@@ -1,0 +1,1083 @@
+3.2.0.alpha.11 (Bleeding Edge)
+017ae41a5ea5406458ffae3034ff7475c9449df4
+o:Sass::Tree::RootNode
+:@has_childrenT:@template"ï@import "shared";
+@import "compass/utilities/general/hacks";
+
+// Background property support for vendor prefixing within values.
+@mixin background(
+  $background-1,
+  $background-2: false,
+  $background-3: false,
+  $background-4: false,
+  $background-5: false,
+  $background-6: false,
+  $background-7: false,
+  $background-8: false,
+  $background-9: false,
+  $background-10: false
+) {
+  $backgrounds: compact($background-1, $background-2, $background-3, $background-4, $background-5,
+                        $background-6, $background-7, $background-8, $background-9, $background-10);
+  $mult-bgs: -compass-list-size($backgrounds) > 1;
+  $add-pie-bg: prefixed(-pie,   $backgrounds) or $mult-bgs;
+  @if $experimental-support-for-svg          and prefixed(-svg,    $backgrounds) {      background:    -svg($backgrounds); }
+  @if $support-for-original-webkit-gradients and prefixed(-owg,    $backgrounds) {      background:    -owg($backgrounds); }
+  @if $experimental-support-for-webkit       and prefixed(-webkit, $backgrounds) {      background: -webkit($backgrounds); }
+  @if $experimental-support-for-mozilla      and prefixed(-moz,    $backgrounds) {      background:    -moz($backgrounds); }
+  @if $experimental-support-for-opera        and prefixed(-o,      $backgrounds) {      background:      -o($backgrounds); }
+  @if $experimental-support-for-pie          and $add-pie-bg                     { -pie-background:    -pie($backgrounds); }
+                                                                                        background:         $backgrounds ;
+}
+
+@mixin background-with-css2-fallback(
+  $background-1,
+  $background-2: false,
+  $background-3: false,
+  $background-4: false,
+  $background-5: false,
+  $background-6: false,
+  $background-7: false,
+  $background-8: false,
+  $background-9: false,
+  $background-10: false
+) {
+  $backgrounds: compact($background-1, $background-2, $background-3, $background-4, $background-5,
+                        $background-6, $background-7, $background-8, $background-9, $background-10);
+  $mult-bgs: -compass-list-size($backgrounds) > 1;
+  $simple-background: if($mult-bgs or prefixed(-css2, $backgrounds), -css2(-compass-nth($backgrounds, last)), false);
+  @if not blank($simple-background) { background: $simple-background; }
+  @include background($background-1, $background-2, $background-3, $background-4, $background-5,
+                      $background-6, $background-7, $background-8, $background-9, $background-10);
+}
+
+
+// Background image property support for vendor prefixing within values.
+@mixin background-image(
+  $image-1,
+  $image-2: false,
+  $image-3: false,
+  $image-4: false,
+  $image-5: false,
+  $image-6: false,
+  $image-7: false,
+  $image-8: false,
+  $image-9: false,
+  $image-10: false
+) {
+  $images: compact($image-1, $image-2, $image-3, $image-4, $image-5, $image-6, $image-7, $image-8, $image-9, $image-10);
+  $add-pie-bg: prefixed(-pie,   $images) or -compass-list-size($images) > 1;
+
+  @if $experimental-support-for-svg          and prefixed(-svg,    $images) { background-image:    -svg($images); background-size: 100%; }
+  @if $support-for-original-webkit-gradients and prefixed(-owg,    $images) { background-image:    -owg($images); }
+  @if $experimental-support-for-webkit       and prefixed(-webkit, $images) { background-image: -webkit($images); }
+  @if $experimental-support-for-mozilla      and prefixed(-moz,    $images) { background-image:    -moz($images); }
+  @if $experimental-support-for-opera        and prefixed(-o,      $images) { background-image:      -o($images); }
+  @if $experimental-support-for-pie          and $add-pie-bg                { @warn "PIE does not support background-image. Use @include background(#{$images}) instead." }
+                                                                              background-image:         $images ;
+}
+
+// Emit a IE-Specific filters that renders a simple linear gradient.
+// For use in IE 6 - 8. Best practice would have you apply this via a
+// conditional IE stylesheet, but if you must, you should place this before
+// any background-image properties that you have specified.
+@mixin filter-gradient($start-color, $end-color, $orientation: vertical) {
+  @include has-layout;
+  $gradient-type: if($orientation == vertical, 0, 1);
+  @if $legacy-support-for-ie8 {
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(gradientType=#{$gradient-type}, startColorstr='#{ie-hex-str($start-color)}', endColorstr='#{ie-hex-str($end-color)}')";
+  }
+  @if $legacy-support-for-ie6 or $legacy-support-for-ie7 {
+    filter: progid:DXImageTransform.Microsoft.gradient(gradientType=#{$gradient-type}, startColorstr='#{ie-hex-str($start-color)}', endColorstr='#{ie-hex-str($end-color)}');
+  }
+}
+
+
+// Border image property support for vendor prefixing properties and values.
+@mixin border-image($value) {
+  @if $experimental-support-for-mozilla      {    -moz-border-image:    -moz(-compass-list($value)); }
+  @if $support-for-original-webkit-gradients { -webkit-border-image:    -owg(-compass-list($value)); }
+  @if $experimental-support-for-webkit       { -webkit-border-image: -webkit(-compass-list($value)); }
+  @if $experimental-support-for-opera        {      -o-border-image:      -o(-compass-list($value)); }
+  @if $experimental-support-for-svg          {         border-image:    -svg(-compass-list($value)); }
+                                                       border-image:                       $value;
+}
+
+// List style image property support for vendor prefixing within values.
+@mixin list-style-image($image) {
+  @if $experimental-support-for-mozilla      and prefixed(-moz,    $image) { list-style-image:    -moz($image); }
+  @if $support-for-original-webkit-gradients and prefixed(-owg,    $image) { list-style-image:    -owg($image); }
+  @if $experimental-support-for-webkit       and prefixed(-webkit, $image) { list-style-image: -webkit($image); }
+  @if $experimental-support-for-opera        and prefixed(-o,      $image) { list-style-image:      -o($image); }
+  @if $experimental-support-for-svg          and prefixed(-svg,    $image) { list-style-image:    -svg($image); }
+                                                                             list-style-image:         $image ;
+}
+
+// List style property support for vendor prefixing within values.
+@mixin list-style($value) {
+  $value: -compass-list($value);
+  @if $experimental-support-for-mozilla      and prefixed(-moz,    $value) { list-style-image:    -moz($value); }
+  @if $support-for-original-webkit-gradients and prefixed(-owg,    $value) { list-style-image:    -owg($value); }
+  @if $experimental-support-for-webkit       and prefixed(-webkit, $value) { list-style-image: -webkit($value); }
+  @if $experimental-support-for-opera        and prefixed(-o,      $value) { list-style-image:      -o($value); }
+  @if $experimental-support-for-svg          and prefixed(-svg,    $value) { list-style-image:    -svg($value); }
+                                                                             list-style-image:         $value ;
+}
+
+// content property support for vendor prefixing within values.
+@mixin content($value) {
+  $value: -compass-list($value);
+  @if $experimental-support-for-mozilla      and prefixed(-moz,    $value) { content:    -moz($value); }
+  @if $support-for-original-webkit-gradients and prefixed(-owg,    $value) { content:    -owg($value); }
+  @if $experimental-support-for-webkit       and prefixed(-webkit, $value) { content: -webkit($value); }
+  @if $experimental-support-for-opera        and prefixed(-o,      $value) { content:      -o($value); }
+  @if $experimental-support-for-svg          and prefixed(-svg,    $value) { content:    -svg($value); }
+                                                                             content:         $value ;
+}
+:@children[o:Sass::Tree::ImportNode
+;0;[ :@options{ :
+@linei:@imported_filename"sharedo;	
+;0;[ ;
+@
+;i;"$compass/utilities/general/hackso:Sass::Tree::CommentNode:
+@loud0;[ ;
+@
+:@value"J/* Background property support for vendor prefixing within values. */:@silenti ;i	:@lines[ o:Sass::Tree::MixinDefNode:
+@args[[o:Sass::Script::Variable:@underscored_name"background_1:
+@name"background-1;
+{ 0[o;;"background_2;"background-2;
+@o:Sass::Script::Bool;
+@;F;i[o;;"background_3;"background-3;
+@o;;
+@;F;i[o;;"background_4;"background-4;
+@o;;
+@;F;i[o;;"background_5;"background-5;
+@o;;
+@;F;i[o;;"background_6;"background-6;
+@o;;
+@;F;i[o;;"background_7;"background-7;
+@o;;
+@;F;i[o;;"background_8;"background-8;
+@o;;
+@;F;i[o;;"background_9;"background-9;
+@o;;
+@;F;i[o;;"background_10;"background-10;
+@o;;
+@;F;i;T;"background;[o:Sass::Tree::VariableNode:@guarded0;"backgrounds;[ ;
+@
+;i:
+@expro:Sass::Script::Funcall
+;[o;	;"background_1;"background-1;
+@
+;io;	;"background_2;"background-2;
+@
+;io;	;"background_3;"background-3;
+@
+;io;	;"background_4;"background-4;
+@
+;io;	;"background_5;"background-5;
+@
+;io;	;"background_6;"background-6;
+@
+;io;	;"background_7;"background-7;
+@
+;io;	;"background_8;"background-8;
+@
+;io;	;"background_9;"background-9;
+@
+;io;	;"background_10;"background-10;
+@
+;i;"compact;
+@
+;i:@keywords{ o;;0;"mult-bgs;[ ;
+@
+;i;o:Sass::Script::Operation
+:@operand2o:Sass::Script::Number:@original"1;
+@
+:@denominator_units[ ;i;i:@numerator_units[ :@operator:gt:@operand1o;
+;[o;	;"backgrounds;"backgrounds;
+@
+;i;"-compass-list-size;
+@
+;i;{ ;
+@
+;io;;0;"add-pie-bg;[ ;
+@
+;i;o;
+;o;	;"mult_bgs;"mult-bgs;
+@
+;i;#:or;%o;
+;[o:Sass::Script::String	:
+@type:identifier;
+@
+;"	-pie;io;	;"backgrounds;"backgrounds;
+@
+;i;"prefixed;
+@
+;i;{ ;
+@
+;iu:Sass::Tree::IfNode$[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"	-svg:
+@lineio:Sass::Script::Variable	:@underscored_name"backgrounds:
+@name"backgrounds;@
+;i;"prefixed;@
+;i:@keywords{ :@operator:and:@operand1o;	;"!experimental_support_for_svg;"!experimental-support-for-svg;@
+;i;@
+;i0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["background:@children[ ;@
+;o;
+;[o;	;"backgrounds;"backgrounds;@
+;i;"	-svg;@
+;i;{ ;iu;*6[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"	-owg:
+@lineio:Sass::Script::Variable	:@underscored_name"backgrounds:
+@name"backgrounds;@
+;i;"prefixed;@
+;i:@keywords{ :@operator:and:@operand1o;	;"*support_for_original_webkit_gradients;"*support-for-original-webkit-gradients;@
+;i;@
+;i0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["background:@children[ ;@
+;o;
+;[o;	;"backgrounds;"backgrounds;@
+;i;"	-owg;@
+;i;{ ;iu;*0[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"-webkit:
+@lineio:Sass::Script::Variable	:@underscored_name"backgrounds:
+@name"backgrounds;@
+;i;"prefixed;@
+;i:@keywords{ :@operator:and:@operand1o;	;"$experimental_support_for_webkit;"$experimental-support-for-webkit;@
+;i;@
+;i0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["background:@children[ ;@
+;o;
+;[o;	;"backgrounds;"backgrounds;@
+;i;"-webkit;@
+;i;{ ;iu;*,[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"	-moz:
+@lineio:Sass::Script::Variable	:@underscored_name"backgrounds:
+@name"backgrounds;@
+;i;"prefixed;@
+;i:@keywords{ :@operator:and:@operand1o;	;"%experimental_support_for_mozilla;"%experimental-support-for-mozilla;@
+;i;@
+;i0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["background:@children[ ;@
+;o;
+;[o;	;"backgrounds;"backgrounds;@
+;i;"	-moz;@
+;i;{ ;iu;*$[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"-o:
+@lineio:Sass::Script::Variable	:@underscored_name"backgrounds:
+@name"backgrounds;@
+;i;"prefixed;@
+;i:@keywords{ :@operator:and:@operand1o;	;"#experimental_support_for_opera;"#experimental-support-for-opera;@
+;i;@
+;i0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["background:@children[ ;@
+;o;
+;[o;	;"backgrounds;"backgrounds;@
+;i;"-o;@
+;i;{ ;iu;*Ã[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Variable	:@underscored_name"add_pie_bg:
+@name"add-pie-bg:@options{ :
+@linei:@operator:and:@operand1o;	;"!experimental_support_for_pie;	"!experimental-support-for-pie;
+@
+;i;
+@
+;i0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;	["-pie-background:@children[ ;
+@
+:@valueo:Sass::Script::Funcall
+:
+@args[o;	;"backgrounds;	"backgrounds;
+@
+;i;	"	-pie;
+@
+;i:@keywords{ ;io:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["background;[ ;
+@
+;o;	;"backgrounds;"backgrounds;
+@
+;i ;i ;
+@
+;io;;[[o;;"background_1;"background-1;
+{ 0[o;;"background_2;"background-2;
+@õo;;
+@õ;F;i%[o;;"background_3;"background-3;
+@õo;;
+@õ;F;i&[o;;"background_4;"background-4;
+@õo;;
+@õ;F;i'[o;;"background_5;"background-5;
+@õo;;
+@õ;F;i([o;;"background_6;"background-6;
+@õo;;
+@õ;F;i)[o;;"background_7;"background-7;
+@õo;;
+@õ;F;i*[o;;"background_8;"background-8;
+@õo;;
+@õ;F;i+[o;;"background_9;"background-9;
+@õo;;
+@õ;F;i,[o;;"background_10;"background-10;
+@õo;;
+@õ;F;i-;T;""background-with-css2-fallback;[
+o;;0;"backgrounds;[ ;
+@
+;i0;o;
+;[o;	;"background_1;"background-1;
+@
+;i/o;	;"background_2;"background-2;
+@
+;i/o;	;"background_3;"background-3;
+@
+;i/o;	;"background_4;"background-4;
+@
+;i/o;	;"background_5;"background-5;
+@
+;i/o;	;"background_6;"background-6;
+@
+;i0o;	;"background_7;"background-7;
+@
+;i0o;	;"background_8;"background-8;
+@
+;i0o;	;"background_9;"background-9;
+@
+;i0o;	;"background_10;"background-10;
+@
+;i0;"compact;
+@
+;i0;{ o;;0;"mult-bgs;[ ;
+@
+;i1;o;
+;o;; "1;
+@
+;!@t;i;i1;"[ ;#;$;%o;
+;[o;	;"backgrounds;"backgrounds;
+@
+;i1;"-compass-list-size;
+@
+;i1;{ ;
+@
+;i1o;;0;"simple-background;[ ;
+@
+;i2;o;
+;[o;
+;o;
+;[o;'	;(;);
+@
+;"
+-css2;i2o;	;"backgrounds;"backgrounds;
+@
+;i2;"prefixed;
+@
+;i2;{ ;#;&;%o;	;"mult_bgs;"mult-bgs;
+@
+;i2;
+@
+;i2o;
+;[o;
+;[o;	;"backgrounds;"backgrounds;
+@
+;i2o;'	;(;);
+@
+;"	last;i2;"-compass-nth;
+@
+;i2;{ ;"
+-css2;
+@
+;i2;{ o;;
+@
+;F;i2;"if;
+@
+;i2;{ u;*è[o:!Sass::Script::UnaryOperation	:@operator:not:@operando:Sass::Script::Funcall
+:
+@args[o:Sass::Script::Variable	:@underscored_name"simple_background:
+@name"simple-background:@options{ :
+@linei3;"
+blank;@;i3:@keywords{ ;@;i30[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["background:@children[ ;@:@valueo;	;"simple_background;"simple-background;@;i3;i3o:Sass::Tree::MixinNode;[o;	;"background_1;"background-1;
+@
+;i4o;	;"background_2;"background-2;
+@
+;i4o;	;"background_3;"background-3;
+@
+;i4o;	;"background_4;"background-4;
+@
+;i4o;	;"background_5;"background-5;
+@
+;i4o;	;"background_6;"background-6;
+@
+;i5o;	;"background_7;"background-7;
+@
+;i5o;	;"background_8;"background-8;
+@
+;i5o;	;"background_9;"background-9;
+@
+;i5o;	;"background_10;"background-10;
+@
+;i5;"background;[ ;
+@
+;i5;{ ;
+@
+;i.o;;0;[ ;
+@
+;"P/* Background image property support for vendor prefixing within values. */;i ;i9;[ o;;[[o;;"image_1;"image-1;
+{ 0[o;;"image_2;"image-2;
+@No;;
+@N;F;i<[o;;"image_3;"image-3;
+@No;;
+@N;F;i=[o;;"image_4;"image-4;
+@No;;
+@N;F;i>[o;;"image_5;"image-5;
+@No;;
+@N;F;i?[o;;"image_6;"image-6;
+@No;;
+@N;F;i@[o;;"image_7;"image-7;
+@No;;
+@N;F;iA[o;;"image_8;"image-8;
+@No;;
+@N;F;iB[o;;"image_9;"image-9;
+@No;;
+@N;F;iC[o;;"image_10;"image-10;
+@No;;
+@N;F;iD;T;"background-image;[o;;0;"images;[ ;
+@
+;iF;o;
+;[o;	;"image_1;"image-1;
+@
+;iFo;	;"image_2;"image-2;
+@
+;iFo;	;"image_3;"image-3;
+@
+;iFo;	;"image_4;"image-4;
+@
+;iFo;	;"image_5;"image-5;
+@
+;iFo;	;"image_6;"image-6;
+@
+;iFo;	;"image_7;"image-7;
+@
+;iFo;	;"image_8;"image-8;
+@
+;iFo;	;"image_9;"image-9;
+@
+;iFo;	;"image_10;"image-10;
+@
+;iF;"compact;
+@
+;iF;{ o;;0;"add-pie-bg;[ ;
+@
+;iG;o;
+;o;
+;o;; "1;
+@
+;!@t;i;iG;"[ ;#;$;%o;
+;[o;	;"images;"images;
+@
+;iG;"-compass-list-size;
+@
+;iG;{ ;
+@
+;iG;#;&;%o;
+;[o;'	;(;);
+@
+;"	-pie;iGo;	;"images;"images;
+@
+;iG;"prefixed;
+@
+;iG;{ ;
+@
+;iGu;*Y[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"	-svg:
+@lineiIo:Sass::Script::Variable	:@underscored_name"images:
+@name"images;@
+;iI;"prefixed;@
+;iI:@keywords{ :@operator:and:@operand1o;	;"!experimental_support_for_svg;"!experimental-support-for-svg;@
+;iI;@
+;iI0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["background-image:@children[ ;@
+;o;
+;[o;	;"images;"images;@
+;iI;"	-svg;@
+;iI;{ ;iIo;;i ;;;["background-size;[ ;@
+;o;	;
+;;@
+;"	100%;iIu;*([o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"	-owg:
+@lineiJo:Sass::Script::Variable	:@underscored_name"images:
+@name"images;@
+;iJ;"prefixed;@
+;iJ:@keywords{ :@operator:and:@operand1o;	;"*support_for_original_webkit_gradients;"*support-for-original-webkit-gradients;@
+;iJ;@
+;iJ0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["background-image:@children[ ;@
+;o;
+;[o;	;"images;"images;@
+;iJ;"	-owg;@
+;iJ;{ ;iJu;*"[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"-webkit:
+@lineiKo:Sass::Script::Variable	:@underscored_name"images:
+@name"images;@
+;iK;"prefixed;@
+;iK:@keywords{ :@operator:and:@operand1o;	;"$experimental_support_for_webkit;"$experimental-support-for-webkit;@
+;iK;@
+;iK0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["background-image:@children[ ;@
+;o;
+;[o;	;"images;"images;@
+;iK;"-webkit;@
+;iK;{ ;iKu;*[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"	-moz:
+@lineiLo:Sass::Script::Variable	:@underscored_name"images:
+@name"images;@
+;iL;"prefixed;@
+;iL:@keywords{ :@operator:and:@operand1o;	;"%experimental_support_for_mozilla;"%experimental-support-for-mozilla;@
+;iL;@
+;iL0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["background-image:@children[ ;@
+;o;
+;[o;	;"images;"images;@
+;iL;"	-moz;@
+;iL;{ ;iLu;*[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"-o:
+@lineiMo:Sass::Script::Variable	:@underscored_name"images:
+@name"images;@
+;iM;"prefixed;@
+;iM:@keywords{ :@operator:and:@operand1o;	;"#experimental_support_for_opera;"#experimental-support-for-opera;@
+;iM;@
+;iM0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["background-image:@children[ ;@
+;o;
+;[o;	;"images;"images;@
+;iM;"-o;@
+;iM;{ ;iMu;*+[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Variable	:@underscored_name"add_pie_bg:
+@name"add-pie-bg:@options{ :
+@lineiN:@operator:and:@operand1o;	;"!experimental_support_for_pie;	"!experimental-support-for-pie;
+@
+;iN;
+@
+;iN0[o:Sass::Tree::WarnNode	:@children[ ;
+@
+;iN:
+@expro:&Sass::Script::StringInterpolation
+:@beforeo:Sass::Script::String	:
+@type:string;
+@
+:@value"DPIE does not support background-image. Use @include background(;iN;
+@
+:@aftero;	;;;
+@
+;") instead.;iN;iN:	@mido;	;"images;	"images;
+@
+;iNo;+;,i ;-;.;["background-image;[ ;
+@
+;o;	;"images;"images;
+@
+;iO;iO;
+@
+;iEo;;0;[ ;
+@
+;"/* Emit a IE-Specific filters that renders a simple linear gradient.
+ * For use in IE 6 - 8. Best practice would have you apply this via a
+ * conditional IE stylesheet, but if you must, you should place this before
+ * any background-image properties that you have specified. */;i ;iR;[ o;;[[o;;"start_color;"start-color;
+{ 0[o;;"end_color;"end-color;
+@“0[o;;"orientation;"orientation;
+@“o;'	;(;);
+@“;"vertical;iV;T;"filter-gradient;[	o;/;[ ;"has-layout;[ ;
+@
+;iW;{ o;;0;"gradient-type;[ ;
+@
+;iX;o;
+;[o;
+;o;'	;(;);
+@
+;"vertical;iX;#:eq;%o;	;"orientation;"orientation;
+@
+;iX;
+@
+;iXo;; "0;
+@
+;!@t;i ;iX;"[ o;; "1;
+@
+;!@t;i;iX;"[ ;"if;
+@
+;iX;{ u;*¯[o:Sass::Script::Variable	:@underscored_name"legacy_support_for_ie8:
+@name"legacy-support-for-ie8:@options{ :
+@lineiY0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["-ms-filter:@children[ ;@	:@valueo:&Sass::Script::StringInterpolation
+:@beforeo:Sass::Script::String	:
+@type:string;@	;"=progid:DXImageTransform.Microsoft.gradient(gradientType=;	iZ;@	:@aftero;
+;o;	;;;@	;", startColorstr=';	iZ;@	;o;
+;o;	;;;@	;"', endColorstr=';	iZ;@	;o;	;;;@	;"');	iZ;	iZ:	@mido:Sass::Script::Funcall
+:
+@args[o; 	;"end_color;"end-color;@	;	iZ;"ie-hex-str;@	;	iZ:@keywords{ ;	iZ;o;
+;[o; 	;"start_color;"start-color;@	;	iZ;"ie-hex-str;@	;	iZ;{ ;	iZ;o; 	;"gradient_type;"gradient-type;@	;	iZ;	iZu;*º[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Variable	:@underscored_name"legacy_support_for_ie7:
+@name"legacy-support-for-ie7:@options{ :
+@linei\:@operator:or:@operand1o;	;"legacy_support_for_ie6;	"legacy-support-for-ie6;
+@
+;i\;
+@
+;i\0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;	["filter:@children[ ;
+@
+:@valueo: Sass::Script::Interpolation:@whitespace_afterF:@beforeo;;F;o;;F;o:Sass::Script::String	:
+@type:identifier;
+@
+;"=progid:DXImageTransform.Microsoft.gradient(gradientType=;i]:@whitespace_beforeF;
+@
+:@aftero;	;;;
+@
+;", startColorstr=';i]:@originally_textF:	@mido;	;"gradient_type;	"gradient-type;
+@
+;i];F;
+@
+;o;	;;;
+@
+;"', endColorstr=';i];F;o:Sass::Script::Funcall
+:
+@args[o;	;"start_color;	"start-color;
+@
+;i];	"ie-hex-str;
+@
+;i]:@keywords{ ;F;
+@
+;o;	;;;
+@
+;"');i];F;o;
+; [o;	;"end_color;	"end-color;
+@
+;i];	"ie-hex-str;
+@
+;i];!{ ;i];
+@
+;iVo;;0;[ ;
+@
+;"T/* Border image property support for vendor prefixing properties and values. */;i ;ib;[ o;;[[o;;"
+value;"
+value;
+{ 0;T;"border-image;[u;*~[o:Sass::Script::Variable	:@underscored_name"%experimental_support_for_mozilla:
+@name"%experimental-support-for-mozilla:@options{ :
+@lineid0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["-moz-border-image:@children[ ;@	:@valueo:Sass::Script::Funcall
+:
+@args[o;
+;[o; 	;"
+value;"
+value;@	;	id;"-compass-list;@	;	id:@keywords{ ;"	-moz;@	;	id;{ ;	idu;*ã[o:Sass::Script::Variable	:@underscored_name"*support_for_original_webkit_gradients:
+@name"*support-for-original-webkit-gradients:@options{ :
+@lineie0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["-webkit-border-image:@children[ ;@	:@valueo:Sass::Script::Funcall
+:
+@args[o;
+;[o; 	;"
+value;"
+value;@	;	ie;"-compass-list;@	;	ie:@keywords{ ;"	-owg;@	;	ie;{ ;	ieu;*Ç[o:Sass::Script::Variable	:@underscored_name"$experimental_support_for_webkit:
+@name"$experimental-support-for-webkit:@options{ :
+@lineif0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["-webkit-border-image:@children[ ;@	:@valueo:Sass::Script::Funcall
+:
+@args[o;
+;[o; 	;"
+value;"
+value;@	;	if;"-compass-list;@	;	if:@keywords{ ;"-webkit;@	;	if;{ ;	ifu;*v[o:Sass::Script::Variable	:@underscored_name"#experimental_support_for_opera:
+@name"#experimental-support-for-opera:@options{ :
+@lineig0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["-o-border-image:@children[ ;@	:@valueo:Sass::Script::Funcall
+:
+@args[o;
+;[o; 	;"
+value;"
+value;@	;	ig;"-compass-list;@	;	ig:@keywords{ ;"-o;@	;	ig;{ ;	igu;*q[o:Sass::Script::Variable	:@underscored_name"!experimental_support_for_svg:
+@name"!experimental-support-for-svg:@options{ :
+@lineih0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["border-image:@children[ ;@	:@valueo:Sass::Script::Funcall
+:
+@args[o;
+;[o; 	;"
+value;"
+value;@	;	ih;"-compass-list;@	;	ih:@keywords{ ;"	-svg;@	;	ih;{ ;	iho;+;,i ;-;.;["border-image;[ ;
+@
+;o;	;"
+value;"
+value;
+@
+;ii;ii;
+@
+;ico;;0;[ ;
+@
+;"P/* List style image property support for vendor prefixing within values. */;i ;il;[ o;;[[o;;"
+image;"
+image;
+{ 0;T;"list-style-image;[u;*[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"	-moz:
+@lineino:Sass::Script::Variable	:@underscored_name"
+image:
+@name"
+image;@
+;in;"prefixed;@
+;in:@keywords{ :@operator:and:@operand1o;	;"%experimental_support_for_mozilla;"%experimental-support-for-mozilla;@
+;in;@
+;in0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["list-style-image:@children[ ;@
+;o;
+;[o;	;"
+image;"
+image;@
+;in;"	-moz;@
+;in;{ ;inu;*$[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"	-owg:
+@lineioo:Sass::Script::Variable	:@underscored_name"
+image:
+@name"
+image;@
+;io;"prefixed;@
+;io:@keywords{ :@operator:and:@operand1o;	;"*support_for_original_webkit_gradients;"*support-for-original-webkit-gradients;@
+;io;@
+;io0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["list-style-image:@children[ ;@
+;o;
+;[o;	;"
+image;"
+image;@
+;io;"	-owg;@
+;io;{ ;iou;*[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"-webkit:
+@lineipo:Sass::Script::Variable	:@underscored_name"
+image:
+@name"
+image;@
+;ip;"prefixed;@
+;ip:@keywords{ :@operator:and:@operand1o;	;"$experimental_support_for_webkit;"$experimental-support-for-webkit;@
+;ip;@
+;ip0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["list-style-image:@children[ ;@
+;o;
+;[o;	;"
+image;"
+image;@
+;ip;"-webkit;@
+;ip;{ ;ipu;*[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"-o:
+@lineiqo:Sass::Script::Variable	:@underscored_name"
+image:
+@name"
+image;@
+;iq;"prefixed;@
+;iq:@keywords{ :@operator:and:@operand1o;	;"#experimental_support_for_opera;"#experimental-support-for-opera;@
+;iq;@
+;iq0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["list-style-image:@children[ ;@
+;o;
+;[o;	;"
+image;"
+image;@
+;iq;"-o;@
+;iq;{ ;iqu;*[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"	-svg:
+@lineiro:Sass::Script::Variable	:@underscored_name"
+image:
+@name"
+image;@
+;ir;"prefixed;@
+;ir:@keywords{ :@operator:and:@operand1o;	;"!experimental_support_for_svg;"!experimental-support-for-svg;@
+;ir;@
+;ir0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["list-style-image:@children[ ;@
+;o;
+;[o;	;"
+image;"
+image;@
+;ir;"	-svg;@
+;ir;{ ;iro;+;,i ;-;.;["list-style-image;[ ;
+@
+;o;	;"
+image;"
+image;
+@
+;is;is;
+@
+;imo;;0;[ ;
+@
+;"J/* List style property support for vendor prefixing within values. */;i ;iv;[ o;;[[o;;"
+value;"
+value;
+{ 0;T;"list-style;[o;;0;"
+value;[ ;
+@
+;ix;o;
+;[o;	;"
+value;"
+value;
+@
+;ix;"-compass-list;
+@
+;ix;{ u;*[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"	-moz:
+@lineiyo:Sass::Script::Variable	:@underscored_name"
+value:
+@name"
+value;@
+;iy;"prefixed;@
+;iy:@keywords{ :@operator:and:@operand1o;	;"%experimental_support_for_mozilla;"%experimental-support-for-mozilla;@
+;iy;@
+;iy0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["list-style-image:@children[ ;@
+;o;
+;[o;	;"
+value;"
+value;@
+;iy;"	-moz;@
+;iy;{ ;iyu;*$[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"	-owg:
+@lineizo:Sass::Script::Variable	:@underscored_name"
+value:
+@name"
+value;@
+;iz;"prefixed;@
+;iz:@keywords{ :@operator:and:@operand1o;	;"*support_for_original_webkit_gradients;"*support-for-original-webkit-gradients;@
+;iz;@
+;iz0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["list-style-image:@children[ ;@
+;o;
+;[o;	;"
+value;"
+value;@
+;iz;"	-owg;@
+;iz;{ ;izu;*[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"-webkit:
+@linei{o:Sass::Script::Variable	:@underscored_name"
+value:
+@name"
+value;@
+;i{;"prefixed;@
+;i{:@keywords{ :@operator:and:@operand1o;	;"$experimental_support_for_webkit;"$experimental-support-for-webkit;@
+;i{;@
+;i{0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["list-style-image:@children[ ;@
+;o;
+;[o;	;"
+value;"
+value;@
+;i{;"-webkit;@
+;i{;{ ;i{u;*[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"-o:
+@linei|o:Sass::Script::Variable	:@underscored_name"
+value:
+@name"
+value;@
+;i|;"prefixed;@
+;i|:@keywords{ :@operator:and:@operand1o;	;"#experimental_support_for_opera;"#experimental-support-for-opera;@
+;i|;@
+;i|0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["list-style-image:@children[ ;@
+;o;
+;[o;	;"
+value;"
+value;@
+;i|;"-o;@
+;i|;{ ;i|u;*[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"	-svg:
+@linei}o:Sass::Script::Variable	:@underscored_name"
+value:
+@name"
+value;@
+;i};"prefixed;@
+;i}:@keywords{ :@operator:and:@operand1o;	;"!experimental_support_for_svg;"!experimental-support-for-svg;@
+;i};@
+;i}0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["list-style-image:@children[ ;@
+;o;
+;[o;	;"
+value;"
+value;@
+;i};"	-svg;@
+;i};{ ;i}o;+;,i ;-;.;["list-style-image;[ ;
+@
+;o;	;"
+value;"
+value;
+@
+;i~;i~;
+@
+;iwo;;0;[ ;
+@
+;"G/* content property support for vendor prefixing within values. */;i ;i|;[ o;;[[o;;"
+value;"
+value;
+{ 0;T;"content;[o;;0;"
+value;[ ;
+@
+;i~;o;
+;[o;	;"
+value;"
+value;
+@
+;i~;"-compass-list;
+@
+;i~;{ u;*[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"	-moz:
+@lineio:Sass::Script::Variable	:@underscored_name"
+value:
+@name"
+value;@
+;i;"prefixed;@
+;i:@keywords{ :@operator:and:@operand1o;	;"%experimental_support_for_mozilla;"%experimental-support-for-mozilla;@
+;i;@
+;i0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["content:@children[ ;@
+;o;
+;[o;	;"
+value;"
+value;@
+;i;"	-moz;@
+;i;{ ;iu;*#[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"	-owg:
+@lineiÄo:Sass::Script::Variable	:@underscored_name"
+value:
+@name"
+value;@
+;iÄ;"prefixed;@
+;iÄ:@keywords{ :@operator:and:@operand1o;	;"*support_for_original_webkit_gradients;"*support-for-original-webkit-gradients;@
+;iÄ;@
+;iÄ0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["content:@children[ ;@
+;o;
+;[o;	;"
+value;"
+value;@
+;iÄ;"	-owg;@
+;iÄ;{ ;iÄu;*[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"-webkit:
+@lineiÅo:Sass::Script::Variable	:@underscored_name"
+value:
+@name"
+value;@
+;iÅ;"prefixed;@
+;iÅ:@keywords{ :@operator:and:@operand1o;	;"$experimental_support_for_webkit;"$experimental-support-for-webkit;@
+;iÅ;@
+;iÅ0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["content:@children[ ;@
+;o;
+;[o;	;"
+value;"
+value;@
+;iÅ;"-webkit;@
+;iÅ;{ ;iÅu;*[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"-o:
+@lineiÇo:Sass::Script::Variable	:@underscored_name"
+value:
+@name"
+value;@
+;iÇ;"prefixed;@
+;iÇ:@keywords{ :@operator:and:@operand1o;	;"#experimental_support_for_opera;"#experimental-support-for-opera;@
+;iÇ;@
+;iÇ0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["content:@children[ ;@
+;o;
+;[o;	;"
+value;"
+value;@
+;iÇ;"-o;@
+;iÇ;{ ;iÇu;*[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Funcall
+:
+@args[o:Sass::Script::String	:
+@type:identifier:@options{ :@value"	-svg:
+@lineiÉo:Sass::Script::Variable	:@underscored_name"
+value:
+@name"
+value;@
+;iÉ;"prefixed;@
+;iÉ:@keywords{ :@operator:and:@operand1o;	;"!experimental_support_for_svg;"!experimental-support-for-svg;@
+;iÉ;@
+;iÉ0[o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["content:@children[ ;@
+;o;
+;[o;	;"
+value;"
+value;@
+;iÉ;"	-svg;@
+;iÉ;{ ;iÉo;+;,i ;-;.;["content;[ ;
+@
+;o;	;"
+value;"
+value;
+@
+;iÑ;iÑ;
+@
+;i};
+@
+;i
