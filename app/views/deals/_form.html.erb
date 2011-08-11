@@ -1,0 +1,75 @@
+<%= form_for [@merchant, @deal] do |f| %>
+<% if @deal.errors.any? %>
+<div id="error_explanation">
+	<h2><%= pluralize(@deal.errors.count, "error") %> prohibited this deal from being saved:</h2>
+
+	<ul>
+		<% @deal.errors.full_messages.each do |msg| %>
+		<li>
+			<%= msg %>
+		</li>
+		<% end %>
+	</ul>
+</div>
+<% end %>
+
+<div class="field">
+	<%= f.label :title %>
+	<br />
+	<%= f.text_field :title %>
+</div>
+<div class="field">
+	<%= f.label :location %>
+	<br />
+	<%= f.text_field :location %>
+</div>
+<div class="field">
+	<%= f.label :description %>
+	<br />
+	<%= f.text_field :description %>
+</div>
+<div class="field">
+	<%= f.label :regular_price %>
+	<br />
+	<%= f.text_field :regular_price %>
+</div>
+<div class="field">
+	<%= f.label :discount_price %>
+	<br />
+	<%= f.text_field :discount_price %>
+</div>
+<div class="field">
+	<%= f.label :start_date %>
+	<br />
+	<%= f.date_select :start_date,
+	                      :default => Time.now,
+	                      :minute_step => 5 %>
+</div>
+<div class="field">
+	<%= f.label :end_date %>
+	<br />
+	<%= f.date_select :end_date,
+	                      :default => Time.now,
+	                      :minute_step => 5 %>
+</div>
+<div class="field">
+	<%= f.label :expiry_date %>
+	<br />
+	<%= f.date_select :expiry_date,
+	                      :default => Time.now,
+	                      :minute_step => 5 %>
+</div>
+<div class="field">
+	<%= f.label :max_per_person %>
+	<br />
+	<%= f.text_field :max_per_person %>
+</div>
+<div class="field">
+	<%= f.label :max_limit %>
+	<br />
+	<%= f.text_field :max_limit %>
+</div>
+<div class="actions">
+	<%= f.submit %>
+</div>
+<% end %>

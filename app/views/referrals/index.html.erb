@@ -1,0 +1,19 @@
+<h1>Listing referrals</h1>
+
+<table>
+	<tr>
+		<th>Referral#</th>
+	    <th>Creator</th>
+		<th>Deal</th>
+	</tr>
+
+	<% @referrals.each do |referral| %>
+	<tr>
+		<td><%= referral.id %></td>
+		<td><%= referral.creator.name %></td>
+		<td><%= referral.deal.item.title %></td>
+	</tr>
+	<% end %>
+</table>
+
+<br />

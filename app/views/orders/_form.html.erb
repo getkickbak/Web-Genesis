@@ -1,0 +1,35 @@
+<%= form_for @order, :url => complete_order_path(@deal) do |f| %>
+<% if @order.errors.any? %>
+<div id="error_explanation">
+	<h2><%= pluralize(@order.errors.count, "error") %> prohibited this order from being saved:</h2>
+
+	<ul>
+		<% @order.errors.full_messages.each do |msg| %>
+		<li>
+			<%= msg %>
+		</li>
+		<% end %>
+	</ul>
+</div>
+<% end %>
+<%
+=begin
+%>
+<div class="field">
+	<%= @deal.title %>
+</div>
+<%
+=end
+%>
+<div class="field">
+	<%= f.label :quantity %>
+	<br />
+	<%= f.text_field :quantity %>
+</div>
+
+<%= hidden_field_tag 'referral_id', @referral_id %>
+
+<div class="actions">
+	<%= f.submit "Complete Order" %>
+</div>
+<% end %>

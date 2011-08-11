@@ -1,0 +1,51 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Title:</b>
+  <%= @deal.title %>
+</p>
+
+<p>
+  <b>Location:</b>
+  <%= @deal.location %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%= @deal.description %>
+</p>
+
+<p>
+  <b>Regular Price:</b>
+  <%= @deal.regular_price %>
+</p>
+
+<p>
+  <b>Discount Price:</b>
+  <%= @deal.discount_price %>
+</p>
+
+<p>
+  <b>Start Date:</b>
+  <%= @deal.start_date %>
+</p>
+
+<p>
+  <b>End Date:</b>
+  <%= @deal.end_date %>
+</p>
+
+<p>
+  <b>Expiry Date:</b>
+  <%= @deal.expiry_date %>
+</p>
+
+<p>
+  <b>Max Per Person:</b>
+  <%= @deal.max_per_person %>
+</p>
+
+<% if @merchant %>
+<%= link_to 'Edit', edit_merchant_deal_path(@merchant,@deal) %> |
+<%= link_to 'Back', merchant_deals_path %>
+<% end %>
