@@ -1,25 +1,49 @@
 Genesis::Application.routes.draw do
-  devise_for :users, :path => "", :controllers => { :registrations => "user_devise/registrations" }
-  
-  #resources :sessions, :only => [:new, :create, :destroy]
+=begin  
+  devise_for :users, :path => "", :controllers => { 
+    :registrations => "user_devise/registrations"
+  }
+=end  
   resources :merchants do
-    resources :items
     resources :deals
   end
   
-  #match '/signup', :to => 'users#new'
-  #match '/signin', :to => 'sessions#new'
-  #match '/signout', :to => 'sessions#destroy'
+  match '/sign_in' => 'sessions#create'
+  match '/sign_out' => 'sessions#destroy'
   
-  match '/users/:user_id/coupons' => 'orders#index', :via => :get 
-  match '/users/:user_id/orders/:id' => 'orders#show', :via => :get, :as => :user_order
-  
-  match '/deals/:id' => 'deals#show', :via => :get
-  match '/deals/:id/confirmation' => 'orders#new', :via => :get
-  match '/deals/:id/complete_order' => 'orders#create', :via => :post, :as => :complete_order
-  match '/deals/:id/referrals/create' => 'referrals#create', :via => :get, :as => :new_referral
+  #match '/users/:id/account' => 'users#edit'
+  #match '/users/:user_id/coupons' => 'orders#index', :via => :get , :as => :user_coupons
+  #match '/users/:user_id/orders/:id' => 'orders#show', :via => :get, :as => :user_order
+  match '/orders/:id' => 'orders#show', :as => :user_order
 
-  root :to => 'referrals#index', :via => :get
+  match '/deals/:id' => 'deals#show'
+  match '/deals/:id/confirmation' => 'orders#new', :via => :get, :as => :confirm_order
+  match '/deals/:id/complete_order' => 'orders#create', :via => :post, :as => :complete_order
+  match '/deals/:id/pay_details' => 'orders#pay_details', :via => :get, :as => :pay_details
+  match '/deals/:id/referrals/create' => 'referrals#create', :via => :get, :as => :new_referral
+  
+  namespace "business" do
+    constraints :subdomain => "merchant" do
+      resources :sessions, :only => [:new, :create, :destroy]
+      
+      match '/sign_in' => 'sessions#new'
+      match '/sign_out' => 'sessions#destroy'
+      
+      match '/coupons' => 'coupons#index'
+      match '/coupons/:id' => 'coupons#show'
+      match '/coupons/:id/redeem' => 'coupons#redeem', :via => :post
+  
+      match '/rewards' => 'rewards#index'
+      match '/rewards/:id' => 'rewards#show'
+      match '/rewards/:id/redeem' => 'rewards#redeem', :via => :post
+    end
+  end
+  
+  match '/featured_deal' => 'deals#show', :as => :default_deal
+  root :to => redirect("/featured_deal")
+  #match '/referrals' => 'referrals#index'
+  #root :to => 'referrals#index', :via => :get
+  
   # The priority is based upon order of creation:
   # first created -> highest priority.
 

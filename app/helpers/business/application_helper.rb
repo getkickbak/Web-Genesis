@@ -1,0 +1,3 @@
+module Business::ApplicationHelper
+
+end

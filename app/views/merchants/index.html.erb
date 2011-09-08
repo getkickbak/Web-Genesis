@@ -3,6 +3,7 @@
 <table>
 	<tr>
 		<th>Name</th>
+		<th>Email</th>
 		<th>Address</th>
 		<th>Phone</th>
 		<th></th>
@@ -13,6 +14,7 @@
 	<% @merchants.each do |merchant| %>
 	<tr>
 		<td><%= merchant.name %></td>
+		<td><%= merchant.email %></td>
 		<td><%= merchant.address %></td>
 	    <td><%= merchant.phone %></td>
 		<td><%= link_to 'Show', merchant_path(merchant) %></td>

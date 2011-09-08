@@ -1,34 +1,21 @@
-<%= form_for @merchant do |f| %>
-<% if @merchant.errors.any? %>
-<div id="error_explanation">
-	<h2><%= pluralize(@merchant.errors.count, "error") %> prohibited this merchant from being saved:</h2>
+<%= simple_form_for @merchant do |f| %>
+	<% if @merchant.errors.any? %>
+	<div id="error_explanation">
+		<h2><%= pluralize(@merchant.errors.count, "error") %> prohibited this merchant from being saved:</h2>
 
-	<ul>
-		<% @merchant.errors.full_messages.each do |msg| %>
-		<li>
-			<%= msg %>
-		</li>
-		<% end %>
-	</ul>
-</div>
-<% end %>
-
-<div class="field">
-	<%= f.label :name %>
-	<br />
-	<%= f.text_field :name %>
-</div>
-<div class="field">
-	<%= f.label :address %>
-	<br />
-	<%= f.text_field :address %>
-</div>
-<div class="field">
-	<%= f.label :phone %>
-	<br />
-	<%= f.phone_field :phone %>
-</div>
-<div class="actions">
-	<%= f.submit %>
-</div>
+		<ul>
+			<% @merchant.errors.full_messages.each do |msg| %>
+			<li>
+				<%= msg %>
+			</li>
+			<% end %>
+		</ul>
+	</div>
+	<% end %>
+	<%= f.input :name %>
+	<%= f.input :email %>
+	<%= f.input :address %>
+	<%= f.input :phone %>
+	<%= f.input :paypal_account %>
+	<%= f.button :submit %>
 <% end %>

@@ -36,7 +36,12 @@ gem 'dm-transactions',      DM_VERSION
 gem 'dm-aggregates',        DM_VERSION
 gem 'dm-timestamps',        DM_VERSION
 gem 'dm-observer',          DM_VERSION
-gem 'dm-devise',            '~> 1.4.0'
+gem 'dm-accepts_nested_attributes', DM_VERSION
+#gem 'dm-devise',            '~> 1.4.0'
+gem 'cancan'
+gem 'simple_form' 
+gem 'jquery-rails'  
+gem 'rqr'
 
 group(:development, :test) do
 

@@ -1,94 +1,97 @@
 class MerchantsController < ApplicationController
-  # GET /merchants
-  # GET /merchants.xml
+  before_filter :authenticate_user!, :only => [:edit, :update]
+  #load_and_authorize_resource
+
   def index
-    @merchants = Merchant.all
+    authorize! :read, Merchant
+
+    start = 0
+    max = 10
+    @merchants = Merchant.find(start, max)
 
     respond_to do |format|
       format.html # index.html.erb
-      format.xml  { render :xml => @merchants }
+      #format.xml  { render :xml => @merchants }
     end
   end
 
-  # GET /merchants/1
-  # GET /merchants/1.xml
   def show
-    @merchant = MerchantService.instance.get_merchant(params[:id])
+    @merchant = Merchant.first(:merchant_id => params[:id])
+    authorize! :read, @merchant
 
     respond_to do |format|
       format.html # show.html.erb
-      format.xml  { render :xml => @merchant }
+      #format.xml  { render :xml => @merchant }
     end
   end
 
-  # GET /merchants/new
-  # GET /merchants/new.xml
   def new
     @merchant = Merchant.new
+    authorize! :create, @merchant
 
     respond_to do |format|
       format.html # new.html.erb
-      format.xml  { render :xml => @merchant }
+      #format.xml  { render :xml => @merchant }
     end
   end
 
-  # GET /merchants/1/edit
   def edit
-    @merchant = MerchantService.instance.get_merchant(params[:id])
+    @merchant = Merchant.first(:merchant_id => params[:id])
+    authorize! :update, @merchant
   end
 
-  # POST /merchants
-  # POST /merchants.xml
   def create
+    authorize! :create, Merchant
+
     Merchant.transaction do
       begin
-        @merchant = MerchantService.instance.create_merchant(params[:merchant])
+        @merchant = Merchant.create(params[:merchant])
         respond_to do |format|
-          format.html { redirect_to(@merchant, :notice => 'Merchant was successfully created.') }
-          format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
+          format.html { redirect_to(:action => "show", :id => @merchant.merchant_id, :notice => 'Merchant was successfully created.') }
+          #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
         end
       rescue DataMapper::SaveFailureError => e
-        puts "Exception: " + e.resource.errors.inspect
+        logger.error("Exception: " + e.resource.errors.inspect)
         @merchant = e.resource
         respond_to do |format|
           format.html { render :action => "new" }
-          format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
         end
       end
     end
   end
 
-  # PUT /merchants/1
-  # PUT /merchants/1.xml
   def update
     Merchant.transaction do
       begin
-        @merchant = MerchantService.instance.get_merchant(params[:id])
-        MerchantService.instance.update_merchant(@merchant, params[:merchant])
+        @merchant = Merchant.first(:merchant_id => params[:id])
+        authorize! :update, @merchant
+
+        @merchant.update(params[:merchant])
         respond_to do |format|
-          format.html { redirect_to(@merchant, :notice => 'Merchant was successfully updated.') }
-          format.xml  { head :ok }
+          format.html { redirect_to(:action => "show", :id => @merchant.merchant_id, :notice => 'Merchant was successfully updated.') }
+          #format.xml  { head :ok }
         end
       rescue DataMapper::SaveFailureError => e
-        puts "Exception: " + e.resource.errors.inspect
+        logger.error("Exception: " + e.resource.errors.inspect)
         @merchant = e.resource
         respond_to do |format|
           format.html { render :action => "edit" }
-          format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
         end
       end
     end
   end
 
-  # DELETE /merchants/1
-  # DELETE /merchants/1.xml
   def destroy
-    @merchant = MerchantService.instance.get_merchant(params[:id])
+    @merchant = Merchant.first(:merchant_id => params[:id])
+    authorize! :destroy, @merchant
+
     @merchant.destroy
 
     respond_to do |format|
       format.html { redirect_to(merchants_url) }
-      format.xml  { head :ok }
+      #format.xml  { head :ok }
     end
   end
 end

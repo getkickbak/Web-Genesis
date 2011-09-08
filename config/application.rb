@@ -5,6 +5,7 @@ require 'action_controller/railtie'
 require 'dm-rails/railtie'
 require 'dm-rails/mass_assignment_security'
 require 'action_mailer/railtie'
+require 'dm-accepts_nested_attributes'
 # require 'active_resource/railtie'
 # require 'rails/test_unit/railtie'
 
@@ -48,5 +49,6 @@ module Genesis
     
     DataMapper::Model.append_inclusions(DataMapper::MassAssignmentSecurity)
     DataMapper::Model.raise_on_save_failure = true
+    DataMapper::Property::String.length(255)
   end
 end

@@ -1,75 +1,36 @@
-<%= form_for [@merchant, @deal] do |f| %>
-<% if @deal.errors.any? %>
-<div id="error_explanation">
-	<h2><%= pluralize(@deal.errors.count, "error") %> prohibited this deal from being saved:</h2>
+<%= simple_form_for [@merchant, @deal], :html => {:novalidate => true} do |f| %>
+	<% if @deal.errors.any? %>
+	<div id="error_explanation">
+		<h2><%= pluralize(@deal.errors.count, "error") %> prohibited this deal from being saved:</h2>
 
-	<ul>
-		<% @deal.errors.full_messages.each do |msg| %>
-		<li>
-			<%= msg %>
-		</li>
-		<% end %>
-	</ul>
-</div>
-<% end %>
+		<ul>
+			<% @deal.errors.full_messages.each do |msg| %>
+			<li>
+				<%= msg %>
+			</li>
+			<% end %>
+		</ul>
+	</div>
+	<% end %>
+	<%= f.input :title %>
+	<%= f.input :location %>
+	<%= f.input :photo_url1 %>
+	<%= f.input :photo_url2 %>
+	<%= f.input :photo_url3 %>
+	<%= f.input :photo_url4 %>
+	<%= f.input :photo_url5 %>
+	<%= f.input :description, :as => :text %>
+	<%= f.input :highlights, :as => :text %>
+	<%= f.input :details, :as => :text %>
+	<%= f.input :start_date, :as => :date, :order => [:day, :month, :year], :input_html => { :value => Time.now } %>
+	<%= f.input :end_date, :as => :date, :order => [:day, :month, :year], :input_html => { :value => Time.now } %>
+	<%= f.input :expiry_date, :as => :date, :order => [:day, :month, :year], :input_html => { :value => Time.now } %>
+	<%= f.input :max_per_person %>
+	<%= f.input :max_limit %>
 
-<div class="field">
-	<%= f.label :title %>
-	<br />
-	<%= f.text_field :title %>
-</div>
-<div class="field">
-	<%= f.label :location %>
-	<br />
-	<%= f.text_field :location %>
-</div>
-<div class="field">
-	<%= f.label :description %>
-	<br />
-	<%= f.text_field :description %>
-</div>
-<div class="field">
-	<%= f.label :regular_price %>
-	<br />
-	<%= f.text_field :regular_price %>
-</div>
-<div class="field">
-	<%= f.label :discount_price %>
-	<br />
-	<%= f.text_field :discount_price %>
-</div>
-<div class="field">
-	<%= f.label :start_date %>
-	<br />
-	<%= f.date_select :start_date,
-	                      :default => Time.now,
-	                      :minute_step => 5 %>
-</div>
-<div class="field">
-	<%= f.label :end_date %>
-	<br />
-	<%= f.date_select :end_date,
-	                      :default => Time.now,
-	                      :minute_step => 5 %>
-</div>
-<div class="field">
-	<%= f.label :expiry_date %>
-	<br />
-	<%= f.date_select :expiry_date,
-	                      :default => Time.now,
-	                      :minute_step => 5 %>
-</div>
-<div class="field">
-	<%= f.label :max_per_person %>
-	<br />
-	<%= f.text_field :max_per_person %>
-</div>
-<div class="field">
-	<%= f.label :max_limit %>
-	<br />
-	<%= f.text_field :max_limit %>
-</div>
-<div class="actions">
-	<%= f.submit %>
-</div>
-<% end %>
+	<%= f.simple_fields_for :subdeals do |builder| %>
+		<%= render "subdeal_fields", :f => builder %>
+	<% end %>
+	<p><%= link_to_add_fields "Add Subdeal", f, :subdeals %></p>
+	<%= f.button :submit %>
+<% end %> 
