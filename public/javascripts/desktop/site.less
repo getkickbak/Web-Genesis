@@ -1,0 +1,511 @@
+/* Preboot.less
+ * Variables and mixins to pre-ignite any new web development project
+ * ------------------------------------------------------------------ */
+
+// Griditude
+@gridColumns:       24;
+@gridColumnWidth:   20px;
+@gridGutterWidth:   10px;
+
+// VARIABLES
+// ---------
+
+// Links
+@linkColor:         #0069d6;
+@linkColorHover:    darken(@linkColor, 10);
+
+// Baseline grid
+@basefont:          13px;
+@baseline:          18px;
+
+@green:              #6E8B3D;
+@baseColor:         @green;                  // Set a base color
+@greenDark:        #5A7333;
+@red:            		 #FF0000;
+@redDark:           #CE0000;
+@blue:				 #535F9F;
+@blueDark:			 #495699;
+@gold:				 #FFC500;
+@goldDark:			 #ECB702;
+.noMargin {
+	margin : 0px !important;
+}
+.noPadding {
+	padding : 0px !important;
+}
+.noWrap {
+	white-space:nowrap;
+}
+
+// GRID SYSTEM
+// -----------
+
+.absColumns(@columnSpan: 1) {
+  position:absolute;
+  left: (@gridColumnWidth * @columnSpan) + (@gridGutterWidth * (@columnSpan - 1));
+}
+
+.row {
+  position:relative;
+  .span0     { width:0px; height:0px; visibility:hidden;}
+  .span17 { .columns(17); }
+  .span18 { .columns(18); }
+  .span19 { .columns(19); }
+  .span20 { .columns(20); }
+  .span21 { .columns(21); }
+  .span22 { .columns(22); }
+  .span23 { .columns(23); }
+  .span24 { .columns(24); }
+  .span0abs { position:absolute; margin:0; left: 0; }
+  .span1abs { .absColumns(1); }
+  .span2abs { .absColumns(2); }
+  .span3abs { .absColumns(3); }
+  .span4abs { .absColumns(4); }
+  .span5abs { .absColumns(5); }
+  .span6abs { .absColumns(6); }
+  .span7abs { .absColumns(7); }
+  .span8abs { .absColumns(8); }
+  .span9abs { .absColumns(9); }
+  .span10abs { .absColumns(10); }
+  .span11abs { .absColumns(11); }
+  .span12abs { .absColumns(12); }
+  .span13abs { .absColumns(13); }
+  .span14abs { .absColumns(14); }
+  .span15abs { .absColumns(15); }
+  .span16abs { .absColumns(16); }
+  .span17abs { .absColumns(17); }
+  .span18abs { .absColumns(18); }
+  .span19abs { .absColumns(19); }
+  .span20abs { .absColumns(20); }
+  .span21abs { .absColumns(21); }
+  .span22abs { .absColumns(22); }
+  .span23abs { .absColumns(23); }
+  .span24abs { .absColumns(24); }
+}
+
+.flexLayout(@type : horizontal, @direction : normal, @pack : start, @align : center) {
+	display: -webkit-box !important;
+	-webkit-box-orient: @type;
+	-webkit-box-direction: @direction;
+	-webkit-box-pack: @pack;
+	-webkit-box-align: @align;
+	
+	//display: -moz-box !important;
+	-moz-box-orient: @type;
+	-moz-box-direction: @direction;
+	-moz-box-pack: @pack;
+	-moz-box-align: @align;
+	float: none !important;
+}
+
+.boxFlex(@flex : 1) {
+	-webkit-box-flex: @flex;
+	-moz-box-flex: @flex;
+	box-flex : @flex;
+	float : none !important;
+}
+
+.flex0 { .boxFlex(0) }
+.flex1 { .boxFlex(1) }
+.flex2 { .boxFlex(2) }
+.flex3 { .boxFlex(3) }
+.flex4 { .boxFlex(4) }
+.flex5 { .boxFlex(5) }
+.flex6 { .boxFlex(6) }
+.hFlexLayout {.flexLayout(horizontal) }
+.vFlexLayout {.flexLayout(vertical) }
+
+
+// BASE STYLES
+// -----------
+
+.row {
+	margin-bottom:1.0em;
+}
+	
+.primary {
+    #gradient > .vertical(@green, @greenDark);
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+    border-color: @greenDark @greenDark darken(@greenDark, 15%);
+    border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+    &:hover {
+      color: #fff;
+    }
+}
+
+.pricetag {
+	#gradient > .vertical(@red, @redDark);
+	color: #fff;
+	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+	border-color: @redDark @redDark darken(@redDark, 15%);
+	border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+	&:hover {
+  		color: #fff;
+	}
+}
+.fbtag {
+	#gradient > .vertical(@blue, @blueDark);
+	color: #fff;
+	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+	border-color: @blueDark @blueDark darken(@blueDark, 15%);
+	border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+	&:hover {
+  		color: #fff;
+	}
+}
+.rewardtag {
+	#gradient > .vertical(@gold, @goldDark);
+	color: #fff;
+	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+	border-color: @goldDark @goldDark darken(@goldDark, 15%);
+	border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+	&:hover {
+  		color: #fff;
+	}
+}
+
+.btn {
+  //.button(#1174C6);
+  .transition(.1s linear all);
+  &.primary {
+    #gradient > .vertical(@green, @greenDark);
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+    border-color: @greenDark @greenDark darken(@greenDark, 15%);
+    border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+    &:hover {
+      color: #fff;
+    }
+  }
+  &.pricetag {
+  	#gradient > .vertical(@red, @redDark);
+  	color: #fff;
+  	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+  	border-color: @redDark @redDark darken(@redDark, 15%);
+  	border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+  	&:hover {
+    	color: #fff;
+  	}
+  }
+  &.fbtag {
+  	#gradient > .vertical(@blue, @blueDark);
+  	color: #fff;
+  	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+  	border-color: @blueDark @blueDark darken(@blueDark, 15%);
+  	border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+  	&:hover {
+    	color: #fff;
+  	}
+  }
+	.rewardtag {
+		#gradient > .vertical(@gold, @goldDark);
+		color: #fff;
+		text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+		border-color: @goldDark @goldDark darken(@goldDark, 15%);
+		border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+		&:hover {
+  			color: #fff;
+		}
+	}
+  &.large {
+    font-size: 16px;
+    line-height: 28px;
+    .border-radius(6px);
+  }
+  &.small {
+    padding-right: 9px;
+    padding-left: 9px;
+    font-size: 11px;
+  }
+  &.disabled {
+    background-image: none;
+    .opacity(65);
+    cursor: default;
+  }
+
+  // this can't be included with the .disabled def because IE8 and below will drop it ;_;
+  &:disabled {
+    background-image: none;
+    .opacity(65);
+    cursor: default;
+    color: #fff;
+  }
+  &:active {
+    @shadow: inset 0 3px 7px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.05);
+    .box-shadow(@shadow);
+  }
+}
+
+.panelBodyHighlights {
+	padding-top : 10px;
+	padding-bottom: 10px;
+	padding-left : 10px;
+	padding-right : 10px;
+	background : white;
+	min-height: 232px;
+}
+
+body {
+	background : #89B556;
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+
+a {
+	cursor : pointer;
+}
+
+// ------------------------------------------------------------------
+//    Tables
+// ------------------------------------------------------------------
+
+.purchase table {
+	td {
+		float:inherit !important;
+		border: 0;
+	}
+	th {
+		float:inherit !important;
+	}
+	th, td {
+		padding-left: 0;
+		padding-right: 0;
+	}
+    td:nth-last-child(-n+5), th:nth-last-child(-n+5) {
+    	text-align:center;
+	}
+	input {
+		width:44px;
+		text-align:center;
+	}
+	input[type=radio] {
+		width:20px;
+		text-align:center;
+	}
+}
+
+.payment table {
+	td {
+		border: 0;
+	}
+	th, td {
+		float:none !important;
+		padding-left: 0;
+		padding-right: 0;
+	}
+    td:nth-last-child(-n+1), th:nth-last-child(-n+1) {
+    	text-align:center;
+	}
+	input {
+		width:44px;
+		text-align:center;
+	}
+	input[type=radio] {
+		width:20px;
+		text-align:center;
+	}
+}
+
+// TOPBAR
+// ------
+
+// Topbar for Branding and Nav
+.topbar {
+	tr {
+		height:50px;
+	}
+	td {
+		padding-top:0;
+		padding-bottom:0;
+		border:none;
+	}
+  	// Hover and active states
+  	td.active {
+    	background-color: #333;
+    	background-color: rgba(255,255,255,.05);
+    	color: @white;
+    	text-decoration: none;
+  	}
+	ul li a {
+		padding:15px 10px 16px;
+	}
+}
+
+// ------------------------------------------------------------------
+//    Slideshow
+// ------------------------------------------------------------------
+
+#container {
+	width: 710px;
+	height: 333px;
+	position: relative;
+	z-index: 0;
+}
+
+/*
+    Slides container
+    Important:
+    Set the width of your slides container
+    Set to display none, prevents content flash
+*/
+
+#slides .slides_container {
+    overflow:hidden;
+    position:relative;
+	height:333px;
+    display:none;
+}
+
+/*
+    Each slide
+    Important:
+    Set the width of your slides
+    If height not specified height will be set by the slide content
+    Set to display block
+*/
+
+.slides_container div.slide {
+	width: 700px;
+	height:333px;
+    display:block;
+}
+
+/*
+    Next/prev buttons
+*/
+
+#slides .next,#slides .prev {
+    position:absolute;
+    top:(333px-21px)/2;
+    left:0;
+    width:21px;
+    height:0;
+    padding-top:21px;
+    overflow:hidden;
+    display:block;
+    z-index:101;
+}
+
+#slides .prev {
+    background:url(lib/Slides/examples/Product/img/arrow-prev.png);
+}
+
+#slides .next {
+    left:678px;
+    background:url(lib/Slides/examples/Product/img/arrow-next.png);
+}
+
+#mainMsg .next, #mainMsg .prev {
+	display:none;
+}
+
+#mainMsg * {
+	margin-left : 0;
+	margin-right : 0;
+}
+
+// ------------------------------------------------------------------
+//    Pagination
+// ------------------------------------------------------------------
+
+#slides .pagination {
+    background:#dfdfdf;
+    width:130px;
+    padding:5px 5px;
+    float:left;
+    margin-left:30px;
+    border-radius:5px;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+}
+
+#slides .pagination li {
+    float:left;
+    margin:2px 4px;
+    list-style:none;
+}
+
+#slides .pagination li a {
+    display:block;
+    width:55px;
+    height:41px;
+    margin:1px;
+    float:left;
+    background:#f9f9f9;
+}
+
+#slides .pagination li.current a {
+    border:1px solid #7f7f7f;
+    margin:0;
+}
+
+// ------------------------------------------------------------------
+//    Hero Unit
+// ------------------------------------------------------------------
+.hero-unit {
+	margin-bottom : 15px;
+	padding:30px;
+	background-color:white;
+}
+
+.hero-referral {
+	margin-bottom : 0px;
+	padding:10px;
+	td {
+		vertical-align:top;
+		border:none;
+	}
+	.btn {
+		margin-top:10px;
+	}
+	
+	form:last-child {
+		margin:0;
+	}
+}
+
+.hero-start {
+	padding-left:30px;
+	margin-top:10px;
+	padding-top:9px;
+	padding-right:40px;
+	background-image : url(http://static02.linkedin.com/scds/common/u/img/bg/bg_question_orange_top_525x1000.png);
+	background-repeat : no-repeat;
+	overflow:hidden;
+}
+.hero-end {
+	background-image : url(http://static01.linkedin.com/scds/common/u/img/bg/bg_question_orange_bot_525x8.png);
+	background-repeat : no-repeat;
+	margin-bottom : 10px;
+}
+
+// ------------------------------------------------------------------
+//    Misc Classes
+// ------------------------------------------------------------------
+
+form {
+	float: left;
+}
+
+form label {
+	clear:both;
+}
+
+.alignLeft {
+	text-align:left;
+	width:auto;
+}
+.alignRight {
+	text-align:right;
+	width:auto;
+}
+
+/* jQuery UI Tabs 1.8.16
+ *
+ * Copyright 2011, AUTHORS.txt (http://jqueryui.com/about)
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * http://docs.jquery.com/UI/Tabs#theming
+ */
+.ui-tabs .ui-tabs-hide { display: none !important; }

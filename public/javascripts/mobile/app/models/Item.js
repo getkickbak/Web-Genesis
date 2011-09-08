@@ -280,7 +280,7 @@ app.stores.items1 = new Ext.data.Store(
    {
       id : 0,
       url: 'resources/img/photo1.PNG',
-      desc : 'This is a Hamburger',
+      desc : 'Steakhouse Fare for Dinner or Lunch at Houston Steaks & Ribs',
       name : 'Cupcakes',
       author_id : 3,
       author :
@@ -295,7 +295,7 @@ app.stores.items1 = new Ext.data.Store(
    {
       id : 1,
       url: 'resources/img/photo1.PNG',
-      desc : 'This is a Cheeseburger',
+      desc : '$12 for Two Jumbo Buckets of Golf Balls at grand Slam Driving Ranges (Up to $26 Value).',
       name : 'Cupcakes1',
       author_id : 4,
       timeStamp : new Date(),

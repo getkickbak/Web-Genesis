@@ -1,0 +1,181 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html" xmlns:f="http://java.sun.com/jsf/core" xmlns:c="http://java.sun.com/jstl/core">
+   <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
+      <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+      <meta property="fb:admins" content="725565520"/>
+      <meta property="fb:app_id" content="197968780267830"/>
+      <!-- iPad/iPhone specific css below, add after your main css >
+      <link rel="stylesheet" media="only screen and (max-device-width: 1024px)"
+      href="ipad.css" type="text/css" />
+      <link rel="stylesheet" media="only screen and (max-device-width: 480px)"
+      href="iphone.css" type="text/css" />
+      -->
+      <!-- If you application is targeting iOS BEFORE 4.0 you MUST put json2.js
+      from http://www.JSON.org/json2.js into your www directory and include it
+      here -->
+      <!--
+      <script type="text/javascript" charset="utf-8"
+      src="lib/phonegap.0.9.6.min.js"></script>
+      <script type="text/javascript"
+      src="http://192.168.0.52:8080/target/target-script-min.js#anonymous"></script>
+      -->
+      <script type="text/javascript" charset="utf-8">
+         // If you want to prevent dragging, uncomment this section
+         /*
+          function preventBehavior(e)
+          {
+          e.preventDefault();
+          };
+          document.addEventListener("touchmove", preventBehavior, false);
+          */
+
+         /* If you are supporting your own protocol, the var invokeString will
+          * contain any arguments to the app launch.
+          see
+          http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+          for more details -jm */
+         /*
+          function handleOpenURL(url)
+          {
+          // TODO: do something with the url passed in.
+          }
+          */
+
+         function onBodyLoad()
+         {
+            document.addEventListener("deviceready", function(args)
+            {
+            }, false);
+         }
+      </script>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <title>Just For My Friends</title>
+      <link rel="stylesheet/less" href="lib/twitter-bootstrap-0f11410/lib/bootstrap.less"/>
+      <link rel="stylesheet/css" href="lib/jquery-ui-1.8.16.custom/css/south-street/jquery-ui-1.8.16.custom.css"/>
+      <script type="text/javascript" src="less-1.1.3.min.js"></script>
+      <script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=places&amp;sensor=true"></script>
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+      <script type="text/javascript" src="lib/fridek-gmap-f5658d5/jquery.gmap.min.js"></script>
+      <script type="text/javascript" src="lib/Slides/source/slides.min.jquery.js"></script>
+      <script type="text/javascript" src="lib/carhartl-jquery-cookie-575a419/jquery.cookie.js"></script>
+      <script type="text/javascript" src="src/common.js"></script>
+      <script type="text/javascript" src="src/purchase.js"></script>
+   </head>
+   <body>
+      <div id="fb-root"></div>
+      <script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script>
+      <table class="noWrap topbar container">
+         <tr class="fill fixed">
+            <td class=""><h3><a href="index.html">Just For My Friends</a></h3></td>
+            <td class=" active"><a href="index.html">Home</a></td>
+            <td class=""><a href="#about">About</a></td>
+            <td style="width:100%;"><a>&#160;</a></td>
+            <td id="fb_login_img" class="">
+            <img src="http://graph.facebook.com/725565520/picture?type=square"/>
+            </td>
+            <td class=""><a href="#account">Account</a></td>
+            <td id="fb_login"><fb:login-button perms="email,user_birthday,publish_stream" on-login="facebook_onLogin(true);" size="medium" background="dark" length="long" registration-url="https://developers.facebook.com/docs/plugins/registration"></fb:login-button></td>
+         </tr>
+      </table>
+      <div name="top" class="container">
+         <!-- Example row of columns -->
+         <form >
+            <div class="row" style="margin-top:100px;">
+               <div id="highlights" class="span24">
+                  <h2>Your Purchase Choices</h2>
+                  <div class="purchase panelBodyHighlights">
+                     <table>
+                        <thead>
+                           <tr>
+                              <th style="visibility:hidden;" class="">
+                              <input type="radio" name="couponValue" value="0"/>
+                              </th>
+                              <th class="green span14">Description</th>
+                              <th class="green span2">Quantity</th>
+                              <th class="green span1">&#160;</th>
+                              <th class="green span2">Price</th>
+                              <th class="green span1">&#160;</th>
+                              <th class="green span2">Total</th>
+                           </tr>
+                        </thead>
+                        <tr>
+                           <td class="span1">
+                           <input type="radio" name="couponValue" value="100"  checked="1"/>
+                           </td>
+                           <td class="span14">$100 Coupon for C$80 at 20% Discount</td>
+                           <td class="span2">
+                           <input name="quantity1" value="1"/>
+                           </td>
+                           <td class="span1">x</td>
+                           <td class="span2">C$80</td>
+                           <td class="span1">=</td>
+                           <td class="span2">C$80</td>
+                        </tr>
+                        <tr>
+                           <td class="span1">
+                           <input type="radio" name="couponValue" value="50"/>
+                           </td>
+                           <td class="span14">$50 Coupon for C$40 at 20% Discount</td>
+                           <td class="span2">
+                           <input name="quantity1"/>
+                           </td>
+                           <td class="span1">x</td>
+                           <td class="span2">C$40</td>
+                           <td class="span1">=</td>
+                           <td class="span2">&#160;</td>
+                        </tr>
+                        <tr>
+                           <td class="span1">
+                           <input type="radio" name="couponValue" value="25"/>
+                           </td>
+                           <td class="span14">$25 Coupon for C$20 at 20% Discount</td>
+                           <td class="span2">
+                           <input name="quantity3"/>
+                           </td>
+                           <td class="span1">x</td>
+                           <td class="span2">C$20</td>
+                           <td class="span1">=</td>
+                           <td class="span2">&#160;</td>
+                        </tr>
+                     </table>
+                  </div>
+               </div>
+            </div>
+            <div class="row">
+               <div id="highlights" class="span24">
+                  <h2>Select Your Payment Method</h2>
+                  <div class="payment panelBodyHighlights">
+                     <table>
+                        <thead>
+                           <tr>
+                              <th style="visibility:hidden;" class="">
+                              <input type="radio" name="payMethod" value="none"/>
+                              </th>
+                              <th class="green span14">Method</th>
+                              <th class="span8" style="visibility:hidden;">&#160;</th>
+                           </tr>
+                        </thead>
+                        <tr>
+                           <td class="">
+                           <input type="radio" name="payMethod" value="PayPal" checked="1"/>
+                           </td>
+                           <td class="span14">PayPal or Credit Card</td>
+                           <td class="span4" style="visibility:hidden;">&#160;</td>
+                           <td class="span4"><a id="payPayPal" class="btn primary large noWrap">Complete Order</a></td>
+                        </tr>
+                     </table>
+                  </div>
+               </div>
+            </div>
+         </form>
+         <footer>
+            <p>
+               &copy;Company 2011
+            </p>
+         </footer>
+      </div>
+      <!-- /container -->
+   </body>
+</html>

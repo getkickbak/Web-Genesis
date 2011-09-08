@@ -1,0 +1,1060 @@
+3.2.0.alpha.11 (Bleeding Edge)
+6643758de438ea8d0c58f962577ca3d02e5b6d94
+o:Sass::Tree::RootNode
+:@has_childrenT:@template"'// Let's start with the basics
+//$base-color: #7c92ae;
+//$base-color: #ae987c;
+
+$theme-prim-color: #6E8B3D; // green 
+$theme-sec-color: #7AC5CD; //#0099CC blue
+$icon-color: #666666; // grey
+$base-color: #5A4F43; // brown
+$base-gradient: 'glossy';
+$global-row-height: 3.6em;
+
+//$tabs-light: lighten(desaturate($base-color, 10%), 5%);
+$tabs-light-active: saturate(#3A6EA5, 20%);
+//$tabs-dark: darken($base-color, 20%);
+$tabs-dark-active-color: saturate(lighten(#3A6EA5, 30%), 70%);
+$tabs-bottom-icon-size: 2.25em;
+//$tabs-top-height: $tabs-bottom-icon-size + 1.0em;
+
+// Badges
+$badge-size: 2.25em;
+$badge-bg-gradient: 'glossy';
+
+// Lists
+//$list-active-gradient: 'bevel';
+//$list-header-bg-color: transparentize(saturate($base-color, 10%), .25);
+//$list-header-gradient: 'matte';
+
+// Tabs
+//$tabs-dark: #111;
+
+//$include_default_icons: false;
+
+@import 'sencha-touch/default/all';
+$button-height: 2.4em;
+
+$button-bg-color : desaturate(lighten($base-color, 10%), 5%);
+
+$list-pressed-color: lighten(#3A6EA5, 50%);
+$list-active-color: #3A6EA5;
+
+/**
+ * Creates a theme UI for buttons.
+ * Also automatically generates UIs for {ui-label}-round and {ui-label}-small.
+ *
+ * @param {string} $ui-label The name of the UI being created.
+ *   Can not included spaces or special punctuation (used in class names)
+ * @param {color} $color Base color for the UI.
+ * @param {string} [$gradient: $button-gradient] Default gradient for the UI.
+ *
+ * @example
+ * // SCSS
+ * @include sencha-button-ui-large('secondary', #99A4AE, 'glossy');
+ * 
+ * // JS
+ * var cancelBtn = new Ext.Button({text: 'Cancel', ui: 'secondary'});
+ * 
+ * @class Ext.Button
+ * @xtype button
+ */
+@mixin sencha-button-ui-large($ui-label, $color, $gradient: $button-gradient) {
+  .x-button.x-button-#{$ui-label}, .x-button.x-button-#{$ui-label}-round {
+    @include toolbar-button-large($color, $gradient);
+  }
+
+  .x-button.x-button-#{$ui-label}-round {
+    @extend .x-button-round;
+    border:none !important;
+    background:none;
+  }
+  
+  .x-button-#{$ui-label} {
+    img {
+      width: 3.4em;
+      height: 3.4em;
+
+      &.x-icon-mask {
+        height : 2.6em;
+        width : 2.6em;
+        -webkit-mask-size : 2.6em;
+      }
+    }
+  }
+}
+
+/**
+ * Includes the default styles for toolbar buttons, mostly used as a helper function.
+ *
+ * @param {color} $bg-color Base color to be used for the button.
+ * @param {color} [$type=$button-gradient] $type Gradient style for the button, will automatically use "recessed" when pressed.
+ */
+@mixin toolbar-button-large($bg-color, $type: $button-gradient){
+  &, .x-toolbar & {
+    border: none;
+    padding : 0.3em 0 0 0;
+    -webkit-box-shadow : none;
+    @include color-by-background($bg-color, 40%);
+    
+    .x-button-label {
+      line-height:3.0em;
+      font-weight:normal;
+      font-size: 0.7em;
+    }
+    
+    img.x-icon-mask {
+      @include mask-by-background($bg-color,14%,'matte');
+    }
+  
+    &.x-button-pressed img.x-icon-mask, &.x-button-active img.x-icon-mask {
+      @include mask-by-background($theme-sec-color,40%,'matte');
+    }
+    
+    &.x-button-pressed, &.x-button-active {
+      &, &:after {
+        @include background-gradient(darken($bg-color, 28%), 'glossy');
+      }
+    }
+  }
+}
+
+@mixin sencha-round-panel($ui-label, $panel-radius: $panel-border-radius) {
+  .x-panel.x-panel-#{$ui-label}, .x-panel-#{$ui-label} .x-panel-body {
+    @if $include-border-radius {
+      @include border-radius($panel-radius);
+    }
+  }
+}
+
+@include sencha-panel;
+@include sencha-buttons;
+@include sencha-sheet;
+@include sencha-picker;
+@include sencha-tabs;
+@include sencha-toolbar; 
+@include sencha-toolbar-forms;
+@include sencha-carousel;
+@include sencha-indexbar;
+@include sencha-list;
+@include sencha-list-paging;
+@include sencha-list-pullrefresh;
+@include sencha-layout;
+@include sencha-form;
+@include sencha-msgbox;
+@include sencha-loading-spinner;
+
+// create custom ui for toolbar
+@include sencha-toolbar-ui('black', #000000);
+@include sencha-toolbar-ui('secondary', $theme-sec-color);
+
+// include custom icon masks
+@include pictos-iconmask("favorites");
+@include pictos-iconmask("search");
+@include pictos-iconmask("add_black");
+@include pictos-iconmask("bookmarks");
+@include pictos-iconmask("trash");
+@include pictos-iconmask("more");
+@include pictos-iconmask("chart2");
+@include pictos-iconmask("flag");
+@include pictos-iconmask("refresh");
+@include pictos-iconmask("home");
+@include pictos-iconmask("delete");
+@include pictos-iconmask("settings");
+@include pictos-iconmask("user_add");
+@include pictos-iconmask("maps");
+
+// ------------------------------------------------------------------
+// List
+// ------------------------------------------------------------------
+  .x-list-round {
+    .x-list-group-items > *,
+    &.x-list-flat .x-list-parent > * {
+      &:first-child {
+        @if $include-border-radius { @include border-top-radius(1.0em); }
+      }
+      &:last-child {
+        @include border-bottom-radius(1.0em)
+      }
+    }
+  }
+
+.x-dataview.x-list .x-list-item {
+  margin-left : 0px !important;
+  margin-right : 0px !important;
+}
+
+// ------------------------------------------------------------------
+// Panel
+// ------------------------------------------------------------------
+
+@mixin background-color-float-panel-anchor($bg-color, $type: $base-gradient) {
+.x-panel .anchor {
+  background-color: $bg-color;
+  @if $include-highlights {
+    @if $type == bevel {
+      @include background-image(linear-gradient(color_stops(lighten($bg-color, 30%), lighten($bg-color, 15%) 2%, lighten($bg-color, 8%) 30%, $bg-color 65%, darken($bg-color, 10%))));
+    } @else if $type == glossy {
+      //@include background-image(linear-gradient(color_stops(lighten($bg-color, 15%), lighten($bg-color, 5%) 50%, $bg-color 51%, darken($bg-color, 5%))));
+      background-color : darken($bg-color, 5%);
+    } @else if $type == recessed {
+      @include background-image(linear-gradient(color_stops(darken($bg-color, 10%), darken($bg-color, 5%) 10%, $bg-color 65%, lighten($bg-color, .5%))));
+    } @else if $type == matte {
+      @include background-image(linear-gradient(color_stops(lighten($bg-color, 30%), lighten($bg-color, 7%) 2%, darken($bg-color, 7%))));
+    }
+  }
+}
+}
+@include background-color-float-panel-anchor($button-bg-color, 'glossy');
+
+// ------------------------------------------------------------------
+// Toolbar
+// ------------------------------------------------------------------
+.x-toolbar .x-button {
+  .x-button-label {
+    font-size: 1.0em;
+  }
+}
+  
+// ------------------------------------------------------------------
+// TabBar
+// ------------------------------------------------------------------
+.x-tabbar.x-docked-bottom {
+  .x-tab {
+    padding: 0em ((5.5em - 1em) / 2);
+  }
+}
+
+.x-toolbar-dark {
+  -webkit-box-shadow: 5px 5px 5px #000000;
+  //-webkit-box-shadow: rgba(#fff, .2) 0 .1em .1em, inset rgba(#000, .3) 0 .1em .2em;
+}
+
+.x-tabbar.x-docked-bottom {
+  .x-tab {
+    .x-button-label {
+      font-size: 0.8em;
+      line-height: 1.2em;
+    }
+  }
+}
+
+.x-toolbar-secondary {
+  .x-toolbar-title {
+    @include color-by-background(#000000);
+  }
+}
+// ------------------------------------------------------------------
+// Button
+// ------------------------------------------------------------------
+  .x-hasbadge {
+    .x-badge {
+      padding-left:0.1em;
+      padding-right:0.1em;
+      @if $include-border-radius { @include border-radius($badge-size/3); }
+      line-height: 0.8em;
+      height: $badge-size/1.75;
+      font-size: 1.25em;
+      top: 0em;
+      right: 40px;
+    }
+  }
+  
+.x-splitbutton {
+  .x-button {
+    -webkit-border-radius: 0;
+    margin: 0;
+    &:first-child {
+      @include border-left-radius($button_radius);
+    }
+    &:last-child {
+      @include border-right-radius($button_radius);
+    }
+    &:not(:first-child) {
+      border-left: 0;
+    }
+  }
+}
+
+.x-button-round {
+  @if $include-border-radius { @include border-radius($button-height/5); }
+  padding: .1em $button-height/5;
+}
+.disclosure-icon {
+    //position: relative;
+      overflow: visible;
+      -webkit-mask: 0 0 theme_image($theme-name, "disclosure.png") no-repeat;
+      -webkit-mask-size: $list-disclosure-size;
+      @include background-gradient(saturate($active-color, 10%));
+      width: $list-disclosure-size;
+      height: $list-disclosure-size;
+}
+@include sencha-button-ui('green', $theme-prim-color);
+@include sencha-button-ui('light', $button-bg-color);
+@include sencha-button-ui('orange', #FFA54F);
+@include sencha-button-ui-large('large', $icon-color);
+$tabs-large: lighten(desaturate($base-color, 10%), 5%);
+$tabs-large-active: saturate($theme-sec-color, 20%);
+$tabs-large-bar-gradient : 'matte';
+@include sencha-tabbar-ui('large', #000000, $tabs-large-bar-gradient, $tabs-large-active);
+@include sencha-round-panel('defaultRound');
+
+// ------------------------------------------------------------------
+// Misc
+// ------------------------------------------------------------------
+
+@mixin roundBorder($radius : $button-height/5) {
+  @include border-radius($radius);
+}
+
+.nopadding {
+  padding:0px !important;
+}
+
+.bannerCls {
+  -webkit-font-smoothing: antialiased;
+  @include rotate(-2.5deg);
+  font-size:5em;
+  color:white;
+  margin-top:30px;
+  margin-bottom:20px;
+  text-align:center;
+  background:#1E0F00;
+  font-weight:bold;
+}
+
+.roundCls {
+  @include roundBorder();
+}
+
+.imgRoundCls {
+  @include border-radius();
+  margin-right:0.5em;
+  width : 2*$tabs-bottom-icon-size;
+  height : 2*$tabs-bottom-icon-size;
+}
+
+.majorText {
+  font-weight : bold;
+  font-size : 1.3em;
+  color : black;
+}
+
+.minorText {
+  //@include background-image(linear-gradient(color_stops(lighten($bg-color, 15%), lighten($bg-color, 5%) 50%, $bg-color 51%, darken($bg-color, 5%))));
+  color : lighten($base-color, 15%);
+}
+
+.thumb {
+  width: 605px;
+  vertical-align: top;
+  display: inline-block;
+  background:url(/javascripts/mobile/resources/img/groupon-frame.png) no-repeat;
+  padding:20px;
+}
+
+.topOffset {
+  top : -5em !important;
+}
+
+.highlight {
+   font-weight : bold;
+}
+:@children[no:Sass::Tree::CommentNode:
+@loud0;[ :@options{ :@value"V/* Let's start with the basics
+ *$base-color: #7c92ae;
+ *$base-color: #ae987c; */:@silenti :
+@linei:@lines[ o:Sass::Tree::VariableNode:@guarded0:
+@name"theme-prim-color;[ ;@
+;i
+:
+@expro:Sass::Script::Color	:@attrs{	:redis:
+alphai:
+greeni‹:	blueiB;@
+;0;i
+o;	;
+0;[ ;@
+;"/* green  */;i ;i
+;[ o;;0;"theme-sec-color;[ ;@
+;i;o;	;{	;i;i;iÅ;iÍ;@
+;0;io;	;
+0;[ ;@
+;"/*#0099CC blue */;i ;i;[ o;;0;"icon-color;[ ;@
+;i;o;	;{	;ik;i;ik;ik;@
+;0;io;	;
+0;[ ;@
+;"/* grey */;i ;i;[ o;;0;"base-color;[ ;@
+;i;o;	;{	;i_;i;iT;iH;@
+;0;io;	;
+0;[ ;@
+;"/* brown */;i ;i;[ o;;0;"base-gradient;[ ;@
+;i;o:Sass::Script::String	:
+@type:string;@
+;"glossy;io;;0;"global-row-height;[ ;@
+;i;o:Sass::Script::Number:@original"
+3.6em;@
+:@denominator_units[ ;f3.6000000000000001 ÌÍ;i:@numerator_units["emo;	;
+0;[ ;@
+;"A/*$tabs-light: lighten(desaturate($base-color, 10%), 5%); */;i ;i;[ o;;0;"tabs-light-active;[ ;@
+;i;o:Sass::Script::Funcall
+:
+@args[o;	;{	;i?;i;is;i¥;@
+;0;io;;"20%;@
+;[ ;i;i; ["%;"saturate;@
+;i:@keywords{ o;	;
+0;[ ;@
+;"//*$tabs-dark: darken($base-color, 20%); */;i ;i;[ o;;0;"tabs-dark-active-color;[ ;@
+;i;o;!
+;"[o;!
+;"[o;	;{	;i?;i;is;i¥;@
+;0;io;;"30%;@
+;[ ;i#;i; ["%;"lighten;@
+;i;#{ o;;"70%;@
+;[ ;iK;i; ["%;"saturate;@
+;i;#{ o;;0;"tabs-bottom-icon-size;[ ;@
+;i;o;;"2.25em;@
+;[ ;f	2.25;i; ["emo;	;
+0;[ ;@
+;";/*$tabs-top-height: $tabs-bottom-icon-size + 1.0em; */;i ;i;[ o;	;
+0;[ ;@
+;"/* Badges */;i ;i;[ o;;0;"badge-size;[ ;@
+;i;o;;"2.25em;@
+;[ ;f	2.25;i; ["emo;;0;"badge-bg-gradient;[ ;@
+;i;o;	;;;@
+;"glossy;io;	;
+0;[ ;@
+;"™/* Lists
+ *$list-active-gradient: 'bevel';
+ *$list-header-bg-color: transparentize(saturate($base-color, 10%), .25);
+ *$list-header-gradient: 'matte'; */;i ;i;[ o;	;
+0;[ ;@
+;"#/* Tabs
+ *$tabs-dark: #111; */;i ;i!;[ o;	;
+0;[ ;@
+;"(/*$include_default_icons: false; */;i ;i$;[ o:Sass::Tree::ImportNode
+;0;[ ;@
+;i&:@imported_filename"sencha-touch/default/allo;;0;"button-height;[ ;@
+;i';o;;"
+2.4em;@
+;[ ;f2.3999999999999999 33;i'; ["emo;;0;"button-bg-color;[ ;@
+;i);o;!
+;"[o;!
+;"[o:Sass::Script::Variable	:@underscored_name"base_color;"base-color;@
+;i)o;;"10%;@
+;[ ;i;i); ["%;"lighten;@
+;i);#{ o;;"5%;@
+;[ ;i
+;i); ["%;"desaturate;@
+;i);#{ o;;0;"list-pressed-color;[ ;@
+;i+;o;!
+;"[o;	;{	;i?;i;is;i¥;@
+;0;i+o;;"50%;@
+;[ ;i7;i+; ["%;"lighten;@
+;i+;#{ o;;0;"list-active-color;[ ;@
+;i,;o;	;{	;i?;i;is;i¥;@
+;0;i,o;	;
+0;[ ;@
+;"^/**
+ * Creates a theme UI for buttons.
+ * Also automatically generates UIs for {ui-label}-round and {ui-label}-small.
+ *
+ * @param {string} $ui-label The name of the UI being created.
+ *   Can not included spaces or special punctuation (used in class names)
+ * @param {color} $color Base color for the UI.
+ * @param {string} [$gradient: $button-gradient] Default gradient for the UI.
+ *
+ * @example
+ * // SCSS
+ * @include sencha-button-ui-large('secondary', #99A4AE, 'glossy');
+ * 
+ * // JS
+ * var cancelBtn = new Ext.Button({text: 'Cancel', ui: 'secondary'});
+ * 
+ * @class Ext.Button
+ * @xtype button
+ */;0;i.;[ o:Sass::Tree::MixinDefNode;"[[o;&;'"ui_label;"ui-label;{ 0[o;&;'"
+color;"
+color;@Ó0[o;&;'"gradient;"gradient;@Óo;&	;'"button_gradient;"button-gradient;@Ó;iA;T;"sencha-button-ui-large;[o:Sass::Tree::RuleNode;T:
+@tabsi ;[o:Sass::Tree::MixinNode;"[o;&	;'"
+color;"
+color;@
+;iCo;&	;'"gradient;"gradient;@
+;iC;"toolbar-button-large;[ ;@
+;iC;#{ :
+@rule[
+".x-button.x-button-o;&	;'"ui_label;"ui-label;@
+;iB", .x-button.x-button-o;&	;'"ui_label;"ui-label;@
+;iB"-round;@
+;iBo;);T;*i ;[o:Sass::Tree::ExtendNode	:@selector["."x-button-round;[ ;@
+;iGo:Sass::Tree::PropNode;*i :@prop_syntax:new;["border;[ ;@
+;o;;:identifier;@
+;"none !important;iHo;/;*i ;0;1;["background;[ ;@
+;o;;;2;@
+;"	none;iI;,[".x-button.x-button-o;&	;'"ui_label;"ui-label;@
+;iF"-round;@
+;iFo;);T;*i ;[o;);T;*i ;[o;/;*i ;0;1;["
+width;[ ;@
+;o;;;2;@
+;"
+3.4em;iNo;/;*i ;0;1;["height;[ ;@
+;o;;;2;@
+;"
+3.4em;iOo;);T;*i ;[o;/;*i ;0;1;["height;[ ;@
+;o;;;2;@
+;"
+2.6em;iRo;/;*i ;0;1;["
+width;[ ;@
+;o;;;2;@
+;"
+2.6em;iSo;/;*i ;0;1;["-webkit-mask-size;[ ;@
+;o;;;2;@
+;"
+2.6em;iT;,["&.x-icon-mask;@
+;iQ:@parsed_ruleso:"Sass::Selector::CommaSequence:@filename" ;iQ:@members[o:Sass::Selector::Sequence;6[o:#Sass::Selector::SimpleSequence;5@8;iQ;6[o:Sass::Selector::Parent;5@8;iQo:Sass::Selector::Class;["x-icon-mask;5@8;iQ;,["img;@
+;iM;3o;4;5" ;iM;6[o;7;6[o;8;5@E;iM;6[o:Sass::Selector::Element	:@namespace0;["img;5@E;iM;,[".x-button-o;&	;'"ui_label;"ui-label;@
+;iL;@
+;iL;@
+;iAo;	;
+0;[ ;@
+;""/**
+ * Includes the default styles for toolbar buttons, mostly used as a helper function.
+ *
+ * @param {color} $bg-color Base color to be used for the button.
+ * @param {color} [$type=$button-gradient] $type Gradient style for the button, will automatically use "recessed" when pressed.
+ */;0;iZ;[ o;(;"[[o;&;'"bg_color;"bg-color;{ 0[o;&;'"	type;"	type;@]o;&	;'"button_gradient;"button-gradient;@];i`;T;"toolbar-button-large;[o;);T;*i ;[o;/;*i ;0;1;["border;[ ;@
+;o;;;2;@
+;"	none;ibo;/;*i ;0;1;["padding;[ ;@
+;o;;;2;@
+;"0.3em 0 0 0;ico;/;*i ;0;1;["-webkit-box-shadow;[ ;@
+;o;;;2;@
+;"	none;ido;+;"[o;&	;'"bg_color;"bg-color;@
+;ieo;;"40%;@
+;[ ;i-;ie; ["%;"color-by-background;[ ;@
+;ie;#{ o;);T;*i ;[o;/;*i ;0;1;["line-height;[ ;@
+;o;;;2;@
+;"
+3.0em;iho;/;*i ;0;1;["font-weight;[ ;@
+;o;;;2;@
+;"normal;iio;/;*i ;0;1;["font-size;[ ;@
+;o;;;2;@
+;"
+0.7em;ij;,[".x-button-label;@
+;ig;3o;4;5" ;ig;6[o;7;6[o;8;5@Ÿ;ig;6[o;:;["x-button-label;5@Ÿ;igo;);T;*i ;[o;+;"[o;&	;'"bg_color;"bg-color;@
+;ino;;"14%;@
+;[ ;i;in; ["%o;	;;;@
+;"
+matte;in;"mask-by-background;[ ;@
+;in;#{ ;,["img.x-icon-mask;@
+;im;3o;4;5" ;im;6[o;7;6[o;8;5@¼;im;6[o;;	;<0;["img;5@¼;imo;:;["x-icon-mask;5@¼;imo;);T;*i ;[o;+;"[o;&	;'"theme_sec_color;"theme-sec-color;@
+;iro;;"40%;@
+;[ ;i-;ir; ["%o;	;;;@
+;"
+matte;ir;"mask-by-background;[ ;@
+;ir;#{ ;,["J&.x-button-pressed img.x-icon-mask, &.x-button-active img.x-icon-mask;@
+;iq;3o;4;5" ;iq;6[o;7;6[o;8;5@Ü;iq;6[o;9;5@Ü;iqo;:;["x-button-pressed;5@Ü;iqo;8;5@Ü;iq;6[o;;	;<0;["img;5@Ü;iqo;:;["x-icon-mask;5@Ü;iqo;7;6[o;8;5@Ü;iq;6[o;9;5@Ü;iqo;:;["x-button-active;5@Ü;iqo;8;5@Ü;iq;6[o;;	;<0;["img;5@Ü;iqo;:;["x-icon-mask;5@Ü;iqo;);T;*i ;[o;);T;*i ;[o;+;"[o;!
+;"[o;&	;'"bg_color;"bg-color;@
+;iwo;;"28%;@
+;[ ;i!;iw; ["%;"darken;@
+;iw;#{ o;	;;;@
+;"glossy;iw;"background-gradient;[ ;@
+;iw;#{ ;,["&, &:after;@
+;iv;3o;4;5" ;iv;6[o;7;6[o;8;5@;iv;6[o;9;5@;ivo;7;6[o;8;5@;iv;6[o;9;5@;ivo:Sass::Selector::Pseudo
+;:
+class;["
+after;5@;iv:	@arg0;,["*&.x-button-pressed, &.x-button-active;@
+;iu;3o;4;5" ;iu;6[o;7;6[o;8;5@*;iu;6[o;9;5@*;iuo;:;["x-button-pressed;5@*;iuo;7;6[o;8;5@*;iu;6[o;9;5@*;iuo;:;["x-button-active;5@*;iu;,["&, .x-toolbar &;@
+;ia;3o;4;5" ;ia;6[o;7;6[o;8;5@?;ia;6[o;9;5@?;iao;7;6[o;8;5@?;ia;6[o;:;["x-toolbar;5@?;iao;8;5@?;ia;6[o;9;5@?;ia;@
+;i`o;(;"[[o;&;'"ui_label;"ui-label;{ 0[o;&;'"panel_radius;"panel-radius;@Vo;&	;'"panel_border_radius;"panel-border-radius;@V;i};T;"sencha-round-panel;[o;);T;*i ;[u:Sass::Tree::IfNode[o:Sass::Script::Variable	:@underscored_name"include_border_radius:
+@name"include-border-radius:@options{ :
+@linei0[o:Sass::Tree::MixinNode:
+@args[o; 	;"panel_radius;"panel-radius;@	;	i{;"border-radius:@children[ ;@	;	i{:@keywords{ ;,[
+".x-panel.x-panel-o;&	;'"ui_label;"ui-label;@
+;i~", .x-panel-o;&	;'"ui_label;"ui-label;@
+;i~" .x-panel-body;@
+;i~;@
+;i}o;+;"[ ;"sencha-panel;[ ;@
+;i€;#{ o;+;"[ ;"sencha-buttons;[ ;@
+;i;#{ o;+;"[ ;"sencha-sheet;[ ;@
+;i‚;#{ o;+;"[ ;"sencha-picker;[ ;@
+;iƒ;#{ o;+;"[ ;"sencha-tabs;[ ;@
+;i„;#{ o;+;"[ ;"sencha-toolbar;[ ;@
+;i…;#{ o;+;"[ ;"sencha-toolbar-forms;[ ;@
+;i†;#{ o;+;"[ ;"sencha-carousel;[ ;@
+;i‡;#{ o;+;"[ ;"sencha-indexbar;[ ;@
+;iˆ;#{ o;+;"[ ;"sencha-list;[ ;@
+;i‰;#{ o;+;"[ ;"sencha-list-paging;[ ;@
+;iŠ;#{ o;+;"[ ;"sencha-list-pullrefresh;[ ;@
+;i‹;#{ o;+;"[ ;"sencha-layout;[ ;@
+;iŒ;#{ o;+;"[ ;"sencha-form;[ ;@
+;i;#{ o;+;"[ ;"sencha-msgbox;[ ;@
+;iŽ;#{ o;+;"[ ;"sencha-loading-spinner;[ ;@
+;i;#{ o;	;
+0;[ ;@
+;"'/* create custom ui for toolbar */;i ;i‘;[ o;+;"[o;	;;;@
+;"
+black;i’o;	;{	;i ;i;i ;i ;@
+;0;i’;"sencha-toolbar-ui;[ ;@
+;i’;#{ o;+;"[o;	;;;@
+;"secondary;i“o;&	;'"theme_sec_color;"theme-sec-color;@
+;i“;"sencha-toolbar-ui;[ ;@
+;i“;#{ o;	;
+0;[ ;@
+;"$/* include custom icon masks */;i ;i•;[ o;+;"[o;	;;;@
+;"favorites;i–;"pictos-iconmask;[ ;@
+;i–;#{ o;+;"[o;	;;;@
+;"search;i—;"pictos-iconmask;[ ;@
+;i—;#{ o;+;"[o;	;;;@
+;"add_black;i˜;"pictos-iconmask;[ ;@
+;i˜;#{ o;+;"[o;	;;;@
+;"bookmarks;i™;"pictos-iconmask;[ ;@
+;i™;#{ o;+;"[o;	;;;@
+;"
+trash;iš;"pictos-iconmask;[ ;@
+;iš;#{ o;+;"[o;	;;;@
+;"	more;i›;"pictos-iconmask;[ ;@
+;i›;#{ o;+;"[o;	;;;@
+;"chart2;iœ;"pictos-iconmask;[ ;@
+;iœ;#{ o;+;"[o;	;;;@
+;"	flag;i;"pictos-iconmask;[ ;@
+;i;#{ o;+;"[o;	;;;@
+;"refresh;iž;"pictos-iconmask;[ ;@
+;iž;#{ o;+;"[o;	;;;@
+;"	home;iŸ;"pictos-iconmask;[ ;@
+;iŸ;#{ o;+;"[o;	;;;@
+;"delete;i ;"pictos-iconmask;[ ;@
+;i ;#{ o;+;"[o;	;;;@
+;"settings;i¡;"pictos-iconmask;[ ;@
+;i¡;#{ o;+;"[o;	;;;@
+;"user_add;i¢;"pictos-iconmask;[ ;@
+;i¢;#{ o;+;"[o;	;;;@
+;"	maps;i£;"pictos-iconmask;[ ;@
+;i£;#{ o;	;
+0;[ ;@
+;"–/* ------------------------------------------------------------------
+ * List
+ * ------------------------------------------------------------------ */;i ;i¥;[ o;);T;*i ;[o;);T;*i ;[o;);T;*i ;[u;@C[o:Sass::Script::Variable	:@underscored_name"include_border_radius:
+@name"include-border-radius:@options{ :
+@linei¬0[o:Sass::Tree::MixinNode:
+@args[o:Sass::Script::Number:@original"1em;@	:@denominator_units[ :@valuef1;	i¬:@numerator_units["em;"border-top-radius:@children[ ;@	;	i¬:@keywords{ ;,["&:first-child;@
+;i«;3o;4;5" ;i«;6[o;7;6[o;8;5@H;i«;6[o;9;5@H;i«o;=
+;;>;["first-child;5@H;i«;?0o;);T;*i ;[o;+;"[o;;"1em;@
+;[ ;f1;i¯; ["em;"border-bottom-radius;[ ;@
+;i°;#{ ;,["&:last-child;@
+;i®;3o;4;5" ;i®;6[o;7;6[o;8;5@b;i®;6[o;9;5@b;i®o;=
+;;>;["last-child;5@b;i®;?0;,["B.x-list-group-items > *,
+    &.x-list-flat .x-list-parent > *;@
+;iª;3o;4;5" ;iª;6[o;7;6[o;8;5@o;iª;6[o;:;["x-list-group-items;5@o;iª">o;8;5@o;iª;6[o:Sass::Selector::Universal;<0;5@o;iªo;7;6[
+"
+o;8;5@o;iª;6[o;9;5@o;iªo;:;["x-list-flat;5@o;iªo;8;5@o;iª;6[o;:;["x-list-parent;5@o;iª">o;8;5@o;iª;6[o;A;<0;5@o;iª;,[".x-list-round;@
+;i¨;3o;4;5" ;i¨;6[o;7;6[o;8;5@‘;i¨;6[o;:;["x-list-round;5@‘;i¨o;);T;*i ;[o;/;*i ;0;1;["margin-left;[ ;@
+;o;;;2;@
+;"0px !important;iµo;/;*i ;0;1;["margin-right;[ ;@
+;o;;;2;@
+;"0px !important;i¶;,["$.x-dataview.x-list .x-list-item;@
+;i´;3o;4;5" ;i´;6[o;7;6[o;8;5@«;i´;6[o;:;["x-dataview;5@«;i´o;:;["x-list;5@«;i´o;8;5@«;i´;6[o;:;["x-list-item;5@«;i´o;	;
+0;[ ;@
+;"—/* ------------------------------------------------------------------
+ * Panel
+ * ------------------------------------------------------------------ */;i ;i¹;[ o;(;"[[o;&;'"bg_color;"bg-color;{ 0[o;&;'"	type;"	type;@Æo;&	;'"base_gradient;"base-gradient;@Æ;i½;T;"(background-color-float-panel-anchor;[o;);T;*i ;[o;/;*i ;0;1;["background-color;[ ;@
+;o;&	;'"bg_color;"bg-color;@
+;i¿;i¿u;@|[o:Sass::Script::Variable	:@underscored_name"include_highlights:
+@name"include-highlights:@options{ :
+@lineiÀ0[u:Sass::Tree::IfNodeë[o:Sass::Script::Operation
+:@operand2o:Sass::Script::String	:
+@type:identifier:@options{ :@value"
+bevel:
+@lineiÁ:@operator:eq:@operand1o:Sass::Script::Variable	:@underscored_name"	type:
+@name"	type;
+@;iÁ;
+@;iÁu:Sass::Tree::IfNodeg
+[o:Sass::Script::Operation
+:@operand2o:Sass::Script::String	:
+@type:identifier:@options{ :@value"glossy:
+@lineiÃ:@operator:eq:@operand1o:Sass::Script::Variable	:@underscored_name"	type:
+@name"	type;
+@;iÃ;
+@;iÃu:Sass::Tree::IfNodeZ[o:Sass::Script::Operation
+:@operand2o:Sass::Script::String	:
+@type:identifier:@options{ :@value"recessed:
+@lineiÆ:@operator:eq:@operand1o:Sass::Script::Variable	:@underscored_name"	type:
+@name"	type;
+@;iÆ;
+@;iÆu:Sass::Tree::IfNodeo[o:Sass::Script::Operation
+:@operand2o:Sass::Script::String	:
+@type:identifier:@options{ :@value"
+matte:
+@lineiÈ:@operator:eq:@operand1o:Sass::Script::Variable	:@underscored_name"	type:
+@name"	type;
+@;iÈ;
+@;iÈ0[o:Sass::Tree::MixinNode:
+@args[o:Sass::Script::Funcall
+;[o;
+;[o;
+;[o;	;"bg_color;"bg-color;
+@;iÉo:Sass::Script::Number:@original"30%;
+@:@denominator_units[ ;i#;iÉ:@numerator_units["%;"lighten;
+@;iÉ:@keywords{ o:Sass::Script::List	;
+@;[o;
+;[o;	;"bg_color;"bg-color;
+@;iÉo;;"7%;
+@;[ ;i;iÉ;["%;"lighten;
+@;iÉ;{ o;;"2%;
+@;[ ;i;iÉ;["%;iÉ:@separator:
+spaceo;
+;[o;	;"bg_color;"bg-color;
+@;iÉo;;"7%;
+@;[ ;i;iÉ;["%;"darken;
+@;iÉ;{ ;"color_stops;
+@;iÉ;{ ;"linear-gradient;
+@;iÉ;{ ;"background-image:@children[ ;
+@;iÉ;{ [o:Sass::Tree::MixinNode:
+@args[o:Sass::Script::Funcall
+;[o;
+;[	o;
+;[o;	;"bg_color;"bg-color;
+@;iÇo:Sass::Script::Number:@original"10%;
+@:@denominator_units[ ;i;iÇ:@numerator_units["%;"darken;
+@;iÇ:@keywords{ o:Sass::Script::List	;
+@;[o;
+;[o;	;"bg_color;"bg-color;
+@;iÇo;;"5%;
+@;[ ;i
+;iÇ;["%;"darken;
+@;iÇ;{ o;;"10%;
+@;[ ;i;iÇ;["%;iÇ:@separator:
+spaceo;	;
+@;[o;	;"bg_color;"bg-color;
+@;iÇo;;"65%;
+@;[ ;iF;iÇ;["%;iÇ;;o;
+;[o;	;"bg_color;"bg-color;
+@;iÇo;;"	0.5%;
+@;[ ;f0.5;iÇ;["%;"lighten;
+@;iÇ;{ ;"color_stops;
+@;iÇ;{ ;"linear-gradient;
+@;iÇ;{ ;"background-image:@children[ ;
+@;iÇ;{ [o:Sass::Tree::CommentNode:
+@loud0:@children[ ;
+@;"˜/*@include background-image(linear-gradient(color_stops(lighten($bg-color, 15%), lighten($bg-color, 5%) 50%, $bg-color 51%, darken($bg-color, 5%)))); */:@silenti ;iÄ:@lines[ o:Sass::Tree::PropNode:
+@tabsi :@prop_syntax:new;["background-color;[ ;
+@;o:Sass::Script::Funcall
+:
+@args[o;	;"bg_color;"bg-color;
+@;iÅo:Sass::Script::Number:@original"5%;
+@:@denominator_units[ ;i
+;iÅ:@numerator_units["%;"darken;
+@;iÅ:@keywords{ ;iÅ[o:Sass::Tree::MixinNode:
+@args[o:Sass::Script::Funcall
+;[o;
+;[
+o;
+;[o;	;"bg_color;"bg-color;
+@;iÂo:Sass::Script::Number:@original"30%;
+@:@denominator_units[ ;i#;iÂ:@numerator_units["%;"lighten;
+@;iÂ:@keywords{ o:Sass::Script::List	;
+@;[o;
+;[o;	;"bg_color;"bg-color;
+@;iÂo;;"15%;
+@;[ ;i;iÂ;["%;"lighten;
+@;iÂ;{ o;;"2%;
+@;[ ;i;iÂ;["%;iÂ:@separator:
+spaceo;	;
+@;[o;
+;[o;	;"bg_color;"bg-color;
+@;iÂo;;"8%;
+@;[ ;i;iÂ;["%;"lighten;
+@;iÂ;{ o;;"30%;
+@;[ ;i#;iÂ;["%;iÂ;;o;	;
+@;[o;	;"bg_color;"bg-color;
+@;iÂo;;"65%;
+@;[ ;iF;iÂ;["%;iÂ;;o;
+;[o;	;"bg_color;"bg-color;
+@;iÂo;;"10%;
+@;[ ;i;iÂ;["%;"darken;
+@;iÂ;{ ;"color_stops;
+@;iÂ;{ ;"linear-gradient;
+@;iÂ;{ ;"background-image:@children[ ;
+@;iÂ;{ ;,[".x-panel .anchor;@
+;i¾;3o;4;5" ;i¾;6[o;7;6[o;8;5@Ý;i¾;6[o;:;["x-panel;5@Ý;i¾o;8;5@Ý;i¾;6[o;:;["anchor;5@Ý;i¾;@
+;i½o;+;"[o;&	;'"button_bg_color;"button-bg-color;@
+;iÎo;	;;;@
+;"glossy;iÎ;"(background-color-float-panel-anchor;[ ;@
+;iÎ;#{ o;	;
+0;[ ;@
+;"™/* ------------------------------------------------------------------
+ * Toolbar
+ * ------------------------------------------------------------------ */;i ;iÐ;[ o;);T;*i ;[o;);T;*i ;[o;/;*i ;0;1;["font-size;[ ;@
+;o;;;2;@
+;"
+1.0em;iÕ;,[".x-button-label;@
+;iÔ;3o;4;5" ;iÔ;6[o;7;6[o;8;5@;iÔ;6[o;:;["x-button-label;5@;iÔ;,[".x-toolbar .x-button;@
+;iÓ;3o;4;5" ;iÓ;6[o;7;6[o;8;5@;iÓ;6[o;:;["x-toolbar;5@;iÓo;8;5@;iÓ;6[o;:;["x-button;5@;iÓo;	;
+0;[ ;@
+;"˜/* ------------------------------------------------------------------
+ * TabBar
+ * ------------------------------------------------------------------ */;i ;iÙ;[ o;);T;*i ;[o;);T;*i ;[o;/;*i ;0;1;["padding;[ ;@
+;o:Sass::Script::List	;@
+;[o;;"0em;@
+;[ ;i ;iÞ; ["emo:Sass::Script::Operation
+:@operand2o;
+;@
+;[ ;i;iÞ; [ :@operator:div:@operand1o;C
+;Do;;"1em;@
+;[ ;i;iÞ; ["em;E:
+minus;Go;
+;@
+;[ ;f5.5;iÞ; ["em;@
+;iÞ;@
+;iÞ;iÞ:@separator:
+space;iÞ;,[".x-tab;@
+;iÝ;3o;4;5" ;iÝ;6[o;7;6[o;8;5@E;iÝ;6[o;:;["
+x-tab;5@E;iÝ;,[".x-tabbar.x-docked-bottom;@
+;iÜ;3o;4;5" ;iÜ;6[o;7;6[o;8;5@Q;iÜ;6[o;:;["x-tabbar;5@Q;iÜo;:;["x-docked-bottom;5@Q;iÜo;);T;*i ;[o;/;*i ;0;1;["-webkit-box-shadow;[ ;@
+;o;;;2;@
+;"5px 5px 5px #000000;ião;	;
+0;[ ;@
+;"[/*-webkit-box-shadow: rgba(#fff, .2) 0 .1em .1em, inset rgba(#000, .3) 0 .1em .2em; */;i ;iä;[ ;,[".x-toolbar-dark;@
+;iâ;3o;4;5" ;iâ;6[o;7;6[o;8;5@l;iâ;6[o;:;["x-toolbar-dark;5@l;iâo;);T;*i ;[o;);T;*i ;[o;);T;*i ;[o;/;*i ;0;1;["font-size;[ ;@
+;o;;;2;@
+;"
+0.8em;iêo;/;*i ;0;1;["line-height;[ ;@
+;o;;;2;@
+;"
+1.2em;ië;,[".x-button-label;@
+;ié;3o;4;5" ;ié;6[o;7;6[o;8;5@Š;ié;6[o;:;["x-button-label;5@Š;ié;,[".x-tab;@
+;iè;3o;4;5" ;iè;6[o;7;6[o;8;5@–;iè;6[o;:;["
+x-tab;5@–;iè;,[".x-tabbar.x-docked-bottom;@
+;iç;3o;4;5" ;iç;6[o;7;6[o;8;5@¢;iç;6[o;:;["x-tabbar;5@¢;iço;:;["x-docked-bottom;5@¢;iço;);T;*i ;[o;);T;*i ;[o;+;"[o;	;{	;i ;i;i ;i ;@
+;0;iò;"color-by-background;[ ;@
+;iò;#{ ;,[".x-toolbar-title;@
+;iñ;3o;4;5" ;iñ;6[o;7;6[o;8;5@¼;iñ;6[o;:;["x-toolbar-title;5@¼;iñ;,[".x-toolbar-secondary;@
+;ið;3o;4;5" ;ið;6[o;7;6[o;8;5@È;ið;6[o;:;["x-toolbar-secondary;5@È;iðo;	;
+0;[ ;@
+;"˜/* ------------------------------------------------------------------
+ * Button
+ * ------------------------------------------------------------------ */;i ;iõ;[ o;);T;*i ;[o;);T;*i ;[o;/;*i ;0;1;["padding-left;[ ;@
+;o;;;2;@
+;"
+0.1em;iúo;/;*i ;0;1;["padding-right;[ ;@
+;o;;;2;@
+;"
+0.1em;iûu;@«[o:Sass::Script::Variable	:@underscored_name"include_border_radius:
+@name"include-border-radius:@options{ :
+@lineiü0[o:Sass::Tree::MixinNode:
+@args[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Number:@original"3;@	:@denominator_units[ :@valuei;	iü:@numerator_units[ :@operator:div:@operand1o; 	;"badge_size;"badge-size;@	;	iü;@	;	iü;"border-radius:@children[ ;@	;	iü:@keywords{ o;/;*i ;0;1;["line-height;[ ;@
+;o;;;2;@
+;"
+0.8em;iýo;/;*i ;0;1;["height;[ ;@
+;o;C
+;Do;;"	1.75;@
+;@5;f	1.75;iþ; [ ;E;F;Go;&	;'"badge_size;"badge-size;@
+;iþ;@
+;iþ;iþo;/;*i ;0;1;["font-size;[ ;@
+;o;;;2;@
+;"1.25em;iÿo;/;*i ;0;1;["top;[ ;@
+;o;;;2;@
+;"0em;i o;/;*i ;0;1;["
+right;[ ;@
+;o;;;2;@
+;"	40px;i;,[".x-badge;@
+;iù;3o;4;5" ;iù;6[o;7;6[o;8;5@;iù;6[o;:;["x-badge;5@;iù;,[".x-hasbadge;@
+;iø;3o;4;5" ;iø;6[o;7;6[o;8;5@;iø;6[o;:;["x-hasbadge;5@;iøo;);T;*i ;[o;);T;*i ;[
+o;/;*i ;0;1;["-webkit-border-radius;[ ;@
+;o;;;2;@
+;"0;io;/;*i ;0;1;["margin;[ ;@
+;o;;;2;@
+;"0;io;);T;*i ;[o;+;"[o;&	;'"button_radius;"button_radius;@
+;i
+;"border-left-radius;[ ;@
+;i
+;#{ ;,["&:first-child;@
+;i	;3o;4;5" ;i	;6[o;7;6[o;8;5@?;i	;6[o;9;5@?;i	o;=
+;;>;["first-child;5@?;i	;?0o;);T;*i ;[o;+;"[o;&	;'"button_radius;"button_radius;@
+;i;"border-right-radius;[ ;@
+;i;#{ ;,["&:last-child;@
+;i;3o;4;5" ;i;6[o;7;6[o;8;5@V;i;6[o;9;5@V;io;=
+;;>;["last-child;5@V;i;?0o;);T;*i ;[o;/;*i ;0;1;["border-left;[ ;@
+;o;;;2;@
+;"0;i;,["&:not(:first-child);@
+;i;3o;4;5" ;i;6[o;7;6[o;8;5@k;i;6[o;9;5@k;io:(Sass::Selector::SelectorPseudoClass	;.o;4;6[o;7;6[o;8;6[o;=;;>;["first-child;?0;"not;5@k;i;,[".x-button;@
+;i;3o;4;5" ;i;6[o;7;6[o;8;5@€;i;6[o;:;["x-button;5@€;i;,[".x-splitbutton;@
+;i;3o;4;5" ;i;6[o;7;6[o;8;5@Œ;i;6[o;:;["x-splitbutton;5@Œ;io;);T;*i ;[u;@¶[o:Sass::Script::Variable	:@underscored_name"include_border_radius:
+@name"include-border-radius:@options{ :
+@linei0[o:Sass::Tree::MixinNode:
+@args[o:Sass::Script::Operation
+:@operand2o:Sass::Script::Number:@original"5;@	:@denominator_units[ :@valuei
+;	i:@numerator_units[ :@operator:div:@operand1o; 	;"button_height;"button-height;@	;	i;@	;	i;"border-radius:@children[ ;@	;	i:@keywords{ o;/;*i ;0;1;["padding;[ ;@
+;o;B	;@
+;[o;;"
+0.1em;@
+;[ ;f0.10000000000000001 ™š;i; ["emo;C
+;Do;;"5;@
+;@5;i
+;i; [ ;E;F;Go;&	;'"button_height;"button-height;@
+;i;@
+;i;i;I;J;i;,[".x-button-round;@
+;i;3o;4;5" ;i;6[o;7;6[o;8;5@®;i;6[o;:;["x-button-round;5@®;io;);T;*i ;[o;	;
+0;[ ;@
+;"/*position: relative; */;i ;i;[ o;/;*i ;0;1;["overflow;[ ;@
+;o;;;2;@
+;"visible;io;/;*i ;0;1;["-webkit-mask;[ ;@
+;o;B	;@
+;[	o;;"0;@
+;@5;i ;i; [ o;;"0;@
+;@5;i ;i; [ o;!
+;"[o;&	;'"theme_name;"theme-name;@
+;io;	;;;@
+;"disclosure.png;i;"theme_image;@
+;i;#{ o;	;;2;@
+;"no-repeat;i;i;I;J;io;/;*i ;0;1;["-webkit-mask-size;[ ;@
+;o;&	;'"list_disclosure_size;"list-disclosure-size;@
+;i;io;+;"[o;!
+;"[o;&	;'"active_color;"active-color;@
+;io;;"10%;@
+;[ ;i;i; ["%;"saturate;@
+;i;#{ ;"background-gradient;[ ;@
+;i;#{ o;/;*i ;0;1;["
+width;[ ;@
+;o;&	;'"list_disclosure_size;"list-disclosure-size;@
+;i;io;/;*i ;0;1;["height;[ ;@
+;o;&	;'"list_disclosure_size;"list-disclosure-size;@
+;i ;i ;,[".disclosure-icon;@
+;i;3o;4;5" ;i;6[o;7;6[o;8;5@;i;6[o;:;["disclosure-icon;5@;io;+;"[o;	;;;@
+;"
+green;i"o;&	;'"theme_prim_color;"theme-prim-color;@
+;i";"sencha-button-ui;[ ;@
+;i";#{ o;+;"[o;	;;;@
+;"
+light;i#o;&	;'"button_bg_color;"button-bg-color;@
+;i#;"sencha-button-ui;[ ;@
+;i#;#{ o;+;"[o;	;;;@
+;"orange;i$o;	;{	;iÿ;i;i¥;iT;@
+;0;i$;"sencha-button-ui;[ ;@
+;i$;#{ o;+;"[o;	;;;@
+;"
+large;i%o;&	;'"icon_color;"icon-color;@
+;i%;"sencha-button-ui-large;[ ;@
+;i%;#{ o;;0;"tabs-large;[ ;@
+;i&;o;!
+;"[o;!
+;"[o;&	;'"base_color;"base-color;@
+;i&o;;"10%;@
+;[ ;i;i&; ["%;"desaturate;@
+;i&;#{ o;;"5%;@
+;[ ;i
+;i&; ["%;"lighten;@
+;i&;#{ o;;0;"tabs-large-active;[ ;@
+;i';o;!
+;"[o;&	;'"theme_sec_color;"theme-sec-color;@
+;i'o;;"20%;@
+;[ ;i;i'; ["%;"saturate;@
+;i';#{ o;;0;"tabs-large-bar-gradient;[ ;@
+;i(;o;	;;;@
+;"
+matte;i(o;+;"[	o;	;;;@
+;"
+large;i)o;	;{	;i ;i;i ;i ;@
+;0;i)o;&	;'"tabs_large_bar_gradient;"tabs-large-bar-gradient;@
+;i)o;&	;'"tabs_large_active;"tabs-large-active;@
+;i);"sencha-tabbar-ui;[ ;@
+;i);#{ o;+;"[o;	;;;@
+;"defaultRound;i*;"sencha-round-panel;[ ;@
+;i*;#{ o;	;
+0;[ ;@
+;"–/* ------------------------------------------------------------------
+ * Misc
+ * ------------------------------------------------------------------ */;i ;i,;[ o;(;"[[o;&;'"radius;"radius;{ o;C
+;Do;;"5;@;@5;i
+;i0; [ ;E;F;Go;&	;'"button_height;"button-height;@;i0;@;i0;T;"roundBorder;[o;+;"[o;&	;'"radius;"radius;@
+;i1;"border-radius;[ ;@
+;i1;#{ ;@
+;i0o;);T;*i ;[o;/;*i ;0;1;["padding;[ ;@
+;o;;;2;@
+;"0px !important;i5;,[".nopadding;@
+;i4;3o;4;5" ;i4;6[o;7;6[o;8;5@œ;i4;6[o;:;["nopadding;5@œ;i4o;);T;*i ;[o;/;*i ;0;1;["-webkit-font-smoothing;[ ;@
+;o;;;2;@
+;"antialiased;i9o;+;"[o;;"-2.5deg;@
+;[ ;f	-2.5;i:; ["deg;"rotate;[ ;@
+;i:;#{ o;/;*i ;0;1;["font-size;[ ;@
+;o;;;2;@
+;"5em;i;o;/;*i ;0;1;["
+color;[ ;@
+;o;;;2;@
+;"
+white;i<o;/;*i ;0;1;["margin-top;[ ;@
+;o;;;2;@
+;"	30px;i=o;/;*i ;0;1;["margin-bottom;[ ;@
+;o;;;2;@
+;"	20px;i>o;/;*i ;0;1;["text-align;[ ;@
+;o;;;2;@
+;"center;i?o;/;*i ;0;1;["background;[ ;@
+;o;;;2;@
+;"#1E0F00;i@o;/;*i ;0;1;["font-weight;[ ;@
+;o;;;2;@
+;"	bold;iA;,[".bannerCls;@
+;i8;3o;4;5" ;i8;6[o;7;6[o;8;5@å;i8;6[o;:;["bannerCls;5@å;i8o;);T;*i ;[o;+;"[ ;"roundBorder;[ ;@
+;iE;#{ ;,[".roundCls;@
+;iD;3o;4;5" ;iD;6[o;7;6[o;8;5@ø;iD;6[o;:;["roundCls;5@ø;iDo;);T;*i ;[	o;+;"[ ;"border-radius;[ ;@
+;iI;#{ o;/;*i ;0;1;["margin-right;[ ;@
+;o;;;2;@
+;"
+0.5em;iJo;/;*i ;0;1;["
+width;[ ;@
+;o;C
+;Do;&	;'"tabs_bottom_icon_size;"tabs-bottom-icon-size;@
+;iK;E:
+times;Go;;"2;@
+;@5;i;iK; [ ;@
+;iK;iKo;/;*i ;0;1;["height;[ ;@
+;o;C
+;Do;&	;'"tabs_bottom_icon_size;"tabs-bottom-icon-size;@
+;iL;E;L;Go;;"2;@
+;@5;i;iL; [ ;@
+;iL;iL;,[".imgRoundCls;@
+;iH;3o;4;5" ;iH;6[o;7;6[o;8;5@';iH;6[o;:;["imgRoundCls;5@';iHo;);T;*i ;[o;/;*i ;0;1;["font-weight;[ ;@
+;o;;;2;@
+;"	bold;iPo;/;*i ;0;1;["font-size;[ ;@
+;o;;;2;@
+;"
+1.3em;iQo;/;*i ;0;1;["
+color;[ ;@
+;o;;;2;@
+;"
+black;iR;,[".majorText;@
+;iO;3o;4;5" ;iO;6[o;7;6[o;8;5@G;iO;6[o;:;["majorText;5@G;iOo;);T;*i ;[o;	;
+0;[ ;@
+;"˜/*@include background-image(linear-gradient(color_stops(lighten($bg-color, 15%), lighten($bg-color, 5%) 50%, $bg-color 51%, darken($bg-color, 5%)))); */;i ;iV;[ o;/;*i ;0;1;["
+color;[ ;@
+;o;!
+;"[o;&	;'"base_color;"base-color;@
+;iWo;;"15%;@
+;[ ;i;iW; ["%;"lighten;@
+;iW;#{ ;iW;,[".minorText;@
+;iU;3o;4;5" ;iU;6[o;7;6[o;8;5@i;iU;6[o;:;["minorText;5@i;iUo;);T;*i ;[
+o;/;*i ;0;1;["
+width;[ ;@
+;o;;;2;@
+;"
+605px;i[o;/;*i ;0;1;["vertical-align;[ ;@
+;o;;;2;@
+;"top;i\o;/;*i ;0;1;["display;[ ;@
+;o;;;2;@
+;"inline-block;i]o;/;*i ;0;1;["background;[ ;@
+;o;B	;@
+;[o;	;;2;@
+;"=url(/javascripts/mobile/resources/img/groupon-frame.png);i^o;	;;2;@
+;"no-repeat;i^;i^;I;J;i^o;/;*i ;0;1;["padding;[ ;@
+;o;;;2;@
+;"	20px;i_;,[".thumb;@
+;iZ;3o;4;5" ;iZ;6[o;7;6[o;8;5@™;iZ;6[o;:;["
+thumb;5@™;iZo;);T;*i ;[o;/;*i ;0;1;["top;[ ;@
+;o;B	;@
+;[o;;"	-5em;@
+;[ ;iö;ic; ["emo;	;;2;@
+;"!important;ic;ic;I;J;ic;,[".topOffset;@
+;ib;3o;4;5" ;ib;6[o;7;6[o;8;5@´;ib;6[o;:;["topOffset;5@´;ibo;);T;*i ;[o;/;*i ;0;1;["font-weight;[ ;@
+;o;;;2;@
+;"	bold;ig;,[".highlight;@
+;if;3o;4;5" ;if;6[o;7;6[o;8;5@È;if;6[o;:;["highlight;5@È;if;@
+;i

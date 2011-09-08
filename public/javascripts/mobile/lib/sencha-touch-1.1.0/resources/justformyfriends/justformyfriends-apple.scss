@@ -1,0 +1,360 @@
+// Let's start with the basics
+//$base-color: #7c92ae;
+//$base-color: #ae987c;
+
+$theme-prim-color: #6E8B3D; // green 
+$theme-sec-color: #7AC5CD; //#0099CC blue
+$icon-color: #666666; // grey
+$base-color: #5A4F43; // brown
+$base-gradient: 'glossy';
+$global-row-height: 3.6em;
+
+//$tabs-light: lighten(desaturate($base-color, 10%), 5%);
+$tabs-light-active: saturate(#3A6EA5, 20%);
+//$tabs-dark: darken($base-color, 20%);
+$tabs-dark-active-color: saturate(lighten(#3A6EA5, 30%), 70%);
+$tabs-bottom-icon-size: 2.25em;
+//$tabs-top-height: $tabs-bottom-icon-size + 1.0em;
+
+// Badges
+$badge-size: 2.25em;
+$badge-bg-gradient: 'glossy';
+
+// Lists
+//$list-active-gradient: 'bevel';
+//$list-header-bg-color: transparentize(saturate($base-color, 10%), .25);
+//$list-header-gradient: 'matte';
+
+// Tabs
+//$tabs-dark: #111;
+
+//$include_default_icons: false;
+
+@import 'sencha-touch/default/all';
+$button-height: 2.4em;
+
+$button-bg-color : desaturate(lighten($base-color, 10%), 5%);
+
+$list-pressed-color: lighten(#3A6EA5, 50%);
+$list-active-color: #3A6EA5;
+
+/**
+ * Creates a theme UI for buttons.
+ * Also automatically generates UIs for {ui-label}-round and {ui-label}-small.
+ *
+ * @param {string} $ui-label The name of the UI being created.
+ *   Can not included spaces or special punctuation (used in class names)
+ * @param {color} $color Base color for the UI.
+ * @param {string} [$gradient: $button-gradient] Default gradient for the UI.
+ *
+ * @example
+ * // SCSS
+ * @include sencha-button-ui-large('secondary', #99A4AE, 'glossy');
+ * 
+ * // JS
+ * var cancelBtn = new Ext.Button({text: 'Cancel', ui: 'secondary'});
+ * 
+ * @class Ext.Button
+ * @xtype button
+ */
+@mixin sencha-button-ui-large($ui-label, $color, $gradient: $button-gradient) {
+  .x-button.x-button-#{$ui-label}, .x-button.x-button-#{$ui-label}-round {
+    @include toolbar-button-large($color, $gradient);
+  }
+
+  .x-button.x-button-#{$ui-label}-round {
+    @extend .x-button-round;
+    border:none !important;
+    background:none;
+  }
+  
+  .x-button-#{$ui-label} {
+    img {
+      width: 3.4em;
+      height: 3.4em;
+
+      &.x-icon-mask {
+        height : 2.6em;
+        width : 2.6em;
+        -webkit-mask-size : 2.6em;
+      }
+    }
+  }
+}
+
+/**
+ * Includes the default styles for toolbar buttons, mostly used as a helper function.
+ *
+ * @param {color} $bg-color Base color to be used for the button.
+ * @param {color} [$type=$button-gradient] $type Gradient style for the button, will automatically use "recessed" when pressed.
+ */
+@mixin toolbar-button-large($bg-color, $type: $button-gradient){
+  &, .x-toolbar & {
+    border: none;
+    padding : 0.3em 0 0 0;
+    -webkit-box-shadow : none;
+    @include color-by-background($bg-color, 40%);
+    
+    .x-button-label {
+      line-height:3.0em;
+      font-weight:normal;
+      font-size: 0.7em;
+    }
+    
+    img.x-icon-mask {
+      @include mask-by-background($bg-color,14%,'matte');
+    }
+  
+    &.x-button-pressed img.x-icon-mask, &.x-button-active img.x-icon-mask {
+      @include mask-by-background($theme-sec-color,40%,'matte');
+    }
+    
+    &.x-button-pressed, &.x-button-active {
+      &, &:after {
+        @include background-gradient(darken($bg-color, 28%), 'glossy');
+      }
+    }
+  }
+}
+
+@mixin sencha-round-panel($ui-label, $panel-radius: $panel-border-radius) {
+  .x-panel.x-panel-#{$ui-label}, .x-panel-#{$ui-label} .x-panel-body {
+    @if $include-border-radius {
+      @include border-radius($panel-radius);
+    }
+  }
+}
+
+@include sencha-panel;
+@include sencha-buttons;
+@include sencha-sheet;
+@include sencha-picker;
+@include sencha-tabs;
+@include sencha-toolbar; 
+@include sencha-toolbar-forms;
+@include sencha-carousel;
+@include sencha-indexbar;
+@include sencha-list;
+@include sencha-list-paging;
+@include sencha-list-pullrefresh;
+@include sencha-layout;
+@include sencha-form;
+@include sencha-msgbox;
+@include sencha-loading-spinner;
+
+// create custom ui for toolbar
+@include sencha-toolbar-ui('black', #000000);
+@include sencha-toolbar-ui('secondary', $theme-sec-color);
+
+// include custom icon masks
+@include pictos-iconmask("favorites");
+@include pictos-iconmask("search");
+@include pictos-iconmask("add_black");
+@include pictos-iconmask("bookmarks");
+@include pictos-iconmask("trash");
+@include pictos-iconmask("more");
+@include pictos-iconmask("chart2");
+@include pictos-iconmask("flag");
+@include pictos-iconmask("refresh");
+@include pictos-iconmask("home");
+@include pictos-iconmask("delete");
+@include pictos-iconmask("settings");
+@include pictos-iconmask("user_add");
+@include pictos-iconmask("maps");
+
+// ------------------------------------------------------------------
+// List
+// ------------------------------------------------------------------
+  .x-list-round {
+    .x-list-group-items > *,
+    &.x-list-flat .x-list-parent > * {
+      &:first-child {
+        @if $include-border-radius { @include border-top-radius(1.0em); }
+      }
+      &:last-child {
+        @include border-bottom-radius(1.0em)
+      }
+    }
+  }
+
+.x-dataview.x-list .x-list-item {
+  margin-left : 0px !important;
+  margin-right : 0px !important;
+}
+
+// ------------------------------------------------------------------
+// Panel
+// ------------------------------------------------------------------
+
+@mixin background-color-float-panel-anchor($bg-color, $type: $base-gradient) {
+.x-panel .anchor {
+  background-color: $bg-color;
+  @if $include-highlights {
+    @if $type == bevel {
+      @include background-image(linear-gradient(color_stops(lighten($bg-color, 30%), lighten($bg-color, 15%) 2%, lighten($bg-color, 8%) 30%, $bg-color 65%, darken($bg-color, 10%))));
+    } @else if $type == glossy {
+      //@include background-image(linear-gradient(color_stops(lighten($bg-color, 15%), lighten($bg-color, 5%) 50%, $bg-color 51%, darken($bg-color, 5%))));
+      background-color : darken($bg-color, 5%);
+    } @else if $type == recessed {
+      @include background-image(linear-gradient(color_stops(darken($bg-color, 10%), darken($bg-color, 5%) 10%, $bg-color 65%, lighten($bg-color, .5%))));
+    } @else if $type == matte {
+      @include background-image(linear-gradient(color_stops(lighten($bg-color, 30%), lighten($bg-color, 7%) 2%, darken($bg-color, 7%))));
+    }
+  }
+}
+}
+@include background-color-float-panel-anchor($button-bg-color, 'glossy');
+
+// ------------------------------------------------------------------
+// Toolbar
+// ------------------------------------------------------------------
+.x-toolbar .x-button {
+  .x-button-label {
+    font-size: 1.0em;
+  }
+}
+  
+// ------------------------------------------------------------------
+// TabBar
+// ------------------------------------------------------------------
+.x-tabbar.x-docked-bottom {
+  .x-tab {
+    padding: 0em ((5.5em - 1em) / 2);
+  }
+}
+
+.x-toolbar-dark {
+  -webkit-box-shadow: 5px 5px 5px #000000;
+  //-webkit-box-shadow: rgba(#fff, .2) 0 .1em .1em, inset rgba(#000, .3) 0 .1em .2em;
+}
+
+.x-tabbar.x-docked-bottom {
+  .x-tab {
+    .x-button-label {
+      font-size: 0.8em;
+      line-height: 1.2em;
+    }
+  }
+}
+
+.x-toolbar-secondary {
+  .x-toolbar-title {
+    @include color-by-background(#000000);
+  }
+}
+// ------------------------------------------------------------------
+// Button
+// ------------------------------------------------------------------
+  .x-hasbadge {
+    .x-badge {
+      padding-left:0.1em;
+      padding-right:0.1em;
+      @if $include-border-radius { @include border-radius($badge-size/3); }
+      line-height: 0.8em;
+      height: $badge-size/1.75;
+      font-size: 1.25em;
+      top: 0em;
+      right: 40px;
+    }
+  }
+  
+.x-splitbutton {
+  .x-button {
+    -webkit-border-radius: 0;
+    margin: 0;
+    &:first-child {
+      @include border-left-radius($button_radius);
+    }
+    &:last-child {
+      @include border-right-radius($button_radius);
+    }
+    &:not(:first-child) {
+      border-left: 0;
+    }
+  }
+}
+
+.x-button-round {
+  @if $include-border-radius { @include border-radius($button-height/5); }
+  padding: .1em $button-height/5;
+}
+.disclosure-icon {
+    //position: relative;
+      overflow: visible;
+      -webkit-mask: 0 0 theme_image($theme-name, "disclosure.png") no-repeat;
+      -webkit-mask-size: $list-disclosure-size;
+      @include background-gradient(saturate($active-color, 10%));
+      width: $list-disclosure-size;
+      height: $list-disclosure-size;
+}
+@include sencha-button-ui('green', $theme-prim-color);
+@include sencha-button-ui('light', $button-bg-color);
+@include sencha-button-ui('orange', #FFA54F);
+@include sencha-button-ui-large('large', $icon-color);
+$tabs-large: lighten(desaturate($base-color, 10%), 5%);
+$tabs-large-active: saturate($theme-sec-color, 20%);
+$tabs-large-bar-gradient : 'matte';
+@include sencha-tabbar-ui('large', #000000, $tabs-large-bar-gradient, $tabs-large-active);
+@include sencha-round-panel('defaultRound');
+
+// ------------------------------------------------------------------
+// Misc
+// ------------------------------------------------------------------
+
+@mixin roundBorder($radius : $button-height/5) {
+  @include border-radius($radius);
+}
+
+.nopadding {
+  padding:0px !important;
+}
+
+.bannerCls {
+  -webkit-font-smoothing: antialiased;
+  @include rotate(-2.5deg);
+  font-size:5em;
+  color:white;
+  margin-top:30px;
+  margin-bottom:20px;
+  text-align:center;
+  background:#1E0F00;
+  font-weight:bold;
+}
+
+.roundCls {
+  @include roundBorder();
+}
+
+.imgRoundCls {
+  @include border-radius();
+  margin-right:0.5em;
+  width : 2*$tabs-bottom-icon-size;
+  height : 2*$tabs-bottom-icon-size;
+}
+
+.majorText {
+  font-weight : bold;
+  font-size : 1.3em;
+  color : black;
+}
+
+.minorText {
+  //@include background-image(linear-gradient(color_stops(lighten($bg-color, 15%), lighten($bg-color, 5%) 50%, $bg-color 51%, darken($bg-color, 5%))));
+  color : lighten($base-color, 15%);
+}
+
+.thumb {
+  width: 605px;
+  vertical-align: top;
+  display: inline-block;
+  background:url(/javascripts/mobile/resources/img/groupon-frame.png) no-repeat;
+  padding:20px;
+}
+
+.topOffset {
+  top : -5em !important;
+}
+
+.highlight {
+   font-weight : bold;
+}
