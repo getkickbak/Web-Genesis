@@ -1,12 +1,12 @@
 var _login = function()
 {
-   $('#fb_login').css("display", "none");
-   $('#fb_login_img').css("display", "");
+   //$('#fb_login').css("display", "none");
+   //$('#fb_login_img').css("display", "");
 };
 var _logout = function()
 {
-   $('#fb_login').css("display", "");
-   $('#fb_login_img').css("display", "none");
+   //$('#fb_login').css("display", "");
+   //$('#fb_login_img').css("display", "none");
 };
 var _initFormComponents = function()
 {
@@ -48,22 +48,28 @@ var _initFormComponents = function()
             if($(this).hasClass("date"))
                $(this).datepicker();
          });
-         var div = jQuery("<div />",{
-         css:{
-         width:20,height:20,
-         margin:10,textAlign:"center"
-         }
+         var div = jQuery("<div />",
+         {
+            css :
+            {
+               width : 20,
+               height : 20,
+               margin : 10,
+               textAlign : "center"
+            }
          }).addClass("ui-state-default drag");
          var no = Math.ceil(Math.random() * 4);
-         var holder = jQuery("<div/>",{
-         id:'droppable',
-         text:"Drop the box with "+no+" here",
-         css:{
-         width:100,
-         height:100,
-         'float':'right',
-         fontWeight:'bold'
-         }
+         var holder = jQuery("<div/>",
+         {
+            id : 'droppable',
+            text : "Drop the box with " + no + " here",
+            css :
+            {
+               width : 100,
+               height : 100,
+               'float' : 'right',
+               fontWeight : 'bold'
+            }
          }).addClass('ui-state-default');
          $(form).find("fieldset").append(holder);
          for(var i = 1; i < 5; i++)
@@ -164,7 +170,12 @@ var _initFormComponents = function()
       selector : function(element)
       {
          var parent = $(element).parent();
-         parent.css({"display":"block",width:140,height:21}).addClass("ui-state-default ui-corner-all");
+         parent.css(
+         {
+            "display" : "block",
+            width : 140,
+            height : 21
+         }).addClass("ui-state-default ui-corner-all");
          $(element).addClass("ui-helper-hidden");
          parent.append("&lt;span id='labeltext' style='float:left;'>&lt;/span>&lt;span style='float:right;display:inline-block' class='ui-icon ui-icon-triangle-1-s' >&lt;/span>");
          parent.after("&lt;ul class=' ui-helper-reset ui-widget-content ui-helper-hidden' style='position:absolute;z-index:50;width:140px;' >&lt;/ul>");
@@ -271,37 +282,52 @@ var initSlides = function()
       generateNextPrev : true,
       generatePagination : false
    });
-}
+};
+
 $(document).ready($(function()
 {
-   var $learnmore = $("#learnmore");
+   var $highlights = $("#highlights");
+   var $highlightsBtn = $("#highlightsBtn");
+   var $detailsBtn = $("#detailsBtn");
+   var $highlights1 = $("#highlights-1 *:first-child");
+   var $highlights2 = $("#highlights-2 *:first-child");
+   var $gmap = $("#gmap");
+   var $highlightTabs = $highlights.tabs();
+   
+   /*
    var $offerDetails = $("#offerDetails");
+   var $learnMoreBtn = $("#learnMoreBtn");
+   var $detailSummaryBtn = $("#detailSummaryBtn");
    var $offerDetails1 = $("#offerDetails-1 *:first-child");
    var $offerDetails2 = $("#offerDetails-2 *:first-child");
-   var $gmap = $("#gmap");
-   var $tabs = $offerDetails.tabs();
+   var $offerTabs = $offerDetails.tabs();
+   */
 
    initForm();
    initMainMsg();
    initSlides();
 
-   var details1 = function()
+   var highlights1 = function()
    {
-      $tabs.tabs('select', 0);
-      $learnmore.html("Learn more &raquo;");
-      $offerDetails.switchClass("span0abs span24", "span12abs span12", 1000, function()
+      $highlightsBtn.parent().css('display','none');
+      $highlightTabs.tabs('select', 0);
+      $detailsBtn.parent().css('display','');
+      // switch to 1st tab
+      $highlights.switchClass("span24", "span12", 1000, function()
       {
       });
    };
-   var details2 = function()
+   var highlights2 = function()
    {
-      $tabs.tabs('select', 1);
+      $detailsBtn.parent().css('display','none');
+      $highlightTabs.tabs('select', 1);
+      $highlightsBtn.parent().css('display','');
       if($gmap[0].innerHTML)
       {
          $gmap.hide();
       }
-      // switch to third tab
-      $offerDetails.switchClass("span12abs span12", "span0abs span24", 1000, function()
+      // switch to 2nd tab
+      $highlights.switchClass("span12", "span24", 1000, function()
       {
          if(!$gmap[0].innerHTML)
          {
@@ -321,21 +347,23 @@ $(document).ready($(function()
          {
             $gmap.show();
          }
-         $learnmore.html("Back to Summary &raquo;");
       });
    };
-   $offerDetails1.click(function()
+   $highlightsBtn.click(function()
    {
-      details2();
+      highlights1();
    });
-   $offerDetails2.click(function()
+   $detailsBtn.click(function()
    {
-      details1();
+      highlights2();
    });
-   $learnmore.click(function()
+   /*
+   $highlights.click(function()
    {
       //  Expand or Collapse
-      ($offerDetails.hasClass("span12abs")) ? details2() : details1();
+      ($highlights.hasClass("span12abs")) ? highlights2() : highlights1();
       return false;
    });
+   */
 }));
+

@@ -44,6 +44,10 @@
   position:absolute;
   left: (@gridColumnWidth * @columnSpan) + (@gridGutterWidth * (@columnSpan - 1));
 }
+.relColumns(@columnSpan: 1) {
+  position:relative;
+  left: (@gridColumnWidth * @columnSpan) + (@gridGutterWidth * (@columnSpan - 1));
+}
 
 .row {
   position:relative;
@@ -56,6 +60,7 @@
   .span22 { .columns(22); }
   .span23 { .columns(23); }
   .span24 { .columns(24); }
+  
   .span0abs { position:absolute; margin:0; left: 0; }
   .span1abs { .absColumns(1); }
   .span2abs { .absColumns(2); }
@@ -81,6 +86,32 @@
   .span22abs { .absColumns(22); }
   .span23abs { .absColumns(23); }
   .span24abs { .absColumns(24); }
+  
+  .span0rel { position:absolute; margin:0; left: 0; }
+  .span1rel { .relColumns(1); }
+  .span2rel { .relColumns(2); }
+  .span3rel { .relColumns(3); }
+  .span4rel { .relColumns(4); }
+  .span5rel { .relColumns(5); }
+  .span6rel { .relColumns(6); }
+  .span7rel { .relColumns(7); }
+  .span8rel { .relColumns(8); }
+  .span9rel { .relColumns(9); }
+  .span10rel { .relColumns(10); }
+  .span11rel { .relColumns(11); }
+  .span12rel { .relColumns(12); }
+  .span13rel { .relColumns(13); }
+  .span14rel { .relColumns(14); }
+  .span15rel { .relColumns(15); }
+  .span16rel { .relColumns(16); }
+  .span17rel { .relColumns(17); }
+  .span18rel { .relColumns(18); }
+  .span19rel { .relColumns(19); }
+  .span20rel { .relColumns(20); }
+  .span21rel { .relColumns(21); }
+  .span22rel { .relColumns(22); }
+  .span23rel { .relColumns(23); }
+  .span24rel { .relColumns(24); }
 }
 
 .flexLayout(@type : horizontal, @direction : normal, @pack : start, @align : center) {
@@ -198,9 +229,9 @@
     	color: #fff;
   	}
   }
-	.rewardtag {
-		#gradient > .vertical(@gold, @goldDark);
-		color: #fff;
+   .rewardtag {
+      #gradient > .vertical(@gold, @goldDark);
+      color: #fff;
 		text-shadow: 0 -1px 0 rgba(0,0,0,.25);
 		border-color: @goldDark @goldDark darken(@goldDark, 15%);
 		border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
@@ -377,7 +408,7 @@ a {
 #slides .next,#slides .prev {
     position:absolute;
     top:(333px-21px)/2;
-    left:0;
+    left:10px;
     width:21px;
     height:0;
     padding-top:21px;
@@ -484,7 +515,6 @@ a {
 // ------------------------------------------------------------------
 
 form {
-	float: left;
 }
 
 form label {
