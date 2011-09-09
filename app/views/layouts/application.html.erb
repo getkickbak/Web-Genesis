@@ -51,14 +51,19 @@
       	</script>
       	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>Just For My Friends</title>
+		<!--
 		<%= stylesheet_link_tag :all %>
-		<%= javascript_include_tag :defaults %>
+      <%= javascript_include_tag :defaults %>
+		-->
 		<link rel="stylesheet/less" href="/javascripts/desktop/lib/twitter-bootstrap-0f11410/lib/bootstrap.less"/>
       	<link rel="stylesheet/css" href="/javascripts/desktop/lib/jquery-ui-1.8.16.custom/css/south-street/jquery-ui-1.8.16.custom.css"/>
       	<script type="text/javascript" src="/javascripts/desktop/less-1.1.3.min.js"></script>
       	<script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=places&amp;sensor=true"></script>
+      	
       	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
       	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+         <script type="text/javascript" src="/javascripts/jquery_ujs.js"></script>
+         <script type="text/javascript" src="/javascripts/application.js"></script>
       	<script type="text/javascript" src="/javascripts/desktop//lib/fridek-gmap-f5658d5/jquery.gmap.min.js"></script>
       	<script type="text/javascript" src="/javascripts/desktop//lib/Slides/source/slides.min.jquery.js"></script>
       	<script type="text/javascript" src="/javascripts/desktop/lib/carhartl-jquery-cookie-575a419/jquery.cookie.js"></script>
@@ -71,8 +76,8 @@
 		<script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script>
 		<table class="noWrap topbar container">
 			<tr class="fill fixed">
-				<td class=""><h3><a href="index.html">Just For My Friends</a></h3></td>
-				<td class=" active"><a href="index.html">Home</a></td>
+				<td class=""><h3><a href="/deals/runnersshop">Just For My Friends</a></h3></td>
+				<td class=" active"><a href="/deals/runnersshop">Home</a></td>
 				<td class=""><a href="#about">About</a></td>
 				<td style="width:100%;"><a>&#160;</a></td>
 				<% if signed_in? %>

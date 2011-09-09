@@ -85,9 +85,18 @@
 	</div>
 </div>
 <div class="row">
-	<div id="highlights" class="span12">
-		<h2>HIGHLIGHTS</h2>
-		<div class="panelBodyHighlights">
+	<div id="highlights" class="span0abs span12" style="z-index:1;">
+		<h2>HIGHLIGHTS <a id="detailsBtn" style="float:right;" class="btn primary large">Company Details &raquo;</a></h2>
+      <h2 style="display:none;">ABOUT THIS PLACE ... <a id="highlightsBtn" style="float:right;" class="btn primary large">Back to Highlights &raquo;</a></h2>
+      <ul style="display:none;">
+         <li>
+            <a href="#highlights-1"></a>
+         </li>
+         <li>
+            <a href="#highlights-2"></a>
+         </li>
+      </ul>
+		<div id="highlights-1" class="panelBodyHighlights">
 			<ul>
 				<li>
 					California cuisine inspired menu.
@@ -109,17 +118,37 @@
 				</li>
 			</ul>
 		</div>
+      <div id="highlights-2" class="panelBodyHighlights">
+         <div style="float:left;margin-right:10px;">
+            <ul>
+               <li>
+                  Includes $50 to spend at Brix Napa Valley Grille &amp; Wine Bar.
+               </li>
+               <li>
+                  Dine-in only. Limit 3 Per Person.
+               </li>
+               <li>
+                  Limit 1 per table, 2 for tables of 4 or more.
+               </li>
+               <li>
+                  Not valid on New Year’s Eve, Mother’s Day and Valentine’s Day.
+               </li>
+               <li>
+                  Not valid on gift certificate purchases or other offers.
+               </li>
+               <li>
+                  15% gratuity will be added to pre-discounted bill total.
+               </li>
+               <li>
+                  Taxes included.
+               </li>
+            </ul>
+         </div>
+         <div id="gmap" style="width:280;height:235px;"></div>
+      </div>
 	</div>
-	<div id ="offerDetails" class="span12abs span12">
-		<h2>OFFER DETAILS <a id="learnmore" style="float:right;" class="btn primary large">Learn more &raquo;</a></h2>
-		<ul style="display:none;">
-			<li>
-				<a href="#offerDetails-1"></a>
-			</li>
-			<li>
-				<a href="#offerDetails-2"></a>
-			</li>
-		</ul>
+	<div id ="offerDetails" class="span12rel span12">
+		<h2>OFFER DETAILS</h2>
 		<div id="offerDetails-1" class="panelBodyHighlights">
 			<ul>
 				<li>
@@ -144,34 +173,6 @@
 					Taxes included.
 				</li>
 			</ul>
-		</div>
-		<div id="offerDetails-2" class="panelBodyHighlights">
-			<div style="float:left;margin-right:10px;">
-				<ul>
-					<li>
-						Includes $50 to spend at Brix Napa Valley Grille &amp; Wine Bar.
-					</li>
-					<li>
-						Dine-in only. Limit 3 Per Person.
-					</li>
-					<li>
-						Limit 1 per table, 2 for tables of 4 or more.
-					</li>
-					<li>
-						Not valid on New Year’s Eve, Mother’s Day and Valentine’s Day.
-					</li>
-					<li>
-						Not valid on gift certificate purchases or other offers.
-					</li>
-					<li>
-						15% gratuity will be added to pre-discounted bill total.
-					</li>
-					<li>
-						Taxes included.
-					</li>
-				</ul>
-			</div>
-			<div id="gmap" style="width:120;height:235px;"></div>
 		</div>
 	</div>
 </div>
