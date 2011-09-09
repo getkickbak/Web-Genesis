@@ -35,7 +35,7 @@ class Order
     order[:user_id] = user_id
     order[:referral_id] = referral_id
     order[:purchase_date] = now
-    order[:total_payment] = quantity * subdeal.discount_price
+    order[:total_payment] = quantity * (subdeal ? subdeal.discount_price : 0)
     order[:created_ts] = now
     order[:update_ts] = now
     order.deal = deal

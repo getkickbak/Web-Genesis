@@ -59,7 +59,7 @@ class OrdersController < ApplicationController
         referral_id = 0;
         if (session[:referral_id])
           @referral = Referral.first(:referral_id => session[:referral_id])
-          if referral
+          if @referral
             referral_id = @referral.id
           end  
         else
@@ -78,9 +78,10 @@ class OrdersController < ApplicationController
             #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
             #format.json { render :json => { :success => false } }
           end
+        else
+          @order = Order.create(@deal, @subdeal, current_user.id, referral_id, params[:order])
+          pay_transfer(@order)
         end
-        @order = Order.create(@deal, @subdeal, current_user.id, referral_id, params[:order])
-        pay_transfer(@order)
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         @order = e.resource

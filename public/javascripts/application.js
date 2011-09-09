@@ -12,18 +12,24 @@ function add_fields(link, association, content) {
 	$(link).parent().before(content.replace(regexp, new_id));
 }
 
-$(".sign_in").live('click',function(evt) {
+
+$(".sign_in").live('click', function(evt) {
 	evt.preventDefault();
 
 	var $self = $(this);
 	$.ajax({
-		url: $self.attr("href") + "?email=paul.chan@gmail.com",
-		type: "POST",
-		dataType: "json",
+		url : $self.attr("href") + "?email=paul.chan@gmail.com",
+		type : "POST",
+		dataType : "json",
 		//processData: false,
 		//contentType: "application/json",
-		success: function(response){
+		success : function(response) {
 			window.location.reload(true);
 		}
 	});
+});
+
+$("input[@name='order[subdeal_id]']").live('change', function(evt) {
+
+	alert(evt.target.value);
 });
