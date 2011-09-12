@@ -129,6 +129,28 @@ class OrdersController < ApplicationController
     end
   end
 
+  def cancel
+    @order = Order.first(:order_id => session[:order_id])
+    authorize! :destroy, @order
+    
+    reset_order
+    deal = Deal.get(@order.deal.id)
+    begin
+      deal[:limit_count] -= @order.quantity
+      deal.save
+      @order.destroy
+    rescue StandardError
+      logger.error("Failed to update limit count for Deal: " + deal.id)
+    end  
+    
+    respond_to do |format|
+      #format.html { redirect_to user_order_path(@user, @order, :notice => 'Order was successfully created.') }
+      format.html { redirect_to deal_path(deal) }
+      #format.xml  { render :xml => @order, :status => :created, :location => @order }
+      #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
+    end
+  end
+  
   def destroy
     @order = Order.first(:order_id => params[:id])
     authorize! :destroy, @order
@@ -150,7 +172,7 @@ class OrdersController < ApplicationController
   def pay_transfer(order)
     @host=request.host.to_s
     @port=request.port.to_s
-    @cancelURL="http://#{@host}:#{@port}"
+    @cancelURL="http://#{@host}:#{@port}/deals/#{params[:id]}/cancel_order"
     @returnURL="http://#{@host}:#{@port}/deals/#{params[:id]}/pay_details"
     @caller =  PayPalSDKCallers::Caller.new(false, PayPalSDKProfiles::Profile::ADAPTIVE_SERVICE_PAY)
     req={

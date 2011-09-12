@@ -15,6 +15,7 @@ class Ability
     anonymous
     can :manage, User, :id => @user.id
     can :read, Order, :user_id => @user.id
+    can :delete, Order, :user_id => @user.id, :payment_confirmed => false
     can :create, [Referral]
   end
   

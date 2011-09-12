@@ -1,5 +1,6 @@
 <% content_for :script do %> 
 <script type="text/javascript" src="/javascripts/desktop/src/purchase.js"></script>
+<script type="text/javascript" src="/javascripts/order.js"></script>
 <% end %>
 <% if @order.errors.any? %>
 <div id="error_explanation">
@@ -23,25 +24,26 @@
 				<thead>
 					<tr>
 						<th style="visibility:hidden;" class=""></th>
-						<th class="green span14">Description</th>
+						<th class="green span12">Description</th>
 						<th class="green span2">Quantity</th>
 						<th class="green span1">&#160;</th>
 						<th class="green span2">Price</th>
 						<th class="green span1">&#160;</th>
-						<th class="green span2">Total</th>
+						<th class="green span4">Total</th>
 					</tr>
 				</thead>
 				<% @deal.subdeals.each_with_index do |sdeal, i| %>
 				<tr>
-					<td class="span1"> <%= f.radio_button(:subdeal_id, sdeal.id, :checked => (@deal.subdeals.length == 1 && i== 0) ? true : false) %> </td>
-					<td class="span14"><%= sdeal.title %></td>
-					<td class="span2"> <%= f.text_field(:quantity) %> </td>
+					<td class="span1"> <%= f.radio_button(:subdeal_id, sdeal.id, :checked => (@deal.subdeals.length == 1 && i == 0) ? true : false) %> </td>
+					<td class="span12"><%= sdeal.title %></td>
+					<td class="span2"><input id="order_quantity<%= i+1 %>" type="text" name="order_quantity<%= i+1 %>"> </td>
 					<td class="span1">x</td>
-					<td class="span2">C$<%= sdeal.discount_price %></td>
+					<td id="order_discount_price<%= i+1 %>" class="span2" value="<%= sdeal.discount_price %>">C$<%= sdeal.discount_price.to_i %></td>
 					<td class="span1">=</td>
-					<td class="span2">C$</td>
+					<td id="order_total<%= i+1 %>" class="span4">C$0.00</td>
 				</tr>
 				<% end %>
+				<%= f.hidden_field(:quantity, :value => 1) %>
 			</table>
 		</div>
 	</div>

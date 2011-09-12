@@ -28,8 +28,3 @@ $(".sign_in").live('click', function(evt) {
 		}
 	});
 });
-
-$("input[@name='order[subdeal_id]']").live('change', function(evt) {
-
-	alert(evt.target.value);
-});
