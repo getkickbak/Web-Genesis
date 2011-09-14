@@ -1,91 +1,75 @@
-<% content_for :script do %> <script type="text/javascript" src="/javascripts/desktop/src/purchase.js"></script>
-<% end %> <!-- Example row of columns -->
-<form >
-	<div class="row" style="margin-top:100px;">
-		<div id="highlights" class="span24">
-			<h2>Your Purchase Choices</h2>
-			<div class="purchase panelBodyHighlights">
-				<table>
-					<thead>
-						<tr>
-							<th style="visibility:hidden;" class="">
-							<input type="radio" name="couponValue" value="0"/>
-							</th>
-							<th class="green span16">Description</th>
-							<th class="green span2">Quantity</th>
-							<th class="green span1">&#160;</th>
-							<th class="green span2">Price</th>
-							<th class="green span1">&#160;</th>
-							<th class="green span2">Total</th>
-						</tr>
-					</thead>
+<% content_for :script do %> 
+<script type="text/javascript" src="/javascripts/desktop/src/purchase.js"></script>
+<script type="text/javascript" src="/javascripts/order.js"></script>
+<% end %>
+<% if @order.errors.any? %>
+<div id="error_explanation">
+	<h2><%= pluralize(@order.errors.count, "error") %> prohibited this order from being saved:</h2>
+	<ul>
+		<% @order.errors.full_messages.each do |msg| %>
+		<li>
+			<%= msg %>
+		</li>
+		<% end %>
+	</ul>
+</div>
+<% end %> 
+<!-- Example row of columns -->
+<%= form_for @order, :url => complete_order_path do |f| %>
+<div class="row" style="margin-top:100px;">
+	<div id="highlights" class="span24">
+		<h2>Your Purchase Choices</h2>
+		<div class="purchase panelBodyHighlights">
+			<table>
+				<thead>
 					<tr>
-						<td class="span1">
-						<input type="radio" name="couponValue" value="100"  checked="1"/>
-						</td>
-						<td class="span16">$100 Coupon for C$80 at 20% Discount</td>
-						<td class="span2">
-						<input name="quantity1" value="1"/>
-						</td>
-						<td class="span1">x</td>
-						<td class="span2">C$80</td>
-						<td class="span1">=</td>
-						<td class="span2">C$80</td>
+						<th style="visibility:hidden;" class=""></th>
+						<th class="green span12">Description</th>
+						<th class="green span2">Quantity</th>
+						<th class="green span1">&#160;</th>
+						<th class="green span2">Price</th>
+						<th class="green span1">&#160;</th>
+						<th class="green span4">Total</th>
 					</tr>
-					<tr>
-						<td class="span1">
-						<input type="radio" name="couponValue" value="50"/>
-						</td>
-						<td class="span14">$50 Coupon for C$40 at 20% Discount</td>
-						<td class="span2">
-						<input name="quantity1"/>
-						</td>
-						<td class="span1">x</td>
-						<td class="span2">C$40</td>
-						<td class="span1">=</td>
-						<td class="span2">&#160;</td>
-					</tr>
-					<tr>
-						<td class="span1">
-						<input type="radio" name="couponValue" value="25"/>
-						</td>
-						<td class="span16">$25 Coupon for C$20 at 20% Discount</td>
-						<td class="span2">
-						<input name="quantity3"/>
-						</td>
-						<td class="span1">x</td>
-						<td class="span2">C$20</td>
-						<td class="span1">=</td>
-						<td class="span2">&#160;</td>
-					</tr>
-				</table>
-			</div>
+				</thead>
+				<% @deal.subdeals.each_with_index do |sdeal, i| %>
+				<tr>
+					<td class="span1"> <%= f.radio_button(:subdeal_id, sdeal.id, :checked => (@deal.subdeals.length == 1 && i == 0) ? true : false) %> </td>
+					<td class="span12"><%= sdeal.title %></td>
+					<td class="span2"><input id="order_quantity<%= i+1 %>" type="text" name="order_quantity<%= i+1 %>"> </td>
+					<td class="span1">x</td>
+					<td id="order_discount_price<%= i+1 %>" class="span2" value="<%= sdeal.discount_price %>">C$<%= sdeal.discount_price.to_i %></td>
+					<td class="span1">=</td>
+					<td id="order_total<%= i+1 %>" class="span4">C$0.00</td>
+				</tr>
+				<% end %>
+				<%= f.hidden_field(:quantity, :value => 1) %>
+			</table>
 		</div>
 	</div>
-	<div class="row">
-		<div id="highlights" class="span24">
-			<h2>Select Your Payment Method</h2>
-			<div class="payment panelBodyHighlights">
-				<table>
-					<thead>
-						<tr>
-							<th style="visibility:hidden;" class="">
-							<input type="radio" name="payMethod" value="none"/>
-							</th>
-							<th class="green span14">Method</th>
-							<th class="span8" style="visibility:hidden;">&#160;</th>
-						</tr>
-					</thead>
+</div>
+<div class="row">
+	<div id="highlights" class="span24">
+		<h2>Select Your Payment Method</h2>
+		<div class="payment panelBodyHighlights">
+			<table>
+				<thead>
 					<tr>
-						<td class="">
-						<input type="radio" name="payMethod" value="PayPal" checked="1"/>
-						</td>
-						<td class="span14">PayPal or Credit Card</td>
-						<td class="span4" style="visibility:hidden;">&#160;</td>
-						<td class="span4"><a id="payPayPal" class="btn primary large noWrap">Complete Order</a></td>
+						<th style="visibility:hidden;" class=""></th>
+						<th class="green span14">Method</th>
+						<th class="span8" style="visibility:hidden;">&#160;</th>
 					</tr>
-				</table>
-			</div>
+				</thead>
+				<tr>
+					<td class="span1">
+					<input type="radio" name="payMethod" value="PayPal" checked="1"/>
+					</td>
+					<td class="span14">PayPal or Credit Card</td>
+					<td class="span8" style="visibility:hidden;">&#160;</td>
+				</tr>
+			</table>
+			<%= f.submit "Complete Order", :class => "btn primary large noWrap" %>
 		</div>
 	</div>
-</form>
+</div>
+<% end %>

@@ -6,7 +6,7 @@ class Order
   property :id, Serial
   property :order_id, String, :unique_index => true, :default => 0
   property :user_id, Integer, :default => 0
-  property :subdeal_id, Integer, :required => true
+  property :subdeal_id, Integer, :required => true, :messages => { :presence => "Please pick a deal" }
   property :referral_id, Integer, :default => 0
   property :quantity, Integer, :required => true
   property :purchase_date, DateTime, :default => ::Constant::MIN_TIME
@@ -35,7 +35,7 @@ class Order
     order[:user_id] = user_id
     order[:referral_id] = referral_id
     order[:purchase_date] = now
-    order[:total_payment] = quantity * subdeal.discount_price
+    order[:total_payment] = quantity * (subdeal ? subdeal.discount_price : 0)
     order[:created_ts] = now
     order[:update_ts] = now
     order.deal = deal
@@ -86,7 +86,10 @@ class Order
   private
   
   def check_deal_max_limit
-    (self.deal.limit_count + self.quantity) <= self.deal.max_limit ? true : [false, "Exceeded Deal Max Limit"]
+    if self.deal.max_limit > 0
+      (self.deal.limit_count + self.quantity) <= self.deal.max_limit ? true : [false, "Exceeded Deal Max Limit"]
+    end
+    return true
   end
   
   def check_deal_max_per_person
