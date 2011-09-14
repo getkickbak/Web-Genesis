@@ -11,12 +11,27 @@ class SessionsController < ApplicationController
           format.html { redirect_back_or(default_deal_path) }
           format.json { render :json => { :success => true } }
         end
+      rescue
+        respond_to do |format|
+          format.html { redirect_back_or(default_deal_path) }
+          format.json { render :json => { :success => false } }
+        end
       end
     end
   end
-  
+
   def destroy
-    sign_out
-    redirect_back_or(default_deal_path)
+    begin
+      sign_out
+      respond_to do |format|
+        format.html { redirect_back_or(default_deal_path) }
+        format.json { render :json => { :success => true } }
+      end
+    rescue
+      respond_to do |format|
+        format.html { redirect_back_or(default_deal_path) }
+        format.json { render :json => { :success => false } }
+      end
+    end
   end
 end
