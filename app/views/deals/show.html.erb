@@ -1,93 +1,104 @@
-<% content_for :script do %> 
-<script type="text/javascript" src="/javascripts/desktop/src/site.js"></script>
+<% content_for :script do %> <script type="text/javascript" src="/javascripts/desktop/src/site.js"></script>
 <% end %>
-<% if @merchant.nil? %> <!-- Main hero unit for a primary marketing message or call to action
+<% if @merchant.nil? %> <!-- Main hero unit for a primary marketing message or
+call to action
 -->
 <div id="mainMsg" class="row">
-	<div class="slides_container">
-		<div class="span24">
-			<div class="hero-unit" style="height:270px;">
-				<img style="margin-left:10px;width:250px;float:right;" src="http://image.shutterstock.com/display_pic_with_logo/513907/513907,1275904761,8/stock-vector-vector-red-tape-and-bow-54699760.jpg"/>
-				<h3>Refer friends and get a C$2 Tim Horton Gift Card plus the option to purchase a C$80 Store Coupon valued at C$100!</h3>
-				<small> Get a C$2 Tim Horton Gift Card when you spread the deal to your Facebook Friends. </small>
-				<p style="text-align:center;margin-top:50px;">
-					<a  class="btn fbtag large">Refer a Friend! &raquo;</a>
-				</p>
-			</div>
-		</div>
-		<div class="span24">
-			<table class="hero-unit hero-referral">
-				<tr>
-					<td colspan="2" style="margin:0px;padding:0px 0px 0px 10px;" >
-					<p style="margin:0px;padding:0px;">
-						<a href="http://www.facebook.com/profile.php?id=531950067" target="_blank">Terry Chen</a>, write a recommendation to your friends get rewarded!
-					</p></td>
-				</tr>
-				<tr>
-					<td width="100"><img src="http://graph.facebook.com/725565520/picture?type=normal"/></td>
-					<td>
-					<form>
-						<label class="alignLeft" style="width:548px;"> Who recommended you to this business and how did you know this person? </label>
-						<textarea style="width:538px;"></textarea>
-						<label class="alignLeft" style="width:548px;"> What was your experience the first time you visited the Runner's Shop? </label>
-						<textarea style="width:538px;"></textarea>
-						<label class="alignLeft" style="width:548px;"> What made Runner's Shop standout from the competition? </label>
-						<textarea style="width:538px;"></textarea>
-						<label class="noWrap" style="float:right;width:auto;"> <a  id ="reward" class="btn rewardtag large">Claim your Reward! &raquo;</a>
-					</form></td>
-				</tr>
-			</table>
-		</div>
-		<div id="recommendation" class="span24">
-			<table class="hero-unit hero-referral">
-				<tr>
-					<td colspan="2" style="margin:0px;padding:0px 0px 0px 10px;" >
-					<p style="margin:0px;padding:0px;">
-						Recommendation from your friend, <a href="http://www.facebook.com/profile.php?id=531950067" target="_blank">Terry Chen</a>:
-					</p></td>
-				</tr>
-				<tr>
-					<td width="100"><img src="http://graph.facebook.com/725565520/picture?type=normal"/></td>
-					<td>
-					<div class="hero-start">
-						<p></p>
-					</div>
-					<div class="hero-end">
-						&#160;
-					</div>
-					<div>
-						<a  id="discuss" href="#comments" style="float:right;clear:both;" class="btn large">Discuss with Terry! &raquo;</a>
-					</div></td>
-				</tr>
-			</table>
-		</div>
-	</div>
+   <div class="slides_container">
+      <div class="span24">
+         <div class="hero-unit" style="height:270px;">
+            <img style="margin-left:10px;width:250px;float:right;" src="http://image.shutterstock.com/display_pic_with_logo/513907/513907,1275904761,8/stock-vector-vector-red-tape-and-bow-54699760.jpg"/>
+            <h3>Refer friends and get a C$2 Tim Horton Gift Card plus the option to purchase a C$80 Store Coupon valued at C$100!</h3>
+            <small>
+               Get a C$2 Tim Horton Gift Card when you spread the deal to your Facebook Friends.
+            </small>
+            <p style="text-align:center;margin-top:50px;">
+               <a  class="btn fbtag large">Refer a Friend! &raquo;</a>
+            </p>
+         </div>
+      </div>
+      <div class="span24">
+         <table class="hero-unit hero-referral">
+            <tr>
+               <td colspan="2" style="margin:0px;padding:0px 0px 0px 10px;" >
+               <p style="margin:0px;padding:0px;">
+                  <a href="http://www.facebook.com/profile.php?id=531950067" target="_blank">Terry Chen</a>, write a recommendation to your friends get rewarded!
+               </p></td>
+            </tr>
+            <tr>
+               <td width="100">
+               <img src="http://graph.facebook.com/725565520/picture?type=normal"/>
+               </td>
+               <td>
+               <form>
+                  <label class="alignLeft" style="width:548px;">
+                     Who recommended you to this business and how did you know this person?
+                  </label>
+                  <textarea style="width:538px;"></textarea>
+                  <label class="alignLeft" style="width:548px;">
+                     What was your experience the first time you visited the Runner's Shop?
+                  </label>
+                  <textarea style="width:538px;"></textarea>
+                  <label class="alignLeft" style="width:548px;">
+                     What made Runner's Shop standout from the competition?
+                  </label>
+                  <textarea style="width:538px;"></textarea>
+                  <label class="noWrap" style="float:right;width:auto;">
+                     <a  id ="reward" class="btn rewardtag large">Claim your Reward! &raquo;</a>
+               </form></td>
+            </tr>
+         </table>
+      </div>
+      <div id="recommendation" class="span24">
+         <table class="hero-unit hero-referral">
+            <tr>
+               <td colspan="2" style="margin:0px;padding:0px 0px 0px 10px;" >
+               <p style="margin:0px;padding:0px;">
+                  Recommendation from your friend, <a href="http://www.facebook.com/profile.php?id=531950067" target="_blank">Terry Chen</a>:
+               </p></td>
+            </tr>
+            <tr>
+               <td width="100">
+               <img src="http://graph.facebook.com/725565520/picture?type=normal"/>
+               </td>
+               <td>
+               <div class="hero-start">
+                  <p></p>
+               </div>
+               <div class="hero-end">
+                  &#160;
+               </div>
+               <div>
+                  <a  id="discuss" href="#comments" style="float:right;clear:both;" class="btn large">Discuss with Terry! &raquo;</a>
+               </div></td>
+            </tr>
+         </table>
+      </div>
+   </div>
 </div>
 <!-- Example row of columns -->
 <div class="row">
-	<div class="span24">
-		<h2> $34 for $70 Worth of Steaks, Seafood, Wine, Drinks & More from Brix Napa Valley Grille & Wine Bar <a  href="purchase.html" style="float:right;" class="btn pricetag large">Buy Now! &raquo;</a></h2>
-		<div id="container">
-			<div id="slides">
-				<div class="slides_container">
-					<div class="slide">
-						<img width="710" src="http://d2zi62uu5lo37m.cloudfront.net/deal/708x333/restaurant/20110817brix1.jpg">
-					</div>
-					<div class="slide">
-						<img width="710" src="http://d2zi62uu5lo37m.cloudfront.net/deal/708x333/restaurant/20110817brix2.jpg">
-					</div>
-					<div class="slide">
-						<img width="710" src="http://d2zi62uu5lo37m.cloudfront.net/deal/708x333/restaurant/20110817brix3.jpg">
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+   <div class="span24">
+      <h2><a  href="purchase.html" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a> $34 for $70 Worth of Steaks, Seafood, Wine, Drinks & More from Brix Napa Valley Grille & Wine Bar</h2>
+      <div id="container">
+         <div id="slides">
+            <div class="slides_container">
+               <div class="slide">
+                  <img width="710" src="http://d2zi62uu5lo37m.cloudfront.net/deal/708x333/restaurant/20110817brix1.jpg">
+               </div>
+               <div class="slide">
+                  <img width="710" src="http://d2zi62uu5lo37m.cloudfront.net/deal/708x333/restaurant/20110817brix2.jpg">
+               </div>
+               <div class="slide">
+                  <img width="710" src="http://d2zi62uu5lo37m.cloudfront.net/deal/708x333/restaurant/20110817brix3.jpg">
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
 </div>
 <div class="row">
-	<div id="highlights" class="span0abs span12" style="z-index:1;">
-		<h2>HIGHLIGHTS <a id="detailsBtn" style="float:right;" class="btn primary large">Company Details &raquo;</a></h2>
-      <h2 style="display:none;">ABOUT THIS PLACE ... <a id="highlightsBtn" style="float:right;" class="btn primary large">Back to Highlights &raquo;</a></h2>
+   <div id="highlights" class="span0abs span12" style="z-index:1;">
       <ul style="display:none;">
          <li>
             <a href="#highlights-1"></a>
@@ -96,146 +107,152 @@
             <a href="#highlights-2"></a>
          </li>
       </ul>
-		<div id="highlights-1" class="panelBodyHighlights">
-			<ul>
-				<li>
-					California cuisine inspired menu.
-				</li>
-				<li>
-					Full selection of fresh dishes with appetizers, meat, seafood, pasta, and more.
-				</li>
-				<li>
-					Extensive wine and drink list.
-				</li>
-				<li>
-					Known for their large patio and wide variety of private rooms and whatever your needs are (corporate event or special occasion) there's a seating area available to suit your needs.
-				</li>
-				<li>
-					Located in the dining/entertainment district of Richmond Hill.
-				</li>
-				<li>
-					Rave reviews from customers.
-				</li>
-			</ul>
-		</div>
-      <div id="highlights-2" class="panelBodyHighlights">
-         <div style="float:left;margin-right:10px;">
+      <div id="highlights-1" class="span12" style="margin:0;">
+         <h2><a id="detailsBtn" style="float:right;margin-left:10px;" class="btn primary large">Company Details &raquo;</a>HIGHLIGHTS</h2>
+         <div class="panelBodyHighlights">
             <ul>
                <li>
-                  Includes $50 to spend at Brix Napa Valley Grille &amp; Wine Bar.
+                  California cuisine inspired menu.
                </li>
                <li>
-                  Dine-in only. Limit 3 Per Person.
+                  Full selection of fresh dishes with appetizers, meat, seafood, pasta, and more.
                </li>
                <li>
-                  Limit 1 per table, 2 for tables of 4 or more.
+                  Extensive wine and drink list.
                </li>
                <li>
-                  Not valid on New Year’s Eve, Mother’s Day and Valentine’s Day.
+                  Known for their large patio and wide variety of private rooms and whatever your needs are (corporate event or special occasion) there's a seating area available to suit your needs.
                </li>
                <li>
-                  Not valid on gift certificate purchases or other offers.
+                  Located in the dining/entertainment district of Richmond Hill.
                </li>
                <li>
-                  15% gratuity will be added to pre-discounted bill total.
-               </li>
-               <li>
-                  Taxes included.
+                  Rave reviews from customers.
                </li>
             </ul>
          </div>
-         <div id="gmap" style="width:280;height:235px;"></div>
       </div>
-	</div>
-	<div id ="offerDetails" class="span12rel span12">
-		<h2>OFFER DETAILS</h2>
-		<div id="offerDetails-1" class="panelBodyHighlights">
-			<ul>
-				<li>
-					Includes $70 to spend at Brix Napa Valley Grille & Wine Bar.
-				</li>
-				<li>
-					Dine-in only. Limit 3 Per Person.
-				</li>
-				<li>
-					Limit 1 per table, 2 for tables of 4 or more.
-				</li>
-				<li>
-					Not valid on New Year’s Eve, Mother’s Day and Valentine’s Day.
-				</li>
-				<li>
-					Not valid on gift certificate purchases or other offers.
-				</li>
-				<li>
-					15% gratuity will be added to pre-discounted bill total.
-				</li>
-				<li>
-					Taxes included.
-				</li>
-			</ul>
-		</div>
-	</div>
+      <div id="highlights-2" class="span24" style="margin:0;">
+         <h2>ABOUT THIS PLACE ... <a id="highlightsBtn" style="float:right;" class="btn primary large">Back to Highlights &raquo;</a></h2>
+         <div class="panelBodyHighlights">
+            <div style="float:left;margin-right:10px;">
+               <ul>
+                  <li>
+                     Includes $50 to spend at Brix Napa Valley Grille &amp; Wine Bar.
+                  </li>
+                  <li>
+                     Dine-in only. Limit 3 Per Person.
+                  </li>
+                  <li>
+                     Limit 1 per table, 2 for tables of 4 or more.
+                  </li>
+                  <li>
+                     Not valid on New Year’s Eve, Mother’s Day and Valentine’s Day.
+                  </li>
+                  <li>
+                     Not valid on gift certificate purchases or other offers.
+                  </li>
+                  <li>
+                     15% gratuity will be added to pre-discounted bill total.
+                  </li>
+                  <li>
+                     Taxes included.
+                  </li>
+               </ul>
+            </div>
+            <div id="gmap" style="width:270;height:235px;"></div>
+         </div>
+      </div>
+   </div>
+   <div id ="offerDetails" class="span12rel span12">
+      <h2>OFFER DETAILS</h2>
+      <div id="offerDetails-1" class="panelBodyHighlights">
+         <ul>
+            <li>
+               Includes $70 to spend at Brix Napa Valley Grille & Wine Bar.
+            </li>
+            <li>
+               Dine-in only. Limit 3 Per Person.
+            </li>
+            <li>
+               Limit 1 per table, 2 for tables of 4 or more.
+            </li>
+            <li>
+               Not valid on New Year’s Eve, Mother’s Day and Valentine’s Day.
+            </li>
+            <li>
+               Not valid on gift certificate purchases or other offers.
+            </li>
+            <li>
+               15% gratuity will be added to pre-discounted bill total.
+            </li>
+            <li>
+               Taxes included.
+            </li>
+         </ul>
+      </div>
+   </div>
 </div>
 <div id="comments" class="hero-unit" style="margin:0;padding:10px 30px 30px;display:none;">
-	<h4 id="discuss">Ask Terry any questions about the deal ...</h4>
-	<fb:comments href="http://www.justformyfriends.com:3000/javascripts/desktop/index.html" num_posts="1" width="640"></fb:comments>
+   <h4 id="discuss">Ask Terry any questions about the deal ...</h4>
+   <fb:comments href="http://www.justformyfriends.com:3000/javascripts/desktop/index.html" num_posts="1" width="640"></fb:comments>
 </div>
 <% else %>
 <p id="notice">
-	<%= notice %>
+   <%= notice %>
 </p>
 <p>
-	<b>Title:</b>
-	<%= @deal.title %>
+   <b>Title:</b>
+   <%= @deal.title %>
 </p>
 <p>
-	<b>Location:</b>
-	<%= @deal.location %>
+   <b>Location:</b>
+   <%= @deal.location %>
 </p>
 <p>
-	<b>Description:</b>
-	<%= @deal.description %>
+   <b>Description:</b>
+   <%= @deal.description %>
 </p>
 <p>
-	<b>Hightlights:</b>
-	<%= @deal.highlights %>
+   <b>Hightlights:</b>
+   <%= @deal.highlights %>
 </p>
 <p>
-	<b>Details:</b>
-	<%= @deal.details %>
+   <b>Details:</b>
+   <%= @deal.details %>
 </p>
 <p>
-	<b>Start Date:</b>
-	<%= @deal.start_date %>
+   <b>Start Date:</b>
+   <%= @deal.start_date %>
 </p>
 <p>
-	<b>End Date:</b>
-	<%= @deal.end_date %>
+   <b>End Date:</b>
+   <%= @deal.end_date %>
 </p>
 <p>
-	<b>Expiry Date:</b>
-	<%= @deal.expiry_date %>
+   <b>Expiry Date:</b>
+   <%= @deal.expiry_date %>
 </p>
 <p>
-	<b>Max Per Person:</b>
-	<%= @deal.max_per_person %>
+   <b>Max Per Person:</b>
+   <%= @deal.max_per_person %>
 </p>
 <p>
-	<b>Max Limit:</b>
-	<%= @deal.max_limit %>
+   <b>Max Limit:</b>
+   <%= @deal.max_limit %>
 </p>
 <% @deal.subdeals.each do |subdeal| %>
 <p>
-	<b>Subdeal Title:</b>
-	<%= subdeal.title %>
+   <b>Subdeal Title:</b>
+   <%= subdeal.title %>
 </p>
 <p>
-	<b>Regular Price:</b>
-	<%= subdeal.regular_price %>
+   <b>Regular Price:</b>
+   <%= subdeal.regular_price %>
 </p>
 <p>
-	<b>Discount Price:</b>
-	<%= subdeal.discount_price %>
+   <b>Discount Price:</b>
+   <%= subdeal.discount_price %>
 </p>
 <% end %>
 

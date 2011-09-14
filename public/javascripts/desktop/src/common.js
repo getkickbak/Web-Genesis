@@ -1,8 +1,144 @@
-
 Genesis =
 {
-   fbAppId : 197968780267830
+   fbAppId : '197968780267830',
+   emailId : 'erchan_2000@yahoo.ca',
+   sign_in_path : '/sign_in',
+   sign_out_path : '/sign_out',
+   userId : '725565520',
+   initDone : false,
+   loginBitSet : 0x0
 };
+
+var _init = function()
+{
+   if(Genesis.initDone == true)
+   {
+      oldSessionLogin();
+      //oAuth2SessionLogin();
+   }
+   Genesis.initDone = true;
+}
+var oldSessionLogin = function()
+{
+   var response = FB.getSession();
+   if(response == null)
+   {
+      $("#fb_login").css("display", "");
+      _logout();
+      _fb_disconnect();
+      if($("#fb_account")[0])
+      {
+         // Not logged into facebook, but web session avail
+         facebook_onLogout();
+      }
+   }
+   else
+   {
+      if(response.uid == Genesis.userId)
+      {
+         // Logged into facebook, but no web session avail
+         if(!$("#fb_account")[0])
+         {
+            _login();
+            _fb_connect();
+            facebook_onLogin(false);
+         }
+         else
+         {
+            $("#fb_login_img").html('<img src="http://graph.facebook.com/' + Genesis.userId + '/picture?type=square"/>');
+            $("#fb_login_img").css("display", "");
+            facebook_loginCallback();
+         }
+      }
+      else
+      {
+         // Logged into facebook, but mismatch web session avail
+         _logout();
+         _fb_disconnect();
+         facebook_onLogout();
+      }
+   }
+   FB.Event.subscribe('auth.sessionChange', function(response)
+   {
+      // Session Removed
+      if(response.status != 'connected')
+      {
+         _logout();
+         //facebook_onLogout();
+
+      }
+      // New session detected
+      else
+      {
+         // Clear current session
+         //FB.Auth.setSession(null);
+         _login();
+         facebook_onLogin(false);
+      }
+   });
+}
+var oAuth2SessionLogin = function()
+{
+   FB.getLoginStatus(function(response)
+   {
+      if(response.status != 'connected')
+      {
+         $("#fb_login").css("display", "");
+         // Not logged into facebook, but web session avail
+         if($("#fb_account")[0])
+         {
+            _login();
+            _fb_connect();
+         }
+         else
+         {
+            _logout();
+            _fb_disconnect();
+         }
+      }
+      else
+      {
+         if(response.authResponse && (response.authResponse.userId == Genesis.userId))
+         {
+            // Logged into facebook, but no web session avail
+            if(!$("#fb_account")[0])
+            {
+               _login();
+               _fb_connect();
+               facebook_onLogin(false);
+            }
+            else
+            {
+               $("#fb_login_img").html('<img id="fb_login_img" src="http://graph.facebook.com/' + Genesis.userId + '/picture?type=square"/>');
+               $("#fb_login_img").css("display", "");
+            }
+         }
+         else
+         {
+            // Logged into facebook, but mismatch web session avail
+            _logout();
+            _fb_disconnect();
+            facebook_onLogout();
+         }
+      }
+   });
+   FB.Event.subscribe('auth.authResponseChange', function(response)
+   {
+      // do something with response
+      //alert("logout success");
+      if(response.status != 'connected')
+      {
+         _logout();
+         facebook_onLogout();
+
+      }
+      else
+      {
+         _login();
+         facebook_onLogin(false);
+      }
+   });
+}
 
 window.fbAsyncInit = function()
 {
@@ -10,32 +146,18 @@ window.fbAsyncInit = function()
    {
       // Use user's Facebook AppID if we are logging into their site directly
       appId : Genesis.fbAppId,
+      authResponse : true,
       status : true,
       cookie : true,
-      xfbml : true,
-      oauth : false
+      xfbml : false
+      //,oauth : true
    });
-   FB.Event.subscribe('auth.sessionChange', function(response)
-   {
-      // do something with response
-      //alert("logout success");
-      (response.status != 'connected') ? _logout() : _login();
-   });
-   if(FB.getSession() != null)
-   {
-      // logged in and connected user, someone you know
-      _login();
-      _fb_connect();
-   }
-   else
-   {
-      // no user session available, someone you dont know
-      _logout();
-      _fb_disconnect();
-   }
+   _init();
 };
+
 $(document).ready($(function()
 {
+   _init();
 }));
 // **************************************************************************
 // Facebook API
@@ -44,13 +166,46 @@ $(document).ready($(function()
 * One set for production domain, another for developement domain
 */
 // **************************************************************************
-function facebook_onLogin(signup)
+function facebook_onLogout()
+{
+   if(FB.getSession())
+   {
+      FB.logout(function(response)
+      {
+      });
+   }
+   FB.Auth.setSession(null);
+   $.ajax(
+   {
+      url : Genesis.sign_out_path,
+      type : "GET",
+      dataType : "json",
+      //processData: false,
+      //contentType: "application/json",
+      success : function(response)
+      {
+         window.location.reload(true);
+      }
+   });
+}
+
+function facebook_loginCallback()
 {
    FB.api('/me', function(response)
    {
       if(response.id == null)
+      {
+         // Show Login Button to log into Facebook
+         facebook_onLogout();
          return;
-
+      }
+      Genesis.loginBitSet |= 0x10;
+      if((Genesis.loginBitSet == 0x11) && ($("#fb_login_img").text()))
+      {
+         window.location.reload(true);
+      }
+      //$(".sign_in").live('click', function(evt)
+      //);
       //Ext.util.Cookies.set('fbAppId', (Genesis.fbAppId != 0) ? Genesis.fbAppId : Genesis.toontiFbAppId);
 
       /*
@@ -154,7 +309,55 @@ function facebook_onLogin(signup)
        });
        */
    });
+}
+
+function facebook_onLogin(signup)
+{
+   $("#fb_login").css("display", "none");
+   if(!$("#fb_account")[0])
+   {
+      //evt.preventDefault();
+
+      //var $self = $(this);
+      $.ajax(
+      {
+         url : Genesis.sign_in_path,
+         type : "POST",
+         data : "email=" + Genesis.emailId,
+         dataType : "json",
+         //processData: false,
+         //contentType: "application/json",
+         success : function(response)
+         {
+            Genesis.loginBitSet |= 0x01;
+            if(Genesis.loginBitSet == 0x11)
+            {
+               window.location.reload(true);
+            }
+         }
+      });
+   }
+   Genesis.loginBitSet |= 0x01;
+   if(FB.getSession() == null)
+   {
+      FB.login(function(res)
+      {
+         if(res.status == 'connected')
+         {
+            facebook_loginCallback();
+         }
+      },
+      {
+         //scope : 'email,user_birthday,publish_stream'
+         perms : 'email,user_birthday,publish_stream'
+      });
+   }
+   else
+   {
+      facebook_loginCallback();
+   }
 };
+
 _fb_connect = _fb_disconnect = function()
 {
    /*
