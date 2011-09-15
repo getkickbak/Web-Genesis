@@ -14,7 +14,7 @@ Genesis::Application.routes.draw do
   #match '/users/:id/account' => 'users#edit'
   #match '/users/:user_id/coupons' => 'orders#index', :via => :get , :as => :user_coupons
   #match '/users/:user_id/orders/:id' => 'orders#show', :via => :get, :as => :user_order
-  match '/orders/:id' => 'orders#show', :as => :user_order
+  match '/orders/:id' => 'orders#show', :as => :order
 
   match '/deals/:id' => 'deals#show', :as => :deal
   match '/deals/:id/confirmation' => 'orders#new', :via => :get, :as => :confirm_order

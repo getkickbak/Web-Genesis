@@ -32,5 +32,10 @@
 		<%= render "subdeal_fields", :f => builder %>
 	<% end %>
 	<p><%= link_to_add_fields "Add Subdeal", f, :subdeals %></p>
+	
+	<%= f.simple_fields_for :referral_topics do |builder| %>
+		<%= render "referral_topic_fields", :f => builder %>
+	<% end %>
+	<p><%= link_to_add_fields "Add Referral Topic", f, :referral_topics %></p>
 	<%= f.button :submit %>
 <% end %> 

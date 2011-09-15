@@ -79,7 +79,8 @@ class OrdersController < ApplicationController
             #format.json { render :json => { :success => false } }
           end
         else
-          @order = Order.create(@deal, @subdeal, current_user.id, referral_id, params[:order])
+          session[:order_in_progress] = true
+          @order = Order.create(@deal, @subdeal, current_user, referral_id, params[:order])
           pay_transfer(@order)
         end
       rescue DataMapper::SaveFailureError => e
@@ -105,6 +106,9 @@ class OrdersController < ApplicationController
      logger.error("Failed to update payment_confirmed for Order: " + @order.id)
    end
    
+    @order.print_coupons
+    UserMailer.order_confirmed_email(@order).deliver
+    
     @response = session[:pay_response]
     @paykey = @response["payKey"]
     @caller =  PayPalSDKCallers::Caller.new(false, PayPalSDKProfiles::Profile::ADAPTIVE_SERVICE_PAYMENT_DETAILS)
@@ -119,7 +123,7 @@ class OrdersController < ApplicationController
       session[:paydetails_response]=@transaction.response
       respond_to do |format|
         #format.html { redirect_to user_order_path(@user, @order, :notice => 'Order was successfully created.') }
-        format.html { redirect_to user_order_path(@order, :notice => 'Order was successfully created.') }
+        format.html { redirect_to order_path(@order, :notice => 'Order was successfully created.') }
         #format.xml  { render :xml => @order, :status => :created, :location => @order }
         #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
       end
@@ -138,7 +142,6 @@ class OrdersController < ApplicationController
     begin
       deal[:limit_count] -= @order.quantity
       deal.save
-      @order.destroy
     rescue StandardError
       logger.error("Failed to update limit count for Deal: " + deal.id)
     end  

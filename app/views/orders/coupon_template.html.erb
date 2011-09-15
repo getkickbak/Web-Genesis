@@ -1,0 +1,14 @@
+<table>
+	<tr>
+		<td>JustForMyFriends</td>
+		<td><%= @coupon_id %></td>
+	</tr>
+	<tr>
+		<td><%= @order.deal.expiry_date %></td>
+		<td><%= @order.user.name %></td>
+	</tr>
+	<tr>
+		<td><img src="<%= @qr_code %>"></td>
+		<td></td>
+	</tr>
+</table>

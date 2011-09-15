@@ -238,7 +238,12 @@
 	<%= subdeal.discount_price %>
 </p>
 <% end %>
-
+<% @deal.referral_topics.each do |topic| %>
+<p>
+	<b>Referral Topic:</b>
+	<%= topic.content %>
+</p>
+<% end %>
 <% if @merchant %>
 <%= link_to 'Edit', edit_merchant_deal_path(@merchant,@deal) %> |
 <%= link_to 'Back', merchant_deals_path %>

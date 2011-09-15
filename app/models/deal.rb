@@ -29,14 +29,16 @@ class Deal
   attr_accessor :start_date_str, :end_date_str, :expiry_date_str
   attr_accessible :title, :description, :photo_url1, :photo_url2, :photo_url3, :photo_url4, :photo_url5, 
                   :highlights, :details, :location, :start_date,
-                  :end_date, :expiry_date, :max_per_person, :max_limit, :subdeals_attributes
+                  :end_date, :expiry_date, :max_per_person, :max_limit, :subdeals_attributes, :referral_topics_attributes
 
+  has n, :referral_topics
   has n, :subdeals
   belongs_to :merchant
 
+  accepts_nested_attributes_for :referral_topics, :allow_destroy => true, :reject_if => lambda { |s| s[:content].blank? }
   accepts_nested_attributes_for :subdeals, :allow_destroy => true, :reject_if => lambda { |s| s[:title].blank? || s[:regular_price].blank? || s[:discount_price].blank? }
 
-  validates_with_method :validate_min_subdeals, :validate_start_date, :validate_end_date, :validate_expiry_date
+  validates_with_method :validate_min_subdeals, :validate_min_referral_topics, :validate_start_date, :validate_end_date, :validate_expiry_date
 
   def self.create(merchant, deal_info)
     now = Time.now
@@ -61,7 +63,9 @@ class Deal
       :expiry_date => now,
       :max_per_person => deal_info[:max_per_person],
       :max_limit => deal_info[:max_limit],
-      :subdeals_attributes => deal_info[:subdeals_attributes] ? deal_info[:subdeals_attributes] : {}
+      :subdeals_attributes => deal_info[:subdeals_attributes] ? deal_info[:subdeals_attributes] : {},
+      :referral_topics_attributes => deal_info[:referral_topics_attributes] ? deal_info[:referral_topics_attributes] : {}
+
     )
     deal.start_date_str = r["start_date"]
     deal.end_date_str = r["end_date"]
@@ -123,6 +127,10 @@ class Deal
     rescue ArgumentError
       return false
     end
+  end
+  
+  def validate_min_referral_topics
+    self.referral_topics.length > 0 ? true : [false, "Need at least 1 referral topic"]  
   end
   
   def validate_min_subdeals

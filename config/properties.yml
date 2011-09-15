@@ -1,3 +1,20 @@
-COMMISSION: 0
-PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
-FEES_PAYER: SECONDARYONLY
+development:
+  COMMISSION: 0
+  PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
+  FEES_PAYER: SECONDARYONLY
+  QR_CODE_FILE_PATH: /Users/paulchan/Downloads/
+  COUPON_FILE_PATH: /Users/paulchan/Downloads/
+  
+test:  
+  COMMISSION: 0
+  PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
+  FEES_PAYER: SECONDARYONLY
+  QR_CODE_FILE_PATH: /Users/paulchan/Downloads/
+  COUPON_FILE_PATH: /Users/paulchan/Downloads/
+  
+production:
+  COMMISSION: 0
+  PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
+  FEES_PAYER: SECONDARYONLY
+  QR_CODE_FILE_PATH: /Users/paulchan/Downloads/ 
+  COUPON_FILE_PATH: /Users/paulchan/Downloads/

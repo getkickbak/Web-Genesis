@@ -42,6 +42,8 @@ gem 'cancan'
 gem 'simple_form' 
 gem 'jquery-rails'  
 gem 'rqr'
+gem 'pdfkit'
+gem "barby", "~> 0.5.0"
 
 group(:development, :test) do
 

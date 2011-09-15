@@ -46,4 +46,17 @@ Genesis::Application.configure do
 
   # Send deprecation notices to registered listeners
   config.active_support.deprecation = :notify
+  
+  config.action_mailer.default_url_options = { :host => 'justformyfriends.com:3001' }
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    :address              => "mail1",
+    :port                 => 25,
+    #:domain               => 'baci.lindsaar.net',
+    #:user_name            => 'root',
+    #:password             => 'micro',
+    #:authentication       => :plain,
+    :enable_starttls_auto => true
+    #:openssl_verify_mode  => 'none'
+  }
 end
