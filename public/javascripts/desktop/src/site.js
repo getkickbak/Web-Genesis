@@ -293,15 +293,15 @@ $(document).ready($(function()
    var $highlights2 = $("#highlights-2 *:first-child");
    var $gmap = $("#gmap");
    var $highlightTabs = $highlights.tabs();
-   
+
    /*
-   var $offerDetails = $("#offerDetails");
-   var $learnMoreBtn = $("#learnMoreBtn");
-   var $detailSummaryBtn = $("#detailSummaryBtn");
-   var $offerDetails1 = $("#offerDetails-1 *:first-child");
-   var $offerDetails2 = $("#offerDetails-2 *:first-child");
-   var $offerTabs = $offerDetails.tabs();
-   */
+    var $offerDetails = $("#offerDetails");
+    var $learnMoreBtn = $("#learnMoreBtn");
+    var $detailSummaryBtn = $("#detailSummaryBtn");
+    var $offerDetails1 = $("#offerDetails-1 *:first-child");
+    var $offerDetails2 = $("#offerDetails-2 *:first-child");
+    var $offerTabs = $offerDetails.tabs();
+    */
 
    initForm();
    initMainMsg();
@@ -309,44 +309,32 @@ $(document).ready($(function()
 
    var highlights1 = function()
    {
-      $highlightsBtn.parent().css('display','none');
-      $highlightTabs.tabs('select', 0);
-      $detailsBtn.parent().css('display','');
       // switch to 1st tab
       $highlights.switchClass("span24", "span12", 1000, function()
       {
+         $highlightTabs.tabs('select', 0);
       });
    };
    var highlights2 = function()
    {
-      $detailsBtn.parent().css('display','none');
-      $highlightTabs.tabs('select', 1);
-      $highlightsBtn.parent().css('display','');
-      if($gmap[0].innerHTML)
+      if(!$gmap[0].innerHTML)
       {
-         $gmap.hide();
+         $gmap.gMap(
+         {
+            markers : [
+            {
+               latitude : 47.660937,
+               longitude : 9.569803
+            }],
+            zoom : "fit",
+            latitude : "fit",
+            longitude : "fit"
+         });
       }
       // switch to 2nd tab
+      $highlightTabs.tabs('select', 1);
       $highlights.switchClass("span12", "span24", 1000, function()
       {
-         if(!$gmap[0].innerHTML)
-         {
-            $gmap.gMap(
-            {
-               markers : [
-               {
-                  latitude : 47.660937,
-                  longitude : 9.569803
-               }],
-               zoom : "fit",
-               latitude : "fit",
-               longitude : "fit"
-            });
-         }
-         else
-         {
-            $gmap.show();
-         }
       });
    };
    $highlightsBtn.click(function()
@@ -358,12 +346,11 @@ $(document).ready($(function()
       highlights2();
    });
    /*
-   $highlights.click(function()
-   {
-      //  Expand or Collapse
-      ($highlights.hasClass("span12abs")) ? highlights2() : highlights1();
-      return false;
-   });
-   */
+    $highlights.click(function()
+    {
+    //  Expand or Collapse
+    ($highlights.hasClass("span12abs")) ? highlights2() : highlights1();
+    return false;
+    });
+    */
 }));
-
