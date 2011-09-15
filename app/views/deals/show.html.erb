@@ -255,10 +255,10 @@ call to action
    <%= subdeal.discount_price %>
 </p>
 <% end %>
-<% @deal.referral_topics.each do |topic| %>
+<% @deal.referral_subjects.each do |subject| %>
 <p>
-	<b>Referral Topic:</b>
-	<%= topic.content %>
+	<b>Referral Subject:</b>
+	<%= subject.content %>
 </p>
 <% end %>
 <% if @merchant %>

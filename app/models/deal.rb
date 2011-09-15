@@ -29,16 +29,16 @@ class Deal
   attr_accessor :start_date_str, :end_date_str, :expiry_date_str
   attr_accessible :title, :description, :photo_url1, :photo_url2, :photo_url3, :photo_url4, :photo_url5, 
                   :highlights, :details, :location, :start_date,
-                  :end_date, :expiry_date, :max_per_person, :max_limit, :subdeals_attributes, :referral_topics_attributes
+                  :end_date, :expiry_date, :max_per_person, :max_limit, :subdeals_attributes, :referral_subjects_attributes
 
-  has n, :referral_topics
+  has n, :referral_subjects
   has n, :subdeals
   belongs_to :merchant
 
-  accepts_nested_attributes_for :referral_topics, :allow_destroy => true, :reject_if => lambda { |s| s[:content].blank? }
+  accepts_nested_attributes_for :referral_subjects, :allow_destroy => true, :reject_if => lambda { |s| s[:content].blank? }
   accepts_nested_attributes_for :subdeals, :allow_destroy => true, :reject_if => lambda { |s| s[:title].blank? || s[:regular_price].blank? || s[:discount_price].blank? }
 
-  validates_with_method :validate_min_subdeals, :validate_min_referral_topics, :validate_start_date, :validate_end_date, :validate_expiry_date
+  validates_with_method :validate_min_subdeals, :validate_min_referral_subjects, :validate_start_date, :validate_end_date, :validate_expiry_date
 
   def self.create(merchant, deal_info)
     now = Time.now
@@ -64,7 +64,7 @@ class Deal
       :max_per_person => deal_info[:max_per_person],
       :max_limit => deal_info[:max_limit],
       :subdeals_attributes => deal_info[:subdeals_attributes] ? deal_info[:subdeals_attributes] : {},
-      :referral_topics_attributes => deal_info[:referral_topics_attributes] ? deal_info[:referral_topics_attributes] : {}
+      :referral_subjects_attributes => deal_info[:referral_subjects_attributes] ? deal_info[:referral_subjects_attributes] : {}
 
     )
     deal.start_date_str = r["start_date"]
@@ -111,6 +111,7 @@ class Deal
     self.max_per_person = deal_info[:max_per_person]
     self.max_limit = deal_info[:max_limit]
     self.subdeals_attributes = deal_info[:subdeals_attributes] ? deal_info[:subdeals_attributes] : {}
+    self.referral_subjects_attributes = deal_info[:referral_subjects_attributes] ? deal_info[:referral_subjects_attributes] : {}
     self.update_ts = now
     save
   end
@@ -129,8 +130,8 @@ class Deal
     end
   end
   
-  def validate_min_referral_topics
-    self.referral_topics.length > 0 ? true : [false, "Need at least 1 referral topic"]  
+  def validate_min_referral_subjects
+    self.referral_subjects.length > 0 ? true : [false, "Need at least 1 referral subject"]  
   end
   
   def validate_min_subdeals
