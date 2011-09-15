@@ -2,6 +2,7 @@ Genesis =
 {
    fbAppId : '197968780267830',
    emailId : 'erchan_2000@yahoo.ca',
+   fb_login_tag : '<fb:login-button perms="email,user_birthday,publish_stream" on-login="facebook_onLogin(false);" size="large" background="dark" length="long" autologoutlink="true"></fb:login-button>',
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    userId : '725565520',
@@ -15,6 +16,13 @@ var _init = function()
    {
       oldSessionLogin();
       //oAuth2SessionLogin();
+      var popupDialog = $("#popupDialog");
+      var popupModal = $("#popupModal");
+      popupDialog.find(".close").click(function()
+      {
+         popupDialog.css("display", "none");
+         popupModal.css("display", "none");
+      });
    }
    Genesis.initDone = true;
 }
@@ -138,6 +146,24 @@ var oAuth2SessionLogin = function()
          facebook_onLogin(false);
       }
    });
+}
+var loginPopup = function()
+{
+   var popupModal = $("#popupModal");
+   var popupDialog = $("#popupDialog");
+   try
+   {
+      Fb.Auth.setSession(null);
+   }
+   catch(e)
+   {
+   }
+   var popupDialogTitle = popupDialog.find(".modal-header h3").html("Facebook Login Required");
+   var popupDialogContent = popupDialog.find(".modal-body").html(Genesis.fb_login_tag);
+   popupDialog.find(".modal").css("top", (document.body.scrollTop + 100) + "px");
+   popupDialog.css("display", "");
+   popupModal.css("display", "");
+   FB.XFBML.parse();
 }
 
 window.fbAsyncInit = function()
