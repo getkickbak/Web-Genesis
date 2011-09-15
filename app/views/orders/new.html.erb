@@ -43,7 +43,7 @@
 					<td id="order_total<%= i+1 %>" class="span4">C$0.00</td>
 				</tr>
 				<% end %>
-				<%= f.hidden_field(:quantity, :value => 1) %>
+				<%= f.hidden_field(:quantity, :value => 0) %>
 			</table>
 		</div>
 	</div>
@@ -68,7 +68,7 @@
 					<td class="span8" style="visibility:hidden;">&#160;</td>
 				</tr>
 			</table>
-			<%= f.submit "Complete Order", :class => "btn primary large noWrap" %>
+			<%= f.submit "Complete Order", :class => "btn primary large noWrap", :disable_with => "Working..." %>
 		</div>
 	</div>
 </div>

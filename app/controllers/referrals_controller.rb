@@ -42,17 +42,17 @@ class ReferralsController < ApplicationController
           @reward = Reward.create(deal,current_user,@referral.id)
         end
         respond_to do |format|
-          format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
+          #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          #format.json { render :json => { :success => true, :data => @referral, :total => 1 } }
+          format.json { render :json => { :success => true, :data => { :referral_id => @referral.referral_id, :deal_id => @referral.deal.deal_id }, :total => 1 } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         @referral = e.resource
         respond_to do |format|
-          format.html { render :action => "new" }
+          #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          #format.json { render :json => { :success => false } }
+          format.json { render :json => { :success => false } }
         end
       end
     end

@@ -19,7 +19,7 @@
 	    <td><%= order.quantity %></td>
 	    <td><%= order.purchase_date %></td>
 	    <td><%= order.total_payment %></td>
-		<td><%= link_to 'Show', user_order_path(@user,order) %></td>
+		<td><%= link_to 'Show', order_path(order) %></td>
 	</tr>
 	<% end %>
 </table>

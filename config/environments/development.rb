@@ -1,9 +1,9 @@
 Genesis::Application.configure do
-  # Settings specified here will take precedence over those in config/application.rb
+# Settings specified here will take precedence over those in config/application.rb
 
-  # In the development environment your application's code is reloaded on
-  # every request.  This slows down response time but is perfect for development
-  # since you don't have to restart the webserver when you make code changes.
+# In the development environment your application's code is reloaded on
+# every request.  This slows down response time but is perfect for development
+# since you don't have to restart the webserver when you make code changes.
   config.cache_classes = false
 
   # Log error messages when you accidentally call methods on nil.
@@ -22,8 +22,18 @@ Genesis::Application.configure do
 
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
-  
-  config.action_mailer.default_url_options = { :host => 'localhost:3000' }
-  
+
+  config.action_mailer.default_url_options = { :host => 'justformyfriends.com:3001' }
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    :address              => "mail1",
+    :port                 => 25,
+    #:domain               => 'baci.lindsaar.net',
+    #:user_name            => 'root',
+    #:password             => 'micro',
+    #:authentication       => :plain,
+    :enable_starttls_auto => true
+    #:openssl_verify_mode  => 'none'
+  }
 end
 

@@ -255,7 +255,12 @@ call to action
    <%= subdeal.discount_price %>
 </p>
 <% end %>
-
+<% @deal.referral_subjects.each do |subject| %>
+<p>
+	<b>Referral Subject:</b>
+	<%= subject.content %>
+</p>
+<% end %>
 <% if @merchant %>
 <%= link_to 'Edit', edit_merchant_deal_path(@merchant,@deal) %> |
 <%= link_to 'Back', merchant_deals_path %>

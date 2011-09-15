@@ -6,8 +6,7 @@ Genesis =
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    userId : '725565520',
-   initDone : false,
-   loginBitSet : 0x0
+   initDone : false
 };
 
 var _init = function()
@@ -285,11 +284,23 @@ function facebook_loginCallback()
          facebook_onLogout();
          return;
       }
-      Genesis.loginBitSet |= 0x10;
-      if((Genesis.loginBitSet == 0x11) && ($("#fb_login_img").text()))
+      if(!$("#fb_account")[0])
       {
-         window.location.reload(true);
+         $.ajax(
+         {
+            url : Genesis.sign_in_path,
+            type : "POST",
+            data : "email=" + Genesis.emailId,
+            dataType : "json",
+            //processData: false,
+            //contentType: "application/json",
+            success : function(response)
+            {
+               window.location.reload(true);
+            }
+         });
       }
+
       //$(".sign_in").live('click', function(evt)
       //);
       //Ext.util.Cookies.set('fbAppId', (Genesis.fbAppId != 0) ? Genesis.fbAppId : Genesis.toontiFbAppId);
@@ -400,30 +411,6 @@ function facebook_loginCallback()
 function facebook_onLogin(signup)
 {
    $("#fb_login").css("display", "none");
-   if(!$("#fb_account")[0])
-   {
-      //evt.preventDefault();
-
-      //var $self = $(this);
-      $.ajax(
-      {
-         url : Genesis.sign_in_path,
-         type : "POST",
-         data : "email=" + Genesis.emailId,
-         dataType : "json",
-         //processData: false,
-         //contentType: "application/json",
-         success : function(response)
-         {
-            Genesis.loginBitSet |= 0x01;
-            if(Genesis.loginBitSet == 0x11)
-            {
-               window.location.reload(true);
-            }
-         }
-      });
-   }
-   Genesis.loginBitSet |= 0x01;
    if(FB.getSession() == null)
    {
       FB.login(function(res)

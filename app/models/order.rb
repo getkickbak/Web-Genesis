@@ -5,7 +5,6 @@ class Order
 
   property :id, Serial
   property :order_id, String, :unique_index => true, :default => 0
-  property :user_id, Integer, :default => 0
   property :subdeal_id, Integer, :required => true, :messages => { :presence => "Please pick a deal" }
   property :referral_id, Integer, :default => 0
   property :quantity, Integer, :required => true
@@ -20,11 +19,12 @@ class Order
   attr_accessible :subdeal_id, :quantity
 
   belongs_to :deal
+  belongs_to :user
   has n, :coupons
   
-  validates_with_method :check_deal_max_limit, :check_deal_max_per_person, :check_end_date
+  validates_with_method :check_quantity, :check_deal_max_limit, :check_deal_max_per_person, :check_end_date
   
-  def self.create(deal, subdeal, user_id, referral_id, order_info)
+  def self.create(deal, subdeal, user, referral_id, order_info)
     now = Time.now
     quantity = order_info[:quantity].to_i
     order = Order.new(
@@ -32,24 +32,24 @@ class Order
       :quantity => quantity
     )
     order[:order_id] = "#{rand(1000) + 2000}#{now.to_i}"
-    order[:user_id] = user_id
     order[:referral_id] = referral_id
     order[:purchase_date] = now
     order[:total_payment] = quantity * (subdeal ? subdeal.discount_price : 0)
     order[:created_ts] = now
     order[:update_ts] = now
     order.deal = deal
+    order.user = user
     
-    #qr = RQR::QRCode.new()
+    qr = RQR::QRCode.new()
     coupon_id = "#{rand(1000) + 3000}#{now.to_i}"
     (0..quantity-1).each do |i|
       coupon = order.coupons.new
-      coupon[:coupon_id] = "#{coupon_id}-#{i}"
+      coupon[:coupon_id] = "#{coupon_id}-#{i+1}"
       coupon[:barcode] = ""
-      #url = "http://www.cnn.com"
-      #filename = "where_is_this_" + coupon[:coupon_id]
-      #qr.save(url, filename, :png)
-      #coupoon[:qr_code] = filename
+      url = "http://www.justformyfriends.com"
+      filename = APP_PROP["QR_CODE_FILE_PATH"] + coupon[:coupon_id]
+      qr.save(url, filename, :png)
+      coupon[:qr_code] = filename
       coupon[:created_ts] = now
       coupon[:update_ts] = now
     end
@@ -83,17 +83,27 @@ class Order
     self.order_id
   end
   
+  def print_coupons
+    self.coupons.each do |coupon|
+      coupon.print
+    end
+  end
+  
   private
+  
+  def check_quantity
+    self.quantity > 0 ? true : [false, "Quantity must exceed 0"]  
+  end
   
   def check_deal_max_limit
     if self.deal.max_limit > 0
-      (self.deal.limit_count + self.quantity) <= self.deal.max_limit ? true : [false, "Exceeded Deal Max Limit"]
+      (self.deal.limit_count + self.quantity) <= self.deal.max_limit ? true : [false, "Exceeded deal max limit"]
     end
     return true
   end
   
   def check_deal_max_per_person
-    (self.quantity + past_orders_quantity) <= self.deal.max_per_person ? true : [false, "Exceeded Max Per Person Limit"]
+    (self.quantity + past_orders_quantity) <= self.deal.max_per_person ? true : [false, "Exceeded max per person limit"]
   end
   
   def check_end_date
@@ -103,8 +113,8 @@ class Order
   def past_orders_quantity
     total_count = DataMapper.repository(:default).adapter.select(
       "SELECT SUM(quantity) FROM orders WHERE user_id = ? 
-        AND deal_id = ? AND payment_confirmed = 't'", self.user_id, self.deal.id
+        AND deal_id = ? AND payment_confirmed = 't'", self.user.id, self.deal.id
     )
-    return total_count[0]
+    return total_count[0] ? total_count[0] : 0
   end
 end
