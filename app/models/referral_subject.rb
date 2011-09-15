@@ -1,4 +1,6 @@
-class ReferralTopic
+require 'util/constant'
+
+class ReferralSubject
   include DataMapper::Resource
 
   property :id, Serial

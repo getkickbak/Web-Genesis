@@ -21,7 +21,7 @@ Genesis::Application.routes.draw do
   match '/deals/:id/complete_order' => 'orders#create', :via => :post, :as => :complete_order
   match '/deals/:id/pay_details' => 'orders#pay_details', :via => :get, :as => :pay_details
   match '/deals/:id/cancel_order' => 'orders#cancel'
-  match '/deals/:id/referrals/create' => 'referrals#create', :via => :post, :as => :new_referral
+  match '/deals/:id/referrals/create' => 'referrals#create', :via => :get, :as => :new_referral
   
   namespace "business" do
     constraints :subdomain => "merchant" do
