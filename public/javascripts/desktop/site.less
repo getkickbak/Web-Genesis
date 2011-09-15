@@ -42,11 +42,11 @@
 
 .absColumns(@columnSpan: 1) {
   position:absolute;
-  left: (@gridColumnWidth * @columnSpan) + (@gridGutterWidth * (@columnSpan - 1));
+  left: (@gridColumnWidth * @columnSpan) + (@gridGutterWidth * (@columnSpan));
 }
 .relColumns(@columnSpan: 1) {
   position:relative;
-  left: (@gridColumnWidth * @columnSpan) + (@gridGutterWidth * (@columnSpan - 1));
+  left: (@gridColumnWidth * @columnSpan) + (@gridGutterWidth * (@columnSpan));
 }
 
 .row {
@@ -61,7 +61,7 @@
   .span23 { .columns(23); }
   .span24 { .columns(24); }
   
-  .span0abs { position:absolute; margin:0; left: 0; }
+  .span0abs { position:absolute; left: 0; }
   .span1abs { .absColumns(1); }
   .span2abs { .absColumns(2); }
   .span3abs { .absColumns(3); }
@@ -294,6 +294,7 @@ a {
 .purchase table {
 	td {
 		float:inherit !important;
+		display:table-cell !important;
 		border: 0;
 	}
 	th {
@@ -319,6 +320,7 @@ a {
 .payment table {
 	td {
 		border: 0;
+      display:table-cell !important;
 	}
 	th, td {
 		float:none !important;
@@ -343,6 +345,9 @@ a {
 
 // Topbar for Branding and Nav
 .topbar {
+   h3 a {
+      padding-top:13px;
+   }
 	tr {
 		height:50px;
 	}
@@ -433,7 +438,7 @@ a {
 }
 
 #mainMsg * {
-	margin-left : 0;
+	//margin-left : 0;
 	margin-right : 0;
 }
 
@@ -515,6 +520,17 @@ a {
 // ------------------------------------------------------------------
 //    Misc Classes
 // ------------------------------------------------------------------
+
+#fb_login_img {
+   height:50px;
+}
+
+#fb_login a {
+   padding:0;
+   display:inline-block;
+   line-height:16px;
+   margin-top: (50px - 21px)/2;
+}
 
 form {
 }

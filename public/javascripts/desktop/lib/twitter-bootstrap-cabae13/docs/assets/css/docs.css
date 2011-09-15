@@ -198,7 +198,7 @@ div.topbar-wrapper .topbar {
   position: absolute;
   margin: 0 -20px;
 }
-div.topbar-wrapper .topbar .topbar-inner {
+div.topbar-wrapper div.topbar div.topbar-inner {
   padding-left: 20px;
   padding-right: 20px;
   -webkit-border-radius: 4px;
