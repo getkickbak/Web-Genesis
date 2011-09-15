@@ -153,7 +153,7 @@ var loginPopup = function()
    var popupDialog = $("#popupDialog");
    try
    {
-      Fb.Auth.setSession(null);
+      FB.Auth.setSession(null);
    }
    catch(e)
    {
