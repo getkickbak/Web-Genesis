@@ -1,10 +1,8 @@
 Genesis = {
 	fbAppId : '197968780267830',
-	emailId : 'wayofdragon@gmail.com',
 	fb_login_tag : '<fb:login-button perms="email,user_birthday,publish_stream" on-login="facebook_onLogin(false);" size="large" background="dark" length="long" autologoutlink="true"></fb:login-button>',
 	sign_in_path : '/sign_in',
 	sign_out_path : '/sign_out',
-	userId : '690900499',
 	initDone : false
 };
 
@@ -32,22 +30,15 @@ var oldSessionLogin = function() {
 			facebook_onLogout();
 		}
 	} else {
-		if(response.uid == Genesis.userId) {
-			// Logged into facebook, but no web session avail
-			if(!$("#fb_account")[0]) {
-				_login();
-				_fb_connect();
-				facebook_onLogin(false);
-			} else {
-				$("#fb_login_img").html('<img src="http://graph.facebook.com/' + Genesis.userId + '/picture?type=square"/>');
-				$("#fb_login_img").css("display", "");
-				facebook_loginCallback();
-			}
+		// Logged into facebook, but no web session avail
+		if(!$("#fb_account")[0]) {
+			_login();
+			_fb_connect();
+			facebook_onLogin(false);
 		} else {
-			// Logged into facebook, but mismatch web session avail
-			_logout();
-			_fb_disconnect();
-			facebook_onLogout();
+			$("#fb_login_img").html('<img src="http://graph.facebook.com/' + response.uid + '/picture?type=square"/>');
+			$("#fb_login_img").css("display", "");
+			facebook_loginCallback();
 		}
 	}
 	FB.Event.subscribe('auth.sessionChange', function(response) {
@@ -79,14 +70,14 @@ var oAuth2SessionLogin = function() {
 				_fb_disconnect();
 			}
 		} else {
-			if(response.authResponse && (response.authResponse.userId == Genesis.userId)) {
+			if(response.authResponse) {
 				// Logged into facebook, but no web session avail
 				if(!$("#fb_account")[0]) {
 					_login();
 					_fb_connect();
 					facebook_onLogin(false);
 				} else {
-					$("#fb_login_img").html('<img id="fb_login_img" src="http://graph.facebook.com/' + Genesis.userId + '/picture?type=square"/>');
+					$("#fb_login_img").html('<img id="fb_login_img" src="http://graph.facebook.com/' + response.authResponse.userId + '/picture?type=square"/>');
 					$("#fb_login_img").css("display", "");
 				}
 			} else {
@@ -221,10 +212,17 @@ function facebook_loginCallback() {
 			return;
 		}
 		if(!$("#fb_account")[0]) {
+			name = response.name
+			email = response.email
+			facebook_id = response.id
+			facebook_uid = response.user_name
+			gender = response.gender == "male" ? "m" : "f"
+			birthday = response.birthday.split('/')
+			birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1] 
 			$.ajax({
 				url : Genesis.sign_in_path,
 				type : "POST",
-				data : "email=" + Genesis.emailId,
+				data : "name=" + name + "&email=" + email + "&facebook_id=" + facebook_id + "&facebook_uid=" + facebook_uid + "&gender=" + gender + "&birthday=" + birthday,
 				dataType : "json",
 				//processData: false,
 				//contentType: "application/json",

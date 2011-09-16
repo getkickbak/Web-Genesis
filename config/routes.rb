@@ -23,6 +23,9 @@ Genesis::Application.routes.draw do
   match '/deals/:id/cancel_order' => 'orders#cancel'
   match '/deals/:id/referrals/create' => 'referrals#create', :via => :get, :as => :new_referral
   
+  match '/resend_coupons' => 'orders#resend_coupons'
+  match '/resend_reward' => 'referrals#resend_reward'
+  
   namespace "business" do
     constraints :subdomain => "merchant" do
       resources :sessions, :only => [:new, :create, :destroy]

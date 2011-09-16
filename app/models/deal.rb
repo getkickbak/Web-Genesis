@@ -9,11 +9,7 @@ class Deal
   property :description, String, :length => 4096, :required => true
   property :highlights, String, :length => 512, :required => true
   property :details, String, :length => 512, :required => true
-  property :photo_url1, String, :required => true
-  property :photo_url2, String, :default => ""
-  property :photo_url3, String, :default => ""
-  property :photo_url4, String, :default => ""
-  property :photo_url5, String, :default => ""
+  property :photo_urls, String, :length => 1024, :required => true
   property :location, String, :required => true
   property :start_date, DateTime, :required => true
   property :end_date, DateTime, :required => true
@@ -27,8 +23,7 @@ class Deal
   #property :deleted, ParanoidBoolean, :default => false
 
   attr_accessor :start_date_str, :end_date_str, :expiry_date_str
-  attr_accessible :title, :description, :photo_url1, :photo_url2, :photo_url3, :photo_url4, :photo_url5, 
-                  :highlights, :details, :location, :start_date,
+  attr_accessible :title, :description, :photo_urls, :highlights, :details, :location, :start_date,
                   :end_date, :expiry_date, :max_per_person, :max_limit, :subdeals_attributes, :referral_subjects_attributes
 
   has n, :referral_subjects
@@ -52,11 +47,7 @@ class Deal
       :description => deal_info[:description].strip,
       :highlights => deal_info[:highlights].strip,
       :details => deal_info[:details].strip,
-      :photo_url1 => deal_info[:photo_url1].strip,
-      :photo_url2 => deal_info[:photo_url2].strip,
-      :photo_url3 => deal_info[:photo_url3].strip,
-      :photo_url4 => deal_info[:photo_url4].strip,
-      :photo_url5 => deal_info[:photo_url5].strip,
+      :photo_urls => deal_info[:photo_urls].strip,
       :location => deal_info[:location].strip,
       :start_date => now,
       :end_date => now,
@@ -94,11 +85,7 @@ class Deal
     self.description = deal_info[:description].strip
     self.highlights = deal_info[:highlights].strip
     self.details = deal_info[:details].strip
-    self.photo_url1 = deal_info[:photo_url1].strip
-    self.photo_url2 = deal_info[:photo_url2].strip
-    self.photo_url3 = deal_info[:photo_url3].strip
-    self.photo_url4 = deal_info[:photo_url4].strip
-    self.photo_url5 = deal_info[:photo_url5].strip
+    self.photo_urls = deal_info[:photo_urls].strip
     self.location = deal_info[:location].strip
     dates = ["start_date","end_date","expiry_date"]
     r = {}
