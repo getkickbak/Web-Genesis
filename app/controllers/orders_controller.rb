@@ -1,8 +1,6 @@
 require 'profile'
 require 'caller'
 
-
-
 class OrdersController < ApplicationController
   before_filter :authenticate_user!, :except => [:new]
   #load_and_authorize_resource
@@ -19,7 +17,7 @@ class OrdersController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
-      #format.xml  { render :xml => @orders }
+    #format.xml  { render :xml => @orders }
     end
   end
 
@@ -30,7 +28,7 @@ class OrdersController < ApplicationController
 
     respond_to do |format|
       format.html # show.html.erb
-      #format.xml  { render :xml => @order }
+    #format.xml  { render :xml => @order }
     end
   end
 
@@ -38,20 +36,20 @@ class OrdersController < ApplicationController
     reset_order
     @order = Order.new
     authorize! :create, @order
-    
+
     @user = current_user
     @deal = Deal.first(:deal_id => params[:id])
     session[:referral_id] = params[:referral_id]
 
     respond_to do |format|
       format.html # new.html.erb
-      #format.xml  { render :xml => @order }
+    #format.xml  { render :xml => @order }
     end
   end
 
   def create
     authorize! :create, Order
-    
+
     Order.transaction do
       begin
         @deal = Deal.first(:deal_id => params[:id])
@@ -60,23 +58,23 @@ class OrdersController < ApplicationController
         if (session[:referral_id])
           @referral = Referral.first(:referral_id => session[:referral_id])
           if @referral
-            referral_id = @referral.id
-          end  
+          referral_id = @referral.id
+          end
         else
-          referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id)  
+          referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id)
           if referral
-            referral_id = referral.id
+          referral_id = referral.id
           end
         end
-        
+
         if referral_id == 0
           logger.error("Cannot complete order without referral")
           @order = Order.new
           @order.errors.add(:referral_id, "Need to refer a friend first")
           respond_to do |format|
             format.html { render :action => "new" }
-            #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
-            #format.json { render :json => { :success => false } }
+          #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
+          #format.json { render :json => { :success => false } }
           end
         else
           session[:order_in_progress] = true
@@ -88,8 +86,8 @@ class OrdersController < ApplicationController
         @order = e.resource
         respond_to do |format|
           format.html { render :action => "new" }
-          #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
-          #format.json { render :json => { :success => false } }
+        #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
+        #format.json { render :json => { :success => false } }
         end
       end
     end
@@ -97,18 +95,23 @@ class OrdersController < ApplicationController
 
   def pay_details
     @order = Order.first(:order_id => session[:order_id])
+    if !@order || @order.order_id != params[:order_id]
+      redirect_to :controller => 'calls', :action => 'error'
+      return
+    end
+    
     authorize! :create, @order
 
-   begin
-     @order[:payment_confirmed] = true
-     @order.save
-   rescue StandardError
-     logger.error("Failed to update payment_confirmed for Order: " + @order.id)
-   end
-   
+    begin
+      @order[:payment_confirmed] = true
+      @order.save
+    rescue StandardError
+      logger.error("Failed to update payment_confirmed for Order: " + @order.id)
+    end
+
     @order.print_coupons
     UserMailer.order_confirmed_email(@order).deliver
-    
+
     @response = session[:pay_response]
     @paykey = @response["payKey"]
     @caller =  PayPalSDKCallers::Caller.new(false, PayPalSDKProfiles::Profile::ADAPTIVE_SERVICE_PAYMENT_DETAILS)
@@ -122,10 +125,10 @@ class OrdersController < ApplicationController
     if (@transaction.success?)
       session[:paydetails_response]=@transaction.response
       respond_to do |format|
-        #format.html { redirect_to user_order_path(@user, @order, :notice => 'Order was successfully created.') }
+      #format.html { redirect_to user_order_path(@user, @order, :notice => 'Order was successfully created.') }
         format.html { redirect_to order_path(@order, :notice => 'Order was successfully created.') }
-        #format.xml  { render :xml => @order, :status => :created, :location => @order }
-        #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
+      #format.xml  { render :xml => @order, :status => :created, :location => @order }
+      #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
       end
     else
       session[:paypal_error]=@transaction.response
@@ -135,22 +138,44 @@ class OrdersController < ApplicationController
 
   def cancel
     @order = Order.first(:order_id => session[:order_id])
-    authorize! :destroy, @order
+    if !@order
+      redirect_to :controller => 'calls', :action => 'error'
+      return
+    end
     
+    authorize! :destroy, @order
+
     reset_order
     deal = Deal.get(@order.deal.id)
+    
     begin
-      deal[:limit_count] -= @order.quantity
+    deal[:limit_count] -= @order.quantity
       deal.save
     rescue StandardError
       logger.error("Failed to update limit count for Deal: " + deal.id)
-    end  
-    
+    end
+
     respond_to do |format|
-      #format.html { redirect_to user_order_path(@user, @order, :notice => 'Order was successfully created.') }
+    #format.html { redirect_to user_order_path(@user, @order, :notice => 'Order was successfully created.') }
       format.html { redirect_to deal_path(deal) }
-      #format.xml  { render :xml => @order, :status => :created, :location => @order }
-      #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
+    #format.xml  { render :xml => @order, :status => :created, :location => @order }
+    #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
+    end
+  end
+
+  def resend_coupons
+    orders = Order.all(:user_id => current_user.id)
+    if orders.length > 0
+      orders.foreach do |order|
+        UserMailer.order_confirmed_email(order).deliver
+      end
+      respond_to do |format|
+        format.json { render :json => { :success => true } }
+      end
+    else
+      respond_to do |format|
+        format.json { render :json => { :success => false } }
+      end
     end
   end
   
@@ -162,21 +187,21 @@ class OrdersController < ApplicationController
 
     respond_to do |format|
       format.html { redirect_to(orders_url) }
-      #format.xml  { head :ok }
+    #format.xml  { head :ok }
     end
   end
-  
+
   private
 
   def reset_order
     reset_session
   end
-  
+
   def pay_transfer(order)
     @host=request.host.to_s
     @port=request.port.to_s
     @cancelURL="http://#{@host}:#{@port}/deals/#{params[:id]}/cancel_order"
-    @returnURL="http://#{@host}:#{@port}/deals/#{params[:id]}/pay_details"
+    @returnURL="http://#{@host}:#{@port}/deals/#{params[:id]}/pay_details?order_id="+order.order_id
     @caller =  PayPalSDKCallers::Caller.new(false, PayPalSDKProfiles::Profile::ADAPTIVE_SERVICE_PAY)
     req={
       "requestEnvelope.errorLanguage" => "en_US",

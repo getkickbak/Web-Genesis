@@ -1,6 +1,8 @@
 class Reward
   include DataMapper::Resource
-  
+
+  @@template = ERB.new File.read(File.expand_path "app/views/orders/reward_template.html.erb")
+
   property :referral_id, Integer, :key => true
   property :reward_code, String, :unique_index => true,  :required => true
   property :qr_code, String, :default => ""
@@ -9,22 +11,23 @@ class Reward
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
-  
+
   attr_accessible :referral_id, :reward_code
-  
+
   belongs_to :deal
   belongs_to :user
   
   def self.create(deal, user, referral_id)
     now = Time.now
-    #url = "http://www.cnn.com"
-    #filename = "where_is_this"
-    #qr = RQR::QRCode.new()
-    #qr.save(url,file_name, :png)
+    qr = RQR::QRCode.new()
+    url = "http://www.justformyfriends.com"
+    reward_code = "#{now.to_i}#{rand(1000) + 1000}"
+    filename = APP_PROP["REWARD_QR_CODE_FILE_PATH"] + reward_code
+    qr.save(url, filename, :png)
     reward = Reward.new(
       :referral_id => referral_id,
-      :reward_code => "#{now.to_i}#{rand(1000) + 1000}"
-      #:qr_code => filename
+      :reward_code => reward_code,
+      :qr_code => filename
     )
     reward[:created_ts] = now
     reward[:update_ts] = now
@@ -32,5 +35,14 @@ class Reward
     reward.user = user
     reward.save
     return reward
+  end
+  
+  def print
+    html = @@template.result(binding)
+    kit = PDFKit.new(html, :page_size => 'Letter')
+    #kit.stylesheets << '/path/to/css/file'
+
+    # Save the PDF to a file
+    kit.to_file(APP_PROP["REWARD_FILE_PATH"]+"#{self.reward_code}.pdf")
   end
 end

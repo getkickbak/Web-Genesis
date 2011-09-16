@@ -4,12 +4,12 @@
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
   </head>
   <body>
-    <h2>Hi <%= @order.user.name.split(' ')[0] %>,</h2>
+    <h2>Hi <%= @reward.user.name.split(' ')[0] %>,</h2>
     <p>
-      You have successfully purchased <a href="<%= deal_url(@order.deal) %>" ><%= @order.deal.title %></a>
+      Thanks for referring your friends to <%= @reward.deal.merchant.name %>!
     </p>
     <p>
-      When you are ready to use them, you can print the attached vouchers.
+      Please print the attached coupon and bring it to <%= @reward.deal.merchant.name %> to claim your reward.
     </p>
     <p>Thanks for participating and have a great day!</p>
     <p>The JustForMyFriends Team</p>

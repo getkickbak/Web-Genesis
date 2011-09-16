@@ -13,10 +13,10 @@ class User
 =end
   property :id, Serial
   property :name, String, :required => true
-  property :email, String, :required => true, :unique => true,
-            :format => :email_address
+  property :email, String, :required => true, :format => :email_address
   property :salt, String, :default => ""         
-  property :facebook_id, String, :required => true         
+  property :facebook_id, String, :required => true, :unique => true     
+  property :facebook_uid, String, :required => true    
   #property :encrypted_password, String, :required => false, :length => 255
   property :photo_url, String, :default => ""
   property :role, String, :default => "anonymous"
@@ -26,7 +26,7 @@ class User
   #property :deleted, ParanoidBoolean, :default => false
     
   #attr_accessible :name, :email, :password, :password_confirmation
-  attr_accessible :name, :email, :facebook_id
+  attr_accessible :name, :email, :facebook_id, :facebook_uid
     
   has 1, :profile, 'UserProfile'
   has n, :friendships, :child_key => [ :source_id ]
@@ -59,7 +59,8 @@ class User
     user = User.new(
       :name => user_info[:name],
       :email => user_info[:email],   
-      :facebook_id => user_info[:facebook_id]
+      :facebook_id => user_info[:facebook_id],
+      :facebook_uid => user_info[:facebook_uid]
     ) 
     user[:created_ts] = now
     user[:update_ts] = now

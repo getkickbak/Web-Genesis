@@ -28,6 +28,9 @@ class DealsController < ApplicationController
     end    
     authorize! :read, @deal  
     
+    if params[:referral_id]
+      @referral = Referral.get(params[:referral_id])
+    end
     respond_to do |format|
       format.html # show.html.erb
       #format.xml  { render :xml => @deal }

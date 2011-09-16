@@ -4,6 +4,8 @@ development:
   FEES_PAYER: SECONDARYONLY
   QR_CODE_FILE_PATH: /Users/paulchan/Downloads/
   COUPON_FILE_PATH: /Users/paulchan/Downloads/
+  REWARD_QR_CODE_FILE_PATH: /Users/paulchan/Downloads/
+  REWARD_FILE_PATH: /Users/paulchan/Downloads/
   
 test:  
   COMMISSION: 0
@@ -11,6 +13,8 @@ test:
   FEES_PAYER: SECONDARYONLY
   QR_CODE_FILE_PATH: /Users/paulchan/Downloads/
   COUPON_FILE_PATH: /Users/paulchan/Downloads/
+  REWARD_QR_CODE_FILE_PATH: /Users/paulchan/Downloads/
+  REWARD_FILE_PATH: /Users/paulchan/Downloads/
   
 production:
   COMMISSION: 0
@@ -18,3 +22,5 @@ production:
   FEES_PAYER: SECONDARYONLY
   QR_CODE_FILE_PATH: /Users/paulchan/Downloads/ 
   COUPON_FILE_PATH: /Users/paulchan/Downloads/
+  REWARD_QR_CODE_FILE_PATH: /Users/paulchan/Downloads/
+  REWARD_FILE_PATH: /Users/paulchan/Downloads/

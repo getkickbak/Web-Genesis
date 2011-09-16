@@ -9,8 +9,9 @@ class UserProfile
   property :update_ts, DateTime, :required => true
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
-
+  
   belongs_to :user
+  
   
   def update(profile_info)
     now = Time.now

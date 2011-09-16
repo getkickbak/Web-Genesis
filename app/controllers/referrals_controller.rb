@@ -38,9 +38,11 @@ class ReferralsController < ApplicationController
         referral_info = { :photo_url => photo_url, :comment => params[:comment] }
         @referral = Referral.create(deal,current_user,referral_info)
         reward_count = Reward.count(:deal_id => deal.id, :user_id => current_user.id )
-        if (reward_count == 0)
+        #if (reward_count == 0)
           @reward = Reward.create(deal,current_user,@referral.id)
-        end
+          @reward.print
+          UserMailer.reward_email(@reward).deliver
+        #end
         respond_to do |format|
           #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -58,6 +60,20 @@ class ReferralsController < ApplicationController
     end
   end
 
+  def resend_reward
+    reward = Reward.first(:user_id => current_user.id)
+    if reward
+      UserMailer.reward_email(reward).deliver
+      respond_to do |format|
+        format.json { render :json => { :success => true } }
+      end
+    else
+      respond_to do |format|
+        format.json { render :json => { :success => false } }
+      end
+    end
+  end
+  
   def destroy
     @referral = Referral.get(params[:id])
     authorize! :destroy, @referral

@@ -14,11 +14,7 @@
 	<% end %>
 	<%= f.input :title %>
 	<%= f.input :location %>
-	<%= f.input :photo_url1 %>
-	<%= f.input :photo_url2 %>
-	<%= f.input :photo_url3 %>
-	<%= f.input :photo_url4 %>
-	<%= f.input :photo_url5 %>
+	<%= f.input :photo_urls, :as => :text %>
 	<%= f.input :description, :as => :text %>
 	<%= f.input :highlights, :as => :text %>
 	<%= f.input :details, :as => :text %>
