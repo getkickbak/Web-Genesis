@@ -19,6 +19,7 @@ var _init = function() {
 	}
 	Genesis.initDone = true;
 }
+
 var oldSessionLogin = function() {
 	var response = FB.getSession();
 	if(response == null) {
@@ -94,18 +95,18 @@ var oAuth2SessionLogin = function() {
 		if(response.status != 'connected') {
 			_logout();
 			facebook_onLogout();
-
 		} else {
 			_login();
 			facebook_onLogin(false);
 		}
 	});
 }
+
 var loginPopup = function() {
 	var popupModal = $("#popupModal");
 	var popupDialog = $("#popupDialog");
 	try {
-		Fb.Auth.setSession(null);
+		FB.Auth.setSession(null);
 	} catch(e) {
 	}
 	var popupDialogTitle = popupDialog.find(".modal-header h3").html("Facebook Login Required");
@@ -179,6 +180,7 @@ $(document).ready($(function() {
 		return false;
 	});
 }));
+
 // **************************************************************************
 // Facebook API
 /*
@@ -218,7 +220,7 @@ function facebook_loginCallback() {
 			facebook_uid = response.user_name
 			gender = response.gender == "male" ? "m" : "f"
 			birthday = response.birthday.split('/')
-			birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1] 
+			birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1]
 			$.ajax({
 				url : Genesis.sign_in_path,
 				type : "POST",
