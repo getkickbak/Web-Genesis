@@ -4,8 +4,17 @@
 	<tr>
 		<th>Name</th>
 		<th>Email</th>
-		<th>Address</th>
+		<th>First Name</th>
+		<th>Last Name</th>
+		<th>Address1</th>
+		<th>Address2</th>
+		<th>City</th>
+		<th>State</th>
+		<th>Zipcode</th>
+		<th>Country</th>
 		<th>Phone</th>
+		<th>Website</th>
+		<th>Paypal Account</th>
 		<th></th>
 		<th></th>
 		<th></th>
@@ -15,8 +24,17 @@
 	<tr>
 		<td><%= merchant.name %></td>
 		<td><%= merchant.email %></td>
-		<td><%= merchant.address %></td>
+		<td><%= merchant.first_name %></td>
+		<td><%= merchant.last_name %></td>
+		<td><%= merchant.address1 %></td>
+		<td><%= merchant.address2 %></td>
+		<td><%= merchant.city %></td>
+		<td><%= merchant.state %></td>
+		<td><%= merchant.zipcode %></td>
+		<td><%= merchant.country %></td>
 	    <td><%= merchant.phone %></td>
+	    <td><%= merchant.website %></td>
+	    <td><%= merchant.paypal_account %></td>
 		<td><%= link_to 'Show', merchant_path(merchant) %></td>
 		<td><%= link_to 'Edit', edit_merchant_path(merchant) %></td>
 		<td><%= link_to 'Destroy', merchant_path(merchant), :confirm => 'Are you sure?', :method => :delete %></td>

@@ -296,7 +296,7 @@ function facebook_loginCallback()
          name = response.name
          email = response.email
          facebook_id = response.id
-         facebook_uid = response.user_name
+         facebook_uid = response.username
          gender = response.gender == "male" ? "m" : "f"
          birthday = response.birthday.split('/')
          birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1]

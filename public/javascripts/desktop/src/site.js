@@ -310,16 +310,17 @@ $(document).ready($(function()
    {
       if(!$gmap[0].innerHTML)
       {
+      	 merchant_name = $("#merchant_name")[0].innerHTML;
+      	 address = $("#merchant_address1")[0].innerHTML + ' '+ $("#merchant_address2")[0].innerHTML + ' ' + $("#merchant_city_state_zipcode")[0].innerHTML;
          $gmap.gMap(
          {
             markers : [
             {
-               latitude : 47.660937,
-               longitude : 9.569803
+               address: address,
+               html: merchant_name
             }],
-            zoom : "fit",
-            latitude : "fit",
-            longitude : "fit"
+            zoom : 15,
+            address : address
          });
       }
       // switch to 2nd tab

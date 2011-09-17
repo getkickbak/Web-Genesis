@@ -1,5 +1,4 @@
-<% content_for :script do %> 
-<script type="text/javascript" src="/javascripts/desktop/src/site.js"></script>
+<% content_for :script do %> <script type="text/javascript" src="/javascripts/desktop/src/site.js"></script>
 <% end %>
 <% if @merchant.nil? %> <!-- Main hero unit for a primary marketing message or
 call to action
@@ -30,11 +29,9 @@ call to action
 					<td width="100"><img src="<%= "http://graph.facebook.com/#{current_user.facebook_id}/picture?type=normal" %>"/></td>
 					<td>
 					<form>
-						<% @deal.referral_subjects.each do |subject| %> 
-						<label class="alignLeft" style="width:548px;"> <%= subject.content %> </label>
+						<% @deal.referral_subjects.each do |subject| %> <label class="alignLeft" style="width:548px;"> <%= subject.content %> </label>
 						<textarea style="width:538px;"></textarea>
-						<% end %> 
-						<label class="noWrap" style="float:right;width:auto;"> <a id ="reward" class="btn rewardtag large">Claim your Reward! &raquo;</a>
+						<% end %> <label class="noWrap" style="float:right;width:auto;"> <a id ="reward" class="btn rewardtag large">Claim your Reward! &raquo;</a>
 					</form></td>
 				</tr>
 			</table>
@@ -46,8 +43,7 @@ call to action
 					<td colspan="2" style="margin:0px;padding:0px 0px 0px 10px;" >
 					<p style="margin:0px;padding:0px;">
 						Recommendation from your friend, <a href="<%= "http://www.facebook.com/profile.php?id=#{current_user.facebook_uid}" %>" target="_blank"><%= @referral.creator.name %></a>:
-					</p>
-					</td>
+					</p></td>
 				</tr>
 				<tr>
 					<td width="100"><img src="<%= "http://graph.facebook.com/#{current_user.facebook_id}/picture?type=normal" %>"/></td>
@@ -60,8 +56,7 @@ call to action
 					</div>
 					<div>
 						<a  id="discuss" href="#comments" style="float:right;clear:both;" class="btn large">Discuss with <%= @referral.creator.name.split(' ')[0] %>! &raquo;</a>
-					</div>
-					</td>
+					</div></td>
 				</tr>
 			</table>
 		</div>
@@ -120,7 +115,18 @@ call to action
 				<div style="float:left;margin-right:10px;">
 					<%= @deal.description %>
 				</div>
-				<div id="gmap" style="width:270px;height:235px;float:right;"></div>
+				<div style="width:190px;float:right;">
+					<div id="gmap" style="height:235px;"></div>
+					<div id="address">
+						<p id="merchant_name"><%= @deal.merchant.name %></p>
+						<p id="merchant_address1"><%= @deal.merchant.address1 %></p>
+						<% if @deal.merchant.address2 %>
+							<p id="merchant_address2"><%= @deal.merchant.address2 %></p>
+						<% end %>
+						<p id="merchant_city_state_zipcode"><%= @deal.merchant.city %>, <%= @deal.merchant.state %> <%= @deal.merchant.zipcode %></p>
+						<p id="merchant_phone"><%= @deal.merchant.phone %></p>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
