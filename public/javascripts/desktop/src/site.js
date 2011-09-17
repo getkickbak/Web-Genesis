@@ -294,15 +294,6 @@ $(document).ready($(function()
    var $gmap = $("#gmap");
    var $highlightTabs = $highlights.tabs();
 
-   /*
-    var $offerDetails = $("#offerDetails");
-    var $learnMoreBtn = $("#learnMoreBtn");
-    var $detailSummaryBtn = $("#detailSummaryBtn");
-    var $offerDetails1 = $("#offerDetails-1 *:first-child");
-    var $offerDetails2 = $("#offerDetails-2 *:first-child");
-    var $offerTabs = $offerDetails.tabs();
-    */
-
    initForm();
    initMainMsg();
    initSlides();
@@ -346,12 +337,4 @@ $(document).ready($(function()
    {
       highlights2();
    });
-   /*
-    $highlights.click(function()
-    {
-    //  Expand or Collapse
-    ($highlights.hasClass("span12abs")) ? highlights2() : highlights1();
-    return false;
-    });
-    */
 }));
