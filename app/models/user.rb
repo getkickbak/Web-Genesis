@@ -12,11 +12,11 @@ class User
           :validatable
 =end
   property :id, Serial
-  property :name, String, :required => true
-  property :email, String, :required => true, :format => :email_address
+  property :name, String, :required => true, :default => ""
+  property :email, String, :required => true, :format => :email_address, :default => ""
   property :salt, String, :default => ""         
-  property :facebook_id, String, :required => true, :unique => true     
-  property :facebook_uid, String, :required => true    
+  property :facebook_id, String, :required => true, :unique => true, :default => ""     
+  property :facebook_uid, String, :required => true, :default => ""   
   #property :encrypted_password, String, :required => false, :length => 255
   property :photo_url, String, :default => ""
   property :role, String, :default => "anonymous"

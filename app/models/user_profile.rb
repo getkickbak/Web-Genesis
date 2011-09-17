@@ -2,11 +2,11 @@ class UserProfile
   include DataMapper::Resource
 
   property :id, Serial
-  property :gender, Enum[:m, :f, :u], :required => true
-  property :birthday, DateTime, :required => true
+  property :gender, Enum[:m, :f, :u], :required => true, :default => 1
+  property :birthday, DateTime, :required => true, :default => ::Constant::MIN_TIME
   property :zipcode, String, :default => ""
-  property :created_ts, DateTime, :required => true
-  property :update_ts, DateTime, :required => true
+  property :created_ts, DateTime, :required => true, :default => ::Constant::MIN_TIME
+  property :update_ts, DateTime, :required => true, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   

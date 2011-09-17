@@ -4,7 +4,7 @@ class Reward
   @@template = ERB.new File.read(File.expand_path "app/views/orders/reward_template.html.erb")
 
   property :referral_id, Integer, :key => true
-  property :reward_code, String, :unique_index => true,  :required => true
+  property :reward_code, String, :unique_index => true,  :required => true, :default => ""
   property :qr_code, String, :default => ""
   property :redeemed, Boolean, :default => false
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME

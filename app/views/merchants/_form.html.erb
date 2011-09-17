@@ -14,8 +14,18 @@
 	<% end %>
 	<%= f.input :name %>
 	<%= f.input :email %>
-	<%= f.input :address %>
+	<%= f.input :password %>
+	<%= f.input :password_confirmation %>
+	<%= f.input :first_name %>
+	<%= f.input :last_name %>
+	<%= f.input :address1 %>
+	<%= f.input :address2, :required => false %>
+	<%= f.input :city %>
+	<%= f.input :state %>
+	<%= f.input :zipcode %>
+	<%= f.input :country, :as => :string %>
 	<%= f.input :phone %>
+	<%= f.input :website %>
 	<%= f.input :paypal_account %>
 	<%= f.button :submit %>
 <% end %>
