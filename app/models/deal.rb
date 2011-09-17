@@ -5,16 +5,16 @@ class Deal
 
   property :id, Serial
   property :deal_id, String, :unique_index => true, :default => ""
-  property :title, String, :required => true
-  property :description, String, :length => 4096, :required => true
-  property :highlights, String, :length => 512, :required => true
-  property :details, String, :length => 512, :required => true
-  property :photo_urls, String, :length => 1024, :required => true
-  property :location, String, :required => true
-  property :start_date, DateTime, :required => true
-  property :end_date, DateTime, :required => true
-  property :expiry_date, DateTime, :required => true
-  property :max_per_person, Integer, :required => true
+  property :title, String, :required => true, :default => ""
+  property :description, String, :length => 4096, :required => true, :default => ""
+  property :highlights, String, :length => 512, :required => true, :default => ""
+  property :details, String, :length => 512, :required => true, :default => ""
+  property :photo_urls, String, :length => 1024, :required => true, :default => ""
+  property :location, String, :required => true, :default => ""
+  property :start_date, DateTime, :required => true, :default => ::Constant::MIN_TIME
+  property :end_date, DateTime, :required => true, :default => ::Constant::MIN_TIME
+  property :expiry_date, DateTime, :required => true, :default => ::Constant::MIN_TIME
+  property :max_per_person, Integer, :required => true, :default => 0
   property :max_limit, Integer, :default => 0
   property :limit_count, Integer, :default => 0
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME

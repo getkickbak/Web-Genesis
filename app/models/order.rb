@@ -5,9 +5,9 @@ class Order
 
   property :id, Serial
   property :order_id, String, :unique_index => true, :default => 0
-  property :subdeal_id, Integer, :required => true, :messages => { :presence => "Please pick a deal" }
+  property :subdeal_id, Integer, :required => true, :default => 0, :messages => { :presence => "Please pick a deal" }
   property :referral_id, Integer, :default => 0
-  property :quantity, Integer, :required => true
+  property :quantity, Integer, :required => true, :default => 0
   property :purchase_date, DateTime, :default => ::Constant::MIN_TIME
   property :total_payment, Decimal, :scale => 2, :default => 0
   property :payment_confirmed, Boolean, :default => false

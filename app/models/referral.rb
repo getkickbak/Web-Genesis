@@ -4,9 +4,9 @@ class Referral
   include DataMapper::Resource
 
   property :id, Serial
-  property :referral_id, String, :unique_index => true, :required => true
-  property :photo_url, String, :required => true
-  property :comment, String, :length => 1024, :required => true
+  property :referral_id, String, :unique_index => true, :required => true, :default => 0
+  property :photo_url, String, :required => true, :default => ""
+  property :comment, String, :length => 1024, :required => true, :default => ""
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
