@@ -1,2 +1,4 @@
-module Business::CouponsHelper
+module Business
+  module CouponsHelper
+  end
 end
