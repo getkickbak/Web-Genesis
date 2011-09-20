@@ -1,3 +1,5 @@
-module Business::ApplicationHelper
+module Business
+  module ApplicationHelper
 
+  end
 end

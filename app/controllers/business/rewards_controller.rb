@@ -1,30 +1,37 @@
-class Business::RewardsController < Business::ApplicationController
-  
-  def show
-    @reward = Reward.get(params[:id])     
-    #authorize! :read, @reward 
+module Business
+  class RewardsController < ApplicationController
+    before_filter :authenticate_merchant!
     
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @reward }
+    def index
+      authorize! :read, Reward
     end
-  end
-  
-  def redeem
-    @reward = Reward.get(params[:id])
-    #authorize! :update, @reward
 
-    begin
-      @reward[:redeemed] = true
-      @reward.save
+    def show
+      @reward = Reward.get(params[:id])
+      authorize! :read, @reward
+
       respond_to do |format|
-        format.json { render :json => { :success => false } }
+        format.html # show.html.erb
+        format.xml  { render :xml => @reward }
       end
-    rescue DataMapper::SaveFailureError => e
-      logger.error("Exception: " + e.resource.errors.inspect)
-      @reward = e.resource
-      respond_to do |format|
-        format.json { render :json => { :success => false } }
+    end
+
+    def redeem
+      @reward = Reward.get(params[:id])
+      authorize! :update, @reward
+
+      begin
+        @reward[:redeemed] = true
+        @reward.save
+        respond_to do |format|
+          format.json { render :json => { :success => false } }
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @reward = e.resource
+        respond_to do |format|
+          format.json { render :json => { :success => false } }
+        end
       end
     end
   end

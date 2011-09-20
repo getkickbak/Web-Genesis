@@ -1,32 +1,39 @@
-class Business::CouponsController < Business::ApplicationController
-  
-  def show
-    @coupon = Coupon.first(:coupon_id => params[:id])
-    #authorize! :read, @coupon
-
-    respond_to do |format|
-      format.html # show.html.erb
-      format.xml  { render :xml => @coupon }
+module Business
+  class CouponsController < ApplicationController
+    before_filter :authenticate_merchant!
+    
+    def index
+      authorize! :read, Coupon
     end
-  end
 
-  def redeem
-    @coupon = Coupon.first(:coupon_id => params[:id])
-    #authorize! :update, Coupon
+    def show
+      @coupon = Coupon.first(:coupon_id => params[:id])
+      authorize! :read, @coupon
 
-    begin
-      @coupon[:redeemed] = true
-      @coupon.save
       respond_to do |format|
-        format.json { render :json => { :success => false } }
-      end
-    rescue DataMapper::SaveFailureError => e
-      logger.error("Exception: " + e.resource.errors.inspect)
-      @coupon = e.resource
-      respond_to do |format|
-        format.json { render :json => { :success => false } }
+        format.html # show.html.erb
+        format.xml  { render :xml => @coupon }
       end
     end
-  end
 
+    def redeem
+      @coupon = Coupon.first(:coupon_id => params[:id])
+      authorize! :update, Coupon
+
+      begin
+        @coupon[:redeemed] = true
+        @coupon.save
+        respond_to do |format|
+          format.json { render :json => { :success => false } }
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @coupon = e.resource
+        respond_to do |format|
+          format.json { render :json => { :success => false } }
+        end
+      end
+    end
+
+  end
 end

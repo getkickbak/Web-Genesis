@@ -1,20 +1,24 @@
-class Business::SessionsController < Business::ApplicationController
-  
-  def create
-    Merchant.transaction do
-      begin
-        merchant = Merchant.first(:email => params[:email])
-        if merchant.nil?
-          merchant = Merchant.create(params)
-        end
-        sign_in(merchant)
+module Business
+  class SessionsController < ApplicationController
+    def new
+
+    end
+
+    def create
+      merchant = Merchant.authenticate(params[:session][:email],
+                                       params[:session][:password])
+      if merchant.nil?
+        flash.now[:error] = "Invalid email/password combination."
+        render 'new'
+      else
+        sign_in merchant
         redirect_back_or(coupons_path)
       end
     end
-  end
-  
-  def destroy
-    sign_out
-    redirect_back_or(coupons_path)
+
+    def destroy
+      sign_out
+      redirect_back_or(coupons_path)
+    end
   end
 end
