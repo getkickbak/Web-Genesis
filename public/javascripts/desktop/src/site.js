@@ -319,8 +319,8 @@ $(document).ready($(function()
    {
       if(!$gmap[0].innerHTML)
       {
-         merchant_name = $("#merchant_name")[0].innerHTML;
-         address = $("#merchant_address1")[0].innerHTML + ' ' + $("#merchant_address2")[0].innerHTML + ' ' + $("#merchant_city_state_zipcode")[0].innerHTML;
+         merchant_name = $("#merchant_name")[0].innerHTML.trim();
+         address = $("#merchant_address1")[0].innerHTML.trim() + ' ' + $("#merchant_address2")[0].innerHTML.trim() + ' ' + $("#merchant_city_state_zipcode")[0].innerHTML.trim();
          $gmap.gMap(
          {
             markers : [
