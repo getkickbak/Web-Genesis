@@ -4,7 +4,9 @@ Genesis =
    fb_login_tag : '<fb:login-button perms="email,user_birthday,publish_stream" on-login="facebook_onLogin(false);" size="large" background="dark" length="long" autologoutlink="true"></fb:login-button>',
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
-   initDone : false
+   initDone : false,
+   errMsg : null,
+   warningMsg : null
 };
 
 var _init = function()
@@ -13,18 +15,20 @@ var _init = function()
    {
       oldSessionLogin();
       //oAuth2SessionLogin();
-      var popupDialog = $("#popupDialog");
-      var popupModal = $("#popupModal");
-      popupDialog.find(".close").click(function()
-      {
-         popupDialog.css("display", "none");
-         popupModal.css("display", "none");
-      });
-      popupDialog.find(".modal-footer .primary").click(function()
-      {
-         popupDialog.css("display", "none");
-         popupModal.css("display", "none");
-      });
+      /*
+       var popupDialog = $("#popupDialog");
+       var popupModal = $("#popupModal");
+       popupDialog.find(".close").click(function()
+       {
+       popupDialog.css("display", "none");
+       popupModal.css("display", "none");
+       });
+       popupDialog.find(".modal-footer .primary").click(function()
+       {
+       popupDialog.css("display", "none");
+       popupModal.css("display", "none");
+       });
+       */
    }
    Genesis.initDone = true;
 }
@@ -184,6 +188,34 @@ window.fbAsyncInit = function()
    _init();
 };
 // **************************************************************************
+// Switch Tabs Manually
+// **************************************************************************
+function switchTab(tab, tabPanel)
+{
+   tab.parent().find('.active').removeClass('active');
+   tab.addClass('active');
+   tabPanel.parent().find('.active').removeClass('active');
+   tabPanel.addClass('active');
+}
+
+// **************************************************************************
+// Misc Functions
+// **************************************************************************
+function showErrMsg(msg)
+{
+   Genesis.errMsg.find("*:nth-child(2)").html(msg);
+   Genesis.errMsg.switchClass('hide', 'in');
+   location.href = "#top";
+}
+
+function showWarningMsg(msg)
+{
+   Genesis.warningMsg.find('*:nth-child(2)').html(msg);
+   Genesis.warningMsg.switchClass('hide', 'in');
+   location.href = "#top";
+}
+
+// **************************************************************************
 // On Page Ready
 // **************************************************************************
 
@@ -191,6 +223,8 @@ $(document).ready($(function()
 {
    _init();
 
+   Genesis.warningMsg = $(".alert-message.warning");
+   Genesis.errMsg = $(".alert-message.error");
    // scroll spy logic
    // ================
 
@@ -238,17 +272,23 @@ $(document).ready($(function()
    processScroll();
 
    $window.scroll(processScroll);
-   // Dropdown example for topbar nav
-   // ===============================
-
-   $("body").bind("click", function(e)
+   $('#topbar').dropdown();
+   $("#faq dd").css('display', 'none');
+   $("#faq dt").bind('click', function()
    {
-      $('.dropdown-toggle, .menu').parent("li").removeClass("open");
-   });
-   $(".dropdown-toggle, .menu").click(function(e)
-   {
-      var $li = $(this).parent("li").toggleClass('open');
-      return false;
+      var dt = $(this);
+      if(dt.next().css('display') == 'none')
+      {
+         $("#faq dd").hide('slow', function()
+         {
+            if($(this).prev()[0] == dt[0])
+            {
+               dt.next().toggle('fast', 'linear', function()
+               {
+               });
+            }
+         });
+      }
    });
 }));
 // **************************************************************************

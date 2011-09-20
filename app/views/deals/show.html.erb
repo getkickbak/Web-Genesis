@@ -3,218 +3,390 @@
 <% if @merchant.nil? %> <!-- Main hero unit for a primary marketing message or
 call to action
 -->
-<div id="mainMsg" class="row">
-   <a name="mainMsg"></a>
-	<div class="slides_container">
-		<div class="span24">
-			<div class="hero-unit" style="height:270px;">
-				<img style="margin-left:10px;width:250px;float:right;" src="http://image.shutterstock.com/display_pic_with_logo/513907/513907,1275904761,8/stock-vector-vector-red-tape-and-bow-54699760.jpg"/>
-				<h3>Refer friends and get a C$2 Tim Horton Gift Card plus the option to purchase a C$80 Store Coupon valued at C$100!</h3>
-				<small> Get a C$2 Tim Horton Gift Card when you spread the deal to your Facebook Friends. </small>
-				<p style="text-align:center;margin-top:50px;font-weight:bold;">
-					<a  class="btn fbtag large">Refer a Friend! &raquo;</a>
-				</p>
-			</div>
-		</div>
-		<% if signed_in? %>
-		<div class="span24">
-			<table class="hero-unit hero-referral">
-				<tr>
-					<td colspan="2" style="margin:0px;padding:0px 0px 0px 10px;" >
-					<p style="margin:0px;padding:0px;">
-						<a href="<%= "http://www.facebook.com/profile.php?id=#{current_user.facebook_uid}" %>" target="_blank"><%= current_user.name.split(' ')[0] %></a>, write a recommendation to your friends get rewarded!
-					</p></td>
-				</tr>
-				<tr>
-					<td width="100"><img src="<%= "http://graph.facebook.com/#{current_user.facebook_id}/picture?type=normal" %>"/></td>
-					<td>
-					<form>
-						<% @deal.referral_subjects.each do |subject| %> <label class="alignLeft" style="width:548px;"> <%= subject.content %> </label>
-						<textarea style="width:538px;"></textarea>
-						<% end %> <label class="noWrap" style="float:right;width:auto;"> <a id ="reward" class="btn rewardtag large">Claim your Reward! &raquo;</a>
-					</form></td>
-				</tr>
-			</table>
-		</div>
-		<% if @referral %>
-		<div id="recommendation" class="span24">
-			<table class="hero-unit hero-referral">
-				<tr>
-					<td colspan="2" style="margin:0px;padding:0px 0px 0px 10px;" >
-					<p style="margin:0px;padding:0px;">
-						Recommendation from your friend, <a href="<%= "http://www.facebook.com/profile.php?id=#{current_user.facebook_uid}" %>" target="_blank"><%= @referral.creator.name %></a>:
-					</p></td>
-				</tr>
-				<tr>
-					<td width="100"><img src="<%= "http://graph.facebook.com/#{current_user.facebook_id}/picture?type=normal" %>"/></td>
-					<td>
-					<div class="hero-start">
-						<p></p>
-					</div>
-					<div class="hero-end">
-						&#160;
-					</div>
-					<div>
-						<a  id="discuss" href="#comments" style="float:right;clear:both;" class="btn large">Discuss with <%= @referral.creator.name.split(' ')[0] %>! &raquo;</a>
-					</div></td>
-				</tr>
-			</table>
-		</div>
-		<% end %>
-		<% end %>
-	</div>
-</div>
-<!-- Example row of columns -->
 <div class="row">
-	<div class="span24">
-		<h2 style="min-height:70px;"><a  href="/deals/runnersshop/confirmation" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a> <%= @deal.title %></h2>
-		<div id="container">
-			<div id="slides">
-				<div class="slides_container">
-					<% @deal.photo_urls.split(/\r/).each do |photo_url| %>
-					<div class="slide">
-						<img width="710" src="<%= photo_url %>">
-					</div>
-					<% end %>
-				</div>
-			</div>
-		</div>
-	</div>
+   <div class="span24">
+      <div id="mainMsg" class="row">
+         <a name="mainMsg"></a>
+         <div class="slides_container">
+            <div class="span24">
+               <div class="hero-unit" style="height:270px;">
+                  <img style="margin-left:10px;width:250px;float:right;" src="http://image.shutterstock.com/display_pic_with_logo/513907/513907,1275904761,8/stock-vector-vector-red-tape-and-bow-54699760.jpg"/>
+                  <h3>Refer friends and get a C$2 Tim Horton Gift Card plus the option to purchase a C$80 Store Coupon valued at C$100!</h3>
+                  <small>
+                     Get a C$2 Tim Horton Gift Card when you spread the deal to your Facebook Friends.
+                  </small>
+                  <p style="text-align:center;margin-top:50px;font-weight:bold;">
+                     <a  class="btn fbtag large">Refer a Friend! &raquo;</a>
+                  </p>
+               </div>
+            </div>
+            <% if signed_in? %>
+            <div class="span24">
+               <table class="hero-unit hero-referral">
+                  <tr>
+                     <td colspan="2" style="margin:0px;padding:0px 0px 0px 10px;" >
+                     <p style="margin:0px;padding:0px;">
+                        <a href="<%= "http://www.facebook.com/profile.php?id=#{current_user.facebook_uid}" %>" target="_blank"><%= current_user.name.split(' ')[0] %></a>, write a recommendation to your friends get rewarded!
+                     </p></td>
+                  </tr>
+                  <tr>
+                     <td width="100">
+                     <img src="<%= "http://graph.facebook.com/#{current_user.facebook_id}/picture?type=normal" %>"/>
+                     </td>
+                     <td>
+                     <form>
+                        <% @deal.referral_subjects.each do |subject| %>
+                        <label class="alignLeft" style="width:548px;">
+                           <%= subject.content %>
+                        </label>
+                        <textarea style="width:538px;"></textarea>
+                        <% end %>
+                        <label class="noWrap" style="float:right;width:auto;">
+                           <a id ="reward" class="btn rewardtag large">Claim your Reward! &raquo;</a>
+                     </form></td>
+                  </tr>
+               </table>
+            </div>
+            <% if @referral %>
+            <div id="recommendation" class="span24">
+               <table class="hero-unit hero-referral">
+                  <tr>
+                     <td colspan="2" style="margin:0px;padding:0px 0px 0px 10px;" >
+                     <p style="margin:0px;padding:0px;">
+                        Recommendation from your friend, <a href="<%= "http://www.facebook.com/profile.php?id=#{current_user.facebook_uid}" %>" target="_blank"><%= @referral.creator.name %></a>:
+                     </p></td>
+                  </tr>
+                  <tr>
+                     <td width="100">
+                     <img src="<%= "http://graph.facebook.com/#{current_user.facebook_id}/picture?type=normal" %>"/>
+                     </td>
+                     <td>
+                     <div class="hero-start">
+                        <p></p>
+                     </div>
+                     <div class="hero-end">
+                        &#160;
+                     </div>
+                     <div>
+                        <a  id="discuss" href="#comments" style="float:right;clear:both;" class="btn large">Discuss with <%= @referral.creator.name.split(' ')[0] %>! &raquo;</a>
+                     </div></td>
+                  </tr>
+               </table>
+            </div>
+            <% end %>
+            <% end %>
+         </div>
+      </div>
+      <!-- Example row of columns -->
+      <div class="row">
+         <div class="span24">
+            <h2><%= @deal.title %></h2>
+            <div id="container">
+               <div id="slides">
+                  <div class="slides_container">
+                     <% @deal.photo_urls.split(/\r/).each do |photo_url| %>
+                     <div class="slide">
+                        <img width="710" src="<%= photo_url %>">
+                     </div>
+                     <% end %>
+                  </div>
+               </div>
+            </div>
+            <h2 id="deal_countdown">Time Left to Buy
+            <% if @merchant.nil? %> <a href="/deals/runnersshop/confirmation" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
+            <br/>
+            <% else %>
+            <div id="referralWarning" class="modal fade hide">
+               <div class="modal-header">
+                  <a class="close">×</a>
+                  <h3>Friend Referral Required</h3>
+               </div>
+               <div class="modal-body" style="text-align:center;">
+                  You must send a friend referral before you can purchase this deal!
+               </div>
+               <div class="modal-footer">
+                  <a onclick="$('#referralWarning').modal('hide');" class="btn fbtag">Refer a Friend!</a>
+                  <a onclick="$('#referralWarning').modal('hide');" class="btn primary">OK</a>
+               </div>
+            </div><a data-controls-modal="referralWarning" data-backdrop="true" data-keyboard="true" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
+            <br/>
+            <% end %>
+            <script type="text/javascript" >
+               TargetDate = "12/01/2011 12:00 am GMT-0400";
+               BackColor = "";
+               ForeColor = "#676767";
+               CountActive = true;
+               CountStepper = -1;
+               LeadingZero = true;
+               DisplayFormat = "%%D%% Days %%H%% Hrs %%M%% Mins %%S%% secs";
+               FinishMessage = "The deal is over. Better luck next time!";
+
+            </script><script type="text/javascript" src="/javascripts/desktop/lib/countdown.js"></script></h2>
+         </div>
+      </div>
+      <div class="row">
+         <div id="highlightsCtn" class="span0abs span12" style="z-index:1;overflow:hidden;">
+            <ul id="highlights" class="tabs" data-tabs="tabs" style="display:none;">
+               <li>
+                  <a class="active" href="#highlights-1"></a>
+               </li>
+               <li>
+                  <a href="#highlights-2"></a>
+               </li>
+            </ul>
+            <div class="tab-content">
+               <div id="highlights-1" class="span12 active" style="margin:0;">
+                  <h2><a id="detailsBtn" style="float:right;margin-left:10px;margin-top:5px;" class="btn primary">Company Details &raquo;</a>
+                  <div>
+                     HIGHLIGHTS
+                  </div></h2>
+                  <div class="panelBodyHighlights">
+                     <ul>
+                        <% @deal.highlights.split(/\r/).each do |highlight| %>
+                        <li>
+                           <%= highlight %>
+                        </li>
+                        <% end %>
+                     </ul>
+                  </div>
+               </div>
+               <div id="highlights-2" class="span24" style="margin:0;">
+                  <h2><a id="highlightsBtn" style="float:right;margin-left:10px;margin-top:5px;" class="btn primary">Back to Highlights &raquo;</a>
+                  <div>
+                     ABOUT THIS PLACE ...
+                  </div></h2>
+                  <div class="panelBodyHighlights">
+                     <div id="gmap" style="height:235px;float:right;width:190px;margin-left:10px;"></div>
+                     <div id="address">
+                        <p id="merchant_name">
+                           <%= @deal.merchant.name %>
+                        </p>
+                        <p id="merchant_address1">
+                           <%= @deal.merchant.address1 %>
+                        </p>
+                        <% if @deal.merchant.address2 %>
+                        <p id="merchant_address2">
+                           <%= @deal.merchant.address2 %>
+                        </p>
+                        <% end %>
+                        <p id="merchant_city_state_zipcode">
+                           <%= @deal.merchant.city %>, <%= @deal.merchant.state %> <%= @deal.merchant.zipcode %>
+                        </p>
+                        <p id="merchant_phone">
+                           <%= @deal.merchant.phone %>
+                        </p>
+                     </div>
+                     <div>
+                        <%= @deal.description %>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div id ="offerDetails" class="span12rel span12">
+            <h2>OFFER DETAILS</h2>
+            <div id="offerDetails-1" class="panelBodyHighlights">
+               <ul>
+                  <% @deal.details.split(/\r/).each do |detail| %>
+                  <li>
+                     <%= detail %>
+                  </li>
+                  <% end %>
+               </ul>
+            </div>
+         </div>
+      </div>
+      <% if @referral %> <div id="comments" class="hero-unit" style="margin:0;padding:10px 30px 30px;display:none;"></div>
+      <h4 id="discuss">Ask <%= @referral.creator.name.split(' ')[0] %> any questions about the deal ...</h4>
+      <fb:comments href="http://www.justformyfriends.com:3000/javascripts/desktop/index.html" num_posts="1" width="640"></fb:comments>
+      <% end %>
+   </div>
+   <div id="faq" class="span8">
+      <h2>FAQ</h2>
+      <div class="panelBodyHighlights">
+         <dl>
+            <dt>
+I need help ASAP! What should I do?
+            </dt>
+            <dd>
+The best way to reach us is to email info@justformyfriends.com. Another way to reach us quickly is to call 1.800.306.4577 to speak with a JustForMyFriends representative.
+            </dd>
+            <dt>
+What is  JustForMyFriends?
+            </dt>
+            <dd>
+JustForMyFriends is an awesome way for you to get more out of your city. Here on JustForMyFriends, we’re able to offer very large discounts on local businesses by guaranteeing them a minimum amount of customers. Every day we offer a new unbeatable buy. Each buy remains on the site for 24 hours and if enough people sign up for it by entering their credit card info before midnight, the buy goes through and everyone get’s it. If the minimum is not hit, nobody’s credit card is charged and nobody gets to take advantage of the deal.
+            </dd>
+            <dt>
+How do I purchase today's Buy?
+            </dt>
+            <dd>
+Just click on the Blue “Buy Now” button or the bright pink bar on the home image and you will be asked for your billing information. If the day’s Buy doesn’t get enough buyers, your credit card will not be charged and no one will get the Buy. However, if the buy goes through, you’ll receive a JustForMyFriends ticket in your email inbox (make sure to check your junk mail folder too) and your credit card will be charged.
+            </dd>
+            <dt>
+Do I need to enter a promo code before I check out?
+            </dt>
+            <dd>
+No. This option does not have to be filled out, it can be left blank. Occasionally we will have promo codes that will allow a further discount on your purchase, but we will let you know when.
+            </dd>
+            <dt>
+Does it cost me anything to create an account or use this website?
+            </dt>
+            <dd>
+Not at all! You can create an account for free, you can receive the daily emails for free, and there are no extra sign up fees when you want to get in on a buy!
+            </dd>
+            <dt>
+How do I create an account on JustForMyFriends?
+            </dt>
+            <dd>
+Click on “Sign In” in the top right corner, and then click on “Join JustForMyFriends”. Enter your name, desired username, email, password, and indicate if you would like to receive the daily emails.
+            </dd>
+            <dt>
+Do I have to sign up a group of people I know to get the buy?
+            </dt>
+            <dd>
+Nope! As long as enough people sign up (strangers or not), the buy will go through. However, you may want to share the buy you're interested in on your social networks to ensure that enough people sign up. Signing up as a group could be lots of fun on buys like paintballing and go carting!
+            </dd>
+            <dt>
+What are the expiration dates of JustForMyFriends's?
+            </dt>
+            <dd>
+Every deal has different details and specifications so be sure to check the expiration date as they all vary.
+            </dd>
+            <dt>
+I bought today's buy, how do I use it?
+            </dt>
+            <dd>
+If the buy goes through, you will receive an email with redemption instructions and a ticket to be printed or displayed on your cell phone. If you have created a JustForMyFriends account before your purchase was made, you may view your ticket in the “My Buys” section of your profile.
+            <dt>
+Can JustForMyFriends's be gifted for others?
+            </dt>
+            <dd>
+Of course! We do our best to allow gifting buys and will state clearly if for some reason a particular buy does not permit it.
+            <dt>
+Can JustForMyFriends's be used more than once? (ie: if I don't use the whole discount at one time)?
+            </dt>
+<dd>
+It depends on the buy but most buys will need to be redeemed in one visit.
+            </dd>
+            <dt>
+Is my credit card charged as soon as I sign up for buy?
+            </dt>
+            <dd>
+No. You will only be charged if enough people sign up for the day's buy.
+            </dd>
+            <dt>
+Is JustForMyFriends safe?
+            </dt>
+            <dd>
+100%! Your credit card number is transmitted by SSL directly to a secure electronic vault. To learn more about SSL certification check out http://www.ehow.com/how-does_ssl-work.html
+            </dd>
+            <dt>
+What methods of payment do you accept?
+            </dt>
+            <dd>
+We currently accept Visa and MasterCard. PayPal and American Express are coming soon!
+            </dd>
+            <dt>
+How do I get my business on JustForMyFriends?
+            </dt>
+            <dd>
+We’re always glad to hear from new businesses that are interested in our service. Please visit www.whyjustformyfriends.com, email us at biz@justformyfriends.com, or call us @ 1.800.306.4577 and press 2 for merchant services.
+            </dd>
+            <dt>
+Can I suggest a business if I want them to feature a deal on JustForMyFriends?
+            </dt>
+            <dd>
+Absolutely! There is a link at the bottom of this page that says “Suggest a Business” in which you can fill out the form provided.
+            </dd>
+            <dt>
+Are JustForMyFriends's Refundable?
+            </dt>
+            <dd>
+You may opt-out of a deal at any time before the deal closes. Returns are handled on a case-by-case basis and will be reviewed by our customer service team. Please e-mail info@justformyfriends.com with subject “refund” and clearly describe your situation. For the most part we consider a purchased deal to be final after the deal closes at midnight.
+            </dd>
+            <dt>
+What happens if the business that featured a deal closes down?
+            </dt>
+            <dd>
+We will do our very best to ensure this never happens. In the case that it does, you will receive either the deal you purchased or your money back, 100% guaranteed!
+            </dd>
+            <dt>
+Will previous buys be featured again?
+            </dt>
+            <dd>
+We cannot guarantee that a previous buy will appear again. The best thing to do is to sign up for the desired buy the day it's featured on JustForMyFriends. If you see a past buy that you would like to have back, create an account and vote for it to return on the “Recent Buys” page.
+            </dd>
+         </dl>
+      </div>
+   </div>
 </div>
-<div class="row">
-	<div id="highlights" class="span0abs span12" style="z-index:1;">
-		<ul style="display:none;">
-			<li>
-				<a href="#highlights-1"></a>
-			</li>
-			<li>
-				<a href="#highlights-2"></a>
-			</li>
-		</ul>
-		<div id="highlights-1" class="span12" style="margin:0;">
-			<h2><a id="detailsBtn" style="float:right;margin-left:10px;margin-top:5px;" class="btn primary">Company Details &raquo;</a>
-			<div>
-				HIGHLIGHTS
-			</div></h2>
-			<div class="panelBodyHighlights">
-				<ul>
-					<% @deal.highlights.split(/\r/).each do |highlight| %>
-					<li>
-						<%= highlight %>
-					</li>
-					<% end %>
-				</ul>
-			</div>
-		</div>
-		<div id="highlights-2" class="span24" style="margin:0;">
-			<h2><a id="highlightsBtn" style="float:right;margin-left:10px;margin-top:5px;" class="btn primary">Back to Highlights &raquo;</a>
-			<div>
-				ABOUT THIS PLACE ...
-			</div></h2>
-			<div class="panelBodyHighlights">
-				<div style="float:left;margin-right:10px;">
-					<%= @deal.description %>
-				</div>
-				<div style="width:190px;float:right;">
-					<div id="gmap" style="height:235px;"></div>
-					<div id="address">
-						<p id="merchant_name"><%= @deal.merchant.name %></p>
-						<p id="merchant_address1"><%= @deal.merchant.address1 %></p>
-						<% if @deal.merchant.address2 %>
-							<p id="merchant_address2"><%= @deal.merchant.address2 %></p>
-						<% end %>
-						<p id="merchant_city_state_zipcode"><%= @deal.merchant.city %>, <%= @deal.merchant.state %> <%= @deal.merchant.zipcode %></p>
-						<p id="merchant_phone"><%= @deal.merchant.phone %></p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div id ="offerDetails" class="span12rel span12">
-		<h2>OFFER DETAILS</h2>
-		<div id="offerDetails-1" class="panelBodyHighlights">
-			<ul>
-				<% @deal.details.split(/\r/).each do |detail| %>
-				<li>
-					<%= detail %>
-				</li>
-				<% end %>
-			</ul>
-		</div>
-	</div>
-</div>
-<% if @referral %>
-<div id="comments" class="hero-unit" style="margin:0;padding:10px 30px 30px;display:none;">
-	<h4 id="discuss">Ask <%= @referral.creator.name.split(' ')[0] %> any questions about the deal ...</h4>
-	<fb:comments href="http://www.justformyfriends.com:3000/javascripts/desktop/index.html" num_posts="1" width="640"></fb:comments>
-</div>
-<% end %>
 <% else %>
 <p id="notice">
-	<%= notice %>
+   <%= notice %>
 </p>
 <p>
-	<b>Title:</b>
-	<%= @deal.title %>
+   <b>Title:</b>
+   <%= @deal.title %>
 </p>
 <p>
-	<b>Location:</b>
-	<%= @deal.location %>
+   <b>Location:</b>
+   <%= @deal.location %>
 </p>
 <p>
-	<b>Photo Urls</b>
-	<%= @deal.photo_urls %>
+   <b>Photo Urls</b>
+   <%= @deal.photo_urls %>
 </p>
 <p>
-	<b>Description:</b>
-	<%= @deal.description %>
+   <b>Description:</b>
+   <%= @deal.description %>
 </p>
 <p>
-	<b>Hightlights:</b>
-	<%= @deal.highlights %>
+   <b>Hightlights:</b>
+   <%= @deal.highlights %>
 </p>
 <p>
-	<b>Details:</b>
-	<%= @deal.details %>
+   <b>Details:</b>
+   <%= @deal.details %>
 </p>
 <p>
-	<b>Start Date:</b>
-	<%= @deal.start_date %>
+   <b>Start Date:</b>
+   <%= @deal.start_date %>
 </p>
 <p>
-	<b>End Date:</b>
-	<%= @deal.end_date %>
+   <b>End Date:</b>
+   <%= @deal.end_date %>
 </p>
 <p>
-	<b>Expiry Date:</b>
-	<%= @deal.expiry_date %>
+   <b>Expiry Date:</b>
+   <%= @deal.expiry_date %>
 </p>
 <p>
-	<b>Max Per Person:</b>
-	<%= @deal.max_per_person %>
+   <b>Max Per Person:</b>
+   <%= @deal.max_per_person %>
 </p>
 <p>
-	<b>Max Limit:</b>
-	<%= @deal.max_limit %>
+   <b>Max Limit:</b>
+   <%= @deal.max_limit %>
 </p>
 <% @deal.subdeals.each do |subdeal| %>
 <p>
-	<b>Subdeal Title:</b>
-	<%= subdeal.title %>
+   <b>Subdeal Title:</b>
+   <%= subdeal.title %>
 </p>
 <p>
-	<b>Regular Price:</b>
-	<%= subdeal.regular_price %>
+   <b>Regular Price:</b>
+   <%= subdeal.regular_price %>
 </p>
 <p>
-	<b>Discount Price:</b>
-	<%= subdeal.discount_price %>
+   <b>Discount Price:</b>
+   <%= subdeal.discount_price %>
 </p>
 <% end %>
 <% @deal.referral_subjects.each do |subject| %>
 <p>
-	<b>Referral Subject:</b>
-	<%= subject.content %>
+   <b>Referral Subject:</b>
+   <%= subject.content %>
 </p>
 <% end %>
 <% if @merchant %>

@@ -34,6 +34,10 @@
       <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
       <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
       <script type="text/javascript" src="/javascripts/jquery_ujs.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/js/bootstrap-modal.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/js/bootstrap-alerts.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/js/bootstrap-dropdown.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/js/bootstrap-tabs.js"></script>
       <script type="text/javascript" src="/javascripts/application.js"></script>
       <script type="text/javascript" src="/javascripts/desktop//lib/fridek-gmap-f5658d5/jquery.gmap.min.js"></script>
       <script type="text/javascript" src="/javascripts/desktop//lib/Slides/source/slides.min.jquery.js"></script>
@@ -45,7 +49,7 @@
    <body>
       <div id="fb-root"></div>
       <script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script>
-      <div class="topbar">
+      <div id="topbar" class="topbar">
          <div class="topbar-inner noWrap">
             <div class="container">
                <h3><a href="/">Just For My Friends</a></h3>
@@ -59,16 +63,16 @@
                </ul>
                <ul class="nav secondary-nav">
                   <% if signed_in? %>
-                  <li id ="fb_account" class="dropdown">
+                  <li id ="fb_account" class="menu" data-dropdown="dropdown">
                      <div id="fb_login_img" style="display:none;float:left;"></div>
-                     <a href="#" class="dropdown-toggle" style="float:left;">Account</a>
-                     <ul class="dropdown-menu">
+                     <a href="#" class="menu" style="float:left;">Account</a>
+                     <ul class="menu-dropdown">
                         <li>
                            <a href="#">Resend Vouchers</a>
                         </li>
                         <li class="divider"></li>
                         <li>
-                        <a href="#">Resend Reward</a>
+                           <a href="#">Resend Reward</a>
                         </li>
                      </ul>
                   </li>
@@ -86,6 +90,9 @@
          </div>
       </div>
       <div name="top" class="container">
+         <div style="margin-top:50px;" >&#160;</div>
+         <div class="alert-message warning fade hide"><a class="close" onclick="$(this).parent().switchClass('in','hide')">x</a><h3></h3></div>
+         <div class="alert-message error fade hide"><a class="close" onclick="$(this).parent().switchClass('in','hide')">x</a><h3></h3></div>
          <%= yield %>
          <footer>
             <p>
@@ -95,29 +102,31 @@
       </div>
       <div id="popupModal" class="well popup" style="border: none; position:absolute;z-index:10000;display:none;width:100%;height:100%;top:0"></div>
       <!-- General Message Modal Popup -->
-      <div id="popupDialog" style="position:absolute;z-index:100000;display:none;top:0;width:100%;height:100%">
-         <div class="modal" style="position: relative; top: auto; left: auto; margin: 0 auto; z-index:1;top:100px;">
-            <div class="modal-header">
-               <h3></h3>
-               <a class="close">×</a>
-            </div>
-            <div class="modal-body" style="text-align:center;"></div>
-            <div class="modal-footer">
-               <a class="btn primary">OK</a>
-            </div>
+      <div id="popupDialog" class="modal fade hide">
+         <div class="modal-header">
+            <h3></h3>
+            <a class="close">×</a>
+         </div>
+         <div class="modal-body" style="text-align:center;"></div>
+         <div class="modal-footer">
+            <a class="btn primary">OK</a>
          </div>
       </div>
       <!-- Referral Confirmation Popup -->
       <div id="referralDialog" style="position:absolute;z-index:100000;display:none;top:0;width:100%;height:100%">
-         <div class="modal" style="position: relative; top: auto; left: auto; margin: 0 auto; z-index:1;top:100px;">
+         <div class="modal fade in" style="position: relative; top: auto; left: auto; margin: 0 auto; z-index:1;top:100px;">
             <div class="modal-header">
                <h3>THANK YOU for your referral!</h3>
                <a class="close">×</a>
             </div>
             <div class="modal-body">
                <h4>Hey Eric!</h4>
-               <p>Yay! An email is on its way for you to claim your reward.</p>
-               <p>Now that you have submitted your referral, you are also eligible to buy this deal!</p>
+               <p>
+                  Yay! An email is on its way for you to claim your reward.
+               </p>
+               <p>
+                  Now that you have submitted your referral, you are also eligible to buy this deal!
+               </p>
             </div>
             <div class="modal-footer">
                <a  href="/deals/runnersshop/confirmation" class="btn pricetag large">Buy Now! &raquo;</a>
