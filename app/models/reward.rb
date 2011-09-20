@@ -1,7 +1,7 @@
 class Reward
   include DataMapper::Resource
 
-  @@template = ERB.new File.read(File.expand_path "app/views/orders/reward_template.html.erb")
+  @@template = ERB.new File.read(File.expand_path "app/views/user_mailer/reward_template.html.erb")
 
   property :referral_id, Integer, :key => true
   property :reward_code, String, :unique_index => true,  :required => true, :default => ""

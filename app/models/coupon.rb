@@ -3,7 +3,7 @@ require 'util/constant'
 class Coupon
   include DataMapper::Resource
 
-  @@template = ERB.new File.read(File.expand_path "app/views/orders/coupon_template.html.erb")
+  @@template = ERB.new File.read(File.expand_path "app/views/user_mailer/coupon_template.html.erb")
 
   property :id, Serial
   property :coupon_id, String, :unique_index => true, :default => 0

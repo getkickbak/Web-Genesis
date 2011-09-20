@@ -1,12 +1,11 @@
 require 'profile'
 require 'caller'
 
-
-
 class OrdersController < ApplicationController
    before_filter :authenticate_user!, :except => [:new]
    #load_and_authorize_resource
    @@clientDetails=PayPalSDKProfiles::Profile.client_details
+   
    def index
       authorize! :read, current_user
 
@@ -192,44 +191,46 @@ class OrdersController < ApplicationController
       end
    end
 
-   def coupon
+   def coupon_email
       #@user = User.get(params[:user_id])
       @order = Order.first(:order_id => params[:id])
 
       respond_to do |format|
-         format.html # show.html.erb
+         format.html { render :template => "user_mailer/order_confirmed_email_template", :locals => { :order => @order } }
       #format.xml  { render :xml => @order }
       end
    end
 
+  def reward_email
+      #@user = User.get(params[:user_id])
+      @reward = Reward.first(:referral_id => params[:id])
+
+      respond_to do |format|
+        format.html { render :template => "user_mailer/reward_email_template", :locals => { :reward => @reward } }
+      #format.xml  { render :xml => @order }
+      end
+   end
+   
    def reward_template
       #@user = User.get(params[:user_id])
-      @order = Order.first(:order_id => params[:id])
+      @reward = Reward.first(:referral_id => params[:id])
 
       respond_to do |format|
-         format.html # show.html.erb
+        format.html { render :template => "user_mailer/reward_template" }
       #format.xml  { render :xml => @order }
       end
    end
+   
    def coupon_template
       #@user = User.get(params[:user_id])
-      @order = Order.first(:order_id => params[:id])
+      @coupon = Coupon.first(:coupon_id => params[:id])
 
       respond_to do |format|
-         format.html # show.html.erb
+        format.html { render :template => "user_mailer/coupon_template" }
       #format.xml  { render :xml => @order }
       end
    end
 
-   def reward
-      #@user = User.get(params[:user_id])
-      @order = Order.first(:order_id => params[:id])
-
-      respond_to do |format|
-         format.html # show.html.erb
-      #format.xml  { render :xml => @order }
-      end
-   end
    private
 
    def reset_order
