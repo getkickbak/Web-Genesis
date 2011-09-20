@@ -6,7 +6,7 @@ module Business
 
     def create
       merchant = Merchant.authenticate(params[:session][:email],
-      params[:session][:password])
+                                       params[:session][:password])
       if merchant.nil?
         flash.now[:error] = "Invalid email/password combination."
         render 'new'
