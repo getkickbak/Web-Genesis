@@ -33,9 +33,16 @@ class DealsController < ApplicationController
     elsif signed_in?
       @referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id)  
     end
-    respond_to do |format|
-      format.html # show.html.erb
-      #format.xml  { render :xml => @deal }
+    
+    if params[:id]
+      respond_to do |format|
+        format.html # show.html.erb
+        #format.xml  { render :xml => @deal }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to deal_path(@deal) }
+      end
     end
   end
 
