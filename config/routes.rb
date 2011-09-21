@@ -37,12 +37,13 @@ Genesis::Application.routes.draw do
     #match '/users/:id/account' => 'users#edit'
     #match '/users/:user_id/coupons' => 'orders#index', :via => :get , :as => :user_coupons
     #match '/users/:user_id/orders/:id' => 'orders#show', :via => :get, :as => :user_order
-    match '/orders/:id' => 'orders#show', :as => :order
+    #match '/orders/:id' => 'orders#show', :as => :order
 
     match '/deals/:id' => 'deals#show', :as => :deal
     match '/deals/:id/confirmation' => 'orders#new', :via => :get, :as => :confirm_order
     match '/deals/:id/complete_order' => 'orders#create', :via => :post, :as => :complete_order
     match '/deals/:id/pay_details' => 'orders#pay_details', :via => :get, :as => :pay_details
+    match '/deals/:id/thanks' => 'orders#thanks', :via => :get, :as => :pay_thanks 
     
     #Testing purposes only
     match '/deals/:id/order_confirmed_email_template' => 'orders#coupon_email'
