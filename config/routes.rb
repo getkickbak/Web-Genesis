@@ -56,7 +56,7 @@ Genesis::Application.routes.draw do
     match '/resend_coupons' => 'orders#resend_coupons'
     match '/resend_reward' => 'referrals#resend_reward'
 
-    root :to => redirect("/deals/subway")
+    root :to => redirect("/deals/runnersshop")
 
     #match '/referrals' => 'referrals#index'
     #root :to => 'referrals#index', :via => :get
