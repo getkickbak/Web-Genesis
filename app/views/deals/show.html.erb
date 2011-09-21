@@ -16,7 +16,11 @@ call to action
                      Get a C$2 Tim Horton Gift Card when you spread the deal to your Facebook Friends.
                   </small>
                   <p style="text-align:center;margin-top:50px;font-weight:bold;">
-                     <a  class="btn fbtag large">Refer a Friend! &raquo;</a>
+                  	 <% if signed_in? %>
+                     <a class="btn fbtag large">Refer a Friend! &raquo;</a>
+                     <% else %>
+                     <a class="btn large" onclick="loginPopup();">Refer a Friend! &raquo;</a>
+                     <% end %>
                   </p>
                </div>
             </div>
@@ -93,7 +97,7 @@ call to action
                </div>
             </div>
             <h2 id="deal_countdown">Time Left to Buy
-            <% if @merchant.nil? %> <a href="/deals/runnersshop/confirmation" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
+            <% if @referral.nil? %> <a href="/deals/runnersshop/confirmation" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
             <br/>
             <% else %>
             <div id="referralWarning" class="modal fade hide">
