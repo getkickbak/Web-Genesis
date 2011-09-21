@@ -127,7 +127,7 @@ class OrdersController < ApplicationController
       session[:paydetails_response]=@transaction.response
       respond_to do |format|
       #format.html { redirect_to user_order_path(@user, @order, :notice => 'Order was successfully created.') }
-        format.html { redirect_to order_path(@order, :notice => 'Order was successfully created.') }
+        format.html { redirect_to pay_thanks_path(@order.deal.deal_id) }
       #format.xml  { render :xml => @order, :status => :created, :location => @order }
       #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
       end
@@ -137,6 +137,11 @@ class OrdersController < ApplicationController
     end
   end
 
+  def thanks
+    @order = Order.first(:order_id => session[:order_id])
+    reset_order
+  end
+  
   def cancel
     @order = Order.first(:order_id => session[:order_id])
     if !@order
