@@ -243,7 +243,6 @@ var initForm = function() {
 	_initFormComponents();
 }
 var initMainMsg = function() {
-	var $recommendation = $("#recommendation");
 	var $mainMsg = $("#mainMsg");
 	$mainMsg.slides({
 		preload : true,
@@ -260,7 +259,7 @@ var initMainMsg = function() {
 		autoHeightSpeed : 100,
 		generateNextPrev : true,
 		generatePagination : false,
-		start : 1
+		start : $("#recommendation").length > 0 ? 2 : 1
 	});
 	$("#mainMsg .fbtag").click(function() {
 		$(".next").trigger("click");
