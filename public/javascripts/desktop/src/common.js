@@ -110,7 +110,6 @@ var oAuth2SessionLogin = function() {
 	});
 }
 var loginPopup = function() {
-	var popupModal = $("#popupModal");
 	var popupDialog = $("#popupDialog");
 	try {
 		FB.Auth.setSession(null);
@@ -118,10 +117,8 @@ var loginPopup = function() {
 	}
 	var popupDialogTitle = popupDialog.find(".modal-header h3").html("Facebook Login Required");
 	var popupDialogContent = popupDialog.find(".modal-body").html(Genesis.fb_login_tag);
-	popupDialog.find(".modal").css("top", (document.body.scrollTop + 100) + "px");
 	popupDialog.find(".modal-footer .primary").attr("href", "#");
-	popupDialog.css("display", "");
-	popupModal.css("display", "");
+	popupDialog.modal();
 	FB.XFBML.parse();
 }
 var referralRequestPopup = function() {
@@ -129,10 +126,7 @@ var referralRequestPopup = function() {
 	var popupDialogTitle = popupDialog.find(".modal-header h3").html("Friend Referral Required before Purchase");
 	var popupDialogContent = popupDialog.find(".modal-body").html("<p>Before being eligible to purchase this deal, a friend referral is required.</p>");
 	popupDialog.find(".modal-footer .primary").attr("href", "#mainMsg");
-	popupDialog.modal({
-		keyboard : true,
-		backdrop : 'static'
-	});
+	popupDialog.modal();
 }
 
 window.fbAsyncInit = function() {
@@ -229,6 +223,11 @@ $(document).ready($(function() {
 				}
 			});
 		}
+	});
+	// PopupDialog Initializer
+	$("#popupDialog").modal({
+		keyboard : true,
+		backdrop : 'static'
 	});
 }));
 // **************************************************************************
