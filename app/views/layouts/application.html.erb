@@ -75,7 +75,7 @@
                   </li>
                   <% end %>
                   <li id="fb_login" style="display:none;">
-                     <fb:login-button perms="email,user_birthday,publish_stream" on-login="facebook_onLogin(false);" size="large" background="dark" length="short" autologoutlink="true"></fb:login-button>
+                     <fb:login-button perms="email,user_birthday,publish_stream" on-login="facebook_onLogin();" size="large" background="dark" length="short" autologoutlink="true"></fb:login-button>
                   </li>
                   <% if signed_in? %>
                   <li class="">
