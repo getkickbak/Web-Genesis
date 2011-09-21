@@ -1,4 +1,5 @@
 Genesis::Application.routes.draw do
+
   scope :module => "business" do
     constraints :subdomain => "merchant" do
       resources :sessions, :only => [:new, :create, :destroy]
@@ -24,6 +25,8 @@ Genesis::Application.routes.draw do
   :registrations => "user_devise/registrations"
   }
 =end
+    get "/pages/how_it_works"
+
     resources :merchants do
       resources :deals
     end
@@ -49,16 +52,15 @@ Genesis::Application.routes.draw do
     #end
 
     match '/deals/:id/cancel_order' => 'orders#cancel'
-    match '/deals/:id/referrals/create' => 'referrals#create', :via => :get, :as => :new_referral    
+    match '/deals/:id/referrals/create' => 'referrals#create', :via => :post, :as => :new_referral    
     match '/resend_coupons' => 'orders#resend_coupons'
     match '/resend_reward' => 'referrals#resend_reward'
 
-    match '/featured_deal' => 'deals#show', :as => :default_deal
-    root :to => redirect("/featured_deal")
+    root :to => redirect("/deals/subway")
 
+    #match '/referrals' => 'referrals#index'
+    #root :to => 'referrals#index', :via => :get
   end
-#match '/referrals' => 'referrals#index'
-#root :to => 'referrals#index', :via => :get
 
 # The priority is based upon order of creation:
 # first created -> highest priority.

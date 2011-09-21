@@ -8,6 +8,7 @@ call to action
       <div id="mainMsg" class="row">
          <a name="mainMsg"></a>
          <div class="slides_container">
+         	<% if @referral.nil? %>
             <div class="span24">
                <div class="hero-unit" style="height:270px;">
                   <img style="margin-left:10px;width:250px;float:right;" src="http://image.shutterstock.com/display_pic_with_logo/513907/513907,1275904761,8/stock-vector-vector-red-tape-and-bow-54699760.jpg"/>
@@ -19,11 +20,12 @@ call to action
                   	 <% if signed_in? %>
                      <a class="btn fbtag large">Refer a Friend! &raquo;</a>
                      <% else %>
-                     <a class="btn large" onclick="loginPopup();">Refer a Friend! &raquo;</a>
+                     <a class="btn fbtag large" onclick="loginPopup();">Refer a Friend! &raquo;</a>
                      <% end %>
                   </p>
                </div>
             </div>
+            <% end %>
             <% if signed_in? %>
             <div class="span24">
                <table class="hero-unit hero-referral">
@@ -51,6 +53,7 @@ call to action
                   </tr>
                </table>
             </div>
+            <% end %>
             <% if @referral %>
             <div id="recommendation" class="span24">
                <table class="hero-unit hero-referral">
@@ -66,7 +69,7 @@ call to action
                      </td>
                      <td>
                      <div class="hero-start">
-                        <p></p>
+                        <p><%= @referral.comment %></p>
                      </div>
                      <div class="hero-end">
                         &#160;
@@ -77,7 +80,6 @@ call to action
                   </tr>
                </table>
             </div>
-            <% end %>
             <% end %>
          </div>
       </div>
@@ -97,7 +99,7 @@ call to action
                </div>
             </div>
             <h2 id="deal_countdown">Time Left to Buy
-            <% if @referral.nil? %> <a href="/deals/runnersshop/confirmation" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
+            <% if @referral %> <a href="/deals/<%= @deal.deal_id %>/confirmation?referral_id=<%= @referral.referral_id %>" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
             <br/>
             <% else %>
             <div id="referralWarning" class="modal fade hide">

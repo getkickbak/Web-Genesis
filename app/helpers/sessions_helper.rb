@@ -27,7 +27,7 @@ module SessionsHelper
 
   def deny_access
     store_location
-    redirect_to default_deal_path
+    redirect_to root_path
   end
 
   private

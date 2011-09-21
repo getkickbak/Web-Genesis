@@ -29,7 +29,9 @@ class DealsController < ApplicationController
     authorize! :read, @deal  
     
     if params[:referral_id]
-      @referral = Referral.get(params[:referral_id])
+      @referral = Referral.first(:referral_id => params[:referral_id])
+    elsif signed_in?
+      @referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id)  
     end
     respond_to do |format|
       format.html # show.html.erb

@@ -34,7 +34,7 @@ class ReferralsController < ApplicationController
     Referral.transaction do
       begin
         deal = Deal.first(:deal_id => params[:id])
-        photo_url = params[:photo_url] ? params[:photo_url] : deal.photo_url1
+        photo_url = params[:photo_url] ? params[:photo_url] : deal.photo_urls.split('\r')[0]
         referral_info = { :photo_url => photo_url, :comment => params[:comment] }
         @referral = Referral.create(deal,current_user,referral_info)
         reward_count = Reward.count(:deal_id => deal.id, :user_id => current_user.id )
@@ -46,7 +46,7 @@ class ReferralsController < ApplicationController
         respond_to do |format|
           #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => true, :data => { :referral_id => @referral.referral_id, :deal_id => @referral.deal.deal_id }, :total => 1 } }
+          format.json { render :json => { :success => true, :data => { :referral_id => @referral.referral_id }, :total => 1 } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)

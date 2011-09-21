@@ -20,12 +20,12 @@ class SessionsController < ApplicationController
         end      
         sign_in(user)
         respond_to do |format|
-          format.html { redirect_back_or(default_deal_path) }
+          format.html { redirect_back_or(root_path) }
           format.json { render :json => { :success => true } }
         end
       rescue
         respond_to do |format|
-          format.html { redirect_back_or(default_deal_path) }
+          format.html { redirect_back_or(root_path) }
           format.json { render :json => { :success => false } }
         end
       end
@@ -36,12 +36,12 @@ class SessionsController < ApplicationController
     begin
       sign_out
       respond_to do |format|
-        format.html { redirect_back_or(default_deal_path) }
+        format.html { redirect_back_or(root_path) }
         format.json { render :json => { :success => true } }
       end
     rescue
       respond_to do |format|
-        format.html { redirect_back_or(default_deal_path) }
+        format.html { redirect_back_or(root_path) }
         format.json { render :json => { :success => false } }
       end
     end
