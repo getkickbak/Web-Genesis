@@ -101,7 +101,6 @@ call to action
             <h2 id="deal_countdown" class="description_footer">Time Left to Buy
             <% if signed_in? %>	
             <% if @referral %> <a href="/deals/<%= @deal.deal_id %>/confirmation?referral_id=<%= @referral.referral_id %>" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
-            <br/>
             <% else %>
             <div id="referralWarning" class="modal fade hide">
                <div class="modal-header">
@@ -116,11 +115,11 @@ call to action
                   <a onclick="$('#referralWarning').modal('hide');" class="btn primary">OK</a>
                </div>
             </div><a data-controls-modal="referralWarning" data-backdrop="true" data-keyboard="true" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
-            <br/>
             <% end %>
             <% else %>
             <a style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large" onclick="loginPopup();">Buy Now! &raquo;</a>
             <% end %>
+            <br/>
             <script type="text/javascript" >
 				TargetDate = "12/01/2011 12:00 am GMT-0400";
 				BackColor = "";
