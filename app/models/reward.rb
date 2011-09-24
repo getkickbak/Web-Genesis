@@ -22,7 +22,7 @@ class Reward
     qr = RQR::QRCode.new()
     url = "http://www.justformyfriends.com"
     reward_code = "#{now.to_i}#{rand(1000) + 1000}"
-    filename = APP_PROP["REWARD_QR_CODE_FILE_PATH"] + reward_code
+    filename = APP_PROP["REWARD_QR_CODE_FILE_PATH"] + reward_code + ".png"
     qr.save(url, filename, :png)
     reward = Reward.new(
       :referral_id => referral_id,

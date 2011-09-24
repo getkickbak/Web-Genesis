@@ -396,6 +396,10 @@ We cannot guarantee that a previous buy will appear again. The best thing to do 
 <% end %>
 <% @deal.referral_subjects.each do |subject| %>
 <p>
+   <b>Referral Seq#:</b>
+   <%= subject.seq_num %>
+</p>
+<p>
    <b>Referral Subject:</b>
    <%= subject.content %>
 </p>

@@ -47,7 +47,7 @@ class Order
       coupon[:coupon_id] = "#{coupon_id}-#{i+1}"
       coupon[:barcode] = ""
       url = "http://www.justformyfriends.com"
-      filename = APP_PROP["QR_CODE_FILE_PATH"] + coupon[:coupon_id]
+      filename = APP_PROP["QR_CODE_FILE_PATH"] + coupon[:coupon_id] + ".png"
       qr.save(url, filename, :png)
       coupon[:qr_code] = filename
       coupon[:created_ts] = now

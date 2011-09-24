@@ -26,8 +26,8 @@ class Deal
   attr_accessible :title, :description, :photo_urls, :highlights, :details, :location, :start_date,
                   :end_date, :expiry_date, :max_per_person, :max_limit, :subdeals_attributes, :referral_subjects_attributes
 
-  has n, :referral_subjects
-  has n, :subdeals
+  has n, :referral_subjects, :order => [ :seq_num.asc ]
+  has n, :subdeals, :order => [ :discount_price.asc ]
   belongs_to :merchant
 
   accepts_nested_attributes_for :referral_subjects, :allow_destroy => true, :reject_if => lambda { |s| s[:content].blank? }

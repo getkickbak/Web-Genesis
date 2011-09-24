@@ -39,18 +39,22 @@ Genesis::Application.routes.draw do
     #match '/users/:user_id/orders/:id' => 'orders#show', :via => :get, :as => :user_order
     #match '/orders/:id' => 'orders#show', :as => :order
 
-    match '/deals/:id' => 'deals#show', :as => :deal
-    match '/deals/:id/confirmation' => 'orders#new', :via => :get, :as => :confirm_order
-    match '/deals/:id/complete_order' => 'orders#create', :via => :post, :as => :complete_order
-    match '/deals/:id/pay_details' => 'orders#pay_details', :via => :get, :as => :pay_details
-    match '/deals/:id/thanks' => 'orders#thanks', :via => :get, :as => :pay_thanks 
-    
     #Testing purposes only
-    match '/deals/:id/order_confirmed_email_template' => 'orders#coupon_email'
-    match '/deals/:id/reward_email_template' => 'orders#reward_email'
-    match '/deals/:id/coupon_template' => 'orders#coupon_template'
-    match '/deals/:id/reward_template' => 'orders#reward_template'
+    match '/orders/:id/confirmed_email' => 'orders#confirmed_email'
+    match '/referrals/:id/reward_email' => 'referrals#reward_email'
+    
+    match '/orders/:id/confirmed_email_template' => 'orders#confirmed_email_template'
+    match '/orders/:id/coupon_template' => 'orders#coupon_template'
+    match '/referrals/:id/reward_email_template' => 'referrals#reward_email_template'
+    match '/referrals/:id/reward_template' => 'referrals#reward_template'
     #end
+    
+    match '/deals/:id' => 'deals#show', :as => :deal
+    match '/deals/:id/confirmation' => 'orders#new', :as => :confirm_order
+    match '/deals/:id/complete_order' => 'orders#create', :via => :post, :as => :complete_order
+    match '/deals/:id/pay_details' => 'orders#pay_details', :as => :pay_details
+    match '/deals/:id/thanks' => 'orders#thanks', :as => :pay_thanks
+    match '/deals/:id/referrals' => 'deals#get_referrals' 
 
     match '/deals/:id/cancel_order' => 'orders#cancel'
     match '/deals/:id/referrals/create' => 'referrals#create', :via => :post, :as => :new_referral    

@@ -4,6 +4,7 @@ class ReferralSubject
   include DataMapper::Resource
 
   property :id, Serial
+  property :seq_num, Integer, :required => true, :default => 0
   property :content, String, :required => true, :default => ""
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
