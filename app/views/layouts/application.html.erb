@@ -13,8 +13,7 @@
       <link rel="stylesheet/less" href="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/lib/bootstrap.less"/>
       <link rel="stylesheet" href="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/docs/assets/css/docs.css"/>
       <!--
-      <link rel="stylesheet"
-      href="/javascripts/desktop/lib/jquery-ui-1.8.16.custom/css/south-street/jquery-ui-1.8.16.custom.css"/>
+      <link rel="stylesheet" href="/javascripts/desktop/lib/jquery-ui-1.8.16.custom/css/south-street/jquery-ui-1.8.16.custom.css"/>
       -->
       <script type="text/javascript">
          var switchTo5x = true;
@@ -34,6 +33,7 @@
       <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
       <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
       <script type="text/javascript" src="/javascripts/jquery_ujs.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/cubiq-iscroll-8165866/src/iscroll.js"></script>
       <script type="text/javascript" src="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/js/bootstrap-modal.js"></script>
       <script type="text/javascript" src="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/js/bootstrap-alerts.js"></script>
       <script type="text/javascript" src="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/js/bootstrap-dropdown.js"></script>
@@ -87,9 +87,15 @@
          </div>
       </div>
       <div name="top" class="container">
-         <div style="margin-top:50px;" >&#160;</div>
-         <div class="alert-message warning fade hide"><a class="close" onclick="$(this).parent().switchClass('in','hide')">x</a><h3></h3></div>
-         <div class="alert-message error fade hide"><a class="close" onclick="$(this).parent().switchClass('in','hide')">x</a><h3></h3></div>
+         <div style="margin-top:50px;" >
+            &#160;
+         </div>
+         <div class="alert-message warning fade hide">
+            <a class="close" onclick="$(this).parent().switchClass('in','hide')">x</a><h3></h3>
+         </div>
+         <div class="alert-message error fade hide">
+            <a class="close" onclick="$(this).parent().switchClass('in','hide')">x</a><h3></h3>
+         </div>
          <%= yield %>
          <footer>
             <p>

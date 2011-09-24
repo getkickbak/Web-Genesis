@@ -397,68 +397,67 @@ a {
     Set to display none, prevents content flash
 */
 
-#slides .slides_container {
-    overflow:hidden;
-    position:relative;
-	 height:337px;
-	 width:710px;
-    display:none;
-}
-
-/*
-    Each slide
-    Important:
-    Set the width of your slides
-    If height not specified height will be set by the slide content
-    Set to display block
-*/
-
-.slides_container div.slide {
-	width: 700px;
-	height:337px;
-    display:block;
-}
-
-/*
-    Next/prev buttons
-*/
-
-#slides .next,#slides .prev {
-    position:absolute;
-    top:(337px-21px)/2;
-    left:10px;
-    width:21px;
-    height:0;
-    padding-top:21px;
-    overflow:hidden;
-    display:block;
-    z-index:101;
-}
-
-#slides .prev {
-    background:url(lib/Slides/examples/Product/img/arrow-prev.png);
-}
-
-#slides .next {
-    left:678px;
-    background:url(lib/Slides/examples/Product/img/arrow-next.png);
+#slides {
+   .slides_container {
+      soverflow:hidden;
+      position:relative;
+	   height:337px;
+	   width:710px;
+      display:none;
+   }
+      
+   /*
+      Each slide
+      Important:
+      Set the width of your slides
+      If height not specified height will be set by the slide content
+      Set to display block
+   */
+   div.slide {
+      width: 700px;
+      height:337px;
+      display:block;
+   }
+   /*
+      Next/prev buttons
+   */
+   .next, .prev {
+      position:absolute;
+      top:(337px-21px)/2;
+      left:10px;
+      width:21px;
+      height:0;
+      padding-top:21px;
+      overflow:hidden;
+      display:block;
+      z-index:101;
+   }
+   .prev {
+      background:url(lib/Slides/examples/Product/img/arrow-prev.png);
+   }
+   .next {
+      left:678px;
+      background:url(lib/Slides/examples/Product/img/arrow-next.png);
+   }
 }
 
 #mainMsg {
-   //margin-top:60px;
-}
-
-#mainMsg .next, #mainMsg .prev {
-	display:none;
-}
-
-#mainMsg * {
-	//margin-left : 0;
-	margin-right : 0;
-}
-
-#mainMsg .hero-unit {
-   margin-bottom : 0;
+   * {
+	  //margin-left : 0;
+	  margin-right : 0;
+	}
+   .hero-unit {
+      margin-bottom : 0;
+   }
+   .next, .prev {
+      display:none;
+   }
+   /*
+      Pagination Buttons
+   */
+   .pagination {
+      display:none;
+   }
 }
 
 // ------------------------------------------------------------------
@@ -504,7 +503,7 @@ a {
 	background-color:white;
 }
 
-.hero-referral {
+.hero-referral, .hero-referrals {
 	margin-bottom : 0px;
 	padding:10px;
 	td {
@@ -518,6 +517,23 @@ a {
 	form:last-child {
 		margin:0;
 	}
+}
+
+.height0 {
+   height:0;
+   overflow:hidden;
+}
+
+.hero-mainMsg {
+   min-height:270px;
+}
+
+#referralsWrapper {
+   &.hero-referrals {
+      padding:0px;
+      min-height:371px;
+      max-height:855px;
+   }
 }
 
 .hero-start {
@@ -560,6 +576,46 @@ a {
    background:#E9E9E9;
    color:#676767;
   .border-radius(0px);
+}
+
+
+// ------------------------------------------------------------------
+// Scroller
+// ------------------------------------------------------------------
+#referralsWrapper {
+   /*
+    position:absolute; z-index:1;
+    top:45px; bottom:48px; left:0;
+    width:100%;
+    */
+    background:white;
+    overflow:auto;
+}
+
+.scroller {
+    position:absolute; z-index:1;
+/*  -webkit-touch-callout:none;*/
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    width:100%;
+    padding:0;
+}
+
+.scroller ul {
+    list-style:none;
+    padding:0;
+    margin:0;
+    width:100%;
+    text-align:left;
+}
+
+.scroller li {
+    padding:0 10px;
+    height:40px;
+    line-height:40px;
+    border-bottom:1px solid #ccc;
+    border-top:1px solid #fff;
+    background-color:#fafafa;
+    font-size:14px;
 }
 
 // ------------------------------------------------------------------

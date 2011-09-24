@@ -14,6 +14,10 @@ var _init = function()
    if(Genesis.initDone == true)
    {
       oldSessionLogin();
+      document.addEventListener('touchmove', function(e)
+      {
+         e.preventDefault();
+      }, false);
    }
    Genesis.initDone = true;
 }
@@ -113,7 +117,6 @@ var oAuth2SessionLogin = function()
    FB.Event.subscribe('auth.authResponseChange', function(response)
    {
       // do something with response
-      //alert("logout success");
       if(response.status != 'connected')
       {
          _logout();
@@ -347,111 +350,6 @@ function facebook_loginCallback()
             }
          });
       }
-
-      //$(".sign_in").live('click', function(evt)
-      //);
-      //Ext.util.Cookies.set('fbAppId', (Genesis.fbAppId != 0) ? Genesis.fbAppId : Genesis.toontiFbAppId);
-
-      /*
-       var accountCreationInfo = Seam.Remoting.createType("com.toonti.soc.user.UserAccountCreation");
-       accountCreationInfo.setFbId(response.id);
-       accountCreationInfo.setFirstName(response.first_name);
-       accountCreationInfo.setLastName(response.last_name);
-       accountCreationInfo.setEmail(response.email);
-       accountCreationInfo.setPassword('');
-       var genderTypes =
-       {
-       'male' : 'M',
-       'female' : 'F'
-       };
-       var gender = genderTypes[response.gender];
-       if(Ext.isEmpty(gender))
-       {
-       gender = 'U';
-       }
-       accountCreationInfo.setGender(gender);
-       var tbirthday = response.birthday;
-       var birthday;
-       if(!Ext.isEmpty(tbirthday))
-       {
-       tbirthday = tbirthday.split('/');
-       var year = Ext.num(tbirthday[2]);
-       var month =  Ext.num(tbirthday[0]) - 1;
-       var day = Ext.num(tbirthday[1]);
-       birthday = new Date(year, month, day);
-       }
-       else
-       {
-       birthday = new Date();
-       }
-       accountCreationInfo.setBirthday(birthday);
-       var subdomainName = getHostSubdomain();
-       var domainName = null;
-       if(subdomainName != null)
-       {
-       if(subdomainName == 'www')
-       {
-       subdomainName = null;
-       }
-       }
-       else
-       {
-       domainName = document.location.host;
-       }
-       var username = response.username || response.id;
-       //var thumbnails = accountCreationInfo.profileThumbnails = [];
-       if(username)
-       {
-       //for (var i=1; i<=6; i++)
-       //{
-       //thumbnails[i-1] = Genesis.getFbProfilePhotoURL(username,i);
-       //}
-       Ext.util.Cookies.set('fbUserName', username);
-       }
-       else
-       {
-       //for (var i=1; i<=6; i++)
-       //{
-       //thumbnails[i-1] = "";
-       //}
-       $.cookie('fbUserName');
-       }
-       var authenticator = Seam.Component.getInstance("authenticator");
-       authenticator.facebookLogin(accountCreationInfo, subdomainName, domainName, Ext.isEmpty(response.verified) ? false : true,
-       function(results)
-       {
-       if(results.success)
-       {
-       if(signup)
-       {
-       var subdomainName = getHostSubdomain();
-       if((!Ext.isEmpty(subdomainName) && subdomainName != 'www') || Ext.isEmpty(subdomainName))
-       {
-       location.href = Genesis.communityProfileURL;
-       }
-       else
-       {
-       location.href = Genesis.createCommunityURL;
-       }
-       }
-       else
-       {
-       window.location.reload();
-       }
-       }
-       else
-       {
-       Ext.MessageBox.show(
-       {
-       title : 'Error',
-       msg : results.items[0],
-       buttons : Ext.MessageBox.OK,
-       icon : Ext.MessageBox.ERROR
-       });
-       return false;
-       }
-       });
-       */
    });
 }
 
