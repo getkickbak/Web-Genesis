@@ -25,7 +25,7 @@ Genesis::Application.routes.draw do
   :registrations => "user_devise/registrations"
   }
 =end
-    get "/pages/how_it_works"
+    match "/how_it_works" => 'pages#how_it_works'
 
     resources :merchants do
       resources :deals

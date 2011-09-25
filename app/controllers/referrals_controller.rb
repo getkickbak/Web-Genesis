@@ -54,7 +54,7 @@ class ReferralsController < ApplicationController
         respond_to do |format|
           #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false } }
+          format.json { render :json => { :success => false, :msg => "Trouble creating a referral.  Please try again." } }
         end
       end
     end
@@ -65,11 +65,11 @@ class ReferralsController < ApplicationController
     if reward
       UserMailer.reward_email(reward).deliver
       respond_to do |format|
-        format.json { render :json => { :success => true } }
+        format.json { render :json => { :success => true, :msg => "Your reward has been sent" } }
       end
     else
       respond_to do |format|
-        format.json { render :json => { :success => false } }
+        format.json { render :json => { :success => false, :msg => "You have no reward at the moment" } }
       end
     end
   end
@@ -104,7 +104,7 @@ class ReferralsController < ApplicationController
   end
    
   def destroy
-    @referral = Referral.get(params[:id])
+    @referral = Referral.get(params[:id] || not_found
     authorize! :destroy, @referral
 
     @referral.destroy

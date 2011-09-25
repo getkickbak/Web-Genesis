@@ -7,12 +7,12 @@ module Business
     end
 
     def show
-      @coupon = Coupon.first(:coupon_id => params[:id])
+      @coupon = Coupon.first(:coupon_id => params[:id]) || not_found
       authorize! :read, @coupon
 
       respond_to do |format|
         format.html # show.html.erb
-        format.xml  { render :xml => @coupon }
+        format.json  { render :json => { :success => true, :data => @coupon.to_json } }
       end
     end
 
@@ -24,7 +24,7 @@ module Business
         @coupon[:redeemed] = true
         @coupon.save
         respond_to do |format|
-          format.json { render :json => { :success => false } }
+          format.json { render :json => { :success => true } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)

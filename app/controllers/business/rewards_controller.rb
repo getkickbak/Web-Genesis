@@ -7,24 +7,24 @@ module Business
     end
 
     def show
-      @reward = Reward.get(params[:id])
+      @reward = Reward.get(params[:id]) || not_found
       authorize! :read, @reward
 
       respond_to do |format|
         format.html # show.html.erb
-        format.xml  { render :xml => @reward }
+        format.json  { render :json => { :success => true, :data => @reward.to_json } }
       end
     end
 
     def redeem
-      @reward = Reward.get(params[:id])
+      @reward = Reward.get(params[:id]) || not_found
       authorize! :update, @reward
 
       begin
         @reward[:redeemed] = true
         @reward.save
         respond_to do |format|
-          format.json { render :json => { :success => false } }
+          format.json { render :json => { :success => true } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)

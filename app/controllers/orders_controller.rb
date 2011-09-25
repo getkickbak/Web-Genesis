@@ -24,7 +24,7 @@ class OrdersController < ApplicationController
 
   def show
     #@user = User.get(params[:user_id])
-    @order = Order.first(:order_id => params[:id])
+    @order = Order.first(:order_id => params[:id]) || not_found
     authorize! :read, @order
 
     respond_to do |format|
@@ -53,7 +53,7 @@ class OrdersController < ApplicationController
 
     Order.transaction do
       begin
-        @deal = Deal.first(:deal_id => params[:id])
+        @deal = Deal.first(:deal_id => params[:id]) || not_found
         @subdeal = Subdeal.get(params[:order][:subdeal_id])
         referral_id = 0;
         if (session[:referral_id])
@@ -97,8 +97,7 @@ class OrdersController < ApplicationController
   def pay_details
     @order = Order.first(:order_id => session[:order_id])
     if !@order || @order.order_id != params[:order_id]
-      redirect_to :controller => 'calls', :action => 'error'
-    return
+      raise Exception.new
     end
 
     authorize! :create, @order
@@ -145,8 +144,7 @@ class OrdersController < ApplicationController
   def cancel
     @order = Order.first(:order_id => session[:order_id])
     if !@order
-      redirect_to :controller => 'calls', :action => 'error'
-    return
+      raise Exception.new
     end
 
     authorize! :destroy, @order
@@ -270,7 +268,7 @@ class OrdersController < ApplicationController
       end
     else
       session[:paypal_error]=@transaction.response
-      redirect_to :controller => 'calls', :action => 'error'
+      raise Exception.new("Payment Error.  Please Try Again.")
     end
   end
 end

@@ -7,14 +7,17 @@ module Business
     include SessionsHelper
     #check_authorization :unless => :devise_controller?
 
-    unless ActionController::Base.consider_all_requests_local
+    unless Rails.application.config.consider_all_requests_loca
       rescue_from Exception, :with => :render_error
-      rescue_from ActiveRecord::RecordNotFound, :with => :render_not_found
       rescue_from ActionController::RoutingError, :with => :render_not_found
       rescue_from ActionController::UnknownController, :with => :render_not_found
       rescue_from ActionController::UnknownAction, :with => :render_not_found
     end
 
+    def not_found
+      raise ActionController::RoutingError.new('Not Found')
+    end
+  
     def current_ability
       @current_ability ||= MerchantAbility.new(current_merchant)
     end
