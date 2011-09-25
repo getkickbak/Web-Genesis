@@ -122,7 +122,7 @@ class DealsController < ApplicationController
     result = Referral.find_by_deal(@deal.id, start, max)
 
     respond_to do |format|
-      format.json { render :json => { :success => true, :data => result[:items].to_json(:only => [:photo_url, :comment, :created_ts], :methods => [:creator] ), :total => result[:total] } }
+      format.json { render :json => { :success => true, :data => result[:items].to_json(:only => [:photo_url, :comment, :created_ts], :methods => [:creator]), :total => result[:total] } }
     end  
   end
   

@@ -32,7 +32,7 @@ call to action
                   <tr>
                      <td colspan="2" style="margin:0px;padding:0px 0px 0px 10px;" >
                      <p style="margin:0px;padding:0px;">
-                        <a href="<%= "http://www.facebook.com/profile.php?id=#{current_user.facebook_uid}" %>" target="_blank"><%= current_user.name.split(' ')[0] %></a>, write a recommendation to your friends get rewarded!
+                        <a href="<%= "http://www.facebook.com/profile.php?id=#{current_user.facebook_id}" %>" target="_blank"><%= current_user.name.split(' ')[0] %></a>, write a recommendation to your friends get rewarded!
                      </p></td>
                   </tr>
                   <tr>
@@ -60,7 +60,7 @@ call to action
                   <tr>
                      <td colspan="2" style="margin:0px;padding:0px 0px 0px 10px;" >
                      <p style="margin:0px;padding:0px;">
-                        Recommendation from <% if signed_in? && @referral.creator.id == current_user.id %> you<% else %> your friend<% end %>, <a href="<%= "http://www.facebook.com/profile.php?id=#{@referral.creator.facebook_uid}" %>" target="_blank"><%= @referral.creator.name %></a>:
+                        Recommendation from <% if signed_in? && @referral.creator.id == current_user.id %> you<% else %> your friend<% end %>, <a href="<%= "http://www.facebook.com/profile.php?id=#{@referral.creator.facebook_id}" %>" target="_blank"><%= @referral.creator.name %></a>:
                      </p></td>
                   </tr>
                   <tr>
