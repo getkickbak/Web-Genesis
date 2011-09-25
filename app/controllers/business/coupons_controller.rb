@@ -17,7 +17,7 @@ module Business
     end
 
     def redeem
-      @coupon = Coupon.first(:coupon_id => params[:id])
+      @coupon = Coupon.first(:coupon_id => params[:id]) || not_found
       authorize! :update, Coupon
 
       begin
