@@ -31,7 +31,7 @@ class Deal
   belongs_to :merchant
 
   accepts_nested_attributes_for :referral_subjects, :allow_destroy => true, :reject_if => lambda { |s| s[:content].blank? }
-  accepts_nested_attributes_for :subdeals, :allow_destroy => true, :reject_if => lambda { |s| s[:title].blank? || s[:regular_price].blank? || s[:discount_price].blank? }
+  accepts_nested_attributes_for :subdeals, :allow_destroy => true, :reject_if => lambda { |s| s[:title].blank? || s[:coupon_title].blank? || s[:regular_price].blank? || s[:discount_price].blank? }
 
   validates_with_method :validate_min_subdeals, :validate_min_referral_subjects, :validate_start_date, :validate_end_date, :validate_expiry_date
 

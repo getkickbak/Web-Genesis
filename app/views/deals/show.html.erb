@@ -12,15 +12,15 @@ call to action
             <div class="span24">
                <div class="hero-unit" style="height:270px;">
                   <img style="margin-left:10px;width:250px;float:right;" src="http://image.shutterstock.com/display_pic_with_logo/513907/513907,1275904761,8/stock-vector-vector-red-tape-and-bow-54699760.jpg"/>
-                  <h3>Refer friends and get a C$2 Tim Horton Gift Card plus the option to purchase a C$80 Store Coupon valued at C$100!</h3>
+                  <h3>Refer friends and get a C$2 Tim Hortons Gift Card plus the option to purchase the great deal below!</h3>
                   <small>
-                     Get a C$2 Tim Horton Gift Card when you spread the deal to your Facebook Friends.
+                     Get a C$2 Tim Hortons Gift Card when you spread the deal to your Facebook Friends.
                   </small>
                   <p style="text-align:center;margin-top:50px;font-weight:bold;">
                   	 <% if signed_in? %>
-                     <a class="btn fbtag large">Refer a Friend! &raquo;</a>
+                     <a class="btn fbtag large">Refer your Friends! &raquo;</a>
                      <% else %>
-                     <a class="btn fbtag large" onclick="loginPopup();">Refer a Friend! &raquo;</a>
+                     <a class="btn fbtag large" onclick="loginPopup();">Refer your Friends! &raquo;</a>
                      <% end %>
                   </p>
                </div>
@@ -173,7 +173,7 @@ call to action
                         <p id="merchant_address1">
                            <%= @deal.merchant.address1 %>
                         </p>
-                        <% if @deal.merchant.address2 %>
+                        <% if @deal.merchant.address2 && !@deal.merchant.address2.empty? %>
                         <p id="merchant_address2">
                            <%= @deal.merchant.address2 %>
                         </p>
@@ -384,6 +384,10 @@ We cannot guarantee that a previous buy will appear again. The best thing to do 
 <p>
    <b>Subdeal Title:</b>
    <%= subdeal.title %>
+</p>
+<p>
+   <b>Subdeal Coupon Title:</b>
+   <%= subdeal.coupon_title %>
 </p>
 <p>
    <b>Regular Price:</b>

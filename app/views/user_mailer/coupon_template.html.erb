@@ -1,56 +1,51 @@
 <div style="text-align:left;width:643px;border:#000000 1px solid;background:#fcf8e0;font-family:Arial, Helvetica, sans-serif;font-size:13px;" id="yui_3_2_0_1_13164539816631680">
-   <a rel="nofollow" id="yiv77517769email_voucher_header" target="_blank" href="http://www.wagjag.com">
-   <img src="http://www.wagjag.com/images/email_header.jpg" border="0" alt="wagjag.com">
-   </a>
-   <br>
-   <div style="margin-left:15px;" id="yui_3_2_0_1_13164539816631679">
-      <br>
-      <br>
-      <center id="yui_3_2_0_1_13164539816631678">
-         <div style="font-size:11px;border:#000000 1px solid;text-align:left;padding:10px;width:500px;" id="yui_3_2_0_1_13164539816631677">
-            <div style="width:98%;border-bottom:#c1c1c1 1px solid;font-size:24px;color:#c1c1c1;font-weight:bold;">
-               Voucher: &nbsp; &nbsp; &nbsp; Emeg-gujE-572173-2-06CA7F
-            </div>
-            <span style="font-size:14px;"><b>
-               <p>
-                  5 class pass at The Yoga Sanctuary
-               </p></b></span>
-            <br>
-            <table style="font-size:11px;" id="yui_3_2_0_1_13164539816631676">
-               <tbody id="yui_3_2_0_1_13164539816631675">
-                  <tr id="yui_3_2_0_1_13164539816631674">
-                     <td colspan="2" id="yui_3_2_0_1_13164539816631673"><span style="font-size:12px;">Selected Option: 2 College Street</span>
-                     <br>
-                     </td>
-                  </tr>
-                  <tr>
-                     <td style="width:150px;margin-right:10px;" valign="top"> The Yoga Sanctuary
-                     <br>
-                     <br>
-                     ,
-                     <br>
-                     <br>
-                     (416) 461-6161</td>
-                     <td><b>Details:</b>
-                     <br>
-                     Must use first class by Dec 21, 2011. Pass will expire 1 year after first class
-                     Valid only at the location chosen(indicated on this voucher)
-                     To redeem please print this voucher and bring to location chosen
-                     Taxes included. Voucher has no cash value </td>
-                  </tr>
-               </tbody>
-            </table>
-         </div>
-         <br>
-         <center>
-            Questions? Email: <a rel="nofollow" ymailto="mailto:info@wagjag.com" target="_blank" href="mailto:info@wagjag.com">info@wagjag.com</a>
-         </center>
-         <br>
-         <center>
-            <a rel="nofollow" target="_blank" href="http://www.wagjag.com">WagJag.com</a>
-         </center>
-         <br>
-         <br>
-      </center>
-   </div>
+	<div id="yui_3_2_0_1_13164539816631679">
+		<br>
+		<br>
+		<center id="yui_3_2_0_1_13164539816631678">
+			<div style="font-size:11px;text-align:left;padding:20px;" id="yui_3_2_0_1_13164539816631677">
+				<div style="width:98%;border-bottom:#c1c1c1 1px solid;font-size:24px;color:#c1c1c1;font-weight:bold;">
+					Voucher: &nbsp; &nbsp; &nbsp; <%= @coupon_id %>
+				</div>
+				<span style="font-size:20px;"><b><%= @coupon_title %></b></span>
+				<br>
+				<table style="font-size:11px;" id="yui_3_2_0_1_13164539816631676">
+					<tbody id="yui_3_2_0_1_13164539816631675">
+						<tr>
+							<td style="width:150px;margin-right:10px;" valign="top">
+							<b>Redeem at:</b>	
+							<br>
+							<%= @order.deal.merchant.name %>
+							<br>
+							<%= @order.deal.merchant.address1 %>
+							<br>
+							<% if @order.deal.merchant.address2 && !@order.deal.merchant.address2.empty? %>
+							<%= @order.deal.merchant.address2 %>
+							<br>
+							<% end %>
+							<%= @order.deal.merchant.city %>, <%= @order.deal.merchant.state %> <%= @order.deal.merchant.zipcode %>
+							<br>
+							<%= @order.deal.merchant.phone %> </td>
+						</tr>
+						<tr>
+							<td><b>Details:</b>
+							<br>
+							<%= @order.deal.details %> </td>
+							<td style="width:150px;margin-right:10px;" valign="top"><img src="<%= @qr_code %>"></td
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<br>
+			<center>
+				Questions? Email: <a rel="nofollow" ymailto="mailto:info@justformyfriends.com" target="_blank" href="mailto:info@justformyfriends.com">info@justformyfriends.com</a>
+			</center>
+			<br>
+			<center>
+				<a rel="nofollow" target="_blank" href="http://www.justformyfriends.com">JustForMyFriends.com</a>
+			</center>
+			<br>
+			<br>
+		</center>
+	</div>
 </div>

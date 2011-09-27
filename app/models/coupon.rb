@@ -7,6 +7,7 @@ class Coupon
 
   property :id, Serial
   property :coupon_id, String, :unique_index => true, :default => 0
+  property :coupon_title, String, :default => ""
   property :barcode, String, :default => ""
   property :qr_code, String, :default => ""
   property :redeemed, Boolean, :default => false
