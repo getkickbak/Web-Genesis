@@ -119,6 +119,12 @@ class User
     self
   end
     
+  def as_json(options)
+    only = {:only => [:name, :facebook_id]}
+    options = options.nil? ? only : options.merge(only)
+     super(options)
+  end
+    
   private
     
     def make_salt

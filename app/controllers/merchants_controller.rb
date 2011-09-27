@@ -16,7 +16,7 @@ class MerchantsController < ApplicationController
   end
 
   def show
-    @merchant = Merchant.first(:merchant_id => params[:id])
+    @merchant = Merchant.first(:merchant_id => params[:id]) || not_found
     authorize! :read, @merchant
 
     respond_to do |format|
@@ -36,7 +36,7 @@ class MerchantsController < ApplicationController
   end
 
   def edit
-    @merchant = Merchant.first(:merchant_id => params[:id])
+    @merchant = Merchant.first(:merchant_id => params[:id]) || not_found
     authorize! :update, @merchant
   end
 
@@ -64,7 +64,7 @@ class MerchantsController < ApplicationController
   def update
     Merchant.transaction do
       begin
-        @merchant = Merchant.first(:merchant_id => params[:id])
+        @merchant = Merchant.first(:merchant_id => params[:id]) || not_found
         authorize! :update, @merchant
 
         @merchant.update(params[:merchant])
@@ -84,7 +84,7 @@ class MerchantsController < ApplicationController
   end
 
   def destroy
-    @merchant = Merchant.first(:merchant_id => params[:id])
+    @merchant = Merchant.first(:merchant_id => params[:id]) || not_found
     authorize! :destroy, @merchant
 
     @merchant.destroy

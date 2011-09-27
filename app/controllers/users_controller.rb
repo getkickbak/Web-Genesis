@@ -16,7 +16,7 @@ class UsersController < ApplicationController
   end
 
   def show
-    @user = User.get(params[:id])
+    @user = User.first(params[:id]) || not_found
     authorize! :read, @user
 
     respond_to do |format|
@@ -36,7 +36,7 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user = User.get(params[:id])
+    @user = User.first(params[:id]) || not_found
     authorize! :update, @user
   end
 
@@ -67,7 +67,7 @@ class UsersController < ApplicationController
   def update
     User.transaction do
       begin
-        @user = User.get(params[:id])
+        @user = User.first(params[:id]) || not_found
         authorize! :update, @user
 
         @user.update(params[:user])
@@ -89,7 +89,7 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    @user = User.get(params[:id])
+    @user = User.get(params[:id]) || not_found
     authorize! :destroy, @user
    
     @user.destroy

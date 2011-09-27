@@ -24,7 +24,8 @@ function get_referrals()
 		//processData: false,
 		//contentType: "application/json",
 		success : function(response) {
-			data = response.data;
+			data = jQuery.parseJSON(response.data);
+			test = data;
 		}
 	});	
 }

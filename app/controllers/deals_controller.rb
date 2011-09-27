@@ -9,8 +9,8 @@ class DealsController < ApplicationController
     start = 0
     max = 10
     @merchant = Merchant.first(:merchant_id => merchant_id)
-    @deals = Deal.find(@merchant.id, start, max)
-
+    @deals = Deal.find(@merchant.id, start, max) || not_found
+ 
     respond_to do |format|
       format.html # index.html.erb
       #format.xml  { render :xml => @deals }
@@ -22,7 +22,7 @@ class DealsController < ApplicationController
       @merchant = Merchant.first(:merchant_id => params[:merchant_id])
     end
     if params[:id]
-      @deal = Deal.first(:deal_id => params[:id])  
+      @deal = Deal.first(:deal_id => params[:id]) || not_found
     else
       @deal = Deal.get(1)
     end    
@@ -59,8 +59,8 @@ class DealsController < ApplicationController
   end
 
   def edit
-    @merchant = Merchant.first(:merchant_id => params[:merchant_id])
-    @deal = Deal.first(:deal_id => params[:id])
+    @merchant = Merchant.first(:merchant_id => params[:merchant_id]) || not_found
+    @deal = Deal.first(:deal_id => params[:id]) || not_found
     authorize! :update, @deal
   end
 
@@ -93,7 +93,7 @@ class DealsController < ApplicationController
     Deal.transaction do
       begin
         @merchant = Merchant.first(params[:merchant_id])
-        @deal = Deal.first(params[:id])
+        @deal = Deal.first(params[:id]) || not_found
         authorize! :update, @deal
 
         @deal.update(params[:deal])
@@ -114,7 +114,7 @@ class DealsController < ApplicationController
   end
 
   def get_referrals
-    @deal = Deal.first(:deal_id => params[:id])
+    @deal = Deal.first(:deal_id => params[:id]) || not_found
     authorize! :read, @deal
 
     start = params[:start].to_i
@@ -122,12 +122,12 @@ class DealsController < ApplicationController
     result = Referral.find_by_deal(@deal.id, start, max)
 
     respond_to do |format|
-      format.json { render :json => { :success => true, :data => result[:items].to_json(:only => [:photo_url, :comment, :created_ts], :methods => [:creator] ), :total => result[:total] } }
+      format.json { render :json => { :success => true, :data => result[:items].to_json(:only => [:photo_url, :comment, :created_ts], :methods => [:creator]), :total => result[:total] } }
     end  
   end
   
   def destroy
-    @deal = Deal.first(:deal_id => params[:id])
+    @deal = Deal.first(:deal_id => params[:id]) || not_found
     authorize! :destroy, @deal
 
     @deal.destroy
