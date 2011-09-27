@@ -66,5 +66,18 @@ class Referral
     result[:items] = referrals
     return result
   end  
-  
+
+  def self.find_referrers(deal_id, max)
+    count = Referral.count(Referral.deal.id => deal_id)
+    referrer_ids = DataMapper.repository(:default).adapter.select(
+      "SELECT creator_id FROM referrals WHERE deal_id = ?
+       ORDER BY created_ts DESC 
+       LIMIT 0,?", deal_id, max 
+    )
+    referrers = User.all(:id => referrer_ids)
+    result = {}
+    result[:total] = count
+    result[:items] = referrers
+    erturn result
+  end  
 end

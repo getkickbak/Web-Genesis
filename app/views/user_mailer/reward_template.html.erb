@@ -4,15 +4,15 @@
 		<br>
 		<center id="yui_3_2_0_1_13164539816631678">
 			<div style="font-size:11px;text-align:left;padding:20px;" id="yui_3_2_0_1_13164539816631677">
-				<div style="width:98%;border-bottom:#c1c1c1 1px solid;font-size:24px;color:#c1c1c1;font-weight:bold;">
+				<div style="width:100%;margin-bottom:10px;border-bottom:#c1c1c1 1px solid;font-size:24px;color:#c1c1c1;font-weight:bold;">
 					Reward: &nbsp; &nbsp; &nbsp; <%= @reward_code %>
 				</div>
 				<span style="font-size:20px;"><b>Free C$2 Tim Hortons Gift Card</b></span>
 				<br>
-				<table style="font-size:11px;" id="yui_3_2_0_1_13164539816631676">
+				<table style="font-size:13px;margin-top:10px;" id="yui_3_2_0_1_13164539816631676">
 					<tbody id="yui_3_2_0_1_13164539816631675">
 						<tr>
-							<td style="width:150px;margin-right:10px;" valign="top">
+							<td style="margin-right:10px;" valign="top">
 							<b>Redeem at:</b>	
 							<br>
 							<%= @deal.merchant.name %>
@@ -25,13 +25,13 @@
 							<% end %>
 							<%= @deal.merchant.city %>, <%= @deal.merchant.state %> <%= @deal.merchant.zipcode %>
 							<br>
-							<%= @deal.merchant.phone %> </td>
-						</tr>
-						<tr>
-							<td><b>Details:</b>
+							<%= @deal.merchant.phone %>
 							<br>
-							<%= @deal.details %> </td>
-							<td style="width:150px;margin-right:10px;" valign="top"><img src="<%= @qr_code %>"></td
+							<br>
+							<b>Details:</b>
+							<br>
+							<%= @deal.details %></td>
+							<td style="width:150px;margin-right:10px;" valign="top"><img src="<%= @qr_code %>"></td>
 						</tr>
 					</tbody>
 				</table>

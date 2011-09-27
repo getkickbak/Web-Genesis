@@ -54,7 +54,7 @@ Genesis::Application.routes.draw do
     match '/deals/:id/complete_order' => 'orders#create', :via => :post, :as => :complete_order
     match '/deals/:id/pay_details' => 'orders#pay_details', :as => :pay_details
     match '/deals/:id/thanks' => 'orders#thanks', :as => :pay_thanks
-    match '/deals/:id/referrals' => 'deals#get_referrals' 
+    match '/deals/:id/referrals' => 'referrals#find_by_deal' 
 
     match '/deals/:id/cancel_order' => 'orders#cancel'
     match '/deals/:id/referrals/create' => 'referrals#create', :via => :post, :as => :new_referral    
