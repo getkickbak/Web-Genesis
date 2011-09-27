@@ -1,7 +1,7 @@
 Genesis =
 {
    fbAppId : '197968780267830',
-   fb_login_tag : '<fb:login-button perms="email,user_birthday,publish_stream" on-login="facebook_onLogin();" size="large" background="dark" length="long" autologoutlink="true"></fb:login-button>',
+   fb_login_tag : '<fb:login-button perms="email,user_birthday,publish_stream" on-login="facebook_onLogin();" size="large" background="dark" length="long"></fb:login-button>',
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    initDone : false,
@@ -320,7 +320,7 @@ function facebook_loginCallback()
    {
       if(response.id == null)
       {
-         if($("#fb_account")[0])
+         //if($("#fb_account")[0])
          {
             // Show Login Button to log into Facebook
             facebook_onLogout();
@@ -356,17 +356,24 @@ function facebook_loginCallback()
 function facebook_onLogin()
 {
    $("#fb_login").css("display", "none");
-   FB.login(function(res)
+   try
    {
-      if(res.status == 'connected')
+      FB.login(function(res)
       {
-         facebook_loginCallback();
-      }
-   },
+         if(res.status == 'connected')
+         {
+            facebook_loginCallback();
+         }
+      },
+      {
+         //scope : 'email,user_birthday,publish_stream'
+         perms : 'email,user_birthday,publish_stream'
+      });
+   }
+   catch(e)
    {
-      //scope : 'email,user_birthday,publish_stream'
-      perms : 'email,user_birthday,publish_stream'
-   });
+      facebook_loginCallback();
+   }
 }
 
 _fb_connect = _fb_disconnect = function()
