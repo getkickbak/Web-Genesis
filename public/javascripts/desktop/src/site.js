@@ -303,11 +303,11 @@ Site =
    {
       return '<li><table class="hero-referrals hero-referralSeparator">' + '<tr>' + '<td width="100">' + '<img width="100" src="http://graph.facebook.com/' + facebook_id + '/picture?type=normal&"/>' + '</td>' + '<td>' + '<div class="hero-start">' + '<p>' + comment + '</p>' + '</div>' + '<div class="hero-end">&#160;</div>' + '</td>' + '</tr>' + '</table></li>';
    },
-   getReferrals : function(referrals)
+   getReferrals : function()
    {
       var start = 0, end = 10;
       var referralsList = $("#referralsList");
-
+      var referrals = $('#referralsList .scroller ul');
       $.ajax(
       {
          url : location.protocol+'//'+location.host+location.pathname + "/referrals",
@@ -418,7 +418,7 @@ $(document).ready($(function()
       // switch to 1st tab
       $highlightsCtn.switchClass("span24", "span12", 1000, function()
       {
-         switchTab($highlights1Tab, $highlights1);
+         Genesis.switchTab($highlights1Tab, $highlights1);
       });
    });
    $detailsBtn.click(function()
@@ -439,7 +439,7 @@ $(document).ready($(function()
          });
       }
       // switch to 2nd tab
-      switchTab($highlights2Tab, $highlights2);
+      Genesis.switchTab($highlights2Tab, $highlights2);
       $highlightsCtn.switchClass("span12", "span24", 1000, function()
       {
       });
@@ -460,8 +460,10 @@ $(document).ready($(function()
    {
       referralFbTag = true;
    });
+   /*
    $("#referralsBtn").bind('click', function()
    {
       Site.getReferrals($("#referralsList .scroller ul"));
    });
+   */
 }));
