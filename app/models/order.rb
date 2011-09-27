@@ -40,7 +40,7 @@ class Order
     order.deal = deal
     order.user = user
     
-    qr = RQR::QRCode.new()
+    qr = RQR::QRCode.new(:module_size => 3)
     coupon_id = "#{rand(1000) + 3000}#{now.to_i}"
     (0..quantity-1).each do |i|
       coupon = order.coupons.new

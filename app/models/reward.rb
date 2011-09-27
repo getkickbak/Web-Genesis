@@ -12,14 +12,14 @@ class Reward
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
 
-  attr_accessible :referral_id, :reward_code
+  attr_accessible :referral_id, :reward_code, :qr_code
 
   belongs_to :deal
   belongs_to :user
   
   def self.create(deal, user, referral_id)
     now = Time.now
-    qr = RQR::QRCode.new()
+    qr = RQR::QRCode.new(:module_size => 3)
     url = "http://www.justformyfriends.com"
     reward_code = "#{now.to_i}#{rand(1000) + 1000}"
     filename = APP_PROP["REWARD_QR_CODE_FILE_PATH"] + reward_code + ".png"

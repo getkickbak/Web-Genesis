@@ -4,15 +4,15 @@
 		<br>
 		<center id="yui_3_2_0_1_13164539816631678">
 			<div style="font-size:11px;text-align:left;padding:20px;" id="yui_3_2_0_1_13164539816631677">
-				<div style="width:98%;border-bottom:#c1c1c1 1px solid;font-size:24px;color:#c1c1c1;font-weight:bold;">
+				<div style="width:100%;margin-bottom:10px;border-bottom:#c1c1c1 1px solid;font-size:24px;color:#c1c1c1;font-weight:bold;">
 					Voucher: &nbsp; &nbsp; &nbsp; <%= @coupon_id %>
 				</div>
 				<span style="font-size:20px;"><b><%= @coupon_title %></b></span>
 				<br>
-				<table style="font-size:11px;" id="yui_3_2_0_1_13164539816631676">
+				<table style="font-size:13px;margin-top:10px;" id="yui_3_2_0_1_13164539816631676">
 					<tbody id="yui_3_2_0_1_13164539816631675">
 						<tr>
-							<td style="width:150px;margin-right:10px;" valign="top">
+							<td style="margin-right:10px;" valign="top">
 							<b>Redeem at:</b>	
 							<br>
 							<%= @order.deal.merchant.name %>
@@ -25,13 +25,13 @@
 							<% end %>
 							<%= @order.deal.merchant.city %>, <%= @order.deal.merchant.state %> <%= @order.deal.merchant.zipcode %>
 							<br>
-							<%= @order.deal.merchant.phone %> </td>
-						</tr>
-						<tr>
-							<td><b>Details:</b>
+							<%= @order.deal.merchant.phone %> 
 							<br>
-							<%= @order.deal.details %> </td>
-							<td style="width:150px;margin-right:10px;" valign="top"><img src="<%= @qr_code %>"></td
+							<br>
+							<b>Details:</b>
+							<br>
+							<%= @order.deal.details %></td>
+							<td style="width:150px;margin-right:10px;" valign="top"><img src="<%= @qr_code %>"></td>
 						</tr>
 					</tbody>
 				</table>
