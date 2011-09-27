@@ -27,15 +27,6 @@
 @blueDark:			 #495699;
 @gold:				 #FFC500;
 @goldDark:			 #ECB702;
-.noMargin {
-	margin : 0px !important;
-}
-.noPadding {
-	padding : 0px !important;
-}
-.noWrap {
-	white-space:nowrap;
-}
 
 // GRID SYSTEM
 // -----------
@@ -220,38 +211,38 @@
 }
 
 .btn {
-  //.button(#1174C6);
-  .transition(.1s linear all);
-  &.primary {
-    #gradient > .vertical(@green, @greenDark);
-    color: #fff;
-    text-shadow: 0 -1px 0 rgba(0,0,0,.25);
-    border-color: @greenDark @greenDark darken(@greenDark, 15%);
-    border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
-    &:hover {
+   //.button(#1174C6);
+   .transition(.1s linear all);
+   &.primary {
+      #gradient > .vertical(@green, @greenDark);
       color: #fff;
-    }
-  }
-  &.pricetag {
-  	#gradient > .vertical(@red, @redDark);
-  	color: #fff;
-  	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
-  	border-color: @redDark @redDark darken(@redDark, 15%);
-  	border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
-  	&:hover {
-    	color: #fff;
-  	}
-  }
-  &.fbtag {
-  	#gradient > .vertical(@blue, @blueDark);
-  	color: #fff;
-  	text-shadow: 0 -1px 0 rgba(0,0,0,.25);
-  	border-color: @blueDark @blueDark darken(@blueDark, 15%);
-  	border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
-  	&:hover {
-    	color: #fff;
-  	}
-  }
+      text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+      border-color: @greenDark @greenDark darken(@greenDark, 15%);
+      border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+      &:hover {
+         color: #fff;
+      }
+   }
+   &.pricetag {
+  	   #gradient > .vertical(@red, @redDark);
+  	   color: #fff;
+  	   text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+  	   border-color: @redDark @redDark darken(@redDark, 15%);
+  	   border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+  	   &:hover {
+         color: #fff;
+  	   }
+   }
+   &.fbtag {
+  	   #gradient > .vertical(@blue, @blueDark);
+  	   color: #fff;
+  	   text-shadow: 0 -1px 0 rgba(0,0,0,.25);
+  	   border-color: @blueDark @blueDark darken(@blueDark, 15%);
+  	   border-color: rgba(0,0,0,.1) rgba(0,0,0,.1) fadein(rgba(0,0,0,.1), 15%);
+  	   &:hover {
+    	 color: #fff;
+  	   }
+   }
    .rewardtag {
       #gradient > .vertical(@gold, @goldDark);
       color: #fff;
@@ -262,52 +253,33 @@
   			color: #fff;
 		}
 	}
-  &.large {
-    font-size: 16px;
-    line-height: 28px;
-    .border-radius(6px);
-  }
-  &.small {
-    padding-right: 9px;
-    padding-left: 9px;
-    font-size: 11px;
-  }
-  &.disabled {
-    background-image: none;
-    .opacity(65);
-    cursor: default;
-  }
+   &.large {
+      font-size: 16px;
+      line-height: 28px;
+      .border-radius(6px);
+   }
+   &.small {
+      padding-right: 9px;
+      padding-left: 9px;
+      font-size: 11px;
+   }
+   &.disabled {
+      background-image: none;
+      .opacity(65);
+      cursor: default;
+   }
 
-  // this can't be included with the .disabled def because IE8 and below will drop it ;_;
-  &:disabled {
-    background-image: none;
-    .opacity(65);
-    cursor: default;
-    color: #fff;
-  }
-  &:active {
-    @shadow: inset 0 3px 7px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.05);
-    .box-shadow(@shadow);
-  }
-}
-
-.panelBodyHighlights {
-	padding-top : 10px;
-	padding-bottom: 10px;
-	padding-left : 10px;
-	padding-right : 10px;
-	background : white;
-	min-height: 232px;
-	//overflow-x : hidden;
-}
-
-body {
-	background : #89B556;
-    -webkit-font-smoothing: subpixel-antialiased;
-}
-
-a {
-	cursor : pointer;
+   // this can't be included with the .disabled def because IE8 and below will drop it ;_;
+   &:disabled {
+      background-image: none;
+      .opacity(65);
+      cursor: default;
+      color: #fff;
+   }
+   &:active {
+      @shadow: inset 0 3px 7px rgba(0,0,0,.1), 0 1px 2px rgba(0,0,0,.05);
+      .box-shadow(@shadow);
+   }
 }
 
 // ------------------------------------------------------------------
@@ -349,7 +321,6 @@ a {
    td:nth-last-child(-n+5), th:nth-last-child(-n+5) {
       text-align:center;
    }
-
 }
 
 // ------------------------------------------------------------------
@@ -396,7 +367,6 @@ a {
     Set the width of your slides container
     Set to display none, prevents content flash
 */
-
 #slides {
    .slides_container {
       soverflow:hidden;
@@ -418,9 +388,7 @@ a {
       height:337px;
       display:block;
    }
-   /*
-      Next/prev buttons
-   */
+   // Next/prev buttons
    .next, .prev {
       position:absolute;
       top:(337px-21px)/2;
@@ -452,9 +420,7 @@ a {
    .next, .prev {
       display:none;
    }
-   /*
-      Pagination Buttons
-   */
+   // Pagination Buttons
    .pagination {
       display:none;
    }
@@ -472,26 +438,27 @@ a {
     border-radius:5px;
     -webkit-border-radius:5px;
     -moz-border-radius:5px;
-}
-
-#slides .pagination li {
-    float:left;
-    margin:2px 4px;
-    list-style:none;
-}
-
-#slides .pagination li a {
-    display:block;
-    width:55px;
-    height:41px;
-    margin:1px;
-    float:left;
-    background:#f9f9f9;
-}
-
-#slides .pagination li.current a {
-    border:1px solid #7f7f7f;
-    margin:0;
+    
+    li {
+      float:left;
+      margin:2px 4px;
+      list-style:none;
+      
+      a {
+         display:block;
+         width:55px;
+         height:41px;
+         margin:1px;
+         float:left;
+         background:#f9f9f9;
+      }
+      
+      &.current a {
+         border:1px solid #7f7f7f;
+         margin:0;
+      }
+      
+   }
 }
 
 // ------------------------------------------------------------------
@@ -580,6 +547,15 @@ a {
 #mainMsg .hero-mainMsg {
    min-height:270px;
 }
+.mainMsgFooter {
+   position:absolute;
+   bottom:0;
+   left:0;
+   right:0;
+   text-align:center;
+   padding:0 0 10px 0;
+   font-weight:bold;
+}
 
 #recommendation {
    ul, li {
@@ -628,33 +604,33 @@ a {
 }
 
 .scroller {
-    position:absolute; z-index:1;
-/*  -webkit-touch-callout:none;*/
-    -webkit-tap-highlight-color:rgba(0,0,0,0);
-    width:100%;
-    padding:0;
-    top:0;
-}
-
-.scroller ul {
-    list-style:none;
-    padding:0;
-    margin:0;
-    width:100%;
-    text-align:left;
-}
+   position:absolute; z-index:1;
+// -webkit-touch-callout:none;
+   -webkit-tap-highlight-color:rgba(0,0,0,0);
+   width:100%;
+   padding:0;
+   top:0;
+    
+   ul {
+      list-style:none;
+      padding:0;
+      margin:0;
+      width:100%;
+      text-align:left;
+   }
 
 /*
-.scroller li {
-    padding:0 10px;
-    height:40px;
-    line-height:40px;
-    border-bottom:1px solid #ccc;
-    border-top:1px solid #fff;
-    background-color:#fafafa;
-    font-size:14px;
-}
+   li {
+      padding:0 10px;
+      height:40px;
+      line-height:40px;
+      border-bottom:1px solid #ccc;
+      border-top:1px solid #fff;
+      background-color:#fafafa;
+      font-size:14px;
+   }
 */
+}
 
 /**
  *
@@ -667,39 +643,39 @@ a {
     height:8px;
     bottom:1px;
     left:2px;
-    right:7px
-}
-
-.myScrollbarH > div {
-    position:absolute;
-    z-index:300;
-    height:100%;
-
-    /* The following is probably what you want to customize */
-    background-image:-webkit-gradient(linear, 0 0, 100% 0, from(#a00), to(#f00));
-    background-image:-moz-linear-gradient(top, #f00, #900);
-    background-image:-o-linear-gradient(top, #f00, #900);
-
-    border:1px solid #900;
-    -webkit-background-clip:padding-box;
-    -moz-background-clip:padding-box;
-    -o-background-clip:padding-box;
-    background-clip:padding-box;
+    right:7px;
     
-    -webkit-box-sizing:border-box;
-    -moz-box-sizing:border-box;
-    -o-box-sizing:border-box;
-    box-sizing:border-box;
+    >div {
+      position:absolute;
+      z-index:300;
+      height:100%;
+
+      /* The following is probably what you want to customize */
+      background-image:-webkit-gradient(linear, 0 0, 100% 0, from(#a00), to(#f00));
+      background-image:-moz-linear-gradient(top, #f00, #900);
+      background-image:-o-linear-gradient(top, #f00, #900);
+
+      border:1px solid #900;
+      -webkit-background-clip:padding-box;
+      -moz-background-clip:padding-box;
+      -o-background-clip:padding-box;
+      background-clip:padding-box;
     
-    -webkit-border-radius:4px;
-    -moz-border-radius:4px;
-    -o-border-radius:4px;
-    border-radius:4px;
+      -webkit-box-sizing:border-box;
+      -moz-box-sizing:border-box;
+      -o-box-sizing:border-box;
+      box-sizing:border-box;
     
-    -webkit-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
-    -moz-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
-    -o-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
-    box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+      -webkit-border-radius:4px;
+      -moz-border-radius:4px;
+      -o-border-radius:4px;
+      border-radius:4px;
+    
+      -webkit-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+      -moz-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+      -o-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+      box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+   }
 }
 
 
@@ -711,44 +687,44 @@ a {
 .myScrollbarV {
     position:absolute;
     z-index:300;
-    width:8px;bottom:7px;top:2px;right:1px
-}
-
-.myScrollbarV > div {
-    position:absolute;
-    z-index:300;
-    width:100%;
-
-    /* The following is probably what you want to customize */
-    background:-webkit-gradient(linear, 0 0, 100% 0, from(#f00), to(#900));
-    background-image:-moz-linear-gradient(top, #f00, #900);
-    background-image:-o-linear-gradient(top, #f00, #900);
-
-    border:1px solid #900;
-
-    -webkit-background-clip:padding-box;
-    -moz-background-clip:padding-box;
-    -o-background-clip:padding-box;
-    background-clip:padding-box;
+    width:8px;bottom:7px;top:2px;right:1px;
     
-    -webkit-box-sizing:border-box;
-    -moz-box-sizing:border-box;
-    -o-box-sizing:border-box;
-    box-sizing:border-box;
+    > div {
+      position:absolute;
+      z-index:300;
+      width:100%;
+
+      /* The following is probably what you want to customize */
+      background:-webkit-gradient(linear, 0 0, 100% 0, from(#f00), to(#900));
+      background-image:-moz-linear-gradient(top, #f00, #900);
+      background-image:-o-linear-gradient(top, #f00, #900);
+
+      border:1px solid #900;
+
+      -webkit-background-clip:padding-box;
+      -moz-background-clip:padding-box;
+      -o-background-clip:padding-box;
+      background-clip:padding-box;
     
-    -webkit-border-radius:4px;
-    -moz-border-radius:4px;
-    -o-border-radius:4px;
-    border-radius:4px;
+      -webkit-box-sizing:border-box;
+      -moz-box-sizing:border-box;
+      -o-box-sizing:border-box;
+      box-sizing:border-box;
     
-    -webkit-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
-    -moz-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
-    -o-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
-    box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+      -webkit-border-radius:4px;
+      -moz-border-radius:4px;
+      -o-border-radius:4px;
+      border-radius:4px;
+    
+      -webkit-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+      -moz-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+      -o-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+      box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+   }
 }
 
 // ------------------------------------------------------------------
-// Misc Classes
+// Facebook
 // ------------------------------------------------------------------
 #fb_login_img {
    height:50px;
@@ -761,37 +737,38 @@ a {
    margin-top: (50px - 21px)/2;
 }
 
+// ------------------------------------------------------------------
+// Misc Classes
+// ------------------------------------------------------------------
+
 #faq {
    dl {
       font-size : 0.875em;
    }
-
-   dl dt:first-child {
-      margin-bottom : 10px;
-   }
-
-   dl dt:nth-child(n+2) {
-    margin : 10px 0;
+   dl {
+      &:first-child {
+         margin-bottom : 10px;
+      }
+      dt:nth-child(n+2) {
+         margin : 10px 0;
+      }
    }
    dd {
-   margin-left : 0;
+      margin-left : 0;
    }
 }
 
 form {
 }
-
 form label {
 	clear:both;
 }
-
-.alignLeft {
-	text-align:left;
-	width:auto;
+body {
+   background : #89B556;
+    -webkit-font-smoothing: subpixel-antialiased;
 }
-.alignRight {
-	text-align:right;
-	width:auto;
+a {
+   cursor : pointer;
 }
 
 .popup {
@@ -806,6 +783,32 @@ form label {
    overflow:hidden;
 }
 
+.panelBodyHighlights {
+   padding-top : 10px;
+   padding-bottom: 10px;
+   padding-left : 10px;
+   padding-right : 10px;
+   background : white;
+   min-height: 232px;
+   //overflow-x : hidden;
+}
+.alignLeft {
+   text-align:left;
+   width:auto;
+}
+.alignRight {
+   text-align:right;
+   width:auto;
+}
+.noMargin {
+   margin : 0px !important;
+}
+.noPadding {
+   padding : 0px !important;
+}
+.noWrap {
+   white-space:nowrap;
+}
 
 // ------------------------------------------------------------------
 // Reward Coupon

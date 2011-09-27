@@ -31,11 +31,11 @@ call to action
                   <small>
                      Get a C$2 Tim Hortons Gift Card when you spread the deal to your Facebook Friends.
                   </small>
-                  <p style="text-align:center;margin-top:50px;font-weight:bold;">
+                  <p class="mainMsgFooter">
                   	 <% if signed_in? %>
                      <a class="btn fbtag large">Refer your Friends! &raquo;</a>
                      <% else %>
-                     <a class="btn fbtag large" onclick="loginPopup();">Refer your Friends! &raquo;</a>
+                     <a class="btn fbtag large" onclick="Genesis.loginPopup();">Refer your Friends! &raquo;</a>
                      <% end %>
                   </p>
                </div>
@@ -134,7 +134,7 @@ call to action
             </div><a data-controls-modal="referralWarning" data-backdrop="true" data-keyboard="true" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
             <% end %>
             <% else %>
-            <a style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large" onclick="loginPopup();">Buy Now! &raquo;</a>
+            <a style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large" onclick="Genesis.loginPopup();">Buy Now! &raquo;</a>
             <% end %>
             <br/>
             <script type="text/javascript" >

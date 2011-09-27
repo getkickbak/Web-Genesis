@@ -418,7 +418,7 @@ $(document).ready($(function()
       // switch to 1st tab
       $highlightsCtn.switchClass("span24", "span12", 1000, function()
       {
-         switchTab($highlights1Tab, $highlights1);
+         Genesis.switchTab($highlights1Tab, $highlights1);
       });
    });
    $detailsBtn.click(function()
@@ -439,7 +439,7 @@ $(document).ready($(function()
          });
       }
       // switch to 2nd tab
-      switchTab($highlights2Tab, $highlights2);
+      Genesis.switchTab($highlights2Tab, $highlights2);
       $highlightsCtn.switchClass("span12", "span24", 1000, function()
       {
       });

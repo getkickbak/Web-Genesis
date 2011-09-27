@@ -6,21 +6,79 @@ Genesis =
    sign_out_path : '/sign_out',
    initDone : false,
    errMsg : null,
-   warningMsg : null
+   warningMsg : null,
+   popupDialog : null,
+   _init : function()
+   {
+      if(this.initDone == true)
+      {
+         oldSessionLogin();
+         document.addEventListener('touchmove', function(e)
+         {
+            e.preventDefault();
+         }, false);
+         this.popupDialog = $("#popupDialog");
+      }
+      this.initDone = true;
+   },
+   // **************************************************************************
+   // Switch Tabs Manually
+   // **************************************************************************
+   switchTab : function(tab, tabPanel)
+   {
+      tab.parent().find('.active').removeClass('active');
+      tab.addClass('active');
+      tabPanel.parent().find('.active').removeClass('active');
+      tabPanel.addClass('active');
+   },
+   // **************************************************************************
+   // Misc Functions
+   // **************************************************************************
+   _showMsg : function(obj, msg)
+   {
+      Genesis[obj].find("*:nth-child(2)").html(msg);
+      Genesis[obj].switchClass('hide', 'in');
+      location.href = "#top";
+   },
+   showErrMsg : function(msg)
+   {
+      this._showMsg('errMsg', msg)
+   },
+   showWarningMsg : function(msg)
+   {
+      this._showMsg('warningMsg', msg)
+   },
+   // **************************************************************************
+   // Dynamic Popup
+   // **************************************************************************
+   loginPopup : function()
+   {
+      try
+      {
+         FB.Auth.setSession(null);
+      }
+      catch(e)
+      {
+      }
+      var primBtn = this.popupDialog.find(".modal-footer .primary");
+      var popupDialogTitle = this.popupDialog.find(".modal-header h3").html("Facebook Login Required");
+      var popupDialogContent = this.popupDialog.find(".modal-body").html(Genesis.fb_login_tag);
+      primBtn.attr("href", "#");
+      primBtn.attr("onclick", "$('#popupDialog').modal('hide');");
+      this.popupDialog.modal();
+      FB.XFBML.parse();
+   },
+   referralRequestPopup : function()
+   {
+      var primBtn = this.popupDialog.find(".modal-footer .primary");
+      var popupDialogTitle = this.popupDialog.find(".modal-header h3").html("Friend Referral Required before Purchase");
+      var popupDialogContent = this.popupDialog.find(".modal-body").html("<p>Before being eligible to purchase this deal, a friend referral is required.</p>");
+      primBtn.attr("href", "#mainMsg");
+      primBtn.attr("onclick", "$('#popupDialog').modal('hide');");
+      this.popupDialog.modal();
+   }
 };
 
-var _init = function()
-{
-   if(Genesis.initDone == true)
-   {
-      oldSessionLogin();
-      document.addEventListener('touchmove', function(e)
-      {
-         e.preventDefault();
-      }, false);
-   }
-   Genesis.initDone = true;
-}
 // **************************************************************************
 // Login Scripts
 // **************************************************************************
@@ -129,31 +187,6 @@ var oAuth2SessionLogin = function()
       }
    });
 }
-var loginPopup = function()
-{
-   var popupDialog = $("#popupDialog");
-   try
-   {
-      FB.Auth.setSession(null);
-   }
-   catch(e)
-   {
-   }
-   var popupDialogTitle = popupDialog.find(".modal-header h3").html("Facebook Login Required");
-   var popupDialogContent = popupDialog.find(".modal-body").html(Genesis.fb_login_tag);
-   popupDialog.find(".modal-footer .primary").attr("href", "#");
-   popupDialog.modal();
-   FB.XFBML.parse();
-}
-var referralRequestPopup = function()
-{
-   var popupDialog = $("#popupDialog");
-   var popupDialogTitle = popupDialog.find(".modal-header h3").html("Friend Referral Required before Purchase");
-   var popupDialogContent = popupDialog.find(".modal-body").html("<p>Before being eligible to purchase this deal, a friend referral is required.</p>");
-   popupDialog.find(".modal-footer .primary").attr("href", "#mainMsg");
-   popupDialog.modal();
-}
-
 window.fbAsyncInit = function()
 {
    FB.init(
@@ -166,49 +199,19 @@ window.fbAsyncInit = function()
       xfbml : false
       //,oauth : true
    });
-   _init();
+   Genesis._init();
 };
-// **************************************************************************
-// Switch Tabs Manually
-// **************************************************************************
-function switchTab(tab, tabPanel)
-{
-   tab.parent().find('.active').removeClass('active');
-   tab.addClass('active');
-   tabPanel.parent().find('.active').removeClass('active');
-   tabPanel.addClass('active');
-}
-
-// **************************************************************************
-// Misc Functions
-// **************************************************************************
-function showErrMsg(msg)
-{
-   Genesis.errMsg.find("*:nth-child(2)").html(msg);
-   Genesis.errMsg.switchClass('hide', 'in');
-   location.href = "#top";
-}
-
-function showWarningMsg(msg)
-{
-   Genesis.warningMsg.find('*:nth-child(2)').html(msg);
-   Genesis.warningMsg.switchClass('hide', 'in');
-   location.href = "#top";
-}
-
 // **************************************************************************
 // On Page Ready
 // **************************************************************************
-
 $(document).ready($(function()
 {
-   _init();
-
+   Genesis._init();
    Genesis.warningMsg = $(".alert-message.warning");
    Genesis.errMsg = $(".alert-message.error");
+
    // scroll spy logic
    // ================
-
    var activeTarget = location.hash, position =
    {
    }, $window = $(window), nav = $('body > .topbar li a'), targets = nav.map(function()
@@ -284,6 +287,8 @@ $(document).ready($(function()
       backdrop : 'static'
    });
 }));
+
+
 // **************************************************************************
 // Facebook API
 /*
