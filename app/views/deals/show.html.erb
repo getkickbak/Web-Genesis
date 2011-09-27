@@ -5,12 +5,27 @@ call to action
 -->
 <div class="row">
    <div class="span24">
+      <div class="row span0abs span24 height0" style="z-index:200;" id="referralsList">
+         <div class="hero-unit hero-referrals">
+               <p class="referralsHeader">Recommendation from others :</p>
+               <div id="referralsWrapper">
+                  <div class="scroller">
+                     <ul></ul>
+                  </div>
+               </div>
+               <div class="referralsFooter">
+                  <p>
+                     <a onclick="Site.backtoMain();" class="btn large">Back to Main &raquo;</a>
+                  </p>
+               </div>
+         </div>
+      </div>
       <div id="mainMsg" class="row">
          <a name="mainMsg"></a>
          <div class="slides_container">
          	<% if @referral.nil? %>
             <div class="span24">
-               <div class="hero-unit" style="height:270px;">
+               <div class="hero-unit hero-mainMsg">
                   <img style="margin-left:10px;width:250px;float:right;" src="http://image.shutterstock.com/display_pic_with_logo/513907/513907,1275904761,8/stock-vector-vector-red-tape-and-bow-54699760.jpg"/>
                   <h3>Refer friends and get a C$2 Tim Hortons Gift Card plus the option to purchase the great deal below!</h3>
                   <small>
@@ -36,8 +51,8 @@ call to action
                      </p></td>
                   </tr>
                   <tr>
-                     <td width="100">
-                     <img src="<%= "http://graph.facebook.com/#{current_user.facebook_id}/picture?type=normal&" %>"/>
+                     <td>
+                     <img width="100" src="<%= "http://graph.facebook.com/#{current_user.facebook_id}/picture?type=normal&" %>"/>
                      </td>
                      <td>
                      <form>
@@ -64,8 +79,8 @@ call to action
                      </p></td>
                   </tr>
                   <tr>
-                     <td width="100">
-                     <img src="<%= "http://graph.facebook.com/#{@referral.creator.facebook_id}/picture?type=normal&" %>"/>
+                     <td>
+                     <img width="100" src="<%= "http://graph.facebook.com/#{@referral.creator.facebook_id}/picture?type=normal&" %>"/>
                      </td>
                      <td>
                      <div class="hero-start">
@@ -74,8 +89,9 @@ call to action
                      <div class="hero-end">
                         &#160;
                      </div>
-                     <div>
-                        <a  id="discuss" href="#comments" style="float:right;clear:both;" class="btn large">Discuss with <%= @referral.creator.name.split(' ')[0] %>! &raquo;</a>
+                     <div style="clear:both;float:right;">
+                        <a  id="referralsBtn" class="btn large">Check out all our Referrals! &raquo;</a>
+                        <a  id="discussBtn" href="#comments" class="btn large">Discuss with <%= @referral.creator.name.split(' ')[0] %>! &raquo;</a>
                      </div></td>
                   </tr>
                </table>
@@ -84,7 +100,7 @@ call to action
          </div>
       </div>
       <!-- Example row of columns -->
-      <div class="row">
+      <div id="mainDeal" class="row">
          <div class="span24">
             <h2><%= @deal.title %></h2>
             <div id="container">
@@ -100,7 +116,8 @@ call to action
             </div>
             <h2 id="deal_countdown" class="description_footer">Time Left to Buy
             <% if signed_in? %>	
-            <% if @referral %> <a href="/deals/<%= @deal.deal_id %>/confirmation?referral_id=<%= @referral.referral_id %>" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
+            <% if @referral %>
+            <a href="/deals/<%= @deal.deal_id %>/confirmation?referral_id=<%= @referral.referral_id %>" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
             <% else %>
             <div id="referralWarning" class="modal fade hide">
                <div class="modal-header">
@@ -121,16 +138,18 @@ call to action
             <% end %>
             <br/>
             <script type="text/javascript" >
-				TargetDate = "<%= @deal.end_date %>";
-				BackColor = "";
-				ForeColor = "#676767";
-				CountActive = true;
-				CountStepper = -1;
-				LeadingZero = true;
-				DisplayFormat = "%%D%% Days %%H%% Hrs %%M%% Mins %%S%% secs";
-				FinishMessage = "The deal is over. Better luck next time!";
+               TargetDate = "<%= @deal.end_date %>";
+               BackColor = "";
+               //ForeColor = "#676767";
+               ForeColor = "black";
+               CountActive = true;
+               CountStepper = -1;
+               LeadingZero = true;
+               DisplayFormat = "%%D%% Days %%H%% Hrs %%M%% Mins %%S%% secs";
+               FinishMessage = "The deal is over. Better luck next time!";
 
-            </script><script type="text/javascript" src="/javascripts/desktop/lib/countdown.js"></script></h2>
+            </script>
+            <script type="text/javascript" src="/javascripts/desktop/lib/countdown.js"></script></h2>
          </div>
       </div>
       <div class="row">

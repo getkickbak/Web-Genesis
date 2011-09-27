@@ -44,10 +44,16 @@ function CountBack(secs)
    if(secs < 0)
    {
       document.getElementById("cntdwn").innerHTML = FinishMessage;
-      document.getElementById('cntbuta').style.display = 'none';
-      document.getElementById('cntbutb').style.display = 'block';
-      timepause();
-      document.getElementById('cntspan').style.display = 'none';
+      try
+      {
+         document.getElementById('cntbuta').style.display = 'none';
+         document.getElementById('cntbutb').style.display = 'block';
+         timepause();
+         document.getElementById('cntspan').style.display = 'none';
+      }
+      catch(e)
+      {
+      }
       return;
    }
    DisplayStr = DisplayFormat.replace(/%%D%%/g, calcage(secs, 86400, 100000));
