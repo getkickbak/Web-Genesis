@@ -503,6 +503,21 @@ a {
 	background-color:white;
 }
 
+.hero-start {
+   padding-left:30px;
+   margin-top:10px;
+   padding-top:9px;
+   padding-right:45px;
+   background-image : url(http://static02.linkedin.com/scds/common/u/img/bg/bg_question_orange_top_525x1000.png);
+   background-repeat : no-repeat;
+   overflow:hidden;
+}
+.hero-end {
+   background-image : url(http://static01.linkedin.com/scds/common/u/img/bg/bg_question_orange_bot_525x8.png);
+   background-repeat : no-repeat;
+   margin-bottom : 10px;
+}
+
 .hero-referral, .hero-referrals {
    color:gray;
  	margin-bottom : 0px;
@@ -520,37 +535,50 @@ a {
 	}
 }
 
-.height0 {
-   height:0;
-   overflow:hidden;
+#referralsList {
+   z-index:200;
+   .hero-referrals {
+      min-height:398px;
+      position:relative;
+   }
+   .referralsHeader {
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      margin:0px;
+      padding:10px 20px;
+   }
+   #referralsWrapper {
+      table.hero-referralSeparator {
+         border-width : 1px 0 0 0;
+         border-style : dotted;
+         .border-radius(0px);
+         &:first-child {
+            border-width : 0;
+         }
+         padding-top:0px;
+         padding-bottom:0px;
+         td {
+            padding-top:0px;
+            padding-bottom:0px;
+         }
+      }
+   }
+   .referralsFooter {
+      position:absolute;
+      bottom:0;
+      left:0;
+      right:0;
+      text-align:center;
+      padding:0 0 10px 0;
+      font-weight:bold;
+   }
+   
 }
 
-.hero-mainMsg {
+#mainMsg .hero-mainMsg {
    min-height:270px;
-}
-
-.hero-referrals {
-   min-height:398px;
-   position:relative;
-}
-
-.referralsHeader {
-   position:absolute;
-   top:0;
-   left:0;
-   right:0;
-   margin:0px;
-   padding:10px 20px;
-}
-
-.referralsFooter {
-   position:absolute;
-   bottom:0;
-   left:0;
-   right:0;
-   text-align:center;
-   padding:0 0 10px 0;
-   font-weight:bold;
 }
 
 #recommendation {
@@ -558,38 +586,6 @@ a {
       margin:0;
       list-style : none;
    }
-}
-
-#referralsWrapper {
-   table.hero-referralSeparator {
-      border-width : 1px 0 0 0;
-      border-style : dotted;
-      .border-radius(0px);
-      &:first-child {
-         border-width : 0;
-      }
-      padding-top:0px;
-      padding-bottom:0px;
-      td {
-         padding-top:0px;
-         padding-bottom:0px;
-      }
-   }
-}
-
-.hero-start {
-	padding-left:30px;
-	margin-top:10px;
-	padding-top:9px;
-	padding-right:45px;
-	background-image : url(http://static02.linkedin.com/scds/common/u/img/bg/bg_question_orange_top_525x1000.png);
-	background-repeat : no-repeat;
-	overflow:hidden;
-}
-.hero-end {
-	background-image : url(http://static01.linkedin.com/scds/common/u/img/bg/bg_question_orange_bot_525x8.png);
-	background-repeat : no-repeat;
-	margin-bottom : 10px;
 }
 
 // ------------------------------------------------------------------
@@ -805,6 +801,11 @@ form label {
 .invisible {
    visibility:hidden;
 }
+.height0 {
+   height:0;
+   overflow:hidden;
+}
+
 
 // ------------------------------------------------------------------
 // Reward Coupon

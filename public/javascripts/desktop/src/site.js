@@ -10,6 +10,8 @@ var _logout = function()
 };
 Site =
 {
+   referralsMinHeight : 398,
+   referralsMaxHeight : 855,
    _initFormComponents : function()
    {
       /*
@@ -320,6 +322,9 @@ Site =
             {
                var data = $.parseJSON(response.data);
                var enableScroll = false;
+               var referralsHeight = $(".hero-unit.hero-referrals");
+               var mainMsgReferralsBtn = $("#mainMsg .pagination li:last-child a");
+
                for(var i = 0; i < response.total; i++)
                {
                   referrals.append(Site.initReferrals(data[i].creator.facebook_id, data[i].comment));
@@ -327,30 +332,39 @@ Site =
                   referrals.append(Site.initReferrals(data[i].creator.facebook_id, data[i].comment));
                   referrals.append(Site.initReferrals(data[i].creator.facebook_id, data[i].comment));
                }
-               var height = Math.max($("#referralsWrapper .scroller").prop("offsetHeight"), 398 - (47 + 77));
-               if(height > (398 - (47 + 77)))
+
+               // Make sure the HTML is updated by the browser
+               setTimeout(function()
                {
-                  height = Math.min($("#referralsWrapper .scroller").prop("offsetHeight"), 855 - (47 + 77));
-                  if(height == (855 - (47 + 77)))
+                  var headerHeight = $(".referralsFooter").prop('offsetHeight');
+                  var bodyHeight = $("#referralsWrapper .scroller").prop("offsetHeight");
+                  var footerHeight = $(".referralsHeader").prop('offsetHeight');
+                  var netHeight = headerHeight + footerHeight;
+                  var height = Math.max(bodyHeight, Site.referralsMinHeight - netHeight);
+                  if(height > (Site.referralsMinHeight - netHeight))
                   {
-                     $("#mainDeal").addClass("invisible");
-                     enableScroll = true;
-                  }
-               }
-               $(".hero-unit.hero-referrals").css("height", (height + (47 + 77) - 20) + "px")
-               referralsList.removeClass("height0", 1000, function()
-               {
-                  $("#mainMsg .pagination li:last-child a").trigger("click");
-                  if(enableScroll)
-                  {
-                     Site.referralsScroll = new iScroll('referralsWrapper',
+                     height = Math.min(bodyHeight, Site.referralsMaxHeight - netHeight);
+                     if(height == (Site.referralsMaxHeight - netHeight))
                      {
-                        hScrollbar : false,
-                        vScrollbar : true
-                        //,scrollbarClass : 'myScrollbar'
-                     });
+                        $("#mainDeal").addClass("invisible");
+                        enableScroll = true;
+                     }
                   }
-               });
+                  referralsHeight.css("height", (height + netHeight - 20) + "px")
+                  referralsList.removeClass("height0", 1000, function()
+                  {
+                     mainMsgReferralsBtn.trigger("click");
+                     if(enableScroll)
+                     {
+                        Site.referralsScroll = new iScroll('referralsWrapper',
+                        {
+                           hScrollbar : false,
+                           vScrollbar : true
+                           //,scrollbarClass : 'myScrollbar'
+                        });
+                     }
+                  });
+               }, 0);
             }
             else
             {
