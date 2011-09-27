@@ -28,6 +28,19 @@ class ReferralsController < ApplicationController
     end
   end
   
+  def find_by_deal
+    @deal = Deal.first(:deal_id => params[:id]) || not_found
+    authorize! :read, @deal
+
+    start = params[:start].to_i
+    max = params[:max].to_i
+    result = Referral.find_by_deal(@deal.id, start, max)
+
+    respond_to do |format|
+      format.json { render :json => { :success => true, :data => result[:items].to_json(:only => [:photo_url, :comment, :created_ts], :methods => [:creator]), :total => result[:total] } }
+    end  
+  end
+  
   def create
     authorize! :create, Referral
 
