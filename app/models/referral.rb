@@ -37,9 +37,9 @@ class Referral
     referrals = Referral.all(Referral.creator.id => user_id, :order => [ :created_ts.desc ], :offset => start, :limit => max)
     #result = {}
     #result[:total] = count
-    #result[:items] = orders
+    #result[:items] = referrals
     #return result
-    return orders
+    return referrals
   end
 
   def self.find_received_by(user_id, start, max)
@@ -53,10 +53,18 @@ class Referral
     referrals = Referral.all(:id => referral_ids)
     #result = {}
     #result[:total] = count
-    #result[:items] = orders
+    #result[:items] = referrals
     #return result
     return referrals
   end
-  
+
+  def self.find_by_deal(deal_id, start, max)
+    count = Referral.count(Referral.deal.id => deal_id)
+    referrals = Referral.all(Referral.deal.id => deal_id, :order => [ :created_ts.desc ], :offset => start, :limit => max)
+    result = {}
+    result[:total] = count
+    result[:items] = referrals
+    return result
+  end  
   
 end

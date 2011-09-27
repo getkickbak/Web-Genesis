@@ -1,5 +1,5 @@
 class ReferralsController < ApplicationController
-  before_filter :authenticate_user!, :only => [:create]
+  before_filter :authenticate_user!, :only => [:create, :reward_email_template]
   #load_and_authorize_resource
 
   def find
@@ -74,6 +74,35 @@ class ReferralsController < ApplicationController
     end
   end
   
+  def reward_email
+    @referral = Referral.first(:referral_id => params[:id])
+    @reward = Reward.first(:referral_id => @referral.id)
+
+    respond_to do |format|
+      format.html { render :template => "user_mailer/reward_email", :locals => { :reward => @reward } }
+    #format.xml  { render :xml => @order }
+    end
+  end
+    
+  def reward_email_template
+    @referral = Referral.first(:referral_id => params[:id])
+
+    respond_to do |format|
+      format.html { render :template => "user_mailer/reward_email_template", :locals => { :referral => @referral } }
+    #format.xml  { render :xml => @order }
+    end
+  end 
+  
+  def reward_template
+    @referral = Referral.first(:referral_id => params[:id])
+    @reward = Reward.first(:referral_id => @referral.id)
+
+    respond_to do |format|
+      format.html { render :template => "user_mailer/reward_template", :locals => @reward.attributes }
+    #format.xml  { render :xml => @order }
+    end
+  end
+   
   def destroy
     @referral = Referral.get(params[:id])
     authorize! :destroy, @referral

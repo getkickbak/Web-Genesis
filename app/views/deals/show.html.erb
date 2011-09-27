@@ -6,18 +6,21 @@ call to action
 <div class="row">
    <div class="span24">
       <div class="row span0abs span24 height0" style="z-index:200;" id="referralsList">
-         <div id="referralsWrapper" class="hero-unit hero-referrals">
-             <div class="scroller">
-               <ul></ul>
-            </div>
-            <div style="position:absolute;bottom:0;text-align:center;margin-top:50px;font-weight:bold;width:100%;">
-               <p>
-                  <a onclick="Site.backtoMain();" class="btn large">Back to Main &raquo;</a>
-               </p>
-            </div>
+         <div class="hero-unit hero-referrals">
+               <p class="referralsHeader">Recommendation from others :</p>
+               <div id="referralsWrapper">
+                  <div class="scroller">
+                     <ul></ul>
+                  </div>
+               </div>
+               <div class="referralsFooter">
+                  <p>
+                     <a onclick="Site.backtoMain();" class="btn large">Back to Main &raquo;</a>
+                  </p>
+               </div>
          </div>
       </div>
-      <div class="row" id="mainMsg">
+      <div id="mainMsg" class="row">
          <a name="mainMsg"></a>
          <div class="slides_container">
          	<% if @referral.nil? %>
@@ -48,8 +51,8 @@ call to action
                      </p></td>
                   </tr>
                   <tr>
-                     <td width="100">
-                     <img src="<%= "http://graph.facebook.com/#{current_user.facebook_id}/picture?type=normal&" %>"/>
+                     <td>
+                     <img width="100" src="<%= "http://graph.facebook.com/#{current_user.facebook_id}/picture?type=normal&" %>"/>
                      </td>
                      <td>
                      <form>
@@ -76,8 +79,8 @@ call to action
                      </p></td>
                   </tr>
                   <tr>
-                     <td width="100">
-                     <img src="<%= "http://graph.facebook.com/#{@referral.creator.facebook_id}/picture?type=normal&" %>"/>
+                     <td>
+                     <img width="100" src="<%= "http://graph.facebook.com/#{@referral.creator.facebook_id}/picture?type=normal&" %>"/>
                      </td>
                      <td>
                      <div class="hero-start">
@@ -97,7 +100,7 @@ call to action
          </div>
       </div>
       <!-- Example row of columns -->
-      <div class="row">
+      <div id="mainDeal" class="row">
          <div class="span24">
             <h2><%= @deal.title %></h2>
             <div id="container">
@@ -135,16 +138,18 @@ call to action
             <% end %>
             <br/>
             <script type="text/javascript" >
-               TargetDate = "12/01/2011 12:00 am GMT-0400";
+               TargetDate = "<%= @deal.end_date %>";
                BackColor = "";
-               ForeColor = "#676767";
+               //ForeColor = "#676767";
+               ForeColor = "black";
                CountActive = true;
                CountStepper = -1;
                LeadingZero = true;
                DisplayFormat = "%%D%% Days %%H%% Hrs %%M%% Mins %%S%% secs";
                FinishMessage = "The deal is over. Better luck next time!";
 
-            </script><script type="text/javascript" src="/javascripts/desktop/lib/countdown.js"></script></h2>
+            </script>
+            <script type="text/javascript" src="/javascripts/desktop/lib/countdown.js"></script></h2>
          </div>
       </div>
       <div class="row">
@@ -409,6 +414,10 @@ We cannot guarantee that a previous buy will appear again. The best thing to do 
 </p>
 <% end %>
 <% @deal.referral_subjects.each do |subject| %>
+<p>
+   <b>Referral Seq#:</b>
+   <%= subject.seq_num %>
+</p>
 <p>
    <b>Referral Subject:</b>
    <%= subject.content %>

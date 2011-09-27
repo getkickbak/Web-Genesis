@@ -4,7 +4,7 @@ require 'caller'
 
 
 class OrdersController < ApplicationController
-  before_filter :authenticate_user!, :except => [:new]
+  before_filter :authenticate_user!, :except => [:new, :confirmed_email]
   #load_and_authorize_resource
   @@clientDetails=PayPalSDKProfiles::Profile.client_details
   def index
@@ -197,8 +197,16 @@ class OrdersController < ApplicationController
     end
   end
 
-  def coupon_email
-    #@user = User.get(params[:user_id])
+  def confirmed_email
+    @order = Order.first(:order_id => params[:id])
+
+    respond_to do |format|
+      format.html { render :template => "user_mailer/order_confirmed_email", :locals => { :order => @order } }
+    #format.xml  { render :xml => @order }
+    end
+  end
+
+  def confirmed_email_template
     @order = Order.first(:order_id => params[:id])
 
     respond_to do |format|
@@ -206,33 +214,12 @@ class OrdersController < ApplicationController
     #format.xml  { render :xml => @order }
     end
   end
-
-  def reward_email
-    #@user = User.get(params[:user_id])
-    @reward = Reward.first(:referral_id => params[:id])
-
-    respond_to do |format|
-      format.html { render :template => "user_mailer/reward_email_template", :locals => { :reward => @reward } }
-    #format.xml  { render :xml => @order }
-    end
-  end
-
-  def reward_template
-    #@user = User.get(params[:user_id])
-    @reward = Reward.first(:referral_id => params[:id])
-
-    respond_to do |format|
-      format.html { render :template => "user_mailer/reward_template" }
-    #format.xml  { render :xml => @order }
-    end
-  end
-
+  
   def coupon_template
-    #@user = User.get(params[:user_id])
-    @coupon = Coupon.first(:coupon_id => params[:id])
+    @coupon = Coupon.first(:coupon_id => params[:coupon_id])
 
     respond_to do |format|
-      format.html { render :template => "user_mailer/coupon_template" }
+      format.html { render :template => "user_mailer/coupon_template", :locals => @coupon.attributes }
     #format.xml  { render :xml => @order }
     end
   end

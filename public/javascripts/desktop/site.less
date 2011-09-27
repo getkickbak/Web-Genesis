@@ -504,7 +504,8 @@ a {
 }
 
 .hero-referral, .hero-referrals {
-	margin-bottom : 0px;
+   color:gray;
+ 	margin-bottom : 0px;
 	padding:10px;
 	td {
 		vertical-align:top;
@@ -528,11 +529,51 @@ a {
    min-height:270px;
 }
 
+.hero-referrals {
+   min-height:398px;
+   position:relative;
+}
+
+.referralsHeader {
+   position:absolute;
+   top:0;
+   left:0;
+   right:0;
+   margin:0px;
+   padding:10px 20px;
+}
+
+.referralsFooter {
+   position:absolute;
+   bottom:0;
+   left:0;
+   right:0;
+   text-align:center;
+   padding:0 0 10px 0;
+   font-weight:bold;
+}
+
+#recommendation {
+   ul, li {
+      margin:0;
+      list-style : none;
+   }
+}
+
 #referralsWrapper {
-   &.hero-referrals {
-      padding:0px;
-      min-height:371px;
-      max-height:855px;
+   table.hero-referralSeparator {
+      border-width : 1px 0 0 0;
+      border-style : dotted;
+      .border-radius(0px);
+      &:first-child {
+         border-width : 0;
+      }
+      padding-top:0px;
+      padding-bottom:0px;
+      td {
+         padding-top:0px;
+         padding-bottom:0px;
+      }
    }
 }
 
@@ -540,7 +581,7 @@ a {
 	padding-left:30px;
 	margin-top:10px;
 	padding-top:9px;
-	padding-right:40px;
+	padding-right:45px;
 	background-image : url(http://static02.linkedin.com/scds/common/u/img/bg/bg_question_orange_top_525x1000.png);
 	background-repeat : no-repeat;
 	overflow:hidden;
@@ -583,13 +624,11 @@ a {
 // Scroller
 // ------------------------------------------------------------------
 #referralsWrapper {
-   /*
-    position:absolute; z-index:1;
-    top:45px; bottom:48px; left:0;
+    position:absolute;
+    top:47px; bottom:77px; left:0;
     width:100%;
-    */
     background:white;
-    overflow:auto;
+    overflow:hidden;
 }
 
 .scroller {
@@ -598,6 +637,7 @@ a {
     -webkit-tap-highlight-color:rgba(0,0,0,0);
     width:100%;
     padding:0;
+    top:0;
 }
 
 .scroller ul {
@@ -608,6 +648,7 @@ a {
     text-align:left;
 }
 
+/*
 .scroller li {
     padding:0 10px;
     height:40px;
@@ -616,6 +657,98 @@ a {
     border-top:1px solid #fff;
     background-color:#fafafa;
     font-size:14px;
+}
+*/
+
+/**
+ *
+ * Horizontal Scrollbar
+ *
+ */
+.myScrollbarH {
+    position:absolute;
+    z-index:300;
+    height:8px;
+    bottom:1px;
+    left:2px;
+    right:7px
+}
+
+.myScrollbarH > div {
+    position:absolute;
+    z-index:300;
+    height:100%;
+
+    /* The following is probably what you want to customize */
+    background-image:-webkit-gradient(linear, 0 0, 100% 0, from(#a00), to(#f00));
+    background-image:-moz-linear-gradient(top, #f00, #900);
+    background-image:-o-linear-gradient(top, #f00, #900);
+
+    border:1px solid #900;
+    -webkit-background-clip:padding-box;
+    -moz-background-clip:padding-box;
+    -o-background-clip:padding-box;
+    background-clip:padding-box;
+    
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -o-box-sizing:border-box;
+    box-sizing:border-box;
+    
+    -webkit-border-radius:4px;
+    -moz-border-radius:4px;
+    -o-border-radius:4px;
+    border-radius:4px;
+    
+    -webkit-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+    -moz-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+    -o-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+    box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+}
+
+
+/**
+ *
+ * Vertical Scrollbar
+ *
+ */
+.myScrollbarV {
+    position:absolute;
+    z-index:300;
+    width:8px;bottom:7px;top:2px;right:1px
+}
+
+.myScrollbarV > div {
+    position:absolute;
+    z-index:300;
+    width:100%;
+
+    /* The following is probably what you want to customize */
+    background:-webkit-gradient(linear, 0 0, 100% 0, from(#f00), to(#900));
+    background-image:-moz-linear-gradient(top, #f00, #900);
+    background-image:-o-linear-gradient(top, #f00, #900);
+
+    border:1px solid #900;
+
+    -webkit-background-clip:padding-box;
+    -moz-background-clip:padding-box;
+    -o-background-clip:padding-box;
+    background-clip:padding-box;
+    
+    -webkit-box-sizing:border-box;
+    -moz-box-sizing:border-box;
+    -o-box-sizing:border-box;
+    box-sizing:border-box;
+    
+    -webkit-border-radius:4px;
+    -moz-border-radius:4px;
+    -o-border-radius:4px;
+    border-radius:4px;
+    
+    -webkit-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+    -moz-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+    -o-box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
+    box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5);
 }
 
 // ------------------------------------------------------------------
@@ -667,6 +800,10 @@ form label {
 
 .popup {
    .opacity(50);
+}
+
+.invisible {
+   visibility:hidden;
 }
 
 // ------------------------------------------------------------------

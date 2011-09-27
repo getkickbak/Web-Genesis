@@ -299,33 +299,58 @@ Site =
    },
    initReferrals : function(facebook_id, comment)
    {
-      return '<tr>' + '<td width="50">' + '<img src="http://graph.facebook.com/"' + facebook_id + '/picture?type=normal&"/>' + '</td>' + '<td>' + '<div class="hero-start">' + '<p>' + comment + '</p>' + '</div>' + '<div class="hero-end">&#160;</div>' + '</td>' + '</tr>';
+      return '<li><table class="hero-referrals hero-referralSeparator">' + '<tr>' + '<td width="100">' + '<img width="100" src="http://graph.facebook.com/' + facebook_id + '/picture?type=normal&"/>' + '</td>' + '<td>' + '<div class="hero-start">' + '<p>' + comment + '</p>' + '</div>' + '<div class="hero-end">&#160;</div>' + '</td>' + '</tr>' + '</table></li>';
    },
    getReferrals : function(referrals)
    {
       var start = 0, end = 10;
+      var referralsList = $("#referralsList");
 
       $.ajax(
       {
-         url : location.href + "/referrals/show",
+         url : "/deals/runnersshop/referrals",
          type : "GET",
-         data : "start=" + start + '&end=' + end,
+         data : "start=" + start + '&max=' + end,
          dataType : "json",
          //processData: false,
-         //contentType: "application/json",
+         contentType : "application/json",
          success : function(response)
          {
             if(response.success)
             {
-               for(var i = 0; i < response.comments.length; i++)
+               var data = $.parseJSON(response.data);
+               var enableScroll = false;
+               for(var i = 0; i < response.total; i++)
                {
-                  referrals.appendChild(Site.initReferrals(response.facebook_id, response.comments));
+                  referrals.append(Site.initReferrals(data[i].creator.facebook_id, data[i].comment));
+                  referrals.append(Site.initReferrals(data[i].creator.facebook_id, data[i].comment));
+                  referrals.append(Site.initReferrals(data[i].creator.facebook_id, data[i].comment));
+                  referrals.append(Site.initReferrals(data[i].creator.facebook_id, data[i].comment));
                }
-               if(!Site.referralsScroll)
+               var height = Math.max($("#referralsWrapper .scroller").prop("offsetHeight"), 398 - (47 + 77));
+               if(height > (398 - (47 + 77)))
                {
-                  Site.referralsScroll = new iScroll('referralsWrapper');
+                  height = Math.min($("#referralsWrapper .scroller").prop("offsetHeight"), 855 - (47 + 77));
+                  if(height == (855 - (47 + 77)))
+                  {
+                     $("#mainDeal").addClass("invisible");
+                     enableScroll = true;
+                  }
                }
-               $("#mainMsg .pagination li:last-child a").trigger("click");
+               $(".hero-unit.hero-referrals").css("height", (height + (47 + 77) - 20) + "px")
+               referralsList.removeClass("height0", 1000, function()
+               {
+                  $("#mainMsg .pagination li:last-child a").trigger("click");
+                  if(enableScroll)
+                  {
+                     Site.referralsScroll = new iScroll('referralsWrapper',
+                     {
+                        hScrollbar : false,
+                        vScrollbar : true
+                        //,scrollbarClass : 'myScrollbar'
+                     });
+                  }
+               });
             }
             else
             {
@@ -333,19 +358,19 @@ Site =
          }
       });
    },
-   showReferralsList : function(referrals)
-   {
-      var referralsList = $("#referralsWrapper").parent();
-      Site.getReferrals(referrals);
-      referralsList.removeClass("height0", 1000, function()
-      {
-      });
-   },
    backtoMain : function()
    {
       var referralsList = $("#referralsList");
+      var referrals = $("#referralsList .scroller ul");
+      if(Site.referralsScroll)
+      {
+         Site.referralsScroll.destroy();
+         $("#mainDeal").removeClass("invisible");
+         delete Site.referralsScroll;
+      }
       referralsList.addClass("height0", 1000, function()
       {
+         referrals.html('');
       });
    }
 }
@@ -366,6 +391,14 @@ $(document).ready($(function()
    Site.initMainMsg();
    Site.initSlides();
 
+   $(window).bind('mousewheel', function(event, b)
+   {
+      // Are we only the scrolling region?
+      if((event.target != document.body) && jQuery.contains($("#referralsList")[0], event.target))
+      {
+         event.preventDefault();
+      }
+   });
    $highlightsBtn.click(function()
    {
       // switch to 1st tab
@@ -415,8 +448,6 @@ $(document).ready($(function()
    });
    $("#referralsBtn").bind('click', function()
    {
-      var referrals = $("#referralsList .scroller ul");
-      referrals.html('');
-      Site.showReferralsList(referrals);
+      Site.getReferrals($("#referralsList .scroller ul"));
    });
 }));
