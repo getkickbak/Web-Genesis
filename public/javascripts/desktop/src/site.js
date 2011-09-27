@@ -230,7 +230,7 @@ Site =
          });
          $.ajax(
          {
-            url : location.href + "/referrals/create",
+            url : location.protocol+'//'+location.host+location.pathname + "/referrals/create",
             type : "POST",
             data : "comment=" + rewardMsg,
             dataType : "json",
@@ -238,7 +238,7 @@ Site =
             //contentType: "application/json",
             success : function(response)
             {
-               location.href = location.href + "?referral_id=" + response.data.referral_id
+               location.href = location.protocol+'//'+location.host+location.pathname + "?referral_id=" + response.data.referral_id
             }
          });
       });
@@ -310,7 +310,7 @@ Site =
 
       $.ajax(
       {
-         url : "/deals/runnersshop/referrals",
+         url : location.protocol+'//'+location.host+location.pathname + "/referrals",
          type : "GET",
          data : "start=" + start + '&max=' + end,
          dataType : "json",
@@ -425,8 +425,8 @@ $(document).ready($(function()
    {
       if(!$gmap[0].innerHTML)
       {
-         merchant_name = $("#merchant_name")[0].innerHTML.trim();
-         address = $("#merchant_address1")[0].innerHTML.trim() + ' ' + $("#merchant_address2")[0].innerHTML.trim() + ' ' + $("#merchant_city_state_zipcode")[0].innerHTML.trim();
+         merchant_name = $("#merchant_name").text().trim();
+         address = $("#merchant_address1").text().trim() + ' ' + $("#merchant_address2").text().trim() + ' ' + $("#merchant_city_state_zipcode").text().trim();
          $gmap.gMap(
          {
             markers : [
