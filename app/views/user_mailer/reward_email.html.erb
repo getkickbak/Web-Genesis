@@ -1,82 +1,39 @@
 <!DOCTYPE html>
 <html>
-   <head>
-      <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
-   </head>
-   <body>
-      <h2>Hi <%= @reward.user.name.split(' ')[0] %>,</h2>
-      <p>
-         Thanks for referring your friends to <%= @reward.deal.merchant.name %>!
-      </p>
-      <p>
-         Please print the attached coupon and bring it to <%= @reward.deal.merchant.name %> to claim your reward.
-      </p>
-      <p>
-         Thanks for participating and have a great day!
-      </p>
-      <p>
-         The JustForMyFriends Team
-      </p>
-      <p>
-         <a href="http://www.justformyfriends.com">www.justformyfriends.com</a>
-      </p>
-      <style type="text/css">
-      </style>
-      <div id="yiv2062346305">
-         <center id="yui_3_2_0_1_1316453981663533">
-            <div style="text-align:left;width:643px;border:#000000 1px solid;background:#fcf8e0;font-family:Arial, Helvetica, sans-serif;font-size:13px;" id="yui_3_2_0_1_1316453981663532">
-               <a rel="nofollow" target="_blank" href="http://www.justformyfriends.com">
-               <img src="http://www.justformyfriends.com/images/email_header.jpg" border="0" alt="justformyfriends.com">
-               </a>
-               <br>
-               <div style="margin-left:15px;" id="yui_3_2_0_1_1316453981663531">
-                  <br>
-                  <br>
-                  <b>Hello Eric Chan</b>
-                  <br>
-                  <br>
-                  This email confirms that you have signed up for the following JustForMyFriends. <h2 id="yui_3_2_0_1_1316453981663530">This email is only a confirmation - you will receive your e-voucher(s) separately by email.
-                  <br>
-                  <br>
-                  You can also print e-vouchers by logging in to <a rel="nofollow" target="_blank" href="http://www.justformyfriends.com">JustForMyFriends.com</a> and clicking on 'My Account'.</h2>
-                  <br>
-                  <b>JustForMyFriends Details</b>:
-                  <br>
-                  Merchant: The Yoga Sanctuary
-                  <br>
-                  Description: $30 for Five Classes at The Yoga Sanctuary (A $73 Value) - <i>Choose One of Two Locations</i>
-                  <br>
-                  Details: Must use first class within 1 year. Pass will expire 1 year after first class
-                  Limit 2 per person. More as gifts
-                  Valid only at the location chosen
-                  Taxes included. Voucher has no cash value
-                  <br>
-                  Price per item: $30.00
-                  <br>
-                  Number purchased: 4
-                  <br>
-                  Order ID: 572173 <span style="font-size:9px;">(<b>this is an order confirmation only, your voucher will come seperately</b>)</span>
-                  <br>
-                  <br>
-                  Remember, the deal will only be activated if enough people sign up please, tell your friends to ensure the group is big enough!
-                  <br>
-                  <br>
-                  If the group is big enough, you will receive your electronic voucher(s) by email after the clock stops ticking. Your credit card will only be charged if the group is big enough to activate the deal.
-                  <br>
-                  <br>
-                  <center>
-                     Questions or comments? Email us at <a rel="nofollow" ymailto="mailto:info@justformyfriends.com" target="_blank" href="mailto:info@justformyfriends.com">info@justformyfriends.com</a>
-                  </center>
-                  <br>
-                  <br>
-                  <center>
-                     Thanks from the <a rel="nofollow" target="_blank" href="http://www.justformyfriends.com">JustForMyFriends.com</a> team.
-                  </center>
-                  <br>
-                  <br>
-               </div>
-            </div>
-         </center>
-      </div>
-   </body>
+	<head>
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+	</head>
+	<body>
+		<style type="text/css">
+		</style>
+		<div id="yiv2062346305">
+			<center id="yui_3_2_0_1_1316453981663533">
+				<div style="text-align:left;width:643px;border:#000000 1px solid;background:#fcf8e0;font-family:Arial, Helvetica, sans-serif;font-size:13px;" id="yui_3_2_0_1_1316453981663532">
+					<a rel="nofollow" target="_blank" href="http://www.justformyfriends.com"> <img src="http://www.justformyfriends.com/images/email_header.jpg" border="0" alt="justformyfriends.com"> </a>
+					<br>
+					<div style="margin-left:15px;" id="yui_3_2_0_1_1316453981663531">
+						<br>
+						<br>
+						<b>Hi <%= @reward.user.name.split(' ')[0] %>,</b>
+						<br>
+						<br>
+						Thanks for referring your friends to <%= @reward.deal.merchant.name %>!
+						<br>
+						Please print the attached coupon and bring it to <%= @reward.deal.merchant.name %> to claim your reward.
+						<br>
+						<br>
+						<center>
+							Questions or comments? Email us at <a rel="nofollow" ymailto="mailto:info@justformyfriends.com" target="_blank" href="mailto:info@justformyfriends.com">info@justformyfriends.com</a>
+						</center>
+						<br>
+						<center>
+							Thanks from the <a rel="nofollow" target="_blank" href="http://www.justformyfriends.com">JustForMyFriends.com</a> team.
+						</center>
+						<br>
+						<br>
+					</div>
+				</div>
+			</center>
+		</div>
+	</body>
 </html>

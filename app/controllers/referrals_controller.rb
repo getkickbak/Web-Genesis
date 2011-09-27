@@ -97,14 +97,18 @@ class ReferralsController < ApplicationController
     @referral = Referral.first(:referral_id => params[:id])
     @reward = Reward.first(:referral_id => @referral.id)
 
+    @reward_code = @reward.reward_code
+    @qr_code = @reward.qr_code
+    @deal = @reward.deal
+    
     respond_to do |format|
-      format.html { render :template => "user_mailer/reward_template", :locals => @reward.attributes }
+      format.html { render :template => "user_mailer/reward_template" }
     #format.xml  { render :xml => @order }
     end
   end
    
   def destroy
-    @referral = Referral.get(params[:id] || not_found
+    @referral = Referral.get(params[:id]) || not_found
     authorize! :destroy, @referral
 
     @referral.destroy

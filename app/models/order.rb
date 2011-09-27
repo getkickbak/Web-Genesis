@@ -45,6 +45,7 @@ class Order
     (0..quantity-1).each do |i|
       coupon = order.coupons.new
       coupon[:coupon_id] = "#{coupon_id}-#{i+1}"
+      coupon[:coupon_title] = subdeal.coupon_title
       coupon[:barcode] = ""
       url = "http://www.justformyfriends.com"
       filename = APP_PROP["QR_CODE_FILE_PATH"] + coupon[:coupon_id] + ".png"

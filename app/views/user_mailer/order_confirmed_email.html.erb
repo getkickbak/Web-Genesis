@@ -4,22 +4,6 @@
       <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
    </head>
    <body>
-      <h2>Hi <%= @order.user.name.split(' ')[0] %>,</h2>
-      <p>
-         You have successfully purchased <a href="<%= deal_url(@order.deal) %>" ><%= @order.deal.title %></a>
-      </p>
-      <p>
-         When you are ready to use them, you can print the attached vouchers.
-      </p>
-      <p>
-         Thanks for participating and have a great day!
-      </p>
-      <p>
-         The JustForMyFriends Team
-      </p>
-      <p>
-         <a href="http://www.justformyfriends.com">www.justformyfriends.com</a>
-      </p>
       <style type="text/css">
       </style>
       <div id="yiv2062346305">
@@ -35,32 +19,27 @@
                   <b>Hi <%= @order.user.name.split(' ')[0] %>,</b>
                   <br>
                   <br>
-                  This email confirms that you have signed up for the following JustForMyFriends.
+         		  You have successfully purchased <a href="<%= deal_url(@order.deal) %>" ><%= @subdeal.title %></a>
                   <br>
-                  You can also print e-vouchers by logging in to <a rel="nofollow" target="_blank" href="http://www.justformyfriends.com">JustForMyFriends.com</a> and clicking on 'My Account'.</h2>
+                  When you are ready to use the e-vouchers, you can print the attachment(s).
                   <br>
-                  <b>JustForMyFriends Details</b>:
                   <br>
-                  Merchant: The Yoga Sanctuary
+                  <b>Order Details</b>:
                   <br>
-                  Description: $30 for Five Classes at The Yoga Sanctuary (A $73 Value) - <i>Choose One of Two Locations</i>
+                  Order number: <%= @order.order_id %>
                   <br>
-                  Details: Must use first class within 1 year. Pass will expire 1 year after first class
-                  Limit 2 per person. More as gifts
-                  Valid only at the location chosen
-                  Taxes included. Voucher has no cash value
+                  Merchant: <%= @order.deal.merchant.name %>
                   <br>
-                  Price per item: $30.00
+                  Description: <%= @subdeal.title %>
                   <br>
-                  Number purchased: 4
+                  Price per item: $<%= @subdeal.discount_price.to_i %>
                   <br>
-                  Order ID: 572173 <span style="font-size:9px;">(<b>this is an order confirmation only, your voucher will come seperately</b>)</span>
+                  Number purchased: <%= @order.quantity %>
                   <br>
                   <br>
                   <center>
                      Questions or comments? Email us at <a rel="nofollow" ymailto="mailto:info@justformyfriends.com" target="_blank" href="mailto:info@justformyfriends.com">info@justformyfriends.com</a>
                   </center>
-                  <br>
                   <br>
                   <center>
                      Thanks from the <a rel="nofollow" target="_blank" href="http://www.justformyfriends.com">JustForMyFriends.com</a> team.

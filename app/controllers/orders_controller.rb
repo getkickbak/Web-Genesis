@@ -197,6 +197,7 @@ class OrdersController < ApplicationController
 
   def confirmed_email
     @order = Order.first(:order_id => params[:id])
+    @subdeal = Subdeal.get(@order.subdeal_id)
 
     respond_to do |format|
       format.html { render :template => "user_mailer/order_confirmed_email", :locals => { :order => @order } }
@@ -216,8 +217,12 @@ class OrdersController < ApplicationController
   def coupon_template
     @coupon = Coupon.first(:coupon_id => params[:coupon_id])
 
+    @order = @coupon.order
+    @coupon_id = @coupon.coupon_id
+    @coupon_title = @coupon.coupon_title
+    @qr_code = @coupon.qr_code
     respond_to do |format|
-      format.html { render :template => "user_mailer/coupon_template", :locals => @coupon.attributes }
+      format.html { render :template => "user_mailer/coupon_template" }
     #format.xml  { render :xml => @order }
     end
   end
