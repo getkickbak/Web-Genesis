@@ -93,11 +93,13 @@ call to action
                   </tr>
                   <tr>
                      <td colspan="2" style="padding-top:0;">
-                                       <div style="float:left;">
-                        <a onclick="Site.getReferrals();" style="cursor:pointer;">74 people recommend this business. </a>
+                     <% referrers = get_referrers(@deal.id, @referral.creator.id, 10) %>    
+                     <% if referrers[:total] > 0 %>           		
+                     <div style="float:left;">
+                        <a onclick="Site.getReferrals();" style="cursor:pointer;"><%= referrers[:total] %> people recommend this business. </a>
                         <table style="border:0;padding:0;margin:0;">
                            <tr>
-                           <% get_referrers(@deal.id, 10)[:items].each do |referrer| %>
+                           <% referrers[:items].each do |referrer| %>
                            <td style="padding:1px;border:0;padding:0;margin:0;">
                               <img  style="cursor:pointer;" onclick="Site.getReferrals();" width="36" src="<%= "http://graph.facebook.com/#{referrer.facebook_id}/picture?type=square&" %>">
                            </td>
@@ -105,6 +107,7 @@ call to action
                            </tr>
                         </table>
                      </div>
+                     <% end %>
                      <div style="float:right;">
                         <!--<a  id="referralsBtn" class="btn large">Check out all our Referrals! &raquo;</a>-->
                         <a  id="discussBtn" href="#comments" class="btn large">Discuss with <%= @referral.creator.name.split(' ')[0] %>! &raquo;</a>
@@ -155,15 +158,16 @@ call to action
             <% end %>
             <br/>
             <script type="text/javascript" >
-               TargetDate = "<%= @deal.end_date %>";
-               BackColor = "";
-               //ForeColor = "#676767";
-               ForeColor = "black";
-               CountActive = true;
-               CountStepper = -1;
-               LeadingZero = true;
-               DisplayFormat = "%%D%% Days %%H%% Hrs %%M%% Mins %%S%% secs";
-               FinishMessage = "The deal is over. Better luck next time!";
+               				TargetDate = "<%= @deal.end_date %>
+				";
+				BackColor = "";
+				//ForeColor = "#676767";
+				ForeColor = "black";
+				CountActive = true;
+				CountStepper = -1;
+				LeadingZero = true;
+				DisplayFormat = "%%D%% Days %%H%% Hrs %%M%% Mins %%S%% secs";
+				FinishMessage = "The deal is over. Better luck next time!";
 
             </script>
             <script type="text/javascript" src="/javascripts/desktop/lib/countdown.js"></script></h2>

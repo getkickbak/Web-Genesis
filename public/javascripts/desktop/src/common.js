@@ -67,32 +67,36 @@ Genesis = {
 		this.popupDialog.modal();
 	},
 	resendVouchersPopup : function() {
+		var primBtn = this.popupDialog.find(".modal-footer .primary");
 		$.ajax({
-			url : Genesis.resend_vouchers_path,
+			url : this.resend_vouchers_path,
 			type : "GET",
-			data : "name=" + name + "&email=" + email + "&facebook_id=" + facebook_id + "&facebook_uid=" + facebook_uid + "&gender=" + gender + "&birthday=" + birthday,
 			dataType : "json",
 			//processData: false,
 			//contentType: "application/json",
 			success : function(response) {
-				var popupDialogTitle = this.popupDialog.find(".modal-header h3").html("Your Vouchers have been Sent!");
-				var popupDialogContent = this.popupDialog.find(".modal-body").html("<p>An email will be arrive in your inbox shortly.</p>");
-				this.popupDialog.modal();
+				var popupDialogTitle = Genesis.popupDialog.find(".modal-header h3").html("Your Vouchers have been Sent!");
+				var popupDialogContent = Genesis.popupDialog.find(".modal-body").html("<p>An email will be arrive in your inbox shortly.</p>");
+				primBtn.attr("href", "#");
+				primBtn.attr("onclick", "$('#popupDialog').modal('hide');");
+				Genesis.popupDialog.modal();
 			}
 		});
 	},
 	resendRewardPopup : function() {
+		var primBtn = this.popupDialog.find(".modal-footer .primary");
 		$.ajax({
-			url : Genesis.resend_reward_path,
+			url : this.resend_reward_path,
 			type : "GET",
-			data : "name=" + name + "&email=" + email + "&facebook_id=" + facebook_id + "&facebook_uid=" + facebook_uid + "&gender=" + gender + "&birthday=" + birthday,
 			dataType : "json",
 			//processData: false,
 			//contentType: "application/json",
 			success : function(response) {
-				var popupDialogTitle = this.popupDialog.find(".modal-header h3").html("Your Reward has been Sent!");
-				var popupDialogContent = this.popupDialog.find(".modal-body").html("<p>An email will arrive in your inbox shortly.</p>");
-				this.popupDialog.modal();
+				var popupDialogTitle = Genesis.popupDialog.find(".modal-header h3").html("Your Reward has been Sent!");
+				var popupDialogContent = Genesis.popupDialog.find(".modal-body").html("<p>An email will arrive in your inbox shortly.</p>");
+				primBtn.attr("href", "#");
+				primBtn.attr("onclick", "$('#popupDialog').modal('hide');");
+				Genesis.popupDialog.modal();
 			}
 		});
 	}
