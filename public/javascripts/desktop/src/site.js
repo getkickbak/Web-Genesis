@@ -303,11 +303,11 @@ Site =
    {
       return '<li><table class="hero-referrals hero-referralSeparator">' + '<tr>' + '<td width="100">' + '<img width="100" src="http://graph.facebook.com/' + facebook_id + '/picture?type=normal&"/>' + '</td>' + '<td>' + '<div class="hero-start">' + '<p>' + comment + '</p>' + '</div>' + '<div class="hero-end">&#160;</div>' + '</td>' + '</tr>' + '</table></li>';
    },
-   getReferrals : function(referrals)
+   getReferrals : function()
    {
       var start = 0, end = 10;
       var referralsList = $("#referralsList");
-
+      var referrals = $('#referralsList .scroller ul');
       $.ajax(
       {
          url : location.protocol+'//'+location.host+location.pathname + "/referrals",
@@ -460,8 +460,10 @@ $(document).ready($(function()
    {
       referralFbTag = true;
    });
+   /*
    $("#referralsBtn").bind('click', function()
    {
       Site.getReferrals($("#referralsList .scroller ul"));
    });
+   */
 }));

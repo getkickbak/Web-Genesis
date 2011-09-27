@@ -78,6 +78,6 @@ class Referral
     result = {}
     result[:total] = count
     result[:items] = referrers
-    erturn result
+    return result
   end  
 end

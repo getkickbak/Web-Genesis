@@ -89,10 +89,27 @@ call to action
                      <div class="hero-end">
                         &#160;
                      </div>
-                     <div style="clear:both;float:right;">
-                        <a  id="referralsBtn" class="btn large">Check out all our Referrals! &raquo;</a>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td colspan="2" style="padding-top:0;">
+                                       <div style="float:left;">
+                        <a onclick="Site.getReferrals();" style="cursor:pointer;">74 people recommend this business. </a>
+                        <table style="border:0;padding:0;margin:0;">
+                           <tr>
+                           <% get_referrers(@deal.id, 10)[:items].each do |referrer| %>
+                           <td style="padding:1px;border:0;padding:0;margin:0;">
+                              <img  style="cursor:pointer;" onclick="Site.getReferrals();" width="36" src="<%= "http://graph.facebook.com/#{referrer.facebook_id}/picture?type=square&" %>">
+                           </td>
+                           <% end %>
+                           </tr>
+                        </table>
+                     </div>
+                     <div style="float:right;">
+                        <!--<a  id="referralsBtn" class="btn large">Check out all our Referrals! &raquo;</a>-->
                         <a  id="discussBtn" href="#comments" class="btn large">Discuss with <%= @referral.creator.name.split(' ')[0] %>! &raquo;</a>
-                     </div></td>
+                     </div>
+                     </td>
                   </tr>
                </table>
             </div>
@@ -138,7 +155,8 @@ call to action
             <% end %>
             <br/>
             <script type="text/javascript" >
-               TargetDate = "<%= @deal.end_date %>";
+                              TargetDate = "<%= @deal.end_date %>
+               ";
                BackColor = "";
                //ForeColor = "#676767";
                ForeColor = "black";
