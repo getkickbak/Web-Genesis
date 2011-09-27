@@ -12,7 +12,8 @@ $(function() {
 	$("input[name='order[subdeal_id]']").live('change', function(evt) {
 		i = 1;
 		while($("#quantity" + i).length) {
-			if(i == evt.target.value) {
+			id_value = evt.target.attributes.getNamedItem("id_value").value
+			if(i == id_value) {
 				$("#quantity" + i).attr("disabled", false);
 				$("#quantity" + i).val(1);
 			} else {
@@ -26,7 +27,8 @@ $(function() {
 	$("input[name='order[subdeal_id]']").live('change', function(evt) {
 		i = 1;
 		while($("#order_quantity" + i).length) {
-			if(i == evt.target.value) {
+			id_value = evt.target.attributes.getNamedItem("id_value").value
+			if(i == id_value) {
 				$("#order_quantity" + i).attr("disabled", false);
 				$("#order_quantity" + i).val(1);
 				$("#order_total" + i).html("C$" + parseFloat($("#order_discount_price" + i).attr("value")).toFixed(2));

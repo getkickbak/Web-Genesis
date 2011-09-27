@@ -32,9 +32,9 @@
                         <th class="green span4">Total</th>
                      </tr>
                   </thead>
-                  <% @deal.subdeals.each_with_index.map do |sdeal, i| %>
+                  <% @deal.subdeals.each_with_index do |sdeal, i| %>
                   <tr>
-                     <td class="span1"> <%= f.radio_button(:subdeal_id, sdeal.id, :checked => (@deal.subdeals.length == 1 && i == 0) ? true : false) %> </td>
+                     <td class="span1"> <%= f.radio_button(:subdeal_id, sdeal.id, :id_value => i+1, :checked => (@deal.subdeals.length == 1 && i == 0) ? true : false) %> </td>
                      <td class="span12"><%= sdeal.title %></td>
                      <td class="span2">
                      <input id="order_quantity<%= i+1 %>" type="text" name="order_quantity<%= i+1 %>">
