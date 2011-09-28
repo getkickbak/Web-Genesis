@@ -96,11 +96,11 @@ call to action
                      <% referrers = get_referrers(@deal.id, @referral.creator.id, 10) %>    
                      <% if referrers[:total] > 0 %>           		
                      <div style="float:left;">
-                        <a onclick="Site.getReferrals();" style="cursor:pointer;"><%= referrers[:total] %> other <% if referrers[:total] == 1 %>person<% else %>people<% end %> recommend this business.</a>
+                        <a onclick="Site.getReferrals();" style="cursor:pointer;"><%= referrers[:total] %> other <% if referrers[:total] == 1 %>person<% else %>people<% end %> also recommend <%= @deal.merchant.name %></a>
                         <table style="border:0;padding:0;margin:0;">
                            <tr>
                            <% referrers[:items].each do |referrer| %>
-                           <td style="padding:1px;border:0;padding:0;margin:0;">
+                           <td style="padding:0 5px 0 0;border:0;margin:0;">
                               <img  style="cursor:pointer;" onclick="Site.getReferrals();" width="36" src="<%= "http://graph.facebook.com/#{referrer.facebook_id}/picture?type=square&" %>">
                            </td>
                            <% end %>
@@ -135,27 +135,31 @@ call to action
                </div>
             </div>
             <h2 id="deal_countdown" class="description_footer">Time Left to Buy
-            <% if signed_in? %>	
-            <% if @referral %>
-            <a href="/deals/<%= @deal.deal_id %>/confirmation?referral_id=<%= @referral.referral_id %>" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
+            <% if @deal.end_date > Time.now %> 	
+            	<% if signed_in? %>	
+            		<% if @referral %>
+            		<a href="/deals/<%= @deal.deal_id %>/confirmation?referral_id=<%= @referral.referral_id %>" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
+            		<% else %>
+            		<div id="referralWarning" class="modal fade hide">
+               			<div class="modal-header">
+                  			<a class="close">×</a>
+                  			<h3>Friend Referral Required</h3>
+               			</div>
+               			<div class="modal-body" style="text-align:center;">
+                  			You must send a friend referral before you can purchase this deal!
+               			</div>
+               			<div class="modal-footer">
+                  			<a onclick="$('#referralWarning').modal('hide');" class="btn fbtag">Refer a Friend!</a>
+                  			<a onclick="$('#referralWarning').modal('hide');" class="btn primary">OK</a>
+               			</div>
+            		</div><a data-controls-modal="referralWarning" data-backdrop="true" data-keyboard="true" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
+            		<% end %>
+            	<% else %>
+            	<a style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large" onclick="Genesis.loginPopup();">Buy Now! &raquo;</a>
+            	<% end %>
             <% else %>
-            <div id="referralWarning" class="modal fade hide">
-               <div class="modal-header">
-                  <a class="close">×</a>
-                  <h3>Friend Referral Required</h3>
-               </div>
-               <div class="modal-body" style="text-align:center;">
-                  You must send a friend referral before you can purchase this deal!
-               </div>
-               <div class="modal-footer">
-                  <a onclick="$('#referralWarning').modal('hide');" class="btn fbtag">Refer a Friend!</a>
-                  <a onclick="$('#referralWarning').modal('hide');" class="btn primary">OK</a>
-               </div>
-            </div><a data-controls-modal="referralWarning" data-backdrop="true" data-keyboard="true" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
-            <% end %>
-            <% else %>
-            <a style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large" onclick="Genesis.loginPopup();">Buy Now! &raquo;</a>
-            <% end %>
+            	<a style="float:right;margin-left:10px;margin-top:12px;" class="btn large">Deal Expired</a>	
+            <% end %>	
             <% subdeal = @deal.subdeals.last %>
             <large style="float:right;margin-left:10px;margin-top:12px;padding-top:9px;">C$<%= (subdeal.regular_price - subdeal.discount_price).to_i %> OFF</large>
             <br/>
