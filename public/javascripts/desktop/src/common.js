@@ -88,7 +88,7 @@ Genesis = {
 			//contentType: "application/json",
 			success : function(response) {
 				if(successCallBack && response.success) {
-					successCallBack();
+					successCallBack(response);
 				}
 				var msg = response.msg;
 				if(msg) {
