@@ -68,11 +68,11 @@ class Referral
   end  
 
   def self.find_referrers(deal_id, current_referrer_id, max)
-    count = Referral.count(Referral.deal.id => deal_id)
+    count = Referral.count(Referral.deal.id => deal_id, Referral.creator.id.not => current_referrer_id)
     referrer_ids = DataMapper.repository(:default).adapter.select(
-      "SELECT creator_id FROM referrals WHERE deal_id = ?
+      "SELECT creator_id FROM referrals WHERE deal_id = ? AND creator_id <> ?
        ORDER BY created_ts DESC 
-       LIMIT 0,?", deal_id, max 
+       LIMIT 0,?", current_referrer_id, deal_id, max 
     )
     referrers = User.all(:id => referrer_ids)
     result = {}

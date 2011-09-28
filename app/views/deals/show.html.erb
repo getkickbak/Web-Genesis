@@ -96,7 +96,7 @@ call to action
                      <% referrers = get_referrers(@deal.id, @referral.creator.id, 10) %>    
                      <% if referrers[:total] > 0 %>           		
                      <div style="float:left;">
-                        <a onclick="Site.getReferrals();" style="cursor:pointer;"><%= referrers[:total] %> people recommend this business. </a>
+                        <a onclick="Site.getReferrals();" style="cursor:pointer;"><%= referrers[:total] %> other <% if referrers[:total] == 1 %>person<% else %>people<% end %> recommend this business.</a>
                         <table style="border:0;padding:0;margin:0;">
                            <tr>
                            <% referrers[:items].each do |referrer| %>
@@ -156,11 +156,11 @@ call to action
             <% else %>
             <a style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large" onclick="Genesis.loginPopup();">Buy Now! &raquo;</a>
             <% end %>
-            <large style="float:right;margin-left:10px;margin-top:12px;padding-top:9px;">C$20 OFF</large>
+            <% subdeal = @deal.subdeals.last %>
+            <large style="float:right;margin-left:10px;margin-top:12px;padding-top:9px;">C$<%= (subdeal.regular_price - subdeal.discount_price).to_i %> OFF</large>
             <br/>
             <script type="text/javascript" >
-               				TargetDate = "<%= @deal.end_date %>
-				";
+               	TargetDate = "<%= @deal.end_date %>";
 				BackColor = "";
 				//ForeColor = "#676767";
 				ForeColor = "black";
@@ -249,7 +249,7 @@ call to action
       </div>
       <% if @referral %> 
       <div id="comments" class="hero-unit" style="margin:0;padding:10px 30px 30px;">
-      <h4 id="discuss">Ask <%= @referral.creator.name.split(' ')[0] %> any questions about the deal ...</h4>
+      <h4 id="discuss">Ask <%= @referral.creator.name.split(' ')[0] %> any questions about <%= @deal.merchant.name %> ...</h4>
       <fb:comments href="http://www.justformyfriends.com:3000/javascripts/desktop/index.html" num_posts="1" width="640"></fb:comments>
       </div>
       <% end %>

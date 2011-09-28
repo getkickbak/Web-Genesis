@@ -5,6 +5,8 @@ Genesis = {
 	sign_out_path : '/sign_out',
 	resend_vouchers_path : '/resend_vouchers',
 	resend_reward_path : '/resend_reward',
+	create_referrals : '/referrals/create',
+	get_referrals : '/referrals',
 	initDone : false,
 	errMsg : null,
 	warningMsg : null,
@@ -67,36 +69,35 @@ Genesis = {
 		this.popupDialog.modal();
 	},
 	resendVouchersPopup : function() {
-		var primBtn = this.popupDialog.find(".modal-footer .primary");
-		$.ajax({
-			url : this.resend_vouchers_path,
-			type : "GET",
-			dataType : "json",
-			//processData: false,
-			//contentType: "application/json",
-			success : function(response) {
-				var popupDialogTitle = Genesis.popupDialog.find(".modal-header h3").html("Your Vouchers have been Sent!");
-				var popupDialogContent = Genesis.popupDialog.find(".modal-body").html("<p>An email will be arrive in your inbox shortly.</p>");
-				primBtn.attr("href", "#");
-				primBtn.attr("onclick", "$('#popupDialog').modal('hide');");
-				Genesis.popupDialog.modal();
-			}
-		});
+		this.ajax(false, this.resend_vouchers_path, 'GET', null, 'json');
 	},
 	resendRewardPopup : function() {
-		var primBtn = this.popupDialog.find(".modal-footer .primary");
+		this.ajax(false, this.resend_reward_path, 'GET', null, 'json');
+	},
+	ajax : function(absPath, url, type, data, dataType, successCallBack) {
+		var popupDialog = this.popupDialog;
+		var primBtn = popupDialog.find(".modal-footer .primary");
+		var path = (absPath) ? location.protocol + '//' + location.host + location.pathname : '';
+
 		$.ajax({
-			url : this.resend_reward_path,
-			type : "GET",
-			dataType : "json",
+			url : path + url,
+			type : type,
+			data : data ? data : undefined,
+			dataType : dataType,
 			//processData: false,
 			//contentType: "application/json",
 			success : function(response) {
-				var popupDialogTitle = Genesis.popupDialog.find(".modal-header h3").html("Your Reward has been Sent!");
-				var popupDialogContent = Genesis.popupDialog.find(".modal-body").html("<p>An email will arrive in your inbox shortly.</p>");
-				primBtn.attr("href", "#");
-				primBtn.attr("onclick", "$('#popupDialog').modal('hide');");
-				Genesis.popupDialog.modal();
+				if(successCallBack && response.success) {
+					successCallBack();
+				}
+				var msg = response.msg;
+				if(msg) {
+					var popupDialogTitle = popupDialog.find(".modal-header h3").html(msg[0]);
+					var popupDialogContent = popupDialog.find(".modal-body").html('<p>' + msg[1] + '</p>');
+					primBtn.attr("href", "#");
+					primBtn.attr("onclick", "$('#popupDialog').modal('hide');");
+					popupDialog.modal();
+				}
 			}
 		});
 	}
@@ -272,15 +273,8 @@ function facebook_onLogout() {
 		});
 	}
 	FB.Auth.setSession(null);
-	$.ajax({
-		url : Genesis.sign_out_path,
-		type : "GET",
-		dataType : "json",
-		//processData: false,
-		//contentType: "application/json",
-		success : function(response) {
-			window.location.reload(true);
-		}
+	Genesis.ajax(false, Genesis.sign_out_path, 'GET', null, 'json', function() {
+		window.location.reload(true);
 	});
 }
 
@@ -295,23 +289,16 @@ function facebook_loginCallback() {
 			return;
 		}
 		if(!$("#fb_account")[0]) {
-			name = response.name
-			email = response.email
-			facebook_id = response.id
-			facebook_uid = response.username
-			gender = response.gender == "male" ? "m" : "f"
-			birthday = response.birthday.split('/')
-			birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1]
-			$.ajax({
-				url : Genesis.sign_in_path,
-				type : "POST",
-				data : "name=" + name + "&email=" + email + "&facebook_id=" + facebook_id + "&facebook_uid=" + facebook_uid + "&gender=" + gender + "&birthday=" + birthday,
-				dataType : "json",
-				//processData: false,
-				//contentType: "application/json",
-				success : function(response) {
-					window.location.reload(true);
-				}
+			var name = response.name;
+			var email = response.email;
+			var facebook_id = response.id;
+			var facebook_uid = response.username;
+			var gender = response.gender == "male" ? "m" : "f";
+			var birthday = response.birthday.split('/');
+			birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1];
+			var params = "name=" + name + "&email=" + email + "&facebook_id=" + facebook_id + "&facebook_uid=" + facebook_uid + "&gender=" + gender + "&birthday=" + birthday;
+			Genesis.ajax(false, Genesis.sign_in_path, 'POST', params, 'json', function(response) {
+				window.location.reload(true);
 			});
 		}
 	});

@@ -59,12 +59,12 @@ class OrdersController < ApplicationController
         if (session[:referral_id])
           @referral = Referral.first(:referral_id => session[:referral_id])
           if @referral
-            referral_id = @referral.id
+          referral_id = @referral.id
           end
         else
           referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id)
           if referral
-            referral_id = referral.id
+          referral_id = referral.id
           end
         end
 
@@ -140,7 +140,7 @@ class OrdersController < ApplicationController
     @order = Order.first(:order_id => session[:order_id])
     reset_order
   end
-  
+
   def cancel
     @order = Order.first(:order_id => session[:order_id])
     if !@order
@@ -153,7 +153,7 @@ class OrdersController < ApplicationController
     deal = Deal.get(@order.deal.id)
 
     begin
-      deal[:limit_count] -= @order.quantity
+    deal[:limit_count] -= @order.quantity
       deal.save
     rescue StandardError
       logger.error("Failed to update limit count for Deal: " + deal.id)
@@ -168,17 +168,23 @@ class OrdersController < ApplicationController
   end
 
   def resend_coupons
-    orders = Order.all(:user_id => current_user.id)
-    if orders.length > 0
-      orders.foreach do |order|
+    begin
+      orders = Order.all(:user_id => current_user.id)
+      orders.each do |order|
         UserMailer.order_confirmed_email(order).deliver
       end
-      respond_to do |format|
-        format.json { render :json => { :success => true } }
+      msg = []
+      if orders.length > 0
+        msg = ["Your Vouchers have been Sent!", "An email will arrive in your inbox shortly."]
+      else
+        msg = ["You have no Vouchers!", "Clearly, you need to buy one :)"]
       end
-    else
       respond_to do |format|
-        format.json { render :json => { :success => false } }
+        format.json { render :json => { :success => true, :msg => msg, :total => orders.length } }
+      end
+    rescue
+      respond_to do |format|
+        format.json { render :json => { :success => false, :msg => ["Your Vouchers failed to Send!", "Please try again."] } }
       end
     end
   end
@@ -213,7 +219,7 @@ class OrdersController < ApplicationController
     #format.xml  { render :xml => @order }
     end
   end
-  
+
   def coupon_template
     @coupon = Coupon.first(:coupon_id => params[:coupon_id])
 
