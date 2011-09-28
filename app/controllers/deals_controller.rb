@@ -28,20 +28,25 @@ class DealsController < ApplicationController
     end    
     authorize! :read, @deal  
     
+    redirect = false
+    
     if params[:referral_id]
       @referral = Referral.first(:referral_id => params[:referral_id])
     elsif signed_in?
-      @referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id)  
+      @referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id)
+      if @referral
+        redirect = true
+      end  
     end
     
-    if params[:id]
+    if params[:id] && !redirect
       respond_to do |format|
         format.html # show.html.erb
         #format.xml  { render :xml => @deal }
       end
     else
       respond_to do |format|
-        format.html { redirect_to deal_path(@deal) }
+        format.html { redirect_to deal_path(@deal)+"?referral_id=#{@referral.referral_id}" }
       end
     end
   end

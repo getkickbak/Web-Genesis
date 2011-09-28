@@ -1,4 +1,12 @@
-$(function() {
+var _login = function()
+{
+}
+
+var _logout = function()
+{
+}
+
+$(document).ready($(function() {
 
 	function stopRKey(evt) { 
   		var evt = (evt) ? evt : ((event) ? event : null); 
