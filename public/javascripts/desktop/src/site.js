@@ -353,52 +353,74 @@ $(document).ready($(function() {
 	Site.initMainMsg();
 	Site.initSlides();
 
-	$(window).bind('mousewheel', function(event, b) {
-		// Are we only the scrolling region?
-		if((event.target != document.body) && jQuery.contains($("#referralsList")[0], event.target)) {
-			event.preventDefault();
-		}
-	});
-	$highlightsBtn.click(function() {
-		// switch to 1st tab
-		$highlightsCtn.switchClass("span24", "span12", 1000, function() {
-			Genesis.switchTab($highlights1Tab, $highlights1);
-		});
-	});
-	$detailsBtn.click(function() {
-		if(!$gmap[0].innerHTML) {
-			merchant_name = $("#merchant_name").text().trim();
-			address = $("#merchant_address1").text().trim() + ' ' + $("#merchant_address2").text().trim() + ' ' + $("#merchant_city_state_zipcode").text().trim();
-			$gmap.gMap({
-				markers : [{
-					address : address,
-					html : merchant_name
-				}],
-				zoom : 15,
-				address : address
-			});
-		}
-		// switch to 2nd tab
-		Genesis.switchTab($highlights2Tab, $highlights2);
-		$highlightsCtn.switchClass("span12", "span24", 1000, function() {
-		});
-	});
-	var referralFbTag = false;
-	$('#referralWarning').bind('hidden', function() {
-		if(referralFbTag) {
-			setTimeout(function() {
-				$(".next").trigger("click");
-				referralFbTag = false;
-			}, 500);
-		}
-	});
-	$('#referralWarning .fbtag').bind('click', function() {
-		referralFbTag = true;
-	});
-	/*
-	 $("#referralsBtn").bind('click', function()
-	 {
-	 Site.getReferrals($("#referralsList .scroller ul"));
-	 });
-	 */
+   var mouseWheelEvt;
+   if (jQuery.browser.webkit)
+   {
+      mouseWheelEvt = 'mousewheel';
+   }
+   else if (jQuery.browser.mozilla)
+   {
+      mouseWheelEvt = 'DOMMouseScroll';
+   }
+   $(window).bind(mouseWheelEvt, function(event, b)
+   {
+      // Are we only the scrolling region?
+      if((event.target != document.body) && jQuery.contains($("#referralsList")[0], event.target))
+      {
+         event.preventDefault();
+      }
+   });
+   $highlightsBtn.click(function()
+   {
+      // switch to 1st tab
+      $highlightsCtn.switchClass("span24", "span12", 1000, function()
+      {
+         Genesis.switchTab($highlights1Tab, $highlights1);
+      });
+   });
+   $detailsBtn.click(function()
+   {
+      if(!$gmap[0].innerHTML)
+      {
+         merchant_name = $("#merchant_name").text().trim();
+         address = $("#merchant_address1").text().trim() + ' ' + $("#merchant_address2").text().trim() + ' ' + $("#merchant_city_state_zipcode").text().trim();
+         $gmap.gMap(
+         {
+            markers : [
+            {
+               address : address,
+               html : merchant_name
+            }],
+            zoom : 15,
+            address : address
+         });
+      }
+      // switch to 2nd tab
+      Genesis.switchTab($highlights2Tab, $highlights2);
+      $highlightsCtn.switchClass("span12", "span24", 1000, function()
+      {
+      });
+   });
+   var referralFbTag = false;
+   $('#referralWarning').bind('hidden', function()
+   {
+      if(referralFbTag)
+      {
+         setTimeout(function()
+         {
+            $(".next").trigger("click");
+            referralFbTag = false;
+         }, 500);
+      }
+   });
+   $('#referralWarning .fbtag').bind('click', function()
+   {
+      referralFbTag = true;
+   });
+   /*
+   $("#referralsBtn").bind('click', function()
+   {
+      Site.getReferrals($("#referralsList .scroller ul"));
+   });
+   */
 }));
