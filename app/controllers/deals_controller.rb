@@ -45,8 +45,12 @@ class DealsController < ApplicationController
         #format.xml  { render :xml => @deal }
       end
     else
+      parameters = ""
+      if @referral
+        parameters = "?referral_id=#{@referral.referral_id}"
+      end
       respond_to do |format|
-        format.html { redirect_to deal_path(@deal)+"?referral_id=#{@referral.referral_id}" }
+        format.html { redirect_to deal_path(@deal)+parameters }
       end
     end
   end
