@@ -1,9 +1,19 @@
-<% content_for :script do %> <script type="text/javascript" src="/javascripts/desktop/src/purchase.js"></script>
-<script type="text/javascript" src="/javascripts/order.js"></script>
+<% content_for :script do %>
+<script type="text/javascript" src="/javascripts/desktop/src/order.js"></script>
+<script type="text/javascript">
+$(document).ready($(function() {
+	var msg = $("#error_explanation").html();
+	if (msg)
+	{
+		Genesis.showErrMsg(msg);
+	}
+}));
+</script>
 <% end %>
+
 <% if @order.errors.any? %>
-<div id="error_explanation">
-   <h2><%= pluralize(@order.errors.count, "error") %> prohibited this order from being saved:</h2>
+<div style="display:none;" id="error_explanation">
+   <h3><%= pluralize(@order.errors.count, "error") %> prohibited this order from being saved:</h3>
    <ul>
       <% @order.errors.full_messages.each do |msg| %>
       <li>
