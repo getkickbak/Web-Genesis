@@ -405,7 +405,16 @@ $(document).ready($(function()
    Site.initMainMsg();
    Site.initSlides();
 
-   $(window).bind('mousewheel', function(event, b)
+   var mouseWheelEvt;
+   if (jQuery.browser.webkit)
+   {
+      mouseWheelEvt = 'mousewheel';
+   }
+   else if (jQuery.browser.mozilla)
+   {
+      mouseWheelEvt = 'DOMMouseScroll';
+   }
+   $(window).bind(mouseWheelEvt, function(event, b)
    {
       // Are we only the scrolling region?
       if((event.target != document.body) && jQuery.contains($("#referralsList")[0], event.target))
