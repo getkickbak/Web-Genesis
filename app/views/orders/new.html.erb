@@ -29,8 +29,8 @@ $(document).ready($(function() {
       <div class="row">
          <div id="highlights" class="span24">
             <h2>Your Purchase Choices</h2>
-            <div class="purchase panelBodyHighlights">
-               <table>
+            <div class="purchase panelBodyHighlights" style="padding-right:40px;">
+               <table style="margin-bottom:0px;">
                   <thead>
                      <tr>
                         <th style="visibility:hidden;" class="span1"></th>
@@ -39,7 +39,7 @@ $(document).ready($(function() {
                         <th class="green span1">&#160;</th>
                         <th class="green span2">Price</th>
                         <th class="green span1">&#160;</th>
-                        <th class="green span4">Total</th>
+                        <th class="green span4" style="text-align:right;">Total</th>
                      </tr>
                   </thead>
                   <% @deal.subdeals.each_with_index do |sdeal, i| %>
@@ -52,10 +52,21 @@ $(document).ready($(function() {
                      <td class="span1">x</td>
                      <td id="order_discount_price<%= i+1 %>" class="span2" value="<%= sdeal.discount_price %>">C$<%= sdeal.discount_price.to_i %></td>
                      <td class="span1">=</td>
-                     <td id="order_total<%= i+1 %>" class="span4">C$0.00</td>
+                     <td id="order_total<%= i+1 %>" class="span4" style="text-align:right;">C$0.00</td>
                   </tr>
                   <% end %>
-                  <%= f.hidden_field(:quantity, :value => 0) %>
+                  <tr>
+                  	<td colspan="2">
+                  	</td>
+                  	<td colspan="3" style="text-align:right;">
+		               <h4>My Total:</h4>
+                 	</td>
+                 	<td colspan="1"></td>
+                  	<td colspan="1" style="text-align:right;">
+		               <h4 id="order_grand_total">C$0.00</h4>
+                 	</td>
+                  </tr>
+                  <%= f.hidden_field(:quantity, :value => 0) %>                
                </table>
             </div>
          </div>
