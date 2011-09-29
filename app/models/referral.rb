@@ -72,7 +72,7 @@ class Referral
     referrer_ids = DataMapper.repository(:default).adapter.select(
       "SELECT creator_id FROM referrals WHERE deal_id = ? AND creator_id <> ?
        ORDER BY created_ts DESC 
-       LIMIT 0,?", current_referrer_id, deal_id, max 
+       LIMIT 0,?", deal_id, current_referrer_id, max 
     )
     referrers = User.all(:id => referrer_ids)
     result = {}

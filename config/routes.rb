@@ -26,6 +26,8 @@ Genesis::Application.routes.draw do
   }
 =end
     match "/how_it_works" => 'pages#how_it_works'
+    match "/privacy" => 'pages#privacy'
+    match "/terms" => 'pages#terms'
 
     resources :merchants do
       resources :deals
