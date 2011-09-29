@@ -50,11 +50,11 @@ class ReferralsController < ApplicationController
         referral_info = { :photo_url => photo_url, :comment => params[:comment] }
         @referral = Referral.create(deal,current_user,referral_info)
         reward_count = Reward.count(:deal_id => deal.id, :user_id => current_user.id )
-        #if (reward_count == 0)
-        @reward = Reward.create(deal,current_user,@referral.id)
-        @reward.print
-        UserMailer.reward_email(@reward).deliver
-        #end
+        if (reward_count == 0)
+          @reward = Reward.create(deal,current_user,@referral.id)
+          @reward.print
+          UserMailer.reward_email(@reward).deliver
+        end
         respond_to do |format|
         #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }

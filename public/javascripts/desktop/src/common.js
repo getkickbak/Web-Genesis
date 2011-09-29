@@ -89,12 +89,13 @@ Genesis =
    {
       this.ajax(false, this.resend_reward_path, 'GET', null, 'json');
    },
-   ajax : function(absPath, url, type, data, dataType, successCallBack)
+   ajax : function(absPath, url, type, data, dataType, successCallBack, button, reenableButton)
    {
       var popupDialog = this.popupDialog;
       var primBtn = popupDialog.find(".modal-footer .primary");
       var path = (absPath) ? location.protocol + '//' + location.host + location.pathname : '';
 
+	  if (button) button.addClass('disabled');
       $.ajax(
       {
          url : path + url,
@@ -109,6 +110,7 @@ Genesis =
             {
                successCallBack(response);
             }
+         	if (button && reenableButton) button.removeClass('disabled');
             var msg = response.msg;
             if(msg)
             {

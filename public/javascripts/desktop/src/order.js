@@ -7,7 +7,6 @@ var _logout = function()
 }
 
 $(document).ready($(function() {
-
 	function stopRKey(evt) { 
   		var evt = (evt) ? evt : ((event) ? event : null); 
   		var node = (evt.target) ? evt.target : ((evt.srcElement) ? evt.srcElement : null); 
@@ -59,4 +58,4 @@ $(document).ready($(function() {
 		});
 		x++
 	}
-});
+}));

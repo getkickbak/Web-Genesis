@@ -234,7 +234,7 @@ Site =
             {
                location.href = location.protocol + '//' + location.host + location.pathname + "?referral_id=" + response.data.referral_id;
             }, 0);
-         });
+         },$reward,false);
       });
       $discussBtn.click(function(event)
       {
