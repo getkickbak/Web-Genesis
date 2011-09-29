@@ -724,6 +724,31 @@
 }
 
 // ------------------------------------------------------------------
+// Comment Block
+// ------------------------------------------------------------------
+.referralsBlock {
+   padding:10px 20px;   
+}
+.commentBlock {
+   display:table-cell;
+   vertical-align:middle;
+   height:auto;
+   width:10000px;
+}
+.commentImage {
+   padding:2px;
+   border:1px solid #CCCCCC;
+   margin: 0 10px 0 0;
+   width:50px;
+}
+.commentName {
+   font-weight:bold;
+}
+.postContent {
+   margin-top:5px;
+}
+
+// ------------------------------------------------------------------
 // Facebook
 // ------------------------------------------------------------------
 #fb_login_img {
@@ -772,19 +797,12 @@
    }
 }
 
-form {
+.left {
+   float:left;
 }
-form label {
-	clear:both;
+.right {
+   float:right;
 }
-body {
-   background : #89B556;
-    -webkit-font-smoothing: subpixel-antialiased;
-}
-a {
-   cursor : pointer;
-}
-
 .popup {
    .opacity(50);
 }
@@ -822,6 +840,18 @@ a {
 }
 .noWrap {
    white-space:nowrap;
+}
+.clearfix {
+   zoom:1;
+   &::before {
+      clear:both;
+      content:".";
+      display:block;
+      font-size:0;
+      height:0;
+      line-height:0;
+      visibility:hidden;
+   }
 }
 
 // ------------------------------------------------------------------

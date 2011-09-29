@@ -293,9 +293,18 @@ Site =
          generatePagination : false
       });
    },
-   initReferrals : function(facebook_id, comment)
+   initReferrals : function(name, facebook_id, comment,timestamp)
    {
-      return '<li><table class="hero-referrals hero-referralSeparator">' + '<tr>' + '<td width="100">' + '<img width="100" src="http://graph.facebook.com/' + facebook_id + '/picture?type=normal&"/>' + '</td>' + '<td>' + '<div class="hero-start">' + '<p>' + comment + '</p>' + '</div>' + '<div class="hero-end">&#160;</div>' + '</td>' + '</tr>' + '</table></li>';
+      return '<li class="referralsBlock">' + 
+      ('<div class="clearfix">'+
+      '<img class="left commentImage" src="http://graph.facebook.com/' + facebook_id + '/picture?type=square&"/>' +
+      '<div class="commentBlock">' +
+      '<div style="padding:5px;margin-bottom:10px;line-height:20px;background:#E1E4F2;border-bottom:1px solid #CCCCCC;">'+
+      '<a class="commentName">'+name+'</a>'+
+      '<div class="right">'+Genesis.convertDate(Date.parse(timestamp))+'</div>'+
+      '</div>'+
+      '<div class="postContent">' + comment + '</div>' + '</div>') +
+      '</li>';
    },
    getReferrals : function()
    {
@@ -311,10 +320,10 @@ Site =
 
          for(var i = 0; i < response.total; i++)
          {
-            referrals.append(Site.initReferrals(data[i].creator.facebook_id, data[i].comment));
-            referrals.append(Site.initReferrals(data[i].creator.facebook_id, data[i].comment));
-            referrals.append(Site.initReferrals(data[i].creator.facebook_id, data[i].comment));
-            referrals.append(Site.initReferrals(data[i].creator.facebook_id, data[i].comment));
+            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment,data[i].created_ts));
+            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment,data[i].created_ts));
+            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment,data[i].created_ts));
+            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment,data[i].created_ts));
          }
 
          // Make sure the HTML is updated by the browser

@@ -12,6 +12,7 @@ Genesis =
    errMsg : null,
    warningMsg : null,
    popupDialog : null,
+   weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
    _init : function()
    {
       if(this.initDone == true)
@@ -24,6 +25,169 @@ Genesis =
          this.popupDialog = $("#popupDialog");
       }
       this.initDone = true;
+   },
+   isEmpty : function(v)
+   {
+      return (!v || (v == undefined));
+   },
+   // **************************************************************************
+   // Date Time
+   // **************************************************************************
+   convertDateCommon : function(v, dateFormat, noConvert)
+   {
+      var date;
+      var format = dateFormat || this.dateFormat;
+
+      if(!( v instanceof Date))
+      {
+         if( typeof (JSON) != 'undefined')
+         {
+            v = (jQuery.browser.msie) ? v.split(/Z$/)[0] : v.split('.')[0];
+         }
+
+         if(Genesis.isEmpty(v))
+         {
+            date = new Date();
+         }
+         else
+         {
+            if(format)
+            {
+               date = Date.parseDate(v, format);
+               if(Genesis.isEmpty(date))
+               {
+                  date = new Date(v).format(format);
+               }
+               return [date, date];
+            }
+            date = new Date(v);
+            if(date.toString() == 'Invalid Date')
+            {
+               date = Date.parseDate(v, format);
+            }
+         }
+      }
+      else
+      {
+         date = v;
+      }
+      if(!noConvert)
+      {
+         var currentDate = new Date().getTime();
+         // Adjust for time drift between Client computer and Application Server
+         var offsetTime = this.currentDateTime(currentDate);
+
+         var timeExpiredSec = (offsetTime - date.getTime()) / 1000;
+
+         if(timeExpiredSec > -10)
+         {
+            if((timeExpiredSec) < 2)
+               return [timeExpiredSec, 'a second ago'];
+            if((timeExpiredSec) < 60)
+               return [timeExpiredSec, parseInt(timeExpiredSec) + ' secs ago'];
+            timeExpiredSec = timeExpiredSec / 60;
+            if((timeExpiredSec) < 2)
+               return [timeExpiredSec, 'a minute ago'];
+            if((timeExpiredSec) < 60)
+               return [timeExpiredSec, parseInt(timeExpiredSec) + ' minutes ago'];
+            timeExpiredSec = timeExpiredSec / 60;
+            if((timeExpiredSec) < 2)
+               return [date, 'an hour ago'];
+            if((timeExpiredSec) < 24)
+               return [date, parseInt(timeExpiredSec) + ' hours ago'];
+            timeExpiredSec = timeExpiredSec / 24;
+            if(((timeExpiredSec) < 2) && ((new Date().getDay() - date.getDay()) == 1))
+               return [date, 'Yesterday at ' + date.format('g:i A')];
+            if((timeExpiredSec) < 7)
+               return [date, Genesis.weekday[date.getDay()] + ' at ' + date.format('g:i A')];
+            timeExpiredSec = timeExpiredSec / 7;
+            if(((timeExpiredSec) < 2) && (timeExpiredSec % 7 == 0))
+               return [date, 'a week ago'];
+            if(((timeExpiredSec) < 5) && (timeExpiredSec % 7 == 0))
+               return [date, parseInt(timeExpiredSec) + ' weeks ago'];
+
+            if(timeExpiredSec < 5)
+               return [date, parseInt(timeExpiredSec * 7) + ' days ago']
+            return [date, null];
+         }
+         // Back to the Future! Client might have changed it's local clock
+         else
+         {
+         }
+      }
+
+      return [date, -1];
+   },
+   convertDateFullTime : function(v)
+   {
+      return v.format('D, M d, Y \\a\\t g:i A');
+   },
+   convertDateReminder : function(v)
+   {
+      var today = new Date();
+      var todayDate = today.getDate();
+      var todayMonth = today.getMonth();
+      var todayYear = today.getFullYear();
+      var date = v.getDate();
+      var month = v.getMonth();
+      var year = v.getFullYear();
+      if(todayDate == date && todayMonth == month && todayYear == year)
+      {
+         return 'Today ' + v.format('g:i A');
+      }
+      return v.format('D g:i A');
+   },
+   convertDate : function(v, dateFormat)
+   {
+      var rc = this.convertDateCommon.call(this, v, dateFormat);
+      if(rc[1] != -1)
+      {
+         return (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
+      }
+      else
+      {
+         return rc[0].format('D, M d, Y \\a\\t g:i A');
+      }
+   },
+   convertDateNoTime : function(v)
+   {
+      var rc = this.convertDateCommon.call(this, v, null, true);
+      if(rc[1] != -1)
+      {
+         return (rc[1] == null) ? rc[0].format('D, M d, Y') : rc[1];
+      }
+      else
+      {
+         return rc[0].format('D, M d, Y')
+      }
+   },
+   convertDateNoTimeNoWeek : function(v)
+   {
+      var rc = this.convertDateCommon.call(this, v, null, true);
+      if(rc[1] != -1)
+      {
+         return (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
+      }
+      else
+      {
+         return rc[0].format('M d, Y');
+      }
+   },
+   convertDateInMins : function(v)
+   {
+      var rc = this.convertDateCommon.call(this, v, null, true);
+      if(rc[1] != -1)
+      {
+         return (rc[1] == null) ? rc[0].format('h:ia T') : rc[1];
+      }
+      else
+      {
+         return rc[0].format('h:ia T');
+      }
+   },
+   currentDateTime : function(currentDate)
+   {
+      return systemTime + (currentDate - clientTime);
    },
    // **************************************************************************
    // Switch Tabs Manually
@@ -251,6 +415,10 @@ window.fbAsyncInit = function()
 // **************************************************************************
 $(document).ready($(function()
 {
+   systemTime = ($('#systemTime').text() != '') ? $('#systemTime').text() : clientTime.getTime();
+   localOffset = -clientTime.getTimezoneOffset() * (60 * 1000);
+   clientTime = clientTime.getTime();
+
    Genesis._init();
    Genesis.warningMsg = $(".alert-message.warning");
    Genesis.errMsg = $(".alert-message.error");
