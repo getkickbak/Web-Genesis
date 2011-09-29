@@ -47,14 +47,17 @@ $(document).ready($(function() {
 			}
 			i++
 		}
+		$("#order_grand_total").html("C$" + parseFloat($("#order_discount_price" + id_value).attr("value")).toFixed(2));
 	});
 	var x = 1;
 	while($("#order_quantity" + x).length) {
 		$("#order_quantity" + x).live('keyup', {
 			index : x
 		}, function(evt) {
-			$("#order_total" + evt.data.index).html("C$" + parseFloat(evt.target.value * $("#order_discount_price" + evt.data.index).attr("value")).toFixed(2));
+			var total = parseFloat(evt.target.value * $("#order_discount_price" + evt.data.index).attr("value")).toFixed(2)
+			$("#order_total" + evt.data.index).html("C$" + total);
 			$("input[name='order[quantity]']").val(evt.target.value);
+			$("#order_grand_total").html("C$" + total);
 		});
 		x++
 	}
