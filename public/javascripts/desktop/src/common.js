@@ -16,7 +16,8 @@ Genesis =
       FB.api(
       {
          method : 'fql.query',
-         //query : 'SELECT uid, name, username, current_location FROM user WHERE uid=me() OR uid IN (SELECT uid FROM friendlist_member WHERE flid=' + listId + ')'
+         //query : 'SELECT uid, name, username, current_location FROM user WHERE uid=me() OR uid IN (SELECT uid FROM
+         // friendlist_member WHERE flid=' + listId + ')'
          query : 'SELECT uid, name, username, current_location FROM user WHERE uid=me() OR uid IN (SELECT uid2 FROM friend WHERE uid1 = me())'
       }, function(response)
       {
@@ -257,33 +258,44 @@ Genesis =
    // **************************************************************************
    _popupCommon : function(title, body, href, yesMSg, yesFnStr, noMsg, noFnStr)
    {
-      var primBtn = this.popupDialog.find(".modal-footer .primary");
-      var secBtn = this.popupDialog.find(".modal-footer .secondary");
-      var popupDialogTitle = this.popupDialog.find(".modal-header h3").html(title);
-      var popupDialogContent = this.popupDialog.find(".modal-body").html(body);
-      primBtn.attr("href", href);
-      if(yesMsg)
+      if(!this.popupDialog.data().modal.isShown)
       {
-         primBtn.attr("onclick", yesFnStr);
-         primBtn.text(yesMsg);
+         var primBtn = this.popupDialog.find(".modal-footer .primary");
+         var secBtn = this.popupDialog.find(".modal-footer .secondary");
+         var popupDialogTitle = this.popupDialog.find(".modal-header h3").html(title);
+         var popupDialogContent = this.popupDialog.find(".modal-body").html(body);
+         primBtn.attr("href", href);
+         if(yesMsg)
+         {
+            primBtn.attr("onclick", yesFnStr);
+            primBtn.text(yesMsg);
+         }
+         else
+         {
+            primBtn.text('OK');
+            primBtn.attr("onclick", yesFnStr || "$('#popupDialog').modal('hide');");
+         }
+         if(noMsg)
+         {
+            secBtn.text(noMsg);
+            secBtn.css('display', '');
+            secBtn.attr("onclick", noFnStr || "$('#popupDialog').modal('hide');");
+         }
+         else
+         {
+            secBtn.text('Cancel');
+            secBtn.css('display', 'none');
+         }
+         this.popupDialog.modal();
       }
+      // Put this in the queue
       else
       {
-         primBtn.text('OK');
-         primBtn.attr("onclick", yesFnStr || "$('#popupDialog').modal('hide');");
+         this.popupDialog.queue(function()
+         {
+            Genesis._popupCommon(title, body, href, yesMSg, yesFnStr, noMsg, noFnStr);
+         });
       }
-      if(noMsg)
-      {
-         secBtn.text(noMsg);
-         secBtn.css('display','');
-         secBtn.attr("onclick", noFnStr || "$('#popupDialog').modal('hide');");
-      }
-      else
-      {
-         secBtn.text('Cancel');
-         secBtn.css('display','none');
-      }
-      this.popupDialog.modal();
    },
    loginPopup : function()
    {
