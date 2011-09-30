@@ -232,9 +232,16 @@ Site =
          {
             setTimeout(function()
             {
-               location.href = location.protocol + '//' + location.host + location.pathname + "?referral_id=" + response.data.referral_id;
+               Site.newReferralURL = location.protocol + '//' + location.host + location.pathname + "?referral_id=" + response.data.referral_id;
+               FB.ui(
+               {
+                  method : 'send',
+                  name : 'Testing 123',
+                  link : Site.newReferralURL,
+                  description : rewardMsg
+               });
             }, 0);
-         },$reward,false);
+         }, $reward, false);
       });
       $discussBtn.click(function(event)
       {
@@ -293,18 +300,9 @@ Site =
          generatePagination : false
       });
    },
-   initReferrals : function(name, facebook_id, comment,timestamp)
+   initReferrals : function(name, facebook_id, comment, timestamp)
    {
-      return '<li class="referralsBlock">' + 
-      ('<div class="clearfix">'+
-      '<img class="left commentImage" src="http://graph.facebook.com/' + facebook_id + '/picture?type=square&"/>' +
-      '<div class="commentBlock">' +
-      '<div style="padding:5px;margin-bottom:10px;line-height:20px;background:#E1E4F2;border-bottom:1px solid #CCCCCC;">'+
-      '<a class="commentName">'+name+'</a>'+
-      '<div class="right">'+Genesis.convertDate(Date.parse(timestamp))+'</div>'+
-      '</div>'+
-      '<div class="postContent">' + comment + '</div>' + '</div>') +
-      '</li>';
+      return '<li class="referralsBlock">' + ('<div class="clearfix">' + '<img class="left commentImage" src="http://graph.facebook.com/' + facebook_id + '/picture?type=square&"/>' + '<div class="commentBlock">' + '<div style="padding:5px;margin-bottom:10px;line-height:20px;background:#E1E4F2;border-bottom:1px solid #CCCCCC;">' + '<a class="commentName">' + name + '</a>' + '<div class="right">' + Genesis.convertDate(Date.parse(timestamp)) + '</div>' + '</div>' + '<div class="postContent">' + comment + '</div>' + '</div>') + '</li>';
    },
    getReferrals : function()
    {
@@ -320,10 +318,10 @@ Site =
 
          for(var i = 0; i < response.total; i++)
          {
-            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment,data[i].created_ts));
-            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment,data[i].created_ts));
-            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment,data[i].created_ts));
-            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment,data[i].created_ts));
+            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment, data[i].created_ts));
+            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment, data[i].created_ts));
+            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment, data[i].created_ts));
+            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment, data[i].created_ts));
          }
 
          // Make sure the HTML is updated by the browser
@@ -403,6 +401,9 @@ $(document).ready($(function()
    {
       mouseWheelEvt = 'DOMMouseScroll';
    }
+   // --------------------------------------------------------------------------------
+   // Scrolling Referrals
+   // --------------------------------------------------------------------------------
    $(window).bind(mouseWheelEvt, function(event, b)
    {
       // Are we only the scrolling region?
@@ -411,6 +412,9 @@ $(document).ready($(function()
          event.preventDefault();
       }
    });
+   // --------------------------------------------------------------------------------
+   // SlideShow
+   // --------------------------------------------------------------------------------
    $highlightsBtn.click(function()
    {
       // switch to 1st tab
@@ -442,6 +446,9 @@ $(document).ready($(function()
       {
       });
    });
+   // --------------------------------------------------------------------------------
+   // Reward Button
+   // --------------------------------------------------------------------------------
    var referralFbTag = false;
    $('#referralWarning').bind('hidden', function()
    {
@@ -458,10 +465,19 @@ $(document).ready($(function()
    {
       referralFbTag = true;
    });
-   /*
-    $("#referralsBtn").bind('click', function()
-    {
-    Site.getReferrals($("#referralsList .scroller ul"));
-    });
-    */
+   // --------------------------------------------------------------------------------
+   // Facebook Message
+   // --------------------------------------------------------------------------------
+   FB.Event.subscribe('message.send', function(href, response)
+   {
+      if(response.success)
+      {
+         location.href = Site.newReferralURL;
+      }
+      // Try again to send to users
+      else
+      {
+
+      }
+   });
 }));

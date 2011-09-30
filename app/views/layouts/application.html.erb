@@ -4,6 +4,14 @@
       <meta http-equiv="Content-type" content="text/html; charset=utf-8">
       <meta property="fb:admins" content="725565520"/>
       <meta property="fb:app_id" content="197968780267830"/>
+      <!--
+      <meta property="og:type" content="movie"/>
+      -->
+      <meta property="og:site_name" content="JustForMyFriends"/>
+      <meta property="og:title" content=""/>
+      <meta property="og:url" content="http://www.imdb.com/title/tt0117500/"/>
+      <meta property="og:image" content="http://ia.media-imdb.com/rock.jpg"/>
+      <meta property="og:description" content="">
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>Just For My Friends</title>
       <!--
@@ -14,6 +22,7 @@
       <link rel="stylesheet" href="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/docs/assets/css/docs.css"/>
       <!--
       <link rel="stylesheet" href="/javascripts/desktop/lib/jquery-ui-1.8.16.custom/css/south-street/jquery-ui-1.8.16.custom.css"/>
+      <script type="text/javascript" src="/javascripts/desktop/lib/jquery.xdomainajax.js"></script>
       -->
       <script type="text/javascript" src="/javascripts/desktop/lib/date.js"></script>
       <script type="text/javascript" src="/javascripts/desktop/lib/Datejs-all/src/extras.js"></script>
@@ -78,7 +87,7 @@
                   </li>
                   <% end %>
                   <li id="fb_login" style="display:none;">
-                     <fb:login-button perms="email,user_birthday,publish_stream" on-login="facebook_onLogin();" size="large" background="dark" length="short"></fb:login-button>
+                     <fb:login-button scope="email,user_birthday,publish_stream" on-login="facebook_onLogin();" size="large" background="dark" length="short"></fb:login-button>
                   </li>
                   <% if signed_in? %>
                   <li class="">
@@ -138,6 +147,8 @@
             </div>
          </div>
       </div>
-      <div id="systemTime" style="display:none;"><%= Time.now().to_f*1000 %></div>
+      <div id="systemTime" style="display:none;">
+         <%= Time.now().to_f*1000 %>
+      </div>
    </body>
 </html>
