@@ -17,7 +17,7 @@ class Ability
     can :manage, User, :id => @user.id
     can :read, Order, :user => { :id => @user.id }
     can :delete, Order, :user => { :id => @user.id }, :payment_confirmed => false
-    can :create, [Referral]
+    can [:create, :update], [Referral]
   end
   
   def admin

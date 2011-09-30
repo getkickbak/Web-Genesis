@@ -7,6 +7,7 @@ class Referral
   property :referral_id, String, :unique_index => true, :required => true, :default => 0
   property :photo_url, String, :required => true, :default => ""
   property :comment, String, :length => 1024, :required => true, :default => ""
+  property :confirmed, Boolean, :default => false
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime

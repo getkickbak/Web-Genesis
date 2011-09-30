@@ -153,7 +153,7 @@ class OrdersController < ApplicationController
     deal = Deal.get(@order.deal.id)
 
     begin
-    deal[:limit_count] -= @order.quantity
+      deal[:limit_count] -= @order.quantity
       deal.save
     rescue StandardError
       logger.error("Failed to update limit count for Deal: " + deal.id)
@@ -279,7 +279,7 @@ class OrdersController < ApplicationController
       end
     else
       session[:paypal_error]=@transaction.response
-      raise Exception.new("Payment Error.  Please Try Again.")
+      raise "Payment Error.  Please Try Again."
     end
   end
 end

@@ -20,7 +20,7 @@ class Reward
   def self.create(deal, user, referral_id)
     now = Time.now
     qr = RQR::QRCode.new(:module_size => 3)
-    url = "http://www.justformyfriends.com"
+    url = root_url
     reward_code = "#{now.to_i}#{rand(1000) + 1000}"
     filename = APP_PROP["REWARD_QR_CODE_FILE_PATH"] + reward_code + ".png"
     qr.save(url, filename, :png)
