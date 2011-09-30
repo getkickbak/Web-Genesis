@@ -230,11 +230,28 @@ Site =
          });
          Genesis.ajax(true, Genesis.create_referrals, 'POST', "comment=" + rewardMsg, 'json', function(response)
          {
-            setTimeout(function()
+            // Send to Facebook Newsfeed
+            FB.api('/me/feed', 'post',
             {
-               location.href = location.protocol + '//' + location.host + location.pathname + "?referral_id=" + response.data.referral_id;
-            }, 0);
-         },$reward,false);
+               message : rewardMsg
+            }, function(response)
+            {
+               if(!response || response.error)
+               {
+                  Genesis.popupDialog
+               }
+               else
+               {
+                  console.log('Post ID: ' + response.id);
+                  // Update Server about successful Newsfeed update
+                  Genesis.ajax(true, Genesis.complete_referrals, 'POST', "", 'json', function(response)
+                  {
+                     // Ask to send message directly to friends
+                     Site.referralDecisionPopup(location.protocol + '//' + location.host + location.pathname + "?referral_id=" + response.data.referral_id, rewardMsg);
+                  });
+               }
+            });
+         }, $reward, false);
       });
       $discussBtn.click(function(event)
       {
@@ -293,18 +310,9 @@ Site =
          generatePagination : false
       });
    },
-   initReferrals : function(name, facebook_id, comment,timestamp)
+   initReferrals : function(name, facebook_id, comment, timestamp)
    {
-      return '<li class="referralsBlock">' + 
-      ('<div class="clearfix">'+
-      '<img class="left commentImage" src="http://graph.facebook.com/' + facebook_id + '/picture?type=square&"/>' +
-      '<div class="commentBlock">' +
-      '<div style="padding:5px;margin-bottom:10px;line-height:20px;background:#E1E4F2;border-bottom:1px solid #CCCCCC;">'+
-      '<a class="commentName">'+name+'</a>'+
-      '<div class="right">'+Genesis.convertDate(Date.parse(timestamp))+'</div>'+
-      '</div>'+
-      '<div class="postContent">' + comment + '</div>' + '</div>') +
-      '</li>';
+      return '<li class="referralsBlock">' + ('<div class="clearfix">' + '<img class="left commentImage" src="http://graph.facebook.com/' + facebook_id + '/picture?type=square&"/>' + '<div class="commentBlock">' + '<div style="padding:5px;margin-bottom:10px;line-height:20px;background:#E1E4F2;border-bottom:1px solid #CCCCCC;">' + '<a class="commentName">' + name + '</a>' + '<div class="right">' + Genesis.convertDate(Date.parse(timestamp)) + '</div>' + '</div>' + '<div class="postContent">' + comment + '</div>' + '</div>') + '</li>';
    },
    getReferrals : function()
    {
@@ -320,10 +328,10 @@ Site =
 
          for(var i = 0; i < response.total; i++)
          {
-            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment,data[i].created_ts));
-            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment,data[i].created_ts));
-            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment,data[i].created_ts));
-            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment,data[i].created_ts));
+            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment, data[i].created_ts));
+            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment, data[i].created_ts));
+            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment, data[i].created_ts));
+            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment, data[i].created_ts));
          }
 
          // Make sure the HTML is updated by the browser
@@ -374,6 +382,47 @@ Site =
       {
          referrals.html('');
       });
+   },
+   referralRequestPopup : function()
+   {
+      Genesis._popupCommon("Friend Referral Required before Purchase", "<p>Before being eligible to purchase this deal, a friend referral is required.</p>", "#mainMsg");
+   },
+   resendVouchersPopup : function()
+   {
+      Genesis.ajax(false, Genesis.resend_vouchers_path, 'GET', null, 'json');
+   },
+   resendRewardPopup : function()
+   {
+      Genesis.ajax(false, Genesis.resend_reward_path, 'GET', null, 'json');
+   },
+   referralDecisionPopup : function(url, msg)
+   {
+      this._url = url;
+      this._msg = msg;
+      Genesis._popupCommon("Facebook Posts", "<p>Your recommendation has been posted on your facebook newsfeed,</p><p>Would you like to send this recommendation to specific friends?</p>", "#", "Yes", "Site.referralCompletePopup();", "No", "location.href=" + this._url);
+   },
+   referralCompletePopup : function()
+   {
+      $('#popupDialog').modal('hide');
+      FB.ui(
+      {
+         method : 'send',
+         name : 'Message to your friends',
+         link : this._url,
+         description : this._msg
+      }, function(response)
+      {
+         if(!response || response.error)
+         {
+            Genesis.showErrMsg("Error sending your recommendation message to your friend's mail accounts.");
+         }
+         else
+         {
+            Genesis._popupCommon("Congratulations!", "<p>Your recommendation has been sent to your friend's mail accounts.</p>", this._url);
+         }
+         delete this._url;
+         delete this._msg;
+      });
    }
 }
 $(document).ready($(function()
@@ -403,6 +452,9 @@ $(document).ready($(function()
    {
       mouseWheelEvt = 'DOMMouseScroll';
    }
+   // --------------------------------------------------------------------------------
+   // Scrolling Referrals
+   // --------------------------------------------------------------------------------
    $(window).bind(mouseWheelEvt, function(event, b)
    {
       // Are we only the scrolling region?
@@ -411,6 +463,9 @@ $(document).ready($(function()
          event.preventDefault();
       }
    });
+   // --------------------------------------------------------------------------------
+   // SlideShow
+   // --------------------------------------------------------------------------------
    $highlightsBtn.click(function()
    {
       // switch to 1st tab
@@ -442,6 +497,9 @@ $(document).ready($(function()
       {
       });
    });
+   // --------------------------------------------------------------------------------
+   // Reward Button
+   // --------------------------------------------------------------------------------
    var referralFbTag = false;
    $('#referralWarning').bind('hidden', function()
    {
@@ -458,10 +516,19 @@ $(document).ready($(function()
    {
       referralFbTag = true;
    });
-   /*
-    $("#referralsBtn").bind('click', function()
-    {
-    Site.getReferrals($("#referralsList .scroller ul"));
-    });
-    */
+   // --------------------------------------------------------------------------------
+   // Facebook Message
+   // --------------------------------------------------------------------------------
+   FB.Event.subscribe('message.send', function(href, response)
+   {
+      if(response.success)
+      {
+         //location.href = Site.newReferralURL;
+      }
+      // Try again to send to users
+      else
+      {
+
+      }
+   });
 }));

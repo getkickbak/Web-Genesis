@@ -1,13 +1,48 @@
 Genesis =
 {
    fbAppId : '197968780267830',
-   fb_login_tag : '<fb:login-button perms="email,user_birthday,publish_stream" on-login="facebook_onLogin();" size="large" background="dark" length="long"></fb:login-button>',
+   fb_login_tag : '<fb:login-button scope="email,user_birthday,publish_stream,read_friendlists" on-login="facebook_onLogin();" size="large" background="dark" length="long"></fb:login-button>',
+   getFriendsURL : function()
+   {
+      return 'https://graph.facebook.com/me/friends?fields=name,username,id&access_token=' + Genesis.access_token;
+   },
+   getFriendListsURL : function()
+   {
+      return 'https://graph.facebook.com/me/friendlists?access_token=' + Genesis.access_token;
+   },
+   getFriendsInListURL : function(listId, callback)
+   {
+      var loginUser;
+      FB.api(
+      {
+         method : 'fql.query',
+         //query : 'SELECT uid, name, username, current_location FROM user WHERE uid=me() OR uid IN (SELECT uid FROM friendlist_member WHERE flid=' + listId + ')'
+         query : 'SELECT uid, name, username, current_location FROM user WHERE uid=me() OR uid IN (SELECT uid2 FROM friend WHERE uid1 = me())'
+      }, function(response)
+      {
+         loginUser = response[0];
+
+         for(var i = 1; i < response.length; i++)
+         {
+            if(response[i].username)
+            {
+               console.log(response[i].username);
+            }
+         }
+         if(callback)
+         {
+            callback(response);
+         }
+      });
+   },
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    resend_vouchers_path : '/resend_vouchers',
    resend_reward_path : '/resend_reward',
    create_referrals : '/referrals/create',
    get_referrals : '/referrals',
+   complete_referrals : '/referrals/complete',
+   access_token : null,
    initDone : false,
    errMsg : null,
    warningMsg : null,
@@ -17,7 +52,8 @@ Genesis =
    {
       if(this.initDone == true)
       {
-         oldSessionLogin();
+         //oldSessionLogin();
+         oAuth2SessionLogin();
          document.addEventListener('touchmove', function(e)
          {
             e.preventDefault();
@@ -219,6 +255,36 @@ Genesis =
    // **************************************************************************
    // Dynamic Popup
    // **************************************************************************
+   _popupCommon : function(title, body, href, yesMSg, yesFnStr, noMsg, noFnStr)
+   {
+      var primBtn = this.popupDialog.find(".modal-footer .primary");
+      var secBtn = this.popupDialog.find(".modal-footer .secondary");
+      var popupDialogTitle = this.popupDialog.find(".modal-header h3").html(title);
+      var popupDialogContent = this.popupDialog.find(".modal-body").html(body);
+      primBtn.attr("href", href);
+      if(yesMsg)
+      {
+         primBtn.attr("onclick", yesFnStr);
+         primBtn.text(yesMsg);
+      }
+      else
+      {
+         primBtn.text('OK');
+         primBtn.attr("onclick", yesFnStr || "$('#popupDialog').modal('hide');");
+      }
+      if(noMsg)
+      {
+         secBtn.text(noMsg);
+         secBtn.css('display','');
+         secBtn.attr("onclick", noFnStr || "$('#popupDialog').modal('hide');");
+      }
+      else
+      {
+         secBtn.text('Cancel');
+         secBtn.css('display','none');
+      }
+      this.popupDialog.modal();
+   },
    loginPopup : function()
    {
       try
@@ -228,38 +294,14 @@ Genesis =
       catch(e)
       {
       }
-      var primBtn = this.popupDialog.find(".modal-footer .primary");
-      var popupDialogTitle = this.popupDialog.find(".modal-header h3").html("Facebook Login Required");
-      var popupDialogContent = this.popupDialog.find(".modal-body").html(Genesis.fb_login_tag);
-      primBtn.attr("href", "#");
-      primBtn.attr("onclick", "$('#popupDialog').modal('hide');");
-      this.popupDialog.modal();
+      this._popupCommon("Facebook Login Required", Genesis.fb_login_tag, "#");
       FB.XFBML.parse();
-   },
-   referralRequestPopup : function()
-   {
-      var primBtn = this.popupDialog.find(".modal-footer .primary");
-      var popupDialogTitle = this.popupDialog.find(".modal-header h3").html("Friend Referral Required before Purchase");
-      var popupDialogContent = this.popupDialog.find(".modal-body").html("<p>Before being eligible to purchase this deal, a friend referral is required.</p>");
-      primBtn.attr("href", "#mainMsg");
-      primBtn.attr("onclick", "$('#popupDialog').modal('hide');");
-      this.popupDialog.modal();
-   },
-   resendVouchersPopup : function()
-   {
-      this.ajax(false, this.resend_vouchers_path, 'GET', null, 'json');
-   },
-   resendRewardPopup : function()
-   {
-      this.ajax(false, this.resend_reward_path, 'GET', null, 'json');
    },
    ajax : function(absPath, url, type, data, dataType, successCallBack, button, reenableButton)
    {
-      var popupDialog = this.popupDialog;
-      var primBtn = popupDialog.find(".modal-footer .primary");
       var path = (absPath) ? location.protocol + '//' + location.host + location.pathname : '';
-
-	  if (button) button.addClass('disabled');
+      if(button)
+         button.addClass('disabled');
       $.ajax(
       {
          url : path + url,
@@ -274,15 +316,14 @@ Genesis =
             {
                successCallBack(response);
             }
-         	if (button && reenableButton) button.removeClass('disabled');
+            if(button && reenableButton)
+            {
+               button.removeClass('disabled');
+            }
             var msg = response.msg;
             if(msg)
             {
-               var popupDialogTitle = popupDialog.find(".modal-header h3").html(msg[0]);
-               var popupDialogContent = popupDialog.find(".modal-body").html('<p>' + msg[1] + '</p>');
-               primBtn.attr("href", "#");
-               primBtn.attr("onclick", "$('#popupDialog').modal('hide');");
-               popupDialog.modal();
+               Genesis._popupCommon(msg[0], '<p>' + msg[1] + '</p>', "#");
             }
          }
       });
@@ -295,111 +336,83 @@ Genesis =
 var oldSessionLogin = function()
 {
    var response = FB.getSession();
-   if(response == null)
+   var noLogin = false;
+   if($("#fb_account")[0])
    {
-      $("#fb_login").css("display", "");
-      _logout();
-      _fb_disconnect();
-      if($("#fb_account")[0])
+      $('#topbar .secondary-nav > li:not([id="fb_login"])').css('display', 'none');
+      noLogin = true;
+   }
+   if(response != null)
+   {
+      $("#fb_login").css("display", "none");
+      $('#topbar .secondary-nav > li:not([id="fb_login"])').css('display', '');
+      _login();
+      _fb_connect();
+      facebook_onLogin(noLogin);
+      FB.Event.subscribe('auth.sessionChange', function(response)
       {
-         // Not logged into facebook, but web session avail
-         facebook_onLogout();
-      }
+         // do something with response
+         if(response.status != 'connected')
+         {
+            _logout();
+         }
+         else
+         {
+            _login();
+         }
+      });
    }
    else
    {
-      // Logged into facebook, but no web session avail
-      if(!$("#fb_account")[0])
-      {
-         _login();
-         _fb_connect();
-         facebook_onLogin(false);
-      }
-      else
-      {
-         $("#fb_login_img").html('<img src="http://graph.facebook.com/' + response.uid + '/picture?type=square"/>');
-         $("#fb_login_img").css("display", "");
-         facebook_loginCallback();
-      }
+      _logout();
+      _fb_disconnect();
    }
-   FB.Event.subscribe('auth.sessionChange', function(response)
-   {
-      if(response.status != 'connected')
-      {
-         // Session Removed
-         _logout();
-
-      }
-      else
-      {
-         // New session detected
-         _login();
-      }
-   });
+   $("#fb_login").css("display", "");
 }
 var oAuth2SessionLogin = function()
 {
+   var noLogin = false;
+   if($("#fb_account")[0])
+   {
+      $('#topbar .secondary-nav > li:not([id="fb_login"])').css('display', 'none');
+      noLogin = true;
+   }
+
    FB.getLoginStatus(function(response)
    {
-      if(response.status != 'connected')
+      if((response.status != 'connected') || (!response.authResponse))
       {
-         $("#fb_login").css("display", "");
-         // Not logged into facebook, but web session avail
-         if($("#fb_account")[0])
-         {
-            _login();
-            _fb_connect();
-         }
-         else
-         {
-            _logout();
-            _fb_disconnect();
-         }
+         _logout();
+         _fb_disconnect();
       }
       else
       {
-         if(response.authResponse)
-         {
-            // Logged into facebook, but no web session avail
-            if(!$("#fb_account")[0])
-            {
-               _login();
-               _fb_connect();
-               facebook_onLogin(false);
-            }
-            else
-            {
-               $("#fb_login_img").html('<img id="fb_login_img" src="http://graph.facebook.com/' + response.authResponse.userId + '/picture?type=square"/>');
-               $("#fb_login_img").css("display", "");
-            }
-         }
-         else
-         {
-            // Logged into facebook, but mismatch web session avail
-            _logout();
-            _fb_disconnect();
-            facebook_onLogout();
-         }
+         $("#fb_login").css("display", "none");
+         $('#topbar .secondary-nav > li:not([id="fb_login"])').css('display', '');
+         // Logged into facebook, but no web session avail
+         _login();
+         _fb_connect();
+         facebook_onLogin(noLogin);
       }
-   });
+   }, true);
    FB.Event.subscribe('auth.authResponseChange', function(response)
    {
       // do something with response
       if(response.status != 'connected')
       {
          _logout();
-         facebook_onLogout();
       }
       else
       {
          _login();
-         facebook_onLogin(false);
       }
    });
+   $("#fb_login").css("display", "");
 }
 
 window.fbAsyncInit = function()
 {
+
    FB.init(
    {
       // Use user's Facebook AppID if we are logging into their site directly
@@ -407,8 +420,8 @@ window.fbAsyncInit = function()
       authResponse : true,
       status : true,
       cookie : true,
-      xfbml : false
-      //,oauth : true
+      xfbml : true,
+      oauth : true
    });
    Genesis._init();
 };
@@ -417,6 +430,9 @@ window.fbAsyncInit = function()
 // **************************************************************************
 $(document).ready($(function()
 {
+   // --------------------------------------------------------------------------------
+   // Init System Time Clock
+   // --------------------------------------------------------------------------------
    systemTime = ($('#systemTime').text() != '') ? $('#systemTime').text() : clientTime.getTime();
    localOffset = -clientTime.getTimezoneOffset() * (60 * 1000);
    clientTime = clientTime.getTime();
@@ -425,8 +441,9 @@ $(document).ready($(function()
    Genesis.warningMsg = $(".alert-message.warning");
    Genesis.errMsg = $(".alert-message.error");
 
-   // scroll spy logic
-   // ================
+   // --------------------------------------------------------------------------------
+   // #Hash Init
+   // --------------------------------------------------------------------------------
    var activeTarget = location.hash, position =
    {
    }, $window = $(window), nav = $('body > .topbar li a'), targets = nav.map(function()
@@ -474,7 +491,13 @@ $(document).ready($(function()
    processScroll();
 
    $window.scroll(processScroll);
+   // --------------------------------------------------------------------------------
+   // Init TopBar
+   // --------------------------------------------------------------------------------
    $('#topbar').dropdown();
+   // --------------------------------------------------------------------------------
+   // Init FAQ
+   // --------------------------------------------------------------------------------
    $("#faq dd").css('display', 'none');
    $("#faq dt").bind('click', function()
    {
@@ -495,7 +518,9 @@ $(document).ready($(function()
          });
       }
    });
-   // PopupDialog Initializer
+   // --------------------------------------------------------------------------------
+   // Init PopupDialog
+   // --------------------------------------------------------------------------------
    $("#popupDialog").modal(
    {
       keyboard : true,
@@ -511,17 +536,23 @@ $(document).ready($(function()
 // **************************************************************************
 function facebook_onLogout()
 {
-   if(FB.getSession())
+   try
    {
       FB.logout(function(response)
       {
+         Genesis.ajax(false, Genesis.sign_out_path, 'GET', null, 'json', function()
+         {
+            window.location.reload(true);
+         });
       });
    }
-   FB.Auth.setSession(null);
-   Genesis.ajax(false, Genesis.sign_out_path, 'GET', null, 'json', function()
+   catch(e)
    {
-      window.location.reload(true);
-   });
+      Genesis.ajax(false, Genesis.sign_out_path, 'GET', null, 'json', function()
+      {
+         window.location.reload(true);
+      });
+   }
 }
 
 function facebook_loginCallback()
@@ -537,11 +568,11 @@ function facebook_loginCallback()
          }
          return;
       }
+      var facebook_id = response.id;
       if(!$("#fb_account")[0])
       {
          var name = response.name;
          var email = response.email;
-         var facebook_id = response.id;
          var facebook_uid = response.username;
          var gender = response.gender == "male" ? "m" : "f";
          var birthday = response.birthday.split('/');
@@ -552,29 +583,35 @@ function facebook_loginCallback()
             window.location.reload(true);
          });
       }
+      else
+      {
+         $("#fb_login_img").html('<img src="http://graph.facebook.com/' + facebook_id + '/picture?type=square"/>');
+         $("#fb_login_img").css("display", "");
+      }
    });
 }
 
-function facebook_onLogin()
+function facebook_onLogin(noLogin)
 {
    $("#fb_login").css("display", "none");
-   try
+   if(noLogin)
+   {
+      facebook_loginCallback();
+   }
+   else
    {
       FB.login(function(res)
       {
-         if(res.status == 'connected')
+         if((res.status == 'connected') && response.authResponse)
          {
+            Genesis.access_token = response.authResponse.accessToken;
             facebook_loginCallback();
          }
       },
       {
-         //scope : 'email,user_birthday,publish_stream'
-         perms : 'email,user_birthday,publish_stream'
+         scope : 'email,user_birthday,publish_stream,read_friendlists'
+         //perms : 'email,user_birthday,publish_stream,read_friendlists'
       });
-   }
-   catch(e)
-   {
-      facebook_loginCallback();
    }
 }
 
