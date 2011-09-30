@@ -230,17 +230,27 @@ Site =
          });
          Genesis.ajax(true, Genesis.create_referrals, 'POST', "comment=" + rewardMsg, 'json', function(response)
          {
-            setTimeout(function()
+            // Send to Facebook Newsfeed
+            FB.api('/me/feed', 'post',
             {
-               Site.newReferralURL = location.protocol + '//' + location.host + location.pathname + "?referral_id=" + response.data.referral_id;
-               FB.ui(
+               message : rewardMsg
+            }, function(response)
+            {
+               if(!response || response.error)
                {
-                  method : 'send',
-                  name : 'Testing 123',
-                  link : Site.newReferralURL,
-                  description : rewardMsg
-               });
-            }, 0);
+                  Genesis.popupDialog
+               }
+               else
+               {
+                  console.log('Post ID: ' + response.id);
+                  // Update Server about successful Newsfeed update
+                  Genesis.ajax(true, Genesis.complete_referrals, 'POST', "", 'json', function(response)
+                  {
+                     // Ask to send message directly to friends
+                     Site.referralDecisionPopup(location.protocol + '//' + location.host + location.pathname + "?referral_id=" + response.data.referral_id, rewardMsg);
+                  });
+               }
+            });
          }, $reward, false);
       });
       $discussBtn.click(function(event)
@@ -372,6 +382,47 @@ Site =
       {
          referrals.html('');
       });
+   },
+   referralRequestPopup : function()
+   {
+      Genesis._popupCommon("Friend Referral Required before Purchase", "<p>Before being eligible to purchase this deal, a friend referral is required.</p>", "#mainMsg");
+   },
+   resendVouchersPopup : function()
+   {
+      Genesis.ajax(false, Genesis.resend_vouchers_path, 'GET', null, 'json');
+   },
+   resendRewardPopup : function()
+   {
+      Genesis.ajax(false, Genesis.resend_reward_path, 'GET', null, 'json');
+   },
+   referralDecisionPopup : function(url, msg)
+   {
+      this._url = url;
+      this._msg = msg;
+      Genesis._popupCommon("Facebook Posts", "<p>Your recommendation has been posted on your facebook newsfeed,</p><p>Would you like to send this recommendation to specific friends?</p>", "#", "Yes", "Site.referralCompletePopup();", "No", "location.href=" + this._url);
+   },
+   referralCompletePopup : function()
+   {
+      $('#popupDialog').modal('hide');
+      FB.ui(
+      {
+         method : 'send',
+         name : 'Message to your friends',
+         link : this._url,
+         description : this._msg
+      }, function(response)
+      {
+         if(!response || response.error)
+         {
+            Genesis.showErrMsg("Error sending your recommendation message to your friend's mail accounts.");
+         }
+         else
+         {
+            Genesis._popupCommon("Congratulations!", "<p>Your recommendation has been sent to your friend's mail accounts.</p>", this._url);
+         }
+         delete this._url;
+         delete this._msg;
+      });
    }
 }
 $(document).ready($(function()
@@ -472,7 +523,7 @@ $(document).ready($(function()
    {
       if(response.success)
       {
-         location.href = Site.newReferralURL;
+         //location.href = Site.newReferralURL;
       }
       // Try again to send to users
       else

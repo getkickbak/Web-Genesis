@@ -1,7 +1,7 @@
 Genesis =
 {
    fbAppId : '197968780267830',
-   fb_login_tag : '<fb:login-button scope="email,user_birthday,publish_stream" on-login="facebook_onLogin();" size="large" background="dark" length="long"></fb:login-button>',
+   fb_login_tag : '<fb:login-button scope="email,user_birthday,publish_stream,read_friendlists" on-login="facebook_onLogin();" size="large" background="dark" length="long"></fb:login-button>',
    getFriendsURL : function()
    {
       return 'https://graph.facebook.com/me/friends?fields=name,username,id&access_token=' + Genesis.access_token;
@@ -12,22 +12,11 @@ Genesis =
    },
    getFriendsInListURL : function(listId, callback)
    {
-      var tag = '<fb:send href="' + location.protocol + '//' + location.host + location.pathname + '" font="tahoma"></fb:send>';
-      var primBtn = this.popupDialog.find(".modal-footer .primary");
-      var popupDialogTitle = this.popupDialog.find(".modal-header h3").html("Facebook Login Required");
-      var popupDialogContent = this.popupDialog.find(".modal-body").html(tag);
-      primBtn.attr("href", "#");
-      primBtn.attr("onclick", "$('#popupDialog').modal('hide');");
-      this.popupDialog.modal();
-      FB.XFBML.parse();
-      return;
-
       var loginUser;
       FB.api(
       {
          method : 'fql.query',
-         //query : 'SELECT uid, name, username, current_location FROM user WHERE uid=me() OR uid IN (SELECT uid FROM
-         // friendlist_member WHERE flid=' + listId + ')'
+         //query : 'SELECT uid, name, username, current_location FROM user WHERE uid=me() OR uid IN (SELECT uid FROM friendlist_member WHERE flid=' + listId + ')'
          query : 'SELECT uid, name, username, current_location FROM user WHERE uid=me() OR uid IN (SELECT uid2 FROM friend WHERE uid1 = me())'
       }, function(response)
       {
@@ -35,19 +24,6 @@ Genesis =
 
          for(var i = 1; i < response.length; i++)
          {
-            /*
-             if(loginUser.current_location)
-             {
-             if(response[i].current_location && (response[i].current_location.city == loginUser.current_location.city))
-             {
-             console.log(response[i]);
-             }
-             }
-             else
-             {
-             console.log(response[i]);
-             }
-             */
             if(response[i].username)
             {
                console.log(response[i].username);
@@ -278,6 +254,36 @@ Genesis =
    // **************************************************************************
    // Dynamic Popup
    // **************************************************************************
+   _popupCommon : function(title, body, href, yesMSg, yesFnStr, noMsg, noFnStr)
+   {
+      var primBtn = this.popupDialog.find(".modal-footer .primary");
+      var secBtn = this.popupDialog.find(".modal-footer .secondary");
+      var popupDialogTitle = this.popupDialog.find(".modal-header h3").html(title);
+      var popupDialogContent = this.popupDialog.find(".modal-body").html(body);
+      primBtn.attr("href", href);
+      if(yesMsg)
+      {
+         primBtn.attr("onclick", yesFnStr);
+         primBtn.text(yesMsg);
+      }
+      else
+      {
+         primBtn.text('OK');
+         primBtn.attr("onclick", yesFnStr || "$('#popupDialog').modal('hide');");
+      }
+      if(noMsg)
+      {
+         secBtn.text(noMsg);
+         secBtn.css('display','');
+         secBtn.attr("onclick", noFnStr || "$('#popupDialog').modal('hide');");
+      }
+      else
+      {
+         secBtn.text('Cancel');
+         secBtn.css('display','none');
+      }
+      this.popupDialog.modal();
+   },
    loginPopup : function()
    {
       try
@@ -287,37 +293,12 @@ Genesis =
       catch(e)
       {
       }
-      var primBtn = this.popupDialog.find(".modal-footer .primary");
-      var popupDialogTitle = this.popupDialog.find(".modal-header h3").html("Facebook Login Required");
-      var popupDialogContent = this.popupDialog.find(".modal-body").html(Genesis.fb_login_tag);
-      primBtn.attr("href", "#");
-      primBtn.attr("onclick", "$('#popupDialog').modal('hide');");
-      this.popupDialog.modal();
+      this._popupCommon("Facebook Login Required", Genesis.fb_login_tag, "#");
       FB.XFBML.parse();
-   },
-   referralRequestPopup : function()
-   {
-      var primBtn = this.popupDialog.find(".modal-footer .primary");
-      var popupDialogTitle = this.popupDialog.find(".modal-header h3").html("Friend Referral Required before Purchase");
-      var popupDialogContent = this.popupDialog.find(".modal-body").html("<p>Before being eligible to purchase this deal, a friend referral is required.</p>");
-      primBtn.attr("href", "#mainMsg");
-      primBtn.attr("onclick", "$('#popupDialog').modal('hide');");
-      this.popupDialog.modal();
-   },
-   resendVouchersPopup : function()
-   {
-      this.ajax(false, this.resend_vouchers_path, 'GET', null, 'json');
-   },
-   resendRewardPopup : function()
-   {
-      this.ajax(false, this.resend_reward_path, 'GET', null, 'json');
    },
    ajax : function(absPath, url, type, data, dataType, successCallBack, button, reenableButton)
    {
-      var popupDialog = this.popupDialog;
-      var primBtn = popupDialog.find(".modal-footer .primary");
       var path = (absPath) ? location.protocol + '//' + location.host + location.pathname : '';
-
       if(button)
          button.addClass('disabled');
       $.ajax(
@@ -335,15 +316,13 @@ Genesis =
                successCallBack(response);
             }
             if(button && reenableButton)
+            {
                button.removeClass('disabled');
+            }
             var msg = response.msg;
             if(msg)
             {
-               var popupDialogTitle = popupDialog.find(".modal-header h3").html(msg[0]);
-               var popupDialogContent = popupDialog.find(".modal-body").html('<p>' + msg[1] + '</p>');
-               primBtn.attr("href", "#");
-               primBtn.attr("onclick", "$('#popupDialog').modal('hide');");
-               popupDialog.modal();
+               Genesis._popupCommon(msg[0], '<p>' + msg[1] + '</p>', "#");
             }
          }
       });
@@ -629,8 +608,8 @@ function facebook_onLogin(noLogin)
          }
       },
       {
-         scope : 'email,user_birthday,publish_stream'
-         //perms : 'email,user_birthday,publish_stream'
+         scope : 'email,user_birthday,publish_stream,read_friendlists'
+         //perms : 'email,user_birthday,publish_stream,read_friendlists'
       });
    }
 }
