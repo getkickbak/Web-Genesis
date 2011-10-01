@@ -45,11 +45,11 @@ class ReferralsController < ApplicationController
 
     Referral.transaction do
       begin
-        referral_count = Referral.count(:deal_id => @referral.deal.id, :creator_id => current_user.id )
+        deal = Deal.first(:deal_id => params[:id]) || not_found
+        referral_count = Referral.count(:deal_id => deal.id, :creator_id => current_user.id )
         if (referral_count > 0)
           raise "You have already recommended this Deal."
         end
-        deal = Deal.first(:deal_id => params[:id])
         photo_url = params[:photo_url] ? params[:photo_url] : deal.photo_urls.split('\r')[0]
         referral_info = { :photo_url => photo_url, :comment => params[:comment] }
         @referral = Referral.create(deal,current_user,referral_info)
@@ -71,7 +71,7 @@ class ReferralsController < ApplicationController
   end
 
   def confirm
-    @referral = Referral.first(:referral_id => params[:id])
+    @referral = Referral.first(:referral_id => params[:id]) || not_found
     authorize! :update, @referral
 
     Referral.transaction do

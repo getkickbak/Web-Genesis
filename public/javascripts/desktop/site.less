@@ -780,13 +780,32 @@
 // Error and Warning Message
 // ------------------------------------------------------------------
 .alert-message {
-  padding-top: 28px;
-  padding-bottom: 28px;
+  padding-top: 15px;
+  padding-bottom: 15px;
   // Adjust close icon
   .close {
   	position:absolute;
   	top : 10px;
   	right : 10px;
+  }
+}
+
+.btn,
+.alert-message {
+  // Danger and error appear as red
+  &.danger,
+  &.error {
+    .gradientBar(#FFEBE8, #FFEBE8);
+    border-color:#DD3C10;
+    border-width:2px;
+  }
+  // Success appears as green
+  &.success {
+    .gradientBar(#62c462, #57a957);
+  }
+  // Info appears as a neutral blue
+  &.info {
+    .gradientBar(#5bc0de, #339bb9);
   }
 }
 
