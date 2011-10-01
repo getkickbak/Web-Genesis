@@ -42,7 +42,10 @@ Genesis =
    resend_reward_path : '/resend_reward',
    create_referrals : '/referrals/create',
    get_referrals : '/referrals',
-   complete_referrals : '/referrals/complete',
+   get_confirm_referrals : function(refId)
+   {
+      return '/referrals/'+refId+'/confirm';
+   },
    access_token : null,
    initDone : false,
    errMsg : null,
