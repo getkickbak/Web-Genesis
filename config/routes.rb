@@ -28,6 +28,7 @@ Genesis::Application.routes.draw do
     match "/how_it_works" => 'pages#how_it_works'
     match "/privacy" => 'pages#privacy'
     match "/terms" => 'pages#terms'
+    match "/contact_us" => 'pages#contact_us'
 
     resources :merchants do
       resources :deals
@@ -57,6 +58,7 @@ Genesis::Application.routes.draw do
     match '/deals/:id/pay_details' => 'orders#pay_details', :as => :pay_details
     match '/deals/:id/thanks' => 'orders#thanks', :as => :pay_thanks
     match '/deals/:id/referrals' => 'referrals#find_by_deal' 
+    match '/referrals/:id/confirm' => 'referrals#confirm', :via => :post
 
     match '/deals/:id/cancel_order' => 'orders#cancel'
     match '/deals/:id/referrals/create' => 'referrals#create', :via => :post, :as => :new_referral    
