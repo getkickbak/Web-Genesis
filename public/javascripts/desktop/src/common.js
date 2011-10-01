@@ -256,7 +256,7 @@ Genesis =
    // **************************************************************************
    // Dynamic Popup
    // **************************************************************************
-   _popupCommon : function(title, body, href, yesMSg, yesFnStr, noMsg, noFnStr)
+   _popupCommon : function(title, body, href, yesMsg, yesFnStr, noMsg, noFnStr)
    {
       if(!this.popupDialog.data().modal.isShown)
       {
@@ -288,7 +288,7 @@ Genesis =
          }
          this.popupDialog.modal();
       }
-      // Put this in the queue
+      // Put this in the animation queue
       else
       {
          this.popupDialog.queue(function()
@@ -313,7 +313,9 @@ Genesis =
    {
       var path = (absPath) ? location.protocol + '//' + location.host + location.pathname : '';
       if(button)
+      {
          button.addClass('disabled');
+      }
       $.ajax(
       {
          url : path + url,
@@ -328,7 +330,7 @@ Genesis =
             {
                successCallBack(response);
             }
-            if(button && reenableButton)
+            if(button && (reenableButton || !response.success))
             {
                button.removeClass('disabled');
             }

@@ -10,8 +10,8 @@ var _logout = function()
 };
 Site =
 {
-   referralsMinHeight : 398,
-   referralsMaxHeight : 855,
+   referralsMinHeight : 534,
+   referralsMaxHeight : 1005,
    _initFormComponents : function()
    {
       /*
