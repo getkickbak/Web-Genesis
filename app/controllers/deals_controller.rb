@@ -31,9 +31,9 @@ class DealsController < ApplicationController
     redirect = false
     
     if params[:referral_id]
-      @referral = Referral.first(:referral_id => params[:referral_id])
+      @referral = Referral.first(:referral_id => params[:referral_id], :confirmed => true)
     elsif signed_in?
-      @referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id)
+      @referral = Referral.first(:deal_id => @deal.id, :confirmed => true, :creator_id => current_user.id)
       if @referral
         redirect = true
       end  
