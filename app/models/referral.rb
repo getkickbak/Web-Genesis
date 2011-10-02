@@ -35,7 +35,7 @@ class Referral
   end
 
   def self.find_created_by(user_id, start, max)
-    referrals = Referral.all(Referral.creator.id => user_id, :order => [ :created_ts.desc ], :offset => start, :limit => max)
+    referrals = Referral.all(Referral.creator.id => user_id, :order => [ :created_ts.desc ], :confirmed => true, :offset => start, :limit => max)
     #result = {}
     #result[:total] = count
     #result[:items] = referrals
@@ -45,9 +45,9 @@ class Referral
 
   def self.find_received_by(user_id, start, max)
     referral_ids = DataMapper.repository(:default).adapter.select(
-      "SELECT id FROM referrals WHERE creator_id IN 
+      "SELECT id FROM referrals WHERE (creator_id IN 
         (SELECT followed_id FROM relationships WHERE follower_id = ?)
-        OR creator_id = ? 
+        OR creator_id = ?) AND confirmed = true
         ORDER BY created_ts DESC
         LIMIT ?,?", user_id, user_id, start, max
     )
@@ -61,7 +61,7 @@ class Referral
 
   def self.find_by_deal(deal_id, start, max)
     count = Referral.count(Referral.deal.id => deal_id)
-    referrals = Referral.all(Referral.deal.id => deal_id, :order => [ :created_ts.desc ], :offset => start, :limit => max)
+    referrals = Referral.all(Referral.deal.id => deal_id, :order => [ :created_ts.desc ], :confirmed => true, :offset => start, :limit => max)
     result = {}
     result[:total] = count
     result[:items] = referrals
