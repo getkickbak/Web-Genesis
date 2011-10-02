@@ -89,7 +89,7 @@ class ReferralsController < ApplicationController
             format.json { render :json => { :success => true } }
           end
         end
-      rescue
+      rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         @referral = e.resource
         respond_to do |format|
