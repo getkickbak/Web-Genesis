@@ -48,7 +48,7 @@ class ReferralsController < ApplicationController
         deal = Deal.first(:deal_id => params[:id]) || not_found
         referral_count = Referral.count(:deal_id => deal.id, :creator_id => current_user.id )
         if (referral_count > 0)
-          raise "You have already recommended this Deal."
+          raise Exceptions::AppException.new("You have already recommended this Deal.")
         end
         photo_url = params[:photo_url] ? params[:photo_url] : deal.photo_urls.split('\r')[0]
         referral_info = { :photo_url => photo_url, :comment => params[:comment] }

@@ -5,7 +5,7 @@ class Order
 
   property :id, Serial
   property :order_id, String, :unique_index => true, :default => 0
-  property :subdeal_id, Integer, :required => true, :default => 0, :messages => { :presence => "Please pick a deal" }
+  property :subdeal_id, Integer, :required => true, :default => 0, :messages => { :presence => "Please pick a Deal" }
   property :referral_id, Integer, :default => 0
   property :quantity, Integer, :required => true, :default => 0
   property :purchase_date, DateTime, :default => ::Constant::MIN_TIME
@@ -20,7 +20,10 @@ class Order
 
   belongs_to :deal
   belongs_to :user
+  has 1, :gift_option
   has n, :coupons
+  
+  #accepts_nested_attributes_for :gift_option, :allow_destroy => true, :reject_if => lambda { |s| s[:from].blank? || s[:to].blank? || s[:email].blank? || s[:message].blank? }
   
   validates_with_method :check_quantity, :check_deal_max_limit, :check_deal_max_per_person, :check_end_date
   
@@ -47,7 +50,7 @@ class Order
       coupon[:coupon_id] = "#{coupon_id}-#{i+1}"
       coupon[:coupon_title] = subdeal.coupon_title
       coupon[:barcode] = ""
-      url = "http://www.justformyfriends.com"
+      url = deal_url(deal)+"?referral_id=#{referral_id}"
       filename = APP_PROP["QR_CODE_FILE_PATH"] + coupon[:coupon_id] + ".png"
       qr.save(url, filename, :png)
       coupon[:qr_code] = filename
@@ -93,7 +96,7 @@ class Order
   private
   
   def check_quantity
-    self.quantity > 0 ? true : [false, "Quantity must exceed 0"]  
+    self.quantity > 0 ? true : [false, "Quantity must be greater than 0"]  
   end
   
   def check_deal_max_limit
