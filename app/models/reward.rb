@@ -1,6 +1,6 @@
 class Reward
   include DataMapper::Resource
-  include Rails.application.routes.url_helpers
+  #include Rails.application.routes.url_helpers
 
   @@template = ERB.new File.read(File.expand_path "app/views/user_mailer/reward_template.html.erb")
 
@@ -21,7 +21,8 @@ class Reward
   def self.create(deal, user, referral_id)
     now = Time.now
     qr = RQR::QRCode.new(:module_size => 3)
-    url = root_url
+    #url = root_path
+    url = "http://www.justformyfriends.com"
     reward_code = "#{now.to_i}#{rand(1000) + 1000}"
     filename = APP_PROP["REWARD_QR_CODE_FILE_PATH"] + reward_code + ".png"
     qr.save(url, filename, :png)
