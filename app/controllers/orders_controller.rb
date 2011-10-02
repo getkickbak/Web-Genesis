@@ -279,7 +279,7 @@ class OrdersController < ApplicationController
       end
     else
       session[:paypal_error]=@transaction.response
-      raise "Payment Error.  Please Try Again."
+      raise Exceptions::AppException.new("Payment Error.  Please Try Again.")
     end
   end
 end
