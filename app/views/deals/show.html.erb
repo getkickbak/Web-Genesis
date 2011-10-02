@@ -164,15 +164,15 @@ call to action
             <large style="float:right;margin-left:10px;margin-top:12px;padding-top:9px;">C$<%= (subdeal.regular_price - subdeal.discount_price).to_i %> OFF</large>
             <br/>
             <script type="text/javascript" >
-               	TargetDate = "<%= @deal.end_date %>";
-				BackColor = "";
-				//ForeColor = "#676767";
-				ForeColor = "black";
-				CountActive = true;
-				CountStepper = -1;
-				LeadingZero = true;
-				DisplayFormat = "%%D%% Days %%H%% Hrs %%M%% Mins %%S%% secs";
-				FinishMessage = "The deal is over. Better luck next time!";
+               TargetDate = "<%= @deal.end_date %>";
+               BackColor = "";
+               //ForeColor = "#676767";
+               ForeColor = "black";
+               CountActive = true;
+               CountStepper = -1;
+               LeadingZero = true;
+               DisplayFormat = "%%D%% Days %%H%% Hrs %%M%% Mins %%S%% secs";
+               FinishMessage = "The deal is over. Better luck next time!";
 
             </script>
             <script type="text/javascript" src="/javascripts/desktop/lib/countdown.js"></script>
@@ -258,6 +258,9 @@ call to action
       </div>
       <% end %>
    </div>
+   <% if signed_in? %>  
+   <div id="currFbId" style="display:none;"><%= current_user.facebook_id %></div>
+   <% end %>
    <div id="faq" class="span8">
       <h2>FAQ</h2>
       <div class="panelBodyHighlights">
