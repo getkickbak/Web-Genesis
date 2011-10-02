@@ -1,5 +1,6 @@
 class Reward
   include DataMapper::Resource
+  include Rails.application.routes.url_helpers
 
   @@template = ERB.new File.read(File.expand_path "app/views/user_mailer/reward_template.html.erb")
 
