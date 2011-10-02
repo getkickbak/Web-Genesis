@@ -29,6 +29,7 @@ Genesis::Application.routes.draw do
     match "/privacy" => 'pages#privacy'
     match "/terms" => 'pages#terms'
     match "/contact_us" => 'pages#contact_us'
+    match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :contact_create
 
     resources :merchants do
       resources :deals

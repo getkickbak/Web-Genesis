@@ -76,7 +76,8 @@ class ReferralsController < ApplicationController
 
     Referral.transaction do
       begin
-        @referral.update(:confirmed => true)
+        @referral[:confirmed] = true
+        @referral.save
         reward_count = Reward.count(:deal_id => @referral.deal.id, :user_id => current_user.id )
         if (reward_count == 0)
           @reward = Reward.create(@referral.deal,current_user,@referral.id)

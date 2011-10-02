@@ -1,18 +1,17 @@
+<p id="notice"><%= notice %></p>
 <div class="row">
    <div class="span24">
       <div class="row">
          <div id="highlights" class="span24">
             <h2>Email JustForMyFriends</h2>
-            <div class="panelBodyHighlights" style="padding-right:40px;">
-               
-            </div>
-         </div>
-      </div>
-      <div class="row">
-         <div id="highlights" class="span24">
-            <h2>Mailing Address</h2>
             <div class="panelBodyHighlights">
- 
+               <%= simple_form_for @contact, :url => contact_create_path do |f| %>
+               		<%= f.input :name, :label => 'Full name' %>
+					<%= f.input :email, :label => 'Email address', :input_html => { :value => signed_in? ? current_user.email : ''} %>
+					<%= f.input :topic, :label => 'Reason', :collection => Contact.topic_list %>
+					<%= f.input :description, :label => 'How can we help you?', :as => :text %>
+					<%= f.button :submit, 'Submit Request' %>
+               <% end %>
             </div>
          </div>
       </div>

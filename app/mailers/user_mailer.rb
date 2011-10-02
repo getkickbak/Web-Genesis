@@ -19,4 +19,9 @@ class UserMailer < ActionMailer::Base
                                               :data => content}      
     mail(:to => @reward.user.email, :subject => "Reward - A C$2 Tim Horton Gift Card")
   end
+  
+  def contact_email(contact)
+    @contact = contact
+    mail(:from => "#{@contact[:name]} <#{@contact[:email]}>", :to => 'help@justformyfriends.com', :subject => @contact[:topic])
+  end
 end
