@@ -2,7 +2,7 @@ require 'util/constant'
 
 class Order
   include DataMapper::Resource
-  include Rails.application.routes.url_helpers
+  #include Rails.application.routes.url_helpers
 
   property :id, Serial
   property :order_id, String, :unique_index => true, :default => 0
