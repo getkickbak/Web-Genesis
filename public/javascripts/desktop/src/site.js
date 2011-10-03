@@ -10,8 +10,9 @@ var _logout = function()
 };
 Site =
 {
-   referralsMinHeight : 534,
-   referralsMaxHeight : 1005,
+   referralsMinHeight : 398, // 534
+   referralsMaxHeight : 855, //1005
+   resubmitFriendsEmail : false,
    _initFormComponents : function()
    {
       /*
@@ -228,31 +229,38 @@ Site =
          {
             rewardMsg += $(this).text();
          });
-         Genesis.ajax(true, Genesis.create_referrals, 'POST', "comment=" + rewardMsg, 'json', function(res)
+         if(!Site.resubmitFriendsEmail)
          {
-            // Send to Facebook Newsfeed
-            FB.api('/me/feed', 'post',
+            Genesis.ajax(true, Genesis.create_referrals, 'POST', "comment=" + rewardMsg, 'json', function(res)
             {
-               message : rewardMsg
-            }, function(response)
-            {
-               if(!response || response.error)
+               // Send to Facebook Newsfeed
+               FB.api('/me/feed', 'post',
                {
-                  Genesis.showErrMsg("Error Updating Facebook Newsfeed. Try again.");
-                  $reward.removeClass('disabled');
-               }
-               else
+                  message : rewardMsg
+               }, function(response)
                {
-                  console.log('Referral ID: ' + response.id);
-                  // Update Server about successful Newsfeed update
-                  Genesis.ajax(false, Genesis.get_confirm_referrals(res.data.referral_id), 'POST', "", 'json', function(response)
+                  if(!response || response.error)
                   {
-                     // Ask to send message directly to friends
-                     Site.referralDecisionPopup(location.protocol + '//' + location.host + location.pathname + "?referral_id=" + res.data.referral_id, rewardMsg);
-                  });
-               }
-            });
-         }, $reward, false);
+                     Genesis.showErrMsg("Error Updating Facebook Newsfeed. Try again.");
+                     $reward.removeClass('disabled');
+                  }
+                  else
+                  {
+                     console.log('Referral ID: ' + response.id);
+                     // Update Server about successful Newsfeed update
+                     Genesis.ajax(false, Genesis.get_confirm_referrals(res.data.referral_id), 'POST', "", 'json', function(response)
+                     {
+                        // Ask to send message directly to friends
+                        Site.referralDecisionPopup(location.protocol + '//' + location.host + location.pathname + "?referral_id=" + res.data.referral_id, rewardMsg, $reward);
+                     });
+                  }
+               });
+            }, $reward, false);
+         }
+         else
+         {
+            Site.referralCompletePopup();
+         }
       });
       $discussBtn.click(function(event)
       {
@@ -327,7 +335,7 @@ Site =
          var referralsHeight = $(".hero-unit.hero-referrals");
          var mainMsgReferralsBtn = $("#mainMsg .pagination li:last-child a");
 
-         for(var i = 0; i < response.total; i++)
+         for(var i = 0; i < data.length; i++)
          {
             referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment, data[i].created_ts));
             referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment, data[i].created_ts));
@@ -396,14 +404,16 @@ Site =
    {
       Genesis.ajax(false, Genesis.resend_reward_path, 'GET', null, 'json');
    },
-   referralDecisionPopup : function(url, msg)
+   referralDecisionPopup : function(url, msg, rewardBtn)
    {
       this._url = url;
       this._msg = msg;
+      this._rewardBtn = rewardBtn;
       Genesis._popupCommon("Facebook Posts", "<p>Your recommendation has been posted on your facebook newsfeed,</p><p>Would you like to send this recommendation to specific friends?</p>", "#", "Yes", "Site.referralCompletePopup();", "No", "location.href=" + this._url);
    },
    referralCompletePopup : function()
    {
+      $(".alert-message.error .close").parent().switchClass('in', 'hide');
       $('#popupDialog').modal('hide');
       FB.ui(
       {
@@ -415,14 +425,20 @@ Site =
       {
          if(!response || response.error)
          {
-            Genesis.showErrMsg("Error sending your recommendation message to your friend's mail accounts.");
+            Site.resubmitFriendsEmail= true;
+            Genesis.showErrMsg("Error sending your recommendation message to your friend's mail accounts.<br/>Resubmit to Try Again!", function()
+            {
+               //location.href = this._url;
+            });
+            Site._rewardBtn.removeClass('disabled');
          }
          else
          {
             Genesis._popupCommon("Congratulations!", "<p>Your recommendation has been sent to your friend's mail accounts.</p>", this._url);
+            delete Site._url;
+            delete Site._msg;
+            delete Site_rewardBtn;
          }
-         delete this._url;
-         delete this._msg;
       });
    }
 }

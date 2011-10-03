@@ -59,17 +59,17 @@ Genesis =
          }
          if(i < perms.length)
          {
-            location.href = 'http://www.facebook.com/dialog/oauth/?scope='+Genesis.perms+'&client_id='+Genesis.fbAppId+'&redirect_uri='+location.href+'&response_type=token';
+            location.href = 'http://www.facebook.com/dialog/oauth/?scope=' + Genesis.perms + '&client_id=' + Genesis.fbAppId + '&redirect_uri=' + location.href + '&response_type=token';
             /*
-            FB.ui(
-            {
-               client_id : Genesis.fbAppId,
-               method : 'oauth',
-               scope : Genesis.perms,
-               redirect_uri : location,
-               response_type : 'token'
-            });
-            */
+             FB.ui(
+             {
+             client_id : Genesis.fbAppId,
+             method : 'oauth',
+             scope : Genesis.perms,
+             redirect_uri : location,
+             response_type : 'token'
+             });
+             */
          }
          else
          {
@@ -285,19 +285,25 @@ Genesis =
    // **************************************************************************
    // Misc Functions
    // **************************************************************************
-   _showMsg : function(obj, msg)
+   _showMsg : function(obj, msg, closeBtn, cb)
    {
+      closeBtn.prop("onclick", function()
+      {
+         closeBtn.parent().switchClass('in', 'hide');
+         if(cb)
+            cb();
+      });
       Genesis[obj].find("*:nth-child(2)").html(msg);
       Genesis[obj].switchClass('hide', 'in');
       location.href = "#top";
    },
-   showErrMsg : function(msg)
+   showErrMsg : function(msg, cb)
    {
-      this._showMsg('errMsg', msg)
+      this._showMsg('errMsg', msg, $(".alert-message.error .close"), cb);
    },
    showWarningMsg : function(msg)
    {
-      this._showMsg('warningMsg', msg)
+      this._showMsg('warningMsg', msg, $(".alert-message.warning .close"), cb);
    },
    // **************************************************************************
    // Dynamic Popup
@@ -417,25 +423,25 @@ var oAuth2SessionLogin = function()
       }
    });
    /*
-   setTimeout(function()
-   {
-      FB.getLoginStatus(function(response)
-      {
-         if((response.status != 'connected') || (!response.authResponse))
-         {
-            _logout();
-            _fb_disconnect();
-         }
-         else
-         {
-            Genesis.access_token = response.authResponse.accessToken;
-            // Check proper facebook permissions
-            // If not ready, we need the user to trigger login again, to popup permission Dialog box, otherwise, security violation
-            Genesis.checkFbPerms(response.authResponse.userID);
-         }
-      }, true);
-   }, 0);
-   */
+    setTimeout(function()
+    {
+    FB.getLoginStatus(function(response)
+    {
+    if((response.status != 'connected') || (!response.authResponse))
+    {
+    _logout();
+    _fb_disconnect();
+    }
+    else
+    {
+    Genesis.access_token = response.authResponse.accessToken;
+    // Check proper facebook permissions
+    // If not ready, we need the user to trigger login again, to popup permission Dialog box, otherwise, security violation
+    Genesis.checkFbPerms(response.authResponse.userID);
+    }
+    }, true);
+    }, 0);
+    */
    $("#fb_login").css("display", "");
 }
 
