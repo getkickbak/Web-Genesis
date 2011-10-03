@@ -422,26 +422,6 @@ var oAuth2SessionLogin = function()
          Genesis.checkFbPerms(response.authResponse.userID);
       }
    });
-   /*
-    setTimeout(function()
-    {
-    FB.getLoginStatus(function(response)
-    {
-    if((response.status != 'connected') || (!response.authResponse))
-    {
-    _logout();
-    _fb_disconnect();
-    }
-    else
-    {
-    Genesis.access_token = response.authResponse.accessToken;
-    // Check proper facebook permissions
-    // If not ready, we need the user to trigger login again, to popup permission Dialog box, otherwise, security violation
-    Genesis.checkFbPerms(response.authResponse.userID);
-    }
-    }, true);
-    }, 0);
-    */
    $("#fb_login").css("display", "");
 }
 

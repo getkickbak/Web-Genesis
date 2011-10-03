@@ -75,15 +75,13 @@
                         </li>
                      </ul>
                   </li>
-                  <% end %>
-                  <li id="fb_login" style="display:none;">
-                     <fb:login-button scope="email,user_birthday,publish_stream,read_friendlists" on-login="facebook_onLogin();" size="large" background="dark" length="short"></fb:login-button>
-                  </li>
-                  <% if signed_in? %>
                   <li class="">
                      <a href="#" onclick="facebook_onLogout()">Sign Out</a>
                   </li>
                   <% end %>
+                  <li id="fb_login" style="display:none;">
+                     <fb:login-button scope="email,user_birthday,publish_stream,read_friendlists" on-login="facebook_onLogin();" size="large" background="dark" length="short"></fb:login-button>
+                  </li>
                </ul>
             </div>
          </div>
