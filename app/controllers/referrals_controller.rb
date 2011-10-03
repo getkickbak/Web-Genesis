@@ -83,11 +83,11 @@ class ReferralsController < ApplicationController
           @reward = Reward.create(@referral.deal,current_user,@referral.id)
           @reward.print
           UserMailer.reward_email(@reward).deliver
-          respond_to do |format|
-          #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
-          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => true } }
-          end
+        end
+        respond_to do |format|
+        #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+          format.json { render :json => { :success => true } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
