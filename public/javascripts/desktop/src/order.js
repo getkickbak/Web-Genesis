@@ -1,8 +1,8 @@
-var _login = function()
+_login = function()
 {
 }
 
-var _logout = function()
+_logout = function()
 {
 }
 

@@ -2,7 +2,6 @@ require 'util/constant'
 
 class Order
   include DataMapper::Resource
-  #include Rails.application.routes.url_helpers
 
   property :id, Serial
   property :order_id, String, :unique_index => true, :default => 0
@@ -28,7 +27,7 @@ class Order
   
   validates_with_method :check_quantity, :check_deal_max_limit, :check_deal_max_per_person, :check_end_date
   
-  def self.create(deal, subdeal, user, referral_id, order_info)
+  def self.create(deal, subdeal, user, referral_id, order_info, url)
     now = Time.now
     quantity = order_info[:quantity].to_i
     order = Order.new(
@@ -51,8 +50,6 @@ class Order
       coupon[:coupon_id] = "#{coupon_id}-#{i+1}"
       coupon[:coupon_title] = subdeal.coupon_title
       coupon[:barcode] = ""
-      #url = deal_path(deal)+"?referral_id=#{referral_id}"
-      url = "http://www.justformyfriends.com"
       filename = APP_PROP["QR_CODE_FILE_PATH"] + coupon[:coupon_id] + ".png"
       qr.save(url, filename, :png)
       coupon[:qr_code] = filename

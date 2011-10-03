@@ -1,11 +1,11 @@
-var _login = function()
+_login = function()
 {
    $('#fb_login').css("display", "none");
    $('#fb_login_img').css("display", "");
    $('#fb_login2').css("display", "none");
 }
 
-var _logout = function()
+_logout = function()
 {
    $('#fb_login').css("display", "");
    $('#fb_login_img').css("display", "none");

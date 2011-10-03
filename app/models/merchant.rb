@@ -7,6 +7,7 @@ class Merchant
   property :id, Serial
   property :merchant_id, String, :unique_index => true, :default => ""
   property :name, String, :required => true, :default => ""
+  property :photo_url, String, :required => true, :default => ""
   property :email, String, :required => true, :unique => true,
             :format => :email_address
   property :first_name, String, :required => true, :default => ""
@@ -30,7 +31,7 @@ class Merchant
   #property :deleted, ParanoidBoolean, :default => false
 
   attr_accessor :password, :password_confirmation
-  attr_accessible :name, :email, :first_name, :last_name, :password, :password_confirmation, :address1, :address2,
+  attr_accessible :name, :email, :photo_url, :first_name, :last_name, :password, :password_confirmation, :address1, :address2,
                   :city, :state, :zipcode, :country, :phone, :website, :paypal_account
 
   has n, :deals
@@ -45,6 +46,7 @@ class Merchant
     merchant = Merchant.new(
     :name => merchant_name,
     :email => merchant_info[:email].strip,
+    :photo_url => merchant_info[:photo_url].strip,
     :first_name => merchant_info[:first_name].strip,
     :last_name => merchant_info[:last_name].strip,
     :password => merchant_info[:password].strip,
@@ -97,6 +99,7 @@ class Merchant
     self.merchant_id = merchant_name.downcase.gsub(' ','-')
     self.name = merchant_name
     self.email = merchant_info[:email].strip
+    self.photo_url = merchant_info[:photo_url].strip
     self.password = merchant_info[:password].strip
     self.password_confirmation = merchant_info[:password_confirmation].strip
     self.first_name = merchant_info[:first_name].strip

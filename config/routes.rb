@@ -61,7 +61,7 @@ Genesis::Application.routes.draw do
     match '/deals/:id/referrals' => 'referrals#find_by_deal' 
     match '/referrals/:id/confirm' => 'referrals#confirm', :via => :post
 
-    match '/deals/:id/cancel_order' => 'orders#cancel'
+    match '/deals/:id/cancel_order' => 'orders#cancel', :as => :cancel_order
     match '/deals/:id/referrals/create' => 'referrals#create', :via => :post, :as => :new_referral    
     match '/resend_vouchers' => 'orders#resend_coupons'
     match '/resend_reward' => 'referrals#resend_reward'

@@ -79,7 +79,8 @@ class OrdersController < ApplicationController
           end
         else
           session[:order_in_progress] = true
-          @order = Order.create(@deal, @subdeal, current_user, referral_id, params[:order])
+          url = deal_path(@deal)+"?referral_id=#{referral_id}"
+          @order = Order.create(@deal, @subdeal, current_user, referral_id, params[:order], url)
           pay_transfer(@order)
         end
       rescue DataMapper::SaveFailureError => e
@@ -240,10 +241,8 @@ class OrdersController < ApplicationController
   end
 
   def pay_transfer(order)
-    @host=request.host.to_s
-    @port=request.port.to_s
-    @cancelURL="http://#{@host}:#{@port}/deals/#{params[:id]}/cancel_order"
-    @returnURL="http://#{@host}:#{@port}/deals/#{params[:id]}/pay_details?order_id="+order.order_id
+    @cancelURL=cancel_order_url(order.deal)
+    @returnURL=pay_details_url(order.deal)+"?order_id=#{order.order_id}"
     @caller =  PayPalSDKCallers::Caller.new(false, PayPalSDKProfiles::Profile::ADAPTIVE_SERVICE_PAY)
     req={
       "requestEnvelope.errorLanguage" => "en_US",
