@@ -100,8 +100,12 @@ call to action
                         <table style="border:0;padding:0;margin:0;">
                            <tr>
                            <% referrers[:items].each do |referrer| %>
-                           <td style="padding:0 5px 0 0;border:0;margin:0;">
+                           <td style="padding:0 1px 0 0;border:0;margin:0;width:36px;">
                               <img  style="cursor:pointer;" onclick="Site.getReferrals();" width="36" src="<%= "http://graph.facebook.com/#{referrer.facebook_id}/picture?type=square&" %>">
+                           </td>                           
+                           <% end %>
+                           <% (1..10-referrers[:items].to_a.length).each do |i| %>
+                           <td style="padding:0 1px 0 0;border:0;margin:0;width:36px;">
                            </td>
                            <% end %>
                            </tr>
