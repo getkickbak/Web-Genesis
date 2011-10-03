@@ -228,7 +228,7 @@ Site =
          {
             rewardMsg += $(this).text();
          });
-         Genesis.ajax(true, Genesis.create_referrals, 'POST', "comment=" + rewardMsg, 'json', function(response)
+         Genesis.ajax(true, Genesis.create_referrals, 'POST', "comment=" + rewardMsg, 'json', function(res)
          {
             // Send to Facebook Newsfeed
             FB.api('/me/feed', 'post',
@@ -238,16 +238,17 @@ Site =
             {
                if(!response || response.error)
                {
-                  Genesis.popupDialog
+                  Genesis.showErrMsg("Error Updating Facebook Newsfeed. Try again.");
+                  $reward.removeClass('disabled');
                }
                else
                {
                   console.log('Referral ID: ' + response.id);
                   // Update Server about successful Newsfeed update
-                  Genesis.ajax(false, Genesis.get_confirm_referrals(response.data.referral_id), 'POST', "", 'json', function(response)
+                  Genesis.ajax(false, Genesis.get_confirm_referrals(res.data.referral_id), 'POST', "", 'json', function(response)
                   {
                      // Ask to send message directly to friends
-                     Site.referralDecisionPopup(location.protocol + '//' + location.host + location.pathname + "?referral_id=" + response.data.referral_id, rewardMsg);
+                     Site.referralDecisionPopup(location.protocol + '//' + location.host + location.pathname + "?referral_id=" + res.data.referral_id, rewardMsg);
                   });
                }
             });
