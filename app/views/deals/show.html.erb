@@ -177,7 +177,6 @@ call to action
                LeadingZero = true;
                DisplayFormat = "%%D%% Days %%H%% Hrs %%M%% Mins %%S%% secs";
                FinishMessage = "The deal is over. Better luck next time!";
-
             </script>
             <script type="text/javascript" src="/javascripts/desktop/lib/countdown.js"></script>
             </h2>
@@ -215,26 +214,6 @@ call to action
                      ABOUT THIS PLACE ...
                   </div></h2>
                   <div class="panelBodyHighlights">
-                     <div id="gmap" style="height:235px;float:right;width:190px;margin-left:10px;"></div>
-                     <div id="address">
-                        <p id="merchant_name">
-                           <%= @deal.merchant.name %>
-                        </p>
-                        <p id="merchant_address1">
-                           <%= @deal.merchant.address1 %>
-                        </p>
-                        <% if @deal.merchant.address2 && !@deal.merchant.address2.empty? %>
-                        <p id="merchant_address2">
-                           <%= @deal.merchant.address2 %>
-                        </p>
-                        <% end %>
-                        <p id="merchant_city_state_zipcode">
-                           <%= @deal.merchant.city %>, <%= @deal.merchant.state %> <%= @deal.merchant.zipcode %>
-                        </p>
-                        <p id="merchant_phone">
-                           <%= @deal.merchant.phone %>
-                        </p>
-                     </div>
                      <div>
                         <%= @deal.description %>
                      </div>
@@ -262,9 +241,11 @@ call to action
       </div>
       <% end %>
    </div>
-   <div id="faq" class="span8">
-      <h2>FAQ</h2>
-      <div class="panelBodyHighlights">
+   <div class="span8">
+      <div class="row">
+         <div id="faq" class="span8">
+            <h2>FAQ</h2>
+      	  <div class="panelBodyHighlights">
          <dl>
             <dt>
 What is  JustForMyFriends?
@@ -361,6 +342,32 @@ Will previous buys be featured again?
 We cannot guarantee that a previous buy will appear again. The best thing to do is to sign up for the desired buy the day it's featured on JustForMyFriends. If you see a past buy that you would like to have back, create an account and vote for it to return on the “Recent Buys” page.
             </dd>
          </dl>
+      </div>
+         </div>
+      </div>
+      <div class="row">
+         <div class="span8">
+            <h2>LOCATION</h2>
+            <div style="display:none">
+               <div id="merchant_address1"><%= @deal.merchant.address1 %></div>
+               <% if @deal.merchant.address2 && !@deal.merchant.address2.empty? %>
+               <div id="merchant_address2"><%= @deal.merchant.address2 %></div>
+               <% end %>
+               <div id="merchant_city_state_zipcode"><%= @deal.merchant.city %>, <%= @deal.merchant.state %><br/><%= @deal.merchant.zipcode %></div>
+            </div>
+            <div class="panelBodyHighlights">
+               <!--
+                  Copmany's Logo 
+                -->
+               <div></div>
+               <div id="address" style="text-align:center;">
+                  <p id="merchant_name"><%= @deal.merchant.name %></p>
+                  <p id="merchant_address"></p>
+                  <p id="merchant_phone"><%= @deal.merchant.phone %></p>
+               </div>
+               <div id="gmap" style="height:235px;width:210px;"></div>
+            </div>
+         </div>
       </div>
    </div>
 </div>

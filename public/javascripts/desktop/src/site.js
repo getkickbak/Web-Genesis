@@ -461,7 +461,6 @@ $(document).ready($(function()
    var $highlights2Tab = $("#highlights li:nth-child(2) a");
    var $highlights1 = $("#highlights-1");
    var $highlights2 = $("#highlights-2");
-   var $gmap = $("#gmap");
    var $highlightTabs = $highlights.tabs();
 
    Site.initForm();
@@ -479,6 +478,25 @@ $(document).ready($(function()
       mouseWheelEvt = 'DOMMouseScroll';
    }
    // --------------------------------------------------------------------------------
+   // Google Map
+   // --------------------------------------------------------------------------------
+   var $gmap = $("#gmap");
+   var merchant_name = $("#merchant_name").text().trim();
+   address = $("#merchant_address1").text().trim() + ' ' + $("#merchant_address2").text().trim() + ' ' + $("#merchant_city_state_zipcode").text().trim();
+   $gmap.gMap(
+   {
+      markers : [
+      {
+         address : address,
+         html : merchant_name
+      }],
+      zoom : 15,
+      address : address
+   });
+   address = $("#merchant_address1").text().trim() + '<br/>' + $("#merchant_address2").text().trim() + '<br/>' + $("#merchant_city_state_zipcode").html().trim();
+   $("#merchant_address").html(address);
+
+   // --------------------------------------------------------------------------------
    // Scrolling Referrals
    // --------------------------------------------------------------------------------
    $(window).bind(mouseWheelEvt, function(event, b)
@@ -495,6 +513,7 @@ $(document).ready($(function()
    $highlightsBtn.click(function()
    {
       // switch to 1st tab
+      $("#offerDetails").css('height',$("#highlights-1").css('height'));
       $highlightsCtn.switchClass("span24", "span12", 1000, function()
       {
          Genesis.switchTab($highlights1Tab, $highlights1);
@@ -502,22 +521,8 @@ $(document).ready($(function()
    });
    $detailsBtn.click(function()
    {
-      if(!$gmap[0].innerHTML)
-      {
-         merchant_name = $("#merchant_name").text().trim();
-         address = $("#merchant_address1").text().trim() + ' ' + $("#merchant_address2").text().trim() + ' ' + $("#merchant_city_state_zipcode").text().trim();
-         $gmap.gMap(
-         {
-            markers : [
-            {
-               address : address,
-               html : merchant_name
-            }],
-            zoom : 15,
-            address : address
-         });
-      }
       // switch to 2nd tab
+      $("#offerDetails").css('height',$("#highlights-2").css('height'));
       Genesis.switchTab($highlights2Tab, $highlights2);
       $highlightsCtn.switchClass("span12", "span24", 1000, function()
       {
