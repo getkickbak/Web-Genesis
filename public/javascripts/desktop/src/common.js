@@ -604,7 +604,7 @@ function facebook_loginCallback(noLogin)
          var params = "name=" + name + "&email=" + email + "&facebook_id=" + facebook_id + "&facebook_uid=" + facebook_uid + "&gender=" + gender + "&birthday=" + birthday;
          Genesis.ajax(false, Genesis.sign_in_path, 'POST', params, 'json', function(response)
          {
-            if(!noLogin)
+            if(!noLogin || (Genesis.currFbId != facebook_id))
             {
                window.location.reload(true);
             }
