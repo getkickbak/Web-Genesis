@@ -559,7 +559,10 @@ function facebook_onLogout()
       {
          Genesis.ajax(false, Genesis.sign_out_path, 'GET', null, 'json', function()
          {
-            window.location.reload(true);
+            setTimeout(function()
+            {
+               window.location.reload(true);
+            }, 0);
          });
       });
    }
@@ -567,7 +570,10 @@ function facebook_onLogout()
    {
       Genesis.ajax(false, Genesis.sign_out_path, 'GET', null, 'json', function()
       {
-         window.location.reload(true);
+         setTimeout(function()
+         {
+            window.location.reload(true);
+         }, 0);
       });
    }
 }
@@ -606,7 +612,10 @@ function facebook_loginCallback(noLogin)
          {
             if(!noLogin || (Genesis.currFbId != facebook_id))
             {
-               window.location.reload(true);
+               setTimeout(function()
+               {
+                  window.location.reload(true);
+               }, 0);
             }
             Genesis.currFbId = facebook_id;
             if($("#fb_account")[0])
