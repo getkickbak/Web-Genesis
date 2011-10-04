@@ -6,11 +6,13 @@
             <h2>Email JustForMyFriends</h2>
             <div class="panelBodyHighlights">
                <%= simple_form_for @contact, :url => contact_create_path do |f| %>
-               		<%= f.input :name, :label => 'Full name' %>
+               <%= f.input :name,  :label => 'Full name' %>
 					<%= f.input :email, :label => 'Email address', :input_html => { :value => signed_in? ? current_user.email : ''} %>
 					<%= f.input :topic, :label => 'Reason', :collection => Contact.topic_list %>
 					<%= f.input :description, :label => 'How can we help you?', :as => :text %>
-					<%= f.button :submit, 'Submit Request' %>
+					<div class="alignRight">
+					<%= f.button :submit, 'Submit Request', :class =>"large btn" %>
+					</div>
                <% end %>
             </div>
          </div>
