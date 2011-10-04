@@ -13,6 +13,7 @@ Site =
    referralsMinHeight : 398, // 534
    referralsMaxHeight : 855, //1005
    resubmitFriendsEmail : false,
+   dealNameSelector : '#mainDeal h2:first-child',
    _initFormComponents : function()
    {
       /*
@@ -237,7 +238,7 @@ Site =
                // Send to Facebook Newsfeed
                FB.api('/me/feed', 'post',
                {
-                  name : '',
+                  name : $(Site.dealNameSelector).text(),
                   link : referralURL,
                   picture : $("meta[property='og:image']").prop("content"),
                   description : '',
@@ -414,7 +415,7 @@ Site =
       this._url = url;
       this._msg = msg;
       this._rewardBtn = rewardBtn;
-      Genesis._popupCommon("Facebook Posts", "<p>Your recommendation has been posted on your facebook newsfeed,</p><p>Would you like to send this recommendation to specific friends?</p>", "#", "Yes", "Site.referralCompletePopup();", "No", "location.href='" + this._url+"'");
+      Genesis._popupCommon("Facebook Posts", "<p>Your recommendation has been posted on your facebook newsfeed,</p><p>Would you like to send this recommendation to specific friends?</p>", "#", "Yes", "Site.referralCompletePopup();", "No", "location.href='" + this._url + "'");
    },
    referralCompletePopup : function()
    {
@@ -525,18 +526,27 @@ $(document).ready($(function()
    var referralFbTag = false;
    $('#referralWarning').bind('hidden', function()
    {
-      if(referralFbTag)
+      var referralTabVisible = $("#mainMsg .hero-referral").parent().css('display') != 'none';
+      if(!referralTabVisible)
       {
-         setTimeout(function()
+         if(referralFbTag)
          {
-            $(".next").trigger("click");
-            referralFbTag = false;
-         }, 500);
+            setTimeout(function()
+            {
+               $(".next").trigger("click");
+               referralFbTag = false;
+            }, 500);
+         }
+      }
+      else
+      {
+         location.hash = "#top";
       }
    });
    $('#referralWarning .fbtag').bind('click', function()
    {
       referralFbTag = true;
+      $('#referralWarning').modal('hide');
    });
    // --------------------------------------------------------------------------------
    // Facebook Message
