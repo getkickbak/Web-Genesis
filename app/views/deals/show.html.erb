@@ -183,6 +183,32 @@ call to action
          </div>
       </div>
       <div class="row">
+         <div class="span24">
+            <h2>LOCATION</h2>
+            <div style="display:none">
+               <div id="merchant_address1"><%= @deal.merchant.address1 %></div>
+               <% if @deal.merchant.address2 && !@deal.merchant.address2.empty? %>
+               <div id="merchant_address2"><%= @deal.merchant.address2 %></div>
+               <% end %>
+               <div id="merchant_city_state_zipcode"><%= @deal.merchant.city %>, <%= @deal.merchant.state %><br/><%= @deal.merchant.zipcode %></div>
+            </div>
+            <div class="panelBodyHighlights">
+               <div></div>
+               <div class="span12">
+                  <!--
+                     Copmany's Logo 
+                   -->
+                  <div id="address" class="alignCenter" style="width:200px;">
+                    <p id="merchant_name"><%= @deal.merchant.name %></p>
+                    <p id="merchant_address"></p>
+                    <p id="merchant_phone"><%= @deal.merchant.phone %></p>
+                  </div>
+               </div>
+               <div id="gmap" class="right" style="height:235px;width:310px;margin-left:10px;"></div>
+            </div>
+         </div>
+      </div>
+      <div class="row">
          <div id="highlightsCtn" class="span0abs span12" style="z-index:1;overflow:hidden;">
             <ul id="highlights" class="tabs" data-tabs="tabs" style="display:none;">
                <li>
@@ -242,10 +268,20 @@ call to action
       <% end %>
    </div>
    <div class="span8">
+      <% if @referral %> 
       <div class="row">
-         <div id="faq" class="span8">
-            <h2>FAQ</h2>
-      	  <div class="panelBodyHighlights">
+      <div class="span8">
+         <h2>SHARE</h2>
+           <div class="panelBodyHighlights alignCenter" style="min-height:0px;">
+            <div class="fb-send" data-href="http://www.justformyfriends:3000/deals/<%= @deal.deal_id %>?referral_id=<%= @referral.referral_id %>" data-font="verdana"></div>
+         </div>
+         </div>
+      </div>
+      <% end %>
+      <div id="faq" class="row">
+      <div class="span8">
+         <h2>FAQ</h2>
+         <div class="panelBodyHighlights">
          <dl>
             <dt>
 What is  JustForMyFriends?
@@ -342,31 +378,7 @@ Will previous buys be featured again?
 We cannot guarantee that a previous buy will appear again. The best thing to do is to sign up for the desired buy the day it's featured on JustForMyFriends. If you see a past buy that you would like to have back, create an account and vote for it to return on the “Recent Buys” page.
             </dd>
          </dl>
-      </div>
          </div>
-      </div>
-      <div class="row">
-         <div class="span8">
-            <h2>LOCATION</h2>
-            <div style="display:none">
-               <div id="merchant_address1"><%= @deal.merchant.address1 %></div>
-               <% if @deal.merchant.address2 && !@deal.merchant.address2.empty? %>
-               <div id="merchant_address2"><%= @deal.merchant.address2 %></div>
-               <% end %>
-               <div id="merchant_city_state_zipcode"><%= @deal.merchant.city %>, <%= @deal.merchant.state %><br/><%= @deal.merchant.zipcode %></div>
-            </div>
-            <div class="panelBodyHighlights">
-               <!--
-                  Copmany's Logo 
-                -->
-               <div></div>
-               <div id="address" style="text-align:center;">
-                  <p id="merchant_name"><%= @deal.merchant.name %></p>
-                  <p id="merchant_address"></p>
-                  <p id="merchant_phone"><%= @deal.merchant.phone %></p>
-               </div>
-               <div id="gmap" style="height:235px;width:210px;"></div>
-            </div>
          </div>
       </div>
    </div>
