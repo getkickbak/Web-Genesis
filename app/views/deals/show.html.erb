@@ -164,7 +164,7 @@ call to action
             <% else %>
             	<a style="float:right;margin-left:10px;margin-top:12px;" class="btn large">Deal Expired</a>	
             <% end %>	
-            <% subdeal = @deal.subdeals.last %>
+            <% subdeal = @deal.subdeals.first %>
             <large style="float:right;margin-left:10px;margin-top:12px;padding-top:9px;">C$<%= (subdeal.regular_price - subdeal.discount_price).to_i %> OFF</large>
             <br/>
             <script type="text/javascript" >
@@ -270,28 +270,16 @@ call to action
       <div class="panelBodyHighlights">
          <dl>
             <dt>
-I need help ASAP! What should I do?
-            </dt>
-            <dd>
-The best way to reach us is to email help@justformyfriends.com. Another way to reach us quickly is to call 1.800.306.4577 to speak with a JustForMyFriends representative.
-            </dd>
-            <dt>
 What is  JustForMyFriends?
             </dt>
             <dd>
-JustForMyFriends is an awesome way for you to get more out of your city. Here on JustForMyFriends, we’re able to offer very large discounts on local businesses by guaranteeing them a minimum amount of customers. Every day we offer a new unbeatable buy. Each buy remains on the site for 24 hours and if enough people sign up for it by entering their credit card info before midnight, the buy goes through and everyone get’s it. If the minimum is not hit, nobody’s credit card is charged and nobody gets to take advantage of the deal.
+JustForMyFriends is an awesome way for you find out the great local businesses that are recommended by your trusted friends.
             </dd>
             <dt>
-How do I purchase today's Buy?
+I want today's Deal. What to do?
             </dt>
             <dd>
 Just click on the Blue “Buy Now” button or the bright pink bar on the home image and you will be asked for your billing information. If the day’s Buy doesn’t get enough buyers, your credit card will not be charged and no one will get the Buy. However, if the buy goes through, you’ll receive a JustForMyFriends ticket in your email inbox (make sure to check your junk mail folder too) and your credit card will be charged.
-            </dd>
-            <dt>
-Do I need to enter a promo code before I check out?
-            </dt>
-            <dd>
-No. This option does not have to be filled out, it can be left blank. Occasionally we will have promo codes that will allow a further discount on your purchase, but we will let you know when.
             </dd>
             <dt>
 Does it cost me anything to create an account or use this website?
@@ -304,12 +292,6 @@ How do I create an account on JustForMyFriends?
             </dt>
             <dd>
 Click on “Sign In” in the top right corner, and then click on “Join JustForMyFriends”. Enter your name, desired username, email, password, and indicate if you would like to receive the daily emails.
-            </dd>
-            <dt>
-Do I have to sign up a group of people I know to get the buy?
-            </dt>
-            <dd>
-Nope! As long as enough people sign up (strangers or not), the buy will go through. However, you may want to share the buy you're interested in on your social networks to ensure that enough people sign up. Signing up as a group could be lots of fun on buys like paintballing and go carting!
             </dd>
             <dt>
 What are the expiration dates of JustForMyFriends's?
