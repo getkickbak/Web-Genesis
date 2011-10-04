@@ -15,6 +15,8 @@ Genesis =
    {
       return 'https://graph.facebook.com/me/friendlists?access_token=' + Genesis.access_token;
    },
+   // Get Friends with Facebook email address
+   //
    getFriendsInListURL : function(listId, callback)
    {
       var loginUser;
@@ -541,7 +543,7 @@ $(document).ready($(function()
                {
                   dt.next().show("highlight",
                   {
-                  }, 4000);
+                  }, 2500);
                });
             }
          });
