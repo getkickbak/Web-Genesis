@@ -287,7 +287,7 @@ Genesis =
    // **************************************************************************
    _showMsg : function(obj, msg, closeBtn, cb, rawHtml)
    {
-      closeBtn.prop("onclick", function()
+      closeBtn.bind("click", function()
       {
          closeBtn.parent().switchClass('in', 'hide');
          if(cb)
@@ -310,7 +310,7 @@ Genesis =
    // **************************************************************************
    // Dynamic Popup
    // **************************************************************************
-   _popupCommon : function(title, body, href, yesMsg, yesFnStr, noMsg, noFnStr)
+   _popupCommon : function(title, body, href, yesMsg, yesFn, noMsg, noFn)
    {
       if(!this.popupDialog.data().modal.isShown)
       {
@@ -321,19 +321,31 @@ Genesis =
          primBtn.attr("href", href);
          if(yesMsg)
          {
-            primBtn.attr("onclick", yesFnStr);
             primBtn.text(yesMsg);
+            primBtn.unbind("click");
+            primBtn.bind("click", yesFn);
          }
          else
          {
             primBtn.text('OK');
-            primBtn.attr("onclick", yesFnStr || "$('#popupDialog').modal('hide');");
+            primBtn.unbind("click");
+            primBtn.bind("click", yesFn ||
+            function()
+            {
+               $('#popupDialog').modal('hide');
+            });
+
          }
          if(noMsg)
          {
             secBtn.text(noMsg);
             secBtn.css('display', '');
-            secBtn.attr("onclick", noFnStr || "$('#popupDialog').modal('hide');");
+            secBtn.unbind("click");
+            secBtn.bind("click", noFn ||
+            function()
+            {
+               $('#popupDialog').modal('hide');
+            });
          }
          else
          {
@@ -347,7 +359,7 @@ Genesis =
       {
          this.popupDialog.queue(function()
          {
-            Genesis._popupCommon(title, body, href, yesMSg, yesFnStr, noMsg, noFnStr);
+            Genesis._popupCommon(title, body, href, yesMsg, yesFn, noMsg, noFn);
          });
       }
    },

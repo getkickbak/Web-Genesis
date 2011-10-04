@@ -415,7 +415,10 @@ Site =
       this._url = url;
       this._msg = msg;
       this._rewardBtn = rewardBtn;
-      Genesis._popupCommon("Facebook Posts", "<p>Your recommendation has been posted on your facebook newsfeed,</p><p>Would you like to send this recommendation to specific friends?</p>", "#", "Yes", "Site.referralCompletePopup();", "No", "location.href='" + this._url + "'");
+      Genesis._popupCommon("Facebook Posts", "<p>Your recommendation has been posted on your facebook newsfeed,</p><p>Would you like to send this recommendation to specific friends?</p>", "#", "Yes", Site.referralCompletePopup, "No", function()
+      {
+         location.href = Site._url;
+      });
    },
    referralCompletePopup : function()
    {
