@@ -493,7 +493,7 @@ $(document).ready($(function()
       zoom : 15,
       address : address
    });
-   address = $("#merchant_address1").text().trim() + '<br/>' + $("#merchant_address2").text().trim() + '<br/>' + $("#merchant_city_state_zipcode").html().trim();
+   address = $("#merchant_address1").text().trim() + ' ' + $("#merchant_address2").text().trim() + '<br/>' + $("#merchant_city_state_zipcode").html().trim() + '<a target="_blank" href="' + "http://maps.google.com/maps?f=d&daddr=" + address + '">Get Directions</a>';
    $("#merchant_address").html(address);
 
    // --------------------------------------------------------------------------------
@@ -513,7 +513,7 @@ $(document).ready($(function()
    $highlightsBtn.click(function()
    {
       // switch to 1st tab
-      $("#offerDetails").css('height',$("#highlights-1").css('height'));
+      $("#offerDetails").css('height', $("#highlights-1").css('height'));
       $highlightsCtn.switchClass("span24", "span12", 1000, function()
       {
          Genesis.switchTab($highlights1Tab, $highlights1);
@@ -522,7 +522,7 @@ $(document).ready($(function()
    $detailsBtn.click(function()
    {
       // switch to 2nd tab
-      $("#offerDetails").css('height',$("#highlights-2").css('height'));
+      $("#offerDetails").css('height', $("#highlights-2").css('height'));
       Genesis.switchTab($highlights2Tab, $highlights2);
       $highlightsCtn.switchClass("span12", "span24", 1000, function()
       {
