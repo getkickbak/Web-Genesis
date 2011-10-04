@@ -99,7 +99,7 @@ Genesis =
    {
       if(this.initDone == true)
       {
-         Genesis.currFbId = $("#currFbId").text() || "0";
+         Genesis.currFbId = parseInt($("#currFbId").text()) || "0";
          oAuth2SessionLogin();
          document.addEventListener('touchmove', function(e)
          {
@@ -285,7 +285,7 @@ Genesis =
    // **************************************************************************
    // Misc Functions
    // **************************************************************************
-   _showMsg : function(obj, msg, closeBtn, cb)
+   _showMsg : function(obj, msg, closeBtn, cb, rawHtml)
    {
       closeBtn.prop("onclick", function()
       {
@@ -293,17 +293,19 @@ Genesis =
          if(cb)
             cb();
       });
-      Genesis[obj].find("*:nth-child(2)").html(msg);
+      var htmlMsg = (rawHtml) ? msg : '<h5>' + msg + '</h5>';
+      var msgNode = Genesis[obj].find("*:nth-child(2)");
+      msgNode[0] ? msgNode.html(htmlMsg) : Genesis[obj].append(htmlMsg);
       Genesis[obj].switchClass('hide', 'in');
       location.href = "#top";
    },
-   showErrMsg : function(msg, cb)
+   showErrMsg : function(msg, cb, rawHtml)
    {
-      this._showMsg('errMsg', msg, $(".alert-message.error .close"), cb);
+      this._showMsg('errMsg', msg, $(".alert-message.error .close"), cb, rawHtml);
    },
    showWarningMsg : function(msg)
    {
-      this._showMsg('warningMsg', msg, $(".alert-message.warning .close"), cb);
+      this._showMsg('warningMsg', msg, $(".alert-message.warning .close"), cb, rawHtml);
    },
    // **************************************************************************
    // Dynamic Popup
@@ -591,7 +593,7 @@ function facebook_loginCallback(noLogin)
          $("#fb_login_img").html('<img src="http://graph.facebook.com/' + facebook_id + '/picture?type=square"/>');
          $("#fb_login_img").css("display", "");
       }
-      if(!$("#fb_account")[0] || noLogin)
+      if(!$("#fb_account")[0] || (Genesis.currFbId != facebook_id))
       {
          var name = response.name;
          var email = response.email;

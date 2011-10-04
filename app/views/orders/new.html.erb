@@ -3,7 +3,7 @@
 	$(document).ready($(function() {
 		var msg = $("#error_explanation").html();
 		if(msg) {
-			Genesis.showErrMsg(msg);
+			Genesis.showErrMsg(msg,null,true);
 		}
 	}));
 
@@ -13,6 +13,7 @@
 <% if @order.errors.any? %>
 <div style="display:none;" id="error_explanation">
 	<h5>Please fix the <%= pluralize(@order.errors.count, "error") %> below:</h5>
+	<br/>
 	<ul>
 		<% @order.errors.full_messages.each do |msg| %>
 		<li>
