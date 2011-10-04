@@ -10,7 +10,7 @@
 					<%= f.input :email, :label => 'Email address', :input_html => { :value => signed_in? ? current_user.email : ''} %>
 					<%= f.input :topic, :label => 'Reason', :collection => Contact.topic_list %>
 					<%= f.input :description, :label => 'How can we help you?', :as => :text %>
-					<div class="alignRight">
+					<div class="alignLeft">
 					<%= f.button :submit, 'Submit Request', :class =>"large btn" %>
 					</div>
                <% end %>
