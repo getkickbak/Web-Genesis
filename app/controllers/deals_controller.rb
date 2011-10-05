@@ -37,6 +37,10 @@ class DealsController < ApplicationController
       @referral = Referral.first(:deal_id => @deal.id, :confirmed => true, :creator_id => current_user.id)
       if @referral
         redirect = true
+      elsif params[:secret_code]
+        if params[:secret_code] == @deal.reward_secret_code
+          @show_reward = true
+        end      
       end  
     end
     
