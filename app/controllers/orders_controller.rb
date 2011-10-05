@@ -4,7 +4,7 @@ require 'caller'
 
 
 class OrdersController < ApplicationController
-  before_filter :authenticate_user!, :except => [:new, :confirmed_email]
+  before_filter :authenticate_user!, :except => [:confirmed_email]
   #load_and_authorize_resource
   @@clientDetails=PayPalSDKProfiles::Profile.client_details
   def index
@@ -57,12 +57,12 @@ class OrdersController < ApplicationController
         @subdeal = Subdeal.get(params[:order][:subdeal_id])
         referral_id = 0;
         if (session[:referral_id])
-          @referral = Referral.first(:referral_id => session[:referral_id])
+          @referral = Referral.first(:referral_id => session[:referral_id], :confirmed => true)
           if @referral
           referral_id = @referral.id
           end
         else
-          referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id)
+          referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id, :confirmed => true)
           if referral
           referral_id = referral.id
           end

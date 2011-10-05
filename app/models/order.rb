@@ -16,7 +16,8 @@ class Order
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
 
-  attr_accessible :subdeal_id, :quantity
+  attr_accessor :agree_to_terms
+  attr_accessible :subdeal_id, :quantity, :agree_to_terms
 
   belongs_to :deal
   belongs_to :user
@@ -25,14 +26,15 @@ class Order
   
   #accepts_nested_attributes_for :gift_option, :allow_destroy => true, :reject_if => lambda { |s| s[:from].blank? || s[:to].blank? || s[:email].blank? || s[:message].blank? }
   
-  validates_with_method :check_quantity, :check_deal_max_limit, :check_deal_max_per_person, :check_end_date
+  validates_with_method :check_quantity, :check_deal_max_limit, :check_deal_max_per_person, :check_end_date, :check_agree_to_terms
   
   def self.create(deal, subdeal, user, referral_id, order_info, url)
     now = Time.now
     quantity = order_info[:quantity].to_i
     order = Order.new(
       :subdeal_id => order_info[:subdeal_id],
-      :quantity => quantity
+      :quantity => quantity,
+      :agree_to_terms => order_info[:agree_to_terms]
     )
     order[:order_id] = "#{rand(1000) + 2000}#{now.to_i}"
     order[:referral_id] = referral_id
@@ -119,5 +121,9 @@ class Order
         AND deal_id = ? AND payment_confirmed = 't'", self.user.id, self.deal.id
     )
     return total_count[0] ? total_count[0] : 0
+  end
+  
+  def check_agree_to_terms
+    self.agree_to_terms == '1' ? true : [false, "Please agree to Terms Of Use and Privacy Agreement"]
   end
 end

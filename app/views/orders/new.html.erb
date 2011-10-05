@@ -80,13 +80,14 @@
 						</thead>
 						<tr>
 							<td class="span1">
-							<input type="radio" name="payMethod" value="PayPal" checked="1"/>
+								<input type="radio" name="payMethod" value="PayPal" checked="1"/>
 							</td>
 							<td class="span14">PayPal or Credit Card</td>
 							<td class="span8" style="visibility:hidden;">&#160;</td>
 						</tr>
 					</table>
-					<%= f.submit "Complete Order", :class => "btn primary large noWrap", :disable_with => "Working..." %>
+					<div><%= f.check_box(:agree_to_terms) %> I agree to the <a href="/terms">Terms Of Use</a> and <a>Privacy Agreement</a></div>
+					<div style="margin-top:10px;"><%= f.submit "Complete Order", :class => "btn primary large noWrap", :disable_with => "Working..." %></div>
 				</div>
 			</div>
 		</div>
@@ -97,17 +98,17 @@
 		<div class="panelBodyHighlights">
 			<dl>
 				<dt>
-					What happens after recommend this merchant to my friends?
+					What happens after I buy this deal?
 				</dt>
 				<dd>
-					You can expect an email receipt on your reward from us. You can then redeem the deal by printing out your ticket or displaying it on your smartphone. Yay!
+					You will receive an email confirmation receipt from us along with instructions on what to do next. Redeem the deal by printing out your ticket or displaying it on your smartphone.
 				</dd>
 				<dt>
-					What happens after I purchase this deal?
-				</dt>
-				<dd>
-					You can expect an email confirmation receipt from us along with basic instructions on what to do next. You can then redeem the deal by printing out your ticket or displaying it on your smartphone.
-				</dd>
+					Is JustForMyFriends safe?
+            	</dt>
+            	<dd>
+					Our transactions are handled by PayPal, which is in turn protected by SSL so it is 100% safe.
+            	</dd>
 			</dl>
 		</div>
 	</div>

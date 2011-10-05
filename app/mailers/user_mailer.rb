@@ -22,6 +22,6 @@ class UserMailer < ActionMailer::Base
   
   def contact_email(contact)
     @contact = contact
-    mail(:from => "#{@contact[:name]} <#{@contact[:email]}>", :to => 'help@justformyfriends.com', :subject => @contact[:topic])
+    mail(:from => "#{@contact.name} <#{@contact.email}>", :to => 'help@justformyfriends.com', :subject => @contact.topic)
   end
 end
