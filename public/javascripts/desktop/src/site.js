@@ -528,7 +528,6 @@ Site =
          {
             callback(response);
          }
-         ,
       }, Site), 0);
    },
    checkFriendReferral : function(result, uidField, nameField)
@@ -551,7 +550,7 @@ Site =
       {
          return a[uidField] - b[uidField];
       });
-      this.ajax(false, this.checkUidReferralUrl, 'GET', 'friend_facebook_ids=' + friendsList, 'json', $.proxy(function(res)
+      Genesis.ajax(false, this.checkUidReferralUrl, 'GET', 'friend_facebook_ids=' + friendsList, 'json', $.proxy(function(res)
       {
          // Empty Result tell user to use the secret key
          if(result.length == 0)
@@ -578,7 +577,6 @@ Site =
             $("#profileBrowserDialog").switchClass("hide", "in");
             this.buildFriendsList(friendsList);
          }
-         ,
       }, Site));
    },
    getFriendsList : function(callback)
@@ -606,7 +604,6 @@ Site =
                this.showErrMsg("Error Retrieving Friends List from Facebook. Reload Page to Try Again.");
             }
          }
-         ,
       }, Site));
    }
 }
