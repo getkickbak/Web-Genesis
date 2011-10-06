@@ -34,14 +34,15 @@ class DealsController < ApplicationController
     if params[:referral_id]
       @referral = Referral.first(:referral_id => params[:referral_id], :confirmed => true)
     end
+    
+    if params[:secret_code] && params[:secret_code] == @deal.reward_secret_code
+      @show_reward = true
+    end
+      
     if signed_in? && @referral.nil?
       @referral = Referral.first(:deal_id => @deal.id, :confirmed => true, :creator_id => current_user.id)
       if @referral
-        redirect = true
-      elsif params[:secret_code]
-        if params[:secret_code] == @deal.reward_secret_code
-          @show_reward = true
-        end      
+        redirect = true    
       end  
     end
     
