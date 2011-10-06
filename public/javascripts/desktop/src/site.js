@@ -2,6 +2,7 @@ _login = function()
 {
    //$('#fb_login').css("display", "none");
    //$('#fb_login_img').css("display", "");
+   Site.getFriendsList();
 };
 _logout = function()
 {
@@ -14,6 +15,7 @@ Site =
    referralsMaxHeight : 855, //1005
    resubmitFriendsEmail : false,
    dealNameSelector : '#mainDeal h2:first-child',
+   checkUidReferralUrl : '/referrals',
    _initFormComponents : function()
    {
       /*
@@ -449,6 +451,155 @@ Site =
             delete Site_rewardBtn;
          }
       });
+   },
+   // **************************************************************************
+   // Retrieve Friends List for user to select
+   // **************************************************************************
+   getFriendsURL : function()
+   {
+      return 'https://graph.facebook.com/me/friends?fields=name,username,id&access_token=' + Genesis.access_token;
+   },
+   getFriendListsURL : function()
+   {
+      return 'https://graph.facebook.com/me/friendlists?access_token=' + Genesis.access_token;
+   },
+   buildFriendsList : function(result, callback)
+   {
+      var cols = 3;
+      var html = "";
+      for(var x = 0; x < Math.ceil(result.length / cols); x++)
+      {
+         html += '<li>';
+         for(var y = x * cols; (y < (x + 1) * cols) && (y < result.length); y++)
+         {
+            html += '<div class="listItem"><div class="listItemCtn"><a onclick="">' + '<img class="left" width="50" style="margin-right:5px;display:block;" src="http://graph.facebook.com/' + this.friendsList[y].value + '/picture?type=square&"/>' + '<div class="listContent">' + this.friendsList[y].label + '</div></div>' + '</a></div>';
+         }
+         html += '</li>';
+      }
+      $("#profileBrowserDialog .listView .scroller ul").html(html);
+      setTimeout($.proxy(function()
+      {
+         var headerHeight = $("#profileBrowserDialog .filterBox").prop('offsetHeight');
+         var bodyHeight = $("#profileBrowserWrapper .scroller").prop("offsetHeight");
+         var footerHeight = 0;
+         var netHeight = headerHeight + footerHeight;
+         var height = Math.max(bodyHeight, this.friendsMinHeight - netHeight);
+         var cleanScroller = true;
+         if(height > (this.friendsMinHeight - netHeight))
+         {
+            height = Math.min(bodyHeight, Genesis.friendsMaxHeight - netHeight);
+            if(height == (this.friendsMaxHeight - netHeight))
+            {
+               if(this.friendsScroll)
+               {
+                  this.friendsScroll.refresh();
+               }
+               else
+               {
+
+                  this.friendsScroll = new iScroll('profileBrowserWrapper',
+                  {
+                     hScrollbar : false,
+                     vScrollbar : true
+                  });
+               }
+               cleanScroller = false;
+            }
+            $("#profileBrowserDialog .profileBrowserBody").css("height", height);
+         }
+         else
+         {
+            $("#profileBrowserDialog .profileBrowserBody").css("height", bodyHeight);
+         }
+         if(this.friendsScroll && cleanScroller)
+         {
+            this.friendsScroll.destroy();
+            delete this.friendsScroll;
+         }
+         if(callback)
+         {
+            callback(response);
+         }
+         ,
+      }, Site), 0);
+   },
+   checkFriendReferral : function(result, uidField, nameField)
+   {
+      var friendsList = '';
+      this.friendsList = [];
+      for(var x = 0; x < result.length; x++)
+      {
+         if(result[x][uidField] != Genesis.currFbId)
+         {
+            this.friendsList.push(
+            {
+               label : result[x][nameField],
+               value : result[x][uidField]
+            });
+            friendsList += ((friendsList.length > 0) ? ',' : '') + result[x][uidField];
+         }
+      }
+      this.friendsList.sort(function(a, b)
+      {
+         return a[uidField] - b[uidField];
+      });
+      this.ajax(false, this.checkUidReferralUrl, 'GET', 'friend_facebook_ids=' + friendsList, 'json', $.proxy(function(res)
+      {
+         // Empty Result tell user to use the secret key
+         if(result.length == 0)
+         {
+            this.showErrMsg("No Friends were found from your Friends List on Facebook. Reload Page to Try Again.");
+         }
+         else
+         {
+            var res = [];
+            var friendsList = [];
+            for(var i = 0; i < res.length; i++)
+            {
+               var index = this.friendsList.binarySearch(result[i].facebook_id, function(a, b)
+               {
+                  return (a[uidField] - b);
+               });
+               if(index >= 0)
+               {
+                  res.push(index);
+                  friendsList[i] = thistory.friendsList[index];
+               }
+            }
+            this.friendsList = friendsList;
+            $("#profileBrowserDialog").switchClass("hide", "in");
+            this.buildFriendsList(friendsList);
+         }
+         ,
+      }, Site));
+   },
+   getFriendsList : function(callback)
+   {
+      FB.api(
+      {
+         method : 'fql.query',
+         //query : 'SELECT uid, name, username, current_location FROM user WHERE uid=me() OR uid IN (SELECT uid FROM
+         // friendlist_member WHERE flid=' + listId + ')'
+         query : 'SELECT uid, name, username, current_location FROM user WHERE uid=me() OR uid IN (SELECT uid2 FROM friend WHERE uid1 = me())'
+      }, $.proxy(function(response)
+      {
+         if(response.length > 1)
+         {
+            this.checkFriendReferral(response, 'uid', 'name', callback);
+         }
+         else
+         {
+            if(response.length == 1)
+            {
+               this.showErrMsg("No Friends were found from your Friends List on Facebook. Reload Page to Try Again.");
+            }
+            else
+            {
+               this.showErrMsg("Error Retrieving Friends List from Facebook. Reload Page to Try Again.");
+            }
+         }
+         ,
+      }, Site));
    }
 }
 $(document).ready($(function()
