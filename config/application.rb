@@ -8,6 +8,7 @@ require 'action_mailer/railtie'
 require 'dm-accepts_nested_attributes'
 # require 'active_resource/railtie'
 # require 'rails/test_unit/railtie'
+require 'string_extension'
 
 
 # If you have a Gemfile, require the gems listed there, including any gems

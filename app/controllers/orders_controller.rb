@@ -5,6 +5,7 @@ require 'caller'
 
 class OrdersController < ApplicationController
   before_filter :authenticate_user!, :except => [:confirmed_email]
+
   #load_and_authorize_resource
   @@clientDetails=PayPalSDKProfiles::Profile.client_details
   def index
@@ -38,9 +39,18 @@ class OrdersController < ApplicationController
     @order = Order.new
     authorize! :create, @order
 
-    @user = current_user
-    @deal = Deal.first(:deal_id => params[:id])
-    session[:referral_id] = params[:referral_id]
+    @deal = Deal.first(:deal_id => params[:id]) || not_found
+    if (params[:referral_id])
+      @referral = Referral.first(:referral_id => session[:referral_id], :confirmed => true)
+    else
+      @referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id, :confirmed => true)
+    end
+    
+    if @referral.nil?
+      raise Exceptions::AppException.new("Referral needed before you can buy deal.")
+    end
+    
+    session[:referral_id] = @referral.referral_id
 
     respond_to do |format|
       format.html # new.html.erb
@@ -51,38 +61,19 @@ class OrdersController < ApplicationController
   def create
     authorize! :create, Order
 
+    referral_id = session[:referral_id]
+    if referral_id.nil?
+      raise Exceptions::AppException.new("Referral needed before you can buy deal.")
+    end
+    
     Order.transaction do
       begin
         @deal = Deal.first(:deal_id => params[:id]) || not_found
         @subdeal = Subdeal.get(params[:order][:subdeal_id])
-        referral_id = 0;
-        if (session[:referral_id])
-          @referral = Referral.first(:referral_id => session[:referral_id], :confirmed => true)
-          if @referral
-          referral_id = @referral.id
-          end
-        else
-          referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id, :confirmed => true)
-          if referral
-          referral_id = referral.id
-          end
-        end
-
-        if referral_id == 0
-          logger.error("Cannot complete order without referral")
-          @order = Order.new
-          @order.errors.add(:referral_id, "Need to refer a friend first")
-          respond_to do |format|
-            format.html { render :action => "new" }
-          #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
-          #format.json { render :json => { :success => false } }
-          end
-        else
-          session[:order_in_progress] = true
-          url = deal_path(@deal)+"?referral_id=#{referral_id}"
-          @order = Order.create(@deal, @subdeal, current_user, referral_id, params[:order], url)
-          pay_transfer(@order)
-        end
+        session[:order_in_progress] = true
+        url = deal_path(@deal)+"?referral_id=#{referral_id}"
+        @order = Order.create(@deal, @subdeal, current_user, referral_id, params[:order], url)
+        pay_transfer(@order)
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         @order = e.resource
@@ -139,6 +130,9 @@ class OrdersController < ApplicationController
 
   def thanks
     @order = Order.first(:order_id => session[:order_id])
+    if !@order
+      raise Exception.new
+    end
     reset_order
   end
 
@@ -154,7 +148,7 @@ class OrdersController < ApplicationController
     deal = Deal.get(@order.deal.id)
 
     begin
-      deal[:limit_count] -= @order.quantity
+    deal[:limit_count] -= @order.quantity
       deal.save
     rescue StandardError
       logger.error("Failed to update limit count for Deal: " + deal.id)

@@ -4,5 +4,5 @@
 en:
   errors:
       messages:
-        blank: "is required"
-        email_format: "is not formatted properly"
+        blank: "%{attribute} is required"
+        email_format: "%{attribute} is not formatted properly"

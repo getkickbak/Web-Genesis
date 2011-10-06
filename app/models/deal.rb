@@ -17,6 +17,7 @@ class Deal
   property :max_per_person, Integer, :required => true, :default => 0
   property :max_limit, Integer, :default => 0
   property :limit_count, Integer, :default => 0
+  property :reward_secret_code, String, :default => ""
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -62,6 +63,7 @@ class Deal
     deal.end_date_str = r["end_date"]
     deal.expiry_date_str = r["expiry_date"]
     deal[:deal_id] = merchant.merchant_id
+    deal[:reward_secret_code] = String.random_alphanumeric
     deal[:created_ts] = now
     deal[:update_ts] = now
     deal.merchant = merchant
