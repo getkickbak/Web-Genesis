@@ -20,10 +20,10 @@ Site =
    dealNameSelector : '#mainDeal h2:first-child',
    //friendsMinHeight : 353 + 52 + 28 + 2 * 18,
    //friendsMaxHeight : 353 + 52 + 28 + 2 * 18,
-   friendsMinHeight : 60 + 52 + 28 + 2 * 18,
-   friendsMaxHeight : 120 + 52 + 28 + 2 * 18,
+   friendsMinHeight : 70 + 10,
+   friendsMaxHeight : 140 + 10,
    friendsList : null,
-   checkUidReferralUrl : '/referrals',
+   checkUidReferralUrl : '/referrers',
    _initFormComponents : function()
    {
       /*
@@ -475,12 +475,13 @@ Site =
    {
       var cols = 3;
       var html = "";
+      var dealPath = location.protocol + '//' + location.host + location.pathname + "?referral_id=";
       for(var x = 0; x < Math.ceil(result.length / cols); x++)
       {
          html += '<li>';
          for(var y = x * cols; (y < (x + 1) * cols) && (y < result.length); y++)
          {
-            html += '<div class="listItem"><div class="listItemCtn"><a onclick="">' + '<img class="left" width="50" style="margin-right:5px;display:block;" src="http://graph.facebook.com/' + this.friendsList[y].value + '/picture?type=square&"/>' + '<div class="listContent">' + this.friendsList[y].label + '</div></div>' + '</a></div>';
+            html += '<div class="listItem"><div class="listItemCtn"><a href="' + dealPath + result[y].refId + '">' + '<img class="left" width="50" style="margin-right:5px;display:block;" src="http://graph.facebook.com/' + this.friendsList[y].value + '/picture?type=square&"/>' + '<div class="listContent">' + this.friendsList[y].label + '</div></div>' + '</a></div>';
          }
          html += '</li>';
       }
@@ -495,7 +496,7 @@ Site =
          var cleanScroller = true;
          if(height > (this.friendsMinHeight - netHeight))
          {
-            height = Math.min(bodyHeight, Genesis.friendsMaxHeight - netHeight);
+            height = Math.min(bodyHeight, this.friendsMaxHeight - netHeight);
             if(height == (this.friendsMaxHeight - netHeight))
             {
                if(this.friendsScroll)
@@ -517,7 +518,7 @@ Site =
          }
          else
          {
-            $("#profileBrowserDialog .profileBrowserBody").css("height", bodyHeight);
+            $("#profileBrowserDialog .profileBrowserBody").css("height", Math.max(this.friendsMinHeight, bodyHeight + netHeight));
          }
          if(this.friendsScroll && cleanScroller)
          {
@@ -550,32 +551,34 @@ Site =
       {
          return a[uidField] - b[uidField];
       });
-      Genesis.ajax(false, this.checkUidReferralUrl, 'GET', 'friend_facebook_ids=' + friendsList, 'json', $.proxy(function(res)
+      Genesis.ajax(true, this.checkUidReferralUrl, 'GET', 'friend_facebook_ids=' + friendsList, 'json', $.proxy(function(res)
       {
+         var data = $.parseJSON(res.data);
          // Empty Result tell user to use the secret key
-         if(result.length == 0)
+         if(res.total == 0)
          {
-            this.showErrMsg("No Friends were found from your Friends List on Facebook. Reload Page to Try Again.");
+            Genesis.showErrMsg("You have no referrals.");
          }
          else
          {
-            var res = [];
             var friendsList = [];
-            for(var i = 0; i < res.length; i++)
+            for(var i = 0; i < res.total; i++)
             {
-               var index = this.friendsList.binarySearch(result[i].facebook_id, function(a, b)
+               var index = this.friendsList.binarySearch(data[i].creator_facebook_id, function(a, b)
                {
-                  return (a[uidField] - b);
+                  return (a.value - b);
                });
                if(index >= 0)
                {
-                  res.push(index);
-                  friendsList[i] = thistory.friendsList[index];
+                  friendsList[i] = this.friendsList[index];
+                  friendsList[i].refId = data[i].referral_id;
                }
             }
             this.friendsList = friendsList;
-            $("#profileBrowserDialog").switchClass("hide", "in");
-            this.buildFriendsList(friendsList);
+            $("#profileBrowserDialog").switchClass("hide", "in", 500, function()
+            {
+               Site.buildFriendsList(friendsList);
+            });
          }
       }, Site));
    },
@@ -658,7 +661,7 @@ $(document).ready($(function()
    $(window).bind(mouseWheelEvt, function(event, b)
    {
       // Are we only the scrolling region?
-      if((event.target != document.body) && jQuery.contains($("#referralsList")[0], event.target))
+      if((event.target != document.body) && $("#referralsList")[0] && jQuery.contains($("#referralsList")[0], event.target))
       {
          event.preventDefault();
       }

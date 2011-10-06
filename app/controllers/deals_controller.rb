@@ -29,6 +29,7 @@ class DealsController < ApplicationController
     authorize! :read, @deal  
     
     redirect = false
+    @show_reward = false
     
     if params[:referral_id]
       @referral = Referral.first(:referral_id => params[:referral_id], :confirmed => true)

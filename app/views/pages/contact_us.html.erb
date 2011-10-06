@@ -6,10 +6,14 @@
             <h2>Email JustForMyFriends</h2>
             <div class="panelBodyHighlights">
                <%= simple_form_for @contact, :url => contact_create_path do |f| %>
-               <%= f.input :name,  :label => 'Full name' %>
-					<%= f.input :email, :label => 'Email address', :input_html => { :value => signed_in? ? current_user.email : ''} %>
-					<%= f.input :topic, :label => 'Reason', :collection => Contact.topic_list %>
-					<%= f.input :description, :label => 'How can we help you?', :as => :text %>
+               <%= f.input :name %>
+                    <% if signed_in? && @contact.errors.empty? %>
+					<%= f.input :email, :input_html => { :value => current_user.email } %>
+					<% else %>
+					<%= f.input :email %>
+					<% end %>
+					<%= f.input :topic, :collection => Contact.topic_list %>
+					<%= f.input :description, :as => :text %>
 					<div class="alignLeft">
 					<%= f.button :submit, 'Submit Request', :class =>"large btn" %>
 					</div>
@@ -23,16 +27,16 @@
       <div class="panelBodyHighlights">
          <dl>
             <dt>
-               What happens after recommend this merchant to my friends?
+               I just bought JustForMyFriends, where are my vouchers?
             </dt>
             <dd>
-               You can expect an email receipt on your reward from us. You can then redeem the deal by printing out your ticket or displaying it on your smartphone. Yay!
+               You will receive a confirmation email from us along with the vouchers. Redeem the deal by printing out your ticket or displaying it on your smartphone.  
             </dd>
             <dt>
-               What happens after I purchase this deal?
+           	   I never received the confirmation email or I lost it, what do I do?
             </dt>
             <dd>
-               You can expect an email confirmation receipt from us along with basic instructions on what to do next. You can then redeem the deal by printing out your ticket or displaying it on your smartphone.
+               In the unfortunate event the confirmation email never arrived or it is lost, you can have it resent by clicking on Account > Resend Vouchers. It is that simple :)
             </dd>
          </dl>
       </div>

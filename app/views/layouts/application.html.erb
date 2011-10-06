@@ -9,8 +9,8 @@
       <meta property="og:url" content="http://www.imdb.com/title/tt0117500/"/>
       -->
       <meta property="og:site_name" content="JustForMyFriends"/>
-      <meta property="og:title" content=""/>
-      <meta property="og:image" content="http://ia.media-imdb.com/rock.jpg"/>
+      <meta property="og:title" content="<% if @deal %> <%= @deal.title %> <% end %>"/>
+      <meta property="og:image" content="<% if @deal %> <%= @deal.merchant.photo_url %> <% end %>"/>
       <meta property="og:description" content="">
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>Just For My Friends</title>

@@ -41,7 +41,7 @@ class OrdersController < ApplicationController
 
     @deal = Deal.first(:deal_id => params[:id]) || not_found
     if (params[:referral_id])
-      @referral = Referral.first(:referral_id => session[:referral_id], :confirmed => true)
+      @referral = Referral.first(:referral_id => params[:referral_id], :confirmed => true)
     else
       @referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id, :confirmed => true)
     end

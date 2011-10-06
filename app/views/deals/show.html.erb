@@ -5,12 +5,12 @@ call to action
 -->
 <div class="row">
    <div class="span24">
-      <% if @referral.nil? && @show_reward.nil? %>
+      <% if @referral.nil? && !@show_reward %>
       <div class="row fade hide" id="profileBrowserDialog">
          <div class="span24">
-            <h2>Who Recommended You To This WebSite?</h2>
+            <h2>Who Recommended You To <%=@deal.merchant.name %>?</h2>
             <div class="profileBrowserBody">
-               <div class="clearfix filterBox">
+               <div class="clearfix filterBox hide">
                   <label for="friendSearchInput">Friend Search</label>
                   <div class="input"><input class="xlarge" id="friendSearchInput" name="friendSearchInput" size="30" type="text"/></div>
                </div>
@@ -142,8 +142,8 @@ call to action
             <% end %>
          </div>
       </div>
-      <!-- Example row of columns -->
       <% end %>
+      <!-- Example row of columns -->
       <div id="mainDeal" class="row">
          <div class="span24">
             <h2><%= @deal.title %></h2>
@@ -233,9 +233,9 @@ call to action
                   <div>
                      ABOUT THIS PLACE ...
                   </div></h2>
-                  <div class="panelBodyHighlights">
+                  <div class="panelBodyHighlights" style=padding:20px;>
                      <div>
-                        <%= @deal.description %>
+                        <%=raw @deal.description %>
                      </div>
                   </div>
                </div>
@@ -264,19 +264,18 @@ call to action
                <% end %>
                <div id="merchant_city_state_zipcode"><%= @deal.merchant.city %>, <%= @deal.merchant.state %><br/> <%= @deal.merchant.zipcode %><br/><br/></div>
             </div>
-            <div class="panelBodyHighlights">
-               <div></div>
+            <div class="panelBodyHighlights left">
                <div class="span12">
-                  <!--
-                     Copmany's Logo 
-                   -->
+               	<img width="200" class="alignCenter" style="display:block;margin-bottom:10px;" src="<%= @deal.merchant.photo_url %>"/>
                   <div id="address" class="alignCenter" style="width:200px;">
+                     <!--
                     <p id="merchant_name"><%= @deal.merchant.name %></p>
+                    -->
                     <p id="merchant_address"></p>
                     <p id="merchant_phone"><%= @deal.merchant.phone %></p>
                   </div>
                </div>
-               <div id="gmap" class="right" style="height:235px;width:310px;margin-left:10px;"></div>
+               <div id="gmap" class="right" style="height:235px;width:320px;margin-left:10px;"></div>
             </div>
          </div>
       </div>
