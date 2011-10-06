@@ -352,9 +352,9 @@ Site =
          // Make sure the HTML is updated by the browser
          setTimeout(function()
          {
-            var headerHeight = $(".referralsFooter").prop('offsetHeight');
+            var headerHeight = $(".referralsHeader").prop('offsetHeight');
             var bodyHeight = $("#referralsWrapper .scroller").prop("offsetHeight");
-            var footerHeight = $(".referralsHeader").prop('offsetHeight');
+            var footerHeight = $(".referralsFooter").prop('offsetHeight');
             var netHeight = headerHeight + footerHeight;
             var height = Math.max(bodyHeight, Site.referralsMinHeight - netHeight);
             if(height > (Site.referralsMinHeight - netHeight))
@@ -467,16 +467,6 @@ $(document).ready($(function()
    Site.initMainMsg();
    Site.initSlides();
 
-   var mouseWheelEvt;
-   if(jQuery.browser.webkit)
-   {
-      mouseWheelEvt = 'mousewheel';
-   }
-   else
-   if(jQuery.browser.mozilla)
-   {
-      mouseWheelEvt = 'DOMMouseScroll';
-   }
    // --------------------------------------------------------------------------------
    // Google Map
    // --------------------------------------------------------------------------------
@@ -499,6 +489,16 @@ $(document).ready($(function()
    // --------------------------------------------------------------------------------
    // Scrolling Referrals
    // --------------------------------------------------------------------------------
+   var mouseWheelEvt;
+   if(jQuery.browser.webkit)
+   {
+      mouseWheelEvt = 'mousewheel';
+   }
+   else
+   if(jQuery.browser.mozilla)
+   {
+      mouseWheelEvt = 'DOMMouseScroll';
+   }
    $(window).bind(mouseWheelEvt, function(event, b)
    {
       // Are we only the scrolling region?

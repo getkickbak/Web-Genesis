@@ -1,12 +1,41 @@
+Array.prototype.binarySearch = function(find, comparator)
+{
+   var low = 0, high = this.length - 1, i, comparison;
+   while(low <= high)
+   {
+      i = Math.floor((low + high) / 2);
+      comparison = comparator(this[i], find);
+      if(comparison < 0)
+      {
+         low = i + 1;
+         continue;
+      };
+      if(comparison > 0)
+      {
+         high = i - 1;
+         continue;
+      };
+      return i;
+   }
+   return null;
+};
 Genesis =
 {
    currFbId : "0",
    perms : 'email,user_birthday,publish_stream,read_friendlists',
    fbAppId : '197968780267830',
+   //friendsMinHeight : 353 + 52 + 28 + 2 * 18,
+   //friendsMaxHeight : 353 + 52 + 28 + 2 * 18,
+   friendsMinHeight : 60 + 52 + 28 + 2 * 18,
+   friendsMaxHeight : 120 + 52 + 28 + 2 * 18,
+   friendsList : null,
    fb_login_tag : function()
    {
       return '<fb:login-button scope="' + this.perms + '" on-login="facebook_onLogin(false);" size="large" background="dark" length="long"></fb:login-button>';
    },
+   // **************************************************************************
+   // Retrieve Friends List for user to select
+   // **************************************************************************
    getFriendsURL : function()
    {
       return 'https://graph.facebook.com/me/friends?fields=name,username,id&access_token=' + Genesis.access_token;
@@ -15,33 +44,140 @@ Genesis =
    {
       return 'https://graph.facebook.com/me/friendlists?access_token=' + Genesis.access_token;
    },
-   // Get Friends with Facebook email address
-   //
-   getFriendsInListURL : function(listId, callback)
+   buildFriendsList : function(result, callback)
    {
-      var loginUser;
+      var cols = 3;
+      var html = "";
+      for(var x = 0; x < Math.ceil(result.length / cols); x++)
+      {
+         html += '<li>';
+         for(var y = x * cols; (y < (x + 1) * cols) && (y < result.length); y++)
+         {
+            html += '<div class="listItem"><div class="listItemCtn"><a onclick="">' + '<img class="left" width="50" style="margin-right:5px;display:block;" src="http://graph.facebook.com/' + this.friendsList[y].value + '/picture?type=square&"/>' + '<div class="listContent">' + this.friendsList[y].label + '</div></div>' + '</a></div>';
+         }
+         html += '</li>';
+      }
+      $("#profileBrowserDialog .listView .scroller ul").html(html);
+      setTimeout($.proxy(function()
+      {
+         var headerHeight = $("#profileBrowserDialog .filterBox").prop('offsetHeight');
+         var bodyHeight = $("#profileBrowserWrapper .scroller").prop("offsetHeight");
+         var footerHeight = 0;
+         var netHeight = headerHeight + footerHeight;
+         var height = Math.max(bodyHeight, this.friendsMinHeight - netHeight);
+         var cleanScroller = true;
+         if(height > (this.friendsMinHeight - netHeight))
+         {
+            height = Math.min(bodyHeight, Genesis.friendsMaxHeight - netHeight);
+            if(height == (this.friendsMaxHeight - netHeight))
+            {
+               if(this.friendsScroll)
+               {
+                  this.friendsScroll.refresh();
+               }
+               else
+               {
+
+                  this.friendsScroll = new iScroll('profileBrowserWrapper',
+                  {
+                     hScrollbar : false,
+                     vScrollbar : true
+                  });
+               }
+               cleanScroller = false;
+            }
+            $("#profileBrowserDialog .profileBrowserBody").css("height", height);
+         }
+         else
+         {
+            $("#profileBrowserDialog .profileBrowserBody").css("height", bodyHeight);
+         }
+         if(this.friendsScroll && cleanScroller)
+         {
+            this.friendsScroll.destroy();
+            delete this.friendsScroll;
+         }
+         if(callback)
+         {
+            callback(response);
+         }
+      }, Genesis), 0);
+   },
+   checkFriendReferral : function(result, uidField, nameField)
+   {
+      var friendsList = '';
+      this.friendsList = [];
+      for(var x = 0; x < result.length; x++)
+      {
+         if(result[x][uidField] != Genesis.currFbId)
+         {
+            this.friendsList.push(
+            {
+               label : result[x][nameField],
+               value : result[x][uidField]
+            });
+            friendsList += ((friendsList.length > 0) ? ',' : '') + result[x][uidField];
+         }
+      }
+      this.friendsList.sort(function(a, b)
+      {
+         return a[uidField] - b[uidField];
+      });
+      this.ajax(false, this.checkUidReferralUrl, 'GET', 'friend_facebook_ids=' + friendsList, 'json', $.proxy(function(res)
+      {
+         // Empty Result tell user to use the secret key
+         if(result.length == 0)
+         {
+            this.showErrMsg("No Friends were found from your Friends List on Facebook. Reload Page to Try Again.");
+         }
+         else
+         {
+            var res = [];
+            var friendsList = [];
+            for(var i = 0; i < res.length; i++)
+            {
+               var index = this.friendsList.binarySearch(result[i].facebook_id, function(a, b)
+               {
+                  return (a[uidField] - b);
+               });
+               if(index >= 0)
+               {
+                  res.push(index);
+                  friendsList[i] = thistory.friendsList[index];
+               }
+            }
+            this.friendsList = friendsList;
+            $("#profileBrowserDialog").switchClass("hide","in");
+            this.buildFriendsList(friendsList);
+         }
+      }, Genesis));
+   },
+   getFriendsList : function(callback)
+   {
       FB.api(
       {
          method : 'fql.query',
          //query : 'SELECT uid, name, username, current_location FROM user WHERE uid=me() OR uid IN (SELECT uid FROM
          // friendlist_member WHERE flid=' + listId + ')'
          query : 'SELECT uid, name, username, current_location FROM user WHERE uid=me() OR uid IN (SELECT uid2 FROM friend WHERE uid1 = me())'
-      }, function(response)
+      }, $.proxy(function(response)
       {
-         loginUser = response[0];
-
-         for(var i = 1; i < response.length; i++)
+         if(response.length > 1)
          {
-            if(response[i].username)
+            this.checkFriendReferral(response, 'uid', 'name', callback);
+         }
+         else
+         {
+            if(response.length == 1)
             {
-               console.log(response[i].username);
+               this.showErrMsg("No Friends were found from your Friends List on Facebook. Reload Page to Try Again.");
+            }
+            else
+            {
+               this.showErrMsg("Error Retrieving Friends List from Facebook. Reload Page to Try Again.");
             }
          }
-         if(callback)
-         {
-            callback(response);
-         }
-      });
+      }, Genesis));
    },
    checkFbPerms : function(fbUseId)
    {
@@ -49,9 +185,9 @@ Genesis =
       {
          method : 'fql.query',
          query : 'SELECT ' + Genesis.perms + ' FROM permissions WHERE uid=me()'
-      }, function(response)
+      }, $.proxy(function(response)
       {
-         var perms = Genesis.perms.split(',');
+         var perms = this.perms.split(',');
          for(var i = 0; i < perms.length; i++)
          {
             if(!response[0][perms[i]] || !parseInt(response[0][perms[i]]))
@@ -61,7 +197,7 @@ Genesis =
          }
          if(i < perms.length)
          {
-            location.href = 'http://www.facebook.com/dialog/oauth/?scope=' + Genesis.perms + '&client_id=' + Genesis.fbAppId + '&redirect_uri=' + location.href + '&response_type=token';
+            location.href = 'http://www.facebook.com/dialog/oauth/?scope=' + this.perms + '&client_id=' + this.fbAppId + '&redirect_uri=' + location.href + '&response_type=token';
             /*
              FB.ui(
              {
@@ -79,7 +215,7 @@ Genesis =
             _fb_connect();
             facebook_onLogin($("#fb_account")[0] != null);
          }
-      });
+      }, Genesis));
    },
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
@@ -87,6 +223,7 @@ Genesis =
    resend_reward_path : '/resend_reward',
    create_referrals : '/referrals/create',
    get_referrals : '/referrals',
+   checkUidReferralUrl : '/referrals',
    get_confirm_referrals : function(refId)
    {
       return '/referrals/' + refId + '/confirm';
@@ -348,6 +485,7 @@ Genesis =
             {
                $('#popupDialog').modal('hide');
             });
+
          }
          else
          {
@@ -472,6 +610,40 @@ $(document).ready($(function()
    Genesis.warningMsg = $(".alert-message.warning");
    Genesis.errMsg = $(".alert-message.error");
 
+   // --------------------------------------------------------------------------------
+   // Friends List ScrollBar Init
+   // --------------------------------------------------------------------------------
+   var mouseWheelEvt;
+   if(jQuery.browser.webkit)
+   {
+      mouseWheelEvt = 'mousewheel';
+   }
+   else
+   if(jQuery.browser.mozilla)
+   {
+      mouseWheelEvt = 'DOMMouseScroll';
+   }
+   $(window).bind(mouseWheelEvt, function(event, b)
+   {
+      // Are we only the scrolling region?
+      if((event.target != document.body) && jQuery.contains($("#profileBrowserWrapper")[0], event.target))
+      {
+         event.preventDefault();
+      }
+   });
+   $("#friendSearchInput").autocomplete(
+   {
+      appendTo : 'nowhere',
+      source : [],
+      minLength : 0,
+      search : $.proxy(function(event, ui)
+      {
+         console.log("search triggered");
+         var result = (this.isEmpty(event.target.value)) ? this.friendsList : $.ui.autocomplete.filter(this.friendsList, event.target.value);
+
+         this.buildFriendsList(result);
+      }, Genesis)
+   });
    // --------------------------------------------------------------------------------
    // #Hash Init
    // --------------------------------------------------------------------------------
@@ -612,6 +784,8 @@ function facebook_loginCallback(noLogin)
          $('#topbar .secondary-nav > li:not([id="fb_login"])').css('display', '');
          $("#fb_login_img").html('<img src="http://graph.facebook.com/' + facebook_id + '/picture?type=square"/>');
          $("#fb_login_img").css("display", "");
+
+         Genesis.getFriendsList();
       }
       if(!$("#fb_account")[0] || (Genesis.currFbId != facebook_id))
       {
