@@ -602,16 +602,15 @@
 
 #referralsWrapper, #profileBrowserWrapper {
     position:absolute;
-    left:0;
     width:100%;
     background:white;
     overflow:hidden;
 }
 #referralsWrapper {
-    top:52px; bottom:77px;
+    top:52px; bottom:77px; left:0;
 }
 #profileBrowserWrapper {
-    top:(52px+28px+2*@baseline); bottom:10px;
+    top:(52px+28px+2*@baseline); bottom:10px; left:10px;;
 }
 
 .scroller {
@@ -948,7 +947,7 @@
    .filterBox {
       margin-top: @baseline;
       margin-bottom: @baseline;
-      position:absolute;top:52px;left:0;right:0;
+      position:absolute;top:52px;left:10px;right:0;
    }
    .input {
       margin-left:150px;
