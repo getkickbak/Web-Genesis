@@ -1,47 +1,37 @@
+Array.prototype.binarySearch = function(find, comparator)
+{
+   var low = 0, high = this.length - 1, i, comparison;
+   while(low <= high)
+   {
+      i = Math.floor((low + high) / 2);
+      comparison = comparator(this[i], find);
+      if(comparison < 0)
+      {
+         low = i + 1;
+         continue;
+      };
+      if(comparison > 0)
+      {
+         high = i - 1;
+         continue;
+      };
+      return i;
+   }
+   return null;
+};
 Genesis =
 {
    currFbId : "0",
    perms : 'email,user_birthday,publish_stream,read_friendlists',
    fbAppId : '197968780267830',
+   //friendsMinHeight : 353 + 52 + 28 + 2 * 18,
+   //friendsMaxHeight : 353 + 52 + 28 + 2 * 18,
+   friendsMinHeight : 60 + 52 + 28 + 2 * 18,
+   friendsMaxHeight : 120 + 52 + 28 + 2 * 18,
+   friendsList : null,
    fb_login_tag : function()
    {
       return '<fb:login-button scope="' + this.perms + '" on-login="facebook_onLogin(false);" size="large" background="dark" length="long"></fb:login-button>';
-   },
-   getFriendsURL : function()
-   {
-      return 'https://graph.facebook.com/me/friends?fields=name,username,id&access_token=' + Genesis.access_token;
-   },
-   getFriendListsURL : function()
-   {
-      return 'https://graph.facebook.com/me/friendlists?access_token=' + Genesis.access_token;
-   },
-   // Get Friends with Facebook email address
-   //
-   getFriendsInListURL : function(listId, callback)
-   {
-      var loginUser;
-      FB.api(
-      {
-         method : 'fql.query',
-         //query : 'SELECT uid, name, username, current_location FROM user WHERE uid=me() OR uid IN (SELECT uid FROM
-         // friendlist_member WHERE flid=' + listId + ')'
-         query : 'SELECT uid, name, username, current_location FROM user WHERE uid=me() OR uid IN (SELECT uid2 FROM friend WHERE uid1 = me())'
-      }, function(response)
-      {
-         loginUser = response[0];
-
-         for(var i = 1; i < response.length; i++)
-         {
-            if(response[i].username)
-            {
-               console.log(response[i].username);
-            }
-         }
-         if(callback)
-         {
-            callback(response);
-         }
-      });
    },
    checkFbPerms : function(fbUseId)
    {
@@ -49,9 +39,9 @@ Genesis =
       {
          method : 'fql.query',
          query : 'SELECT ' + Genesis.perms + ' FROM permissions WHERE uid=me()'
-      }, function(response)
+      }, $.proxy(function(response)
       {
-         var perms = Genesis.perms.split(',');
+         var perms = this.perms.split(',');
          for(var i = 0; i < perms.length; i++)
          {
             if(!response[0][perms[i]] || !parseInt(response[0][perms[i]]))
@@ -61,7 +51,7 @@ Genesis =
          }
          if(i < perms.length)
          {
-            location.href = 'http://www.facebook.com/dialog/oauth/?scope=' + Genesis.perms + '&client_id=' + Genesis.fbAppId + '&redirect_uri=' + location.href + '&response_type=token';
+            location.href = 'http://www.facebook.com/dialog/oauth/?scope=' + this.perms + '&client_id=' + this.fbAppId + '&redirect_uri=' + location.href + '&response_type=token';
             /*
              FB.ui(
              {
@@ -75,11 +65,9 @@ Genesis =
          }
          else
          {
-            _login();
-            _fb_connect();
             facebook_onLogin($("#fb_account")[0] != null);
          }
-      });
+      }, Genesis));
    },
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
@@ -348,6 +336,7 @@ Genesis =
             {
                $('#popupDialog').modal('hide');
             });
+
          }
          else
          {
@@ -426,8 +415,6 @@ var oAuth2SessionLogin = function()
    {
       if((response.status != 'connected') || (!response.authResponse))
       {
-         _logout();
-         _fb_disconnect();
          facebook_onLogout();
       }
       else
@@ -472,6 +459,40 @@ $(document).ready($(function()
    Genesis.warningMsg = $(".alert-message.warning");
    Genesis.errMsg = $(".alert-message.error");
 
+   // --------------------------------------------------------------------------------
+   // Friends List ScrollBar Init
+   // --------------------------------------------------------------------------------
+   var mouseWheelEvt;
+   if(jQuery.browser.webkit)
+   {
+      mouseWheelEvt = 'mousewheel';
+   }
+   else
+   if(jQuery.browser.mozilla)
+   {
+      mouseWheelEvt = 'DOMMouseScroll';
+   }
+   $(window).bind(mouseWheelEvt, function(event, b)
+   {
+      // Are we only the scrolling region?
+      if((event.target != document.body) && jQuery.contains($("#profileBrowserWrapper")[0], event.target))
+      {
+         event.preventDefault();
+      }
+   });
+   $("#friendSearchInput").autocomplete(
+   {
+      appendTo : 'nowhere',
+      source : [],
+      minLength : 0,
+      search : $.proxy(function(event, ui)
+      {
+         console.log("search triggered");
+         var result = (this.isEmpty(event.target.value)) ? this.friendsList : $.ui.autocomplete.filter(this.friendsList, event.target.value);
+
+         this.buildFriendsList(result);
+      }, Genesis)
+   });
    // --------------------------------------------------------------------------------
    // #Hash Init
    // --------------------------------------------------------------------------------
@@ -569,6 +590,8 @@ function facebook_onLogout()
 {
    try
    {
+      _fb_disconnect();
+      _logout();
       FB.logout(function(response)
       {
          Genesis.ajax(false, Genesis.sign_out_path, 'GET', null, 'json', function()
@@ -612,6 +635,9 @@ function facebook_loginCallback(noLogin)
          $('#topbar .secondary-nav > li:not([id="fb_login"])').css('display', '');
          $("#fb_login_img").html('<img src="http://graph.facebook.com/' + facebook_id + '/picture?type=square"/>');
          $("#fb_login_img").css("display", "");
+
+         _fb_connect();
+         _login();
       }
       if(!$("#fb_account")[0] || (Genesis.currFbId != facebook_id))
       {

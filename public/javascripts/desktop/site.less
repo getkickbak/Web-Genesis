@@ -599,12 +599,19 @@
 // ------------------------------------------------------------------
 // Scroller
 // ------------------------------------------------------------------
-#referralsWrapper {
+
+#referralsWrapper, #profileBrowserWrapper {
     position:absolute;
-    top:47px; bottom:77px; left:0;
+    left:0;
     width:100%;
     background:white;
     overflow:hidden;
+}
+#referralsWrapper {
+    top:52px; bottom:77px;
+}
+#profileBrowserWrapper {
+    top:(52px+28px+2*@baseline); bottom:10px;
 }
 
 .scroller {
@@ -924,6 +931,60 @@
    }
 }
 
+// ------------------------------------------------------------------
+// Select Friends List Dialog Box
+// ------------------------------------------------------------------
+#profileBrowserDialog {
+   //margin: 150px auto;
+   //width:575px;
+   //height:(253px+52px+28px+2*@baseline);
+   overflow:hidden;
+   position:relative;
+   .profileBrowserBody {
+      background-color:white;
+   }
+   h2 {
+   }
+   .filterBox {
+      margin-top: @baseline;
+      margin-bottom: @baseline;
+      position:absolute;top:52px;left:0;right:0;
+   }
+   .input {
+      margin-left:150px;
+   }
+   .listView {
+      table {
+         
+      }
+   }
+   .listItemCtn {
+      padding:5px;
+      &:hover {
+         background-color: @pageBgColor;
+      }
+   }
+   .listItem {
+      width:710px/3-6px;
+      margin:5px 0 0 5px;
+      float:left;
+      a {
+         color:#333;
+         font-weight:bold;
+         font-size:0.9em;
+      }
+   }
+   .listContent {
+      vertical-align:middle;
+      width:10000px;
+      height:50px;
+      display:table-cell;
+   }
+   .profileBrowserFooter {
+      position:absolute;bottom:0;left:0;right:0;
+      padding-bottom:10px;
+   }
+}
 
 // ------------------------------------------------------------------
 // Reward Coupon
