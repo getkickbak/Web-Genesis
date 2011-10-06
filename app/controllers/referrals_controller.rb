@@ -44,11 +44,11 @@ class ReferralsController < ApplicationController
     @deal = Deal.first(:deal_id => params[:id]) || not_found
     authorize! :read, @deal
     
-    friend_facebook_ids = params[:friend_facebook_ids]
+    friend_facebook_ids = params[:friend_facebook_ids].split(',')
     result = Referral.find_by_user(@deal.id, friend_facebook_ids)
       
     respond_to do |format|
-      format.json { render :json => { :success => true, :data => result[:items].to_json, :total => result[:total] } }
+      format.json { render :json => { :success => true, :data => result[:items].to_json(:only => [:creator_facebook_id]), :total => result[:total] } }
     end  
   end
   

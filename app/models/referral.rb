@@ -80,12 +80,11 @@ class Referral
   
   def self.find_referrers(deal_id, current_referrer_id, max)
     count = Referral.count(Referral.deal.id => deal_id, Referral.creator.id.not => current_referrer_id, :confirmed => true)
-    referrer_ids = Referral.all(:fields => [:creator_id], Referral.deal.id => deal_id, Referral.creator.id.not => current_referrer_id, :confirmed => true, :order => [ :created_ts.desc ], :offset => 0, :limit => max)
-    #referrer_ids = DataMapper.repository(:default).adapter.select(
-    #  "SELECT creator_id FROM referrals WHERE deal_id = ? AND creator_id <> ? AND confirmed = 't'
-    #   ORDER BY created_ts DESC 
-    #   LIMIT 0,?", deal_id, current_referrer_id, max 
-    #)
+    referrer_ids = DataMapper.repository(:default).adapter.select(
+      "SELECT creator_id FROM referrals WHERE deal_id = ? AND creator_id <> ? AND confirmed = 't'
+       ORDER BY created_ts DESC 
+       LIMIT 0,?", deal_id, current_referrer_id, max 
+    )
     referrers = User.all(:id => referrer_ids)
     result = {}
     result[:total] = count

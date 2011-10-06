@@ -2,7 +2,10 @@ _login = function()
 {
    //$('#fb_login').css("display", "none");
    //$('#fb_login_img').css("display", "");
-   Site.getFriendsList();
+   if($("#profileBrowserDialog")[0])
+   {
+      Site.getFriendsList();
+   }
 };
 _logout = function()
 {
@@ -15,7 +18,12 @@ Site =
    referralsMaxHeight : 855, //1005
    resubmitFriendsEmail : false,
    dealNameSelector : '#mainDeal h2:first-child',
-   checkUidReferralUrl : '/referrals',
+   //friendsMinHeight : 353 + 52 + 28 + 2 * 18,
+   //friendsMaxHeight : 353 + 52 + 28 + 2 * 18,
+   friendsMinHeight : 60 + 52 + 28 + 2 * 18,
+   friendsMaxHeight : 120 + 52 + 28 + 2 * 18,
+   friendsList : null,
+   checkUidReferralUrl : '/referrers',
    _initFormComponents : function()
    {
       /*
@@ -520,7 +528,6 @@ Site =
          {
             callback(response);
          }
-         ,
       }, Site), 0);
    },
    checkFriendReferral : function(result, uidField, nameField)
@@ -543,34 +550,34 @@ Site =
       {
          return a[uidField] - b[uidField];
       });
-      this.ajax(false, this.checkUidReferralUrl, 'GET', 'friend_facebook_ids=' + friendsList, 'json', $.proxy(function(res)
+      Genesis.ajax(true, this.checkUidReferralUrl, 'GET', 'friend_facebook_ids=' + friendsList, 'json', $.proxy(function(res)
       {
+      	var data = $.parseJSON(res.data);
          // Empty Result tell user to use the secret key
-         if(result.length == 0)
+         if(res.total == 0)
          {
-            this.showErrMsg("No Friends were found from your Friends List on Facebook. Reload Page to Try Again.");
+            Genesis.showErrMsg("You have no referrals.");
          }
          else
          {
-            var res = [];
+            var result = [];
             var friendsList = [];
-            for(var i = 0; i < res.length; i++)
+            for(var i = 0; i < res.total; i++)
             {
-               var index = this.friendsList.binarySearch(result[i].facebook_id, function(a, b)
+               var index = this.friendsList.binarySearch(data[i].creator_facebook_id, function(a, b)
                {
-                  return (a[uidField] - b);
+                  return (a.value - b);
                });
                if(index >= 0)
                {
-                  res.push(index);
-                  friendsList[i] = thistory.friendsList[index];
+                  result.push(index);
+                  friendsList[i] = this.friendsList[index];
                }
             }
             this.friendsList = friendsList;
             $("#profileBrowserDialog").switchClass("hide", "in");
             this.buildFriendsList(friendsList);
          }
-         ,
       }, Site));
    },
    getFriendsList : function(callback)
@@ -598,7 +605,6 @@ Site =
                this.showErrMsg("Error Retrieving Friends List from Facebook. Reload Page to Try Again.");
             }
          }
-         ,
       }, Site));
    }
 }
@@ -653,7 +659,7 @@ $(document).ready($(function()
    $(window).bind(mouseWheelEvt, function(event, b)
    {
       // Are we only the scrolling region?
-      if((event.target != document.body) && jQuery.contains($("#referralsList")[0], event.target))
+      if((event.target != document.body) && $("#referralsList")[0] && jQuery.contains($("#referralsList")[0], event.target))
       {
          event.preventDefault();
       }

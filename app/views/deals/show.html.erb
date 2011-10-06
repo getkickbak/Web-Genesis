@@ -5,6 +5,7 @@ call to action
 -->
 <div class="row">
    <div class="span24">
+      <% if @referral.nil? && !@show_reward %>
       <div class="row fade hide" id="profileBrowserDialog">
          <div class="span24">
             <h2>Who Recommended You To This WebSite?</h2>
@@ -22,6 +23,7 @@ call to action
             </div>
          </div>
       </div>
+      <% else %>
       <div class="row span0abs span24 height0" id="referralsList">
          <div class="hero-unit hero-referrals">
                <p class="referralsHeader">Recommendation from others :</p>
@@ -140,6 +142,7 @@ call to action
             <% end %>
          </div>
       </div>
+      <% end %>
       <!-- Example row of columns -->
       <div id="mainDeal" class="row">
          <div class="span24">
