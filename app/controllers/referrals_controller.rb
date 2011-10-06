@@ -40,6 +40,18 @@ class ReferralsController < ApplicationController
     end
   end
 
+  def find_by_user
+    @deal = Deal.first(:deal_id => params[:id]) || not_found
+    authorize! :read, @deal
+    
+    friend_facebook_ids = params[:friend_facebook_ids]
+    result = Referral.find_by_user(@deal.id, friend_facebook_ids)
+      
+    respond_to do |format|
+      format.json { render :json => { :success => true, :data => result[:items].to_json, :total => result[:total] } }
+    end  
+  end
+  
   def create
     authorize! :create, Referral
 

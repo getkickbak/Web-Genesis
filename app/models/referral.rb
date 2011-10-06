@@ -5,6 +5,7 @@ class Referral
 
   property :id, Serial
   property :referral_id, String, :unique_index => true, :required => true, :default => 0
+  property :creator_facebook_id, String, :required => true, :default => ""
   property :photo_url, String, :required => true, :default => ""
   property :comment, String, :length => 1024, :required => true, :default => ""
   property :confirmed, Boolean, :default => false
@@ -25,6 +26,7 @@ class Referral
       :comment => referral_info[:comment].strip
     )
     referral[:referral_id] = "#{rand(1000) + 2000}#{now.to_i}"
+    referral[:creator_facebook_id] = creator.facebook_id
     referral[:created_ts] = now
     referral[:update_ts] = now
     referral.creator = creator
@@ -61,20 +63,29 @@ class Referral
 
   def self.find_by_deal(deal_id, start, max)
     count = Referral.count(Referral.deal.id => deal_id, :confirmed => true)
-    referrals = Referral.all(Referral.deal.id => deal_id, :order => [ :created_ts.desc ], :confirmed => true, :offset => start, :limit => max)
+    referrals = Referral.all(Referral.deal.id => deal_id, :confirmed => true, :order => [ :created_ts.desc ], :offset => start, :limit => max)
     result = {}
     result[:total] = count
     result[:items] = referrals
     return result
   end  
 
+  def self.find_by_user(deal_id, friends_facebook_ids)
+    referrer_facebook_ids = Referral.all(:fields => [:creator_facebook_id], Referral.deal.id => deal_id, :creator_facebook_id => friends_facebook_ids)
+    result = {}
+    result[:total] = referrer_facebook_ids.to_a.length
+    result[:items] = referrer_facebook_ids
+    return result 
+  end
+  
   def self.find_referrers(deal_id, current_referrer_id, max)
     count = Referral.count(Referral.deal.id => deal_id, Referral.creator.id.not => current_referrer_id, :confirmed => true)
-    referrer_ids = DataMapper.repository(:default).adapter.select(
-      "SELECT creator_id FROM referrals WHERE deal_id = ? AND creator_id <> ? AND confirmed = 't'
-       ORDER BY created_ts DESC 
-       LIMIT 0,?", deal_id, current_referrer_id, max 
-    )
+    referrer_ids = Referral.all(:fields => [:creator_id], Referral.deal.id => deal_id, Referral.creator.id.not => current_referrer_id, :confirmed => true, :order => [ :created_ts.desc ], :offset => 0, :limit => max)
+    #referrer_ids = DataMapper.repository(:default).adapter.select(
+    #  "SELECT creator_id FROM referrals WHERE deal_id = ? AND creator_id <> ? AND confirmed = 't'
+    #   ORDER BY created_ts DESC 
+    #   LIMIT 0,?", deal_id, current_referrer_id, max 
+    #)
     referrers = User.all(:id => referrer_ids)
     result = {}
     result[:total] = count

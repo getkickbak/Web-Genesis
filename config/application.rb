@@ -8,8 +8,6 @@ require 'action_mailer/railtie'
 require 'dm-accepts_nested_attributes'
 # require 'active_resource/railtie'
 # require 'rails/test_unit/railtie'
-require 'string_extension'
-
 
 # If you have a Gemfile, require the gems listed there, including any gems
 # you've limited to :test, :development, or :production.
@@ -54,5 +52,7 @@ module Genesis
     DataMapper::Model.append_inclusions(DataMapper::MassAssignmentSecurity)
     DataMapper::Model.raise_on_save_failure = true
     DataMapper::Property::String.length(255)
+    
+    require 'string_extension'
   end
 end
