@@ -2,7 +2,10 @@ _login = function()
 {
    //$('#fb_login').css("display", "none");
    //$('#fb_login_img').css("display", "");
-   Site.getFriendsList();
+   if($("#profileBrowserDialog")[0])
+   {
+      Site.getFriendsList();
+   }
 };
 _logout = function()
 {
@@ -15,6 +18,11 @@ Site =
    referralsMaxHeight : 855, //1005
    resubmitFriendsEmail : false,
    dealNameSelector : '#mainDeal h2:first-child',
+   //friendsMinHeight : 353 + 52 + 28 + 2 * 18,
+   //friendsMaxHeight : 353 + 52 + 28 + 2 * 18,
+   friendsMinHeight : 60 + 52 + 28 + 2 * 18,
+   friendsMaxHeight : 120 + 52 + 28 + 2 * 18,
+   friendsList : null,
    checkUidReferralUrl : '/referrals',
    _initFormComponents : function()
    {

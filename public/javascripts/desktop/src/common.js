@@ -24,11 +24,6 @@ Genesis =
    currFbId : "0",
    perms : 'email,user_birthday,publish_stream,read_friendlists',
    fbAppId : '197968780267830',
-   //friendsMinHeight : 353 + 52 + 28 + 2 * 18,
-   //friendsMaxHeight : 353 + 52 + 28 + 2 * 18,
-   friendsMinHeight : 60 + 52 + 28 + 2 * 18,
-   friendsMaxHeight : 120 + 52 + 28 + 2 * 18,
-   friendsList : null,
    fb_login_tag : function()
    {
       return '<fb:login-button scope="' + this.perms + '" on-login="facebook_onLogin(false);" size="large" background="dark" length="long"></fb:login-button>';
