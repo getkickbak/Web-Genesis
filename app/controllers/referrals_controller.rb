@@ -48,7 +48,7 @@ class ReferralsController < ApplicationController
     result = Referral.find_by_user(@deal.id, friend_facebook_ids)
       
     respond_to do |format|
-      format.json { render :json => { :success => true, :data => result[:items].to_json(:only => [:creator_facebook_id]), :total => result[:total] } }
+      format.json { render :json => { :success => true, :data => result[:items].to_json(:only => [:referral_id, :creator_facebook_id]), :total => result[:total] } }
     end  
   end
   

@@ -20,8 +20,8 @@ Site =
    dealNameSelector : '#mainDeal h2:first-child',
    //friendsMinHeight : 353 + 52 + 28 + 2 * 18,
    //friendsMaxHeight : 353 + 52 + 28 + 2 * 18,
-   friendsMinHeight : 60 + 52 + 28 + 2 * 18,
-   friendsMaxHeight : 120 + 52 + 28 + 2 * 18,
+   friendsMinHeight : 70+10,
+   friendsMaxHeight : 140+10,
    friendsList : null,
    checkUidReferralUrl : '/referrers',
    _initFormComponents : function()
@@ -475,12 +475,13 @@ Site =
    {
       var cols = 3;
       var html = "";
+      var dealPath = location.protocol + '//' + location.host + location.pathname + "?referral_id=";
       for(var x = 0; x < Math.ceil(result.length / cols); x++)
       {
          html += '<li>';
          for(var y = x * cols; (y < (x + 1) * cols) && (y < result.length); y++)
          {
-            html += '<div class="listItem"><div class="listItemCtn"><a onclick="">' + '<img class="left" width="50" style="margin-right:5px;display:block;" src="http://graph.facebook.com/' + this.friendsList[y].value + '/picture?type=square&"/>' + '<div class="listContent">' + this.friendsList[y].label + '</div></div>' + '</a></div>';
+            html += '<div class="listItem"><div class="listItemCtn"><a href="'+dealPath+result[y].refId+'">' + '<img class="left" width="50" style="margin-right:5px;display:block;" src="http://graph.facebook.com/' + this.friendsList[y].value + '/picture?type=square&"/>' + '<div class="listContent">' + this.friendsList[y].label + '</div></div>' + '</a></div>';
          }
          html += '</li>';
       }
@@ -495,7 +496,7 @@ Site =
          var cleanScroller = true;
          if(height > (this.friendsMinHeight - netHeight))
          {
-            height = Math.min(bodyHeight, Genesis.friendsMaxHeight - netHeight);
+            height = Math.min(bodyHeight, this.friendsMaxHeight - netHeight);
             if(height == (this.friendsMaxHeight - netHeight))
             {
                if(this.friendsScroll)
@@ -517,7 +518,7 @@ Site =
          }
          else
          {
-            $("#profileBrowserDialog .profileBrowserBody").css("height", bodyHeight);
+            $("#profileBrowserDialog .profileBrowserBody").css("height", Math.max(this.friendsMinHeight,bodyHeight+netHeight));
          }
          if(this.friendsScroll && cleanScroller)
          {
@@ -560,7 +561,6 @@ Site =
          }
          else
          {
-            var result = [];
             var friendsList = [];
             for(var i = 0; i < res.total; i++)
             {
@@ -570,13 +570,15 @@ Site =
                });
                if(index >= 0)
                {
-                  result.push(index);
                   friendsList[i] = this.friendsList[index];
+                  friendsList[i].refId = data[i].referral_id;
                }
             }
             this.friendsList = friendsList;
-            $("#profileBrowserDialog").switchClass("hide", "in");
-            this.buildFriendsList(friendsList);
+            $("#profileBrowserDialog").switchClass("hide", "in", 500, function()
+            {
+            	Site.buildFriendsList(friendsList);            	
+            });
          }
       }, Site));
    },

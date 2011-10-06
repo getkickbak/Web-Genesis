@@ -610,7 +610,7 @@
     top:52px; bottom:77px; left:0;
 }
 #profileBrowserWrapper {
-    top:(52px+28px+2*@baseline); bottom:10px; left:10px;;
+    top:(10px+52px); bottom:10px; left:10px;
 }
 
 .scroller {
@@ -936,10 +936,11 @@
 #profileBrowserDialog {
    //margin: 150px auto;
    //width:575px;
-   //height:(253px+52px+28px+2*@baseline);
+   //height:(253px+10px+52px+28px+2*@baseline);
    overflow:hidden;
    position:relative;
    .profileBrowserBody {
+   	  padding-top:10px;
       background-color:white;
    }
    h2 {
