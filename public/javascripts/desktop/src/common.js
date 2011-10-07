@@ -473,7 +473,7 @@ $(document).ready($(function()
    $(window).bind(mouseWheelEvt, function(event, b)
    {
       // Are we only the scrolling region?
-      if((event.target != document.body) && jQuery.contains($("#profileBrowserWrapper")[0], event.target))
+      if((event.target != document.body) && $("#profileBrowserWrapper")[0] && jQuery.contains($("#profileBrowserWrapper")[0], event.target))
       {
          event.preventDefault();
       }
