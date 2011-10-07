@@ -14,8 +14,8 @@ _logout = function()
 };
 Site =
 {
-   referralsMinHeight : 398, // 534
-   referralsMaxHeight : 855, //1005
+   referralsMinHeight : 420, // 534
+   referralsMaxHeight : 420+507, //1005
    resubmitFriendsEmail : false,
    dealNameSelector : '#mainDeal h2:first-child',
    //friendsMinHeight : 353 + 52 + 28 + 2 * 18,
