@@ -610,7 +610,8 @@
     top:52px; bottom:77px; left:0;
 }
 #profileBrowserWrapper {
-    top:(10px+52px); bottom:10px; left:10px;
+    top:(52px+10px+45px+2*20px); bottom:10px; left:0;
+    margin-left:10px;
 }
 
 .scroller {
@@ -939,11 +940,14 @@
 #profileBrowserDialog {
    //margin: 150px auto;
    //width:575px;
-   //height:(253px+10px+52px+28px+2*@baseline);
+   //height:(253px+10px+85px+52px+28px+2*@baseline);
    overflow:hidden;
    position:relative;
+   .profileBrowserHeader {
+      padding:20px;
+   }
    .profileBrowserBody {
-   	  padding-top:10px;
+   	padding-top:10px;
       background-color:white;
    }
    h2 {
@@ -951,7 +955,7 @@
    .filterBox {
       margin-top: @baseline;
       margin-bottom: @baseline;
-      position:absolute;top:52px;left:10px;right:0;
+      position:absolute;top:(52px+85px);left:10px;right:0;
    }
    .input {
       margin-left:150px;
@@ -968,8 +972,8 @@
       }
    }
    .listItem {
-      width:710px/3-6px;
-      margin:5px 0 0 5px;
+      width:((710-6)-3*15)/3px;
+      margin:5px 0 0 15px;
       float:left;
       a {
          color:#333;

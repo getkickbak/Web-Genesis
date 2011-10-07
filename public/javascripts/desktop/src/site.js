@@ -20,8 +20,8 @@ Site =
    dealNameSelector : '#mainDeal h2:first-child',
    //friendsMinHeight : 353 + 52 + 28 + 2 * 18,
    //friendsMaxHeight : 353 + 52 + 28 + 2 * 18,
-   friendsMinHeight : 70 + 10,
-   friendsMaxHeight : 140 + 10,
+   friendsMinHeight : 70 + 45 + 2*20 + 10,
+   friendsMaxHeight : 140 + 45 + 2*20 + 10,
    friendsList : null,
    checkUidReferralUrl : '/referrers',
    _initFormComponents : function()
@@ -488,7 +488,7 @@ Site =
       $("#profileBrowserDialog .listView .scroller ul").html(html);
       setTimeout($.proxy(function()
       {
-         var headerHeight = $("#profileBrowserDialog .filterBox").prop('offsetHeight');
+         var headerHeight = $("#profileBrowserDialog .profileBrowserHeader").prop('offsetHeight');
          var bodyHeight = $("#profileBrowserWrapper .scroller").prop("offsetHeight");
          var footerHeight = 0;
          var netHeight = headerHeight + footerHeight;
@@ -631,7 +631,8 @@ $(document).ready($(function()
    // --------------------------------------------------------------------------------
    var $gmap = $("#gmap");
    var merchant_name = $("#merchant_name").text().trim();
-   address = $("#merchant_address1").text().trim() + ' ' + $("#merchant_address2").text().trim() + ' ' + $("#merchant_city_state_zipcode").text().trim();
+   var address = $("#merchant_address1").text().trim() + ' ' + $("#merchant_address2").text().trim() + ' ' + $("#merchant_city_state_zipcode").text().trim();
+   var htmlAddress = $("#merchant_address1").text().trim() + ' ' + $("#merchant_address2").text().trim() + ' ' + $("#merchant_city_state_zipcode").html().trim();
    $gmap.gMap(
    {
       markers : [
@@ -642,8 +643,8 @@ $(document).ready($(function()
       zoom : 15,
       address : address
    });
-   address = $("#merchant_address1").text().trim() + ' ' + $("#merchant_address2").text().trim() + '<br/>' + $("#merchant_city_state_zipcode").html().trim() + '<a target="_blank" href="' + "http://maps.google.com/maps?f=d&daddr=" + address + '">Get Directions</a>';
-   $("#merchant_address").html(address);
+   htmlAddress += '<a target="_blank" href="' + "http://maps.google.com/maps?f=d&daddr=" + address + '">Get Directions</a>';
+   $("#merchant_address").html(htmlAddress);
 
    // --------------------------------------------------------------------------------
    // Scrolling Referrals
@@ -730,4 +731,23 @@ $(document).ready($(function()
 
       }
    });
+   // --------------------------------------------------------------------------------
+   // Facebook Friends' referrals
+   // --------------------------------------------------------------------------------
+   /*
+    $("#friendSearchInput").autocomplete(
+    {
+    appendTo : 'nowhere',
+    source : [],
+    minLength : 0,
+    search : $.proxy(function(event, ui)
+    {
+    console.log("search triggered");
+    var result = (this.isEmpty(event.target.value)) ? this.friendsList : $.ui.autocomplete.filter(this.friendsList,
+   event.target.value);
+
+    this.buildFriendsList(result);
+    }, Genesis)
+    });
+    */
 }));
