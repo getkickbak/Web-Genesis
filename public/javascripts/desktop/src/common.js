@@ -288,7 +288,7 @@ Genesis =
    {
       this._showMsg('errMsg', msg, $(".alert-message.error .close"), cb, rawHtml);
    },
-   showWarningMsg : function(msg)
+   showWarningMsg : function(msg, cb, rawHtml)
    {
       this._showMsg('warningMsg', msg, $(".alert-message.warning .close"), cb, rawHtml);
    },
