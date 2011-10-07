@@ -361,9 +361,9 @@ Genesis =
       this._popupCommon("Facebook Login Required", Genesis.fb_login_tag(), "#");
       FB.XFBML.parse();
    },
-   ajax : function(absPath, url, type, data, dataType, successCallBack, button, reenableButton)
+   ajax : function(relPath, url, type, data, dataType, successCallBack, button, reenableButton)
    {
-      var path = (absPath) ? location.protocol + '//' + location.host + location.pathname : '';
+      var path = (relPath) ? location.protocol + '//' + location.host + location.pathname : '';
       if(button)
       {
          button.addClass('disabled');
@@ -372,24 +372,27 @@ Genesis =
       {
          url : path + url,
          type : type,
-         data : data ? data : undefined,
+         data : Genesis.isEmpty(data) ? undefined : data,
          dataType : dataType,
          //processData: false,
          //contentType: "application/json",
          success : function(response)
          {
-            if(successCallBack && response.success)
+            if(successCallBack && response && response.success)
             {
                successCallBack(response);
             }
-            if(button && (reenableButton || !response.success))
+            if(button && (reenableButton || !response || !response.success))
             {
                button.removeClass('disabled');
             }
-            var msg = response.msg;
-            if(msg)
+            if(response)
             {
-               Genesis._popupCommon(msg[0], '<p>' + msg[1] + '</p>', "#");
+               var msg = response.msg;
+               if(msg)
+               {
+                  Genesis._popupCommon(msg[0], '<p>' + msg[1] + '</p>', "#");
+               }
             }
          }
       });
@@ -474,19 +477,6 @@ $(document).ready($(function()
       {
          event.preventDefault();
       }
-   });
-   $("#friendSearchInput").autocomplete(
-   {
-      appendTo : 'nowhere',
-      source : [],
-      minLength : 0,
-      search : $.proxy(function(event, ui)
-      {
-         console.log("search triggered");
-         var result = (this.isEmpty(event.target.value)) ? this.friendsList : $.ui.autocomplete.filter(this.friendsList, event.target.value);
-
-         this.buildFriendsList(result);
-      }, Genesis)
    });
    // --------------------------------------------------------------------------------
    // #Hash Init
