@@ -195,18 +195,7 @@ call to action
                			</div>
             		</div><a data-controls-modal="referralWarning" data-backdrop="true" data-keyboard="true" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
             		<% else %>
-            		<div id="referralWarning" class="modal fade hide">
-               			<div class="modal-header">
-                  			<a class="close">×</a>
-                  			<h3>Friend Referral Required</h3>
-               			</div>
-               			<div class="modal-body" style="text-align:center;">
-                  			You must be referred by a friend before you can purchase this deal!
-               			</div>
-               			<div class="modal-footer">
-                  			<a onclick="$('#referralWarning').modal('hide');" class="btn primary">OK</a>
-               			</div>
-            		</div><a data-controls-modal="referralWarning" data-backdrop="true" data-keyboard="true" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
+            		<a style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large disabled">Buy Now! &raquo;</a>
             		<% end %>
             	<% else %>
             	<a style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large" onclick="Genesis.loginPopup();">Buy Now! &raquo;</a>
