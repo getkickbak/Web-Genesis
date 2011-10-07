@@ -156,7 +156,7 @@ class OrdersController < ApplicationController
 
     respond_to do |format|
     #format.html { redirect_to user_order_path(@user, @order, :notice => 'Order was successfully created.') }
-      format.html { redirect_to deal_path(deal) }
+      format.html { redirect_to deal_path(deal)+"?referral_id=#{@order.referral_id}", :notice => 'Your order has been cancelled.' }
     #format.xml  { render :xml => @order, :status => :created, :location => @order }
     #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
     end

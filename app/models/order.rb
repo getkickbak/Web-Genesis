@@ -124,6 +124,10 @@ class Order
   end
   
   def check_agree_to_terms
-    self.agree_to_terms == '1' ? true : [false, "Please agree to Terms Of Use and Privacy Agreement"]
+    if self.agree_to_terms
+      self.agree_to_terms == '1' ? true : [false, "Please agree to Terms Of Use and Privacy Agreement"]
+    else
+      return true
+    end
   end
 end

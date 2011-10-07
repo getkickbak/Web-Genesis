@@ -19,7 +19,7 @@
                   <b>Hi <%= @order.user.name.split(' ')[0] %>,</b>
                   <br>
                   <br>
-         		  You have successfully purchased <a href="<%= deal_url(@order.deal) %>" ><%= @subdeal.title %></a>
+         		  You have successfully purchased <a href="<%= deal_url(@order.deal)+"?referral_id=#{@order.referral_id}" %>" ><%= @subdeal.title %></a>
                   <br>
                   When you are ready to use the e-vouchers, you can print the attachment(s).
                   <br>
