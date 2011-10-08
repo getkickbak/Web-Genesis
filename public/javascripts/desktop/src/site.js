@@ -490,11 +490,11 @@ Site =
       {
          var headerHeight = $("#profileBrowserDialog .profileBrowserHeader").prop('offsetHeight');
          var bodyHeight = $("#profileBrowserWrapper .scroller").prop("offsetHeight");
-         var footerHeight = 0;
-         var netHeight = headerHeight + footerHeight;
+         var footerHeight = 10;
+         var netHeight = headerHeight + footerHeight + 10;
          var height = Math.max(bodyHeight, this.friendsMinHeight - netHeight);
          var cleanScroller = true;
-         if(height > (this.friendsMinHeight - netHeight))
+         if(height > (this.friendsMaxHeight - netHeight))
          {
             height = Math.min(bodyHeight, this.friendsMaxHeight - netHeight);
             if(height == (this.friendsMaxHeight - netHeight))
@@ -514,7 +514,7 @@ Site =
                }
                cleanScroller = false;
             }
-            $("#profileBrowserDialog .profileBrowserBody").css("height", height);
+            $("#profileBrowserDialog .profileBrowserBody").css("height", height+netHeight);
          }
          else
          {

@@ -71,7 +71,7 @@ class Referral
   end  
 
   def self.find_by_user(deal_id, friends_facebook_ids)
-    referrer_facebook_ids = Referral.all(:fields => [:referral_id, :creator_facebook_id], Referral.deal.id => deal_id, :creator_facebook_id => friends_facebook_ids)
+    referrer_facebook_ids = Referral.all(:fields => [:referral_id, :creator_facebook_id], Referral.deal.id => deal_id, :creator_facebook_id => friends_facebook_ids, :confirmed => true)
     result = {}
     result[:total] = referrer_facebook_ids.to_a.length
     result[:items] = referrer_facebook_ids
