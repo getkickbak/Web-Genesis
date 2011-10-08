@@ -4,6 +4,7 @@ class PagesController < ApplicationController
 
   def contact_us
     @contact = Contact.new
+    @notice = request.filtered_parameters['notice']
   end
 
   def contact_us_create
