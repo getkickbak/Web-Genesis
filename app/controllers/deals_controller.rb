@@ -69,6 +69,10 @@ class DealsController < ApplicationController
 
     @merchant = Merchant.first(:merchant_id => params[:merchant_id])
     @deal = Deal.new
+    now = Time.now
+    @deal.start_date = now
+    @deal.end_date = now
+    @deal.expiry_date = now
 
     respond_to do |format|
       format.html # new.html.erb

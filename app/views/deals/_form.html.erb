@@ -18,9 +18,9 @@
 	<%= f.input :description, :as => :text %>
 	<%= f.input :highlights, :as => :text %>
 	<%= f.input :details, :as => :text %>
-	<%= f.input :start_date, :as => :date, :order => [:day, :month, :year], :input_html => { :value => Time.now } %>
-	<%= f.input :end_date, :as => :date, :order => [:day, :month, :year], :input_html => { :value => Time.now } %>
-	<%= f.input :expiry_date, :as => :date, :order => [:day, :month, :year], :input_html => { :value => Time.now } %>
+	<%= f.input :start_date, :as => :date, :order => [:day, :month, :year] %>
+	<%= f.input :end_date, :as => :date, :order => [:day, :month, :year] %>
+	<%= f.input :expiry_date, :as => :date, :order => [:day, :month, :year] %>
 	<%= f.input :max_per_person %>
 	<%= f.input :max_limit %>
 

@@ -13,19 +13,3 @@ function add_fields(link, association, content)
    var regexp = new RegExp("new_" + association, "g")
    $(link).parent().before(content.replace(regexp, new_id));
 }
-
-function get_referrals()
-{
-	$.ajax({
-		url : "/deals/subway/referrals",
-		type : "GET",
-		data : "start=0&max=2",
-		dataType : "json",
-		//processData: false,
-		//contentType: "application/json",
-		success : function(response) {
-			data = jQuery.parseJSON(response.data);
-			test = data;
-		}
-	});	
-}
