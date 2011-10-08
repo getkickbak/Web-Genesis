@@ -1,5 +1,6 @@
 class PagesController < ApplicationController
   def how_it_works
+    @show_reward = true
   end
 
   def contact_us
