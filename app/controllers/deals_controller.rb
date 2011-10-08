@@ -1,3 +1,5 @@
+require 'util/constant'
+
 class DealsController < ApplicationController
   before_filter :authenticate_user!, :only => [:edit, :update]
   #load_and_authorize_resource
