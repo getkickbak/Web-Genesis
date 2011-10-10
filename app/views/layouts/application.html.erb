@@ -9,8 +9,8 @@
       <meta property="og:url" content="http://www.imdb.com/title/tt0117500/"/>
       -->
       <meta property="og:site_name" content="JustForMyFriends"/>
-      <meta property="og:title" content="<% if @deal %><%= @deal.title %><% end %>"/>
-      <meta property="og:image" content="<% if @deal %><%= @deal.merchant.photo_url %><% end %>"/>
+      <meta property="og:title" content="<% if (defined? @deal) %><%= @deal.title %><% end %>"/>
+      <meta property="og:image" content="<% if (defined? @deal) %><%= @deal.merchant.photo_url %><% end %>"/>
       <meta property="og:description" content="">
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>Just For My Friends</title>
@@ -62,7 +62,7 @@
          <div class="topbar-inner noWrap">
             <div class="container">
                <h3><a href="/"><img width="200" style="position:absolute;top:0px;left:-10px;" src="/images/logo.png"/>Just For My Friends</a></h3>
-               <% if @show_reward %>
+               <% if (defined? @show_reward) %>
                <ul class="nav">
                   <li class="">
                      <a href="/how_it_works">How It Works</a>

@@ -1,4 +1,19 @@
-<p id="notice"><%= notice %></p>
+<% content_for :script do %>
+<script type="text/javascript">
+	$(document).ready($(function() {
+		var msg = $("#notice").html();
+		if(msg) {
+			Genesis.showWarningMsg(msg,null,true);
+		}
+	}));
+
+</script>
+<% end %>
+<% if @notice %>
+<div style="display:none;" id="notice">
+	<p><%= @notice %></p>
+</div>
+<% end %>
 <div class="row">
    <div class="span24">
       <div class="row">

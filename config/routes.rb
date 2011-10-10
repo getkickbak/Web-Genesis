@@ -54,6 +54,7 @@ Genesis::Application.routes.draw do
     #end
     
     match '/deals/:id' => 'deals#show', :as => :deal
+    match '/deals/:id/verify_secret_code' => 'deals#verify_secret_code'
     match '/deals/:id/confirmation' => 'orders#new', :as => :confirm_order
     match '/deals/:id/complete_order' => 'orders#create', :via => :post, :as => :complete_order
     match '/deals/:id/pay_details' => 'orders#pay_details', :as => :pay_details
