@@ -36,7 +36,7 @@ gem 'dm-transactions',      DM_VERSION
 gem 'dm-aggregates',        DM_VERSION
 gem 'dm-timestamps',        DM_VERSION
 gem 'dm-observer',          DM_VERSION
-gem 'dm-accepts_nested_attributes', DM_VERSION, :git => 'git://github.com/snusnu/dm-accepts_nested_attributes'
+gem 'dm-accepts_nested_attributes', DM_VERSION, :git => 'git://github.com/snusnu/dm-accepts_nested_attributes.git'
 #gem 'dm-devise',            '~> 1.4.0'
 gem 'cancan'
 gem 'simple_form' 

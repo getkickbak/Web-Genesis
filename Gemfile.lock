@@ -1,5 +1,5 @@
 GIT
-  remote: git://github.com/snusnu/dm-accepts_nested_attributes
+  remote: git://github.com/snusnu/dm-accepts_nested_attributes.git
   revision: 0a42e3f133f39e451acbb24558bbcdb7cccb33de
   specs:
     dm-accepts_nested_attributes (1.1.0)
