@@ -1,9 +1,15 @@
-defaults: &defaults
+sqlite_defaults: &defaults
   adapter: sqlite
 
+mysql_defaults: &mysql_defaults
+  adapter: mysql
+  username: mysql_user
+  password: mysql_sekret
+  host: localhost
+  
 development:
   database: db/genesis_development.db
-  <<: *defaults
+  <<: *sqlite_defaults
 
   # Add more repositories
   # repositories:
@@ -18,7 +24,7 @@ development:
 
 test:
   database: db/genesis_test.db
-  <<: *defaults
+  <<: *sqlite_defaults
 production:
   database: db/genesis_production.db
-  <<: *defaults
+  <<: *mysql_defaults

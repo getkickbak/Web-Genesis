@@ -2,7 +2,7 @@ _login = function()
 {
    //$('#fb_login').css("display", "none");
    //$('#fb_login_img').css("display", "");
-   if($("#profileBrowserDialog")[0])
+   if($("#referralsBrowserDialog")[0])
    {
       Site.getFriendsList();
    }
@@ -445,7 +445,7 @@ Site =
          if(!response || response.error)
          {
             Site.resubmitFriendsEmail = true;
-            Genesis.showErrMsg("Error sending your recommendation message to your friend's mail accounts.<br/>Resubmit to Try Again!", function()
+            Genesis.showErrMsg("Error sending your recommendation message to your friends' mail accounts.<br/>Resubmit to Try Again!", function()
             {
                //location.href = this._url;
             });
@@ -453,7 +453,7 @@ Site =
          }
          else
          {
-            Genesis._popupCommon("Congratulations!", "<p>Your recommendation has been sent to your friend's mail accounts.</p>", this._url);
+            Genesis._popupCommon("Congratulations!", "<p>Your recommendation has been sent to your friends' mail accounts.</p>", this._url);
             delete Site._url;
             delete Site._msg;
             delete Site_rewardBtn;
@@ -485,11 +485,11 @@ Site =
          }
          html += '</li>';
       }
-      $("#profileBrowserDialog .listView .scroller ul").html(html);
+      $("#referralsBrowserDialog .listView .scroller ul").html(html);
       setTimeout($.proxy(function()
       {
-         var headerHeight = $("#profileBrowserDialog .profileBrowserHeader").prop('offsetHeight');
-         var bodyHeight = $("#profileBrowserWrapper .scroller").prop("offsetHeight");
+         var headerHeight = $("#referralsBrowserDialog .referralsBrowserHeader").prop('offsetHeight');
+         var bodyHeight = $("#referralsBrowserWrapper .scroller").prop("offsetHeight");
          var footerHeight = 10;
          var netHeight = headerHeight + footerHeight + 10;
          var height = Math.max(bodyHeight, this.friendsMinHeight - netHeight);
@@ -506,7 +506,7 @@ Site =
                else
                {
 
-                  this.friendsScroll = new iScroll('profileBrowserWrapper',
+                  this.friendsScroll = new iScroll('referralsBrowserWrapper',
                   {
                      hScrollbar : false,
                      vScrollbar : true
@@ -514,11 +514,11 @@ Site =
                }
                cleanScroller = false;
             }
-            $("#profileBrowserDialog .profileBrowserBody").css("height", height+netHeight);
+            $("#referralsBrowserDialog .referralsBrowserBody").css("height", height+netHeight);
          }
          else
          {
-            $("#profileBrowserDialog .profileBrowserBody").css("height", Math.max(this.friendsMinHeight, bodyHeight + netHeight));
+            $("#referralsBrowserDialog .referralsBrowserBody").css("height", Math.max(this.friendsMinHeight, bodyHeight + netHeight));
          }
          if(this.friendsScroll && cleanScroller)
          {
@@ -557,7 +557,7 @@ Site =
          // Empty Result tell user to use the secret key
          if(res.total == 0)
          {
-            Genesis.showErrMsg("You have no referrals.");
+            $("#secretCodeDialog").switchClass("hide", "in");
          }
          else
          {
@@ -575,7 +575,7 @@ Site =
                }
             }
             this.friendsList = friendsList;
-            $("#profileBrowserDialog").switchClass("hide", "in", 500, function()
+            $("#referralsBrowserDialog").switchClass("hide", "in", 500, function()
             {
                Site.buildFriendsList(friendsList);
             });
@@ -600,14 +600,30 @@ Site =
          {
             if(response.length == 1)
             {
-               this.showErrMsg("No Friends were found from your Friends List on Facebook. Reload Page to Try Again.");
+               $("#secretCodeDialog").switchClass("hide", "in");
             }
             else
             {
-               this.showErrMsg("Error Retrieving Friends List from Facebook. Reload Page to Try Again.");
+               Genesis.showErrMsg("Error Retrieving Friends List from Facebook. Reload Page to Try Again.");
             }
          }
       }, Site));
+   },
+   verifySecretCode : function()
+   {
+   	
+      var secretCode = $("#secretCodeInput")[0].value;
+   	  Genesis.ajax(true, Genesis.verify_secret_code_path, 'GET', "secret_code=" + secretCode, 'json', function(response)
+      {
+      	if(response.data.correct)
+      	{
+      		location.href = location.origin + location.pathname + "?secret_code="+secretCode+"&notice="+response.data.msg;
+      	}
+      	else
+      	{
+      		Genesis.showErrMsg(response.data.msg);
+      	}
+      });
    }
 }
 $(document).ready($(function()

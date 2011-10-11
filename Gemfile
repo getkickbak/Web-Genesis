@@ -9,7 +9,6 @@ gem 'actionmailer',       RAILS_VERSION, :require => 'action_mailer'
 gem 'railties',           RAILS_VERSION, :require => 'rails'
 
 gem 'dm-rails',          '~> 1.1.0'
-gem 'dm-sqlite-adapter', DM_VERSION
 
 # You can use any of the other available database adapters.
 # This is only a small excerpt of the list of all available adapters
@@ -66,5 +65,11 @@ group(:development, :test) do
   # gem 'rails_metrics', '~> 0.1', :git => 'git://github.com/engineyard/rails_metrics'
   
   gem 'ruby-debug'
+  gem 'dm-sqlite-adapter', DM_VERSION
+end
+
+group(:production) do
+  
+  gem 'dm-mysql-adapter', DM_VERSION
 end
 

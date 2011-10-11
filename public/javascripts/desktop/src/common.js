@@ -70,6 +70,7 @@ Genesis =
    resend_reward_path : '/resend_reward',
    create_referrals : '/referrals/create',
    get_referrals : '/referrals',
+   verify_secret_code_path : '/verify_secret_code',
    get_confirm_referrals : function(refId)
    {
       return '/referrals/' + refId + '/confirm';

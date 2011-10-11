@@ -20,23 +20,38 @@ call to action
 <div class="row">
    <div class="span24">
       <% if @referral.nil? && !@show_reward %>
-      <div class="row fade hide" id="profileBrowserDialog">
+      <div class="row fade hide" id="referralsBrowserDialog">
          <div class="span24">
             <h2>Who Recommended You To <%=@deal.merchant.name %>?</h2>
-            <div class="profileBrowserBody">
-               <div class="profileBrowserHeader">
+            <div class="referralsBrowserBody">
+               <div class="referralsBrowserHeader">
                   <div class="filterBox hide">
                      <label for="friendSearchInput">Friend Search</label>
                      <div class="input"><input class="xlarge" id="friendSearchInput" name="friendSearchInput" size="30" type="text"/></div>
                   </div>
                   <strong style="font-size:120%">You need to be referred by a friend to be eligible for this deal.<br/>Which one of the following friends did you get your referral from?</strong>
                </div>
-               <div id="profileBrowserWrapper" class="listView">
+               <div id="referralsBrowserWrapper" class="listView">
                   <div class="scroller">
                      <ul></ul>
                   </div>
                </div>
-               <div class="profileBrowserFooter"></div>
+               <div class="referralsBrowserFooter"></div>
+            </div>
+         </div>
+      </div>
+      <div class="row fade hide" id="secretCodeDialog">
+         <div class="span24">
+            <h2>Who Recommended You To <%=@deal.merchant.name %>?</h2>
+            <div class="Body">
+               <div class="referralsBrowserHeader">
+                  <div class="filterBox">
+                     <label for="friendSearchInput">Enter Secret Code:</label>
+                     <div class="input"><input class="xlarge" id="secretCodeInput" name="secretCodeInput" size="30" type="text"/></div>
+                     <a onclick="Site.verifySecretCode();" class="large btn">Submit</a>
+                  </div>
+               </div>
+               <div class="referralsBrowserFooter"></div>
             </div>
          </div>
       </div>
@@ -176,10 +191,10 @@ call to action
                </div>
             </div>
             <h2 id="deal_countdown" class="description_footer">Time Left to Buy
-            <% if @deal.end_date > Time.now %> 	
+            <% if @deal.end_date >= Time.now && @deal.limit_count < @deal.max_limit %> 	
             	<% if signed_in? %>	
             		<% if @referral %>
-            		<a href="/deals/<%= @deal.deal_id %>/confirmation?referral_id=<%= @referral.referral_id %>" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
+            		<a href="/deals/<%= @deal.deal_id %>/confirmation?referral_id=<%= @referral.referral_id %>" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large alignCenter">Buy Now! &raquo;</a>
             		<% elsif @show_reward %>
             		<div id="referralWarning" class="modal fade hide">
                			<div class="modal-header">
@@ -193,15 +208,15 @@ call to action
                   			<a class="btn fbtag">Refer a Friend!</a>
                   			<a onclick="$('#referralWarning').modal('hide');" class="btn primary">OK</a>
                			</div>
-            		</div><a data-controls-modal="referralWarning" data-backdrop="true" data-keyboard="true" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large">Buy Now! &raquo;</a>
+            		</div><a data-controls-modal="referralWarning" data-backdrop="true" data-keyboard="true" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large alignCenter">Buy Now! &raquo;</a>
             		<% else %>
-            		<a style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large disabled">Buy Now! &raquo;</a>
+            		<a style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large alignCenter disabled">Buy Now! &raquo;</a>
             		<% end %>
             	<% else %>
-            	<a style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large" onclick="Genesis.loginPopup();">Buy Now! &raquo;</a>
+            	<a style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large alignCenter" onclick="Genesis.loginPopup();">Buy Now! &raquo;</a>
             	<% end %>
             <% else %>
-            	<a style="float:right;margin-left:10px;margin-top:12px;" class="btn large">Deal Expired</a>	
+            	<a style="float:right;margin-left:10px;margin-top:12px;" class="btn large alignCenter">No Longer<br>Available</a>	
             <% end %>	
             <% subdeal = @deal.subdeals.first %>
             <large style="float:right;margin-left:10px;margin-top:12px;padding-top:9px;">C$<%= (subdeal.regular_price - subdeal.discount_price).to_i %> OFF</large>

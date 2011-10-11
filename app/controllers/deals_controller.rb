@@ -50,8 +50,15 @@ class DealsController < ApplicationController
     
     if params[:id] && !redirect
       respond_to do |format|
-        format.html # show.html.erb
-        #format.xml  { render :xml => @deal }
+        if params[:notice].nil?
+          format.html # show.html.erb
+          #format.xml  { render :xml => @deal }
+        else
+          format.html { 
+            flash[:notice] = params[:notice] 
+            render "show"
+          }
+        end   
       end
     else
       parameters = ""
@@ -132,6 +139,25 @@ class DealsController < ApplicationController
           #format.json { render :json => { :success => false } }
         end
       end
+    end
+  end
+  
+  def verify_secret_code
+    @deal = Deal.first(:deal_id => params[:id]) || not_found
+    authorize! :read, @deal
+    
+    msg = ""
+    data = {}
+    if params[:secret_code] == @deal.reward_secret_code
+       data[:correct] = true
+       data[:msg] = "#{current_user.name.split(' ')[0]}, Welcome to JustForMyFriends."
+    else
+       data[:correct] = false
+       data[:msg] = "Incorrect code.  Please try again."
+    end
+    respond_to do |format|
+      format.json { render :json => { :success => true, :data => data } }
+      #format.xml  { head :ok }
     end
   end
   
