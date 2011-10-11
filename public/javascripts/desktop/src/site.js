@@ -648,7 +648,7 @@ $(document).ready($(function()
    var $gmap = $("#gmap");
    var merchant_name = $("#merchant_name").text().trim();
    var address = $("#merchant_address1").text().trim() + ' ' + $("#merchant_address2").text().trim() + ' ' + $("#merchant_city_state_zipcode").text().trim();
-   var htmlAddress = $("#merchant_address1").text().trim() + ' ' + $("#merchant_address2").text().trim() + ' ' + $("#merchant_city_state_zipcode").html().trim();
+   var htmlAddress = $("#merchant_address1").text().trim() + ' ' + $("#merchant_address2").text().trim() + '<br/>' + $("#merchant_city_state_zipcode").html().trim();
    $gmap.gMap(
    {
       markers : [
