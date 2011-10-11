@@ -1,4 +1,4 @@
-sqlite_defaults: &defaults
+defaults: &defaults
   adapter: sqlite
 
 mysql_defaults: &mysql_defaults
@@ -9,7 +9,7 @@ mysql_defaults: &mysql_defaults
   
 development:
   database: db/genesis_development.db
-  <<: *sqlite_defaults
+  <<: *defaults
 
   # Add more repositories
   # repositories:
@@ -24,7 +24,7 @@ development:
 
 test:
   database: db/genesis_test.db
-  <<: *sqlite_defaults
+  <<: *defaults
 production:
   database: db/genesis_production.db
   <<: *mysql_defaults

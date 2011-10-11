@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-RAILS_VERSION = '~> 3.0.4'
+RAILS_VERSION = '~> 3.0.9'
 DM_VERSION    = '~> 1.1.0'
 
 gem 'activesupport',      RAILS_VERSION, :require => 'active_support'
@@ -33,7 +33,7 @@ gem 'dm-transactions',      DM_VERSION
 gem 'dm-aggregates',        DM_VERSION
 gem 'dm-timestamps',        DM_VERSION
 gem 'dm-observer',          DM_VERSION
-gem 'dm-accepts_nested_attributes', DM_VERSION, :git => 'git://github.com/snusnu/dm-accepts_nested_attributes.git'
+gem 'dm-accepts_nested_attributes', DM_VERSION, :git => 'git://github.com/snusnu/dm-accepts_nested_attributes'
 #gem 'dm-devise',            '~> 1.4.0'
 gem 'cancan'
 gem 'simple_form' 
@@ -43,6 +43,8 @@ gem 'pdfkit'
 gem "barby", "~> 0.5.0"
 
 group(:development, :test) do
+  gem 'dm-sqlite-adapter', DM_VERSION
+  #gem 'ruby-debug19'
   # Uncomment this if you want to use rspec for testing your application
 
   gem 'rspec-rails', '~> 2.0.1'
@@ -62,12 +64,10 @@ group(:development, :test) do
   # gem 'rails_metrics', '~> 0.1', :git => 'git://github.com/engineyard/rails_metrics'
   
   #gem 'ruby-debug'
-  gem 'ruby-debug19'
-  gem 'dm-sqlite-adapter', DM_VERSION
 end
 
 group(:production) do  
-  gem 'dm-mysql-adapter', DM_VERSION
   gem "mysql2"
+  gem 'dm-mysql-adapter', DM_VERSION
 end
 
