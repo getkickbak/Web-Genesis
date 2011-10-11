@@ -22,7 +22,7 @@ class ReferralsController < ApplicationController
     rescue StandardError
       respond_to do |format|
       #format.xml  { render :xml => referrals }
-        format.json { render :json => { :false => true } }
+        format.json { render :json => { :success => false } }
       end
     end
   end

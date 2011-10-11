@@ -42,14 +42,7 @@ gem 'jquery-rails'
 gem 'pdfkit'
 gem "barby", "~> 0.5.0"
 
-group(:production) do
-   gem 'dm-mysql-adapter',     DM_VERSION
-   gem "mysql2"
-end
-
 group(:development, :test) do
-  gem 'dm-sqlite-adapter',    DM_VERSION
-  gem 'ruby-debug19'
   # Uncomment this if you want to use rspec for testing your application
 
   gem 'rspec-rails', '~> 2.0.1'
@@ -69,5 +62,12 @@ group(:development, :test) do
   # gem 'rails_metrics', '~> 0.1', :git => 'git://github.com/engineyard/rails_metrics'
   
   #gem 'ruby-debug'
+  gem 'ruby-debug19'
+  gem 'dm-sqlite-adapter', DM_VERSION
+end
+
+group(:production) do  
+  gem 'dm-mysql-adapter', DM_VERSION
+  gem "mysql2"
 end
 

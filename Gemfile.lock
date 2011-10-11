@@ -96,7 +96,6 @@ GEM
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
     mime-types (1.16)
-    mysql2 (0.3.7)
     pdfkit (0.5.2)
     polyglot (0.3.2)
     rack (1.2.3)
@@ -168,7 +167,6 @@ DEPENDENCIES
   dm-types (~> 1.1.0)
   dm-validations (~> 1.1.0)
   jquery-rails
-  mysql2
   pdfkit
   railties (~> 3.0.4)
   rspec-rails (~> 2.0.1)

@@ -15,6 +15,8 @@ Genesis::Application.routes.draw do
       match '/rewards/:id' => 'rewards#show'
       match '/rewards/:id/redeem' => 'rewards#redeem', :via => :post
 
+      match '*a', :to => 'errors#routing'
+
       root :to => redirect("/coupons")
     end
   end
@@ -67,6 +69,8 @@ Genesis::Application.routes.draw do
     match '/deals/:id/referrals/create' => 'referrals#create', :via => :post, :as => :new_referral    
     match '/resend_vouchers' => 'orders#resend_coupons'
     match '/resend_reward' => 'referrals#resend_reward'
+
+    match '*a', :to => 'errors#routing'
 
     root :to => 'deals#show'
 
