@@ -9,7 +9,6 @@ gem 'actionmailer',       RAILS_VERSION, :require => 'action_mailer'
 gem 'railties',           RAILS_VERSION, :require => 'rails'
 
 gem 'dm-rails',          '~> 1.1.0'
-gem 'dm-sqlite-adapter', DM_VERSION
 
 # You can use any of the other available database adapters.
 # This is only a small excerpt of the list of all available adapters
@@ -20,8 +19,6 @@ gem 'dm-sqlite-adapter', DM_VERSION
 #
 # for a rather complete list of available datamapper adapters and plugins
 
-# gem 'dm-sqlite-adapter',    DM_VERSION
-# gem 'dm-mysql-adapter',     DM_VERSION
 # gem 'dm-postgres-adapter',  DM_VERSION
 # gem 'dm-oracle-adapter',    DM_VERSION
 # gem 'dm-sqlserver-adapter', DM_VERSION
@@ -41,12 +38,18 @@ gem 'dm-accepts_nested_attributes', DM_VERSION, :git => 'git://github.com/snusnu
 gem 'cancan'
 gem 'simple_form' 
 gem 'jquery-rails'  
-gem 'rqr'
+#gem 'rqr'
 gem 'pdfkit'
 gem "barby", "~> 0.5.0"
 
-group(:development, :test) do
+group(:production) do
+   gem 'dm-mysql-adapter',     DM_VERSION
+   gem "mysql2"
+end
 
+group(:development, :test) do
+  gem 'dm-sqlite-adapter',    DM_VERSION
+  gem 'ruby-debug19'
   # Uncomment this if you want to use rspec for testing your application
 
   gem 'rspec-rails', '~> 2.0.1'
@@ -65,6 +68,6 @@ group(:development, :test) do
 
   # gem 'rails_metrics', '~> 0.1', :git => 'git://github.com/engineyard/rails_metrics'
   
-  gem 'ruby-debug'
+  #gem 'ruby-debug'
 end
 
