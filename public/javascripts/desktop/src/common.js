@@ -397,7 +397,15 @@ Genesis =
             }
          }
       });
-   }
+   },
+   resendVouchersPopup : function()
+   {
+      this.ajax(false, Genesis.resend_vouchers_path, 'GET', null, 'json');
+   },
+   resendRewardPopup : function()
+   {
+      this.ajax(false, Genesis.resend_reward_path, 'GET', null, 'json');
+   },
 };
 
 // **************************************************************************

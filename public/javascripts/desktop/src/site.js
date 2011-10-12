@@ -412,14 +412,6 @@ Site =
    {
       Genesis._popupCommon("Friend Referral Required before Purchase", "<p>Before being eligible to purchase this deal, a friend referral is required.</p>", "#mainMsg");
    },
-   resendVouchersPopup : function()
-   {
-      Genesis.ajax(false, Genesis.resend_vouchers_path, 'GET', null, 'json');
-   },
-   resendRewardPopup : function()
-   {
-      Genesis.ajax(false, Genesis.resend_reward_path, 'GET', null, 'json');
-   },
    referralDecisionPopup : function(url, msg, rewardBtn)
    {
       this._url = url;
