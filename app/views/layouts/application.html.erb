@@ -78,11 +78,11 @@
                      <a href="#" class="menu" style="float:left;">Account</a>
                      <ul class="menu-dropdown">
                         <li>
-                           <a onclick="Site.resendVouchersPopup()">Resend Vouchers</a>
+                           <a onclick="Genesis.resendVouchersPopup()">Resend Vouchers</a>
                         </li>
                         <li class="divider"></li>
                         <li>
-                           <a onclick="Site.resendRewardPopup()">Resend Reward</a>
+                           <a onclick="Genesis.resendRewardPopup()">Resend Reward</a>
                         </li>
                      </ul>
                   </li>
@@ -134,6 +134,7 @@
          </div>
       </div>
       <!-- Referral Confirmation Popup -->
+      <% if (defined? @deal) %>
       <div id="referralDialog" style="position:absolute;z-index:100000;display:none;top:0;width:100%;height:100%">
          <div class="modal fade in" style="position: relative; top: auto; left: auto; margin: 0 auto; z-index:1;top:100px;">
             <div class="modal-header">
@@ -150,10 +151,11 @@
                </p>
             </div>
             <div class="modal-footer">
-               <a  href="/deals/runnersshop/confirmation" class="btn pricetag large">Buy Now! &raquo;</a>
+               <a  href="/deals/<%= @deal.id %>/confirmation" class="btn pricetag large">Buy Now! &raquo;</a>
             </div>
          </div>
       </div>
+      <% end %>
       <!-- Server Side into passed to Client Side -->
       <div style="display:none;">
          <div id="systemTime">
