@@ -326,7 +326,7 @@ call to action
       <div class="span8">
          <h2>SHARE</h2>
            <div class="panelBodyHighlights alignCenter" style="min-height:0px;">
-            <div class="fb-send" data-href="http://www.justformyfriends:3000/deals/<%= @deal.deal_id %>?referral_id=<%= @referral.referral_id %>" data-font="verdana"></div>
+            <div class="fb-send" data-href="<%= deal_url(@deal.deal_id) %>?referral_id=<%= @referral.referral_id %>" data-font="verdana"></div>
          </div>
          </div>
       </div>
