@@ -2,7 +2,7 @@ defaults: &defaults
   adapter: sqlite
 
 mysql_defaults: &mysql_defaults
-  adapter: mysql
+  adapter: mysql2
   username: mysql_user
   password: mysql_sekret
   host: localhost
