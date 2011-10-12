@@ -67,7 +67,7 @@ group(:development, :test) do
 end
 
 group(:production) do  
-  gem "mysql2"
+  gem "mysql2", '< 0.3'
   gem 'dm-mysql-adapter', DM_VERSION
 end
 

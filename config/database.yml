@@ -3,8 +3,8 @@ defaults: &defaults
 
 mysql_defaults: &mysql_defaults
   adapter: mysql2
-  username: mysql_user
-  password: mysql_sekret
+  username: deploy
+  password: ZX5hEpyD0i
   host: localhost
   
 development:
@@ -26,5 +26,5 @@ test:
   database: db/genesis_test.db
   <<: *defaults
 production:
-  database: db/genesis_production.db
+  database: genesis
   <<: *mysql_defaults
