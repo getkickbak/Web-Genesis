@@ -42,16 +42,17 @@ call to action
       </div>
       <div class="row fade hide" id="secretCodeDialog">
          <div class="span24">
-            <h2>Who Recommended You To <%=@deal.merchant.name %>?</h2>
-            <div class="Body">
+            <h2>No referrals were found from your Facebook Friends</h2>
+            <div class="referralsBrowserBody form-stacked">
                <div class="referralsBrowserHeader">
                   <div class="filterBox">
                      <label for="friendSearchInput">Enter Secret Code:</label>
                      <div class="input"><input class="xlarge" id="secretCodeInput" name="secretCodeInput" size="30" type="text"/></div>
-                     <a onclick="Site.verifySecretCode();" class="large btn">Submit</a>
                   </div>
                </div>
-               <div class="referralsBrowserFooter"></div>
+               <div class="referralsBrowserFooter alignRight">
+                  <a onclick="Site.verifySecretCode();" class="large btn">Submit</a>
+               </div>
             </div>
          </div>
       </div>
