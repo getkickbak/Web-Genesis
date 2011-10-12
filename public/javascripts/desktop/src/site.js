@@ -551,7 +551,7 @@ Site =
       {
          return a[uidField] - b[uidField];
       });
-      Genesis.ajax(true, this.checkUidReferralUrl, 'GET', 'friend_facebook_ids=' + friendsList, 'json', $.proxy(function(res)
+      Genesis.ajax(true, this.checkUidReferralUrl, 'POST', 'friend_facebook_ids=' + friendsList, 'json', $.proxy(function(res)
       {
          var data = $.parseJSON(res.data);
          // Empty Result tell user to use the secret key
