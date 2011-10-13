@@ -30,7 +30,7 @@
 					<%= f.input :topic, :collection => Contact.topic_list %>
 					<%= f.input :description, :as => :text %>
 					<div class="alignLeft">
-					<%= f.button :submit, 'Submit Request', :class =>"large btn" %>
+					<%= f.button :submit, 'Submit Request', :disable_with => "Working...", :class =>"large primary btn" %>
 					</div>
                <% end %>
             </div>

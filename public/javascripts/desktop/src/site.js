@@ -223,6 +223,7 @@ Site =
    {
       var textareas = $("#mainMsg .hero-referral").find("textarea");
       var defaultAnswer = ["My office co-worker John recommended me to Runner's Shop. He's an avid runner who regularly competes in marathon races.", "The first time I visited the place, I signed up for one of their running clinics during the winter months. They fitted me with proper running shoes and I haven't had an injury yet!", "I like the fact that the club foster's a friendly environment and their training programs are top notch!"];
+      var $verifySecretCode = $("#verifySecretCode");
       var $reward = $("#reward");
       var $discussBtn = $("#discussBtn");
       var $comments = $("#comments");
@@ -233,14 +234,31 @@ Site =
       {
          $(this).text(defaultAnswer[i++]);
       });
-      $reward.click(function(event)
+      $verifySecretCode.click(function(event)
+      {
+         var secretCode = $("#secretCodeInput")[0].value;
+         Genesis.ajax(true, Genesis.verify_secret_code_path, 'GET', "secret_code=" + secretCode, 'json', function(response)
+         {
+            if(response.data.correct)
+            {
+               location.href = location.origin + location.pathname + "?secret_code=" + secretCode + "&notice=" + response.data.msg;
+            }
+            else
+            {
+               Genesis.showErrMsg(response.data.msg);
+               $verifySecretCode.attr("disabled", false);
+               $verifySecretCode.removeClass('disabled');
+            }
+         }, $verifySecretCode, false);
+      });
+      $reward.click($.proxy(function(event)
       {
          var rewardMsg = "";
          textareas.each(function()
          {
             rewardMsg += $(this).text();
          });
-         if(!Site.resubmitFriendsEmail)
+         if(!this.resubmitFriendsEmail)
          {
             Genesis.ajax(true, Genesis.create_referrals, 'POST', "comment=" + rewardMsg, 'json', function(res)
             {
@@ -258,6 +276,7 @@ Site =
                   if(!response || response.error)
                   {
                      Genesis.showErrMsg("Error Updating Facebook Newsfeed. Try again.");
+                     $reward.attr('disabled', false);
                      $reward.removeClass('disabled');
                   }
                   else
@@ -268,16 +287,16 @@ Site =
                      {
                         // Ask to send message directly to friends
                         Site.referralDecisionPopup(referralURL, rewardMsg, $reward);
-                     }, $reward, false);
+                     });
                   }
                });
             }, $reward, false);
          }
          else
          {
-            Site.referralCompletePopup();
+            this.referralCompletePopup();
          }
-      });
+      }, Site));
       $discussBtn.click(function(event)
       {
          $comments.show("highlight",
@@ -441,6 +460,7 @@ Site =
             {
                //location.href = this._url;
             });
+            Site._rewardBtn.attr('disabled', false);
             Site._rewardBtn.removeClass('disabled');
          }
          else
@@ -448,9 +468,9 @@ Site =
             Genesis._popupCommon("Congratulations!", "<p>Your recommendation has been sent to your friends' mail accounts.</p>", this._url);
             delete Site._url;
             delete Site._msg;
-            delete Site._rewardBtn;
+            delete Site_rewardBtn;
          }
-      }, Site._rewardBtn, false);
+      });
    },
    // **************************************************************************
    // Retrieve Friends List for user to select
@@ -600,22 +620,6 @@ Site =
             }
          }
       }, Site));
-   },
-   verifySecretCode : function()
-   {
-
-      var secretCode = $("#secretCodeInput")[0].value;
-      Genesis.ajax(true, Genesis.verify_secret_code_path, 'GET', "secret_code=" + secretCode, 'json', function(response)
-      {
-         if(response.data.correct)
-         {
-            location.href = location.origin + location.pathname + "?secret_code=" + secretCode + "&notice=" + response.data.msg;
-         }
-         else
-         {
-            Genesis.showErrMsg(response.data.msg);
-         }
-      });
    }
 }
 $(document).ready($(function()
