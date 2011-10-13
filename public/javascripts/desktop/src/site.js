@@ -246,10 +246,8 @@ Site =
             else
             {
                Genesis.showErrMsg(response.data.msg);
-               $verifySecretCode.attr("disabled", false);
-               $verifySecretCode.removeClass('disabled');
             }
-         }, $verifySecretCode, false);
+         }, $verifySecretCode, true);
       });
       $reward.click($.proxy(function(event)
       {
@@ -283,11 +281,17 @@ Site =
                   {
                      console.log('Referral ID: ' + response.id);
                      // Update Server about successful Newsfeed update
-                     Genesis.ajax(false, Genesis.get_confirm_referrals(res.data.referral_id), 'POST', "", 'json', function(response)
+                     Genesis.ajax(false, Genesis.get_confirm_referrals(res.data.referral_id), 'POST', "", 'json', $.proxy(function(response)
                      {
                         // Ask to send message directly to friends
-                        Site.referralDecisionPopup(referralURL, rewardMsg, $reward);
-                     }, $reward, false);
+                        this._url = referralURL;
+                        this._msg = rewardMsg;
+                        this._rewardBtn = $reward;
+                        Genesis._popupCommon("Facebook Posts", "<p>Your recommendation has been posted on your facebook newsfeed,</p>" + "<p>Would you like to send this recommendation to specific friends?</p>", "#", "Yes", this.referralCompletePopup, "No", function()
+                        {
+                           location.href = Site._url;
+                        });
+                     }, Site), $reward, false);
                   }
                });
             }, $reward, false);
@@ -431,16 +435,6 @@ Site =
    {
       Genesis._popupCommon("Friend Referral Required before Purchase", "<p>Before being eligible to purchase this deal, a friend referral is required.</p>", "#mainMsg");
    },
-   referralDecisionPopup : function(url, msg, rewardBtn)
-   {
-      this._url = url;
-      this._msg = msg;
-      this._rewardBtn = rewardBtn;
-      Genesis._popupCommon("Facebook Posts", "<p>Your recommendation has been posted on your facebook newsfeed,</p><p>Would you like to send this recommendation to specific friends?</p>", "#", "Yes", Site.referralCompletePopup, "No", function()
-      {
-         location.href = Site._url;
-      });
-   },
    referralCompletePopup : function()
    {
       $(".alert-message.error .close").parent().switchClass('in', 'hide');
@@ -451,26 +445,26 @@ Site =
          name : 'Message to your friends',
          link : this._url,
          description : this._msg
-      }, function(response)
+      }, $.proxy(function(response)
       {
          if(!response || response.error)
          {
-            Site.resubmitFriendsEmail = true;
+            this.resubmitFriendsEmail = true;
             Genesis.showErrMsg("Error sending your recommendation message to your friends' mail accounts.<br/>Resubmit to Try Again!", function()
             {
                //location.href = this._url;
             });
-            Site._rewardBtn.attr('disabled', false);
-            Site._rewardBtn.removeClass('disabled');
+            this._rewardBtn.attr('disabled', false);
+            this._rewardBtn.removeClass('disabled');
          }
          else
          {
             Genesis._popupCommon("Congratulations!", "<p>Your recommendation has been sent to your friends' mail accounts.</p>", this._url);
-            delete Site._url;
-            delete Site._msg;
-            delete Site_rewardBtn;
          }
-      });
+         delete this._url;
+         delete this._msg;
+         delete this._rewardBtn;
+      },this));
    },
    // **************************************************************************
    // Retrieve Friends List for user to select
