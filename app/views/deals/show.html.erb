@@ -20,6 +20,7 @@ call to action
 <div class="row">
    <div class="span24">
       <% if @referral.nil? && !@show_reward %>
+      <div class="row fade hide" id="referralsBrowserDialog">
          <div class="span24">
             <h2>Who Recommended You To <%=@deal.merchant.name %>?</h2>
             <div class="referralsBrowserBody">
