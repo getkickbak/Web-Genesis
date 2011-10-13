@@ -44,7 +44,7 @@ gem "barby", "~> 0.5.0"
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION
-  #gem 'ruby-debug19'
+  gem 'ruby-debug19'
   # Uncomment this if you want to use rspec for testing your application
 
   gem 'rspec-rails', '~> 2.0.1'
@@ -67,7 +67,7 @@ group(:development, :test) do
 end
 
 group(:production) do  
-  gem "mysql2", '< 0.3'
+  gem "mysql2", :git => 'git://github.com/brianmario/mysql2'
   gem 'dm-mysql-adapter', DM_VERSION
 end
 
