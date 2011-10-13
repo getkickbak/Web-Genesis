@@ -411,7 +411,7 @@ Genesis =
          //contentType: "application/json",
          success : function(response)
          {
-            if(response && typeof response.session_expired != 'undefined')
+            if(response && !Genesis.isEmpty(response.session_expired))
             {
                setTimeout(function()
                {
