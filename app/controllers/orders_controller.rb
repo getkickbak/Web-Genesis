@@ -177,7 +177,8 @@ class OrdersController < ApplicationController
       respond_to do |format|
         format.json { render :json => { :success => true, :msg => msg, :total => orders.length } }
       end
-    rescue
+    rescue StandardError => e
+      logger.error(e)
       respond_to do |format|
         format.json { render :json => { :success => false, :msg => ["Your Vouchers failed to Send!", "Please try again."] } }
       end

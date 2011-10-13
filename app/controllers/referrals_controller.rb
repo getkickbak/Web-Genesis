@@ -1,5 +1,5 @@
 class ReferralsController < ApplicationController
-  before_filter :authenticate_user!, :only => [:create, :reward_email_template]
+  before_filter :authenticate_user!, :only => [:create, :confirmed, :resend_reward]
   #load_and_authorize_resource
   def find
     authorize! :read, current_user
@@ -127,7 +127,8 @@ class ReferralsController < ApplicationController
       respond_to do |format|
         format.json { render :json => { :success => true, :msg => msg } }
       end
-    rescue
+    rescue StandardError => e
+      logger.error(e)
       respond_to do |format|
         format.json { render :json => { :success => false, :msg => ["Something went wrong", "Your Reward failed to Send!  Please try again."] } }
       end
