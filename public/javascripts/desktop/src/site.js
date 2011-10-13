@@ -268,7 +268,7 @@ Site =
                      {
                         // Ask to send message directly to friends
                         Site.referralDecisionPopup(referralURL, rewardMsg, $reward);
-                     });
+                     }, $reward, false);
                   }
                });
             }, $reward, false);
@@ -448,9 +448,9 @@ Site =
             Genesis._popupCommon("Congratulations!", "<p>Your recommendation has been sent to your friends' mail accounts.</p>", this._url);
             delete Site._url;
             delete Site._msg;
-            delete Site_rewardBtn;
+            delete Site._rewardBtn;
          }
-      });
+      }, Site._rewardBtn, false);
    },
    // **************************************************************************
    // Retrieve Friends List for user to select
