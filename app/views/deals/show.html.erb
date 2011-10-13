@@ -20,7 +20,6 @@ call to action
 <div class="row">
    <div class="span24">
       <% if @referral.nil? && !@show_reward %>
-      <div class="row fade hide" id="referralsBrowserDialog">
          <div class="span24">
             <h2>Who Recommended You To <%=@deal.merchant.name %>?</h2>
             <div class="referralsBrowserBody">
@@ -191,8 +190,9 @@ call to action
             </div>
             <table id="deal_countdown" class="description_footer noMargin">
             <tr>
-            <td class="noPadding" style="vertical-align:middle;">
-            <div>Time Left to Buy</div>
+            <td class="noPadding" style="vertical-align:middle;border:0;">
+            <div class="heading">Time Left to Buy</div>
+            <h3>
             <script type="text/javascript" >
                TargetDate = "<%= @deal.end_date %>";
                BackColor = "";
@@ -205,11 +205,12 @@ call to action
                FinishMessage = "The deal is over. Better luck next time!";
             </script>
             <script type="text/javascript" src="/javascripts/desktop/lib/countdown.js"></script>
+            </h3>
             </td>
-            <td class="noPadding alignRight" width="100" style="vertical-align:middle;">
+            <td class="noPadding alignRight" width="100" style="vertical-align:middle;border:0;">
                <% subdeal = @deal.subdeals.first %>
                <h3>C$<%= (subdeal.regular_price - subdeal.discount_price).to_i %> OFF</h3>
-            <td class="noPadding alignRight" style="vertical-align:middle;width:130px;">
+            <td class="noPadding alignRight" style="vertical-align:middle;width:130px;border:0;">
             <div>
             <% if @deal.end_date >= Time.now && @deal.limit_count < @deal.max_limit %> 	
             	<% if signed_in? %>	

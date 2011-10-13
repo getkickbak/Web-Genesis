@@ -26,7 +26,7 @@ Genesis =
    fbAppId : '197968780267830',
    fb_login_tag : function(forceReload)
    {
-      return '<fb:login-button scope="' + this.perms + '" on-login="facebook_onLogin(false,' + ((forceReload) ? 'true' : 'false') + ');" size="large" background="dark" length="long"></fb:login-button>';
+      return '<fb:login-button scope="' + this.perms + '" on-login="" size="large" background="dark" length="long"></fb:login-button>';
    },
    checkFbPerms : function(fbUseId)
    {
@@ -63,7 +63,7 @@ Genesis =
             }
             else
             {
-               facebook_onLogin($("#fb_account")[0] != null);
+	           facebook_onLogin(Genesis.isEmpty($("#fb_account")[0]), false);
             }
          }
       }, Genesis));
@@ -713,7 +713,7 @@ function facebook_onLogin(noLogin, forceReload)
          if((res.status == 'connected') && response.authResponse)
          {
             Genesis.access_token = response.authResponse.accessToken;
-            facebook_loginCallback(noLogin, forceReload);
+	        facebook_loginCallback(noLogin, forceReload);
          }
       },
       {
