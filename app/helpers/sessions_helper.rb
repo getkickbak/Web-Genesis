@@ -29,7 +29,7 @@ module SessionsHelper
     store_location
     respond_to do |format|
       format.html { redirect_to root_path }
-      format.json { render :json => { :success => false, :msg => ["Session Expired", "Please login again."] } }
+      format.json { render :json => { :session_expired => true, :success => false, :msg => ["Session Expired", "Please login again."] } }
     end
   end
 
