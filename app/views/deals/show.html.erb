@@ -189,11 +189,32 @@ call to action
                   </div>
                </div>
             </div>
-            <h2 id="deal_countdown" class="description_footer">Time Left to Buy
+            <table id="deal_countdown" class="description_footer noMargin">
+            <tr>
+            <td class="noPadding" style="vertical-align:middle;">
+            <div>Time Left to Buy</div>
+            <script type="text/javascript" >
+               TargetDate = "<%= @deal.end_date %>";
+               BackColor = "";
+               //ForeColor = "#676767";
+               ForeColor = "black";
+               CountActive = true;
+               CountStepper = -1;
+               LeadingZero = true;
+               DisplayFormat = "%%D%% Days %%H%% Hrs %%M%% Mins %%S%% secs";
+               FinishMessage = "The deal is over. Better luck next time!";
+            </script>
+            <script type="text/javascript" src="/javascripts/desktop/lib/countdown.js"></script>
+            </td>
+            <td class="noPadding alignRight" width="100" style="vertical-align:middle;">
+               <% subdeal = @deal.subdeals.first %>
+               <h3>C$<%= (subdeal.regular_price - subdeal.discount_price).to_i %> OFF</h3>
+            <td class="noPadding alignRight" style="vertical-align:middle;width:130px;">
+            <div>
             <% if @deal.end_date >= Time.now && @deal.limit_count < @deal.max_limit %> 	
             	<% if signed_in? %>	
             		<% if @referral %>
-            		<a href="/deals/<%= @deal.deal_id %>/confirmation?referral_id=<%= @referral.referral_id %>" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large alignCenter">Buy Now! &raquo;</a>
+            		<a href="/deals/<%= @deal.deal_id %>/confirmation?referral_id=<%= @referral.referral_id %>" class="btn pricetag large alignCenter">Buy Now! &raquo;</a>
             		<% elsif @show_reward %>
             		<div id="referralWarning" class="modal fade hide">
                			<div class="modal-header">
@@ -207,32 +228,21 @@ call to action
                   			<a class="btn fbtag">Refer a Friend!</a>
                   			<a onclick="$('#referralWarning').modal('hide');" class="btn primary">OK</a>
                			</div>
-            		</div><a data-controls-modal="referralWarning" data-backdrop="true" data-keyboard="true" style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large alignCenter">Buy Now! &raquo;</a>
+            		</div>
+            		<a data-controls-modal="referralWarning" data-backdrop="true" data-keyboard="true" class="btn pricetag large alignCenter">Buy Now! &raquo;</a>
             		<% else %>
-            		<a style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large alignCenter disabled">Buy Now! &raquo;</a>
+            		<a class="btn pricetag large alignCenter disabled">Buy Now! &raquo;</a>
             		<% end %>
             	<% else %>
-            	<a style="float:right;margin-left:10px;margin-top:12px;" class="btn pricetag large alignCenter" onclick="Genesis.loginPopup();">Buy Now! &raquo;</a>
+            	<a class="btn pricetag large alignCenter" onclick="Genesis.loginPopup();">Buy Now! &raquo;</a>
             	<% end %>
             <% else %>
-            	<a style="float:right;margin-left:10px;margin-top:12px;" class="btn large alignCenter">No Longer<br>Available</a>	
-            <% end %>	
-            <% subdeal = @deal.subdeals.first %>
-            <large style="float:right;margin-left:10px;margin-top:12px;padding-top:9px;">C$<%= (subdeal.regular_price - subdeal.discount_price).to_i %> OFF</large>
-            <br/>
-            <script type="text/javascript" >
-               TargetDate = "<%= @deal.end_date %>";
-               BackColor = "";
-               //ForeColor = "#676767";
-               ForeColor = "black";
-               CountActive = true;
-               CountStepper = -1;
-               LeadingZero = true;
-               DisplayFormat = "%%D%% Days %%H%% Hrs %%M%% Mins %%S%% secs";
-               FinishMessage = "The deal is over. Better luck next time!";
-            </script>
-            <script type="text/javascript" src="/javascripts/desktop/lib/countdown.js"></script>
-            </h2>
+            	<a class="btn large alignCenter">No Longer<br>Available</a>	
+            <% end %>
+            </div>
+            </td>
+            </tr>
+         </table>
          </div>
       </div>
       <div class="row">
