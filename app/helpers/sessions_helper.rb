@@ -27,7 +27,10 @@ module SessionsHelper
 
   def deny_access
     store_location
-    redirect_to root_path
+    respond_to do |format|
+      format.html { redirect_to root_path }
+      format.json { render :json => { :success => false, :msg => ["Session Expired", "Please login again."] } }
+    end
   end
 
   private
@@ -39,8 +42,8 @@ module SessionsHelper
   def remember_token
     cookies.signed[:remember_token] || [nil, nil]
   end
-  
-  def store_location 
+
+  def store_location
     session[:return_to] = request.fullpath
   end
 
