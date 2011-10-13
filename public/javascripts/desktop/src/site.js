@@ -15,13 +15,13 @@ _logout = function()
 Site =
 {
    referralsMinHeight : 420, // 534
-   referralsMaxHeight : 420+503+13, //1005
+   referralsMaxHeight : 420 + 503 + 13, //1005
    resubmitFriendsEmail : false,
    dealNameSelector : '#mainDeal h2:first-child',
    //friendsMinHeight : 353 + 52 + 28 + 2 * 18,
    //friendsMaxHeight : 353 + 52 + 28 + 2 * 18,
-   friendsMinHeight : 70 + 45 + 2*20 + 10,
-   friendsMaxHeight : 140 + 45 + 2*20 + 10,
+   friendsMinHeight : 70 + 45 + 2 * 20 + 10,
+   friendsMaxHeight : 140 + 45 + 2 * 20 + 10,
    friendsList : null,
    checkUidReferralUrl : '/referrers',
    _initFormComponents : function()
@@ -506,7 +506,7 @@ Site =
                }
                cleanScroller = false;
             }
-            $("#referralsBrowserDialog .referralsBrowserBody").css("height", height+netHeight);
+            $("#referralsBrowserDialog .referralsBrowserBody").css("height", height + netHeight);
          }
          else
          {
@@ -603,18 +603,18 @@ Site =
    },
    verifySecretCode : function()
    {
-   	
+
       var secretCode = $("#secretCodeInput")[0].value;
-   	  Genesis.ajax(true, Genesis.verify_secret_code_path, 'GET', "secret_code=" + secretCode, 'json', function(response)
+      Genesis.ajax(true, Genesis.verify_secret_code_path, 'GET', "secret_code=" + secretCode, 'json', function(response)
       {
-      	if(response.data.correct)
-      	{
-      		location.href = location.origin + location.pathname + "?secret_code="+secretCode+"&notice="+response.data.msg;
-      	}
-      	else
-      	{
-      		Genesis.showErrMsg(response.data.msg);
-      	}
+         if(response.data.correct)
+         {
+            location.href = location.origin + location.pathname + "?secret_code=" + secretCode + "&notice=" + response.data.msg;
+         }
+         else
+         {
+            Genesis.showErrMsg(response.data.msg);
+         }
       });
    }
 }
@@ -752,7 +752,7 @@ $(document).ready($(function()
     {
     console.log("search triggered");
     var result = (this.isEmpty(event.target.value)) ? this.friendsList : $.ui.autocomplete.filter(this.friendsList,
-   event.target.value);
+    event.target.value);
 
     this.buildFriendsList(result);
     }, Genesis)
