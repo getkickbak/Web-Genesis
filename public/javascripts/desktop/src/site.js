@@ -287,7 +287,7 @@ Site =
                      {
                         // Ask to send message directly to friends
                         Site.referralDecisionPopup(referralURL, rewardMsg, $reward);
-                     });
+                     }, $reward, false);
                   }
                });
             }, $reward, false);

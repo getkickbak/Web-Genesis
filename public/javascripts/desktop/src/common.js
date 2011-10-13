@@ -63,7 +63,7 @@ Genesis =
             }
             else
             {
-	           facebook_onLogin(Genesis.isEmpty($("#fb_account")[0]), false);
+               facebook_onLogin(Genesis.isEmpty($("#fb_account")[0]), false);
             }
          }
       }, Genesis));
@@ -426,7 +426,7 @@ Genesis =
             }
             if(button && (reenableButton || !response || !response.success))
             {
-		       button.attr("disabled", false);
+               button.attr("disabled", false);
                button.removeClass('disabled');
             }
             if(response)
@@ -715,7 +715,7 @@ function facebook_onLogin(noLogin, forceReload)
          if((res.status == 'connected') && response.authResponse)
          {
             Genesis.access_token = response.authResponse.accessToken;
-	        facebook_loginCallback(noLogin, forceReload);
+            facebook_loginCallback(noLogin, forceReload);
          }
       },
       {
