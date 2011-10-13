@@ -399,6 +399,7 @@ Genesis =
       var path = (relPath) ? location.protocol + '//' + location.host + location.pathname : '';
       if(button)
       {
+         button.attr("disabled", true);
          button.addClass('disabled');
       }
       $.ajax(
@@ -425,6 +426,7 @@ Genesis =
             }
             if(button && (reenableButton || !response || !response.success))
             {
+		       button.attr("disabled", false);
                button.removeClass('disabled');
             }
             if(response)
