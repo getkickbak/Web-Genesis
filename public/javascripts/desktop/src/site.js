@@ -15,7 +15,7 @@ _logout = function()
 Site =
 {
    referralsMinHeight : 420, // 534
-   referralsMaxHeight : 420+507, //1005
+   referralsMaxHeight : 420+503+13, //1005
    resubmitFriendsEmail : false,
    dealNameSelector : '#mainDeal h2:first-child',
    //friendsMinHeight : 353 + 52 + 28 + 2 * 18,
