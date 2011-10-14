@@ -254,21 +254,22 @@ Site =
          var rewardMsg = "";
          textareas.each(function()
          {
-            rewardMsg += $(this).text();
+            rewardMsg += $(this).text() + ' ';
          });
          if(!this.resubmitFriendsEmail)
          {
             Genesis.ajax(true, Genesis.create_referrals, 'POST', "comment=" + rewardMsg, 'json', function(res)
             {
-               var referralURL = location.protocol + '//' + location.host + location.pathname + "?referral_id=" + res.data.referral_id;
+               var baseURL = location.protocol + '//' + location.host;
+               var referralURL = baseURL + location.pathname + "?referral_id=" + res.data.referral_id;
                // Send to Facebook Newsfeed
                FB.api('/me/feed', 'post',
                {
                   name : $(Site.dealNameSelector).text(),
                   link : referralURL,
-                  picture : $("meta[property='og:image']").prop("content"),
-                  description : '',
-                  message : rewardMsg
+                  caption : baseURL,
+                  description : rewardMsg
+                  //,message : ''
                }, function(response)
                {
                   if(!response || response.error)
@@ -464,7 +465,7 @@ Site =
          delete this._url;
          delete this._msg;
          delete this._rewardBtn;
-      },this));
+      }, this));
    },
    // **************************************************************************
    // Retrieve Friends List for user to select
@@ -560,32 +561,35 @@ Site =
       Genesis.ajax(true, this.checkUidReferralUrl, 'POST', 'friend_facebook_ids=' + friendsList, 'json', $.proxy(function(res)
       {
          var data = $.parseJSON(res.data);
-         // Empty Result tell user to use the secret key
-         if(res.total == 0)
+         $("#friendReferralLoadingMask").switchClass("in", "hide", 0, $.proxy(function()
          {
-            $("#secretCodeDialog").switchClass("hide", "in");
-         }
-         else
-         {
-            var friendsList = [];
-            for(var i = 0; i < res.total; i++)
+            // Empty Result tell user to use the secret key
+            if(res.total == 0)
             {
-               var index = this.friendsList.binarySearch(data[i].creator_facebook_id, function(a, b)
-               {
-                  return (a.value - b);
-               });
-               if(index >= 0)
-               {
-                  friendsList[i] = this.friendsList[index];
-                  friendsList[i].refId = data[i].referral_id;
-               }
+               $("#secretCodeDialog").switchClass("hide", "in", 100);
             }
-            this.friendsList = friendsList;
-            $("#referralsBrowserDialog").switchClass("hide", "in", 500, function()
+            else
             {
-               Site.buildFriendsList(friendsList);
-            });
-         }
+               var friendsList = [];
+               for(var i = 0; i < res.total; i++)
+               {
+                  var index = this.friendsList.binarySearch(data[i].creator_facebook_id, function(a, b)
+                  {
+                     return (a.value - b);
+                  });
+                  if(index >= 0)
+                  {
+                     friendsList[i] = this.friendsList[index];
+                     friendsList[i].refId = data[i].referral_id;
+                  }
+               }
+               this.friendsList = friendsList;
+               $("#referralsBrowserDialog").switchClass("hide", "in", 100, function()
+               {
+                  Site.buildFriendsList(friendsList);
+               });
+            }
+         },this));
       }, Site));
    },
    getFriendsList : function(callback)
@@ -604,9 +608,10 @@ Site =
          }
          else
          {
+            $("#friendReferralLoadingMask").addClass("hide");
             if(response.length == 1)
             {
-               $("#secretCodeDialog").switchClass("hide", "in");
+               $("#secretCodeDialog").switchClass("hide", "in", 100);
             }
             else
             {
@@ -628,6 +633,10 @@ $(document).ready($(function()
    var $highlights2 = $("#highlights-2");
    var $highlightTabs = $highlights.tabs();
 
+   if($("#referralsBrowserDialog")[0])
+   {
+      $("#friendReferralLoadingMask").switchClass("hide","in");
+   }
    Site.initForm();
    Site.initMainMsg();
    Site.initSlides();
