@@ -11,8 +11,8 @@ call to action
 <div class="row">
    <div class="span24">
       <% if @referral.nil? && !@show_reward %>
-      <div class="row fade hide" id="referralsBrowserDialog">
-         <div class="span24">
+      <div class="row" style="min-height:140px;">
+         <div class="span24 fade hide" id="referralsBrowserDialog">
             <h2>Who Recommended You To <%=@deal.merchant.name %>?</h2>
             <div class="referralsBrowserBody">
                <div class="referralsBrowserHeader">
@@ -30,9 +30,7 @@ call to action
                <div class="referralsBrowserFooter"></div>
             </div>
          </div>
-      </div>
-      <div class="row fade hide" id="secretCodeDialog">
-         <div class="span24">
+         <div class="span24 fade hide" id="secretCodeDialog">
             <h2>No referrals were found from your Facebook Friends</h2>
             <div class="referralsBrowserBody form-stacked">
                <div class="referralsBrowserHeader">
@@ -41,6 +39,14 @@ call to action
                      <div class="input"><input class="xlarge" id="secretCodeInput" name="secretCodeInput" size="30" type="text"/></div>
                      <button type="button" id="verifySecretCode" class="large primary btn"></button>
                   </div>
+               </div>
+            </div>
+         </div>
+         <div class="span24 fade hide" id="friendReferralLoadingMask">
+            <h2>Looking for Referrals from your Facebook Friends ...</h2>
+            <div class="referralsBrowserBody" style="position:relative;height:88px;">
+               <div style="margin-left:-16px;margin-top:-16px;position:absolute;top:50%;left:50%;">
+                  <img src="http://photos.justformyfriends.com/large-loading.gif"/>
                </div>
             </div>
          </div>
