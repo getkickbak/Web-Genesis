@@ -7,7 +7,7 @@ module Business
     include SessionsHelper
     #check_authorization :unless => :devise_controller?
 
-    unless Rails.application.config.consider_all_requests_loca
+    unless Rails.application.config.consider_all_requests_local
       rescue_from Exception, :with => :render_error
       rescue_from CanCan::AccessDenied, :with => :render_not_found
       rescue_from ActionController::RoutingError, :with => :render_not_found

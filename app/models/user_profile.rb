@@ -2,7 +2,7 @@ class UserProfile
   include DataMapper::Resource
 
   property :id, Serial
-  property :gender, Enum[:m, :f, :u], :required => true, :default => 1
+  property :gender, Enum[:m, :f, :u], :required => true, :default => :u
   property :birthday, DateTime, :required => true, :default => ::Constant::MIN_TIME
   property :zipcode, String, :default => ""
   property :created_ts, DateTime, :required => true, :default => ::Constant::MIN_TIME
