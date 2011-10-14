@@ -45,7 +45,8 @@ class Order
     order.deal = deal
     order.user = user
     
-    qr = RQR::QRCode.new(:module_size => 3)
+    qr = RQRCode::QRCode.new( url, :size => 4, :level => :h )
+    png = qr.to_img
     coupon_id = "#{rand(1000) + 3000}#{now.to_i}"
     (0..quantity-1).each do |i|
       coupon = order.coupons.new
@@ -53,7 +54,7 @@ class Order
       coupon[:coupon_title] = subdeal.coupon_title
       coupon[:barcode] = ""
       filename = APP_PROP["QR_CODE_FILE_PATH"] + coupon[:coupon_id] + ".png"
-      qr.save(url, filename, :png)
+      png.resize(90, 90).save(filename)
       coupon[:qr_code] = filename
       coupon[:created_ts] = now
       coupon[:update_ts] = now

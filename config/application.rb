@@ -6,6 +6,7 @@ require 'dm-rails/railtie'
 require 'dm-rails/mass_assignment_security'
 require 'action_mailer/railtie'
 require 'dm-accepts_nested_attributes'
+
 # require 'active_resource/railtie'
 # require 'rails/test_unit/railtie'
 
@@ -45,13 +46,18 @@ module Genesis
 
     # Configure sensitive parameters which will be filtered from the log file.
     config.filter_parameters += [:password]
-    
+
     config.autoload_paths += %W(#{config.root}/lib)
     config.autoload_paths += Dir["#{config.root}/lib/**/"]
 
     DataMapper::Model.append_inclusions(DataMapper::MassAssignmentSecurity)
     DataMapper::Model.raise_on_save_failure = true
     DataMapper::Property::String.length(255)
+
+    PDFKit.configure do |config|
+      config.wkhtmltopdf =
+      '/usr/local/rvm/gems/ruby-1.9.2-p290/bin/wkhtmltopdf'
+    end
     
     require 'string_extension'
   end

@@ -38,9 +38,10 @@ gem 'dm-accepts_nested_attributes', DM_VERSION, :git => 'git://github.com/snusnu
 gem 'cancan'
 gem 'simple_form' 
 gem 'jquery-rails'  
-#gem 'rqr'
+gem 'rqrcode_png', '~> 0.1.0'
 gem 'pdfkit'
-gem "barby", "~> 0.5.0"
+gem 'barby', '~> 0.5.0'
+gem 'wkhtmltopdf-binary'
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION
