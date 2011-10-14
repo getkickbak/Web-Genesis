@@ -809,6 +809,11 @@ function facebook_loginCallback(noLogin, forceReload)
 
          _fb_connect();
          _login();
+         var msg = $("#notice").text();
+         if(msg)
+         {
+            Genesis.showWarningMsg(response.first_name + ', ' + msg, null, true);
+         }
       }
       if(Genesis.popupDialog.data().modal.isShown)
          Genesis.popupDialog.modal('hide');

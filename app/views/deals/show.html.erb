@@ -1,13 +1,4 @@
 <% content_for :script do %> <script type="text/javascript" src="/javascripts/desktop/src/site.js"></script>
-<script type="text/javascript">
-	$(document).ready($(function() {
-		var msg = $("#notice").html();
-		if(msg) {
-			Genesis.showWarningMsg(msg,null,true);
-		}
-	}));
-
-</script>
 <% end %>
 <% if @merchant.nil? %> <!-- Main hero unit for a primary marketing message or
 call to action
