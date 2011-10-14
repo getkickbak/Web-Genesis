@@ -502,10 +502,25 @@
 	form:last-child {
 		margin:0;
 	}
-	form textarea {
-	  width : 538px;
-	  height: 100px; 
+	img {
+	  margin-top:10px;
+	  width:100px;
+	  padding:2px;
+	  border:1px solid #CCCCCC; 
 	}
+	form {
+	  label {
+	     font-weight:bold;
+	     padding-bottom:5px;
+	     font-size:1.125em;
+	  }
+	  textarea {
+        font-size:1.25em;
+	     width : ((@gridColumnWidth * @gridColumns*0.75)) + (@gridGutterWidth * (@gridColumns*0.75))-(2+10)-2*10-(100+2*(3+10))-(2*10+4*2+2);
+	     height: 80px;
+	     
+	  }
+   }
 }
 
 #referralsList {

@@ -254,21 +254,22 @@ Site =
          var rewardMsg = "";
          textareas.each(function()
          {
-            rewardMsg += $(this).text();
+            rewardMsg += $(this).text()+' ';
          });
          if(!this.resubmitFriendsEmail)
          {
             Genesis.ajax(true, Genesis.create_referrals, 'POST', "comment=" + rewardMsg, 'json', function(res)
             {
-               var referralURL = location.protocol + '//' + location.host + location.pathname + "?referral_id=" + res.data.referral_id;
+               var baseURL = location.protocol + '//' + location.host;
+               var referralURL = baseURL + location.pathname + "?referral_id=" + res.data.referral_id;
                // Send to Facebook Newsfeed
                FB.api('/me/feed', 'post',
                {
                   name : $(Site.dealNameSelector).text(),
                   link : referralURL,
-                  picture : $("meta[property='og:image']").prop("content"),
-                  description : '',
-                  message : rewardMsg
+                  caption : baseURL,
+                  description : rewardMsg
+                  //,message : ''
                }, function(response)
                {
                   if(!response || response.error)
@@ -464,7 +465,7 @@ Site =
          delete this._url;
          delete this._msg;
          delete this._rewardBtn;
-      },this));
+      }, this));
    },
    // **************************************************************************
    // Retrieve Friends List for user to select
