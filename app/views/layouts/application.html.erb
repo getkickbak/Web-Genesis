@@ -9,8 +9,8 @@
       <meta property="og:url" content="http://www.imdb.com/title/tt0117500/"/>
       -->
       <meta property="og:site_name" content="JustForMyFriends"/>
-      <meta property="og:title" content="<% if (defined? @deal && !@deal.nil?) %><%= @deal.title.gsub(/<\/?[^>]+>/, "") %><% end %>"/>
-      <meta property="og:image" content="<% if (defined? @deal && !@deal.nil?) %><%= @deal.merchant.photo_url %><% end %>"/>
+      <meta property="og:title" content="<% if (defined? @deal) && !@deal.nil? %><%= @deal.title.gsub(/<\/?[^>]+>/, "") %><% end %>"/>
+      <meta property="og:image" content="<% if (defined? @deal) && !@deal.nil? %><%= @deal.merchant.photo_url %><% end %>"/>
       <meta property="og:description" content="<% if (!@referral.nil?) %><%= @referral.comment %><% end %>">
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>JustForMyFriends</title>
