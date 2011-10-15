@@ -615,6 +615,7 @@ var oAuth2SessionLogin = function()
          // Check proper facebook permissions
          // If not ready, we need the user to trigger login again, to popup permission Dialog box, otherwise, security violation
          Genesis.checkFbPerms(response.authResponse.userID);
+         $("#greetingsPanel").removeClass('hide');
       }
    });
    $("#fb_login").css("display", "");

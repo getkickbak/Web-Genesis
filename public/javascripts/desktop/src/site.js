@@ -589,7 +589,7 @@ Site =
                   Site.buildFriendsList(friendsList);
                });
             }
-         },this));
+         }, this));
       }, Site));
    },
    getFriendsList : function(callback)
@@ -635,7 +635,7 @@ $(document).ready($(function()
 
    if($("#referralsBrowserDialog")[0])
    {
-      $("#friendReferralLoadingMask").switchClass("hide","in");
+      $("#friendReferralLoadingMask").switchClass("hide", "in");
    }
    Site.initForm();
    Site.initMainMsg();
