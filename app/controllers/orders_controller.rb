@@ -71,7 +71,7 @@ class OrdersController < ApplicationController
         @deal = Deal.first(:deal_id => params[:id]) || not_found
         @subdeal = Subdeal.get(params[:order][:subdeal_id])
         session[:order_in_progress] = true
-        url = deal_path(@deal)+"?referral_id=#{referral_id}"
+        url = deal_url(@deal)+"?referral_id=#{referral_id}"
         @order = Order.create(@deal, @subdeal, current_user, referral_id, params[:order], url)
         pay_transfer(@order)
       rescue DataMapper::SaveFailureError => e
