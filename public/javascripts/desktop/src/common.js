@@ -206,7 +206,7 @@ Genesis =
             }
             else
             {
-               facebook_onLogin(Genesis.isEmpty($("#fb_account")[0]), false);
+               facebook_onLogin(false);
             }
          }
       }, Genesis));
@@ -784,7 +784,7 @@ function facebook_onLogout()
    }
 }
 
-function facebook_loginCallback(noLogin, forceReload)
+function facebook_loginCallback(forceReload)
 {
    FB.api('/me', function(response)
    {
@@ -826,17 +826,20 @@ function facebook_loginCallback(noLogin, forceReload)
          var params = "name=" + name + "&email=" + email + "&facebook_id=" + facebook_id + "&facebook_uid=" + facebook_uid + "&gender=" + gender + "&birthday=" + birthday;
          Genesis.ajax(false, Genesis.sign_in_path, 'POST', params, 'json', function(response)
          {
-            if(!noLogin || (Genesis.currFbId != facebook_id) || forceReload)
+            if(!$("#fb_account")[0] || forceReload)
             {
                setTimeout(function()
                {
                   window.location.reload(true);
                }, 0);
             }
-            Genesis.currFbId = facebook_id;
-            if($("#fb_account")[0])
+            else
             {
-               showLogin();
+               Genesis.currFbId = facebook_id;
+               if($("#fb_account")[0])
+               {
+                  showLogin();
+               }
             }
          });
       }
@@ -847,12 +850,12 @@ function facebook_loginCallback(noLogin, forceReload)
    });
 }
 
-function facebook_onLogin(noLogin, forceReload)
+function facebook_onLogin(forceReload)
 {
    $("#fb_login").css("display", "none");
-   if(noLogin)
+   if($("#fb_account")[0])
    {
-      facebook_loginCallback(noLogin, forceReload);
+      facebook_loginCallback(forceReload);
    }
    else
    {
@@ -863,7 +866,7 @@ function facebook_onLogin(noLogin, forceReload)
             if((response.status == 'connected') && response.authResponse)
             {
                Genesis.access_token = response.authResponse.accessToken;
-               facebook_loginCallback(noLogin, forceReload);
+               facebook_loginCallback(forceReload);
             }
          },
          {
@@ -879,7 +882,7 @@ function facebook_onLogin(noLogin, forceReload)
             if((response.status == 'connected') && response.authResponse)
             {
                Genesis.access_token = response.authResponse.accessToken;
-               facebook_loginCallback(noLogin, forceReload);
+               facebook_loginCallback(forceReload);
             }
             else
             {
