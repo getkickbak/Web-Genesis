@@ -50,12 +50,12 @@ Genesis::Application.configure do
   config.action_mailer.default_url_options = { :host => 'justformyfriends.com' }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    :address              => "mail1",
-    :port                 => 25,
-    #:domain               => 'baci.lindsaar.net',
-    #:user_name            => 'root',
-    #:password             => 'micro',
-    #:authentication       => :plain,
+    :address              => "smtp.gmail.com",
+    :port                 => 587,
+    :domain               => 'justformyfriends.com',
+    :user_name            => 'admin',
+    :password             => 'Intern96',
+    :authentication       => :plain,
     :enable_starttls_auto => true
     #:openssl_verify_mode  => 'none'
   }
