@@ -14,7 +14,7 @@ $(document).ready($(function() {
 	} 
 
 	document.onkeypress = stopRKey;
-
+	
 	// code to execute when the DOM is ready
 	$("input[name='order[subdeal_id]']").live('change', function(evt) {
 		i = 1;
@@ -61,4 +61,15 @@ $(document).ready($(function() {
 		});
 		x++
 	}
+	
+	$("#enable_gift").click(function(event)
+	{
+		$("#gift").show();
+		$("input[name='order[give_gift]']").val(true);
+	})
+	$("#disable_gift").click(function(event)
+	{
+		$("#gift").hide();
+		$("input[name='order[give_gift]']").val(false);
+	})
 }));

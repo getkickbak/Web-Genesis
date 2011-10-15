@@ -19,7 +19,7 @@ class Reward
   
   def self.create(deal, user, referral_id, url)
     now = Time.now
-    qr = RQRCode::QRCode.new( url, :size => 5, :level => :h )
+    qr = RQRCode::QRCode.new( url, :size => 6, :level => :h )
     png = qr.to_img                                             # returns an instance of ChunkyPNG
     reward_code = "#{now.to_i}#{rand(1000) + 1000}"
     filename = APP_PROP["REWARD_QR_CODE_FILE_PATH"] + reward_code + ".png"

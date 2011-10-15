@@ -16,26 +16,26 @@ class Order
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
 
-  attr_accessor :agree_to_terms
-  attr_accessible :subdeal_id, :quantity, :agree_to_terms
+  attr_accessible :subdeal_id, :quantity, :gift_option_attributes
 
   belongs_to :deal
   belongs_to :user
   has 1, :gift_option
   has n, :coupons
   
-  #accepts_nested_attributes_for :gift_option, :allow_destroy => true, :reject_if => lambda { |s| s[:from].blank? || s[:to].blank? || s[:to_email].blank? || s[:message].blank? }
+  accepts_nested_attributes_for :gift_option, :allow_destroy => true
   
-  validates_with_method :check_quantity, :check_deal_max_limit, :check_deal_max_per_person, :check_end_date, :check_agree_to_terms
+  validates_with_method :check_quantity, :check_deal_max_limit, :check_deal_max_per_person, :check_end_date
   
-  def self.create(deal, subdeal, user, referral_id, order_info, url)
+  def self.create(deal, subdeal, user, referral_id, order_info, agree_to_terms, url)
     now = Time.now
     quantity = order_info[:quantity].to_i
     order = Order.new(
       :subdeal_id => order_info[:subdeal_id],
       :quantity => quantity,
-      :agree_to_terms => order_info[:agree_to_terms]
+      :gift_option_attributes => order_info[:give_gift] ? order_info[:gift_option_attributes] : {}
     )
+    
     order[:order_id] = "#{rand(1000) + 2000}#{now.to_i}"
     order[:referral_id] = referral_id
     order[:purchase_date] = now
@@ -45,7 +45,7 @@ class Order
     order.deal = deal
     order.user = user
     
-    qr = RQRCode::QRCode.new( url, :size => 5, :level => :h )
+    qr = RQRCode::QRCode.new( "url", :size => 6, :level => :h )
     png = qr.to_img
     coupon_id = "#{rand(1000) + 3000}#{now.to_i}"
     (0..quantity-1).each do |i|
@@ -60,6 +60,10 @@ class Order
       coupon[:update_ts] = now
     end
     order.save
+    if agree_to_terms.nil? 
+       order.errors.add(:base, "Please agree to Terms Of Use and Privacy Agreement")
+       raise DataMapper::SaveFailureError.new("",order)
+    end
     deal[:limit_count] += order.quantity
     deal.save
     return order
@@ -122,13 +126,5 @@ class Order
         AND deal_id = ? AND payment_confirmed = 't'", self.user.id, self.deal.id
     )
     return total_count[0] ? total_count[0] : 0
-  end
-  
-  def check_agree_to_terms
-    if self.agree_to_terms
-      self.agree_to_terms == '1' ? true : [false, "Please agree to Terms Of Use and Privacy Agreement"]
-    else
-      return true
-    end
   end
 end
