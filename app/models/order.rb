@@ -30,11 +30,20 @@ class Order
   def self.create(deal, subdeal, user, referral_id, order_info, agree_to_terms, url)
     now = Time.now
     quantity = order_info[:quantity].to_i
-    order = Order.new(
-      :subdeal_id => order_info[:subdeal_id],
-      :quantity => quantity,
-      :gift_option_attributes => order_info[:give_gift] ? order_info[:gift_option_attributes] : {}
-    )
+    
+    give_gift = order_info[:give_gift].to_bool
+    if give_gift
+      order = Order.new(
+        :subdeal_id => order_info[:subdeal_id],
+        :quantity => quantity,
+        :gift_option_attributes => order_info[:gift_option_attributes]
+      )
+    else
+      order = Order.new(
+        :subdeal_id => order_info[:subdeal_id],
+        :quantity => quantity
+      )
+    end 
     
     order[:order_id] = "#{rand(1000) + 2000}#{now.to_i}"
     order[:referral_id] = referral_id
@@ -45,7 +54,7 @@ class Order
     order.deal = deal
     order.user = user
     
-    qr = RQRCode::QRCode.new( url, :size => 6, :level => :h )
+    qr = RQRCode::QRCode.new( "url", :size => 6, :level => :h )
     png = qr.to_img
     coupon_id = "#{rand(1000) + 3000}#{now.to_i}"
     (0..quantity-1).each do |i|
