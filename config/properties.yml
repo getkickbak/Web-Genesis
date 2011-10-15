@@ -2,25 +2,25 @@ development:
   COMMISSION: 0
   PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
   FEES_PAYER: SECONDARYONLY
-  QR_CODE_FILE_PATH: /Users/paulchan/Documents/
-  COUPON_FILE_PATH: /Users/paulchan/Documents/
-  REWARD_QR_CODE_FILE_PATH: /Users/paulchan/Documents/
-  REWARD_FILE_PATH: /Users/paulchan/Documents/
+  QR_CODE_FILE_PATH: /Users/eric/Documents/
+  COUPON_FILE_PATH: /Users/eric/Documents/
+  REWARD_QR_CODE_FILE_PATH: /Users/eric/Documents/
+  REWARD_FILE_PATH: /Users/eric/Documents/
   
 test:  
   COMMISSION: 0
   PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
   FEES_PAYER: SECONDARYONLY
-  QR_CODE_FILE_PATH: /Users/paulchan/Documents/
-  COUPON_FILE_PATH: /Users/paulchan/Documents/
-  REWARD_QR_CODE_FILE_PATH: /Users/paulchan/Documents/
-  REWARD_FILE_PATH: /Users/paulchan/Documents/
+  QR_CODE_FILE_PATH: /Users/eric/Documents/
+  COUPON_FILE_PATH: /Users/eric/Documents/
+  REWARD_QR_CODE_FILE_PATH: /Users/eric/Documents/
+  REWARD_FILE_PATH: /Users/eric/Documents/
   
 production:
   COMMISSION: 0
   PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
   FEES_PAYER: SECONDARYONLY
-  QR_CODE_FILE_PATH: /Users/paulchan/Documents/ 
-  COUPON_FILE_PATH: /Users/paulchan/Documents/
-  REWARD_QR_CODE_FILE_PATH: /Users/paulchan/Documents/
-  REWARD_FILE_PATH: /Users/paulchan/Documents/
+  QR_CODE_FILE_PATH: /data/JustForMyFriends/shared/system 
+  COUPON_FILE_PATH: /data/JustForMyFriends/shared/system
+  REWARD_QR_CODE_FILE_PATH: /data/JustForMyFriends/shared/system
+  REWARD_FILE_PATH: /data/JustForMyFriends/shared/system
