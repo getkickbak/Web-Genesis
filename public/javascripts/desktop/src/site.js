@@ -723,7 +723,7 @@ $(document).ready($(function()
       }
       else
       {
-         location.hash = "#top";
+         $(window).scrollTop($('#mainMsg').position().top);
       }
    });
    $('#referralWarning .fbtag').bind('click', function()
