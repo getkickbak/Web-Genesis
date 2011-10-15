@@ -497,10 +497,7 @@ Genesis =
          this.popupDialog.modal('show');
          if(cb)
          {
-            setTimeout(function()
-            {
-               cb();
-            }, 0);
+            cb();
          }
       }
       // Put this in the animation queue
