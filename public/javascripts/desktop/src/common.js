@@ -856,18 +856,41 @@ function facebook_onLogin(noLogin, forceReload)
    }
    else
    {
-      FB.login(function(res)
+      var _fbLogin = function()
       {
-         if((res.status == 'connected') && response.authResponse)
+         FB.login(function(response)
          {
-            Genesis.access_token = response.authResponse.accessToken;
-            facebook_loginCallback(noLogin, forceReload);
-         }
-      },
+            if((response.status == 'connected') && response.authResponse)
+            {
+               Genesis.access_token = response.authResponse.accessToken;
+               facebook_loginCallback(noLogin, forceReload);
+            }
+         },
+         {
+            scope : Genesis.perms
+            //perms : Genesis.perms
+         });
+      };
+      //Browser Quirks
+      if($.browser.safari)
       {
-         scope : Genesis.perms
-         //perms : Genesis.perms
-      });
+         FB.getLoginStatus(function(response)
+         {
+            if((response.status == 'connected') && response.authResponse)
+            {
+               Genesis.access_token = response.authResponse.accessToken;
+               facebook_loginCallback(noLogin, forceReload);
+            }
+            else
+            {
+               _fbLogin();
+            }
+         });
+      }
+      else
+      {
+         _fbLogin();
+      }
    }
 }
 
