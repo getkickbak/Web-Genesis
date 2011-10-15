@@ -24,7 +24,7 @@ class Order
   has 1, :gift_option
   has n, :coupons
   
-  #accepts_nested_attributes_for :gift_option, :allow_destroy => true, :reject_if => lambda { |s| s[:from].blank? || s[:to].blank? || s[:email].blank? || s[:message].blank? }
+  #accepts_nested_attributes_for :gift_option, :allow_destroy => true, :reject_if => lambda { |s| s[:from].blank? || s[:to].blank? || s[:to_email].blank? || s[:message].blank? }
   
   validates_with_method :check_quantity, :check_deal_max_limit, :check_deal_max_per_person, :check_end_date, :check_agree_to_terms
   
@@ -45,7 +45,7 @@ class Order
     order.deal = deal
     order.user = user
     
-    qr = RQRCode::QRCode.new( url, :size => 4, :level => :h )
+    qr = RQRCode::QRCode.new( url, :size => 5, :level => :h )
     png = qr.to_img
     coupon_id = "#{rand(1000) + 3000}#{now.to_i}"
     (0..quantity-1).each do |i|
