@@ -45,7 +45,7 @@ class Order
     order.deal = deal
     order.user = user
     
-    qr = RQRCode::QRCode.new( "url", :size => 6, :level => :h )
+    qr = RQRCode::QRCode.new( url, :size => 6, :level => :h )
     png = qr.to_img
     coupon_id = "#{rand(1000) + 3000}#{now.to_i}"
     (0..quantity-1).each do |i|
