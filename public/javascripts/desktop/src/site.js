@@ -716,6 +716,7 @@ $(document).ready($(function()
          {
             setTimeout(function()
             {
+               $(window).scrollTop($('#mainMsg').position().top);
                $(".next").trigger("click");
                referralFbTag = false;
             }, 500);
