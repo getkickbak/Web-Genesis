@@ -54,11 +54,6 @@ module Genesis
     DataMapper::Model.raise_on_save_failure = true
     DataMapper::Property::String.length(255)
 
-    PDFKit.configure do |config|
-      config.wkhtmltopdf =
-      '/usr/local/rvm/gems/ruby-1.9.2-p290/bin/wkhtmltopdf'
-    end
-    
     require 'string_extension'
   end
 end
