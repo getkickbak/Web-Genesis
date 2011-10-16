@@ -21,6 +21,6 @@ production:
   PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
   FEES_PAYER: SECONDARYONLY
   QR_CODE_FILE_PATH: /data/JustForMyFriends/qrcode
-  COUPON_FILE_PATH: /data/JustForMyFriends/shared/coupons
-  REWARD_QR_CODE_FILE_PATH: /data/JustForMyFriends/shared/reward_qrcode
-  REWARD_FILE_PATH: /data/JustForMyFriends/shared/reward
+  COUPON_FILE_PATH: /data/JustForMyFriends/coupons
+  REWARD_QR_CODE_FILE_PATH: /data/JustForMyFriends/reward_qrcode
+  REWARD_FILE_PATH: /data/JustForMyFriends/reward
