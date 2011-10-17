@@ -126,7 +126,7 @@ class Order
   end
   
   def check_end_date
-    Time.now <= self.deal.end_date ? true : [false, "Deal has expired"]
+    Time.now <= self.deal.end_date ? true : [false, "Deal is over"]
   end
   
   def past_orders_quantity

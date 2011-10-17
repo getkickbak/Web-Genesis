@@ -21,6 +21,9 @@
                   <br>
                   <br>
          		  You have successfully purchased <a href="<%= deal_url(@order.deal)+"?referral_id=#{@order.referral_id}" %>" ><%= @subdeal.title %></a>
+         		  <% if @is_gift %>
+         		  as a gift for your friend <%= @order.gift_option.to %>
+         		  <% end %>
                   <br>
                   When you are ready to use the e-vouchers, you can print the attachment(s).
                   <br>

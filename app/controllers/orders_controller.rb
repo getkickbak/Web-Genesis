@@ -35,10 +35,16 @@ class OrdersController < ApplicationController
   end
 
   def new
-    reset_order
-    @order = Order.new
+    @order = Order.new(flash[:order])
     authorize! :create, @order
 
+    if @order.subdeal_id != 0
+      subdeal = Subdeal.get(@order.subdeal_id)
+      @order.total_payment = @order.quantity * subdeal.discount_price
+    end
+    if flash[:errors].nil?
+      reset_order  
+    end
     @deal = Deal.first(:deal_id => params[:id]) || not_found
     if (params[:referral_id])
       @referral = Referral.first(:referral_id => params[:referral_id], :confirmed => true)
@@ -76,9 +82,12 @@ class OrdersController < ApplicationController
         pay_transfer(@order)
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
-        @order = e.resource
         respond_to do |format|
-          format.html { render :action => "new" }
+          flash[:order] = params[:order]
+          flash[:give_gift] = params[:order][:give_gift].to_bool
+          flash[:agree_to_terms] = params[:agree_to_terms]
+          flash[:errors] = JSON.parse(e.resource.errors.to_json)
+          format.html { redirect_to confirm_order_path(@deal)+"?referral_id=#{referral_id}" }
         #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
         #format.json { render :json => { :success => false } }
         end
@@ -102,7 +111,11 @@ class OrdersController < ApplicationController
     end
 
     @order.print_coupons
-    UserMailer.order_confirmed_email(@order).deliver
+    if @order.gift_option.nil?
+      UserMailer.order_confirmed_email(@order,false).deliver
+    else
+      UserMailer.order_confirmed_email(@order,true).deliver
+    end  
 
     @response = session[:pay_response]
     @paykey = @response["payKey"]
@@ -118,7 +131,7 @@ class OrdersController < ApplicationController
       session[:paydetails_response]=@transaction.response
       respond_to do |format|
       #format.html { redirect_to user_order_path(@user, @order, :notice => 'Order was successfully created.') }
-        format.html { redirect_to pay_thanks_path(@order.deal.deal_id) }
+        format.html { redirect_to pay_thanks_path(@order.deal) }
       #format.xml  { render :xml => @order, :status => :created, :location => @order }
       #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
       end

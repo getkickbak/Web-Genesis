@@ -10,14 +10,14 @@
 </script>
 <% end %>
 
-<% if @order.errors.any? %>
+<% if flash[:errors] %>
 <div style="display:none;" id="error_explanation">
-	<h5>Please fix the <%= pluralize(@order.errors.count, "error") %> below:</h5>
+	<h5>Please fix the <%= pluralize(flash[:errors].length, "error") %> below:</h5>
 	<br/>
 	<ul>
-		<% @order.errors.full_messages.each do |msg| %>
+		<% flash[:errors].each do |msg| %>
 		<li>
-			<%= msg %>
+			<%= msg.join %>
 		</li>
 		<% end %>
 	</ul>
@@ -44,44 +44,42 @@
 						</thead>
 						<% @deal.subdeals.each_with_index do |sdeal, i| %>
 						<tr>
-							<td class="span1"> <%= f.radio_button(:subdeal_id, sdeal.id, :id_value => i+1, :checked => (@deal.subdeals.length == 1 && i == 0) ? true : false) %> </td>
+							<td class="span1"> <%= f.radio_button(:subdeal_id, sdeal.id, :id_value => i+1, :checked => ((@deal.subdeals.length == 1 && i == 0) || (@order.subdeal_id == sdeal.id)) ? true : false) %> </td>
 							<td class="span12"><%= sdeal.title %></td>
 							<td class="span2">
-							<input id="order_quantity<%= i+1 %>" type="text" name="order_quantity<%= i+1 %>">
+							<input id="order_quantity<%= i+1 %>" type="text" name="order_quantity<%= i+1 %>" value="<%= @order.subdeal_id == sdeal.id ? @order.quantity : nil %>">
 							</td>
 							<td class="span1">x</td>
 							<td id="order_discount_price<%= i+1 %>" class="span2" value="<%= sdeal.discount_price %>">C$<%= sdeal.discount_price.to_i %></td>
 							<td class="span1">=</td>
-							<td id="order_total<%= i+1 %>" class="span4" style="text-align:right;">C$0.00</td>
+							<td id="order_total<%= i+1 %>" class="span4" style="text-align:right;">C$<%= @order.subdeal_id == sdeal.id ? "%0.2f" % @order.total_payment : '0.00' %></td>
 						</tr>
 						<% end %>
 						<tr>
 							<td colspan="2"><a id="enable_gift">Gift this</a></td>
 							<td colspan="3" style="text-align:right;"><h4>My Total:</h4></td>
 							<td colspan="1"></td>
-							<td colspan="1" style="text-align:right;"><h4 id="order_grand_total">C$0.00</h4></td>
+							<td colspan="1" style="text-align:right;"><h4 id="order_grand_total">C$<%= @order.subdeal_id ? "%0.2f" % @order.total_payment : '0.00' %></h4></td>
 						</tr>
-						<%= f.hidden_field(:quantity, :value => 0) %>
+						<%= f.hidden_field(:quantity, :value => @order.quantity ? @order.quantity : 0) %>
 					</table>
 				</div>
 			</div>
 		</div>
-		<div id="gift" class="row" style="display:none;">
+		<div id="gift" class="row" style="<%= flash[:give_gift] ? 'display:block;' : 'display:none' %>">
 			<div class="span24">
 				<h2>Gift Option</h2>
 				<div class="payment panelBodyHighlights">
 					<%= f.fields_for :gift_option_attributes, do |g| %>
 					<%= g.label :from %>
-					<%= g.text_field :from %>
+					<%= g.text_field :from, :value => flash[:give_gift] ? @order.gift_option_attributes[:from] : "" %>
 					<%= g.label :to %>
-					<%= g.text_field :to %>
-					<%= g.label :to_email %>
-					<%= g.text_field :to_email %>
+					<%= g.text_field :to, :value => flash[:give_gift] ? @order.gift_option_attributes[:to] : "" %>
 					<%= g.label :message %>
-					<%= g.text_area :message %>
+					<%= g.text_area :message, :value => flash[:give_gift] ? @order.gift_option_attributes[:message] : "" %>
 					<% end %>
 					<a id="disable_gift">Nevermind</a>
-					<%= f.hidden_field(:give_gift, :value => false) %>
+					<%= f.hidden_field(:give_gift, :value => flash[:give_gift] ? true : false) %>
 				</div>
 			</div>
 		</div>		
@@ -105,7 +103,7 @@
 							<td class="span8" style="visibility:hidden;">&#160;</td>
 						</tr>
 					</table>
-					<div><input type="checkbox" name="agree_to_terms"> I agree to the <a href="/terms">Terms Of Use</a> and <a>Privacy Agreement</a></div>
+					<div><% if flash[:agree_to_terms].nil?  %><input type="checkbox" name="agree_to_terms" ><% else %><input type="checkbox" name="agree_to_terms" checked="checked" ><% end %> I agree to the <a href="/terms">Terms Of Use</a> and <a>Privacy Agreement</a></div>
 					<div style="margin-top:10px;"><%= f.submit "Complete Order", :class => "btn primary large noWrap", :disable_with => "Working..." %></div>
 				</div>
 			</div>

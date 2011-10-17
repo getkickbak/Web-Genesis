@@ -1,8 +1,9 @@
 class UserMailer < ActionMailer::Base
   default :from => "JustForMyFriends <notification@justformyfriends.com>"
   
-  def order_confirmed_email(order)
+  def order_confirmed_email(order, is_gift)
     @order = order
+    @is_gift = is_gift
     @subdeal = Subdeal.get(@order.subdeal_id)
     @order.coupons.each do |coupon|
       content = File.read(APP_PROP["COUPON_FILE_PATH"]+"#{coupon.coupon_id}.pdf")
