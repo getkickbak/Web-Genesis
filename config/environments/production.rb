@@ -1,6 +1,5 @@
 Genesis::Application.configure do
 # Settings specified here will take precedence over those in config/application.rb
-
 # The production environment is meant for finished, "live" apps.
 # Code is not reloaded between requests
    config.cache_classes = true
@@ -53,7 +52,7 @@ Genesis::Application.configure do
       :address              => "smtp.gmail.com",
       :port                 => 587,
       :domain               => 'justformyfriends.com',
-      :user_name            => 'admin',
+      :user_name            => 'admin@justformyfriends.com',
       :password             => 'Intern96',
       :authentication       => :plain,
       :enable_starttls_auto => true

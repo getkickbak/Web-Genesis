@@ -23,7 +23,7 @@ class Reward
     png = qr.to_img.resize(480,480)
     reward_code = "#{now.to_i}#{rand(1000) + 1000}"
     filename = APP_PROP["REWARD_QR_CODE_FILE_PATH"] + reward_code + ".png"
-    png.resize(90, 90).save(filename)
+    png.save(filename)
     reward = Reward.new(
       :referral_id => referral_id,
       :reward_code => reward_code,
@@ -36,7 +36,7 @@ class Reward
     reward.save
     return reward
   end
-  
+
   def print
     html = @@template.result(binding)
     kit = PDFKit.new(html, :page_size => 'Letter')

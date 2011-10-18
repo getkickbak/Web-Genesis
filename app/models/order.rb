@@ -63,7 +63,7 @@ class Order
       coupon[:coupon_title] = subdeal.coupon_title
       coupon[:barcode] = ""
       filename = APP_PROP["QR_CODE_FILE_PATH"] + coupon[:coupon_id] + ".png"
-      png.resize(90, 90).save(filename)
+      png.save(filename)
       coupon[:qr_code] = filename
       coupon[:created_ts] = now
       coupon[:update_ts] = now

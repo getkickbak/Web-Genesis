@@ -268,8 +268,9 @@ Site =
                   name : $(Site.dealNameSelector).text(),
                   link : referralURL,
                   caption : baseURL,
-                  description : rewardMsg
-                  //,message : ''
+                  picture : $('meta[property~="og:image"]').prop('content'),
+                  message : rewardMsg,
+                  description : $("#highlights-2 .panelBodyHighlights div *").text()
                }, function(response)
                {
                   if(!response || response.error)
