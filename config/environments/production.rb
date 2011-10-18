@@ -55,7 +55,7 @@ Genesis::Application.configure do
       :domain               => 'justformyfriends.com',
       :user_name            => 'admin',
       :password             => 'Intern96',
-      :authentication       => :plain,
+      :authentication       => 'plain',
       :enable_starttls_auto => true
       #:openssl_verify_mode  => 'none'
    }
