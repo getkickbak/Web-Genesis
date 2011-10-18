@@ -46,8 +46,6 @@ class Reward
       #kit.stylesheets << '/path/to/css/file'
 
       # Save the PDF to a file
-      logger.debgu("Before PDF Create")
       kit.to_file(APP_PROP["REWARD_FILE_PATH"]+"#{self.reward_code}.pdf")
-      logger.debgu("After PDF Create")
    end
 end
