@@ -270,7 +270,7 @@ Site =
                   caption : baseURL,
                   image : $('meta[property~="og:image"]').prop('content'),
                   message : rewardMsg,
-                  description : $("#highlights-2 .panelBodyHighlights div *").text();
+                  description : $("#highlights-2 .panelBodyHighlights div *").text()
                }, function(response)
                {
                   if(!response || response.error)
