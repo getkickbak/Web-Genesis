@@ -191,6 +191,7 @@ call to action
             <td class="noPadding" style="vertical-align:middle;border:0;">
             <div class="heading">Time Left to Buy</div>
             <h3>
+            <% if @deal.end_date >= Time.now && @deal.limit_count < @deal.max_limit %>
             <script type="text/javascript" >
                TargetDate = "<%= @deal.end_date %>";
                BackColor = "";
@@ -203,6 +204,9 @@ call to action
                FinishMessage = "The deal is over. Better luck next time!";
             </script>
             <script type="text/javascript" src="/javascripts/desktop/lib/countdown.js"></script>
+            <% else %>
+            	The deal is over. Better luck next time!
+            <% end %>
             </h3>
             </td>
             <td class="noPadding alignRight" width="100" style="vertical-align:middle;border:0;">
