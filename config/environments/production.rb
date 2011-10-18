@@ -53,9 +53,9 @@ Genesis::Application.configure do
       :address              => "smtp.gmail.com",
       :port                 => 587,
       :domain               => 'justformyfriends.com',
-      :user_name            => 'admin',
+      :user_name            => 'admin@justformyfriends.com',
       :password             => 'Intern96',
-      :authentication       => 'plain',
+      :authentication       => :plain,
       :enable_starttls_auto => true
       #:openssl_verify_mode  => 'none'
    }
