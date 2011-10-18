@@ -287,7 +287,7 @@
 // ------------------------------------------------------------------
 // Payment Tables
 // ------------------------------------------------------------------
-.purchase table, .payment table {
+.purchase table, .payment table, .gift table {
    border:0;
    th[class*="span"], td[class*="span"] {
       display : table-cell;
@@ -306,17 +306,32 @@
 		padding-left: 0;
 		padding-right: 0;
 	}
-	input {
-		width:44px;
-		text-align:center;
-	}
-	input[type=radio] {
-		width:20px;
-		text-align:center;
-	}
 	th + th, td + td {
    	border-left : 0;
 	}
+}
+
+.purchase table, .payment table {
+   input {
+      width:44px;
+      text-align:center;
+   }
+   input[type=radio] {
+      width:20px;
+      text-align:center;
+   }
+}
+
+.gift table {
+   padding:0 20px;
+   input {
+      width:300px;
+      text-align:left;
+   }
+   textarea {
+      width: 600 + 42px;
+      text-align:left;
+   }
 }
 
 .purchase table {

@@ -56,30 +56,44 @@
 						</tr>
 						<% end %>
 						<tr>
-							<td colspan="2"><a id="enable_gift">Gift this</a></td>
+							<td colspan="2"><img style="vertical-align:middle;" src="http://photos.justformyfriends.com/gift-icon.png"/><a style="vertical-align:middle;margin-left:5px;" id="enable_gift">Using this as a Gift?</a></td>
 							<td colspan="3" style="text-align:right;"><h4>My Total:</h4></td>
 							<td colspan="1"></td>
 							<td colspan="1" style="text-align:right;"><h4 id="order_grand_total">C$<%= @order.subdeal_id ? "%0.2f" % @order.total_payment : '0.00' %></h4></td>
 						</tr>
-						<%= f.hidden_field(:quantity, :value => @order.quantity ? @order.quantity : 0) %>
 					</table>
+               <%= f.hidden_field(:quantity, :value => @order.quantity ? @order.quantity : 0) %>
 				</div>
 			</div>
 		</div>
 		<div id="gift" class="row" style="<%= flash[:give_gift] ? 'display:block;' : 'display:none' %>">
 			<div class="span24">
 				<h2>Gift Option</h2>
-				<div class="payment panelBodyHighlights">
+				<div class="gift panelBodyHighlights form-stacked">
+				   <table>
 					<%= f.fields_for :gift_option_attributes, do |g| %>
+					<tr>
+					<td>
 					<%= g.label :from %>
 					<%= g.text_field :from, :value => flash[:give_gift] ? @order.gift_option_attributes[:from] : "" %>
+					</td>
+					<td>
 					<%= g.label :to %>
 					<%= g.text_field :to, :value => flash[:give_gift] ? @order.gift_option_attributes[:to] : "" %>
+					</td>
+					</tr>
+					<td colspan="2">
 					<%= g.label :message %>
 					<%= g.text_area :message, :value => flash[:give_gift] ? @order.gift_option_attributes[:message] : "" %>
+					</td>
+					</tr>
+					<tr>
+               <td>
+               <a id="disable_gift">Nevermind</a>
+               <%= f.hidden_field(:give_gift, :value => flash[:give_gift] ? true : false) %>
+               </td>
+               </table>
 					<% end %>
-					<a id="disable_gift">Nevermind</a>
-					<%= f.hidden_field(:give_gift, :value => flash[:give_gift] ? true : false) %>
 				</div>
 			</div>
 		</div>		
