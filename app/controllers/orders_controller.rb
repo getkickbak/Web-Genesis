@@ -52,14 +52,17 @@ class OrdersController < ApplicationController
     end
     
     if @referral.nil?
-      raise Exceptions::AppException.new("Referral needed before you can buy deal.")
-    end
-    
-    session[:referral_id] = @referral.referral_id
+      respond_to do |format|
+        format.html { redirect_to deal_path(@deal) }
+        #format.xml  { render :xml => @order }
+      end
+    else
+      session[:referral_id] = @referral.referral_id
 
-    respond_to do |format|
-      format.html # new.html.erb
-    #format.xml  { render :xml => @order }
+      respond_to do |format|
+        format.html # new.html.erb
+        #format.xml  { render :xml => @order }
+      end
     end
   end
 
