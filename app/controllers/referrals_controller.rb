@@ -10,9 +10,9 @@ class ReferralsController < ApplicationController
 
          referrals = []
          if (params[:mode] == "")
-         referrals = Referral.find_created_by(current_user.id, start, max)
+          referrals = Referral.find_created_by(current_user.id, start, max)
          else
-         referrals = Referral.find_received_by(current_user.id, start, max)
+          referrals = Referral.find_received_by(current_user.id, start, max)
          end
 
          respond_to do |format|
@@ -60,7 +60,7 @@ class ReferralsController < ApplicationController
             deal = Deal.first(:deal_id => params[:id]) || not_found
             referral_count = Referral.count(:deal_id => deal.id, :confirmed => true, :creator_id => current_user.id )
             if (referral_count > 0)
-            raise Exceptions::AppException.new("You have already recommended this Deal.")
+              raise Exceptions::AppException.new("You have already recommended this Deal.")
             end
             photo_url = params[:photo_url] ? params[:photo_url] : deal.photo_urls.split(/\r/)[0]
             referral_info = { :photo_url => photo_url, :comment => params[:comment] }

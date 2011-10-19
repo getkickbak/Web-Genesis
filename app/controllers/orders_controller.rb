@@ -1,13 +1,12 @@
 require 'profile'
 require 'caller'
 
-
-
 class OrdersController < ApplicationController
   before_filter :authenticate_user!, :except => [:confirmed_email]
 
   #load_and_authorize_resource
   @@clientDetails=PayPalSDKProfiles::Profile.client_details
+  
   def index
     authorize! :read, current_user
 
@@ -77,8 +76,7 @@ class OrdersController < ApplicationController
         @deal = Deal.first(:deal_id => params[:id]) || not_found
         @subdeal = Subdeal.get(params[:order][:subdeal_id])
         session[:order_in_progress] = true
-        url = deal_url(@deal)+"?referral_id=#{referral_id}"
-        @order = Order.create(@deal, @subdeal, current_user, referral_id, params[:order], params[:agree_to_terms], url)
+        @order = Order.create(@deal, @subdeal, current_user, referral_id, params[:order], params[:agree_to_terms])
         pay_transfer(@order)
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)

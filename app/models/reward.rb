@@ -17,11 +17,11 @@ class Reward
   belongs_to :deal
   belongs_to :user
   
-  def self.create(deal, user, referral_id, url)
+  def self.create(deal, user, referral_id)
     now = Time.now
-    qr = RQRCode::QRCode.new( url, :size => 8, :level => :h )
-    png = qr.to_img.resize(150,150)
     reward_code = "#{now.to_i}#{rand(1000) + 1000}"
+    qr = RQRCode::QRCode.new( reward_code, :size => 5, :level => :h )
+    png = qr.to_img.resize(90,90)
     filename = APP_PROP["REWARD_QR_CODE_FILE_PATH"] + reward_code + ".png"
     png.save(filename)
     reward = Reward.new(

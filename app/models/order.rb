@@ -27,7 +27,7 @@ class Order
   
   validates_with_method :check_quantity, :check_deal_max_limit, :check_deal_max_per_person, :check_end_date
   
-  def self.create(deal, subdeal, user, referral_id, order_info, agree_to_terms, url)
+  def self.create(deal, subdeal, user, referral_id, order_info, agree_to_terms)
     now = Time.now
     quantity = order_info[:quantity].to_i
     
@@ -54,12 +54,12 @@ class Order
     order.deal = deal
     order.user = user
     
-    qr = RQRCode::QRCode.new( url, :size => 8, :level => :h )
-    png = qr.to_img.resize(150,150)
     coupon_id = "#{rand(1000) + 3000}#{now.to_i}"
     (0..quantity-1).each do |i|
       coupon = order.coupons.new
       coupon[:coupon_id] = "#{coupon_id}-#{i+1}"
+      qr = RQRCode::QRCode.new( coupon[:coupon_id], :size => 5, :level => :h )
+      png = qr.to_img.resize(90,90)
       coupon[:coupon_title] = subdeal.coupon_title
       coupon[:barcode] = ""
       filename = APP_PROP["QR_CODE_FILE_PATH"] + coupon[:coupon_id] + ".png"
