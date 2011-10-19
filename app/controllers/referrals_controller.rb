@@ -64,9 +64,9 @@ class ReferralsController < ApplicationController
             end
             photo_url = params[:photo_url] ? params[:photo_url] : deal.photo_urls.split(/\r/)[0]
             referral_info = { :photo_url => photo_url, :comment => params[:comment] }
-            logger.debug("Before Referral Create");
+            #logger.debug("Before Referral Create");
             @referral = Referral.create(deal,current_user,referral_info)
-            logger.debug("After Referral Create");
+            #logger.debug("After Referral Create");
             respond_to do |format|
             #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -97,9 +97,9 @@ class ReferralsController < ApplicationController
             url = root_url
             @reward = Reward.create(@referral.deal,current_user,@referral.id,url)
             @reward.print
-            logger.debug("Before Referral Mail Create");
+            #logger.debug("Before Referral Mail Create");
             UserMailer.reward_email(@reward).deliver
-            logger.debug("After Referral Mail Create");
+            #logger.debug("After Referral Mail Create");
             end
             respond_to do |format|
             #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
