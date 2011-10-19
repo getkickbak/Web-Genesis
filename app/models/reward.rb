@@ -21,7 +21,7 @@ class Reward
     now = Time.now
     reward_code = "#{now.to_i}#{rand(1000) + 1000}"
     qr = RQRCode::QRCode.new( reward_code, :size => 5, :level => :h )
-    png = qr.to_img.resize(120,120)
+    png = qr.to_img.resize(90,90)
     filename = APP_PROP["REWARD_QR_CODE_FILE_PATH"] + reward_code + ".png"
     png.save(filename)
     reward = Reward.new(
