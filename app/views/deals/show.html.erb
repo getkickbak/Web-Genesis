@@ -76,7 +76,7 @@ call to action
                   <img class="right" style="margin-left:10px;" src="http://photos.justformyfriends.com/gift.png"/>
                   <h3>Refer friends and get a C$2 Tim Hortons Gift Card plus the option to purchase the great deal below!</h3>
                   <small>
-                     Get a C$2 Tim Hortons Gift Card when you spread the deal to your Facebook Friends.
+                     Get a C$2 Tim Hortons Gift Card when you spread the deal to your Facebook Friends (*limited quantity).
                   </small>
                   <p class="mainMsgFooter">
                   	 <% if signed_in? %>
@@ -469,9 +469,14 @@ You will get a prompt refund guaranteed.
    <%= @deal.max_limit %>
 </p>
 <p>
+	<b>Max Reward:</b>
+	<%= @deal.max_reward %>
+</p>
+<p>
 	<b>Reward Secret Code:</b>
 	<%= @deal.reward_secret_code %>
 </p>
+
 <% @deal.subdeals.each do |subdeal| %>
 <p>
    <b>Subdeal Title:</b>

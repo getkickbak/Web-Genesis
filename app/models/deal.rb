@@ -17,6 +17,8 @@ class Deal
   property :max_per_person, Integer, :required => true, :default => 0
   property :max_limit, Integer, :default => 0
   property :limit_count, Integer, :default => 0
+  property :max_reward, Integer, :default => 0
+  property :reward_count, Integer, :default => 0
   property :reward_secret_code, String, :default => ""
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -25,7 +27,7 @@ class Deal
 
   attr_accessor :start_date_str, :end_date_str, :expiry_date_str
   attr_accessible :title, :description, :photo_urls, :highlights, :details, :location, :start_date,
-                  :end_date, :expiry_date, :max_per_person, :max_limit, :subdeals_attributes, :referral_subjects_attributes
+                  :end_date, :expiry_date, :max_per_person, :max_limit, :max_reward, :max_reward_count, :subdeals_attributes, :referral_subjects_attributes
 
   has n, :referral_subjects, :order => [ :seq_num.asc ]
   has n, :subdeals, :order => [ :discount_price.desc ]
@@ -34,7 +36,7 @@ class Deal
   accepts_nested_attributes_for :referral_subjects, :allow_destroy => true, :reject_if => lambda { |s| s[:content].blank? }
   accepts_nested_attributes_for :subdeals, :allow_destroy => true, :reject_if => lambda { |s| s[:title].blank? || s[:coupon_title].blank? || s[:regular_price].blank? || s[:discount_price].blank? }
 
-  validates_with_method :validate_min_subdeals, :validate_min_referral_subjects, :validate_start_date, :validate_end_date, :validate_expiry_date
+  validates_with_method :validate_min_subdeals, :validate_min_referral_subjects, :validate_start_date, :validate_end_date, :validate_expiry_date, :validate_max_limit, :validate_max_reward
 
   def self.create(merchant, deal_info)
     now = Time.now
@@ -55,6 +57,7 @@ class Deal
       :expiry_date => now,
       :max_per_person => deal_info[:max_per_person],
       :max_limit => deal_info[:max_limit],
+      :maxz_reward => deal_info[:max_reward],
       :subdeals_attributes => deal_info[:subdeals_attributes] ? deal_info[:subdeals_attributes] : {},
       :referral_subjects_attributes => deal_info[:referral_subjects_attributes] ? deal_info[:referral_subjects_attributes] : {}
 
@@ -99,6 +102,7 @@ class Deal
     self.expiry_date_str = r["expiry_date"]
     self.max_per_person = deal_info[:max_per_person]
     self.max_limit = deal_info[:max_limit]
+    self.max_reward = deal_info[:max_reward]
     self.subdeals_attributes = deal_info[:subdeals_attributes] ? deal_info[:subdeals_attributes] : {}
     self.referral_subjects_attributes = deal_info[:referral_subjects_attributes] ? deal_info[:referral_subjects_attributes] : {}
     self.update_ts = now
@@ -143,4 +147,11 @@ class Deal
     convert_date(n.to_sym, v) ? true : [false, n.gsub('_',' ').capitalize + " is not valid"] 
   end
   
+  def validate_max_limit
+    self.max_limit > 0 ? true : [false, "Max Limit must be greater than 0"]
+  end
+  
+  def validate_max_reward
+    self.max_reward > 0 ? true : [false, "Max Reward must be greater than 0"]
+  end
 end

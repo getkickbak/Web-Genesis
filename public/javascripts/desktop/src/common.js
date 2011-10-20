@@ -810,7 +810,7 @@ function facebook_loginCallback(forceReload)
          var msg = $("#notice").text();
          if(msg)
          {
-            Genesis.showWarningMsg(response.first_name + ', ' + msg, null, true);
+            Genesis.showWarningMsg(msg, null, true);
          }
       }
       if(Genesis.popupDialog.data().modal.isShown)

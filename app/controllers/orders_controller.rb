@@ -162,7 +162,7 @@ class OrdersController < ApplicationController
     deal = Deal.get(@order.deal.id)
 
     begin
-    deal[:limit_count] -= @order.quantity
+      deal[:limit_count] -= @order.quantity
       deal.save
     rescue StandardError
       logger.error("Failed to update limit count for Deal: " + deal.id)

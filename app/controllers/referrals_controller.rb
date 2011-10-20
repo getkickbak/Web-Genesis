@@ -64,9 +64,7 @@ class ReferralsController < ApplicationController
             end
             photo_url = params[:photo_url] ? params[:photo_url] : deal.photo_urls.split(/\r/)[0]
             referral_info = { :photo_url => photo_url, :comment => params[:comment] }
-            #logger.debug("Before Referral Create");
             @referral = Referral.create(deal,current_user,referral_info)
-            #logger.debug("After Referral Create");
             respond_to do |format|
             #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -93,18 +91,21 @@ class ReferralsController < ApplicationController
             @referral[:confirmed] = true
             @referral.save
             reward_count = Reward.count(:deal_id => @referral.deal.id, :user_id => current_user.id )
-            if (reward_count == 0)
-            url = root_url
-            @reward = Reward.create(@referral.deal,current_user,@referral.id,url)
-            @reward.print
-            #logger.debug("Before Referral Mail Create");
-            UserMailer.reward_email(@reward).deliver
-            #logger.debug("After Referral Mail Create");
+            if (reward_count == 0 && @referral.deal.reward_count < @referral.deal.max_reward)
+              url = root_url
+              @reward = Reward.create(@referral.deal,current_user,@referral.id,url)
+              @reward.print
+              @referral.deal[:reward_count]++
+              @referral.deal.save
+              UserMailer.reward_email(@reward).deliver
+              flash[:notice] = "Thank you for your recommendation!  A reward email will be sent to you shortly."
+            else
+              flash[:notice] = "Sorry, we are out of rewards but you can still take advantage of this special deal."
             end
             respond_to do |format|
             #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-               format.json { render :json => { :success => true } }
+               format.json { render :json => { :success => true, :msg => ["Facebook Posts", "Your recommendation has been posted on your facebook newsfeed.","Would you like to send this recommendation to specific friends?"] } }
             end
          rescue DataMapper::SaveFailureError => e
             logger.error("Exception: " + e.resource.errors.inspect)

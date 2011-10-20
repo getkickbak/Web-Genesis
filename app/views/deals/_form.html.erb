@@ -23,6 +23,7 @@
 	<%= f.input :expiry_date, :as => :date, :order => [:day, :month, :year] %>
 	<%= f.input :max_per_person %>
 	<%= f.input :max_limit %>
+	<%= f.input :max_reward %>
 
 	<%= f.simple_fields_for :subdeals do |builder| %>
 		<%= render "subdeal_fields", :f => builder %>

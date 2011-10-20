@@ -29,6 +29,7 @@
 		<td><%= deal.expiry_date %></td>
 		<td><%= deal.max_per_person %></td>
 		<td><%= deal.max_limit %></td>
+		<td><%= deal.max_reward %></td>
 		<td><%= link_to 'Show', merchant_deal_path(@merchant,deal) %></td>
 		<td><%= link_to 'Edit', edit_merchant_deal_path(@merchant,deal) %></td>
 		<td><%= link_to 'Destroy', merchant_deal_path(@merchant,deal), :confirm => 'Are you sure?', :method => :delete %></td>

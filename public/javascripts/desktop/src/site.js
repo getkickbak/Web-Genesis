@@ -241,7 +241,7 @@ Site =
          {
             if(response.data.correct)
             {
-               location.href = location.origin + location.pathname + "?secret_code=" + secretCode + "&notice=" + response.data.msg;
+               location.href = location.origin + location.pathname + "?secret_code=" + secretCode;
             }
             else
             {
@@ -289,7 +289,7 @@ Site =
                         this._url = referralURL;
                         this._msg = rewardMsg;
                         this._rewardBtn = $reward;
-                        Genesis._popupCommon("Facebook Posts", "<p>Your recommendation has been posted on your facebook newsfeed,</p>" + "<p>Would you like to send this recommendation to specific friends?</p>", "#", "Yes", this.referralCompletePopup, "No", function()
+                        Genesis._popupCommon(response.msg[0], "<p>"+response.msg[1]+"</p>" + "<p>"+response.msg[2]+"</p>", "#", "Yes", this.referralCompletePopup, "No", function()
                         {
                            location.href = Site._url;
                         });
@@ -461,7 +461,7 @@ Site =
          }
          else
          {
-            Genesis._popupCommon("Congratulations!", "<p>Your recommendation has been sent to your friends' mail accounts.</p>", this._url);
+            Genesis._popupCommon("Thanks!", "<p>Your recommendation has been sent to your friends' mail accounts.</p>", this._url);
          }
          delete this._url;
          delete this._msg;
