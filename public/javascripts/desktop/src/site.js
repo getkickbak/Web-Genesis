@@ -265,12 +265,12 @@ Site =
                // Send to Facebook Newsfeed
                FB.api('/me/feed', 'post',
                {
-                  name : $(Site.dealNameSelector).text(),
+                  name : $('meta[property~="og:title"]').prop('content'),
                   link : referralURL,
                   caption : baseURL,
                   picture : $('meta[property~="og:image"]').prop('content'),
                   message : rewardMsg,
-                  description : $("#highlights-2 .panelBodyHighlights div *").text()
+                  description : $('meta[property~="og:description"]').prop('content')
                }, function(response)
                {
                   if(!response || response.error)
