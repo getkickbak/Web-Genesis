@@ -1,4 +1,5 @@
 source 'http://rubygems.org'
+source :rubygems
 
 RAILS_VERSION = '~> 3.0.9'
 DM_VERSION    = '~> 1.1.0'
@@ -23,6 +24,7 @@ gem 'dm-rails',          '~> 1.1.0'
 # gem 'dm-oracle-adapter',    DM_VERSION
 # gem 'dm-sqlserver-adapter', DM_VERSION
 
+gem "rake"
 gem 'dm-core',              DM_VERSION
 gem 'dm-serializer',        DM_VERSION
 gem 'dm-migrations',        DM_VERSION
