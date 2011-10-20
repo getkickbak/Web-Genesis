@@ -83,7 +83,7 @@
 					</td>
 					</tr>
 					<td colspan="2">
-					<%= g.label :message %>
+					<%= g.label :message, "Message <span>- (optional)</span>".html_safe %>
 					<%= g.text_area :message, :rows => 5, :value => flash[:give_gift] ? @order.gift_option_attributes[:message] : "" %>
 					</td>
 					</tr>

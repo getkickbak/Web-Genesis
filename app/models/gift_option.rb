@@ -6,7 +6,7 @@ class GiftOption
   property :id, Serial
   property :from, String, :required => true
   property :to, String, :required => true
-  property :message, String, :length => 512, :required => true
+  property :message, String, :length => 512, :default => ""
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
