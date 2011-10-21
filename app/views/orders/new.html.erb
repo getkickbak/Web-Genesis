@@ -116,6 +116,15 @@
 							<td class="span14">PayPal or Credit Card</td>
 							<td class="span8" style="visibility:hidden;">&#160;</td>
 						</tr>
+						<tr>
+							<td class="noPadding noMargin" colspan="3">
+								<!-- PayPal Logo -->
+								<table class="noPadding noMargin" border="0" cellpadding="0" cellspacing="0" align="center">
+									<tr><td align="center" class="noPadding noMargin"><a href="#" onclick="javascript:window.open('https://www.paypal.com/ca/cgi-bin/webscr?cmd=xpt/Marketing/popup/OLCWhatIsPayPal-outside','olcwhatispaypal','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=400, height=350');"><img  src="https://www.paypal.com/en_US/i/bnr/horizontal_solution_PPeCheck.gif" border="0" alt="Solution Graphics"></a></td></tr>
+								</table>
+								<!-- PayPal Logo -->
+							</td>
+						</tr>
 					</table>
 					<div><% if flash[:agree_to_terms].nil?  %><input type="checkbox" name="agree_to_terms" ><% else %><input type="checkbox" name="agree_to_terms" checked="checked" ><% end %> I agree to the <a href="/terms">Terms Of Use</a> and <a>Privacy Agreement</a></div>
 					<div style="margin-top:10px;"><%= f.submit "Complete Order", :class => "btn primary large noWrap", :disable_with => "Working..." %></div>
