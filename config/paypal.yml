@@ -58,15 +58,20 @@ test:
  
 production:
   # redirect url
-  REDIRECT_URL: https://www.paypal.com/webscr?cmd=_ap-payment&paykey=
+  #REDIRECT_URL: https://www.paypal.com/webscr?cmd=_ap-payment&paykey=
+  REDIRECT_URL: https://www.sandbox.paypal.com/webscr?cmd=_ap-payment&paykey=
 
   # specify the 3-token values.    
-  USER: paul.chan_api1.justformyfriends.com
-  PASSWORD:  6CLFZ8ESCJUMK6XF
-  SIGNATURE: A2eXLsICE-Kw6UV4hYLnHldjmkqeAW15c76rWMuiBLf9JlSC85XCYR9z
+  #USER: paul.chan_api1.justformyfriends.com
+  #PASSWORD:  6CLFZ8ESCJUMK6XF
+  #SIGNATURE: A2eXLsICE-Kw6UV4hYLnHldjmkqeAW15c76rWMuiBLf9JlSC85XCYR9z
+  USER: middle_1312472948_biz_api1.gmail.com
+  PASSWORD:  "1312472987"
+  SIGNATURE: AQeoLK6k17n.8dndObjia1jsnKl4AhKjCtA3eFn0dIca9CKsL-R6vB7x
           
   #    @@endpoints 
-  API_SERVER:  svcs.paypal.com
+  #API_SERVER:  svcs.paypal.com
+  API_SERVER:  svcs.sandbox.paypal.com
 
   # Proxy information of the client environment.   @@proxy_info 
   USE_PROXY:  false
