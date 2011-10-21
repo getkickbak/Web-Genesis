@@ -126,7 +126,7 @@
 							</td>
 						</tr>
 					</table>
-					<div><% if flash[:agree_to_terms].nil?  %><input type="checkbox" name="agree_to_terms" ><% else %><input type="checkbox" name="agree_to_terms" checked="checked" ><% end %> I agree to the <a href="/terms">Terms Of Use</a> and <a>Privacy Agreement</a></div>
+					<div><% if flash[:agree_to_terms].nil?  %><input type="checkbox" name="agree_to_terms" ><% else %><input type="checkbox" name="agree_to_terms" checked="checked" ><% end %> I agree to the <a href="/terms">Terms Of Use</a> and <a href="/privacy">Privacy Agreement</a></div>
 					<div style="margin-top:10px;"><%= f.submit "Complete Order", :class => "btn primary large noWrap", :disable_with => "Working..." %></div>
 				</div>
 			</div>
