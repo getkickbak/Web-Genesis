@@ -58,7 +58,6 @@ class OrdersController < ApplicationController
       end
     else
       session[:referral_id] = @referral.referral_id
-
       respond_to do |format|
         format.html # new.html.erb
         #format.xml  { render :xml => @order }
@@ -69,17 +68,24 @@ class OrdersController < ApplicationController
   def create
     authorize! :create, Order
 
+    @deal = Deal.first(:deal_id => params[:id]) || not_found
     referral_id = session[:referral_id]
     if referral_id.nil?
       raise Exceptions::AppException.new("Referral needed before you can buy deal.")
     end
     
+    new_customer = true
+    @referral = Referral.first(:deal_id => @deal.id, :confirmed => true, :creator_id => current_user.id)
+    if @referral
+      referral_id = @referral.referral_id
+      new_customer = false
+    end
+
     Order.transaction do
       begin
-        @deal = Deal.first(:deal_id => params[:id]) || not_found
         @subdeal = Subdeal.get(params[:order][:subdeal_id])
         session[:order_in_progress] = true
-        @order = Order.create(@deal, @subdeal, current_user, referral_id, params[:order], params[:agree_to_terms])
+        @order = Order.create(@deal, @subdeal, current_user, referral_id, new_customer, params[:order], params[:agree_to_terms])
         pay_transfer(@order)
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)

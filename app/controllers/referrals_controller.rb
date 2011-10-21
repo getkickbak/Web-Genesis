@@ -55,9 +55,10 @@ class ReferralsController < ApplicationController
    def create
       authorize! :create, Referral
 
+      deal = Deal.first(:deal_id => params[:id]) || not_found
+
       Referral.transaction do
          begin
-            deal = Deal.first(:deal_id => params[:id]) || not_found
             referral_count = Referral.count(:deal_id => deal.id, :confirmed => true, :creator_id => current_user.id )
             if (referral_count > 0)
               raise Exceptions::AppException.new("You have already recommended this Deal.")

@@ -7,6 +7,7 @@ class Order
   property :order_id, String, :unique_index => true, :default => 0
   property :subdeal_id, Integer, :required => true, :default => 0, :messages => { :presence => "Please pick a Deal" }
   property :referral_id, Integer, :default => 0
+  property :new_customer, Boolean, :default => true
   property :quantity, Integer, :required => true, :default => 0
   property :purchase_date, DateTime, :default => ::Constant::MIN_TIME
   property :total_payment, Decimal, :scale => 2, :default => 0
@@ -27,7 +28,7 @@ class Order
   
   validates_with_method :check_quantity, :check_deal_max_limit, :check_deal_max_per_person, :check_end_date
   
-  def self.create(deal, subdeal, user, referral_id, order_info, agree_to_terms)
+  def self.create(deal, subdeal, user, referral_id, new_customer, order_info, agree_to_terms)
     now = Time.now
     quantity = order_info[:quantity].to_i
     
@@ -47,6 +48,7 @@ class Order
     
     order[:order_id] = "#{rand(1000) + 2000}#{now.to_i}"
     order[:referral_id] = referral_id
+    order[:new_customer] = new_customer
     order[:purchase_date] = now
     order[:total_payment] = quantity * (subdeal ? subdeal.discount_price : 0)
     order[:created_ts] = now
