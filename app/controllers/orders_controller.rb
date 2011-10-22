@@ -72,12 +72,14 @@ class OrdersController < ApplicationController
     referral_id = session[:referral_id]
     if referral_id.nil?
       raise Exceptions::AppException.new("Referral needed before you can buy deal.")
+    else
+      referral_key_id = Referral.first(:referral_id => referral_id).id
     end
     
     new_customer = true
-    @referral = Referral.first(:deal_id => @deal.id, :confirmed => true, :creator_id => current_user.id)
-    if @referral
-      referral_id = @referral.referral_id
+    referral = Referral.first(:deal_id => @deal.id, :confirmed => true, :creator_id => current_user.id)
+    if referral
+      referral_key_id = referral.id
       new_customer = false
     end
 
@@ -85,7 +87,7 @@ class OrdersController < ApplicationController
       begin
         @subdeal = Subdeal.get(params[:order][:subdeal_id])
         session[:order_in_progress] = true
-        @order = Order.create(@deal, @subdeal, current_user, referral_id, new_customer, params[:order], params[:agree_to_terms])
+        @order = Order.create(@deal, @subdeal, current_user, referral_key_id, new_customer, params[:order], params[:agree_to_terms])
         pay_transfer(@order)
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
@@ -164,6 +166,7 @@ class OrdersController < ApplicationController
 
     authorize! :destroy, @order
 
+    referral_id = session[:referral_id]
     reset_order
     deal = Deal.get(@order.deal.id)
 
@@ -176,7 +179,7 @@ class OrdersController < ApplicationController
 
     respond_to do |format|
     #format.html { redirect_to user_order_path(@user, @order, :notice => 'Order was successfully created.') }
-      format.html { redirect_to deal_path(deal)+"?referral_id=#{@order.referral_id}", :notice => 'Your order has been cancelled.' }
+      format.html { redirect_to deal_path(deal)+"?referral_id=#{referral_id}", :notice => 'Your order has been cancelled.' }
     #format.xml  { render :xml => @order, :status => :created, :location => @order }
     #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
     end
