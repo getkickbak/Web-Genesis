@@ -112,20 +112,27 @@ class OrdersController < ApplicationController
 
     authorize! :create, @order
 
+    logger.debug("Before Payment Confirmed")
     begin
       @order[:payment_confirmed] = true
       @order.save
     rescue StandardError
       logger.error("Failed to update payment_confirmed for Order: " + @order.id)
     end
+    logger.debug("After Payment Confiremd")
 
+    logger.debug("Before Print Coupons")
     @order.print_coupons
+    logger.debug("After Print Coupons")
+    logger.debug("Before Order Confirmed Email")
     if @order.gift_option.nil?
       UserMailer.order_confirmed_email(@order,false).deliver
     else
       UserMailer.order_confirmed_email(@order,true).deliver
     end  
+    logger.debug("After Order Confirmed Email")
 
+    logger.debug("Before PayPal Payment Details")
     @response = session[:pay_response]
     @paykey = @response["payKey"]
     @caller =  PayPalSDKCallers::Caller.new(false, PayPalSDKProfiles::Profile::ADAPTIVE_SERVICE_PAYMENT_DETAILS)
@@ -136,6 +143,7 @@ class OrdersController < ApplicationController
       "payKey" =>@paykey
     }
     )
+    logger.debug("After PayPal Payment Details")
     if (@transaction.success?)
       session[:paydetails_response]=@transaction.response
       respond_to do |format|
