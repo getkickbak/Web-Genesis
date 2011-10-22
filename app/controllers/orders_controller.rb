@@ -1,12 +1,13 @@
 require 'profile'
 require 'caller'
 
+
+
 class OrdersController < ApplicationController
   before_filter :authenticate_user!, :except => [:confirmed_email]
 
   #load_and_authorize_resource
   @@clientDetails=PayPalSDKProfiles::Profile.client_details
-  
   def index
     authorize! :read, current_user
 
@@ -38,29 +39,29 @@ class OrdersController < ApplicationController
     authorize! :create, @order
 
     if @order.subdeal_id != 0
-      subdeal = Subdeal.get(@order.subdeal_id)
-      @order.total_payment = @order.quantity * subdeal.discount_price
+    subdeal = Subdeal.get(@order.subdeal_id)
+    @order.total_payment = @order.quantity * subdeal.discount_price
     end
     if flash[:errors].nil?
-      reset_order  
+    reset_order
     end
     @deal = Deal.first(:deal_id => params[:id]) || not_found
     if (params[:referral_id])
-      @referral = Referral.first(:referral_id => params[:referral_id], :confirmed => true)
+    @referral = Referral.first(:referral_id => params[:referral_id], :confirmed => true)
     else
-      @referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id, :confirmed => true)
+    @referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id, :confirmed => true)
     end
-    
+
     if @referral.nil?
       respond_to do |format|
         format.html { redirect_to deal_path(@deal) }
-        #format.xml  { render :xml => @order }
+      #format.xml  { render :xml => @order }
       end
     else
       session[:referral_id] = @referral.referral_id
       respond_to do |format|
         format.html # new.html.erb
-        #format.xml  { render :xml => @order }
+      #format.xml  { render :xml => @order }
       end
     end
   end
@@ -71,16 +72,16 @@ class OrdersController < ApplicationController
     @deal = Deal.first(:deal_id => params[:id]) || not_found
     referral_id = session[:referral_id]
     if referral_id.nil?
-      raise Exceptions::AppException.new("Referral needed before you can buy deal.")
+    raise Exceptions::AppException.new("Referral needed before you can buy deal.")
     else
-      referral_key_id = Referral.first(:referral_id => referral_id).id
+    referral_key_id = Referral.first(:referral_id => referral_id).id
     end
-    
+
     new_customer = true
     referral = Referral.first(:deal_id => @deal.id, :confirmed => true, :creator_id => current_user.id)
     if referral
-      referral_key_id = referral.id
-      new_customer = false
+    referral_key_id = referral.id
+    new_customer = false
     end
 
     Order.transaction do
@@ -107,32 +108,32 @@ class OrdersController < ApplicationController
   def pay_details
     @order = Order.first(:order_id => session[:order_id])
     if !@order || @order.order_id != params[:order_id]
-      raise Exception.new
+    raise Exception.new
     end
 
     authorize! :create, @order
 
-    logger.debug("Before Payment Confirmed")
+    #logger.debug("Before Payment Confirmed")
     begin
       @order[:payment_confirmed] = true
       @order.save
     rescue StandardError
-      logger.error("Failed to update payment_confirmed for Order: " + @order.id)
+    logger.error("Failed to update payment_confirmed for Order: " + @order.id)
     end
-    logger.debug("After Payment Confiremd")
+    #logger.debug("After Payment Confiremd")
 
-    logger.debug("Before Print Coupons")
+    #logger.debug("Before Print Coupons")
     @order.print_coupons
-    logger.debug("After Print Coupons")
-    logger.debug("Before Order Confirmed Email")
+    #logger.debug("After Print Coupons")
+    #logger.debug("Before Order Confirmed Email")
     if @order.gift_option.nil?
-      UserMailer.order_confirmed_email(@order,false).deliver
+    UserMailer.order_confirmed_email(@order,false).deliver
     else
-      UserMailer.order_confirmed_email(@order,true).deliver
-    end  
-    logger.debug("After Order Confirmed Email")
+    UserMailer.order_confirmed_email(@order,true).deliver
+    end
+    #logger.debug("After Order Confirmed Email")
 
-    logger.debug("Before PayPal Payment Details")
+    #logger.debug("Before PayPal Payment Details")
     @response = session[:pay_response]
     @paykey = @response["payKey"]
     @caller =  PayPalSDKCallers::Caller.new(false, PayPalSDKProfiles::Profile::ADAPTIVE_SERVICE_PAYMENT_DETAILS)
@@ -143,7 +144,7 @@ class OrdersController < ApplicationController
       "payKey" =>@paykey
     }
     )
-    logger.debug("After PayPal Payment Details")
+    #logger.debug("After PayPal Payment Details")
     if (@transaction.success?)
       session[:paydetails_response]=@transaction.response
       respond_to do |format|
@@ -153,8 +154,8 @@ class OrdersController < ApplicationController
       #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
       end
     else
-      session[:paypal_error]=@transaction.response
-      redirect_to :controller => 'calls', :action => 'error'
+    session[:paypal_error]=@transaction.response
+    redirect_to :controller => 'calls', :action => 'error'
     end
   end
 
@@ -170,7 +171,7 @@ class OrdersController < ApplicationController
   def cancel
     @order = Order.first(:order_id => session[:order_id])
     if !@order
-      raise Exception.new
+    raise Exception.new
     end
 
     authorize! :destroy, @order
@@ -180,10 +181,10 @@ class OrdersController < ApplicationController
     deal = Deal.get(@order.deal.id)
 
     begin
-      deal[:limit_count] -= @order.quantity
+    deal[:limit_count] -= @order.quantity
       deal.save
     rescue StandardError
-      logger.error("Failed to update limit count for Deal: " + deal.id)
+    logger.error("Failed to update limit count for Deal: " + deal.id)
     end
 
     respond_to do |format|
@@ -299,13 +300,13 @@ class OrdersController < ApplicationController
       @paymentExecStatus=@response["paymentExecStatus"].join
       #if "paymentExecStatus" is completed redirect to pay_details method else redirect to sandbox with paykey
       if (@paymentExecStatus =="COMPLETED")
-        redirect_to :controller => 'orders',:action => 'pay_details'
+      redirect_to :controller => 'orders',:action => 'pay_details'
       else
-        redirect_to "#{PayPalSDKProfiles::Profile.PAYPAL_REDIRECT_URL}#{@paykey}"
+      redirect_to "#{PayPalSDKProfiles::Profile.PAYPAL_REDIRECT_URL}#{@paykey}"
       end
     else
-      session[:paypal_error]=@transaction.response
-      raise Exceptions::AppException.new("Payment Error.  Please Try Again.")
+    session[:paypal_error]=@transaction.response
+    raise Exceptions::AppException.new("Payment Error.  Please Try Again.")
     end
   end
 end
