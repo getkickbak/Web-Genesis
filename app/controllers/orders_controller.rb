@@ -159,10 +159,11 @@ class OrdersController < ApplicationController
   end
 
   def thanks
-    @order = Order.first(:order_id => session[:order_id])
-    if !@order
-      raise Exception.new
-    end
+    #@order = Order.first(:order_id => session[:order_id])
+    #if !@order
+    #  raise Exception.new
+    #end
+    @referral_id = session[:referral_id]
     reset_order
   end
 
