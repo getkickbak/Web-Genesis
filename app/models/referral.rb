@@ -49,9 +49,9 @@ class Referral
     referral_ids = DataMapper.repository(:default).adapter.select(
       "SELECT id FROM referrals WHERE (creator_id IN 
         (SELECT followed_id FROM relationships WHERE follower_id = ?)
-        OR creator_id = ?) AND confirmed = 't'
+        OR creator_id = ?) AND confirmed = ?
         ORDER BY created_ts DESC
-        LIMIT ?,?", user_id, user_id, start, max
+        LIMIT ?,?", user_id, user_id, true, start, max
     )
     referrals = Referral.all(:id => referral_ids)
     #result = {}
@@ -81,9 +81,9 @@ class Referral
   def self.find_referrers(deal_id, current_referrer_id, max)
     count = Referral.count(Referral.deal.id => deal_id, Referral.creator.id.not => current_referrer_id, :confirmed => true)
     referrer_ids = DataMapper.repository(:default).adapter.select(
-      "SELECT creator_id FROM referrals WHERE deal_id = ? AND creator_id <> ? AND confirmed = 't'
+      "SELECT creator_id FROM referrals WHERE deal_id = ? AND creator_id <> ? AND confirmed = ?
        ORDER BY created_ts DESC 
-       LIMIT 0,?", deal_id, current_referrer_id, max 
+       LIMIT 0,?", deal_id, true, current_referrer_id, max 
     )
     referrers = User.all(:id => referrer_ids)
     result = {}
