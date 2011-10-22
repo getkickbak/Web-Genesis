@@ -75,7 +75,7 @@
 					<tr>
 					<td>
 					<%= g.label :from %>
-					<%= g.text_field :from, :value => flash[:give_gift] ? @order.gift_option_attributes[:from] : "" %>
+					<%= g.text_field :from, :value => flash[:give_gift] ? @order.gift_option_attributes[:from] : current_user.name %>
 					</td>
 					<td>
 					<%= g.label :to %>
