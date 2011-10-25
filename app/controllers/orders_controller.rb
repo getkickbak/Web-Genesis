@@ -114,11 +114,13 @@ class OrdersController < ApplicationController
     authorize! :create, @order
 
     #logger.debug("Before Payment Confirmed")
-    begin
-      @order[:payment_confirmed] = true
-      @order.save
-    rescue StandardError
-    logger.error("Failed to update payment_confirmed for Order: " + @order.id)
+    Order.transaction do
+      begin
+        @order[:payment_confirmed] = true
+        @order.save
+      rescue StandardError
+      logger.error("Failed to update payment_confirmed for Order: " + @order.id)
+      end
     end
     #logger.debug("After Payment Confiremd")
 
@@ -162,7 +164,7 @@ class OrdersController < ApplicationController
   def thanks
     @order = Order.first(:order_id => session[:order_id])
     if !@order
-      raise Exception.new
+    raise Exception.new
     end
     @referral_id = session[:referral_id]
     reset_order
@@ -180,11 +182,13 @@ class OrdersController < ApplicationController
     reset_order
     deal = Deal.get(@order.deal.id)
 
-    begin
-    deal[:limit_count] -= @order.quantity
-      deal.save
-    rescue StandardError
-    logger.error("Failed to update limit count for Deal: " + deal.id)
+    Deal.transaction do
+      begin
+      deal[:limit_count] -= @order.quantity
+        deal.save
+      rescue StandardError
+      logger.error("Failed to update limit count for Deal: " + deal.id)
+      end
     end
 
     respond_to do |format|

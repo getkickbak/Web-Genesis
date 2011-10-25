@@ -134,7 +134,7 @@ class Order
   def past_orders_quantity
     total_count = DataMapper.repository(:default).adapter.select(
       "SELECT SUM(quantity) FROM orders WHERE user_id = ? 
-        AND deal_id = ? AND payment_confirmed = ? AND deleted_ts <> ?", self.user.id, self.deal.id, true, nil
+        AND deal_id = ? AND payment_confirmed = ? AND deleted_ts IS NULL", self.user.id, self.deal.id, true
     )
     return total_count[0] ? total_count[0] : 0
   end

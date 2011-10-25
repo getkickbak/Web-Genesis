@@ -93,10 +93,9 @@ class ReferralsController < ApplicationController
             @referral.save
             reward_count = Reward.count(:deal_id => @referral.deal.id, :user_id => current_user.id )
             if (reward_count == 0 && @referral.deal.reward_count < @referral.deal.max_reward)
-              url = root_url
-              @reward = Reward.create(@referral.deal,current_user,@referral.id,url)
+              @reward = Reward.create(@referral.deal,current_user,@referral.id)
               @reward.print
-              @referral.deal[:reward_count]++
+              @referral.deal[:reward_count] += 1
               @referral.deal.save
               UserMailer.reward_email(@reward).deliver
               flash[:notice] = "Thank you for the referral!  Your reward email will be arrive shortly."
