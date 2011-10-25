@@ -287,12 +287,12 @@ Site =
                      {
                         // Ask to send message directly to friends
                         this._url = referralURL;
-                        this._msg = rewardMsg;
+                        this._msg = $('meta[property~="og:description"]').prop('content');
                         this._rewardBtn = $reward;
                         Genesis._popupCommon(response.msg[0], "<p>"+response.msg[1]+"</p>" + "<p>"+response.msg[2]+"</p>", "#", "Yes", this.referralCompletePopup, "No", function()
                         {
                            location.href = Site._url;
-                        });
+                        }, null, this);
                      }, Site), $reward, false);
                   }
                });
@@ -444,8 +444,9 @@ Site =
       FB.ui(
       {
          method : 'send',
-         name : 'Message to your friends',
+         name : $('meta[property~="og:title"]').prop('content'),
          link : this._url,
+         picture : $('meta[property~="og:image"]').prop('content'),
          description : this._msg
       }, $.proxy(function(response)
       {
@@ -462,10 +463,10 @@ Site =
          else
          {
             Genesis._popupCommon("Thanks!", "<p>Your recommendation has been sent to your friends' mail accounts.</p>", this._url);
+            delete this._url;
+            delete this._msg;
+            delete this._rewardBtn;
          }
-         delete this._url;
-         delete this._msg;
-         delete this._rewardBtn;
       }, this));
    },
    // **************************************************************************

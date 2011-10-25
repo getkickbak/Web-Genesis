@@ -451,7 +451,7 @@ Genesis =
    // **************************************************************************
    // Dynamic Popup
    // **************************************************************************
-   _popupCommon : function(title, body, href, yesMsg, yesFn, noMsg, noFn, cb)
+   _popupCommon : function(title, body, href, yesMsg, yesFn, noMsg, noFn, cb, cxt)
    {
       if(!this.popupDialog.data().modal.isShown)
       {
@@ -464,7 +464,10 @@ Genesis =
          {
             primBtn.text(yesMsg);
             primBtn.unbind("click");
-            primBtn.bind("click", yesFn);
+            primBtn.bind("click", function()
+            {
+               !yesFn || yesFn.call(cxt || this);
+            });
          }
          else
          {
@@ -485,6 +488,7 @@ Genesis =
             secBtn.bind("click", noFn ||
             function()
             {
+               !noFn || noFn.call(cxt || this);
                Genesis.popupDialog.modal('hide');
             });
 
@@ -497,7 +501,7 @@ Genesis =
          this.popupDialog.modal('show');
          if(cb)
          {
-            cb();
+            cb.call(cxt || this);
          }
       }
       // Put this in the animation queue
@@ -505,7 +509,7 @@ Genesis =
       {
          this.popupDialog.queue($.proxy(function()
          {
-            this._popupCommon(title, body, href, yesMsg, yesFn, noMsg, noFn, cb);
+            this._popupCommon(title, body, href, yesMsg, yesFn, noMsg, noFn, cb, cxt);
          }, this));
       }
    },
