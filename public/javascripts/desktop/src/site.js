@@ -609,15 +609,17 @@ Site =
          }
          else
          {
-            $("#friendReferralLoadingMask").addClass("hide");
-            if(response.length == 1)
-            {
-               $("#secretCodeDialog").switchClass("hide", "in", 100);
-            }
-            else
-            {
-               Genesis.showErrMsg("Error Retrieving Friends List from Facebook. Reload Page to Try Again.");
-            }
+    	 	$("#friendReferralLoadingMask").switchClass("in", "hide", 100, function()
+	        {
+            	if(response.length == 1)
+        	    {
+    	           $("#secretCodeDialog").switchClass("hide", "in", 100);
+	            }
+            	else
+        	    {
+    	           Genesis.showErrMsg("Error Retrieving Friends List from Facebook. Reload Page to Try Again.");
+	            }
+            });
          }
       }, Site));
    }
