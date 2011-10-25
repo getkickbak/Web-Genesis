@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:og="http://ogp.me/ns#">
-   <head>
+   <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# justformyfriends: http://ogp.me/ns/fb/justformyfriends#">
       <meta http-equiv="Content-type" content="text/html; charset=utf-8">
       <meta property="fb:admins" content="725565520"/>
       <meta property="fb:app_id" content="197968780267830"/>
-      <!--
-      <meta property="og:type" content="movie"/>
-      <meta property="og:url" content="http://www.imdb.com/title/tt0117500/"/>
-      -->
+      <meta property="og:type" content="justformyfriends:business" />
       <meta property="og:site_name" content="JustForMyFriends"/>
       <meta property="og:title" content="<% if (defined? @deal) && !@deal.nil? && !@deal.subdeals.nil? %><% subdeal = @deal.subdeals.first %><%= "C$#{(subdeal.regular_price - subdeal.discount_price).to_i} OFF - #{@deal.title.gsub(/<\/?[^>]+>/, "")}" %><% end %>"/>
       <% if (defined? @deal) && !@deal.nil? && !@deal.merchant.nil? %> <meta property="og:image" content="<%= @deal.merchant.photo_url %>"/>
