@@ -1,9 +1,16 @@
 module Business
   class CouponsController < ApplicationController
     before_filter :authenticate_merchant!
-    
+    set_tab :coupons
     def index
       authorize! :read, Coupon
+
+      if params[:search]
+        @coupon = Coupon.first(:coupon_id => params[:search])
+        if @coupon
+        @subdeal = Subdeal.get(@coupon.order.subdeal_id)
+        end
+      end
     end
 
     def show
@@ -11,26 +18,33 @@ module Business
       authorize! :read, @coupon
 
       respond_to do |format|
-        format.html # show.html.erb
         format.json  { render :json => { :success => true, :data => @coupon.to_json } }
       end
     end
 
     def redeem
       @coupon = Coupon.first(:coupon_id => params[:id]) || not_found
-      authorize! :update, Coupon
+      authorize! :update, @coupon
 
-      begin
-        @coupon[:redeemed] = true
-        @coupon.save
-        respond_to do |format|
-          format.json { render :json => { :success => true } }
-        end
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        @coupon = e.resource
-        respond_to do |format|
-          format.json { render :json => { :success => false } }
+      Coupon.transaction do
+        begin
+          @coupon[:redeemed] = true
+          @coupon[:update_ts] = Time.now
+          @coupon.save
+          msg = "Coupon# #{@coupon.coupon_id} has been successfully redeemed."
+          flash[:notice] = msg
+          respond_to do |format|
+            format.html { redirect_to coupons_path+"?search=#{params[:id]}" }
+            format.json { render :json => { :success => true, :msg => msg } }
+          end
+        rescue DataMapper::SaveFailureError => e
+          logger.error("Exception: " + e.resource.errors.inspect)
+          error_msg = "Error redeeming coupon.  Please try again."
+          flash[:error] = error_msg
+          respond_to do |format|
+            format.html { redirect_to coupons_path+"?search=#{params[:id]}" }
+            format.json { render :json => { :success => false, :msg => error_msg } }
+          end
         end
       end
     end

@@ -29,6 +29,7 @@ gem 'dm-serializer',        DM_VERSION
 gem 'dm-migrations',        DM_VERSION
 gem 'dm-types',             DM_VERSION
 gem 'dm-validations',       DM_VERSION
+#gem 'dm-validations', :git => 'git://github.com/emmanuel/dm-validations', :branch => 'feature/reorganize'
 gem 'dm-constraints',       DM_VERSION
 gem 'dm-transactions',      DM_VERSION
 gem 'dm-aggregates',        DM_VERSION
@@ -43,6 +44,7 @@ gem 'rqrcode_png', '~> 0.1.1'
 gem 'pdfkit'
 gem 'barby', '~> 0.5.0'
 gem 'wkhtmltopdf-binary'
+gem 'tabs_on_rails'
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION

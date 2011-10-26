@@ -37,6 +37,10 @@ class Reward
     return reward
   end
 
+  def to_param
+    self.reward_code
+  end
+  
   def print
     html = @@template.result(binding)
     kit = PDFKit.new(html, :page_size => 'Letter')

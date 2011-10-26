@@ -2,11 +2,13 @@ require 'util/constant'
 
 class Deal
   include DataMapper::Resource
+  include ApplicationHelper
 
   property :id, Serial
   property :deal_id, String, :unique_index => true, :default => ""
   property :title, String, :required => true, :default => ""
   property :description, String, :length => 4096, :required => true, :default => ""
+  property :mini_description, String, :default => ""
   property :highlights, String, :length => 512, :required => true, :default => ""
   property :details, String, :length => 512, :required => true, :default => ""
   property :photo_urls, String, :length => 1024, :required => true, :default => ""
@@ -37,7 +39,9 @@ class Deal
   accepts_nested_attributes_for :subdeals, :allow_destroy => true, :reject_if => lambda { |s| s[:title].blank? || s[:coupon_title].blank? || s[:regular_price].blank? || s[:discount_price].blank? }
 
   validates_with_method :validate_min_subdeals, :validate_min_referral_subjects, :validate_start_date, :validate_end_date, :validate_expiry_date, :validate_max_limit, :validate_max_reward
-
+  
+  before :save, :minimize_description
+  
   def self.create(merchant, deal_info)
     now = Time.now
     dates = ["start_date","end_date","expiry_date"]
@@ -57,7 +61,7 @@ class Deal
       :expiry_date => now,
       :max_per_person => deal_info[:max_per_person],
       :max_limit => deal_info[:max_limit],
-      :maxz_reward => deal_info[:max_reward],
+      :max_reward => deal_info[:max_reward],
       :subdeals_attributes => deal_info[:subdeals_attributes] ? deal_info[:subdeals_attributes] : {},
       :referral_subjects_attributes => deal_info[:referral_subjects_attributes] ? deal_info[:referral_subjects_attributes] : {}
 
@@ -110,6 +114,15 @@ class Deal
   end
 
   private
+  
+  def minimize_description
+    mini_desc = helpers.strip_tags(self.description)
+    if mini_desc.length > 255
+      self.mini_description = mini_desc[0..251] + "..."
+    else
+      self.mini_description = mini_desc
+    end
+  end
   
   def convert_date(field, field_str)
     begin

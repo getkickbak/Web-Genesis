@@ -92,11 +92,11 @@ class OrdersController < ApplicationController
         pay_transfer(@order)
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
+        flash[:order] = params[:order]
+        flash[:give_gift] = params[:order][:give_gift].to_bool
+        flash[:agree_to_terms] = params[:agree_to_terms]
+        flash[:errors] = JSON.parse(e.resource.errors.to_json)
         respond_to do |format|
-          flash[:order] = params[:order]
-          flash[:give_gift] = params[:order][:give_gift].to_bool
-          flash[:agree_to_terms] = params[:agree_to_terms]
-          flash[:errors] = JSON.parse(e.resource.errors.to_json)
           format.html { redirect_to confirm_order_path(@deal)+"?referral_id=#{referral_id}" }
         #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
         #format.json { render :json => { :success => false } }

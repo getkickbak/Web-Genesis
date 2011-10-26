@@ -20,7 +20,7 @@
          <div class="span24">
             <h2>Email JustForMyFriends</h2>
             <div class="panelBodyHighlights">
-               <%= simple_form_for @contact, :url => contact_create_path do |f| %>
+               <%= simple_form_for @contact, :url => create_contact_path do |f| %>
                <%= f.input :name %>
                     <% if signed_in? && @contact.errors.empty? %>
 					<%= f.input :email, :input_html => { :value => current_user.email } %>
