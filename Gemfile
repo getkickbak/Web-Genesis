@@ -23,7 +23,7 @@ gem 'dm-rails',          '~> 1.1.0'
 # gem 'dm-oracle-adapter',    DM_VERSION
 # gem 'dm-sqlserver-adapter', DM_VERSION
 
-#gem "rake",               '~> 0.9.2.2'
+gem "rake",               '~> 0.9.2.2'
 gem 'dm-core',              DM_VERSION
 gem 'dm-serializer',        DM_VERSION
 gem 'dm-migrations',        DM_VERSION
