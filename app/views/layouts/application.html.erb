@@ -8,14 +8,14 @@
       <meta property="og:site_name" content="JustForMyFriends"/>
       <meta property="og:title" content="<% if (defined? @deal) && !@deal.nil? && !@deal.subdeals.nil? %><% subdeal = @deal.subdeals.first %><%= "C$#{(subdeal.regular_price - subdeal.discount_price).to_i} OFF - #{@deal.title.gsub(/<\/?[^>]+>/, "")}" %><% end %>"/>
       <% if (defined? @deal) && !@deal.nil? && !@deal.merchant.nil? %> <meta property="og:image" content="<%= @deal.merchant.photo_url %>"/>
-      <meta property="og:description" content="<%= @deal.description[0..255] %>">
+      <meta property="og:description" content="<%= @deal.mini_description %>">
       <meta property="og:street-address" content="<%= @deal.merchant.address1 %> <%= @deal.merchant.address2 %>"/>
       <meta property="og:locality" content="<%= @deal.merchant.city %>"/>
       <meta property="og:region" content="<%= @deal.merchant.state %>"/>
       <meta property="og:postal-code" content="<%= @deal.merchant.zipcode %>"/>
       <meta property="og:email" content="<%= @deal.merchant.email %>"/>
       <meta property="og:phone_number" content="<%= @deal.merchant.phone %>"/>
-      <% end %> <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <% end %>
       <title>JustForMyFriends</title>
       <!--
       <%= stylesheet_link_tag :all %>
@@ -68,7 +68,7 @@
             <div class="container">
                <h3><a href="/">
                   <img width="200" style="position:absolute;top:0px;left:-10px;" src="http://photos.justformyfriends.com/logo.png"/>
-                  Just For My Friends</a></h3>
+                  JustForMyFriends</a></h3>
                <% if (defined? @show_reward) && @show_reward %>
                <ul class="nav">
                   <li class=""><a href="/how_it_works">How It Works</a></li>

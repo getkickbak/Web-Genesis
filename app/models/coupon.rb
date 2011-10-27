@@ -20,6 +20,10 @@ class Coupon
 
   belongs_to :order
   
+  def to_param
+    self.coupon_id
+  end
+  
   def print
     html = @@template.result(binding)
     kit = PDFKit.new(html, :page_size => 'Letter')

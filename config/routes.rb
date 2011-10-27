@@ -7,13 +7,13 @@ Genesis::Application.routes.draw do
       match '/sign_in' => 'sessions#new'
       match '/sign_out' => 'sessions#destroy'
 
-      match '/coupons' => 'coupons#index'
+      match '/coupons' => 'coupons#index', :as => :coupons
       match '/coupons/:id' => 'coupons#show'
-      match '/coupons/:id/redeem' => 'coupons#redeem', :via => :post
+      match '/coupons/:id/redeem' => 'coupons#redeem', :as => :redeem_coupon
 
-      match '/rewards' => 'rewards#index'
+      match '/rewards' => 'rewards#index', :as => :rewards
       match '/rewards/:id' => 'rewards#show'
-      match '/rewards/:id/redeem' => 'rewards#redeem', :via => :post
+      match '/rewards/:id/redeem' => 'rewards#redeem', :as => :redeem_reward
 
       match '*a', :to => 'errors#routing'
 
@@ -32,7 +32,7 @@ Genesis::Application.routes.draw do
     match "/terms" => 'pages#terms'
     match "/merchant_terms" => 'pages#merchant_terms'
     match "/contact_us" => 'pages#contact_us'
-    match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :contact_create
+    match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
 
     resources :merchants do
       resources :deals

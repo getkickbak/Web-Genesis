@@ -1,0 +1,35 @@
+<%= render 'layouts/business/tabs' %>
+<%= form_tag coupons_path, :method => 'get' do %>
+<p>
+	<%= text_field_tag :search, params[:search] %>
+	<%= submit_tag "Search", :name => nil %>
+</p>
+<% end %>
+<% if @coupon %>
+<table style="margin-bottom:0px;">
+	<thead>
+		<tr>
+			<th class="green span6">Coupon#</th>
+			<th class="green span6">Order#</th>
+			<th class="green span2">Value</th>
+			<th class="green span4">Status</th>
+			<th class="green span6">Redemption Date</th>
+			<th class="green span3">Action</th>
+		</tr>
+	</thead>
+	<tr>
+		<td class="span6"><%= @coupon.coupon_id %></td>
+		<td class="span6"><%= @coupon.order.order_id %></td>
+		<td class="span2">C$<%= @subdeal.regular_price.to_i %></td>
+		<td class="span4"><%= @coupon.redeemed ? "Redeemed" : "Not Redeemed"%></td>
+		<td class="span6"><%= @coupon.redeemed ? @coupon.update_ts.strftime("%b %d, %Y") : "Not Yet" %></td>
+		<% if @coupon.redeemed? %>
+			<td class="span3">Nothing</td>
+		<% else %>
+			<td class="span3"><%= link_to 'Redeem', redeem_coupon_url(@coupon) %></td>
+		<% end %>
+	</tr>
+</table>
+<% elsif defined? @coupon %>
+<div>Not Found<div>
+<% end %> 

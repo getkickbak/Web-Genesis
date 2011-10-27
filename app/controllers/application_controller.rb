@@ -1,12 +1,17 @@
 require 'dm-rails/middleware/identity_map'
 
-
-
 class ApplicationController < ActionController::Base
   use Rails::DataMapper::Middleware::IdentityMap
   protect_from_forgery
   include SessionsHelper
   #check_authorization :unless => :devise_controller?
+  before_filter :set_cache_buster
+  
+  def set_cache_buster
+    response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+  end
 
   unless Rails.application.config.consider_all_requests_local
     rescue_from Exception, :with => :render_error
