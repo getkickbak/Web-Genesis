@@ -185,7 +185,8 @@ Genesis =
             var perms = this.perms.split(',');
             for(var i = 0; i < perms.length; i++)
             {
-               if(!response[0][perms[i]] || !parseInt(response[0][perms[i]]))
+               // publish_actions is a beta feature and will not be available to regular users
+               if((!response[0][perms[i]] || !parseInt(response[0][perms[i]])) && (perms[i] != 'publish_actions'))
                {
                   break;
                }

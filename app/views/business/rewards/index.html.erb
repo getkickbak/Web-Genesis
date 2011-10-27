@@ -1,32 +1,30 @@
 <%= render 'layouts/business/tabs' %>
 <%= form_tag rewards_path, :class => 'form-stacked marchant-form', :method => 'get' do %>
 <div>
-   <%= label_tag do  %> <h3>Enter Rewards Code</h3>
-   <% end %>
+   <%= label_tag do  %> <h3>Enter Rewards Code</h3> <% end %>
    <%= text_field_tag :search, params[:search], :class => 'xxlarge' %>
    <%= submit_tag "Lookup Rewards", :type => 'submit', :name => nil, :style => 'line-height:34px;', :class => 'btn large right' %>
+   <% if @reward %>
+   <%= label_tag do %> <h3 style='margin-top:20px;'>Results</h3> <% end %>
+   <table style="margin-bottom:0px;background:white;">
+      <thead>
+         <tr>
+            <th class="green ">Reward#</th>
+            <th class="green ">Status</th>
+            <th class="green ">Redemption Date</th>
+            <th class="green ">Action</th>
+         </tr>
+      </thead>
+      <tr>
+         <td class=""><%= @reward.reward_code %></td>
+         <td class=""><%= @reward.redeemed ? "Redeemed" : "Not Redeemed" %></td>
+         <td class=""><%= @reward.redeemed ? @reward.update_ts.strftime("%b %d, %Y") : "Not Yet" %></td>
+         <% if @reward.redeemed? %> <td class="">Nothing</td>
+         <% else %> <td class=""><%= link_to 'Redeem', redeem_reward_url(@reward) %></td>
+         <% end %>
+      </tr>
+   </table>
+   <% elsif defined? @reward %> <h3 style="text-align:center;margin-top:100px;"> No Vouchers were found </h3>
    <% end %>
 </div>
-<% if @reward %>
-<table style="margin-bottom:0px;">
-   <thead>
-      <tr>
-         <th class="green span6">Reward#</th>
-         <th class="green span4">Status</th>
-         <th class="green span6">Redemption Date</th>
-         <th class="green span3">Action</th>
-      </tr>
-   </thead>
-   <tr>
-      <td class="span6"><%= @reward.reward_code %></td>
-      <td class="span4"><%= @reward.redeemed ? "Redeemed" : "Not Redeemed" %></td>
-      <td class="span6"><%= @reward.redeemed ? @reward.update_ts.strftime("%b %d, %Y") : "Not Yet" %></td>
-      <% if @reward.redeemed? %> <td class="span3">Nothing</td>
-      <% else %> <td class="span3"><%= link_to 'Redeem', redeem_reward_url(@reward) %></td>
-      <% end %>
-   </tr>
-</table>
-<% elsif defined? @reward %>
-<div>
-   Not Found<div
-   <% end %>
+<% end %> 
