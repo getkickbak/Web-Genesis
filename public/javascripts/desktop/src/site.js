@@ -14,8 +14,8 @@ _logout = function()
 };
 Site =
 {
-   referralsMinHeight : 420, // 534
-   referralsMaxHeight : 420 + 503 + 13, //1005
+   //referralsMinHeight : 420, // 534
+   //referralsMaxHeight : 420 + 503 + 13, //1005
    resubmitFriendsEmail : false,
    dealNameSelector : '#mainDeal h2:first-child',
    //friendsMinHeight : 353 + 52 + 28 + 2 * 18,
@@ -289,7 +289,7 @@ Site =
                         this._url = referralURL;
                         this._msg = $('meta[property~="og:description"]').prop('content');
                         this._rewardBtn = $reward;
-                        Genesis._popupCommon(response.msg[0], "<p>"+response.msg[1]+"</p>" + "<p>"+response.msg[2]+"</p>", "#", "Yes", this.referralCompletePopup, "No", function()
+                        Genesis._popupCommon(response.msg[0], "<p>" + response.msg[1] + "</p>" + "<p>" + response.msg[2] + "</p>", "#", "Yes", this.referralCompletePopup, "No", function()
                         {
                            location.href = Site._url;
                         }, null, this);
@@ -369,6 +369,11 @@ Site =
       var start = 0, end = 10000;
       var referralsList = $("#referralsList");
       var referrals = $('#referralsList .scroller ul');
+
+      // Check limiters
+      this.referralsMinHeight = removeUnit($("#mainMsg").css('height')) + 13;
+      this.referralsMaxHeight = this.referralsMinHeight + removeUnit($("#mainDeal").css('height'));
+
       Genesis.ajax(true, Genesis.get_referrals, 'GET', "start=" + start + '&max=' + end, 'json', function(response)
       {
          var data = $.parseJSON(response.data);
@@ -385,37 +390,37 @@ Site =
          }
 
          // Make sure the HTML is updated by the browser
-         setTimeout(function()
+         setTimeout($.proxy(function()
          {
             var headerHeight = $(".referralsHeader").prop('offsetHeight');
             var bodyHeight = $("#referralsWrapper .scroller").prop("offsetHeight");
             var footerHeight = $(".referralsFooter").prop('offsetHeight');
             var netHeight = headerHeight + footerHeight;
-            var height = Math.max(bodyHeight, Site.referralsMinHeight - netHeight);
-            if(height > (Site.referralsMinHeight - netHeight))
+            var height = Math.max(bodyHeight, this.referralsMinHeight - netHeight);
+            if(height > (this.referralsMinHeight - netHeight))
             {
-               height = Math.min(bodyHeight, Site.referralsMaxHeight - netHeight);
-               if(height == (Site.referralsMaxHeight - netHeight))
+               height = Math.min(bodyHeight, this.referralsMaxHeight - netHeight);
+               if(height == (this.referralsMaxHeight - netHeight))
                {
                   $("#mainDeal").addClass("invisible");
                   enableScroll = true;
                }
             }
             referralsHeight.css("height", (height + netHeight - 20) + "px")
-            referralsList.removeClass("height0", 1000, function()
+            referralsList.removeClass("height0", 1000, $.proxy(function()
             {
                mainMsgReferralsBtn.trigger("click");
                if(enableScroll)
                {
-                  Site.referralsScroll = new iScroll('referralsWrapper',
+                  this.referralsScroll = new iScroll('referralsWrapper',
                   {
                      hScrollbar : false,
                      vScrollbar : true
                      //,scrollbarClass : 'myScrollbar'
                   });
                }
-            });
-         }, 0);
+            }, this));
+         }, Site), 0);
       });
    },
    backtoMain : function()
@@ -610,16 +615,16 @@ Site =
          }
          else
          {
-    	 	$("#friendReferralLoadingMask").switchClass("in", "hide", 100, function()
-	        {
-            	if(response.length == 1)
-        	    {
-    	           $("#secretCodeDialog").switchClass("hide", "in", 100);
-	            }
-            	else
-        	    {
-    	           Genesis.showErrMsg("Error Retrieving Friends List from Facebook. Reload Page to Try Again.");
-	            }
+            $("#friendReferralLoadingMask").switchClass("in", "hide", 100, function()
+            {
+               if(response.length == 1)
+               {
+                  $("#secretCodeDialog").switchClass("hide", "in", 100);
+               }
+               else
+               {
+                  Genesis.showErrMsg("Error Retrieving Friends List from Facebook. Reload Page to Try Again.");
+               }
             });
          }
       }, Site));

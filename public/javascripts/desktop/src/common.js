@@ -160,6 +160,41 @@ String.htmlDecode = (function()
 })();
 
 //---------------------------------------------------------------------------------
+// Standard Library Functions
+//---------------------------------------------------------------------------------
+function removeUnit(measurement, defaultValue)
+{
+   switch (typeof(measurement))
+   {
+      case 'number' :
+         return measurement;
+         break;
+      case 'string' :
+         return parseInt(measurement.slice(0, measurement.length - 2), (defaultValue) ? defaultValue : 0);
+         break;
+      default :
+         return defaultValue;
+         break;
+   }
+}
+
+function addUnit(measurement, defaultValue)
+{
+   switch (typeof(measurement))
+   {
+      case 'string' :
+         return ((Genesis.isEmpty(measurement)) ? (((defaultValue) ? defaultValue + 'px' : '')) : measurement + 'px');
+         break;
+      case 'number' :
+         return measurement + 'px';
+         break;
+      default :
+         return ((defaultValue) ? defaultValue + 'px' : '');
+         break;
+   }
+}
+
+//---------------------------------------------------------------------------------
 // JustForMyFriends Library
 //---------------------------------------------------------------------------------
 Genesis =
@@ -466,8 +501,7 @@ Genesis =
             primBtn.text(yesMsg);
             primBtn.unbind("click");
             primBtn.bind("click", function()
-            {
-               !yesFn || yesFn.call(cxt || this);
+            {!yesFn || yesFn.call(cxt || this);
             });
          }
          else
@@ -488,8 +522,7 @@ Genesis =
             secBtn.unbind("click");
             secBtn.bind("click", noFn ||
             function()
-            {
-               !noFn || noFn.call(cxt || this);
+            {!noFn || noFn.call(cxt || this);
                Genesis.popupDialog.modal('hide');
             });
 
