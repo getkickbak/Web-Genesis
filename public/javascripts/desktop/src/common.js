@@ -194,6 +194,16 @@ function addUnit(measurement, defaultValue)
    }
 }
 
+function convertString(v, rec, limit)
+{
+   if(!v)
+      return "";
+
+   if(v.length > limit)
+      return v.substring(0, limit) + ' ...';
+   return v;
+}
+
 //---------------------------------------------------------------------------------
 // JustForMyFriends Library
 //---------------------------------------------------------------------------------
