@@ -165,11 +165,11 @@ String.htmlDecode = (function()
 Genesis =
 {
    currFbId : "0",
-   perms : 'email,user_birthday,publish_stream,read_friendlists',
+   perms : 'email,user_birthday,publish_stream,read_friendlists,publish_actions',
    fbAppId : '197968780267830',
    fb_login_tag : function(forceReload)
    {
-      return '<fb:login-button scope="' + this.perms + '" on-login="" size="large" background="dark" length="long"></fb:login-button>';
+      return '<fb:login-button scope="' + this.perms + '" size="large" background="dark" length="long"></fb:login-button>';
    },
    checkFbPerms : function(fbUseId)
    {
