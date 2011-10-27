@@ -143,12 +143,12 @@ call to action
                      <% referrers = get_referrers(@deal.id, @referral.creator.id, 10) %>    
                      <% if referrers[:total] > 0 %>           		
                      <div style="float:left;">
-                        <a onclick="Site.getReferrals();" style="cursor:pointer;"><%= referrers[:total] %> other <% if referrers[:total] == 1 %>person<% else %>people<% end %> also recommend <%= @deal.merchant.name %></a>
+                        <a onclick="Site.getReferrals(<%= "#{@referral.referral_id}" %>);" style="cursor:pointer;"><%= referrers[:total] %> other <% if referrers[:total] == 1 %>person<% else %>people<% end %> also recommend <%= @deal.merchant.name %></a>
                         <table style="border:0;padding:0;margin:0;">
                            <tr>
                            <% referrers[:items].each do |referrer| %>
                            <td style="padding:0 1px 0 0;border:0;margin:0;width:36px;">
-                              <img  style="cursor:pointer;" onclick="Site.getReferrals();" width="36" src="<%= "http://graph.facebook.com/#{referrer.facebook_id}/picture?type=square&" %>">
+                              <img  style="cursor:pointer;" onclick="Site.getReferrals(<%= "#{@referral.referral_id}" %>);" width="36" src="<%= "http://graph.facebook.com/#{referrer.facebook_id}/picture?type=square&" %>">
                            </td>                           
                            <% end %>
                            <% (1..10-referrers[:items].to_a.length).each do |i| %>

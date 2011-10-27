@@ -364,7 +364,7 @@ Site =
    {
       return '<li class="referralsBlock">' + ('<div class="clearfix">' + '<img class="left commentImage" src="http://graph.facebook.com/' + facebook_id + '/picture?type=square&"/>' + '<div class="commentBlock">' + '<div style="padding:5px;margin-bottom:10px;line-height:20px;background:#E1E4F2;border-bottom:1px solid #CCCCCC;">' + '<a class="commentName">' + name + '</a>' + '<div class="right">' + Genesis.convertDate(Date.parse(timestamp)) + '</div>' + '</div>' + '<div class="postContent">' + comment + '</div>' + '</div>') + '</li>';
    },
-   getReferrals : function()
+   getReferrals : function(referral_id)
    {
       var start = 0, end = 10000;
       var referralsList = $("#referralsList");
@@ -374,7 +374,7 @@ Site =
       this.referralsMinHeight = removeUnit($("#mainMsg").css('height')) + 13;
       this.referralsMaxHeight = this.referralsMinHeight + removeUnit($("#mainDeal").css('height'));
 
-      Genesis.ajax(true, Genesis.get_referrals, 'GET', "start=" + start + '&max=' + end, 'json', function(response)
+      Genesis.ajax(true, Genesis.get_referrals, 'GET', "referral_id=" + referral_id + "&start=" + start + '&max=' + end, 'json', function(response)
       {
          var data = $.parseJSON(response.data);
          var enableScroll = false;

@@ -61,9 +61,9 @@ class Referral
     return referrals
   end
 
-  def self.find_by_deal(deal_id, start, max)
-    count = Referral.count(Referral.deal.id => deal_id, :confirmed => true)
-    referrals = Referral.all(Referral.deal.id => deal_id, :confirmed => true, :order => [ :created_ts.desc ], :offset => start, :limit => max)
+  def self.find_by_deal(deal_id, current_referral_id, start, max)
+    count = Referral.count(Referral.deal.id => deal_id, :referral_id.not => current_referral_id, :confirmed => true)
+    referrals = Referral.all(Referral.deal.id => deal_id, :referral_id.not => current_referral_id, :confirmed => true, :order => [ :created_ts.desc ], :offset => start, :limit => max)
     result = {}
     result[:total] = count
     result[:items] = referrals
