@@ -19,8 +19,9 @@
 		<script type="text/javascript" src="/javascripts/desktop/lib/date.js"></script>
 		<script type="text/javascript" src="/javascripts/desktop/lib/Datejs-all/src/extras.js"></script>
 		<script type="text/javascript">
-         var clientTime = new Date();
-      </script>
+var clientTime=new Date();
+
+		</script>
 		<script type="text/javascript" src="/javascripts/desktop/less-1.1.4.min.js"></script>
 		<script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=places&amp;sensor=true"></script>
 		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
@@ -58,8 +59,19 @@
 			<div style="margin-top:100px;" >
 				&#160;
 			</div>
+			<div class="clearfix"></div>
+			<div class="alert-message warning fade hide">
+				<a class="close">x</a>
+			</div>
+			<div class="alert-message error fade hide">
+				<a class="close">x</a>
+			</div>
 			<%= yield %> <!-- Footer  -->
 			<footer>
+				<div class="right">
+					<% if signed_in? %> <a href="/merchant_terms">terms</a> |
+					<% end %> <a href="/contact_us">contact us</a>
+				</div>
 				<p>
 					&copy;JustForMyFriends 2011
 				</p>

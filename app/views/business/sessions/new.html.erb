@@ -1,7 +1,24 @@
-<h1>Sign in to JustForMyFriends!</h1>
+<% content_for :script do %>
+<script type="text/javascript">
+$(document).ready($(function() {
+var msg=$("#error_explanation").html();
+if(msg) {
+Genesis.showErrMsg(msg,null,true);
+}
+}));
 
+</script>
+<% end %>
+<h3>Sign in to JustForMyFriends</h3>
+<% if flash[:error] %>
+<div style="display:none;" id="error_explanation">
+	<p>
+		<%= flash[:error] %>
+	</p>
+</div>
+<% end %>
 <%= simple_form_for(:session, :url => sessions_path) do |f| %>
-    <%= f.input :email %>
-    <%= f.input :password %>
-    <%= f.button :submit, "Sign In", :class => 'btn' %>
+<%= f.input :email %>
+<%= f.input :password %>
+<%= f.button :submit, "Sign In", :class => 'btn' %>
 <% end %>

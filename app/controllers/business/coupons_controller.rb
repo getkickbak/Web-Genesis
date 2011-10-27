@@ -31,7 +31,7 @@ module Business
           @coupon[:redeemed] = true
           @coupon[:update_ts] = Time.now
           @coupon.save
-          msg = "Coupon# #{@coupon.coupon_id} has been successfully redeemed."
+          msg = "Voucher# #{@coupon.coupon_id} has been successfully redeemed."
           flash[:notice] = msg
           respond_to do |format|
             format.html { redirect_to coupons_path+"?search=#{params[:id]}" }

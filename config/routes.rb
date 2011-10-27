@@ -4,6 +4,10 @@ Genesis::Application.routes.draw do
     constraints :subdomain => "merchant" do
       resources :sessions, :only => [:new, :create, :destroy]
 
+      match "/merchant_terms" => 'pages#merchant_terms'
+      match "/contact_us" => 'pages#contact_us'
+      match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
+
       match '/sign_in' => 'sessions#new'
       match '/sign_out' => 'sessions#destroy'
 

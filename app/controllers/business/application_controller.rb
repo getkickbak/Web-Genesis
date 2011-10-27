@@ -6,6 +6,7 @@ module Business
     use Rails::DataMapper::Middleware::IdentityMap
     protect_from_forgery
     helper TabsOnRails::ActionController::HelperMethods
+    helper SessionsHelper
     include SessionsHelper
     #check_authorization :unless => :devise_controller?
     before_filter :set_cache_buster

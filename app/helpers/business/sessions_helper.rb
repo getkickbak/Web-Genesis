@@ -4,7 +4,7 @@ module Business
       cookies.permanent.signed[:remember_token] = [merchant.id, merchant.salt]
       self.current_merchant = merchant
     end
-
+    
     def signed_in?
       !current_merchant.nil?
     end

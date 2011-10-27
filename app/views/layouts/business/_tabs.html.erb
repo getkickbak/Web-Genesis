@@ -1,35 +1,32 @@
-<% content_for :script do %> <script type="text/javascript">
-   $(document).ready($(function()
-   {
-      var msg = $("#notice").html();
-      if(msg)
-      {
-         Genesis.showWarningMsg(msg, null, true);
-      }
-   }));
+<% content_for :script do %>
+<script type="text/javascript">
+$(document).ready($(function() {
+var msg=$("#notice").html();
+if(msg) {
+Genesis.showWarningMsg(msg,null,true);
+}
+}));
 
 </script>
 <% end %>
-<ul class="tabs">
-   <%= tabs_tag :builder => Business::ApplicationHelper::MenuTabBuilder do |tab| %>
-   <%= tab.coupons 'Coupons', coupons_path %>
-   <%= tab.rewards 'Rewards', rewards_path %>
-   <% end %>
-</ul>
-<!-- Alert Messages -->
-<div class="alert-message warning fade hide">
-   <a class="close">x</a>
-</div>
-<div class="alert-message error fade hide">
-   <a class="close">x</a>
-</div>
 <% if notice %>
 <div style="display:none;" id="notice">
-   <p><%= notice %></p>
+	<p>
+		<%= notice %>
+	</p>
 </div>
 <% end %>
 <% if flash[:error] %>
 <div style="display:none;" id="error_explanation">
-   <p><%= flash[:error] %></p>
+	<p>
+		<%= flash[:error] %>
+	</p>
 </div>
 <% end %>
+<ul class="tabs">
+	<%= tabs_tag :builder => Business::ApplicationHelper::MenuTabBuilder do |tab| %>
+	<%= tab.coupons 'Vouchers', coupons_path %>
+	<%= tab.rewards 'Rewards', rewards_path %>
+	<% end %>
+</ul>
+<div class="clearfix"></div>

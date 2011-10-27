@@ -10,7 +10,14 @@ class Contact
       ['General inquiry', 'General inquiry'],
       ['Suggest a business', 'Suggest a business']
     ]
-     
+  
+  @@merchant_topic_list = [
+      ['Login issues', 'Login issues'],
+      ['Voucher issues', 'Voucher issues'],
+      ['Reward issues','Reward issues'],
+      ['General inquiry', 'General inquiry']
+    ] 
+    
   attr_accessor :name, :email, :topic, :description
   
   validates :name, :presence => true
@@ -20,6 +27,10 @@ class Contact
   
   def self.topic_list
     @@topic_list
+  end
+  
+  def self.merchant_topic_list
+    @@merchant_topic_list
   end
   
   def initialize(attributes = {})

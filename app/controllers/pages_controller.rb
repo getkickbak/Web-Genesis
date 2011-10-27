@@ -27,7 +27,8 @@ class PagesController < ApplicationController
 
   def privacy
   end
-  
+
   def merchant_terms
+    
   end
 end
