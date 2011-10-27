@@ -122,7 +122,7 @@ call to action
                   <tr>
                      <td colspan="2" style="margin:0px;padding:0px 0px 0px 10px;" >
                      <p style="margin:0px;padding:0px;">
-                        Recommendation from <% if signed_in? && @referral.creator.id == current_user.id %> you<% else %> your friend<% end %>, <a href="<%= "http://www.facebook.com/profile.php?id=#{@referral.creator.facebook_id}" %>" target="_blank"><%= @referral.creator.name %></a>:
+                        Recommendation from <% if signed_in? && @referral.creator.id == current_user.id %> you<% else %> your friend<% end %>, <a href="<%= "http://www.facebook.com/profile.php?id=#{@referral.creator.facebook_id}" %>" target="_blank"><%= @referral.creator.name[0..31] %></a>:
                      </p></td>
                   </tr>
                   <tr>
