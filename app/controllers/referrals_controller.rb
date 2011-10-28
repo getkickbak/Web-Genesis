@@ -99,7 +99,7 @@ class ReferralsController < ApplicationController
               @referral.deal[:reward_count] += 1
               @referral.deal.save
               UserMailer.reward_email(@reward).deliver
-              flash[:notice] = "Thank you for the referral!  Your reward email will be arrive shortly."
+              flash[:notice] = "Thank you for the referral!  Your reward email will arrive in your inbox shortly."
             else
               flash[:notice] = "Sorry, we are out of rewards but you can still take advantage of this special deal."
             end
