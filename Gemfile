@@ -45,6 +45,7 @@ gem 'pdfkit'
 gem 'barby', '~> 0.5.0'
 gem 'wkhtmltopdf-binary'
 gem 'tabs_on_rails'
+gem 'redis'
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION

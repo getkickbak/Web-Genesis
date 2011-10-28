@@ -130,6 +130,7 @@ GEM
       thor (~> 0.14.4)
     rake (0.9.2.2)
     rdoc (3.9.1)
+    redis (2.2.2)
     rqrcode (0.4.2)
     rqrcode_png (0.1.1)
       chunky_png
@@ -200,6 +201,7 @@ DEPENDENCIES
   pdfkit
   railties (~> 3.0.9)
   rake (~> 0.9.2.2)
+  redis
   rqrcode_png (~> 0.1.1)
   rspec-rails (~> 2.0.1)
   ruby-debug19
