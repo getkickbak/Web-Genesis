@@ -11,9 +11,9 @@ Genesis::Application.routes.draw do
       match '/sign_in' => 'sessions#new'
       match '/sign_out' => 'sessions#destroy'
 
-      match '/coupons' => 'coupons#index', :as => :coupons
-      match '/coupons/:id' => 'coupons#show'
-      match '/coupons/:id/redeem' => 'coupons#redeem', :as => :redeem_coupon
+      match '/vouchers' => 'coupons#index', :as => :coupons
+      match '/vouchers/:id' => 'coupons#show'
+      match '/vouchers/:id/redeem' => 'coupons#redeem', :as => :redeem_coupon
 
       match '/rewards' => 'rewards#index', :as => :rewards
       match '/rewards/:id' => 'rewards#show'
