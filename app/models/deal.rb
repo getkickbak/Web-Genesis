@@ -19,6 +19,8 @@ class Deal
   property :max_per_person, Integer, :required => true, :default => 0
   property :max_limit, Integer, :default => 0
   property :limit_count, Integer, :default => 0
+  property :reward_title, String, :required => true, :default => ""
+  property :reward_details, String, :length => 512, :required => true, :default => ""
   property :max_reward, Integer, :default => 0
   property :reward_count, Integer, :default => 0
   property :reward_secret_code, String, :default => ""
@@ -29,7 +31,8 @@ class Deal
 
   attr_accessor :start_date_str, :end_date_str, :expiry_date_str
   attr_accessible :title, :description, :photo_urls, :highlights, :details, :location, :start_date,
-                  :end_date, :expiry_date, :max_per_person, :max_limit, :max_reward, :max_reward_count, :subdeals_attributes, :referral_subjects_attributes
+                  :end_date, :expiry_date, :max_per_person, :max_limit, :reward_title, :reward_details, 
+                  :max_reward, :max_reward_count, :subdeals_attributes, :referral_subjects_attributes
 
   has n, :referral_subjects, :order => [ :seq_num.asc ]
   has n, :subdeals, :order => [ :discount_price.desc ]
@@ -61,6 +64,8 @@ class Deal
       :expiry_date => now,
       :max_per_person => deal_info[:max_per_person],
       :max_limit => deal_info[:max_limit],
+      :reward_title => deal_info[:reward_title],
+      :reward_details => deal_info[:reward_details],
       :max_reward => deal_info[:max_reward],
       :subdeals_attributes => deal_info[:subdeals_attributes] ? deal_info[:subdeals_attributes] : {},
       :referral_subjects_attributes => deal_info[:referral_subjects_attributes] ? deal_info[:referral_subjects_attributes] : {}
@@ -106,6 +111,8 @@ class Deal
     self.expiry_date_str = r["expiry_date"]
     self.max_per_person = deal_info[:max_per_person]
     self.max_limit = deal_info[:max_limit]
+    self.reward_title = deal_info[:reward_title]
+    self.reward_details = deal_info[:reward_details]
     self.max_reward = deal_info[:max_reward]
     self.subdeals_attributes = deal_info[:subdeals_attributes] ? deal_info[:subdeals_attributes] : {}
     self.referral_subjects_attributes = deal_info[:referral_subjects_attributes] ? deal_info[:referral_subjects_attributes] : {}

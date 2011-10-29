@@ -17,7 +17,7 @@ table {
 			<table cellspacing="1" style="font-size:13px;border-collapse: collapse;position:relative;">
 				<tbody>
 					<tr>
-						<td colspan="2" style="font-size:24px;color:#c1c1c1;font-weight:bold;margin-right:10px;" valign="top"><span style="font-size:20px;float:left;width:350px;color:black;"><b>Free C$2 Tim Hortons Gift Card</b></span>
+						<td colspan="2" style="font-size:24px;color:#c1c1c1;font-weight:bold;margin-right:10px;" valign="top"><span style="font-size:20px;float:left;width:350px;color:black;"><b><%= @deal.reward_title %></b></span>
 						<div style="float:right;">
 							<%= @reward_code %>
 						</div></td>
@@ -47,7 +47,7 @@ table {
 						<div style="float:left;">
 							<b>Details:</b>
 							<br>
-							Expires Dec 31, 2011.  This coupon is not convertible to cash.  Whilst quantity last.  Offer subject to change without prior notice.
+							<%= @deal.reward_details %>
 						</div></td>
 						<td style="vertical-align:middle;">
 						<div style="text-align:center;">
