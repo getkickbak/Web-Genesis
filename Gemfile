@@ -73,7 +73,7 @@ end
 
 group(:production) do  
   #gem "mysql2", :git => 'git://github.com/brianmario/mysql2'
-  gem "mysql2", '~> 0.2.13'
+  gem "mysql2"
   #gem 'ruby-debug19'
   gem 'dm-mysql-adapter', DM_VERSION
 end
