@@ -5,7 +5,7 @@ class Reward
 
   property :referral_id, Integer, :key => true
   property :reward_code, String, :unique_index => true,  :required => true, :default => ""
-  property :qr_code, String, :default => ""
+  property :qr_code, String, :required => true, :default => ""
   property :redeemed, Boolean, :default => false
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
