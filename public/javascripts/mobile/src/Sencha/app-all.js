@@ -368,8 +368,7 @@ Ext.define("Sencha.view.Viewport",
    },
    buildDockedItems : function()
    {
-      return
-      {
+      return {
          xtype : "navigationbar",
          itemId : "viewportToolbar",
          docked : "top",
@@ -695,8 +694,7 @@ Ext.define("Sencha.view.SessionDetail",
    buildDetailComponent : function()
    {
       var a = this, b = a.record.getData();
-      return
-      {
+      return {
          xtype : "container",
          flex : 1,
          scrollable : true,
@@ -754,8 +752,7 @@ Ext.define("Sencha.view.SessionDetail",
    buildLocationCt : function()
    {
       var b = this, a = b.record;
-      return
-      {
+      return {
          xtype : "component",
          cls : "sc-miniboxes",
          tpl : b.trackTimeTpl,
@@ -954,8 +951,7 @@ Ext.define("Sencha.view.SpeakerDetail",
    buildDetailContainer : function()
    {
       var a = this;
-      return
-      {
+      return {
          xtype : "component",
          data : a.record.getData(),
          tpl : a.getSpeakerDetailTpl(),
@@ -1043,8 +1039,7 @@ Ext.define("Sencha.store.Speakers",
    })
 }); (function()
 {
-   var a =
-   {
+   var a = {
       platinum : 0,
       hackathon : 1,
       gold : 2,
@@ -1841,7 +1836,7 @@ Ext.Loader.setConfig(
 });
 Ext.require("Ext.DateExtras");
 Ext.require(["Sencha.Util", "Sencha.DataManager"]);
-Ext.regApplication(
+Ext.application(
 {
    name : "Sencha",
    //appFolder : "js/Sencha/app",
@@ -1870,5 +1865,4 @@ Ext.regApplication(
       })
       console.log('mainLaunch');
    }
-});
 });
