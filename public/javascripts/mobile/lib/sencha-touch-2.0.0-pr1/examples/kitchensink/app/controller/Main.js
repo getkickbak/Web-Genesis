@@ -26,7 +26,7 @@ Ext.define('Kitchensink.controller.Main', {
         'YQL',
         'Ajax',
         'Video',
-        'Audio',
+        'Audio',f
         'NestedLoading',
         'Carousel',
         'TouchEvents'

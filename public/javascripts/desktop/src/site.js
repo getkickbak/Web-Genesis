@@ -517,7 +517,8 @@ Site =
                {
                   this.friendsScroll.refresh();
                }
-               else
+               // Scrolling required for iOS < 5 and other browsers
+               else if ((client.OS != 'iPhone') || (client.version < 5.0))
                {
 
                   this.friendsScroll = new iScroll('referralsBrowserWrapper',
