@@ -3,7 +3,7 @@ class MerchantsController < ApplicationController
   #load_and_authorize_resource
 
   def index
-    authorize! :read, Merchant
+    authorize! :manage, :all
 
     start = 0
     max = 10

@@ -25,6 +25,7 @@
 	<%= f.input :max_limit %>
 	<%= f.input :reward_title %>
 	<%= f.input :reward_details, :as => :text %>
+	<%= f.input :reward_expiry_date, :as => :date, :order => [:day, :month, :year] %>
 	<%= f.input :max_reward %>
 
 	<%= f.simple_fields_for :subdeals do |builder| %>

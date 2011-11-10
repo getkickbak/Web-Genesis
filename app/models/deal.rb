@@ -21,7 +21,8 @@ class Deal
   property :limit_count, Integer, :default => 0
   property :reward_title, String, :required => true, :default => ""
   property :reward_details, String, :length => 512, :required => true, :default => ""
-  property :max_reward, Integer, :default => 0
+  property :reward_expiry_date, DateTime, :required => true, :default => ::Constant::MIN_TIME
+  property :max_reward, Integer, :required => true, :default => 0
   property :reward_count, Integer, :default => 0
   property :reward_secret_code, String, :default => ""
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -29,9 +30,9 @@ class Deal
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
 
-  attr_accessor :start_date_str, :end_date_str, :expiry_date_str
+  attr_accessor :start_date_str, :end_date_str, :expiry_date_str, :reward_expiry_date_str
   attr_accessible :title, :description, :photo_urls, :highlights, :details, :location, :start_date,
-                  :end_date, :expiry_date, :max_per_person, :max_limit, :reward_title, :reward_details, 
+                  :end_date, :expiry_date, :max_per_person, :max_limit, :reward_title, :reward_details, :reward_expiry_date,
                   :max_reward, :max_reward_count, :subdeals_attributes, :referral_subjects_attributes
 
   has n, :referral_subjects, :order => [ :seq_num.asc ]
@@ -41,7 +42,8 @@ class Deal
   accepts_nested_attributes_for :referral_subjects, :allow_destroy => true, :reject_if => lambda { |s| s[:content].blank? }
   accepts_nested_attributes_for :subdeals, :allow_destroy => true, :reject_if => lambda { |s| s[:title].blank? || s[:coupon_title].blank? || s[:regular_price].blank? || s[:discount_price].blank? }
 
-  validates_with_method :validate_min_subdeals, :validate_min_referral_subjects, :validate_start_date, :validate_end_date, :validate_expiry_date, :validate_max_limit, :validate_max_reward
+  validates_with_method :validate_min_subdeals, :validate_min_referral_subjects, :validate_start_date, :validate_end_date, :validate_expiry_date, 
+                        :validate_reward_expiry_date, :validate_max_limit, :validate_max_reward
   
   before :save, :minimize_description
   
@@ -66,6 +68,7 @@ class Deal
       :max_limit => deal_info[:max_limit],
       :reward_title => deal_info[:reward_title],
       :reward_details => deal_info[:reward_details],
+      :reward_expiry_date => now,
       :max_reward => deal_info[:max_reward],
       :subdeals_attributes => deal_info[:subdeals_attributes] ? deal_info[:subdeals_attributes] : {},
       :referral_subjects_attributes => deal_info[:referral_subjects_attributes] ? deal_info[:referral_subjects_attributes] : {}
@@ -101,7 +104,7 @@ class Deal
     self.details = deal_info[:details].strip
     self.photo_urls = deal_info[:photo_urls].strip
     self.location = deal_info[:location].strip
-    dates = ["start_date","end_date","expiry_date"]
+    dates = ["start_date","end_date","expiry_date","reward_expiry_date"]
     r = {}
     dates.each do |d|
       r[d] = deal_info[d+"(1i)"]+'-'+deal_info[d+"(2i)"]+'-'+deal_info[d+"(3i)"]
@@ -113,6 +116,7 @@ class Deal
     self.max_limit = deal_info[:max_limit]
     self.reward_title = deal_info[:reward_title]
     self.reward_details = deal_info[:reward_details]
+    self.reward_expiry_date_str = r["reward_expiry_date"]
     self.max_reward = deal_info[:max_reward]
     self.subdeals_attributes = deal_info[:subdeals_attributes] ? deal_info[:subdeals_attributes] : {}
     self.referral_subjects_attributes = deal_info[:referral_subjects_attributes] ? deal_info[:referral_subjects_attributes] : {}
@@ -161,6 +165,10 @@ class Deal
   
   def validate_expiry_date
     validate_date("expiry_date", "expiry_date_str")
+  end
+  
+  def validate_reward_expiry_date
+    validate_date("reward_expiry_date", "reward_expiry_date_str")  
   end
   
   def validate_date(n,v)

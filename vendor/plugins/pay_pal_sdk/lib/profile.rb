@@ -4,6 +4,7 @@ require 'socket'
 module PayPalSDKProfiles
   class Profile
     cattr_accessor :headers
+    cattr_accessor :config
     cattr_accessor :endpoints
     cattr_accessor :client_info
     cattr_accessor :proxy_info
@@ -13,6 +14,7 @@ module PayPalSDKProfiles
 
     ADAPTIVE_SERVICE_PAY = "/AdaptivePayments/Pay"
     ADAPTIVE_SERVICE_PAYMENT_DETAILS = "/AdaptivePayments/PaymentDetails"
+    MASS_PAY = "/nvp"
 
     #Developer central URL
     @@DEV_CENTRAL_URL="https://developer.paypal.com"
@@ -35,6 +37,9 @@ module PayPalSDKProfiles
     # Information needed for tracking purposes.
     @@client_info = {"VERSION" => nil, "SOURCE" => nil}
 
+    # specify configuration
+    @@config = {}
+    
     def self.load_config(config)
       @@config = config
       @@PAYPAL_REDIRECT_URL = @@config["REDIRECT_URL"]
@@ -43,13 +48,14 @@ module PayPalSDKProfiles
       @@headers["X-PAYPAL-SECURITY-SIGNATURE"] = @@config["SIGNATURE"]
       @@headers["X-PAYPAL-APPLICATION-ID"] = @@config["APPLICATION_ID"]
       @@headers["X-PAYPAL-DEVICE-IPADDRESS"] = @@config["IP_ADDRESS"]
-      @@endpoints["SERVER"] = @@config["API_SERVER"]
+      @@endpoints["ADAPTIVE_PAY_SERVER"] = @@config["API_SERVER"]
+      @@endpoints["MASS_PAY_SERVER"] = @@config["MASS_PAY_API_SERVER"]
       @@client_details["ipAddress"] = @@config["IP_ADDRESS"]
       @@client_details["applicationId"] = @@config["APPLICATION_ID"]
       @@proxy_info["USE_PROXY"] = @@config["USE_PROXY"]
+      @@client_info["VERSION"] = @@config["VERSION"]
       @@client_info["SOURCE"] = @@config["SOURCE"]
     end
-
   end
 
 end

@@ -9,15 +9,16 @@ class Ability
   def anonymous
     #can :read, [Deal,Referral,Merchant]
     can :read, [Deal]
-    can :create, [Order]
   end
   
   def user
     anonymous
     can :manage, User, :id => @user.id
+    can :read, Coupon, :user => { :id => @user.id } 
     can :read, Order, :user => { :id => @user.id }
+    can :create, Order
     can :delete, Order, :user => { :id => @user.id }, :payment_confirmed => false
-    can [:create, :update], [Referral]
+    can [:create, :update], Referral
   end
   
   def admin

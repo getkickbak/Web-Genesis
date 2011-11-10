@@ -62,7 +62,7 @@ class Referral
   end
 
   def self.find_by_deal(deal_id, current_referral_id, start, max)
-    count = Referral.count(Referral.deal.id => deal_id, :referral_id.not => current_referral_id, :confirmed => true)
+    count = Referral.count(Referral.deal.id => deal_id, :referral_id.not => current_referral_id, :confirmed => true) || 0
     referrals = Referral.all(Referral.deal.id => deal_id, :referral_id.not => current_referral_id, :confirmed => true, :order => [ :created_ts.desc ], :offset => start, :limit => max)
     result = {}
     result[:total] = count
@@ -79,7 +79,7 @@ class Referral
   end
   
   def self.find_referrers(deal_id, current_referrer_id, max)
-    count = Referral.count(Referral.deal.id => deal_id, Referral.creator.id.not => current_referrer_id, :confirmed => true)
+    count = Referral.count(Referral.deal.id => deal_id, Referral.creator.id.not => current_referrer_id, :confirmed => true) || 0
     referrer_ids = DataMapper.repository(:default).adapter.select(
       "SELECT creator_id FROM referrals WHERE deal_id = ? AND creator_id <> ? AND confirmed = ? AND deleted_ts IS NULL
        ORDER BY created_ts DESC 

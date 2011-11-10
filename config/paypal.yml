@@ -9,6 +9,7 @@ development:
           
   #    @@endpoints 
   API_SERVER:  svcs.sandbox.paypal.com
+  MASS_PAY_API_SERVER: api-3t.sandbox.paypal.com
 
   # Proxy information of the client environment.   @@proxy_info 
   USE_PROXY:  false
@@ -26,7 +27,6 @@ development:
   VERSION: "4.0"
   SOURCE: PayPalRubySDKV1.2.0
 
-
 test:
   # redirect url
   REDIRECT_URL: https://www.sandbox.paypal.com/webscr?cmd=_ap-payment&paykey=
@@ -38,6 +38,7 @@ test:
           
   #    @@endpoints 
   API_SERVER:  svcs.sandbox.paypal.com
+  MASS_PAY_API_SERVER: api-3t.sandbox.paypal.com
 
   # Proxy information of the client environment.   @@proxy_info 
   USE_PROXY:  false
@@ -72,6 +73,8 @@ production:
   #    @@endpoints 
   #API_SERVER:  svcs.paypal.com
   API_SERVER:  svcs.sandbox.paypal.com
+  #MASS_PAY_API_SERVER: api-3t.paypal.com
+  MASS_PAY_API_SERVER: api-3t.sandbox.paypal.com
 
   # Proxy information of the client environment.   @@proxy_info 
   USE_PROXY:  false

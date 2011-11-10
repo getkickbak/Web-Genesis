@@ -3,6 +3,7 @@ class UserMailer < ActionMailer::Base
   
   def order_confirmed_email(order, is_gift)
     @order = order
+    @referral_id = Referral.get(order.referral_id).referral_id
     @is_gift = is_gift
     @subdeal = Subdeal.get(@order.subdeal_id)
     @order.coupons.each do |coupon|
@@ -24,5 +25,11 @@ class UserMailer < ActionMailer::Base
   def contact_email(contact)
     @contact = contact
     mail(:from => "#{@contact.name} <#{@contact.email}>", :to => 'help@justformyfriends.com', :subject => @contact.topic)
+  end
+  
+  def voucher_reminder_email(user, coupons)
+    @user = user
+    @coupons = coupons
+    mail(:to => user.email, :subject => "Reminder - Use your vouchers before they expire!")
   end
 end

@@ -14,6 +14,7 @@
 		<th>Max Limit</th>
 		<th>Reward Title</th>
 		<th>Reward Details</th>
+		<th>Reward Expiry Date</th>
 		<th>Max Reward</th>
 		<th></th>
 		<th></th>
@@ -34,6 +35,7 @@
 		<td><%= deal.max_limit %></td>
 		<td><%= deal.reward_title %></td>
 		<td><%= deal.reward_details %></td>
+		<td><%= deal.reward_expiry_date %></td>
 		<td><%= deal.max_reward %></td>
 		<td><%= link_to 'Show', merchant_deal_path(@merchant,deal) %></td>
 		<td><%= link_to 'Edit', edit_merchant_deal_path(@merchant,deal) %></td>
