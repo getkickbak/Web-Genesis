@@ -5,6 +5,18 @@
 	</p>
 </div>
 <% end %>
+<% if notice %>
+<div style="display:none;" id="notice">
+	<p>
+		<%= notice %>
+	</p>
+</div>
+<% end %>
+<% if flash[:error] %>
+<div style="display:none;" id="error_explanation">
+   <p><%= flash[:error] %></p>
+</div>
+<% end %>
 <%= form_for :admin, :url => admin_run_path do |f| %>
 <table style="margin-bottom:0px;margin-top:5px;background-color:white;">
 	<thead>
