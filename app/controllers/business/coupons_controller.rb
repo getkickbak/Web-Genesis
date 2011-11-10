@@ -3,7 +3,7 @@ module Business
     before_filter :authenticate_merchant!
     set_tab :coupons
     def index
-      authorize! :read, current_merchant
+      authorize! :read, Coupon
 
       if params[:search]
         @coupon = Coupon.first(:coupon_id => params[:search])

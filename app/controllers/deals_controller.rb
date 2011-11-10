@@ -5,7 +5,7 @@ class DealsController < ApplicationController
   #load_and_authorize_resource
   
   def index
-    authorize! :read, Merchant
+    authorize! :manage, :all
     
     merchant_id = params[:merchant_id]
     start = 0

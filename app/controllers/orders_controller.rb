@@ -9,7 +9,7 @@ class OrdersController < ApplicationController
   #load_and_authorize_resource
   @@clientDetails=PayPalSDKProfiles::Profile.client_details
   def index
-    authorize! :read, current_user
+    authorize! :manage, :all
 
     user_id = params[:user_id]
     start = 0
@@ -233,6 +233,7 @@ class OrdersController < ApplicationController
   end
 
   def confirmed_email
+    authorize! :manage, :all
     @order = Order.first(:order_id => params[:id])
     @subdeal = Subdeal.get(@order.subdeal_id)
 
@@ -243,6 +244,7 @@ class OrdersController < ApplicationController
   end
 
   def confirmed_email_template
+    authorize! :manage, :all
     @order = Order.first(:order_id => params[:id])
 
     respond_to do |format|

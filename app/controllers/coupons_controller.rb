@@ -11,6 +11,7 @@ class CouponsController < ApplicationController
   end
 
   def template
+    authorize! :manage, :all
     @coupon = Coupon.first(:coupon_id => params[:id])
 
     @order = @coupon.order
@@ -24,6 +25,7 @@ class CouponsController < ApplicationController
   end
 
   def reminder_email
+    authorize! :manage, :all
     coupon = Coupon.first(:coupon_id => params[:id])
     @user = coupon.user
     @coupons = [coupon]

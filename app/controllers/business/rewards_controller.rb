@@ -3,7 +3,7 @@ module Business
     before_filter :authenticate_merchant!
     set_tab :rewards
     def index
-      authorize! :read, current_merchant
+      authorize! :read, Reward
 
       if params[:search]
       @reward = Reward.first(:reward_code => params[:search])

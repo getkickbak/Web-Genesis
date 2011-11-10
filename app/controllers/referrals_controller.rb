@@ -142,6 +142,7 @@ class ReferralsController < ApplicationController
    end
 
    def reward_email
+      authorize! :manage, :all
       @referral = Referral.first(:referral_id => params[:id])
       @reward = Reward.first(:referral_id => @referral.id)
 
@@ -152,6 +153,7 @@ class ReferralsController < ApplicationController
    end
 
    def reward_email_template
+      authorize! :manage, :all
       @referral = Referral.first(:referral_id => params[:id])
 
       respond_to do |format|
@@ -161,6 +163,7 @@ class ReferralsController < ApplicationController
    end
 
    def reward_template
+      authorize! :manage, :all
       @referral = Referral.first(:referral_id => params[:id])
       @reward = Reward.first(:referral_id => @referral.id)
 
