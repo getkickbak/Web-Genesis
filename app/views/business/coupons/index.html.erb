@@ -21,9 +21,15 @@
 			<td class=""><%= @coupon.coupon_id %></td>
 			<td class=""><%= @coupon.order.order_id %></td>
 			<td class="">C$<%= @subdeal.regular_price.to_i %></td>
-			<td class=""><%= @coupon.redeemed ? "Redeemed" : "Not Redeemed"%></td>
+			<% if @coupon.redeemed %>
+			<td class="">Redeemed</td>
+			<% elsif @coupon.expiry_date.to_date >= (Date.today - 7) %>
+			<td class="">Not Redeemed</td>
+			<% else %>
+			<td class="">Expired</td>
+			<% end %>
 			<td class=""><%= @coupon.redeemed ? @coupon.update_ts.strftime("%b %d, %Y") : "Not Yet" %></td>
-			<% if @coupon.redeemed? %> <td class="">Nothing</td>
+			<% if @coupon.redeemed? || @coupon.expiry_date.to_date < (Date.today - 7) %> <td class="">Nothing</td>
 			<% else %> <td class=""><%= link_to 'Redeem', redeem_coupon_url(@coupon) %></td>
 			<% end %>
 		</tr>

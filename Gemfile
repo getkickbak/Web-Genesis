@@ -46,6 +46,8 @@ gem 'barby', '~> 0.5.0'
 gem 'wkhtmltopdf-binary'
 gem 'tabs_on_rails'
 gem 'redis'
+gem 'resque'
+gem 'resque-scheduler'
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION

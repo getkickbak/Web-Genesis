@@ -3,7 +3,7 @@ module Business
     before_filter :authenticate_merchant!
     set_tab :rewards
     def index
-      authorize! :read, Reward
+      authorize! :read, current_merchant
 
       if params[:search]
       @reward = Reward.first(:reward_code => params[:search])
@@ -23,6 +23,15 @@ module Business
       @reward = Reward.first(:reward_code => params[:id]) || not_found
       authorize! :update, @reward
 
+      if @reward.expiry_date.to_date >= Date.today
+        error_msg = "Error redeeming reward.  Please try again."
+        flash[:error] = error_msg
+        respond_to do |format|
+          format.html { redirect_to rewards_path+"?search=#{params[:id]}" }
+          format.json { render :json => { :success => false, :msg => error_msg } }
+        end
+      end
+      
       Reward.transaction do
         begin
           @reward[:redeemed] = true

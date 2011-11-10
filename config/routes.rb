@@ -21,7 +21,7 @@ Genesis::Application.routes.draw do
 
       match '*a', :to => 'errors#routing'
 
-      root :to => redirect("/coupons")
+      root :to => redirect("/vouchers")
     end
   end
 
@@ -53,9 +53,10 @@ Genesis::Application.routes.draw do
     #Testing purposes only
     match '/orders/:id/confirmed_email' => 'orders#confirmed_email'
     match '/referrals/:id/reward_email' => 'referrals#reward_email'
+    match '/vouchers/:id/reminder_email' => 'coupons#reminder_email'
     
     match '/orders/:id/confirmed_email_template' => 'orders#confirmed_email_template'
-    match '/orders/:id/coupon_template' => 'orders#coupon_template'
+    match '/vouchers/:id/template' => 'coupons#template'
     match '/referrals/:id/reward_email_template' => 'referrals#reward_email_template'
     match '/referrals/:id/reward_template' => 'referrals#reward_template'
     #end
@@ -73,8 +74,11 @@ Genesis::Application.routes.draw do
     match '/deals/:id/cancel_order' => 'orders#cancel', :as => :cancel_order
     match '/deals/:id/referrals/create' => 'referrals#create', :via => :post, :as => :new_referral    
     match '/resend_vouchers' => 'orders#resend_coupons'
-    match '/resend_reward' => 'referrals#resend_reward'
-
+    match '/resend_reward' => 'referrals#resend_reward' 
+    
+    match '/admin' => 'admin#index', :as => :admin
+    match '/admin/run' => 'admin#run', :as => :admin_run
+    
     match '*a', :to => 'errors#routing'
 
     root :to => 'deals#show'

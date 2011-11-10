@@ -80,6 +80,7 @@ class DealsController < ApplicationController
     @deal.start_date = now
     @deal.end_date = now
     @deal.expiry_date = now
+    @deal.reward_expiry_date = now
 
     respond_to do |format|
       format.html # new.html.erb

@@ -17,9 +17,15 @@
 		</thead>
 		<tr>
 			<td class=""><%= @reward.reward_code %></td>
-			<td class=""><%= @reward.redeemed ? "Redeemed" : "Not Redeemed" %></td>
+			<% if @reward.redeemed %>
+			<td class="">Redeemed</td>
+			<% elsif @reward.expiry_date.to_date >= Date.today %>
+			<td class="">Not Redeemed</td>
+			<% else %>
+			<td class="">Expired</td>
+			<% end %>
 			<td class=""><%= @reward.redeemed ? @reward.update_ts.strftime("%b %d, %Y") : "Not Yet" %></td>
-			<% if @reward.redeemed? %> <td class="">Nothing</td>
+			<% if @reward.redeemed? || @reward.expiry_date.to_date < Date.today %> <td class="">Nothing</td>
 			<% else %> <td class=""><%= link_to 'Redeem', redeem_reward_url(@reward) %></td>
 			<% end %>
 		</tr>

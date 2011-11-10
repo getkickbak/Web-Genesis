@@ -60,7 +60,7 @@ class ReferralsController < ApplicationController
 
       Referral.transaction do
          begin
-            referral_count = Referral.count(:deal_id => deal.id, :confirmed => true, :creator_id => current_user.id )
+            referral_count = Referral.count(:deal_id => deal.id, :confirmed => true, :creator_id => current_user.id ) || 0
             if (referral_count > 0)
               raise Exceptions::AppException.new("You have already recommended this Deal.")
             end
@@ -92,7 +92,7 @@ class ReferralsController < ApplicationController
          begin
             @referral[:confirmed] = true
             @referral.save
-            reward_count = Reward.count(:deal_id => @referral.deal.id, :user_id => current_user.id )
+            reward_count = Reward.count(:deal_id => @referral.deal.id, :user_id => current_user.id ) || 0
             if (reward_count == 0 && @referral.deal.reward_count < @referral.deal.max_reward)
               @reward = Reward.create(@referral.deal,current_user,@referral.id)
               @reward.print

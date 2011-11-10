@@ -6,13 +6,14 @@ class Reward
   property :referral_id, Integer, :key => true
   property :reward_code, String, :unique_index => true,  :required => true, :default => ""
   property :qr_code, String, :required => true, :default => ""
+  property :expiry_date, DateTime, :required => true, :default => ::Constant::MIN_TIME 
   property :redeemed, Boolean, :default => false
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
 
-  attr_accessible :referral_id, :reward_code, :qr_code
+  attr_accessible :referral_id, :reward_code, :qr_code, :expiry_date
 
   belongs_to :deal
   belongs_to :user
@@ -27,7 +28,8 @@ class Reward
     reward = Reward.new(
       :referral_id => referral_id,
       :reward_code => reward_code,
-      :qr_code => filename
+      :qr_code => filename,
+      :expiry_date => deal.reward_expiry_date
     )
     reward[:created_ts] = now
     reward[:update_ts] = now

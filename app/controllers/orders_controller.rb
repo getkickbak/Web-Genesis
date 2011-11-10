@@ -119,45 +119,43 @@ class OrdersController < ApplicationController
         @order[:payment_confirmed] = true
         @order.save
       rescue StandardError
-      logger.error("Failed to update payment_confirmed for Order: " + @order.id)
-      end
-    end
-    #logger.debug("After Payment Confiremd")
+        logger.error("Failed to update payment_confirmed for Order(#{@order.order_id})")
+      ensure
+        #logger.debug("After Payment Confiremd")
 
-    #logger.debug("Before Print Coupons")
-    @order.print_coupons
-    #logger.debug("After Print Coupons")
-    #logger.debug("Before Order Confirmed Email")
-    if @order.gift_option.nil?
-    UserMailer.order_confirmed_email(@order,false).deliver
-    else
-    UserMailer.order_confirmed_email(@order,true).deliver
-    end
-    #logger.debug("After Order Confirmed Email")
+        #logger.debug("Before Print Coupons")
+        @order.print_coupons
+        #logger.debug("After Print Coupons")
+        #logger.debug("Before Order Confirmed Email")
+        if @order.gift_option.nil?
+          UserMailer.order_confirmed_email(@order,false).deliver
+        else
+          UserMailer.order_confirmed_email(@order,true).deliver
+        end
+        #logger.debug("After Order Confirmed Email")
 
-    #logger.debug("Before PayPal Payment Details")
-    @response = session[:pay_response]
-    @paykey = @response["payKey"]
-    @caller =  PayPalSDKCallers::Caller.new(false, PayPalSDKProfiles::Profile::ADAPTIVE_SERVICE_PAYMENT_DETAILS)
-    #sending the request string to call method where the paymentDetails API call is made
-    @transaction = @caller.call(
-    {
-      "requestEnvelope.errorLanguage" => "en_US",
-      "payKey" =>@paykey
-    }
-    )
-    #logger.debug("After PayPal Payment Details")
-    if (@transaction.success?)
-      session[:paydetails_response]=@transaction.response
-      respond_to do |format|
-      #format.html { redirect_to user_order_path(@user, @order, :notice => 'Order was successfully created.') }
-        format.html { redirect_to pay_thanks_path(@order.deal) }
-      #format.xml  { render :xml => @order, :status => :created, :location => @order }
-      #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
+        #logger.debug("Before PayPal Payment Details")
+        @response = session[:pay_response]
+        @paykey = @response["payKey"]
+        @caller =  PayPalSDKCallers::Caller.new(false, PayPalSDKProfiles::Profile::ADAPTIVE_SERVICE_PAYMENT_DETAILS)
+        #sending the request string to call method where the paymentDetails API call is made
+        @transaction = @caller.call(
+        {
+          "requestEnvelope.errorLanguage" => "en_US",
+          "payKey" =>@paykey
+        }
+        )
+        #logger.debug("After PayPal Payment Details")
+        if !@transaction.success?
+          logger.error("Failed to send PayPal Payment Details for Order(#{@order.order_id})")
+        end
+        respond_to do |format|
+          #format.html { redirect_to user_order_path(@user, @order, :notice => 'Order was successfully created.') }
+            format.html { redirect_to pay_thanks_path(@order.deal) }
+          #format.xml  { render :xml => @order, :status => :created, :location => @order }
+          #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
+        end   
       end
-    else
-    session[:paypal_error]=@transaction.response
-    redirect_to :controller => 'calls', :action => 'error'
     end
   end
 
@@ -184,10 +182,10 @@ class OrdersController < ApplicationController
 
     Deal.transaction do
       begin
-      deal[:limit_count] -= @order.quantity
+        deal[:limit_count] -= @order.quantity
         deal.save
       rescue StandardError
-      logger.error("Failed to update limit count for Deal: " + deal.id)
+        logger.error("Failed to update limit count for Deal(#{deal.deal_id})")
       end
     end
 
@@ -201,7 +199,7 @@ class OrdersController < ApplicationController
 
   def resend_coupons
     begin
-      orders = Order.all(:user_id => current_user.id)
+      orders = Order.all(Order.user.id => current_user.id)
       orders.each do |order|
         UserMailer.order_confirmed_email(order).deliver
       end
@@ -252,20 +250,7 @@ class OrdersController < ApplicationController
     #format.xml  { render :xml => @order }
     end
   end
-
-  def coupon_template
-    @coupon = Coupon.first(:coupon_id => params[:coupon_id])
-
-    @order = @coupon.order
-    @coupon_id = @coupon.coupon_id
-    @coupon_title = @coupon.coupon_title
-    @qr_code = @coupon.qr_code
-    respond_to do |format|
-      format.html { render :template => "user_mailer/coupon_template" }
-    #format.xml  { render :xml => @order }
-    end
-  end
-
+  
   private
 
   def reset_order
@@ -284,11 +269,7 @@ class OrdersController < ApplicationController
       "memo"=> order.order_id,
       "feesPayer"=> APP_PROP["FEES_PAYER"],
       "receiverList.receiver[0].email"=> APP_PROP["PAYPAL_ACCOUNT"],
-      "receiverList.receiver[1].email"=> order.deal.merchant.paypal_account,
       "receiverList.receiver[0].amount"=> order[:total_payment],
-      "receiverList.receiver[1].amount"=> order[:total_payment]*(100-APP_PROP["COMMISSION"])/100,
-      "receiverList.receiver[0].primary[0]"=> true,
-      "receiverList.receiver[1].primary[1]"=> false,
       "currencyCode"=> "CAD",
       "actionType"=> "PAY",
       "returnUrl" => @returnURL,

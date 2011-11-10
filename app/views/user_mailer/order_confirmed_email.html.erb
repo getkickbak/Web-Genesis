@@ -14,13 +14,13 @@
                	  <img src="http://photos.justformyfriends.com/logo.png" border="0" alt="justformyfriends.com">
                   </a>
                </div>
-               <div style="margin-left:15px;">
+               <div style="padding:0 15px 0 15px;">
                   <br>
                   <br>
                   <b>Hi <%= @order.user.name.split(' ')[0] %>,</b>
                   <br>
                   <br>
-         		  You have successfully purchased <a href="<%= deal_url(@order.deal)+"?referral_id=#{@order.referral_id}" %>" ><%= @subdeal.title %></a>
+         		  You have successfully purchased <a target="_blank" href="<%= deal_url(@order.deal)+"?referral_id=#{@referral_id}" %>" ><%= @subdeal.title %></a>
          		  <% if @is_gift %>
          		  as a gift for your friend <%= @order.gift_option.to %>
          		  <% end %>

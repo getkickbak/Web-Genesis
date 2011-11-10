@@ -63,12 +63,16 @@ class Order
       qr = RQRCode::QRCode.new( coupon[:coupon_id], :size => 5, :level => :h )
       png = qr.to_img.resize(90,90)
       coupon[:coupon_title] = subdeal.coupon_title
+      coupon[:paid_amount] = subdeal.discount_price
+      coupon[:expiry_date] = deal.expiry_date
       coupon[:barcode] = ""
       filename = APP_PROP["QR_CODE_FILE_PATH"] + coupon[:coupon_id] + ".png"
       png.save(filename)
       coupon[:qr_code] = filename
       coupon[:created_ts] = now
       coupon[:update_ts] = now
+      coupon.deal = deal
+      coupon.user = user
     end
     order.save
     if agree_to_terms.nil? 
@@ -81,8 +85,8 @@ class Order
   end
   
   def self.find(user_id, start, max)
-    count = Order.count(:user_id => user_id)
-    orders = Order.all(:user_id => user_id, :offset => start, :limit => max)
+    count = Order.count(Order.user.id => user_id) || 0
+    orders = Order.all(Order.user.id => user_id, :offset => start, :limit => max)
     #result = {}
     #result[:total] = count
     #result[:items] = orders
@@ -91,7 +95,7 @@ class Order
   end
   
   def self.find_referred_by(referrer_id, start, max)
-    count = Order.count(:referrer_id => referrer_id)
+    count = Order.count(:referrer_id => referrer_id) || 0
     orders = Order.all(:referrer_id => referrer_id, :offset => start, :limit => max)
     #result = {}
     #result[:total] = count
@@ -128,7 +132,7 @@ class Order
   end
   
   def check_end_date
-    Time.now <= self.deal.end_date ? true : [false, "Deal is over"]
+    Date.today <= self.deal.end_date.to_date ? true : [false, "Deal is over"]
   end
   
   def past_orders_quantity

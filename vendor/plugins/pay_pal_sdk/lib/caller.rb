@@ -17,8 +17,6 @@ module PayPalSDKCallers
     @@profile = PayPalSDKProfiles::Profile
     # Proxy server information hash
     @@pi=@@profile.proxy_info
-    # merchant credentials hash
-    @@cre=@@profile.headers
     # client information such as version, source hash
     @@ci=@@profile.client_info
     # endpoints of PayPal hash
@@ -27,16 +25,27 @@ module PayPalSDKCallers
     # CTOR
     def initialize(ssl_verify_mode=false, service=PayPalSDKProfiles::Profile::ADAPTIVE_SERVICE_PAY)
       @ssl_strict = ssl_verify_mode
-      @@headers =@@cre
+      
+      if service == PayPalSDKProfiles::Profile::MASS_PAY
+        # merchant credentials hash
+        @cre = {
+          "USER" => @@profile.config["USER"],
+          "PWD" => @@profile.config["PASSWORD"],
+          "SIGNATURE" => @@profile.config["SIGNATURE"],
+        }
+        @headers ={'Content-Type' => 'html/text'} 
+      else  
+        # merchant credentials hash
+        @cre=@@profile.headers
+        @headers = @cre
+        # Condition to test whether header value "X-PAYPAL-REQUEST-SOURCE" is available
+        if  (@headers.has_key?("X-PAYPAL-REQUEST-SOURCE"))
+          @headers["X-PAYPAL-REQUEST-SOURCE"]="RUBY_NVP_SDK_V1.0" + "- " + @headers["X-PAYPAL-REQUEST-SOURCE"]
+        else
+          @headers["X-PAYPAL-REQUEST-SOURCE"]= "RUBY_NVP_SDK_V1.0"
+        end
+      end  
       @service =service
-    end
-
-    # Condition to test whether header value "X-PAYPAL-REQUEST-SOURCE" is available
-    @@headers =@@cre
-    if  (@@headers.has_key?("X-PAYPAL-REQUEST-SOURCE"))
-      @@headers["X-PAYPAL-REQUEST-SOURCE"]="RUBY_NVP_SDK_V1.0" + "- " + @@headers["X-PAYPAL-REQUEST-SOURCE"]
-    else
-      @@headers["X-PAYPAL-REQUEST-SOURCE"]= "RUBY_NVP_SDK_V1.0"
     end
 
     # This method uses HTTP::Net library to talk to PayPal WebServices. This is the method what merchants should mostly care about.
@@ -46,6 +55,9 @@ module PayPalSDKCallers
     # It will also work behind a proxy server. If the calls need be to made via a proxy sever, set USE_PROXY flag to true and specify proxy server and port information in the profile class.
 
     def call(requesth)
+      if @service == PayPalSDKProfiles::Profile::MASS_PAY
+        requesth.merge(@cre)
+      end
       req_data= "#{hash2cgiString(requesth)}"
       if (@@pi["USE_PROXY"])
         if( @@pi["USER"].nil? || @@pi["PASSWORD"].nil? )
@@ -54,7 +66,7 @@ module PayPalSDKCallers
           http = Net::HTTP::Proxy(@@pi["ADDRESS"],@@pi["PORT"],@@pi["USER"], @@pi["PASSWORD"]).new(@@ep["SERVER"], @@pi["PORT"])
         end
       else
-        http = Net::HTTP.new(@@ep["SERVER"], @@ep["PORT"])
+        http = Net::HTTP.new(@service == PayPalSDKProfiles::Profile::MASS_PAY ? @@ep["MASS_PAY_SERVER"] : @@ep["ADAPTIVE_PAY_SERVER"], @@ep["PORT"])
       end
 
       http.verify_mode    = OpenSSL::SSL::VERIFY_NONE #unless ssl_strict
@@ -66,20 +78,20 @@ module PayPalSDKCallers
       @@PayPalLog.info "#{Time.now.strftime("%a %m/%d/%y %H:%M %Z")}- SENT:"
       @@PayPalLog.info "#{CGI.unescape(maskedrequest)}"
 
-      contents,unparseddata = http.post2(@service,req_data,@@headers)
+      contents,unparseddata = http.post2(@service,req_data,@headers)
       @@PayPalLog.info "\n"
       @@PayPalLog.info "#{Time.now.strftime("%a %m/%d/%y %H:%M %Z")}- RECEIVED:"
       @@PayPalLog.info "#{CGI.unescape(unparseddata)}"
 
       data = CGI::parse(unparseddata)
-      transaction = Transaction.new(data)
+      transaction = Transaction.new(data,@service)
     end
   end
 
   # Wrapper class to wrap response hash from PayPal as an object and to provide nice helper methods
   class Transaction
-    def initialize(data)
-      @success = data["responseEnvelope.ack"].to_s != "Failure"
+    def initialize(data, service)
+      @success = (service == PayPalSDKProfiles::Profile::MASS_PAY ? data["ACK"].to_s : data["responseEnvelope.ack"].to_s) != "Failure"
       @response = data
     end
 
