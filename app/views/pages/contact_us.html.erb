@@ -1,17 +1,17 @@
-<% content_for :script do %>
-<script type="text/javascript">
-	$(document).ready($(function() {
-		var msg = $("#notice").html();
-		if(msg) {
-			Genesis.showWarningMsg(msg,null,true);
-		}
-	}));
+<% content_for :script do %> <script type="text/javascript">
+   $(document).ready($(function()
+   {
+      var msg = $("#notice").html();
+      if(msg) {
+         Genesis.showWarningMsg(msg, null, true);
+      }
+   }));
 
 </script>
 <% end %>
 <% if @notice %>
 <div style="display:none;" id="notice">
-	<p><%= @notice %></p>
+   <p><%= @notice %></p>
 </div>
 <% end %>
 <div class="row">
@@ -22,36 +22,102 @@
             <div class="panelBodyHighlights">
                <%= simple_form_for @contact, :url => create_contact_path do |f| %>
                <%= f.input :name %>
-                    <% if signed_in? && @contact.errors.empty? %>
-					<%= f.input :email, :input_html => { :value => current_user.email } %>
-					<% else %>
-					<%= f.input :email %>
-					<% end %>
-					<%= f.input :topic, :collection => Contact.topic_list %>
-					<%= f.input :description, :as => :text, :input_html => { :rows => 10 } %>
-					<div class="alignLeft">
-					<%= f.button :submit, 'Submit Request', :disable_with => "Working...", :class =>"large primary btn" %>
-					</div>
+               <% if signed_in? && @contact.errors.empty? %>
+               <%= f.input :email, :input_html => { :value => current_user.email } %>
+               <% else %>
+               <%= f.input :email %>
+               <% end %>
+               <%= f.input :topic, :collection => Contact.topic_list %>
+               <%= f.input :description, :as => :text, :input_html => { :rows => 10 } %>
+               <div class="alignLeft">
+                  <%= f.button :submit, 'Submit Request', :disable_with => "Working...", :class =>"large primary btn" %>
+               </div>
                <% end %>
             </div>
          </div>
       </div>
    </div>
-   <div id="faq" class="span8">
-      <h2>Questions</h2>
+   <div id="faq" class="span12">
+      <h2>FAQ</h2>
       <div class="panelBodyHighlights">
          <dl>
             <dt>
-               I just bought JustForMyFriends, where are my vouchers?
+               What is  JustForMyFriends?
             </dt>
             <dd>
-               You will receive a confirmation email from us along with the vouchers. Redeem the deal by printing out your ticket or displaying it on your smartphone.  
+               JustForMyFriends is an awesome way for you find out the great local businesses that are recommended by your trusted friends. On top of that, you get to try them out for a special discount.
             </dd>
             <dt>
-           	   I never received the confirmation email or I lost it, what do I do?
+               I want this deal. What to do?
+            </dt>
+            <dd>
+               Just click on the “Buy Now” button before the offer ends and you will be asked for your billing information.  Once the order goes through, you’ll receive a JustForMyFriends voucher in your email inbox (be sure to check your junk mail folder too) and your credit card/paypal account will be charged.
+            </dd>
+            <dt>
+               I just bought from JustForMyFriends, where are my vouchers?
+            </dt>
+            <dd>
+               You will receive a confirmation email from us along with the vouchers. Redeem the deal by printing out your ticket or displaying it on your smartphone.
+            </dd>
+            <dt>
+               I never received the confirmation email for my voucher(s) or I lost them, what do I do?
             </dt>
             <dd>
                In the unfortunate event the confirmation email never arrived or it is lost, you can have it resent by clicking on Account > Resend Vouchers. It is that simple :)
+            </dd>
+            <dt>
+               I just bought the deal, how do I use it?
+            </dt>
+            <dd>
+               Once you received your confirmation email, just print the attached voucher(s) and follow the redemption instructions.
+            </dd>
+            <dt>
+               Can I buy this deal as a gift for someone else?
+            </dt>
+            <dd>
+               Absolutely! We work with our merchants to make sure buys can be gifted unless stated otherwise.
+            </dd>
+            <dt>
+               Does it cost me anything to join JustForMyFriends?
+            </dt>
+            <dd>
+               Absolutely not!
+            </dd>
+            <dt>
+               How do I create an account on JustForMyFriends?
+            </dt>
+            <dd>
+               Click on “Log In” in the top right corner, and you can create one using your Facebook credentials.
+            </dd>
+            <dt>
+               Do JustForMyFriends vouchers expire?
+            </dt>
+            <dd>
+               The expiration date will be stated on the voucher and on the deal page under 'Offer Details', so you know upfront before making a purchase. The expiration date is binding unless prohibited by law.
+            </dd>
+            <dt>
+               If I don't use the full value of the voucher in one visit, can I use the remainder another time?
+            </dt>
+            <dd>
+               No. You won't receive credit or cash back unless otherwise stated.
+            </dd>
+            <dt>
+               Is JustForMyFriends safe?
+            </dt>
+            <dd>
+               Our transactions are handled by PayPal, which is in turn protected by SSL so it is 100% safe.
+            </dd>
+            <dt>
+               What methods of payment do you accept?
+            </dt>
+            <dd>
+               We currently accept Visa, MasterCard, American Express and PayPal.
+            </dd>
+            <dt>
+               What happens if the business for the deal I bought closes down?
+            </dt>
+            <dd>
+               You will get a prompt refund guaranteed.
             </dd>
          </dl>
       </div>
