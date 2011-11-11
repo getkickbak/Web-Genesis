@@ -711,7 +711,7 @@ Genesis =
          FB.XFBML.parse();
       });
    },
-   ajax : function(relPath, url, type, data, dataType, successCallBack, button, reenableButton)
+   ajax : function(relPath, url, type, data, dataType, successCallBack, button, reenableButton, failCallback)
    {
       var path = (relPath) ? location.protocol + '//' + location.host + location.pathname : '';
       if(button)
@@ -740,6 +740,10 @@ Genesis =
             if(successCallBack && response && response.success)
             {
                successCallBack(response);
+            }
+            if(failCallBack && (!response || !response.success))
+            {
+               failCallBack(response);
             }
             if(button && (reenableButton || !response || !response.success))
             {

@@ -45,7 +45,7 @@ call to action
          </div>
          <div class="span32 fade hide" id="friendReferralLoadingMask">
             <h2>Looking for Referrals from your Facebook Friends ...</h2>
-            <div class="referralsBrowserBody" style="position:relative;height:88px;">
+            <div class="referralsBrowserBody">
                <div style="margin-left:-16px;margin-top:-16px;position:absolute;top:50%;left:50%;">
                   <img src="http://photos.justformyfriends.com/large-loading.gif"/>
                </div>
@@ -120,6 +120,10 @@ call to action
             <% end %>
             <% if @referral %>
             <div id="recommendation" class="span32">
+               <div class="hide loadingMask">
+                  <img src="http://photos.justformyfriends.com/large-loading.gif"/>
+               </div>
+               <div class="loadMask hide"></div>
                <div class="hero-unit hero-referral">
                   <p class="referralHeader">
                      Recommendation from <% if signed_in? && @referral.creator.id == current_user.id %> you<% else %> your friend<% end %>, <a href="<%= "http://www.facebook.com/profile.php?id=#{@referral.creator.facebook_id}" %>" target="_blank"><%= @referral.creator.name[0..31] %></a>:

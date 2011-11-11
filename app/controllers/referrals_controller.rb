@@ -1,3 +1,8 @@
+require 'aws/s3'
+require 'guid'
+
+
+
 class ReferralsController < ApplicationController
    before_filter :authenticate_user!, :only => [:create, :confirmed, :resend_reward, :photo_upload]
    #load_and_authorize_resource
@@ -179,11 +184,21 @@ class ReferralsController < ApplicationController
 
    def photo_upload
       @deal = Deal.first(:deal_id => params[:deal_id])
-      msg = [];
+      image = params[:image]
+
       msg = ["Photo has been Uploaded Successfully!"]
       #msg = ["Error Uploading Photo. Try Again"]
+
+      AWS::S3::Base.establish_connection!(
+      :access_key_id     => 'AKIAIBKLCOJMK2OWLHUQ',
+      :secret_access_key => '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'
+      )
+      #Write to Amazon S3 Datacenter
+      filaename = @deal.deal_id+'/'+Guid.new + '.jpg'
+      S3Object.store(filename, image, 'photos.justformyfriends.com', :content_type => 'image/jpeg', :access => :public_read)
+
       respond_to do |format|
-         format.json { render :json => { :success => true, :msg => msg, :photo_url => 'http://photos.justformyfriends.com/'+@deal.deal_id+'/'+''+'.jpg'} }
+         format.json { render :json => { :success => true, :msg => msg, :photo_url => 'http://photos.justformyfriends.com'+'/'+filename} }
       end
    end
 

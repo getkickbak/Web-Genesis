@@ -48,6 +48,8 @@ gem 'tabs_on_rails'
 gem 'redis'
 gem 'resque'
 gem 'resque-scheduler'
+gem 'aws-s3'
+gem 'guid'
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION

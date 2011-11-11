@@ -332,11 +332,11 @@ Site = {
    {
       var $mainMsg = $(this.mainMsg);
       $mainMsg.slides({
-         preload : true,
+         //preload : true,
          // This option causes weird hanging in IE.
          // Images woudl only load after refreshing, all versions of IE
          //preloadImage : 'http://d2fetk9hhxwrks.cloudfront.net/buttons/loader.gif',
-         preloadImage : '',
+         //preloadImage : '',
 
          effect : 'slide',
          crossfade : true,
@@ -382,6 +382,9 @@ Site = {
       var referralsList = $(this.referralsList);
       var referrals = $(this.referralsListScroller);
 
+      $("#recommendation .loadingMask").removeClass("hide");
+      $("#recommendation .loadMask").removeClass("hide");
+      
       // Check limiters
       this.referralsMinHeight = removeUnit($(this.mainMsg).css('height')) + 13;
       this.referralsMaxHeight = this.referralsMinHeight + removeUnit($(this.mainDeal).css('height'));
@@ -440,8 +443,15 @@ Site = {
                   });
                }
             }, this));
+            
+            $("#recommendation .loadingMask").addClass("hide");
+            $("#recommendation .loadMask").addClass("hide");
          }, this), 0);
-      },this));
+      },this),null,null,function()
+      {
+         $("#recommendation .loadingMask").addClass("hide");
+         $("#recommendation .loadMask").addClass("hide");         
+      });
    },
    backtoMain : function()
    {

@@ -29,6 +29,10 @@ GEM
     activesupport (3.0.9)
     addressable (2.2.6)
     archive-tar-minitar (0.5.2)
+    aws-s3 (0.6.2)
+      builder
+      mime-types
+      xml-simple
     barby (0.5.0)
     bcrypt-ruby (2.1.4)
     builder (2.1.2)
@@ -100,6 +104,7 @@ GEM
     erubis (2.6.6)
       abstract (>= 1.0.0)
     fastercsv (1.5.4)
+    guid (0.1.1)
     i18n (0.5.0)
     jquery-rails (1.0.14)
       railties (~> 3.0)
@@ -191,6 +196,7 @@ GEM
     warden (1.0.6)
       rack (>= 1.0)
     wkhtmltopdf-binary (0.9.5.3)
+    xml-simple (1.1.1)
 
 PLATFORMS
   ruby
@@ -199,6 +205,7 @@ DEPENDENCIES
   actionmailer (~> 3.0.9)
   actionpack (~> 3.0.9)
   activesupport (~> 3.0.9)
+  aws-s3
   barby (~> 0.5.0)
   cancan
   dm-accepts_nested_attributes (~> 1.1.0)!
@@ -216,6 +223,7 @@ DEPENDENCIES
   dm-transactions (~> 1.1.0)
   dm-types (~> 1.1.0)
   dm-validations (~> 1.1.0)
+  guid
   jquery-rails
   mysql2
   pdfkit
