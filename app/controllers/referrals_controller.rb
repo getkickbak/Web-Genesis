@@ -4,7 +4,7 @@ require 'guid'
 
 
 class ReferralsController < ApplicationController
-   before_filter :authenticate_user!, :only => [:create, :confirmed, :resend_reward, :photo_upload]
+   before_filter :authenticate_user!, :only => [:create, :confirmed, :resend_reward]#, :photo_upload]
    #load_and_authorize_resource
    def find
       authorize! :read, current_user
@@ -182,7 +182,7 @@ class ReferralsController < ApplicationController
       end
    end
 
-   def photo_upload
+   def upload_photo
       @deal = Deal.first(:deal_id => params[:deal_id])
       image = params[:image]
 

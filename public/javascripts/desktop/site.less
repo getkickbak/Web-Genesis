@@ -18,17 +18,19 @@
 @basefont:          13px;
 @baseline:          18px;
 
-@green:              #6E8B3D;
-@baseColor:         @green;                  // Set a base color
+@green:            #6E8B3D;
+@baseColor:        @green;                  // Set a base color
 @greenDark:        #5A7333;
-@red:            	#FF0000;
-@redDark:           #CE0000;
+@red:            	 #FF0000;
+@redDark:          #CE0000;
 @blue:				 #535F9F;
 @blueDark:			 #495699;
-@orange:			 #FF7F00;		
+@orange:			    #FF7F00;		
 @orangeDark:		 #FF6000;
-@gold:				#EDC207;
-@goldDark:			#E7AE00;
+@gold:				 #EDC207;
+@goldDark:			 #E7AE00;
+@photoWidth:       650px;
+@photoHeight:      473px;
 
 // GRID SYSTEM
 // -----------
@@ -224,8 +226,8 @@
 	}
 }
 
+//.button(#1174C6);
 .btn {
-   //.button(#1174C6);
    .transition(.1s linear all);
    &.primary {
       #gradient > .vertical(@green, @greenDark);
@@ -404,8 +406,8 @@ select.xxlarge {
 // Slideshow
 // ------------------------------------------------------------------
 #container {
-	width: 650px;
-	height: 473px;
+	width: @photoWidth;
+	height: @photoHeight;
 	position: relative;
 	z-index: 0;
 }
@@ -420,8 +422,8 @@ select.xxlarge {
    .slides_container {
       soverflow:hidden;
       position:relative;
-	   height:477px;
-	   width:650px;
+	   height:@photoHeight+4;
+	   width:@photoWidth;
       display:none;
    }
       
@@ -434,13 +436,13 @@ select.xxlarge {
    */
    div.slide {
       width: 640px;
-      height:473px;
+      height:@photoHeight;
       display:block;
    }
    // Next/prev buttons
    .next, .prev {
       position:absolute;
-      top:(473px-21px)/2;
+      top:((@photoHeight) - 21px)/2;
       left:10px;
       width:21px;
       height:0;
@@ -453,7 +455,7 @@ select.xxlarge {
       background:url(lib/Slides/examples/Product/img/arrow-prev.png);
    }
    .next {
-      left:678px;
+      left:((@photoWidth)-32px);
       background:url(lib/Slides/examples/Product/img/arrow-next.png);
    }
 }
@@ -1197,7 +1199,7 @@ select.xxlarge {
       }
    }
    .listItem {
-      width:((650-6)-3*15)/3px;
+      width:(((@photoWidth)-6)-3*15)/3px;
       margin:5px 0 0 15px;
       float:left;
       a {
