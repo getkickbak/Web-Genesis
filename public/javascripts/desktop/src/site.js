@@ -2,7 +2,7 @@ _login = function()
 {
    //$('#fb_login').css("display", "none");
    //$('#fb_login_img').css("display", "");
-   if($("#referralsBrowserDialog")[0]) {
+   if($(Site.referralsBrowser)[0]) {
       Site.getFriendsList();
    }
 };
@@ -12,10 +12,37 @@ _logout = function()
    //$('#fb_login_img').css("display", "none");
 };
 Site = {
-   //referralsMinHeight : 420, // 534
-   //referralsMaxHeight : 420 + 503 + 13, //1005
+   referralsMinHeight : 0,
+   referralsMaxHeight : 0,
    resubmitFriendsEmail : false,
+
    dealNameSelector : '#mainDeal h2:first-child',
+
+   referralBrowser : '#referralsBrowserDialog',
+   referralBrowserHeader : '#referralsBrowserDialog .referralsBrowserHeader',
+   referralBrowserScroller : '#referralsBrowserWrapper .scroller',
+   referralBrowserBody : '#referralsBrowserDialog .referralsBrowserBody',
+   referralBrowserList : '#referralsBrowserDialog .listView .scroller ul',
+   referralsCtn : '.hero-unit.hero-referrals',
+   referralsHeader : '.referralsHeader',
+   referralsScroller : '#referralsWrapper .scroller',
+   referralsFooter : '.referralsFooter',
+   referralsList : '#referralsList',
+   referralsListScroller : '#referralsList .scroller ul',
+   referralsScroll : null,
+
+   referralWarning : '#referralWarning',
+   referralWarningFbTag : '#referralWarning .fbtag',
+
+   recommendation : '#recommendation',
+   mainMsg : '#mainMsg',
+   mainMsgFbTag : '#mainMsg .fbtag',
+   mainMsgReferral : '#mainMsg .hero-referral',
+   mainMsgReferralsBtn : '#mainMsg .pagination li:last-child a',
+
+   mainDeal : '#mainDeal',
+
+   alertMsgClose : '.alert-message.error .close',
    //friendsMinHeight : 353 + 52 + 28 + 2 * 18,
    //friendsMaxHeight : 353 + 52 + 28 + 2 * 18,
    friendsMinHeight : 70 + 45 + 2 * 20 + 10,
@@ -219,13 +246,13 @@ Site = {
    },
    initForm : function()
    {
-      var textareas = $("#mainMsg .hero-referral").find("textarea");
+      var textareas = $(this.mainMsgReferral).find("textarea");
       var defaultAnswer = ["My office co-worker John recommended me to Runner's Shop. He's an avid runner who regularly competes in marathon races.", "The first time I visited the place, I signed up for one of their running clinics during the winter months. They fitted me with proper running shoes and I haven't had an injury yet!", "I like the fact that the club foster's a friendly environment and their training programs are top notch!"];
       var $verifySecretCode = $("#verifySecretCode");
       var $reward = $("#reward");
       var $discussBtn = $("#discussBtn");
       var $comments = $("#comments");
-      var $recommendMsg = $('#recommendation').find(".hero-start p");
+      var $recommendMsg = $(this.recommendation).find(".hero-start p");
       var i = 0;
 
       $.each(textareas, function()
@@ -303,7 +330,7 @@ Site = {
    },
    initMainMsg : function()
    {
-      var $mainMsg = $("#mainMsg");
+      var $mainMsg = $(this.mainMsg);
       $mainMsg.slides({
          preload : true,
          // This option causes weird hanging in IE.
@@ -319,9 +346,9 @@ Site = {
          autoHeightSpeed : 100,
          generateNextPrev : true,
          generatePagination : true,
-         start : $("#recommendation").length > 0 ? 2 : 1
+         start : $(this.recommendation).length > 0 ? 2 : 1
       });
-      $("#mainMsg .fbtag").click(function()
+      $(this.mainMsgFbTag).click(function()
       {
          $(".next").trigger("click");
       });
@@ -331,9 +358,6 @@ Site = {
       var $slides = $("#slides");
       $slides.slides({
          preload : true,
-         // This option causes weird hanging in IE.
-         // Images woudl only load after refreshing, all versions of IE
-         //preloadImage : 'http://d2fetk9hhxwrks.cloudfront.net/buttons/loader.gif',
          preloadImage : '',
          play : 5000,
          pause : 2500,
@@ -355,45 +379,58 @@ Site = {
    getReferrals : function(referral_id)
    {
       var start = 0, end = 10000;
-      var referralsList = $("#referralsList");
-      var referrals = $('#referralsList .scroller ul');
+      var referralsList = $(this.referralsList);
+      var referrals = $(this.referralsListScroller);
 
       // Check limiters
-      this.referralsMinHeight = removeUnit($("#mainMsg").css('height')) + 13;
-      this.referralsMaxHeight = this.referralsMinHeight + removeUnit($("#mainDeal").css('height'));
+      this.referralsMinHeight = removeUnit($(this.mainMsg).css('height')) + 13;
+      this.referralsMaxHeight = this.referralsMinHeight + removeUnit($(this.mainDeal).css('height'));
 
-      Genesis.ajax(true, Genesis.get_referrals, 'GET', "referral_id=" + referral_id + "&start=" + start + '&max=' + end, 'json', function(response)
+      Genesis.ajax(true, Genesis.get_referrals, 'GET', "referral_id=" + referral_id + "&start=" + start + '&max=' + end, 'json', $.proxy(function(response)
       {
          var data = $.parseJSON(response.data);
          var enableScroll = false;
-         var referralsHeight = $(".hero-unit.hero-referrals");
-         var mainMsgReferralsBtn = $("#mainMsg .pagination li:last-child a");
+         var mainMsgReferralsBtn = $(this.mainMsgReferralsBtn);
 
          for(var i = 0; i < data.length; i++) {
-            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment, data[i].created_ts));
-            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment, data[i].created_ts));
-            referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment, data[i].created_ts));
             referrals.append(Site.initReferrals(data[i].creator.name, data[i].creator.facebook_id, data[i].comment, data[i].created_ts));
          }
 
          // Make sure the HTML is updated by the browser
          setTimeout($.proxy(function()
          {
-            var headerHeight = $(".referralsHeader").prop('offsetHeight');
-            var bodyHeight = $("#referralsWrapper .scroller").prop("offsetHeight");
-            var footerHeight = $(".referralsFooter").prop('offsetHeight');
+            var headerHeight = $(this.referralsHeader).prop('offsetHeight');
+            var bodyHeight = $(this.referralsScroller).prop('offsetHeight');
+            var footerHeight = $(this.referralsFooter).prop('offsetHeight');
             var netHeight = headerHeight + footerHeight;
-            var height = Math.max(bodyHeight, this.referralsMinHeight - netHeight);
-            if(height > (this.referralsMinHeight - netHeight)) {
-               height = Math.min(bodyHeight, this.referralsMaxHeight - netHeight);
-               if(height == (this.referralsMaxHeight - netHeight)) {
-                  $("#mainDeal").addClass("invisible");
+            // Limit Height to viewport or minHeight or maxHeight
+            var clientHeight = document.documentElement.clientHeight;
+            var minHeight = this.referralsMinHeight - netHeight;
+            var maxHeight = (function()
+            {
+               if(clientHeight > this.referralsMaxHeight) {
+                  return this.referralsMaxHeight - netHeight;
+               }
+               else
+               if(clientHeight >= this.referralsMinHeight) {
+                  return clientHeight - netHeight;
+               }
+               else {
+                  return this.referralsMinHeight- netHeight;
+               }
+            }).call(this);
+            var height = Math.max(bodyHeight, minHeight);
+            if(height > minHeight) {
+               height = Math.min(bodyHeight, maxHeight);
+               if(height == maxHeight) {
+                  //$(this.mainDeal).addClass("invisible");
                   enableScroll = true;
                }
             }
-            referralsHeight.css("height", (height + netHeight - 20) + "px")
+            $(this.referralsCtn).css("height", addUnit(height + netHeight - 20))
             referralsList.removeClass("height0", 1000, $.proxy(function()
             {
+               // Trigger to go to next slide or only one exists, hide mainMsg
                mainMsgReferralsBtn.trigger("click");
                if(enableScroll) {
                   this.referralsScroll = new iScroll('referralsWrapper', {
@@ -403,16 +440,17 @@ Site = {
                   });
                }
             }, this));
-         }, Site), 0);
-      });
+         }, this), 0);
+      },this));
    },
    backtoMain : function()
    {
-      var referralsList = $("#referralsList");
-      var referrals = $("#referralsList .scroller ul");
+      var referralsList = $(this.referralsList);
+      var referrals = $(this.referralsListScroller);
       if(Site.referralsScroll) {
          Site.referralsScroll.destroy();
-         $("#mainDeal").removeClass("invisible");
+         $(this.referralsScroller).prop('style').cssText='';
+         $(this.mainDeal).removeClass("invisible");
          delete Site.referralsScroll;
       }
       referralsList.addClass("height0", 1000, function()
@@ -422,11 +460,11 @@ Site = {
    },
    referralRequestPopup : function()
    {
-      Genesis._popupCommon("Friend Referral Required before Purchase", "<p>Before being eligible to purchase this deal, a friend referral is required.</p>", "#mainMsg");
+      Genesis._popupCommon("Friend Referral Required before Purchase", "<p>Before being eligible to purchase this deal, a friend referral is required.</p>", this.mainMsg);
    },
    referralCompletePopup : function()
    {
-      $(".alert-message.error .close").parent().switchClass('in', 'hide');
+      $(this.alertMsgClose).parent().switchClass('in', 'hide');
       $('#popupDialog').modal('hide');
       FB.ui({
          method : 'send',
@@ -476,11 +514,11 @@ Site = {
          }
          html += '</li>';
       }
-      $("#referralsBrowserDialog .listView .scroller ul").html(html);
+      $(this.referralBrowserList).html(html);
       setTimeout($.proxy(function()
       {
-         var headerHeight = $("#referralsBrowserDialog .referralsBrowserHeader").prop('offsetHeight');
-         var bodyHeight = $("#referralsBrowserWrapper .scroller").prop("offsetHeight");
+         var headerHeight = $(this.referralBrowserHeader).prop('offsetHeight');
+         var bodyHeight = $(this.referralBrowserScroller).prop("offsetHeight");
          var footerHeight = 10;
          var netHeight = headerHeight + footerHeight + 10;
          var height = Math.max(bodyHeight, this.friendsMinHeight - netHeight);
@@ -502,10 +540,10 @@ Site = {
                }
                cleanScroller = false;
             }
-            $("#referralsBrowserDialog .referralsBrowserBody").css("height", height + netHeight);
+            $(this.referralBrowserBody).css("height", height + netHeight);
          }
          else {
-            $("#referralsBrowserDialog .referralsBrowserBody").css("height", Math.max(this.friendsMinHeight, bodyHeight + netHeight));
+            $(this.referralBrowserBody).css("height", Math.max(this.friendsMinHeight, bodyHeight + netHeight));
          }
          if(this.friendsScroll && cleanScroller) {
             this.friendsScroll.destroy();
@@ -555,7 +593,7 @@ Site = {
                   }
                }
                this.friendsList = friendsList;
-               $("#referralsBrowserDialog").switchClass("hide", "in", 100, function()
+               $(this.referralBrowser).switchClass("hide", "in", 100, function()
                {
                   Site.buildFriendsList(friendsList);
                });
@@ -591,7 +629,7 @@ Site = {
 }
 $(document).ready($(function()
 {
-   if($("#referralsBrowserDialog")[0]) {
+   if($(Site.referralBrowser)[0]) {
       $("#friendReferralLoadingMask").switchClass("hide", "in");
    }
    Site.initForm();
@@ -627,13 +665,13 @@ $(document).ready($(function()
    if(jQuery.browser.mozilla) {
       mouseWheelEvt = 'DOMMouseScroll';
    }
-   $(window).bind(mouseWheelEvt, function(event, b)
+   $(window).bind(mouseWheelEvt, $.proxy(function(event, b)
    {
       // Are we only the scrolling region?
-      if((event.target != document.body) && $("#referralsList")[0] && jQuery.contains($("#referralsList")[0], event.target)) {
+      if((event.target != document.body) && $(this.referralsList)[0] && jQuery.contains($(this.referralsList)[0], event.target)) {
          event.preventDefault();
       }
-   });
+   }, Site));
    // --------------------------------------------------------------------------------
    // SlideShow
    // --------------------------------------------------------------------------------
@@ -652,7 +690,7 @@ $(document).ready($(function()
    {
    // switch to 1st tab
    $("#offerDetails").css('height', $("#highlights-1").css('height'));
-   $highlightsCtn.switchClass("span24", "span12", 1000, function()
+   $highlightsCtn.switchClass("span22", "span11", 1000, function()
    {
    Genesis.switchTab($highlights1Tab, $highlights1);
    });
@@ -662,7 +700,7 @@ $(document).ready($(function()
    // switch to 2nd tab
    $("#offerDetails").css('height', $("#highlights-2").css('height'));
    Genesis.switchTab($highlights2Tab, $highlights2);
-   $highlightsCtn.switchClass("span12", "span24", 1000, function()
+   $highlightsCtn.switchClass("span11", "span22", 1000, function()
    {
    });
    });
@@ -671,12 +709,12 @@ $(document).ready($(function()
    // Reward Button
    // --------------------------------------------------------------------------------
    var referralFbTag = false;
-   $('#referralWarning').bind('hidden', function()
+   $(Site.referralWarning).bind('hidden', $.proxy(function()
    {
-      var referralTabVisible = $("#mainMsg .hero-referral").parent().css('display') != 'none';
+      var referralTabVisible = $(this.mainMsgReferral).parent().css('display') != 'none';
       if(!referralTabVisible) {
          if(referralFbTag) {
-            $(window).scrollTop($('#mainMsg').position().top);
+            $(window).scrollTop($(this.mainMsg).position().top);
             setTimeout(function()
             {
                $(".next").trigger("click");
@@ -685,14 +723,14 @@ $(document).ready($(function()
          }
       }
       else {
-         $(window).scrollTop($('#mainMsg').position().top);
+         $(window).scrollTop($(this.mainMsg).position().top);
       }
-   });
-   $('#referralWarning .fbtag').bind('click', function()
+   }, Site));
+   $(Site.referralWarningFbTag).bind('click', $.proxy(function()
    {
       referralFbTag = true;
-      $('#referralWarning').modal('hide');
-   });
+      $(this.referralWarning).modal('hide');
+   }, Site));
    // --------------------------------------------------------------------------------
    // Facebook Message
    // --------------------------------------------------------------------------------

@@ -3,7 +3,7 @@
  * ------------------------------------------------------------------ */
 
 // Griditude
-@gridColumns:       36;
+@gridColumns:       32;
 @gridColumnWidth:   20px;
 @gridGutterWidth:   10px;
 
@@ -404,7 +404,7 @@ select.xxlarge {
 // Slideshow
 // ------------------------------------------------------------------
 #container {
-	width: 710px;
+	width: 650px;
 	height: 473px;
 	position: relative;
 	z-index: 0;
@@ -421,7 +421,7 @@ select.xxlarge {
       soverflow:hidden;
       position:relative;
 	   height:477px;
-	   width:710px;
+	   width:650px;
       display:none;
    }
       
@@ -433,7 +433,7 @@ select.xxlarge {
       Set to display block
    */
    div.slide {
-      width: 700px;
+      width: 640px;
       height:473px;
       display:block;
    }
@@ -577,10 +577,15 @@ select.xxlarge {
    margin-bottom : 10px;
 }
 
+.hero-referral {
+   padding:0px;
+}
+.hero-referrals {
+   padding:10px 100px;
+}
 .hero-referral, .hero-referrals {
    color:gray;
  	margin-bottom : 0px;
-	padding:10px;
 	td {
 		vertical-align:top;
 		border:none;
@@ -607,15 +612,17 @@ select.xxlarge {
 	  }
 	  textarea {
         font-size:1.25em;
-	     width : ((@gridColumnWidth * @gridColumns*1.0)) + (@gridGutterWidth * (@gridColumns*1.0))-(2+10)-2*10-(100+2*(3+10))-(2*10+4*2+2);
+	     width : ((@gridColumnWidth * @gridColumns*1.0)) + (@gridGutterWidth * (@gridColumns*1.0))-(2+10)-2*10-(100+2*(3+10))-(2*10+4*2+2)-(200-20);
 	     height: 80px;
 	     
 	  }
    }
 }
 
-#referralsList {
+#referralsList, #recommendation {
    z-index:200;
+}
+#referralsList, #recommendation, #mainMsg {
    .hero-referrals {
       min-height:420px;
       position:relative;
@@ -627,6 +634,16 @@ select.xxlarge {
       right:0;
       margin:0px;
       padding:10px 20px;
+   }
+   .referralHeader {
+      margin:0px;
+      padding:10px 20px;
+   }
+   .referralWrapper {
+      //width:750px;
+      border:0;
+      margin:0;
+      padding:0px 100px 10px 100px;
    }
    #referralsWrapper {
       table.hero-referralSeparator {
@@ -724,15 +741,16 @@ select.xxlarge {
 
 #referralsWrapper, #referralsBrowserWrapper {
     position:absolute;
-    width:100%;
     background:white;
     overflow:hidden;
 }
 #referralsWrapper {
-    top:52px; bottom:77px; left:0;
+    width:750px;
+    top:52px; bottom:77px; left:100px;
 }
 #referralsBrowserWrapper {
-    top:(52px+10px+45px+2*20px); bottom:10px; left:0;
+    width:100%;
+    top:(52px+10px+45px+2*20px); bottom:10px; left:0px;
     margin-left:10px;
 }
 
@@ -1153,7 +1171,7 @@ select.xxlarge {
       }
    }
    .listItem {
-      width:((710-6)-3*15)/3px;
+      width:((650-6)-3*15)/3px;
       margin:5px 0 0 15px;
       float:left;
       a {

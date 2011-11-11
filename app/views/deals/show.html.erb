@@ -9,11 +9,11 @@ call to action
 </div>
 <% end %>
 <div class="row" style="margin-bottom:0;">
-   <div class="span36">
+   <div class="span32">
       <!-- Greetings -->
       <% if @referral.nil? && !@show_reward %>
       <div id="greetingsPanel" class="row hide" style="min-height:140px;">
-         <div class="span36 fade hide" id="referralsBrowserDialog">
+         <div class="span32 fade hide" id="referralsBrowserDialog">
             <h2>Who Recommended You To <%= @deal.merchant.name %>?</h2>
             <div class="referralsBrowserBody">
                <div class="referralsBrowserHeader">
@@ -31,7 +31,7 @@ call to action
                <div class="referralsBrowserFooter"></div>
             </div>
          </div>
-         <div class="span36 fade hide" id="secretCodeDialog">
+         <div class="span32 fade hide" id="secretCodeDialog">
             <h2>No referrals were found from your Facebook Friends</h2>
             <div class="referralsBrowserBody form-stacked">
                <div class="referralsBrowserHeader">
@@ -43,7 +43,7 @@ call to action
                </div>
             </div>
          </div>
-         <div class="span36 fade hide" id="friendReferralLoadingMask">
+         <div class="span32 fade hide" id="friendReferralLoadingMask">
             <h2>Looking for Referrals from your Facebook Friends ...</h2>
             <div class="referralsBrowserBody" style="position:relative;height:88px;">
                <div style="margin-left:-16px;margin-top:-16px;position:absolute;top:50%;left:50%;">
@@ -54,7 +54,7 @@ call to action
       </div>
       <!-- Referral Msg -->
       <% else %>
-      <div class="row span0abs span36 height0" id="referralsList">
+      <div class="row span0abs span32 height0" id="referralsList">
          <div class="hero-unit hero-referrals">
                <p class="referralsHeader">Recommendation from others :</p>
                <div id="referralsWrapper">
@@ -74,7 +74,7 @@ call to action
          <a name="mainMsg"></a>
          <div class="slides_container">
             <% if @referral.nil? %>
-            <div class="span36">
+            <div class="span32">
                <div class="hero-unit hero-mainMsg">
                   <img class="right" style="width:366px;margin-left:10px;" src="http://photos.justformyfriends.com/gift.png"/>
                   <h3 style="padding:20px 0;font-size:250%;">Refer friends and get a <br/><%= @deal.reward_title %> plus the option to purchase the great deal below!</h3>
@@ -92,14 +92,12 @@ call to action
             </div>
             <% end %>
             <% if signed_in? %>
-            <div class="span36">
-               <table class="hero-unit hero-referral">
-                  <tr>
-                     <td colspan="2" style="margin:0px;padding:0px 0px 0px 10px;" >
-                     <p style="margin:0px;padding:0px;">
-                        <a href="<%= "http://www.facebook.com/profile.php?id=#{current_user.facebook_id}" %>" target="_blank"><%= current_user.name.split(' ')[0] %></a>, write a recommendation to your friends and get rewarded!
-                     </p></td>
-                  </tr>
+            <div class="span32">
+               <div class="hero-unit hero-referral">
+                  <p class="referralHeader">
+                     <a href="<%= "http://www.facebook.com/profile.php?id=#{current_user.facebook_id}" %>" target="_blank"><%= current_user.name.split(' ')[0] %></a>, write a recommendation to your friends and get rewarded!
+                  </p>
+                  <table class="referralWrapper">
                   <tr>
                      <td>
                      <img src="<%= "http://graph.facebook.com/#{current_user.facebook_id}/picture?type=normal&" %>"/>
@@ -116,24 +114,23 @@ call to action
                            <button type="button" id ="reward" class="btn rewardtag large"></button>
                      </form></td>
                   </tr>
-               </table>
+                  </table>
+               </div>
             </div>
             <% end %>
             <% if @referral %>
-            <div id="recommendation" class="span36">
-               <table class="hero-unit hero-referral">
-                  <tr>
-                     <td colspan="2" style="margin:0px;padding:0px 0px 0px 10px;" >
-                     <p style="margin:0px;padding:0px;">
-                        Recommendation from <% if signed_in? && @referral.creator.id == current_user.id %> you<% else %> your friend<% end %>, <a href="<%= "http://www.facebook.com/profile.php?id=#{@referral.creator.facebook_id}" %>" target="_blank"><%= @referral.creator.name[0..31] %></a>:
-                     </p></td>
-                  </tr>
+            <div id="recommendation" class="span32">
+               <div class="hero-unit hero-referral">
+                  <p class="referralHeader">
+                     Recommendation from <% if signed_in? && @referral.creator.id == current_user.id %> you<% else %> your friend<% end %>, <a href="<%= "http://www.facebook.com/profile.php?id=#{@referral.creator.facebook_id}" %>" target="_blank"><%= @referral.creator.name[0..31] %></a>:
+                  </p>
+                  <table class="referralWrapper">
                   <tr>
                      <td width="100">
                      <img src="<%= "http://graph.facebook.com/#{@referral.creator.facebook_id}/picture?type=normal&" %>"/>
                      </td>
                      <td>
-                     <table style="border:0;">
+                     <table class="noBorder noMargin">
                         <tr class="hero-start">
                            <td>&#160;</td>
                            <td>
@@ -176,7 +173,8 @@ call to action
                      </div>
                      </td>
                   </tr>
-               </table>
+                  </table>
+               </div>
             </div>
             <% end %>
          </div>
@@ -185,10 +183,10 @@ call to action
    </div>
 </div>
 <div class="row">
-   <div class="span24">
+   <div class="span22">
       <!-- Deal Panel Msg -->
       <div id="mainDeal" class="row">
-         <div class="span24">
+         <div class="span22">
             <h2><%= raw @deal.title %></h2>
             <div id="container">
                <div id="slides">
@@ -266,7 +264,7 @@ call to action
       </div>
       <!-- Company Detail Info Msg -->
       <div class="row">
-         <div class="span24">
+         <div class="span22">
              <h2>ABOUT THIS PLACE ...</h2>
               <div class="panelBodyHighlights" style=padding:20px;>
                  <%= raw @deal.description %>
@@ -277,14 +275,14 @@ call to action
       <!-- Deal Comments -->
       <div id="comments" class="hero-unit" style="margin:0;padding:10px 30px 30px;">
          <h4 id="discuss">Ask <%= @referral.creator.name.split(' ')[0] %> any questions about <%= @deal.merchant.name %> ...</h4>
-         <fb:comments href="/deals/<%= @deal.deal_id %>?referral_id=<%= @referral.referral_id %>" num_posts="1" width="640"></fb:comments>
+         <fb:comments href="/deals/<%= @deal.deal_id %>?referral_id=<%= @referral.referral_id %>" num_posts="1" width="580"></fb:comments>
       </div>
       <% end %>
    </div>
-   <div class="span12">
+   <div class="span10">
       <% if @referral %> 
       <div class="row">
-         <div class="span12">
+         <div class="span10">
             <h2>SHARE</h2>
             <div class="panelBodyHighlights alignCenter" style="min-height:0px;">
                <div class="fb-like" data-send="true" data-layout="button_count" data-width="100" data-show-faces="true" data-font="verdana" data-href="<%= deal_url(@deal.deal_id) %>?referral_id=<%= @referral.referral_id %>"></div>
@@ -293,7 +291,7 @@ call to action
       </div>
       <% end %>
       <div class="row">
-         <div class="span12">
+         <div class="span10">
             <h2>HIGHLIGHTS</h2>
             <div class="panelBodyHighlights">
                <ul>
@@ -307,7 +305,7 @@ call to action
          </div>
       </div>
       <div class="row">
-         <div class="span12">
+         <div class="span10">
             <h2>OFFER DETAILS</h2>
             <div class="panelBodyHighlights">
                <ul>
@@ -322,7 +320,7 @@ call to action
       </div>
       <!-- Company Location -->
       <div class="row">
-         <div class="span12">
+         <div class="span10">
             <h2>LOCATION</h2>
             <div style="display:none">
                <div id="merchant_address1"><%= @deal.merchant.address1 %></div>

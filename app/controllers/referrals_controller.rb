@@ -1,5 +1,5 @@
 class ReferralsController < ApplicationController
-   before_filter :authenticate_user!, :only => [:create, :confirmed, :resend_reward]
+   before_filter :authenticate_user!, :only => [:create, :confirmed, :resend_reward, :photo_upload]
    #load_and_authorize_resource
    def find
       authorize! :read, current_user
@@ -10,9 +10,9 @@ class ReferralsController < ApplicationController
 
          referrals = []
          if (params[:mode] == "")
-          referrals = Referral.find_created_by(current_user.id, start, max)
+         referrals = Referral.find_created_by(current_user.id, start, max)
          else
-          referrals = Referral.find_received_by(current_user.id, start, max)
+         referrals = Referral.find_received_by(current_user.id, start, max)
          end
 
          respond_to do |format|
@@ -62,7 +62,7 @@ class ReferralsController < ApplicationController
          begin
             referral_count = Referral.count(:deal_id => deal.id, :confirmed => true, :creator_id => current_user.id ) || 0
             if (referral_count > 0)
-              raise Exceptions::AppException.new("You have already recommended this Deal.")
+            raise Exceptions::AppException.new("You have already recommended this Deal.")
             end
             photo_url = params[:photo_url] ? params[:photo_url] : deal.photo_urls.split(/\r/)[0]
             referral_info = { :photo_url => photo_url, :comment => params[:comment] }
@@ -94,14 +94,14 @@ class ReferralsController < ApplicationController
             @referral.save
             reward_count = Reward.count(:deal_id => @referral.deal.id, :user_id => current_user.id ) || 0
             if (reward_count == 0 && @referral.deal.reward_count < @referral.deal.max_reward)
-              @reward = Reward.create(@referral.deal,current_user,@referral.id)
-              @reward.print
-              @referral.deal[:reward_count] += 1
-              @referral.deal.save
-              UserMailer.reward_email(@reward).deliver
-              flash[:notice] = "Thank you for the referral!  Your reward email will arrive in your inbox shortly."
+            @reward = Reward.create(@referral.deal,current_user,@referral.id)
+            @reward.print
+            @referral.deal[:reward_count] += 1
+            @referral.deal.save
+            UserMailer.reward_email(@reward).deliver
+            flash[:notice] = "Thank you for the referral!  Your reward email will arrive in your inbox shortly."
             else
-              flash[:notice] = "Sorry, we are out of rewards but you can still take advantage of this special deal."
+            flash[:notice] = "Sorry, we are out of rewards but you can still take advantage of this special deal."
             end
             respond_to do |format|
             #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
@@ -174,6 +174,16 @@ class ReferralsController < ApplicationController
       respond_to do |format|
          format.html { render :template => "user_mailer/reward_template" }
       #format.xml  { render :xml => @order }
+      end
+   end
+
+   def photo_upload
+      @deal = Deal.first(:deal_id => params[:deal_id])
+      msg = [];
+      msg = ["Photo has been Uploaded Successfully!"]
+      #msg = ["Error Uploading Photo. Try Again"]
+      respond_to do |format|
+         format.json { render :json => { :success => true, :msg => msg, :photo_url => 'http://photos.justformyfriends.com/'+@deal.deal_id+'/'+''+'.jpg'} }
       end
    end
 

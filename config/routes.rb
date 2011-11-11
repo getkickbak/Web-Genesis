@@ -1,91 +1,94 @@
 Genesis::Application.routes.draw do
 
-  scope :module => "business" do
-    constraints :subdomain => "merchant" do
-      resources :sessions, :only => [:new, :create, :destroy]
+   scope :module => "business" do
+      constraints :subdomain => "merchant" do
+         resources :sessions, :only => [:new, :create, :destroy]
 
+         match "/merchant_terms" => 'pages#merchant_terms'
+         match "/contact_us" => 'pages#contact_us'
+         match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
+
+         match '/sign_in' => 'sessions#new'
+         match '/sign_out' => 'sessions#destroy'
+
+         match '/vouchers' => 'coupons#index', :as => :coupons
+         match '/vouchers/:id' => 'coupons#show'
+         match '/vouchers/:id/redeem' => 'coupons#redeem', :as => :redeem_coupon
+
+         match '/rewards' => 'rewards#index', :as => :rewards
+         match '/rewards/:id' => 'rewards#show'
+         match '/rewards/:id/redeem' => 'rewards#redeem', :as => :redeem_reward
+
+         match '*a', :to => 'errors#routing'
+
+         root :to => redirect("/vouchers")
+      end
+   end
+
+   constraints Domain do
+=begin
+   devise_for :users, :path => "", :controllers => {
+   :registrations => "user_devise/registrations"
+   }
+=end
+      match "/how_it_works" => 'pages#how_it_works'
+      match "/privacy" => 'pages#privacy'
+      match "/terms" => 'pages#terms'
       match "/merchant_terms" => 'pages#merchant_terms'
       match "/contact_us" => 'pages#contact_us'
+      match "/faq" => 'pages#contact_us'
+      match "/faq/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
       match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
 
-      match '/sign_in' => 'sessions#new'
+      resources :merchants do
+         resources :deals
+      end
+
+      match '/sign_in' => 'sessions#create'
       match '/sign_out' => 'sessions#destroy'
 
-      match '/vouchers' => 'coupons#index', :as => :coupons
-      match '/vouchers/:id' => 'coupons#show'
-      match '/vouchers/:id/redeem' => 'coupons#redeem', :as => :redeem_coupon
+      #match '/users/:id/account' => 'users#edit'
+      #match '/users/:user_id/coupons' => 'orders#index', :via => :get , :as => :user_coupons
+      #match '/users/:user_id/orders/:id' => 'orders#show', :via => :get, :as => :user_order
+      #match '/orders/:id' => 'orders#show', :as => :order
 
-      match '/rewards' => 'rewards#index', :as => :rewards
-      match '/rewards/:id' => 'rewards#show'
-      match '/rewards/:id/redeem' => 'rewards#redeem', :as => :redeem_reward
+      #Testing purposes only
+      match '/orders/:id/confirmed_email' => 'orders#confirmed_email'
+      match '/referrals/:id/reward_email' => 'referrals#reward_email'
+      match '/vouchers/:id/reminder_email' => 'coupons#reminder_email'
+
+      match '/orders/:id/confirmed_email_template' => 'orders#confirmed_email_template'
+      match '/vouchers/:id/template' => 'coupons#template'
+      match '/referrals/:id/reward_email_template' => 'referrals#reward_email_template'
+      match '/referrals/:id/reward_template' => 'referrals#reward_template'
+      #end
+
+      match '/deals/:id' => 'deals#show', :as => :deal
+      match '/deals/:id/verify_secret_code' => 'deals#verify_secret_code'
+      match '/deals/:id/confirmation' => 'orders#new', :as => :confirm_order
+      match '/deals/:id/complete_order' => 'orders#create', :via => :post, :as => :complete_order
+      match '/deals/:id/pay_details' => 'orders#pay_details', :as => :pay_details
+      match '/deals/:id/thanks' => 'orders#thanks', :as => :pay_thanks
+      match '/deals/:id/referrals' => 'referrals#find_by_deal'
+      match '/deals/:id/referrers' => 'referrals#find_by_user'
+      match '/referrals/:id/confirm' => 'referrals#confirm', :via => :post
+      match '/referrals/photo_upload' => 'referrals#upload_photo', :via => :post
+
+      match '/deals/:id/cancel_order' => 'orders#cancel', :as => :cancel_order
+      match '/deals/:id/referrals/create' => 'referrals#create', :via => :post, :as => :new_referral
+      match '/resend_vouchers' => 'orders#resend_coupons'
+      match '/resend_reward' => 'referrals#resend_reward'
+
+      match '/admin' => 'admin#index', :as => :admin
+      match '/admin/run' => 'admin#run', :as => :admin_run
 
       match '*a', :to => 'errors#routing'
+      
+      root :to => 'deals#show'
 
-      root :to => redirect("/vouchers")
-    end
-  end
-
-  constraints Domain do
-=begin
-  devise_for :users, :path => "", :controllers => {
-  :registrations => "user_devise/registrations"
-  }
-=end
-    match "/how_it_works" => 'pages#how_it_works'
-    match "/privacy" => 'pages#privacy'
-    match "/terms" => 'pages#terms'
-    match "/merchant_terms" => 'pages#merchant_terms'
-    match "/contact_us" => 'pages#contact_us'
-    match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
-
-    resources :merchants do
-      resources :deals
-    end
-
-    match '/sign_in' => 'sessions#create'
-    match '/sign_out' => 'sessions#destroy'
-
-    #match '/users/:id/account' => 'users#edit'
-    #match '/users/:user_id/coupons' => 'orders#index', :via => :get , :as => :user_coupons
-    #match '/users/:user_id/orders/:id' => 'orders#show', :via => :get, :as => :user_order
-    #match '/orders/:id' => 'orders#show', :as => :order
-
-    #Testing purposes only
-    match '/orders/:id/confirmed_email' => 'orders#confirmed_email'
-    match '/referrals/:id/reward_email' => 'referrals#reward_email'
-    match '/vouchers/:id/reminder_email' => 'coupons#reminder_email'
-    
-    match '/orders/:id/confirmed_email_template' => 'orders#confirmed_email_template'
-    match '/vouchers/:id/template' => 'coupons#template'
-    match '/referrals/:id/reward_email_template' => 'referrals#reward_email_template'
-    match '/referrals/:id/reward_template' => 'referrals#reward_template'
-    #end
-    
-    match '/deals/:id' => 'deals#show', :as => :deal
-    match '/deals/:id/verify_secret_code' => 'deals#verify_secret_code'
-    match '/deals/:id/confirmation' => 'orders#new', :as => :confirm_order
-    match '/deals/:id/complete_order' => 'orders#create', :via => :post, :as => :complete_order
-    match '/deals/:id/pay_details' => 'orders#pay_details', :as => :pay_details
-    match '/deals/:id/thanks' => 'orders#thanks', :as => :pay_thanks
-    match '/deals/:id/referrals' => 'referrals#find_by_deal' 
-    match '/deals/:id/referrers' => 'referrals#find_by_user'
-    match '/referrals/:id/confirm' => 'referrals#confirm', :via => :post
-
-    match '/deals/:id/cancel_order' => 'orders#cancel', :as => :cancel_order
-    match '/deals/:id/referrals/create' => 'referrals#create', :via => :post, :as => :new_referral    
-    match '/resend_vouchers' => 'orders#resend_coupons'
-    match '/resend_reward' => 'referrals#resend_reward' 
-    
-    match '/admin' => 'admin#index', :as => :admin
-    match '/admin/run' => 'admin#run', :as => :admin_run
-    
-    match '*a', :to => 'errors#routing'
-
-    root :to => 'deals#show'
-
-    #match '/referrals' => 'referrals#index'
-    #root :to => 'referrals#index', :via => :get
-  end
+   #match '/referrals' => 'referrals#index'
+   #root :to => 'referrals#index', :via => :get
+   end
 
 # The priority is based upon order of creation:
 # first created -> highest priority.
