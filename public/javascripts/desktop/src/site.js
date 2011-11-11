@@ -2,7 +2,7 @@ _login = function()
 {
    //$('#fb_login').css("display", "none");
    //$('#fb_login_img').css("display", "");
-   if($(Site.referralsBrowser)[0]) {
+   if($(Site.referralBrowser)[0]) {
       Site.getFriendsList();
    }
 };
