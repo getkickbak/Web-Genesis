@@ -1,43 +1,39 @@
-<% content_for :script do %>
-<script type="text/javascript">
-	$(document).ready($(function() {
-		var msg = $("#notice").html();
-		if(msg) {
-			Genesis.showWarningMsg(msg,null,true);
-		}
-	}));
+<% content_for :script do %> <script type="text/javascript">
+   $(document).ready($(function()
+   {
+      var msg = $("#notice").html();
+      if(msg) {
+         Genesis.showWarningMsg(msg, null, true);
+      }
+   }));
 
 </script>
 <% end %>
 <% if @notice %>
 <div style="display:none;" id="notice">
-	<p><%= @notice %></p>
+   <p><%= @notice %></p>
 </div>
 <% end %>
 <div class="row">
-   <div class="span24">
-      <div class="row">
-         <div class="span24">
-            <h2>Email JustForMyFriends</h2>
-            <div class="panelBodyHighlights">
-               <%= simple_form_for @contact, :url => create_contact_path do |f| %>
-               <%= f.input :name %>
-                    <% if signed_in? && @contact.errors.empty? %>
-					<%= f.input :email, :input_html => { :value => current_merchant.email } %>
-					<% else %>
-					<%= f.input :email %>
-					<% end %>
-					<%= f.input :topic, :collection => Contact.merchant_topic_list %>
-					<%= f.input :description, :as => :text, :input_html => { :rows => 10 } %>
-					<div class="alignLeft">
-					<%= f.button :submit, 'Submit Request', :disable_with => "Working...", :class =>"large primary btn" %>
-					</div>
-               <% end %>
-            </div>
+   <div class="span22">
+      <h2>Email JustForMyFriends</h2>
+      <div class="panelBodyHighlights">
+         <%= simple_form_for @contact, :url => create_contact_path do |f| %>
+         <%= f.input :name %>
+         <% if signed_in? && @contact.errors.empty? %>
+         <%= f.input :email, :input_html => { :value => current_merchant.email } %>
+         <% else %>
+         <%= f.input :email %>
+         <% end %>
+         <%= f.input :topic, :collection => Contact.merchant_topic_list %>
+         <%= f.input :description, :as => :text, :input_html => { :rows => 10 } %>
+         <div class="alignLeft">
+            <%= f.button :submit, 'Submit Request', :disable_with => "Working...", :class =>"large primary btn" %>
          </div>
+         <% end %>
       </div>
    </div>
-   <div id="faq" class="span12">
+   <div id="faq" class="span10">
       <h2>Questions</h2>
       <div class="panelBodyHighlights">
          <dl>
@@ -45,10 +41,10 @@
                I just bought JustForMyFriends, where are my vouchers?
             </dt>
             <dd>
-               You will receive a confirmation email from us along with the vouchers. Redeem the deal by printing out your ticket or displaying it on your smartphone.  
+               You will receive a confirmation email from us along with the vouchers. Redeem the deal by printing out your ticket or displaying it on your smartphone.
             </dd>
             <dt>
-           	   I never received the confirmation email or I lost it, what do I do?
+               I never received the confirmation email or I lost it, what do I do?
             </dt>
             <dd>
                In the unfortunate event the confirmation email never arrived or it is lost, you can have it resent by clicking on Account > Resend Vouchers. It is that simple :)
