@@ -1,3 +1,6 @@
+require 'util/common'
+require 'aws/s3'
+
 class Reward
   include DataMapper::Resource
 
@@ -23,8 +26,14 @@ class Reward
     reward_code = "#{now.to_i}#{rand(1000) + 1000}"
     qr = RQRCode::QRCode.new( reward_code, :size => 5, :level => :h )
     png = qr.to_img.resize(90,90)
-    filename = APP_PROP["REWARD_QR_CODE_FILE_PATH"] + reward_code + ".png"
-    png.save(filename)
+    AWS::S3::S3Object.store(
+      ::Common.generate_reward_file_path(user,"#{reward_code}.png"), 
+      png.to_string,
+      APP_PROP["AMAZON_FILES_BUCKET"], 
+      :content_type => 'image/png', 
+      :access => :public_read
+    )
+    filename = ::Common.generate_full_reward_file_path(user,"#{reward_code}.png")
     reward = Reward.new(
       :referral_id => referral_id,
       :reward_code => reward_code,
@@ -49,6 +58,6 @@ class Reward
     #kit.stylesheets << '/path/to/css/file'
 
     # Save the PDF to a file
-    kit.to_file(APP_PROP["REWARD_FILE_PATH"]+"#{self.reward_code}.pdf")
+    AWS::S3::S3Object.store(::Common.generate_reward_file_path(self.user,"#{self.reward_code}.pdf"), kit.to_pdf, APP_PROP["AMAZON_FILES_BUCKET"], :access => :public_read)
   end
 end

@@ -1,5 +1,6 @@
 require 'digest'
 require 'util/constant'
+require 'guid'
 
 class User
   include DataMapper::Resource
@@ -12,6 +13,7 @@ class User
           :validatable
 =end
   property :id, Serial
+  property :user_id, String, :required => true, :default => ""
   property :name, String, :required => true, :default => ""
   property :email, String, :required => true, :format => :email_address, :default => ""
   property :salt, String, :default => ""         
@@ -62,6 +64,7 @@ class User
       :facebook_id => user_info[:facebook_id],
       :facebook_uid => user_info[:facebook_uid]
     ) 
+    user[:user_id] = "#{user_info[:name].downcase.gsub(' ','-')}-#{Guid.new}"
     user[:created_ts] = now
     user[:update_ts] = now
     user[:role] = "user"

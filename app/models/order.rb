@@ -1,4 +1,7 @@
 require 'util/constant'
+require 'util/common'
+require 'aws/s3'
+require 'guid'
 
 class Order
   include DataMapper::Resource
@@ -66,8 +69,14 @@ class Order
       coupon[:paid_amount] = subdeal.discount_price
       coupon[:expiry_date] = deal.expiry_date
       coupon[:barcode] = ""
-      filename = APP_PROP["QR_CODE_FILE_PATH"] + coupon[:coupon_id] + ".png"
-      png.save(filename)
+      AWS::S3::S3Object.store(
+        ::Common.generate_voucher_file_path(user,"#{coupon[:coupon_id]}.png"), 
+        png.to_string, 
+        APP_PROP["AMAZON_FILES_BUCKET"], 
+        :content_type => 'image/png', 
+        :access => :public_read
+      )
+      filename = ::Common.generate_full_voucher_file_path(user,"#{coupon[:coupon_id]}.png")
       coupon[:qr_code] = filename
       coupon[:created_ts] = now
       coupon[:update_ts] = now
@@ -136,10 +145,6 @@ class Order
   end
   
   def past_orders_quantity
-    total_count = DataMapper.repository(:default).adapter.select(
-      "SELECT SUM(quantity) FROM orders WHERE user_id = ? 
-        AND deal_id = ? AND payment_confirmed = ? AND deleted_ts IS NULL", self.user.id, self.deal.id, true
-    )
-    return total_count[0] ? total_count[0] : 0
+    Order.sum(:quantity, Order.user.id => self.user.id, Order.deal.id => self.deal.id, :payment_confirmed => true) || 0
   end
 end
