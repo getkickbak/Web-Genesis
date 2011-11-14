@@ -1,0 +1,176 @@
+// ------------------------------------------------------------------
+// Hero Unit
+// ------------------------------------------------------------------
+.hero-unit {
+	margin-bottom : 15px;
+	padding:30px;
+	background-color:white;
+   .box-shadow(5px 5px 5px rgba(12, 12, 12, 0.2));
+}
+
+.hero-start {
+   td:first-child {
+      //padding-left:30px;
+      margin-top:10px;
+      padding:9px 0 0 0 !important;
+      background-repeat : no-repeat;
+      width:20px;
+      background-image : url(http://static02.linkedin.com/scds/common/u/img/bg/bg_question_orange_top_525x1000.png);
+   }
+   td:nth-child(2) {
+      background-repeat : repeat-x;
+      padding:10px 0 0 0;
+      background-position : -30px 0px;
+      background-image : url(http://photos.justformyfriends.com/top-line.png);
+   }
+   td:last-child {
+      margin-top:10px;
+      padding:9px 0 0 0  !important;
+      //padding-right:45px;
+      background-repeat : no-repeat;
+      background-position : -490px 0px;
+      background-image : url(http://static02.linkedin.com/scds/common/u/img/bg/bg_question_orange_top_525x1000.png);
+      width:20px;
+   }
+   overflow:hidden;
+}
+.hero-end {
+   td:first-child {
+      background-repeat : no-repeat;
+      background-image : url(http://static01.linkedin.com/scds/common/u/img/bg/bg_question_orange_bot_525x8.png);
+      width:20px;
+   }
+   td:nth-child(2) {
+      background-repeat : repeat-x;
+      background-position : -30px 0px;
+      background-image : url(http://photos.justformyfriends.com/bottom-line.png);
+   }
+   td:last-child {
+      background-repeat : no-repeat;
+      background-position : -490px 0px;
+      background-image : url(http://static01.linkedin.com/scds/common/u/img/bg/bg_question_orange_bot_525x8.png);
+      width:20px;
+   }
+   td {
+      padding-top:0px;
+      padding-bottom:0px;
+   }
+   margin-bottom : 10px;
+}
+
+.hero-referral {
+   padding:0px;
+}
+.hero-referrals {
+   padding:10px 100px;
+}
+.hero-referral, .hero-referrals {
+   color:gray;
+ 	margin-bottom : 0px;
+	td {
+		vertical-align:top;
+		border:none;
+	}
+	.btn {
+		margin-top:10px;
+	}
+	
+	form:last-child {
+		margin:0;
+	}
+	// Facebook 100px Images
+	img[src*="picture?type=normal"] {
+	  margin-top:10px;
+	  width:100px;
+	  padding:2px;
+	  border:1px solid #CCCCCC; 
+	}
+	form {
+	  label {
+	     font-weight:bold;
+	     padding-bottom:5px;
+	     font-size:1.125em;
+	  }
+	  textarea {
+        font-size:1.25em;
+	     width : ((@gridColumnWidth * @gridColumns*1.0)) + (@gridGutterWidth * (@gridColumns*1.0))-(2+10)-2*10-(100+2*(3+10))-(2*10+4*2+2)-(200-20);
+	     height: 80px;
+	     
+	  }
+   }
+}
+
+#referralsList, #recommendation {
+   z-index:200;
+}
+#referralsList, #recommendation, #mainMsg {
+   .hero-referrals {
+      min-height:420px;
+      position:relative;
+   }
+   .referralsHeader {
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      margin:0px;
+      padding:10px 20px;
+   }
+   .referralHeader {
+      margin:0px;
+      padding:10px 20px;
+   }
+   .referralWrapper {
+      //width:750px;
+      border:0;
+      margin:0;
+      padding:0px 100px 10px 100px;
+   }
+   #referralsWrapper {
+      table.hero-referralSeparator {
+         border-width : 1px 0 0 0;
+         border-style : dotted;
+         .border-radius(0px);
+         &:first-child {
+            border-width : 0;
+         }
+         padding-top:0px;
+         padding-bottom:0px;
+         td {
+            padding-top:0px;
+            padding-bottom:0px;
+         }
+      }
+   }
+   .referralsFooter {
+      position:absolute;
+      bottom:0;
+      left:0;
+      right:0;
+      text-align:center;
+      padding:0 0 10px 0;
+      font-weight:bold;
+   }
+   
+}
+
+#mainMsg .hero-mainMsg {
+   min-height:270px;
+}
+.mainMsgFooter {
+   position:absolute;
+   bottom:0;
+   left:0;
+   right:0;
+   text-align:center;
+   padding:0 0 10px 0;
+   font-weight:bold;
+}
+
+#recommendation {
+   positive:relative;
+   ul, li {
+      margin:0;
+      list-style : none;
+   }
+}
