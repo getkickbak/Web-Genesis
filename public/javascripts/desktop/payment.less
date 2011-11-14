@@ -1,0 +1,55 @@
+// ------------------------------------------------------------------
+// Payment Tables
+// ------------------------------------------------------------------
+.purchase table, .payment table, .gift table {
+   border:0;
+   th[class*="span"], td[class*="span"] {
+      display : table-cell;
+   }
+   
+   td {
+      float:inherit !important;
+      display:table-cell !important;
+      border: 0;
+      vertical-align:middle;
+   }
+   th {
+      float:inherit !important;
+   }
+   th, td {
+      padding-left: 0;
+      padding-right: 0;
+   }
+   th + th, td + td {
+      border-left : 0;
+   }
+}
+
+.purchase table, .payment table {
+   input {
+      width:44px;
+      text-align:center;
+   }
+   input[type=radio] {
+      width:20px;
+      text-align:center;
+   }
+}
+
+.gift table {
+   padding:0 20px;
+   input {
+      width:300px;
+      text-align:left;
+   }
+   textarea {
+      width: 600 + 42px;
+      text-align:left;
+   }
+}
+
+.purchase table {
+   td:nth-last-child(-n+5), th:nth-last-child(-n+5) {
+      text-align:center;
+   }
+}

@@ -4,17 +4,14 @@
 Array.prototype.binarySearch = function(find, comparator)
 {
    var low = 0, high = this.length - 1, i, comparison;
-   while(low <= high)
-   {
+   while(low <= high) {
       i = Math.floor((low + high) / 2);
       comparison = comparator(this[i], find);
-      if(comparison < 0)
-      {
+      if(comparison < 0) {
          low = i + 1;
          continue;
       };
-      if(comparison > 0)
-      {
+      if(comparison > 0) {
          high = i - 1;
          continue;
       };
@@ -57,8 +54,7 @@ String.prototype.stripComments = function()
 String.prototype.times = function(n)
 {
    var s = '';
-   for(var i = 0; i < n; i++)
-   {
+   for(var i = 0; i < n; i++) {
       s += this;
    }
    return s;
@@ -99,16 +95,14 @@ String.prototype.trim = function(x)
  */
 String.htmlEncode = (function()
 {
-   var entities =
-   {
+   var entities = {
       '&' : '&amp;',
       '>' : '&gt;',
       '<' : '&lt;',
       '"' : '&quot;'
    }, keys = [], p, regex;
 
-   for(p in entities)
-   {
+   for(p in entities) {
       keys.push(p);
    }
    regex = new RegExp('(' + keys.join('|') + ')', 'g');
@@ -129,16 +123,14 @@ String.htmlEncode = (function()
  */
 String.htmlDecode = (function()
 {
-   var entities =
-   {
+   var entities = {
       '&amp;' : '&',
       '&gt;' : '>',
       '&lt;' : '<',
       '&quot;' : '"'
    }, keys = [], p, regex;
 
-   for(p in entities)
-   {
+   for(p in entities) {
       keys.push(p);
    }
    regex = new RegExp('(' + keys.join('|') + '|&#[0-9]{1,5};' + ')', 'g');
@@ -147,18 +139,15 @@ String.htmlDecode = (function()
    {
       return (!value) ? value : String(value).replace(regex, function(match, capture)
       {
-         if( capture in entities)
-         {
+         if( capture in entities) {
             return entities[capture];
          }
-         else
-         {
+         else {
             return String.fromCharCode(parseInt(capture.substr(2), 10));
          }
       });
    };
 })();
-
 
 //---------------------------------------------------------------------------------
 // Browser Detect
@@ -172,13 +161,11 @@ $.client = {
    },
    searchString : function(data)
    {
-      for(var i = 0; i < data.length; i++)
-      {
+      for(var i = 0; i < data.length; i++) {
          var dataString = data[i].string;
          var dataProp = data[i].prop;
          this.versionSearchString = data[i].versionSearch || data[i].identity;
-         if(dataString)
-         {
+         if(dataString) {
             if(dataString.indexOf(data[i].subString) != -1)
                return data[i].identity;
          }
@@ -194,91 +181,75 @@ $.client = {
          return;
       return parseFloat(dataString.substring(index + this.versionSearchString.length + 1));
    },
-   dataBrowser : [
-   {
+   dataBrowser : [{
       string : navigator.userAgent,
       subString : "Chrome",
       identity : "Chrome"
-   },
-   {
+   }, {
       string : navigator.userAgent,
       subString : "OmniWeb",
       versionSearch : "OmniWeb/",
       identity : "OmniWeb"
-   },
-   {
+   }, {
       string : navigator.vendor,
       subString : "Apple",
       identity : "Safari",
       versionSearch : "Version"
-   },
-   {
+   }, {
       prop : window.opera,
       identity : "Opera",
       versionSearch : "Version"
-   },
-   {
+   }, {
       string : navigator.vendor,
       subString : "iCab",
       identity : "iCab"
-   },
-   {
+   }, {
       string : navigator.vendor,
       subString : "KDE",
       identity : "Konqueror"
-   },
-   {
+   }, {
       string : navigator.userAgent,
       subString : "Firefox",
       identity : "Firefox"
-   },
-   {
+   }, {
       string : navigator.vendor,
       subString : "Camino",
       identity : "Camino"
-   },
-   {
+   }, {
       // for newer Netscapes (6+)
       string : navigator.userAgent,
       subString : "Netscape",
       identity : "Netscape"
-   },
-   {
+   }, {
       string : navigator.userAgent,
       subString : "MSIE",
       identity : "Explorer",
       versionSearch : "MSIE"
-   },
-   {
+   }, {
       string : navigator.userAgent,
       subString : "Gecko",
       identity : "Mozilla",
       versionSearch : "rv"
-   },
-   {
+   }, {
       // for older Netscapes (4-)
       string : navigator.userAgent,
       subString : "Mozilla",
       identity : "Netscape",
       versionSearch : "Mozilla"
    }],
-   dataOS : [
-   {
+   dataOS : [{
       string : navigator.platform,
       subString : "Win",
       identity : "Windows"
-   },
-   {
+   }, {
       string : navigator.platform,
       subString : "Mac",
       identity : "Mac"
-   },
-   {
+   }, {
       string : navigator.userAgent,
       subString : "iPhone",
       identity : "iPhone/iPod"
-   },
-   {
+   }, {
       string : navigator.platform,
       subString : "Linux",
       identity : "Linux"
@@ -332,12 +303,10 @@ function convertString(v, rec, limit)
    return v;
 }
 
-
 //---------------------------------------------------------------------------------
 // JustForMyFriends Library
 //---------------------------------------------------------------------------------
-Genesis =
-{
+Genesis = {
    currFbId : "0",
    perms : 'email,user_birthday,publish_stream,read_friendlists,publish_actions',
    fbAppId : '197968780267830',
@@ -347,26 +316,21 @@ Genesis =
    },
    checkFbPerms : function(fbUseId)
    {
-      FB.api(
-      {
+      FB.api({
          method : 'fql.query',
          query : 'SELECT ' + Genesis.perms + ' FROM permissions WHERE uid=me()'
       }, $.proxy(function(response)
       {
          // Proceed only if no errors
-         if(!response.error_msg)
-         {
+         if(!response.error_msg) {
             var perms = this.perms.split(',');
-            for(var i = 0; i < perms.length; i++)
-            {
+            for(var i = 0; i < perms.length; i++) {
                // publish_actions is a beta feature and will not be available to regular users
-               if((!response[0][perms[i]] || !parseInt(response[0][perms[i]])) && (perms[i] != 'publish_actions'))
-               {
+               if((!response[0][perms[i]] || !parseInt(response[0][perms[i]])) && (perms[i] != 'publish_actions')) {
                   break;
                }
             }
-            if(i < perms.length)
-            {
+            if(i < perms.length) {
                location.href = 'http://www.facebook.com/dialog/oauth/?scope=' + this.perms + '&client_id=' + this.fbAppId + '&redirect_uri=' + location.href + '&response_type=token';
                /*
                 FB.ui(
@@ -379,8 +343,7 @@ Genesis =
                 });
                 */
             }
-            else
-            {
+            else {
                facebook_onLogin(false);
             }
          }
@@ -405,8 +368,7 @@ Genesis =
    weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
    _init : function()
    {
-      if(this.initDone == true)
-      {
+      if(this.initDone == true) {
          Genesis.currFbId = parseInt($("#currFbId").text()) || "0";
          oAuth2SessionLogin();
          document.addEventListener('touchmove', function(e)
@@ -417,8 +379,7 @@ Genesis =
          // Init PopupDialog
          // --------------------------------------------------------------------------------
          this.popupDialog = $("#popupDialog");
-         this.popupDialog.modal(
-         {
+         this.popupDialog.modal({
             keyboard : true,
             backdrop : 'static'
          });
@@ -437,49 +398,39 @@ Genesis =
       var date;
       var format = dateFormat || this.dateFormat;
 
-      if(!( v instanceof Date))
-      {
-         if( typeof (JSON) != 'undefined')
-         {
+      if(!( v instanceof Date)) {
+         if( typeof (JSON) != 'undefined') {
             v = (jQuery.browser.msie) ? v.split(/Z$/)[0] : v.split('.')[0];
          }
 
-         if(Genesis.isEmpty(v))
-         {
+         if(Genesis.isEmpty(v)) {
             date = new Date();
          }
-         else
-         {
-            if(format)
-            {
+         else {
+            if(format) {
                date = Date.parseDate(v, format);
-               if(Genesis.isEmpty(date))
-               {
+               if(Genesis.isEmpty(date)) {
                   date = new Date(v).format(format);
                }
                return [date, date];
             }
             date = new Date(v);
-            if(date.toString() == 'Invalid Date')
-            {
+            if(date.toString() == 'Invalid Date') {
                date = Date.parseDate(v, format);
             }
          }
       }
-      else
-      {
+      else {
          date = v;
       }
-      if(!noConvert)
-      {
+      if(!noConvert) {
          var currentDate = new Date().getTime();
          // Adjust for time drift between Client computer and Application Server
          var offsetTime = this.currentDateTime(currentDate);
 
          var timeExpiredSec = (offsetTime - date.getTime()) / 1000;
 
-         if(timeExpiredSec > -10)
-         {
+         if(timeExpiredSec > -10) {
             if((timeExpiredSec) < 2)
                return [timeExpiredSec, 'a second ago'];
             if((timeExpiredSec) < 60)
@@ -510,8 +461,7 @@ Genesis =
             return [date, null];
          }
          // Back to the Future! Client might have changed it's local clock
-         else
-         {
+         else {
          }
       }
 
@@ -530,8 +480,7 @@ Genesis =
       var date = v.getDate();
       var month = v.getMonth();
       var year = v.getFullYear();
-      if(todayDate == date && todayMonth == month && todayYear == year)
-      {
+      if(todayDate == date && todayMonth == month && todayYear == year) {
          return 'Today ' + v.format('g:i A');
       }
       return v.format('D g:i A');
@@ -539,48 +488,40 @@ Genesis =
    convertDate : function(v, dateFormat)
    {
       var rc = this.convertDateCommon.call(this, v, dateFormat);
-      if(rc[1] != -1)
-      {
+      if(rc[1] != -1) {
          return (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
       }
-      else
-      {
+      else {
          return rc[0].format('D, M d, Y \\a\\t g:i A');
       }
    },
    convertDateNoTime : function(v)
    {
       var rc = this.convertDateCommon.call(this, v, null, true);
-      if(rc[1] != -1)
-      {
+      if(rc[1] != -1) {
          return (rc[1] == null) ? rc[0].format('D, M d, Y') : rc[1];
       }
-      else
-      {
+      else {
          return rc[0].format('D, M d, Y')
       }
    },
    convertDateNoTimeNoWeek : function(v)
    {
       var rc = this.convertDateCommon.call(this, v, null, true);
-      if(rc[1] != -1)
-      {
+      if(rc[1] != -1) {
          return (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
       }
-      else
-      {
+      else {
          return rc[0].format('M d, Y');
       }
    },
    convertDateInMins : function(v)
    {
       var rc = this.convertDateCommon.call(this, v, null, true);
-      if(rc[1] != -1)
-      {
+      if(rc[1] != -1) {
          return (rc[1] == null) ? rc[0].format('h:ia T') : rc[1];
       }
-      else
-      {
+      else {
          return rc[0].format('h:ia T');
       }
    },
@@ -628,23 +569,20 @@ Genesis =
    // **************************************************************************
    _popupCommon : function(title, body, href, yesMsg, yesFn, noMsg, noFn, cb, cxt)
    {
-      if(!this.popupDialog.data().modal.isShown)
-      {
+      if(!this.popupDialog.data().modal.isShown) {
          var primBtn = this.popupDialog.find(".modal-footer .primary");
          var secBtn = this.popupDialog.find(".modal-footer .secondary");
          var popupDialogTitle = this.popupDialog.find(".modal-header h3").html(title);
          var popupDialogContent = this.popupDialog.find(".modal-body").html(body);
          primBtn.attr("href", href);
-         if(yesMsg)
-         {
+         if(yesMsg) {
             primBtn.text(yesMsg);
             primBtn.unbind("click");
             primBtn.bind("click", function()
             {!yesFn || yesFn.call(cxt || this);
             });
          }
-         else
-         {
+         else {
             primBtn.text('OK');
             primBtn.unbind("click");
             primBtn.bind("click", yesFn ||
@@ -654,8 +592,7 @@ Genesis =
             });
 
          }
-         if(noMsg)
-         {
+         if(noMsg) {
             secBtn.text(noMsg);
             secBtn.css('display', '');
             secBtn.unbind("click");
@@ -666,20 +603,17 @@ Genesis =
             });
 
          }
-         else
-         {
+         else {
             secBtn.text('Cancel');
             secBtn.css('display', 'none');
          }
          this.popupDialog.modal('show');
-         if(cb)
-         {
+         if(cb) {
             cb.call(cxt || this);
          }
       }
       // Put this in the animation queue
-      else
-      {
+      else {
          this.popupDialog.queue($.proxy(function()
          {
             this._popupCommon(title, body, href, yesMsg, yesFn, noMsg, noFn, cb, cxt);
@@ -688,12 +622,10 @@ Genesis =
    },
    loginPopup : function(msg, reload)
    {
-      try
-      {
+      try {
          FB.Auth.setSession(null);
       }
-      catch(e)
-      {
+      catch(e) {
          /*
           FB.init({
           // Use user's Facebook AppID if we are logging into their site directly
@@ -704,6 +636,11 @@ Genesis =
           xfbml : true,
           oauth : true
           });
+          // Workaround for IE8 and IE9 bug
+          if ($.browser.msie)
+          {
+          FB.UIServer.setLoadedNode = function(a,b){FB.UIServer._loadedNodes[a.id]=b;};
+          }
           */
       }
       this._popupCommon(msg || "Facebook Login Required", this.fb_login_tag(reload), "#", null, null, null, null, function()
@@ -714,13 +651,11 @@ Genesis =
    ajax : function(relPath, url, type, data, dataType, successCallBack, button, reenableButton, failCallback)
    {
       var path = (relPath) ? location.protocol + '//' + location.host + location.pathname : '';
-      if(button)
-      {
+      if(button) {
          button.attr("disabled", true);
          button.addClass('disabled');
       }
-      $.ajax(
-      {
+      $.ajax({
          url : path + url,
          type : type,
          data : Genesis.isEmpty(data) ? undefined : data,
@@ -729,32 +664,26 @@ Genesis =
          //contentType: "application/json",
          success : function(response)
          {
-            if(response && !Genesis.isEmpty(response.session_expired))
-            {
+            if(response && !Genesis.isEmpty(response.session_expired)) {
                setTimeout(function()
                {
                   Genesis._popupCommon(response.msg[0], '<p>' + response.msg[1] + '</p>', 'javascript:window.location.reload();');
                }, 0);
                return;
             }
-            if(successCallBack && response && response.success)
-            {
+            if(!Genesis.isEmpty(successCallBack) && response && response.success) {
                successCallBack(response);
             }
-            if(failCallBack && (!response || !response.success))
-            {
+            if(!Genesis.isEmpty(failCallBack) && (!response || !response.success)) {
                failCallBack(response);
             }
-            if(button && (reenableButton || !response || !response.success))
-            {
+            if(button && (reenableButton || !response || !response.success)) {
                button.attr("disabled", false);
                button.removeClass('disabled');
             }
-            if(response)
-            {
+            if(response) {
                var msg = response.msg;
-               if(msg)
-               {
+               if(msg) {
                   Genesis._popupCommon(msg[0], '<p>' + msg[1] + '</p>', "#");
                }
             }
@@ -776,19 +705,16 @@ Genesis =
 // **************************************************************************
 var oAuth2SessionLogin = function()
 {
-   if($("#fb_account")[0])
-   {
+   if($("#fb_account")[0]) {
       $('#topbar .secondary-nav > li:not([id="fb_login"])').css('display', 'none');
    }
 
    FB.Event.subscribe('auth.authResponseChange', function(response)
    {
-      if((response.status != 'connected') || (!response.authResponse))
-      {
+      if((response.status != 'connected') || (!response.authResponse)) {
          facebook_onLogout();
       }
-      else
-      {
+      else {
          Genesis.access_token = response.authResponse.accessToken;
          // Check proper facebook permissions
          // If not ready, we need the user to trigger login again, to popup permission Dialog box, otherwise, security violation
@@ -802,8 +728,7 @@ var oAuth2SessionLogin = function()
 window.fbAsyncInit = function()
 {
 
-   FB.init(
-   {
+   FB.init({
       // Use user's Facebook AppID if we are logging into their site directly
       appId : Genesis.fbAppId,
       authResponse : true,
@@ -812,6 +737,13 @@ window.fbAsyncInit = function()
       xfbml : true,
       oauth : true
    });
+   // Workaround for IE8 and IE9 bug
+   if($.browser.msie) {
+      FB.UIServer.setLoadedNode = function(a, b)
+      {
+         FB.UIServer._loadedNodes[a.id] = b;
+      };
+   }
    Genesis._init();
 };
 // **************************************************************************
@@ -833,41 +765,28 @@ $(document).ready($(function()
    // --------------------------------------------------------------------------------
    // Friends List ScrollBar Init
    // --------------------------------------------------------------------------------
-   var mouseWheelEvt;
-   if(jQuery.browser.webkit)
-   {
-      mouseWheelEvt = 'mousewheel';
-   }
-   else
-   if(jQuery.browser.mozilla)
-   {
-      mouseWheelEvt = 'DOMMouseScroll';
-   }
+   var mouseWheelEvt = 'DOMMouseScroll mousewheel';
    $(window).bind(mouseWheelEvt, function(event, b)
    {
       // Are we only the scrolling region?
-      if((event.target != document.body) && $("#profileBrowserWrapper")[0] && jQuery.contains($("#profileBrowserWrapper")[0], event.target))
-      {
+      if((event.target != document.body) && $("#profileBrowserWrapper")[0] && jQuery.contains($("#profileBrowserWrapper")[0], event.target)) {
          event.preventDefault();
       }
    });
    // --------------------------------------------------------------------------------
    // #Hash Init
    // --------------------------------------------------------------------------------
-   var activeTarget = location.hash, position =
-   {
+   var activeTarget = location.hash, position = {
    }, $window = $(window), nav = $('body > .topbar li a'), targets = nav.map(function()
    {
       return $(this).attr('href');
    });
    var offsets = $.map(targets, function(id)
    {
-      try
-      {
+      try {
          return $(id).offset().top;
       }
-      catch(e)
-      {
+      catch(e) {
          return 0;
       }
    });
@@ -880,12 +799,9 @@ $(document).ready($(function()
    function processScroll(e)
    {
       var scrollTop = $window.scrollTop() + 10, i;
-      for( i = offsets.length; i--; )
-      {
-         if((targets[i].match(/^#/) || (targets[i].match(location.pathname))) && (activeTarget != targets[i]) && (scrollTop >= offsets[i]) && (!offsets[i + 1] || (scrollTop <= offsets[i + 1])))
-         {
-            if((targets[i] != '#'))
-            {
+      for( i = offsets.length; i--; ) {
+         if((targets[i].match(/^#/) || (targets[i].match(location.pathname))) && (activeTarget != targets[i]) && (scrollTop >= offsets[i]) && (!offsets[i + 1] || (scrollTop <= offsets[i + 1]))) {
+            if((targets[i] != '#')) {
                activeTarget = targets[i];
                setButton(activeTarget);
             }
@@ -912,16 +828,13 @@ $(document).ready($(function()
    $("#faq dt").bind('click', function()
    {
       var dt = $(this);
-      if(dt.next().css('display') == 'none')
-      {
+      if(dt.next().css('display') == 'none') {
          $("#faq dd").hide('slow', function()
          {
-            if($(this).prev()[0] == dt[0])
-            {
+            if($(this).prev()[0] == dt[0]) {
                dt.next().toggle('fast', 'linear', function()
                {
-                  dt.next().show("highlight",
-                  {
+                  dt.next().show("highlight", {
                   }, 2500);
                });
             }
@@ -938,8 +851,7 @@ $(document).ready($(function()
 // **************************************************************************
 function facebook_onLogout()
 {
-   try
-   {
+   try {
       _fb_disconnect();
       _logout();
       FB.logout(function(response)
@@ -953,8 +865,7 @@ function facebook_onLogout()
          });
       });
    }
-   catch(e)
-   {
+   catch(e) {
       Genesis.ajax(false, Genesis.sign_out_path, 'GET', null, 'json', function()
       {
          setTimeout(function()
@@ -969,8 +880,7 @@ function facebook_loginCallback(forceReload)
 {
    FB.api('/me', function(response)
    {
-      if(response.id == null)
-      {
+      if(response.id == null) {
          //if($("#fb_account")[0])
          {
             // Show Login Button to log into Facebook
@@ -989,15 +899,13 @@ function facebook_loginCallback(forceReload)
          _fb_connect();
          _login();
          var msg = $("#notice").text();
-         if(msg)
-         {
+         if(msg) {
             Genesis.showWarningMsg(msg, null, true);
          }
       }
       if(Genesis.popupDialog.data().modal.isShown)
          Genesis.popupDialog.modal('hide');
-      if(!$("#fb_account")[0] || (Genesis.currFbId != facebook_id) || forceReload)
-      {
+      if(!$("#fb_account")[0] || (Genesis.currFbId != facebook_id) || forceReload) {
          var name = response.name;
          var email = response.email;
          var facebook_uid = response.username;
@@ -1007,25 +915,21 @@ function facebook_loginCallback(forceReload)
          var params = "name=" + name + "&email=" + email + "&facebook_id=" + facebook_id + "&facebook_uid=" + facebook_uid + "&gender=" + gender + "&birthday=" + birthday;
          Genesis.ajax(false, Genesis.sign_in_path, 'POST', params, 'json', function(response)
          {
-            if(!$("#fb_account")[0] || forceReload)
-            {
+            if(!$("#fb_account")[0] || forceReload) {
                setTimeout(function()
                {
                   window.location.reload(true);
                }, 0);
             }
-            else
-            {
+            else {
                Genesis.currFbId = facebook_id;
-               if($("#fb_account")[0])
-               {
+               if($("#fb_account")[0]) {
                   showLogin();
                }
             }
          });
       }
-      else
-      {
+      else {
          showLogin();
       }
    });
@@ -1034,45 +938,37 @@ function facebook_loginCallback(forceReload)
 function facebook_onLogin(forceReload)
 {
    $("#fb_login").css("display", "none");
-   if($("#fb_account")[0])
-   {
+   if($("#fb_account")[0]) {
       facebook_loginCallback(forceReload);
    }
-   else
-   {
+   else {
       var _fbLogin = function()
       {
          FB.login(function(response)
          {
-            if((response.status == 'connected') && response.authResponse)
-            {
+            if((response.status == 'connected') && response.authResponse) {
                Genesis.access_token = response.authResponse.accessToken;
                facebook_loginCallback(forceReload);
             }
-         },
-         {
+         }, {
             scope : Genesis.perms
             //perms : Genesis.perms
          });
       };
       //Browser Quirks
-      if($.browser.safari)
-      {
+      if($.browser.safari) {
          FB.getLoginStatus(function(response)
          {
-            if((response.status == 'connected') && response.authResponse)
-            {
+            if((response.status == 'connected') && response.authResponse) {
                Genesis.access_token = response.authResponse.accessToken;
                facebook_loginCallback(forceReload);
             }
-            else
-            {
+            else {
                _fbLogin();
             }
          });
       }
-      else
-      {
+      else {
          _fbLogin();
       }
    }

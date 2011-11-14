@@ -48,7 +48,7 @@ h2 {
   @shadow: 0 0.1em 0.3em rgba(0,0,0,.25), inset 0 -1px 0 rgba(0,0,0,.1);
   .box-shadow(@shadow);
   padding : 0.375em;
-   .border-radius(0.25em 0.25em 0 0);
+  .border-radius(0.25em 0.25em 0 0);
 }
 h3, h4, h5, h6 {
   line-height: @baseline * 2;
@@ -218,4 +218,17 @@ a {
 
 label span {
 	font-size : 0.8em;
+}
+
+// ------------------------------------------------------------------
+// FORMS
+// ------------------------------------------------------------------
+.input-xxlarge,
+input.xxlarge,
+textarea.xxlarge,
+select.xxlarge {
+   padding:8px;
+   font-size: @basefont * 2;
+   line-height : @baseline * 2;
+   height : @baseline * 2;
 }
