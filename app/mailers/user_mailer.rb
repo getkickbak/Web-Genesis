@@ -1,3 +1,5 @@
+require 'util/common'
+
 class UserMailer < ActionMailer::Base
   default :from => "JustForMyFriends <notification@justformyfriends.com>"
   
@@ -7,18 +9,18 @@ class UserMailer < ActionMailer::Base
     @is_gift = is_gift
     @subdeal = Subdeal.get(@order.subdeal_id)
     @order.coupons.each do |coupon|
-      content = File.read(APP_PROP["COUPON_FILE_PATH"]+"#{coupon.coupon_id}.pdf")
+      file = AWS::S3::S3Object.find(::Common.generate_voucher_file_path(@order.user,"#{coupon.coupon_id}.pdf"), APP_PROP["AMAZON_FILES_BUCKET"])
       attachments["#{coupon.coupon_id}.pdf"] = {:mime_type => 'application/pdf',
-                                                :data => content}
+                                                :data => file.value}
     end
     mail(:to => @order.user.email, :subject => "Order Confirmation - " + @order.deal.title)
   end
   
   def reward_email(reward)
     @reward = reward
-    content = File.read(APP_PROP["REWARD_FILE_PATH"]+"#{@reward.reward_code}.pdf")
+    file = AWS::S3::S3Object.find(::Common.generate_reward_file_path(@reward.user,"#{@reward.reward_code}.pdf"), APP_PROP["AMAZON_FILES_BUCKET"])
     attachments["#{@reward.reward_code}.pdf"] = {:mime_type => 'application/pdf',
-                                              :data => content}      
+                                              :data => file.value}      
     mail(:to => @reward.user.email, :subject => "Reward - A #{@reward.deal.reward_title}")
   end
   

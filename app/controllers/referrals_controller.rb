@@ -189,10 +189,6 @@ class ReferralsController < ApplicationController
       msg = ["Photo has been Uploaded Successfully!"]
       #msg = ["Error Uploading Photo. Try Again"]
 
-      AWS::S3::Base.establish_connection!(
-      :access_key_id     => 'AKIAIBKLCOJMK2OWLHUQ',
-      :secret_access_key => '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'
-      )
       #Write to Amazon S3 Datacenter
       filaename = @deal.deal_id+'/'+Guid.new + '.jpg'
       S3Object.store(filename, image, 'photos.justformyfriends.com', :content_type => 'image/jpeg', :access => :public_read)

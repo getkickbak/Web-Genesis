@@ -2,25 +2,22 @@ development:
   COMMISSION: 2.9
   PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
   FEES_PAYER: EACHRECEIVER
-  QR_CODE_FILE_PATH: /Users/paulchan/Documents/
-  COUPON_FILE_PATH: /Users/paulchan/Documents/
-  REWARD_QR_CODE_FILE_PATH: /Users/paulchan/Documents/
-  REWARD_FILE_PATH: /Users/paulchan/Documents/
+  FILE_HOST: files.justformyfriends.com
+  AMAZON_FILES_BUCKET: files.justformyfriends.com
+  AMAZON_PHOTOS_BUCKET: photos.justformyfriends.com
   
 test:  
   COMMISSION: 2.9
   PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
   FEES_PAYER: EACHRECEIVER
-  QR_CODE_FILE_PATH: /Users/paulchan/Documents/
-  COUPON_FILE_PATH: /Users/paulchan/Documents/
-  REWARD_QR_CODE_FILE_PATH: /Users/paulchan/Documents/
-  REWARD_FILE_PATH: /Users/paulchan/Documents/
+  FILE_HOST: files.justformyfriends.com
+  AMAZON_FILES_BUCKET: files.justformyfriends.com
+  AMAZON_PHOTOS_BUCKET: photos.justformyfriends.com
   
 production:
   COMMISSION: 2.9
   PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
   FEES_PAYER: EACHRECEIVER
-  QR_CODE_FILE_PATH: /data/JustForMyFriends/qrcode/
-  COUPON_FILE_PATH: /data/JustForMyFriends/coupons/
-  REWARD_QR_CODE_FILE_PATH: /data/JustForMyFriends/reward_qrcode/
-  REWARD_FILE_PATH: /data/JustForMyFriends/reward/
+  FILE_HOST: files.justformyfriends.com
+  AMAZON_FILES_BUCKET: files.justformyfriends.com
+  AMAZON_PHOTOS_BUCKET: photos.justformyfriends.com
