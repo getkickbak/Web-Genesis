@@ -5,6 +5,7 @@ class SessionsController < ApplicationController
         user = User.first(:facebook_id => params[:facebook_id])
         if user.nil?
           user = User.create(params)
+          flash[:notice] = "Hi #{user.name.split(' ')[0]}, Welcome to JustForMyFriends."
         else
           account_info = {
             :name => params[:name],

@@ -157,7 +157,6 @@ class DealsController < ApplicationController
       data = {}
       if params[:secret_code] == @deal.reward_secret_code
       data[:correct] = true
-      flash[:notice] = "Hi #{current_user.name.split(' ')[0]}, Welcome to JustForMyFriends."
       else
       data[:correct] = false
       data[:msg] = "Incorrect code.  Please try again."
