@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:og="http://ogp.me/ns#">
+   <head prefix="og:http://ogp.me/ns# fb:http://ogp.me/ns/fb# justformyfriends:http://ogp.me/ns/fb/justformyfriends#">
+      <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+      <meta property="fb:admins" content="725565520"/>
+      <meta property="fb:app_id" content="197968780267830"/>
+      <meta property="og:type" content="justformyfriends:business" />
+      <meta property="og:site_name" content="JustForMyFriends"/>
+      <title>JustForMyFriends</title>
+      <link rel="icon" href="http://photos.justformyfriends.com/favicon.ico" type="image/x-icon">
+      <link rel="shortcut icon" href="http://photos.justformyfriends.com/favicon.ico" type="image/x-icon">
+      <link rel="stylesheet/less" href="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/lib/bootstrap.less"/>
+      <link rel="stylesheet" href="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/docs/assets/css/docs.css"/>
+      <link rel="stylesheet" href="/stylesheets/application.css"/>
+      <script type="text/javascript" src="/javascripts/desktop/lib/date.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/Datejs-all/src/extras.js"></script>
+      <script type="text/javascript">
+         var clientTime = new Date();
+         var _login = function()
+         {
+         };
+         var _logout = function()
+         {
+         };
+
+      </script>
+      <script type="text/javascript" src="/javascripts/desktop/less-1.1.4.min.js"></script>
+      <script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=places&amp;sensor=true"></script>
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+      <script type="text/javascript" src="/javascripts/jquery_ujs.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/cubiq-iscroll-8165866/src/iscroll.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/js/bootstrap-modal.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/js/bootstrap-alerts.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/js/bootstrap-dropdown.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/twitter-bootstrap-3c3d596/js/bootstrap-tabs.js"></script>
+      <script type="text/javascript" src="/javascripts/application.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop//lib/fridek-gmap-f5658d5/jquery.gmap.min.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop//lib/Slides/source/slides.min.jquery.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/carhartl-jquery-cookie-575a419/jquery.cookie.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/src/common.js"></script>
+   </head>
+   <body>
+      <div class="clearfix" style="padding:5px;">&#160;</div>
+      <div class="promoBanner" style="width:700px;position:relative;padding:0 20px;text-align:center;">
+         <a href="http://www.justformyfriends.com/deals/runnersshop?secret_code=DEMO">
+         <img class="right" style="margin-top:18px;margin-right:40px;" src="http://photos.justformyfriends.com/trophy.png">
+         </a>
+         <h3 style="padding:13px 0 28px 0;font-size:250%;line-height:50px;">REFER A FRIEND
+            <br/>
+            GET A <span style="color:red">FREE</span> GIFT
+            <br/>
+            <a class="btn rewardTag promoBtn" href="http://www.justformyfriends.com/deals/runnersshop?secret_code=DEMO">
+            <img src="http://photos.justformyfriends.com/favicon.ico">
+            Find Out More &raquo</a></h3>
+      </div>
+      <div class="clearfix" style="padding:5px;">&#160;</div>
+      <div class="promoBanner" style="width:300px;position:relative;padding:0 20px;text-align:center;">
+         <h3 style="padding:20px 0;font-size:250%;line-height:40px;">REFER A FRIEND
+            <br/>
+            <a href="http://www.justformyfriends.com/deals/runnersshop?secret_code=DEMO">
+            <img class="center" src="http://photos.justformyfriends.com/recommend.png">
+            </a> GET A <span style="color:red">FREE</span> GIFT <a class="btn rewardTag promoBtn" style="margin-top:10px;" href="http://www.justformyfriends.com/deals/runnersshop?secret_code=DEMO">
+            <img src="http://photos.justformyfriends.com/favicon.ico">
+            Find Out More &raquo</a></h3>
+      </div>
+      <!-- Server Side into passed to Client Side -->
+      <div style="display:none;">
+         <div id="systemTime">
+            <%= Time.now().to_f*1000 %>
+         </div>
+         <% if signed_in? %>
+         <div id="currFbId">
+            <%= current_user.facebook_id %>
+         </div>
+         <% end %>
+      </div>
+   </body>
+</html>

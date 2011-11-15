@@ -297,3 +297,19 @@
       .box-shadow(@shadow);
    }
 }
+
+#gradient {
+  .radial(@startColor: #00b3ee, @endColor: #c3325f) {
+    background-color: @endColor;
+    background-repeat: repeat-x;
+    background-image: -khtml-gradient(radial, from(@startColor), to(@endColor)); // Konqueror
+    background-image: -moz-linear-gradient(@startColor, @endColor); // FF 3.6+
+    background-image: -ms-linear-gradient(@startColor, @endColor); // IE10
+    background-image: -webkit-gradient(radial, color-stop(0%, @startColor), color-stop(100%, @endColor)); // Safari 4+, Chrome 2+
+    background-image: -webkit-radial-gradient(@startColor, @endColor); // Safari 5.1+, Chrome 10+
+    background-image: -o-radial-gradient(@startColor, @endColor); // Opera 11.10
+    background-image: radial-gradient(@startColor, @endColor); // Le standard
+    filter: e(%("progid:DXImageTransform.Microsoft.gradient(startColorstr='%d', endColorstr='%d', GradientType=2)",@startColor,@endColor)); // IE9 and down
+  }
+
+}
