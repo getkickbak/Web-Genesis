@@ -1,6 +1,5 @@
 require 'digest'
 require 'util/constant'
-require 'guid'
 
 class User
   include DataMapper::Resource
@@ -64,7 +63,7 @@ class User
       :facebook_id => user_info[:facebook_id],
       :facebook_uid => user_info[:facebook_uid]
     ) 
-    user[:user_id] = "#{user_info[:name].downcase.gsub(' ','-')}-#{Guid.new}"
+    user[:user_id] = "#{user_info[:name].downcase.gsub(' ','-')}"
     user[:created_ts] = now
     user[:update_ts] = now
     user[:role] = "user"
