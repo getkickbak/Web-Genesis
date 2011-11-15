@@ -15,6 +15,7 @@ class Contact
       ['Login issues', 'Login issues'],
       ['Voucher issues', 'Voucher issues'],
       ['Reward issues','Reward issues'],
+      ['Payment issues','Payment issues'],
       ['General inquiry', 'General inquiry']
     ] 
     
