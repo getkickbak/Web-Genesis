@@ -139,7 +139,7 @@ class Deal
     begin
       date_str = self.send(field_str)
       if date_str
-        self[field] = DateTime.parse(date_str)
+        self[field] = Time.zone.parse(date_str)
       end  
       return true
     rescue ArgumentError

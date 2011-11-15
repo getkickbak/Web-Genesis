@@ -1,5 +1,5 @@
 class MerchantsController < ApplicationController
-  before_filter :authenticate_user!, :only => [:edit, :update]
+  before_filter :authenticate_user!
   #load_and_authorize_resource
 
   def index
@@ -62,11 +62,11 @@ class MerchantsController < ApplicationController
   end
 
   def update
+    @merchant = Merchant.first(:merchant_id => params[:id]) || not_found
+    authorize! :update, @merchant
+
     Merchant.transaction do
       begin
-        @merchant = Merchant.first(:merchant_id => params[:id]) || not_found
-        authorize! :update, @merchant
-
         @merchant.update(params[:merchant])
         respond_to do |format|
           format.html { redirect_to(:action => "show", :id => @merchant.merchant_id, :notice => 'Merchant was successfully updated.') }

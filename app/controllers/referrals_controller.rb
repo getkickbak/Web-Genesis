@@ -4,8 +4,9 @@ require 'guid'
 
 
 class ReferralsController < ApplicationController
-   before_filter :authenticate_user!, :only => [:create, :confirmed, :resend_reward]#, :photo_upload]
+   before_filter :authenticate_user!, :except => [:find, :find_by_deal, :find_by_user, :photo_upload]
    #load_and_authorize_resource
+   
    def find
       authorize! :read, current_user
 

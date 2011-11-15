@@ -3,8 +3,9 @@ require 'util/constant'
 
 
 class DealsController < ApplicationController
-   before_filter :authenticate_user!, :only => [:edit, :update]
+   before_filter :authenticate_user!, :except => [:index, :show]
    #load_and_authorize_resource
+  
    def index
       authorize! :manage, :all
 
@@ -101,6 +102,8 @@ class DealsController < ApplicationController
       Deal.transaction do
          begin
             @merchant = Merchant.first(params[:merchant_id])
+            #Temporary settings
+            Time.zone = "Eastern Time (US & Canada)"
             @deal = Deal.create(@merchant, params[:deal])
 
             respond_to do |format|
@@ -120,13 +123,15 @@ class DealsController < ApplicationController
       end
    end
 
-   def update
+   def update 
+      @merchant = Merchant.first(params[:merchant_id])
+      @deal = Deal.first(params[:id]) || not_found
+      authorize! :update, @deal
+
+      #Temporary settings
+      Time.zone = "Eastern Time (US & Canada)"
       Deal.transaction do
          begin
-            @merchant = Merchant.first(params[:merchant_id])
-            @deal = Deal.first(params[:id]) || not_found
-            authorize! :update, @deal
-
             @deal.update(params[:deal])
             respond_to do |format|
                format.html { redirect_to merchant_deal_path(@merchant, @deal, :notice => 'Deal was successfully updated.') }
