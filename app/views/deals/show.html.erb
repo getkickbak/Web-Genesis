@@ -8,7 +8,7 @@ call to action
 	<p><%= notice %></p>
 </div>
 <% end %>
-<div class="row" style="margin-bottom:0;">
+<div class="row">
    <div class="span32">
       <!-- Greetings -->
       <% if @referral.nil? && !@show_reward %>
@@ -70,7 +70,7 @@ call to action
          </div>
       </div>
       <!-- Main Panel Msg -->
-      <div id="mainMsg" class="row">
+      <div id="mainMsg" class="row noMargin">
          <a name="mainMsg"></a>
          <div class="slides_container">
             <% if @referral.nil? %>
@@ -128,56 +128,58 @@ call to action
                   <p class="referralHeader">
                      Recommendation from <% if signed_in? && @referral.creator.id == current_user.id %> you<% else %> your friend<% end %>, <a href="<%= "http://www.facebook.com/profile.php?id=#{@referral.creator.facebook_id}" %>" target="_blank"><%= @referral.creator.name[0..31] %></a>:
                   </p>
-                  <table class="referralWrapper">
-                  <tr>
-                     <td width="100">
-                     <img src="<%= "http://graph.facebook.com/#{@referral.creator.facebook_id}/picture?type=normal&" %>"/>
-                     </td>
-                     <td>
-                     <table class="noBorder noMargin">
-                        <tr class="hero-start">
-                           <td>&#160;</td>
-                           <td>
-                              <p><%= @referral.comment %></p>
-                           </td>
-                           <td>&#160;</td>
-                        </tr>
-                        <tr class="hero-end">
-                           <td>&#160;</td>
-                           <td>&#160;</td>
-                           <td>&#160;</td>
-                        </tr>
-                     </table>
-                     </td>
-                  </tr>
-                  <tr>
-                     <td colspan="2" style="padding-top:0;">
-                     <% referrers = get_referrers(@deal.id, @referral.creator.id, 10) %>    
-                     <% if referrers[:total] > 0 %>               
-                     <div style="float:left;">
-                        <a onclick="Site.getReferrals(<%= "#{@referral.referral_id}" %>);" style="cursor:pointer;"><%= referrers[:total] %> other <% if referrers[:total] == 1 %>person<% else %>people<% end %> also recommend <%= @deal.merchant.name %></a>
-                        <table style="border:0;padding:0;margin:0;">
-                           <tr>
-                           <% referrers[:items].each do |referrer| %>
-                           <td style="padding:0 1px 0 0;border:0;margin:0;width:36px;">
-                              <img  style="cursor:pointer;" onclick="Site.getReferrals(<%= "#{@referral.referral_id}" %>);" width="36" src="<%= "http://graph.facebook.com/#{referrer.facebook_id}/picture?type=square&" %>">
-                           </td>                           
-                           <% end %>
-                           <% (1..10-referrers[:items].to_a.length).each do |i| %>
-                           <td style="padding:0 1px 0 0;border:0;margin:0;width:36px;">
-                           </td>
-                           <% end %>
+                  <div class="referralWrapper">
+                     <table>
+                     <tr>
+                        <td width="100">
+                        <img src="<%= "http://graph.facebook.com/#{@referral.creator.facebook_id}/picture?type=normal&" %>"/>
+                        </td>
+                        <td>
+                        <table class="noBorder noMargin">
+                           <tr class="hero-start">
+                              <td>&#160;</td>
+                              <td>
+                                 <p><%= @referral.comment %></p>
+                              </td>
+                              <td>&#160;</td>
+                           </tr>
+                           <tr class="hero-end">
+                              <td>&#160;</td>
+                              <td>&#160;</td>
+                              <td>&#160;</td>
                            </tr>
                         </table>
-                     </div>
-                     <% end %>
-                     <div style="float:right;">
-                        <!--<a  id="referralsBtn" class="btn large">Check out all our Referrals! &raquo;</a>-->
-                        <a  id="discussBtn" href="#comments" class="btn large">Discuss with <%= @referral.creator.name.split(' ')[0] %>! &raquo;</a>
-                     </div>
-                     </td>
-                  </tr>
-                  </table>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td colspan="2" style="padding-top:0;">
+                        <% referrers = get_referrers(@deal.id, @referral.creator.id, 10) %>    
+                        <% if referrers[:total] > 0 %>               
+                        <div style="float:left;">
+                           <a onclick="Site.getReferrals(<%= "#{@referral.referral_id}" %>);" style="cursor:pointer;"><%= referrers[:total] %> other <% if referrers[:total] == 1 %>person<% else %>people<% end %> also recommend <%= @deal.merchant.name %></a>
+                           <table style="border:0;padding:0;margin:0;">
+                              <tr>
+                              <% referrers[:items].each do |referrer| %>
+                              <td style="padding:0 1px 0 0;border:0;margin:0;width:36px;">
+                                 <img  style="cursor:pointer;" onclick="Site.getReferrals(<%= "#{@referral.referral_id}" %>);" width="36" src="<%= "http://graph.facebook.com/#{referrer.facebook_id}/picture?type=square&" %>">
+                              </td>                           
+                              <% end %>
+                              <% (1..10-referrers[:items].to_a.length).each do |i| %>
+                              <td style="padding:0 1px 0 0;border:0;margin:0;width:36px;">
+                              </td>
+                              <% end %>
+                              </tr>
+                           </table>
+                        </div>
+                        <% end %>
+                        <div style="float:right;">
+                           <!--<a  id="referralsBtn" class="btn large">Check out all our Referrals! &raquo;</a>-->
+                           <a  id="discussBtn" href="#comments" class="btn large">Discuss with <%= @referral.creator.name.split(' ')[0] %>! &raquo;</a>
+                        </div>
+                        </td>
+                     </tr>
+                     </table>
+                  </div>
                </div>
             </div>
             <% end %>
@@ -205,7 +207,7 @@ call to action
             </div>
             <table id="deal_countdown" class="description_footer noMargin">
             <tr>
-            <td class="noPadding" style="vertical-align:middle;border:0;">
+            <td>
             <div class="heading">Time Left to Buy</div>
             <h3>
             <% if @deal.end_date >= Time.now && @deal.limit_count < @deal.max_limit %>
@@ -227,10 +229,10 @@ call to action
             <% end %>
             </h3>
             </td>
-            <td class="noPadding alignRight" width="100" style="vertical-align:middle;border:0;">
+            <td width="110">
                <% subdeal = @deal.subdeals.first %>
                <h3>C$<%= (subdeal.regular_price - subdeal.discount_price).to_i %> OFF</h3>
-            <td class="noPadding alignRight" style="vertical-align:middle;width:130px;border:0;">
+            <td width="120">
             <div>
             <% if @deal.end_date >= Time.now && @deal.limit_count < @deal.max_limit %> 	
             	<% if signed_in? %>	
@@ -279,7 +281,7 @@ call to action
       <!-- Deal Comments -->
       <div id="comments" class="hero-unit" style="margin:0;padding:10px 30px 30px;">
          <h4 id="discuss">Ask <%= @referral.creator.name.split(' ')[0] %> any questions about <%= @deal.merchant.name %> ...</h4>
-         <fb:comments href="/deals/<%= @deal.deal_id %>?referral_id=<%= @referral.referral_id %>" num_posts="1" width="580"></fb:comments>
+         <fb:comments href="/deals/<%= @deal.deal_id %>?referral_id=<%= @referral.referral_id %>" num_posts="1" width="590"></fb:comments>
       </div>
       <% end %>
    </div>
