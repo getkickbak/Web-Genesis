@@ -674,7 +674,7 @@ Genesis = {
             if(!Genesis.isEmpty(successCallBack) && response && response.success) {
                successCallBack(response);
             }
-            if(!Genesis.isEmpty(failCallBack) && (!response || !response.success)) {
+            if(!Genesis.isEmpty(failCallback) && (!response || !response.success)) {
                failCallBack(response);
             }
             if(button && (reenableButton || !response || !response.success)) {

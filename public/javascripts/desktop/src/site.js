@@ -384,7 +384,7 @@ Site = {
 
       $("#recommendation .loadingMask").removeClass("hide");
       $("#recommendation .loadMask").removeClass("hide");
-      
+
       // Check limiters
       this.referralsMinHeight = removeUnit($(this.mainMsg).css('height')) + 13;
       this.referralsMaxHeight = this.referralsMinHeight + removeUnit($(this.mainDeal).css('height'));
@@ -419,7 +419,7 @@ Site = {
                   return clientHeight - netHeight;
                }
                else {
-                  return this.referralsMinHeight- netHeight;
+                  return this.referralsMinHeight - netHeight;
                }
             }).call(this);
             var height = Math.max(bodyHeight, minHeight);
@@ -431,6 +431,7 @@ Site = {
                }
             }
             $(this.referralsCtn).css("height", addUnit(height + netHeight - 20))
+            $(this.mainMsg).addClass("invisible");
             referralsList.removeClass("height0", 1000, $.proxy(function()
             {
                // Trigger to go to next slide or only one exists, hide mainMsg
@@ -443,30 +444,31 @@ Site = {
                   });
                }
             }, this));
-            
+
             $("#recommendation .loadingMask").addClass("hide");
             $("#recommendation .loadMask").addClass("hide");
          }, this), 0);
-      },this),null,null,function()
+      }, this), null, null, function()
       {
          $("#recommendation .loadingMask").addClass("hide");
-         $("#recommendation .loadMask").addClass("hide");         
+         $("#recommendation .loadMask").addClass("hide");
       });
    },
    backtoMain : function()
    {
       var referralsList = $(this.referralsList);
       var referrals = $(this.referralsListScroller);
-      if(Site.referralsScroll) {
-         Site.referralsScroll.destroy();
-         $(this.referralsScroller).prop('style').cssText='';
+      if(this.referralsScroll) {
+         this.referralsScroll.destroy();
+         $(this.referralsScroller).prop('style').cssText = '';
          $(this.mainDeal).removeClass("invisible");
          delete Site.referralsScroll;
       }
-      referralsList.addClass("height0", 1000, function()
+      $(this.mainMsg).removeClass("invisible");
+      referralsList.addClass("height0", 1000, $.proxy(function()
       {
          referrals.html('');
-      });
+      }, this));
    },
    referralRequestPopup : function()
    {
