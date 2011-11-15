@@ -956,7 +956,7 @@ function facebook_onLogin(forceReload)
          });
       };
       //Browser Quirks
-      if($.browser.safari) {
+      if($.client.browser == 'Safari') {
          FB.getLoginStatus(function(response)
          {
             if((response.status == 'connected') && response.authResponse) {
