@@ -12,7 +12,7 @@ class DealsController < ApplicationController
       merchant_id = params[:merchant_id]
       start = 0
       max = 10
-      @merchant = Merchant.first(:merchant_id => merchant_id)
+      @merchant = Merchant.first(:merchant_id => merchant_id) || not_found
       @deals = Deal.find(@merchant.id, start, max) || not_found
 
       respond_to do |format|
@@ -23,7 +23,7 @@ class DealsController < ApplicationController
 
    def show
       if params[:merchant_id]
-      @merchant = Merchant.first(:merchant_id => params[:merchant_id])
+      @merchant = Merchant.first(:merchant_id => params[:merchant_id]) || not_found
       end
       if params[:id]
       @deal = Deal.first(:deal_id => params[:id]) || not_found
@@ -76,7 +76,7 @@ class DealsController < ApplicationController
    def new
       authorize! :create, Deal
 
-      @merchant = Merchant.first(:merchant_id => params[:merchant_id])
+      @merchant = Merchant.first(:merchant_id => params[:merchant_id]) || not_found
       @deal = Deal.new
       now = Time.now
       @deal.start_date = now
@@ -97,11 +97,11 @@ class DealsController < ApplicationController
    end
 
    def create
+      @merchant = Merchant.first(params[:merchant_id]) || not_found
       authorize! :create, Deal
 
       Deal.transaction do
          begin
-            @merchant = Merchant.first(params[:merchant_id])
             #Temporary settings
             Time.zone = "Eastern Time (US & Canada)"
             @deal = Deal.create(@merchant, params[:deal])
@@ -124,7 +124,7 @@ class DealsController < ApplicationController
    end
 
    def update 
-      @merchant = Merchant.first(params[:merchant_id])
+      @merchant = Merchant.first(params[:merchant_id]) || not_found
       @deal = Deal.first(params[:id]) || not_found
       authorize! :update, @deal
 
