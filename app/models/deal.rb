@@ -5,7 +5,7 @@ class Deal
   include ApplicationHelper
 
   property :id, Serial
-  property :deal_id, String, :unique_index => true, :default => ""
+  property :deal_id, String, :unique_index => true, :required => true, :default => ""
   property :title, String, :required => true, :default => ""
   property :description, String, :length => 4096, :required => true, :default => ""
   property :mini_description, String, :default => ""

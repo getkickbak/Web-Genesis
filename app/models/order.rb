@@ -7,7 +7,7 @@ class Order
   include DataMapper::Resource
 
   property :id, Serial
-  property :order_id, String, :unique_index => true, :default => 0
+  property :order_id, String, :unique_index => true, :required => true, :default => 0
   property :subdeal_id, Integer, :required => true, :default => 0, :messages => { :presence => "Please pick a Deal" }
   property :referral_id, Integer, :default => 0
   property :new_customer, Boolean, :default => true

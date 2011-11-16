@@ -8,7 +8,7 @@ class Coupon
   @@template = ERB.new File.read(File.expand_path "app/views/user_mailer/voucher_template.html.erb")
 
   property :id, Serial
-  property :coupon_id, String, :unique_index => true, :default => 0
+  property :coupon_id, String, :unique_index => true, :required => true, :default => 0
   property :coupon_title, String, :default => ""
   property :paid_amount, Integer, :default => 0
   property :expiry_date, DateTime, :default => ::Constant::MIN_TIME
