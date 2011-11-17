@@ -1,12 +1,12 @@
 require 'aws/s3'
 require 'guid'
+require 'base64'
 
 
 
 class ReferralsController < ApplicationController
-   before_filter :authenticate_user!, :except => [:find, :find_by_deal, :find_by_user, :photo_upload]
+   before_filter :authenticate_user!, :except => [:find, :find_by_deal, :find_by_user, :upload_photo]
    #load_and_authorize_resource
-   
    def find
       authorize! :read, current_user
 
@@ -184,18 +184,26 @@ class ReferralsController < ApplicationController
    end
 
    def upload_photo
-      @deal = Deal.first(:deal_id => params[:deal_id])
-      image = params[:image]
+      begin
+         @deal = Deal.first(:deal_id => params[:deal_id])
+         image = Base64.decode64(params[:data])
 
-      msg = ["Photo has been Uploaded Successfully!"]
-      #msg = ["Error Uploading Photo. Try Again"]
+         msg = ["Photo has been Uploaded Successfully!"]
+         #msg = ["Error Uploading Photo. Try Again"]
 
-      #Write to Amazon S3 Datacenter
-      filaename = @deal.deal_id+'/'+Guid.new + '.jpg'
-      S3Object.store(filename, image, 'photos.justformyfriends.com', :content_type => 'image/jpeg', :access => :public_read)
+         #Write to Amazon S3 Datacenter
+         filaename = @deal.deal_id+'/'+Guid.new + '.jpg'
+         S3Object.store(filename, image, 'photos.justformyfriends.com', :content_type => 'image/jpeg', :access => :public_read)
 
-      respond_to do |format|
-         format.json { render :json => { :success => true, :msg => msg, :photo_url => 'http://photos.justformyfriends.com'+'/'+filename} }
+         respond_to do |format|
+            format.json { render :json => { :success => true, :msg => msg, :photo_url => 'http://photos.justformyfriends.com'+'/'+filename} }
+         end
+      rescue StandardError
+         msg = ["Photo failed to Upload!"]
+         respond_to do |format|
+         #format.xml  { render :xml => referrals }
+            format.json { render :json => { :success => false, :msg => msg, :photo_url : '' } }
+         end
       end
    end
 
