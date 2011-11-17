@@ -201,7 +201,7 @@ class ReferralsController < ApplicationController
          msg = ["Photo failed to Upload!"]
          respond_to do |format|
          #format.xml  { render :xml => referrals }
-            format.json { render :json => { :success => false, :msg => msg, :photo_url : '' } }
+            format.json { render :json => { :success => false, :msg => msg, :photo_url => '' } }
          end
       end
    end
