@@ -67,9 +67,9 @@ class OrdersController < ApplicationController
   end
 
   def create
+    @deal = Deal.first(:deal_id => params[:id]) || not_found
     authorize! :create, Order
 
-    @deal = Deal.first(:deal_id => params[:id]) || not_found
     referral_id = session[:referral_id]
     if referral_id.nil?
     raise Exceptions::AppException.new("Referral needed before you can buy deal.")
@@ -221,7 +221,7 @@ class OrdersController < ApplicationController
   end
 
   def destroy
-    @order = Order.first(:order_id => params[:id])
+    @order = Order.first(:order_id => params[:id]) || not_found
     authorize! :destroy, @order
 
     @order.destroy

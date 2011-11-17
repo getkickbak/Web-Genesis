@@ -60,9 +60,8 @@ class ReferralsController < ApplicationController
    end
 
    def create
-      authorize! :create, Referral
-
       deal = Deal.first(:deal_id => params[:id]) || not_found
+      authorize! :create, Referral
 
       Referral.transaction do
          begin

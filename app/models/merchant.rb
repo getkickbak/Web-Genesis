@@ -5,7 +5,7 @@ class Merchant
   include DataMapper::Resource
 
   property :id, Serial
-  property :merchant_id, String, :unique_index => true, :default => ""
+  property :merchant_id, String, :unique_index => true, :required => true, :default => ""
   property :name, String, :required => true, :default => ""
   property :photo_url, String, :required => true, :default => ""
   property :email, String, :required => true, :unique => true,

@@ -25,7 +25,7 @@ class Referral
       :photo_url => referral_info[:photo_url],
       :comment => referral_info[:comment].strip
     )
-    referral[:referral_id] = "#{rand(1000) + 2000}#{now.to_i}"
+    referral[:referral_id] = "#{rand(1000) + 4000}#{now.to_i}"
     referral[:creator_facebook_id] = creator.facebook_id
     referral[:created_ts] = now
     referral[:update_ts] = now
