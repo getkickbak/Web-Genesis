@@ -1,6 +1,6 @@
 require 'aws/s3'
 require 'guid'
-require 'base64'
+#require 'base64'
 
 
 
@@ -185,7 +185,7 @@ class ReferralsController < ApplicationController
    def upload_photo
       begin
          @deal = Deal.first(:deal_id => params[:deal_id])
-         image = Base64.decode64(params[:data])
+         image = params[:image]
 
          msg = ["Photo has been Uploaded Successfully!"]
          #msg = ["Error Uploading Photo. Try Again"]
