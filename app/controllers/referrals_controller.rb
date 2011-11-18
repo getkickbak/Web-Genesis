@@ -192,7 +192,7 @@ class ReferralsController < ApplicationController
 
          #Write to Amazon S3 Datacenter
          filaename = @deal.deal_id+'/'+Guid.new + '.jpg'
-         S3Object.store(filename, image, 'photos.justformyfriends.com', :content_type => 'image/jpeg', :access => :public_read)
+         S3Object.store(filename, image, APP_PROP["AMAZON_PHOTOS_BUCKET"], :content_type => 'image/jpeg', :access => :public_read)
 
          respond_to do |format|
             format.json { render :json => { :success => true, :msg => msg, :photo_url => 'http://photos.justformyfriends.com'+'/'+filename} }
