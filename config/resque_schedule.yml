@@ -1,5 +1,5 @@
 voucher_reminders:
-  cron: 0 1 * * ?
+  cron: 0 1 * * *
   class: VoucherReminders
   description: Voucher Reminders
 voucher_payments:

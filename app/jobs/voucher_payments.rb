@@ -39,33 +39,43 @@ module VoucherPayments
       #logger.debug("amount after: #{amount}")
       if amount > 0
         #logger.debug("before paypal")
-        caller =  PayPalSDKCallers::Caller.new(false, PayPalSDKProfiles::Profile::MASS_PAY)
+        #caller =  PayPalSDKCallers::Caller.new(false, PayPalSDKProfiles::Profile::MASS_PAY)
         #logger.debug("before req")
         actual_amount = amount * (100-APP_PROP["COMMISSION"])/100 - 0.3
-        req={
-          "VERSION" => "51.0",
-          "METHOD" => "MassPay",
-          "RECEIVERTYPE" => "EmailAddress",
-          "L_EMAIL0" => deal.merchant.paypal_account,
-          "L_AMT0" => actual_amount,
-          "CURRENCYCODE" => "CAD"
-        }
+        #req={
+        #  "VERSION" => "51.0",
+        #  "METHOD" => "MassPay",
+        #  "RECEIVERTYPE" => "EmailAddress",
+        #  "L_EMAIL0" => deal.merchant.paypal_account,
+        #  "L_AMT0" => actual_amount,
+        #  "CURRENCYCODE" => "CAD"
+        #}
         #logger.debug("after req: #{req}")
-        transaction = caller.call(req)
+        #transaction = caller.call(req)
         #logger.debug("after paypal")
-        if (transaction.success?)
-          Coupon.transaction do
-            begin
-              Coupon.all(:coupon_id => coupon_ids).update!(:paid_merchant => true, :update_ts => now)
-              logger.info("Amount transfered before commission: #{amount}")
-              logger.info("Amount transfered after commission: #{actual_amount}")
-            rescue DataMapper::SaveFailureError => e
-              logger.error("Failed to update paid_merchant for Coupons(#{coupon_ids.join(",")})")
-              logger.error("Exception: " + e.resource.errors.inspect)
-            end
+        #if (transaction.success?)
+        #  Coupon.transaction do
+        #    begin
+        #      Coupon.all(:coupon_id => coupon_ids).update!(:paid_merchant => true, :update_ts => now)
+        #      logger.info("Amount transfered before commission: #{amount}")
+        #      logger.info("Amount transfered after commission: #{actual_amount}")
+        #    rescue DataMapper::SaveFailureError => e
+        #      logger.error("Failed to update paid_merchant for Coupons(#{coupon_ids.join(",")})")
+        #      logger.error("Exception: " + e.resource.errors.inspect)
+        #    end
+        #  end
+        #else
+        #  logger.error("VoucherPayments failed for Deal(#{deal.deal_id})")
+        #end
+        Coupon.transaction do
+          begin
+            Coupon.all(:coupon_id => coupon_ids).update!(:paid_merchant => true, :update_ts => now)
+            logger.info("Amount to be transfered before commission: #{amount}")
+            logger.info("Amount to be transfered after commission: #{actual_amount}")
+          rescue DataMapper::SaveFailureError => e
+            logger.error("Failed to update paid_merchant for Coupons(#{coupon_ids.join(",")})")
+            logger.error("Exception: " + e.resource.errors.inspect)
           end
-        else
-          logger.error("VoucherPayments failed for Deal(#{deal.deal_id})")
         end
       else
         logger.info("Merchant doesn't need to be paid")  
