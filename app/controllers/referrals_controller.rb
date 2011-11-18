@@ -1,5 +1,5 @@
 require 'aws/s3'
-require 'guid'
+require 'uuidtools'
 #require 'base64'
 
 
@@ -185,14 +185,15 @@ class ReferralsController < ApplicationController
    def upload_photo
       begin
          @deal = Deal.first(:deal_id => params[:deal_id])
-         image = params[:image]
-
+         image = params[:image].open
+         
          msg = ["Photo has been Uploaded Successfully!"]
          #msg = ["Error Uploading Photo. Try Again"]
 
          #Write to Amazon S3 Datacenter
-         filaename = @deal.deal_id+'/'+Guid.new + '.jpg'
-         S3Object.store(filename, image, 'photos.justformyfriends.com', :content_type => 'image/jpeg', :access => :public_read)
+         uuid = UUIDTools::UUID.timestamp_create().to_s.upcase
+         filename = @deal.deal_id+'/'+ uuid + '.jpg'
+         AWS::S3::S3Object.store(filename, image, 'photos.justformyfriends.com', :content_type => 'image/jpeg', :access => :public_read)
 
          respond_to do |format|
             format.json { render :json => { :success => true, :msg => msg, :photo_url => 'http://photos.justformyfriends.com'+'/'+filename} }

@@ -1,7 +1,6 @@
 require 'util/constant'
 require 'util/common'
 require 'aws/s3'
-require 'guid'
 
 class Order
   include DataMapper::Resource
