@@ -24,7 +24,7 @@ Genesis::Application.routes.draw do
          root :to => redirect("/vouchers")
       end
    end
-
+   
    constraints Domain do
 =begin
    devise_for :users, :path => "", :controllers => {
@@ -79,9 +79,17 @@ Genesis::Application.routes.draw do
       match '/resend_vouchers' => 'orders#resend_coupons'
       match '/resend_reward' => 'referrals#resend_reward'
 
-      match '/admin' => 'admin#index', :as => :admin
-      match '/admin/run' => 'admin#run', :as => :admin_run
+      namespace :admin do
+        match '/jobs' => 'jobs#index', :as => :jobs
+        match '/jobs/run' => 'jobs#run', :as => :job_run
 
+        constraints CanAccessResque do
+          mount Resque::Server, at: '/resque'
+        end
+        match "/resque", :to => redirect("/")
+        match "/resque/*path", :to => redirect("/")
+      end
+      
       match '*a', :to => 'errors#routing'
       
       root :to => 'deals#show'

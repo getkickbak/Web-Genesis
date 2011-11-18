@@ -3,6 +3,7 @@ development:
   PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
   FEES_PAYER: EACHRECEIVER
   FILE_HOST: files.justformyfriends.com
+  PHOTO_HOST : photos.justformyfriends.com
   AMAZON_FILES_BUCKET: files.justformyfriends.com
   AMAZON_PHOTOS_BUCKET: photos.justformyfriends.com
   
@@ -11,6 +12,7 @@ test:
   PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
   FEES_PAYER: EACHRECEIVER
   FILE_HOST: files.justformyfriends.com
+  PHOTO_HOST : photos.justformyfriends.com
   AMAZON_FILES_BUCKET: files.justformyfriends.com
   AMAZON_PHOTOS_BUCKET: photos.justformyfriends.com
   
@@ -19,5 +21,6 @@ production:
   PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
   FEES_PAYER: EACHRECEIVER
   FILE_HOST: files.justformyfriends.com
+  PHOTO_HOST : photos.justformyfriends.com
   AMAZON_FILES_BUCKET: files.justformyfriends.com
   AMAZON_PHOTOS_BUCKET: photos.justformyfriends.com
