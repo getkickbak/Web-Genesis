@@ -49,7 +49,7 @@ gem 'redis'
 gem 'resque'
 gem 'resque-scheduler'
 gem 'aws-s3'
-gem 'guid'
+gem 'uuidtools'
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION
