@@ -5,6 +5,7 @@ development:
   FILE_HOST: files.justformyfriends.com
   AMAZON_FILES_BUCKET: files.justformyfriends.com
   AMAZON_PHOTOS_BUCKET: photos.justformyfriends.com
+  REDIS_URL: "redis://justformyfriends:5506b4d6a5868ccdfbf6c36531214b1a@stingfish.redistogo.com:9112/"  
   
 test:  
   COMMISSION: 2.9
@@ -13,6 +14,7 @@ test:
   FILE_HOST: files.justformyfriends.com
   AMAZON_FILES_BUCKET: files.justformyfriends.com
   AMAZON_PHOTOS_BUCKET: photos.justformyfriends.com
+  REDIS_URL: "redis://justformyfriends:5506b4d6a5868ccdfbf6c36531214b1a@stingfish.redistogo.com:9112/"  
   
 production:
   COMMISSION: 2.9
@@ -21,3 +23,4 @@ production:
   FILE_HOST: files.justformyfriends.com
   AMAZON_FILES_BUCKET: files.justformyfriends.com
   AMAZON_PHOTOS_BUCKET: photos.justformyfriends.com
+  REDIS_URL: "redis://username:password@127.0.0.1:6379/"
