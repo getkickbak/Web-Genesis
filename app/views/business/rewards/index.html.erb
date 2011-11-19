@@ -1,7 +1,7 @@
 <%= render 'layouts/business/tabs' %>
 <%= form_tag rewards_path, :class => 'form-stacked marchant-form', :method => 'get' do %>
 <div>
-	<%= label_tag do  %> <h3>Enter Rewards Code</h3> <% end %>
+	<%= label_tag do  %> <h3>Enter Reward Code</h3> <% end %>
 	<%= text_field_tag :search, params[:search], :class => 'xxlarge' %>
 	<%= submit_tag "Lookup Rewards", :type => 'submit', :name => nil, :style => 'line-height:34px;', :class => 'btn large right' %>
 	<% if @reward %>
