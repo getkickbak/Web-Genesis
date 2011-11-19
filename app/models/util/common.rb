@@ -15,7 +15,7 @@ class Common
       "#{user.user_id}/vouchers/#{filename}"
    end
 
-   def self.generate_photo_file_path(deal_id,filename)
+   def self.generate_photo_file_path(deal_id, filename)
       "#{deal_id}/#{filename}"
    end
 
