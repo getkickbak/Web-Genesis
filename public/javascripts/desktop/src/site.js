@@ -35,10 +35,16 @@ Site = {
    referralWarningFbTag : '#referralWarning .fbtag',
 
    recommendation : '#recommendation',
+   recommendationLoadingMask : '#recommendation .loadingMask',
+   recommendationMask : '#recommendation .loadMask',
+
+   friendReferralLoadingMask : '#friendReferralLoadingMask',
    mainMsg : '#mainMsg',
    mainMsgFbTag : '#mainMsg .fbtag',
    mainMsgReferral : '#mainMsg .hero-referral',
    mainMsgReferralsBtn : '#mainMsg .pagination li:last-child a',
+
+   secretCodeDialog : '#secretCodeDialog',
 
    mainDeal : '#mainDeal',
 
@@ -382,8 +388,8 @@ Site = {
       var referralsList = $(this.referralsList);
       var referrals = $(this.referralsListScroller);
 
-      $("#recommendation .loadingMask").removeClass("hide");
-      $("#recommendation .loadMask").removeClass("hide");
+      $(this.recommendationLoadingMask).removeClass("hide");
+      $(this.recommendationMask).removeClass("hide");
 
       // Check limiters
       this.referralsMinHeight = removeUnit($(this.mainMsg).css('height')) + 13;
@@ -445,14 +451,14 @@ Site = {
                }
             }, this));
 
-            $("#recommendation .loadingMask").addClass("hide");
-            $("#recommendation .loadMask").addClass("hide");
+            $(this.recommendationLoadingMask).addClass("hide");
+            $(this.recommendationMask).addClass("hide");
          }, this), 0);
-      }, this), null, null, function()
+      }, this), null, null, $.proxy(function()
       {
-         $("#recommendation .loadingMask").addClass("hide");
-         $("#recommendation .loadMask").addClass("hide");
-      });
+         $(this.recommendationLoadingMask).addClass("hide");
+         $(this.recommendationMask).addClass("hide");
+      },this));
    },
    backtoMain : function()
    {
@@ -476,8 +482,11 @@ Site = {
    },
    referralCompletePopup : function()
    {
-      $(this.alertMsgClose).parent().switchClass('in', 'hide');
-      $('#popupDialog').modal('hide');
+      //Clear up any Error Tooltips
+      $(Genesis.alertErrorClose).parent().switchClass('in', 'hide');
+      //Hide PopupDialog
+      Genesis.popupDialog.modal('hide');
+      
       FB.ui({
          method : 'send',
          name : $('meta[property~="og:title"]').prop('content'),
@@ -522,7 +531,7 @@ Site = {
       for(var x = 0; x < Math.ceil(result.length / cols); x++) {
          html += '<li>';
          for(var y = x * cols; (y < (x + 1) * cols) && (y < result.length); y++) {
-            html += '<div class="listItem"><div class="listItemCtn"><a href="' + dealPath + result[y].refId + '">' + '<img class="left" width="50" style="margin-right:5px;display:block;" src="http://graph.facebook.com/' + this.friendsList[y].value + '/picture?type=square&"/>' + '<div class="listContent">' + this.friendsList[y].label + '</div></div>' + '</a></div>';
+            html += '<div class="listItem"><div class="listItemCtn">' + '<a href="' + dealPath + result[y].refId + '"><img class="left" width="50" style="margin-right:5px;display:block;" src="http://graph.facebook.com/' + this.friendsList[y].value + '/picture?type=square&"/>' + '<div class="listContent">' + this.friendsList[y].label + '</div></a>' + '</div></div>';
          }
          html += '</li>';
       }
@@ -586,11 +595,11 @@ Site = {
       Genesis.ajax(true, this.checkUidReferralUrl, 'POST', 'friend_facebook_ids=' + friendsList, 'json', $.proxy(function(res)
       {
          var data = $.parseJSON(res.data);
-         $("#friendReferralLoadingMask").switchClass("in", "hide", 0, $.proxy(function()
+         $(this.friendReferralLoadingMask).switchClass("in", "hide", 0, $.proxy(function()
          {
             // Empty Result tell user to use the secret key
             if(res.total == 0) {
-               $("#secretCodeDialog").switchClass("hide", "in", 100);
+               $(this.secretCodeDialog).switchClass("hide", "in", 100);
             }
             else {
                var friendsList = [];
@@ -626,27 +635,29 @@ Site = {
             this.checkFriendReferral(response, 'uid', 'name', callback);
          }
          else {
-            $("#friendReferralLoadingMask").switchClass("in", "hide", 100, function()
+            $(this.friendReferralLoadingMask).switchClass("in", "hide", 100, $.proxy(function()
             {
                if(response.length == 1) {
-                  $("#secretCodeDialog").switchClass("hide", "in", 100);
+                  $(this.secretCodeDialog).switchClass("hide", "in", 100);
                }
                else {
                   Genesis.showErrMsg("Error Retrieving Friends List from Facebook. Reload Page to Try Again.");
                }
-            });
+            }, this));
          }
       }, Site));
    }
 }
 $(document).ready($(function()
 {
-   if($(Site.referralBrowser)[0]) {
-      $("#friendReferralLoadingMask").switchClass("hide", "in");
+   var site = Site;
+
+   if($(site.referralBrowser)[0]) {
+      $(site.friendReferralLoadingMask).switchClass("hide", "in");
    }
-   Site.initForm();
-   Site.initMainMsg();
-   Site.initSlides();
+   site.initForm();
+   site.initMainMsg();
+   site.initSlides();
 
    // --------------------------------------------------------------------------------
    // Google Map
@@ -669,21 +680,13 @@ $(document).ready($(function()
    // --------------------------------------------------------------------------------
    // Scrolling Referrals
    // --------------------------------------------------------------------------------
-   var mouseWheelEvt;
-   if(jQuery.browser.webkit) {
-      mouseWheelEvt = 'mousewheel';
-   }
-   else
-   if(jQuery.browser.mozilla) {
-      mouseWheelEvt = 'DOMMouseScroll';
-   }
-   $(window).bind(mouseWheelEvt, $.proxy(function(event, b)
+   $(window).bind(Genesis.mouseWheelEvt, $.proxy(function(event, b)
    {
       // Are we only the scrolling region?
       if((event.target != document.body) && $(this.referralsList)[0] && jQuery.contains($(this.referralsList)[0], event.target)) {
          event.preventDefault();
       }
-   }, Site));
+   }, site));
    // --------------------------------------------------------------------------------
    // SlideShow
    // --------------------------------------------------------------------------------
@@ -721,7 +724,7 @@ $(document).ready($(function()
    // Reward Button
    // --------------------------------------------------------------------------------
    var referralFbTag = false;
-   $(Site.referralWarning).bind('hidden', $.proxy(function()
+   $(site.referralWarning).bind('hidden', $.proxy(function()
    {
       var referralTabVisible = $(this.mainMsgReferral).parent().css('display') != 'none';
       if(!referralTabVisible) {
@@ -737,12 +740,12 @@ $(document).ready($(function()
       else {
          $(window).scrollTop($(this.mainMsg).position().top);
       }
-   }, Site));
-   $(Site.referralWarningFbTag).bind('click', $.proxy(function()
+   }, site));
+   $(site.referralWarningFbTag).bind('click', $.proxy(function()
    {
       referralFbTag = true;
       $(this.referralWarning).modal('hide');
-   }, Site));
+   }, site));
    // --------------------------------------------------------------------------------
    // Facebook Message
    // --------------------------------------------------------------------------------
