@@ -307,9 +307,14 @@ function convertString(v, rec, limit)
 // JustForMyFriends Library
 //---------------------------------------------------------------------------------
 Genesis = {
+   mouseWheelEvt : 'DOMMouseScroll mousewheel',
    currFbId : "0",
    perms : 'email,user_birthday,publish_stream,read_friendlists,publish_actions',
    fbAppId : '197968780267830',
+   
+   alertWarningClose : 'alert-message.warning .close',
+   alertErrorClose : 'alert-message.error .close',
+   
    fb_login_tag : function(forceReload)
    {
       return '<fb:login-button scope="' + this.perms + '" size="large" background="dark" length="long"></fb:login-button>';
@@ -558,11 +563,11 @@ Genesis = {
    },
    showErrMsg : function(msg, cb, rawHtml)
    {
-      this._showMsg('errMsg', msg, $(".alert-message.error .close"), cb, rawHtml);
+      this._showMsg('errMsg', msg, $(this.alertErrorClose), cb, rawHtml);
    },
    showWarningMsg : function(msg, cb, rawHtml)
    {
-      this._showMsg('warningMsg', msg, $(".alert-message.warning .close"), cb, rawHtml);
+      this._showMsg('warningMsg', msg, $(this.alertWarningClose), cb, rawHtml);
    },
    // **************************************************************************
    // Dynamic Popup
@@ -751,6 +756,8 @@ window.fbAsyncInit = function()
 // **************************************************************************
 $(document).ready($(function()
 {
+   var genesis = Genesis;
+   
    // --------------------------------------------------------------------------------
    // Init System Time Clock
    // --------------------------------------------------------------------------------
@@ -758,17 +765,16 @@ $(document).ready($(function()
    localOffset = -clientTime.getTimezoneOffset() * (60 * 1000);
    clientTime = clientTime.getTime();
 
-   Genesis._init();
-   Genesis.warningMsg = $(".alert-message.warning");
-   Genesis.errMsg = $(".alert-message.error");
+   genesis._init();
+   genesis.warningMsg = $(".alert-message.warning");
+   genesis.errMsg = $(".alert-message.error");
 
    // --------------------------------------------------------------------------------
    // Friends List ScrollBar Init
    // --------------------------------------------------------------------------------
-   var mouseWheelEvt = 'DOMMouseScroll mousewheel';
-   $(window).bind(mouseWheelEvt, function(event, b)
+   $(window).bind(genesis.mouseWheelEvt, function(event, b)
    {
-      // Are we only the scrolling region?
+      // Are we in the scrolling region?
       if((event.target != document.body) && $("#profileBrowserWrapper")[0] && jQuery.contains($("#profileBrowserWrapper")[0], event.target)) {
          event.preventDefault();
       }
