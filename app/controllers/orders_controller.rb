@@ -84,6 +84,15 @@ class OrdersController < ApplicationController
     new_customer = false
     end
 
+    if @deal.deal_id == "the-runners-shop-clinics"
+      customer_ids = DataMapper.repository(:default).adapter.select(
+        "SELECT id FROM runners_shop_customers WHERE LOWER(name) = ?", 
+        current_user.name.downcase
+      )
+      if customer_ids.length > 0
+        new_customer = false
+      end
+    end
     Order.transaction do
       begin
         @subdeal = Subdeal.get(params[:order][:subdeal_id])

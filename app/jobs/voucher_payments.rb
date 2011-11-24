@@ -20,6 +20,7 @@ module VoucherPayments
     deals.each do |deal|
       #logger.debug("begin")
       logger.info("Deal(#{deal.deal_id})")
+      next if deal.deal_id == "the-runners-shop-clinics"        
       total_amount_due = Coupon.sum(:paid_amount, :deal_id => deal.id , :redeemed => true) || 0
       total_amount_paid = Coupon.sum(:paid_amount, :deal_id => deal.id , :redeemed => true, :paid_merchant => true) || 0
       logger.info("Total Amount Due: #{total_amount_due}")
@@ -41,7 +42,7 @@ module VoucherPayments
         #logger.debug("before paypal")
         #caller =  PayPalSDKCallers::Caller.new(false, PayPalSDKProfiles::Profile::MASS_PAY)
         #logger.debug("before req")
-        actual_amount = amount * (100-APP_PROP["COMMISSION"])/100 - 0.3
+        actual_amount = amount * (100-APP_PROP["COMMISSION"])/100 - (coupon_ids.length * 0.3)
         #req={
         #  "VERSION" => "51.0",
         #  "METHOD" => "MassPay",

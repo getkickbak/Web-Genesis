@@ -1,11 +1,11 @@
 <% content_for :script do %> <script type="text/javascript" src="/javascripts/desktop/src/order.js"></script>
 <script type="text/javascript">
-	$(document).ready($(function() {
-		var msg = $("#error_explanation").html();
-		if(msg) {
-			Genesis.showErrMsg(msg,null,true);
-		}
-	}));
+$(document).ready($(function() {
+var msg=$("#error_explanation").html();
+if(msg) {
+Genesis.showErrMsg(msg,null,true);
+}
+}));
 
 </script>
 <% end %>
@@ -35,7 +35,7 @@
 							<tr>
 								<th class="span1 invisible"></th>
 								<th class="green span11">Description</th>
-                        <th class="span1 invisible">&#160;</th>
+								<th class="span1 invisible">&#160;</th>
 								<th class="green span2">Quantity</th>
 								<th class="span1 invisible">&#160;</th>
 								<th class="green span2">Price</th>
@@ -47,7 +47,7 @@
 						<tr>
 							<td class="span1"> <%= f.radio_button(:subdeal_id, sdeal.id, :id_value => i+1, :checked => ((@deal.subdeals.length == 1 && i == 0) || (@order.subdeal_id == sdeal.id)) ? true : false) %> </td>
 							<td class="span11" colspan="1"><%= sdeal.title %></td>
-                     <td class="span1 invisible">&#160;</td>
+							<td class="span1 invisible">&#160;</td>
 							<td class="span2">
 							<input id="order_quantity<%= i+1 %>" type="text" name="order_quantity<%= i+1 %>" value="<%= @order.subdeal_id == sdeal.id ? @order.quantity : nil %>">
 							</td>
@@ -64,7 +64,7 @@
 							<td style="text-align:right;"><h4 id="order_grand_total">C$<%= @order.subdeal_id ? "%0.2f" % @order.total_payment : '0.00' %></h4></td>
 						</tr>
 					</table>
-               <%= f.hidden_field(:quantity, :value => @order.quantity ? @order.quantity : 0) %>
+					<%= f.hidden_field(:quantity, :value => @order.quantity ? @order.quantity : 0) %>
 				</div>
 			</div>
 		</div>
@@ -72,33 +72,24 @@
 			<div class="span24">
 				<h2>Gift Option</h2>
 				<div class="gift panelBodyHighlights form-stacked">
-				   <table>
-					<%= f.fields_for :gift_option_attributes, do |g| %>
-					<tr>
-					<td>
-					<%= g.label :from %>
-					<%= g.text_field :from, :value => flash[:give_gift] ? @order.gift_option_attributes[:from] : current_user.name %>
-					</td>
-					<td>
-					<%= g.label :to %>
-					<%= g.text_field :to, :value => flash[:give_gift] ? @order.gift_option_attributes[:to] : "" %>
-					</td>
-					</tr>
-					<td colspan="2">
-					<%= g.label :message, "Message <span>- (optional)</span>".html_safe %>
-					<%= g.text_area :message, :rows => 5, :value => flash[:give_gift] ? @order.gift_option_attributes[:message] : "" %>
-					</td>
-					</tr>
-					<tr>
-               <td>
-               <a id="disable_gift">Nevermind</a>
-               <%= f.hidden_field(:give_gift, :value => flash[:give_gift] ? true : false) %>
-               </td>
-               </table>
+					<table>
+						<%= f.fields_for :gift_option_attributes, do |g| %>
+						<tr>
+							<td> <%= g.label :from %>
+							<%= g.text_field :from, :value => flash[:give_gift] ? @order.gift_option_attributes[:from] : current_user.name %> </td>
+							<td> <%= g.label :to %>
+							<%= g.text_field :to, :value => flash[:give_gift] ? @order.gift_option_attributes[:to] : "" %> </td>
+						</tr>
+						<td colspan="2"> <%= g.label :message, "Message <span>- (optional)</span>".html_safe %>
+						<%= g.text_area :message, :rows => 5, :value => flash[:give_gift] ? @order.gift_option_attributes[:message] : "" %> </td>
+						</tr>
+						<tr>
+							<td><a id="disable_gift">Nevermind</a> <%= f.hidden_field(:give_gift, :value => flash[:give_gift] ? true : false) %> </td>
+					</table>
 					<% end %>
 				</div>
 			</div>
-		</div>		
+		</div>
 		<div class="row">
 			<div class="span24">
 				<h2>Select Your Payment Method</h2>
@@ -113,23 +104,32 @@
 						</thead>
 						<tr>
 							<td class="span1">
-								<input type="radio" name="payMethod" value="PayPal" checked="1"/>
+							<input type="radio" name="payMethod" value="PayPal" checked="1"/>
 							</td>
 							<td class="span14">PayPal or Credit Card</td>
 							<td class="span8 invisible" >&#160;</td>
 						</tr>
 						<tr>
-							<td class="noPadding noMargin" colspan="3">
-								<!-- PayPal Logo -->
-								<table class="noPadding noMargin" border="0" cellpadding="0" cellspacing="0" align="center">
-									<tr><td align="center" class="noPadding noMargin"><a href="#" onclick="javascript:window.open('https://www.paypal.com/ca/cgi-bin/webscr?cmd=xpt/Marketing/popup/OLCWhatIsPayPal-outside','olcwhatispaypal','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=400, height=350');"><img  src="https://www.paypal.com/en_US/i/bnr/horizontal_solution_PPeCheck.gif" border="0" alt="Solution Graphics"></a></td></tr>
-								</table>
-								<!-- PayPal Logo -->
-							</td>
+							<td class="span1">&#160;</td><!-- PayPal Logo -->
+							<td class="noPadding noMargin" colspan="2"><!-- PayPal Logo -->
+							<table class="noPadding noMargin" border="0" cellpadding="0" cellspacing="0" align="center">
+								<tr>
+									<td align="center" class="noPadding noMargin"><a href="#" onclick="javascript:window.open('https://www.paypal.com/ca/cgi-bin/webscr?cmd=xpt/Marketing/popup/OLCWhatIsPayPal-outside','olcwhatispaypal','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=400, height=350');"><img  src="https://www.paypal.com/en_US/i/bnr/horizontal_solution_PPeCheck.gif" border="0" alt="Solution Graphics"></a></td>
+								</tr>
+							</table><!-- PayPal Logo --></td>
+						</tr>
+						<tr>
+							<td class="span1"><% if flash[:agree_to_terms].nil?  %>
+							<input type="checkbox" name="agree_to_terms" >
+							<% else %>
+							<input type="checkbox" name="agree_to_terms" checked="checked" >
+							<% end %></td>
+							<td colspan="2" class="noMargin noPadding"><span>I agree to the <a href="/terms">Terms Of Use</a> and <a href="/privacy">Privacy Agreement</a></span></td>
+						</tr>
+						<tr>
+							<td colspan="3"> <%= f.submit "Complete Order", :class => "btn primary large noWrap", :disable_with => "Working..." %> </td>
 						</tr>
 					</table>
-					<div><% if flash[:agree_to_terms].nil?  %><input type="checkbox" name="agree_to_terms" ><% else %><input type="checkbox" name="agree_to_terms" checked="checked" ><% end %> I agree to the <a href="/terms">Terms Of Use</a> and <a href="/privacy">Privacy Agreement</a></div>
-					<div style="margin-top:10px;"><%= f.submit "Complete Order", :class => "btn primary large noWrap", :disable_with => "Working..." %></div>
 				</div>
 			</div>
 		</div>
@@ -147,10 +147,10 @@
 				</dd>
 				<dt>
 					Is JustForMyFriends safe?
-            	</dt>
-            	<dd>
+				</dt>
+				<dd>
 					Our transactions are handled by PayPal, which is in turn protected by SSL so it is 100% safe.
-            	</dd>
+				</dd>
 			</dl>
 		</div>
 	</div>

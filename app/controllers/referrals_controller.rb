@@ -97,16 +97,20 @@ class ReferralsController < ApplicationController
          begin
             @referral[:confirmed] = true
             @referral.save
-            reward_count = Reward.count(:deal_id => @referral.deal.id, :user_id => current_user.id ) || 0
-            if (reward_count == 0 && @referral.deal.reward_count < @referral.deal.max_reward)
-            @reward = Reward.create(@referral.deal,current_user,@referral.id)
-            @reward.print
-            @referral.deal[:reward_count] += 1
-            @referral.deal.save
-            UserMailer.reward_email(@reward).deliver
-            flash[:notice] = "Thank you for the referral!  Your reward email will arrive in your inbox shortly."
+            if @referral.deal.deal_id != "the-runners-shop-clinic"
+              reward_count = Reward.count(:deal_id => @referral.deal.id, :user_id => current_user.id ) || 0
+              if (reward_count == 0 && @referral.deal.reward_count < @referral.deal.max_reward)
+                @reward = Reward.create(@referral.deal,current_user,@referral.id)
+                @reward.print
+                @referral.deal[:reward_count] += 1
+                @referral.deal.save
+                UserMailer.reward_email(@reward).deliver
+                flash[:notice] = "Thank you for the referral!  Your reward email will arrive in your inbox shortly."
+              else
+                flash[:notice] = "Sorry, we are out of rewards but you can still take advantage of this special deal."
+              end
             else
-            flash[:notice] = "Sorry, we are out of rewards but you can still take advantage of this special deal."
+              flash[:notice] = "Thank you for the referral! Now go ahead and get this awesome deal :)"
             end
             respond_to do |format|
             #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
@@ -124,7 +128,7 @@ class ReferralsController < ApplicationController
          end
       end
    end
-
+   
    def resend_reward
       begin
          reward = Reward.first(:user_id => current_user.id)

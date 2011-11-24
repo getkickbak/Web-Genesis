@@ -52,7 +52,11 @@ class Order
     order[:referral_id] = referral_id
     order[:new_customer] = new_customer
     order[:purchase_date] = now
-    order[:total_payment] = quantity * (subdeal ? subdeal.discount_price : 0)
+    if deal.deal_id == "the-runners-shop-clinics" && !new_customer
+      order[:total_payment] = quantity * (subdeal ? subdeal.regular_price : 0)
+    else
+      order[:total_payment] = quantity * (subdeal ? subdeal.discount_price : 0)  
+    end  
     order[:created_ts] = now
     order[:update_ts] = now
     order.deal = deal
@@ -65,7 +69,7 @@ class Order
       qr = RQRCode::QRCode.new( coupon[:coupon_id], :size => 5, :level => :h )
       png = qr.to_img.resize(90,90)
       coupon[:coupon_title] = subdeal.coupon_title
-      coupon[:paid_amount] = subdeal.discount_price
+      coupon[:paid_amount] = (deal.deal_id == "the-runners-shop-clinics" && !new_customer) ? subdeal.regular_price : subdeal.discount_price
       coupon[:expiry_date] = deal.expiry_date
       coupon[:barcode] = ""
       AWS::S3::S3Object.store(

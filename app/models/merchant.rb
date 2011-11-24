@@ -22,7 +22,7 @@ class Merchant
   property :country, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
   property :website, String, :required => true, :default => ""
-  property :paypal_account, String, :required => true
+  property :paypal_account, String, :default => ""
   property :latitude, Decimal, :scale => 6, :default => 0
   property :longtitude, Decimal, :scale => 6, :default => 0
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
