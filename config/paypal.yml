@@ -59,22 +59,16 @@ test:
  
 production:
   # redirect url
-  #REDIRECT_URL: https://www.paypal.com/webscr?cmd=_ap-payment&paykey=
-  REDIRECT_URL: https://www.sandbox.paypal.com/webscr?cmd=_ap-payment&paykey=
+  REDIRECT_URL: https://www.paypal.com/webscr?cmd=_ap-payment&paykey=
 
   # specify the 3-token values.    
-  #USER: paul.chan_api1.justformyfriends.com
-  #PASSWORD:  6CLFZ8ESCJUMK6XF
-  #SIGNATURE: A2eXLsICE-Kw6UV4hYLnHldjmkqeAW15c76rWMuiBLf9JlSC85XCYR9z
-  USER: middle_1312472948_biz_api1.gmail.com
-  PASSWORD:  "1312472987"
-  SIGNATURE: AQeoLK6k17n.8dndObjia1jsnKl4AhKjCtA3eFn0dIca9CKsL-R6vB7x
+  USER: paul.chan_api1.justformyfriends.com
+  PASSWORD:  "6CLFZ8ESCJUMK6XF"
+  SIGNATURE: A2eXLsICE-Kw6UV4hYLnHldjmkqeAW15c76rWMuiBLf9JlSC85XCYR9z
           
   #    @@endpoints 
-  #API_SERVER:  svcs.paypal.com
-  API_SERVER:  svcs.sandbox.paypal.com
-  #MASS_PAY_API_SERVER: api-3t.paypal.com
-  MASS_PAY_API_SERVER: api-3t.sandbox.paypal.com
+  API_SERVER:  svcs.paypal.com
+  MASS_PAY_API_SERVER: api-3t.paypal.com
 
   # Proxy information of the client environment.   @@proxy_info 
   USE_PROXY:  false
@@ -85,7 +79,7 @@ production:
 
   # Information needed for tracking purposes.   @@client_details
   IP_ADDRESS: 127.0.0.1
-  APPLICATION_ID: APP-80W284485P519543T
+  APPLICATION_ID: APP-7KF06769UJ402551S
   DEVICE_ID: mydevice 
 
   # Information needed for tracking purposes.   @@client_info   
