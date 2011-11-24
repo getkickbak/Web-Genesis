@@ -29,23 +29,25 @@
 		<div class="row">
 			<div class="span24">
 				<h2>Your Purchase Choices</h2>
-				<div class="purchase panelBodyHighlights" style="padding-right:40px;">
+				<div class="purchase panelBodyHighlights" style="padding-right:20px;">
 					<table style="margin-bottom:0px;">
 						<thead>
 							<tr>
-								<th style="visibility:hidden;" class="span1"></th>
-								<th class="green span12">Description</th>
+								<th class="span1 invisible"></th>
+								<th class="green span11">Description</th>
+                        <th class="span1 invisible">&#160;</th>
 								<th class="green span2">Quantity</th>
-								<th class="green span1">&#160;</th>
+								<th class="span1 invisible">&#160;</th>
 								<th class="green span2">Price</th>
-								<th class="green span1">&#160;</th>
+								<th class="span1 invisible">&#160;</th>
 								<th class="green span4" style="text-align:right;">Total</th>
 							</tr>
 						</thead>
 						<% @deal.subdeals.each_with_index do |sdeal, i| %>
 						<tr>
 							<td class="span1"> <%= f.radio_button(:subdeal_id, sdeal.id, :id_value => i+1, :checked => ((@deal.subdeals.length == 1 && i == 0) || (@order.subdeal_id == sdeal.id)) ? true : false) %> </td>
-							<td class="span12"><%= sdeal.title %></td>
+							<td class="span11" colspan="1"><%= sdeal.title %></td>
+                     <td class="span1 invisible">&#160;</td>
 							<td class="span2">
 							<input id="order_quantity<%= i+1 %>" type="text" name="order_quantity<%= i+1 %>" value="<%= @order.subdeal_id == sdeal.id ? @order.quantity : nil %>">
 							</td>
@@ -57,9 +59,9 @@
 						<% end %>
 						<tr>
 							<td colspan="2"><img style="vertical-align:middle;" src="http://photos.justformyfriends.com/gift-icon.png"/><a style="vertical-align:middle;margin-left:5px;" id="enable_gift">Buying this as a Gift?</a></td>
-							<td colspan="3" style="text-align:right;"><h4>My Total:</h4></td>
-							<td colspan="1"></td>
-							<td colspan="1" style="text-align:right;"><h4 id="order_grand_total">C$<%= @order.subdeal_id ? "%0.2f" % @order.total_payment : '0.00' %></h4></td>
+							<td colspan="4" class="alignRight"><h4>My Total:</h4></td>
+							<td >&#160;</td>
+							<td class="alignRight"><h4 id="order_grand_total">C$<%= @order.subdeal_id ? "%0.2f" % @order.total_payment : '0.00' %></h4></td>
 						</tr>
 					</table>
                <%= f.hidden_field(:quantity, :value => @order.quantity ? @order.quantity : 0) %>
@@ -100,13 +102,13 @@
 		<div class="row">
 			<div class="span24">
 				<h2>Select Your Payment Method</h2>
-				<div class="payment panelBodyHighlights">
+				<div class="payment panelBodyHighlights" style="padding-right:20px;">
 					<table>
 						<thead>
 							<tr>
-								<th style="visibility:hidden;" class=""></th>
+								<th class="span1 invisible"></th>
 								<th class="green span14">Method</th>
-								<th class="span8" style="visibility:hidden;">&#160;</th>
+								<th class="span8">&#160;</th>
 							</tr>
 						</thead>
 						<tr>
@@ -114,7 +116,7 @@
 								<input type="radio" name="payMethod" value="PayPal" checked="1"/>
 							</td>
 							<td class="span14">PayPal or Credit Card</td>
-							<td class="span8" style="visibility:hidden;">&#160;</td>
+							<td class="span8 invisible" >&#160;</td>
 						</tr>
 						<tr>
 							<td class="noPadding noMargin" colspan="3">
