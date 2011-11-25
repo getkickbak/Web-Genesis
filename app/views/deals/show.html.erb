@@ -219,7 +219,7 @@ call to action
             <td>
             <div class="heading">Time Left to Buy</div>
             <h3>
-            <% if false &&  @deal.end_date.to_date >= Date.today && @deal.limit_count < @deal.max_limit %>
+            <% if @deal.end_date.to_date >= Date.today && @deal.limit_count < @deal.max_limit %>
             <script type="text/javascript" >
                var TargetDate = "<%= @deal.end_date.change(:hour => 23, :min => 59, :sec => 59) %>";
                var BackColor = "";
@@ -244,7 +244,7 @@ call to action
             </h3>
             </td>
             <td width="120" style="text-align:right;">
-               <% if false && @deal.deal_id == "the-runners-shop-clinics" && defined? @new_customer && !@new_customer %>
+               <% if @deal.deal_id == "the-runners-shop-clinics" && defined? @new_customer && !@new_customer %>
                <% subdeal = @deal.subdeals.last %>
                <small style="vertical-align:text-bottom">from</small><h3>C$<%= subdeal.regular_price.to_i %></h3>
                <% else %>	
@@ -254,7 +254,7 @@ call to action
             </td>   
             <td width="120">
             <div>
-            <% if false && @deal.end_date.to_date >= Date.today && @deal.limit_count < @deal.max_limit %> 	
+            <% if @deal.end_date.to_date >= Date.today && @deal.limit_count < @deal.max_limit %> 	
             	<% if signed_in? %>	
             		<% if @referral %>
             		<a href="/deals/<%= @deal.deal_id %>/confirmation?referral_id=<%= @referral.referral_id %>" class="btn pricetag large alignCenter">Buy Now! &raquo;</a>
