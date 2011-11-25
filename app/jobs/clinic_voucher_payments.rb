@@ -23,8 +23,9 @@ module ClinicVoucherPayments
         referral_count = Coupon.count(Coupon.order.referral_id => referral.id, :new_customer => true) || 0
         if referral_count > 0
           subdeal = Subdeal.get(coupon.order.subdeal_id)
-          refund_amount += subdeal.regular_price - subdeal.discount_price
-          logger.info("User(#{coupon.user.name}) will be credited $#{refund_amount} for referring #{referral_count} new customers")
+          credit = subdeal.regular_price - subdeal.discount_price
+          refund_amount += credit
+          logger.info("User(#{coupon.user.name}) will be credited $#{credit} for referring #{referral_count} new customers")
         end
       end
     end
