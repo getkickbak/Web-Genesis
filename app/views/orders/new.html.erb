@@ -34,27 +34,35 @@ Genesis.showErrMsg(msg,null,true);
 						<thead>
 							<tr>
 								<th class="span1 invisible"></th>
-								<th class="green span11">Description</th>
+								<th class="green span9">Description</th>
 								<th class="span1 invisible">&#160;</th>
-								<th class="green span2">Quantity</th>
+								<th class="green span3">Quantity</th>
 								<th class="span1 invisible">&#160;</th>
 								<th class="green span2">Price</th>
 								<th class="span1 invisible">&#160;</th>
-								<th class="green span4" style="text-align:right;">Total</th>
+								<th class="green span5" style="text-align:right;">Total</th>
 							</tr>
 						</thead>
-						<% @deal.subdeals.each_with_index do |sdeal, i| %>
+						<% subdeals = @deal.subdeals %>
+						<% if @deal.deal_id == "the-runners-shop-clinics" %>
+						<% subdeals = subdeals.reverse %>
+						<% end %>
+						<% subdeals.each_with_index do |sdeal, i| %>
 						<tr>
 							<td class="span1"> <%= f.radio_button(:subdeal_id, sdeal.id, :id_value => i+1, :checked => ((@deal.subdeals.length == 1 && i == 0) || (@order.subdeal_id == sdeal.id)) ? true : false) %> </td>
-							<td class="span11" colspan="1"><%= sdeal.title %></td>
+							<td class="span9"><%= sdeal.title %></td>
 							<td class="span1 invisible">&#160;</td>
-							<td class="span2">
+							<td class="span3">
 							<input id="order_quantity<%= i+1 %>" type="text" name="order_quantity<%= i+1 %>" value="<%= @order.subdeal_id == sdeal.id ? @order.quantity : nil %>">
 							</td>
 							<td class="span1">x</td>
+							<% if @deal.deal_id == "the-runners-shop-clinics" && !@new_customer %>
+							<td id="order_discount_price<%= i+1 %>" class="span2" value="<%= sdeal.regular_price %>">C$<%= sdeal.regular_price.to_i %></td>
+							<% else %>
 							<td id="order_discount_price<%= i+1 %>" class="span2" value="<%= sdeal.discount_price %>">C$<%= sdeal.discount_price.to_i %></td>
+							<% end %>
 							<td class="span1">=</td>
-							<td id="order_total<%= i+1 %>" class="span4" style="text-align:right;">C$<%= @order.subdeal_id == sdeal.id ? "%0.2f" % @order.total_payment : '0.00' %></td>
+							<td id="order_total<%= i+1 %>" class="span5" style="text-align:right;">C$<%= @order.subdeal_id == sdeal.id ? "%0.2f" % @order.total_payment : '0.00' %></td>
 						</tr>
 						<% end %>
 						<tr>

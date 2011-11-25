@@ -97,7 +97,7 @@ class ReferralsController < ApplicationController
          begin
             @referral[:confirmed] = true
             @referral.save
-            if @referral.deal.deal_id != "the-runners-shop-clinic"
+            if @referral.deal.deal_id != "the-runners-shop-clinics"
               reward_count = Reward.count(:deal_id => @referral.deal.id, :user_id => current_user.id ) || 0
               if (reward_count == 0 && @referral.deal.reward_count < @referral.deal.max_reward)
                 @reward = Reward.create(@referral.deal,current_user,@referral.id)
@@ -110,7 +110,7 @@ class ReferralsController < ApplicationController
                 flash[:notice] = "Sorry, we are out of rewards but you can still take advantage of this special deal."
               end
             else
-              flash[:notice] = "Thank you for the referral! Now go ahead and get this awesome deal :)"
+              flash[:notice] = "Thank you for the referral! Now go ahead and make the purchase :)"
             end
             respond_to do |format|
             #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }

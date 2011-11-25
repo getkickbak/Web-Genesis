@@ -52,6 +52,17 @@ class OrdersController < ApplicationController
     @referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id, :confirmed => true)
     end
 
+    if @deal.deal_id == "the-runners-shop-clinics"
+      @new_customer = true
+      customer_ids = DataMapper.repository(:default).adapter.select(
+        "SELECT id FROM runners_shop_customers WHERE LOWER(name) = ?", 
+        current_user.name.downcase
+      )
+      if customer_ids.length > 0 || @referral
+        @new_customer = false
+      end
+    end 
+      
     if @referral.nil?
       respond_to do |format|
         format.html { redirect_to deal_path(@deal) }
@@ -78,12 +89,6 @@ class OrdersController < ApplicationController
     end
 
     new_customer = true
-    referral = Referral.first(:deal_id => @deal.id, :confirmed => true, :creator_id => current_user.id)
-    if referral
-    referral_key_id = referral.id
-    new_customer = false
-    end
-
     if @deal.deal_id == "the-runners-shop-clinics"
       customer_ids = DataMapper.repository(:default).adapter.select(
         "SELECT id FROM runners_shop_customers WHERE LOWER(name) = ?", 
@@ -93,6 +98,12 @@ class OrdersController < ApplicationController
         new_customer = false
       end
     end
+    referral = Referral.first(:deal_id => @deal.id, :confirmed => true, :creator_id => current_user.id)
+    if referral
+    referral_key_id = referral.id
+    new_customer = false
+    end
+
     Order.transaction do
       begin
         @subdeal = Subdeal.get(params[:order][:subdeal_id])
@@ -174,6 +185,9 @@ class OrdersController < ApplicationController
     raise Exception.new
     end
     @referral_id = session[:referral_id]
+    if @order.deal.deal_id == "the-runners-shop-clinics"
+      @referral = Referral.first(:deal_id => @order.deal.id, :confirmed => true, :creator_id => current_user.id)
+    end
     reset_order
   end
 

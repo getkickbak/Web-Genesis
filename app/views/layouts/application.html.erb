@@ -6,7 +6,7 @@
       <meta property="fb:app_id" content="197968780267830"/>
       <meta property="og:type" content="justformyfriends:business" />
       <meta property="og:site_name" content="JustForMyFriends"/>
-      <meta property="og:title" content="<% if (defined? @deal) && !@deal.nil? && !@deal.subdeals.nil? %><% subdeal = @deal.subdeals.first %><%= "C$#{(subdeal.regular_price - subdeal.discount_price).to_i} OFF - #{@deal.title.gsub(/<\/?[^>]+>/, "")}" %><% end %>"/>
+      <meta property="og:title" content="<% if (defined? @deal) && !@deal.nil? && !@deal.subdeals.empty? %><% subdeal = @deal.subdeals.first %><%= "C$#{(subdeal.regular_price - subdeal.discount_price).to_i} OFF - #{@deal.title.gsub(/<\/?[^>]+>/, "")}" %><% end %>"/>
       <% if (defined? @deal) && !@deal.nil? && !@deal.merchant.nil? %> <meta property="og:image" content="<%= @deal.merchant.photo_url %>"/>
       <meta property="og:description" content="<%= @deal.mini_description %>">
       <meta property="og:street-address" content="<%= @deal.merchant.address1 %> <%= @deal.merchant.address2 %>"/>
@@ -69,7 +69,7 @@
                <h3><a href="/" style="width:180px;">
                   <img width="200" style="position:absolute;top:0px;left:-10px;" src="http://photos.justformyfriends.com/logo.png"/>
                   JustForMyFriends</a></h3>
-               <% if (defined? @show_reward) && @show_reward %>
+               <% if (defined? @show_reward) && @show_reward && (defined? @deal) && @deal.deal_id != "the-runners-shop-clinics" %>
                <ul class="nav">
                   <li class=""><a href="/how_it_works">How It Works</a></li>
                </ul>

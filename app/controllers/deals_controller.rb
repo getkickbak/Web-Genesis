@@ -28,7 +28,7 @@ class DealsController < ApplicationController
       if params[:id]
       @deal = Deal.first(:deal_id => params[:id]) || not_found
       else
-      @deal = Deal.get(1)
+      @deal = Deal.first(:deal_id => "the-runners-shop-clinics")
       end
       authorize! :read, @deal
 
@@ -43,6 +43,7 @@ class DealsController < ApplicationController
       @show_reward = true
       end
 
+      test = @referral.nil?
       if signed_in? && @referral.nil?
          @referral = Referral.first(:deal_id => @deal.id, :confirmed => true, :creator_id => current_user.id)
          if @referral
@@ -50,6 +51,17 @@ class DealsController < ApplicationController
          end
       end
 
+      if signed_in? && @deal.deal_id == "the-runners-shop-clinics"
+        @new_customer = true
+        customer_ids = DataMapper.repository(:default).adapter.select(
+          "SELECT id FROM runners_shop_customers WHERE LOWER(name) = ?", 
+          current_user.name.downcase
+        )
+        if customer_ids.length > 0 || @referral
+          @new_customer = false
+        end
+      end  
+      
       if params[:id] && !redirect
          respond_to do |format|
             if params[:notice].nil?
@@ -83,7 +95,6 @@ class DealsController < ApplicationController
       @deal.end_date = now
       @deal.expiry_date = now
       @deal.reward_expiry_date = now
-
       respond_to do |format|
          format.html # new.html.erb
       #format.xml  { render :xml => @deal }
