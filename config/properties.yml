@@ -20,7 +20,7 @@ test:
   
 production:
   COMMISSION: 2.9
-  PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
+  PAYPAL_ACCOUNT: paul.chan@justformyfriends.com
   FEES_PAYER: EACHRECEIVER
   FILE_HOST: files.justformyfriends.com
   PHOTO_HOST : photos.justformyfriends.com
