@@ -63,6 +63,19 @@ class ReferralsController < ApplicationController
       deal = Deal.first(:deal_id => params[:id]) || not_found
       authorize! :create, Referral
 
+      if Date.today > deal.end_date.to_date
+        respond_to do |format|
+          #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
+          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+          if deal.deal_id == "the-runners-shop-clinics"
+            format.json { render :json => { :success => false, :msg => ["Sorry...", "Promotion is over!"] } }
+          else
+            format.json { render :json => { :success => false, :msg => ["Sorry...", "Deal is over!"] } }
+          end  
+        end
+        return
+      end
+      
       Referral.transaction do
          begin
             referral_count = Referral.count(:deal_id => deal.id, :confirmed => true, :creator_id => current_user.id ) || 0
