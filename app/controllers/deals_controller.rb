@@ -108,7 +108,7 @@ class DealsController < ApplicationController
    end
 
    def create
-      @merchant = Merchant.first(params[:merchant_id]) || not_found
+      @merchant = Merchant.first(:merchant_id => params[:merchant_id]) || not_found
       authorize! :create, Deal
 
       Deal.transaction do
@@ -135,8 +135,8 @@ class DealsController < ApplicationController
    end
 
    def update 
-      @merchant = Merchant.first(params[:merchant_id]) || not_found
-      @deal = Deal.first(params[:id]) || not_found
+      @merchant = Merchant.first(:merchant_id => params[:merchant_id]) || not_found
+      @deal = Deal.first(:deal_id =>params[:id]) || not_found
       authorize! :update, @deal
 
       #Temporary settings
