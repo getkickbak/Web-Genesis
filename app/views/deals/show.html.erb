@@ -244,9 +244,13 @@ call to action
             </h3>
             </td>
             <td width="120" style="text-align:right;">
-               <% if @deal.deal_id == "the-runners-shop-clinics" && defined? @new_customer && !@new_customer %>
-               <% subdeal = @deal.subdeals.last %>
-               <small style="vertical-align:text-bottom">from</small><h3>C$<%= (subdeal.regular_price/1.13).to_i %></h3>
+               <% if @deal.deal_id == "the-runners-shop-clinics" %>
+            		<% subdeal = @deal.subdeals.last %>
+               		<% if defined? @new_customer && @new_customer %>
+               		<small style="vertical-align:text-bottom">from</small><h3>C$<%= (subdeal.discount_price/1.13).to_i %></h3>
+               		<% else %>
+               		<small style="vertical-align:text-bottom">from</small><h3>C$<%= (subdeal.regular_price/1.13).to_i %></h3>
+               		<% end %>
                <% else %>	
                <% subdeal = @deal.subdeals.first %>
                <h3>C$<%= (subdeal.regular_price - subdeal.discount_price).to_i %> OFF</h3>
