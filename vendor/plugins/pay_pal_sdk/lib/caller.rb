@@ -93,8 +93,8 @@ module PayPalSDKCallers
     def initialize(log, data, service)
       @@PayPalLog=log
       @@PayPalLog.debug("service: #{service}")
-      @@PayPalLog.debug("responseEnvelope.ack: #{data["responseEnvelope.ack"].to_s}")
-      @success = (service == PayPalSDKProfiles::Profile::MASS_PAY ? data["ACK"].to_s : data["responseEnvelope.ack"].to_s) != "Failure"
+      @@PayPalLog.debug("responseEnvelope.ack: #{data["responseEnvelope.ack"].join}")
+      @success = (service == PayPalSDKProfiles::Profile::MASS_PAY ? data["ACK"].to_s : data["responseEnvelope.ack"].join) != "Failure"
       @response = data
     end
 
