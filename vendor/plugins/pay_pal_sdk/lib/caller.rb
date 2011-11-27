@@ -91,8 +91,8 @@ module PayPalSDKCallers
   # Wrapper class to wrap response hash from PayPal as an object and to provide nice helper methods
   class Transaction
     def initialize(data, service)
-      @@PayPalLog.debug("service: #{service}")
-      @@PayPalLog.debug("responseEnvelope.ack: #{data["responseEnvelope.ack"].to_s}")
+      Caller.@@PayPalLog.debug("service: #{service}")
+      Caller.@@PayPalLog.debug("responseEnvelope.ack: #{data["responseEnvelope.ack"].to_s}")
       @success = (service == PayPalSDKProfiles::Profile::MASS_PAY ? data["ACK"].to_s : data["responseEnvelope.ack"].to_s) != "Failure"
       @response = data
     end
