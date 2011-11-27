@@ -64,11 +64,15 @@ Genesis.showErrMsg(msg,null,true);
 							<input id="order_quantity<%= i+1 %>" type="text" name="order_quantity<%= i+1 %>" value="<%= @order.subdeal_id == sdeal.id ? @order.quantity : nil %>">
 							</td>
 							<td class="span1">x</td>
-							<% if @deal.deal_id == "the-runners-shop-clinics" && !@new_customer %>
-							<td id="order_discount_price<%= i+1 %>" class="span2" value="<%= sdeal.regular_price %>">C$<%= sdeal.regular_price.to_i %></td>
+							<% if @deal.deal_id == "the-runners-shop-clinics" %>
+								<% if @new_customer %>
+								<td id="order_discount_price<%= i+1 %>" class="span2" value="<%= sdeal.discount_price %>">C$<%= "%0.2f" % sdeal.discount_price %></td>
+								<% else %>
+								<td id="order_discount_price<%= i+1 %>" class="span2" value="<%= sdeal.regular_price %>">C$<%= "%0.2f" % sdeal.regular_price %></td>
+								<% end %>
 							<% else %>
 							<td id="order_discount_price<%= i+1 %>" class="span2" value="<%= sdeal.discount_price %>">C$<%= sdeal.discount_price.to_i %></td>
-							<% end %>
+							<% end >
 							<td class="span1">=</td>
 							<td id="order_total<%= i+1 %>" class="span5" style="text-align:right;">C$<%= @order.subdeal_id == sdeal.id ? "%0.2f" % @order.total_payment : '0.00' %></td>
 						</tr>
