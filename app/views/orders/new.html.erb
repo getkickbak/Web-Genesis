@@ -52,7 +52,7 @@ Genesis.showErrMsg(msg,null,true);
 							<td class="span1"> <%= f.radio_button(:subdeal_id, sdeal.id, :id_value => i+1, :checked => ((@deal.subdeals.length == 1 && i == 0) || (@order.subdeal_id == sdeal.id)) ? true : false) %> </td>
 							<% if @deal.deal_id == "the-runners-shop-clinics"%>
 								<% if @new_customer %>
-								<td class="span9"><%= "C$#{(sdeal.discount_price/1.13).to_i} + HST #{sdeal.title}" %></td>
+								<td class="span9"><span style="text-decoration:line-through;"><%= "C$#{(sdeal.regular_price/1.13).to_i}" %></span> <%= "C$#{(sdeal.discount_price/1.13).to_i} + HST #{sdeal.title}" %></td>
 								<% else %>
 								<td class="span9"><%= "C$#{(sdeal.regular_price/1.13).to_i} + HST #{sdeal.title}" %></td>
 								<% end %>
@@ -64,8 +64,12 @@ Genesis.showErrMsg(msg,null,true);
 							<input id="order_quantity<%= i+1 %>" type="text" name="order_quantity<%= i+1 %>" value="<%= @order.subdeal_id == sdeal.id ? @order.quantity : nil %>">
 							</td>
 							<td class="span1">x</td>
-							<% if @deal.deal_id == "the-runners-shop-clinics" && !@new_customer %>
-							<td id="order_discount_price<%= i+1 %>" class="span2" value="<%= sdeal.regular_price %>">C$<%= sdeal.regular_price.to_i %></td>
+							<% if @deal.deal_id == "the-runners-shop-clinics" %>
+								<% if @new_customer %>
+								<td id="order_discount_price<%= i+1 %>" class="span2" value="<%= sdeal.discount_price %>">C$<%= "%0.2f" % sdeal.discount_price %></td>
+								<% else %>
+								<td id="order_discount_price<%= i+1 %>" class="span2" value="<%= sdeal.regular_price %>">C$<%= "%0.2f" % sdeal.regular_price %></td>
+								<% end %>
 							<% else %>
 							<td id="order_discount_price<%= i+1 %>" class="span2" value="<%= sdeal.discount_price %>">C$<%= sdeal.discount_price.to_i %></td>
 							<% end %>

@@ -24,6 +24,7 @@ class DealsController < ApplicationController
    def show
       if params[:merchant_id]
       @merchant = Merchant.first(:merchant_id => params[:merchant_id]) || not_found
+      authorize! :read, @merchant
       end
       if params[:id]
       @deal = Deal.first(:deal_id => params[:id]) || not_found

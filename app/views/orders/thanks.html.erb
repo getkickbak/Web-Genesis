@@ -5,8 +5,8 @@
          <p>
             A confirmation email will be sent to you shortly.
          </p>
-         <% if @order.deal.deal_id == "the-runners-shop-clinics" && defined? @referral && !@referral.nil? %>
-         <p>You will receive a $25 credit on your purchase for any qualified referrals at the conclusion of this offer.</p>
+         <% if @order.deal.deal_id == "the-runners-shop-clinics" && (defined? @referral) && !@referral.nil? %>
+         <p>You will receive a $25 + HST credit on your purchase for any qualified referrals at the conclusion of this offer.</p>
          <% end %>
          <p style="text-align:center;margin-top:50px;font-weight:bold;">
             <a href="<%= deal_url(@order.deal)+"?referral_id=#{@referral_id}" %>" class="btn large">Back to Main »</a>
