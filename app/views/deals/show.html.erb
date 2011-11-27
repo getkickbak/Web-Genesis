@@ -229,14 +229,14 @@ call to action
                var CountStepper = -1;
                var LeadingZero = true;
                var DisplayFormat = "%%D%% Days %%H%% Hrs %%M%% Mins %%S%% secs";
-               <% if @deal.deal_id == "the-runners-shop-clinics" && defined? @new_customer && !@new_customer %>
+               <% if @deal.deal_id == "the-runners-shop-clinics" && (defined? @new_customer) && !@new_customer %>
                var FinishMessage = "The promotion is over!";
 			   <% else %>
 			   var FinishMessage = "The deal is over!";
 			   <% end %>
             </script>
             <script type="text/javascript" src="/javascripts/desktop/lib/countdown.js"></script>
-            <% elsif @deal.deal_id == "the-runners-shop-clinics" && defined? @new_customer && !@new_customer %>
+            <% elsif @deal.deal_id == "the-runners-shop-clinics" && (defined? @new_customer) && !@new_customer %>
             	The promotion is over!
             <% else %>
             	The deal is over!
@@ -244,7 +244,7 @@ call to action
             </h3>
             </td>
             <td width="120" style="text-align:right;">
-               <% if @deal.deal_id == "the-runners-shop-clinics" && defined? @new_customer && !@new_customer %>
+               <% if @deal.deal_id == "the-runners-shop-clinics" && (defined? @new_customer) && !@new_customer %>
                <% subdeal = @deal.subdeals.last %>
                <small style="vertical-align:text-bottom">from</small><h3>C$<%= (subdeal.regular_price/1.13).to_i %></h3>
                <% else %>	
