@@ -72,7 +72,7 @@ Genesis.showErrMsg(msg,null,true);
 								<% end %>
 							<% else %>
 							<td id="order_discount_price<%= i+1 %>" class="span2" value="<%= sdeal.discount_price %>">C$<%= sdeal.discount_price.to_i %></td>
-							<% end >
+							<% end %>
 							<td class="span1">=</td>
 							<td id="order_total<%= i+1 %>" class="span5" style="text-align:right;">C$<%= @order.subdeal_id == sdeal.id ? "%0.2f" % @order.total_payment : '0.00' %></td>
 						</tr>
