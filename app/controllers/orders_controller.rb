@@ -306,6 +306,7 @@ class OrdersController < ApplicationController
       session[:order_id] = order.order_id
       session[:pay_response]=@transaction.response
       @response = session[:pay_response]
+      logger.debug("response: " + @response)
       @paykey = @response["payKey"].join
       @paymentExecStatus=@response["paymentExecStatus"].join
       #if "paymentExecStatus" is completed redirect to pay_details method else redirect to sandbox with paykey
