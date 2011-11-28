@@ -131,25 +131,6 @@
             <a class="btn secondary">Cancel</a>
          </div>
       </div>
-      <!-- Referral Confirmation Popup -->
-      <% if (defined? @deal) && !@deal.nil? && !@referral.nil? %>
-      <div id="referralDialog" style="position:absolute;z-index:100000;display:none;top:0;width:100%;height:100%">
-         <div class="modal fade in" style="position: relative; top: auto; left: auto; margin: 0 auto; z-index:1;top:100px;">
-            <div class="modal-header">
-               <a class="close">×</a>
-               <h3>THANK YOU for your referral!</h3>
-            </div>
-            <div class="modal-body">
-               <h4>Hey Eric!</h4>
-               <p> Yay! An email is on its way for you to claim your reward. </p>
-               <p> Now that you have submitted your referral, you are also eligible to buy this deal! </p>
-            </div>
-            <div class="modal-footer">
-               <a  href="/deals/<%= @deal.id %>/confirmation" class="btn pricetag large">Buy Now! &raquo;</a>
-            </div>
-         </div>
-      </div>
-      <% end %>
       <!-- Server Side into passed to Client Side -->
       <div style="display:none;">
          <div id="systemTime">
