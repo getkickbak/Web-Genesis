@@ -6,7 +6,16 @@
       <meta property="fb:app_id" content="197968780267830"/>
       <meta property="og:type" content="justformyfriends:business" />
       <meta property="og:site_name" content="JustForMyFriends"/>
-      <meta property="og:title" content="<% if (defined? @deal) && !@deal.nil? && !@deal.subdeals.empty? %><% subdeal = @deal.subdeals.first %><%= "C$#{(subdeal.regular_price - subdeal.discount_price).to_i} OFF - #{@deal.title.gsub(/<\/?[^>]+>/, "")}" %><% end %>"/>
+      <% if (defined? @deal) && !@deal.nil? && !@deal.subdeals.empty? %>
+        <% subdeal = @deal.subdeals.first %>
+      	<% if @deal.deal_id == "the-runners-shop-clinics" %>
+      	<meta property="og:title" content="<%= "C$#{((subdeal.regular_price - subdeal.discount_price)/1.13).to_i} OFF - #{@deal.title.gsub(/<\/?[^>]+>/, "")}" %>"/>
+      	<% else %>	
+      	<meta property="og:title" content="<%= "C$#{(subdeal.regular_price - subdeal.discount_price).to_i} OFF - #{@deal.title.gsub(/<\/?[^>]+>/, "")}" %>"/>
+      	<% end %>
+      <% else %>
+      	<meta property="og:title" content=""/>
+      <% end %>
       <% if (defined? @deal) && !@deal.nil? && !@deal.merchant.nil? %> <meta property="og:image" content="<%= @deal.merchant.photo_url %>"/>
       <meta property="og:description" content="<%= @deal.mini_description %>">
       <meta property="og:street-address" content="<%= @deal.merchant.address1 %> <%= @deal.merchant.address2 %>"/>
