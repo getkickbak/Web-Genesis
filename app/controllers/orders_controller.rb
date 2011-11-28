@@ -295,7 +295,7 @@ class OrdersController < ApplicationController
       "clientDetails.ipAddress"=> @@clientDetails["ipAddress"],
       "clientDetails.deviceId" => @@clientDetails["deviceId"],
       "clientDetails.applicationId" => @@clientDetails["applicationId"],
-      "memo"=> order.order_id,
+      "memo"=> "order# #{order.order_id}",
       "feesPayer"=> APP_PROP["FEES_PAYER"],
       "receiverList.receiver[0].email"=> APP_PROP["PAYPAL_ACCOUNT"],
       "receiverList.receiver[0].amount"=> order[:total_payment],
