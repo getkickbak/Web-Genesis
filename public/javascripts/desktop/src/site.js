@@ -392,7 +392,7 @@ Site = {
       $(this.recommendationMask).removeClass("hide");
 
       // Check limiters
-      this.referralsMinHeight = removeUnit($(this.mainMsg).css('height')) + 13;
+      this.referralsMinHeight = removeUnit($(this.mainMsg).css('height'));
       this.referralsMaxHeight = this.referralsMinHeight + removeUnit($(this.mainDeal).css('height'));
 
       Genesis.ajax(true, Genesis.get_referrals, 'GET', "referral_id=" + referral_id + "&start=" + start + '&max=' + end, 'json', $.proxy(function(response)
