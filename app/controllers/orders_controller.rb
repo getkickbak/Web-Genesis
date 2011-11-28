@@ -39,8 +39,12 @@ class OrdersController < ApplicationController
     authorize! :create, @order
 
     if @order.subdeal_id != 0
-    subdeal = Subdeal.get(@order.subdeal_id)
-    @order.total_payment = @order.quantity * subdeal.discount_price
+      subdeal = Subdeal.get(@order.subdeal_id)
+      if @order.deal.deal_id == "the-runners-shop-clinics" && !@order.new_customer
+        @order.total_payment = @order.quantity * subdeal.regular_price
+      else
+        @order.total_payment = @order.quantity * subdeal.discount_price
+      end
     end
     if flash[:errors].nil?
     reset_order
@@ -58,7 +62,7 @@ class OrdersController < ApplicationController
         "SELECT id FROM runners_shop_customers WHERE LOWER(name) = ?", 
         current_user.name.downcase
       )
-      if customer_ids.length > 0 || @referral
+      if customer_ids.length > 0 || (@referral && @referral.creator.id == current_user.id)
         @new_customer = false
       end
     end 
@@ -306,9 +310,9 @@ class OrdersController < ApplicationController
       session[:order_id] = order.order_id
       session[:pay_response]=@transaction.response
       @response = session[:pay_response]
-      @response.sort{|a,b| a[1]<=>b[1]}.each { |elem|
-        logger.debug "#{elem[1]}, #{elem[0]}"
-      }
+      #@response.sort{|a,b| a[1]<=>b[1]}.each { |elem|
+      #  logger.debug "#{elem[1]}, #{elem[0]}"
+      #}
       @paykey = @response["payKey"].join
       @paymentExecStatus=@response["paymentExecStatus"].join
       #if "paymentExecStatus" is completed redirect to pay_details method else redirect to sandbox with paykey
