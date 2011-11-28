@@ -44,7 +44,6 @@ class DealsController < ApplicationController
       @show_reward = true
       end
 
-      test = @referral.nil?
       if signed_in? && @referral.nil?
          @referral = Referral.first(:deal_id => @deal.id, :confirmed => true, :creator_id => current_user.id)
          if @referral
@@ -58,7 +57,7 @@ class DealsController < ApplicationController
           "SELECT id FROM runners_shop_customers WHERE LOWER(name) = ?", 
           current_user.name.downcase
         )
-        if customer_ids.length > 0 || @referral
+        if customer_ids.length > 0 || (@referral && @referral.creator.id == current_user.id)
           @new_customer = false
         end
       end  

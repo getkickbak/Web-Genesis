@@ -52,9 +52,9 @@ Genesis.showErrMsg(msg,null,true);
 							<td class="span1"> <%= f.radio_button(:subdeal_id, sdeal.id, :id_value => i+1, :checked => ((@deal.subdeals.length == 1 && i == 0) || (@order.subdeal_id == sdeal.id)) ? true : false) %> </td>
 							<% if @deal.deal_id == "the-runners-shop-clinics"%>
 								<% if @new_customer %>
-								<td class="span9"><span style="text-decoration:line-through;"><%= "C$#{(sdeal.regular_price/1.13).to_i}" %></span> <%= "C$#{(sdeal.discount_price/1.13).to_i} + HST #{sdeal.title}" %></td>
+								<td class="span9"><span style="text-decoration:line-through;"><%= "C$#{(sdeal.regular_price/1.13).to_i}" %></span> <%= "C$#{(sdeal.discount_price/1.13).to_i} + HST for #{sdeal.title}" %></td>
 								<% else %>
-								<td class="span9"><%= "C$#{(sdeal.regular_price/1.13).to_i} + HST #{sdeal.title}" %></td>
+								<td class="span9"><%= "C$#{(sdeal.regular_price/1.13).to_i} + HST for #{sdeal.title}" %></td>
 								<% end %>
 							<% else %>
 							<td class="span9"><%= sdeal.title %></td>
