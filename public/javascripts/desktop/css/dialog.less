@@ -77,12 +77,18 @@
    }
    .listItemCtn {
       padding:5px;
+      display:block;
       &:hover {
          background-color: @pageBgColor;
       }
+      img {
+         width:50px;
+         margin-right:5px;
+         display:block;
+      }
    }
    .listItem {
-      width:(((@photoWidth)-6)-3*15)/3px;
+      width:(((@gridColumnWidth * @gridColumns) + (@gridGutterWidth * (@gridColumns)-20-10)-6)-3*15)/3px;
       margin:5px 0 0 15px;
       float:left;
       a {
