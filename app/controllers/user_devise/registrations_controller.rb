@@ -5,10 +5,11 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
   end
 
   def create
-    User.transaction do |t|
+    #User.transaction do |t|
       begin
         build_resource
-        User.create(resource)
+        user = User.create(resource, resource.password, resource.password_confirmation)
+        resource = user
         if resource.active_for_authentication?
           set_flash_message :notice, :signed_up if is_navigational_format?
           sign_in(resource_name, resource)
@@ -19,11 +20,11 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
           respond_with resource, :location => after_inactive_sign_up_path_for(resource)
         end  
       rescue StandardError => e
-        t.rollback
+        #t.rollback
         clean_up_passwords(resource)
         respond_with_navigational(resource) { render_with_scope :new }
       end
-    end
+    #end
   end
 
   def update

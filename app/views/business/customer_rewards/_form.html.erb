@@ -1,0 +1,18 @@
+<%= simple_form_for @customer_reward do |f| %>
+	<% if @customer_reward.errors.any? %>
+	<div id="error_explanation">
+		<h2><%= pluralize(@customer_reward.errors.count, "error") %> prohibited this reward from being saved:</h2>
+
+		<ul>
+			<% @customer_reward.errors.full_messages.each do |msg| %>
+			<li>
+				<%= msg %>
+			</li>
+			<% end %>
+		</ul>
+	</div>
+	<% end %>
+	<%= f.input :title %>
+	<%= f.input :points %>
+	<%= f.button :submit %>
+<% end %>

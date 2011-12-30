@@ -1,0 +1,43 @@
+<h1>Listing deals</h1>
+<table>
+	<tr>
+		<th>Title</th>
+		<th>Location</th>
+		<th>Photo Urls</th>
+		<th>Description</th>
+		<th>Highlights</th>
+		<th>Details</th>
+		<th>Start Date</th>
+		<th>End Date</th>
+		<th>Expiry Date</th>
+		<th>Max Per Person</th>
+		<th>Max Limit</th>
+		<th>Reward Title</th>
+		<th>Reward Details</th>
+		<th>Reward Expiry Date</th>
+		<th>Max Reward</th>
+		<th></th>
+		<th></th>
+		<th></th>
+	</tr>
+	<% @deals.each do |deal| %>
+	<tr>
+		<td><%= deal.title %></td>
+		<td><%= deal.location %></td>
+		<td><%= deal.photo_urls %></td>
+		<td><%= deal.description %></td>
+		<td><%= deal.highlights %></td>
+		<td><%= deal.details %></td>
+		<td><%= deal.start_date %></td>
+		<td><%= deal.end_date %></td>
+		<td><%= deal.expiry_date %></td>
+		<td><%= deal.max_per_person %></td>
+		<td><%= deal.max_limit %></td>
+		<td><%= link_to 'Show', merchant_deal_path(@merchant,deal) %></td>
+		<td><%= link_to 'Edit', edit_merchant_deal_path(@merchant,deal) %></td>
+		<td><%= link_to 'Destroy', merchant_deal_path(@merchant,deal), :confirm => 'Are you sure?', :method => :delete %></td>
+	</tr>
+	<% end %>
+</table>
+<br />
+<%= link_to 'New Deal', new_merchant_deal_path(@merchant) %> 

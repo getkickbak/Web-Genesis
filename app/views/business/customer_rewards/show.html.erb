@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Title</b>
+  <%= @customer_reward.title %>
+</p>
+
+<p>
+  <b>Points:</b>
+  <%= @customer_reward.points %>
+</p>
+
+<%= link_to 'Edit', edit_customer_reward_path(@customer_reward) %> |
+<%= link_to 'Back', customer_rewards_path %>

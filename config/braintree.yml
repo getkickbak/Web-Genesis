@@ -1,0 +1,14 @@
+development:
+  MERCHANT_ID = bcfdzf2xfj6wd5m2
+  PUBLIC_KEY = d995nksvjjrm9kw3
+  PRIVATE_KEY = mgzxnqwpvrqnxx9x
+  
+test:
+  MERCHANT_ID = bcfdzf2xfj6wd5m2
+  PUBLIC_KEY = d995nksvjjrm9kw3
+  PRIVATE_KEY = mgzxnqwpvrqnxx9x
+  
+production:
+  MERCHANT_ID = bcfdzf2xfj6wd5m2
+  PUBLIC_KEY = d995nksvjjrm9kw3
+  PRIVATE_KEY = mgzxnqwpvrqnxx9x

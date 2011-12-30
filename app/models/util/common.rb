@@ -1,18 +1,18 @@
 class Common
-   def self.generate_full_reward_file_path(user, filename)
-      get_host+generate_reward_file_path(user, filename)
+   def self.generate_full_merchant_qr_code_file_path(merchant_id, filename)
+      get_host+generate_merchant_qr_code_file_path(merchant_id, filename)
    end
 
-   def self.generate_reward_file_path(user, filename)
-      "#{user.user_id}/rewards/#{filename}"
+   def self.generate_merchant_qr_code_file_path(merchant_id, filename)
+      "#{merchant_id}/qr_code/#{filename}"
+   end
+   
+   def self.generate_full_voucher_file_path(user_id, filename)
+      get_host+generate_voucher_file_path(user_id, filename)
    end
 
-   def self.generate_full_voucher_file_path(user, filename)
-      get_host+generate_voucher_file_path(user, filename)
-   end
-
-   def self.generate_voucher_file_path(user, filename)
-      "#{user.user_id}/vouchers/#{filename}"
+   def self.generate_voucher_file_path(user_id, filename)
+      "#{user_id}/vouchers/#{filename}"
    end
 
    def self.generate_photo_file_path(deal_id, filename)

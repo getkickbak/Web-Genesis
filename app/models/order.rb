@@ -14,6 +14,7 @@ class Order
   property :purchase_date, DateTime, :default => ::Constant::MIN_TIME
   property :total_payment, Decimal, :scale => 2, :default => 0
   property :payment_confirmed, Boolean, :default => false
+  property :txn_id, String, :default => ""
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -28,7 +29,7 @@ class Order
   
   accepts_nested_attributes_for :gift_option, :allow_destroy => true
   
-  validates_with_method :check_quantity, :check_deal_max_limit, :check_deal_max_per_person, :check_end_date
+  validates_with_method :check_quantity, :check_deal_max_limit, :check_deal_max_per_person, :check_start_date, :check_end_date
   
   def self.create(deal, subdeal, user, referral_id, new_customer, order_info, agree_to_terms)
     now = Time.now
@@ -52,11 +53,7 @@ class Order
     order[:referral_id] = referral_id
     order[:new_customer] = new_customer
     order[:purchase_date] = now
-    if deal.deal_id == "the-runners-shop-clinics" && !new_customer
-      order[:total_payment] = quantity * (subdeal ? subdeal.regular_price : 0)
-    else
-      order[:total_payment] = quantity * (subdeal ? subdeal.discount_price : 0)  
-    end  
+    order[:total_payment] = quantity * (subdeal ? subdeal.discount_price : 0)  
     order[:created_ts] = now
     order[:update_ts] = now
     order.deal = deal
@@ -69,17 +66,17 @@ class Order
       qr = RQRCode::QRCode.new( coupon[:coupon_id], :size => 5, :level => :h )
       png = qr.to_img.resize(90,90)
       coupon[:coupon_title] = subdeal.coupon_title
-      coupon[:paid_amount] = (deal.deal_id == "the-runners-shop-clinics" && !new_customer) ? subdeal.regular_price : subdeal.discount_price
+      coupon[:paid_amount] =  subdeal.discount_price
       coupon[:expiry_date] = deal.expiry_date
       coupon[:barcode] = ""
       AWS::S3::S3Object.store(
-        ::Common.generate_voucher_file_path(user,"#{coupon[:coupon_id]}.png"), 
+        ::Common.generate_voucher_file_path(user.user_id,"#{coupon[:coupon_id]}.png"), 
         png.to_string, 
         APP_PROP["AMAZON_FILES_BUCKET"], 
         :content_type => 'image/png', 
         :access => :public_read
       )
-      filename = ::Common.generate_full_voucher_file_path(user,"#{coupon[:coupon_id]}.png")
+      filename = ::Common.generate_full_voucher_file_path(user.user_id,"#{coupon[:coupon_id]}.png")
       coupon[:qr_code] = filename
       coupon[:created_ts] = now
       coupon[:update_ts] = now
@@ -143,8 +140,12 @@ class Order
     (self.quantity + past_orders_quantity) <= self.deal.max_per_person ? true : [false, "Exceeded max per person limit"]
   end
   
+  def check_start_date
+    Date.today >= self.deal.start_date ? true : [false, "Deal not yet started"]
+  end
+  
   def check_end_date
-    Date.today <= self.deal.end_date.to_date ? true : [false, "Deal is over"]
+    Date.today <= self.deal.end_date ? true : [false, "Deal is over"]
   end
   
   def past_orders_quantity

@@ -63,15 +63,11 @@ class ReferralsController < ApplicationController
       deal = Deal.first(:deal_id => params[:id]) || not_found
       authorize! :create, Referral
 
-      if Date.today > deal.end_date.to_date
+      if Date.today > deal.end_date
         respond_to do |format|
           #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          if deal.deal_id == "the-runners-shop-clinics"
-            format.json { render :json => { :success => false, :msg => ["Sorry...", "Promotion is over!"] } }
-          else
-            format.json { render :json => { :success => false, :msg => ["Sorry...", "Deal is over!"] } }
-          end  
+          format.json { render :json => { :success => false, :msg => ["Sorry...", "Deal is over!"] } }
         end
         return
       end
@@ -110,21 +106,6 @@ class ReferralsController < ApplicationController
          begin
             @referral[:confirmed] = true
             @referral.save
-            if @referral.deal.deal_id != "the-runners-shop-clinics"
-              reward_count = Reward.count(:deal_id => @referral.deal.id, :user_id => current_user.id ) || 0
-              if (reward_count == 0 && @referral.deal.reward_count < @referral.deal.max_reward)
-                @reward = Reward.create(@referral.deal,current_user,@referral.id)
-                @reward.print
-                @referral.deal[:reward_count] += 1
-                @referral.deal.save
-                UserMailer.reward_email(@reward).deliver
-                flash[:notice] = "Thank you for the referral!  Your reward email will arrive in your inbox shortly."
-              else
-                flash[:notice] = "Sorry, we are out of rewards but you can still take advantage of this special deal."
-              end
-            else
-              flash[:notice] = "Thank you for the referral! Now go ahead and make the purchase :)"
-            end
             respond_to do |format|
             #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -139,63 +120,6 @@ class ReferralsController < ApplicationController
                format.json { render :json => { :success => false, :msg => ["Something went wrong", "Trouble updating a referral.  Please try again."] } }
             end
          end
-      end
-   end
-   
-   def resend_reward
-      begin
-         reward = Reward.first(:user_id => current_user.id)
-         msg = []
-         if reward
-            UserMailer.reward_email(reward).deliver
-            msg = ["Your Reward has been Sent!", "An email will arrive in your inbox shortly."]
-         else
-            msg = ["You have no Reward!", "But, You can Refer Friends to get one :)"]
-         end
-         respond_to do |format|
-            format.json { render :json => { :success => true, :msg => msg } }
-         end
-      rescue StandardError => e
-         logger.error(e)
-         respond_to do |format|
-            format.json { render :json => { :success => false, :msg => ["Something went wrong", "Your Reward failed to Send!  Please try again."] } }
-         end
-      end
-   end
-
-   def reward_email
-      authorize! :manage, :all
-      @referral = Referral.first(:referral_id => params[:id])
-      @reward = Reward.first(:referral_id => @referral.id)
-
-      respond_to do |format|
-         format.html { render :template => "user_mailer/reward_email", :locals => { :reward => @reward } }
-      #format.xml  { render :xml => @order }
-      end
-   end
-
-   def reward_email_template
-      authorize! :manage, :all
-      @referral = Referral.first(:referral_id => params[:id])
-
-      respond_to do |format|
-         format.html { render :template => "user_mailer/reward_email_template", :locals => { :referral => @referral } }
-      #format.xml  { render :xml => @order }
-      end
-   end
-
-   def reward_template
-      authorize! :manage, :all
-      @referral = Referral.first(:referral_id => params[:id])
-      @reward = Reward.first(:referral_id => @referral.id)
-
-      @reward_code = @reward.reward_code
-      @qr_code = @reward.qr_code
-      @deal = @reward.deal
-
-      respond_to do |format|
-         format.html { render :template => "user_mailer/reward_template" }
-      #format.xml  { render :xml => @order }
       end
    end
 

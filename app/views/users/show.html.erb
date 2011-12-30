@@ -10,7 +10,5 @@
   <%= @user.email %>
 </p>
 
-<p>
-  <b>Password:</b>
-  <%= @user.password %>
-</p>
+<%= link_to 'Edit', edit_account_path(@account) %> |
+<%= link_to 'Back', account_path %>

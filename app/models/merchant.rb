@@ -3,71 +3,72 @@ require 'util/constant'
 
 class Merchant
   include DataMapper::Resource
+  # Include default devise modules. Others available are:
+  # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
 
+  devise :database_authenticatable, #:registerable, #:confirmable,
+          :recoverable, :rememberable, :trackable, :timeoutable,
+          :validatable, :authentication_keys => [:email]
+          
   property :id, Serial
   property :merchant_id, String, :unique_index => true, :required => true, :default => ""
   property :name, String, :required => true, :default => ""
-  property :photo_url, String, :required => true, :default => ""
   property :email, String, :required => true, :unique => true,
             :format => :email_address
-  property :first_name, String, :required => true, :default => ""
-  property :last_name, String, :required => true, :default => ""
-  property :encrypted_password, String, :default => ""
-  property :salt, String, :default => ""
-  property :address1, String, :required => true, :default => ""
-  property :address2, String, :default => ""
-  property :city, String, :required => true, :default => ""
-  property :state, String, :required => true, :default => ""
-  property :zipcode, String, :required => true, :default => ""
-  property :country, String, :required => true, :default => ""
+  property :encrypted_password, String, :required => true, :default => ""
+  property :photo_url, String, :default => ""
+  property :account_first_name, String, :required => true, :default => ""
+  property :account_last_name, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
-  property :website, String, :required => true, :default => ""
-  property :paypal_account, String, :default => ""
-  property :latitude, Decimal, :scale => 6, :default => 0
-  property :longtitude, Decimal, :scale => 6, :default => 0
+  property :auth_code, String, :required => true, :default => ""
+  property :qr_code, String, :required => true, :default => ""
+  property :payment_account_id, String, :default => ""
+  property :status, Enum[:active, :suspended, :deleted], :default => :active
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
 
-  attr_accessor :password, :password_confirmation
-  attr_accessible :name, :email, :photo_url, :first_name, :last_name, :password, :password_confirmation, :address1, :address2,
-                  :city, :state, :zipcode, :country, :phone, :website, :paypal_account
+  attr_accessible :name, :email, :account_first_name, :account_last_name, :phone, :password, :password_confirmation, :encrypted_password
 
-  has n, :deals
-
+  validates_presence_of :password, :password_confirmation
+  validates_length_of :password, :min => 6, :max => 40
   validates_confirmation_of :password
-
-  before :save, :encrypt_password
   
-  def self.create(merchant_info)
+  has n, :merchant_credit_cards, :child_key => [ :merchant_id ]
+  has n, :credit_cards, :through => :merchant_credit_cards, :via => :credit_card
+
+  def self.create(merchant_info, password, password_confirmation)
     now = Time.now
     merchant_name = merchant_info[:name].squeeze(' ').strip
+    merchant_id = merchant_name.downcase.gsub(' ','-')
+    auth_code = String.random_alphanumeric
+    filename = generate_qr_code(merchant_id, auth_code)
+    
     merchant = Merchant.new(
-    :name => merchant_name,
-    :email => merchant_info[:email].strip,
-    :photo_url => merchant_info[:photo_url].strip,
-    :first_name => merchant_info[:first_name].strip,
-    :last_name => merchant_info[:last_name].strip,
-    :password => merchant_info[:password].strip,
-    :password_confirmation => merchant_info[:password_confirmation].strip,
-    :address1 => merchant_info[:address1].strip,
-    :address2 => merchant_info[:address2].strip,
-    :city => merchant_info[:city].strip,
-    :state => merchant_info[:state].strip,
-    :zipcode => merchant_info[:zipcode].strip,
-    :country => merchant_info[:country].strip,
-    :phone => merchant_info[:phone].strip,
-    :website => merchant_info[:website].strip,
-    :paypal_account => merchant_info[:paypal_account].strip
+      :name => merchant_name,
+      :email => merchant_info[:email].strip,
+      :password => password.strip,
+      :password_confirmation => password_confirmation.strip,
+      :encrypted_password => merchant_info[:encrypted_password],
+      :account_first_name => merchant_info[:account_first_name].strip,
+      :account_last_name => merchant_info[:account_last_name].strip,
+      :phone => merchant_info[:phone].strip
     )
-    merchant[:merchant_id] = merchant_name.downcase.gsub(' ','-')
+    merchant[:merchant_id] = merchant_id
+    merchant[:auth_code] = auth_code
+    merchant[:qr_code] = filename
     merchant[:created_ts] = now
     merchant[:update_ts] = now
     merchant.save
     return merchant
   end
 
+  def self.create_without_devise(merchant_info)
+    merchant_info[:encrypted_password] = self.encrypt_password(merchant_info[:password])
+    self.create(merchant_info, merchant_info[:password], merchant_info[:password_confirmation])
+  end
+  
   def self.find(start, max)
     count = Merchant.count
     merchants = Merchant.all(:offset => start, :limit => max)
@@ -78,16 +79,10 @@ class Merchant
     return merchants
   end
 
-  def self.authenticate(email, submitted_password)
-    merchant = Merchant.first(:email => email)
-    merchant && merchant.has_password?(submitted_password) ? merchant : nil
+  def password_required?  
+    !self.password.blank? && super  
   end
   
-  def self.authenticate_with_salt(id, cookie_salt)
-    merchant = get(id)
-    (merchant && merchant.salt == cookie_salt) ? merchant : nil
-  end
-
   def to_param
     self.merchant_id
   end
@@ -99,45 +94,60 @@ class Merchant
     self.merchant_id = merchant_name.downcase.gsub(' ','-')
     self.name = merchant_name
     self.email = merchant_info[:email].strip
-    self.photo_url = merchant_info[:photo_url].strip
     self.password = merchant_info[:password].strip
     self.password_confirmation = merchant_info[:password_confirmation].strip
-    self.first_name = merchant_info[:first_name].strip
-    self.last_name = merchant_info[:last_name].strip
-    self.address1 = merchant_info[:address1].strip
-    self.address2 = merchant_info[:address2].strip
-    self.city = merchant_info[:city].strip
-    self.state = merchant_info[:state].strip
-    self.zipcode = merchant_info[:zipcode].strip
-    self.country = merchant_info[:country].strip
+    self.encrypted_password = Merchant.encrypt_password(self.password)
+    self.account_first_name = merchant_info[:account_first_name].strip
+    self.account_last_name = merchant_info[:account_last_name].strip
     self.phone = merchant_info[:phone].strip
-    self.website = merchant_info[:website].strip
-    self.paypal_account = merchant_info[:paypal_account].strip
     self.update_ts = now
     save
   end
-
-  def has_password?(submitted_password)
-    self.encrypted_password == encrypt(submitted_password)  
+  
+  def update_qr_code
+    now = Time.now
+    auth_code = String.random_alphanumeric
+    filename = self.generate_qr_code(self.merchant_id, auth_code) 
+    self.auth_code = auth_code
+    self.qr_code = filename
+    self.update_ts = now
+    save
+  end
+  
+  def add_credit_card(credit_card)
+    credit_cards.concat(Array(credit_card))
+    save
+    self
+  end
+  
+  def remove_credit_card(credit_card)
+    merchant_credit_cards.all(:credit_card => Array(credit_card)).destroy
+    reload
+    self
+  end
+  
+  def as_json(options)
+    only = {:only => [:merchant_id,:name]}
+    options = options.nil? ? only : options.merge(only)
+     super(options)
   end
   
   private
-
-  def encrypt_password
-    self.salt = make_salt unless has_password?(self.password)
-    self.encrypted_password = encrypt(self.password)
+  
+  def self.encrypt_password(password)
+    BCrypt::Password.create(password)
   end
   
-  def encrypt(string)
-     secure_hash("#{self.salt}--#{string}")
+  def self.generate_qr_code(merchant_id, auth_code)
+    qr = RQRCode::QRCode.new( auth_code, :size => 5, :level => :h )
+    png = qr.to_img.resize(90,90)
+    AWS::S3::S3Object.store(
+      ::Common.generate_merchant_qr_code_file_path(merchant_id,"#{auth_code}.png"), 
+      png.to_string,
+      APP_PROP["AMAZON_FILES_BUCKET"], 
+      :content_type => 'image/png', 
+      :access => :public_read
+    )
+    filename = ::Common.generate_full_merchant_qr_code_file_path(merchant_id,"#{auth_code}.png")  
   end
-  
-  def make_salt
-    secure_hash("#{Time.now.utc}--#{self.password}")
-  end
-
-  def secure_hash(string)
-    Digest::SHA2.hexdigest(string)
-  end
-
 end

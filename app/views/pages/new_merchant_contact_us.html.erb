@@ -1,0 +1,36 @@
+<% content_for :script do %> <script type="text/javascript">
+   $(document).ready($(function()
+   {
+      var msg = $("#notice").html();
+      if(msg) {
+         Genesis.showWarningMsg(msg, null, true);
+      }
+   }));
+
+</script>
+<% end %>
+<% if @notice %>
+<div style="display:none;" id="notice">
+   <p><%= @notice %></p>
+</div>
+<% end %>
+<div class="row">
+   <div class="span32">
+      <h2>Email JustForMyFriends</h2>
+      <div class="panelBodyHighlights">
+         <%= simple_form_for @contact, :url => create_contact_path do |f| %>
+         <%= f.input :name %>
+         <%= f.input :email %>
+         <%= f.input :merchant_name %>
+         <%= f.input :address %>
+         <%= f.input :city %>
+         <%= f.input :state, :collection => Contact.states %>
+         <%= f.input :phone %>
+         <%= f.input :message, :as => :text, :input_html => { :rows => 10 } %>
+         <div class="alignLeft">
+            <%= f.button :submit, 'Submit Request', :disable_with => "Working...", :class =>"large primary btn" %>
+         </div>
+         <% end %>
+      </div>
+   </div>
+</div>

@@ -1,5 +1,5 @@
 module Business
-  class CouponsController < ApplicationController
+  class CouponsController < BaseApplicationController
     before_filter :authenticate_merchant!
     set_tab :coupons
     def index
@@ -26,7 +26,7 @@ module Business
       @coupon = Coupon.first(:coupon_id => params[:id]) || not_found
       authorize! :update, @coupon
 
-      if @coupon.expiry_date.to_date >= (Date.today - 7)
+      if @coupon.expiry_date >= (Date.today - 7)
         error_msg = "Error redeeming voucher.  Please try again."
         flash[:error] = error_msg
         respond_to do |format|
