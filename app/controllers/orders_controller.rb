@@ -1,13 +1,8 @@
-require 'profile'
-require 'caller'
-
-
-
 class OrdersController < ApplicationController
-  before_filter :authenticate_user!, :except => [:confirmed_email]
+  before_filter :authenticate_user!, :except => [:new, :create, :confirmed_email]
 
   #load_and_authorize_resource
-  @@clientDetails=PayPalSDKProfiles::Profile.client_details
+  
   def index
     authorize! :manage, :all
 
@@ -39,12 +34,8 @@ class OrdersController < ApplicationController
     authorize! :create, @order
 
     if @order.subdeal_id != 0
-      subdeal = Subdeal.get(@order.subdeal_id)
-      if @order.deal.deal_id == "the-runners-shop-clinics" && !@order.new_customer
-        @order.total_payment = @order.quantity * subdeal.regular_price
-      else
-        @order.total_payment = @order.quantity * subdeal.discount_price
-      end
+    subdeal = Subdeal.get(@order.subdeal_id)
+    @order.total_payment = @order.quantity * subdeal.discount_price
     end
     if flash[:errors].nil?
     reset_order
@@ -56,17 +47,6 @@ class OrdersController < ApplicationController
     @referral = Referral.first(:deal_id => @deal.id, :creator_id => current_user.id, :confirmed => true)
     end
 
-    if @deal.deal_id == "the-runners-shop-clinics"
-      @new_customer = true
-      customer_ids = DataMapper.repository(:default).adapter.select(
-        "SELECT id FROM runners_shop_customers WHERE LOWER(name) = ?", 
-        current_user.name.downcase
-      )
-      if customer_ids.length > 0 || (@referral && @referral.creator.id == current_user.id)
-        @new_customer = false
-      end
-    end 
-      
     if @referral.nil?
       respond_to do |format|
         format.html { redirect_to deal_path(@deal) }
@@ -93,15 +73,6 @@ class OrdersController < ApplicationController
     end
 
     new_customer = true
-    if @deal.deal_id == "the-runners-shop-clinics"
-      customer_ids = DataMapper.repository(:default).adapter.select(
-        "SELECT id FROM runners_shop_customers WHERE LOWER(name) = ?", 
-        current_user.name.downcase
-      )
-      if customer_ids.length > 0
-        new_customer = false
-      end
-    end
     referral = Referral.first(:deal_id => @deal.id, :confirmed => true, :creator_id => current_user.id)
     if referral
     referral_key_id = referral.id
@@ -129,69 +100,12 @@ class OrdersController < ApplicationController
     end
   end
 
-  def pay_details
-    @order = Order.first(:order_id => session[:order_id])
-    if !@order || @order.order_id != params[:order_id]
-    raise Exception.new
-    end
-
-    authorize! :create, @order
-
-    #logger.debug("Before Payment Confirmed")
-    Order.transaction do
-      begin
-        @order[:payment_confirmed] = true
-        @order.save
-      rescue StandardError
-        logger.error("Failed to update payment_confirmed for Order(#{@order.order_id})")
-      ensure
-        #logger.debug("After Payment Confiremd")
-
-        #logger.debug("Before Print Coupons")
-        @order.print_coupons
-        #logger.debug("After Print Coupons")
-        #logger.debug("Before Order Confirmed Email")
-        if @order.gift_option.nil?
-          UserMailer.order_confirmed_email(@order,false).deliver
-        else
-          UserMailer.order_confirmed_email(@order,true).deliver
-        end
-        #logger.debug("After Order Confirmed Email")
-
-        #logger.debug("Before PayPal Payment Details")
-        @response = session[:pay_response]
-        @paykey = @response["payKey"]
-        @caller =  PayPalSDKCallers::Caller.new(false, PayPalSDKProfiles::Profile::ADAPTIVE_SERVICE_PAYMENT_DETAILS)
-        #sending the request string to call method where the paymentDetails API call is made
-        @transaction = @caller.call(
-        {
-          "requestEnvelope.errorLanguage" => "en_US",
-          "payKey" =>@paykey
-        }
-        )
-        #logger.debug("After PayPal Payment Details")
-        if !@transaction.success?
-          logger.error("Failed to send PayPal Payment Details for Order(#{@order.order_id})")
-        end
-        respond_to do |format|
-          #format.html { redirect_to user_order_path(@user, @order, :notice => 'Order was successfully created.') }
-            format.html { redirect_to pay_thanks_path(@order.deal) }
-          #format.xml  { render :xml => @order, :status => :created, :location => @order }
-          #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
-        end   
-      end
-    end
-  end
-
   def thanks
     @order = Order.first(:order_id => session[:order_id])
     if !@order
     raise Exception.new
     end
     @referral_id = session[:referral_id]
-    if @order.deal.deal_id == "the-runners-shop-clinics"
-      @referral = Referral.first(:deal_id => @order.deal.id, :confirmed => true, :creator_id => current_user.id)
-    end
     reset_order
   end
 
@@ -209,10 +123,10 @@ class OrdersController < ApplicationController
 
     Deal.transaction do
       begin
-        deal[:limit_count] -= @order.quantity
+      deal[:limit_count] -= @order.quantity
         deal.save
       rescue StandardError
-        logger.error("Failed to update limit count for Deal(#{deal.deal_id})")
+      logger.error("Failed to update limit count for Deal(#{deal.deal_id})")
       end
     end
 
@@ -221,29 +135,6 @@ class OrdersController < ApplicationController
       format.html { redirect_to deal_path(deal)+"?referral_id=#{referral_id}", :notice => 'Your order has been cancelled.' }
     #format.xml  { render :xml => @order, :status => :created, :location => @order }
     #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
-    end
-  end
-
-  def resend_coupons
-    begin
-      orders = Order.all(Order.user.id => current_user.id)
-      orders.each do |order|
-        UserMailer.order_confirmed_email(order).deliver
-      end
-      msg = []
-      if orders.length > 0
-        msg = ["Your Vouchers have been Sent!", "An email will arrive in your inbox shortly."]
-      else
-        msg = ["You have no Vouchers!", "Clearly, you need to buy one :)"]
-      end
-      respond_to do |format|
-        format.json { render :json => { :success => true, :msg => msg, :total => orders.length } }
-      end
-    rescue StandardError => e
-      logger.error(e)
-      respond_to do |format|
-        format.json { render :json => { :success => false, :msg => ["Your Vouchers failed to Send!", "Please try again."] } }
-      end
     end
   end
 
@@ -279,7 +170,7 @@ class OrdersController < ApplicationController
     #format.xml  { render :xml => @order }
     end
   end
-  
+
   private
 
   def reset_order
@@ -287,43 +178,97 @@ class OrdersController < ApplicationController
   end
 
   def pay_transfer(order)
-    @cancelURL=cancel_order_url(order.deal)
-    @returnURL=pay_details_url(order.deal)+"?order_id=#{order.order_id}"
-    @caller =  PayPalSDKCallers::Caller.new(false, PayPalSDKProfiles::Profile::ADAPTIVE_SERVICE_PAY)
-    req={
-      "requestEnvelope.errorLanguage" => "en_US",
-      "clientDetails.ipAddress"=> @@clientDetails["ipAddress"],
-      "clientDetails.deviceId" => @@clientDetails["deviceId"],
-      "clientDetails.applicationId" => @@clientDetails["applicationId"],
-      "memo"=> "order# #{order.order_id}",
-      "feesPayer"=> APP_PROP["FEES_PAYER"],
-      "receiverList.receiver[0].email"=> APP_PROP["PAYPAL_ACCOUNT"],
-      "receiverList.receiver[0].amount"=> order[:total_payment],
-      "currencyCode"=> "CAD",
-      "actionType"=> "PAY",
-      "returnUrl" => @returnURL,
-      "cancelUrl"=> @cancelURL
+    payment_info = {
+      :amount => "100.00",
+      :order_id => order.order_id,
     }
-    @transaction = @caller.call(req)
-
-    if (@transaction.success?)
-      session[:order_id] = order.order_id
-      session[:pay_response]=@transaction.response
-      @response = session[:pay_response]
-      #@response.sort{|a,b| a[1]<=>b[1]}.each { |elem|
-      #  logger.debug "#{elem[1]}, #{elem[0]}"
-      #}
-      @paykey = @response["payKey"].join
-      @paymentExecStatus=@response["paymentExecStatus"].join
-      #if "paymentExecStatus" is completed redirect to pay_details method else redirect to sandbox with paykey
-      if (@paymentExecStatus =="COMPLETED")
-      redirect_to :controller => 'orders',:action => 'pay_details'
+    if new_user
+      token_info = {
+        :customer_id => current_user.user_id
+      }
+      if new_credit_card
+        credit_card = CreditCard.create(current_user)
+        token_info[:credit_card] = {
+          :token => "#{credit_card.id}",
+          :cardholder_name => "The Cardholder",
+          :number => "5105105105105100",
+          :expiration_date => "05/2012",
+          :cvv => "cvv",
+          :billing_address => {
+            :street_address => "1 E Main St",
+            :locality => "Chicago",
+            :region => "Illinois",
+            :postal_code => "60622",
+            :country_code_alpha2 => "US"
+          }
+        } 
+      end
+      payment_info = payment_info.merge(token_info)
+    else   
+      credit_card = CreditCard.create(current_user)
+      billing_info = {
+        :credit_card => {
+          :token => "#{credit_card.id}",
+          :cardholder_name => "The Cardholder",
+          :number => "5105105105105100",
+          :expiration_date => "05/2012",
+          :cvv => "cvv",
+          :billing_address => {
+            :street_address => "1 E Main St",
+            :locality => "Chicago",
+            :region => "Illinois",
+            :postal_code => "60622",
+            :country_code_alpha2 => "US"
+          }
+        },
+        :customer => {
+          :id => current_user.user_id
+        },
+        :options => {
+          :store_in_vault => true
+        }
+      }
+      payment_info.merge(billing_info)
+    end
+    
+    if order.deal.limit_count + order.quantity >= order.deal.min_limit
+      options = payment_info[:options]
+      if options.nil?
+        payment_info[:options] = {
+          :submit_for_settlement => true
+        }
       else
-      redirect_to "#{PayPalSDKProfiles::Profile.PAYPAL_REDIRECT_URL}#{@paykey}"
+        payment_info[:options][:submit_for_settlement] = true
+      end  
+    end
+    result = Braintree::Transaction.sale(payment_info)
+
+    if result.success?
+      order[:txn_id] = result.transaction.id
+      if order.deal.limit_count + order.quantity >= order.deal.min_limit
+        order[:payment_confirmed] = true
+        order.save 
+        #@response.sort{|a,b| a[1]<=>b[1]}.each { |elem|
+        #  logger.debug "#{elem[1]}, #{elem[0]}"
+        #}
+        #logger.debug("Before Print Coupons")
+        order.print_coupons
+        #logger.debug("After Print Coupons")
+        #logger.debug("Before Order Confirmed Email")
+        UserMailer.order_confirmed_email(order,order.gift_option.nil?).deliver
+      else
+        order.save  
+      end
+      session[:order_id] = order.order_id
+      respond_to do |format|
+        #format.html { redirect_to user_order_path(@user, @order, :notice => 'Order was successfully created.') }
+          format.html { redirect_to pay_thanks_path(order.deal) }
+        #format.xml  { render :xml => @order, :status => :created, :location => @order }
+        #format.json { render :json => { :success => true, :data => @order, :total => 1 } }
       end
     else
-    session[:paypal_error]=@transaction.response
-    raise Exceptions::AppException.new("Payment Error.  Please Try Again.")
+      session[:paypal_error]=@transaction.response
+      raise Exceptions::AppException.new("Payment Error.  Please Try Again.")
     end
   end
 end

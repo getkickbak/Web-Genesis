@@ -8,7 +8,7 @@ gem 'actionpack',         RAILS_VERSION, :require => 'action_pack'
 gem 'actionmailer',       RAILS_VERSION, :require => 'action_mailer'
 gem 'railties',           RAILS_VERSION, :require => 'rails'
 
-gem 'dm-rails',          '~> 1.1.0'
+gem 'dm-rails',           DM_VERSION
 
 # You can use any of the other available database adapters.
 # This is only a small excerpt of the list of all available adapters
@@ -50,6 +50,8 @@ gem 'resque'
 gem 'resque-scheduler'
 gem 'aws-s3'
 gem 'uuidtools'
+gem 'bcrypt-ruby'
+gem 'country-select'
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION

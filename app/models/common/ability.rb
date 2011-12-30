@@ -19,6 +19,16 @@ class Ability
     can :create, Order
     can :delete, Order, :user => { :id => @user.id }, :payment_confirmed => false
     can [:create, :update], Referral
+    can :manage, Customer, :user => { :id => @user.id }
+    can :manage, CreditCard
+    can :read, CustomerReward
+    can :read, Challenge 
+  end
+  
+  def sales
+    user
+    can :manage, Venue
+    can [:read,:create,:update], Merchant  
   end
   
   def admin

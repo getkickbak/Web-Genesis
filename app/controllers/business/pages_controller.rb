@@ -1,6 +1,7 @@
 module Business
-  class PagesController < ApplicationController
+  class PagesController < BaseApplicationController
     before_filter :authenticate_merchant!, :only => [:merchant_terms]
+    skip_authorization_check
 
     def contact_us
       @contact = Contact.new
@@ -20,7 +21,7 @@ module Business
         end
       end
     end
-
+    
     def merchant_terms
     end
   end

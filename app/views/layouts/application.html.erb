@@ -7,12 +7,8 @@
       <meta property="og:type" content="justformyfriends:business" />
       <meta property="og:site_name" content="JustForMyFriends"/>
       <% if (defined? @deal) && !@deal.nil? && !@deal.subdeals.empty? %>
-        <% subdeal = @deal.subdeals.first %>
-      	<% if @deal.deal_id == "the-runners-shop-clinics" %>
-      	<meta property="og:title" content="<%= "C$#{((subdeal.regular_price - subdeal.discount_price)/1.13).to_i} OFF - #{@deal.title.gsub(/<\/?[^>]+>/, "")}" %>"/>
-      	<% else %>	
+        <% subdeal = @deal.subdeals.first %>	
       	<meta property="og:title" content="<%= "C$#{(subdeal.regular_price - subdeal.discount_price).to_i} OFF - #{@deal.title.gsub(/<\/?[^>]+>/, "")}" %>"/>
-      	<% end %>
       <% else %>
       	<meta property="og:title" content=""/>
       <% end %>
@@ -78,18 +74,21 @@
                <h3><a href="/" style="width:180px;">
                   <img width="200" style="position:absolute;top:0px;left:-10px;" src="http://photos.justformyfriends.com/logo.png"/>
                   JustForMyFriends</a></h3>
-               <% if (defined? @show_reward) && @show_reward && (defined? @deal) && @deal.deal_id != "the-runners-shop-clinics" %>
                <ul class="nav">
                   <li class=""><a href="/how_it_works">How It Works</a></li>
                </ul>
-               <% end %>
                <ul class="nav secondary-nav">
-                  <% if signed_in? %> <li id ="fb_account" class="menu" data-dropdown="dropdown"><div id="fb_login_img" style="display:none;float:left;"></div><a href="#" class="menu" style="float:left;">Account</a>
+                  <% if signed_in? %> 
+                  <!-->
+                  <li id ="fb_account" class="menu" data-dropdown="dropdown"><div id="fb_login_img" style="display:none;float:left;"></div><a href="#" class="menu" style="float:left;">Account</a>
                      <ul class="menu-dropdown">
                         <li><a onclick="Genesis.resendVouchersPopup()">Resend Vouchers</a></li>
                         <li class="divider"></li>
                         <li><a onclick="Genesis.resendRewardPopup()">Resend Reward</a></li>
-                     </ul></li>
+                     </ul>
+                  </li>
+                  -->
+                  <li class=""><a href="/account">Account</a></li>   
                   <li class=""><a href="#" onclick="facebook_onLogout()">Sign Out</a></li>
                   <% end %> <li id="fb_login" style="display:none;"><fb:login-button scope="email,user_birthday,publish_stream,read_friendlists,publish_actions" size="large" background="dark" length="short"></fb:login-button></li>
                </ul>

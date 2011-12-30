@@ -7,3 +7,7 @@ voucher_payments:
   class: VoucherPayments
   args: true
   description: Voucher Payments  
+voucher_payments_capture:
+  cron: 0 * * * *
+  class: VoucherPaymentsCapture
+  description: Voucher Payments Capture

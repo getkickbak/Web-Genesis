@@ -10,6 +10,13 @@ en:
           topic: "Reason"
           description: "How can we help you?"
   errors:
+      blank: "%{attribute} is required"
       messages:
         blank: "%{attribute} is required"
         email_format: "%{attribute} is not formatted properly"
+        
+  datamapper:
+      errors:
+        messages:
+          blank: "%{attribute} is required"
+          email_format: "%{attribute} is not formatted properly"
