@@ -2,6 +2,7 @@ module Business
   class CouponsController < BaseApplicationController
     before_filter :authenticate_merchant!
     set_tab :coupons
+    
     def index
       authorize! :read, Coupon
 

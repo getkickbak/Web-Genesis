@@ -25,14 +25,14 @@ class PagesController < ApplicationController
   end
 
   def add_business
-    @contact = MerchantContact.new
+    @merchant_contact = MerchantContact.new
     @notice = request.filtered_parameters['notice']
   end
 
   def add_business_create
-    @contact = MerchantContact.new(params[:contact])
-    if @contact.valid?
-      UserMailer.merchant_contact_email(@contact).deliver
+    @merchant_contact = MerchantContact.new(params[:merchant_contact])
+    if @merchant_contact.valid?
+      UserMailer.add_merchant_contact_email(@merchant_contact).deliver
       respond_to do |format|
         format.html { redirect_to(:action => 'add_business', :notice => 'Email was successfully sent.') }
       end

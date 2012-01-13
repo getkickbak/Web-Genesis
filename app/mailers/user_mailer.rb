@@ -18,7 +18,12 @@ class UserMailer < ActionMailer::Base
   
   def merchant_contact_email(contact)
     @contact = contact
-    mail(:from => "#{@contact.name} <#{@contact.email}>", :to => 'inquiry@justformyfriends.com', :subject => 'Business Inquiry')  
+    mail(:from => "#{@contact.name} <#{@contact.email}>", :to => 'business_help@justformyfriends.com', :subject => @contact.topic)  
+  end
+  
+  def add_merchant_contact_email(contact)
+    @contact = contact
+    mail(:from => "#{@contact.name} <#{@contact.email}>", :to => 'add_business@justformyfriends.com', :subject => 'Business Inquiry')
   end
   
   def voucher_reminder_email(user, coupons)

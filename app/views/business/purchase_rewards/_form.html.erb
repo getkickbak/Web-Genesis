@@ -1,18 +1,8 @@
 <%= simple_form_for @purchase_reward do |f| %>
-	<% if @purchase_reward.errors.any? %>
-	<div id="error_explanation">
-		<h2><%= pluralize(@purchase_reward.errors.count, "error") %> prohibited this reward from being saved:</h2>
-
-		<ul>
-			<% @purchase_reward.errors.full_messages.each do |msg| %>
-			<li>
-				<%= msg %>
-			</li>
-			<% end %>
-		</ul>
-	</div>
-	<% end %>
 	<%= f.input :title %>
+	<%= f.input :average_price %>
+	<%= f.input :reward_ratio %>
 	<%= f.input :points %>
+	<%= f.collection_check_boxes :venue_ids, Venue.all(:fields => [:id, :name], Venue.merchant.id => current_merchant.id), :id, :name, :checked => @venue_ids %>
 	<%= f.button :submit %>
 <% end %>

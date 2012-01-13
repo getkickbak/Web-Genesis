@@ -4,7 +4,7 @@ class PurchaseRewardsController < ApplicationController
   def index
     authorize! :read, PurchaseReward
     
-    @rewards = PurchaseReward.all(:merchant_id => params[:merchant_id])
+    @rewards = PurchaseReward.all(PurchaseReward.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]))
     respond_to do |format|
       #format.xml  { render :xml => referrals }
       format.json { render :json => { :success => true, :data => @rewards.to_json(:only => [:id, :title, :description, :points]) } }
@@ -12,22 +12,37 @@ class PurchaseRewardsController < ApplicationController
    end
   
   def earn
-    @merchant = Merchant.get(params[:merchant_id]) || not_found
-    @customer = Customer.first(Customer.merchant.id => merchant.id, Customer.user.id => current_user.id) || not_found
+    @venue = Venue.all(:id => params[:venue_id], Venue.merchant.id => params[:merchant_id]) || not_found
+    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
+    new_customer = false
+    if @customer.nil?
+      @customer = Customer.create(@venue.merchant,current_user)        
+      new_customer = true
+    end
     authorize! :update, @customer
     
     Customer.transaction do
       begin
         if @merchant.auth_code == params[:auth_code]
+          challenge = Challenge.first(Challenge.merchant.id => @venue.merchant.id, :type => 'referral')
+          if challenge && new_customer
+            referral_challenge = ReferralChallenge.first(ReferralChallenge.merchant.id => @venue.merchant.id, :ref_email => current_user.email)
+            if referral_challenge
+              referral_customer = Customer.first(Customer.merchant.id => @venue.merchant.id, :user_id => referral_challenge.user.id)
+              referral_customer.points += challenge.points
+              referral_customer.save
+            end
+          end
           reward_ids = params[:reward_id]
           reward_ids.each do |reward_id|
-            reward = PurchaseReward.first(:merchant_id => @merchant.id, :id => reward_id) || not_found
+            reward = PurchaseReward.first(PurchaseReward.merchant.id => @venue.merchant.id, :id => reward_id) || not_found
             record = EarnRewardRecord.new(
               :reward_id => reward.id,
+              :venue_id => @venue.id,
               :points => reward.points,
-              :time => now
+              :created_ts => now
             )
-            record.merchant = @merchant
+            record.merchant = @venue.merchant
             record.user = current_user
             record.save
             @customer.points += reward.points

@@ -16,13 +16,42 @@ class CustomersController < ApplicationController
   end  
   
   def show
-    @merchant = Merchant.first(:merchant_id => params[:merchant_id]) || not_found
-    @customer = Customer.all(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id) || not_found
+    @customer = Customer.all(Customer.merchant.id => params[:merchant_id], Customer.user.id => current_user.id) || not_found
     authorize! :read, @customer
      
     respond_to do |format|
       format.html # index.html.erb
       format.json { render :json => { :success => true, :data => @customer.to_json(:only => [:qr_code]) } }
     end
+  end
+  
+  def create
+    @merchant = Merchant.get(params[:merchant_id]) || not_found
+    authorize! :create, Customer
+    
+    Customer.transaction do
+      begin
+        if @merchant.auth_code == params[:auth_code]))
+          Customer.create(@merchant,current_user)
+          success = true
+          msg = [""]
+        else
+          success = false
+          msg = [""]   
+        end
+        respond_to do |format|
+          #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
+          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+          format.json { render :json => { :success => success, :msg => msg } }
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        respond_to do |format|
+          #format.html { render :action => "new" }
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :msg => ["Something went wrong", "Please try again."] } }
+        end
+      end
+    end  
   end
 end

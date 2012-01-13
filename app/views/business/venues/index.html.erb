@@ -3,13 +3,6 @@
 <table>
 	<tr>
 		<th>Name</th>
-		<th>Address1</th>
-		<th>City</th>
-		<th>State</th>
-		<th>ZipCode</th>
-		<th>Country</th>
-		<th>Phone</th>
-		<th>Website</th>
 		<th></th>
 		<th></th>
 		<th></th>
@@ -18,13 +11,6 @@
 	<% @venues.each do |venue| %>
 	<tr>
 		<td><%= venue.name %></td>
-		<td><%= venue.address1 %></td>
-		<td><%= venue.city %></td>
-		<td><%= venue.state %></td>
-	    <td><%= venue.zipcode %></td>
-	    <td><%= venue.country %></td>
-	    <td><%= venue.phone %></td>
-	    <td><%= venue.website %></td>
 		<td><%= link_to 'Show', venue_path(venue) %></td>
 		<td><%= link_to 'Edit', edit_venue_path(venue) %></td>
 		<td><%= link_to 'Destroy', venue_path(venue), :confirm => 'Are you sure?', :method => :delete %></td>

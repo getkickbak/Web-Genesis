@@ -5,7 +5,7 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
   end
 
   def create
-    #User.transaction do |t|
+    User.transaction do |t|
       begin
         build_resource
         user = User.create(resource, resource.password, resource.password_confirmation)
@@ -24,7 +24,7 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
         clean_up_passwords(resource)
         respond_with_navigational(resource) { render_with_scope :new }
       end
-    #end
+    end
   end
 
   def update

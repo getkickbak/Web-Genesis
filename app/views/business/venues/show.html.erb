@@ -6,8 +6,8 @@
 </p>
 
 <p>
-  <b>Address1:</b>
-  <%= @venue.address1 %>
+  <b>Address:</b>
+  <%= @venue.address %>
 </p>
 
 <p>
@@ -38,6 +38,16 @@
 <p>
   <b>Website</b>
   <%= @venue.website %>
+</p>
+
+<p>
+  <b>Longitude</b>
+  <%= @venue.longitude %>
+</p>
+
+<p>
+  <b>Latitude</b>
+  <%= @venue.latitude %>
 </p>
 
 <%= link_to 'Edit', edit_venue_path(@venue) %> |

@@ -1,0 +1,48 @@
+<% content_for :script do %> 
+<script type="text/javascript" src="/javascripts/desktop/src/business/credit_card.js"></script>
+<% end %>
+<h1>Credit Cards</h1>
+<table>
+	<% @credit_cards.each do |credit_card| %>
+	<tr>
+		<td><%= credit_card.number %></td>
+		<td><%= link_to 'Edit', '#', :onclick => "edit_credit_card(#{credit_card.id});" %></td>
+		<td><%= link_to 'Destroy', delete_credit_card_path, :confirm => 'Are you sure?' %></td>
+	</tr>
+	<tr>
+		<td>
+		<%= simple_form_for credit_card, :html => { :id => "edit_credit_card_#{credit_card.id}", :style => "display:none;" }, :url => update_credit_card_path do |f| %>
+		<%= f.input :name %>
+		<%= f.input :expiry_date, :as => :date, :order => [:month, :year] %>
+		<%= f.input :security_code %>
+		<%= f.input :address %>
+		<%= f.input :city %>
+		<%= f.input :state %>
+		<%= f.input :zip %>
+		<%= f.button :submit, 'Update' %>
+		<% end %>
+		</td>
+		<td></td>
+		<td></td>
+	</tr>
+	<% end %>
+	<% if @credit_cards.length == 0 %>
+	<tr>
+		<td>
+		<%= simple_form_for @credit_card, :url => create_credit_card_path do |f| %>
+		<%= f.input :name %>
+		<%= f.input :number %>
+		<%= f.input :expiry_date, :as => :date, :order => [:month, :year] %>
+		<%= f.input :security_code %>
+		<%= f.input :address %>
+		<%= f.input :city %>
+		<%= f.input :state %>
+		<%= f.input :zip %>
+		<%= f.button :submit, 'Add' %>
+		<% end %>
+		</td>
+		<td></td>
+		<td></td>
+	</tr>
+	<% end %>
+</table>

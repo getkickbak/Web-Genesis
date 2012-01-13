@@ -18,13 +18,13 @@
    <div class="span32">
       <h2>Email JustForMyFriends</h2>
       <div class="panelBodyHighlights">
-         <%= simple_form_for @contact, :url => create_contact_path do |f| %>
+         <%= simple_form_for @merchant_contact, :url => create_merchant_contact_path do |f| %>
          <%= f.input :name %>
          <%= f.input :email %>
          <%= f.input :merchant_name %>
          <%= f.input :address %>
          <%= f.input :city %>
-         <%= f.input :state, :collection => Contact.states %>
+         <%= f.input :state, :collection => MerchantContact.states %>
          <%= f.input :phone %>
          <%= f.input :message, :as => :text, :input_html => { :rows => 10 } %>
          <div class="alignLeft">

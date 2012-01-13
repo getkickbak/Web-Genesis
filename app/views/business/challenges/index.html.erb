@@ -13,7 +13,7 @@
 
 	<% @challenges.each do |challenge| %>
 	<tr>
-		<td><%= challenge.type %></td>
+		<td><%= EatsChallenges.default_challenge_type_to_name[challenge.type] %></td>
 		<td><%= challenge.name %></td>
 		<td><%= challenge.description %></td>
 		<td><%= challenge.points %></td>

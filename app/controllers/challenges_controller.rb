@@ -3,7 +3,7 @@ class ChallengesController < ApplicationController
   
   def find
     authorize! :read, Challenge
-    @challenges = Challenge.all(:merchant_id => params[:merchant_id])
+    @challenges = Challenge.all(Challenge.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]))
     respond_to do |format|
       #format.xml  { render :xml => referrals }
       format.json { render :json => { :success => true, :data => @challenges.to_json(:only => [:id, :title, :description, :points]) } }
@@ -11,15 +11,15 @@ class ChallengesController < ApplicationController
   end
 
   def start
-    @merchant = Merchant.first(params[:merchant_id]) || not_found
-    @challenge = Challenge.first(:id => params[:challenge_id], :merchant_id => @merchant.id) || not_found
+    @merchant = Merchant.get(params[:merchant_id]) || not_found
+    @challenge = Challenge.first(:id => params[:challenge_id], Challenge.merchant.id => @merchant.id) || not_found
     @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
     Customer.transaction do
       begin
         if is_startable_challenge?(@challenge)
-          start_challenge(@merchant, current_user, params[:email])
+          start_challenge(@merchant, current_user)
           success = true
           msg  = [""]
         else
@@ -43,20 +43,21 @@ class ChallengesController < ApplicationController
   end
   
   def complete
-    @merchant = Merchant.first(params[:merchant_id]) || not_found
-    @challenge = Challenge.first(:id => params[:challenge_id], :merchant_id => @merchant.id) || not_found
-    @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id) || not_found
+    @venue = Venue.first(Venue.merchant.id => params[:merchant_id], :id => params[:venue_id]) || not_found
+    @challenge = Challenge.first(:id => params[:challenge_id], Challenge.merchant.id => @venue.merchant.id) || not_found
+    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
     Customer.transaction do
       begin
-        if is_verification_challenge?(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && @merchant.auth_code == params[:auth_code]))
+        if is_challenge_satisfied(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && @merchant.auth_code == params[:auth_code]))
           record = EarnRewardRecord.new(
             :challenge_id => @challenge.id,
+            :venue_id => @venue.id,
             :points => @challenge.points,
             :time => Time.now
           )
-          record.merchant = @merchant
+          record.merchant = @venue.merchant
           record.user = current_user
           record.save
           @customer.points += @challenge.points
@@ -85,11 +86,12 @@ class ChallengesController < ApplicationController
   
   protected
   
-  def is_verification_challenge?(challenge)
-    if challenge.type == "menu" || challenge.type == "custom"
-      return true
-    end 
-    return false
+  def is_challenge_satisfied(challenge)
+    if challenge.type == "lottery"
+      draw = 1+Random.rand(challenge.data.probability)
+      draw == challenge.data.probability ? true : false
+    end
+    return true
   end
   
   def is_startable_challenge?(challenge)
@@ -98,9 +100,9 @@ class ChallengesController < ApplicationController
     end
   end
   
-  def start_challenge(merchant, user, ref_email)
+  def start_challenge(merchant, user)
     if challenge.type == "referral"
-      ReferralChallenge.create(merchant, user, { :ref_email => ref_email })
+      ReferralChallenge.create(merchant, user, { :ref_email => params[:email] })
     end
   end
 end

@@ -2,9 +2,17 @@ module Business
   class CreditCardsController < BaseApplicationController
     before_filter :authenticate_merchant!
     #load_and_authorize_resource
+    
     def index
       authorize! :read, CreditCard
       
+      @credit_cards = []
+      current_merchant.credit_cards.each do |credit_card|
+        cc = CreditCardForm.new(:id => credit_card.id, :number => '34932432004832083')
+        @credit_cards << cc
+      end
+      @credit_card = CreditCardForm.new
+=begin      
       result = BILLING_GATEWAY.query(current_merchant.merchant_id)
       @credit_card = CreditCardForm.new(
         :name => result.params['ordName'],
@@ -16,16 +24,39 @@ module Business
         :state => result.params['ordProvince'],
         :zip => result.params['ordPostalCode']
       )
-
+=end
       respond_to do |format|
         format.html # index.html.erb
       #format.xml  { render :xml => @users }
       end
     end
-
+    
     def create
+      if current_merchants.credit_cards.to_a.size > 0
+        respond_to do |format|
+          format.html { render :action => "index" }
+          format.json { render :json => { :success => false } }
+        end
+        return  
+      end
       authorize! :create, CreditCard
       
+      CreditCard.transaction do
+        begin
+          credit_card = CreditCard.create({ :card_token => "test"})
+          current_merchant.add_credit_card(credit_card)
+          respond_to do |format|
+            format.html { redirect_to credit_cards_path(:notice => 'Credit card was successfully added.') }
+            format.json { render :json => { :success => true, :msg => 'Credit card was successfully added.' } }
+          end
+        rescue DataMapper::SaveFailureError => e
+          respond_to do |format|
+            format.html { render :action => "index" }
+            format.json { render :json => { :success => false } }
+          end  
+        end
+      end
+=begin      
       CreditCard.transaction do
         begin
           am_credit_card = ActiveMerchant::Billing::CreditCard.new(
@@ -78,7 +109,7 @@ module Business
           )
           if result.success?
             credit_card = CreditCard.create(current_merchant.merchant_id)
-            current_merchant.add(credit_card)
+            current_merchant.add_credit_card(credit_card)
             current_merchant.payment_account_id = result.params['rbAccountId']
             current_merchant.save
             respond_to do |format|
@@ -98,12 +129,18 @@ module Business
           end
         end
       end
+=end      
     end
 
     def update
-      @credit_card = current_merchant.credit_cards.get(params[:card_id]) || not_found
+      @credit_card = current_merchant.credit_cards.first || not_found
       authorize! :update, @credit_card
       
+      respond_to do |format|
+        format.html { redirect_to credit_cards_path(:notice => 'Credit card was successfully updated.') }
+        format.json { render :json => { :success => true, :msg => 'Credit card was successfully updated.' } }
+      end
+=begin      
       CreditCard.transaction do
         begin
           am_credit_card = ActiveMerchant::Billing::CreditCard.new(
@@ -161,5 +198,27 @@ module Business
           end
         end
       end
+=end          
     end
+    
+    def destroy
+    @credit_card = current_merchant.credit_cards.first || not_found
+    authorize! :destroy, @credit_card
+   
+    CreditCard.transaction do
+      begin
+        current_merchant.remove_credit_card(@credit_card)
+        respond_to do |format|
+          format.html { redirect_to(credit_cards_url) }
+          #format.xml  { head :ok }
+        end
+      rescue
+        respond_to do |format|
+          format.html { redirect_to(credit_cards_url) }
+          #format.xml  { head :ok }
+        end 
+      end
+    end
+  end
+  end
 end

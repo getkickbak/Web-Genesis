@@ -1,13 +1,13 @@
-class CheckInData
+class LotteryData
   include ActiveModel::Validations
   include ActiveModel::Conversion
   include ActiveModel::Naming
   
-  attr_accessor :visits
+  attr_accessor :odds
   
-  validates :visits, :presence => true
-  validates_numericality_of :visits, :only_integer => true
-  validate :check_visits
+  validates :odds, :presence => true
+  validates_numericality_of :odds, :only_integer => true
+  validate :check_odds
   
   def initialize(attributes = {})
     @attributes = attributes
@@ -25,15 +25,15 @@ class CheckInData
   end
   
   def as_json(options)
-    only = {:only => [:visits]}
+    only = {:only => [:odds]}
     options = options.nil? ? only : options.merge(only)
     super(options)
   end
   
   private
   
-  def check_visits
-    self.visits = self.visits.to_i
-    errors.add(:visits, "Visits must be greater than 0") unless self.visits > 0
+  def check_odds
+    self.odds = self.odds.to_i
+    errors.add(:odds, "Odds must be greater than 0") unless self.odds > 0
   end
 end

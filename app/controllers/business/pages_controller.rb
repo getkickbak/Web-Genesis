@@ -3,6 +3,7 @@ module Business
     before_filter :authenticate_merchant!, :only => [:merchant_terms]
     skip_authorization_check
 
+    
     def contact_us
       @contact = Contact.new
       @notice = request.filtered_parameters['notice']
@@ -11,7 +12,7 @@ module Business
     def contact_us_create
       @contact = Contact.new(params[:contact])
       if @contact.valid?
-        UserMailer.contact_email(@contact).deliver
+        UserMailer.merchant_contact_email(@contact).deliver
         respond_to do |format|
           format.html { redirect_to(:action => "contact_us", :notice => 'Email was successfully sent.') }
         end

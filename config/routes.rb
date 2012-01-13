@@ -14,10 +14,17 @@ Genesis::Application.routes.draw do
       resources :venues
       #resources :deals
 
+      match "/marketing" => 'marketing#index'
+      match "/analytics" => 'analytics#index'
+      match "/analytics/show_charts" => 'analytics#show_charts'
       match "/account" => 'merchants#show', :as => :account
       match "/account/edit" => 'merchants#edit', :as => :edit_account
-      match "/account/update" => 'merchants#update', :as => :update_account
+      match "/account/update" => 'merchants#update', :via => :post, :as => :update_account
       match "/account/update_qr_code" => 'merchants#update_qr_code', :via => :post
+      match "/billings" => 'credit_cards#index', :as => :credit_cards
+      match "/billings/create" => 'credit_cards#create', :via => :post, :as => :create_credit_card
+      match "/billings/update" => 'credit_cards#update', :via => :post, :as => :update_credit_card
+      match "/billings/delete" => 'credit_cards#destroy', :as => :delete_credit_card
       
       match "/merchant_terms" => 'pages#merchant_terms'
       match "/contact_us" => 'pages#contact_us'
@@ -47,11 +54,10 @@ Genesis::Application.routes.draw do
     match "/faq" => 'pages#faq'
 
     match "/add_business" => 'pages#add_business'
-    match "/add_business/create" => 'pages#add_business_create'
+    match "/add_business/create" => 'pages#add_business_create', :via => :post, :as => :create_merchant_contact
     
-    #resources :credit_cards, :as => 'billing_info', :only => [:index, :create, :update, :destroy]
     resources :check_ins, :only => [:create]
-    resources :customers, :only => [:index, :show]
+    resources :customers, :only => [:index, :show, :create]
     
     match "/account" => 'users#show', :as => :account
     match "/account/edit" => 'users#edit', :as => :edit_account

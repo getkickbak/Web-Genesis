@@ -2,36 +2,32 @@ class CheckInsController < ApplicationController
   before_filter :authenticate_user!
   
   def create
-    @merchant = Merchant.first(params[:merchant_id]) || not_found
-    @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id)
-    new_customer = false
+    @venue = Venue.first(:id => params[:venue_id], Venue.merchant.id => params[:merchant_id]) || not_found
+    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
     if @customer.nil?
-      @customer = Customer.create(merchant,current_user)
-      new_customer = true
+      respond_to do |format|
+        #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => true, :msg => ["msg"] } }
+      end
+      return
     end
     authorize! :update, @customer
     
     CheckIn.transaction do
       begin
         now = Time.now
-        CheckIn.create(@merchant,current_user)
-        challenges = Challenge.all(:merchant_id => @merchant.id)
+        CheckIn.create(@venue.merchant,current_user) unless exceed_max_daily_checkins(@venue.merchant)
+        challenges = Challenge.all(Challenge.merchant.id => @venue.merchant.id)
         challenges.each do |challenge|
-          if challenge.type == "referral" && new_customer
-            referral_challenge = ReferralChallenge.first(:merchant_id => @merchant.id, :ref_email => current_user.email)
-            if referral_challenge
-              referral_customer = Customer.first(:merchant_id => @merchant.id, :user_id => referral_challenge.user.id)
-              referral_customer.points += challenge.points
-              referral_customer.save
-            end
-          end
           if is_qualified_challenge?(challenge)
             record = EarnRewardRecord.new(
               :challenge_id => challenge.id,
+              :venue_id => @venue.id,
               :points => challenge.points,
               :time => now
             )
-            record.merchant = @merchant
+            record.merchant = @venue.merchant
             record.user = current_user
             record.save
             @customer.points += challenge.points
@@ -67,20 +63,25 @@ class CheckInsController < ApplicationController
   end
   
   def checkin_challenge_met?(challenge)
-    if RAILS_ENV == 'production'
-      sql = "SELECT COUNT(*) FROM check_ins WHERE merchant_id = ? AND user_id = ? 
-              AND MONTH(time) = MONTH(?)"
-    else
-      sql = "SELECT COUNT(*) FROM check_ins WHERE merchant_id = ? AND user_id = ? 
-              AND strftime('%m',time) = strftime('%m',?)"        
-    end
-    count = DataMapper.repository(:default).adapter.select(
-      sql, challenge.merchant.id, current_user.id, now
-    )     
-    challenge.data.visits_per_month == count + 1 ? true : false     
+    count = CheckIn.count(CheckIn.merchant.id => challenge.merchant.id, CheckIn.user.id => current_user.id)
+    challenge.data.visits % count == 0 ? true : false     
   end
   
   def birthday_challenge_met?(challenge)
     return current_user.profile.birthday == Date.today
+  end
+  
+  def exceed_max_daily_checkins(merchant)
+    if RAILS_ENV == 'production'
+      sql = "SELECT COUNT(*) FROM check_ins WHERE merchant_id = ? AND user_id = ? 
+              AND CURDATE(time) = CURDATE(?)"
+    else
+      sql = "SELECT COUNT(*) FROM check_ins WHERE merchant_id = ? AND user_id = ? 
+              AND date(time) = date(?)"        
+    end
+    count = DataMapper.repository(:default).adapter.select(
+      sql, merchant.id, current_user.id, Time.now
+    )     
+    count < 2 ? false : true
   end
 end
