@@ -13,7 +13,7 @@ module Business
     end
     
     def show
-      @customer_reward = CustomerReward.first(:id => params[:id]) || not_found
+      @customer_reward = CustomerReward.get(params[:id]) || not_found
       authorize! :read, @customer_reward
 
       respond_to do |format|
@@ -102,7 +102,7 @@ module Business
     end
     
     def destroy
-      @customer_reward = CustomerReward.first(:id => params[:id]) || not_found
+      @customer_reward = CustomerReward.get(params[:id]) || not_found
       authorize! :destroy, @customer_reward
 
       @customer_reward.destroy
