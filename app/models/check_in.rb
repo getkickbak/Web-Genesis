@@ -9,15 +9,15 @@ class CheckIn
   attr_accessible :time
   
   belongs_to :user
-  belongs_to :merchant
+  belongs_to :venue
   
-  def self.create(merchant, user)
+  def self.create(venue, user)
     now = Time.now
     checkin = new CheckIn(
       :time => now
     )
     checkin.user = user
-    checkin.merchant = merchant
+    checkin.venue = venue
     checkin.save
     return checkin
   end

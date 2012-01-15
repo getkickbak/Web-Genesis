@@ -17,7 +17,7 @@ class CheckInsController < ApplicationController
     CheckIn.transaction do
       begin
         now = Time.now
-        CheckIn.create(@venue.merchant,current_user) unless exceed_max_daily_checkins(@venue.merchant)
+        last_check_in = CheckIn.create(@venue.merchant,current_user) unless exceed_max_daily_checkins(@venue.merchant)
         challenges = Challenge.all(Challenge.merchant.id => @venue.merchant.id)
         challenges.each do |challenge|
           if is_qualified_challenge?(challenge)
@@ -33,7 +33,7 @@ class CheckInsController < ApplicationController
             @customer.points += challenge.points
           end  
         end
-        @customer.last_check_in = now
+        @customer.last_check_in = last_check_in
         @customer.save
         respond_to do |format|
           #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
