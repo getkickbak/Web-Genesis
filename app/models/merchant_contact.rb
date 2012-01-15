@@ -1,4 +1,4 @@
-class NewMerchantContact
+class MerchantContact
   include ActiveModel::Validations
   include ActiveModel::Conversion
   include ActiveModel::Naming
@@ -27,8 +27,8 @@ class NewMerchantContact
   validates :phone, :presence => true
   validates :message, :presence => true
   
-  def self.topic_list
-    @@topic_list
+  def self.states
+    @@states
   end
   
   def initialize(attributes = {})

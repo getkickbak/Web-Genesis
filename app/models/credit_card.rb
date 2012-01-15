@@ -13,6 +13,7 @@ class CreditCard
   attr_accessible :card_token
     
   def self.create(card_info)
+    now = Time.now
     credit_card = CreditCard.new(
       :card_token=> card_info[:card_token]
     )  

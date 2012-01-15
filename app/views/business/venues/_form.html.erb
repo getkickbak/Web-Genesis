@@ -1,24 +1,17 @@
+<% content_for :script do %> 
+<script type="text/javascript" src="/javascripts/desktop/src/business/venue.js"></script>
+<% end %>
 <%= simple_form_for @venue do |f| %>
-	<% if @venue.errors.any? %>
-	<div id="error_explanation">
-		<h2><%= pluralize(@venue.errors.count, "error") %> prohibited this venue from being saved:</h2>
-
-		<ul>
-			<% @venue.errors.full_messages.each do |msg| %>
-			<li>
-				<%= msg %>
-			</li>
-			<% end %>
-		</ul>
-	</div>
-	<% end %>
 	<%= f.input :name %>
-	<%= f.input :address1 %>
+	<%= f.input :address %>
 	<%= f.input :city %>
 	<%= f.input :state %>
 	<%= f.input :zipcode %>
 	<%= f.input :country %>
 	<%= f.input :phone %>
 	<%= f.input :website %>
+	<div id="gmap" class="" style="height:235px;width:100%;"></div>
+	<%= f.input :longitude, :as => :hidden, :input_html => { :value => @venue.longitude } %>
+	<%= f.input :latitude, :as => :hidden, :input_html => { :value => @venue.latitude } %>
 	<%= f.button :submit %>
 <% end %>

@@ -3,7 +3,7 @@ require 'util/constant'
 module Business
   class DealsController < BaseApplicationController
     before_filter :authenticate_merchant!
-    set_tab :deals
+    
     #load_and_authorize_resource
     def index
       authorize! :manage, :all

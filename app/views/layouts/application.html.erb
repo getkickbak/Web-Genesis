@@ -13,13 +13,7 @@
       	<meta property="og:title" content=""/>
       <% end %>
       <% if (defined? @deal) && !@deal.nil? && !@deal.merchant.nil? %> <meta property="og:image" content="<%= @deal.merchant.photo_url %>"/>
-      <meta property="og:description" content="<%= @deal.mini_description %>">
-      <meta property="og:street-address" content="<%= @deal.merchant.address1 %> <%= @deal.merchant.address2 %>"/>
-      <meta property="og:locality" content="<%= @deal.merchant.city %>"/>
-      <meta property="og:region" content="<%= @deal.merchant.state %>"/>
-      <meta property="og:postal-code" content="<%= @deal.merchant.zipcode %>"/>
-      <meta property="og:email" content="<%= @deal.merchant.email %>"/>
-      <meta property="og:phone_number" content="<%= @deal.merchant.phone %>"/>
+      
       <% end %>
       <title>JustForMyFriends</title>
       <!--

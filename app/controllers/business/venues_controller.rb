@@ -1,7 +1,6 @@
 module Business
   class VenuesController < BaseApplicationController
     before_filter :authenticate_merchant!
-    set_tab :challenges
     #load_and_authorize_resource
     
     def index
@@ -15,7 +14,7 @@ module Business
     end
 
     def show
-      @venue = Venue.first(:id => params[:id]) || not_found
+      @venue = Venue.get(params[:id]) || not_found
       authorize! :read, @venue
 
       respond_to do |format|
@@ -35,7 +34,7 @@ module Business
     end
 
     def edit
-      @venue = Venue.first(:id => params[:id]) || not_found
+      @venue = Venue.get(params[:id]) || not_found
       authorize! :update, @venue
     end
 
@@ -44,8 +43,6 @@ module Business
 
       Venue.transaction do
         begin
-          params[:venue][:latitude] = 43.649476
-          params[:venue][:longitude] = -79.377004
           @venue = Venue.create(current_merchant, params[:venue])
           respond_to do |format|
             format.html { redirect_to(:action => "show", :id => @venue.id, :notice => 'Venue was successfully crdeated.') }
@@ -63,7 +60,7 @@ module Business
     end
 
     def update
-      @venue = Venue.first(:id => params[:id]) || not_found
+      @venue = Venue.get( params[:id]) || not_found
       authorize! :update, @venue
 
       Venue.transaction do
@@ -81,6 +78,18 @@ module Business
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
           end
         end
+      end
+    end
+    
+    def destroy
+      @venue = Venue.get(params[:id]) || not_found
+      authorize! :destroy, @venue
+
+      @venue.destroy
+
+      respond_to do |format|
+         format.html { redirect_to(venues_url) }
+      #format.xml  { head :ok }
       end
     end
   end

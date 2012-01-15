@@ -4,7 +4,7 @@ class CustomerRewardsController < ApplicationController
   def index
     authorize! :read, CustomerReward
     
-    @rewards = CustomerReward.all(:merchant_id => params[:merchant_id])
+    @rewards = CustomerReward.all(CustomerReward.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]))
     respond_to do |format|
       #format.xml  { render :xml => referrals }
       format.json { render :json => { :success => true, :data => @rewards.to_json(:only => [:id, :title, :description, :points]) } }
@@ -12,12 +12,11 @@ class CustomerRewardsController < ApplicationController
    end
   
   def find_eligible_rewards
-    @merchant = Merchant.first(params[:merchant_id]) || not_found
-    @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id) || not_found
+    @customer = Customer.first(Customer.merchant.id => params[:merchant_id], Customer.user.id => current_user.id) || not_found
     authorize! :read , CustomerReward
     
-    @rewards = CustomerReward.all(:conditions => ["merchant_id = ? AND points <= ?", params[:merchant_id], @customer.points])
-    @rewards.push(CustomerReward.all(:conditions => ["merchant_id = ? AND points > ?", params[:merchant_id], @customer.points], :order => [:points.asc], :offset => 0, :limit => 1))
+    @rewards = CustomerReward.all(CustomerReward.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]), :points.lte => @customer.points])
+    @rewards.push(CustomerReward.all(CustomerReward.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]), :points.gt => @customer.points], :order => [:points.asc], :offset => 0, :limit => 1))
     @eligible_rewards = []
     @rewards.each do |reward|
       item = EligibleReward.new(
@@ -34,21 +33,22 @@ class CustomerRewardsController < ApplicationController
   end
   
   def redeem
-    @merchant = Merchant.first(params[:merchant_id]) || not_found
-    @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id) || not_found
+    @venue = Venue.first(:id => params[:venue_id], Venue.merchant.id => params[:merchant_id]) || not_found
+    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
     Customer.transaction do
       begin
         if @customer.auth_code == params[:auth_code] 
-          reward = CustomerReward.get(params[:reward_id])
+          reward = CustomerReward.first(:id => params[:reward_id], CustomerReward.merchant.id => @venue.merchant.id)
           if @customer.points - reward.points >= 0
             record = RedeemRewardRecord.new(
               :reward_id => reward.id,
+              :venue_id => @venue.id,
               :points => reward.points,
-              :time => now
+              :created_ts => now
             )
-            record.merchant = @merchant
+            record.merchant = @venue.merchant
             record.user = current_user
             record.save
             @customer.points -= reward.points

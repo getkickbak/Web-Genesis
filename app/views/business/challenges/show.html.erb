@@ -2,7 +2,7 @@
 
 <p>
   <b>Type:</b>
-  <%= @challenge.type %>
+  <%= EatsChallenges.default_challenge_type_to_name[@challenge.type] %>
 </p>
 
 <p>
@@ -14,6 +14,18 @@
   <b>Description:</b>
   <%= @challenge.description %>
 </p>
+
+<% if @challenge.type == 'checkin' %>
+<p>
+  <b>Visits:</b>
+  <%= @challenge.data.visits %>
+</p>
+<% elsif @challenge.type == 'lottery'%>
+<p>
+  <b>Odds:</b>
+  <%= @challenge.data.odds %>
+</p>
+<% end %>
 
 <p>
   <b>Points:</b>

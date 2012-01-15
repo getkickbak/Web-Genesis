@@ -19,7 +19,7 @@
 		<script type="text/javascript" src="/javascripts/desktop/lib/date.js"></script>
 		<script type="text/javascript" src="/javascripts/desktop/lib/Datejs-all/src/extras.js"></script>
 		<script type="text/javascript">
-			var clientTime=new Date();
+var clientTime=new Date();
 
 		</script>
 		<script type="text/javascript" src="/javascripts/desktop/less-1.1.4.min.js"></script>
@@ -48,19 +48,40 @@
 					<ul class="nav secondary-nav">
 						<% if signed_in? %>
 						<li class="">
-							<a href="/venues">Venues</a>
+							<a href="/marketing">Marketing</a>
+						</li>
+						<li class="">
+							<a href="/analytics">Analytics</a>
+						</li>
+						<li class="menu" data-dropdown="dropdown">
+							<div style="display:none;float:left;"></div><a href="#" class="menu" style="float:left;">Rewards</a>
+							<ul class="menu-dropdown">
+								<li>
+									<a href="/purchase_rewards">Purchase Rewards</a>
+								</li>
+								<li class="divider"></li>
+								<li>
+									<a href="/customer_rewards">Customer Rewards</a>
+								</li>
+							</ul>
 						</li>
 						<li class="">
 							<a href="/challenges">Challenges</a>
 						</li>
 						<li class="">
-							<a href="/purchase_rewards">Purchase Rewards</a>
+							<a href="/venues">Venues</a>
 						</li>
-						<li class="">
-							<a href="/customer_rewards">Customer Rewards</a>
-						</li>
-						<li class="">
-							<a href="/account">Account</a>
+						<li class="menu" data-dropdown="dropdown">
+							<div style="display:none;float:left;"></div><a href="#" class="menu" style="float:left;">Account</a>
+							<ul class="menu-dropdown">
+								<li>
+									<a href="/account">Account Settings</a>
+								</li>
+								<li class="divider"></li>
+								<li>
+									<a href="/billings">Billings</a>
+								</li>
+							</ul>
 						</li>
 						<li class="">
 							<a href="/sign_out">Sign Out</a>

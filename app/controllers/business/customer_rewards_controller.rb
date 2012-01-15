@@ -1,7 +1,6 @@
 module Business
   class CustomerRewardsController < BaseApplicationController
     before_filter :authenticate_merchant!
-    set_tab :customer_rewards
     
     def index
       authorize! :read, CustomerReward
@@ -14,7 +13,7 @@ module Business
     end
     
     def show
-      @customer_reward = CustomerReward.first(:id => params[:id]) || not_found
+      @customer_reward = CustomerReward.get(params[:id]) || not_found
       authorize! :read, @customer_reward
 
       respond_to do |format|
@@ -38,7 +37,13 @@ module Business
       
       CustomerReward.transaction do
         begin
-          CustomerReward.create(current_merchant, params[:customer_reward])
+          params[:customer_reward][:venue_ids].delete("")
+          if params[:customer_reward][:venue_ids].length > 0
+            venues = Venue.all(:conditions => ["id IN ?", params[:customer_reward][:venue_ids]])
+          else
+            venues = []
+          end
+          CustomerReward.create(current_merchant, params[:customer_reward], venues)
           respond_to do |format|
             format.html { redirect_to customer_rewards_path(:notice => 'Reward was successfully created.') }
             #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
@@ -57,20 +62,32 @@ module Business
     end
     
     def edit
-      @customer_reward = CustomerReward.first(:id => params[:id]) || not_found
+      @customer_reward = CustomerReward.get(params[:id]) || not_found
       authorize! :update, @customer_reward
+      
+      @venue_ids = []
+      @customer_reward.venues.each do |venue|
+        @venue_ids << venue.id
+      end
     end
     
     def update
-      @customer_reward = CustomerReward.first(:id => params[:id]) || not_found
+      @customer_reward = CustomerReward.get(params[:id]) || not_found
       authorize! :update, @customer_reward
 
       CustomerReward.transaction do
          begin
-            @customer_reward.update(params[:customer_reward])
+            params[:customer_reward][:venue_ids].delete("")
+            if params[:customer_reward][:venue_ids].length > 0
+              venues = Venue.all(:conditions => ["id IN ?", params[:customer_reward][:venue_ids]])
+            else
+              venues = []
+            end
+            @customer_reward.update(params[:customer_reward], venues)
             respond_to do |format|
-               format.html { redirect_to customer_rewards_path(:notice => 'Reward was successfully updated.') }
-               format.xml  { head :ok }
+               format.html { redirect_to(:action => "show", :id => @customer_reward.id, :notice => 'Reward was successfully updated.') }
+               #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
+            #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
             end
          rescue DataMapper::SaveFailureError => e
             logger.error("Exception: " + e.resource.errors.inspect)
@@ -85,7 +102,7 @@ module Business
     end
     
     def destroy
-      @customer_reward = CustomerReward.first(:id => params[:id]) || not_found
+      @customer_reward = CustomerReward.get(params[:id]) || not_found
       authorize! :destroy, @customer_reward
 
       @customer_reward.destroy

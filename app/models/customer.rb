@@ -6,7 +6,6 @@ class Customer
   property :auth_code, String, :required => true, :default => ""
   property :qr_code, String, :required => true, :default => ""
   property :points, Integer, :default => 0
-  property :last_check_in, DateTime, :default => ::Constant::MIN_TIME
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -14,6 +13,7 @@ class Customer
   
   attr_accessible :auth_code, :qr_code
   
+  has 1, :last_check_in, 'CheckIn'
   belongs_to :merchant, :key => true
   belongs_to :user, :key => true
   

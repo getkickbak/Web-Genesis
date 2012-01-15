@@ -1,24 +1,17 @@
+<% content_for :script do %> 
+<script type="text/javascript" src="/javascripts/desktop/src/business/challenge.js"></script>
+<% end %>
 <%= simple_form_for @challenge do |f| %>
-	<% if @challenge.errors.any? %>
-	<div id="error_explanation">
-		<h2><%= pluralize(@challenge.errors.count, "error") %> prohibited this challenge from being saved:</h2>
-
-		<ul>
-			<% @challenge.errors.full_messages.each do |msg| %>
-			<li>
-				<%= msg %>
-			</li>
-			<% end %>
-		</ul>
-	</div>
-	<% end %>
-	<%= f.input :type, :collection => @default_challenge_types %>
+	<%= f.input :type, :collection => @available_challenge_types %>
 	<%= f.input :name %>
 	<%= f.input :description, :as => :text, :input_html => { :rows => 10 } %>
-	<%= f.input :require_verif, :as => :hidden, :input_html => { :value => @challenge.require_verif } %>
-	<%= f.simple_fields_for :data do |builder| %>
+	<%= f.input :require_verif, :as => :hidden %>
+	<% if @challenge.data %>
+	<%= f.simple_fields_for @data do |builder| %>
 		<%= render "challenge_data", :f => builder, :type => @challenge.type %>
 	<% end %>
+	<% end %>
 	<%= f.input :points %>
+	<%= f.collection_check_boxes :venue_ids, Venue.all(:fields => [:id, :name], Venue.merchant.id => current_merchant.id), :id, :name, :checked => @venue_ids  %>
 	<%= f.button :submit %>
 <% end %>

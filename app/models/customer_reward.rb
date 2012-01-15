@@ -1,15 +1,59 @@
-class CustomerReward < Reward 
+class CustomerReward
+  include DataMapper::Resource
+
+  property :id, Serial
+  property :title, String, :required => true, :default => ""
+  property :average_price, Integer, :required => true
+  property :points, Integer, :required => true
+  property :created_ts, DateTime, :default => ::Constant::MIN_TIME
+  property :update_ts, DateTime, :default => ::Constant::MIN_TIME
+  property :deleted_ts, ParanoidDateTime
+  #property :deleted, ParanoidBoolean, :default => false
+
+  attr_accessor :venue_ids
+
+  attr_accessible :title, :average_price, :points
+
+  belongs_to :merchant
+  has n, :customer_reward_venues
+  has n, :venues, :through => :customer_reward_venues
+
+  validates_with_method :check_points
   
-  def self.create(merchant, reward_info)
+  def self.create(merchant, reward_info, venues)
     now = Time.now
     reward = CustomerReward.new(
-      :title => reward_info[:title],
-      :points => reward_info[:points]
+    :title => reward_info[:title],
+    :average_price => reward_info[:average_price],
+    :points => reward_info[:points]
     )
     reward[:created_ts] = now
     reward[:update_ts] = now
     reward.merchant = merchant
+    reward.venues.concat(venues)
     reward.save
     return reward
+  end
+
+  def update(reward_info, venues)
+    now = Time.now
+    self.title = reward_info[:title]
+    self.average_price = reward_info[:average_price]
+    self.points = reward_info[:points]
+    self.update_ts = now
+    self.customer_reward_venues.destroy
+    self.venues.concat(venues)
+    save
+  end
+
+  def destroy
+    self.customer_reward_venues.destroy
+    super  
+  end
+  
+  private
+
+  def check_points
+    self.points > 0 ? true : [false, "Points must be greater than 0"]
   end
 end
