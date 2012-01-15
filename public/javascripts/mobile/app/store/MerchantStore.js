@@ -1,14 +1,16 @@
 Ext.require(['Genesis.model.Merchant'], function()
 {
-
-   Ext.define('Genesis.store.MerchanStore', {
-      extend : 'Ext.data.store',
+   Ext.define('Genesis.store.MerchanStore',
+   {
+      extend : 'Ext.data.Store',
       model : 'Genesis.model.Merchant',
       requires : ['Genesis.model.Merchant'],
-      proxy : {
+      proxy :
+      {
          type : (!phoneGapAvailable) ? 'ajax' : 'offlineajax',
          url : Ext.Loader.getPath("Genesis") + "/../" + 'merchantData.json',
-         reader : {
+         reader :
+         {
             type : 'json',
             root : 'accounts'
          }

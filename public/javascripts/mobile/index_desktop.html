@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      <!-- Default Fontsize = 11px
+      iPad @132dpi = 100% - iPhone @163dpi = 114% - iPhone Retina @326dpi = 228%
+      -->
+      <style rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 2)">
+         body {
+            font-size : 228%;
+         }
+      </style>
+      <!-- Dirty hack for Android qHD devices -->
+      <style rel="stylesheet"type="text/css"  media="screen and (-webkit-device-pixel-ratio: 1.5) and (min-device-width: 360px) and (max-device-width: 360px)">
+         body {
+            font-size : 171%;
+         }
+      </style>
+      <!-- iPad/iPhone specific css below, add after your main css >
+      <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
+      <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
+      -->
+      <!--
+      <link rel="apple-touch-startup-image" media="screen and (resolution: 326dpi)" href="resources/img/startup_640.jpg" />
+      <link rel="apple-touch-startup-image" media="screen and (resolution: 163dpi)" href="resources/img/startup.jpg" />
+      <link rel="apple-touch-icon-precomposed" href="resouces/img/icon_57.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="resources/img/icon_72.png"/>
+      <link rel="apple-touch-icon-precomposed" sizes="114x114" href="resources/img/icon_114.png"/>
+      -->
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <title>Genesis</title>
+      <link rel="stylesheet" href="resources/css/sencha-touch.css" type="text/css">
+      <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
+      <script type="text/javascript" src="http://127.0.0.1:8080/target/target-script-min.js"></script>
+      <script type="text/javascript" src="lib/sencha-touch-2.0.0-pr3/a/all-classes.js"></script>
+      directory and include it here -->
+      <!-- Debug Javascript on mobile browser -->
+      <script type="text/javascript" src="lib/sencha-touch-2.0.0-pr3/sencha-touch-all-debug.js"></script>
+      <!--
+      Phone Gap Libs
+      -->
+      <script type="text/javascript" src="lib/phonegap-1.3.0.js"></script>
+      <script type="text/javascript">
+         var phoneGapAvailable = true;
+         var appPath = "app";
+
+         Ext.Loader.setConfig(
+         {
+            enabled : true,
+            paths :
+            {
+               Genesis : appPath
+            }
+         });
+
+      </script>
+      <script type="text/javascript" src="lib/QRCodeReader.js"></script>
+      <script type="text/javascript" src="lib/FileTransfer.js"></script>
+      <!--
+      SenchaTouch Libs
+      -->
+      <script type="text/javascript" src="lib/Overrides.js"></script>
+      <script type="text/javascript" src="app/model/Merchant.js"></script>
+      <script type="text/javascript" src="app/model/Challenge.js"></script>
+      <script type="text/javascript" src="app/model/MainPage.js"></script>
+      <script type="text/javascript" src="app/store/MainPageStore.js"></script>
+      <script type="text/javascript" src="app/store/ChallengePageStore.js"></script>
+      <script type="text/javascript" src="app/view/Viewport.js"></script>
+      <script type="text/javascript" src="app/view/ChallengePage.js"></script>
+      <script type="text/javascript" src="app/view/MainPage.js"></script>
+      <script type="text/javascript" src="app/view/LoginPage.js"></script>
+      <script type="text/javascript" src="app/controller/ControllerBase.js"></script>
+      <script type="text/javascript" src="app/controller/Challenges.js"></script>
+      <script type="text/javascript" src="app/controller/MainPage.js"></script>
+      <script type="text/javascript" src="app/controller/Viewport.js"></script>
+      <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+      <script type="text/javascript">
+         // If you want to prevent dragging, uncomment this section
+         /*
+          function preventBehavior(e)
+          {
+          e.preventDefault();
+          };
+          document.addEventListener("touchmove", preventBehavior, false);
+          */
+
+         /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+          see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+          for more details -jm */
+         /*
+          function handleOpenURL(url)
+          {
+          // TODO: do something with the url passed in.
+          }
+          */
+         /* When this function is called, PhoneGap has been initialized and is ready to roll */
+         /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+          see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+          for more details -jm */
+
+         function appInit()
+         {
+            console.log("appInit - start");
+            Ext.application(
+            {
+               viewport :
+               {
+                  autoMaximize : false
+               },
+               autoCreateViewport : true,
+               models : ['Checkin', 'Coupon', 'Customer', 'Deal', 'EarnRewardsRecord', 'Merchant', 'Order', 'RedeemRewardRecord', 'Reward', 'SubDeal', 'User', 'UserProfile', 'Venue'],
+               controllers : ['Viewport'],
+               launch : function()
+               {
+                  console.log("Launch App");
+               },
+               appFolder : appPath,
+               name : 'Genesis'
+            });
+
+            console.log("appInit - end");
+         }
+
+         function onDeviceReady()
+         {
+            document.addEventListener("online", function()
+            {
+               console.log("Phone is Online");
+            }, false);
+
+            document.addEventListener("offline", function()
+            {
+               console.log("Phone is Offline");
+            }, false);
+            document.addEventListener("pause", function()
+            {
+               console.log("App is Paused");
+            }, false);
+
+            document.addEventListener("resume", function()
+            {
+               console.log("App is Resumed");
+            }, false);
+            console.log("onDeviceReady");
+            appInit();
+         }
+
+
+         document.addEventListener("deviceready", onDeviceReady, false);
+         window.onerror = function(e, url, linenum)
+         {
+            console.log("Error on Line#" + linenum + "\n" + e);
+         }
+         console.log("SystemInit");
+         appInit();
+
+      </script>
+   </head>
+   <body></body>
+</html>

@@ -1,0 +1,43 @@
+[
+   {
+      "name": "Accounts",
+      "photo_url": "resources/img/sprites/account.jpg",
+      "desc": "Accounts",
+      "pageCntlr": "Merchants"
+   }, {
+      "name": "Latest News",
+      "photo_url": "resources/img/sprites/newsfeed.jpg",
+      "desc": "Latest News",
+      "pageCntlr": "Newsfeeds"
+   }, {
+      "name": "Challenges",
+      "photo_url": "resources/img/sprites/challenges.jpg",
+      "desc": "Challenges",
+      "pageCntlr": "Challenges"
+   }, {
+      "name": "Check-ins",
+      "photo_url": "resources/img/sprites/checkin.jpg",
+      "desc": "Check-ins",
+      "pageCntlr": "Checkins"
+   }, {
+      "name": "Earn Points & Rewards",
+      "photo_url": "resources/img/sprites/rewards.jpg",
+      "desc": "Earn Points & Rewards",
+      "pageCntlr": "CustomerRewards"
+   }, {
+      "name": "Coupons",
+      "photo_url": "resources/img/sprites/coupon.jpg",
+      "desc": "Coupons",
+      "pageCntlr": "Coupons"
+   }, {
+      "name": "Daily Deals",
+      "photo_url": "",
+      "desc": "Daily Deals",
+      "pageCntlr": ""
+   }, {
+      "name": "Settings",
+      "photo_url": "resources/img/sprites/settings.jpg",
+      "desc": "Settings",
+      "pageCntlr": "UserProfile"
+   }
+]

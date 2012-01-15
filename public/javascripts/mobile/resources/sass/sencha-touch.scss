@@ -1,0 +1,77 @@
+@import 'sencha-touch/default/all';
+
+@include sencha-panel;
+@include sencha-buttons;
+@include sencha-sheet;
+@include sencha-picker;
+@include sencha-tabs;
+@include sencha-toolbar;
+@include sencha-toolbar-forms;
+@include sencha-indexbar;
+@include sencha-list;
+@include sencha-list-paging;
+@include sencha-list-pullrefresh;
+@include sencha-layout;
+@include sencha-carousel;
+@include sencha-form;
+@include sencha-msgbox;
+@include sencha-loading-spinner;
+
+//Enhancements
+@include pictos-iconmask('list');
+@include pictos-iconmask('info');
+@include sencha-button-ui('fbBlue', desaturate(darken(blue, 10%), 5%));
+
+
+body {
+}
+
+.menuSelections {
+   .x-dataview-item {
+      width:33%;
+      float:left;
+      font-size:0.725em;
+      color:#fff;
+      position:relative;
+      .mainPageItemWrapper, .challengePageItemWrapper {
+         text-align:center;
+         .photo img {
+            width : 100px;
+         }
+         .photoName {
+            font-weight:bold;
+            text-shadow:0em 0.1em 0.03em #000;
+         }
+      }
+   }
+   .x-dataview-item:nth-child(3n+1) {
+      clear:both;
+   }
+}
+
+.challengePageItemDescWrapper {
+  padding:0.25em;
+  background: rgba(0, 0, 0, .25);
+  .itemDesc {
+     font-size:0.5em;
+     padding-bottom:1px;  
+  }
+  .itemDescName {
+     text-align:center;
+  }
+}
+
+.navigationBarTop .x-button, .navigationBarBottom .x-button {
+   &.x-iconalign-top, &.x-iconalign-bottom {
+      padding-top:.2em;
+      padding-bottom:.1em;
+      .x-button-label {
+         margin: 0;
+         padding: .1em 0 .2em 0;
+         font-size: 9px;
+         line-height: 12px;
+         text-rendering: optimizeLegibility;
+         -webkit-font-smoothing: antialiased;
+      }
+   }
+}

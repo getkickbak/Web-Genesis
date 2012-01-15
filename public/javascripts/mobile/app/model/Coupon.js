@@ -1,18 +1,9 @@
-Ext.require(['Genesis.model.User','Genesis.mode.Deal','Genesis.model.Order'], function()
-{l
+Ext.require(['Genesis.model.User', 'Genesis.mode.Deal', 'Genesis.model.Order'], function()
+{
    Ext.define('Genesis.model.Coupon', {
       extend : 'Ext.data.Model',
-      id : 'Order',
+      id : 'Coupon',
       fields : ['coupon_id', 'coupon_title', 'paid_amount', 'expiry_date', 'barcode', 'qr_code', 'redeemed', 'paid_merchant', 'created_ts', 'update_ts'],
-      belongsTo : [{
-         model : 'Genesis.model.User',
-         name : 'user'
-      }, {
-         model : 'Genesis.model.Deal',
-         name : 'deal'
-      }, {
-         model : 'Genesis.model.Order',
-         name : 'order'
-      }]
+      belongsTo : ['Genesis.model.User', 'Genesis.model.Deal', 'Genesis.model.Order']
    });
 });
