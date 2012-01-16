@@ -1,5 +1,7 @@
-module Sales
-  class DealsController < ApplicationController
+module Admin
+  class DealsController < BaseApplicationController
+    before_filter :authenticate_staff!
+    
     def index
       authorize! :manage, :all
 

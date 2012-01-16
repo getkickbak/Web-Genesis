@@ -52,7 +52,7 @@ class EatsChallenges
         :type => "birthday",
         :name => "Birthday",
         :description => "test",
-        :require_verif => false
+        :require_verif => true
       },
       "lottery" =>
       {

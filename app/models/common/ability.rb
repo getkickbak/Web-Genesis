@@ -23,19 +23,6 @@ class Ability
     can :manage, CreditCard
     can :read, CustomerReward
     can :read, Challenge 
-  end
-  
-  def sales
-    user
-    can :manage, Venue
-    can [:read,:create,:update], Merchant  
-  end
-  
-  def admin
-    can :manage, :all
-  end
-  
-  def super_admin
-    admin
+    can :read, Venue
   end
 end

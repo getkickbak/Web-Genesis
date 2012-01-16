@@ -17,35 +17,47 @@ class CheckInsController < ApplicationController
     CheckIn.transaction do
       begin
         now = Time.now
-        last_check_in = CheckIn.create(@venue.merchant,current_user) unless exceed_max_daily_checkins(@venue.merchant)
-        challenges = Challenge.all(Challenge.merchant.id => @venue.merchant.id)
-        challenges.each do |challenge|
-          if is_qualified_challenge?(challenge)
-            record = EarnRewardRecord.new(
-              :challenge_id => challenge.id,
-              :venue_id => @venue.id,
-              :points => challenge.points,
-              :time => now
-            )
-            record.merchant = @venue.merchant
-            record.user = current_user
-            record.save
-            @customer.points += challenge.points
-          end  
+        last_check_in = CheckIn.create(@venue, current_user) unless exceed_max_daily_checkins(@venue.merchant)
+        challenge = Challenge.first(:type => 'checkin', :venues => Venue.all(:id => params[:venue_id]))
+        if challenge && checkin_challenge_met?(challenge)
+          record = EarnRewardRecord.new(
+            :challenge_id => challenge.id,
+            :venue_id => @venue.id,
+            :points => challenge.points,
+            :time => now
+          )
+          record.merchant = @venue.merchant
+          record.user = current_user
+          record.save
+          @customer.points += challenge.points
         end
         @customer.last_check_in = last_check_in
         @customer.save
+        data = {}
+        data[:customer] = @customer
+        @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points])
+        @rewards.push(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points], :order => [:points.asc], :offset => 0, :limit => 1))
+        @eligible_rewards = []
+        @rewards.each do |reward|
+          item = EligibleReward.new(
+            :reward_id => reward.id,
+            :reward_title => reward.title,
+            :points_difference => (@customer.points - reward.points).abs
+          )
+          @eligible_rewards << item  
+        end
+        data[:eligible_rewards] = @eligible_rewards
         respond_to do |format|
           #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => true, :msg => ["msg"] } }
+          format.json { render :json => { :success => true, :data => data } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :msg => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
+          format.json { render :json => { :success => false, :msg => ["Something went wrong", "Trouble checking in.  Please try again."] } }
         end
       end
     end
@@ -53,22 +65,9 @@ class CheckInsController < ApplicationController
   
   private
   
-  def is_qualified_challenge?(challenge)
-    if challenge.type == "checkin"
-      return checkin_challenge_met?(challenge)
-    elsif challenge.type == "birthday"
-      return birthday_challenge_met?(challenge)  
-    end 
-    return false
-  end
-  
   def checkin_challenge_met?(challenge)
-    count = CheckIn.count(CheckIn.merchant.id => challenge.merchant.id, CheckIn.user.id => current_user.id)
+    count = CheckIn.count(CheckIn.user.id => current_user.id, :conditions => ["venue_id IN ?", challenge.venues])
     challenge.data.visits % count == 0 ? true : false     
-  end
-  
-  def birthday_challenge_met?(challenge)
-    return current_user.profile.birthday == Date.today
   end
   
   def exceed_max_daily_checkins(merchant)

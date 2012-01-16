@@ -89,7 +89,9 @@ class ChallengesController < ApplicationController
   def is_challenge_satisfied(challenge)
     if challenge.type == "lottery"
       draw = 1+Random.rand(challenge.data.probability)
-      draw == challenge.data.probability ? true : false
+      return draw == challenge.data.probability ? true : false
+    elsif challenge.type == "birthday"
+      return current_user.profile.birthday == Date.today
     end
     return true
   end

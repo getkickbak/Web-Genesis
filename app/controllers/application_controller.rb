@@ -11,7 +11,11 @@ class ApplicationController < ActionController::Base
   
   def layout_by_resource
     if !Domain.matches?(request)
-      "business/application"
+      if request.subdomain == 'business'
+        "business/application"
+      else
+        "admin/application"
+      end
     else
       "application"
     end

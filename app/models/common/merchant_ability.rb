@@ -2,7 +2,7 @@ class MerchantAbility
   include CanCan::Ability
   
   def initialize(merchant)
-    @merchant = merchant || Merchant.new
+    @merchant = merchant
     can :manage, Merchant, :id => @merchant.id
     can [:read, :update], [Coupon], :order => { :deal => { :merchant => {:id => @merchant.id } } }
     can :manage, CreditCard

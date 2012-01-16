@@ -3,7 +3,7 @@ require 'util/constant'
 class User
   include DataMapper::Resource
 
-  ROLES = %w[anonymous user sales admin super_admin]
+  ROLES = %w[anonymous user]
   
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
@@ -156,7 +156,7 @@ class User
   end
     
   def as_json(options)
-    only = {:only => [:name, :facebook_id]}
+    only = {:only => [:name]}
     options = options.nil? ? only : options.merge(only)
     super(options)
   end

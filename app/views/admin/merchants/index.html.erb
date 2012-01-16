@@ -23,13 +23,13 @@
 		<td><%= merchant.account_last_name %></td>
 	    <td><%= merchant.phone %></td>
 	    <td><%= merchant.status %></td>
-		<td><%= link_to 'Show', sales_merchant_path(merchant) %></td>
-		<td><%= link_to 'Edit', edit_sales_merchant_path(merchant) %></td>
-		<td><%= link_to 'Destroy', sales_merchant_path(merchant), :confirm => 'Are you sure?', :method => :delete %></td>
+		<td><%= link_to 'Show', merchant_path(merchant) %></td>
+		<td><%= link_to 'Edit', edit_merchant_path(merchant) %></td>
+		<td><%= link_to 'Destroy', merchant_path(merchant), :confirm => 'Are you sure?', :method => :delete %></td>
 	</tr>
 	<% end %>
 </table>
 
 <br />
 
-<%= link_to 'New Merchant', new_sales_merchant_path %>
+<%= link_to 'New Merchant', new_merchant_path %>
