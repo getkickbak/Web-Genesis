@@ -1,4 +1,4 @@
-<%= simple_form_for [:sales, @merchant, @deal], :html => {:novalidate => true} do |f| %>
+<%= simple_form_for [@merchant, @deal], :html => {:novalidate => true} do |f| %>
 	<% if @deal.errors.any? %>
 	<div id="error_explanation">
 		<h2><%= pluralize(@deal.errors.count, "error") %> prohibited this deal from being saved:</h2>

@@ -7,7 +7,7 @@ Genesis::Application.routes.draw do
         :registrations => "business/merchant_devise/registrations",
         :passwords => "business/merchant_devise/passwords"
       }
-      
+
       resources :challenges
       resources :purchase_rewards
       resources :customer_rewards
@@ -25,7 +25,7 @@ Genesis::Application.routes.draw do
       match "/billings/create" => 'credit_cards#create', :via => :post, :as => :create_credit_card
       match "/billings/update" => 'credit_cards#update', :via => :post, :as => :update_credit_card
       match "/billings/delete" => 'credit_cards#destroy', :as => :delete_credit_card
-      
+
       match "/merchant_terms" => 'pages#merchant_terms'
       match "/contact_us" => 'pages#contact_us'
       match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
@@ -37,6 +37,39 @@ Genesis::Application.routes.draw do
 =end
       match '*a', :to => 'errors#routing'
 
+    #root :to => redirect("/vouchers")
+    end
+  end
+
+  scope :module => "admin" do
+    constraints :subdomain => "manage" do
+      devise_for :staffs, :path => "", :controllers => {
+        :sessions => "admin/staff_devise/sessions",
+        :registrations => "admin/staff_devise/registrations",
+        :passwords => "admin/staff_devise/passwords"
+      }
+
+      resources :users
+      resources :staffs
+      resources :merchants do
+        #resources :deals
+      end
+      
+      match "/account" => 'staffs#show', :as => :account
+      match "/account/edit" => 'staffs#edit', :as => :edit_account
+      match "/account/update" => 'staffs#update', :via => :post, :as => :update_account
+            
+      match '/jobs' => 'jobs#index', :as => :jobs
+      match '/jobs/run' => 'jobs#run', :as => :job_run
+
+      constraints CanAccessResque do
+        mount Resque::Server, at: '/resque'
+      end
+      match '/resque', :to => redirect("/")
+      match '/resque/*path', :to => redirect("/")
+
+      match '*a', :to => 'errors#routing'
+      
       #root :to => redirect("/vouchers")
     end
   end
@@ -46,6 +79,9 @@ Genesis::Application.routes.draw do
       :registrations => "user_devise/registrations"
     }
 
+    resources :check_ins, :only => [:create]
+    resources :customers, :only => [:index, :show, :create]
+    
     match "/how_it_works" => 'pages#how_it_works'
     #match "/privacy" => 'pages#privacy'
     match "/terms" => 'pages#terms'
@@ -55,33 +91,30 @@ Genesis::Application.routes.draw do
 
     match "/add_business" => 'pages#add_business'
     match "/add_business/create" => 'pages#add_business_create', :via => :post, :as => :create_merchant_contact
-    
-    resources :check_ins, :only => [:create]
-    resources :customers, :only => [:index, :show, :create]
-    
+
     match "/account" => 'users#show', :as => :account
     match "/account/edit" => 'users#edit', :as => :edit_account
     match "/account/update" => 'users#update', :as => :update_account
-      
+
     match '/venues/find_nearest' => 'venues#find_nearest'
 
     match '/challenges/:challenge_id/find' => 'challenges#find'
     match '/challenges/:challenge_id/start' => 'challenges#start'
     match '/challenges/:challenge_id/complete' => 'challenges#complete'
-    
+
     match '/customer_rewards/index' => 'customer_rewards#index'
     match '/customer_rewards/redeem' => 'customer_rewards#redeem'
-    
+
     match '/purchase_rewards/index' => 'purchase_rewards#index'
     match '/purchase_rewards/earn' => 'purchase_rewards#earn'
-    
+
     #match '/users/:id/account' => 'users#edit'
     #match '/users/:user_id/coupons' => 'orders#index', :via => :get , :as => :user_coupons
     #match '/users/:user_id/orders/:id' => 'orders#show', :via => :get, :as => :user_order
     #match '/orders/:id' => 'orders#show', :as => :order
 
     #Testing purposes only
-=begin    
+=begin
     match '/orders/:id/confirmed_email' => 'orders#confirmed_email'
     match '/vouchers/:id/reminder_email' => 'coupons#reminder_email'
 
@@ -106,24 +139,6 @@ Genesis::Application.routes.draw do
     match '/rewards/:id' => 'rewards#show'
     match '/rewards/:id/redeem' => 'rewards#redeem', :as => :redeem_reward
 =end
-
-    namespace :admin do
-      resources :users
-      match '/jobs' => 'jobs#index', :as => :jobs
-      match '/jobs/run' => 'jobs#run', :as => :job_run
-
-      constraints CanAccessResque do
-        mount Resque::Server, at: '/resque'
-      end
-      match '/resque', :to => redirect("/")
-      match '/resque/*path', :to => redirect("/")
-    end
-
-    namespace :sales do
-      resources :merchants do
-        resources :deals
-      end
-    end
 
     match '*a', :to => 'errors#routing'
 

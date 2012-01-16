@@ -1,6 +1,6 @@
 module Admin
-  class JobsController < ApplicationController
-    before_filter :authenticate_user!
+  class JobsController < BaseApplicationController
+    before_filter :authenticate_staff!
     
     def index
       authorize! :manage, :all

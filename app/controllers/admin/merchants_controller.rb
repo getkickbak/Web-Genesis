@@ -1,9 +1,9 @@
-module Sales
+module Admin
   class MerchantsController < ApplicationController
-    before_filter :authenticate_user!
+    before_filter :authenticate_staff!
     
     def index
-      authorize! :manage, :all
+      authorize! :read, Merchant
 
       start = 0
       max = 10
