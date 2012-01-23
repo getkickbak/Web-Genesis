@@ -1,4 +1,12 @@
 class Common
+   def self.generate_full_merchant_qr_code_image_file_path(merchant_id, filename)
+      get_host+generate_merchant_qr_code_image_file_path(merchant_id, filename)
+   end
+
+   def self.generate_merchant_qr_code_image_file_path(merchant_id, filename)
+      "#{merchant_id}/qr_code_image/#{filename}"
+   end
+   
    def self.generate_full_merchant_qr_code_file_path(merchant_id, filename)
       get_host+generate_merchant_qr_code_file_path(merchant_id, filename)
    end

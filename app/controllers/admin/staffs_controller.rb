@@ -6,9 +6,7 @@ module Admin
     def index
       authorize! :read, Staff
 
-      start = 0
-      max = 10
-      @staffs = Staff.find(start, max)
+      @staffs = Staff.all(:order => [:created_ts.desc]).paginate(:page => params[:page])
 
       respond_to do |format|
         format.html # index.html.erb
@@ -27,8 +25,8 @@ module Admin
     end
 
     def new
+      authorize! :create, Staff
       @staff = Staff.new
-      authorize! :create, @staff
 
       respond_to do |format|
         format.html # new.html.erb
@@ -48,7 +46,7 @@ module Admin
         begin
           @staff = Staff.create_without_devise(params[:staff])
           respond_to do |format|
-            format.html { redirect_to(admin_staff_path(@staff), :notice => 'Staff was successfully created.') }
+            format.html { redirect_to(staff_path(@staff), :notice => 'Staff was successfully created.') }
           #format.xml  { render :xml => @staff, :status => :created, :location => @staff }
           #format.json { render :json => { :success => true, :data => @staff, :total => 1 } }
           end
@@ -70,10 +68,12 @@ module Admin
 
       Staff.transaction do
         begin
-          @staff.update(params[:staff])
+          params[:staff][:role] = @staff.role
+          params[:staff][:status] = @staff.status
+          @staff.update_all(params[:staff])
           sign_in(current_staff, :bypass => true)
           respond_to do |format|
-            format.html { redirect_to(admin_staff_path(@staff), :notice => 'Staff was successfully updated.') }
+            format.html { redirect_to(staff_path(@staff), :notice => 'Staff was successfully updated.') }
           #format.xml  { head :ok }
           #format.json { render :json => { :success => true, :data => @staff, :total => 1 } }
           end
@@ -96,7 +96,7 @@ module Admin
       @staff.destroy
 
       respond_to do |format|
-        format.html { redirect_to(admin_staffs_url) }
+        format.html { redirect_to(staffs_url) }
       #format.xml  { head :ok }
       end
     end

@@ -4,7 +4,7 @@ module Business
     
     def index
       authorize! :read, PurchaseReward
-      @purchase_rewards = PurchaseReward.all(PurchaseReward.merchant.id => current_merchant.id)
+      @venues = current_merchant.venues
 
       respond_to do |format|
         format.html # index.html.erb
@@ -26,6 +26,7 @@ module Business
       authorize! :create, PurchaseReward
 
       @purchase_reward = PurchaseReward.new
+      @purchase_reward.reward_ratio = current_merchant.reward_model.reward_ratio
       respond_to do |format|
         format.html # index.html.erb
         #format.xml  { render :xml => @merchants }

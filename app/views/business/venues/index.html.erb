@@ -1,13 +1,6 @@
 <h1>Listing Venues</h1>
 
 <table>
-	<tr>
-		<th>Name</th>
-		<th></th>
-		<th></th>
-		<th></th>
-	</tr>
-
 	<% @venues.each do |venue| %>
 	<tr>
 		<td><%= venue.name %></td>
@@ -20,4 +13,8 @@
 
 <br />
 
-<%= link_to 'New Venue', new_venue_path %>
+
+<%= link_to 'New Venue', new_venue_path %> 
+<% if current_merchant.status == :pending %>
+| <%= link_to 'Continue Setup', setup_path %>
+<% end %>

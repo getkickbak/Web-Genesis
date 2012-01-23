@@ -6,7 +6,7 @@ class ChallengesController < ApplicationController
     @challenges = Challenge.all(Challenge.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]))
     respond_to do |format|
       #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @challenges.to_json(:only => [:id, :title, :description, :points]) } }
+      format.json { render :json => { :success => true, :data => @challenges } }
     end
   end
 
@@ -50,7 +50,7 @@ class ChallengesController < ApplicationController
     
     Customer.transaction do
       begin
-        if is_challenge_satisfied(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && @merchant.auth_code == params[:auth_code]))
+        if is_challenge_satisfied(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && @venue.auth_code == params[:auth_code]))
           record = EarnRewardRecord.new(
             :challenge_id => @challenge.id,
             :venue_id => @venue.id,

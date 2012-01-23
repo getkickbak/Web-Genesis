@@ -1,8 +1,14 @@
+<% content_for :script do %> 
+<script type="text/javascript" src="/javascripts/desktop/src/business/purchase_reward.js"></script>
+<% end %>
+<div style="display:none;">
+	<div id="price_per_point"><%= current_merchant.reward_model.price_per_point %></div>
+</div>
 <%= simple_form_for @purchase_reward do |f| %>
 	<%= f.input :title %>
-	<%= f.input :average_price %>
+	<%= f.input :price %>
 	<%= f.input :reward_ratio %>
 	<%= f.input :points %>
-	<%= f.collection_check_boxes :venue_ids, Venue.all(:fields => [:id, :name], Venue.merchant.id => current_merchant.id), :id, :name, :checked => @venue_ids %>
+	<%= f.collection_check_boxes :venue_ids, current_merchant.venues, :id, :name, :checked => @venue_ids %>
 	<%= f.button :submit %>
 <% end %>

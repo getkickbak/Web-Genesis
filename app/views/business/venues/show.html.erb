@@ -50,5 +50,7 @@
   <%= @venue.latitude %>
 </p>
 
+<%= link_to 'Print QR Code', @venue.qr_code_img %> |
+<%= link_to 'Update QR Code', update_qr_code_venue_path(@venue) %> |
 <%= link_to 'Edit', edit_venue_path(@venue) %> |
 <%= link_to 'Back', venues_path %>

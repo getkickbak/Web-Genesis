@@ -19,7 +19,6 @@ module Admin
           error_msg = "Voucher Payments Capture Job failed."
           Resque.enqueue(ClinicVoucherPayments)
           flash[:notice] = "You have successfully run the Voucher Payments Capture Job."
-        end  
         elsif params[:reminders]
           error_msg = "Voucher Reminders Job failed"
           Resque.enqueue(VoucherReminders)

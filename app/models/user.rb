@@ -19,18 +19,14 @@ class User
   property :encrypted_password, String, :required => true, :default => ""
   property :facebook_id, String, :default => ""     
   property :photo_url, String, :default => ""
-  property :role, String, :default => "anonymous"
-  property :status, Enum[:active, :suspended, :deleted], :default => :active
+  property :role, String, :required => true, :default => "anonymous"
+  property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :active
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
     
-  attr_accessible :name, :email, :facebook_id, :password, :password_confirmation, :encrypted_password
-    
-  validates_presence_of :password, :password_confirmation
-  validates_length_of :password, :min => 6, :max => 40
-  validates_confirmation_of :password
+  attr_accessible :name, :email, :facebook_id, :role, :status, :password, :password_confirmation, :encrypted_password
     
   has 1, :profile, 'UserProfile'
   has n, :friendships, :child_key => [ :source_id ]
@@ -49,12 +45,13 @@ class User
       :email => user_info[:email].strip,   
       :password => password.strip,
       :password_confirmation => password_confirmation.strip,
-      :encrypted_password => user_info[:encrypted_password]
+      :encrypted_password => user_info[:encrypted_password],
+      :role => user_info[:role].strip,
+      :status => user_info[:status]
     ) 
     user[:user_id] = "#{user_info[:name].downcase.gsub(' ','-')}-#{rand(1000) + 1000}#{now.to_i}"
     user[:created_ts] = now
     user[:update_ts] = now
-    user[:role] = "user"
     user.profile = UserProfile.new
     user.profile[:created_ts] = now
     user.profile[:update_ts] = now
@@ -69,13 +66,16 @@ class User
   
   def self.create_from_facebook(user_info)
     now = Time.now
+    password = String.random_alphanumeric
     user = User.new(
       :name => user_info[:name].strip,
       :email => user_info[:email].strip,   
       :facebook_id => user_info[:facebook_id],
       :password => password,
       :password_confirmation => password,
-      :encrypted_password => self.encrypt_password(password)
+      :encrypted_password => self.encrypt_password(password),
+      :role => "user",
+      :status => :active
     ) 
     user[:user_id] = "#{user_info[:name].downcase.gsub(' ','-')}-#{rand(1000) + 1000}#{now.to_i}"
     user[:created_ts] = now
@@ -101,22 +101,20 @@ class User
     return users  
   end
   
-  def password_required?  
-    !self.password.blank? && super  
-  end
-  
   def to_param
     self.user_id
   end
   
-  def update(user_info)
+  def update_all(user_info)
     now = Time.now
     self.user_id = "#{user_info[:name].downcase.gsub(' ','-')}-#{rand(1000) + 1000}#{now.to_i}"
-    self.name = user_info[:name]
-    self.email = user_info[:email]
-    self.password = user_info[:password]
-    self.password_confirmation = user_info[:password_confirmation]
+    self.name = user_info[:name].strip
+    self.email = user_info[:email].strip
+    self.password = user_info[:password].strip
+    self.password_confirmation = user_info[:password_confirmation].strip
     self.encrypted_password = User.encrypt_password(self.password)
+    self.role = user_info[:role].strip
+    self.status = user_info[:status]
     self.update_ts = now
     save
   end
@@ -156,7 +154,7 @@ class User
   end
     
   def as_json(options)
-    only = {:only => [:name]}
+    only = {:only => [:name,:email]}
     options = options.nil? ? only : options.merge(only)
     super(options)
   end

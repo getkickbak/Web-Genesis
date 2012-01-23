@@ -8,7 +8,7 @@ class VenuesController < ApplicationController
     venues = Venue.find_nearest(params[:longitude],params[:latitude])
     respond_to do |format|
     #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => venues.to_json(:only => [:name,:longitude,:latitude], :methods => [:merchant]) } }
+      format.json { render :json => { :success => true, :data => venues } }
     end
   end
 end

@@ -7,7 +7,7 @@ class PurchaseRewardsController < ApplicationController
     @rewards = PurchaseReward.all(PurchaseReward.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]))
     respond_to do |format|
       #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @rewards.to_json(:only => [:id, :title, :description, :points]) } }
+      format.json { render :json => { :success => true, :data => @rewards } }
     end
    end
   
@@ -23,7 +23,7 @@ class PurchaseRewardsController < ApplicationController
     
     Customer.transaction do
       begin
-        if @merchant.auth_code == params[:auth_code]
+        if @venue.auth_code == params[:auth_code]
           challenge = Challenge.first(Challenge.merchant.id => @venue.merchant.id, :type => 'referral')
           if challenge && new_customer
             referral_challenge = ReferralChallenge.first(ReferralChallenge.merchant.id => @venue.merchant.id, :ref_email => current_user.email)

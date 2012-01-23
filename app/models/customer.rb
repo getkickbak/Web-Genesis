@@ -51,6 +51,12 @@ class Customer
     save  
   end
   
+  def as_json(options)
+    only = {:only => [:points]}
+    options = options.nil? ? only : options.merge(only)
+    super(options)
+  end
+  
   private
   
   def generate_qr_code(merchant_id, auth_code)

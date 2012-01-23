@@ -4,7 +4,7 @@ module Business
     
     def index
       authorize! :read, Challenge  
-      @challenges = Challenge.all(Challenge.merchant.id => current_merchant.id)
+      @venues = current_merchant.venues
 
       respond_to do |format|
         format.html # index.html.erb

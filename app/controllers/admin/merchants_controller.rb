@@ -1,13 +1,11 @@
 module Admin
-  class MerchantsController < ApplicationController
+  class MerchantsController < BaseApplicationController
     before_filter :authenticate_staff!
     
     def index
       authorize! :read, Merchant
 
-      start = 0
-      max = 10
-      @merchants = Merchant.find(start, max)
+      @merchants = Merchant.all(:order => [:created_ts.desc]).paginate(:page => params[:page])
 
       respond_to do |format|
         format.html # index.html.erb
@@ -26,8 +24,8 @@ module Admin
     end
 
     def new
+      authorize! :create, Merchant
       @merchant = Merchant.new
-      authorize! :create, @merchant
 
       respond_to do |format|
         format.html # new.html.erb
@@ -45,9 +43,10 @@ module Admin
 
       Merchant.transaction do
         begin
+          params[:merchant][:status] = :pending
           @merchant = Merchant.create_without_devise(params[:merchant])
           respond_to do |format|
-            format.html { redirect_to(sales_merchant_path(@merchant), :notice => 'Merchant was successfully created.') }
+            format.html { redirect_to(merchant_path(@merchant), :notice => 'Merchant was successfully created.') }
           #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
           end
         rescue DataMapper::SaveFailureError => e
@@ -67,9 +66,9 @@ module Admin
 
       Merchant.transaction do
         begin
-          @merchant.update(params[:merchant])
+          @merchant.update_all(params[:merchant])
           respond_to do |format|
-            format.html { redirect_to(sales_merchant_path(@merchant), :notice => 'Merchant was successfully updated.') }
+            format.html { redirect_to(merchant_path(@merchant), :notice => 'Merchant was successfully updated.') }
           #format.xml  { head :ok }
           end
         rescue DataMapper::SaveFailureError => e

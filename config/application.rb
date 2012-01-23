@@ -55,5 +55,9 @@ module Genesis
     DataMapper::Property::String.length(255)
 
     require 'string_extension'
+    
+    WillPaginate.per_page = 10
+    
+    require "will_paginate/array"
   end
 end

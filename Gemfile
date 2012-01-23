@@ -52,6 +52,8 @@ gem 'aws-s3'
 gem 'uuidtools'
 gem 'bcrypt-ruby'
 gem 'country-select'
+gem 'will_paginate'
+gem 'websnap'
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION
