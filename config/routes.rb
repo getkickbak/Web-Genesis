@@ -11,16 +11,22 @@ Genesis::Application.routes.draw do
       resources :challenges
       resources :purchase_rewards
       resources :customer_rewards
-      resources :venues
+      resources :venues do
+        get 'update_qr_code', :on => :member, :as => :update_qr_code
+      end
       #resources :deals
 
-      match "/marketing" => 'marketing#index'
-      match "/analytics" => 'analytics#index'
+      match "/dashboard" => 'dashboard#index', :as => :dashboard
+      match "/setup" => 'setup#index', :as => :setup
+      match "/setup/activate" => 'setup#activate', :as => :setup_activate
+      match "/reward_model" => 'reward_model#index', :as => :reward_model
+      match "/reward_model/update" => 'reward_model#update', :as => :update_reward_model
+      match "/marketing" => 'marketing#index', :as => :marketing
+      match "/analytics" => 'analytics#index', :as => :analytics
       match "/analytics/show_charts" => 'analytics#show_charts'
       match "/account" => 'merchants#show', :as => :account
       match "/account/edit" => 'merchants#edit', :as => :edit_account
-      match "/account/update" => 'merchants#update', :via => :post, :as => :update_account
-      match "/account/update_qr_code" => 'merchants#update_qr_code', :via => :post
+      match "/account/update" => 'merchants#update', :as => :update_account
       match "/billings" => 'credit_cards#index', :as => :credit_cards
       match "/billings/create" => 'credit_cards#create', :via => :post, :as => :create_credit_card
       match "/billings/update" => 'credit_cards#update', :via => :post, :as => :update_credit_card
@@ -37,7 +43,7 @@ Genesis::Application.routes.draw do
 =end
       match '*a', :to => 'errors#routing'
 
-    #root :to => redirect("/vouchers")
+      root :to => redirect("/dashboard")
     end
   end
 
@@ -55,9 +61,9 @@ Genesis::Application.routes.draw do
         #resources :deals
       end
       
-      match "/account" => 'staffs#show', :as => :account
-      match "/account/edit" => 'staffs#edit', :as => :edit_account
-      match "/account/update" => 'staffs#update', :via => :post, :as => :update_account
+      match "/account" => 'account#show', :as => :account
+      match "/account/edit" => 'account#edit', :as => :edit_account
+      match "/account/update" => 'account#update', :as => :update_account
             
       match '/jobs' => 'jobs#index', :as => :jobs
       match '/jobs/run' => 'jobs#run', :as => :job_run

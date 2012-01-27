@@ -1,0 +1,18 @@
+<h1>Reward Model</h1>
+<table>
+	<tr>
+		<td>
+		<%= simple_form_for @reward_model, :url => update_reward_model_path do |f| %>
+		<%= f.input :reward_ratio %>
+		<%= f.input :price_per_point, :input_html => { :disabled => 'disabled' } %>
+		<%= f.submit %>
+		<% end %>
+		</td>
+		<td></td>
+		<td></td>
+	</tr>
+</table>
+
+<% if current_merchant.status == :pending && current_merchant.reward_model %>
+<%= link_to 'Continue Setup', setup_path %>
+<% end %>

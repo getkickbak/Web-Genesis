@@ -5,9 +5,11 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
   end
 
   def create
-    User.transaction do |t|
+    #User.transaction do |t|
       begin
         build_resource
+        resource[:role] = "user"
+        resource[:status] = :active
         user = User.create(resource, resource.password, resource.password_confirmation)
         resource = user
         if resource.active_for_authentication?
@@ -24,7 +26,7 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
         clean_up_passwords(resource)
         respond_with_navigational(resource) { render_with_scope :new }
       end
-    end
+    #end
   end
 
   def update

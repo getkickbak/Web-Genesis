@@ -23,7 +23,9 @@ class UsersController < ApplicationController
 
     User.transaction do
       begin
-        @user.update(params[:user])
+        params[:user][:role] = @user.role
+        params[:user][:status] = @user.status
+        @user.update_all(params[:user])
         sign_in(current_user, :bypass => true)
         respond_to do |format|
           format.html { redirect_to(account_path, :notice => 'User was successfully updated.') }

@@ -70,7 +70,7 @@
 	<% end %>
 	</div>
 	<% if @challenge.type != '' %>
-	<%= f.collection_check_boxes :venue_ids, Venue.all(:fields => [:id, :name], Venue.merchant.id => current_merchant.id), :id, :name %>
+	<%= f.collection_check_boxes :venue_ids, current_merchant.venues, :id, :name %>
 	<%= f.submit "Save", :class => "btn primary large noWrap", :disable_with => "Working..." %>
 	<% end %>
 <% end %>

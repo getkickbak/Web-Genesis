@@ -3,6 +3,7 @@ require 'util/constant'
 
 class Merchant
   include DataMapper::Resource
+  
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
 
@@ -20,30 +21,28 @@ class Merchant
   property :account_first_name, String, :required => true, :default => ""
   property :account_last_name, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
-  property :auth_code, String, :required => true, :default => ""
-  property :qr_code, String, :required => true, :default => ""
   property :payment_account_id, String, :default => ""
-  property :status, Enum[:active, :suspended, :deleted], :default => :active
+  property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :pending
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
 
-  attr_accessible :name, :email, :account_first_name, :account_last_name, :phone, :password, :password_confirmation, :encrypted_password
+  attr_accessible :name, :email, :account_first_name, :account_last_name, :phone, :status, :password, :password_confirmation, :encrypted_password
 
-  validates_presence_of :password, :password_confirmation
-  validates_length_of :password, :min => 6, :max => 40
-  validates_confirmation_of :password
+  #validates_presence_of :password, :password_confirmation
+  #validates_length_of :password, :min => 6, :max => 40
+  #validates_confirmation_of :password
   
+  has 1, :reward_model
   has n, :merchant_credit_cards, :child_key => [ :merchant_id ]
   has n, :credit_cards, :through => :merchant_credit_cards, :via => :credit_card
+  has n, :venues
 
   def self.create(merchant_info, password, password_confirmation)
     now = Time.now
     merchant_name = merchant_info[:name].squeeze(' ').strip
     merchant_id = merchant_name.downcase.gsub(' ','-')
-    auth_code = String.random_alphanumeric
-    filename = generate_qr_code(merchant_id, auth_code)
     
     merchant = Merchant.new(
       :name => merchant_name,
@@ -53,11 +52,10 @@ class Merchant
       :encrypted_password => merchant_info[:encrypted_password],
       :account_first_name => merchant_info[:account_first_name].strip,
       :account_last_name => merchant_info[:account_last_name].strip,
-      :phone => merchant_info[:phone].strip
+      :phone => merchant_info[:phone].strip,
+      :status => merchant_info[:status]
     )
     merchant[:merchant_id] = merchant_id
-    merchant[:auth_code] = auth_code
-    merchant[:qr_code] = filename
     merchant[:created_ts] = now
     merchant[:update_ts] = now
     merchant.save
@@ -78,16 +76,12 @@ class Merchant
     #return result
     return merchants
   end
-
-  def password_required?  
-    !self.password.blank? && super  
-  end
   
   def to_param
     self.merchant_id
   end
 
-  def update(merchant_info)
+  def update_all(merchant_info)
     now = Time.now
     self.attributes = merchant_info
     merchant_name = merchant_info[:name].squeeze(' ').strip
@@ -100,16 +94,7 @@ class Merchant
     self.account_first_name = merchant_info[:account_first_name].strip
     self.account_last_name = merchant_info[:account_last_name].strip
     self.phone = merchant_info[:phone].strip
-    self.update_ts = now
-    save
-  end
-  
-  def update_qr_code
-    now = Time.now
-    auth_code = String.random_alphanumeric
-    filename = self.generate_qr_code(self.merchant_id, auth_code) 
-    self.auth_code = auth_code
-    self.qr_code = filename
+    self.status = merchant_info[:status]
     self.update_ts = now
     save
   end
@@ -127,7 +112,7 @@ class Merchant
   end
   
   def as_json(options)
-    only = {:only => [:merchant_id,:name]}
+    only = {:only => [:id, :merchant_id,:name]}
     options = options.nil? ? only : options.merge(only)
      super(options)
   end
@@ -136,18 +121,5 @@ class Merchant
   
   def self.encrypt_password(password)
     BCrypt::Password.create(password)
-  end
-  
-  def self.generate_qr_code(merchant_id, auth_code)
-    qr = RQRCode::QRCode.new( auth_code, :size => 5, :level => :h )
-    png = qr.to_img.resize(90,90)
-    AWS::S3::S3Object.store(
-      ::Common.generate_merchant_qr_code_file_path(merchant_id,"#{auth_code}.png"), 
-      png.to_string,
-      APP_PROP["AMAZON_FILES_BUCKET"], 
-      :content_type => 'image/png', 
-      :access => :public_read
-    )
-    filename = ::Common.generate_full_merchant_qr_code_file_path(merchant_id,"#{auth_code}.png")  
   end
 end

@@ -1,0 +1,6 @@
+<div><a href="<%= reward_model_path %>">Change Reward Model</a></div>
+<% if current_merchant.venues.length == 1 %>
+<div><a href="<%= venue_path(current_merchant.venues.first) %>">Print QR Code</a></div>
+<% else %>
+<div><a onclick="Genesis.selectVenuePopup();">Print QR Code</a></div>
+<% end %>

@@ -5,7 +5,7 @@ module Business
     
     def index
       authorize! :read, Venue
-      @venues = Venue.all(Venue.merchant.id => current_merchant.id)
+      @venues = current_merchant.venues
 
       respond_to do |format|
         format.html # index.html.erb
@@ -40,7 +40,7 @@ module Business
 
     def create
       authorize! :create, Venue
-
+      
       Venue.transaction do
         begin
           @venue = Venue.create(current_merchant, params[:venue])
@@ -72,7 +72,7 @@ module Business
           end
         rescue DataMapper::SaveFailureError => e
           logger.error("Exception: " + e.resource.errors.inspect)
-          @merchant = e.resource
+          @venue = e.resource
           respond_to do |format|
             format.html { render :action => "edit" }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
@@ -81,15 +81,43 @@ module Business
       end
     end
     
+    def update_qr_code
+      @venue = Venue.get( params[:id]) || not_found
+      authorize! :update, @venue
+
+      Venue.transaction do
+        begin
+          @venue.update_qr_code()
+          respond_to do |format|
+            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => 'QR Code was successfully updated.') }
+          #format.xml  { head :ok }
+          end
+        rescue DataMapper::SaveFailureError => e
+          logger.error("Exception: " + e.resource.errors.inspect)
+          @venue = e.resource
+          respond_to do |format|
+            format.html
+          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+          end
+        end
+      end 
+    end
+    
     def destroy
       @venue = Venue.get(params[:id]) || not_found
       authorize! :destroy, @venue
 
-      @venue.destroy
-
-      respond_to do |format|
-         format.html { redirect_to(venues_url) }
-      #format.xml  { head :ok }
+      if @venue.challenges.length > 0 || @venue.purchase_rewards.length > 0 || @venue.customer_rewards.length > 0
+        respond_to do |format|
+          format.html { redirect_to(:action => "index", :notice => 'Failed to delete venue.  Please check to make sure no challenges or rewards are associated with this venue.') }
+        #format.xml  { head :ok }
+        end
+      else
+        @venue.destroy
+        respond_to do |format|
+          format.html { redirect_to(venues_url) }
+        #format.xml  { head :ok }
+        end
       end
     end
   end

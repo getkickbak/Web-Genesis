@@ -54,6 +54,17 @@
 					<ul class="nav secondary-nav">
 						<% if signed_in? %>
 						<li class="">
+							<a href="/merchants">Merchants</a>
+						</li>
+						<% if current_staff.role == 'admin' || current_staff.role == 'super_admin' %>
+						<li class="">
+							<a href="/staffs">Staffs</a>
+						</li>
+						<li class="">
+							<a href="/users">Users</a>
+						</li>
+						<% end %>
+						<li class="">
 							<a href="/account">Account</a>
 						</li>
 						<li class="">

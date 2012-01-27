@@ -11,7 +11,7 @@ class CustomersController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render :json => { :success => true, :data => results[:items].to_json(:only => [:points], :methods => [:merchant]), :total => results[:total] } }
+      format.json { render :json => { :success => true, :data => results[:items], :total => results[:total] } }
     end
   end  
   
@@ -26,13 +26,13 @@ class CustomersController < ApplicationController
   end
   
   def create
-    @merchant = Merchant.get(params[:merchant_id]) || not_found
+    @venue = Venue.get(params[:venue_id]) || not_found
     authorize! :create, Customer
     
     Customer.transaction do
       begin
-        if @merchant.auth_code == params[:auth_code]))
-          Customer.create(@merchant,current_user)
+        if @venue.auth_code == params[:auth_code]))
+          Customer.create(@venue.merchant, current_user)
           success = true
           msg = [""]
         else

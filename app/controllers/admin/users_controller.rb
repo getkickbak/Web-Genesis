@@ -6,9 +6,7 @@ module Admin
     def index
       authorize! :read, User
 
-      start = 0
-      max = 10
-      @users = User.find(start, max)
+      @users = User.all(:order => [:created_ts.desc]).paginate(:page => params[:page])
 
       respond_to do |format|
         format.html # index.html.erb
@@ -27,8 +25,9 @@ module Admin
     end
 
     def new
+      authorize! :create, User
       @user = User.new
-      authorize! :create, @user
+      @user[:role] = "user"
 
       respond_to do |format|
         format.html # new.html.erb
@@ -48,7 +47,7 @@ module Admin
         begin
           @user = User.create_without_devise(params[:user])
           respond_to do |format|
-            format.html { redirect_to(admin_user_path(@user), :notice => 'User was successfully created.') }
+            format.html { redirect_to(user_path(@user), :notice => 'User was successfully created.') }
           #format.xml  { render :xml => @user, :status => :created, :location => @user }
           #format.json { render :json => { :success => true, :data => @user, :total => 1 } }
           end
@@ -70,10 +69,10 @@ module Admin
 
       User.transaction do
         begin
-          @user.update(params[:user])
+          @user.update_all(params[:user])
           sign_in(current_user, :bypass => true)
           respond_to do |format|
-            format.html { redirect_to(admin_user_path(@user), :notice => 'User was successfully updated.') }
+            format.html { redirect_to(user_path(@user), :notice => 'User was successfully updated.') }
           #format.xml  { head :ok }
           #format.json { render :json => { :success => true, :data => @user, :total => 1 } }
           end
@@ -96,7 +95,7 @@ module Admin
       @user.destroy
 
       respond_to do |format|
-        format.html { redirect_to(admin_users_url) }
+        format.html { redirect_to(users_url) }
       #format.xml  { head :ok }
       end
     end

@@ -1,17 +1,4 @@
 <%= simple_form_for [@staff] do |f| %>
-<% if @staff.errors.any? %>
-<div id="error_explanation">
-	<h2><%= pluralize(@staff.errors.count, "error") %> prohibited this staff from being saved:</h2>
-	<ul>
-		<% @staff.errors.full_messages.each do |msg| %>
-		<li>
-			<%= msg %>
-		</li>
-		<% end %>
-	</ul>
-</div>
-<% end %>
-
 <%= f.input :name %>
 <%= f.input :email %>
 <%= f.input :password %>

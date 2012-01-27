@@ -7,7 +7,7 @@ class CustomerRewardsController < ApplicationController
     @rewards = CustomerReward.all(CustomerReward.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]))
     respond_to do |format|
       #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @rewards.to_json(:only => [:id, :title, :description, :points]) } }
+      format.json { render :json => { :success => true, :data => @rewards } }
     end
    end
   
@@ -18,7 +18,7 @@ class CustomerRewardsController < ApplicationController
     
     Customer.transaction do
       begin
-        if @customer.auth_code == params[:auth_code] 
+        if @venue.auth_code == params[:auth_code] 
           reward = CustomerReward.first(:id => params[:reward_id], CustomerReward.merchant.id => @venue.merchant.id)
           if @customer.points - reward.points >= 0
             record = RedeemRewardRecord.new(

@@ -1,0 +1,59 @@
+<% content_for :script do %> 
+<script type="text/javascript" src="/javascripts/desktop/src/business/setup.js"></script>
+<% end %>
+<div style="width:400px;">
+<div id="progressbar"></div><div><%= "#{@checklist[:count]} out of #{@checklist[:total]} steps completed" %></div>
+</div>
+<div style="display:none;">
+	<div id="total"><%= @checklist[:total] %></div>
+	<div id="count"><%= @checklist[:count] %></div>
+</div>
+<div>
+	<div>
+		<% if !@checklist[:data][:venues] %>
+		<% proceed_next_step = false %>
+		<a href="<%= new_venue_path %>">Create Venue</a>
+		<% else %>
+		<% proceed_next_step = true %>
+		Create Venue
+		<% end %>
+	</div>
+	<div>
+		<% if !@checklist[:data][:reward_model] && proceed_next_step %>
+		<% proceed_next_step = false %>
+		<a href="<%= reward_model_path %>">Setup Reward Model</a>
+		<% else %>
+		Setup Reward Model
+		<% end %>
+	</div>
+	<div>
+		<% if !@checklist[:data][:purchase_rewards] && proceed_next_step %>
+		<% proceed_next_step = false %>
+		<a href="<%= new_purchase_reward_path %>">Create Purchase Reward</a>
+		<% else %>
+		Create Purchase Reward
+		<% end %>
+	</div>
+	<div>
+		<% if !@checklist[:data][:customer_rewards] && proceed_next_step %>
+		<% proceed_next_step = false %>
+		<a href="<%= new_customer_reward_path %>">Create Customer Reward</a>
+		<% else %>
+		Create Customer Reward
+		<% end %>
+	</div>
+	<div>
+		<% if !@checklist[:data][:challenges] && proceed_next_step %>
+		<a href="<%= new_challenge_path %>">Create Challenge (optional)</a>
+		<% else %>
+		Create Challenge (optional)
+		<% end %>
+	</div>
+	<div>
+		<% if @checklist[:data][:venues] && proceed_next_step %>
+		<a href="<%= setup_activate_path %>" class="btn pricetag large alignCenter">Activate</a>
+		<% else %>
+		<a class="btn pricetag large alignCenter disabled">Activate</a>
+		<% end %>
+	</div>
+</div>

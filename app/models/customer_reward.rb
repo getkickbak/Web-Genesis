@@ -3,7 +3,7 @@ class CustomerReward
 
   property :id, Serial
   property :title, String, :required => true, :default => ""
-  property :average_price, Integer, :required => true
+  property :price, Integer, :required => true
   property :points, Integer, :required => true
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -12,20 +12,21 @@ class CustomerReward
 
   attr_accessor :venue_ids
 
-  attr_accessible :title, :average_price, :points
+  attr_accessible :title, :price, :points
 
   belongs_to :merchant
   has n, :customer_reward_venues
   has n, :venues, :through => :customer_reward_venues
 
+  validates_with_method :check_price
   validates_with_method :check_points
   
   def self.create(merchant, reward_info, venues)
     now = Time.now
     reward = CustomerReward.new(
-    :title => reward_info[:title],
-    :average_price => reward_info[:average_price],
-    :points => reward_info[:points]
+      :title => reward_info[:title],
+      :price => reward_info[:price],
+      :points => reward_info[:points]
     )
     reward[:created_ts] = now
     reward[:update_ts] = now
@@ -38,7 +39,7 @@ class CustomerReward
   def update(reward_info, venues)
     now = Time.now
     self.title = reward_info[:title]
-    self.average_price = reward_info[:average_price]
+    self.price = reward_info[:price]
     self.points = reward_info[:points]
     self.update_ts = now
     self.customer_reward_venues.destroy
@@ -46,6 +47,12 @@ class CustomerReward
     save
   end
 
+  def as_json(options)
+    only = {:only => [:id,:title,:points]}
+    options = options.nil? ? only : options.merge(only)
+    super(options)
+  end
+  
   def destroy
     self.customer_reward_venues.destroy
     super  
@@ -53,7 +60,17 @@ class CustomerReward
   
   private
 
+  def check_price
+    if self.price.is_a? Decimal
+      return self.price > 0.0 ? true : [false, "Price must be greater than 0"]  
+    end
+    return true
+  end
+  
   def check_points
-    self.points > 0 ? true : [false, "Points must be greater than 0"]
+    if self.points.is_a? Integer
+      return self.points > 0 ? true : [false, "Points must be greater than 0"]
+    end
+    return true
   end
 end

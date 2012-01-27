@@ -4,6 +4,8 @@ module Admin
       Staff.transaction do |t|
         begin
           build_resource
+          resource[:role] = "admin"
+          resource[:status] = :active
           staff = Staff.create(resource, resource.password, resource.password_confirmation)
           resource = staff
           if resource.active_for_authentication?

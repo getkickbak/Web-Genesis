@@ -4,13 +4,18 @@ module Business
     skip_authorization_check
     
     def index
-      @customers_total = get_customers_total
-      @purchases_total = get_purchases_total(nil)
-      @challenges_total = get_challenges_total(nil)
-      
-      respond_to do |format|
-        format.html # index.html.erb
-      #format.xml  { render :xml => @merchants }
+      if current_merchant.status == :pending
+        respond_to do |format|
+          format.html { redirect_to setup_path }
+        end
+      else
+        @customers_total = get_customers_total
+        @purchases_total = get_purchases_total(nil)
+        @challenges_total = get_challenges_total(nil)
+        respond_to do |format|
+          format.html # index.html.erb
+          #format.xml  { render :xml => @merchants }
+        end
       end
     end
     

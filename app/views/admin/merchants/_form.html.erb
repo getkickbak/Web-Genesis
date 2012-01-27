@@ -1,17 +1,4 @@
-<%= simple_form_for [:admin, @merchant] do |f| %>
-	<% if @merchant.errors.any? %>
-	<div id="error_explanation">
-		<h2><%= pluralize(@merchant.errors.count, "error") %> prohibited this merchant from being saved:</h2>
-
-		<ul>
-			<% @merchant.errors.full_messages.each do |msg| %>
-			<li>
-				<%= msg %>
-			</li>
-			<% end %>
-		</ul>
-	</div>
-	<% end %>
+<%= simple_form_for [@merchant] do |f| %>
 	<%= f.input :name %>
 	<%= f.input :email %>
 	<%= f.input :account_first_name %>

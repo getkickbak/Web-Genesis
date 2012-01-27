@@ -11,6 +11,7 @@
 		<link rel="shortcut icon" href="http://photos.justformyfriends.com/favicon.ico" type="image/x-icon">
 		<link rel="stylesheet/less" href="/javascripts/desktop/lib/twitter-bootstrap-e4993fc/lib/bootstrap.less"/>
 		<link rel="stylesheet" href="/javascripts/desktop/lib/twitter-bootstrap-e4993fc/docs/assets/css/docs.css"/>
+		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css"/>
 		<link rel="stylesheet" href="/stylesheets/application.css"/>
 		<!--
 		<link rel="stylesheet" href="/javascripts/desktop/lib/jquery-ui-1.8.16.custom/css/south-street/jquery-ui-1.8.16.custom.css"/>
@@ -47,6 +48,10 @@ var clientTime=new Date();
 					<h3><a href="/"><img width="200" style="position:absolute;top:0px;left:-10px;" src="http://photos.justformyfriends.com/logo.png"/>JustForMyFriends</a></h3>
 					<ul class="nav secondary-nav">
 						<% if signed_in? %>
+						<% if current_merchant.status == :active %>
+						<li class="">
+							<a href="/dashboard">Dashboard</a>
+						</li>
 						<li class="">
 							<a href="/marketing">Marketing</a>
 						</li>
@@ -71,11 +76,12 @@ var clientTime=new Date();
 						<li class="">
 							<a href="/venues">Venues</a>
 						</li>
+						<% end %>
 						<li class="menu" data-dropdown="dropdown">
 							<div style="display:none;float:left;"></div><a href="#" class="menu" style="float:left;">Account</a>
 							<ul class="menu-dropdown">
 								<li>
-									<a href="/account">Account Settings</a>
+									<a href="/account">Settings</a>
 								</li>
 								<li class="divider"></li>
 								<li>

@@ -18,18 +18,14 @@ class Staff
   property :email, String, :unique_index => true, :required => true, :format => :email_address, :default => ""
   property :encrypted_password, String, :required => true, :default => ""
   property :photo_url, String, :default => ""
-  property :role, String, :default => "sales"
-  property :status, Enum[:active, :suspended, :deleted], :default => :active
+  property :role, String, :required => true, :default => "sales"
+  property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :active
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
     
-  attr_accessible :name, :email, :password, :password_confirmation, :encrypted_password
-    
-  validates_presence_of :password, :password_confirmation
-  validates_length_of :password, :min => 6, :max => 40
-  validates_confirmation_of :password
+  attr_accessible :name, :email, :role, :status, :password, :password_confirmation, :encrypted_password
         
   def self.create(staff_info, password, password_confirmation)
     now = Time.now
@@ -38,7 +34,9 @@ class Staff
       :email => staff_info[:email].strip,   
       :password => password.strip,
       :password_confirmation => password_confirmation.strip,
-      :encrypted_password => staff_info[:encrypted_password]
+      :encrypted_password => staff_info[:encrypted_password],
+      :role => staff_info[:role].strip,
+      :status => staff_info[:status]
     ) 
     staff[:staff_id] = "#{staff_info[:name].downcase.gsub(' ','-')}-#{rand(1000) + 1000}#{now.to_i}"
     staff[:created_ts] = now
@@ -62,30 +60,22 @@ class Staff
     return staffs  
   end
   
-  def password_required?  
-    !self.password.blank? && super  
-  end
-  
   def to_param
     self.staff_id
   end
   
-  def update(staff_info)
+  def update_all(staff_info)
     now = Time.now
     self.staff_id = "#{staff_info[:name].downcase.gsub(' ','-')}-#{rand(1000) + 1000}#{now.to_i}"
-    self.name = staff_info[:name]
-    self.email = staff_info[:email]
-    self.password = staff_info[:password]
-    self.password_confirmation = staff_info[:password_confirmation]
+    self.name = staff_info[:name].strip
+    self.email = staff_info[:email].strip
+    self.password = staff_info[:password].strip
+    self.password_confirmation = staff_info[:password_confirmation].strip
     self.encrypted_password = User.encrypt_password(self.password)
+    self.role = staff_info[:role].strip
+    self.status = staff_info[:status]
     self.update_ts = now
     save
-  end
-  
-  def as_json(options)
-    only = {:only => [:name]}
-    options = options.nil? ? only : options.merge(only)
-    super(options)
   end
   
   private
