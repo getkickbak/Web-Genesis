@@ -1,9 +1,49 @@
-Ext.require(['Genesis.model.Merchant', 'Genesis.model.User'], function()
+Ext.define('Genesis.model.Customer',
 {
-   Ext.define('Genesis.model.Customer', {
-      extend : 'Ext.data.Model',
-      id : 'Customer',
-      fields : ['auth_code', 'qr_code', 'points', 'last_check_in', 'created_ts', 'update_ts'],
-      belongsTo : ['Genesis.model.Merchant', 'Genesis.model.User']
-   });
+   extend : 'Ext.data.Model',
+   requires : ['Genesis.model.Checkin'],
+   alternateClassName : 'Customer',
+   id : 'Customer',
+   config :
+   {
+      belongsTo : [
+      {
+         model : 'Genesis.model.Merchant',
+         getterName : 'getMerchant',
+         setterName : 'setMerchant'
+      },
+      {
+         model : 'Genesis.model.User',
+         getterName : 'getUser',
+         setterName : 'setUser'
+      }],
+      hasOne :
+      {
+         model : 'Genesis.model.Checkin',
+         associationKey : 'last_check_in',
+         // User to make sure no underscore
+         getterName : 'getLastCheckin',
+         setterName : 'setLastCheckin'
+      },
+      proxy :
+      {
+         type : (!phoneGapAvailable) ? 'ajax' : 'offlineajax',
+         url : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json',
+         reader :
+         {
+            type : 'json',
+            rootProperty : 'customers'
+         }
+      },
+      fields : ['auth_code', 'qr_code', 'points', 'created_ts', 'update_ts', 'merchant_id', 'user_id'],
+      idProperty : 'merchant_id'
+   },
+   getMerchant : function()
+   {
+
+   },
+   getUser : function()
+   {
+
+   }
 });

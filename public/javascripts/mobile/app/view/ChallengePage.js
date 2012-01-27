@@ -1,60 +1,28 @@
 Ext.define('Genesis.view.ChallengePage',
 {
    extend : 'Ext.Container',
-   requires : ['Ext.dataview.DataView', 'Genesis.store.ChallengePageStore', 'Ext.Template'],
+   requires : ['Ext.data.Store', 'Ext.dataview.DataView', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.model.Challenge'],
    alias : 'widget.challengepageview',
-   title : 'Challenges',
    config :
    {
+      title : 'Challenges',
       layout : 'fit',
+      scrollable : 'vertical',
       items : [
       {
-         docked : 'bottom',
-         cls : 'navigationBarBottom',
-         xtype : 'toolbar',
-         layout :
-         {
-            pack : 'justify',
-            align : 'center'
-         },
-         defaults :
-         {
-            iconMask : true
-         },
-         items : [
-         {
-            xtype : 'spacer'
-         },
-         {
-            iconCls : 'challenge',
-            iconAlign : 'top',
-            //hidden : true,
-            text : 'Begin!'
-         },
-         {
-            xtype : 'spacer'
-         },
-         {
-            iconCls : 'home',
-            iconAlign : 'top',
-            id : 'homeButton',
-            text : 'Home'
-         }]
-      },
-      {
          xtype : 'dataview',
-         cls : 'menuSelections',
          layout :
          {
             type : 'hbox',
             pack : 'center',
             align : 'middle'
          },
+         cls : 'menuSelections',
          deferInitialRefresh : true,
          store : 'ChallengePageStore',
          itemTpl : Ext.create('Ext.XTemplate',
          // @formatter:off
-         '<div class="challengePageItemWrapper">', '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>', '<div class="photoName">{name}</div>', '</div>',
+         '<div class="challengePageItemWrapper">' + '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>' + '<div class="photoName">{name}</div>' + '</div>',
          // @formatter:on
          {
             getPhoto : function(photoURL)
@@ -62,14 +30,6 @@ Ext.define('Genesis.view.ChallengePage',
                return Ext.isEmpty(photoURL) ? Ext.BLANK_IMAGE_URL : photoURL;
             }
          }),
-         /*
-          plugins : [Ext.create('Ext.ux.DataView.Animated', {
-          duration : 550,
-          idProperty : 'id'
-          })],
-          */
-         itemSelector : 'div.challengePageItemWrapper',
-         //overItemCls : 'phone-hover',
          multiSelect : false,
          autoScroll : true
       },

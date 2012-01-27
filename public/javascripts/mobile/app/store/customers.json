@@ -1,0 +1,31 @@
+{
+   "customers": [
+      {
+         "auth_code": "",
+         "qr_code": "",
+         "points": 10,
+         "last_check_in": {
+            "time": "",
+            "venue_id": 1,
+            "user_id": 1
+         },
+         "created_ts": "",
+         "update_ts": "",
+         "merchant_id": 1,
+         "user_id": 1
+      }, {
+         "auth_code": "",
+         "qr_code": "",
+         "points": 20,
+         "last_check_in": {
+            "time": "",
+            "venue_id": 2,
+            "user_id": 1
+         },
+         "created_ts": "",
+         "update_ts": "",
+         "merchant_id": 2,
+         "user_id": 1
+      }
+   ]
+}

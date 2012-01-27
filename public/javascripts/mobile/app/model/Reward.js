@@ -1,9 +1,18 @@
-Ext.require(['Genesis.model.Merchant'], function()
+Ext.define('Genesis.model.Reward',
 {
-   Ext.define('Genesis.model.Reward', {
-      extend : 'Ext.data.Model',
-      id : 'Reward',
-      fields : ['type', 'title', 'points', 'created_ts', 'update_ts'],
-      belongsTo : 'Genesis.model.Merchant'
-   });
+   extend : 'Ext.data.Model',
+   id : 'Reward',
+   config :
+   {
+      belongsTo : [
+      {
+         model : 'Genesis.model.Merchant',
+         getterName : 'getMerchant',
+         setterName : 'setMerchant'
+      }],
+      fields : ['type', 'title', 'points', 'created_ts', 'update_ts']
+   },
+   getMerchant : function()
+   {
+   }
 });

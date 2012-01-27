@@ -1,0 +1,29 @@
+{
+   "eligibleRewards": [
+      {
+         "reward_id": 1,
+         "reward_title": "You are 5 points from your eligibility to a free breakfast!",
+         "points_difference": 5,
+         "type": "breakfast",
+         "photo_url": ""
+      }, {
+         "reward_id": 2,
+         "reward_title": "Congratulations! You earned enough points for free lunch for two!",
+         "points_difference": 0,
+         "type": "lunch",
+         "photo_url": ""
+      }, {
+         "reward_id": 3,
+         "reward_title": "Congratulations! You earned enough points for a complimentary free coffee @The Runner Shop",
+         "points_difference": 0,
+         "type": "drinks",
+         "photo_url": ""
+      }, {
+         "reward_id": 4,
+         "reward_title": "You are 20 points from your eligibility to a complimentart dinner dish",
+         "points_difference": 20,
+         "type": "dinner",
+         "photo_url": ""
+      }
+   ]
+}

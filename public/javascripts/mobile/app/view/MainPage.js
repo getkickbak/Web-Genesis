@@ -1,26 +1,24 @@
 Ext.define('Genesis.view.MainPage',
 {
    extend : 'Ext.dataview.DataView',
-   requires : ['Ext.dataview.DataView', 'Genesis.store.MainPageStore', 'Ext.Template'],
+   requires : ['Ext.dataview.DataView', 'Ext.XTemplate'],
    alias : 'widget.mainpageview',
-   title : 'JustForMyFriends',
    config :
    {
+      title : 'JustForMyFriends',
       layout :
       {
          type : 'hbox',
          pack : 'center',
          align : 'middle'
       },
+      scrollable : 'vertical',
       cls : 'menuSelections',
       deferInitialRefresh : false,
       store : 'MainPageStore',
       itemTpl : Ext.create('Ext.XTemplate',
       // @formatter:off
-      '<div class="mainPageItemWrapper">',
-         '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
-         '<div class="photoName">{name}</div>',
-      '</div>',
+      '<div class="mainPageItemWrapper">', '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>', '<div class="photoName">{name}</div>', '</div>',
       // @formatter:on
       {
          getPhoto : function(photoURL)
@@ -34,8 +32,6 @@ Ext.define('Genesis.view.MainPage',
        idProperty : 'id'
        })],
        */
-      itemSelector : 'div.mainPageItemWrapper',
-      //overItemCls : 'phone-hover',
       multiSelect : false,
       autoScroll : true
    }

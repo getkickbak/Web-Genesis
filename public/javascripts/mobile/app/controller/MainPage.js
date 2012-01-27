@@ -1,61 +1,107 @@
 Ext.define('Genesis.controller.MainPage',
 {
    extend : 'Genesis.controller.ControllerBase',
-   //requires:['Genesis.controller.Challenges'],
+   requires : ['Ext.data.Store',
+   //'Genesis.controller.Challenges', 'Genesis.controller.Checkins', 'Genesis.controller.RewardsRedemptions'
+   // Base Class
+   'Genesis.controller.ControllerBase'],
    statics :
    {
       mainPage_path : '/mainPage',
       loginPage_path : '/loginPage'
    },
    xtype : 'mainPageCntlr',
-   refs : [
-   // Login Page
-   {
-      ref : 'loginPage',
-      selector : 'loginPageview',
-      autoCreate : true,
-      xtype : 'loginpageview'
-   },
-   // Main Page
-   {
-      ref : 'mainPage',
-      selector : 'mainpageview',
-      autoCreate : true,
-      xtype : 'mainpageview'
-   }],
-   model : ['MainPage'],
-   views : ['LoginPage', 'MainPage'],
-   stores : ['MainPageStore'],
+   models : ['MainPage', 'EligibleReward', 'Customer', 'User'],
    config :
    {
-   },
-   init : function(app)
-   {
-      this.control(
+      refs :
+      {
+         // Login Page
+         loginPage :
+         {
+            selector : 'loginPageview',
+            autoCreate : true,
+            xtype : 'loginpageview'
+         },
+         // Main Page
+         mainPage :
+         {
+            selector : 'mainpageview',
+            autoCreate : true,
+            xtype : 'mainpageview'
+         }
+      },
+      control :
       {
          'loginPageview' :
          {
-            select : this.onLoginItemSelect
+            select : 'onLoginItemSelect'
          },
          'mainpageview' :
          {
-            //itemtap : this.onItemTap,
-            select : this.onItemSelect,
-            itemtouchstart : this.onItemTouchStart,
-            itemtouchend : this.onItemTouchEnd,
-            show : this.onActivate,
-            hide : this.onDeactivate,
+            //itemtap : 'onItemTap',
+            select : 'onItemSelect',
+            itemtouchstart : 'onItemTouchStart',
+            itemtouchend : 'onItemTouchEnd',
+            show : 'onActivate',
+            hide : 'onDeactivate',
          }
-      });
+      }
+   },
+   init : function(app)
+   {
       this.callParent(arguments);
       console.log("MainPage Init");
+
+      //
+      // Load all the info into Stores
+      // Normally we do this in the Login screen
+      //
+      Ext.regStore('UserStore',
+      {
+         model : 'Genesis.model.User',
+         autoLoad : false
+      });
+      Ext.regStore('CustomerStore',
+      {
+         model : 'Genesis.model.Customer',
+         autoLoad : true
+      });
+      //
+      // Store storing the Venue viewing
+      //
+      Ext.regStore('VenueStore',
+      {
+         model : 'Genesis.model.Venue',
+         autoLoad : false
+      });
+      //
+      // Store storing the Customer's Eligible Rewards at a Venue
+      //
+      Ext.regStore('EligibleRewardsStore',
+      {
+         model : 'Genesis.model.EligibleReward',
+         autoLoad : false
+      });
    },
+   // --------------------------------------------------------------------------
+   // MainPage
+   // --------------------------------------------------------------------------
    onItemSelect : function(d, model, eOpts)
    {
       d.deselect([model], false);
       console.log("Controller=[" + model.data.pageCntlr + "]");
 
-      this.getController(model.data.pageCntlr).openMainPage();
+      var cntlr = this.getApplication().getController(model.data.pageCntlr);
+      var msg = cntlr.isOpenAllowed();
+      if(msg === true)
+      {
+         cntlr.openMainPage();
+      }
+      else
+      {
+         Ext.Msg.alert("", msg);
+      }
    },
    onItemTouchStart : function(d, index, target, e, eOpts)
    {
@@ -76,13 +122,23 @@ Ext.define('Genesis.controller.MainPage',
       if(c.rendered)
          this.getViewport().query('button[iconCls=info]')[0].hide();
    },
+   // --------------------------------------------------------------------------
+   // Login Page
+   // --------------------------------------------------------------------------
    onLoginItemSelect : function(d, model, eOpts)
    {
       d.deselect([model], false);
    },
-   openMainPage : function(nohistory)
+   // --------------------------------------------------------------------------
+   // Base Class Overrides
+   // --------------------------------------------------------------------------
+   openMainPage : function()
    {
-      this.pushView(this.getMainPage(), nohistory);
+      this.pushView(this.getMainPage());
       console.log("MainPage Opened");
+   },
+   isOpenAllowed : function()
+   {
+      return true;
    }
 });

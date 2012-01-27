@@ -8,43 +8,47 @@ Ext.define('Genesis.controller.Challenges',
    xtype : 'challengesCntlr',
    config :
    {
-   },
-   refs : [
-   // Bottom Toolbar
-   {
-      ref : 'bottomtoolbar',
-      selector : 'navigatorBarBottom'
-   },
-   {
-      ref : 'challengeBtn',
-      selector : 'button[iconCls=challenge]'
-   },
-   {
-      ref : 'challengePage',
-      selector : 'challengepageview',
-      autoCreate : true,
-      xtype : 'challengepageview'
-   }],
-   model : ['Challenge'],
-   views : ['ChallengePage'//, 'MenuChallenge'
-   ],
-   stores : ['ChallengePageStore'],
-   init : function(app)
-   {
-      this.control(
+      refs :
       {
+         challengeBtn : 'button[iconCls=challenge]',
+         challengePage :
+         {
+            selector : 'challengepageview',
+            autoCreate : true,
+            xtype : 'challengepageview'
+         }
+      },
+      control :
+      {
+         'challengepageview' :
+         {
+            activate : 'onActivate',
+            deactivate : 'onDeactivate'
+         },
          'challengepageview > dataview' :
          {
-            select : this.onItemSelect
+            select : 'onItemSelect'
          },
          'button[iconCls=challenge]' :
          {
-            tap : this.onChallengeBtnTap
+            tap : 'onChallengeBtnTap'
          }
-      });
+      }
+   },
+   model : ['Challenge'],
+   init : function(app)
+   {
       this.callParent(arguments);
       console.log("Challenge Init");
+      Ext.regStore('ChallengePageStore',
+      {
+         model : 'Genesis.model.Challenge',
+         autoLoad : false
+      })
    },
+   // --------------------------------------------------------------------------
+   // Challenge Page
+   // --------------------------------------------------------------------------
    onItemSelect : function(d, model, eOpts)
    {
       d.deselect([model], false);
@@ -63,9 +67,28 @@ Ext.define('Genesis.controller.Challenges',
    onChallengeBtnTap : function(d, index, target, e, eOpts)
    {
    },
+   onActivate : function()
+   {
+      var venueId = this.getViewport().getVenueId();
+      var record = Ext.StoreMgr.get('VenueStore').getById(venueId);
+      Ext.StoreMgr.get('ChallengePageStore').loadData(record.challenges().getRange());
+      Ext.ComponentQuery.query("button[iconCls=challenge")[0].show();
+   },
+   onDeactivate : function()
+   {
+      Ext.ComponentQuery.query("button[iconCls=challenge")[0].hide();
+   },
+   // --------------------------------------------------------------------------
+   // Base Class Overrides
+   // --------------------------------------------------------------------------
    openMainPage : function()
    {
       this.pushView(this.getChallengePage());
       console.log("ChallengePage Opened");
+   },
+   isOpenAllowed : function()
+   {
+      // Check whether Page cannot opened
+      return ((this.getViewport().getVenueId() > 0) ? true : "Cannot open Challenges until You have Checked-in into a Venue");
    }
 });

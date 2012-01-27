@@ -86,4 +86,13 @@ Ext.require(['Ext.data.Store', 'Kitchensink.model.User'], function() {
             ]
         }
     });
+    /*
+    Kitchensink.model.User.load(1,function()
+    {
+       success:function(res,a,b,c)
+       {
+          console.log(res);
+       }
+    });
+    */
 });

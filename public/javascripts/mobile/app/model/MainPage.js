@@ -2,21 +2,18 @@ Ext.define('Genesis.model.MainPage',
 {
    extend : 'Ext.data.Model',
    id : 'MainPage',
-   fields : [
+   config :
    {
-      name : 'name',
-      type : 'string'
-   },
-   {
-      name : 'photo_url',
-      type : 'string'
-   },
-   {
-      name : 'desc',
-      type : 'string'
-   },
-   {
-      name : 'pageCntlr',
-      type : 'string'
-   }]
+      fields : ['name', 'photo_url', 'desc', 'pageCntlr'],
+      proxy :
+      {
+         reader :
+         {
+            type : 'json',
+            rootProperty : 'features'
+         },
+         type : (!phoneGapAvailable) ? 'ajax' : 'offlineajax',
+         url : Ext.Loader.getPath("Genesis") + "/store/" + 'mainPage.json'
+      }
+   }
 });

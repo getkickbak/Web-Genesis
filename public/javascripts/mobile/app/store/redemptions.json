@@ -1,0 +1,25 @@
+{
+   "redemptions": [
+      {
+         "title": "Any drinks including Coffees & Juices",
+         "type": "drinks",
+         "points": 1,
+         "merchant_id": 1
+      }, {
+         "title": "Any Breakfast on the menu",
+         "type": "breakfast",
+         "points": 2,
+         "merchant_id": 1
+      }, {
+         "title": "Any lunch items on the menu",
+         "type": "lunch",
+         "points": 3,
+         "merchant_id": 1
+      }, {
+         "title": "Any dinner platters on the menu",
+         "type": "dinner",
+         "points": 4,
+         "merchant_id": 1
+      }
+   ]
+}

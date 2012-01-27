@@ -1,9 +1,42 @@
-Ext.require(['Genesis.model.Merchant'], function()
+Ext.define('Genesis.model.Venue',
 {
-   Ext.define('Genesis.model.Venue', {
-      extend : 'Ext.data.Model',
-      id : 'Merchant',
-      fields : ['name', 'address1', 'address2', 'city', 'state', 'country', 'zipcode', 'phone', 'website', 'latitude', 'longtitude', 'created_ts', 'update_ts'],
-      belongsTo : 'Genesis.model.Merchant'
-   });
+   extend : 'Ext.data.Model',
+   requires : ['Genesis.model.Challenge', 'Genesis.model.PurchaseReward', 'Genesis.model.CustomerReward'],
+   alternateClassName : 'Venue',
+   id : 'Venue',
+   config :
+   {
+      fields : ['id', 'venue_id', 'name', 'address1', 'address2', 'city', 'state', 'country', 'zipcode', 'phone', 'website', 'latitude', 'longtitude', 'created_ts', 'update_ts', 'merchant_id'],
+      belongsTo : [
+      {
+         model : 'Genesis.model.Merchant',
+         associationKey : 'merchant',
+         getterName : 'getMerchant',
+         setterName : 'setMerchant'
+      }],
+      hasMany : [
+      {
+         model : 'Genesis.model.Challenge',
+         name : 'challenges'
+      },
+      {
+         model : 'Genesis.model.PurchaseReward',
+         name : 'purchaseReward'
+      },
+      {
+         model : 'Genesis.model.CustomerReward',
+         name : 'customerReward'
+      }],
+      proxy :
+      {
+         type : (!phoneGapAvailable) ? 'ajax' : 'offlineajax',
+         url : Ext.Loader.getPath("Genesis") + "/store/" + 'checkinRecords.json',
+         reader :
+         {
+            type : 'json',
+            rootProperty : 'venues'
+         }
+      },
+      idProperty : 'venue_id'
+   }
 });

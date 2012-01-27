@@ -1,33 +1,33 @@
-Ext.define('Genesis.controller.UserProfile', {
+Ext.define('Genesis.controller.UserProfile',
+{
    extend : 'Genesis.controller.ControllerBase',
-   requires : [
-   'Genesis.view.ProfilePage',
+   requires : ['Genesis.view.ProfilePage',
    // Base Class
    'Genesis.controller.ControllerBase'],
-   statics : {
+   statics :
+   {
       challenges_path : '/profile'
    },
    xtype : 'userProfileCntlr',
-   config : {
-   },
-   refs : [
-   // Bottom Toolbar
+   config :
    {
-      ref : 'bottomtoolbar',
-      selector : 'navigatorBarBottom'
-   }, {
-      ref : 'challengeBtn',
-      selector : 'challengeTbButton'
-   }],
-   views : ['ProfilePage'],
+      refs :
+      // Bottom Toolbar
+      {
+         bottomtoolbar : 'navigationBarBottom',
+         challengeBtn : 'challengeTbButton'
+      },
+      control :
+      {
+         '#button[iconCls=checkin]' :
+         {
+            tap : 'onCheckinTap'
+         }
+      }
+   },
    init : function()
    {
       this.callParent(arguments);
-      this.control({
-         '#button[iconCls=checkin]' : {
-            tap : this.onCheckinTap
-         }
-      });
    },
    onCheckinTap : function()
    {

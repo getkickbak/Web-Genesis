@@ -1,26 +1,30 @@
-Ext.define('Genesis.controller.Coupons', {
+Ext.define('Genesis.controller.Coupons',
+{
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Genesis.controller.ControllerBase'],
-   statics : {
+   statics :
+   {
       challenges_path : '/coupons'
    },
    xtype : 'couponsCntlr',
-   config : {
-   },
-   refs : [
-   // Bottom Toolbar
+   config :
    {
-      ref : 'bottomtoolbar',
-      selector : 'navigatorBarBottom'
-   }],
+      refs :
+      {
+         // Bottom Toolbar
+         bottomtoolbar : 'navigationBarBottom'
+      },
+      control :
+      {
+         '#button[iconCls=checkin]' :
+         {
+            tap : 'onCheckinTap'
+         }
+      }
+   },
    init : function()
    {
       this.callParent(arguments);
-      this.control({
-         '#button[iconCls=checkin]' : {
-            tap : this.onCheckinTap
-         }
-      });
    },
    onCheckinTap : function()
    {
