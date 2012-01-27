@@ -18,14 +18,15 @@ class CustomerReward
   has n, :customer_reward_venues
   has n, :venues, :through => :customer_reward_venues
 
+  validates_with_method :check_price
   validates_with_method :check_points
   
   def self.create(merchant, reward_info, venues)
     now = Time.now
     reward = CustomerReward.new(
-    :title => reward_info[:title],
-    :price => reward_info[:price],
-    :points => reward_info[:points]
+      :title => reward_info[:title],
+      :price => reward_info[:price],
+      :points => reward_info[:points]
     )
     reward[:created_ts] = now
     reward[:update_ts] = now
@@ -59,7 +60,17 @@ class CustomerReward
   
   private
 
+  def check_price
+    if self.price.is_a? Decimal
+      return self.price > 0.0 ? true : [false, "Price must be greater than 0"]  
+    end
+    return true
+  end
+  
   def check_points
-    self.points > 0 ? true : [false, "Points must be greater than 0"]
+    if self.points.is_a? Integer
+      return self.points > 0 ? true : [false, "Points must be greater than 0"]
+    end
+    return true
   end
 end

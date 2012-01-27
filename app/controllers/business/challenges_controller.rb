@@ -191,7 +191,7 @@ module Business
       end
       challenge_types = []
       EatsChallenges.default_challenge_types.each do |challenge_type|
-        if !(in_use_types.include? challenge_type[1]) || challenge_type[1] == 'custom' || challenge_type[1] == current_type
+        if !(in_use_types.include? challenge_type[1]) || challenge_type[1] == 'custom' || challenge_type[1] == 'menu' || challenge_type[1] == current_type
           challenge_types << challenge_type
         end
       end
