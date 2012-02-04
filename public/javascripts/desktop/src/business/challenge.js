@@ -1,6 +1,6 @@
 $(document).ready($(function() {
 
-	$("#challenge_type").change(function() {
+	$("#challenge_type_id").change(function() {
 		var pathname = location.pathname;	
 		if (pathname == '/challenges' || pathname == '/challenges/new') {
 			if (!pathname.match('new')) {
@@ -13,6 +13,6 @@ $(document).ready($(function() {
 				pathname += '/edit';
 			}
 		}		
-		location.href = location.origin + pathname + "?type=" +$(this).val();
+		location.href = location.origin + pathname + "?type_id=" +$(this).val();
 	});
 }))

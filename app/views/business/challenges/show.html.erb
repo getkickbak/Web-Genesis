@@ -2,7 +2,7 @@
 
 <p>
   <b>Type:</b>
-  <%= EatsChallenges.default_challenge_type_to_name[@challenge.type] %>
+  <%= ChallengeType.value_to_name[@challenge.type.value][I18n.locale] %>
 </p>
 
 <p>
@@ -15,12 +15,12 @@
   <%= @challenge.description %>
 </p>
 
-<% if @challenge.type == 'checkin' %>
+<% if @challenge.type.value == 'checkin' %>
 <p>
   <b>Visits:</b>
   <%= @challenge.data.visits %>
 </p>
-<% elsif @challenge.type == 'lottery'%>
+<% elsif @challenge.type.value == 'lottery'%>
 <p>
   <b>Odds:</b>
   <%= @challenge.data.odds %>

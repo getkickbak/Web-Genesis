@@ -4,7 +4,6 @@ class Challenge
   include DataMapper::Resource
 
   property :id, Serial
-  property :type, String, :required => true, :default => ""
   property :name, String, :required => true, :default => ""
   property :description, String, :required => true, :default => ""
   property :require_verif, Boolean, :required => true, :default => false
@@ -17,21 +16,25 @@ class Challenge
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
+  attr_accessor :type_id
   attr_accessor :venue_ids
   
-  attr_accessible :type, :name, :description, :require_verif, :data, :points
+  attr_accessible :type_id, :name, :description, :require_verif, :data, :points
   
   belongs_to :merchant
+  has 1, :challenge_to_type
+  has 1, :type, 'ChallengeType', :through => :challenge_to_type, :via => :challenge_type
   has n, :challenge_venues
   has n, :venues, :through => :challenge_venues
     
+  validates_presence_of :type_id  
   validates_with_method :check_data
   validates_with_method :points, :method => :check_points
   
-  def self.create(merchant, challenge_info, venues)
+  def self.create(merchant, type, challenge_info, venues)
     now = Time.now
     challenge = Challenge.new(
-      :type => challenge_info[:type],
+      :type_id => type ? type.id : nil,
       :name => challenge_info[:name],
       :description => challenge_info[:description],
       :require_verif => challenge_info[:require_verif],
@@ -51,14 +54,15 @@ class Challenge
     challenge[:created_ts] = now
     challenge[:update_ts] = now
     challenge.merchant = merchant
+    challenge.type = type
     challenge.venues.concat(venues)
     challenge.save
     return challenge
   end
   
-  def update(challenge_info, venues)
+  def update(type, challenge_info, venues)
     now = Time.now
-    self.type = challenge_info[:type]
+    self.type_id = type ? type.id : nil
     self.name = challenge_info[:name]
     self.description = challenge_info[:description]
     self.points = challenge_info[:points]
@@ -75,13 +79,15 @@ class Challenge
       self.data = challenge_info[:data]
     end
     self.update_ts = now
+    self.type = type
     self.challenge_venues.destroy
     self.venues.concat(venues)
     save
   end
   
   def update_without_save(challenge_info)
-    self.type = challenge_info[:type]
+    self.type_id = nil
+    self.type = nil
     self.name = challenge_info[:name]
     self.description = challenge_info[:description]
     self.points = challenge_info[:points]
@@ -116,9 +122,9 @@ class Challenge
   
   def check_data
     if self.data
-      if self.type == 'checkin'
+      if self.type.value == 'checkin'
         self.data = CheckInData.new(self.data)
-      elsif self.type == 'lottery'
+      elsif self.type.value == 'lottery'
         self.data = LotteryData.new(self.data)  
       end
       if !self.data.valid?

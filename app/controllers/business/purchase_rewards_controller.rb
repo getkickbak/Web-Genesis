@@ -38,13 +38,14 @@ module Business
       
       PurchaseReward.transaction do
         begin
+          type = PurchaseRewardType.get(params[:purchase_reward][:type_id])
           params[:purchase_reward][:venue_ids].delete("")
           if params[:purchase_reward][:venue_ids].length > 0
             venues = Venue.all(:conditions => ["id IN ?", params[:purchase_reward][:venue_ids]])
           else
             venues = []
           end
-          PurchaseReward.create(current_merchant, params[:purchase_reward], venues)
+          PurchaseReward.create(current_merchant, type, params[:purchase_reward], venues)
           respond_to do |format|
             format.html { redirect_to purchase_rewards_path(:notice => 'Reward was successfully created.') }
             #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
@@ -66,6 +67,7 @@ module Business
       @purchase_reward = PurchaseReward.get(params[:id]) || not_found
       authorize! :update, @purchase_reward
       
+      @purchase_reward.type_id = @purchase_reward.type.id
       @venue_ids = []
       @purchase_reward.venues.each do |venue|
         @venue_ids << venue.id
@@ -78,13 +80,14 @@ module Business
 
       PurchaseReward.transaction do
          begin
+            type = PurchaseRewardType.get(params[:purchase_reward][:type_id])
             params[:purchase_reward][:venue_ids].delete("")
             if params[:purchase_reward][:venue_ids].length > 0
               venues = Venue.all(:conditions => ["id IN ?", params[:purchase_reward][:venue_ids]])
             else
               venues = []
             end
-            @purchase_reward.update(params[:purchase_reward], venues)
+            @purchase_reward.update(type, params[:purchase_reward], venues)
             respond_to do |format|
                format.html { redirect_to(:action => "show", :id => @purchase_reward.id, :notice => 'Reward was successfully updated.') }
                #format.xml  { render :xml => @deal, :status => :created, :location => @deal }

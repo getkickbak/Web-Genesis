@@ -21,6 +21,15 @@ class PurchaseRewardsController < ApplicationController
     end
     authorize! :update, @customer
     
+    if !Common.within_geo_distance?(params[:latitude], params[:longitude], @venue.latitude, @venue.longitude)
+      respond_to do |format|
+        #format.html { render :action => "new" }
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :msg => ["Something went wrong", "Outside of check-in distance.  Please try again."] } }
+      end
+      return
+    end
+    
     Customer.transaction do
       begin
         if @venue.auth_code == params[:auth_code]

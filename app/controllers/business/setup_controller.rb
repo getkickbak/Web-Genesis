@@ -21,7 +21,7 @@ module Business
       if current_merchant.status == :pending && has_venues? && set_reward_model? && has_purchase_rewards? && has_customer_rewards?
         #Merchant.transaction do
           begin
-            current_merchant.update_without_password(:status => :active)
+            current_merchant.update_without_password(:type_id => current_merchant.type.id, :status => :active)
             respond_to do |format|
               format.html { redirect_to dashboard_path }
             end

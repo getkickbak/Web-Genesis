@@ -1,4 +1,5 @@
 <%= simple_form_for [@merchant] do |f| %>
+	<%= f.input :type_id, :collection => MerchantType.values[I18n.locale] %>
 	<%= f.input :name %>
 	<%= f.input :email %>
 	<%= f.input :account_first_name %>

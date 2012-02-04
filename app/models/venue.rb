@@ -14,8 +14,8 @@ class Venue
   property :country, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
   property :website, String, :required => true, :default => ""
-  property :longitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :latitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
+  property :longitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :auth_code, String, :required => true, :default => ""
   property :qr_code, String, :required => true, :default => ""
   property :qr_code_img, String, :default => ""
@@ -24,9 +24,13 @@ class Venue
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessible :name, :address, :city, :state, :zipcode, :country, :phone, :website, :latitude, :longitude
+  attr_accessor :type_id
+  
+  attr_accessible :type_id, :name, :address, :city, :state, :zipcode, :country, :phone, :website, :latitude, :longitude
   
   belongs_to :merchant
+  has 1, :venue_to_type
+  has 1, :type, 'VenueType', :through => :venue_to_type, :via => :venue_type
   has n, :challenge_venues
   has n, :purchase_reward_venues
   has n, :customer_reward_venues
@@ -34,12 +38,15 @@ class Venue
   has n, :purchase_rewards, :through => :purchase_reward_venues
   has n, :customer_rewards, :through => :customer_reward_venues
   
-  def self.create(merchant, venue_info)
+  validates_presence_of :type_id  
+
+  def self.create(merchant, type, venue_info)
     now = Time.now
     auth_code = String.random_alphanumeric
     qr_code = generate_qr_code(merchant.id, auth_code)
     
     venue = Venue.new(
+      :type_id => type ? type.id : nil,
       :name => venue_info[:name],
       :address => venue_info[:address],
       :city => venue_info[:city],
@@ -48,13 +55,14 @@ class Venue
       :country => venue_info[:country],
       :phone => venue_info[:phone],
       :website => venue_info[:website],
-      :longitude => venue_info[:longitude].to_f,
-      :latitude => venue_info[:latitude].to_f
+      :latitude => venue_info[:latitude].to_f,
+      :longitude => venue_info[:longitude].to_f
     )
     venue[:auth_code] = auth_code
     venue[:qr_code] = qr_code
     venue[:created_ts] = now
     venue[:update_ts] = now
+    venue.type = type
     venue.merchant = merchant
     venue.save
     qr_code_image = venue.generate_qr_code_image(merchant.merchant_id)
@@ -63,17 +71,18 @@ class Venue
     return venue
   end
   
-  def self.find_nearest(longitude, latitude, max)
+  def self.find_nearest(latitude, longitude, max)
     venues_ids = DataMapper.repository(:default).adapter.select(
       "SELECT id FROM venues WHERE deleted_ts IS NULL
-       ORDER BY ( 3959 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) )  
+       ORDER BY ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) )  
        ASC LIMIT 0,?", latitude, longitude, latitude, max 
     ) 
     Venue.all(:id => venues_ids)
   end
   
-  def update(venue_info)
+  def update(type, venue_info)
     now = Time.now
+    self.type_id = type ? type.id : nil
     self.name = venue_info[:name]
     self.address = venue_info[:address]
     self.city = venue_info[:city]
@@ -85,6 +94,7 @@ class Venue
     self.longitude = venue_info[:longitude].to_f
     self.latitude = venue_info[:latitude].to_f
     self.update_ts = now
+    self.type = type
     save
   end
   

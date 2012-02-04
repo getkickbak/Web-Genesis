@@ -31,7 +31,7 @@ class CustomersController < ApplicationController
     
     Customer.transaction do
       begin
-        if @venue.auth_code == params[:auth_code]))
+        if @venue.auth_code == params[:auth_code]
           Customer.create(@venue.merchant, current_user)
           success = true
           msg = [""]
