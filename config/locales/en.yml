@@ -42,9 +42,9 @@ en:
           description: "Get rewarded when you visit %s times"  
         lottery: 
           name: "Lottery"
-          description: "Get rewarded for participating in our %s"
+          description: "Get rewarded for participating in our %s contest"
         menu: 
-          name: "Menu"
+          name: "Special Menu Item"
           description: "Get rewarded when you buy a %s"
         photo: 
           name: "Photo"
