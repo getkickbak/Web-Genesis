@@ -104,16 +104,20 @@ Genesis::Application.routes.draw do
 
     match '/venues/find_nearest' => 'venues#find_nearest'
 
-    match '/challenges/:challenge_id/find' => 'challenges#find'
+    match '/challenges' => 'challenges#index'
     match '/challenges/:challenge_id/start' => 'challenges#start'
     match '/challenges/:challenge_id/complete' => 'challenges#complete'
 
-    match '/customer_rewards/index' => 'customer_rewards#index'
+    match '/customer_rewards' => 'customer_rewards#index'
     match '/customer_rewards/redeem' => 'customer_rewards#redeem'
 
-    match '/purchase_rewards/index' => 'purchase_rewards#index'
+    match '/purchase_rewards' => 'purchase_rewards#index'
     match '/purchase_rewards/earn' => 'purchase_rewards#earn'
 
+    match '/earn_prizes' => 'earn_prizes#index'
+    match '/earn_prizes/show' => 'earn_prizes#show'
+    match '/earn_prizes/redeem' => 'earn_prizes#redeem'
+    
     #match '/users/:id/account' => 'users#edit'
     #match '/users/:user_id/coupons' => 'orders#index', :via => :get , :as => :user_coupons
     #match '/users/:user_id/orders/:id' => 'orders#show', :via => :get, :as => :user_order

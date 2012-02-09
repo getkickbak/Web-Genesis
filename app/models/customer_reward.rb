@@ -3,7 +3,7 @@ class CustomerReward
 
   property :id, Serial
   property :title, String, :required => true, :default => ""
-  property :price, Integer, :required => true
+  property :price, Decimal, :required => true, :scale => 2
   property :points, Integer, :required => true
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -56,7 +56,7 @@ class CustomerReward
   end
 
   def as_json(options)
-    only = {:only => [:id,:title,:points]}
+    only = {:only => [:id,:title,:points], :methods => [:type]}
     options = options.nil? ? only : options.merge(only)
     super(options)
   end

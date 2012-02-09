@@ -27,7 +27,8 @@ en:
   venue:
       type:
         bakery: "Bakery"
-        cafe: "Cafe"
+        bar: "Bar"
+        cafe: "Café"
         coffee_shop: "Coffee Shop"
         dessert_place: "Dessert Place"
         ice_cream_shop: "Ice Cream Shop"    

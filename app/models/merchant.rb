@@ -48,7 +48,7 @@ class Merchant
   def self.create(type, merchant_info, password, password_confirmation)
     now = Time.now
     merchant_name = merchant_info[:name].squeeze(' ').strip
-    merchant_id = merchant_name.downcase.gsub(' ','-')
+    merchant_id = "#{merchant_name.downcase.gsub(' ','-')}-#{now.to_i}"
     
     merchant = Merchant.new(
       :type_id => type ? type.id : nil,
@@ -121,7 +121,7 @@ class Merchant
   end
   
   def as_json(options)
-    only = {:only => [:id, :merchant_id,:name]}
+    only = {:only => [:id, :merchant_id,:name], :methods => [:type]}
     options = options.nil? ? only : options.merge(only)
      super(options)
   end

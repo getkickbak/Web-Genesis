@@ -11,7 +11,7 @@ class CustomersController < ApplicationController
 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render :json => { :success => true, :data => results[:items], :total => results[:total] } }
+      format.json { render :json => { :success => true, :data => results[:items].to_json, :total => results[:total] } }
     end
   end  
   

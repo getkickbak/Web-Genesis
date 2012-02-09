@@ -1,11 +1,11 @@
 INSERT INTO merchant_types VALUES (1,'food');
-
 INSERT INTO venue_types VALUES (1,1,'bakery');
-INSERT INTO venue_types VALUES (2,1,'cafe');
-INSERT INTO venue_types VALUES (3,1,'coffee_shop');
-INSERT INTO venue_types VALUES (4,1,'dessert_place');
-INSERT INTO venue_types VALUES (5,1,'ice_cream_shop');
-INSERT INTO venue_types VALUES (6,1,'restaurant');
+INSERT INTO venue_types VALUES (2,1,'bar');
+INSERT INTO venue_types VALUES (3,1,'cafe');
+INSERT INTO venue_types VALUES (4,1,'coffee_shop');
+INSERT INTO venue_types VALUES (5,1,'dessert_place');
+INSERT INTO venue_types VALUES (6,1,'ice_cream_shop');
+INSERT INTO venue_types VALUES (7,1,'restaurant');
 
 INSERT INTO customer_reward_types VALUES (1,1,'appetizer');
 INSERT INTO customer_reward_types VALUES (2,1,'bread');

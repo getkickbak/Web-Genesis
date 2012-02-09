@@ -3,8 +3,8 @@ class PurchaseReward
 
   property :id, Serial
   property :title, String, :required => true, :default => ""
-  property :price, Integer, :required => true
-  property :reward_ratio, Integer, :required => true
+  property :price, Decimal, :required => true, :scale => 2
+  property :rebate_rate, Integer, :required => true
   property :points, Integer, :required => true
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -14,7 +14,7 @@ class PurchaseReward
   attr_accessor :type_id
   attr_accessor :venue_ids
 
-  attr_accessible :type_id, :title, :price, :reward_ratio, :points
+  attr_accessible :type_id, :title, :price, :rebate_rate, :points
 
   belongs_to :merchant
   has 1, :purchase_reward_to_type
@@ -24,7 +24,7 @@ class PurchaseReward
 
   validates_presence_of :type_id
   validates_with_method :check_price
-  validates_with_method :check_reward_ratio
+  validates_with_method :check_rebate_rate
   validates_with_method :check_points
   
   def self.create(merchant, type, reward_info, venues)
@@ -33,7 +33,7 @@ class PurchaseReward
       :type_id => type ? type.id : nil,
       :title => reward_info[:title],
       :price => reward_info[:price],
-      :reward_ratio => reward_info[:reward_ratio],
+      :rebate_rate => reward_info[:rebate_rate],
       :points => reward_info[:points]
     )
     reward[:created_ts] = now
@@ -50,7 +50,7 @@ class PurchaseReward
     self.type_id = type ? type.id : nil
     self.title = reward_info[:title]
     self.price = reward_info[:price]
-    self.reward_ratio = reward_info[:reward_ratio]
+    self.rebate_rate = reward_info[:rebate_rate]
     self.points = reward_info[:points]
     self.update_ts = now
     self.type = type
@@ -60,7 +60,7 @@ class PurchaseReward
   end
 
   def as_json(options)
-    only = {:only => [:id,:title,:points]}
+    only = {:only => [:id,:title,:points], :methods => [:type]}
     options = options.nil? ? only : options.merge(only)
     super(options)
   end
@@ -79,9 +79,9 @@ class PurchaseReward
     return true
   end
   
-  def check_reward_ratio
-    if self.reward_ratio.is_a? Integer
-      return self.reward_ratio > 0 ? true : [false, "Reward ratio must be greater than 0"]
+  def check_rebate_rate
+    if self.rebate_rate.is_a? Integer
+      return self.rebate_rate > 0 ? true : [false, "Rebate rate must be greater than 0"]
     end
     return true
   end

@@ -18,7 +18,7 @@ module Business
     end
     
     def activate
-      if current_merchant.status == :pending && has_venues? && set_reward_model? && has_purchase_rewards? && has_customer_rewards?
+      if current_merchant.status == :pending && has_venues? && set_reward_model? && has_purchase_rewards? && has_customer_rewards? && has_challenges?
         #Merchant.transaction do
           begin
             current_merchant.update_without_password(:type_id => current_merchant.type.id, :status => :active)
@@ -54,10 +54,10 @@ module Business
       @checklist[:data][:purchase_rewards] = has_purchase_rewards?
       @checklist[:data][:customer_rewards] = has_customer_rewards?
       @checklist[:data][:challenges] = has_challenges?
-      @checklist[:total] = @checklist[:data].length-1
+      @checklist[:total] = @checklist[:data].length
       @checklist[:count] = 0
       @checklist[:data].each do |key,value|
-        if key != :challenges && value
+        if value
           @checklist[:count] += 1
         end
       end

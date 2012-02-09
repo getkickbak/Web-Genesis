@@ -7,7 +7,7 @@ class PurchaseRewardsController < ApplicationController
     @rewards = PurchaseReward.all(PurchaseReward.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]))
     respond_to do |format|
       #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @rewards } }
+      format.json { render :json => { :success => true, :data => @rewards.to_json } }
     end
    end
   
@@ -32,6 +32,7 @@ class PurchaseRewardsController < ApplicationController
     
     Customer.transaction do
       begin
+        data = []
         if @venue.auth_code == params[:auth_code]
           challenge = Challenge.first(Challenge.merchant.id => @venue.merchant.id, :type => 'referral')
           if challenge && new_customer
@@ -43,6 +44,7 @@ class PurchaseRewardsController < ApplicationController
             end
           end
           reward_ids = params[:reward_id]
+          total_points = 0
           reward_ids.each do |reward_id|
             reward = PurchaseReward.first(PurchaseReward.merchant.id => @venue.merchant.id, :id => reward_id) || not_found
             record = EarnRewardRecord.new(
@@ -55,18 +57,58 @@ class PurchaseRewardsController < ApplicationController
             record.user = current_user
             record.save
             @customer.points += reward.points
+            total_points += reward.points
           end
           @customer.save
           success = true
-          msg = [""]
+          reward_model = @venue.merchant.reward_model
+          prize = CustomerReward.get(reward_model.prize_reward_id) || pick_prize(@venue)
+          current_point_offset = reward_model.prize_point_offset + total_points
+          if (reward_model.prize_point_offset < reward_model.prize_win_offset) && (current_point_offset > reward_model.prize_win_offset)
+              earn_prize = EarnPrize.new(
+                :points => prize.points,
+                :created_ts => now
+              )
+              earn_prize.reward = PurchaseReward.get(prize.id)
+              earn_prize.merchant = @venue.merchant
+              earn_prize.user = current_user
+              earn_prize.save
+              data << prize          
+          end
+          prize_interval = (prize.points / Float(reward_model.prize_rebate_rate) * 100).to_i
+          while current_point_offset >= prize_interval
+            prize = pick_prize(@venue)
+            reward_model.prize_reward_id = prize.id
+            if current_point_offset >= prize_interval
+              reward_model.prize_point_offset = current_point_offset - prize_interval
+            else
+              reward_model.prize_point_offset = current_point_offset
+            end  
+            prize_interval = (prize.points / Float(reward_model.prize_rebate_rate) * 100).to_i
+            reward_model.prize_win_offset = pick_prize_win_offset(prize_interval)  
+            reward_model.save
+            current_point_offset = reward_model.prize_point_offset - prize_interval
+            if current_point_offset > reward_model.prize_win_offset
+              earn_prize = EarnPrize.new(
+                :points => prize.points,
+                :created_ts => now
+              )
+              earn_prize.reward = PurchaseReward.get(prize.id)
+              earn_prize.merchant = @venue.merchant
+              earn_prize.user = current_user
+              earn_prize.save 
+              data << prize       
+            end  
+          end
+          msg = ["", ""]
         else
           success = false
-          msg = [""]
+          msg = ["", ""]
         end  
         respond_to do |format|
           #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => true, :msg => ["", ""] } }
+          format.json { render :json => { :success => success, :data => data.to_json, :msg => msg } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
@@ -77,5 +119,16 @@ class PurchaseRewardsController < ApplicationController
         end
       end
     end
+  end
+  
+  private
+  
+  def pick_prize(venue)
+    idx = Random.rand(venue.purchase_rewards.length)
+    return venue.purchase_rewards.get(idx)
+  end
+  
+  def pick_prize_win_offset(prize_interval)
+    Random.rand(prize_interval)
   end
 end

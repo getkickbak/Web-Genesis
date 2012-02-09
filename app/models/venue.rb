@@ -31,6 +31,7 @@ class Venue
   belongs_to :merchant
   has 1, :venue_to_type
   has 1, :type, 'VenueType', :through => :venue_to_type, :via => :venue_type
+  has 1, :check_in_code
   has n, :challenge_venues
   has n, :purchase_reward_venues
   has n, :customer_reward_venues
@@ -43,7 +44,7 @@ class Venue
   def self.create(merchant, type, venue_info)
     now = Time.now
     auth_code = String.random_alphanumeric
-    qr_code = generate_qr_code(merchant.id, auth_code)
+    qr_code = generate_qr_code(merchant.merchant_id, auth_code)
     
     venue = Venue.new(
       :type_id => type ? type.id : nil,
@@ -67,6 +68,14 @@ class Venue
     venue.save
     qr_code_image = venue.generate_qr_code_image(merchant.merchant_id)
     venue[:qr_code_img] = qr_code_image
+    
+    check_in_auth_code = "#{merchant.merchant_id}-#{rand(1000)}" 
+    venue.check_in_code = CheckInCode.new(
+      :auth_code => check_in_auth_code,
+      :qr_code => generate_qr_code(merchant.merchant_id, check_in_auth_code)
+    )
+    venue.check_in_code[:created_ts] = now
+    venue.check_in_code[:update_ts] = now
     venue.save
     return venue
   end
@@ -101,9 +110,10 @@ class Venue
   def update_qr_code
     now = Time.now
     auth_code = String.random_alphanumeric
-    qr_code = self.class.generate_qr_code(self.merchant_id, auth_code) 
-    qr_code_image = generate_qr_code_image(merchant_id)
+    qr_code = self.class.generate_qr_code(self.merchant.merchant_id, auth_code) 
+    qr_code_image = generate_qr_code_image(self.merchant.merchant_id)
     
+    self.type_id = self.type ? self.type.id : nil
     self.auth_code = auth_code
     self.qr_code = qr_code
     self.qr_code_img = qr_code_image
@@ -131,7 +141,7 @@ class Venue
   end
   
   def as_json(options)
-    only = {:only => [:id, :name, :longitude, :latitude], :methods => [:merchant]}
+    only = {:only => [:id, :name, :longitude, :latitude], :methods => [:type, :merchant]}
     options = options.nil? ? only : options.merge(only)
     super(options)
   end

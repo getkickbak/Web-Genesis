@@ -26,7 +26,7 @@ module Business
       authorize! :create, PurchaseReward
 
       @purchase_reward = PurchaseReward.new
-      @purchase_reward.reward_ratio = current_merchant.reward_model.reward_ratio
+      @purchase_reward.rebate_rate = current_merchant.reward_model.rebate_rate
       respond_to do |format|
         format.html # index.html.erb
         #format.xml  { render :xml => @merchants }

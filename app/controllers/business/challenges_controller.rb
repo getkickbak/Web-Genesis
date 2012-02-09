@@ -1,6 +1,7 @@
 module Business
   class ChallengesController < BaseApplicationController
     before_filter :authenticate_merchant!
+    
     def index
       authorize! :read, Challenge
       @venues = current_merchant.venues
@@ -88,7 +89,7 @@ module Business
           end
           @challenge = Challenge.create(current_merchant, type, params[:challenge], venues)
           respond_to do |format|
-            format.html { redirect_to(:action => "show", :id => @challenge.id, :notice => 'Challenge was successfully created.') }
+            format.html { redirect_to challenges_path(:notice => 'Challenge was successfully created.') }
           #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
           #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
           end
