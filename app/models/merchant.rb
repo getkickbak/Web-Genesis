@@ -45,6 +45,10 @@ class Merchant
 
   validates_presence_of :type_id  
 
+  def self.get_cache_key(id)
+    "Merchant-#{id}"  
+  end
+  
   def self.create(type, merchant_info, password, password_confirmation)
     now = Time.now
     merchant_name = merchant_info[:name].squeeze(' ').strip
@@ -83,6 +87,10 @@ class Merchant
     #result[:items] = orders
     #return result
     return merchants
+  end
+  
+  def cache_key
+    "Merchant-#{self.id}"    
   end
   
   def to_param

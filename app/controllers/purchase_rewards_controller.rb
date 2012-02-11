@@ -61,6 +61,8 @@ class PurchaseRewardsController < ApplicationController
           end
           @customer.save
           success = true
+          mutex = CacheMutex.new(@venue.merchant.cache_key, Cache.memcache)
+          mutex.acquire
           reward_model = @venue.merchant.reward_model
           prize = CustomerReward.get(reward_model.prize_reward_id) || pick_prize(@venue)
           current_point_offset = reward_model.prize_point_offset + total_points
@@ -100,6 +102,7 @@ class PurchaseRewardsController < ApplicationController
               data << prize       
             end  
           end
+          mutex.release
           msg = ["", ""]
         else
           success = false
@@ -117,6 +120,14 @@ class PurchaseRewardsController < ApplicationController
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :msg => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
         end
+      rescue
+        respond_to do |format|
+          #format.html { render :action => "new" }
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :msg => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
+        end  
+      ensure 
+        mutex.release if defined? mutex && mutex  
       end
     end
   end
