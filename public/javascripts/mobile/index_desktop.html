@@ -33,15 +33,14 @@
       <title>Genesis</title>
       <link rel="stylesheet" href="resources/css/sencha-touch.css" type="text/css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
-      <script type="text/javascript" src="http://127.0.0.1:8080/target/target-script-min.js"></script>
       <script type="text/javascript" src="lib/sencha-touch-2.0.0-pr3/a/all-classes.js"></script>
       directory and include it here -->
       <!-- Debug Javascript on mobile browser -->
-      <script type="text/javascript" src="lib/sencha-touch-2.0.0-pr4/sencha-touch-all-debug.js"></script>
+      <script type="text/javascript" src="lib/sencha-touch-2-b2/builds/sencha-touch-all-debug.js"></script>
       <!--
       Phone Gap Libs
       -->
-      <script type="text/javascript" src="lib/phonegap-1.3.0.js"></script>
+      <script type="text/javascript" src="lib/phonegap-1.4.1.js"></script>
       <script type="text/javascript">
          var phoneGapAvailable = false;
          var appPath = "app";
@@ -62,32 +61,55 @@
       SenchaTouch Libs
       -->
       <script type="text/javascript" src="lib/Overrides.js"></script>
+      <!-- View Widgets -->
+      <script type="text/javascript" src="app/profile/Iphone.js"></script>
+      <script type="text/javascript" src="app/profile/Android.js"></script>
+      <script type="text/javascript" src="app/profile/Desktop.js"></script>
+      <!-- View Widgets -->
+      <script type="text/javascript" src="app/view/widgets/NavigationBar.js"></script>
+      <script type="text/javascript" src="app/view/widgets/CheckinMerchantDetailsItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/ChallengeMenuItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/MerchantAccountPtsItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/RedemptionsPtsItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/RewardsCartItem.js"></script>
       <!-- Models -->
-      <script type="text/javascript" src="app/model/MainPage.js"></script>
+      <script type="text/javascript" src="app/model/frontend/MainPage.js"></script>
       <script type="text/javascript" src="app/model/UserProfile.js"></script>
       <script type="text/javascript" src="app/model/User.js"></script>
-      <!--
       <script type="text/javascript" src="app/model/Merchant.js"></script>
-      -->
       <script type="text/javascript" src="app/model/Challenge.js"></script>
       <script type="text/javascript" src="app/model/Checkin.js"></script>
-      <!--
+      <script type="text/javascript" src="app/model/PurchaseReward.js"></script>
+      <script type="text/javascript" src="app/model/CustomerReward.js"></script>
       <script type="text/javascript" src="app/model/Venue.js"></script>
-      -->
+      <script type="text/javascript" src="app/model/EligibleReward.js"></script>
       <script type="text/javascript" src="app/model/Customer.js"></script>
+      <script type="text/javascript" src="app/model/frontend/CustomerVenue.js"></script>
+      <script type="text/javascript" src="app/model/frontend/RewardsMainTemplate.js"></script>
       <!-- Views -->
-      <script type="text/javascript" src="app/store/MainPageStore.js"></script>
-      <script type="text/javascript" src="app/view/CheckinBrowse.js"></script>
+      <script type="text/javascript" src="app/view/ViewBase.js"></script>
+      <script type="text/javascript" src="app/view/CheckinMerchant.js"></script>
+      <script type="text/javascript" src="app/view/CheckinExplore.js"></script>
       <script type="text/javascript" src="app/view/Viewport.js"></script>
       <script type="text/javascript" src="app/view/ChallengePage.js"></script>
       <script type="text/javascript" src="app/view/MainPage.js"></script>
       <script type="text/javascript" src="app/view/LoginPage.js"></script>
+      <script type="text/javascript" src="app/view/Accounts.js"></script>
+      <script type="text/javascript" src="app/view/MerchantAccountPage.js"></script>
+      <script type="text/javascript" src="app/view/MerchantAccount.js"></script>
+      <script type="text/javascript" src="app/view/Rewards.js"></script>
+      <script type="text/javascript" src="app/view/Redemptions.js"></script>
       <!-- Controllers -->
+      <script type="text/javascript" src="app/store/AccountsStore.js"></script>
       <script type="text/javascript" src="app/controller/ControllerBase.js"></script>
       <script type="text/javascript" src="app/controller/Viewport.js"></script>
       <script type="text/javascript" src="app/controller/MainPage.js"></script>
       <script type="text/javascript" src="app/controller/Checkins.js"></script>
       <script type="text/javascript" src="app/controller/Challenges.js"></script>
+      <script type="text/javascript" src="app/controller/Merchants.js"></script>
+      <script type="text/javascript" src="app/controller/RewardsRedemptions.js"></script>
+      <script type="text/javascript" src="app/controller/Accounts.js"></script>
+      <!-- External Libs -->
       <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
       <script type="text/javascript">
          // If you want to prevent dragging, uncomment this section
@@ -118,13 +140,18 @@
             console.log("appInit - start");
             Ext.application(
             {
+               viewport :
+               {
+                  autoMaximize : false
+               },
+               profiles : ['Iphone', 'Android', 'Desktop'],
                //models : ['Checkin', 'Customer', 'Deal', 'EarnRewardRecord', 'Merchant', 'Reward', 'CustomerReward',
                // 'PurchaseReward',
                //'SubDeal', 'User', 'UserProfile',
                //'Venue'],
                views : ['ChallengePage',
                // 'MenuChallenge', 'NewsfeedPage'
-               'CheckinBrowse',
+               'CheckinExplore',
                // Main Page when the user has never checked-in before
                //,'CheckinMerchantMainPage'
                // Main Page when the user has checked-in before
@@ -132,18 +159,19 @@
                //'MerchantAccountBrowse','MerchanAcountPage',
                'MerchantAccount',
                //'QRCodeDisplayMode', 'QRCodeScanMode'
-               'RewardsRedemptionsPage', 'Rewards', 'Redemptions',
+               'Rewards', 'Redemptions', 'Accounts',
                //'ProfilePage',
                'Viewport'],
-               controllers : ['Viewport', 'MainPage', 'Challenges', 'Checkins', 'Merchants', 'RewardsRedemptions'
-               //,'Coupons','Newsfeeds', 'QrCodeDisplay', 'UserProfile'
-               ],
-               stores : ['MainPageStore'],
+               controllers : ['Viewport', 'MainPage', 'Challenges', 'Merchants', 'RewardsRedemptions', 'Accounts',
+               //'Coupons','Newsfeeds', 'QrCodeDisplay', 'UserProfile',
+               'Checkins'],
+               stores : ['AccountsStore'],
                launch : function()
                {
+                  console.log("Launching App");
                   Ext.create('Genesis.view.Viewport');
                   this.getController('Viewport').openMainPage();
-                  console.log("Launch App");
+                  console.log("Launched App");
                },
                appFolder : appPath,
                name : 'Genesis'

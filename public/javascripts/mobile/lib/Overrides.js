@@ -179,69 +179,154 @@ Genesis.fn =
       return unit.match(this._removeUnitRegex)[1];
    }
 }
+
+Ext.define('Genesis.dom.Element',
+{
+   override : 'Ext.dom.Element',
+   setMargin : function(margin, unit)
+   {
+      if(margin || margin === 0)
+      {
+         margin = this.self.unitizeBox((margin === true) ? 5 : margin, unit);
+      }
+      else
+      {
+         margin = null;
+      }
+      this.dom.style.margin = margin;
+   },
+   setPadding : function(padding, unit)
+   {
+      if(padding || padding === 0)
+      {
+         padding = this.self.unitizeBox((padding === true) ? 5 : padding, unit);
+      }
+      else
+      {
+         padding = null;
+      }
+      this.dom.style.padding = padding;
+   },
+});
+Ext.define('Genesis.Component',
+{
+   override : 'Ext.Component',
+   updatePadding : function(padding)
+   {
+      this.innerElement.setPadding(padding, this.getInitialConfig().defaultUnit);
+   },
+   updateMargin : function(margin)
+   {
+      this.element.setMargin(margin, this.getInitialConfig().defaultUnit);
+   }
+});
+
 //---------------------------------------------------------------------------------------------------------------------------------
 // Ext.data.AjaxProxy
 //---------------------------------------------------------------------------------------------------------------------------------
 
-Ext.define('Genesis.data.OfflineAjaxProxy',
+Ext.define('Genesis.data.proxy.OfflineServer',
 {
-   extend : 'Ext.data.AjaxProxy',
-   xtype : 'offlineajax',
-   alias : 'proxy.offlineajax',
-   requires : ['Ext.data.AjaxProxy'],
-   // based on AjaxProxy::createRequestCallback
-   createRequestCallback : function(request, operation, callback, scope)
+   override : 'Ext.data.proxy.Server',
+   processResponse : function(success, operation, request, response, callback, scope)
    {
-      var me = this;
+      var me = this, action = operation.getAction(), reader, resultSet;
 
-      return function(options, success, response)
+      // Assume Success if running under PhotoGap even if StatusCode == 0
+      if((success === true) || (phoneGapAvailable === true))
       {
-         //me.processResponse();
-         var reader, result;
+         reader = me.getReader();
 
-         if(success === true)
+         try
          {
-            reader = me.getReader();
-            result = reader.read(me.extractResponseData(response));
-
-            // With Safari 5.0.3 if a resource is added to the CACHE MANIFEST we always
-            // get a status of 0 from Ajax calls, even though the responseText is returned
-            // from the cache.  This object just assumes the call was successful.
-            result.success = true;
-
-            if(result.success !== false)
-            {
-               //see comment in buildRequest for why we include the response object here
-               Ext.apply(operation,
-               {
-                  response : response,
-                  resultSet : result
-               });
-
-               operation.commitRecords(result.records);
-               operation.setCompleted();
-               operation.setSuccessful();
-            }
-            else
-            {
-               operation.setException(result.message);
-               me.fireEvent('exception', this, response, operation);
-            }
+            resultSet = reader.process(response);
+            //console.log('Ajax call is successful status=[' + response.status + '] url=[' + request.getUrl() + ']');
          }
-         else
+         catch(e)
          {
-            me.setException(operation, response);
+            console.log('Ajax call is failed message=[' + e.getMessage() + '] url=[' + request.getUrl() + ']');
+            operation.setException(operation,
+            {
+               status : null,
+               statusText : e.getMessage()
+            });
+
             me.fireEvent('exception', this, response, operation);
+            return;
          }
 
-         //this callback is the one that was passed to the 'read' or 'write' function above
-         if( typeof callback == 'function')
+         if(operation.process(action, resultSet, request, response) === false)
          {
-            callback.call(scope || me, operation);
+            this.fireEvent('exception', this, response, operation);
          }
-
-         me.afterRequest(request, success);
       }
+      else
+      {
+         console.log('Ajax call is failed status=[' + response.status + '] url=[' + request.getUrl() + ']');
+         me.setException(operation, response);
+         /**
+          * @event exception
+          * Fires when the server returns an exception
+          * @param {Ext.data.proxy.Proxy} this
+          * @param {Object} response The response from the AJAX request
+          * @param {Ext.data.Operation} operation The operation that triggered request
+          */
+         me.fireEvent('exception', this, response, operation);
+      }
+
+      //this callback is the one that was passed to the 'read' or 'write' function above
+      if( typeof callback == 'function')
+      {
+         callback.call(scope || me, operation);
+      }
+
+      me.afterRequest(request, success);
+   }
+});
+
+//---------------------------------------------------------------------------------------------------------------------------------
+// Ext.data.AjaxProxy
+//---------------------------------------------------------------------------------------------------------------------------------
+
+Ext.define('Genesis.data.Connection',
+{
+   override : 'Ext.data.Connection',
+
+   /**
+    * Checks if the response status was successful
+    * @param {Number} status The status code
+    * @return {Object} An object containing success/status state
+    */
+   parseStatus : function(status)
+   {
+      // see: https://prototype.lighthouseapp.com/projects/8886/tickets/129-ie-mangles-http-response-status-code-204-to-1223
+      status = status == 1223 ? 204 : status;
+
+      var success = (status >= 200 && status < 300) || status == 304, isException = false;
+
+      if(phoneGapAvailable && (status === 0))
+      {
+         success = true;
+      }
+      if(!success)
+      {
+         switch (status)
+         {
+            case 12002:
+            case 12029:
+            case 12030:
+            case 12031:
+            case 12152:
+            case 13030:
+               isException = true;
+               break;
+         }
+      }
+      return (
+         {
+            success : success,
+            isException : isException
+         });
    }
 });
 
@@ -293,6 +378,53 @@ Ext.define('Genesis.field.Select',
       }
 
       return this.listPanel;
+   }
+});
+
+Ext.define('Genesis.navigation.Bar',
+{
+   override : 'Ext.navigation.Bar',
+   /**
+    * This creates a proxy of the whole navigation bar and positions it out of the view.
+    * This is used so we know where the back button and title needs to be at any time, either if we are
+    * animating, not animating, or resizing.
+    * @private
+    */
+   createNavigationBarProxy : function()
+   {
+      var proxy = this.proxy;
+
+      if(proxy)
+      {
+         return;
+      }
+
+      //create a titlebar for the proxy
+      this.proxy = proxy = Ext.create('Ext.TitleBar',
+      {
+         items : [
+         {
+            xtype : 'button',
+            ui : 'back',
+            text : ''
+         },
+         {
+            xtype : 'button',
+            iconCls : 'share',
+            align : 'right'
+         }],
+         title : this.backButtonStack[0]
+      });
+
+      proxy.backButton = proxy.down('button[ui=back]');
+
+      //add the proxy to the body
+      Ext.getBody().appendChild(proxy.renderElement);
+
+      proxy.renderElement.setStyle('position', 'absolute');
+      proxy.element.setStyle('visibility', 'hidden');
+      proxy.renderElement.setX(0);
+      proxy.renderElement.setY(-1000);
    }
 });
 //

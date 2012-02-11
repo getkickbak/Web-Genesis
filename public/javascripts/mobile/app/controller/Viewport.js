@@ -29,22 +29,62 @@ Ext.define('Genesis.controller.Viewport',
           tap : 'onBack'
           }
           */
-         'button[iconCls=share]' :
+         'viewportview button[iconCls=share]' :
          {
             tap : 'onShareMerchantTap'
          },
-         'button[iconCls=info]' :
+         'viewportview button[tag=close]' :
+         {
+            tap : 'popView'
+         },
+         'button[tag=main]' :
+         {
+            tap : 'onMainButtonTap'
+         },
+         'tabbar[cls=navigationBarBottom] button[tag=info]' :
          {
             tap : 'onInfoTap'
          },
-         'button[iconCls=home]' :
+         'tabbar[cls=navigationBarBottom] button[tag=home]' :
          {
             tap : 'onHomeButtonTap'
+         },
+         'tabbar[cls=navigationBarBottom] button[tag=accounts]' :
+         {
+            tap : 'onAccountsButtonTap'
+         },
+         'tabbar[cls=navigationBarBottom] button[tag=challenges]' :
+         {
+            tap : 'onChallengesButtonTap'
+         },
+         'tabbar[cls=navigationBarBottom] button[tag=rewards]' :
+         {
+            tap : 'onRewardsButtonTap'
+         },
+         'tabbar[cls=navigationBarBottom] button[tag=redeem]' :
+         {
+            tap : 'onRedemptionsButtonTap'
          },
          'tabbar' :
          {
             tabchange : 'onTabBarTabChange'
+         },
+         'viewportview' :
+         {
+            push : 'onPush'
          }
+      }
+   },
+   onFeatureTap : function(feature, subFeature)
+   {
+      var controller = this.getApplication().getController(feature);
+      if(!subFeature)
+      {
+         controller.openMainPage();
+      }
+      else
+      {
+         controller.openPage(subFeature);
       }
    },
    onShareMerchantTap : function()
@@ -55,11 +95,75 @@ Ext.define('Genesis.controller.Viewport',
       // Open Info ActiveSheet
       //this.getApplication().getView('Viewport').pushView(vp.getInfo());
    },
+   onMainButtonTap : function(b, e, eOpts, eInfo)
+   {
+      var viewport = this.getViewport();
+      var ccustomerId = viewport.getCheckinInfo().customerId;
+      var cvenueId = viewport.getCheckinInfo().venueId;
+      if((ccustomerId == 0) || (cvenueId == 0))
+      {
+         Ext.Msg.alert("Error", "You cannot visit Merchant Main Page until you Check in");
+         return;
+      }
+
+      var vrecord = Ext.StoreMgr.get('AccountsStore').getById(cvenueId);
+      var cntlr = this.getApplication().getController('Checkins');
+      var mCntlr = this.getApplication().getController('Merchants');
+      var samePage = mCntlr.getMainPage() == viewport.getActiveItem();
+
+      if((cvenueId > 0) && (viewport.getVenueId() != cvenueId))
+      {
+         // Restore Merchant Info
+         var cmerchantId = vrecord.getMerchant().getId();
+         Ext.StoreMgr.get('VenueStore').setData([vrecord],
+         {
+            addRecords : false
+         });
+
+         viewport.setCustomerId(ccustomerId);
+         viewport.setVenueId(cvenueId);
+         this.setCustomerStoreFilter(ccustomerId, cmerchantId);
+      }
+      console.log("Going to Merchant Home Account Page ...");
+      //this.onFeatureTap('Merchants');
+
+      cntlr.setVenueInfo(cvenueId, ccustomerId);
+      cntlr.onNonCheckinTap(b, e, eOpts, eInfo, Ext.bind(function()
+      {
+         var bar = viewport.getNavigationBar();
+         bar.titleComponent.setTitle(vrecord.get('name'));
+
+         // Doesn't get called when refreshing the same page
+         if(samePage)
+         {
+            viewport.doSetActiveItem(mCntlr.getMainPage(), null);
+         }
+      }, this));
+   },
+   onAccountsButtonTap : function(b, e, eOpts)
+   {
+      this.onFeatureTap('Accounts');
+      console.log("Going to Accounts Page ...");
+   },
+   onChallengesButtonTap : function(b, e, eOpts)
+   {
+      this.onFeatureTap('Challenges');
+      console.log("Going to Challenges Page ...");
+   },
+   onRewardsButtonTap : function(b, e, eOpts)
+   {
+      this.onFeatureTap('RewardsRedemptions', 'rewards');
+      console.log("Going to Rewards Page ...");
+   },
+   onRedemptionsButtonTap : function(b, e, eOpts)
+   {
+      this.onFeatureTap('RewardsRedemptions', 'redemptions');
+      console.log("Going to Redemptions Page ...");
+   },
    onHomeButtonTap : function(b, e, eOpts)
    {
-      Ext.ComponentQuery.query('button[iconCls=home]')[0].updateActive(false);
-      this.getApplication().getController('MainPage').openMainPage();
-
+      this.getViewport().reset();
+      this.onFeatureTap('MainPage');
       console.log("Going back to HomePage ...");
    },
    onTabBarTabChange : function(bar, newTab, oldTab, eOpts)
@@ -75,21 +179,28 @@ Ext.define('Genesis.controller.Viewport',
       }
       return false;
    },
+   onPush : function(v, activeItem)
+   {
+   },
    init : function(app)
    {
       this.callParent(arguments);
-      /*
-       this.getApplication().getView('Viewport').on(
-       {
-       delegate : '',
-       tap : this.onHomeButtonTap,
-       scope : this
-       });
-       */
       console.log("Viewport Init");
    },
    openMainPage : function()
    {
-      this.getApplication().getController('MainPage').openMainPage();
+      // If not logged in, goto Login Page
+      if(!this.loggedIn)
+      {
+         Ext.StoreMgr.get('AccountsStore').load(
+         {
+            callback : function()
+            {
+               this.onFeatureTap('MainPage');
+               this.loggedIn = true;
+            },
+            scope : this
+         });
+      }
    }
 });

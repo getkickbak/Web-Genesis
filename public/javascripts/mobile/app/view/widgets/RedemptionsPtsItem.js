@@ -11,7 +11,7 @@ Ext.define('Genesis.view.widgets.RedemptionsPtsItem',
          type : 'hbox',
          align : 'stretch'
       },
-      height : '5em',
+      //height : '5em',
       image :
       {
          docked : 'left',
@@ -74,7 +74,7 @@ Ext.define('Genesis.view.widgets.RedemptionsPtsItem',
    },
    updateRecord : function(newRecord)
    {
-      var me = this, dataview = me.dataview, data = dataview.prepareData(newRecord.getData(true), dataview.getStore().indexOf(newRecord), newRecord), items = me.getItems(), item = items.first(), dataMap = me.getDataMap(), componentName, component, setterMap, setterName;
+      var me = this, dataview = me.config.dataview, data = dataview.prepareData(newRecord.getData(true), dataview.getStore().indexOf(newRecord), newRecord), items = me.getItems(), item = items.first(), dataMap = me.getDataMap(), componentName, component, setterMap, setterName;
 
       if(!item)
       {

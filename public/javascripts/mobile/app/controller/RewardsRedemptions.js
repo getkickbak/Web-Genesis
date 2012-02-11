@@ -1,9 +1,7 @@
 Ext.define('Genesis.controller.RewardsRedemptions',
 {
    extend : 'Genesis.controller.ControllerBase',
-   requires : ['Ext.data.Store',
-   // Base Class
-   'Genesis.controller.ControllerBase'],
+   requires : ['Ext.data.Store'],
    statics :
    {
       rewards_path : '/rewards',
@@ -15,12 +13,6 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    {
       refs :
       {
-         rewardsRedemptionsPage :
-         {
-            selector : 'rewardsredemptionspageview',
-            autoCreate : true,
-            xtype : 'rewardsredemptionspageview'
-         },
          rewards :
          {
             selector : 'rewardsview',
@@ -36,14 +28,6 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       },
       control :
       {
-         'rewardsredemptionspageview' :
-         {
-            activate : 'onActivate'
-         },
-         'rewardsredemptionspageview list' :
-         {
-            disclose : 'onRewardsRedemptionsListDisclose'
-         }
       }
    },
    init : function()
@@ -53,23 +37,9 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          model : 'Genesis.model.frontend.CustomerVenue',
          autoLoad : false
       });
-      Ext.regStore('RewardsRedemptionsTemplateStore',
-      {
-         model : 'Genesis.model.frontend.RewardsMainTemplate',
-         data : [
-         {
-            id : "rewards",
-            photo_url : 'resources/img/sprites/rewards.jpg',
-            text : 'Reward Points'
-         },
-         {
-            id : "redemptions",
-            photo_url : 'resources/img/sprites/birthday.jpg',
-            text : 'Redeem Points'
-         }]
-      });
       this.initRewards();
       this.initRedemptions();
+      console.log("Rewards & Redemptions Init");
    },
    initRewards : function()
    {
@@ -84,9 +54,9 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          {
             select : this.onRewardsItemSelect
          },
-         'viewport button[iconCls=earnPts]' :
+         'rewardsview button[tag=cart]' :
          {
-            tap : this.onRewardsEarnPtsTap
+            tap : this.onRewardsShopCartTap
          },
          'rewardsview button[text=Edit]' :
          {
@@ -96,13 +66,21 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          {
             tap : this.onRewardsCartDoneTap
          },
-         'rewardsview rewardscart rewardscartitem button[iconCls=delete_black2]' :
+         'rewardsview dataview[tag=rewardsCart] rewardscartitem button[iconCls=delete_black2]' :
          {
             tap : this.onRewardsCartItemDeleteTap
          },
-         'rewardsview rewardscart rewardscartitem selectfield' :
+         'rewardsview dataview[tag=rewardsCart] rewardscartitem selectfield' :
          {
             change : this.onRewardsCartItemSelectChange
+         },
+         'rewardsview container[tag=rewardTallyList] button[tag=earnPts]' :
+         {
+            tap : this.onRewardsEarnPtsTap
+         },
+         'checkinmerchantview button[tag=checkinBtn]' :
+         {
+            tap : this.onCheckInTap
          }
       });
       Ext.regStore('RewardsStore',
@@ -144,17 +122,37 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       {
          'redemptionsview' :
          {
-            activate : this.onRedemptionsActivate
+            activate : this.onRedemptionsActivate,
+            deactivate : this.onRedemptionsDeactivate
          },
-         'redemptionview list' :
+         'redemptionsview dataview[tag=redemptionsDataview]' :
          {
-            itemtap : this.onRedemptionsItemTap
+            select : this.onRedemptionsItemSelect,
+         },
+         'redemptionsview list[tag=redemptionsList]' :
+         {
+            select : this.onRedemptionsItemListSelect
+         },
+         'redemptionsview segmentedbutton[tag=redemptions]' :
+         {
+            toggle : this.onRedemptionsViewToggle
+         },
+         'redemptionsview button[tag=redeem]' :
+         {
+            tap : this.onRedemptionsItemTap
          }
       });
       Ext.regStore('RedemptionsStore',
       {
          model : 'Genesis.model.CustomerReward',
          autoLoad : false,
+         grouper :
+         {
+            groupFn : function(record)
+            {
+               return record.get('points') + ' Points';
+            }
+         },
          sorters : [
          {
             property : 'points',
@@ -165,60 +163,50 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    // --------------------------------------------------------------------------
    // RewardsRedemptions Page
    // --------------------------------------------------------------------------
-   onActivate : function()
+   onMainActivate : function()
    {
       var venueId = this.getViewport().getVenueId();
       var customerId = this.getViewport().getCustomerId();
       var cstore = Ext.StoreMgr.get('CustomerStore');
-      cstore.clearFilter();
-      var vmodel = Ext.StoreMgr.get('VenueStore').getById(venueId);
-      var cmodel = cstore.getById(customerId);
-
       //
       // Load RewardsRedemptionsStore
       //
+      var vmodel = Ext.StoreMgr.get('VenueStore').getById(venueId);
+      var merchantId = vmodel.getMerchant().getId();
+      this.setCustomerStoreFilter(customerId, merchantId);
+      var cmodel = cstore.getById(merchantId);
       Ext.StoreMgr.get('RewardsRedemptionsStore').setData([
       {
          "customer" : cmodel.raw,
          "venue" : vmodel.raw
       }])
-      this.setCustomerStoreFilter(customerId, vmodel.getMerchant().getId());
-   },
-   onRewardsRedemptionsListDisclose : function(list, record, target, index, e, eOpts)
-   {
-      var page;
-      switch (record.getId())
-      {
-         case 'rewards':
-         {
-            var page = this.getRewards();
-            break;
-         }
-         case 'redemptions':
-         {
-            page = this.getRedemptions();
-            break;
-         }
-      }
-      var vrecord = Ext.StoreMgr.get('CheckinBrowseStore').getById(this.getViewport().getVenueId());
-      page.getInitialConfig().title = vrecord.get('name');
-      this.pushView(page);
    },
    // --------------------------------------------------------------------------
    // Rewards Page
    // --------------------------------------------------------------------------
-   onRewardsActivate : function()
+   getRewardsCart : function()
    {
-      var venueId = this.getViewport().getVenueId();
-      var customerId = this.getViewport().getCustomerId();
+      return this.getRewards().query('dataview[tag=rewardsCart]')[0]
+   },
+   getEarnPtsBtn : function()
+   {
+      return this.getRewards().query('button[tag=cart]')[0]
+   },
+   onRewardsActivate : function(c, newActiveItem, oldActiveItem, eOpts)
+   {
+      var viewport = this.getViewport();
+      var venueId = viewport.getVenueId();
+      var customerId = viewport.getCustomerId();
       var cstore = Ext.StoreMgr.get('CustomerStore');
-      var vmodel = Ext.StoreMgr.get('VenueStore').getById(venueId);
-      var cmodel = cstore.getById(customerId);
-      var store = Ext.StoreMgr.get('RewardsStore');
+      var vstore = Ext.StoreMgr.get('VenueStore');
+      var rstore = Ext.StoreMgr.get('RewardsStore');
+      var vmodel = vstore.getById(venueId);
+      var merchantId = vmodel.getMerchant().getId();
 
-      this.setCustomerStoreFilter(customerId, vmodel.getMerchant().getId());
-      store.clearFilter();
-      store.load(
+      this.setCustomerStoreFilter(customerId, merchantId);
+      var cmodel = cstore.getById(merchantId);
+      rstore.clearFilter();
+      rstore.load(
       {
          parms :
          {
@@ -231,83 +219,115 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             {
                for(var i = 0; i < records.length; i++)
                {
-                  records[i].data['venue_id'] = venueId;
+                  records[i].data['merchant_id'] = merchantId;
                }
-               store.filter([
+               rstore.filter([
                {
                   filterFn : Ext.bind(function(item)
                   {
-                     return item.get("venue_id") == venueId;
+                     return item.get("merchant_id") == merchantId;
                   }, this)
                }]);
+               this.exploreMode = viewport.getCheckinInfo().venueId != venueId;
             }
             else
             {
             }
          }
       });
-      var earnPtsBtn = Ext.ComponentQuery.query('button[iconCls=earnPts]')[0];
-      earnPtsBtn.show();
+      var show = viewport.getCheckinInfo().venueId == venueId;
+      this.getRewards().query('tabbar[cls=navigationBarBottom]')[0][show ? 'show':'hide' ]();
    },
-   onRewardsDeactivate : function()
+   onRewardsDeactivate : function(c, newActiveItem, oldActiveItem, eOpts)
    {
-      Ext.ComponentQuery.query("button[iconCls=earnPts]")[0].hide();
+      // Revert Back to old standard view
+      var container = this.getRewards().query('container[tag=rewards]')[0];
+      if(container)
+      {
+         var activeItem = container.getActiveItem();
+         switch (activeItem.config.tag)
+         {
+            case 'rewardTallyList' :
+            {
+               this.onRewardsShopCartTap(null, null, null);
+               break;
+            }
+         }
+      }
    },
-   onRewardsEarnPtsTap : function(b, e, eOpts)
+   onRewardsShopCartTap : function(b, e, eOpts)
    {
-      var earnPtsBtn = Ext.ComponentQuery.query('button[iconCls=earnPts]')[0];
+      var earnPtsBtn = this.getEarnPtsBtn();
       earnPtsBtn.updateActive(false);
-      var container = Ext.ComponentQuery.query('rewardsview container[tag=rewards]')[0];
+      var container = this.getRewards().query('container[tag=rewards]')[0];
       var activeItem = container.getActiveItem();
+      var animation = container.getLayout().getAnimation();
       switch (activeItem.config.tag)
       {
          case 'rewardMainList' :
          {
-            earnPtsBtn.getInitialConfig().title = 'Earn Points';
-            container.getLayout().getAnimation().setReverse(false);
+            earnPtsBtn.setTitle('Order Menu');
+            animation.setReverse(false);
             container.setActiveItem(1);
             break;
          }
          case 'rewardTallyList' :
          {
-            earnPtsBtn.getInitialConfig().title = 'Orders';
-            container.getLayout().getAnimation().setReverse(true);
+            earnPtsBtn.setTitle('Check Out');
+            animation.setReverse(true);
             container.setActiveItem(0);
             break;
          }
       }
+      return true;
+   },
+   onRewardsEarnPtsTap : function(b, e, eOpts)
+   {
+      this.scanQRCode(
+      {
+         callback : Ext.bind(function(response)
+         {
+            if(response)
+            {
+               console.log("response - " + response);
+               // Send to Server for Approval
+            }
+            else
+            {
+               console.log("response - NONE");
+            }
+         }, this)
+      });
    },
    onRewardsItemSelect : function(list, record, eOpts)
    {
-      var cartList = Ext.ComponentQuery.query('rewardsview rewardscart')[0];
-      //Add to Shopping Cart
-      var store = cartList.getStore();
-      var index = store.indexOf(record);
-      var items;
-      if(index < 0)
+      if(!this.exploreMode)
       {
-         store.add(record);
-         items = cartList.query('rewardscartitem');
+         var cartList = this.getRewardsCart();
+         //Add to Shopping Cart
+         var store = cartList.getStore();
+         var index = store.indexOf(record);
+         var items;
+         if(index < 0)
+         {
+            record.getData().qty = 1;
+            store.add(record);
+         }
+         else
+         {
+            record.set('qty', record.get('qty') + 1);
+            cartList.getViewItems()[index].updateRecord(record);
+         }
+         // Automatically update totals
+         this.updateRewardsCartTotal(store.getRange());
+
       }
       else
       {
-         items = cartList.query('rewardscartitem');
-         var item = items[index];
-         var selectfield = item.query('selectfield')[0];
-         var valuefield = selectfield.getValueField();
-         var qty = selectfield.getValue().get(valuefield) + 1;
-
-         item.query('component[cls=points]')[0].setData(
-         {
-            points : qty * record.get('points')
-         });
-         selectfield.setValue(selectfield.getStore().findRecord(valuefield, qty));
+         Ext.Msg.alert("", "You need to Check-In first before you are elibigle for rewards");
       }
-      // Automatically update totals
-      this.updateRewardsCartTotal(items);
-
       // Deselect item
-      list.deselect(record);
+      list.deselect([record]);
       return false;
    },
    onRewardsCartEditTap : function(b, e, eOpts)
@@ -343,54 +363,81 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    onRewardsCartItemDeleteTap : function(b, e, eOpts)
    {
       var item = b.up('rewardscartitem');
-      var cart = Ext.ComponentQuery.query('rewardsview rewardscart')[0];
+      var cart = this.getRewardsCart();
       var index = cart.getViewItems().indexOf(item);
       var record = cart.getStore().getAt(index);
+      var store = cart.getStore();
 
-      cart.getStore().remove(record);
-      this.updateRewardsCartTotal(cart.getViewItems());
+      store.remove(record);
+      this.updateRewardsCartTotal(store.getRange());
    },
    updateRewardsCartTotal : function(cartItems)
    {
-      var total = Ext.ComponentQuery.query('rewardsview component[tag=total]')[0], totalPts = 0;
+      var total = this.getRewards().query('component[tag=total]')[0], totalPts = 0;
       for(var i = 0; i < cartItems.length; i++)
       {
-         totalPts += cartItems[i].query('component[cls=points]')[0].getData().points;
+         totalPts += cartItems[i].get('qty') * cartItems[i].get('points');
       }
-      total.setData(
+      if(total)
       {
-         points : totalPts
-      });
-
+         total.setData(
+         {
+            points : totalPts
+         });
+      }
    },
    onRewardsCartItemSelectChange : function(f, newValue, oldValue, eOpts)
    {
       var item = f.up('rewardscartitem');
-      var cart = Ext.ComponentQuery.query('rewardsview rewardscart')[0];
+      var cart = this.getRewardsCart();
       var index = cart.getViewItems().indexOf(item);
       var record = cart.getStore().getAt(index);
-      var valuefield = f.getValueField();
 
-      item.query('component[cls=points]')[0].setData(
+      record.set('qty', newValue.get(f.getValueField()));
+      item.updateRecord(record);
+      this.updateRewardsCartTotal(cart.getStore().getRange());
+
+      return true;
+   },
+   onCheckInTap : function(b, e, eOpts)
+   {
+      //
+      // Clears the RewardsCart
+      //
+      var rstore = Ext.StoreMgr.get('RewardsCartStore');
+      if(rstore)
       {
-         points : newValue.get(valuefield) * record.get('points')
-      });
-      this.updateRewardsCartTotal(cart.getViewItems());
+         rstore.removeAll();
+      }
+      // Automatically update totals
+      this.updateRewardsCartTotal([]);
    },
    // --------------------------------------------------------------------------
    // Redemptions Page
    // --------------------------------------------------------------------------
+   getLists : function()
+   {
+      var dataview = this.getRedemptions().query('dataview[tag=redemptionsDataview]')[0];
+      var list = this.getRedemptions().query('list[tag=redemptionsList]')[0];
+
+      return (
+         {
+            dataview : dataview,
+            list : list
+         });
+   },
    onRedemptionsActivate : function()
    {
-      var venueId = this.getViewport().getVenueId();
-      var customerId = this.getViewport().getCustomerId();
+      var viewport = this.getViewport();
+      var venueId = viewport.getVenueId();
+      var customerId = viewport.getCustomerId();
       var cstore = Ext.StoreMgr.get('CustomerStore');
       var vmodel = Ext.StoreMgr.get('VenueStore').getById(venueId);
-      cstore.clearFilter();
-      var cmodel = cstore.getById(customerId);
+      var merchantId = vmodel.getMerchant().getId();
       var rstore = Ext.StoreMgr.get('RedemptionsStore');
 
-      this.setCustomerStoreFilter(customerId, vmodel.getMerchant().getId());
+      this.setCustomerStoreFilter(customerId, merchantId);
+      var cmodel = cstore.getById(merchantId);
       rstore.clearFilter();
       rstore.load(
       {
@@ -414,6 +461,13 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                      return item.get("venue_id") == venueId;
                   }, this)
                }]);
+
+               this.exploreMode = viewport.getCheckinInfo().venueId != venueId;
+               // Update Page Dimensions
+               var segBtns = this.getRedemptions().query('segmentedbutton')[0];
+               var btn = segBtns.query('button[tag=detailed]')[0];
+               segBtns.setPressedButtons([btn]);
+               this.onRedemptionsViewToggle(null, btn, true);
             }
             else
             {
@@ -421,20 +475,213 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          }
       });
    },
-   onRedemptionsItemTap : function(list, index, target, e, eOpts)
+   onRedemptionsDeactivate : function()
    {
+   },
+   onRedemptionsItemSelect : function(d, model, eOpts)
+   {
+      var page = this.getRedemptions();
+      page.query('component[tag=points]')[0].setData(
+      {
+         points : model.get('points')
+      });
+      page.query('component[tag=desc]')[0].setData(
+      {
+         title : model.get('title')
+      });
+
+      return true;
+   },
+   onRedemptionsItemTap : function(b, e, eOpts)
+   {
+      var lists = this.getLists();
+
+      if(!this.exploreMode)
+      {
+         //
+         // Get Show Scanner
+         //
+         this.scanQRCode(
+         {
+            callback : Ext.bind(function(response)
+            {
+               if(response)
+               {
+                  console.log("response - " + response);
+                  // Send to Server for approval
+               }
+               else
+               {
+                  console.log("Failed to get QR Code from Scanner");
+                  Ext.Msg.alert("", "Failed to get QR Code from Scanner");
+               }
+            }, this)
+         });
+      }
+      else
+      {
+         Ext.Msg.alert("", "You need to Check-In first before you are elibigle for redemptions");
+      }
+   },
+   onRedemptionsItemListSelect : function(list, model, eOpts)
+   {
+      var lists = this.getLists();
+
+      list.deselect([model]);
+      lists.dataview.select([model]);
+
+      if(!this.exploreMode)
+      {
+         //
+         // Get Show Scanner
+         //
+         Ext.Msg.alert("", "Show QR Code Scanner");
+      }
+      else
+      {
+         Ext.Msg.alert("", "You need to Check-In first before you are elibigle for redemptions");
+      }
+      return false;
+   },
+   onRedemptionsViewToggle : function(c, button, pressed)
+   {
+      if(pressed)
+      {
+         var view = this.getRedemptions().query('container[tag=redemptionsView]')[0];
+         var lists = this.getLists();
+         var dataview = lists.dataview;
+         var list = lists.list;
+         var scroller, item, container;
+         var height = 0;
+         var model = dataview.getSelection()[0];
+
+         switch(button.config.tag)
+         {
+            case 'detailed' :
+            {
+               container = this.getRedemptions().query('container[tag=redemptionsDataviewWrapper]')[0];
+               var items = container.getItems();
+
+               view.setActiveItem(0);
+
+               // Set Container Height
+               for(var i = 0; i < items.length; i++)
+               {
+                  height += items.get(i).element.getHeight() + items.get(i).element.getMargin('tb');
+               }
+               break;
+            }
+            case 'summary' :
+            {
+               container = list;
+
+               view.setActiveItem(1);
+
+               // Set Container Height
+               height = Ext.fly(container.element.query('.x-list')[0]).getHeight();
+               break;
+            }
+         }
+         container.setHeight(height);
+         view.setHeight(height);
+
+         switch(button.config.tag)
+         {
+            case 'detailed' :
+            {
+               if(dataview.getSelection().length > 0)
+               {
+                  // Scroll to Item in Dataview List
+                  if(dataview.getScrollable())
+                  {
+                     scroller = dataview.getScrollable().getScroller();
+                     item = dataview.getViewItems()[dataview.getStore().indexOf(model)];
+
+                     //stop the scroller from scrolling
+                     scroller.stopAnimation();
+
+                     //make sure the new offsetTop is not out of bounds for the scroller
+                     var containerSize = scroller.getContainerSize().x, size = scroller.getSize().x, maxOffset = size - containerSize, offset = (item.offsetLeft > maxOffset) ? maxOffset : item.offsetLeft;
+
+                     scroller.scrollTo(offset, 0);
+                  }
+               }
+               break;
+            }
+            case 'summary' :
+            {
+               // Scroll to Item in List
+               if(dataview.getSelection().length > 0)
+               {
+                  scroller = this.getRedemptions().getScrollable().getScroller();
+                  item = list.getViewItems()[dataview.getStore().indexOf(model)];
+
+                  //stop the scroller from scrolling
+                  scroller.stopAnimation();
+
+                  //make sure the new offsetTop is not out of bounds for the scroller
+                  var containerSize = scroller.getContainerSize().y, size = scroller.getSize().y, maxOffset = size - containerSize, offset = (item.offsetTop > maxOffset) ? maxOffset : item.offsetTop;
+
+                  scroller.scrollTo(0, offset);
+               }
+               break;
+            }
+         }
+      }
+      return true;
+   },
+   onRedemptionsItemScrollStart : function()
+   {
+      var scroller = this.getRedemptions().getScrollable().getScroller();
+      //stop the scroller from scrolling
+      scroller.setDisabled(true);
+   },
+   onRedemptionsItemScrollEnd : function()
+   {
+      var scroller = this.getRedemptions().getScrollable().getScroller();
+      //stop the scroller from scrolling
+      scroller.setDisabled(false);
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
-   openMainPage : function()
+   getMainPage : function()
    {
-      this.pushView(this.getRewardsRedemptionsPage());
-      console.log("RewardsRedemptionsPage Opened");
+      return this.getRewards();
+   },
+   openPage : function(subFeature)
+   {
+      this.onMainActivate();
+      var page;
+      switch (subFeature)
+      {
+         case 'rewards':
+         {
+            page = this.getRewards();
+            break;
+         }
+         case 'redemptions':
+         {
+            page = this.getRedemptions();
+            if(!this.initReedeem)
+            {
+               var scrollable = page.query('dataview[tag=redemptionsDataview]')[0].getScrollable();
+               scrollable.getScroller().on(
+               {
+                  scope : this,
+                  scrollstart : 'onRedemptionsItemScrollStart',
+                  scrollend : 'onRedemptionsItemScrollEnd'
+               });
+               this.initReedeem = true;
+            }
+            break;
+         }
+      }
+      this.pushView(page);
    },
    isOpenAllowed : function()
    {
       // VenueId can be found fater the User checks into a venue
-      return ((this.getViewport().getVenueId() > 0) ? true : "Cannot open Page until You have Checked-in into a Venue");
+      return ((this.getViewport().getVenueId() > 0) ? true : "You need to Explore or Check-in to a Venue first");
    }
 });

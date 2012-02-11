@@ -4,8 +4,10 @@ Ext.define('Genesis.model.CustomerReward',
    id : 'Venue',
    config :
    {
-      fields : ['title', 'average_price', 'points', 'type', 'photo_url', 'created_ts', 'update_ts', 'merchant_id'],
-      idProperty : 'merchant_id',
+      fields : ['id', 'title', 'average_price', 'points', 'type', 'photo_url', 'created_ts', 'update_ts', 'merchant_id',
+      // Filled in by frontend
+      'venue_id'],
+      idProperty : 'id',
       belongsTo : [
       {
          model : 'Genesis.model.Merchant',
@@ -14,7 +16,7 @@ Ext.define('Genesis.model.CustomerReward',
       }],
       proxy :
       {
-         type : (!phoneGapAvailable) ? 'ajax' : 'offlineajax',
+         type : 'ajax',
          url : Ext.Loader.getPath("Genesis") + "/store/" + 'redemptions.json',
          reader :
          {

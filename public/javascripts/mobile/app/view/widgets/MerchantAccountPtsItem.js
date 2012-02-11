@@ -11,7 +11,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          type : 'hbox',
          align : 'stretch'
       },
-      height : '5em',
+      height : '3.2em',
       image :
       {
          docked : 'left',
@@ -27,14 +27,6 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          flex : 1,
          tpl : '{points} Pts',
          cls : 'points'
-      },
-      rewardRedeem :
-      {
-         docked : 'right',
-         cls : 'wrap',
-         ui : 'yellow',
-         width : '10em',
-         text : 'Earn & Redeem Rewards'
       },
       dataMap :
       {
@@ -80,24 +72,6 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          this.remove(oldPoints);
       }
    },
-   applyRewardRedeem : function(config)
-   {
-      return Ext.factory(Ext.apply(config,
-      {
-      }), Ext.Button, this.getRewardRedeem());
-   },
-   updateRewardRedeem : function(newRewardRedeem, oldRewardRedeem)
-   {
-      if(newRewardRedeem)
-      {
-         this.add(newRewardRedeem);
-      }
-
-      if(oldRewardRedeem)
-      {
-         this.remove(oldRewardRedeem);
-      }
-   },
    /**
     * Updates this container's child items, passing through the dataMap.
     * @param newRecord
@@ -105,7 +79,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
     */
    updateRecord : function(newRecord)
    {
-      var me = this, dataview = me.dataview, data = dataview.prepareData(newRecord.getData(true), dataview.getStore().indexOf(newRecord), newRecord), items = me.getItems(), item = items.first(), dataMap = me.getDataMap(), componentName, component, setterMap, setterName;
+      var me = this, dataview = me.config.dataview, data = dataview.prepareData(newRecord.getData(true), dataview.getStore().indexOf(newRecord), newRecord), items = me.getItems(), item = items.first(), dataMap = me.getDataMap(), componentName, component, setterMap, setterName;
 
       if(!item)
       {

@@ -13,7 +13,7 @@ Ext.define('Genesis.model.User',
       }],
       proxy :
       {
-         type : (!phoneGapAvailable) ? 'ajax' : 'offlineajax',
+         type : 'ajax',
          url : Ext.Loader.getPath("Genesis") + "/store/" + 'users.json',
          reader :
          {

@@ -1,17 +1,22 @@
 Ext.define('Genesis.view.Viewport',
 {
    extend : 'Ext.navigation.View',
-   requires : ['Ext.MessageBox', 'Ext.ActionSheet'],
+   requires : ['Ext.MessageBox', 'Ext.ActionSheet', 'Ext.SegmentedButton', 'Genesis.navigation.Bar'],
    xtype : 'viewportview',
    config :
    {
-      autoMaximize : false,
+      autoDestroy : false,
+      cls : 'viewport',
       fullscreen : true,
       useTitleForBackButtonText : false,
       defaultBackButtonText : 'Back',
-      //profile : Ext.os.deviceType.toLowerCase(),
       venueId : 0,
       customerId : 0,
+      checkinInfo :
+      {
+         venueId : 0,
+         customerId : 0
+      },
       //--------------------------------------------------------------------
       // Navigation Toolbar
       //--------------------------------------------------------------------
@@ -29,14 +34,22 @@ Ext.define('Genesis.view.Viewport',
             align : 'center'
          },
          items : [
+         /*
+          {
+          align : 'left',
+          ui : 'back'
+          },
+          */
          {
             align : 'left',
-            ui : 'back'
+            tag : 'close',
+            hidden : true,
+            text : 'Close'
          },
          {
             align : 'right',
-            text : 'Share',
-            id : 'shareBtn',
+            iconCls : 'share',
+            tag : 'shareBtn',
             hidden : true,
             handler : function()
             {
@@ -44,26 +57,30 @@ Ext.define('Genesis.view.Viewport',
                {
                   this.actions = Ext.create('Ext.ActionSheet',
                   {
+                     hideOnMaskTap : false,
                      defaults :
                      {
                         xtype : 'button',
                         iconCls : 'dummy',
-                        iconAlign : 'right',
+                        iconAlign : 'left',
                         iconMask : true
                      },
                      items : [
                      {
                         text : 'Email',
-                        iconCls : 'compose',
+                        iconCls : 'mail',
+                        tag : 'mail',
                         handler : Ext.emptyFn
                      },
                      {
                         text : 'SMS Message',
-                        iconMaskCls : 'dummymask',
+                        tag : 'sms',
+                        iconCls : 'compose',
                         handler : Ext.emptyFn
                      },
                      {
                         text : 'Facebook',
+                        tag : 'facebook',
                         ui : 'blue',
                         iconCls : 'facebook',
                         handler : Ext.emptyFn
@@ -75,34 +92,20 @@ Ext.define('Genesis.view.Viewport',
                         scope : this,
                         handler : function()
                         {
-                           Ext.Anim.run(this.actions.element, 'slide',
-                           {
-                              scope : this.actions,
-                              easing : 'ease-in-out',
-                              out : true,
-                              direction : 'down',
-                              autoClear : true,
-                              duration : 250,
-                              after : Ext.Function.createDelayed(this.actions.hide, 250)
-                           });
+                           this.actions.hide();
                         }
                      }]
                   });
                   Ext.Viewport.add(this.actions);
+                  this.actions.show();
                }
                this.actions.show();
-               Ext.Anim.run(this.actions.element, 'slide',
-               {
-                  easing : 'ease-in-out',
-                  out : false,
-                  direction : 'up',
-                  autoClear : true
-               });
             }
          },
          {
             align : 'right',
-            iconCls : 'info',
+            tag : 'info',
+            iconCls : 'info_plain',
             destroy : function()
             {
                this.actions.destroy();
@@ -114,6 +117,7 @@ Ext.define('Genesis.view.Viewport',
                {
                   this.actions = Ext.create('Ext.ActionSheet',
                   {
+                     hideOnMaskTap : false,
                      items : [
                      {
                         text : 'Logout',
@@ -125,76 +129,26 @@ Ext.define('Genesis.view.Viewport',
                         scope : this,
                         handler : function()
                         {
-                           Ext.Anim.run(this.actions.element, 'slide',
-                           {
-                              scope : this.actions,
-                              easing : 'ease-in-out',
-                              out : true,
-                              direction : 'down',
-                              autoClear : true,
-                              duration : 250,
-                              after : Ext.Function.createDelayed(this.actions.hide, 250)
-                           });
+                           this.actions.hide();
                         }
                      }]
                   });
                   Ext.Viewport.add(this.actions);
                }
                this.actions.show();
-               Ext.Anim.run(this.actions.element, 'slide',
-               {
-                  easing : 'ease-in-out',
-                  out : false,
-                  direction : 'up',
-                  autoClear : true
-               });
             }
+         },
+         {
+            align : 'right',
+            tag : 'main',
+            iconCls : 'check_black1',
+            hidden : true
          }]
       },
       //--------------------------------------------------------------------
       // Bottom Toolbar
       //--------------------------------------------------------------------
       items : [
-      {
-         docked : 'bottom',
-         cls : 'navigationBarBottom',
-         xtype : 'tabbar',
-         layout :
-         {
-            pack : 'justify',
-            align : 'center'
-         },
-         defaults :
-         {
-            iconMask : true,
-            iconAlign : 'top'
-         },
-         items : [
-         {
-            iconClsMask : 'dummymask',
-            title : ' '
-         },
-         {
-            xtype : 'spacer'
-         },
-         {
-            hidden : true,
-            iconCls : 'challenge',
-            title : 'Begin!'
-         },
-         {
-            hidden : true,
-            iconCls : 'earnPts',
-            title : 'Earn Points'
-         },
-         {
-            xtype : 'spacer'
-         },
-         {
-            iconCls : 'home',
-            title : 'Home'
-         }]
-      }
       /*,{
        title : 'First',
        items : [
@@ -214,5 +168,136 @@ Ext.define('Genesis.view.Viewport',
        }
        }]
        }*/]
+   },
+   // @private
+   applyNavigationBar : function(config)
+   {
+      if(!config)
+      {
+         config =
+         {
+            hidden : true,
+            docked : 'top'
+         };
+      }
+
+      if(config.title)
+      {
+         delete config.title;
+         //<debug>
+         Ext.Logger.warn("Ext.navigation.View: The 'navigationBar' configuration does not accept a 'title' property. You " + "set the title of the navigationBar by giving this navigation view's children a 'title' property.");
+         //</debug>
+      }
+
+      config.view = this;
+
+      return Ext.factory(config, Genesis.navigation.Bar, this.getNavigationBar());
+   },
+   // @private
+   doSetActiveItem : function(activeItem, oldActiveItem)
+   {
+      if(!activeItem)
+      {
+         return;
+      }
+      var me = this;
+      if(activeItem.getInitialConfig().changeTitle === true)
+      {
+         //
+         // Get current Page Title name
+         // Either it's the current venue we are browsing, or the one we checked-in
+         //
+         var venueId = activeItem.venueId || this.getVenueId();
+         var vrecord = Ext.StoreMgr.get('VenueStore').getById(venueId);
+
+         activeItem.getInitialConfig().title = vrecord.get('name');
+      }
+      activeItem.beforeActivate();
+      if(oldActiveItem)
+      {
+         oldActiveItem.beforeDeactivate();
+      }
+      me.callParent(arguments);
+      activeItem.afterActivate();
+      if(oldActiveItem)
+      {
+         oldActiveItem.afterDeactivate();
+      }
+   },
+   /**
+    * @private
+    * Calculates whether it needs to remove any items from the stack when you are popping more than 1
+    * item. If it does, it removes those views from the stack and returns `true`.
+    * @return {Boolean} True if it has removed views
+    */
+   onBeforePop : function(count)
+   {
+      var me = this, innerItems = this.getInnerItems(), ln = innerItems.length, toRemove, last, i;
+
+      //default to 1 pop
+      if(!Ext.isNumber(count) || count < 1)
+      {
+         count = 1;
+      }
+
+      //check if we are trying to remove more items than we have
+      //count = Math.min(count, ln - 1);
+      count = Math.min(count, ln);
+
+      if(count)
+      {
+         //get the items we need to remove from the view and remove theme
+         if(count == ln)
+         {
+            var bar = me.getNavigationBar();
+            //we need to reset the backButtonStack in the navigation bar
+            bar.reset();
+            toRemove = innerItems.splice(-count, count);
+            for( i = 0; i < toRemove.length; i++)
+            {
+               // Don't delete right away, otherwise we cannot animate between views!
+               if(toRemove[i] === me.getActiveItem())
+               {
+                  me.on(
+                  {
+                     activeitemchange : 'doRemove',
+                     scope : me,
+                     single : true,
+                     order : 'after',
+                     args : [toRemove[i], me.indexOf(toRemove[i]), me.getAutoDestroy()]
+                  });
+               }
+               else
+               {
+                  me.doRemove(toRemove[i], me.indexOf(toRemove[i]), me.getAutoDestroy());
+               }
+            }
+            bar.getBackButton().setText(null);
+            bar.getBackButton().hide();
+         }
+         else
+         {
+            //we need to reset the backButtonStack in the navigation bar
+            me.getNavigationBar().onBeforePop(count);
+            toRemove = innerItems.splice(-count, count - 1);
+            for( i = 0; i < toRemove.length; i++)
+            {
+               me.remove(toRemove[i]);
+            }
+            return true;
+         }
+      }
+
+      return false;
+   },
+   /**
+    * Resets the view by removing all items
+    */
+   reset : function()
+   {
+      var me = this;
+      var count = me.getInnerItems().length;
+
+      this.pop(count);
    }
 });

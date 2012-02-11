@@ -27,7 +27,7 @@ Ext.define('Genesis.model.Customer',
       },
       proxy :
       {
-         type : (!phoneGapAvailable) ? 'ajax' : 'offlineajax',
+         type : 'ajax',
          url : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json',
          reader :
          {

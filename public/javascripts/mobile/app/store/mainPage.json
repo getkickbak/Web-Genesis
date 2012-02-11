@@ -4,37 +4,29 @@
          "name": "Accounts",
          "photo_url": "resources/img/sprites/account.jpg",
          "desc": "Accounts",
-         "pageCntlr": "Merchants"
-      }, {
-         "name": "Latest News",
-         "photo_url": "resources/img/sprites/newsfeed.jpg",
-         "desc": "Latest News",
-         "pageCntlr": "Newsfeeds"
+         "pageCntlr": "Accounts"
       }, {
          "name": "Challenges",
          "photo_url": "resources/img/sprites/challenges.jpg",
          "desc": "Challenges",
          "pageCntlr": "Challenges"
       }, {
-         "name": "Check-ins / Browse",
+         "name": "Check-ins / Explore",
          "photo_url": "resources/img/sprites/checkin.jpg",
          "desc": "Check-ins",
          "pageCntlr": "Checkins"
       }, {
-         "name": "Earn Points & Rewards",
+         "name": "Earn Points",
          "photo_url": "resources/img/sprites/rewards.jpg",
-         "desc": "Earn Points & Rewards",
-         "pageCntlr": "RewardsRedemptions"
+         "desc": "Earn Points",
+         "pageCntlr": "RewardsRedemptions",
+         "subFeature": "rewards"
       }, {
-         "name": "Coupons",
-         "photo_url": "resources/img/sprites/coupon.jpg",
-         "desc": "Coupons",
-         "pageCntlr": "Coupons"
-      }, {
-         "name": "Daily Deals",
-         "photo_url": "",
-         "desc": "Daily Deals",
-         "pageCntlr": ""
+         "name": "Redeem Points",
+         "photo_url": "resources/img/sprites/rewards.jpg",
+         "desc": "Redeem Points",
+         "pageCntlr": "RewardsRedemptions",
+         "subFeature": "redemptions"
       }, {
          "name": "Settings",
          "photo_url": "resources/img/sprites/settings.jpg",

@@ -29,7 +29,7 @@ Ext.define('Genesis.controller.Challenges',
          {
             select : 'onItemSelect'
          },
-         'button[iconCls=challenge]' :
+         'challengepageview tabbar button[iconCls=doit]' :
          {
             tap : 'onChallengeBtnTap'
          }
@@ -39,12 +39,15 @@ Ext.define('Genesis.controller.Challenges',
    init : function(app)
    {
       this.callParent(arguments);
-      console.log("Challenge Init");
+      //
+      // Challenges available to the currently checked-in browsing Merchant
+      //
       Ext.regStore('ChallengePageStore',
       {
          model : 'Genesis.model.Challenge',
          autoLoad : false
-      })
+      });
+      console.log("Challenge Init");
    },
    // --------------------------------------------------------------------------
    // Challenge Page
@@ -53,7 +56,11 @@ Ext.define('Genesis.controller.Challenges',
    {
       d.deselect([model], false);
       var desc = this.getChallengePage().query("container[docked=bottom][xtype=container]")[0];
-      desc.updateData(model.data);
+      for(var i = 0; i < desc.getItems().length; i++)
+      {
+         desc.getItems().getAt(i).updateData(model.getData());
+      }
+      return true;
    },
    onItemTouchStart : function(d, index, target, e, eOpts)
    {
@@ -71,19 +78,21 @@ Ext.define('Genesis.controller.Challenges',
    {
       var venueId = this.getViewport().getVenueId();
       var record = Ext.StoreMgr.get('VenueStore').getById(venueId);
-      Ext.StoreMgr.get('ChallengePageStore').loadData(record.challenges().getRange());
-      Ext.ComponentQuery.query("button[iconCls=challenge")[0].show();
+      Ext.StoreMgr.get('ChallengePageStore').setData(record.challenges().getRange());
    },
    onDeactivate : function()
    {
-      Ext.ComponentQuery.query("button[iconCls=challenge")[0].hide();
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
+   getMainPage : function()
+   {
+      return this.getChallengePage();
+   },
    openMainPage : function()
    {
-      this.pushView(this.getChallengePage());
+      this.pushView(this.getMainPage());
       console.log("ChallengePage Opened");
    },
    isOpenAllowed : function()

@@ -1,12 +1,13 @@
 Ext.define('Genesis.view.Redemptions',
 {
-   extend : 'Ext.Container',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RedemptionsPts'],
+   extend : 'Genesis.view.ViewBase',
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RedemptionsPtsItem'],
    alias : 'widget.redemptionsview',
    config :
    {
       title : 'Venue Name',
-      scrollable : true,
+      changeTitle : true,
+      scrollable : 'vertical',
       cls : 'redemptionsMain',
       layout :
       {
@@ -32,8 +33,11 @@ Ext.define('Genesis.view.Redemptions',
          }]
       },
       {
-         xtype : 'redemptionspts',
          cls : 'ptsEarnPanel separator',
+         xtype : 'dataview',
+         useComponents : true,
+         scrollable : false,
+         defaultType : 'redemptionsptsitem',
          store : 'CustomerStore'
       },
       // ------------------------------------------------------------------------
@@ -46,7 +50,7 @@ Ext.define('Genesis.view.Redemptions',
          items : [
          {
             xtype : 'title',
-            title : 'Redemptions Available'
+            title : 'Redemptions Available (Select an item below)'
          },
          {
             xtype : 'spacer'
@@ -57,31 +61,119 @@ Ext.define('Genesis.view.Redemptions',
       // ------------------------------------------------------------------------
       {
          xtype : 'container',
+         height : 10000,
          layout :
          {
             type : 'card',
             animation :
             {
-               type : '',
+               type : 'flip'
 
             }
          },
-         xtype : 'container',
-         cls : 'redemptionsSelection separator',
-         layout :
-         {
-            type : 'vbox',
-            align : 'stretch',
-            pack : 'start'
-         },
+         cls : 'redemptionsView separator',
+         tag : 'redemptionsView',
          items : [
          {
+            xtype : 'container',
+            cls : 'redemptionsDataviewWrapper',
+            tag : 'redemptionsDataviewWrapper',
+            layout :
+            {
+               type : 'vbox',
+               align : 'stretch',
+               pack : 'start'
+            },
+            items : [
+            {
+               xtype : 'dataview',
+               scrollable : 'horizontal',
+               cls : 'redemptionsDataview separator',
+               tag : 'redemptionsDataview',
+               store : 'RedemptionsStore',
+               // @formatter:off
+               itemTpl : Ext.create('Ext.XTemplate', '<img class="photo" src="{[this.getPhoto(values)]}"/>',
+               // @formatter:on
+               {
+                  getPhoto : function(values)
+                  {
+                     if(!values.photo_url)
+                     {
+                        return Genesis.view.Redemptions.getPhoto(values.type);
+                     }
+                     return values.photo_url;
+                  }
+               })
+            },
+            {
+               xtype:'container',
+               cls : 'desc separator',
+               tag : 'desc',
+               data :
+               {
+                  title : 'Empty Description Empty Description Empty Description Empty Description Empty Description Empty Description Empty Description Empty Description Empty Description Empty Description'
+               },
+               tpl : '{title}'
+            },
+            {
+               xtype : 'container',
+               cls : 'ptsContainer separator',
+               layout :
+               {
+                  type : 'hbox',
+                  align : 'middle',
+                  pack : 'center'
+               },
+               height : '',
+               items : [
+               {
+                  xtype : 'component',
+                  data :
+                  {
+                     points : 0
+                  },
+                  tpl : '{points} ',
+                  tag : 'points',
+                  cls : 'points'
+               },
+               {
+                  xtype : 'component',
+                  cls : 'photo',
+                  data :
+                  {
+                     photo_url : 'resources/img/sprites/coin.jpg'
+                  },
+                  tpl : '<img src="{photo_url}"/>'
+               }]
+            },
+            {
+               xtype : 'button',
+               cls : 'separator',
+               tag : 'redeem',
+               ui : 'black-large',
+               text : 'Redeem it!'
+            }]
+         },
+         {
             xtype : 'list',
-            scrollable : 'horizontal',
-            cls : 'separator',
+            scrollable : false,
             store : 'RedemptionsStore',
+            cls : 'redemptionsList',
+            tag : 'redemptionsList',
+            /*
+             indexBar :
+             {
+             docked : 'right',
+             overlay : true,
+             alphabet : false,
+             centered : false,
+             letters : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
+             },
+             */
+            pinHeaders : false,
+            grouped : true,
             // @formatter:off
-            itemTpl : Ext.create('Ext.XTemplate', '<img class="photo" src="{[this.getPhoto(values)]}"/>',
+            itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>', '<div class="listItemDetailsWrapper">', '<div class="itemDesc wrap">{[this.getDesc(values)]}</div>', '</div>',
             // @formatter:on
             {
                getPhoto : function(values)
@@ -91,52 +183,58 @@ Ext.define('Genesis.view.Redemptions',
                      return Genesis.view.Redemptions.getPhoto(values.type);
                   }
                   return values.photo_url;
+               },
+               getDesc : function(values)
+               {
+                  return values.title;
                }
             })
-         },
+         }]
+      },
+      {
+         docked : 'bottom',
+         cls : 'navigationBarBottom',
+         xtype : 'tabbar',
+         layout :
          {
-            cls : 'desc separator',
-            data :
-            {
-               title : 'Empty Description'
-            },
-            tpl : '{title}'
+            pack : 'justify',
+            align : 'center'
          },
+         defaults :
          {
-            xtype : 'container',
-            cls : 'ptsContainer separator',
-            layout :
-            {
-               type : 'hbox',
-               align : 'middle',
-               pack : 'center'
-            },
-            height : '',
+            iconMask : true,
+            iconAlign : 'top'
+         },
+         items : [
+         //
+         // Left side Buttons
+         //
+         {
+            xtype : 'spacer'
+         },
+         //
+         // Middle Button
+         //
+         {
+            xtype : 'segmentedbutton',
+            allowMultiple : false,
+            tag : 'redemptions',
             items : [
             {
-               xtype : 'component',
-               data :
-               {
-                  points : 0
-               },
-               tpl : '{points} ',
-               cls : 'points'
+               text : 'Detailed',
+               tag : 'detailed',
+               pressed : true
             },
             {
-               xtype : 'component',
-               cls : 'photo',
-               data :
-               {
-                  photo_url : 'resources/img/sprites/coin.jpg'
-               },
-               tpl : '<img src="{photo_url}"/>'
+               text : 'Summary',
+               tag : 'summary',
             }]
          },
+         //
+         // Right side Buttons
+         //
          {
-            xtype : 'button',
-            cls : 'separator',
-            ui : 'black-large',
-            text : 'Redeem it!'
+            xtype : 'spacer'
          }]
       }]
    },

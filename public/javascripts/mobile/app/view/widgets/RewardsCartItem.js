@@ -18,7 +18,7 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
          iconMask : true,
          cls : 'plain'
       },
-      select :
+      qty :
       {
          options : [
          {
@@ -36,9 +36,7 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
          {
             text : '4',
             value : 4
-         }],
-         value : 1,
-         width : '5em'
+         }]
       },
       image :
       {
@@ -54,7 +52,6 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
                return values.photo_url;
             }
          })
-
       },
       title :
       {
@@ -64,8 +61,13 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
       points :
       {
          cls : 'points',
-         tpl : '{points} Pts',
-         style : 'min-width:4em;'
+         tpl : Ext.create('Ext.XTemplate', '{[this.getPoints(values)]} Pts',
+         {
+            getPoints : function(values)
+            {
+               return values.qty * values.points;
+            }
+         })
       },
       dataMap :
       {
@@ -80,6 +82,10 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
          getPoints :
          {
             setData : 'points'
+         },
+         getQty :
+         {
+            setValue : 'qty'
          }
       }
    },
@@ -155,27 +161,27 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
          this.remove(oldPoints);
       }
    },
-   applySelect : function(config)
+   applyQty : function(config)
    {
       return Ext.factory(Ext.apply(config,
       {
-      }), Ext.field.Select, this.getSelect());
+      }), Ext.field.Select, this.getQty());
    },
-   updateSelect : function(newSelect, oldSelect)
+   updateQty : function(newQty, oldQty)
    {
-      if(newSelect)
+      if(newQty)
       {
-         this.add(newSelect);
+         this.add(newQty);
       }
 
-      if(oldSelect)
+      if(oldQty)
       {
-         this.remove(oldSelect);
+         this.remove(oldQty);
       }
    },
    updateRecord : function(newRecord)
    {
-      var me = this, dataview = me.dataview, data = dataview.prepareData(newRecord.getData(true), dataview.getStore().indexOf(newRecord), newRecord), items = me.getItems(), item = items.first(), dataMap = me.getDataMap(), componentName, component, setterMap, setterName;
+      var me = this, dataview = me.config.dataview, data = dataview.prepareData(newRecord.getData(true), dataview.getStore().indexOf(newRecord), newRecord), items = me.getItems(), item = items.first(), dataMap = me.getDataMap(), componentName, component, setterMap, setterName;
 
       if(!item)
       {
@@ -196,6 +202,14 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
                      case 'points':
                      case 'photo_url':
                         component[setterName](data);
+                        break;
+                     case 'qty' :
+                        var value = data[setterMap[setterName]];
+                        var store = component.getStore();
+                        var index = store.find(component.getValueField(), value, null, null, null, true);
+                        var record = store.getAt(index);
+
+                        component[setterName](record);
                         break;
                      default :
                         component[setterName](data[setterMap[setterName]]);

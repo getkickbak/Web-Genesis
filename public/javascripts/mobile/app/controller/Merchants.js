@@ -1,9 +1,7 @@
 Ext.define('Genesis.controller.Merchants',
 {
    extend : 'Genesis.controller.ControllerBase',
-   requires : [
-   // Base Class
-   'Genesis.controller.ControllerBase'],
+   requires : ['Ext.data.Store'],
    statics :
    {
       merchantMain_path : '/merchantMain',
@@ -14,19 +12,19 @@ Ext.define('Genesis.controller.Merchants',
    {
       refs :
       {
-         merchantAccountPage :
+         page :
          {
             selector : 'merchantaccountpageview',
             autoCreate : true,
             xtype : 'merchantaccountpageview'
          },
-         merchantAccountBrowse :
+         explore :
          {
-            selector : 'merchantaccountbrowseview',
+            selector : 'merchantaccountexploreview',
             autoCreate : true,
-            xtype : 'merchantaccountbrowseview'
+            xtype : 'merchantaccountexploreview'
          },
-         merchantAccount :
+         main :
          {
             selector : 'merchantaccountview',
             autoCreate : true,
@@ -37,7 +35,7 @@ Ext.define('Genesis.controller.Merchants',
       {
          'merchantaccountview' :
          {
-            activate : 'onMerchantAccountActivate'
+            activate : 'onMainActivate'
          },
          'merchantaccountview button[ui=yellow]' :
          {
@@ -45,24 +43,28 @@ Ext.define('Genesis.controller.Merchants',
          },
          'merchantaccountview list' :
          {
-            disclose : 'onMerchantAccountDisclose'
+            select : 'onMainSelect',
+            disclose : 'onMainDisclose'
          }
       }
    },
    init : function()
    {
       this.callParent(arguments);
+      console.log("Merchants Init");
    },
-   onMerchantAccountActivate : function()
+   onMainActivate : function()
    {
-      var page = this.getMerchantAccount();
-      var customerId = this.getViewport().getCustomerId();
-      var venueId = this.getViewport().getVenueId();
+      var viewport = this.getViewport();
+      var page = this.getMain();
+      var customerId = viewport.getCustomerId();
+      var venueId = viewport.getVenueId();
       var cstore = Ext.StoreMgr.get('CustomerStore');
       var vrecord = Ext.StoreMgr.get('VenueStore').getById(venueId);
-      var crecord = cstore.getById(customerId);
+      var merchantId = vrecord.getMerchant().getId();
+      var crecord = cstore.getById(merchantId);
 
-      this.setCustomerStoreFilter(customerId, vrecord.getMerchant().getId());
+      this.setCustomerStoreFilter(customerId, merchantId);
       page.query('component[tag=photo]')[0].setData(
       {
          photoUrl : vrecord.getMerchant().data.photo_url
@@ -72,34 +74,35 @@ Ext.define('Genesis.controller.Merchants',
          lastCheckin : crecord.getLastCheckin().data.time,
          regMembers : 0,
          ptsEarn : 0,
-         ptsSpent : 0
+         ptsSpent : 0,
+         ptsAvail : crecord.get('points')
       });
+      var cvenueId = viewport.getCheckinInfo().venueId;
+      var show = (venueId != cvenueId) && (cvenueId > 0);
+      viewport.query('button[tag=main]')[0][show ? 'show' : 'hide']();
    },
-   onMerchantAccountRewardsTap : function(b, e, eOpts)
+   onMainDisclose : function(list, record, target, index, e, eOpts)
    {
-      this.getApplication().getController('RewardsRedemptions').openMainPage();
    },
-   onMerchantAccountDisclose : function(ecord, target, index, e, eOpts)
+   onMainSelect : function(d, model, eOpts)
    {
+      d.deselect([model]);
+      this.onMainDisclose(d, model);
+      return false;
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
+   getMainPage : function()
+   {
+      // Check if this is the first time logging into the venue
+      var view = (this.getViewport().getCustomerId() > 0);
+      return this[view ? 'getMain' : 'getPage']();
+   },
    openMainPage : function()
    {
-      // Check if this is the first name logging into the venue
-      if(this.getViewport().getCustomerId() > 0)
-      {
-         var page = this.getMerchantAccount();
-         var vrecord = Ext.StoreMgr.get('VenueStore').getById(this.getViewport().getVenueId());
-
-         page.getInitialConfig().title = vrecord.getData().name;
-         this.pushView(page);
-      }
-      else
-      {
-         this.pushView(this.getMerchantAccountPage());
-      }
+      // Check if this is the first time logging into the venue
+      this.pushView(this.getMainPage());
       console.log("Merchant Account Opened");
    }
 });

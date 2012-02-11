@@ -24,29 +24,45 @@ $icon-size: 57px;
 $panelGap: 0.8em;
 $panelTopGap: 0.7em;
 $panelBorderRadius : 0.6em;
+$xsmallFontSize : 0.3em;
+$smallFontSize : 0.4em;
+$normalFontSize : 0.6em;
+$largeFontSize : 0.8em;
+$xlargeFontSize : 1.2em;
 
 //Enhancements
 @include pictos-iconmask('list');
-@include pictos-iconmask('info');
+@include pictos-iconmask('info_plain');
+@include pictos-iconmask('share');
+@include pictos-iconmask('mail');
+@include pictos-iconmask('shop2');
+@include pictos-iconmask('team');
+@include pictos-iconmask('check_black1');
 @include pictos-iconmask('delete_black2');
 
 body {
 }
 
-.navigationBarTop .x-button, .navigationBarBottom .x-button {
-   &.x-iconalign-top, &.x-iconalign-bottom {
-      padding-top:.2em;
-      padding-bottom:.1em;
-      .x-button-label {
-         //@extend .x-tabbar.x-docked-bottom .x-tab .x-button-label;
-         margin: 0;
-         padding: .1em 0 .2em 0;
-         font-size: 9px;
-         line-height: 12px;
-         text-rendering: optimizeLegibility;
-         -webkit-font-smoothing: antialiased;
+.navigationBarTop, .navigationBarBottom {
+   .x-button {
+      &.x-iconalign-top, &.x-iconalign-bottom {
+         padding-top:.2em;
+         padding-bottom:.1em;
+         .x-button-label {
+            //@extend .x-tabbar.x-docked-bottom .x-tab .x-button-label;
+            margin: 0;
+            padding: .1em 0 .2em 0;
+            font-size: 9px;
+            line-height: 12px;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+         }
       }
    }
+   .x-title {
+      font-size:$largeFontSize;
+   }
+
 }
 //------------------------------------------------------------------------------
 // Utility CSS
@@ -144,7 +160,7 @@ body {
    min-height: $button-height*1.5 !important;
 
    .x-button-label {
-      font-size: 1.2em;
+      font-size: $xlargeFontSize;
    }
 
    .x-button-icon {
@@ -190,43 +206,6 @@ body {
 @include sencha-button-ui('fbBlue', desaturate(darken(blue, 10%), 5%));
 
 //------------------------------------------------------------------------------
-// Icon Select CSS (MainPage and Challenge Page)
-//------------------------------------------------------------------------------
-.menuSelections {
-   .x-dataview-item {
-      width:33%;
-      float:left;
-      font-size:0.725em;
-      color:#fff;
-      position:relative;
-      .mainPageItemWrapper, .challengePageItemWrapper {
-         text-align:center;
-         .photo img {
-            width : $icon-size*2;
-         }
-         .photoName {
-            font-weight:bold;
-            text-shadow:0em 0.1em 0.03em #000;
-         }
-      }
-   }
-   .x-dataview-item:nth-child(3n+1) {
-      clear:both;
-   }
-}
-
-.challengePageItemDescWrapper {
-  padding:0.25em;
-  background: rgba(0, 0, 0, .25);
-  .itemDesc {
-     font-size:0.5em;
-     padding-bottom:1px;  
-  }
-  .itemDescName {
-     text-align:center;
-  }
-}
-//------------------------------------------------------------------------------
 // List CSS
 //------------------------------------------------------------------------------
 .listScrollWrapper, .listScrollIndexWrapper {
@@ -234,7 +213,7 @@ body {
       //margin-top: 1em;
    }
    .photo {
-      top:$panelTopGap;
+      top:$panelTopGap*0.5;
       left:$panelGap;
    }
 }
@@ -252,7 +231,7 @@ body {
       border-right: 1px solid darken($list-bg-color, 15%);
    }
    .photo {
-      top:$panelTopGap;
+      top:$panelTopGap*0.5;
       left:$panelGap;
    }
    &.noBorder .x-list-item {
@@ -263,8 +242,11 @@ body {
    &.x-list .x-list-disclosure {
       bottom:1.0em;
    }
-   .x-list-item-label {
+   &.x-list .x-list-item .x-list-item-label {
       position:relative;
+      padding-top:$panelTopGap*0.5;
+      padding-bottom:$panelTopGap*0.5;
+      min-height:3.25em;
       .photo {
          position:absolute;
          img {
@@ -273,10 +255,15 @@ body {
       }
       .listItemDetailsWrapper {
          padding-left:$icon-size + 10px;
-         padding-right:$icon-size + 10px;
+         //padding-right:$icon-size + 10px;
+         //width:20em;
+         width:14.5em;
+         min-height:$icon-size;
          .itemTitle {
+            font-size:$normalFontSize;
          }
          .itemDesc {
+            font-size:$normalFontSize;
             @include ellipsis
          }
       }
@@ -289,38 +276,131 @@ body {
 }
 
 //------------------------------------------------------------------------------
+// Icon Select CSS (MainPage and Challenge Page)
+//------------------------------------------------------------------------------
+.mainMenuSelections {
+   padding:$panelGap;
+   .x-dataview-item, .x-data-item {
+      width:50%;
+      float:left;
+      font-size:$largeFontSize;
+      color:#fff;
+      position:relative; // Used for add Icon Mask to the selection
+      .mainPageItemWrapper {
+         text-align:center;
+         .photo {
+            height : $icon-size*1.5;
+            img {
+               width : $icon-size*1.5;
+               max-height : $icon-size*1.5;
+            }
+         }
+         .photoName {
+            font-weight:bold;
+            text-shadow:0em 0.1em 0.03em #000;
+            padding-bottom:$panelTopGap*2
+         }
+      }
+   }
+   .x-dataview-item:nth-child(2n+1) {
+      clear:both;
+   }
+   .x-scroll-bar.x-scroll-bar-y {
+      display:none;
+   }
+}
+
+.challengeMenuSelections {
+   padding:$panelGap;
+   .x-dataview-item, .x-data-item {
+      width:33%;
+      float:left;
+      font-size:$largeFontSize;
+      color:#fff;
+      position:relative; // Used for add Icon Mask to the selection
+      .mainPageItemWrapper {
+         text-align:center;
+         .photo {
+            height : $icon-size*1.25;
+            img {
+               width : $icon-size*1.25;
+               max-height : $icon-size*1.25;
+            }
+         }
+         .photoName {
+            font-weight:bold;
+            text-shadow:0em 0.1em 0.03em #000;
+            padding-bottom:$panelTopGap*2
+         }
+      }
+   }
+   .x-dataview-item:nth-child(3n+1) {
+      clear:both;
+   }
+   .x-scroll-bar.x-scroll-bar-y {
+      display:none;
+   }
+}
+
+.challengePageItemDescWrapper {
+   min-height : 6em;
+   max-height : 6em;
+   padding:$panelGap;
+   background: rgba(0, 0, 0, .25);
+   .itemDesc {
+      font-size:$normalFontSize;
+      padding-bottom:1px;  
+   }
+   .itemDescName {
+      text-align:center;
+   }
+}
+
+//------------------------------------------------------------------------------
 // Checkin Pages
 //------------------------------------------------------------------------------
+.checkInExploreList {
+   @extend .listScrollWrapper;
+   .listItemDetailsWrapper {
+      width:12em !important;
+   }
+}
+
 .checkinMerchant {
    .x-body {
    }
 }
-.dataviewWrapper {
-   .x-dataview-item {
-   }
+.checkinMerchantWrapper {
    .x-inner {
       margin:0!important;
+      padding:0!important;
    }
    .photo {
-      position:absolute;
-      top:0em;
-      left:0em;
+      height:$icon-size*2+10;
       img {
-         width : $icon-size*2 ;
-         @include box-shadow(0.5em 0.5em 0.5em rgba(0,0,0,.6));
+         width : $icon-size*2;
+         max-height:$icon-size*2;
+         @include box-shadow(0.2em 0.2em 0.2em rgba(0,0,0,.6));
+         margin-right:$panelGap;
       }
    }
-   .dataviewItemDetailsWrapper {
-      padding-left:$icon-size*2 + 10px;
-      padding-right:$icon-size;
+   .checkinMerchantDetailsWrapper {
+      //margin-left:$icon-size*1.5 + 10px;
+      //padding-right:$icon-size;
+      width:8.5em !important;
       .itemTitle {
+         font-size:$largeFontSize;
       }
       .itemDesc {
+         font-size:$normalFontSize;
          @include ellipsis
       }
    }
 }
-
+.checkInNow {
+  background : black;
+  padding: $panelTopGap 2*$panelGap;
+}
 //------------------------------------------------------------------------------
 // Merchant Account
 //------------------------------------------------------------------------------
@@ -328,12 +408,17 @@ body {
    .x-inner {
       margin:0 !important;
    }  
+   height:7em;
    .merchantStats {
-      font-size : 60%;
+      font-size : $smallFontSize;
       .photo {
-         width:$icon-size*2;
-         @include box-shadow(0.5em 0.5em 0.5em rgba(0,0,0,.6));
+         height:$icon-size*2+10;
          margin-right:$panelGap*2;
+         img {
+            width:$icon-size*2;
+            max-height:$icon-size*2;
+            @include box-shadow(0.5em 0.5em 0.5em rgba(0,0,0,.6));
+         }
       }
       .x-field {
          border : none;
@@ -355,26 +440,29 @@ body {
       @if $include-border-radius { @include border-top-radius($panelBorderRadius); }
    }
    .x-title {
-      font-size:75%;
+      font-size:$normalFontSize;
    }
    margin:0em $panelGap;
 }
 
 .ptsEarnPanel {
-   padding:$panelGap;
+   padding:$panelGap*0.5;
    //border: 1px solid darken($list-bg-color, 15%);
-   @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
+   @if $include-border-radius { @include border-radius($panelBorderRadius); }
    @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
    .x-inner {
      margin:0 !important;
+     height:$icon-size;
    }
    .photo img {
-      width:$icon-size*2;
+      width:$icon-size;
    }
    .points {
-     font-size:200%;
+     font-size:$xlargeFontSize*1.5;
      text-align:center;
-     line-height:2.5em;
+     .x-innerhtml {
+        line-height:$xlargeFontSize*1.5;
+     }
    }
 }
 
@@ -383,6 +471,9 @@ body {
   .x-inner div[id|=ext-component], .x-list-item:last-child {
      @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
   }
+  .listItemDetailsWrapper {
+      width:13em !important;
+   }
 }
 
 //------------------------------------------------------------------------------
@@ -393,7 +484,7 @@ body {
       height : $global-row-height*0.75;
    }
    .x-title {
-      font-size:75%;
+      font-size:$normalFontSize;
    }
    //margin:0em $panelGap;  
 }
@@ -405,7 +496,7 @@ body {
       height : $global-row-height*0.75;
    }
    .x-title {
-      font-size:75%;
+      font-size:$normalFontSize;
    }
    //margin:0em $panelGap;
 }
@@ -419,6 +510,10 @@ body {
    }
 }
 .rewardsCart {
+   @extend .listNoScrollWrapper;
+   &.separator_pad .x-body .x-scroll-container > .x-inner:first-child {
+      padding:0;
+   }
    .x-dataview-inner div.x-data-item {
       .x-data-item-inner {
          padding:0;
@@ -426,24 +521,41 @@ body {
       }
       text-align:center;
       .photo img {
-         width:$icon-size;
+         width:$icon-size*0.5;
+         vertical-align:middle;
       }
       .title {
          text-align:left;
-         font-size:70%;
+         font-size:$normalFontSize;
+         min-height:$icon-size*0.5;
       }
       .points {
+        min-width:3em;
         @extend .noWrap;
         font-weight:bold;
         text-align:right;
         
       }
       .x-field-select {
+         width:3em !important;
          border: 1px solid $form-light;
          @if $include-border-radius { @include border-radius($form-fieldset-radius); }
+         &.x-field {           
+            min-height:1em;
+         }
+         .x-input-el {
+            min-height:1em;
+            padding:0.2em;
+         }
+         &::before {
+            width:2.5em;
+         }
+         &::after {
+            margin:0.7em 0.3em;
+         }
       }
       .x-data-item-inner div {
-        margin-right:$panelGap;
+        margin-right:$panelGap*0.25;
         @include box-shadow(none);
       }
       .x-data-item-inner div:first-child {
@@ -478,15 +590,52 @@ body {
    .ptsEarnPanelHdr:first-child {
       margin-top:$panelTopGap;
    }
-   .ptsEarnPanel .x-innerhtml {
-      font-size:175%;
-      font-weight:bold;
-      line-height:$icon-size*2;
+   .ptsEarnPanel {
+      @if $include-border-radius { @include border-top-radius(0); }
+      .points .x-innerhtml {
+         font-size:$xlargeFontSize;
+         font-weight:bold;
+         line-height:$icon-size;
+      }
    }
-   .redemptionsSelection {
-      background-color : #DDDAC4;
-      @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
-      @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+   .redemptionsView {
+      .redemptionsDataviewWrapper {
+         @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
+         @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+      }
+      .redemptionsDataview {
+         height:4em;
+      }
+      .redemptionsDataviewWrapper {
+         background-color : #DDDAC4;
+         .x-dataview-inner > div[id|=ext-component] {
+            display:table;
+         }
+         .x-dataview-item {
+            display:table-cell;
+            vertical-align:middle;
+            .photo {
+               width:$icon-size + 10;
+               height:$icon-size + 10;
+               margin: $panelGap*0.25;
+               @if $include-border-radius { @include border-radius(.4em) }
+               border: 2px solid transparent;
+               padding:6px;
+            }
+            &.x-item-selected .photo {
+               border-color:darken($list-bg-color, 15%);
+            }
+         }
+         .x-scroll-bar.x-scroll-bar-x {
+            display:none;
+         }
+      }
+      .desc {
+         min-height:3em;
+         .x-innerhtml {
+            font-size:$normalFontSize;
+         }
+      }
       .ptsContainer {
          height:$icon-size;
          .photo img {
@@ -496,13 +645,45 @@ body {
          .points .x-innerhtml {
             line-height:$icon-size;
             font-weight:bold;
-            font-size:275%;
+            font-size:$xlargeFontSize*2;
             text-align:center;
          }
       }
       .x-inner {
          margin:0 !important;
+         padding:0 !important;
+      }
+      .redemptionsList {
+         @extend .listScrollIndexWrapper;
+         .x-inner div[id|=ext-component] {
+            //@if $include-border-radius { @include border-radius($panelBorderRadius); }
+         }
+         &.x-list .x-list-item:last-child {
+           border-bottom : 0;
+         }
+         .listItemDetailsWrapper {
+            width:13em !important;
+         }
       }
    }
 }
 
+//------------------------------------------------------------------------------
+// Accounts Page
+//------------------------------------------------------------------------------
+.accountsMain {
+   .accountsPanelHdr {
+      @extend .ptsEarnPanelHdr;
+   }
+   .accountsPanelHdr:first-child {
+      margin-top:$panelTopGap;
+   }
+   .accountsPanel, .accountsList {
+     @extend .listScrollWrapper;
+   }
+   .accountsPanel {
+      .listItemDetailsWrapper {
+         width:13em !important;
+      }
+   }
+}

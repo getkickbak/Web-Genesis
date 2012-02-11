@@ -12,7 +12,7 @@ Ext.define('Genesis.model.PurchaseReward',
       }],
       proxy :
       {
-         type : (!phoneGapAvailable) ? 'ajax' : 'offlineajax',
+         type : 'ajax',
          url : Ext.Loader.getPath("Genesis") + "/store/" + 'rewards.json',
          reader :
          {
@@ -20,7 +20,9 @@ Ext.define('Genesis.model.PurchaseReward',
             rootProperty : 'rewards'
          }
       },
-      fields : ['title', 'average_price', 'reward_ratio', 'points', 'type', 'photo_url', 'created_ts', 'update_ts', 'venue_id', 'merchant_id']
+      fields : ['title', 'average_price', 'reward_ratio', 'points', 'type', 'photo_url', 'created_ts', 'update_ts', 'venue_id', 'merchant_id',
+      // Added in frontend of shopping cart tracking
+      'qty']
    },
    getMerchant : function()
    {

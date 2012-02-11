@@ -1,11 +1,12 @@
 Ext.define('Genesis.view.MerchantAccount',
 {
    extend : 'Ext.Container',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Ext.tab.Bar', 'Genesis.view.widgets.MerchantAccountPts'],
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Ext.tab.Bar', 'Genesis.view.widgets.MerchantAccountPtsItem'],
    alias : 'widget.merchantaccountview',
    config :
    {
       title : 'Venue Name',
+      changeTitle : true,
       scrollable : 'vertical',
       layout :
       {
@@ -20,12 +21,7 @@ Ext.define('Genesis.view.MerchantAccount',
       {
          xtype : 'container',
          cls : 'merchantStatsPanel separator',
-         layout :
-         {
-            type : 'hbox',
-            pack : 'start',
-            align : 'stretch'
-         },
+         layout : 'fit',
          defaults :
          {
             scrollable : false,
@@ -33,12 +29,21 @@ Ext.define('Genesis.view.MerchantAccount',
          },
          items : [
          {
+            docked : 'left',
             xtype : 'component',
             tag : 'photo',
-            tpl : Ext.create('Ext.XTemplate', '<img class="photo" src="{photoUrl}"/>')
+            tpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{photoUrl}"/></div>')
          },
          {
-            flex : 1,
+            docked : 'top',
+            xtype : 'dataview',
+            cls : 'ptsEarnPanel',
+            useComponents : true,
+            scrollable : false,
+            defaultType : 'merchantaccountptsitem',
+            store : 'CustomerStore'
+         },
+         {
             xtype : 'formpanel',
             defaults :
             {
@@ -59,38 +64,28 @@ Ext.define('Genesis.view.MerchantAccount',
                value : 0
             },
             {
-               label : 'Points Earn this year',
+               label : 'Total Points Earn this year',
                name : 'ptsEarn',
                value : 0
             },
             {
-               label : 'Points Spent this year',
+               label : 'Total Points Spent this year',
                name : 'ptsSpent',
                value : 0
             }]
          }]
       },
       // -----------------------------------------------------------------------
-      // Points Earn Panel
+      // Rewards / Redemption Button
       // -----------------------------------------------------------------------
+      /*
       {
-         xtype : 'toolbar',
-         cls : 'ptsEarnPanelHdr',
-         centered : false,
-         items : [
-         {
-            xtype : 'title',
-            title : 'Points Earned'
-         },
-         {
-            xtype : 'spacer'
-         }]
+      xtype : 'button',
+      ui : 'yellow-large',
+      cls : 'separator',
+      text : 'Earn & Redeem Rewards'
       },
-      {
-         xtype : 'merchantaccountpts',
-         cls : 'ptsEarnPanel separator',
-         store : 'CustomerStore'
-      },
+      */
       // -----------------------------------------------------------------------
       // Newsfeed Panel
       // -----------------------------------------------------------------------
@@ -138,6 +133,62 @@ Ext.define('Genesis.view.MerchantAccount',
             }
          }),
          onItemDisclosure : Ext.emptyFn
+      },
+      {
+         docked : 'bottom',
+         cls : 'navigationBarBottom',
+         xtype : 'tabbar',
+         layout :
+         {
+            pack : 'justify',
+            align : 'center'
+         },
+         defaults :
+         {
+            iconMask : true,
+            iconAlign : 'top'
+         },
+         items : [
+         //
+         // Left side Buttons
+         //
+         {
+            iconCls : 'home',
+            tag : 'home',
+            title : 'Home'
+         },
+         {
+            iconCls : 'rewards',
+            tag : 'rewards',
+            title : 'Rewards'
+         },
+         //
+         // Middle Button
+         //
+         {
+            xtype : 'spacer'
+         },
+         {
+            iconCls : 'challenges',
+            tag : 'challenges',
+            title : 'Challenges'
+         },
+         //
+         // Right side Buttons
+         //
+         {
+            xtype : 'spacer'
+         },
+         {
+            iconCls : 'redeem',
+            tag : 'redeem',
+            title : 'Redeem'
+         },
+         {
+            iconCls : 'team',
+            tag : 'accounts',
+            title : 'Accounts'
+         }]
       }]
    },
    statics :
@@ -165,6 +216,17 @@ Ext.define('Genesis.view.MerchantAccount',
          }
          return photo_url;
       }
+   },
+   beforeActivate : function()
+   {
+   },
+   beforeDeactivate : function()
+   {
+   },
+   afterActivate : function()
+   {
+   },
+   afterDeactivate : function()
+   {
    }
-
-})
+});

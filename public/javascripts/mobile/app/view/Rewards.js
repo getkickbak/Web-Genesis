@@ -1,11 +1,12 @@
 Ext.define('Genesis.view.Rewards',
 {
-   extend : 'Ext.Container',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RewardsCart'],
+   extend : 'Genesis.view.ViewBase',
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RewardsCartItem'],
    alias : 'widget.rewardsview',
    config :
    {
       title : 'Venue Name',
+      changeTitle : true,
       scrollable : false,
       layout :
       {
@@ -43,7 +44,7 @@ Ext.define('Genesis.view.Rewards',
          },
          items : [
          // -------------------------------------------------------------------
-         // Points Menu
+         // Reward Points Menu
          // -------------------------------------------------------------------
          {
             tag : 'rewardMainList',
@@ -59,7 +60,7 @@ Ext.define('Genesis.view.Rewards',
                items : [
                {
                   xtype : 'title',
-                  title : 'Earn Points'
+                  title : 'Earn Points (Select Items in your Order)'
                },
                {
                   xtype : 'spacer',
@@ -72,14 +73,17 @@ Ext.define('Genesis.view.Rewards',
                scrollable : 'vertical',
                store : 'RewardsStore',
                cls : 'rewardsMain',
-               indexBar :
-               {
-                  docked : 'right',
-                  overlay : true,
-                  alphabet : false,
-                  centered : false,
-                  letters : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
-               },
+               /*
+                indexBar :
+                {
+                docked : 'right',
+                overlay : true,
+                alphabet : false,
+                centered : false,
+                letters : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
+                },
+                */
+               pinHeaders : false,
                grouped : true,
                // @formatter:off
                itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>', '<div class="listItemDetailsWrapper">', '<div class="itemDesc wrap">{[this.getDesc(values)]}</div>', '</div>',
@@ -117,7 +121,7 @@ Ext.define('Genesis.view.Rewards',
                items : [
                {
                   xtype : 'title',
-                  title : 'Ordered Items'
+                  title : 'Shopping Cart'
                },
                {
                   xtype : 'spacer',
@@ -136,8 +140,12 @@ Ext.define('Genesis.view.Rewards',
             {
                flex : 1,
                cls : 'shadows',
-               xtype : 'rewardscart',
-               cls : 'rewardsCart listNoScrollWrapper separator_pad',
+               xtype : 'dataview',
+               scrollable : 'vertical',
+               useComponents : true,
+               tag : 'rewardsCart',
+               defaultType : 'rewardscartitem',
+               cls : 'rewardsCart separator_pad',
                store : 'RewardsCartStore'
             },
             {
@@ -166,9 +174,46 @@ Ext.define('Genesis.view.Rewards',
             {
                xtype : 'button',
                cls : 'separator',
+               tag : 'earnPts',
                text : 'Earn Points!',
                ui : 'yellow-large'
             }]
+         }]
+      },
+      {
+         docked : 'bottom',
+         cls : 'navigationBarBottom',
+         xtype : 'tabbar',
+         layout :
+         {
+            pack : 'justify',
+            align : 'center'
+         },
+         defaults :
+         {
+            iconMask : true,
+            iconAlign : 'top'
+         },
+         items : [
+         //
+         // Left side Buttons
+         //
+         {
+            xtype : 'spacer'
+         },
+         //
+         // Middle Button
+         //
+         {
+            iconCls : 'shop2',
+            tag : 'cart',
+            title : 'Check Out'
+         },
+         //
+         // Right side Buttons
+         //
+         {
+            xtype : 'spacer'
          }]
       }]
 

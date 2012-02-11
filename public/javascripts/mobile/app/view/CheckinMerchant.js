@@ -1,11 +1,12 @@
 Ext.define('Genesis.view.CheckinMerchant',
 {
    extend : 'Ext.Container',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate'],
+   requires : ['Ext.dataview.DataView', 'Ext.XTemplate', 'Ext.Map', 'Genesis.view.widgets.CheckinMerchantDetailsItem'],
    alias : 'widget.checkinmerchantview',
    config :
    {
       title : 'Venue Name',
+      changeTitle : true,
       cls : 'checkinMerchant',
       scrollable : 'vertical',
       layout :
@@ -21,62 +22,76 @@ Ext.define('Genesis.view.CheckinMerchant',
       items : [
       {
          xtype : 'dataview',
-         height : '9em',
+         cls : 'checkinMerchantWrapper separator',
+         useComponents : true,
+         defaultType : 'checkinmerchantdetailsitem',
          scrollable : false,
-         store : 'VenueStore',
+         store : 'VenueStore'
+      },
+      {
+         xtype : 'container',
+         margin : 0,
          layout :
          {
             type : 'hbox',
-            pack : 'center',
-            align : 'top'
+            align : 'stretch',
+            pack : 'center'
          },
-         cls : 'dataviewWrapper separator',
-         // @formatter:off
-         itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto()]}"/></div>' + '<div class="dataviewItemDetailsWrapper" style="{[this.getWidth()]}">' + '<div class="itemTitle">{name}</div>' + '<div class="itemDesc">{[this.getAddress(values)]}</div>' + '</div>',
-         // @formatter:on
+         items : [
          {
-            getWidth : function()
-            {
-               return 'width:25em;';
-            },
-            getPhoto : function()
-            {
-
-               var store = Ext.StoreMgr.get('VenueStore');
-               var record = store.getRange()[0];
-               var values = record.getMerchant().data;
-
-               return values.photo_url;
-            },
-            getAddress : function(values)
-            {
-               var address = (values.address2) ? values.address1 + ", " + values.address2 : values.address1;
-               return (address + ", " + values.city + ", " + values.state + ", " + values.country + ", " + values.zipcode);
-            }
-         })
-      },
-      {
-         xtype : 'button',
-         ui : 'green-large',
-         tag : 'checkinBtn',
-         text : 'Check in'
-      },
-      {
-         xtype : 'button',
-         ui : 'red-large',
-         tag : 'browseBtn',
-         text : 'Browse'
-      },
-      {
-         xtype : 'map',
-         mapOptions :
-         {
-            zoom : 16,
-            mapTypeId : window.google.maps.MapTypeId.ROADMAP
+            flex : 1,
+            xtype : 'button',
+            ui : 'green-large',
+            tag : 'checkinBtn',
+            text : 'Check in'
          },
-         useCurrentLocation : false,
-         store : 'VenueStore',
-         flex : 1
+         {
+            flex : 1,
+            xtype : 'button',
+            margin : '0 0 0 0.8',
+            defaultUnit : 'em',
+            ui : 'red-large',
+            tag : 'exploreBtn',
+            text : 'Explore'
+         }]
+      },
+      /*
+       {
+       xtype : 'map',
+       tag : 'map',
+       mapOptions :
+       {
+       zoom : 15//,
+       //mapTypeId : window.google.maps.MapTypeId.ROADMAP
+       },
+       useCurrentLocation : false,
+       //store : 'VenueStore',
+       flex : 1
+       }
+       */
+      {
+         xtype : 'component',
+         tag : 'map',
+         flex : 1,
+         tpl : Ext.create('Ext.XTemplate', '<img height="{height}" width="{width}" src="{photo}"/>')
       }]
+   },
+   beforeActivate : function()
+   {
+   },
+   beforeDeactivate : function()
+   {
+   },
+   afterActivate : function()
+   {
+      // Show Share Icon
+      var viewport = Ext.ComponentQuery.query('viewportview')[0];
+      viewport.query('button[tag=shareBtn]')[0].show();
+      viewport.query('button[tag=main]')[0].hide();
+   },
+   afterDeactivate : function()
+   {
+      var viewport = Ext.ComponentQuery.query('viewportview')[0];
+      viewport.query('button[tag=shareBtn]')[0].hide();
    }
 });
