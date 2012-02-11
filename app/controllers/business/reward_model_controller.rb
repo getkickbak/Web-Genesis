@@ -22,8 +22,9 @@ module Business
             @reward_model.update(params[:reward_model])
             @purchase_rewards = PurchaseReward.all(PurchaseReward.merchant.id => current_merchant.id)
             @purchase_rewards.each do |reward|
-              reward.reward_ratio = @reward_model.reward_ratio
-              reward.points = (reward.price/Float(reward.reward_ratio))/@reward_model.price_per_point
+              reward.type_id = reward.type.id
+              reward.rebate_rate = @reward_model.rebate_rate
+              reward.points = (reward.price * reward.rebate_rate / 100 / @reward_model.price_per_point).to_i
               if reward.points == 0
                 reward.points = 1
               end

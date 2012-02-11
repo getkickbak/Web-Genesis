@@ -26,6 +26,7 @@ module Business
       authorize! :create, CustomerReward
 
       @customer_reward = CustomerReward.new
+      
       respond_to do |format|
         format.html # index.html.erb
         #format.xml  { render :xml => @merchants }
@@ -37,13 +38,14 @@ module Business
       
       CustomerReward.transaction do
         begin
+          type = CustomerRewardType.get(params[:customer_reward][:type_id])
           params[:customer_reward][:venue_ids].delete("")
           if params[:customer_reward][:venue_ids].length > 0
             venues = Venue.all(:conditions => ["id IN ?", params[:customer_reward][:venue_ids]])
           else
             venues = []
           end
-          CustomerReward.create(current_merchant, params[:customer_reward], venues)
+          CustomerReward.create(current_merchant, type, params[:customer_reward], venues)
           respond_to do |format|
             format.html { redirect_to customer_rewards_path(:notice => 'Reward was successfully created.') }
             #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
@@ -65,6 +67,7 @@ module Business
       @customer_reward = CustomerReward.get(params[:id]) || not_found
       authorize! :update, @customer_reward
       
+      @customer_reward.type_id = @customer_reward.type.id
       @venue_ids = []
       @customer_reward.venues.each do |venue|
         @venue_ids << venue.id
@@ -77,13 +80,14 @@ module Business
 
       CustomerReward.transaction do
          begin
+            type = CustomerRewardType.get(params[:customer_reward][:type_id])
             params[:customer_reward][:venue_ids].delete("")
             if params[:customer_reward][:venue_ids].length > 0
               venues = Venue.all(:conditions => ["id IN ?", params[:customer_reward][:venue_ids]])
             else
               venues = []
             end
-            @customer_reward.update(params[:customer_reward], venues)
+            @customer_reward.update(type, params[:customer_reward], venues)
             respond_to do |format|
                format.html { redirect_to(:action => "show", :id => @customer_reward.id, :notice => 'Reward was successfully updated.') }
                #format.xml  { render :xml => @deal, :status => :created, :location => @deal }

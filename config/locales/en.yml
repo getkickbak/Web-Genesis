@@ -16,9 +16,72 @@ en:
         email_format: "%{attribute} is not formatted properly"
         not_a_number: "%{attribute} is not a number"
         not_an_integer: "%{attribute} must be an integer"
-        
   datamapper:
       errors:
         messages:
           blank: "%{attribute} is required"
           email_format: "%{attribute} is not formatted properly"
+  merchant:
+      type:
+        food: "Food"
+  venue:
+      type:
+        bakery: "Bakery"
+        bar: "Bar"
+        cafe: "Café"
+        coffee_shop: "Coffee Shop"
+        dessert_place: "Dessert Place"
+        ice_cream_shop: "Ice Cream Shop"    
+        restaurant: "Restaurant"  
+  challenge:
+      type:
+        birthday: 
+          name: "Birthday"
+          description: "Get rewarded when you visit on your birthday"
+        checkin: 
+          name: "Check-In"
+          description: "Get rewarded when you visit %s times"  
+        lottery: 
+          name: "Lottery"
+          description: "Get rewarded for participating in our %s contest"
+        menu: 
+          name: "Special Menu Item"
+          description: "Get rewarded when you buy a %s"
+        photo: 
+          name: "Photo"
+          description: "Get rewarded when you share an exciting photo of this place"
+        referral: 
+          name: "Referral"
+          description: "Get rewarded when you refer friends and they become customers"
+        custom: 
+          name: "Custom"
+          description: "Whatever you want!"
+  purchase_reward:
+      type:
+        appetizer: "Appetizer"
+        bread: "Bread"      
+        dessert: "Dessert"
+        drinks: "Drinks"
+        entrees: "Entrees"
+        noodles: "Noodles"
+        pasta: "Pasta"
+        pastry: "Pastry"
+        salad: "Salad"
+        sandwich: "Sandwich"
+        side_dish: "Side Dish"
+        soup: "Soup"
+  customer_reward:
+      type:
+        appetizer: "Appetizer"
+        bread: "Bread"      
+        dessert: "Dessert"
+        drinks: "Drinks"
+        entrees: "Entrees"
+        noodles: "Noodles"
+        pasta: "Pasta"
+        pastry: "Pastry"
+        salad: "Salad"
+        sandwich: "Sandwich"
+        side_dish: "Side Dish"
+        soup: "Soup"
+        custom: "Custom"

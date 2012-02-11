@@ -2,13 +2,17 @@
 <script type="text/javascript" src="/javascripts/desktop/src/business/challenge.js"></script>
 <% end %>
 <%= simple_form_for @challenge do |f| %>
-	<%= f.input :type, :collection => @available_challenge_types %>
+	<%= f.input :type_id, :collection => @available_challenge_types %>
 	<%= f.input :name %>
+	<% if @challenge.type.value == 'custom' %>
 	<%= f.input :description, :as => :text, :input_html => { :rows => 10 } %>
+	<% else %>
+	<%= f.input :description, :as => :text, :input_html => { :rows => 10, :disabled => true } %>
+	<% end %>
 	<%= f.input :require_verif, :as => :hidden %>
 	<% if @challenge.data %>
 	<%= f.simple_fields_for @data do |builder| %>
-		<%= render "challenge_data", :f => builder, :type => @challenge.type %>
+		<%= render "challenge_data", :f => builder, :type => @challenge.type.value %>
 	<% end %>
 	<% end %>
 	<%= f.input :points %>

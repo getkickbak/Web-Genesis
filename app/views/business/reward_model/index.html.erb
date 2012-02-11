@@ -3,7 +3,8 @@
 	<tr>
 		<td>
 		<%= simple_form_for @reward_model, :url => update_reward_model_path do |f| %>
-		<%= f.input :reward_ratio %>
+		<%= f.input :rebate_rate %>
+		<%= f.input :prize_rebate_rate %>
 		<%= f.input :price_per_point, :input_html => { :disabled => 'disabled' } %>
 		<%= f.submit %>
 		<% end %>

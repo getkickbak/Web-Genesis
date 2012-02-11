@@ -5,6 +5,7 @@
 	<div id="price_per_point"><%= current_merchant.reward_model.price_per_point %></div>
 </div>
 <%= simple_form_for @customer_reward do |f| %>
+	<%= f.input :type_id, :collection => CustomerRewardType.values[current_merchant.type.value][I18n.locale] %>
 	<%= f.input :title %>
 	<%= f.input :price %>
 	<%= f.input :points %>

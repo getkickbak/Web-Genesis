@@ -36,6 +36,8 @@ module Admin
     def edit
       @merchant = Merchant.first(:merchant_id => params[:id]) || not_found
       authorize! :update, @merchant
+      
+      @merchant.type_id = @merchant.type.id
     end
 
     def create
@@ -44,7 +46,8 @@ module Admin
       Merchant.transaction do
         begin
           params[:merchant][:status] = :pending
-          @merchant = Merchant.create_without_devise(params[:merchant])
+          type = MerchantType.get(params[:merchant][:type_id])
+          @merchant = Merchant.create_without_devise(type, params[:merchant])
           respond_to do |format|
             format.html { redirect_to(merchant_path(@merchant), :notice => 'Merchant was successfully created.') }
           #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
@@ -66,7 +69,8 @@ module Admin
 
       Merchant.transaction do
         begin
-          @merchant.update_all(params[:merchant])
+          type = MerchantType.get(params[:merchant][:type_id])
+          @merchant.update_all(type, params[:merchant])
           respond_to do |format|
             format.html { redirect_to(merchant_path(@merchant), :notice => 'Merchant was successfully updated.') }
           #format.xml  { head :ok }

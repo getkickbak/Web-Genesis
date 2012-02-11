@@ -12,7 +12,7 @@ class RedeemRewardRecord
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessible :reward_id, :points, :created_ts
+  attr_accessible :reward_id, :venue_id, :points, :created_ts
   
   belongs_to :merchant
   belongs_to :user

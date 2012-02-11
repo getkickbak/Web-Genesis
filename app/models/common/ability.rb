@@ -24,5 +24,6 @@ class Ability
     can :read, CustomerReward
     can :read, Challenge 
     can :read, Venue
+    can [:read, :update], EarnPrize
   end
 end

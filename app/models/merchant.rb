@@ -28,23 +28,30 @@ class Merchant
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
 
-  attr_accessible :name, :email, :account_first_name, :account_last_name, :phone, :status, :password, :password_confirmation, :encrypted_password
+  attr_accessor :type_id
+
+  attr_accessible :type_id, :name, :email, :account_first_name, :account_last_name, :phone, :status, :password, :password_confirmation, :encrypted_password
 
   #validates_presence_of :password, :password_confirmation
   #validates_length_of :password, :min => 6, :max => 40
   #validates_confirmation_of :password
   
+  has 1, :merchant_to_type
+  has 1, :type, 'MerchantType', :through => :merchant_to_type, :via => :merchant_type
   has 1, :reward_model
   has n, :merchant_credit_cards, :child_key => [ :merchant_id ]
   has n, :credit_cards, :through => :merchant_credit_cards, :via => :credit_card
   has n, :venues
 
-  def self.create(merchant_info, password, password_confirmation)
+  validates_presence_of :type_id  
+
+  def self.create(type, merchant_info, password, password_confirmation)
     now = Time.now
     merchant_name = merchant_info[:name].squeeze(' ').strip
-    merchant_id = merchant_name.downcase.gsub(' ','-')
+    merchant_id = "#{merchant_name.downcase.gsub(' ','-')}-#{now.to_i}"
     
     merchant = Merchant.new(
+      :type_id => type ? type.id : nil,
       :name => merchant_name,
       :email => merchant_info[:email].strip,
       :password => password.strip,
@@ -58,13 +65,14 @@ class Merchant
     merchant[:merchant_id] = merchant_id
     merchant[:created_ts] = now
     merchant[:update_ts] = now
+    merchant.type = type
     merchant.save
     return merchant
   end
 
-  def self.create_without_devise(merchant_info)
+  def self.create_without_devise(type, merchant_info)
     merchant_info[:encrypted_password] = self.encrypt_password(merchant_info[:password])
-    self.create(merchant_info, merchant_info[:password], merchant_info[:password_confirmation])
+    self.create(type, merchant_info, merchant_info[:password], merchant_info[:password_confirmation])
   end
   
   def self.find(start, max)
@@ -81,9 +89,9 @@ class Merchant
     self.merchant_id
   end
 
-  def update_all(merchant_info)
+  def update_all(type, merchant_info)
     now = Time.now
-    self.attributes = merchant_info
+    self.type_id = type ? type.id : nil
     merchant_name = merchant_info[:name].squeeze(' ').strip
     self.merchant_id = merchant_name.downcase.gsub(' ','-')
     self.name = merchant_name
@@ -96,6 +104,7 @@ class Merchant
     self.phone = merchant_info[:phone].strip
     self.status = merchant_info[:status]
     self.update_ts = now
+    self.type = type
     save
   end
   
@@ -112,7 +121,7 @@ class Merchant
   end
   
   def as_json(options)
-    only = {:only => [:id, :merchant_id,:name]}
+    only = {:only => [:id, :merchant_id,:name], :methods => [:type]}
     options = options.nil? ? only : options.merge(only)
      super(options)
   end

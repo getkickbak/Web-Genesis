@@ -14,6 +14,15 @@ class CheckInsController < ApplicationController
     end
     authorize! :update, @customer
     
+    if !Common.within_geo_distance?(params[:latitude], params[:longitude], @venue.latitude, @venue.longitude)
+      respond_to do |format|
+        #format.html { render :action => "new" }
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :msg => ["Something went wrong", "Outside of check-in distance.  Please try again."] } }
+      end
+      return
+    end
+    
     CheckIn.transaction do
       begin
         now = Time.now
@@ -35,8 +44,10 @@ class CheckInsController < ApplicationController
         @customer.save
         data = {}
         data[:customer] = @customer
-        @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points])
-        @rewards.push(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points], :order => [:points.asc], :offset => 0, :limit => 1))
+        @prizes = EarnPrize.all(EarnPrize.merchant.id => @venue.merchant.id, EarnPrize.user.id => curent_user.id, :redeemd => false)
+        data[:prizes] = @prizes
+        @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
+        @rewards.push(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
         @eligible_rewards = []
         @rewards.each do |reward|
           item = EligibleReward.new(
@@ -50,7 +61,7 @@ class CheckInsController < ApplicationController
         respond_to do |format|
           #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => true, :data => data } }
+          format.json { render :json => { :success => true, :data => data.to_json } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)

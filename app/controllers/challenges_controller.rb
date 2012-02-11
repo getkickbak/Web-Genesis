@@ -1,12 +1,12 @@
 class ChallengesController < ApplicationController
   before_filter :authenticate_user!
   
-  def find
+  def index
     authorize! :read, Challenge
     @challenges = Challenge.all(Challenge.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]))
     respond_to do |format|
       #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @challenges } }
+      format.json { render :json => { :success => true, :data => @challenges.to_json } }
     end
   end
 
@@ -42,12 +42,21 @@ class ChallengesController < ApplicationController
     end  
   end
   
-  def complete
+  def complete    
     @venue = Venue.first(Venue.merchant.id => params[:merchant_id], :id => params[:venue_id]) || not_found
     @challenge = Challenge.first(:id => params[:challenge_id], Challenge.merchant.id => @venue.merchant.id) || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
+    if !Common.within_geo_distance?(params[:latitude], params[:longitude], @venue.latitude, @venue.longitude)
+      respond_to do |format|
+        #format.html { render :action => "new" }
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :msg => ["Something went wrong", "Outside of check-in distance.  Please try again."] } }
+      end
+      return
+    end
+
     Customer.transaction do
       begin
         if is_challenge_satisfied(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && @venue.auth_code == params[:auth_code]))

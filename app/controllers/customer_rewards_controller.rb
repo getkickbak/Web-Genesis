@@ -7,7 +7,7 @@ class CustomerRewardsController < ApplicationController
     @rewards = CustomerReward.all(CustomerReward.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]))
     respond_to do |format|
       #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @rewards } }
+      format.json { render :json => { :success => true, :data => @rewards.to_json } }
     end
    end
   

@@ -5,10 +5,10 @@ class VenuesController < ApplicationController
   def find_nearest
     authorize! :read, Venue
 
-    venues = Venue.find_nearest(params[:longitude],params[:latitude])
+    venues = Venue.find_nearest(params[:latitude],params[:longitude])
     respond_to do |format|
     #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => venues } }
+      format.json { render :json => { :success => true, :data => venues.to_json } }
     end
   end
 end
