@@ -22,9 +22,9 @@ class Challenge
   attr_accessible :type_id, :name, :description, :require_verif, :data, :points
   
   belongs_to :merchant
-  has 1, :challenge_to_type
+  has 1, :challenge_to_type, :constraint => :destroy
   has 1, :type, 'ChallengeType', :through => :challenge_to_type, :via => :challenge_type
-  has n, :challenge_venues
+  has n, :challenge_venues, :constraint => :destroy
   has n, :venues, :through => :challenge_venues
     
   validates_presence_of :type_id  

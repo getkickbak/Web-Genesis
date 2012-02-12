@@ -36,12 +36,12 @@ class Merchant
   #validates_length_of :password, :min => 6, :max => 40
   #validates_confirmation_of :password
   
-  has 1, :merchant_to_type
+  has 1, :merchant_to_type, :constraint => :destroy
   has 1, :type, 'MerchantType', :through => :merchant_to_type, :via => :merchant_type
-  has 1, :reward_model
-  has n, :merchant_credit_cards, :child_key => [ :merchant_id ]
+  has 1, :reward_model, :constraint => :destroy
+  has n, :merchant_credit_cards, :child_key => [ :merchant_id ], :constraint => :destroy
   has n, :credit_cards, :through => :merchant_credit_cards, :via => :credit_card
-  has n, :venues
+  has n, :venues, :constraint => :destroy
 
   validates_presence_of :type_id  
 
@@ -94,7 +94,7 @@ class Merchant
   end
   
   def to_param
-    self.merchant_id
+   self.merchant_id
   end
 
   def update_all(type, merchant_info)
