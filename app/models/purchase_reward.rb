@@ -17,9 +17,9 @@ class PurchaseReward
   attr_accessible :type_id, :title, :price, :rebate_rate, :points
 
   belongs_to :merchant
-  has 1, :purchase_reward_to_type
+  has 1, :purchase_reward_to_type, :constraint => :destroy
   has 1, :type, 'PurchaseRewardType', :through => :purchase_reward_to_type, :via => :purchase_reward_type
-  has n, :purchase_reward_venues
+  has n, :purchase_reward_venues, :constraint => :destroy
   has n, :venues, :through => :purchase_reward_venues
 
   validates_presence_of :type_id

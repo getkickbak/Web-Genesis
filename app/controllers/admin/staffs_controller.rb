@@ -90,7 +90,7 @@ module Admin
     end
 
     def destroy
-      @staff = Staff.get(params[:id]) || not_found
+      @staff = Staff.first(params[:id]) || not_found
       authorize! :destroy, @staff
 
       @staff.destroy

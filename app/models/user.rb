@@ -28,14 +28,14 @@ class User
     
   attr_accessible :name, :email, :facebook_id, :role, :status, :password, :password_confirmation, :encrypted_password
     
-  has 1, :profile, 'UserProfile'
-  has n, :friendships, :child_key => [ :source_id ]
+  has 1, :profile, 'UserProfile', :constraint => :destroy
+  has n, :friendships, :child_key => [ :source_id ], :constraint => :destroy
   has n, :friends, self, :through => :friendships, :via => :target
-  has n, :links_to_followed_users, 'Relationship', :child_key => [ :follower_id ]
-  has n, :links_to_followers, 'Relationship', :child_key => [ :followed_id ]
+  has n, :links_to_followed_users, 'Relationship', :child_key => [ :follower_id ], :constraint => :destroy
+  has n, :links_to_followers, 'Relationship', :child_key => [ :followed_id ], :constraint => :destroy
   has n, :followed_users, self, :through => :links_to_followed_users, :via => :followed
   has n, :followers, self, :through => :links_to_followers, :via => :follower
-  has n, :user_credit_cards, :child_key => [ :user_id ]
+  has n, :user_credit_cards, :child_key => [ :user_id ], :constraint => :destroy
   has n, :credit_cards, :through => :user_credit_cards, :via => :credit_card
     
   def self.create(user_info, password, password_confirmation)
@@ -100,7 +100,7 @@ class User
     #return result
     return users  
   end
-  
+    
   def to_param
     self.user_id
   end

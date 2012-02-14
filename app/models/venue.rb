@@ -29,12 +29,12 @@ class Venue
   attr_accessible :type_id, :name, :address, :city, :state, :zipcode, :country, :phone, :website, :latitude, :longitude
   
   belongs_to :merchant
-  has 1, :venue_to_type
+  has 1, :venue_to_type, :constraint => :destroy
   has 1, :type, 'VenueType', :through => :venue_to_type, :via => :venue_type
-  has 1, :check_in_code
-  has n, :challenge_venues
-  has n, :purchase_reward_venues
-  has n, :customer_reward_venues
+  has 1, :check_in_code, :constraint => :destroy
+  has n, :challenge_venues, :constraint => :destroy
+  has n, :purchase_reward_venues, :constraint => :destroy
+  has n, :customer_reward_venues, :constraint => :destroy
   has n, :challenges, :through => :challenge_venues
   has n, :purchase_rewards, :through => :purchase_reward_venues
   has n, :customer_rewards, :through => :customer_reward_venues

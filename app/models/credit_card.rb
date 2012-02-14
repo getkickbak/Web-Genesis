@@ -23,7 +23,7 @@ class CreditCard
     return credit_card
   end
     
-  def update()
+  def update
     now = Time.now
     self.update_ts = now
     save

@@ -54,6 +54,7 @@ gem 'bcrypt-ruby'
 gem 'country-select'
 gem 'will_paginate'
 gem 'websnap'
+gem 'dalli'
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION
