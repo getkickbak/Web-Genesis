@@ -11,10 +11,17 @@
          "desc": "Challenges",
          "pageCntlr": "Challenges"
       }, {
-         "name": "Check-ins / Explore",
+         "name": "Check-ins",
          "photo_url": "resources/img/sprites/checkin.jpg",
-         "desc": "Check-ins",
-         "pageCntlr": "Checkins"
+         "desc": "Check-ins Menu for Merchants Nearby",
+         "pageCntlr": "Checkins",
+         "subFeature": "checkin"
+      }, {
+         "name": "Explore",
+         "photo_url": "resources/img/sprites/checkin.jpg",
+         "desc": "Explore Merchants Nearby",
+         "pageCntlr": "Checkins",
+         "subFeature": "explore"
       }, {
          "name": "Earn Points",
          "photo_url": "resources/img/sprites/rewards.jpg",

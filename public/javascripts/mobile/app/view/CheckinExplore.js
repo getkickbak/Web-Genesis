@@ -1,29 +1,26 @@
 Ext.require('Ext.plugin.PullRefresh', function()
 {
-   Ext.define('Genesis.view.CheckinBrowse',
+   Ext.define('Genesis.view.CheckinExplore',
    {
       extend : 'Ext.Container',
       requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.plugin.PullRefresh'],
-      alias : 'widget.checkinbrowseview',
+      alias : 'widget.checkinexploreview',
       config :
       {
-         title : 'Nearby Places',
+         title : 'Check-in Nearby Places',
+         changeTitle : false,
          layout : 'fit',
          items : [
          {
             xtype : 'list',
-            store : 'CheckinBrowseStore',
+            store : 'CheckinExploreStore',
             scrollable : 'vertical',
             ui : 'round',
-            cls : 'listScrollWrapper separator_pad',
+            cls : 'checkInExploreList separator_pad',
+            itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>' + '<div class="listItemDetailsWrapper">' + '<div class="itemTitle">{name}</div>' + '<div class="itemDesc">{[this.getAddress(values)]}</div>' + '</div>',
             // @formatter:off
-            itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>' + '<div class="listItemDetailsWrapper" style="{[this.getWidth()]}">' + '<div class="itemTitle">{name}</div>' + '<div class="itemDesc">{[this.getAddress(values)]}</div>' + '</div>',
             // @formatter:on
             {
-               getWidth : function()
-               {
-                  return 'width:25em;';
-               },
                getPhoto : function(values)
                {
                   return values.Merchant['photo_url'];
@@ -31,7 +28,7 @@ Ext.require('Ext.plugin.PullRefresh', function()
                getAddress : function(values)
                {
                   var address = (values.address2) ? values.address1 + ", " + values.address2 : values.address1;
-                  return (address + ", " + values.city + ", " + values.state + ", " + values.country + ", " + values.zipcode);
+                  return (address + ",<br/>" + values.city + ", " + values.state + ", " + values.country + ",<br/>" + values.zipcode);
                }
             }),
             onItemDisclosure : Ext.emptyFn,
@@ -51,7 +48,49 @@ Ext.require('Ext.plugin.PullRefresh', function()
                   store.load();
                }
             })]
+         },
+         {
+            docked : 'bottom',
+            cls : 'checkInNow',
+            xtype : 'container',
+            layout :
+            {
+               type : 'vbox',
+               pack : 'center'
+            },
+            items : [
+            {
+               xtype : 'button',
+               ui : 'checkInNow',
+               tag : 'checkInNow',
+               text : 'Check In Now!'
+            }]
          }]
+      },
+      beforeActivate : function()
+      {
+         switch (this.mode)
+         {
+            case 'checkin':
+               this.getInitialConfig().title = 'Check-in Nearby Places';
+               break;
+            case 'explore' :
+               this.getInitialConfig().title = 'Explore Nearby Places';
+               break;
+         }
+      },
+      beforeDeactivate : function()
+      {
+      },
+      afterActivate : function()
+      {
+         var viewport = Ext.ComponentQuery.query('viewportview')[0];
+         var cvenueId = viewport.getCheckinInfo().venueId;
+         var show = cvenueId > 0;
+         viewport.query('button[tag=main]')[0][show ? 'show' : 'hide']();
+      },
+      afterDeactivate : function()
+      {
       }
    });
 });

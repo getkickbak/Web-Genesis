@@ -87,7 +87,11 @@ Ext.define('Genesis.view.Redemptions',
             items : [
             {
                xtype : 'dataview',
-               scrollable : 'horizontal',
+               scrollable :
+               {
+                  direction : 'horizontal',
+                  indicators : false
+               },
                cls : 'redemptionsDataview separator',
                tag : 'redemptionsDataview',
                store : 'RedemptionsStore',
@@ -106,7 +110,7 @@ Ext.define('Genesis.view.Redemptions',
                })
             },
             {
-               xtype:'container',
+               xtype : 'container',
                cls : 'desc separator',
                tag : 'desc',
                data :
@@ -199,6 +203,11 @@ Ext.define('Genesis.view.Redemptions',
          {
             pack : 'justify',
             align : 'center'
+         },
+         scrollable :
+         {
+            direction : 'horizontal',
+            indicators : false
          },
          defaults :
          {

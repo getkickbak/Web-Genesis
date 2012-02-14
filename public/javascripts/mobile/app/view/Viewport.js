@@ -26,6 +26,12 @@ Ext.define('Genesis.view.Viewport',
          {
             iconMask : true
          },
+         rightButton :
+         {
+            align : 'right',
+            iconMask : true,
+            iconCls : 'check_black1'
+         },
          docked : 'top',
          cls : 'navigationBarTop',
          layout :
@@ -34,12 +40,12 @@ Ext.define('Genesis.view.Viewport',
             align : 'center'
          },
          items : [
-         /*
-          {
-          align : 'left',
-          ui : 'back'
-          },
-          */
+         {
+            align : 'left',
+            tag : 'browse',
+            iconCls : 'search1',
+            hidden : true
+         },
          {
             align : 'left',
             tag : 'close',
@@ -60,6 +66,8 @@ Ext.define('Genesis.view.Viewport',
                      hideOnMaskTap : false,
                      defaults :
                      {
+                        defaultUnit : 'em',
+                        margin : '0 0 0.5 0',
                         xtype : 'button',
                         iconCls : 'dummy',
                         iconAlign : 'left',
@@ -86,6 +94,7 @@ Ext.define('Genesis.view.Viewport',
                         handler : Ext.emptyFn
                      },
                      {
+                        margin : '0.5 0 0 0',
                         text : 'Cancel',
                         iconMaskCls : 'dummymask',
                         ui : 'confirm',
@@ -117,13 +126,21 @@ Ext.define('Genesis.view.Viewport',
                {
                   this.actions = Ext.create('Ext.ActionSheet',
                   {
+                     defaultUnit : 'em',
+                     padding : '1em',
                      hideOnMaskTap : false,
+                     defaults :
+                     {
+                        defaultUnit : 'em'
+                     },
                      items : [
                      {
+                        margin : '0 0 0.5 0',
                         text : 'Logout',
                         handler : Ext.emptyFn
                      },
                      {
+                        margin : '0.5 0 0 0',
                         xtype : 'button',
                         text : 'Cancel',
                         scope : this,

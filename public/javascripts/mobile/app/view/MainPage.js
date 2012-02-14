@@ -8,25 +8,11 @@ Ext.define('Genesis.view.MainPage',
       title : 'JustForMyFriends',
       changeTitle : false,
       layout : 'fit',
-      scrollable : 'vertical',
+      scrollable : false,
       items : [
       {
-         xtype : 'dataview',
-         cls : 'mainMenuSelections',
-         scrollable : false,
-         deferInitialRefresh : false,
-         store : 'MainPageStore',
-         itemTpl : Ext.create('Ext.XTemplate',
-         // @formatter:off
-         '<div class="mainPageItemWrapper">', '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>', '<div class="photoName">{name}</div>', '</div>',
-         // @formatter:on
-         {
-            getPhoto : function(photoURL)
-            {
-               return Ext.isEmpty(photoURL) ? Ext.BLANK_IMAGE_URL : photoURL;
-            }
-         }),
-         autoScroll : true
+         xtype : 'carousel',
+         direction : 'horizontal'
       },
       {
          docked : 'bottom',
@@ -37,6 +23,11 @@ Ext.define('Genesis.view.MainPage',
          {
             pack : 'justify',
             align : 'center'
+         },
+         scrollable :
+         {
+            direction : 'horizontal',
+            indicators : false
          },
          defaults :
          {

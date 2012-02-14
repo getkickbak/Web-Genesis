@@ -143,6 +143,11 @@ Ext.define('Genesis.view.MerchantAccount',
             pack : 'justify',
             align : 'center'
          },
+         scrollable :
+         {
+            direction : 'horizontal',
+            indicators : false
+         },
          defaults :
          {
             iconMask : true,

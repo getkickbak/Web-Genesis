@@ -11,12 +11,8 @@ Ext.define('Genesis.view.ChallengePage',
       scrollable : false,
       items : [
       {
-         xtype : 'dataview',
-         cls : 'challengeMenuSelections',
-         useComponents : true,
-         defaultType : 'challengemenuitem',
-         scrollable : false,
-         store : 'ChallengePageStore'
+         xtype : 'carousel',
+         direction : 'horizontal'
       },
       {
          docked : 'bottom',
@@ -26,6 +22,11 @@ Ext.define('Genesis.view.ChallengePage',
          {
             pack : 'justify',
             align : 'center'
+         },
+         scrollable :
+         {
+            direction : 'horizontal',
+            indicators : false
          },
          defaults :
          {

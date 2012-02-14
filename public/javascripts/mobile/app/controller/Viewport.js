@@ -37,9 +37,13 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'popView'
          },
-         'button[tag=main]' :
+         'viewportview button[tag=main]' :
          {
             tap : 'onMainButtonTap'
+         },
+         'viewportview button[tag=browse]' :
+         {
+            tap : 'onBrowseTap'
          },
          'tabbar[cls=navigationBarBottom] button[tag=info]' :
          {
@@ -87,10 +91,15 @@ Ext.define('Genesis.controller.Viewport',
          controller.openPage(subFeature);
       }
    },
-   onShareMerchantTap : function()
+   onShareMerchantTap : function(b, e, eOpts)
    {
    },
-   onInfoTap : function()
+   onBrowseTap : function(b, e, eOpts)
+   {
+      var cntlr = this.getApplication().getController('Checkins');
+      cntlr.openPage('explore');
+   },
+   onInfoTap : function(b, e, eOpts)
    {
       // Open Info ActiveSheet
       //this.getApplication().getView('Viewport').pushView(vp.getInfo());
@@ -115,10 +124,7 @@ Ext.define('Genesis.controller.Viewport',
       {
          // Restore Merchant Info
          var cmerchantId = vrecord.getMerchant().getId();
-         Ext.StoreMgr.get('VenueStore').setData([vrecord],
-         {
-            addRecords : false
-         });
+         cntlr.setupVenueInfoCommon(vrecord);
 
          viewport.setCustomerId(ccustomerId);
          viewport.setVenueId(cvenueId);
@@ -136,6 +142,7 @@ Ext.define('Genesis.controller.Viewport',
          // Doesn't get called when refreshing the same page
          if(samePage)
          {
+            bar.refreshNavigationBarProxy();
             viewport.doSetActiveItem(mCntlr.getMainPage(), null);
          }
       }, this));

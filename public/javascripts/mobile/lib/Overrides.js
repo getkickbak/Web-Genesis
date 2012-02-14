@@ -381,52 +381,6 @@ Ext.define('Genesis.field.Select',
    }
 });
 
-Ext.define('Genesis.navigation.Bar',
-{
-   override : 'Ext.navigation.Bar',
-   /**
-    * This creates a proxy of the whole navigation bar and positions it out of the view.
-    * This is used so we know where the back button and title needs to be at any time, either if we are
-    * animating, not animating, or resizing.
-    * @private
-    */
-   createNavigationBarProxy : function()
-   {
-      var proxy = this.proxy;
-
-      if(proxy)
-      {
-         return;
-      }
-
-      //create a titlebar for the proxy
-      this.proxy = proxy = Ext.create('Ext.TitleBar',
-      {
-         items : [
-         {
-            xtype : 'button',
-            ui : 'back',
-            text : ''
-         },
-         {
-            xtype : 'button',
-            iconCls : 'share',
-            align : 'right'
-         }],
-         title : this.backButtonStack[0]
-      });
-
-      proxy.backButton = proxy.down('button[ui=back]');
-
-      //add the proxy to the body
-      Ext.getBody().appendChild(proxy.renderElement);
-
-      proxy.renderElement.setStyle('position', 'absolute');
-      proxy.element.setStyle('visibility', 'hidden');
-      proxy.renderElement.setX(0);
-      proxy.renderElement.setY(-1000);
-   }
-});
 //
 // Temporary Fix until Sencha Touch Team fixes Ext.Loader problem when running in PhoneGap
 //

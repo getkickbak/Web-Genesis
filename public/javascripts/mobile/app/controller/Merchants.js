@@ -35,7 +35,8 @@ Ext.define('Genesis.controller.Merchants',
       {
          'merchantaccountview' :
          {
-            activate : 'onMainActivate'
+            activate : 'onMainActivate',
+            deactivate : 'onMainDeactivate'
          },
          'merchantaccountview button[ui=yellow]' :
          {
@@ -80,6 +81,12 @@ Ext.define('Genesis.controller.Merchants',
       var cvenueId = viewport.getCheckinInfo().venueId;
       var show = (venueId != cvenueId) && (cvenueId > 0);
       viewport.query('button[tag=main]')[0][show ? 'show' : 'hide']();
+      viewport.query('button[tag=browse]')[0].show();
+   },
+   onMainDeactivate : function()
+   {
+      var viewport = this.getViewport();
+      viewport.query('button[tag=browse]')[0].hide();
    },
    onMainDisclose : function(list, record, target, index, e, eOpts)
    {

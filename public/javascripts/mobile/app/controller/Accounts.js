@@ -69,6 +69,7 @@ Ext.define('Genesis.controller.Accounts',
    onDisclose : function(list, record, target, index, e, eOpts)
    {
       var controller = this.getApplication().getController('Checkins');
+      controller.mode = 'explore';
       controller.onExploreDisclose(list, record, target, index, e, eOpts);
       return true;
    },

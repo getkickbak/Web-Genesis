@@ -189,6 +189,11 @@ Ext.define('Genesis.view.Rewards',
             pack : 'justify',
             align : 'center'
          },
+         scrollable :
+         {
+            direction : 'horizontal',
+            indicators : false
+         },
          defaults :
          {
             iconMask : true,

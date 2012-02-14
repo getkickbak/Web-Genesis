@@ -6,7 +6,9 @@ Ext.define('Genesis.model.EligibleReward',
    config :
    {
       idProperty : 'reward_id',
-      fields : ['reward_id', 'reward_title', 'points_difference', 'type', 'photo_url', 'venue_id'],
+      fields : ['reward_id', 'reward_title', 'points_difference', 'type', 'photo_url',
+      // Frontend field
+      'venue_id'],
       proxy :
       {
          type : 'ajax',
@@ -20,6 +22,10 @@ Ext.define('Genesis.model.EligibleReward',
    },
    statics :
    {
+      setVenueScanCheckinUrl : function()
+      {
+         this.getProxy().url = Ext.Loader.getPath("Genesis") + "/store/" + 'eligibleRewards.json';
+      },
       setVenueCheckinUrl : function()
       {
          this.getProxy().url = Ext.Loader.getPath("Genesis") + "/store/" + 'eligibleRewards.json';

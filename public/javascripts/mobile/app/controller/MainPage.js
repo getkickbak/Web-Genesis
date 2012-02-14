@@ -84,11 +84,23 @@ Ext.define('Genesis.controller.MainPage',
       });
       //
       // Store storing the Customer's Eligible Rewards at a Venue
+      // Used during Checkin
       //
       Ext.regStore('EligibleRewardsStore',
       {
          model : 'Genesis.model.EligibleReward',
-         autoLoad : false
+         autoLoad : false,
+         listeners :
+         {
+            'metachange' : Ext.bind(function(store, meta)
+            {
+               var cntlr = this.getApplication().getController('Checkins');
+               var record = Ext.StoreMgr.get('CheckinExploreStore').getById(meta.venueId);
+               
+               store.getProxy().getReader().rawData.metaData = record;
+               cntlr.setupVenueInfoCommon(record);
+            }, this)
+         }
       });
       console.log("MainPage Init");
    },
@@ -132,6 +144,41 @@ Ext.define('Genesis.controller.MainPage',
    {
       var show = this.getViewport().getCheckinInfo().venueId > 0;
       this.getMain().query('tabbar[cls=navigationBarBottom]')[0][show ? 'show' : 'hide']();
+
+      if(!this.initialized)
+      {
+         this.initialized = true;
+
+         var carousel = this.getMain().query('carousel')[0];
+         var items = Ext.StoreMgr.get('MainPageStore').getRange();
+         for(var i = 0; i < Math.ceil(items.length / 6); i++)
+         {
+            carousel.add(
+            {
+               xtype : 'dataview',
+               cls : 'mainMenuSelections',
+               scrollable : false,
+               deferInitialRefresh : false,
+               store :
+               {
+                  model : 'Genesis.model.frontend.MainPage',
+                  data : Ext.StoreMgr.get('MainPageStore').getRange(i * 6, (i * 6) + 5)
+               },
+               itemTpl : Ext.create('Ext.XTemplate',
+               // @formatter:off
+               '<div class="mainPageItemWrapper">', '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>', '<div class="photoName">{name}</div>', '</div>',
+               // @formatter:on
+               {
+                  getPhoto : function(photoURL)
+                  {
+                     return Ext.isEmpty(photoURL) ? Ext.BLANK_IMAGE_URL : photoURL;
+                  }
+               }),
+               autoScroll : true
+            });
+         }
+      }
+
    },
    onDeactivate : function(c, eOpts)
    {

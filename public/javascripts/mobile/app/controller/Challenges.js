@@ -25,7 +25,7 @@ Ext.define('Genesis.controller.Challenges',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
-         'challengepageview > dataview' :
+         'challengepageview > carousel dataview' :
          {
             select : 'onItemSelect'
          },
@@ -39,14 +39,6 @@ Ext.define('Genesis.controller.Challenges',
    init : function(app)
    {
       this.callParent(arguments);
-      //
-      // Challenges available to the currently checked-in browsing Merchant
-      //
-      Ext.regStore('ChallengePageStore',
-      {
-         model : 'Genesis.model.Challenge',
-         autoLoad : false
-      });
       console.log("Challenge Init");
    },
    // --------------------------------------------------------------------------
@@ -78,10 +70,30 @@ Ext.define('Genesis.controller.Challenges',
    {
       var venueId = this.getViewport().getVenueId();
       var record = Ext.StoreMgr.get('VenueStore').getById(venueId);
-      Ext.StoreMgr.get('ChallengePageStore').setData(record.challenges().getRange());
+      var carousel = this.getChallengePage().query('carousel')[0];
+      var items = record.challenges().getRange();
+      for(var i = 0; i < Math.ceil(items.length / 6); i++)
+      {
+         carousel.add(
+         {
+            xtype : 'dataview',
+            cls : 'challengeMenuSelections',
+            useComponents : true,
+            defaultType : 'challengemenuitem',
+            scrollable : false,
+            store :
+            {
+               model : 'Genesis.model.Challenge',
+               data : record.challenges().getRange(i * 6, (i * 6) + 5)
+            }
+         });
+      }
+      carousel.setActiveItem(0);
    },
    onDeactivate : function()
    {
+      var carousel = this.getChallengePage().query('carousel')[0];
+      carousel.removeAll();
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

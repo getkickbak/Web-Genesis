@@ -37,6 +37,7 @@ $xlargeFontSize : 1.2em;
 @include pictos-iconmask('mail');
 @include pictos-iconmask('shop2');
 @include pictos-iconmask('team');
+@include pictos-iconmask('search1');
 @include pictos-iconmask('check_black1');
 @include pictos-iconmask('delete_black2');
 
@@ -251,6 +252,7 @@ body {
          position:absolute;
          img {
             width : $icon-size;
+            max-height : $icon-size;
          }
       }
       .listItemDetailsWrapper {
@@ -289,10 +291,10 @@ body {
       .mainPageItemWrapper {
          text-align:center;
          .photo {
-            height : $icon-size*1.5;
+            height : $icon-size*1.25;
             img {
-               width : $icon-size*1.5;
-               max-height : $icon-size*1.5;
+               width : $icon-size*1.25;
+               max-height : $icon-size*1.25;
             }
          }
          .photoName {
@@ -304,9 +306,6 @@ body {
    }
    .x-dataview-item:nth-child(2n+1) {
       clear:both;
-   }
-   .x-scroll-bar.x-scroll-bar-y {
-      display:none;
    }
 }
 
@@ -337,19 +336,16 @@ body {
    .x-dataview-item:nth-child(3n+1) {
       clear:both;
    }
-   .x-scroll-bar.x-scroll-bar-y {
-      display:none;
-   }
 }
 
 .challengePageItemDescWrapper {
-   min-height : 6em;
-   max-height : 6em;
-   padding:$panelGap;
+   min-height : 5em;
+   max-height : 5em;
+   padding:$panelTopGap/2 $panelGap;
    background: rgba(0, 0, 0, .25);
    .itemDesc {
       font-size:$normalFontSize;
-      padding-bottom:1px;  
+      padding-bottom:$panelTopGap/2;  
    }
    .itemDescName {
       text-align:center;
@@ -625,9 +621,6 @@ body {
             &.x-item-selected .photo {
                border-color:darken($list-bg-color, 15%);
             }
-         }
-         .x-scroll-bar.x-scroll-bar-x {
-            display:none;
          }
       }
       .desc {
