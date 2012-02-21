@@ -16,6 +16,6 @@
 	<% end %>
 	<% end %>
 	<%= f.input :points %>
-	<%= f.collection_check_boxes :venue_ids, current_merchant.venues, :id, :name, :checked => @venue_ids  %>
+	<%= f.collection_check_boxes :venue_ids, current_merchant.venues, :id, :name, :checked => @venue_ids %>
 	<%= f.button :submit %>
 <% end %>
