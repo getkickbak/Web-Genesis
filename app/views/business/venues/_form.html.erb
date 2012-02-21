@@ -1,18 +1,23 @@
-<% content_for :script do %> 
-<script type="text/javascript" src="/javascripts/desktop/src/business/venue.js"></script>
+<% content_for :script do %> <script type="text/javascript" src="/javascripts/desktop/src/business/venue.js"></script>
 <% end %>
-<%= simple_form_for @venue do |f| %>
-	<%= f.input :type_id, :collection => VenueType.values[current_merchant.type.value][I18n.locale] %>
-	<%= f.input :name %>
-	<%= f.input :address %>
-	<%= f.input :city %>
-	<%= f.input :state %>
-	<%= f.input :zipcode %>
-	<%= f.input :country %>
-	<%= f.input :phone %>
-	<%= f.input :website %>
-	<div id="gmap" class="" style="height:235px;width:100%;"></div>
-	<%= f.input :longitude, :as => :hidden, :input_html => { :value => @venue.longitude } %>
-	<%= f.input :latitude, :as => :hidden, :input_html => { :value => @venue.latitude } %>
-	<%= f.button :submit %>
-<% end %>
+<div class="row">
+	<div class="span18">
+		<%= simple_form_for @venue do |f| %>
+		<%= f.input :type_id, :collection => VenueType.values[current_merchant.type.value][I18n.locale] %>
+		<%= f.input :name %>
+		<%= f.input :address %>
+		<%= f.input :city %>
+		<%= f.input :state %>
+		<%= f.input :zipcode %>
+		<%= f.input :country %>
+		<%= f.input :phone %>
+		<%= f.input :website %>
+		<%= f.input :longitude, :as => :hidden, :input_html => { :value => @venue.longitude } %>
+		<%= f.input :latitude, :as => :hidden, :input_html => { :value => @venue.latitude } %>
+		<%= f.button :submit %>
+		<% end %>
+	</div>
+	<div class="span14">
+		<div id="gmap" class="" style="height:235px;width:100%;"></div>
+	</div>
+</div>
