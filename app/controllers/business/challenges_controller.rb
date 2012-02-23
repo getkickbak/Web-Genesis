@@ -4,6 +4,7 @@ module Business
     
     def index
       authorize! :read, Challenge
+      
       @venues = current_merchant.venues
 
       respond_to do |format|
@@ -59,12 +60,7 @@ module Business
       end
 
       if !allowed
-        respond_to do |format|
-          format.html { render :action => "new" }
-        #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
-        #format.json { render :json => { :success => false } }
-        end
-      return
+        raise Exceptions::AppException.new("Challenge Type(#{type.value}) already exists for Merchant(#{current_merchant.name})")
       end
 
       Challenge.transaction do
@@ -151,12 +147,7 @@ module Business
       end
 
       if !allowed
-        respond_to do |format|
-          format.html { render :action => "edit" }
-        #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
-        #format.json { render :json => { :success => false } }
-        end
-      return
+        raise Exceptions::AppException.new("Challenge Type(#{type.value}) already exists for Merchant(#{current_merchant.name})")
       end
 
       Challenge.transaction do
@@ -220,7 +211,8 @@ module Business
       end
       challenge_types = []
       ChallengeType.values[current_merchant.type.value][I18n.locale].each do |challenge_type|
-        if !(in_use_types.include? challenge_type[1]) || challenge_type[1] == 'custom' || challenge_type[1] == 'menu' || challenge_type[1] == 'lottery' || challenge_type[1] == current_type
+        value = ChallengeType.id_to_value[challenge_type[1]]
+        if !(in_use_types.include? value) || value == 'custom' || value == 'menu' || value == 'lottery' || value == current_type
           challenge_types << challenge_type
         end
       end

@@ -1,7 +1,7 @@
-<% content_for :script do %> 
-<script type="text/javascript" src="/javascripts/desktop/src/business/challenge.js"></script>
+<% content_for :script do %> <script type="text/javascript" src="/javascripts/desktop/src/business/challenge.js"></script>
 <% end %>
-<%= simple_form_for @challenge do |f| %>
+<div class="content">
+	<%= simple_form_for @challenge do |f| %>
 	<%= f.input :type_id, :collection => @available_challenge_types %>
 	<%= f.input :name %>
 	<% if @challenge.type.value == 'custom' %>
@@ -12,10 +12,16 @@
 	<%= f.input :require_verif, :as => :hidden %>
 	<% if @challenge.data %>
 	<%= f.simple_fields_for @data do |builder| %>
-		<%= render "challenge_data", :f => builder, :type => @challenge.type.value %>
+	<%= render "challenge_data", :f => builder, :type => @challenge.type.value %>
 	<% end %>
 	<% end %>
 	<%= f.input :points %>
-	<%= f.collection_check_boxes :venue_ids, current_merchant.venues, :id, :name, :checked => @venue_ids %>
-	<%= f.button :submit %>
-<% end %>
+	<div class="venues">
+		<div>
+			Venues
+		</div>
+		<%= f.collection_check_boxes :venue_ids, current_merchant.venues, :id, :display_name, :checked => @venue_ids ,:item_wrapper_tag => :div, :item_wrapper_class => 'checkbox' %>
+	</div>
+	<%= f.button :submit, :class => "btn primary noWrap" %>
+	<% end %>
+</div>

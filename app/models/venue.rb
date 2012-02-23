@@ -89,6 +89,10 @@ class Venue
     Venue.all(:id => venues_ids)
   end
   
+  def display_name
+    "#{self.name} - #{self.address}"  
+  end
+  
   def update(type, venue_info)
     now = Time.now
     self.type_id = type ? type.id : nil

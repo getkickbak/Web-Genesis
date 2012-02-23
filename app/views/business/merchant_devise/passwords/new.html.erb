@@ -6,7 +6,7 @@
   <p><%= f.label :email %><br />
   <%= f.email_field :email %></p>
 
-  <p><%= f.submit "Send me reset password instructions" %></p>
+  <p><%= f.submit "Send me reset password instructions", :class => "btn primary noWrap" %></p>
 <% end %>
 
 <%= render :partial => "business/merchant_devise/shared/links" %>

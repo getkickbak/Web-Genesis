@@ -4,12 +4,17 @@
 <div style="display:none;">
 	<div id="price_per_point"><%= current_merchant.reward_model.price_per_point %></div>
 </div>
+<div class="content row">
 <%= simple_form_for @purchase_reward do |f| %>
 	<%= f.input :type_id, :collection => PurchaseRewardType.values[current_merchant.type.value][I18n.locale] %>
 	<%= f.input :title %>
 	<%= f.input :price %>
 	<%= f.input :rebate_rate %>
 	<%= f.input :points %>
-	<%= f.collection_check_boxes :venue_ids, current_merchant.venues, :id, :name, :checked => @venue_ids %>
-	<%= f.button :submit %>
+	<div class="venues">
+		<div>Venues</div>
+		<%= f.collection_check_boxes :venue_ids, current_merchant.venues, :id, :display_name, :item_wrapper_tag => :div, :item_wrapper_class => 'checkbox', :checked => @venue_ids %>
+	</div>
+	<%= f.button :submit, :class => "btn primary noWrap" %>
 <% end %>
+</div>

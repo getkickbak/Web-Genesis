@@ -38,7 +38,7 @@ gem 'dm-observer',          DM_VERSION
 gem 'dm-accepts_nested_attributes', DM_VERSION, :git => 'git://github.com/snusnu/dm-accepts_nested_attributes'
 gem 'dm-devise',            '~> 1.5.0'
 gem 'cancan'
-gem 'simple_form' 
+gem 'simple_form', '~> 2.0.0.rc'
 gem 'jquery-rails'  
 gem 'rqrcode_png', '~> 0.1.1'
 gem 'pdfkit'

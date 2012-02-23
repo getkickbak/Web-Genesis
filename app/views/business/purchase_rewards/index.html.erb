@@ -1,25 +1,17 @@
 <h1>Listing Rewards</h1>
 
-<table>
+<div class="content row">
 	<% @venues.each do |venue| %>
-	<tr>
-		<td><%= venue.name %></td>
-		<td></td>
-		<td></td>
-		<td></td>
-	</tr>
+	<div><%= venue.name %></div>
 	<% venue.purchase_rewards.each do |purchase_reward| %>
-	<tr>
-		<td><%= purchase_reward.title %></td>
-		<td><%= link_to 'Show', purchase_reward_path(purchase_reward) %></td>
-		<td><%= link_to 'Edit', edit_purchase_reward_path(purchase_reward) %></td>
-		<td><%= link_to 'Destroy', purchase_reward_path(purchase_reward), :confirm => 'Are you sure?', :method => :delete %></td>
-	</tr>
+	<div>
+		<div><%= link_to purchase_reward.title, purchase_reward_path(purchase_reward) %></div>
+		<div><%= link_to 'Edit', edit_purchase_reward_path(purchase_reward) %></div>
+		<div><%= link_to 'Destroy', purchase_reward_path(purchase_reward), :confirm => 'Are you sure?', :method => :delete %></div>
+	</div>
 	<% end %>
 	<% end %>
-</table>
-
-<br />
+</div>
 
 <%= link_to 'New Reward', new_purchase_reward_path %>
 <% if current_merchant.status == :pending %>

@@ -1,36 +1,36 @@
-<p id="notice"><%= notice %></p>
-
-<p>
-  <b>Type:</b>
-  <%= ChallengeType.value_to_name[@challenge.type.value][I18n.locale] %>
+<p id="notice">
+	<%= notice %>
 </p>
-
-<p>
-  <b>Name:</b>
-  <%= @challenge.name %>
-</p>
-
-<p>
-  <b>Description:</b>
-  <%= @challenge.description %>
-</p>
-
-<% if @challenge.type.value == 'checkin' %>
-<p>
-  <b>Visits:</b>
-  <%= @challenge.data.visits %>
-</p>
-<% elsif @challenge.type.value == 'lottery'%>
-<p>
-  <b>Odds:</b>
-  <%= @challenge.data.odds %>
-</p>
-<% end %>
-
-<p>
-  <b>Points:</b>
-  <%= @challenge.points %>
-</p>
-
+<div class="content row">
+	<div class="span15">
+	<p>
+		<b>Type:</b>
+		<%= ChallengeType.value_to_name[@challenge.type.value][I18n.locale] %>
+	</p>
+	<p>
+		<b>Name:</b>
+		<%= @challenge.name %>
+	</p>
+	<p>
+		<b>Description:</b>
+		<%= @challenge.description %>
+	</p>
+	<% if @challenge.type.value == 'checkin' %>
+	<p>
+		<b>Visits:</b>
+		<%= @challenge.data.visits %>
+	</p>
+	<% elsif @challenge.type.value == 'lottery'%>
+	<p>
+		<b>Odds:</b>
+		<%= @challenge.data.odds %>
+	</p>
+	<% end %>
+	<p>
+		<b>Points:</b>
+		<%= @challenge.points %>
+	</p>
+	</div>
+</div>
 <%= link_to 'Edit', edit_challenge_path(@challenge) %> |
-<%= link_to 'Back', challenges_path %>
+<%= link_to 'Back', challenges_path %> 

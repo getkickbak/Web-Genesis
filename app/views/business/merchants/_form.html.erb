@@ -1,3 +1,4 @@
+<div class="content row">
 <%= simple_form_for @merchant, :url => update_account_path do |f| %>
 	<%= f.input :name %>
 	<%= f.input :email %>
@@ -6,5 +7,6 @@
 	<%= f.input :password %>
 	<%= f.input :password_confirmation %>
 	<%= f.input :phone %>
-	<%= f.button :submit %>
+	<%= f.button :submit, :class => "btn primary noWrap" %>
 <% end %>
+</div>
