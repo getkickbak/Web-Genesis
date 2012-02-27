@@ -23,7 +23,7 @@ Ext.require('Ext.plugin.PullRefresh', function()
             {
                getPhoto : function(values)
                {
-                  return values.Merchant['photo_url'];
+                  return values.Merchant['icon_url'];
                },
                getAddress : function(values)
                {
@@ -52,6 +52,7 @@ Ext.require('Ext.plugin.PullRefresh', function()
          {
             docked : 'bottom',
             cls : 'checkInNow',
+            tag : 'checkInNow',
             xtype : 'container',
             layout :
             {
@@ -82,12 +83,13 @@ Ext.require('Ext.plugin.PullRefresh', function()
       beforeDeactivate : function()
       {
       },
-      afterActivate : function()
+      afterActivate : function(activeItem, oldActiveItem)
       {
+         /*
          var viewport = Ext.ComponentQuery.query('viewportview')[0];
-         var cvenueId = viewport.getCheckinInfo().venueId;
-         var show = cvenueId > 0;
+         var show = viewport.getCheckinInfo().venueId > 0;
          viewport.query('button[tag=main]')[0][show ? 'show' : 'hide']();
+         */
       },
       afterDeactivate : function()
       {

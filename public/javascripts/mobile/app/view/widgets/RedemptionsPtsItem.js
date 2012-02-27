@@ -74,6 +74,11 @@ Ext.define('Genesis.view.widgets.RedemptionsPtsItem',
    },
    updateRecord : function(newRecord)
    {
+      if(!newRecord)
+      {
+         return;
+      }
+
       var me = this, dataview = me.config.dataview, data = dataview.prepareData(newRecord.getData(true), dataview.getStore().indexOf(newRecord), newRecord), items = me.getItems(), item = items.first(), dataMap = me.getDataMap(), componentName, component, setterMap, setterName;
 
       if(!item)

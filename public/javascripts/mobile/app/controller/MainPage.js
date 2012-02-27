@@ -26,7 +26,10 @@ Ext.define('Genesis.controller.MainPage',
             selector : 'mainpageview',
             autoCreate : true,
             xtype : 'mainpageview'
-         }
+         },
+         mainCarousel : 'mainpageview',
+         mainBtn : 'viewportview button[tag=main]',
+         infoBtn : 'viewportview button[tag=info]'
       },
       control :
       {
@@ -89,18 +92,7 @@ Ext.define('Genesis.controller.MainPage',
       Ext.regStore('EligibleRewardsStore',
       {
          model : 'Genesis.model.EligibleReward',
-         autoLoad : false,
-         listeners :
-         {
-            'metachange' : Ext.bind(function(store, meta)
-            {
-               var cntlr = this.getApplication().getController('Checkins');
-               var record = Ext.StoreMgr.get('CheckinExploreStore').getById(meta.venueId);
-               
-               store.getProxy().getReader().rawData.metaData = record;
-               cntlr.setupVenueInfoCommon(record);
-            }, this)
-         }
+         autoLoad : false
       });
       console.log("MainPage Init");
    },
@@ -127,7 +119,11 @@ Ext.define('Genesis.controller.MainPage',
       }
       else
       {
-         Ext.Msg.alert("", msg);
+         Ext.device.Notification.show(
+         {
+            title : 'Error',
+            message : msg
+         });
       }
       return false;
    },
@@ -142,46 +138,65 @@ Ext.define('Genesis.controller.MainPage',
    },
    onActivate : function(c, eOpts)
    {
-      var show = this.getViewport().getCheckinInfo().venueId > 0;
-      this.getMain().query('tabbar[cls=navigationBarBottom]')[0][show ? 'show' : 'hide']();
+      var viewport = this.getViewport();
+      var show = viewport.getCheckinInfo().venueId > 0;
 
-      if(!this.initialized)
+      var carousel = this.getMainCarousel();
+      carousel.removeAll(true);
+
+      var items = Ext.StoreMgr.get('MainPageStore').getRange();
+      var list = Ext.Array.clone(items);
+      if(!show)
       {
-         this.initialized = true;
-
-         var carousel = this.getMain().query('carousel')[0];
-         var items = Ext.StoreMgr.get('MainPageStore').getRange();
-         for(var i = 0; i < Math.ceil(items.length / 6); i++)
+         Ext.Array.forEach(list, function(item, index, all)
          {
-            carousel.add(
+            switch (item.get('pageCntlr'))
             {
-               xtype : 'dataview',
-               cls : 'mainMenuSelections',
-               scrollable : false,
-               deferInitialRefresh : false,
-               store :
+               case 'MainPage' :
                {
-                  model : 'Genesis.model.frontend.MainPage',
-                  data : Ext.StoreMgr.get('MainPageStore').getRange(i * 6, (i * 6) + 5)
-               },
-               itemTpl : Ext.create('Ext.XTemplate',
-               // @formatter:off
-               '<div class="mainPageItemWrapper">', '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>', '<div class="photoName">{name}</div>', '</div>',
-               // @formatter:on
-               {
-                  getPhoto : function(photoURL)
-                  {
-                     return Ext.isEmpty(photoURL) ? Ext.BLANK_IMAGE_URL : photoURL;
-                  }
-               }),
-               autoScroll : true
-            });
-         }
+                  Ext.Array.remove(items, item);
+                  break;
+               }
+            }
+         });
       }
+      for(var i = 0; i < Math.ceil(items.length / 6); i++)
+      {
+         carousel.add(
+         {
+            xtype : 'dataview',
+            cls : 'mainMenuSelections',
+            scrollable : false,
+            deferInitialRefresh : false,
+            store :
+            {
+               model : 'Genesis.model.frontend.MainPage',
+               data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
+            },
+            itemTpl : Ext.create('Ext.XTemplate',
+            // @formatter:off
+            '<div class="mainPageItemWrapper">', '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>', '<div class="photoName">{name}</div>', '</div>',
+            // @formatter:on
+            {
+               getPhoto : function(photoURL)
+               {
+                  return Ext.isEmpty(photoURL) ? Ext.BLANK_IMAGE_URL : photoURL;
+               }
+            }),
+            autoScroll : true
+         });
+      }
+      if(carousel.getInnerItems().length > 0)
+      {
+         carousel.setActiveItem(0);
+      }
+      this.getInfoBtn().show();
+      this.getMainBtn().hide();
 
    },
    onDeactivate : function(c, eOpts)
    {
+      this.getInfoBtn().hide();
    },
    // --------------------------------------------------------------------------
    // Login Page
@@ -194,6 +209,18 @@ Ext.define('Genesis.controller.MainPage',
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
+   openPage : function(subFeature)
+   {
+      switch (subFeature)
+      {
+         case 'main' :
+         {
+            var cntlr = this.getViewPortCntlr();
+            cntlr.onMainButtonTap();
+            break;
+         }
+      }
+   },
    getMainPage : function()
    {
       return this.getMain();

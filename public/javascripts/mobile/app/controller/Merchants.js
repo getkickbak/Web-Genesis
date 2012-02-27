@@ -12,12 +12,20 @@ Ext.define('Genesis.controller.Merchants',
    {
       refs :
       {
-         page :
-         {
-            selector : 'merchantaccountpageview',
-            autoCreate : true,
-            xtype : 'merchantaccountpageview'
-         },
+         /*
+          page :
+          {
+          selector : 'merchantaccountpageview',
+          autoCreate : true,
+          xtype : 'merchantaccountpageview'
+          },
+          */
+         pagePanel : 'merchantaccountview dataview[tag=menchantPagePanel]',
+         merchantFeedContainer : 'merchantaccountview container[tag=merchantFeedContainer]',
+         merchantDescContainer : 'merchantaccountview container[tag=merchantDescContainer]',
+         merchantDescPanel : 'merchantaccountview container[tag=merchantDescPanel]',
+         merchantAddress : 'merchantaccountview component[tag=merchantAddress]',
+         merchantStats : 'merchantaccountview formpanel[tag=merchantStats]',
          explore :
          {
             selector : 'merchantaccountexploreview',
@@ -29,7 +37,9 @@ Ext.define('Genesis.controller.Merchants',
             selector : 'merchantaccountview',
             autoCreate : true,
             xtype : 'merchantaccountview'
-         }
+         },
+         shareBtn : 'viewportview button[tag=shareBtn]',
+         mainBtn : 'viewportview button[tag=main]'
       },
       control :
       {
@@ -46,7 +56,23 @@ Ext.define('Genesis.controller.Merchants',
          {
             select : 'onMainSelect',
             disclose : 'onMainDisclose'
+         },
+         'merchantaccountview tabbar[cls=navigationBarBottom] button[tag=checkin]' :
+         {
+            tap : 'onCheckinTap'
+         },
+         'merchantaccountview tabbar[cls=navigationBarBottom] button[tag=browse]' :
+         {
+            tap : 'onBrowseTap'
          }
+         /*
+          ,'merchantaccountpageview' :
+          {
+          activate : 'onPageActivate',
+          deactivate : 'onPageDeactivate'
+          }
+          */
+
       }
    },
    init : function()
@@ -65,28 +91,51 @@ Ext.define('Genesis.controller.Merchants',
       var merchantId = vrecord.getMerchant().getId();
       var crecord = cstore.getById(merchantId);
 
+      // Refresh Merchant Panel Info
+      this.getPagePanel().getStore().setData(vrecord);
+
       this.setCustomerStoreFilter(customerId, merchantId);
       page.query('component[tag=photo]')[0].setData(
       {
-         photoUrl : vrecord.getMerchant().data.photo_url
+         photoUrl : vrecord.getMerchant().get('icon_url')
       });
-      page.query('formpanel')[0].setValues(
+
+      if(viewport.getCheckinInfo().venueId == venueId)
       {
-         lastCheckin : crecord.getLastCheckin().data.time,
-         regMembers : 0,
-         ptsEarn : 0,
-         ptsSpent : 0,
-         ptsAvail : crecord.get('points')
-      });
+         page.query('formpanel')[0].setValues(
+         {
+            lastCheckin : crecord.getLastCheckin().get('time'),
+            regMembers : 0,
+            ptsEarn : 0,
+            ptsSpent : 0,
+            ptsAvail : crecord.get('points')
+         });
+         this.getMerchantDescContainer().hide();
+         this.getMerchantFeedContainer().show();
+         this.getMerchantAddress().hide();
+         this.getMerchantStats().show();
+      }
+      else
+      {
+         this.getMerchantFeedContainer().hide();
+         this.getMerchantDescPanel().setData(vrecord.getMerchant());
+         this.getMerchantDescContainer().show();
+         this.getMerchantAddress().setData(vrecord.getData(true));
+         this.getMerchantAddress().show();
+         this.getMerchantStats().hide();
+      }
+
       var cvenueId = viewport.getCheckinInfo().venueId;
       var show = (venueId != cvenueId) && (cvenueId > 0);
-      viewport.query('button[tag=main]')[0][show ? 'show' : 'hide']();
-      viewport.query('button[tag=browse]')[0].show();
+      this.getMainBtn()[show ? 'show' : 'hide']();
+      
+      //
+      // Scroll to the Top of the Screen
+      //
+      this.getMain().getScrollable().getScroller().scrollTo(0, 0);
    },
    onMainDeactivate : function()
    {
-      var viewport = this.getViewport();
-      viewport.query('button[tag=browse]')[0].hide();
    },
    onMainDisclose : function(list, record, target, index, e, eOpts)
    {
@@ -97,14 +146,35 @@ Ext.define('Genesis.controller.Merchants',
       this.onMainDisclose(d, model);
       return false;
    },
+   onCheckinTap : function(b, e, eOpts)
+   {
+      this.getApplication().getController('Checkins').openPage('checkin');
+   },
+   onBrowseTap : function(b, e, eOpts)
+   {
+      this.getApplication().getController('Checkins').openPage('explore');
+   },
+   // --------------------------------------------------------------------------
+   // Merchant Account Page
+   // --------------------------------------------------------------------------
+   onPageActivate : function()
+   {
+      var venueId = viewport.getVenueId();
+      var cstore = Ext.StoreMgr.get('CustomerStore');
+      var vrecord = Ext.StoreMgr.get('VenueStore').getById(venueId);
+   },
+   onPageDeactivate : function()
+   {
+   },
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
    getMainPage : function()
    {
       // Check if this is the first time logging into the venue
-      var view = (this.getViewport().getCustomerId() > 0);
-      return this[view ? 'getMain' : 'getPage']();
+      //var view = (this.getViewport().getCustomerId() > 0);
+      //return this[view ? 'getMain' : 'getPage']();
+      return this.getMain();
    },
    openMainPage : function()
    {

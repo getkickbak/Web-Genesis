@@ -1,6 +1,6 @@
 Ext.define('Genesis.view.Accounts',
 {
-   extend : 'Genesis.view.ViewBase',
+   extend : 'Ext.Container',
    requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar'],
    alias : 'widget.accountsview',
    config :
@@ -50,6 +50,7 @@ Ext.define('Genesis.view.Accounts',
                xtype : 'list',
                store : 'AccountsStore',
                scrollable : false,
+               ui : 'bottom-round',
                cls : 'accountsPanel separator_pad',
                // @formatter:off
                itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>' + '<div class="listItemDetailsWrapper">' + '<div class="itemTitle">{name}</div>' + '<div class="itemDesc noWrap">{[this.getAddress(values)]}</div>' + '</div>',
@@ -57,7 +58,7 @@ Ext.define('Genesis.view.Accounts',
                {
                   getPhoto : function(values)
                   {
-                     return values.Merchant['photo_url'];
+                     return values.Merchant['icon_url'];
                   },
                   getAddress : function(values)
                   {
@@ -91,7 +92,7 @@ Ext.define('Genesis.view.Accounts',
             {
                getPhoto : function(values)
                {
-                  return values.Merchant['photo_url'];
+                  return values.Merchant['icon_url'];
                },
                getAddress : function(values)
                {
@@ -149,5 +150,17 @@ Ext.define('Genesis.view.Accounts',
             xtype : 'spacer'
          }]
       }]
+   },
+   beforeActivate : function()
+   {
+   },
+   beforeDeactivate : function()
+   {
+   },
+   afterActivate : function(activeItem, oldActiveItem)
+   {
+   },
+   afterDeactivate : function()
+   {
    }
 });

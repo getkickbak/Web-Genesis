@@ -232,7 +232,6 @@ Ext.define('Genesis.data.proxy.OfflineServer',
    {
       var me = this, action = operation.getAction(), reader, resultSet;
 
-      // Assume Success if running under PhotoGap even if StatusCode == 0
       if((success === true) || (phoneGapAvailable === true))
       {
          reader = me.getReader();
@@ -240,15 +239,14 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          try
          {
             resultSet = reader.process(response);
-            //console.log('Ajax call is successful status=[' + response.status + '] url=[' + request.getUrl() + ']');
          }
          catch(e)
          {
-            console.log('Ajax call is failed message=[' + e.getMessage() + '] url=[' + request.getUrl() + ']');
+            console.log('Ajax call is failed message=[' + e.message + '] url=[' + request.getUrl() + ']');
             operation.setException(operation,
             {
                status : null,
-               statusText : e.getMessage()
+               statusText : e.message
             });
 
             me.fireEvent('exception', this, response, operation);
@@ -378,6 +376,57 @@ Ext.define('Genesis.field.Select',
       }
 
       return this.listPanel;
+   }
+});
+
+//---------------------------------------------------------------------------------------------------------------------------------
+// Ext.dataview.element.List
+//---------------------------------------------------------------------------------------------------------------------------------
+/**
+ * @private
+ */
+Ext.define('Genesis.dataview.element.List',
+{
+   override : 'Ext.dataview.element.List',
+
+   updateListItem : function(record, item)
+   {
+      var me = this, dataview = me.dataview, extItem = Ext.fly(item), innerItem = extItem.down(me.labelClsCache, true), data = record.getData(true), disclosure = data && data.hasOwnProperty('disclosure'), iconSrc = data && data.hasOwnProperty('iconSrc'), disclosureEl, iconEl;
+
+      innerItem.innerHTML = dataview.getItemTpl().apply(data);
+
+      if(disclosure && dataview.getOnItemDisclosure())
+      {
+         disclosureEl = extItem.down(me.disclosureClsCache);
+         disclosureEl[disclosure ? 'removeCls' : 'addCls'](me.hiddenDisplayCache);
+      }
+
+      if(dataview.getIcon())
+      {
+         iconEl = extItem.down(me.iconClsCache, true);
+         iconEl.style.backgroundImage = iconSrc ? 'url("' + iconSrc + '")' : '';
+      }
+   }
+});
+
+//---------------------------------------------------------------------------------------------------------------------------------
+// Ext.tab.Bar
+//---------------------------------------------------------------------------------------------------------------------------------
+/**
+ * @private
+ */
+Ext.define('Genesis.tab.Bar',
+{
+   override : 'Ext.tab.Bar',
+
+   /**
+    * @private
+    * Fires off the tabchange action
+    */
+   doSetActiveTab : function(newTab, oldTab)
+   {
+      this.callParent(arguments);
+      this.fireAction('tabchange', [this, newTab, oldTab]);
    }
 });
 

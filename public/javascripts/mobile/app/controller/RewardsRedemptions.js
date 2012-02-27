@@ -13,6 +13,9 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    {
       refs :
       {
+         backButton : 'viewportview button[text=Close]',
+         doneBtn : 'viewportview button[tag=done]',
+         editBtn : 'viewportview button[tag=edit]',
          rewards :
          {
             selector : 'rewardsview',
@@ -24,7 +27,18 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             selector : 'redemptionsview',
             autoCreate : true,
             xtype : 'redemptionsview'
-         }
+         },
+         rewardsCart : 'rewardsview dataview[tag=rewardsCart]',
+         rewardsCartTotal : 'rewardsview component[tag=total]',
+         earnPtsBtn : 'rewardsview button[tag=cart]',
+         rewardsContainer : 'rewardsview container[tag=rewards]',
+         navigationBarBottom : 'rewardsview tabbar[cls=navigationBarBottom]',
+         redemptionsList : 'redemptionsview list[tag=redemptionsList]',
+         redemptionsPts : 'redemptionsview component[tag=points]',
+         redemptionsDesc : 'redemptionsview component[tag=desc]',
+         redemptionsContainer : 'redemptionsview container[tag=redemptionsView]',
+         redemptionsDataview : 'redemptionsview dataview[tag=redemptionsDataview]',
+         redemptionsDataviewWrapper : 'redemptionsview container[tag=redemptionsDataviewWrapper]'
       },
       control :
       {
@@ -45,6 +59,14 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    {
       this.control(
       {
+         'viewportview button[tag=edit]' :
+         {
+            tap : this.onRewardsCartEditTap
+         },
+         'viewportview button[tag=done]' :
+         {
+            tap : this.onRewardsCartDoneTap
+         },
          'rewardsview' :
          {
             activate : this.onRewardsActivate,
@@ -57,14 +79,6 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          'rewardsview button[tag=cart]' :
          {
             tap : this.onRewardsShopCartTap
-         },
-         'rewardsview button[text=Edit]' :
-         {
-            tap : this.onRewardsCartEditTap
-         },
-         'rewardsview button[text=Done]' :
-         {
-            tap : this.onRewardsCartDoneTap
          },
          'rewardsview dataview[tag=rewardsCart] rewardscartitem button[iconCls=delete_black2]' :
          {
@@ -184,14 +198,6 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    // --------------------------------------------------------------------------
    // Rewards Page
    // --------------------------------------------------------------------------
-   getRewardsCart : function()
-   {
-      return this.getRewards().query('dataview[tag=rewardsCart]')[0]
-   },
-   getEarnPtsBtn : function()
-   {
-      return this.getRewards().query('button[tag=cart]')[0]
-   },
    onRewardsActivate : function(c, newActiveItem, oldActiveItem, eOpts)
    {
       var viewport = this.getViewport();
@@ -236,15 +242,14 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          }
       });
       var show = viewport.getCheckinInfo().venueId == venueId;
-      this.getRewards().query('tabbar[cls=navigationBarBottom]')[0][show ? 'show':'hide' ]();
-   },
-   onRewardsDeactivate : function(c, newActiveItem, oldActiveItem, eOpts)
-   {
+      this.getNavigationBarBottom()[show ? 'show':'hide' ]();
       // Revert Back to old standard view
-      var container = this.getRewards().query('container[tag=rewards]')[0];
+      var container = this.getRewardsContainer();
       if(container)
       {
          var activeItem = container.getActiveItem();
+         var animation = container.getLayout().getAnimation();
+         animation.disable();
          switch (activeItem.config.tag)
          {
             case 'rewardTallyList' :
@@ -253,29 +258,40 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                break;
             }
          }
+         animation.enable();
       }
+   },
+   onRewardsDeactivate : function(c, newActiveItem, oldActiveItem, eOpts)
+   {
    },
    onRewardsShopCartTap : function(b, e, eOpts)
    {
       var earnPtsBtn = this.getEarnPtsBtn();
-      earnPtsBtn.updateActive(false);
-      var container = this.getRewards().query('container[tag=rewards]')[0];
+      var container = this.getRewardsContainer();
       var activeItem = container.getActiveItem();
       var animation = container.getLayout().getAnimation();
+
+      earnPtsBtn.updateActive(false);
       switch (activeItem.config.tag)
       {
          case 'rewardMainList' :
          {
+            this.getDoneBtn().hide();
+            this.getEditBtn().show();
             earnPtsBtn.setTitle('Order Menu');
             animation.setReverse(false);
             container.setActiveItem(1);
+            this.getBackButton().hide();
             break;
          }
          case 'rewardTallyList' :
          {
+            this.getDoneBtn().hide();
+            this.getEditBtn().hide();
             earnPtsBtn.setTitle('Check Out');
             animation.setReverse(true);
             container.setActiveItem(0);
+            this.getBackButton().show();
             break;
          }
       }
@@ -290,11 +306,28 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             if(response)
             {
                console.log("response - " + response);
+
+               this.clearRewardsCart();
+               //
+               // To-do : Update CustomerStore with returned value
+               //
+               this.popView();
                // Send to Server for Approval
+               Ext.device.Notification.show(
+               {
+                  title : 'Success',
+                  message : 'You haved Earned Your Points!'
+               });
+               Ext.device.Notification.vibrate();
             }
             else
             {
                console.log("response - NONE");
+               Ext.device.Notification.show(
+               {
+                  title : 'Error',
+                  message : 'Error Processing Your Earned Points'
+               });
             }
          }, this)
       });
@@ -324,56 +357,59 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       }
       else
       {
-         Ext.Msg.alert("", "You need to Check-In first before you are elibigle for rewards");
+         Ext.device.Notification.show(
+         {
+            title : 'Warning',
+            message : 'You need to Check-In first before you are elibigle for Rewards'
+         });
       }
       // Deselect item
       list.deselect([record]);
       return false;
    },
-   onRewardsCartEditTap : function(b, e, eOpts)
+   onRewardsCartEditTapCommon : function(b, toggle)
    {
+      this.getDoneBtn()[toggle[0]]();
+      this.getEditBtn()[toggle[1]]();
       b.hide();
-      Ext.ComponentQuery.query('button[text=Done]')[0].show();
-      var buttons = Ext.ComponentQuery.query('rewardscartitem button[iconCls=delete_black2]');
+      var buttons = Ext.ComponentQuery.query('rewardscartitem button[tag=deleteItem]');
       var pts = Ext.ComponentQuery.query('rewardscartitem component[cls=points]');
       Ext.each(buttons, function(item)
       {
-         item.show();
+         item[toggle[0]]();
       })
       Ext.each(pts, function(item)
       {
-         item.hide();
+         item[toggle[1]]();
       })
+   },
+   onRewardsCartEditTap : function(b, e, eOpts)
+   {
+      this.onRewardsCartEditTapCommon(b, ['show', 'hide']);
    },
    onRewardsCartDoneTap : function(b, e, eOpts)
    {
-      b.hide();
-      Ext.ComponentQuery.query(' button[text=Edit]')[0].show();
-      var buttons = Ext.ComponentQuery.query('rewardscartitem button[iconCls=delete_black2]');
-      var pts = Ext.ComponentQuery.query('rewardscartitem component[cls=points]');
-      Ext.each(buttons, function(item)
-      {
-         item.hide();
-      })
-      Ext.each(pts, function(item)
-      {
-         item.show();
-      })
+      this.onRewardsCartEditTapCommon(b, ['hide', 'show']);
    },
    onRewardsCartItemDeleteTap : function(b, e, eOpts)
    {
+      var me = this;
+      var viewport = me.getViewport();
       var item = b.up('rewardscartitem');
-      var cart = this.getRewardsCart();
+      var cart = me.getRewardsCart();
       var index = cart.getViewItems().indexOf(item);
       var record = cart.getStore().getAt(index);
       var store = cart.getStore();
-
-      store.remove(record);
-      this.updateRewardsCartTotal(store.getRange());
+      var properties = item.getAnimateProperties();
+      item.animate(item, item.renderElement, properties.element.from, properties.element.to, 1000, function()
+      {
+         store.remove(record);
+         me.updateRewardsCartTotal(store.getRange());
+      });
    },
    updateRewardsCartTotal : function(cartItems)
    {
-      var total = this.getRewards().query('component[tag=total]')[0], totalPts = 0;
+      var total = this.getRewardsCartTotal(), totalPts = 0;
       for(var i = 0; i < cartItems.length; i++)
       {
          totalPts += cartItems[i].get('qty') * cartItems[i].get('points');
@@ -399,7 +435,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
 
       return true;
    },
-   onCheckInTap : function(b, e, eOpts)
+   clearRewardsCart : function()
    {
       //
       // Clears the RewardsCart
@@ -412,13 +448,17 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       // Automatically update totals
       this.updateRewardsCartTotal([]);
    },
+   onCheckInTap : function(b, e, eOpts)
+   {
+      this.clearRewardsCart();
+   },
    // --------------------------------------------------------------------------
    // Redemptions Page
    // --------------------------------------------------------------------------
    getLists : function()
    {
-      var dataview = this.getRedemptions().query('dataview[tag=redemptionsDataview]')[0];
-      var list = this.getRedemptions().query('list[tag=redemptionsList]')[0];
+      var dataview = this.getRedemptionsDataview();
+      var list = this.getRedemptionsList();
 
       return (
          {
@@ -468,6 +508,10 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                var btn = segBtns.query('button[tag=detailed]')[0];
                segBtns.setPressedButtons([btn]);
                this.onRedemptionsViewToggle(null, btn, true);
+               //
+               // Scroll to the Top of the Screen
+               //
+               this.getRedemptions().getScrollable().getScroller().scrollTo(0, 0);
             }
             else
             {
@@ -480,12 +524,11 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    },
    onRedemptionsItemSelect : function(d, model, eOpts)
    {
-      var page = this.getRedemptions();
-      page.query('component[tag=points]')[0].setData(
+      this.getRedemptionsPts().setData(
       {
          points : model.get('points')
       });
-      page.query('component[tag=desc]')[0].setData(
+      this.getRedemptionsDesc().setData(
       {
          title : model.get('title')
       });
@@ -508,19 +551,37 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                if(response)
                {
                   console.log("response - " + response);
+                  //
+                  // To-do :  Update CustomerStore with returned value
+                  //
+                  this.popView();
                   // Send to Server for approval
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Success',
+                     message : 'Points Redeemed!'
+                  });
+                  Ext.device.Notification.vibrate();
                }
                else
                {
                   console.log("Failed to get QR Code from Scanner");
-                  Ext.Msg.alert("", "Failed to get QR Code from Scanner");
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Error',
+                     message : 'Failed to get QR Code from Scanner'
+                  });
                }
             }, this)
          });
       }
       else
       {
-         Ext.Msg.alert("", "You need to Check-In first before you are elibigle for redemptions");
+         Ext.device.Notification.show(
+         {
+            title : 'Warning',
+            message : 'You need to Check-In first before you are elibigle for Redemptions'
+         });
       }
    },
    onRedemptionsItemListSelect : function(list, model, eOpts)
@@ -535,11 +596,44 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          //
          // Get Show Scanner
          //
-         Ext.Msg.alert("", "Show QR Code Scanner");
+         this.scanQRCode(
+         {
+            callback : Ext.bind(function(response)
+            {
+               if(response)
+               {
+                  console.log("response - " + response);
+                  //
+                  // To-do :  Update CustomerStore with returned value
+                  //
+                  //this.popView();
+                  // Send to Server for approval
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Success',
+                     message : 'Points Redeemed!'
+                  });
+                  Ext.device.Notification.vibrate();
+               }
+               else
+               {
+                  console.log("Failed to get QR Code from Scanner");
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Error',
+                     message : 'Failed to get QR Code from Scanner'
+                  });
+               }
+            }, this)
+         });
       }
       else
       {
-         Ext.Msg.alert("", "You need to Check-In first before you are elibigle for redemptions");
+         Ext.device.Notification.show(
+         {
+            title : 'Warning',
+            message : 'You need to Check-In first before you are elibigle for Redemptions'
+         });
       }
       return false;
    },
@@ -547,7 +641,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    {
       if(pressed)
       {
-         var view = this.getRedemptions().query('container[tag=redemptionsView]')[0];
+         var view = this.getRedemptionsContainer();
          var lists = this.getLists();
          var dataview = lists.dataview;
          var list = lists.list;
@@ -559,7 +653,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          {
             case 'detailed' :
             {
-               container = this.getRedemptions().query('container[tag=redemptionsDataviewWrapper]')[0];
+               container = this.getRedemptionsDataviewWrapper();
                var items = container.getItems();
 
                view.setActiveItem(0);
@@ -578,7 +672,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                view.setActiveItem(1);
 
                // Set Container Height
-               height = Ext.fly(container.element.query('.x-list')[0]).getHeight();
+               height = Ext.fly(container.element.query('.x-list-container')[0]).getHeight();
                break;
             }
          }
@@ -665,7 +759,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             page = this.getRedemptions();
             if(!this.initReedeem)
             {
-               var scrollable = page.query('dataview[tag=redemptionsDataview]')[0].getScrollable();
+               var scrollable = this.getRedemptionsDataview().getScrollable();
                scrollable.getScroller().on(
                {
                   scope : this,

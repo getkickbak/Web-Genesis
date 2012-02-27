@@ -86,13 +86,15 @@ Ext.define('Genesis.view.Redemptions',
             },
             items : [
             {
-               xtype : 'dataview',
+               xtype : 'list',
                scrollable :
                {
                   direction : 'horizontal',
                   indicators : false
                },
+               inline: { wrap: false },
                cls : 'redemptionsDataview separator',
+               loadingText : null, // Disable Loading Mask
                tag : 'redemptionsDataview',
                store : 'RedemptionsStore',
                // @formatter:off
@@ -161,6 +163,7 @@ Ext.define('Genesis.view.Redemptions',
          {
             xtype : 'list',
             scrollable : false,
+            ui : 'bottom-round',
             store : 'RedemptionsStore',
             cls : 'redemptionsList',
             tag : 'redemptionsList',

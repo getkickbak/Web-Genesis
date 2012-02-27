@@ -36,7 +36,7 @@
       <script type="text/javascript" src="http://127.0.0.1:8080/target/target-script-min.js"></script>
       directory and include it here -->
       <!-- Debug Javascript on mobile browser -->
-      <script type="text/javascript" src="lib/sencha-touch-2-b2/builds/sencha-touch-all.js"></script>
+      <script type="text/javascript" src="lib/sencha-touch-2-rc/builds/sencha-touch-all.js"></script>
       <!--
       Phone Gap Libs
       -->
@@ -45,16 +45,22 @@
          var phoneGapAvailable = true;
          var appPath = "app";
 
+         var browser = Ext.browser;
+         browser.setFlag('WebView');
+         browser.setFlag('PhoneGap');
+
          Ext.Loader.setConfig(
          {
             enabled : false,
             paths :
             {
+               Ext : 'lib/sencha-touch-2-rc/src',
                Genesis : appPath
             }
          });
 
       </script>
+      <script type="text/javascript" src="core.js"></script>
       <script type="text/javascript" src="app-all.js"></script>
       <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
       <script type="text/javascript">
@@ -84,12 +90,10 @@
          function appInit()
          {
             console.log("appInit - start");
+            //Ext.require(['Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Connection', 'Ext.device.Notification',
+            // 'Ext.device.Orientation']);
             Ext.application(
             {
-               viewport :
-               {
-                  autoMaximize : false
-               },
                profiles : ['Iphone', 'Android', 'Desktop'],
                //models : ['Checkin', 'Customer', 'Deal', 'EarnRewardRecord', 'Merchant', 'Reward', 'CustomerReward',
                // 'PurchaseReward',
@@ -128,14 +132,53 @@
 
          function onDeviceReady()
          {
+            Ext.triggerReady();
             document.addEventListener("online", function()
             {
                console.log("Phone is Online");
+               if(Ext.device)
+               {
+                  if(Ext.device.Connection.isOnline())
+                  {
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Network Connection Established',
+                        message : 'You are currently connected via ' + Ext.device.Connection.getType()
+                     });
+                  }
+                  else
+                  {
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Network Error',
+                        message : 'You are not currently connected'
+                     });
+                  }
+               }
             }, false);
 
             document.addEventListener("offline", function()
             {
                console.log("Phone is Offline");
+               if(Ext.device)
+               {
+                  if(Ext.device.Connection.isOnline())
+                  {
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Network Connection Established',
+                        message : 'You are currently connected via ' + Ext.device.Connection.getType()
+                     });
+                  }
+                  else
+                  {
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Network Error',
+                        messsage : 'You are not currently connected'
+                     });
+                  }
+               }
             }, false);
             document.addEventListener("pause", function()
             {
@@ -145,6 +188,17 @@
             document.addEventListener("resume", function()
             {
                console.log("App is Resumed");
+               if(Ext.device)
+               {
+                  if(!Ext.device.Connection.isOnline())
+                  {
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Network Error',
+                        messsage : 'You are not currently connected'
+                     });
+                  }
+               }
             }, false);
             console.log("onDeviceReady");
             appInit();

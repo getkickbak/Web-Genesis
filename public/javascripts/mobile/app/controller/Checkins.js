@@ -22,7 +22,12 @@ Ext.define('Genesis.controller.Checkins',
             selector : 'checkinmerchantview',
             autoCreate : true,
             xtype : 'checkinmerchantview'
-         }
+         },
+         checkinBtn : 'checkinmerchantview button[tag=checkinBtn]',
+         exploreBtn : 'checkinmerchantview button[tag=exploreBtn]',
+         checkInNowBar : 'checkinexploreview container[tag=checkInNow]',
+         shareBtn : 'viewportview button[tag=shareBtn]',
+         mainBtn : 'viewportview button[tag=main]'
       },
       control :
       {
@@ -101,6 +106,22 @@ Ext.define('Genesis.controller.Checkins',
          model : 'Genesis.model.Venue',
          autoLoad : false
       });
+
+      Ext.StoreMgr.get('EligibleRewardsStore').on('metachange', function(store, proxy, eOpts)
+      {
+         var venueId;
+         //
+         // To-do : Used our own VenueId for now, remote VenueId after full integration
+         //
+         venueId = (!Ext.isDefined(this.getCheckinMerchant().venueId)) ? proxy.getReader().metaData['venue_id'] : this.getCheckinMerchant().venueId;
+         var record = Ext.StoreMgr.get('CheckinExploreStore').getById(venueId);
+
+         //store.getProxy().getReader().rawData.metaData = record;
+         // Update Metadata
+         proxy.getReader().metaData = record;
+         this.setupVenueInfoCommon(record);
+      }, this);
+
       console.log("Checkins Init");
    },
    // --------------------------------------------------------------------------
@@ -123,8 +144,7 @@ Ext.define('Genesis.controller.Checkins',
                {
                   if(response)
                   {
-                     viewport.getActiveItem().hide();
-                     viewport.setMasked(
+                     Ext.Viewport.setMasked(
                      {
                         xtype : 'loadmask',
                         message : 'Checking in ...'
@@ -141,14 +161,17 @@ Ext.define('Genesis.controller.Checkins',
                   else
                   {
                      console.log("No QR Code Scanned!");
-                     Ext.Msg.alert("", "No QR Code Scanned!");
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Warning',
+                        message : 'No QR Code Scanned!'
+                     });
                   }
                }, this)
             });
             break;
          default:
-            viewport.getActiveItem().hide();
-            viewport.setMasked(
+            Ext.Viewport.setMasked(
             {
                xtype : 'loadmask',
                message : 'Retrieving Merchant Info'
@@ -181,17 +204,43 @@ Ext.define('Genesis.controller.Checkins',
    },
    onExploreActivate : function()
    {
-      Ext.StoreMgr.get('CheckinExploreStore').load();
-      var explore = this.getExplore();
+      var viewport = this.getViewport();
+
+      Ext.StoreMgr.get('CheckinExploreStore').load(
+      {
+         callback : function(records, operation, success)
+         {
+            if(success)
+            {
+               this.getCheckInNowBar().setDisabled(true);
+            }
+            else
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Warning',
+                  message : 'Error loading Nearby Venues'
+               });
+            }
+         },
+         scope : this
+      });
       switch (this.mode)
       {
          case 'checkin':
-            explore.query("button[tag=checkInNow]")[0].show();
+            this.getCheckInNowBar().show();
+            this.getCheckInNowBar().setDisabled(true);
             break;
          case 'explore' :
-            explore.query("button[tag=checkInNow]")[0].hide();
+            this.getCheckInNowBar().hide();
             break;
       }
+      var cvenueId = viewport.getCheckinInfo().venueId;
+      this.getMainBtn()[(cvenueId > 0) ? 'show' : 'hide']();
+      //
+      // Scroll to the Top of the Screen
+      //
+      //this.getExplore().getScrollable().getScroller().scrollTo(0, 0);
    },
    onExploreDeactivate : function()
    {
@@ -278,21 +327,28 @@ Ext.define('Genesis.controller.Checkins',
       switch (this.mode)
       {
          case 'checkin':
-            page.query('button[tag=checkinBtn]')[0].show();
-            page.query('button[tag=exploreBtn]')[0].hide();
+            this.getCheckinBtn().show();
+            this.getExploreBtn().hide();
             break;
          case 'explore' :
-            page.query('button[tag=exploreBtn]')[0].show();
-            page.query('button[tag=checkinBtn]')[0].hide();
+            this.getExploreBtn().show();
+            this.getCheckinBtn().hide();
             break;
       }
+      // Show Share Icon
+      this.getShareBtn().show();
+      this.getMainBtn().hide();
 
       this.onActivateCommon(map, null);
+      //
+      // Scroll to the Top of the Screen
+      //
+      page.getScrollable().getScroller().scrollTo(0, 0);
    },
    onDeactivate : function()
    {
-      var page = this.getCheckinMerchant();
       var viewport = this.getViewport();
+      var page = this.getCheckinMerchant();
       var venueId = viewport.getVenueId();
       // If we didn't check into this Venue, "reload" checked-in Venue info back
       if((venueId != page.venueId) && (venueId > 0))
@@ -305,6 +361,7 @@ Ext.define('Genesis.controller.Checkins',
          });
       }
       this.clearVenueInfo();
+      this.getShareBtn().hide();
    },
    onCheckinCommonTap : function(b, e, eOpts, mode, url, qrcode, position, callback)
    {
@@ -340,18 +397,9 @@ Ext.define('Genesis.controller.Checkins',
             scope : this,
             callback : function(records, operation, success)
             {
-               var metaData = store.getProxy().getReader().rawData.metaData;
+               var metaData = store.getProxy().getReader().metaData;
                if(success && metaData)
                {
-                  // ----- Temporary workround until metachange event is supported ------
-                  var page = this.getCheckinMerchant();
-                  var ccntlr = this.getApplication().getController('Checkins');
-                  metaData = Ext.StoreMgr.get('CheckinExploreStore').getById((page.venueId > 0) ? page.venueId : metaData.venue_id);
-
-                  store.getProxy().getReader().rawData.metaData = metaData;
-                  ccntlr.setupVenueInfoCommon(metaData);
-                  // ----- Temporary workround until metachange event is supported ------
-
                   var cstore = Ext.StoreMgr.get('CustomerStore');
                   var venueId = metaData.get('venue_id');
                   var customerId = cstore.getById(metaData.getMerchant().getId()).get('user_id');
@@ -384,10 +432,11 @@ Ext.define('Genesis.controller.Checkins',
                      default :
                         break;
                   }
-                  // Cleans up Back Buttons on Check-in
-                  viewport.reset();
-                  cview.show();
 
+                  // Cleans up Back Buttons on Check-in
+                  viewport.reset(this);
+
+                  Ext.Viewport.setMasked(false);
                   mcntlr.openMainPage();
 
                   if(callback)
@@ -397,24 +446,32 @@ Ext.define('Genesis.controller.Checkins',
                }
                else
                {
-                  Ext.Msg.alert("Error", "Cannot log into Venue");
-                  cview.show();
-
+                  Ext.Viewport.setMasked(false);
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Error',
+                     message : 'Error loading Nearby Venues from Server'
+                  });
                }
-               viewport.setMasked(false);
             }
          });
       }
    },
-   onCheckinScanTap : function(b, e, eOpts, einfo, callback)
+   onCheckinScanTap : function(b, e, eOpts, einfo)
    {
       // Scan QR Code to confirm Checkin
-      this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueScanCheckinUrl', 'scan', callback);
+      this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueScanCheckinUrl', 'scan', function()
+      {
+         Ext.device.Notification.vibrate();
+      });
    },
-   onCheckinTap : function(b, e, eOpts, einfo, callback)
+   onCheckinTap : function(b, e, eOpts, einfo)
    {
       // Scan QR Code to confirm Checkin
-      this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueCheckinUrl', 'scan', callback);
+      this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueCheckinUrl', 'scan', function()
+      {
+         Ext.device.Notification.vibrate();
+      });
    },
    onNonCheckinTap : function(b, e, eOpts, einfo, callback)
    {

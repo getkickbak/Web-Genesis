@@ -111,33 +111,6 @@ Ext.define('Genesis.view.Rewards',
             tag : 'rewardTallyList',
             items : [
             {
-               xtype : 'toolbar',
-               cls : 'earnPtsPanelHdr',
-               centered : false,
-               defaults :
-               {
-                  iconMask : true
-               },
-               items : [
-               {
-                  xtype : 'title',
-                  title : 'Shopping Cart'
-               },
-               {
-                  xtype : 'spacer',
-                  align : 'right'
-               },
-               {
-                  xtype : 'button',
-                  text : 'Edit'
-               },
-               {
-                  xtype : 'button',
-                  text : 'Done',
-                  hidden : true
-               }]
-            },
-            {
                flex : 1,
                cls : 'shadows',
                xtype : 'dataview',

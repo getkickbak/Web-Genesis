@@ -134,31 +134,33 @@ Ext.define('Genesis.controller.ControllerBase',
    pushView : function(view)
    {
       var viewport = this.getViewport();
-      var stack = viewport.getInnerItems();
-      /*
-       var lastView = (stack.length > 1) ? stack[stack.length - 2] : null;
-       if(lastView && lastView == view)
-       {
-       this.popView();
-       }
-       else
-       */
+      //var stack = viewport.getInnerItems();
+      var stack = viewport.stack;
+      var lastView = (stack.length > 1) ? stack[stack.length - 2] : null;
+      if(lastView && lastView == view)
       {
-         var items = viewport.getInnerItems();
-         if(items.indexOf(view) < 0)
-         {
-            viewport.push(view);
-         }
-         else
-         {
-            viewport.onItemAdd(view, items.length);
-            //viewport.setActiveItem(view);
-         }
+         this.popView();
+      }
+      else
+      {
+         /*
+          var items = viewport.getInnerItems();
+          if(items.indexOf(view) < 0)
+          {
+          viewport.push(view);
+          }
+          else
+          {
+          viewport.onItemAdd(view, items.length);
+          //viewport.setActiveItem(view);
+          }
+          */
+         viewport.push(view, this.getEventDispatcher().controller);
       }
    },
    popView : function(b, e, eOpts)
    {
-      this.getViewport().pop();
+      this.getViewport().pop(this.getEventDispatcher().controller);
    },
    getMainPage : Ext.emptyFn,
    openMainPage : Ext.emptyFn,

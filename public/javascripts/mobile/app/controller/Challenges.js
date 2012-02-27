@@ -72,6 +72,8 @@ Ext.define('Genesis.controller.Challenges',
       var record = Ext.StoreMgr.get('VenueStore').getById(venueId);
       var carousel = this.getChallengePage().query('carousel')[0];
       var items = record.challenges().getRange();
+      
+      carousel.removeAll(true);
       for(var i = 0; i < Math.ceil(items.length / 6); i++)
       {
          carousel.add(
@@ -84,16 +86,17 @@ Ext.define('Genesis.controller.Challenges',
             store :
             {
                model : 'Genesis.model.Challenge',
-               data : record.challenges().getRange(i * 6, (i * 6) + 5)
+               data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
             }
          });
       }
-      carousel.setActiveItem(0);
+      if(carousel.getInnerItems().length > 0)
+      {
+         carousel.setActiveItem(0);
+      }
    },
    onDeactivate : function()
    {
-      var carousel = this.getChallengePage().query('carousel')[0];
-      carousel.removeAll();
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

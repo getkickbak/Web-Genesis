@@ -1,42 +1,79 @@
 Ext.define('Genesis.navigation.Bar',
 {
    extend : 'Ext.navigation.Bar',
+   config :
+   {
+      defaultBackButtonText : 'Back',
+      altBackButtonText : 'Close',
+      mode : 'slide'
+   },
    /**
     * @private
     */
    onViewAdd : function(view, item, index)
    {
+      var me = this;
       var animation = view.getLayout().getAnimation();
+      var titleComponent = me.titleComponent;
 
-      this.endAnimation();
+      me.endAnimation();
 
-      this.backButtonStack.push(item.config.title || this.getDefaultBackButtonText());
+      me.backButtonStack.push(item.config.title || me.getDefaultBackButtonText());
+      me.refreshNavigationBarProxy();
 
-      this.refreshNavigationBarProxy();
-
-      if(animation && animation.isAnimation)
+      var proxy = me.getNavigationBarProxyProperties();
+      if(proxy.title.left)
       {
-         if(this.backButtonStack.length > 1)
-         {
-            this.pushTbAnimated(this.getBackButtonText());
-         }
-         else
-         {
-            //this.popBackButtonAnimated(this.getBackButtonText());
-         }
-         this.pushTitleAnimated(this.getTitleText());
+         //titleComponent.setLeft(proxy.title.left);
+      }
+      if(proxy.title.width)
+      {
+         titleComponent.setWidth(proxy.title.width);
+      }
+
+      var backButton = me.getBackButton();
+      //update the back button, and make sure it is visible
+      if(view.stack.length > 0)
+      {
+         backButton.setText(me.getBackButtonText());
+         backButton.show();
       }
       else
       {
-         if(this.backButtonStack.length > 1)
+         backButton.hide();
+      }
+
+      me.titleComponent.setTitle(me.getTitleText());
+      if(animation && animation.isAnimation && view.isPainted() && me.elementGhost)
+      {
+         //if(this.backButtonStack.length > 1)
+         if(view.getInnerItems().length > 1)
          {
-            this.pushTb(this.getBackButtonText());
+            me.pushTbAnimated(me.getBackButtonText(), this.controller);
+         }
+         else
+         {
+            if(me.elementGhost)
+            {
+               me.elementGhost.destroy();
+               delete me.elementGhost;
+            }
+            //this.popBackButtonAnimated(this.getBackButtonText());
+         }
+      }
+      else
+      {
+         //this.pushTitle(this.getTitleText());
+
+         //if(this.backButtonStack.length > 1)
+         if(view.getInnerItems().length > 1)
+         {
+            me.pushTb(me.getBackButtonText());
          }
          else
          {
             //this.popBackButton(this.getBackButtonText());
          }
-         this.pushTitle(this.getTitleText());
       }
    },
    /**
@@ -44,24 +81,33 @@ Ext.define('Genesis.navigation.Bar',
     */
    onViewRemove : function(view, item, index)
    {
+      var me = this;
       var animation = view.getLayout().getAnimation();
+      var titleComponent = me.titleComponent;
 
-      this.endAnimation();
+      me.endAnimation();
 
-      this.backButtonStack.pop();
+      me.backButtonStack.pop();
 
-      this.refreshNavigationBarProxy();
-
-      if(animation && animation.isAnimation)
+      me.refreshNavigationBarProxy();
+      var proxy = me.getNavigationBarProxyProperties();
+      if(proxy.title.left)
       {
-         this.popTbAnimated(this.getBackButtonText());
-         this.popTitleAnimated(this.getTitleText());
+         //titleComponent.setLeft(proxy.title.left);
+      }
+      if(proxy.title.width)
+      {
+         titleComponent.setWidth(proxy.title.width);
+      }
+      if(animation && animation.isAnimation && view.isPainted() && me.elementGhost)
+      {
+         me.popTbAnimated(me.getBackButtonText(), this.controller);
       }
       else
       {
-         this.popTb(this.getBackButtonText());
-         this.popTitle(this.getTitleText());
+         me.popTb(me.getBackButtonText());
       }
+      me.titleComponent.setTitle(me.getTitleText());
    },
    /**
     * Calculates and returns the position values needed for the back button when you are pushing a title.
@@ -69,82 +115,32 @@ Ext.define('Genesis.navigation.Bar',
     */
    getTbAnimationProperties : function()
    {
-      var me = this, element = me.renderElement, leftBoxElement = me.leftBox.renderElement, rightBoxElement = me.rightBox.renderElement, backButtonElement = me.getBackButton().renderElement;
-      var titleElement = me.titleComponent.renderElement, minButtonOffset = Math.min(element.getWidth() / 3, 200);
-
-      var proxyProperties = this.getNavigationBarProxyProperties(), buttonOffset, leftOffset, leftGhostOffset, rightOffset, rightGhostOffset;
-      buttonOffset = leftOffset = titleElement.getX() - element.getX();
-      leftGhostOffset = element.getX() - leftBoxElement.getX() - leftBoxElement.getWidth();
-      leftOffset = Math.min(leftOffset, minButtonOffset);
-      rightOffset = titleElement.getX() + element.getX();
-      rightGhostOffset = element.getX() - rightBoxElement.getX() - rightBoxElement.getWidth() - titleElement.getX() - titleElement.getWidth();
-
-      return (
+      var me = this, element = me.renderElement;
+      switch (this.getMode())
+      {
+         case 'slide' :
          {
-            backButton :
+            if(!this.slideAnimation)
             {
-               from :
+               this.slideAnimation = new Ext.fx.layout.card.Slide(
                {
-                  left : buttonOffset,
-                  width : proxyProperties.backButton.width,
-                  opacity : 0
-               },
-               to :
-               {
-                  left : 0,
-                  width : proxyProperties.backButton.width,
-                  opacity : 1
-               }
-            },
-            leftBox :
-            {
-               from :
-               {
-                  left : leftOffset,
-                  width : proxyProperties.leftBox.width,
-                  opacity : 0
-               },
-               to :
-               {
-                  left : 0,
-                  width : proxyProperties.leftBox.width,
-                  opacity : 1
-               }
-            },
-            rightBox :
-            {
-               from :
-               {
-                  left : rightOffset,
-                  width : proxyProperties.rightBox.width,
-                  opacity : 0
-               },
-               to :
-               {
-                  left : 0,
-                  width : proxyProperties.rightBox.width,
-                  opacity : 1
-               }
-            },
-            leftGhost :
-            {
-               from : null,
-               to :
-               {
-                  left : leftGhostOffset,
-                  opacity : 0
-               }
-            },
-            rightGhost :
-            {
-               from : null,
-               to :
-               {
-                  left : rightGhostOffset,
-                  opacity : 0
-               }
+                  direction : 'left'
+               });
             }
-         });
+            this.slideAnimation.setReverse(false);
+            return this.slideAnimation;
+         }
+         case 'fade' :
+         {
+            if(!this.fadeAnimation)
+            {
+               this.fadeAnimation = new Ext.fx.layout.card.Fade();
+            }
+            this.fadeAnimation.setReverse(false);
+            return this.fadeAnimation;
+         }
+      }
+
    },
    /**
     * Calculates and returns the position values needed for the back button when you are popping a title.
@@ -152,173 +148,9 @@ Ext.define('Genesis.navigation.Bar',
     */
    getTbAnimationReverseProperties : function()
    {
-      var me = this, element = me.renderElement;
-      var leftBoxElement = me.leftBox.renderElement, rightBoxElement = me.rightBox.renderElement;
-      var titleElement = me.titleComponent.renderElement;
-      var minButtonGhostOffset = Math.min(element.getWidth() / 3, 200);
-
-      var proxyProperties = this.getNavigationBarProxyProperties(), buttonOffset, leftOffset, leftGhostOffset, rightOffset, rightGhostOffset;
-      buttonOffset = leftOffset = element.getX() - leftBoxElement.getX() - leftBoxElement.getWidth();
-      rightOffset = element.getX() - rightBoxElement.getX() - rightBoxElement.getWidth();
-      leftGhostOffset = titleElement.getX() - leftBoxElement.getWidth();
-      leftGhostOffset = Math.min(leftGhostOffset, minButtonGhostOffset);
-      rightGhostOffset = titleElement.getX() + rightBoxElement.getWidth();
-
-      return (
-         {
-            backButton :
-            {
-               from :
-               {
-                  left : buttonOffset,
-                  width : proxyProperties.backButton.width,
-                  opacity : 0
-               },
-               to :
-               {
-                  left : 0,
-                  width : proxyProperties.backButton.width,
-                  opacity : 1
-               }
-            },
-            leftBox :
-            {
-               from :
-               {
-                  left : leftOffset,
-                  width : proxyProperties.leftBox.width,
-                  opacity : 0
-               },
-               to :
-               {
-                  left : 0,
-                  width : proxyProperties.leftBox.width,
-                  opacity : 1
-               }
-            },
-            rightBox :
-            {
-               from :
-               {
-                  left : rightOffset,
-                  width : proxyProperties.rightBox.width,
-                  opacity : 0
-               },
-               to :
-               {
-                  left : 0,
-                  width : proxyProperties.rightBox.width,
-                  opacity : 1
-               }
-            },
-
-            leftGhost :
-            {
-               from : null,
-               to :
-               {
-                  left : leftGhostOffset,
-                  opacity : 0
-               }
-            },
-            rightGhost :
-            {
-               from : null,
-               to :
-               {
-                  left : leftGhostOffset,
-                  opacity : 0
-               }
-            }
-         });
-   },
-   /**
-    * Calculates and returns the position values needed for the title when you are pushing a title.
-    * @private
-    */
-   getTitleAnimationProperties : function()
-   {
-      var me = this, element = me.renderElement, titleElement = me.titleComponent.renderElement, proxyProperties = this.getNavigationBarProxyProperties(), titleOffset, titleGhostOffset;
-      titleOffset = element.getWidth() - titleElement.getX();
-      titleGhostOffset = element.getX() - titleElement.getX() + proxyProperties.leftBox.width;
-
-      if((proxyProperties.leftBox.left + titleElement.getWidth()) > titleElement.getX())
-      {
-         titleGhostOffset = element.getX() - titleElement.getX() - titleElement.getWidth();
-      }
-
-      return (
-         {
-            element :
-            {
-               from :
-               {
-                  left : titleOffset,
-                  width : proxyProperties.title.width,
-                  opacity : 0
-               },
-               to :
-               {
-                  left : proxyProperties.title.left,
-                  width : proxyProperties.title.width,
-                  opacity : 1
-               }
-            },
-            ghost :
-            {
-               from : titleElement.getLeft(),
-               to :
-               {
-                  left : titleGhostOffset,
-                  opacity : 0
-               }
-            }
-         });
-   },
-   /**
-    * Calculates and returns the position values needed for the title when you are popping a title.
-    * @private
-    */
-   getTitleAnimationReverseProperties : function()
-   {
-      var me = this, element = me.renderElement, titleElement = me.titleComponent.renderElement, proxyProperties = this.getNavigationBarProxyProperties(), ghostLeft = 0, titleOffset, titleGhostOffset;
-      ghostLeft = titleElement.getLeft();
-      titleElement.setLeft(0);
-      titleOffset = element.getX() - titleElement.getX() + proxyProperties.backButton.width;
-      titleGhostOffset = element.getX() + element.getWidth();
-
-      if((proxyProperties.leftBox.left + titleElement.getWidth()) > titleElement.getX())
-      {
-         titleOffset = element.getX() - titleElement.getX() - titleElement.getWidth();
-      }
-
-      return (
-         {
-            element :
-            {
-               from :
-               {
-                  left : titleOffset,
-                  width : proxyProperties.title.width,
-                  opacity : 0
-               },
-               to :
-               {
-                  left : proxyProperties.title.left,
-                  width : proxyProperties.title.width,
-                  opacity : 1
-               }
-            },
-            ghost :
-            {
-               from : ghostLeft,
-               to :
-               {
-                  left : titleGhostOffset,
-                  opacity : 0
-               }
-            }
-         });
+      var rc = this.getTbAnimationProperties();
+      rc.setReverse(true);
+      return rc;
    },
    /**
     * Pushes a back button into the bar with no animations
@@ -326,114 +158,10 @@ Ext.define('Genesis.navigation.Bar',
     */
    pushTb : function(title)
    {
-      var backButton = this.getBackButton();
-      backButton.setText(title);
-      backButton.show();
-
-      var properties = this.getTbAnimationProperties();
-      var leftBox = this.leftBox, rightBox = this.rightBox;
-      var leftTo = properties.leftbox.to, rightTo = properties.rightbox.to, buttonTo = properties.backButton.to;
-
-      if(buttonTo.left)
-      {
-         leftBox.setLeft(buttonTo.left);
-      }
-      if(buttonTo.width)
-      {
-         backButton.setWidth(buttonTo.width);
-      }
-      if(leftTo.left)
-      {
-         leftBox.setLeft(leftTo.left);
-      }
-      if(leftTo.width)
-      {
-         leftBox.setWidth(leftTo.width);
-      }
-      if(rightTo.left)
-      {
-         rightBox.setLeft(rightTo.left);
-      }
-      if(rightTo.width)
-      {
-         rightBox.setWidth(rightTo.width);
-      }
-   },
-   /**
-    * Pushes a new back button into the bar with animations
-    * @private
-    */
-   pushTbAnimated : function(title)
-   {
       var me = this;
-      var done = 0;
-
-      var backButton = me.getBackButton(), previousTitle = backButton.getText();
-      var leftBox = me.leftBox, rightBox = me.rightBox;
-      var leftBoxElement = leftBox.renderElement, rightBoxElement = rightBox.renderElement, backButtonElement = backButton.renderElement;
-      var properties = me.getTbAnimationProperties(), leftGhost, rightGhost;
-
-      //update the back button, and make sure it is visible
-      backButton.setText(this.getBackButtonText());
-      backButton.show();
-
-      //animate the backButton, which always has the new title
-      var buttonTo = properties.backButton.to;
-      if(buttonTo.left)
-      {
-         leftBox.setLeft(buttonTo.left);
-      }
-      if(buttonTo.width)
-      {
-         backButton.setWidth(buttonTo.width);
-      }
-      //if there is a previoustitle, there should be a buttonGhost. so create it.
-      leftGhost = me.createProxy(leftBox);
-      rightGhost = me.createProxy(rightBox);
-
-      me.animate(leftBoxElement, properties.leftBox.from, properties.leftBox.to, function()
-      {
-         if((done |= 0x01) == 0x11)
-            me.animating = false;
-      });
-      me.animate(rightBoxElement, properties.rightBox.from, properties.rightBox.to, function()
-      {
-         if((done |= 0x10) == 0x11)
-            me.animating = false;
-      });
-      //if there is a buttonGhost, we must animate it too.
-      me.animate(leftGhost, properties.leftGhost.from, properties.leftGhost.to, function()
-      {
-         leftGhost.destroy();
-      });
-      me.animate(rightGhost, properties.rightGhost.from, properties.rightGhost.to, function()
-      {
-         rightGhost.destroy();
-      });
-   },
-   /**
-    * Pops the back button with no animations
-    * @private
-    */
-   popTbButton : function(title)
-   {
-      var backButton = this.getBackButton();
-      var leftbox = this.leftBox;
-      var rightBox = this.rightBox;
-
-      backButton.setText(null);
-
-      if(title)
-      {
-         backButton.setText(this.getBackButtonText());
-      }
-      else
-      {
-         backButton.hide();
-      }
-
-      var properties = this.getTbAnimationReverseProperties(), leftTo = properties.leftBox.to, rightTo = properties.rightBox.to, buttonTo = properties.backButton.to;
-
+      var proxy = me.getNavigationBarProxyProperties();
+      var backButton = me.getBackButton();
+      var buttonTo = proxy.backButton;
       if(buttonTo.left)
       {
          backButton.setLeft(buttonTo.left);
@@ -443,22 +171,64 @@ Ext.define('Genesis.navigation.Bar',
          backButton.setWidth(buttonTo.width);
       }
 
-      if(leftTo.left)
+   },
+   /**
+    * Pushes a new back button into the bar with animations
+    * @private
+    */
+   pushTbAnimated : function(title, controller)
+   {
+      var me = this;
+      var done = 0;
+
+      var backButton = me.getBackButton(), previousTitle = backButton.getText();
+      var properties = me.getTbAnimationProperties();
+      var proxy = me.getNavigationBarProxyProperties();
+
+      //animate the backButton, which always has the new title
+      var buttonTo = proxy.backButton;
+      if(buttonTo.left)
       {
-         leftBox.setLeft(leftTo.left);
+         backButton.setLeft(buttonTo.left);
       }
-      if(leftTo.width)
+      if(buttonTo.width)
       {
-         backButton.setWidth(leftTo.width);
+         backButton.setWidth(buttonTo.width);
       }
 
-      if(rightTo.left)
+      me.onActiveItemChange.call(properties, null, me.renderElement, me.elementGhost, null, controller, function()
       {
-         rightBox.setLeft(rightTo.left);
+         me.elementGhost.destroy();
+         delete me.elementGhost;
+      });
+   },
+   /**
+    * Pops the back button with no animations
+    * @private
+    */
+   popTb : function(title)
+   {
+      var me = this, backButton = me.getBackButton();
+      var proxy = this.getNavigationBarProxyProperties();
+
+      if(title && me.backButtonStack.length)
+      {
+         backButton.setText(this.getBackButtonText());
+         backButton.show();
       }
-      if(rightTo.width)
+      else
       {
-         rightTo.setWidth(rightTo.width);
+         backButton.hide();
+      }
+
+      var buttonTo = proxy.backButton;
+      if(buttonTo.left)
+      {
+         backButton.setLeft(buttonTo.left);
+      }
+      if(buttonTo.width)
+      {
+         backButton.setWidth(buttonTo.width);
       }
    },
    /**
@@ -466,13 +236,14 @@ Ext.define('Genesis.navigation.Bar',
     * It will automatically know whether or not it should show the previous backButton or not. And proceed accordingly
     * @private
     */
-   popTbAnimated : function(title)
+   popTbAnimated : function(title, controller)
    {
       var me = this;
 
-      var leftBox = me.leftBox, rightBox = me.rightBox, backButton = me.getBackButton();
-      var previousTitle = backButton.getText(), leftBoxElement = leftBox.renderElement, rightBoxElement = rightBox.renderElement;
-      var properties = me.getTbAnimationReverseProperties(), leftGhost, rightGhost;
+      var element = me.element, renderElement = me.renderElement, backButton = me.getBackButton();
+      var previousTitle = backButton.getText();
+      var properties = me.getTbAnimationReverseProperties();
+      var proxy = this.getNavigationBarProxyProperties();
 
       //update the back button, and make sure it is visible
       if(title && me.backButtonStack.length)
@@ -484,36 +255,21 @@ Ext.define('Genesis.navigation.Bar',
       {
          backButton.hide();
       }
-      var buttonTo = properties.backButton.to;
-      if(buttonTo.left)
-      {
-         leftBox.setLeft(buttonTo.left);
-      }
+
+      var buttonTo = proxy.backButton;
       if(buttonTo.width)
       {
          backButton.setWidth(buttonTo.width);
       }
-      //if there is a previoustitle, there should be a buttonGhost. so create it.
-      leftGhost = me.createProxy(me.leftBox);
-      rightGhost = me.createProxy(me.rightBox);
 
-      me.animate(leftBoxElement, properties.leftBox.from, properties.leftBox.to);
-      me.animate(rightBoxElement, properties.rightBox.from, properties.rightBox.to);
-
-      //if there is a buttonGhost, we must animate it too.
-      me.animate(leftGhost, properties.leftGhost.from, properties.leftGhost.to, function()
+      me.onActiveItemChange.call(properties, null, me.renderElement, me.elementGhost, null, controller, function()
       {
-         leftGhost.destroy();
-
+         me.elementGhost.destroy();
+         delete me.elementGhost;
          if(!title)
          {
             backButton.setText(null);
          }
-      });
-      //if there is a buttonGhost, we must animate it too.
-      me.animate(rightGhost, properties.rightGhost.from, properties.rightGhost.to, function()
-      {
-         rightGhost.destroy();
       });
    },
    /**
@@ -615,6 +371,35 @@ Ext.define('Genesis.navigation.Bar',
             }
          });
    },
+   /**
+    * Creates a proxy element of the passed element, and positions it in the same position, using absolute positioning.
+    * The createNavigationBarProxy method uses this to create proxies of the backButton and the title elements.
+    * @private
+    */
+   createProxy : function(component, useParent)
+   {
+      var element = (useParent) ? component.element.getParent() : component.element, ghost = Ext.get(element.id + '-proxy');
+
+      if(!ghost)
+      {
+         ghost = element.dom.cloneNode(true);
+         ghost.id = element.id + '-proxy';
+         ghost.children[0].id = element.dom.children[0].id + '-proxy';
+
+         //insert it into the toolbar
+         element.getParent().dom.appendChild(ghost);
+
+         //set the x/y
+         ghost = Ext.get(ghost);
+         ghost.setStyle('position', 'absolute');
+         ghost.setY(element.getY());
+         ghost.setX(element.getX());
+         ghost.setWidth(element.getWidth());
+         ghost.dom.style.setProperty('z-index', 1, 'important');
+      }
+
+      return ghost;
+   },
    reset : function()
    {
       this.backButtonStack = [];
@@ -622,5 +407,38 @@ Ext.define('Genesis.navigation.Bar',
       {
       };
       this.animating = false;
+   },
+   //
+   // Set "this" as Ext.fx.layout.card.* object
+   //
+   onActiveItemChange : function(cardLayout, inElement, outElement, options, controller, onEnd)
+   {
+      var inAnimation = this.getInAnimation(), outAnimation = this.getOutAnimation(), inElement, outElement;
+
+      if(inElement && outElement)
+      {
+         inAnimation.setElement(inElement);
+         outAnimation.setElement(outElement);
+
+         outAnimation.setOnBeforeEnd(function(element, interrupted)
+         {
+            if(interrupted || Ext.Animator.hasRunningAnimations(element))
+            {
+               controller.firingArguments[1] = null;
+               controller.firingArguments[2] = null;
+            }
+         });
+         outAnimation.setOnEnd(function()
+         {
+            controller.resume();
+            onEnd();
+         });
+
+         inElement.dom.style.setProperty('visibility', 'hidden', '!important');
+         //newItem.show();
+
+         Ext.Animator.run([outAnimation, inAnimation]);
+         controller.pause();
+      }
    }
 });

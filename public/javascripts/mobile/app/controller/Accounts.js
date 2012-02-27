@@ -54,6 +54,10 @@ Ext.define('Genesis.controller.Accounts',
       }
       var sortbtns = this.getViewport().query('segmentedbutton[tag=accounts]')[0];
       sortbtns.show();
+      //
+      // Scroll to the Top of the Screen
+      //
+      this.getAccounts().getScrollable().getScroller().scrollTo(0, 0);
    },
    onDeactivate : function()
    {

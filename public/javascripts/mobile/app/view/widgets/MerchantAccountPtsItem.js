@@ -6,71 +6,87 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
    alias : 'widget.merchantaccountptsitem',
    config :
    {
-      layout :
+      layout : 'fit',
+      background :
       {
-         type : 'hbox',
-         align : 'stretch'
-      },
-      height : '3.2em',
-      image :
-      {
-         docked : 'left',
-         cls : 'photo',
-         data :
+         // Backgrond Image
+         cls : 'merchantPagePanel',
+         tag : 'background',
+         items : [
          {
-            photo_url : 'resources/img/sprites/coin.jpg'
-         },
-         tpl : '<img src="{photo_url}"/>'
-      },
-      points :
-      {
-         flex : 1,
-         tpl : '{points} Pts',
-         cls : 'points'
+            xtype : 'container',
+            // Display Points
+            docked : 'bottom',
+            cls : 'container',
+            layout :
+            {
+               type : 'hbox',
+               align : 'stretch'
+            },
+            //height : '3.2em',
+            defaults :
+            {
+               xtype : 'component'
+            },
+            items : [
+            {
+               docked : 'right',
+               tag : 'points',
+               tpl : '+{points} Pts',
+               cls : 'points'
+            },
+            {
+               docked : 'right',
+               tag : 'coinphoto',
+               data :
+               {
+                  photo_url : 'resources/img/sprites/coin.jpg'
+               },
+               tpl : '<img class="coinphoto" src="{photo_url}" />'
+            }],
+         }],
       },
       dataMap :
       {
-         getPoints :
+         getBackground :
          {
-            setData : 'points'
+            setData : 'background'
          }
       }
    },
-   applyImage : function(config)
+   applyBackground : function(config)
    {
       return Ext.factory(Ext.apply(config,
       {
-      }), Ext.Component, this.getImage());
+      }), Ext.Container, this.getBackground());
    },
-   updateImage : function(newImage, oldImage)
+   updateBackground : function(newBackground, oldBackground)
    {
-      if(newImage)
+      if(newBackground)
       {
-         this.add(newImage);
+         this.add(newBackground);
       }
 
-      if(oldImage)
+      if(oldBackground)
       {
-         this.remove(oldImage);
+         this.remove(oldBackground);
       }
    },
-   applyPoints : function(config)
+   setDataBackground : function(data)
    {
-      return Ext.factory(Ext.apply(config,
-      {
-      }), Ext.Component, this.getPoints());
-   },
-   updatePoints : function(newPoints, oldPoints)
-   {
-      if(newPoints)
-      {
-         this.add(newPoints);
-      }
+      var cstore = Ext.StoreMgr.get('CustomerStore');
+      var viewport = Ext.ComponentQuery.query('viewportview')[0];
+      var customerId = viewport.getCustomerId();
+      var crecord = cstore.getById(data.Merchant['merchant_id']);
+      var bg = this.query('container[tag=background]')[0];
 
-      if(oldPoints)
-      {
-         this.remove(oldPoints);
-      }
+      // Update Background Photo
+      this.setHeight(Ext.Viewport.getSize().width);
+      bg.setStyle('background-image:url(' + data.Merchant['photo_url'] + ')');
+
+      //Update Points
+      var points = this.query('component[tag=points]')[0];
+      points.setData(crecord.getData());
    },
    /**
     * Updates this container's child items, passing through the dataMap.
@@ -79,6 +95,11 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
     */
    updateRecord : function(newRecord)
    {
+      if(!newRecord)
+      {
+         return;
+      }
+
       var me = this, dataview = me.config.dataview, data = dataview.prepareData(newRecord.getData(true), dataview.getStore().indexOf(newRecord), newRecord), items = me.getItems(), item = items.first(), dataMap = me.getDataMap(), componentName, component, setterMap, setterName;
 
       if(!item)
@@ -97,8 +118,9 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                {
                   switch (setterMap[setterName])
                   {
-                     case 'points':
-                        component[setterName](data);
+                     case 'background':
+                        //component[setterName](data);
+                        me.setDataBackground(data);
                         break;
                      default :
                         component[setterName](data[setterMap[setterName]]);

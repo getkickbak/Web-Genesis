@@ -15,42 +15,81 @@ Ext.define('Genesis.view.MerchantAccount',
          pack : 'start'
       },
       items : [
+      {
+         tag : 'menchantPagePanel',
+         xtype : 'dataview',
+         store :
+         {
+            model : 'Genesis.model.Venue',
+            autoLoad : false
+         },
+         useComponents : true,
+         scrollable : false,
+         defaultType : 'merchantaccountptsitem',
+         defaultUnit : 'em',
+         margin : '0 0 0.8 0'
+      },
       // -----------------------------------------------------------------------
-      // Customer Stats
+      // Merchant Info
       // -----------------------------------------------------------------------
+      {
+         xtype : 'toolbar',
+         cls : 'merchantContactPanelHdr',
+         centered : false,
+         items : [
+         {
+            xtype : 'title',
+            title : 'Contact Us'
+         },
+         {
+            xtype : 'spacer'
+         }]
+      },
       {
          xtype : 'container',
          cls : 'merchantStatsPanel separator',
          layout : 'fit',
          defaults :
          {
-            scrollable : false,
-            cls : 'merchantStats'
+            scrollable : false
          },
          items : [
+         // -----------------------------------------------------------------------
+         // Merchant Photo & Address
+         // -----------------------------------------------------------------------
          {
-            docked : 'left',
+            docked : 'right',
             xtype : 'component',
+            cls : 'merchantPhoto',
             tag : 'photo',
             tpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{photoUrl}"/></div>')
          },
          {
-            docked : 'top',
-            xtype : 'dataview',
-            cls : 'ptsEarnPanel',
-            useComponents : true,
-            scrollable : false,
-            defaultType : 'merchantaccountptsitem',
-            store : 'CustomerStore'
+            xtype : 'component',
+            cls : 'merchantAddress',
+            tag : 'merchantAddress',
+            tpl : Ext.create('Ext.XTemplate', '{[this.getAddress(values)]}',
+            {
+               getAddress : function(values)
+               {
+                  var address = (values.address2) ? values.address1 + ", " + values.address2 : values.address1;
+                  return (address + ",<br/>" + values.city + ", " + values.state + ", " + values.country + ",<br/>" + values.zipcode);
+               }
+            })
          },
+         // -----------------------------------------------------------------------
+         // Customer's Stats
+         // -----------------------------------------------------------------------
          {
             xtype : 'formpanel',
+            tag : 'merchantStats',
+            cls : 'merchantStats',
             defaults :
             {
                xtype : 'textfield',
                readOnly : true,
                labelAlign : 'left',
-               labelWidth : '75%'
+               labelWidth : '60%'
             },
             items : [
             {
@@ -87,53 +126,101 @@ Ext.define('Genesis.view.MerchantAccount',
       },
       */
       // -----------------------------------------------------------------------
-      // Newsfeed Panel
+      // Latest Newsfeed Panel
       // -----------------------------------------------------------------------
       {
-         xtype : 'toolbar',
-         cls : 'ptsMerchantFeedPanelHdr',
-         centered : false,
+         xtype : 'container',
+         tag : 'merchantFeedContainer',
+         layout :
+         {
+            type : 'vbox',
+            align : 'stretch',
+            pack : 'start'
+         },
          items : [
          {
-            xtype : 'title',
-            title : 'Latest News'
+            xtype : 'toolbar',
+            cls : 'merchantFeedPanelHdr',
+            centered : false,
+            items : [
+            {
+               xtype : 'title',
+               title : 'Latest News'
+            },
+            {
+               xtype : 'spacer'
+            }]
          },
          {
-            xtype : 'spacer'
+            xtype : 'list',
+            scrollable : false,
+            ui : 'bottom-round',
+            store : 'EligibleRewardsStore',
+            cls : 'merchantFeedPanel separator',
+            // @formatter:off
+            itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>', '<div class="listItemDetailsWrapper">', '<div class="itemDesc wrap">{[this.getDesc(values)]}</div>', '</div>',
+            // @formatter:on
+            {
+               getPhoto : function(values)
+               {
+                  if(!values.photo_url)
+                  {
+                     return Genesis.view.MerchantAccount.getPhoto(values.type);
+                  }
+                  else
+                  {
+                     return values.photo_url;
+                  }
+               },
+               getDesc : function(values)
+               {
+                  // Not eligible for reward yet, don't show disclosure button
+                  if(values.points_difference > 0)
+                  {
+                     values.disclosure = false;
+                  }
+                  return values.reward_title;
+               }
+            }),
+            onItemDisclosure : Ext.emptyFn
          }]
       },
+      // -----------------------------------------------------------------------
+      // Merchant Description Panel
+      // -----------------------------------------------------------------------
       {
-         xtype : 'list',
-         scrollable : false,
-         store : 'EligibleRewardsStore',
-         cls : 'ptsMerchantFeedPanel separator',
-         // @formatter:off
-         itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>', '<div class="listItemDetailsWrapper">', '<div class="itemDesc wrap">{[this.getDesc(values)]}</div>', '</div>',
-         // @formatter:on
+         xtype : 'container',
+         tag : 'merchantDescContainer',
+         layout :
          {
-            getPhoto : function(values)
+            type : 'vbox',
+            align : 'stretch',
+            pack : 'start'
+         },
+         items : [
+         {
+            xtype : 'toolbar',
+            cls : 'merchantDescPanelHdr',
+            centered : false,
+            items : [
             {
-               if(!values.photo_url)
-               {
-                  return Genesis.view.MerchantAccount.getPhoto(values.type);
-               }
-               else
-               {
-                  return values.photo_url;
-               }
+               xtype : 'title',
+               title : 'About Us'
             },
-            getDesc : function(values)
             {
-               // Not eligible for reward yet, don't show disclosure button
-               if(values.points_difference > 0)
-               {
-                  values.disclosure = false;
-               }
-               return values.reward_title;
-            }
-         }),
-         onItemDisclosure : Ext.emptyFn
+               xtype : 'spacer'
+            }]
+         },
+         {
+            xtype : 'container',
+            cls : 'merchantDescPanel separator',
+            tag : 'merchantDescPanel',
+            tpl : '{desc}'
+         }]
       },
+      // -----------------------------------------------------------------------
+      // Toolbar
+      // -----------------------------------------------------------------------
       {
          docked : 'bottom',
          cls : 'navigationBarBottom',
@@ -190,10 +277,20 @@ Ext.define('Genesis.view.MerchantAccount',
             title : 'Redeem'
          },
          {
+            iconCls : 'check_black1',
+            tag : 'checkin',
+            title : 'Check-In'
+         },
+         {
+            tag : 'browse',
+            iconCls : 'search1',
+            title : 'Explore'
+         }/*,
+         {
             iconCls : 'team',
             tag : 'accounts',
             title : 'Accounts'
-         }]
+         }*/]
       }]
    },
    statics :

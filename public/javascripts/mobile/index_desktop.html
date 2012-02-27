@@ -36,7 +36,7 @@
       <script type="text/javascript" src="lib/sencha-touch-2.0.0-pr3/a/all-classes.js"></script>
       directory and include it here -->
       <!-- Debug Javascript on mobile browser -->
-      <script type="text/javascript" src="lib/sencha-touch-2-b2/builds/sencha-touch-all-debug.js"></script>
+      <script type="text/javascript" src="lib/sencha-touch-2-rc/builds/sencha-touch-all-debug.js"></script>
       <!--
       Phone Gap Libs
       -->
@@ -45,11 +45,20 @@
          var phoneGapAvailable = false;
          var appPath = "app";
 
+         var browser = Ext.browser;
+         if(!!window.isNK)
+         {
+            browser.setFlag('WebView');
+            browser.setFlag('Sencha');
+         }
+         browser.setFlag('PhonGap',false);
+
          Ext.Loader.setConfig(
          {
             enabled : true,
             paths :
             {
+               Ext : 'lib/sencha-touch-2-rc/src',
                Genesis : appPath
             }
          });
@@ -66,6 +75,7 @@
       <script type="text/javascript" src="app/profile/Android.js"></script>
       <script type="text/javascript" src="app/profile/Desktop.js"></script>
       <!-- View Widgets -->
+      <script type="text/javascript" src="app/view/widgets/Animation.js"></script>
       <script type="text/javascript" src="app/view/widgets/NavigationBar.js"></script>
       <script type="text/javascript" src="app/view/widgets/CheckinMerchantDetailsItem.js"></script>
       <script type="text/javascript" src="app/view/widgets/ChallengeMenuItem.js"></script>
@@ -95,7 +105,6 @@
       <script type="text/javascript" src="app/view/MainPage.js"></script>
       <script type="text/javascript" src="app/view/LoginPage.js"></script>
       <script type="text/javascript" src="app/view/Accounts.js"></script>
-      <script type="text/javascript" src="app/view/MerchantAccountPage.js"></script>
       <script type="text/javascript" src="app/view/MerchantAccount.js"></script>
       <script type="text/javascript" src="app/view/Rewards.js"></script>
       <script type="text/javascript" src="app/view/Redemptions.js"></script>
@@ -138,12 +147,9 @@
          function appInit()
          {
             console.log("appInit - start");
+            Ext.require(['Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Connection', 'Ext.device.Notification', 'Ext.device.Orientation']);
             Ext.application(
             {
-               viewport :
-               {
-                  autoMaximize : false
-               },
                profiles : ['Iphone', 'Android', 'Desktop'],
                //models : ['Checkin', 'Customer', 'Deal', 'EarnRewardRecord', 'Merchant', 'Reward', 'CustomerReward',
                // 'PurchaseReward',

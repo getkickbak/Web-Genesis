@@ -48,8 +48,8 @@ Ext.define('Genesis.view.CheckinMerchant',
          {
             flex : 1,
             xtype : 'button',
-            margin : '0 0 0 0.8',
-            defaultUnit : 'em',
+            //margin : '0 0 0 0.8',
+            //defaultUnit : 'em',
             ui : 'red-large',
             tag : 'exploreBtn',
             text : 'Explore'
@@ -84,14 +84,8 @@ Ext.define('Genesis.view.CheckinMerchant',
    },
    afterActivate : function()
    {
-      // Show Share Icon
-      var viewport = Ext.ComponentQuery.query('viewportview')[0];
-      viewport.query('button[tag=shareBtn]')[0].show();
-      viewport.query('button[tag=main]')[0].hide();
    },
    afterDeactivate : function()
    {
-      var viewport = Ext.ComponentQuery.query('viewportview')[0];
-      viewport.query('button[tag=shareBtn]')[0].hide();
    }
 });

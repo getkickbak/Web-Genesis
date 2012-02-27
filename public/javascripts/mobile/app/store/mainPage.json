@@ -6,10 +6,10 @@
          "desc": "Accounts",
          "pageCntlr": "Accounts"
       }, {
-         "name": "Challenges",
-         "photo_url": "resources/img/sprites/challenges.jpg",
-         "desc": "Challenges",
-         "pageCntlr": "Challenges"
+         "name": "Settings",
+         "photo_url": "resources/img/sprites/settings.jpg",
+         "desc": "Settings",
+         "pageCntlr": "UserProfile"
       }, {
          "name": "Check-ins",
          "photo_url": "resources/img/sprites/checkin.jpg",
@@ -23,22 +23,11 @@
          "pageCntlr": "Checkins",
          "subFeature": "explore"
       }, {
-         "name": "Earn Points",
-         "photo_url": "resources/img/sprites/rewards.jpg",
-         "desc": "Earn Points",
-         "pageCntlr": "RewardsRedemptions",
-         "subFeature": "rewards"
-      }, {
-         "name": "Redeem Points",
-         "photo_url": "resources/img/sprites/rewards.jpg",
-         "desc": "Redeem Points",
-         "pageCntlr": "RewardsRedemptions",
-         "subFeature": "redemptions"
-      }, {
-         "name": "Settings",
-         "photo_url": "resources/img/sprites/settings.jpg",
-         "desc": "Settings",
-         "pageCntlr": "UserProfile"
+         "name": "Main Menu",
+         "photo_url": "resources/img/sprites/main.jpg",
+         "desc": "Main Menu for your Checked-in Venue",
+         "pageCntlr": "MainPage",
+         "subFeature": "main"
       }
    ]
 }

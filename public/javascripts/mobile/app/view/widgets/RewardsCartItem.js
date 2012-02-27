@@ -2,6 +2,7 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
 {
    extend : 'Ext.dataview.component.DataItem',
    requires : ['Ext.field.Select', 'Ext.XTemplate'],
+   mixins : ['Genesis.view.widgets.Animation'],
    xtype : 'rewardscartitem',
    alias : 'widget.rewardscartitem',
    config :
@@ -15,11 +16,13 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
       {
          hidden : true,
          iconCls : 'delete_black2',
+         tag : 'deleteItem',
          iconMask : true,
          cls : 'plain'
       },
       qty :
       {
+         value : 0,
          options : [
          {
             text : '1',
@@ -36,6 +39,26 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
          {
             text : '4',
             value : 4
+         },
+         {
+            text : '5',
+            value : 5
+         },
+         {
+            text : '6',
+            value : 6
+         },
+         {
+            text : '7',
+            value : 7
+         },
+         {
+            text : '8',
+            value : 8
+         },
+         {
+            text : '9',
+            value : 9
          }]
       },
       image :
@@ -181,6 +204,11 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
    },
    updateRecord : function(newRecord)
    {
+      if(!newRecord)
+      {
+         return;
+      }
+
       var me = this, dataview = me.config.dataview, data = dataview.prepareData(newRecord.getData(true), dataview.getStore().indexOf(newRecord), newRecord), items = me.getItems(), item = items.first(), dataMap = me.getDataMap(), componentName, component, setterMap, setterName;
 
       if(!item)
@@ -203,14 +231,16 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
                      case 'photo_url':
                         component[setterName](data);
                         break;
-                     case 'qty' :
-                        var value = data[setterMap[setterName]];
-                        var store = component.getStore();
-                        var index = store.find(component.getValueField(), value, null, null, null, true);
-                        var record = store.getAt(index);
+                     /*
+                      case 'qty' :
+                      var value = data[setterMap[setterName]];
+                      var store = component.getStore();
+                      var index = store.find(component.getValueField(), value, null, null, null, true);
+                      var record = store.getAt(index);
 
-                        component[setterName](record);
-                        break;
+                      component[setterName](record);
+                      break;
+                      */
                      default :
                         component[setterName](data[setterMap[setterName]]);
                         break;

@@ -1,10 +1,11 @@
 Ext.define('Genesis.view.ViewBase',
 {
    extend : 'Ext.Container',
+   xtype : 'viewbase',
    config :
    {
    },
-   beforeActivate : function()
+   beforeActivate : function(activeItem, oldActiveItem)
    {
       var viewport = Ext.ComponentQuery.query('viewportview')[0];
       var bar = viewport.getNavigationBar();
@@ -14,10 +15,21 @@ Ext.define('Genesis.view.ViewBase',
       // Sets up for Animating the Close Button
       proxy.setUi('normal');
       backBtn.setUi('normal');
-      bar.setDefaultBackButtonText('Close');
-      proxy.setText('Close');
+      bar.setDefaultBackButtonText(bar.getAltBackButtonText());
+      proxy.setText(bar.getAltBackButtonText());
+
+      if(!oldActiveItem.getXTypes().match('mainpageview'))
+      {
+         viewport.changeAnimationCfg();
+      }
    },
-   beforeDeactivate : function()
+   beforeDeactivate : function(activeItem, oldActiveItem)
+   {
+   },
+   afterActivate : function(activeItem, oldActiveItem)
+   {
+   },
+   afterDeactivate : function(activeItem, oldActiveItem)
    {
       var viewport = Ext.ComponentQuery.query('viewportview')[0];
       var bar = viewport.getNavigationBar();
@@ -27,16 +39,7 @@ Ext.define('Genesis.view.ViewBase',
       // Reset back to regular button
       proxy.setUi('back');
       backBtn.setUi('back');
-      bar.setDefaultBackButtonText('Back');
-      proxy.setText('Back');
-   },
-   afterActivate : function()
-   {
-      var viewport = Ext.ComponentQuery.query('viewportview')[0];
-      var show = viewport.getCheckinInfo().venueId > 0;
-      viewport.query('button[tag=main]')[0][show ? 'show' : 'hide']();
-   },
-   afterDeactivate : function()
-   {
+      bar.setDefaultBackButtonText(bar.config.defaultBackButtonText);
+      proxy.setText(bar.config.defaultBackButtonText);
    }
 });
