@@ -1,5 +1,6 @@
 <p id="notice"><%= notice %></p>
 
+<div class="content row">
 <p>
   <b>Title</b>
   <%= @customer_reward.title %>
@@ -9,6 +10,6 @@
   <b>Points:</b>
   <%= @customer_reward.points %>
 </p>
-
+</div>
 <%= link_to 'Edit', edit_customer_reward_path(@customer_reward) %> |
 <%= link_to 'Back', customer_rewards_path %>

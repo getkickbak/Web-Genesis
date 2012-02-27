@@ -1,56 +1,51 @@
-<p id="notice"><%= notice %></p>
-
-<p>
-  <b>Name:</b>
-  <%= @venue.name %>
+<p id="notice">
+	<%= notice %>
 </p>
-
-<p>
-  <b>Address:</b>
-  <%= @venue.address %>
-</p>
-
-<p>
-  <b>City:</b>
-  <%= @venue.city %>
-</p>
-   
-<p>
-  <b>State:</b>
-  <%= @venue.state %>
-</p>
-
-<p>
-  <b>ZipCode:</b>
-  <%= @venue.zipcode %>
-</p>
-
-<p>
-  <b>Country:</b>
-  <%= @venue.country %>
-</p>
-
-<p>
-  <b>Phone:</b>
-  <%= @venue.phone %>
-</p>
-
-<p>
-  <b>Website</b>
-  <%= @venue.website %>
-</p>
-
-<p>
-  <b>Longitude</b>
-  <%= @venue.longitude %>
-</p>
-
-<p>
-  <b>Latitude</b>
-  <%= @venue.latitude %>
-</p>
-
+<div class="content row">
+	<div class="span15">
+		<p>
+			<b>Name:</b>
+			<%= @venue.name %>
+		</p>
+		<p>
+			<b>Address:</b>
+			<%= @venue.address %>
+		</p>
+		<p>
+			<b>City:</b>
+			<%= @venue.city %>
+		</p>
+		<p>
+			<b>State:</b>
+			<%= @venue.state %>
+		</p>
+		<p>
+			<b>ZipCode:</b>
+			<%= @venue.zipcode %>
+		</p>
+		<p>
+			<b>Country:</b>
+			<%= @venue.country %>
+		</p>
+		<p>
+			<b>Phone:</b>
+			<%= @venue.phone %>
+		</p>
+		<p>
+			<b>Website</b>
+			<%= @venue.website %>
+		</p>
+		<p>
+			<b>Longitude</b>
+			<%= @venue.longitude %>
+		</p>
+		<p>
+			<b>Latitude</b>
+			<%= @venue.latitude %>
+		</p>
+	</div>
+</div>
 <%= link_to 'Print QR Code', @venue.qr_code_img %> |
 <%= link_to 'Update QR Code', update_qr_code_venue_path(@venue) %> |
 <%= link_to 'Edit', edit_venue_path(@venue) %> |
-<%= link_to 'Back', venues_path %>
+<%= link_to 'Back', venues_path %> 

@@ -1,66 +1,67 @@
 <% content_for :script do %> 
 <script type="text/javascript" src="/javascripts/desktop/src/business/challenge.js"></script>
 <% end %>
+<div class="content">
 <%= simple_form_for @challenge do |f| %>
 	<%= f.input :type_id, :collection => @available_challenge_types %>
-	<div class="">
-	<% if @challenge.type && @challenge.type.value == 'menu' %>
-		<div>
-			<label>When someone buys a</label><input id="challenge_name" name="challenge[name]" type="text" class="textfield" placeholder="Name"/>
+	<% if @challenge.type && @challenge.type.value == 'birthday' %>
+		<div class="challenge_desc">
+			<span>When someone visits on a birthday</span><%= f.input :name, :as => :hidden %>
 		</div>
 		<%= f.input :description, :as => :hidden %>
 		<%= f.input :require_verif, :as => :hidden %>
-		<div>
-			<label>they will get</label><input id="challenge_points" name="challenge[points]" type="text" class="textfield" placeholder=""/><span>points</span>
+		<div class="challenge_desc">
+			<span>they will get</span><input id="challenge_points" name="challenge[points]" type="text" class="numfield" placeholder=""/><span>points</span>
 		</div>
 	<% elsif @challenge.type && @challenge.type.value == 'checkin' %>
-		<div>
-			<label>When someone visits</label><%= f.input :name, :as => :hidden %>
-			<input id="challenge_check_in_data_visits" name="challenge[check_in_data][visits]" type="text" class="textfield" placeholder=""/><span>times</span>
+		<div class="challenge_desc">
+			<span>When someone visits</span>
+			<input id="challenge_check_in_data_visits" name="challenge[check_in_data][visits]" type="text" class="numfield" placeholder=""/><span>times</span>
 		</div>
+		<%= f.input :name, :as => :hidden %>
 		<%= f.input :description, :as => :hidden %>
 		<%= f.input :require_verif, :as => :hidden %>
-		<div>
-			<label>they will get</label><input id="challenge_points" name="challenge[points]" type="text" class="textfield" placeholder=""/><span>points</span>
-		</div>
-	<% elsif @challenge.type && @challenge.type.value == 'photo' %>
-		<div>
-			<label>When someone shares an exciting photo of this place with their friends through social media</label><%= f.input :name, :as => :hidden %>
-		</div>
-		<%= f.input :description, :as => :hidden %>
-		<%= f.input :require_verif, :as => :hidden %>
-		<div>
-			<label>they will get</label><input id="challenge_points" name="challenge[points]" type="text" class="textfield" placeholder=""/><span>points</span>
-		</div>
-	<% elsif @challenge.type && @challenge.type.value == 'referral' %>
-		<div>
-			<label>When someone refers a friend</label><%= f.input :name, :as => :hidden %>
-		</div>
-		<%= f.input :description, :as => :hidden %>
-		<%= f.input :require_verif, :as => :hidden %>
-		<div>
-			<label>they will get</label><input id="challenge_points" name="challenge[points]" type="text" class="textfield" placeholder=""/><span>points</span>
-		</div>
-	<% elsif @challenge.type && @challenge.type.value == 'birthday' %>
-		<div>
-			<label>When someone visits on a birthday</label><%= f.input :name, :as => :hidden %>
-		</div>
-		<%= f.input :description, :as => :hidden %>
-		<%= f.input :require_verif, :as => :hidden %>
-		<div>
-			<label>they will get</label><input id="challenge_points" name="challenge[points]" type="text" class="textfield" placeholder=""/><span>points</span>
+		<div class="challenge_desc">
+			<span>they will get</span><input id="challenge_points" name="challenge[points]" type="text" class="numfield" placeholder=""/><span>points</span>
 		</div>
 	<% elsif @challenge.type && @challenge.type.value == 'lottery' %>
-		<div>
-			<label>When someone plays the lottery</label><input id="challenge_name" name="challenge[name]" type="text" class="textfield" placeholder="Name"/>
+		<div class="challenge_desc">
+			<span>When someone plays the lottery</span><input id="challenge_name" name="challenge[name]" type="text" class="textfield" placeholder="Name"/>
 		</div>
 		<%= f.input :description, :as => :hidden %>
 		<%= f.input :require_verif, :as => :hidden %>
-		<div>
-			<label>the odds of winning is one in</label><input id="challenge_lottery_data_odds" name="challenge[lottery_data][odds]" type="text" class="textfield" placeholder=""/><span>and</span>
+		<div class="challenge_desc">
+			<span>the odds of winning is one in</span><input id="challenge_lottery_data_odds" name="challenge[lottery_data][odds]" type="text" class="textfield" placeholder=""/><span>and</span>
 		</div>
-		<div>
-			<label>they will get</label><input id="challenge_points" name="challenge[points]" type="text" class="textfield" placeholder=""/><span>points</span>
+		<div class="challenge_desc">
+			<span>they will get</span><input id="challenge_points" name="challenge[points]" type="text" class="numfield" placeholder=""/><span>points</span>
+		</div>
+	<% elsif @challenge.type && @challenge.type.value == 'menu' %>
+		<div class="challenge_desc">
+			<span>When someone buys a</span><input id="challenge_name" name="challenge[name]" type="text" class="textfield" placeholder="Name"/>
+		</div>
+		<%= f.input :description, :as => :hidden %>
+		<%= f.input :require_verif, :as => :hidden %>
+		<div class="challenge_desc">
+			<span>they will get</span><input id="challenge_points" name="challenge[points]" type="text" class="numfield" placeholder=""/><span>points</span>
+		</div>
+	<% elsif @challenge.type && @challenge.type.value == 'photo' %>
+		<div class="challenge_desc">
+			<span>When someone shares an exciting photo of this place with their friends through social media</span><%= f.input :name, :as => :hidden %>
+		</div>
+		<%= f.input :description, :as => :hidden %>
+		<%= f.input :require_verif, :as => :hidden %>
+		<div class="challenge_desc">
+			<span>they will get</span><input id="challenge_points" name="challenge[points]" type="text" class="numfield" placeholder=""/><span>points</span>
+		</div>
+	<% elsif @challenge.type && @challenge.type.value == 'referral' %>
+		<div class="challenge_desc">
+			<span>When someone refers a friend</span><%= f.input :name, :as => :hidden %>
+		</div>
+		<%= f.input :description, :as => :hidden %>
+		<%= f.input :require_verif, :as => :hidden %>
+		<div class="challenge_desc">
+			<span>they will get</span><input id="challenge_points" name="challenge[points]" type="text" class="numfield" placeholder=""/><span>points</span>
 		</div>
 	<% elsif @challenge.type && @challenge.type.value == 'custom' %>	
 		<%= f.input :name %>
@@ -68,9 +69,12 @@
 		<%= f.input :require_verif, :as => :hidden %>
 		<%= f.input :points %>
 	<% end %>
-	</div>
 	<% if @challenge.type && @challenge.type.value != '' %>
-	<%= f.collection_check_boxes :venue_ids, current_merchant.venues, :id, :name %>
-	<%= f.submit "Save", :class => "btn primary large noWrap", :disable_with => "Working..." %>
+	<div class="venues">
+		<div>Venues</div>
+		<%= f.collection_check_boxes :venue_ids, current_merchant.venues, :id, :display_name, :item_wrapper_tag => :div, :item_wrapper_class => 'checkbox' %>
+	</div>
+	<%= f.submit "Save", :class => "btn primary noWrap", :disable_with => "Working..." %>
 	<% end %>
 <% end %>
+</div>

@@ -1,24 +1,28 @@
-<% content_for :script do %> 
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<% content_for :script do %> <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript" src="/javascripts/desktop/src/business/analytics.js"></script>
-<% end %> 
-<div style="float:left;">
-<div id="new_customers"></div>
-<div id="purchases"></div>
-<div id="challenges"></div>
-</div>
-<div>
-	<div>
-		<%= @customers_total %> people in your loyalty program
+<% end %>
+<div class="content row">
+	<div class="span19">
+		<div id="new_customers">&nbsp;</div>
+		<div id="purchases">&nbsp;</div>
+		<div id="challenges">&nbsp;</div>
 	</div>
-	<div>
-		<% @purchases_total.each do |purchases| %>
-		<p><%= purchases[:total] %> <%= purchases[:name] %> purchases</p>
-		<% end %>
-	</div>
-	<div>
-		<% @challenges_total.each do |challenges| %>
-		<p><%= challenges[:total] %> <%= challenges[:name] %> challenges completed</pp>
-		<% end %>
+	<div class="span10">
+		<div>
+			<%= @customers_total %> people in your loyalty program
+		</div>
+		<div>
+			<% @purchases_total.each do |purchases| %>
+			<p>
+				<%= purchases[:total] %> <%= purchases[:name] %> purchases
+			</p>
+			<% end %>
+		</div>
+		<div>
+			<% @challenges_total.each do |challenges| %>
+			<p>
+				<%= challenges[:total] %> <%= challenges[:name] %> challenges completed</pp>
+				<% end %>
+		</div>
 	</div>
 </div>

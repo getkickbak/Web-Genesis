@@ -1,6 +1,7 @@
 <% content_for :script do %> 
 <script type="text/javascript" src="/javascripts/desktop/src/business/setup.js"></script>
 <% end %>
+<div class="content row">
 <div style="width:400px;">
 <div id="progressbar"></div><div><%= "#{@checklist[:count]} out of #{@checklist[:total]} steps completed" %></div>
 </div>
@@ -51,9 +52,10 @@
 	</div>
 	<div>
 		<% if @checklist[:data][:venues] && proceed_next_step %>
-		<a href="<%= setup_activate_path %>" class="btn pricetag large alignCenter">Activate</a>
+		<a href="<%= setup_activate_path %>" class="btn pricetag alignCenter">Activate</a>
 		<% else %>
-		<a class="btn pricetag large alignCenter disabled">Activate</a>
+		<a class="btn pricetag alignCenter disabled">Activate</a>
 		<% end %>
 	</div>
+</div>
 </div>

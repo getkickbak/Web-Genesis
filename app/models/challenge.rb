@@ -30,6 +30,7 @@ class Challenge
   validates_presence_of :type_id  
   validates_with_method :check_data
   validates_with_method :points, :method => :check_points
+  validates_with_method :check_venues
   
   def self.create(merchant, type, challenge_info, venues)
     now = Time.now
@@ -144,6 +145,13 @@ class Challenge
     return true
   end
     
+  def check_venues
+    if self.venues.length == 0
+      return [false, "Must belong to at least one venue"]
+    end
+    return true
+  end
+      
   def generate_qr_code(merchant_id, auth_code)
     qr = RQRCode::QRCode.new( auth_code, :size => 5, :level => :h )
     png = qr.to_img.resize(90,90)

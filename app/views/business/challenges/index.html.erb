@@ -1,25 +1,17 @@
 <h1>Listing Challenges</h1>
 
-<table>
+<div class="content row">
 	<% @venues.each do |venue| %>
-	<tr>
-		<td><%= venue.name %></td>
-		<td></td>
-		<td></td>
-		<td></td>
-	</tr>
+	<div><%= venue.name %></div>
 	<% venue.challenges.each do |challenge| %>
-	<tr>
-		<td><%= challenge.name %></td>
-		<td><%= link_to 'Show', challenge_path(challenge) %></td>
-		<td><%= link_to 'Edit', edit_challenge_path(challenge) %></td>
-		<td><%= link_to 'Destroy', challenge_path(challenge), :confirm => 'Are you sure?', :method => :delete %></td>
-	</tr>
+	<div>
+		<div><%= link_to challenge.name, challenge_path(challenge) %></div>
+		<div><%= link_to 'Edit', edit_challenge_path(challenge) %></div>
+		<div><%= link_to 'Delete', challenge_path(challenge), :confirm => 'Are you sure?', :method => :delete %></div>
+	</div>
 	<% end %>
 	<% end %>
-</table>
-
-<br />
+</div>
 
 <%= link_to 'New Challenge', new_challenge_path %>
 <% if current_merchant.status == :pending %>

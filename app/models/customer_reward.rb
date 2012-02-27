@@ -23,7 +23,8 @@ class CustomerReward
 
   validates_presence_of :type_id
   validates_with_method :check_price
-  validates_with_method :check_points
+  validates_with_method :points, :method => :check_points
+  validates_with_method :check_venues
   
   def self.create(merchant, type, reward_info, venues)
     now = Time.now
@@ -78,6 +79,13 @@ class CustomerReward
   def check_points
     if self.points.is_a? Integer
       return self.points > 0 ? true : [false, "Points must be greater than 0"]
+    end
+    return true
+  end
+  
+  def check_venues
+    if self.venues.length == 0
+      return [false, "Must belong to at least one venue"]
     end
     return true
   end

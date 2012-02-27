@@ -1,17 +1,24 @@
-<h2>Sign in</h2>
-
-<%= form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f| %>
-  <p><%= f.label :email %><br />
-  <%= f.email_field :email %></p>
-
-  <p><%= f.label :password %><br />
-  <%= f.password_field :password %></p>
-
-  <% if devise_mapping.rememberable? -%>
-    <p><%= f.check_box :remember_me %> <%= f.label :remember_me %></p>
-  <% end -%>
-
-  <p><%= f.submit "Sign in" %></p>
-<% end %>
-
-<%= render :partial => "business/merchant_devise/shared/links" %>
+<% flash.each do |name, msg| %>
+<%= content_tag :div, msg, :id => "flash_#{name}" %>
+<% end -%>
+<div class="row">
+	<div class="span16">
+		<div class="modal-header">
+			<h3>Sign In to KICKBAK</h3>
+		</div>
+		<%= simple_form_for resource, :html => {:class=>
+		"marchant-form"}, :url => session_path(resource_name) do |f| %>
+		<div class="modal-body alignLeft">
+			<%= f.input :email %>
+			<%= f.input :password %>
+			<% if devise_mapping.rememberable? %>
+			<%= f.input :remember_me, :as => :boolean %>
+			<% end %>
+		</div>
+		<div class="modal-footer">
+			<%= f.button :submit, "Sign In", :class => 'btn primary' %>
+		</div>
+		<% end %>
+		<%= render :partial => "business/merchant_devise/shared/links" %>
+	</div>
+</div>
