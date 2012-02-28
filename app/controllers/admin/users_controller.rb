@@ -45,7 +45,7 @@ module Admin
 
       User.transaction do
         begin
-          @user = User.create_without_devise(params[:user])
+          @user = User.create(params[:user])
           respond_to do |format|
             format.html { redirect_to(user_path(@user), :notice => 'User was successfully created.') }
           #format.xml  { render :xml => @user, :status => :created, :location => @user }

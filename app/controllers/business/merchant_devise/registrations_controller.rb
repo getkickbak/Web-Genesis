@@ -8,7 +8,7 @@ module Business
       Merchant.transaction do |t|
         begin
           build_resource
-          merchant = Merchant.create(resource, resource.password, resource.password_confirmation)
+          merchant = Merchant.create(resource)
           resource = merchant
           if resource.active_for_authentication?
             set_flash_message :notice, :signed_up if is_navigational_format?

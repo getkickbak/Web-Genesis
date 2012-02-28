@@ -11,14 +11,14 @@ class EarnPrize
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessible :reward_id, :points, :created_ts
+  attr_accessible :points, :created_ts
   
   belongs_to :reward, 'PurchaseReward'
   belongs_to :merchant
   belongs_to :user
   
   def as_json(options)
-    only = {:only => [:id], :methods => [:reward]}
+    only = {:only => [:id], :methods => [:merchant, :reward]}
     options = options.nil? ? only : options.merge(only)
     super(options)
   end

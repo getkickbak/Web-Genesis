@@ -1,12 +1,9 @@
-<h2>Forgot your password?</h2>
-
-<%= form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :post }) do |f| %>
-  <%= devise_error_messages! %>
-
-  <p><%= f.label :email %><br />
-  <%= f.email_field :email %></p>
-
-  <p><%= f.submit "Send me reset password instructions", :class => "btn primary noWrap" %></p>
-<% end %>
-
-<%= render :partial => "business/merchant_devise/shared/links" %>
+<div class="content">
+	<div style="margin:auto;width:500px;padding: 20px; border: 1px solid;">
+		<h3 class="alignCenter">Forgot your password?</h3>
+		<%= simple_form_for resource, :url => password_path(resource_name), :html => { :method => :post } do |f| %>
+		<%= f.input :email %>
+		<%= f.button :submit, "Reset", :class => 'btn primary' %>
+		<% end %>
+	</div>
+</div>

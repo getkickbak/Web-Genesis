@@ -19,7 +19,7 @@ module Business
     
     def activate
       if current_merchant.status == :pending && has_venues? && set_reward_model? && has_purchase_rewards? && has_customer_rewards? && has_challenges?
-        #Merchant.transaction do
+        Merchant.transaction do
           begin
             current_merchant.update_without_password(:type_id => current_merchant.type.id, :status => :active)
             respond_to do |format|
@@ -35,7 +35,7 @@ module Business
             #format.json { render :json => { :success => false } }
             end
           end
-        #end   
+        end   
       else
         respond_to do |format|
           format.html { render :action => "index" }

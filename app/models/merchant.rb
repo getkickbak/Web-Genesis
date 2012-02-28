@@ -28,13 +28,9 @@ class Merchant
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
 
-  attr_accessor :type_id
+  attr_accessor :type_id, :current_password
 
-  attr_accessible :type_id, :name, :email, :account_first_name, :account_last_name, :phone, :status, :password, :password_confirmation, :encrypted_password
-
-  #validates_presence_of :password, :password_confirmation
-  #validates_length_of :password, :min => 6, :max => 40
-  #validates_confirmation_of :password
+  attr_accessible :name, :email, :account_first_name, :account_last_name, :phone, :status, :password, :password_confirmation, :encrypted_password
   
   has 1, :merchant_to_type, :constraint => :destroy
   has 1, :type, 'MerchantType', :through => :merchant_to_type, :via => :merchant_type
@@ -49,7 +45,7 @@ class Merchant
     "Merchant-#{id}"  
   end
   
-  def self.create(type, merchant_info, password, password_confirmation)
+  def self.create(type, merchant_info)
     now = Time.now
     merchant_name = merchant_info[:name].squeeze(' ').strip
     merchant_id = "#{merchant_name.downcase.gsub(' ','-')}-#{now.to_i}"
@@ -58,9 +54,9 @@ class Merchant
       :type_id => type ? type.id : nil,
       :name => merchant_name,
       :email => merchant_info[:email].strip,
-      :password => password.strip,
-      :password_confirmation => password_confirmation.strip,
-      :encrypted_password => merchant_info[:encrypted_password],
+      :current_password => merchant_info[:password].strip,
+      :password => merchant_info[:password].strip,
+      :password_confirmation => merchant_info[:password_confirmation].strip,
       :account_first_name => merchant_info[:account_first_name].strip,
       :account_last_name => merchant_info[:account_last_name].strip,
       :phone => merchant_info[:phone].strip,
@@ -72,11 +68,6 @@ class Merchant
     merchant.type = type
     merchant.save
     return merchant
-  end
-
-  def self.create_without_devise(type, merchant_info)
-    merchant_info[:encrypted_password] = self.encrypt_password(merchant_info[:password])
-    self.create(type, merchant_info, merchant_info[:password], merchant_info[:password_confirmation])
   end
   
   def self.find(start, max)
@@ -97,6 +88,22 @@ class Merchant
    self.merchant_id
   end
 
+  def password_required?
+    !self.current_password.nil? 
+  end
+  
+  # Override Devise::Models::Recoverable
+  #
+  # Update password saving the record and clearing token. Returns true if
+  # the passwords are valid and the record was saved, false otherwise.
+  def reset_password!(new_password, new_password_confirmation)
+    self.type_id = self.type.id
+    self.password = new_password
+    self.password_confirmation = new_password_confirmation
+    clear_reset_password_token if valid?
+    save
+  end
+      
   def update_all(type, merchant_info)
     now = Time.now
     self.type_id = type ? type.id : nil
@@ -104,9 +111,21 @@ class Merchant
     self.merchant_id = merchant_name.downcase.gsub(' ','-')
     self.name = merchant_name
     self.email = merchant_info[:email].strip
-    self.password = merchant_info[:password].strip
-    self.password_confirmation = merchant_info[:password_confirmation].strip
-    self.encrypted_password = Merchant.encrypt_password(self.password)
+    if !merchant_info[:current_password].empty?
+      self.current_password = merchant_info[:current_password].strip
+      if self.current_password && !valid_password?(self.current_password)
+        errors.add(:current_password, "Incorrect password")
+        raise DataMapper::SaveFailureError.new("", self)
+      end
+      if self.current_password == merchant_info[:password].strip
+        errors.add(:password, "New password must be different from current password")
+        raise DataMapper::SaveFailureError.new("", self)
+      end
+      self.password = merchant_info[:password].strip
+      self.password_confirmation = merchant_info[:password_confirmation].strip 
+    else
+      self.current_password = nil  
+    end
     self.account_first_name = merchant_info[:account_first_name].strip
     self.account_last_name = merchant_info[:account_last_name].strip
     self.phone = merchant_info[:phone].strip
@@ -115,7 +134,7 @@ class Merchant
     self.type = type
     save
   end
-  
+    
   def add_credit_card(credit_card)
     credit_cards.concat(Array(credit_card))
     save
@@ -132,11 +151,5 @@ class Merchant
     only = {:only => [:id, :merchant_id,:name], :methods => [:type]}
     options = options.nil? ? only : options.merge(only)
      super(options)
-  end
-  
-  private
-  
-  def self.encrypt_password(password)
-    BCrypt::Password.create(password)
   end
 end

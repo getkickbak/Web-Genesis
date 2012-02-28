@@ -52,7 +52,7 @@ class Customer
   end
   
   def as_json(options)
-    only = {:only => [:points]}
+    only = {:only => [:points], :methods => [:merchant] }
     options = options.nil? ? only : options.merge(only)
     super(options)
   end

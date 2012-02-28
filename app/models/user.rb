@@ -26,6 +26,8 @@ class User
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
     
+  attr_accessor :current_password
+  
   attr_accessible :name, :email, :facebook_id, :role, :status, :password, :password_confirmation, :encrypted_password
     
   has 1, :profile, 'UserProfile', :constraint => :destroy
@@ -38,14 +40,14 @@ class User
   has n, :user_credit_cards, :child_key => [ :user_id ], :constraint => :destroy
   has n, :credit_cards, :through => :user_credit_cards, :via => :credit_card
     
-  def self.create(user_info, password, password_confirmation)
+  def self.create(user_info)
     now = Time.now
     user = User.new(
       :name => user_info[:name].strip,
       :email => user_info[:email].strip,   
-      :password => password.strip,
-      :password_confirmation => password_confirmation.strip,
-      :encrypted_password => user_info[:encrypted_password],
+      :current_password => user_info[:password].strip,
+      :password => user_info[:password].strip,
+      :password_confirmation => user_info[:password_confirmation].strip,
       :role => user_info[:role].strip,
       :status => user_info[:status]
     ) 
@@ -59,11 +61,6 @@ class User
     return user 
   end
   
-  def self.create_without_devise(user_info)
-    user_info[:encrypted_password] = encrypt_password(user_info[:password])
-    self.create(user_info, user_info[:password], user_info[:password_confirmation])
-  end
-  
   def self.create_from_facebook(user_info)
     now = Time.now
     password = String.random_alphanumeric
@@ -71,9 +68,9 @@ class User
       :name => user_info[:name].strip,
       :email => user_info[:email].strip,   
       :facebook_id => user_info[:facebook_id],
+      :current_password => password,
       :password => password,
       :password_confirmation => password,
-      :encrypted_password => self.encrypt_password(password),
       :role => "user",
       :status => :active
     ) 
@@ -105,14 +102,30 @@ class User
     self.user_id
   end
   
+  def password_required?
+    !self.current_password.nil? 
+  end
+  
   def update_all(user_info)
     now = Time.now
     self.user_id = "#{user_info[:name].downcase.gsub(' ','-')}-#{rand(1000) + 1000}#{now.to_i}"
     self.name = user_info[:name].strip
     self.email = user_info[:email].strip
-    self.password = user_info[:password].strip
-    self.password_confirmation = user_info[:password_confirmation].strip
-    self.encrypted_password = User.encrypt_password(self.password)
+    if !user_info[:current_password].empty?
+      self.current_password = user_info[:current_password].strip
+      if self.current_password && !valid_password?(self.current_password)
+        errors.add(:current_password, "Incorrect password")
+        raise DataMapper::SaveFailureError.new("", self)
+      end
+      if self.current_password == user_info[:password].strip
+        errors.add(:password, "New password must be different from current password")
+        raise DataMapper::SaveFailureError.new("", self)
+      end
+      self.password = user_info[:password].strip
+      self.password_confirmation = user_info[:password_confirmation].strip
+    else
+      self.current_password = nil
+    end
     self.role = user_info[:role].strip
     self.status = user_info[:status]
     self.update_ts = now
@@ -157,11 +170,5 @@ class User
     only = {:only => [:name,:email]}
     options = options.nil? ? only : options.merge(only)
     super(options)
-  end
-  
-  private
-  
-  def self.encrypt_password(password)
-    BCrypt::Password.create(password)
   end
 end

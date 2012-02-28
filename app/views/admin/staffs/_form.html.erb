@@ -1,9 +1,10 @@
 <%= simple_form_for [@staff] do |f| %>
 <%= f.input :name %>
 <%= f.input :email %>
-<%= f.input :password %>
-<%= f.input :password_confirmation %>
 <%= f.input :role %>
 <%= f.input :status %>
+<%= f.input :current_password %>
+<%= f.input :password %>
+<%= f.input :password_confirmation %>
 <%= f.button :submit %>
 <% end %> 

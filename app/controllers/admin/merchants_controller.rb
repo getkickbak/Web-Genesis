@@ -47,7 +47,7 @@ module Admin
         begin
           params[:merchant][:status] = :pending
           type = MerchantType.get(params[:merchant][:type_id])
-          @merchant = Merchant.create_without_devise(type, params[:merchant])
+          @merchant = Merchant.create(type, params[:merchant])
           respond_to do |format|
             format.html { redirect_to(merchant_path(@merchant), :notice => 'Merchant was successfully created.') }
           #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }

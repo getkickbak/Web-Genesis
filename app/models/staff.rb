@@ -25,16 +25,18 @@ class Staff
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
     
+  attr_accessor :current_password
+    
   attr_accessible :name, :email, :role, :status, :password, :password_confirmation, :encrypted_password
         
-  def self.create(staff_info, password, password_confirmation)
+  def self.create(staff_info)
     now = Time.now
     staff = Staff.new(
       :name => staff_info[:name].strip,
-      :email => staff_info[:email].strip,   
-      :password => password.strip,
-      :password_confirmation => password_confirmation.strip,
-      :encrypted_password => staff_info[:encrypted_password],
+      :email => staff_info[:email].strip,  
+      :current_password => staff_info[:password].strip,
+      :password => staff_info[:password].strip,
+      :password_confirmation => staff_info[:password_confirmation].strip,
       :role => staff_info[:role].strip,
       :status => staff_info[:status]
     ) 
@@ -43,11 +45,6 @@ class Staff
     staff[:update_ts] = now
     staff.save
     return staff 
-  end
-  
-  def self.create_without_devise(staff_info)
-    staff_info[:encrypted_password] = encrypt_password(staff_info[:password])
-    self.create(staff_info, staff_info[:password], staff_info[:password_confirmation])
   end
   
   def self.find(start, max)
@@ -64,23 +61,33 @@ class Staff
     self.staff_id
   end
   
+   def password_required?
+    !self.current_password.nil? 
+  end
+  
   def update_all(staff_info)
     now = Time.now
     self.staff_id = "#{staff_info[:name].downcase.gsub(' ','-')}-#{rand(1000) + 1000}#{now.to_i}"
     self.name = staff_info[:name].strip
     self.email = staff_info[:email].strip
-    self.password = staff_info[:password].strip
-    self.password_confirmation = staff_info[:password_confirmation].strip
-    self.encrypted_password = User.encrypt_password(self.password)
+    if !staff_info[:current_password].empty?
+      self.current_password = staff_info[:current_password].strip
+      if self.current_password && !valid_password?(self.current_password)
+        errors.add(:current_password, "Incorrect password")
+        raise DataMapper::SaveFailureError.new("", self)
+      end
+      if self.current_password == staff_info[:password].strip
+        errors.add(:password, "New password must be different from current password")
+        raise DataMapper::SaveFailureError.new("", self)
+      end  
+      self.password = staff_info[:password].strip
+      self.password_confirmation = staff_info[:password_confirmation].strip
+    else
+      self.current_password = nil
+    end  
     self.role = staff_info[:role].strip
     self.status = staff_info[:status]
     self.update_ts = now
     save
-  end
-  
-  private
-  
-  def self.encrypt_password(password)
-    BCrypt::Password.create(password)
   end
 end

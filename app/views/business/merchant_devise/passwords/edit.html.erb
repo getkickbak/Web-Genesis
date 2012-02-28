@@ -1,16 +1,11 @@
-<h2>Change your password</h2>
-
-<%= form_for(resource, :as => resource_name, :url => password_path(resource_name), :html => { :method => :put }) do |f| %>
-  <%= devise_error_messages! %>
-  <%= f.hidden_field :reset_password_token %>
-
-  <p><%= f.label :password, "New password" %><br />
-  <%= f.password_field :password %></p>
-
-  <p><%= f.label :password_confirmation, "Confirm new password" %><br />
-  <%= f.password_field :password_confirmation %></p>
-
-  <p><%= f.submit "Change my password", :class => "btn primary noWrap" %></p>
-<% end %>
-
-<%= render :partial => "business/merchant_devise/shared/links" %>
+<div class="content">
+	<div style="margin:auto;width:500px;padding: 20px; border: 1px solid;">
+		<h3 class="alignCenter">Change your password</h3>
+		<%= simple_form_for resource, :url => password_path(resource_name), :html => { :method => :put } do |f| %>
+		<%= f.input :reset_password_token, :as => :hidden %>
+		<%= f.input :password, :label => "New password" %>
+		<%= f.input :password_confirmation, :label => "Confirm new password" %>
+		<%= f.button :submit, "Update", :class => 'btn primary' %>
+		<% end %>
+	</div>
+</div>

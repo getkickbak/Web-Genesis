@@ -71,7 +71,7 @@ class PurchaseRewardsController < ApplicationController
                 :points => prize.points,
                 :created_ts => now
               )
-              earn_prize.reward = PurchaseReward.get(prize.id)
+              earn_prize.reward = prize
               earn_prize.merchant = @venue.merchant
               earn_prize.user = current_user
               earn_prize.save
@@ -95,7 +95,7 @@ class PurchaseRewardsController < ApplicationController
                 :points => prize.points,
                 :created_ts => now
               )
-              earn_prize.reward = PurchaseReward.get(prize.id)
+              earn_prize.reward = prize
               earn_prize.merchant = @venue.merchant
               earn_prize.user = current_user
               earn_prize.save 
@@ -135,8 +135,8 @@ class PurchaseRewardsController < ApplicationController
   private
   
   def pick_prize(venue)
-    idx = Random.rand(venue.purchase_rewards.length)
-    return venue.purchase_rewards.get(idx)
+    idx = Random.rand(venue.customer_rewards.length)
+    return venue.customer_rewards.get(idx)
   end
   
   def pick_prize_win_offset(prize_interval)

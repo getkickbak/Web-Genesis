@@ -44,7 +44,7 @@ module Admin
 
       Staff.transaction do
         begin
-          @staff = Staff.create_without_devise(params[:staff])
+          @staff = Staff.create(params[:staff])
           respond_to do |format|
             format.html { redirect_to(staff_path(@staff), :notice => 'Staff was successfully created.') }
           #format.xml  { render :xml => @staff, :status => :created, :location => @staff }

@@ -6,7 +6,7 @@ module Admin
           build_resource
           resource[:role] = "admin"
           resource[:status] = :active
-          staff = Staff.create(resource, resource.password, resource.password_confirmation)
+          staff = Staff.create(resource)
           resource = staff
           if resource.active_for_authentication?
             set_flash_message :notice, :signed_up if is_navigational_format?

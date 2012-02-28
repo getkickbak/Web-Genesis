@@ -76,7 +76,7 @@ Genesis::Application.routes.draw do
 
       match '*a', :to => 'errors#routing'
       
-      #root :to => redirect("/vouchers")
+      root :to => redirect("/merchants")
     end
   end
 
@@ -152,7 +152,7 @@ Genesis::Application.routes.draw do
 
     match '*a', :to => 'errors#routing'
 
-    root :to => 'deals#show'
+    #root :to => 'deals#show'
 
   #match '/referrals' => 'referrals#index'
   #root :to => 'referrals#index', :via => :get
