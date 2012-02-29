@@ -16,7 +16,6 @@ class Merchant
   property :name, String, :required => true, :default => ""
   property :email, String, :required => true, :unique => true,
             :format => :email_address
-  property :encrypted_password, String, :required => true, :default => ""
   property :photo_url, String, :default => ""
   property :account_first_name, String, :required => true, :default => ""
   property :account_last_name, String, :required => true, :default => ""
@@ -30,7 +29,7 @@ class Merchant
 
   attr_accessor :type_id, :current_password
 
-  attr_accessible :name, :email, :account_first_name, :account_last_name, :phone, :status, :password, :password_confirmation, :encrypted_password
+  attr_accessible :type_id, :name, :email, :account_first_name, :account_last_name, :phone, :status, :password, :password_confirmation
   
   has 1, :merchant_to_type, :constraint => :destroy
   has 1, :type, 'MerchantType', :through => :merchant_to_type, :via => :merchant_type
@@ -92,6 +91,11 @@ class Merchant
     !self.current_password.nil? 
   end
   
+  # Override Devise::mailer
+  def devise_mailer
+    "Business::MerchantDevise::Mailer"
+  end
+  
   # Override Devise::Models::Recoverable
   #
   # Update password saving the record and clearing token. Returns true if
@@ -102,6 +106,10 @@ class Merchant
     self.password_confirmation = new_password_confirmation
     clear_reset_password_token if valid?
     save
+  end
+      
+  def update_without_password(params={})
+    super(params)  
   end
       
   def update_all(type, merchant_info)

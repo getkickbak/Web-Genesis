@@ -16,7 +16,6 @@ class Staff
   property :staff_id, String, :unique_index => true, :required => true, :default => ""
   property :name, String, :required => true, :default => ""
   property :email, String, :unique_index => true, :required => true, :format => :email_address, :default => ""
-  property :encrypted_password, String, :required => true, :default => ""
   property :photo_url, String, :default => ""
   property :role, String, :required => true, :default => "sales"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :active
@@ -27,7 +26,7 @@ class Staff
     
   attr_accessor :current_password
     
-  attr_accessible :name, :email, :role, :status, :password, :password_confirmation, :encrypted_password
+  attr_accessible :name, :email, :role, :status, :password, :password_confirmation
         
   def self.create(staff_info)
     now = Time.now

@@ -16,7 +16,6 @@ class User
   property :user_id, String, :unique_index => true, :required => true, :default => ""
   property :name, String, :required => true, :default => ""
   property :email, String, :unique_index => true, :required => true, :format => :email_address, :default => ""
-  property :encrypted_password, String, :required => true, :default => ""
   property :facebook_id, String, :default => ""     
   property :photo_url, String, :default => ""
   property :role, String, :required => true, :default => "anonymous"
@@ -28,7 +27,7 @@ class User
     
   attr_accessor :current_password
   
-  attr_accessible :name, :email, :facebook_id, :role, :status, :password, :password_confirmation, :encrypted_password
+  attr_accessible :name, :email, :facebook_id, :role, :status, :password, :password_confirmation
     
   has 1, :profile, 'UserProfile', :constraint => :destroy
   has n, :friendships, :child_key => [ :source_id ], :constraint => :destroy

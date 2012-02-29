@@ -3,6 +3,7 @@ require 'util/constant'
 class Customer
   include DataMapper::Resource
 
+  property :id, Serial
   property :auth_code, String, :required => true, :default => ""
   property :qr_code, String, :required => true, :default => ""
   property :points, Integer, :default => 0
@@ -52,7 +53,7 @@ class Customer
   end
   
   def as_json(options)
-    only = {:only => [:points], :methods => [:merchant] }
+    only = {:only => [:points], :methods => [:last_check_in, :merchant] }
     options = options.nil? ? only : options.merge(only)
     super(options)
   end
