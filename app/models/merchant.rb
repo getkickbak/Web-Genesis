@@ -148,7 +148,7 @@ class Merchant
   end
   
   def as_json(options)
-    only = {:only => [:id, :merchant_id,:name], :methods => [:type]}
+    only = {:only => [:id, :merchant_id, :name, :photo_url], :methods => [:type]}
     options = options.nil? ? only : options.merge(only)
      super(options)
   end

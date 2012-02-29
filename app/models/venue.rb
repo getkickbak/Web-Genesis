@@ -14,6 +14,7 @@ class Venue
   property :country, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
   property :website, String, :required => true, :default => ""
+  property :photo_url, String, :default => ""
   property :latitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :longitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :auth_code, String, :required => true, :default => ""
@@ -24,9 +25,9 @@ class Venue
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessor :type_id
+  attr_accessor :type_id, :distance
   
-  attr_accessible :type_id, :name, :address, :city, :state, :zipcode, :country, :phone, :website, :latitude, :longitude
+  attr_accessible :name, :address, :city, :state, :zipcode, :country, :phone, :website, :photo_url, :latitude, :longitude
   
   belongs_to :merchant
   has 1, :venue_to_type, :constraint => :destroy
@@ -80,13 +81,35 @@ class Venue
     return venue
   end
   
-  def self.find_nearest(latitude, longitude, max)
-    venues_ids = DataMapper.repository(:default).adapter.select(
-      "SELECT id FROM venues WHERE deleted_ts IS NULL
-       ORDER BY ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) )  
-       ASC LIMIT 0,?", latitude, longitude, latitude, max 
-    ) 
-    Venue.all(:id => venues_ids)
+  def self.find_nearest(merchant_id, latitude, longitude, max)
+    if merchant_id.nil?
+      venues_info = DataMapper.repository(:default).adapter.select(
+        "SELECT id, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance
+        FROM venues WHERE deleted_ts IS NULL
+        ORDER BY distance
+        ASC LIMIT 0,?", latitude, longitude, latitude, max 
+      )
+    else
+      venues_info = DataMapper.repository(:default).adapter.select(
+        "SELECT id, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance
+        FROM venues WHERE merchant_id = ? AND deleted_ts IS NULL
+        ORDER BY distance
+        ASC LIMIT 0,?", latitude, longitude, latitude, merchant_id, max 
+      )
+    end   
+    venue_id_to_distance_map = {}
+    venue_ids = []
+    venues_info.each do |key,value|
+      venue_ids << value[:id] 
+      venue_id_to_distance_map[value[:id]] = value[:distance]
+    end
+    venues = Venue.all(:id => venue_ids)
+    venues.each do |venue|
+      venue.distance = venue_id_to_distance_map[venue.id]
+    end
+    
+    # Note: Venues are not ordered by distance. Should we do it on the client side or server side?
+    return venues
   end
   
   def display_name
@@ -145,7 +168,7 @@ class Venue
   end
   
   def as_json(options)
-    only = {:only => [:id, :name, :longitude, :latitude], :methods => [:type, :merchant]}
+    only = {:only => [:id, :name, :photo_url, :longitude, :latitude, :distance], :methods => [:type, :merchant]}
     options = options.nil? ? only : options.merge(only)
     super(options)
   end

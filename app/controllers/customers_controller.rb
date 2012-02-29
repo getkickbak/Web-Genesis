@@ -5,9 +5,7 @@ class CustomersController < ApplicationController
   def index
     authorize! :read, Customer
 
-    start = 0
-    max = 10
-    results = Customer.find(current_user.id, start, max)
+    results = Customer.find(current_user.id, params[:start], params[:max])
 
     respond_to do |format|
       format.html # index.html.erb
