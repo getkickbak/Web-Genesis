@@ -39,7 +39,7 @@ class Staff
       :role => staff_info[:role].strip,
       :status => staff_info[:status]
     ) 
-    staff[:staff_id] = "#{staff_info[:name].downcase.gsub(' ','-')}-#{rand(1000) + 1000}#{now.to_i}"
+    staff[:staff_id] = "#{rand(1000) + 2000}#{now.to_i}"
     staff[:created_ts] = now
     staff[:update_ts] = now
     staff.save
@@ -66,7 +66,6 @@ class Staff
   
   def update_all(staff_info)
     now = Time.now
-    self.staff_id = "#{staff_info[:name].downcase.gsub(' ','-')}-#{rand(1000) + 1000}#{now.to_i}"
     self.name = staff_info[:name].strip
     self.email = staff_info[:email].strip
     if !staff_info[:current_password].empty?

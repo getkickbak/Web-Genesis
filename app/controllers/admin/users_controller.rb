@@ -67,10 +67,12 @@ module Admin
       @user = User.first(:user_id => params[:id]) || not_found
       authorize! :update, @user
 
-      User.transaction do
+      #User.transaction do
         begin
           @user.update_all(params[:user])
-          sign_in(current_user, :bypass => true)
+          if !current_user.nil?
+            sign_in(current_user, :bypass => true)
+          end
           respond_to do |format|
             format.html { redirect_to(user_path(@user), :notice => 'User was successfully updated.') }
           #format.xml  { head :ok }
@@ -85,7 +87,7 @@ module Admin
           #format.json { render :json => { :success => false } }
           end
         end
-      end
+      #end
     end
 
     def destroy

@@ -50,7 +50,7 @@ class User
       :role => user_info[:role].strip,
       :status => user_info[:status]
     ) 
-    user[:user_id] = "#{user_info[:name].downcase.gsub(' ','-')}-#{rand(1000) + 1000}#{now.to_i}"
+    user[:user_id] = "#{rand(1000) + 1000}#{now.to_i}"
     user[:created_ts] = now
     user[:update_ts] = now
     user.profile = UserProfile.new
@@ -73,7 +73,7 @@ class User
       :role => "user",
       :status => :active
     ) 
-    user[:user_id] = "#{user_info[:name].downcase.gsub(' ','-')}-#{rand(1000) + 1000}#{now.to_i}"
+    user[:user_id] = "#{rand(1000) + 1000}#{now.to_i}"
     user[:created_ts] = now
     user[:update_ts] = now
     user[:role] = "user"
@@ -107,7 +107,6 @@ class User
   
   def update_all(user_info)
     now = Time.now
-    self.user_id = "#{user_info[:name].downcase.gsub(' ','-')}-#{rand(1000) + 1000}#{now.to_i}"
     self.name = user_info[:name].strip
     self.email = user_info[:email].strip
     if !user_info[:current_password].empty?

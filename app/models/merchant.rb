@@ -47,7 +47,7 @@ class Merchant
   def self.create(type, merchant_info)
     now = Time.now
     merchant_name = merchant_info[:name].squeeze(' ').strip
-    merchant_id = "#{merchant_name.downcase.gsub(' ','-')}-#{now.to_i}"
+    merchant_id = "#{rand(1000) + 3000}#{now.to_i}"
     
     merchant = Merchant.new(
       :type_id => type ? type.id : nil,
@@ -108,15 +108,10 @@ class Merchant
     save
   end
       
-  def update_without_password(params={})
-    super(params)  
-  end
-      
   def update_all(type, merchant_info)
     now = Time.now
     self.type_id = type ? type.id : nil
     merchant_name = merchant_info[:name].squeeze(' ').strip
-    self.merchant_id = merchant_name.downcase.gsub(' ','-')
     self.name = merchant_name
     self.email = merchant_info[:email].strip
     if !merchant_info[:current_password].empty?
