@@ -18,9 +18,9 @@ module Admin
             respond_with resource, :location => after_inactive_sign_up_path_for(resource)
           end
         rescue StandardError => e
-        #t.rollback
+          t.rollback
           clean_up_passwords(resource)
-          respond_with_navigational(resource) { render_with_scope :new }
+          respond_with resource
         end
       end
     end

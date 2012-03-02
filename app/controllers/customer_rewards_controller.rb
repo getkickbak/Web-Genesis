@@ -19,7 +19,7 @@ class CustomerRewardsController < ApplicationController
     Customer.transaction do
       begin
         if @venue.auth_code == params[:auth_code] 
-          reward = CustomerReward.first(:id => params[:reward_id], CustomerReward.merchant.id => @venue.merchant.id)
+          reward = CustomerReward.first(:id => params[:id], CustomerReward.merchant.id => @venue.merchant.id)
           if @customer.points - reward.points >= 0
             record = RedeemRewardRecord.new(
               :reward_id => reward.id,
@@ -33,26 +33,26 @@ class CustomerRewardsController < ApplicationController
             @customer.points -= reward.points
             @customer.save
             success = true
-            msg = [""]
+            data = { :msg => [""] }
           else
             success = false
-            msg = [""]  
+            data = { :msg => [""] }  
           end
         else
           success = false
-          msg = [""]    
+          data = { :msg => [""] }    
         end
         respond_to do |format|
           #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => success, :msg => msg } }
+          format.json { render :json => { :success => success, :data => data } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :msg => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
+          format.json { render :json => { :success => false, :data => { :msg => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } } }
         end
       end
     end

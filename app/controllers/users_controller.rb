@@ -30,7 +30,7 @@ class UsersController < ApplicationController
         respond_to do |format|
           format.html { redirect_to(account_path, :notice => 'User was successfully updated.') }
           #format.xml  { head :ok }
-          #format.json { render :json => { :success => true, :data => @user, :total => 1 } }
+          format.json { render :json => { :success => true, :data => { :msg => [""] } } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
@@ -38,7 +38,7 @@ class UsersController < ApplicationController
         respond_to do |format|
           format.html { render :action => "edit" }
           #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-          #format.json { render :json => { :success => false } }
+          format.json { render :json => { :success => false, :data => { :msg => e.resource.errors.to_json } } }
         end
       end
     end

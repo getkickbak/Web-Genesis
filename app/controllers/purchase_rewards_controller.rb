@@ -25,7 +25,7 @@ class PurchaseRewardsController < ApplicationController
       respond_to do |format|
         #format.html { render :action => "new" }
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :msg => ["Something went wrong", "Outside of check-in distance.  Please try again."] } }
+        format.json { render :json => { :success => false, :data => { :msg => ["Something went wrong", "Outside of check-in distance.  Please try again."] } } }
       end
       return
     end
@@ -43,7 +43,7 @@ class PurchaseRewardsController < ApplicationController
               referral_customer.save
             end
           end
-          reward_ids = params[:reward_id]
+          reward_ids = params[:reward_ids]
           total_points = 0
           reward_ids.each do |reward_id|
             reward = PurchaseReward.first(PurchaseReward.merchant.id => @venue.merchant.id, :id => reward_id) || not_found
@@ -111,20 +111,20 @@ class PurchaseRewardsController < ApplicationController
         respond_to do |format|
           #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => success, :data => data.to_json, :msg => msg } }
+          format.json { render :json => { :success => success, :data => data.to_json, :meta_data => { :msg => msg } } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :msg => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
+          format.json { render :json => { :success => false, :data => { :msg => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } } }
         end
       rescue
         respond_to do |format|
           #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :msg => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
+          format.json { render :json => { :success => false, :data => { :msg => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } } }
         end  
       ensure 
         mutex.release if defined? mutex && mutex  

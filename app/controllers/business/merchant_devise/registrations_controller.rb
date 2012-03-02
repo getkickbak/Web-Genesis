@@ -1,9 +1,5 @@
 module Business
   class MerchantDevise::RegistrationsController < Devise::RegistrationsController
-    def new
-      super
-    end
-
     def create
       Merchant.transaction do |t|
         begin
@@ -22,21 +18,8 @@ module Business
         rescue StandardError => e
           t.rollback
           clean_up_passwords(resource)
-          respond_with_navigational(resource) { render_with_scope :new }
+          respond_with resource
         end
-      end
-    end
-
-    def update
-      self.resource = resource_class.to_adapter.get!(send(:"current_#{resource_name}").to_key)
-
-      if resource.update_with_password(params[resource_name])
-        set_flash_message :notice, :updated if is_navigational_format?
-        sign_in resource_name, resource, :bypass => true
-        respond_with resource, :location => after_update_path_for(resource)
-      else
-        clean_up_passwords(resource)
-        respond_with_navigational(resource){ render_with_scope :edit }
       end
     end
   end

@@ -12,7 +12,7 @@ class ChallengesController < ApplicationController
 
   def start
     @merchant = Merchant.get(params[:merchant_id]) || not_found
-    @challenge = Challenge.first(:id => params[:challenge_id], Challenge.merchant.id => @merchant.id) || not_found
+    @challenge = Challenge.first(:id => params[:id], Challenge.merchant.id => @merchant.id) || not_found
     @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
@@ -21,22 +21,22 @@ class ChallengesController < ApplicationController
         if is_startable_challenge?(@challenge)
           start_challenge(@merchant, current_user)
           success = true
-          msg  = [""]
+          data = { :msg => [""] }
         else
           success = false
-          msg = [""]  
+          data = { :msg => [""] }  
         end
         respond_to do |format|
           #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => success, :msg => msg } }
+          format.json { render :json => { :success => success, :data => data } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :msg => ["Something went wrong", "Trouble starting the challenge.  Please try again."] } }
+          format.json { render :json => { :success => false, :data => { :msg => ["Something went wrong", "Trouble starting the challenge.  Please try again."] } } }
         end
       end
     end  
@@ -44,7 +44,7 @@ class ChallengesController < ApplicationController
   
   def complete    
     @venue = Venue.first(Venue.merchant.id => params[:merchant_id], :id => params[:venue_id]) || not_found
-    @challenge = Challenge.first(:id => params[:challenge_id], Challenge.merchant.id => @venue.merchant.id) || not_found
+    @challenge = Challenge.first(:id => params[:id], Challenge.merchant.id => @venue.merchant.id) || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
@@ -52,7 +52,7 @@ class ChallengesController < ApplicationController
       respond_to do |format|
         #format.html { render :action => "new" }
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :msg => ["Something went wrong", "Outside of check-in distance.  Please try again."] } }
+        format.json { render :json => { :success => false, :dadtdad => { :msg => ["Something went wrong", "Outside of check-in distance.  Please try again."] } } }
       end
       return
     end
@@ -72,22 +72,22 @@ class ChallengesController < ApplicationController
           @customer.points += @challenge.points
           @customer.save
           success = true
-          msg = [""]
+          data = { :msg => [""] }
         else
           success = false
-          msg = [""]   
+          data = { :msg => [""] }   
         end
         respond_to do |format|
           #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => success, :msg => msg } }
+          format.json { render :json => { :success => success, :data => data } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :msg => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
+          format.json { render :json => { :success => false, :data => { :msg => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } } }
         end
       end
     end

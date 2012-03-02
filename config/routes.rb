@@ -82,11 +82,13 @@ Genesis::Application.routes.draw do
 
   constraints Domain do
     devise_for :users, :path => "", :controllers => {
-      :registrations => "user_devise/registrations"
+      :sessions => "user_devise/sessions",
+      :registrations => "user_devise/registrations",
+      :passwords => "user_devise/passwords"
     }
 
     resources :check_ins, :only => [:create]
-    resources :customers, :only => [:index, :show, :create]
+    resources :customers, :only => [:index, :create]
     
     match "/how_it_works" => 'pages#how_it_works'
     #match "/privacy" => 'pages#privacy'
@@ -103,20 +105,21 @@ Genesis::Application.routes.draw do
     match "/account/update" => 'users#update', :as => :update_account
 
     match '/venues/find_nearest' => 'venues#find_nearest'
+    match '/venues/:id/show' => 'venues#show'
 
     match '/challenges' => 'challenges#index'
-    match '/challenges/:challenge_id/start' => 'challenges#start'
-    match '/challenges/:challenge_id/complete' => 'challenges#complete'
+    match '/challenges/:id/start' => 'challenges#start'
+    match '/challenges/:id/complete' => 'challenges#complete'
 
     match '/customer_rewards' => 'customer_rewards#index'
-    match '/customer_rewards/redeem' => 'customer_rewards#redeem'
+    match '/customer_rewards/:id/redeem' => 'customer_rewards#redeem'
 
     match '/purchase_rewards' => 'purchase_rewards#index'
     match '/purchase_rewards/earn' => 'purchase_rewards#earn'
 
     match '/earn_prizes' => 'earn_prizes#index'
-    match '/earn_prizes/show' => 'earn_prizes#show'
-    match '/earn_prizes/redeem' => 'earn_prizes#redeem'
+    match '/earn_prizes/:id/show' => 'earn_prizes#show'
+    match '/earn_prizes/:id/redeem' => 'earn_prizes#redeem'
     
     #match '/users/:id/account' => 'users#edit'
     #match '/users/:user_id/coupons' => 'orders#index', :via => :get , :as => :user_coupons

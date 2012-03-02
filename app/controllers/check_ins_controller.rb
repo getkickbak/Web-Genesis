@@ -8,7 +8,7 @@ class CheckInsController < ApplicationController
       respond_to do |format|
         #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => true, :msg => ["msg"] } }
+        format.json { render :json => { :success => true, :data => { :msg => [""] } } }
       end
       return
     end
@@ -18,7 +18,7 @@ class CheckInsController < ApplicationController
       respond_to do |format|
         #format.html { render :action => "new" }
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :msg => ["Something went wrong", "Outside of check-in distance.  Please try again."] } }
+        format.json { render :json => { :success => false, :data => { :msg => ["Something went wrong", "Outside of check-in distance.  Please try again."] } } }
       end
       return
     end
@@ -44,7 +44,6 @@ class CheckInsController < ApplicationController
           @customer.last_check_in = last_check_in
           @customer.save
           data = {}
-          data[:customer] = @customer
           @prizes = EarnPrize.all(EarnPrize.merchant.id => @venue.merchant.id, EarnPrize.user.id => curent_user.id, :redeemd => false)
           data[:prizes] = @prizes
           @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
@@ -62,13 +61,13 @@ class CheckInsController < ApplicationController
           respond_to do |format|
             #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => true, :data => data.to_json } }
+            format.json { render :json => { :success => true, :data => @customer.to_json, :meta_data => data.to_json } }
           end
         else
           respond_to do |format|
             #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :msg => ["", ""] } }
+            format.json { render :json => { :success => false, :data => { :msg => [""] } } }
           end
         end
       rescue DataMapper::SaveFailureError => e
@@ -76,7 +75,7 @@ class CheckInsController < ApplicationController
         respond_to do |format|
           #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :msg => ["Something went wrong", "Trouble checking in.  Please try again."] } }
+          format.json { render :json => { :success => false, :data => { :msg => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } } }
         end
       end
     end

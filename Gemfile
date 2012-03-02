@@ -36,7 +36,7 @@ gem 'dm-aggregates',        DM_VERSION
 gem 'dm-timestamps',        DM_VERSION
 gem 'dm-observer',          DM_VERSION
 gem 'dm-accepts_nested_attributes', DM_VERSION, :git => 'git://github.com/snusnu/dm-accepts_nested_attributes'
-gem 'dm-devise',            '~> 1.5.0'
+gem 'dm-devise',            '~> 2.0.1'
 gem 'cancan'
 gem 'simple_form', '~> 2.0.0.rc'
 gem 'jquery-rails'  
