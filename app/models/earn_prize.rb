@@ -13,7 +13,7 @@ class EarnPrize
   
   attr_accessible :points, :created_ts
   
-  belongs_to :reward, 'PurchaseReward'
+  belongs_to :reward, 'CustomerReward'
   belongs_to :merchant
   belongs_to :user
   
