@@ -93,7 +93,7 @@ class Merchant
   
   # Override Devise::mailer
   def devise_mailer
-    "Business::MerchantDevise::Mailer"
+    Business::MerchantDevise::Mailer
   end
   
   # Override Devise::Models::Recoverable

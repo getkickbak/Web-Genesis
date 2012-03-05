@@ -1,1 +1,1 @@
-APP_PROP = YAML.load_file("#{RAILS_ROOT}/config/properties.yml")[RAILS_ENV]
+APP_PROP = YAML.load_file("#{Rails.root}/config/properties.yml")[Rails.env]

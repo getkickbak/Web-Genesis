@@ -1,2 +1,2 @@
 
-config = YAML.load_file("#{RAILS_ROOT}/config/beanstream.yml")[RAILS_ENV]
+config = YAML.load_file("#{Rails.root}/config/beanstream.yml")[Rails.env]

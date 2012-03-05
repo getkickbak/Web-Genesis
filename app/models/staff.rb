@@ -64,6 +64,11 @@ class Staff
     !self.current_password.nil? 
   end
   
+  # Override Devise::mailer
+  def devise_mailer
+    Admin::StaffDevise::Mailer
+  end
+  
   def update_all(staff_info)
     now = Time.now
     self.name = staff_info[:name].strip
