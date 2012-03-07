@@ -69,6 +69,7 @@ class PurchaseRewardsController < ApplicationController
           if (reward_model.prize_point_offset < reward_model.prize_win_offset) && (current_point_offset > reward_model.prize_win_offset)
               earn_prize = EarnPrize.new(
                 :points => prize.points,
+                :expiry_date => 6.month.from_now,
                 :created_ts => now
               )
               earn_prize.reward = prize

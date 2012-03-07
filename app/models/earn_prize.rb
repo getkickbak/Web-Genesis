@@ -6,19 +6,20 @@ class EarnPrize
   property :id, Serial
   property :points, Integer, :required => true, :default => 0
   property :redeemed, Boolean, :default => false
+  property :expiry_date, Date, :required => true, :default => ::Constant::MIN_DATE
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessible :points, :created_ts
+  attr_accessible :points, :expiry_date, :created_ts
   
   belongs_to :reward, 'CustomerReward'
   belongs_to :merchant
   belongs_to :user
   
   def as_json(options)
-    only = {:only => [:id, :created_ts], :methods => [:merchant, :reward]}
+    only = {:only => [:id, :expiry_date, :created_ts], :methods => [:merchant, :reward]}
     options = options.nil? ? only : options.merge(only)
     super(options)
   end
