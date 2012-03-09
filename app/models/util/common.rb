@@ -23,12 +23,12 @@ class Common
     "#{user_id}/vouchers/#{filename}"
   end
 
-  def self.generate_photo_file_path(deal_id, filename)
-    "#{deal_id}/#{filename}"
+  def self.generate_photo_file_path(merchant_id, filename)
+    "#{merchant_id}/#{filename}"
   end
 
-  def self.generate_full_photo_file_path(deal_id,filename)
-    "http://#{APP_PROP["PHOTO_HOST"]}/"+generate_photo_file_path(deal_id,filename)
+  def self.generate_full_photo_file_path(merchant_id,filename)
+    get_photo_host+generate_photo_file_path(merchant_id, filename)
   end
 
   def self.within_geo_distance?(latitude_1, longitude_1, latitude_2, longitude_2)

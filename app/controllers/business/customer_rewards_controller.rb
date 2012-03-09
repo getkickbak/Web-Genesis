@@ -54,6 +54,7 @@ module Business
         rescue DataMapper::SaveFailureError => e
           logger.error("Exception: " + e.resource.errors.inspect)
           @customer_reward = e.resource
+          @customer_reward.type_id = params[:customer_reward][:type_id]
           respond_to do |format|
             format.html { render :action => "new" }
             #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
@@ -96,6 +97,7 @@ module Business
          rescue DataMapper::SaveFailureError => e
             logger.error("Exception: " + e.resource.errors.inspect)
             @customer_reward = e.resource
+            @customer_reward.type_id = params[:customer_reward][:type_id]
             respond_to do |format|
                format.html { render :action => "edit" }
             #format.xml  { render :xml => @deal.errors, :status => :unprocessable_entity }

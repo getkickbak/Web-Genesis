@@ -59,5 +59,7 @@ module Genesis
     WillPaginate.per_page = 10
     
     require "will_paginate/array"
+    
+    config.delete_tmp_file_after_storage = false
   end
 end

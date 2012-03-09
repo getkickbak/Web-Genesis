@@ -49,5 +49,8 @@ Genesis::Application.configure do
     :recurring_api_key => 'A5B59392C6304f7288b2d7793742a6a6'
   )
 =end
+
+  # This is where ImageMagicK is installed
+  ENV['PATH'] = "/opt/local/bin:#{ENV['PATH']}"
 end
 

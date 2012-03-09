@@ -17,7 +17,6 @@ class User
   property :name, String, :required => true, :default => ""
   property :email, String, :unique_index => true, :required => true, :format => :email_address, :default => ""
   property :facebook_id, String, :default => ""     
-  property :photo_url, String, :default => ""
   property :role, String, :required => true, :default => "anonymous"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :active
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -27,7 +26,7 @@ class User
     
   attr_accessor :current_password
   
-  attr_accessible :name, :email, :facebook_id, :role, :status, :password, :password_confirmation
+  attr_accessible :name, :email, :facebook_id, :role, :status, :current_password, :password, :password_confirmation
     
   has 1, :profile, 'UserProfile', :constraint => :destroy
   has n, :friendships, :child_key => [ :source_id ], :constraint => :destroy
@@ -41,12 +40,14 @@ class User
     
   def self.create(user_info)
     now = Time.now
+    password = user_info[:password] ? user_info[:password].strip : user_info.password
+    password_confirmation  = user_info[:password_confirmation] ? user_info[:password_confirmation].strip : user_info.password_confirmation
     user = User.new(
       :name => user_info[:name].strip,
       :email => user_info[:email].strip,   
-      :current_password => user_info[:password].strip,
-      :password => user_info[:password].strip,
-      :password_confirmation => user_info[:password_confirmation].strip,
+      :current_password => password,
+      :password => password,
+      :password_confirmation => password_confirmation,
       :role => user_info[:role].strip,
       :status => user_info[:status]
     ) 

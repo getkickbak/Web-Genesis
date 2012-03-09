@@ -8,7 +8,7 @@ class Staff
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
 
-  devise :database_authenticatable, #:registerable, #:confirmable,
+  devise :database_authenticatable, :registerable, #:confirmable,
           :recoverable, :rememberable, :trackable, 
           :validatable, :authentication_keys => [:email]
           
@@ -16,7 +16,6 @@ class Staff
   property :staff_id, String, :unique_index => true, :required => true, :default => ""
   property :name, String, :required => true, :default => ""
   property :email, String, :unique_index => true, :required => true, :format => :email_address, :default => ""
-  property :photo_url, String, :default => ""
   property :role, String, :required => true, :default => "sales"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :active
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -26,16 +25,18 @@ class Staff
     
   attr_accessor :current_password
     
-  attr_accessible :name, :email, :role, :status, :password, :password_confirmation
+  attr_accessible :name, :email, :role, :status, :current_password, :password, :password_confirmation
         
   def self.create(staff_info)
     now = Time.now
+    password = staff_info[:password] ? staff_info[:password].strip : staff_info.password
+    password_confirmation  = staff_info[:password_confirmation] ? staff_info[:password_confirmation].strip : staff_info.password_confirmation
     staff = Staff.new(
       :name => staff_info[:name].strip,
       :email => staff_info[:email].strip,  
-      :current_password => staff_info[:password].strip,
-      :password => staff_info[:password].strip,
-      :password_confirmation => staff_info[:password_confirmation].strip,
+      :current_password => password,
+      :password => password,
+      :password_confirmation => password_confirmation,
       :role => staff_info[:role].strip,
       :status => staff_info[:status]
     ) 

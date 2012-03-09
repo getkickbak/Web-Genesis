@@ -14,7 +14,8 @@ class Venue
   property :country, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
   property :website, String, :required => true, :default => ""
-  property :photo_url, String, :default => ""
+  # Disable auto-validation http://j.mp/gMORhy 
+  property :photo, String, :auto_validation => false
   property :latitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :longitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :auth_code, String, :required => true, :default => ""
@@ -27,7 +28,7 @@ class Venue
   
   attr_accessor :type_id, :distance
   
-  attr_accessible :name, :address, :city, :state, :zipcode, :country, :phone, :website, :photo_url, :latitude, :longitude
+  attr_accessible :type_id, :name, :address, :city, :state, :zipcode, :country, :phone, :website, :latitude, :longitude
   
   belongs_to :merchant
   has 1, :venue_to_type, :constraint => :destroy
@@ -40,7 +41,7 @@ class Venue
   has n, :purchase_rewards, :through => :purchase_reward_venues
   has n, :customer_rewards, :through => :customer_reward_venues
   
-  validates_presence_of :type_id  
+  validates_presence_of :type_id, :on => :save
 
   def self.create(merchant, type, venue_info)
     now = Time.now
@@ -168,7 +169,7 @@ class Venue
   end
   
   def as_json(options)
-    only = {:only => [:id, :name, :photo_url, :longitude, :latitude, :distance], :methods => [:type, :merchant]}
+    only = {:only => [:id, :name, :longitude, :latitude, :distance], :methods => [:type, :merchant]}
     options = options.nil? ? only : options.merge(only)
     super(options)
   end

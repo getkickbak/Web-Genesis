@@ -43,7 +43,7 @@ module Business
     def create
       authorize! :create, Venue
       
-      Venue.transaction do
+      #Venue.transaction do
         begin
           type = VenueType.get(params[:venue][:type_id])
           @venue = Venue.create(current_merchant, type, params[:venue])
@@ -54,12 +54,13 @@ module Business
         rescue DataMapper::SaveFailureError => e
           logger.error("Exception: " + e.resource.errors.inspect)
           @venue = e.resource
+          @venue.type_id = params[:venue][:type_id]
           respond_to do |format|
             format.html { render :action => "new" }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
           end
         end
-      end
+      #end
     end
 
     def update
@@ -77,6 +78,7 @@ module Business
         rescue DataMapper::SaveFailureError => e
           logger.error("Exception: " + e.resource.errors.inspect)
           @venue = e.resource
+          @venue.type_id = params[:venue][:type_id]
           respond_to do |format|
             format.html { render :action => "edit" }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }

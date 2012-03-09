@@ -22,7 +22,7 @@ class PurchaseReward
   has n, :purchase_reward_venues, :constraint => :destroy
   has n, :venues, :through => :purchase_reward_venues
 
-  validates_presence_of :type_id
+  validates_presence_of :type_id, :on => :save
   validates_with_method :check_price
   validates_with_method :check_rebate_rate
   validates_with_method :points, :methods => :check_points

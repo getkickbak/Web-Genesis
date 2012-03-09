@@ -55,6 +55,7 @@ module Admin
         rescue DataMapper::SaveFailureError => e
           logger.error("Exception: " + e.resource.errors.inspect)
           @merchant = e.resource
+          @merchant.type_id = params[:merchant][:type_id]
           respond_to do |format|
             format.html { render :action => "new" }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
@@ -78,6 +79,7 @@ module Admin
         rescue DataMapper::SaveFailureError => e
           logger.error("Exception: " + e.resource.errors.inspect)
           @merchant = e.resource
+          @merchant.type_id = params[:merchant][:type_id]
           respond_to do |format|
             format.html { render :action => "edit" }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }

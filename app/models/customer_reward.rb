@@ -21,7 +21,7 @@ class CustomerReward
   has n, :customer_reward_venues, :constraint => :destroy
   has n, :venues, :through => :customer_reward_venues
 
-  validates_presence_of :type_id
+  validates_presence_of :type_id, :on => :save
   validates_with_method :check_price
   validates_with_method :points, :method => :check_points
   validates_with_method :check_venues

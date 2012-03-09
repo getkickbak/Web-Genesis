@@ -16,11 +16,11 @@ $(document).ready($(function() {
 		data1.addRows(response_data.new_customers);
 
 		var options1 = {
-			width : 500,
+			width : 520,
 			height : 340,
 			title : 'New Customers - Last 2 Weeks',
 			animation : { duration : 1 },
-			chartArea : { left : 80, top : 50, width : 400 },
+			chartArea : { left : 80, top : 50 },
 			legend : { position : 'none' },
 			vAxis : { minValue : 0, maxValue : 8, viewWindowMode : 'explicit', viewWindow : { min : 0 } }
 		};
@@ -39,10 +39,10 @@ $(document).ready($(function() {
 		data2.addRows(response_data.purchases.data);
 
 		var options2 = {
-			width : 500,
+			width : 520,
 			height : 340,
 			title : 'Purchases Per Day - Last 2 Months',
-			chartArea : { left : 80, top : 50, width : 400 },
+			chartArea : { left : 80, top : 50 },
 			vAxis : { minValue : 0, maxValue : 8, viewWindowMode : 'explicit', viewWindow : { min : 0 } }
 		};
 		var purchases_chart = new google.visualization.LineChart(document.getElementById('purchases'));
@@ -57,10 +57,10 @@ $(document).ready($(function() {
 		data3.addRows(response_data.challenges.data);
 
 		var options3 = {
-			width : 500,
+			width : 520,
 			height : 340,
 			title : 'Challenges Completed - Last 2 Months',
-			chartArea : { left : 80, top : 50, width : 400 },
+			chartArea : { left : 80, top : 50 },
 			vAxis : { minValue : 0, maxValue : 8, viewWindowMode : 'explicit', viewWindow : { min : 0 } }
 		};
 		var challenges_chart = new google.visualization.LineChart(document.getElementById('challenges'));

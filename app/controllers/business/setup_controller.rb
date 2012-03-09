@@ -49,6 +49,7 @@ module Business
     
     def build_checklist
       @checklist = {:total => 0, :count => 0, :data => {} }
+      @checklist[:data][:upload_photo] = upload_photo?
       @checklist[:data][:venues] = has_venues?
       @checklist[:data][:reward_model] = set_reward_model?
       @checklist[:data][:purchase_rewards] = has_purchase_rewards?
@@ -61,6 +62,10 @@ module Business
           @checklist[:count] += 1
         end
       end
+    end
+    
+    def upload_photo?
+      current_merchant.image_url ? true : false  
     end
     
     def has_venues?

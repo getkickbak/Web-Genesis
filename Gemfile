@@ -55,13 +55,17 @@ gem 'country-select'
 gem 'will_paginate'
 gem 'websnap'
 gem 'dalli'
+gem 'fog'
+gem 'mini_magick'
+gem 'carrierwave'
+gem 'carrierwave-datamapper', :require => 'carrierwave/datamapper'
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION
   gem 'ruby-debug19'
   # Uncomment this if you want to use rspec for testing your application
 
-  gem 'rspec-rails', '~> 2.0.1'
+  gem 'rspec-rails', '~> 2.6.1'
 
   # To get a detailed overview about what queries get issued and how long they take
   # have a look at rails_metrics. Once you bundled it, you can run

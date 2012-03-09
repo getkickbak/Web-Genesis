@@ -1,4 +1,3 @@
-require 'digest'
 require 'util/constant'
 
 class Merchant
@@ -16,7 +15,8 @@ class Merchant
   property :name, String, :required => true, :default => ""
   property :email, String, :required => true, :unique => true,
             :format => :email_address
-  property :photo_url, String, :default => ""
+  # Disable auto-validation http://j.mp/gMORhy 
+  property :photo, String, :auto_validation => false           
   property :account_first_name, String, :required => true, :default => ""
   property :account_last_name, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
@@ -28,8 +28,9 @@ class Merchant
   #property :deleted, ParanoidBoolean, :default => false
 
   attr_accessor :type_id, :current_password
+  attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :name, :email, :account_first_name, :account_last_name, :phone, :status, :password, :password_confirmation
+  attr_accessible :type_id, :name, :email, :account_first_name, :account_last_name, :phone, :photo, :status, :current_password, :password, :password_confirmation
   
   has 1, :merchant_to_type, :constraint => :destroy
   has 1, :type, 'MerchantType', :through => :merchant_to_type, :via => :merchant_type
@@ -37,8 +38,9 @@ class Merchant
   has n, :merchant_credit_cards, :child_key => [ :merchant_id ], :constraint => :destroy
   has n, :credit_cards, :through => :merchant_credit_cards, :via => :credit_card
   has n, :venues, :constraint => :destroy
+  mount_uploader :photo, MerchantPhotoUploader
 
-  validates_presence_of :type_id  
+  validates_presence_of :type_id, :on => :save  
 
   def self.get_cache_key(id)
     "Merchant-#{id}"  
@@ -48,14 +50,15 @@ class Merchant
     now = Time.now
     merchant_name = merchant_info[:name].squeeze(' ').strip
     merchant_id = "#{rand(1000) + 3000}#{now.to_i}"
-    
+    password = merchant_info[:password] ? merchant_info[:password].strip : merchant_info.password
+    password_confirmation  = merchant_info[:password_confirmation] ? merchant_info[:password_confirmation].strip : merchant_info.password_confirmation
     merchant = Merchant.new(
       :type_id => type ? type.id : nil,
       :name => merchant_name,
       :email => merchant_info[:email].strip,
-      :current_password => merchant_info[:password].strip,
-      :password => merchant_info[:password].strip,
-      :password_confirmation => merchant_info[:password_confirmation].strip,
+      :current_password => password,
+      :password => password,
+      :password_confirmation => password_confirmation,
       :account_first_name => merchant_info[:account_first_name].strip,
       :account_last_name => merchant_info[:account_last_name].strip,
       :phone => merchant_info[:phone].strip,
@@ -138,6 +141,19 @@ class Merchant
     save
   end
     
+  def update_photo(merchant_info)
+    if merchant_info.nil?
+      errors.add(:photo, "Please upload photo")
+      raise DataMapper::SaveFailureError.new("", self)
+    end
+    now = Time.now
+    self.type_id = self.type.id
+    self.current_password = nil
+    self.photo = merchant_info[:photo]
+    self.update_ts = now  
+    save
+  end
+    
   def add_credit_card(credit_card)
     credit_cards.concat(Array(credit_card))
     save
@@ -151,7 +167,7 @@ class Merchant
   end
   
   def as_json(options)
-    only = {:only => [:id, :merchant_id, :name, :photo_url], :methods => [:type]}
+    only = {:only => [:id, :merchant_id, :name, :photo], :methods => [:type]}
     options = options.nil? ? only : options.merge(only)
      super(options)
   end

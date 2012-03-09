@@ -27,7 +27,7 @@ class Challenge
   has n, :challenge_venues, :constraint => :destroy
   has n, :venues, :through => :challenge_venues
     
-  validates_presence_of :type_id  
+  validates_presence_of :type_id, :on => :save  
   validates_with_method :check_data
   validates_with_method :points, :method => :check_points
   validates_with_method :check_venues
@@ -123,10 +123,12 @@ class Challenge
   
   def check_data
     if self.data
-      if self.type.value == 'checkin'
-        self.data = CheckInData.new(self.data)
-      elsif self.type.value == 'lottery'
-        self.data = LotteryData.new(self.data)  
+      if self.data.is_a? ActiveSupport::HashWithIndifferentAccess
+        if self.type.value == 'checkin'
+          self.data = CheckInData.new(self.data)
+        elsif self.type.value == 'lottery'
+          self.data = LotteryData.new(self.data)  
+        end
       end
       if !self.data.valid?
         self.data.errors.each do |key,value|
