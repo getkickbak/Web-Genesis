@@ -43,10 +43,11 @@ module Admin
     def create
       authorize! :create, Merchant
 
-      Merchant.transaction do
+      #Merchant.transaction do
         begin
           params[:merchant][:status] = :pending
           type = MerchantType.get(params[:merchant][:type_id])
+          params[:merchant][:prize_terms] = I18n.t 'prize.terms'
           @merchant = Merchant.create(type, params[:merchant])
           respond_to do |format|
             format.html { redirect_to(merchant_path(@merchant), :notice => 'Merchant was successfully created.') }
@@ -61,7 +62,7 @@ module Admin
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
           end
         end
-      end
+      #end
     end
 
     def update
