@@ -1,1 +1,9 @@
-<div class="content row"></div>
+<div class="content row">
+	<% @venues.each do |venue| %>
+	<div><%= venue.name %></div>
+	<div>
+		<%= link_to 'Print', venue.check_in_code.qr_code_img %> |
+		<%= link_to 'Update', update_checkin_qr_code_venue_path(venue) %> 
+	</div>
+	<% end %>
+</div>

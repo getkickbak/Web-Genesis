@@ -4,6 +4,7 @@ module Business
     skip_authorization_check
     
     def index
+=begin      
       begin
         mutex = CacheMutex.new(current_merchant.cache_key, Cache.memcache)
         mutex.acquire
@@ -18,18 +19,18 @@ module Business
       ensure
         mutex.release  
       end
-=begin      
+=end      
       if current_merchant.status == :pending
         respond_to do |format|
           format.html { redirect_to setup_path }
         end
       else
+        @venues = current_merchant.venues
         respond_to do |format|
           format.html # index.html.erb
           #format.xml  { render :xml => @merchants }
         end
       end
-=end      
     end
   end
 end

@@ -3,7 +3,7 @@ require 'util/constant'
 class Venue
   include DataMapper::Resource
 
-  @@template = ERB.new File.read(File.expand_path "app/views/business/dashboard/qrcode_template.html.erb")
+  @@template = ERB.new File.read(File.expand_path "app/views/business/venues/qrcode_template.html.erb")
 
   property :id, Serial
   property :name, String, :required => true, :default => ""
@@ -74,8 +74,9 @@ class Venue
     check_in_auth_code = "#{merchant.merchant_id}-#{rand(1000)}" 
     venue.check_in_code = CheckInCode.new(
       :auth_code => check_in_auth_code,
-      :qr_code => generate_qr_code(merchant.merchant_id, check_in_auth_code)
+      :qr_code => CheckInCode.generate_qr_code(merchant.merchant_id, check_in_auth_code)
     )
+    venue.check_in_code[:qr_code_img] = venue.check_in_code.generate_qr_code_image(merchant.merchant_id)
     venue.check_in_code[:created_ts] = now
     venue.check_in_code[:update_ts] = now
     venue.save
@@ -137,14 +138,13 @@ class Venue
   
   def update_qr_code
     now = Time.now
-    auth_code = String.random_alphanumeric
-    qr_code = self.class.generate_qr_code(self.merchant.merchant_id, auth_code) 
-    qr_code_image = generate_qr_code_image(self.merchant.merchant_id)
-    
+    new_auth_code = String.random_alphanumeric
+    new_qr_code = self.class.generate_qr_code(self.merchant.merchant_id, new_auth_code) 
     self.type_id = self.type ? self.type.id : nil
-    self.auth_code = auth_code
-    self.qr_code = qr_code
-    self.qr_code_img = qr_code_image
+    self.auth_code = new_auth_code
+    self.qr_code = new_qr_code  
+    new_qr_code_image = generate_qr_code_image(self.merchant.merchant_id)
+    self.qr_code_img = new_qr_code_image
     self.update_ts = now
     save
   end
@@ -165,7 +165,7 @@ class Venue
       :content_type => 'image/png', 
       :access => :public_read
     )
-    full_filename = ::Common.generate_full_merchant_qr_code_image_file_path(merchant_id,"#{filename}") 
+    ::Common.generate_full_merchant_qr_code_image_file_path(merchant_id,"#{filename}") 
   end
   
   def as_json(options)
@@ -176,16 +176,16 @@ class Venue
   
   private
   
-  def self.generate_qr_code(merchant_id, auth_code)
-    qr = RQRCode::QRCode.new( auth_code, :size => 5, :level => :h )
-    png = qr.to_img.resize(90,90)
+  def self.generate_qr_code(merchant_id, code)
+    qr = RQRCode::QRCode.new( code, :size => 10, :level => :h )
+    png = qr.to_img.resize(280,280) 
     AWS::S3::S3Object.store(
-      ::Common.generate_merchant_qr_code_file_path(merchant_id,"#{auth_code}.png"), 
+      ::Common.generate_merchant_qr_code_file_path(merchant_id,"#{code}.png"), 
       png.to_string,
       APP_PROP["AMAZON_FILES_BUCKET"], 
       :content_type => 'image/png', 
       :access => :public_read
     )
-    filename = ::Common.generate_full_merchant_qr_code_file_path(merchant_id,"#{auth_code}.png")  
+    ::Common.generate_full_merchant_qr_code_file_path(merchant_id,"#{code}.png")  
   end
 end

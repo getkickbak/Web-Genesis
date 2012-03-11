@@ -43,7 +43,7 @@ module Business
     def create
       authorize! :create, Venue
       
-      #Venue.transaction do
+      Venue.transaction do
         begin
           type = VenueType.get(params[:venue][:type_id])
           @venue = Venue.create(current_merchant, type, params[:venue])
@@ -60,7 +60,7 @@ module Business
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
           end
         end
-      #end
+      end
     end
 
     def update
@@ -96,6 +96,28 @@ module Business
           @venue.update_qr_code()
           respond_to do |format|
             format.html { redirect_to(:action => "show", :id => @venue.id, :notice => 'QR Code was successfully updated.') }
+          #format.xml  { head :ok }
+          end
+        rescue DataMapper::SaveFailureError => e
+          logger.error("Exception: " + e.resource.errors.inspect)
+          @venue = e.resource
+          respond_to do |format|
+            format.html
+          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+          end
+        end
+      end 
+    end
+    
+    def update_checkin_qr_code
+      @venue = Venue.get(params[:id]) || not_found
+      authorize! :update, @venue
+
+      Venue.transaction do
+        begin
+          @venue.check_in_code.update_qr_code()
+          respond_to do |format|
+            format.html { redirect_to marketing_path(:notice => 'QR Code was successfully updated.') }
           #format.xml  { head :ok }
           end
         rescue DataMapper::SaveFailureError => e

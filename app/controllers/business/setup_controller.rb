@@ -65,7 +65,7 @@ module Business
     end
     
     def upload_photo?
-      current_merchant.image_url ? true : false  
+      current_merchant.photo_url ? true : false  
     end
     
     def has_venues?

@@ -13,6 +13,7 @@ Genesis::Application.routes.draw do
       resources :customer_rewards
       resources :venues do
         get 'update_qr_code', :on => :member, :as => :update_qr_code
+        get 'update_checkin_qr_code', :on => :member, :as => :update_checkin_qr_code
       end
       #resources :deals
 

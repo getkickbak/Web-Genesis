@@ -2,7 +2,7 @@ class CheckInsController < ApplicationController
   before_filter :authenticate_user!
   
   def create
-    @venue = Venue.first(:id => params[:venue_id], Venue.merchant.id => params[:merchant_id]) || not_found
+    @venue = CheckIn.first(:auth_code => params[:auth_code]) || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
     if @customer.nil?
       respond_to do |format|
@@ -25,50 +25,42 @@ class CheckInsController < ApplicationController
     
     CheckIn.transaction do
       begin
-        if @venue.auth_code == params[:auth_code]
-          now = Time.now
-          last_check_in = CheckIn.create(@venue, current_user) unless exceed_max_daily_checkins(@venue.merchant)
-          challenge = Challenge.first(:type => 'checkin', :venues => Venue.all(:id => params[:venue_id]))
-          if challenge && checkin_challenge_met?(challenge)
-            record = EarnRewardRecord.new(
-              :challenge_id => challenge.id,
-              :venue_id => @venue.id,
-              :points => challenge.points,
-              :time => now
-            )
-            record.merchant = @venue.merchant
-            record.user = current_user
-            record.save
-            @customer.points += challenge.points
-          end
-          @customer.last_check_in = last_check_in
-          @customer.save
-          data = {}
-          @prizes = EarnPrize.all(EarnPrize.merchant.id => @venue.merchant.id, EarnPrize.user.id => curent_user.id, :redeemd => false)
-          data[:prizes] = @prizes
-          @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
-          @rewards.push(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
-          @eligible_rewards = []
-          @rewards.each do |reward|
-            item = EligibleReward.new(
-              :reward_id => reward.id,
-              :reward_title => reward.title,
-              :points_difference => (@customer.points - reward.points).abs
-            )
-            @eligible_rewards << item  
-          end
-          data[:eligible_rewards] = @eligible_rewards
-          respond_to do |format|
-            #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
-            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => true, :data => @customer.to_json, :meta_data => data.to_json } }
-          end
-        else
-          respond_to do |format|
-            #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
-            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :data => { :msg => [""] } } }
-          end
+        now = Time.now
+        last_check_in = CheckIn.create(@venue, current_user) unless exceed_max_daily_checkins(@venue.merchant)
+        challenge = Challenge.first(:type => 'checkin', :venues => Venue.all(:id => params[:venue_id]))
+        if challenge && checkin_challenge_met?(challenge)
+          record = EarnRewardRecord.new(
+            :challenge_id => challenge.id,
+            :venue_id => @venue.id,
+            :points => challenge.points,
+            :time => now
+          )
+          record.merchant = @venue.merchant
+          record.user = current_user
+          record.save
+          @customer.points += challenge.points
+        end
+        @customer.last_check_in = last_check_in
+        @customer.save
+        data = {}
+        @prizes = EarnPrize.all(EarnPrize.merchant.id => @venue.merchant.id, EarnPrize.user.id => curent_user.id, :redeemd => false)
+        data[:prizes] = @prizes
+        @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
+        @rewards.push(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
+        @eligible_rewards = []
+        @rewards.each do |reward|
+          item = EligibleReward.new(
+            :reward_id => reward.id,
+            :reward_title => reward.title,
+            :points_difference => (@customer.points - reward.points).abs
+          )
+          @eligible_rewards << item  
+        end
+        data[:eligible_rewards] = @eligible_rewards
+        respond_to do |format|
+          #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
+          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+          format.json { render :json => { :success => true, :data => @customer.to_json, :meta_data => data.to_json } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
