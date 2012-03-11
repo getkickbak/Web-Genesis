@@ -114,6 +114,8 @@ GEM
       data_objects (= 0.10.8)
     erubis (2.7.0)
     excon (0.9.6)
+    faker (1.0.1)
+      i18n (~> 0.4)
     fastercsv (1.5.4)
     fog (1.1.2)
       builder
@@ -273,6 +275,7 @@ DEPENDENCIES
   dm-transactions (~> 1.2.0)
   dm-types (~> 1.2.0)
   dm-validations (~> 1.2.0)
+  faker
   fog
   jquery-rails
   mini_magick

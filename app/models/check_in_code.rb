@@ -6,7 +6,7 @@ class CheckInCode
   @@template = ERB.new File.read(File.expand_path "app/views/business/venues/check_in_template.html.erb")
   
   property :id, Serial
-  property :auth_code, String
+  property :auth_code, String, :unique_index => true, :required => true, :default => ""
   property :qr_code, String, :required => true, :default => ""
   property :qr_code_img, String, :default => ""
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME

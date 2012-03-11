@@ -59,6 +59,7 @@ gem 'fog'
 gem 'mini_magick'
 gem 'carrierwave'
 gem 'carrierwave-datamapper', :require => 'carrierwave/datamapper'
+gem 'faker'
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION
