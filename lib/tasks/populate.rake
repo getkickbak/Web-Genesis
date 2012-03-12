@@ -3,6 +3,7 @@ namespace :db do
   task :populate => :environment do
     require 'faker'
 
+    puts "Creating Users..."
     10.times do |n|
       user = User.create(
       :name => Faker::Name.name,
@@ -13,7 +14,9 @@ namespace :db do
       :status => :active
       )
     end
-
+    puts "Complete User creation"
+  
+    puts "Creating Staffs..."
     2.times do |n|
       staff = Staff.create(
       :name => Faker::Name.name,
@@ -24,7 +27,9 @@ namespace :db do
       :status => :active
       )
     end
-
+    puts "Complete Staff creation"
+    
+    puts "Creating Merchants..."
     10.times do |n|
       type = MerchantType.get(1)
       merchant = Merchant.create(type,
@@ -148,5 +153,6 @@ namespace :db do
       },
       venues)
     end
+    puts "Complete Merchant creation"
   end
 end
