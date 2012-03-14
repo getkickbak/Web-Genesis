@@ -27,14 +27,14 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
         clean_up_passwords resource
         respond_to do |format|
           format.html { redirect_to resource }
-          format.json { render :json => { :success => false, :data => resource.errors.to_json } }
+          format.json { render :json => { :success => false, :metaData => resource.errors.to_json } }
         end  
       rescue
         t.rollback
         clean_up_passwords resource
         respond_to do |format|
           format.html { redirect_to resource }
-          format.json { render :json => { :success => false, :data => { :msg => [""] } } }
+          format.json { render :json => { :success => false, :messasge => [""] } }
         end
       end
     end

@@ -55,7 +55,7 @@ class CreditCardsController < ApplicationController
           current_user.add(credit_card)
           respond_to do |format|
             format.html { redirect_to credit_card_path(:notice => 'Credit card was successfully added.') }
-            format.json { render :json => { :success => true, :msg => 'Credit card was successfully added.' } }
+            format.json { render :json => { :success => true, :message => 'Credit card was successfully added.' } }
           end
         else  
           
@@ -101,7 +101,7 @@ class CreditCardsController < ApplicationController
           @credit_card.update()
           respond_to do |format|
             format.html { redirect_to credit_card_path(:notice => 'Credit card was successfully added.') }
-            format.json { render :json => { :success => true, :msg => 'Credit card was successfully added.' } }
+            format.json { render :json => { :success => true, :message => ['Credit card was successfully added.'] } }
           end
         else
         end  

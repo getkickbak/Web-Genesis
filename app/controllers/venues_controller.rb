@@ -26,7 +26,7 @@ class VenuesController < ApplicationController
     end 
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render :json => { :success => true, :data => @customer, :meta_data => data } }
+      format.json { render :json => { :success => true, :data => @customer, :metaData => data } }
     end  
   end
   

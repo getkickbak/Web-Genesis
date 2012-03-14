@@ -87,9 +87,11 @@ Genesis::Application.routes.draw do
     devise_for :users, :path => "", :controllers => {
       :sessions => "user_devise/sessions",
       :registrations => "user_devise/registrations",
-      :passwords => "user_devise/passwords"
-    }
-
+      :passwords => "user_devise/passwords",
+    } do
+      match "/facebook_sign_in" => 'user_devise/sessions#create_from_facebook'
+    end
+    
     resources :check_ins, :only => [:create]
     resources :customers, :only => [:index, :create]
     
@@ -106,6 +108,7 @@ Genesis::Application.routes.draw do
     match "/account" => 'users#show', :as => :account
     match "/account/edit" => 'users#edit', :as => :edit_account
     match "/account/update" => 'users#update', :as => :update_account
+    match "/account/update_facebook_info" => "users#update_facebook_info"
 
     match '/venues/find_nearest' => 'venues#find_nearest'
     match '/venues/:id/show' => 'venues#show'

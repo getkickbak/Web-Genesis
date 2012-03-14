@@ -30,7 +30,7 @@ class UsersController < ApplicationController
         respond_to do |format|
           format.html { redirect_to(account_path, :notice => 'User was successfully updated.') }
           #format.xml  { head :ok }
-          format.json { render :json => { :success => true, :data => { :msg => [""] } } }
+          format.json { render :json => { :success => true, :msg => [""] } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
@@ -38,7 +38,29 @@ class UsersController < ApplicationController
         respond_to do |format|
           format.html { render :action => "edit" }
           #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :data => { :msg => e.resource.errors.to_json } } }
+          format.json { render :json => { :success => false, :message => e.resource.errors.to_json } }
+        end
+      end
+    end
+  end
+  
+  def update_facebook_info
+    @user = current_user
+    authorize! :update, @user
+
+    User.transaction do
+      begin
+        @user.update_without_password(params[:facebook_id], params[:facebook_email], :update_ts => now)
+        respond_to do |format|
+          #format.xml  { head :ok }
+          format.json { render :json => { :success => true, :message => [""] } }
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @user = e.resource
+        respond_to do |format|
+          #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => e.resource.errors.to_json } }
         end
       end
     end

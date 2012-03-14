@@ -1,5 +1,4 @@
 class UserDevise::SessionsController < Devise::SessionsController
-  
   # POST /resource/sign_in
   def create
     resource = warden.authenticate!(:scope => resource_name, :recall => "#{controller_path}#failure")
@@ -16,7 +15,7 @@ class UserDevise::SessionsController < Devise::SessionsController
       begin
         user = User.first(:facebook_id => params[:facebook_id])
         if user.nil?
-          user = User.create(params)
+          user = User.create_from_facebook(params)
         else
           account_info = {
             :name => params[:name],
@@ -38,12 +37,12 @@ class UserDevise::SessionsController < Devise::SessionsController
       rescue DataMapper::SaveFailureError => e
         respond_to do |format|
           format.html { redirect_to after_sign_in_path_for(resource) }
-          format.json { render :json => { :success => false, :data => { :msg => [""] } } }
+          format.json { render :json => { :success => false, :message => [""] } }
         end  
       rescue
         respond_to do |format|
           format.html { redirect_to after_sign_in_path_for(resource) }
-          format.json { render :json => { :success => false, :data => { :msg => [""] } } }
+          format.json { render :json => { :success => false, :message => [""] } }
         end
       end
     end
@@ -71,7 +70,7 @@ class UserDevise::SessionsController < Devise::SessionsController
   def failure
     respond_to do |format|
       format.html { render :action => "new" }
-      format.json { render :json => { :success => false, :data => { :msg => resource.errors.to_json } } }
+      format.json { render :json => { :success => false, :message => [resource.errors.to_json] } }
     end
   end
 end

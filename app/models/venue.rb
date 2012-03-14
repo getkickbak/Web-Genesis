@@ -178,7 +178,7 @@ class Venue
   
   def self.generate_qr_code(merchant_id, code)
     qr = RQRCode::QRCode.new( code, :size => 10, :level => :h )
-    png = qr.to_img.resize(280,280) 
+    png = qr.to_img.resize(270,270) 
     AWS::S3::S3Object.store(
       ::Common.generate_merchant_qr_code_file_path(merchant_id,"#{code}.png"), 
       png.to_string,

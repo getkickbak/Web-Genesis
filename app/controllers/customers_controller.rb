@@ -39,7 +39,7 @@ class CustomersController < ApplicationController
         respond_to do |format|
           #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :data => { :msg => ["Something went wrong", "Please try again."] } } }
+          format.json { render :json => { :success => false, :message => ["Something went wrong", "Please try again."] } }
         end
       end
     end  

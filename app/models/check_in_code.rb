@@ -51,7 +51,7 @@ class CheckInCode
   
   def self.generate_qr_code(merchant_id, code)
     qr = RQRCode::QRCode.new( code, :size => 5, :level => :h )
-    png = qr.to_img.resize(90,90) 
+    png = qr.to_img.resize(85,85) 
     AWS::S3::S3Object.store(
       ::Common.generate_merchant_qr_code_file_path(merchant_id,"#{code}.png"), 
       png.to_string,

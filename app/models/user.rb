@@ -17,6 +17,7 @@ class User
   property :name, String, :required => true, :default => ""
   property :email, String, :unique_index => true, :required => true, :format => :email_address, :default => ""
   property :facebook_id, String, :default => ""     
+  property :facebook_email, String, :default => ""
   property :role, String, :required => true, :default => "anonymous"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :active
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -68,6 +69,7 @@ class User
       :name => user_info[:name].strip,
       :email => user_info[:email].strip,   
       :facebook_id => user_info[:facebook_id],
+      :facebook_email => user_info[:facebook_email],
       :current_password => password,
       :password => password,
       :password_confirmation => password,

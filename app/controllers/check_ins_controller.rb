@@ -8,7 +8,7 @@ class CheckInsController < ApplicationController
       respond_to do |format|
         #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => true, :data => { :msg => [""] } } }
+        format.json { render :json => { :success => true, :message => [""] } }
       end
       return
     end
@@ -18,7 +18,7 @@ class CheckInsController < ApplicationController
       respond_to do |format|
         #format.html { render :action => "new" }
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :data => { :msg => ["Something went wrong", "Outside of check-in distance.  Please try again."] } } }
+        format.json { render :json => { :success => false, :message => ["Something went wrong", "Outside of check-in distance.  Please try again."] } }
       end
       return
     end
@@ -60,14 +60,14 @@ class CheckInsController < ApplicationController
         respond_to do |format|
           #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => true, :data => @customer.to_json, :meta_data => data.to_json } }
+          format.json { render :json => { :success => true, :data => @customer.to_json, :metaData => data.to_json } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :data => { :msg => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } } }
+          format.json { render :json => { :success => false, :message => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
         end
       end
     end
