@@ -64,7 +64,7 @@ class ChallengesController < ApplicationController
             :challenge_id => @challenge.id,
             :venue_id => @venue.id,
             :points => @challenge.points,
-            :time => Time.now
+            :created_ts => Time.now
           )
           record.merchant = @venue.merchant
           record.user = current_user

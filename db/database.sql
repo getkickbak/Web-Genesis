@@ -35,7 +35,7 @@ INSERT INTO purchase_reward_types VALUES (11,1,'side_dish');
 INSERT INTO purchase_reward_types VALUES (12,1,'soup');
 
 INSERT INTO challenge_types VALUES (1,'birthday');
-INSERT INTO challenge_types VALUES (2,'checkin');
+INSERT INTO challenge_types VALUES (2,'vip');
 INSERT INTO challenge_types VALUES (3,'lottery');
 INSERT INTO challenge_types VALUES (4,'menu');
 INSERT INTO challenge_types VALUES (5,'photo');

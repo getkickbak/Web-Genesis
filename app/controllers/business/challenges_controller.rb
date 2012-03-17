@@ -65,7 +65,7 @@ module Business
 
       Challenge.transaction do
         begin
-          if type.value == 'checkin'
+          if type.value == 'vip'
             params[:challenge][:data] = params[:challenge][:check_in_data]
           elsif type.value == 'lottery'
             params[:challenge][:data] = params[:challenge][:lottery_data]
@@ -80,8 +80,8 @@ module Business
             params[:challenge][:description] = (t "challenge.type.lottery.description") % [params[:challenge][:name]]
           elsif type.value == 'menu'  
             params[:challenge][:description] = (t "challenge.type.menu.description") % [params[:challenge][:name]]
-          elsif type.value == 'checkin'
-            params[:challenge][:description] = (t "challenge.type.checkin.description") % [params[:challenge][:data][:visits]]
+          elsif type.value == 'vip'
+            params[:challenge][:description] = (t "challenge.type.vip.description") % [params[:challenge][:data][:visits]]
           end
           @challenge = Challenge.create(current_merchant, type, params[:challenge], venues)
           respond_to do |format|
@@ -117,7 +117,7 @@ module Business
         @challenge.type = ChallengeType.get(@challenge.type_id)
         if type == 'lottery' || type == 'menu'
           @challenge.description = @challenge.description % [@challenge.name]
-        elsif type == 'checkin'
+        elsif type == 'vip'
           @challenge.description = @challenge.description % [@challenge.data.visits]
         end
       else
@@ -152,7 +152,7 @@ module Business
 
       Challenge.transaction do
         begin
-          if type.value == 'checkin'
+          if type.value == 'vip'
             params[:challenge][:data] = params[:challenge][:check_in_data]
           elsif type.value == 'lottery'
             params[:challenge][:data] = params[:challenge][:lottery_data]
@@ -167,8 +167,8 @@ module Business
             params[:challenge][:description] = (t "challenge.type.lottery.description") % [params[:challenge][:name]]
           elsif type.value == 'menu'  
             params[:challenge][:description] = (t "challenge.type.menu.description") % [params[:challenge][:name]]
-          elsif type.value == 'checkin'
-            params[:challenge][:description] = (t "challenge.type.checkin.description") % [params[:challenge][:data][:visits]]
+          elsif type.value == 'vip'
+            params[:challenge][:description] = (t "challenge.type.vip.description") % [params[:challenge][:data][:visits]]
           end
           @challenge.update(type, params[:challenge], venues)
           respond_to do |format|
@@ -238,10 +238,10 @@ module Business
           :description => (t "challenge.type.birthday.description"),
           :require_verif => true
         },
-        "checkin" =>
+        "vip" =>
         {
-          :name => (t "challenge.type.checkin.name"),
-          :description => (t "challenge.type.checkin.description"),
+          :name => (t "challenge.type.vip.name"),
+          :description => (t "challenge.type.vip.description"),
           :data => CheckInData.new,
           :require_verif => false
         },

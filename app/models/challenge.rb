@@ -124,7 +124,7 @@ class Challenge
   def check_data
     if self.data
       if self.data.is_a? ActiveSupport::HashWithIndifferentAccess
-        if self.type.value == 'checkin'
+        if self.type.value == 'vip'
           self.data = CheckInData.new(self.data)
         elsif self.type.value == 'lottery'
           self.data = LotteryData.new(self.data)  

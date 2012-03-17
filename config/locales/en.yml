@@ -40,8 +40,8 @@ en:
         birthday: 
           name: "Birthday"
           description: "Get rewarded when you visit on your birthday"
-        checkin: 
-          name: "Check-In"
+        vip: 
+          name: "VIP"
           description: "Get rewarded when you visit %s times"  
         lottery: 
           name: "Lottery"

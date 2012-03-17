@@ -34,7 +34,8 @@ class PurchaseRewardsController < ApplicationController
       begin
         data = []
         if @venue.auth_code == params[:auth_code]
-          challenge = Challenge.first(Challenge.merchant.id => @venue.merchant.id, :type => 'referral')
+          now = Time.now
+          challenge = Challenge.first(:type => 'referral', :venues => Venue.all(:id => params[:venue_id]))
           if challenge && new_customer
             referral_challenge = ReferralChallenge.first(ReferralChallenge.merchant.id => @venue.merchant.id, :ref_email => current_user.email)
             if referral_challenge
@@ -43,24 +44,39 @@ class PurchaseRewardsController < ApplicationController
               referral_customer.save
             end
           end
-          reward_ids = params[:reward_ids]
-          total_points = 0
-          reward_ids.each do |reward_id|
-            reward = PurchaseReward.first(PurchaseReward.merchant.id => @venue.merchant.id, :id => reward_id) || not_found
+          challenge = Challenge.first(:type => 'vip', :venues => Venue.all(:id => params[:venue_id]))
+          vip_challenge = false
+          vip_points = 0
+          if challenge && vip_challenge_met?(challenge)
             record = EarnRewardRecord.new(
-              :reward_id => reward.id,
               :venue_id => @venue.id,
-              :points => reward.points,
+              :points => challenge.points,
               :created_ts => now
             )
             record.merchant = @venue.merchant
             record.user = current_user
             record.save
+            @customer.points += challenge.points
+            vip_challenge = true
+            vip_points = challenge.points
+          end
+          reward_ids = params[:reward_ids]
+          total_points = 0
+          rewards = PurchaseReward.all(:id => reward_ids)
+          rewards.each do |reward|
             @customer.points += reward.points
             total_points += reward.points
           end
           @customer.save
-          success = true
+          record = EarnRewardRecord.new(
+            :venue_id => @venue.id,
+            :points => total_points,
+            :created_ts => now
+          )
+          record.merchant = @venue.merchant
+          record.user = current_user
+          record.save
+          
           mutex = CacheMutex.new(@venue.merchant.cache_key, Cache.memcache)
           mutex.acquire
           reward_model = @venue.merchant.reward_model
@@ -104,16 +120,18 @@ class PurchaseRewardsController < ApplicationController
             end  
           end
           mutex.release
-          msg = ["", ""]
+          respond_to do |format|
+            #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => success, :data => { :vip_challenge => vip_challenge, :vip_points => vip_points }, :metaData => { :prizes => data.to_json }, :message => [""] } }
+          end
         else
-          success = false
-          msg = ["", ""]
+          respond_to do |format|
+            #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => false, :message => [""] } }
+          end
         end  
-        respond_to do |format|
-          #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
-          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => success, :data => data.to_json, :message => msg } }
-        end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
@@ -134,6 +152,11 @@ class PurchaseRewardsController < ApplicationController
   end
   
   private
+    
+  def vip_challenge_met?(challenge)
+    count = EarnRewardRecord.count(EarnRewardRecord.user.id => current_user.id, EarnRewardRecord.merchant.id => challenge.merchant.id)
+    challenge.data.visits % count == 0 ? true : false
+  end
   
   def pick_prize(venue)
     idx = Random.rand(venue.customer_rewards.length)
