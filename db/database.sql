@@ -35,11 +35,11 @@ INSERT INTO purchase_reward_types VALUES (11,1,'side_dish');
 INSERT INTO purchase_reward_types VALUES (12,1,'soup');
 
 INSERT INTO challenge_types VALUES (1,'birthday');
-INSERT INTO challenge_types VALUES (2,'vip');
-INSERT INTO challenge_types VALUES (3,'lottery');
-INSERT INTO challenge_types VALUES (4,'menu');
-INSERT INTO challenge_types VALUES (5,'photo');
-INSERT INTO challenge_types VALUES (6,'referral');
+INSERT INTO challenge_types VALUES (2,'lottery');
+INSERT INTO challenge_types VALUES (3,'menu');
+INSERT INTO challenge_types VALUES (4,'photo');
+INSERT INTO challenge_types VALUES (5,'referral');
+INSERT INTO challenge_types VALUES (6,'vip');
 INSERT INTO challenge_types VALUES (7,'custom');
 
 INSERT INTO merchant_challenge_types VALUES (1,1);

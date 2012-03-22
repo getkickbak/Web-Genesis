@@ -33,32 +33,33 @@ class CheckInCode
 
     # I am nil'ing these options out because my version of wkhtmltoimage does
     # not support the scale options and I do not want to crop the image at all.
-    snap = WebSnap::Snapper.new(html, :format => 'png', :'scale-h' => nil, :'scale-w' => nil,
-      :'crop-h' => nil, :'crop-w' => nil, :quality => 100, :'crop-x' => nil, :'crop-y' => nil)
+    snap = WebSnap::Snapper.new(html, :format => 'png',
+      :'crop-h' => nil, :'crop-w' => nil, :quality => 30, :'crop-x' => nil, :'crop-y' => nil)
  
-    filename = String.random_alphanumeric(32)
+    filename = "#{String.random_alphanumeric(32)}"
     AWS::S3::S3Object.store(
-      ::Common.generate_merchant_qr_code_image_file_path(merchant_id,"#{filename}"), 
+      ::Common.generate_merchant_qr_code_image_file_path(merchant_id,filename), 
       snap.to_bytes,
       APP_PROP["AMAZON_FILES_BUCKET"], 
       :content_type => 'image/png', 
       :access => :public_read
     )
-    ::Common.generate_full_merchant_qr_code_image_file_path(merchant_id,"#{filename}") 
+    return filename 
   end
   
   private
   
   def self.generate_qr_code(merchant_id, code)
-    qr = RQRCode::QRCode.new( code, :size => 5, :level => :h )
+    qr = RQRCode::QRCode.new( code, :size => 4, :level => :h )
     png = qr.to_img.resize(85,85) 
+    filename = "#{code}.png"
     AWS::S3::S3Object.store(
-      ::Common.generate_merchant_qr_code_file_path(merchant_id,"#{code}.png"), 
+      ::Common.generate_merchant_qr_code_file_path(merchant_id,filename), 
       png.to_string,
       APP_PROP["AMAZON_FILES_BUCKET"], 
       :content_type => 'image/png', 
       :access => :public_read
     )
-    ::Common.generate_full_merchant_qr_code_file_path(merchant_id,"#{code}.png")  
+    return filename
   end
 end

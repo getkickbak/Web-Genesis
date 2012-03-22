@@ -2,7 +2,6 @@ module Business
   class VenuesController < BaseApplicationController
     before_filter :authenticate_merchant!
     #load_and_authorize_resource
-    
     def index
       authorize! :read, Venue
       @venues = current_merchant.venues
@@ -36,13 +35,13 @@ module Business
     def edit
       @venue = Venue.get(params[:id]) || not_found
       authorize! :update, @venue
-      
+
       @venue.type_id = @venue.type.id
     end
 
     def create
       authorize! :create, Venue
-      
+
       Venue.transaction do
         begin
           type = VenueType.get(params[:venue][:type_id])
@@ -86,7 +85,7 @@ module Business
         end
       end
     end
-    
+
     def update_qr_code
       @venue = Venue.get( params[:id]) || not_found
       authorize! :update, @venue
@@ -106,9 +105,9 @@ module Business
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
           end
         end
-      end 
+      end
     end
-    
+
     def update_checkin_qr_code
       @venue = Venue.get(params[:id]) || not_found
       authorize! :update, @venue
@@ -128,9 +127,32 @@ module Business
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
           end
         end
-      end 
+      end
+    end
+
+    def qrcode_template
+      venue = Venue.get(params[:id]) || not_found
+      authorize! :manage, venue
+      
+      @qr_code = venue.qr_code
+      @name = venue.name
+      respond_to do |format|
+        format.html
+      #format.xml  { render :xml => @order }
+      end
     end
     
+    def check_in_template
+      venue = Venue.get(params[:id]) || not_found
+      authorize! :manage, venue
+      
+      @qr_code = venue.check_in_code.qr_code
+      respond_to do |format|
+        format.html
+      #format.xml  { render :xml => @order }
+      end
+    end
+
     def destroy
       @venue = Venue.get(params[:id]) || not_found
       authorize! :destroy, @venue

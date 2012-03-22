@@ -168,7 +168,7 @@ class User
   end
     
   def as_json(options)
-    only = {:only => [:name,:email]}
+    only = {:only => [:name]}
     options = options.nil? ? only : options.merge(only)
     super(options)
   end

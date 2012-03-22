@@ -45,7 +45,7 @@
 		</p>
 	</div>
 </div>
-<%= link_to 'Print QR Code', @venue.qr_code_img %> |
+<%= link_to 'Print QR Code', ::Common.generate_full_merchant_qr_code_image_file_path(current_merchant.merchant_id,@venue.qr_code_img) %> |
 <%= link_to 'Update QR Code', update_qr_code_venue_path(@venue) %> |
 <%= link_to 'Edit', edit_venue_path(@venue) %> |
 <%= link_to 'Back', venues_path %> 

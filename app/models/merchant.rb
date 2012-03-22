@@ -12,7 +12,7 @@ class Merchant
           
   property :id, Serial
   property :merchant_id, String, :unique_index => true, :required => true, :default => ""
-  property :name, String, :required => true, :default => ""
+  property :name, String, :length => 16, :required => true, :default => ""
   property :email, String, :required => true, :unique => true,
             :format => :email_address
   # Disable auto-validation http://j.mp/gMORhy 

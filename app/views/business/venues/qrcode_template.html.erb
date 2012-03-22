@@ -1,25 +1,28 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Untitled Document</title>
-</head>
-
-<body>
-
-<div style="position: absolute; top: 755px; left: 220px; width: 675px; height: 675px; background-color: none;">
-<img src="<%= @qr_code %>" width="675" height="675">
-</div>
-
-
-<div style="position: absolute; top: 755px; left: 1325px; width: 675px; height: 675px; background-color: none;">
-<img src="<%= @qr_code %>" width="675" height="675">
-</div>
-
-<div style="position: absolute; top: 755px; left: 2425px; width: 675px; height: 675px; background-color: none;">
-<img src="<%= @qr_code %>" width="675" height="675">
-</div>
-
-<img src="authcardweb.jpg" width="3300" height="2550" />
-</body>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>Untitled Document</title>
+	</head>
+	<body>
+		<div style="position: absolute; top: 735px; left: 220px; width: 675px; height: 675px; background-color: none;">
+			<img src="<%= ::Common.generate_full_merchant_qr_code_file_path(@merchant.merchant_id,@qr_code) %>" width="675" height="675">
+		</div>
+		<div style="position: absolute; top: 735px; left: 1325px; width: 675px; height: 675px; background-color: none;">
+			<img src="<%= ::Common.generate_full_merchant_qr_code_file_path(@merchant.merchant_id,@qr_code) %>" width="675" height="675">
+		</div>
+		<div style="position: absolute; top: 735px; left: 2425px; width: 675px; height: 675px; background-color: none;">
+			<img src="<%= ::Common.generate_full_merchant_qr_code_file_path(@merchant.merchant_id,@qr_code) %>" width="675" height="675">
+		</div>
+		<div style="position: absolute; top: 2165px; left: 50px; width: 1000px; font-size: 120px; text-align: center;">
+			<%= @name %>
+		</div>
+		<div style="position: absolute; top: 2165px; left: 1155px; width: 1000px;font-size: 120px; text-align: center;">
+			<%= @name %>
+		</div>
+		<div style="position: absolute; top: 2165px; left: 2255px; width: 1000px; font-size: 120px; text-align: center;">
+			<%= @name %>
+		</div>
+		<img src="http://photos.getkickbak.com/authcardweb.jpg" width="3300" height="2550" />
+	</body>
 </html>

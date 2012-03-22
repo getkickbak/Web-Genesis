@@ -2,7 +2,7 @@ class PurchaseReward
   include DataMapper::Resource
 
   property :id, Serial
-  property :title, String, :required => true, :default => ""
+  property :title, String, :length => 24, :required => true, :default => ""
   property :price, Decimal, :required => true, :scale => 2
   property :rebate_rate, Integer, :required => true
   property :points, Integer, :required => true

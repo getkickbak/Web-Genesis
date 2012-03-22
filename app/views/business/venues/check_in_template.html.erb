@@ -7,23 +7,22 @@
 
 <body>
 
-<div style="position: absolute; top: 2585px; left: 930px; width: 425px; height: 425px; background-color: none;">
-<img src="<%= @qr_code %>" width="425" height="425">
+<div style="position: absolute; top: 2575px; left: 928px; width: 425px; height: 425px; background-color: none;">
+<img src="http://photos.getkickbak.com/kickbakqr.png" width="425" height="425">
 </div>
 
-<div style="position: absolute; top: 2585px; left: 2585px; width: 425px; height: 425px; background-color: none;">
-<img src="<%= @qr_code %>" width="425" height="425">
+<div style="position: absolute; top: 2575px; left: 2583px; width: 425px; height: 425px; background-color: none;">
+<img src="http://photos.getkickbak.com/kickbakqr.png" width="425" height="425">
 </div>
 
-<div style="position: absolute; top: 3940px; left: 620px; width: 425px; height: 425px; background-color: none;">
-<img src="<%= @qr_code %>" width="425" height="425">
+<div style="position: absolute; top: 3930px; left: 615px; width: 425px; height: 425px; background-color: none;">
+<img src="<%= ::Common.generate_full_merchant_qr_code_file_path(@venue.merchant.merchant_id,@qr_code) %>" width="425" height="425">
 </div>
 
-<div style="position: absolute; top: 3940px; left: 2275px; width: 425px; height: 425px; background-color: none;">
-<img src="<%= @qr_code %>" width="425" height="425">
+<div style="position: absolute; top: 3930px; left: 2270px; width: 425px; height: 425px; background-color: none;">
+<img src="<%= ::Common.generate_full_merchant_qr_code_file_path(@venue.merchant.merchant_id,@qr_code) %>" width="425" height="425">
 </div>
 
-
-<img src="ttpweb.jpg" width="3300" height="5100" />
+<img src="http://photos.getkickbak.com/ttpweb.jpg" width="3300" height="5100" />
 </body>
 </html>

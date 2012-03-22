@@ -4,8 +4,8 @@ CarrierWave.configure do |config|
     :aws_access_key_id      => 'AKIAIBKLCOJMK2OWLHUQ',       # required
     :aws_secret_access_key  => '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'       # required
   }
-  config.fog_directory  = 'photos.justformyfriends.com'                     # required
-  config.fog_host       = 'http://photos.justformyfriends.com'            # optional, defaults to nil
+  config.fog_directory  = "#{APP_PROP["PHOTO_HOST"]}"                     # required
+  config.fog_host       = "http://#{APP_PROP["PHOTO_HOST"]}"            # optional, defaults to nil
 end
 
 module CarrierWave

@@ -26,25 +26,27 @@ class EarnPrizesController < ApplicationController
     end
   end
   
+  def show_winners
+    @prizes = EarnPrize.all(EarnPrize.merchant.id => params[:merchant_id], :order => [:created_ts.desc], :offset => 0, :limit => params[:max])
+    
+    respond_to do |format|
+      #format.xml  { render :xml => referrals }
+      format.json { render :json => { :success => true, :data => @prizes.to_json({:only => [:created_ts], :methods => [:user, :reward]}) } }
+    end
+  end
+  
   def redeem
     @earn_prize = EarnPrize.get(params[:id])
     authorize! :update, EarnPrize
     
     EarnPrize.transaction do
       begin
-        if @venue.auth_code == params[:auth_code]
-          @earn_prize.redeemed = true
-          @earn_prize.save
-          success = true
-          msg = [""]
-        else
-          success = false
-          msg = [""] 
-        end
+        @earn_prize.redeemed = true
+        @earn_prize.save
         respond_to do |format|
           #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => success, :message => msg } }
+          format.json { render :json => { :success => true, :message => [""] } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)

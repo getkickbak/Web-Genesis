@@ -49,6 +49,7 @@ class PurchaseRewardsController < ApplicationController
           vip_points = 0
           if challenge && vip_challenge_met?(challenge)
             record = EarnRewardRecord.new(
+              :challenge_id => challenge.id,
               :venue_id => @venue.id,
               :points => challenge.points,
               :created_ts => now
@@ -64,18 +65,19 @@ class PurchaseRewardsController < ApplicationController
           total_points = 0
           rewards = PurchaseReward.all(:id => reward_ids)
           rewards.each do |reward|
+            record = EarnRewardRecord.new(
+              :reward_id => reward.id,
+              :venue_id => @venue.id,
+              :points => reward.points,
+              :created_ts => now
+            )
+            record.merchant = @venue.merchant
+            record.user = current_user
+            record.save
             @customer.points += reward.points
             total_points += reward.points
           end
           @customer.save
-          record = EarnRewardRecord.new(
-            :venue_id => @venue.id,
-            :points => total_points,
-            :created_ts => now
-          )
-          record.merchant = @venue.merchant
-          record.user = current_user
-          record.save
           
           mutex = CacheMutex.new(@venue.merchant.cache_key, Cache.memcache)
           mutex.acquire

@@ -238,13 +238,6 @@ module Business
           :description => (t "challenge.type.birthday.description"),
           :require_verif => true
         },
-        "vip" =>
-        {
-          :name => (t "challenge.type.vip.name"),
-          :description => (t "challenge.type.vip.description"),
-          :data => CheckInData.new,
-          :require_verif => false
-        },
         "lottery" =>
         {
           :name => (t "challenge.type.lottery.name"),
@@ -262,6 +255,13 @@ module Business
         {
           :name => (t "challenge.type.referral.name"),
           :description => (t "challenge.type.referral.description"),
+          :require_verif => false
+        },
+        "vip" =>
+        {
+          :name => (t "challenge.type.vip.name"),
+          :description => (t "challenge.type.vip.description"),
+          :data => CheckInData.new,
           :require_verif => false
         },
         "custom" =>

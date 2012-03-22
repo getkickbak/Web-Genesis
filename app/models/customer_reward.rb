@@ -2,7 +2,7 @@ class CustomerReward
   include DataMapper::Resource
 
   property :id, Serial
-  property :title, String, :required => true, :default => ""
+  property :title, String, :length => 24, :required => true, :default => ""
   property :price, Decimal, :required => true, :scale => 2
   property :points, Integer, :required => true
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME

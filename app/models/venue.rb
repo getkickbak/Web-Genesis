@@ -6,7 +6,7 @@ class Venue
   @@template = ERB.new File.read(File.expand_path "app/views/business/venues/qrcode_template.html.erb")
 
   property :id, Serial
-  property :name, String, :required => true, :default => ""
+  property :name, String, :length => 16, :required => true, :default => ""
   property :address, String, :required => true, :default => ""
   property :city, String, :required => true, :default => ""
   property :state, String, :required => true, :default => ""
@@ -71,7 +71,8 @@ class Venue
     qr_code_image = venue.generate_qr_code_image(merchant.merchant_id)
     venue[:qr_code_img] = qr_code_image
     
-    check_in_auth_code = "#{merchant.merchant_id}-#{rand(1000)}" 
+    merchant.venues.reload
+    check_in_auth_code = "#{merchant.merchant_id}-#{merchant.venues.length}" 
     venue.check_in_code = CheckInCode.new(
       :auth_code => check_in_auth_code,
       :qr_code => CheckInCode.generate_qr_code(merchant.merchant_id, check_in_auth_code)
@@ -154,18 +155,18 @@ class Venue
 
     # I am nil'ing these options out because my version of wkhtmltoimage does
     # not support the scale options and I do not want to crop the image at all.
-    snap = WebSnap::Snapper.new(html, :format => 'png', :'scale-h' => nil, :'scale-w' => nil,
-      :'crop-h' => nil, :'crop-w' => nil, :quality => 100, :'crop-x' => nil, :'crop-y' => nil)
+    snap = WebSnap::Snapper.new(html, :format => 'png',
+      :'crop-h' => nil, :'crop-w' => nil, :quality => 30, :'crop-x' => nil, :'crop-y' => nil)
  
-    filename = String.random_alphanumeric(32)
+    filename = "#{String.random_alphanumeric(32)}"
     AWS::S3::S3Object.store(
-      ::Common.generate_merchant_qr_code_image_file_path(merchant_id,"#{filename}"), 
+      ::Common.generate_merchant_qr_code_image_file_path(merchant_id,filename), 
       snap.to_bytes,
       APP_PROP["AMAZON_FILES_BUCKET"], 
       :content_type => 'image/png', 
       :access => :public_read
     )
-    ::Common.generate_full_merchant_qr_code_image_file_path(merchant_id,"#{filename}") 
+    return filename
   end
   
   def as_json(options)
@@ -177,15 +178,16 @@ class Venue
   private
   
   def self.generate_qr_code(merchant_id, code)
-    qr = RQRCode::QRCode.new( code, :size => 10, :level => :h )
-    png = qr.to_img.resize(270,270) 
+    qr = RQRCode::QRCode.new( code, :size => 4, :level => :h )
+    png = qr.to_img.resize(225,225) 
+    filename = "#{code}.png"
     AWS::S3::S3Object.store(
-      ::Common.generate_merchant_qr_code_file_path(merchant_id,"#{code}.png"), 
+      ::Common.generate_merchant_qr_code_file_path(merchant_id,filename), 
       png.to_string,
       APP_PROP["AMAZON_FILES_BUCKET"], 
       :content_type => 'image/png', 
       :access => :public_read
     )
-    ::Common.generate_full_merchant_qr_code_file_path(merchant_id,"#{code}.png")  
+    return filename 
   end
 end

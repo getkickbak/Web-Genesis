@@ -23,5 +23,4 @@ class EarnPrize
     options = options.nil? ? only : options.merge(only)
     super(options)
   end
-  
 end

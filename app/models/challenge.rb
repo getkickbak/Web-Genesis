@@ -4,7 +4,7 @@ class Challenge
   include DataMapper::Resource
 
   property :id, Serial
-  property :name, String, :required => true, :default => ""
+  property :name, String, :length => 24, :required => true, :default => ""
   property :description, String, :required => true, :default => ""
   property :require_verif, Boolean, :required => true, :default => false
   property :auth_code, String, :default => ""
