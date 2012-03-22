@@ -2,6 +2,7 @@
 
 <table>
 	<tr>
+		<th>Id</th>
 		<th>Name</th>
 		<th>Email</th>
 		<th>First Name</th>
@@ -15,6 +16,7 @@
 
 	<% @merchants.each do |merchant| %>
 	<tr>
+		<td><%= merchant.id %></td>
 		<td><%= merchant.name %></td>
 		<td><%= merchant.email %></td>
 		<td><%= merchant.account_first_name %></td>
