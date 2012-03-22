@@ -47,4 +47,3 @@ INSERT INTO merchant_challenge_types VALUES (1,3);
 INSERT INTO merchant_challenge_types VALUES (1,4);
 INSERT INTO merchant_challenge_types VALUES (1,5);
 INSERT INTO merchant_challenge_types VALUES (1,6);
-INSERT INTO merchant_challenge_types VALUES (1,7);

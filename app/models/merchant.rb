@@ -15,7 +15,8 @@ class Merchant
   property :email, String, :required => true, :unique => true,
             :format => :email_address
   # Disable auto-validation http://j.mp/gMORhy 
-  property :photo, String, :auto_validation => false           
+  property :photo, String, :auto_validation => false
+  property :alt_photo, String, :auto_validation => false           
   property :account_first_name, String, :required => true, :default => ""
   property :account_last_name, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
@@ -30,7 +31,7 @@ class Merchant
   attr_accessor :type_id, :current_password
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :name, :email, :account_first_name, :account_last_name, :phone, :photo, :status, :prize_terms, :current_password, :password, :password_confirmation
+  attr_accessible :type_id, :name, :email, :account_first_name, :account_last_name, :phone, :photo, :alt_photo, :status, :prize_terms, :current_password, :password, :password_confirmation
   
   has 1, :merchant_to_type, :constraint => :destroy
   has 1, :type, 'MerchantType', :through => :merchant_to_type, :via => :merchant_type
@@ -39,6 +40,7 @@ class Merchant
   has n, :credit_cards, :through => :merchant_credit_cards, :via => :credit_card
   has n, :venues, :constraint => :destroy
   mount_uploader :photo, MerchantPhotoUploader
+  mount_uploader :alt_photo, MerchantPhotoUploader
 
   validates_presence_of :type_id, :on => :save  
 
@@ -153,6 +155,19 @@ class Merchant
     save
   end
     
+  def update_alt_photo(merchant_info)
+    if merchant_info.nil?
+      errors.add(:alt_photo, "Please upload photo")
+      raise DataMapper::SaveFailureError.new("", self)
+    end
+    now = Time.now
+    self.type_id = self.type.id
+    self.current_password = nil
+    self.alt_photo = merchant_info[:alt_photo]
+    self.update_ts = now  
+    save
+  end
+    
   def add_credit_card(credit_card)
     credit_cards.concat(Array(credit_card))
     save
@@ -166,7 +181,7 @@ class Merchant
   end
   
   def as_json(options)
-    only = {:only => [:id, :name, :photo, :prize_terms], :methods => [:type]}
+    only = {:only => [:id, :name, :photo, :alt_photo, :prize_terms], :methods => [:type]}
     options = options.nil? ? only : options.merge(only)
      super(options)
   end

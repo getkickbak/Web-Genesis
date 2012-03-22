@@ -24,6 +24,7 @@ Genesis::Application.routes.draw do
       match "/setup/activate" => 'setup#activate', :as => :setup_activate
       match "/account/photo" => 'merchants#photo', :as => :account_photo
       match "/account/photo/update" => 'merchants#update_photo', :as => :update_account_photo
+      match "/account/photo/update_alt" => 'merchants#update_alt_photo', :as => :update_account_alt_photo
       match "/reward_model" => 'reward_model#index', :as => :reward_model
       match "/reward_model/update" => 'reward_model#update', :as => :update_reward_model
       match "/marketing" => 'marketing#index', :as => :marketing

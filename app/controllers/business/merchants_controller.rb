@@ -73,5 +73,27 @@ module Business
         end
       end
     end
+    
+    def update_alt_photo
+      @merchant = current_merchant  
+      authorize! :update, @merchant
+      
+      Merchant.transaction do
+        begin
+          @merchant.update_alt_photo(params[:merchant])
+          respond_to do |format|
+            format.html { redirect_to(:action => "photo", :notice => 'Merchant photo was successfully updated.') }
+          #format.xml  { head :ok }
+          end
+        rescue DataMapper::SaveFailureError => e
+          logger.error("Exception: " + e.resource.errors.inspect)
+          @merchant = e.resource
+          respond_to do |format|
+            format.html { render :action => "photo" }
+          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+          end
+        end
+      end
+    end
   end
 end

@@ -99,23 +99,13 @@ namespace :db do
       challenge_type = ChallengeType.get(2)
       Challenge.create(merchant,challenge_type,
       {
-        :name => (I18n.t "challenge.type.lottery.name"),
-        :description => (I18n.t "challenge.type.lottery.description"),
-        :data => ActiveSupport::HashWithIndifferentAccess.new(:odds => 10),
-        :require_verif => true,
-        :points => rand(10) + 10
-      },
-      venues)
-      challenge_type = ChallengeType.get(3)
-      Challenge.create(merchant,challenge_type,
-      {
         :name => (I18n.t "challenge.type.menu.name"),
         :description => (I18n.t "challenge.type.menu.description"),
         :require_verif => true,
         :points => rand(10) + 10
       },
       venues)
-      challenge_type = ChallengeType.get(4)
+      challenge_type = ChallengeType.get(3)
       Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.photo.name"),
@@ -124,7 +114,7 @@ namespace :db do
         :points => rand(10) + 10
       },
       venues)
-      challenge_type = ChallengeType.get(5)
+      challenge_type = ChallengeType.get(4)
       Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.referral.name"),
@@ -133,7 +123,7 @@ namespace :db do
         :points => rand(10) + 10
       },
       venues)
-      challenge_type = ChallengeType.get(6)
+      challenge_type = ChallengeType.get(5)
       Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.vip.name"),
@@ -143,7 +133,7 @@ namespace :db do
         :points => rand(10) + 10
       },
       venues)
-      challenge_type = ChallengeType.get(7)
+      challenge_type = ChallengeType.get(6)
       Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.custom.name"),
