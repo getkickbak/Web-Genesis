@@ -49,7 +49,7 @@ module Business
 
       allowed = true
       type = ChallengeType.get(params[:challenge][:type_id])
-      if type.value != 'custom' && type.value != 'menu' && type.value != 'lottery'
+      if type.value != 'custom' && type.value != 'menu'
         challenges = Challenge.all(Challenge.merchant.id => current_merchant.id)
         challenges.each do |challenge|
           if type.value == challenge.type.value
@@ -67,8 +67,6 @@ module Business
         begin
           if type.value == 'vip'
             params[:challenge][:data] = params[:challenge][:check_in_data]
-          elsif type.value == 'lottery'
-            params[:challenge][:data] = params[:challenge][:lottery_data]
           end
           params[:challenge][:venue_ids].delete("")
           if params[:challenge][:venue_ids].length > 0
@@ -76,9 +74,7 @@ module Business
           else
             venues = []
           end
-          if type.value == 'lottery'
-            params[:challenge][:description] = (t "challenge.type.lottery.description") % [params[:challenge][:name]]
-          elsif type.value == 'menu'  
+          if type.value == 'menu'  
             params[:challenge][:description] = (t "challenge.type.menu.description") % [params[:challenge][:name]]
           elsif type.value == 'vip'
             params[:challenge][:description] = (t "challenge.type.vip.description") % [params[:challenge][:data][:visits]]
@@ -115,7 +111,7 @@ module Business
         @challenge.update_without_save(challenge_info)
         @challenge.type_id = params[:type_id].to_i
         @challenge.type = ChallengeType.get(@challenge.type_id)
-        if type == 'lottery' || type == 'menu'
+        if type == 'menu'
           @challenge.description = @challenge.description % [@challenge.name]
         elsif type == 'vip'
           @challenge.description = @challenge.description % [@challenge.data.visits]
@@ -154,8 +150,6 @@ module Business
         begin
           if type.value == 'vip'
             params[:challenge][:data] = params[:challenge][:check_in_data]
-          elsif type.value == 'lottery'
-            params[:challenge][:data] = params[:challenge][:lottery_data]
           end
           params[:challenge][:venue_ids].delete("")
           if params[:challenge][:venue_ids].length > 0
@@ -163,9 +157,7 @@ module Business
           else
             venues = []
           end
-          if type.value == 'lottery'
-            params[:challenge][:description] = (t "challenge.type.lottery.description") % [params[:challenge][:name]]
-          elsif type.value == 'menu'  
+          if type.value == 'menu'  
             params[:challenge][:description] = (t "challenge.type.menu.description") % [params[:challenge][:name]]
           elsif type.value == 'vip'
             params[:challenge][:description] = (t "challenge.type.vip.description") % [params[:challenge][:data][:visits]]
@@ -212,7 +204,7 @@ module Business
       challenge_types = []
       ChallengeType.values[current_merchant.type.value][I18n.locale].each do |challenge_type|
         value = ChallengeType.id_to_value[challenge_type[1]]
-        if !(in_use_types.include? value) || value == 'custom' || value == 'menu' || value == 'lottery' || value == current_type
+        if !(in_use_types.include? value) || value == 'custom' || value == 'menu' || value == current_type
           challenge_types << challenge_type
         end
       end
@@ -236,13 +228,6 @@ module Business
         {
           :name => (t "challenge.type.birthday.name"),
           :description => (t "challenge.type.birthday.description"),
-          :require_verif => true
-        },
-        "lottery" =>
-        {
-          :name => (t "challenge.type.lottery.name"),
-          :description => (t "challenge.type.lottery.description"),
-          :data => LotteryData.new,
           :require_verif => true
         },
         "photo" =>

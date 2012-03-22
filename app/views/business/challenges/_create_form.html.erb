@@ -24,18 +24,6 @@
 		<div class="challenge_desc">
 			<span>they will get</span><input id="challenge_points" name="challenge[points]" type="text" class="numfield" placeholder=""/><span>points</span>
 		</div>
-	<% elsif @challenge.type && @challenge.type.value == 'lottery' %>
-		<div class="challenge_desc">
-			<span>When someone plays the lottery</span><input id="challenge_name" name="challenge[name]" type="text" class="textfield" placeholder="Name"/>
-		</div>
-		<%= f.input :description, :as => :hidden %>
-		<%= f.input :require_verif, :as => :hidden %>
-		<div class="challenge_desc">
-			<span>the odds of winning is one in</span><input id="challenge_lottery_data_odds" name="challenge[lottery_data][odds]" type="text" class="textfield" placeholder=""/><span>and</span>
-		</div>
-		<div class="challenge_desc">
-			<span>they will get</span><input id="challenge_points" name="challenge[points]" type="text" class="numfield" placeholder=""/><span>points</span>
-		</div>
 	<% elsif @challenge.type && @challenge.type.value == 'menu' %>
 		<div class="challenge_desc">
 			<span>When someone buys a</span><input id="challenge_name" name="challenge[name]" type="text" class="textfield" placeholder="Name"/>

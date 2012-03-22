@@ -4,7 +4,7 @@ class Challenge
   include DataMapper::Resource
 
   property :id, Serial
-  property :name, String, :length => 24, :required => true, :default => ""
+  property :name, String, :length => 20, :required => true, :default => ""
   property :description, String, :required => true, :default => ""
   property :require_verif, Boolean, :required => true, :default => false
   property :auth_code, String, :default => ""
@@ -125,9 +125,7 @@ class Challenge
     if self.data
       if self.data.is_a? ActiveSupport::HashWithIndifferentAccess
         if self.type.value == 'vip'
-          self.data = CheckInData.new(self.data)
-        elsif self.type.value == 'lottery'
-          self.data = LotteryData.new(self.data)  
+          self.data = CheckInData.new(self.data)  
         end
       end
       if !self.data.valid?

@@ -96,10 +96,6 @@ class ChallengesController < ApplicationController
   protected
   
   def is_challenge_satisfied(challenge)
-    if challenge.type == "lottery"
-      draw = 1+Random.rand(challenge.data.probability)
-      return draw == challenge.data.probability ? true : false
-    end
     return true
   end
   
