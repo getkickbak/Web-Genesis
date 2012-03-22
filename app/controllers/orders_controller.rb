@@ -184,7 +184,7 @@ class OrdersController < ApplicationController
     }
     if new_user
       token_info = {
-        :customer_id => current_user.user_id
+        :customer_id => current_user.id
       }
       if new_credit_card
         credit_card = CreditCard.create(current_user)
@@ -222,7 +222,7 @@ class OrdersController < ApplicationController
           }
         },
         :customer => {
-          :id => current_user.user_id
+          :id => current_user.id
         },
         :options => {
           :store_in_vault => true

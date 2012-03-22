@@ -14,7 +14,7 @@ module Admin
     end
 
     def show
-      @merchant = Merchant.first(:merchant_id => params[:id]) || not_found
+      @merchant = Merchant.get(params[:id]) || not_found
       authorize! :read, @merchant
 
       respond_to do |format|
@@ -34,7 +34,7 @@ module Admin
     end
 
     def edit
-      @merchant = Merchant.first(:merchant_id => params[:id]) || not_found
+      @merchant = Merchant.get(params[:id]) || not_found
       authorize! :update, @merchant
       
       @merchant.type_id = @merchant.type.id
@@ -43,7 +43,7 @@ module Admin
     def create
       authorize! :create, Merchant
 
-      #Merchant.transaction do
+      Merchant.transaction do
         begin
           params[:merchant][:status] = :pending
           type = MerchantType.get(params[:merchant][:type_id])
@@ -62,11 +62,11 @@ module Admin
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
           end
         end
-      #end
+      end
     end
 
     def update
-      @merchant = Merchant.first(:merchant_id => params[:id]) || not_found
+      @merchant = Merchant.get(params[:id]) || not_found
       authorize! :update, @merchant
 
       Merchant.transaction do
@@ -90,7 +90,7 @@ module Admin
     end
 
     def destroy
-      @merchant = Merchant.first(:merchant_id => params[:id]) || not_found
+      @merchant = Merchant.get(params[:id]) || not_found
       authorize! :destroy, @merchant
 
       @merchant.destroy

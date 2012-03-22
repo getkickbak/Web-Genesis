@@ -13,7 +13,6 @@ class User
           :validatable, :authentication_keys => [:email]
           
   property :id, Serial
-  property :user_id, String, :unique_index => true, :required => true, :default => ""
   property :name, String, :required => true, :default => ""
   property :email, String, :unique_index => true, :required => true, :format => :email_address, :default => ""
   property :facebook_id, String, :default => ""     
@@ -52,7 +51,6 @@ class User
       :role => user_info[:role].strip,
       :status => user_info[:status]
     ) 
-    user[:user_id] = "#{rand(1000) + 1000}#{now.to_i}"
     user[:created_ts] = now
     user[:update_ts] = now
     user.profile = UserProfile.new
@@ -76,7 +74,6 @@ class User
       :role => "user",
       :status => :active
     ) 
-    user[:user_id] = "#{rand(1000) + 1000}#{now.to_i}"
     user[:created_ts] = now
     user[:update_ts] = now
     user[:role] = "user"
@@ -101,7 +98,7 @@ class User
   end
     
   def to_param
-    self.user_id
+    self.id
   end
   
   def password_required?

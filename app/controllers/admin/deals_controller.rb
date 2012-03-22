@@ -8,7 +8,7 @@ module Admin
       merchant_id = params[:merchant_id]
       start = 0
       max = 10
-      @merchant = Merchant.first(:merchant_id => merchant_id) || not_found
+      @merchant = Merchant.get(merchant_id) || not_found
       @deals = Deal.find(@merchant.id, start, max) || not_found
 
       respond_to do |format|
@@ -20,7 +20,7 @@ module Admin
     def new
       authorize! :create, Deal
 
-      @merchant = Merchant.first(:merchant_id => params[:merchant_id]) || not_found
+      @merchant = Merchant.get(params[:merchant_id]) || not_found
       @deal = Deal.new
       today = Date.today
       @deal.start_date = today
@@ -33,13 +33,13 @@ module Admin
     end
 
     def edit
-      @merchant = Merchant.first(:merchant_id => params[:merchant_id]) || not_found
+      @merchant = Merchant.get(params[:merchant_id]) || not_found
       @deal = Deal.first(:deal_id => params[:id]) || not_found
       authorize! :update, @deal
     end
 
     def create
-      @merchant = Merchant.first(:merchant_id => params[:merchant_id]) || not_found
+      @merchant = Merchant.get(params[:merchant_id]) || not_found
       authorize! :create, Deal
 
       Deal.transaction do
@@ -66,7 +66,7 @@ module Admin
     end
 
     def update
-      @merchant = Merchant.first(:merchant_id => params[:merchant_id]) || not_found
+      @merchant = Merchant.get(params[:merchant_id]) || not_found
       @deal = Deal.first(:deal_id =>params[:id]) || not_found
       authorize! :update, @deal
 

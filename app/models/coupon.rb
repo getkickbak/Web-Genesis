@@ -37,6 +37,6 @@ class Coupon
     #kit.stylesheets << '/path/to/css/file'
 
     # Save the PDF to a file
-    AWS::S3::S3Object.store(::Common.generate_voucher_file_path(self.user.user_id,"#{self.coupon_id}.pdf"), kit.to_pdf, APP_PROP["AMAZON_FILES_BUCKET"], :access => :public_read)
+    AWS::S3::S3Object.store(::Common.generate_voucher_file_path(self.user.id,"#{self.coupon_id}.pdf"), kit.to_pdf, APP_PROP["AMAZON_FILES_BUCKET"], :access => :public_read)
   end
 end

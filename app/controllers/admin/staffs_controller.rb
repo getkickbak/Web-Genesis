@@ -15,7 +15,7 @@ module Admin
     end
 
     def show
-      @staff = Staff.first(:staff_id => params[:id]) || current_staff
+      @staff = Staff.get(params[:id]) || current_staff
       authorize! :read, @staff
 
       respond_to do |format|
@@ -35,7 +35,7 @@ module Admin
     end
 
     def edit
-      @staff = Staff.first(:staff_id => params[:id]) || current_staff
+      @staff = Staff.get(params[:id]) || current_staff
       authorize! :update, @staff
     end
 
@@ -63,7 +63,7 @@ module Admin
     end
 
     def update
-      @staff = Staff.first(:staff_id => params[:id]) || current_staff
+      @staff = Staff.get(params[:id]) || current_staff
       authorize! :update, @staff
 
       Staff.transaction do

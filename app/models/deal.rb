@@ -66,7 +66,7 @@ class Deal
     deal.start_date_str = r["start_date"]
     deal.end_date_str = r["end_date"]
     deal.expiry_date_str = r["expiry_date"]
-    deal[:deal_id] = "#{merchant.merchant_id}-#{now.to_i}"
+    deal[:deal_id] = "#{merchant.id}-#{now.to_i}"
     deal[:created_ts] = now
     deal[:update_ts] = now
     deal.merchant = merchant

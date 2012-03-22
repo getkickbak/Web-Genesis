@@ -32,7 +32,7 @@
 								<td style="padding:10px 10px 9px;border:0 !important;"> <%= coupon.expiry_date.strftime("%b %d, %Y") %>
 								<% days_left = (coupon.expiry_date - Date.today).to_i %>
 								<% if days_left <= 5 %> <span style="color:red;"><%= "(#{days_left} days left)" %></span> <% end %> </td>
-								<td style="padding:10px 10px 9px;border:0 !important;"><a target="_blank" href="<%= Common.generate_full_voucher_file_path(@user.user_id,"#{coupon.coupon_id}.pdf") %>" >Print</a></td>
+								<td style="padding:10px 10px 9px;border:0 !important;"><a target="_blank" href="<%= Common.generate_full_voucher_file_path(@user.id,"#{coupon.coupon_id}.pdf") %>" >Print</a></td>
 							</tr>
 							<% end %>
 						</table>

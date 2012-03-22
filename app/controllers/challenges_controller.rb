@@ -113,7 +113,9 @@ class ChallengesController < ApplicationController
   
   def start_challenge(merchant, user)
     if challenge.type == "referral"
-      ReferralChallenge.create(merchant, user, { :ref_email => params[:email] })
+      params[:emails].each do |email|
+        ReferralChallenge.create(merchant, user, { :ref_email => email })
+      end
     end
   end
 end

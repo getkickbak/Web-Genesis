@@ -6,7 +6,7 @@ class Venue
   @@template = ERB.new File.read(File.expand_path "app/views/business/venues/qrcode_template.html.erb")
 
   property :id, Serial
-  property :name, String, :length => 16, :required => true, :default => ""
+  property :name, String, :length => 24, :required => true, :default => ""
   property :address, String, :required => true, :default => ""
   property :city, String, :required => true, :default => ""
   property :state, String, :required => true, :default => ""
@@ -46,7 +46,7 @@ class Venue
   def self.create(merchant, type, venue_info)
     now = Time.now
     auth_code = String.random_alphanumeric
-    qr_code = generate_qr_code(merchant.merchant_id, auth_code)
+    qr_code = generate_qr_code(merchant.id, auth_code)
     
     venue = Venue.new(
       :type_id => type ? type.id : nil,
@@ -63,21 +63,20 @@ class Venue
     )
     venue[:auth_code] = auth_code
     venue[:qr_code] = qr_code
-    venue[:created_ts] = now
-    venue[:update_ts] = now
     venue.type = type
     venue.merchant = merchant
-    venue.save
-    qr_code_image = venue.generate_qr_code_image(merchant.merchant_id)
+    qr_code_image = venue.generate_qr_code_image(merchant.id)
     venue[:qr_code_img] = qr_code_image
+    venue[:created_ts] = now
+    venue[:update_ts] = now
     
     merchant.venues.reload
-    check_in_auth_code = "#{merchant.merchant_id}-#{merchant.venues.length}" 
+    check_in_auth_code = "#{merchant.id}-#{merchant.venues.length+1}" 
     venue.check_in_code = CheckInCode.new(
       :auth_code => check_in_auth_code,
-      :qr_code => CheckInCode.generate_qr_code(merchant.merchant_id, check_in_auth_code)
+      :qr_code => CheckInCode.generate_qr_code(merchant.id, check_in_auth_code)
     )
-    venue.check_in_code[:qr_code_img] = venue.check_in_code.generate_qr_code_image(merchant.merchant_id)
+    venue.check_in_code[:qr_code_img] = venue.check_in_code.generate_qr_code_image(merchant.id)
     venue.check_in_code[:created_ts] = now
     venue.check_in_code[:update_ts] = now
     venue.save
@@ -140,11 +139,11 @@ class Venue
   def update_qr_code
     now = Time.now
     new_auth_code = String.random_alphanumeric
-    new_qr_code = self.class.generate_qr_code(self.merchant.merchant_id, new_auth_code) 
+    new_qr_code = self.class.generate_qr_code(self.merchant.id, new_auth_code) 
     self.type_id = self.type ? self.type.id : nil
     self.auth_code = new_auth_code
     self.qr_code = new_qr_code  
-    new_qr_code_image = generate_qr_code_image(self.merchant.merchant_id)
+    new_qr_code_image = generate_qr_code_image(self.merchant.id)
     self.qr_code_img = new_qr_code_image
     self.update_ts = now
     save

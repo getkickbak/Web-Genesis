@@ -15,7 +15,7 @@ module Admin
     end
 
     def show
-      @user = User.first(:user_id => params[:id]) || not_found
+      @user = User.get(params[:id]) || not_found
       authorize! :read, @user
 
       respond_to do |format|
@@ -36,7 +36,7 @@ module Admin
     end
 
     def edit
-      @user = User.first(:user_id => params[:id]) || not_found
+      @user = User.get(params[:id]) || not_found
       authorize! :update, @user
     end
 
@@ -64,7 +64,7 @@ module Admin
     end
 
     def update
-      @user = User.first(:user_id => params[:id]) || not_found
+      @user = User.get(params[:id]) || not_found
       authorize! :update, @user
 
       #User.transaction do

@@ -11,8 +11,7 @@ class Merchant
           :validatable, :authentication_keys => [:email]
           
   property :id, Serial
-  property :merchant_id, String, :unique_index => true, :required => true, :default => ""
-  property :name, String, :length => 16, :required => true, :default => ""
+  property :name, String, :length => 24, :required => true, :default => ""
   property :email, String, :required => true, :unique => true,
             :format => :email_address
   # Disable auto-validation http://j.mp/gMORhy 
@@ -50,7 +49,6 @@ class Merchant
   def self.create(type, merchant_info)
     now = Time.now
     merchant_name = merchant_info[:name].squeeze(' ').strip
-    merchant_id = "#{rand(1000) + 3000}#{now.to_i}"
     password = merchant_info[:password] ? merchant_info[:password].strip : merchant_info.password
     password_confirmation  = merchant_info[:password_confirmation] ? merchant_info[:password_confirmation].strip : merchant_info.password_confirmation
     merchant = Merchant.new(
@@ -66,7 +64,6 @@ class Merchant
       :status => merchant_info[:status],
       :prize_terms => merchant_info[:prize_terms]
     )
-    merchant[:merchant_id] = merchant_id
     merchant[:created_ts] = now
     merchant[:update_ts] = now
     merchant.type = type
@@ -89,7 +86,7 @@ class Merchant
   end
   
   def to_param
-   self.merchant_id
+   self.id
   end
 
   def password_required?
@@ -169,7 +166,7 @@ class Merchant
   end
   
   def as_json(options)
-    only = {:only => [:id, :merchant_id, :name, :photo, :prize_terms], :methods => [:type]}
+    only = {:only => [:id, :name, :photo, :prize_terms], :methods => [:type]}
     options = options.nil? ? only : options.merge(only)
      super(options)
   end

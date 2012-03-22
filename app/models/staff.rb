@@ -13,7 +13,6 @@ class Staff
           :validatable, :authentication_keys => [:email]
           
   property :id, Serial
-  property :staff_id, String, :unique_index => true, :required => true, :default => ""
   property :name, String, :required => true, :default => ""
   property :email, String, :unique_index => true, :required => true, :format => :email_address, :default => ""
   property :role, String, :required => true, :default => "sales"
@@ -40,7 +39,6 @@ class Staff
       :role => staff_info[:role].strip,
       :status => staff_info[:status]
     ) 
-    staff[:staff_id] = "#{rand(1000) + 2000}#{now.to_i}"
     staff[:created_ts] = now
     staff[:update_ts] = now
     staff.save
@@ -58,7 +56,7 @@ class Staff
   end
   
   def to_param
-    self.staff_id
+    self.id
   end
   
    def password_required?

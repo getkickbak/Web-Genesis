@@ -44,7 +44,7 @@ class Challenge
 =begin    
     if challenge_info[:require_verif]
       auth_code = String.random_alphanumeric
-      filename = generate_qr_code(merchant.merchant_id, auth_code)
+      filename = generate_qr_code(merchant.id, auth_code)
       challenge[:auth_code] = auth_code
       challenge[:qr_code] = filename 
     end
@@ -70,7 +70,7 @@ class Challenge
 =begin    
     if !self.require_verif && challenge_info[:require_verif]
       auth_code = String.random_alphanumeric
-      filename = generate_qr_code(merchant.merchant_id, auth_code)
+      filename = generate_qr_code(merchant.id, auth_code)
       challenge[:auth_code] = auth_code
       challenge[:qr_code] = filename 
     end
@@ -101,7 +101,7 @@ class Challenge
   def update_qr_code
     now = Time.now
     auth_code = String.random_alphanumeric
-    filename = generate_qr_code(self.merchant.merchant_id, auth_code)
+    filename = generate_qr_code(self.merchant.id, auth_code)
     self.auth_code = auth_code
     self.qr_code = filename
     self.update_ts = now

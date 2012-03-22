@@ -13,7 +13,7 @@ module Business
       end
       @credit_card = CreditCardForm.new
 =begin      
-      result = BILLING_GATEWAY.query(current_merchant.merchant_id)
+      result = BILLING_GATEWAY.query(current_merchant.id)
       @credit_card = CreditCardForm.new(
         :name => result.params['ordName'],
         :number => result.params['trnCardNumber'],
@@ -72,7 +72,7 @@ module Business
             {
               :cardValidation => 1,
               :operationType => 'N',
-              :vault_id => current_merchant.merchant_id,
+              :vault_id => current_merchant.id,
               :status => 'A',
               :billing_address => {
                 :address1 => params[:card_info][:address1],
@@ -108,7 +108,7 @@ module Business
             }
           )
           if result.success?
-            credit_card = CreditCard.create(current_merchant.merchant_id)
+            credit_card = CreditCard.create(current_merchant.id)
             current_merchant.add_credit_card(credit_card)
             current_merchant.payment_account_id = result.params['rbAccountId']
             current_merchant.save
@@ -151,7 +151,7 @@ module Business
             :year => parms[:card_info][:year],
             :verification_value => params[:card_info][:cvv]
           ) 
-          result = BILLING_GATEWAY.update(current_user.user_id, am_credit_card,
+          result = BILLING_GATEWAY.update(current_user.id, am_credit_card,
             {
               :cardValidation => 1,
               :status => 'A',

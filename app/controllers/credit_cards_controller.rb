@@ -3,7 +3,7 @@ class CreditCardsController < ApplicationController
   #load_and_authorize_resource
   def index
     authorize! :read, CreditCard
-    result = BILLING_GATEWAY.query(current_user.user_id)
+    result = BILLING_GATEWAY.query(current_user.id)
     @credit_card = CreditCardForm.new(
       :name => result.params['ordName'],
       :number => result.params['trnCardNumber'],
@@ -39,7 +39,7 @@ class CreditCardsController < ApplicationController
           {
             :cardValidation => 1,
             :operationType => 'N',
-            :vault_id => current_user.user_id,
+            :vault_id => current_user.id,
             :status => 'A',
             :billing_address => {
               :address1 => params[:card_info][:address1],
@@ -51,7 +51,7 @@ class CreditCardsController < ApplicationController
           }
         )
         if result.success?
-          credit_card = CreditCard.create(current_user.user_id)
+          credit_card = CreditCard.create(current_user.id)
           current_user.add(credit_card)
           respond_to do |format|
             format.html { redirect_to credit_card_path(:notice => 'Credit card was successfully added.') }
@@ -84,7 +84,7 @@ class CreditCardsController < ApplicationController
           :year => parms[:card_info][:year],
           :verification_value => params[:card_info][:cvv]
         ) 
-        result = BILLING_GATEWAY.update(current_user.user_id, am_credit_card,
+        result = BILLING_GATEWAY.update(current_user.id, am_credit_card,
           {
             :cardValidation => 1,
             :status => 'A',

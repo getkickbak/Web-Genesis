@@ -70,13 +70,13 @@ class Order
       coupon[:expiry_date] = deal.expiry_date
       coupon[:barcode] = ""
       AWS::S3::S3Object.store(
-        ::Common.generate_voucher_file_path(user.user_id,"#{coupon[:coupon_id]}.png"), 
+        ::Common.generate_voucher_file_path(user.id,"#{coupon[:coupon_id]}.png"), 
         png.to_string, 
         APP_PROP["AMAZON_FILES_BUCKET"], 
         :content_type => 'image/png', 
         :access => :public_read
       )
-      filename = ::Common.generate_full_voucher_file_path(user.user_id,"#{coupon[:coupon_id]}.png")
+      filename = ::Common.generate_full_voucher_file_path(user.id,"#{coupon[:coupon_id]}.png")
       coupon[:qr_code] = filename
       coupon[:created_ts] = now
       coupon[:update_ts] = now
