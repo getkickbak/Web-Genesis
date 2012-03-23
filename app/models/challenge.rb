@@ -39,7 +39,6 @@ class Challenge
       :require_verif => challenge_info[:require_verif],
       :points => challenge_info[:points]
     )
-   
     if challenge_info.include? :data
       challenge[:data] = challenge_info[:data]
     end
