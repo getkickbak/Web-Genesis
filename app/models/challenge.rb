@@ -39,14 +39,7 @@ class Challenge
       :require_verif => challenge_info[:require_verif],
       :points => challenge_info[:points]
     )
-=begin    
-    if challenge_info[:require_verif]
-      auth_code = String.random_alphanumeric
-      filename = generate_qr_code(merchant.id, auth_code)
-      challenge[:auth_code] = auth_code
-      challenge[:qr_code] = filename 
-    end
-=end    
+   
     if challenge_info.include? :data
       challenge[:data] = challenge_info[:data]
     end
@@ -64,15 +57,7 @@ class Challenge
     self.type_id = type ? type.id : nil
     self.name = challenge_info[:name]
     self.description = challenge_info[:description]
-    self.points = challenge_info[:points]
-=begin    
-    if !self.require_verif && challenge_info[:require_verif]
-      auth_code = String.random_alphanumeric
-      filename = generate_qr_code(merchant.id, auth_code)
-      challenge[:auth_code] = auth_code
-      challenge[:qr_code] = filename 
-    end
-=end    
+    self.points = challenge_info[:points]   
     self.require_verif = challenge_info[:require_verif]
     if challenge_info.include? :data
       self.data = challenge_info[:data]
