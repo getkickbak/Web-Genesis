@@ -19,11 +19,9 @@ class CheckInCode
   def update_qr_code
     now = Time.now
     new_auth_code = "#{self.venue.merchant.id}-#{rand(1000)}"
-    new_qr_code = self.class.generate_qr_code(self.venue.merchant.id, new_auth_code) 
     self.auth_code = new_auth_code
-    self.qr_code = new_qr_code
-    new_qr_code_image = generate_qr_code_image(self.venue.merchant.id)
-    self.qr_code_img = new_qr_code_image
+    self.qr_code = self.class.generate_qr_code(self.venue.merchant.id, new_auth_code)
+    self.qr_code_img = generate_qr_code_image(self.venue.merchant.id)
     self.update_ts = now
     save
   end

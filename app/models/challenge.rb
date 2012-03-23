@@ -7,8 +7,6 @@ class Challenge
   property :name, String, :length => 20, :required => true, :default => ""
   property :description, String, :required => true, :default => ""
   property :require_verif, Boolean, :required => true, :default => false
-  property :auth_code, String, :default => ""
-  property :qr_code, String, :default => ""
   property :data, Object
   property :points, Integer, :required => true
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -98,16 +96,6 @@ class Challenge
     end
   end
   
-  def update_qr_code
-    now = Time.now
-    auth_code = String.random_alphanumeric
-    filename = generate_qr_code(self.merchant.id, auth_code)
-    self.auth_code = auth_code
-    self.qr_code = filename
-    self.update_ts = now
-    save  
-  end
-  
   def as_json(options)
     only = {:only => [:id,:name,:description,:require_verif,:points], :methods => [:type]}
     options = options.nil? ? only : options.merge(only)
@@ -150,18 +138,5 @@ class Challenge
       return [false, "Must belong to at least one venue"]
     end
     return true
-  end
-      
-  def generate_qr_code(merchant_id, auth_code)
-    qr = RQRCode::QRCode.new( auth_code, :size => 5, :level => :h )
-    png = qr.to_img.resize(90,90)
-    AWS::S3::S3Object.store(
-      ::Common.generate_merchant_qr_code_file_path(merchant_id,"#{auth_code}.png"), 
-      png.to_string,
-      APP_PROP["AMAZON_FILES_BUCKET"], 
-      :content_type => 'image/png', 
-      :access => :public_read
-    )
-    filename = ::Common.generate_full_merchant_qr_code_file_path(merchant_id,"#{auth_code}.png")
   end
 end

@@ -33,11 +33,9 @@ class AuthorizationCode
   def update_qr_code
     now = Time.now
     new_auth_code = String.random_alphanumeric
-    new_qr_code = self.class.generate_qr_code(self.merchant.id, new_auth_code) 
     self.auth_code = new_auth_code
-    self.qr_code = new_qr_code  
-    new_qr_code_image = generate_qr_code_image(self.merchant.id)
-    self.qr_code_img = new_qr_code_image
+    self.qr_code = self.class.generate_qr_code(self.merchant.id, new_auth_code)  
+    self.qr_code_img = generate_qr_code_image(self.merchant.id)
     self.update_ts = now
     save
   end
