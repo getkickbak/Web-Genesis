@@ -1,34 +1,34 @@
 class Common
   def self.generate_full_merchant_qr_code_image_file_path(merchant_id, filename)
-    get_host+generate_merchant_qr_code_image_file_path(merchant_id, filename)
+    get_file_host+generate_merchant_qr_code_image_file_path(merchant_id, filename)
   end
 
   def self.generate_merchant_qr_code_image_file_path(merchant_id, filename)
-    "#{merchant_id}/qr_code_image/#{filename}"
+    "merchants/#{merchant_id}/qr_code_image/#{filename}"
   end
 
   def self.generate_full_merchant_qr_code_file_path(merchant_id, filename)
-    get_host+generate_merchant_qr_code_file_path(merchant_id, filename)
+    get_file_host+generate_merchant_qr_code_file_path(merchant_id, filename)
   end
 
   def self.generate_merchant_qr_code_file_path(merchant_id, filename)
-    "#{merchant_id}/qr_code/#{filename}"
+    "merchants/#{merchant_id}/qr_code/#{filename}"
   end
 
   def self.generate_full_voucher_file_path(user_id, filename)
-    get_host+generate_voucher_file_path(user_id, filename)
+    get_file_host+generate_voucher_file_path(user_id, filename)
   end
 
   def self.generate_voucher_file_path(user_id, filename)
-    "#{user_id}/vouchers/#{filename}"
+    "users/#{user_id}/vouchers/#{filename}"
   end
 
-  def self.generate_photo_file_path(merchant_id, filename)
-    "#{merchant_id}/#{filename}"
+  def self.generate_merchant_photo_file_path(merchant_id, filename)
+    "merchants/#{merchant_id}/#{filename}"
   end
 
-  def self.generate_full_photo_file_path(merchant_id,filename)
-    get_photo_host+generate_photo_file_path(merchant_id, filename)
+  def self.generate_full_merchant_photo_file_path(merchant_id,filename)
+    get_photo_host+generate_merchant_photo_file_path(merchant_id, filename)
   end
 
   def self.within_geo_distance?(latitude_1, longitude_1, latitude_2, longitude_2)
@@ -46,7 +46,7 @@ class Common
     "http://#{APP_PROP["PHOTO_HOST"]}/"
   end
 
-  def self.get_host
+  def self.get_file_host
     "http://#{APP_PROP["FILE_HOST"]}/"
   end
 end

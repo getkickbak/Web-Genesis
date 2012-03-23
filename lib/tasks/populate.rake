@@ -30,7 +30,7 @@ namespace :db do
     puts "Complete Staff creation"
     
     puts "Creating Merchants..."
-    10.times do |n|
+    2.times do |n|
       type = MerchantType.get(1)
       merchant = Merchant.create(type,
       {
@@ -44,6 +44,24 @@ namespace :db do
         :status => :active,
         :prize_terms => I18n.t('prize.terms')
       })
+      filenames = ["thai.jpg","chicken.jpg","burrito.jpg","salad.jpg","focaccia.jpg"]
+      file_idx = rand(filenames.length)
+      filename = filenames[file_idx] 
+      AWS::S3::S3Object.copy(
+        filename,
+        "merchants/#{merchant.id}/#{filename}", 
+        APP_PROP["AMAZON_PHOTOS_BUCKET"]
+      )
+      thumb_filenames = ["thumbnail_thai.jpg","thumbnail_chicken.jpg","thumbnail_burrito.jpg","thumbnail_salad.jpg","thumbnail_focaccia.jpg"]
+      thumb_filename = thumb_filenames[file_idx] 
+      AWS::S3::S3Object.copy(
+        thumb_filename,
+        "merchants/#{merchant.id}/#{thumb_filename}", 
+        APP_PROP["AMAZON_PHOTOS_BUCKET"]
+      )
+      DataMapper.repository(:default).adapter.execute(
+          "UPDATE merchants SET photo = ?, alt_photo = ? WHERE id = ?", filename, filename, merchant.id
+      )
       RewardModel.create(merchant,
       {
         :rebate_rate => 9,
