@@ -33,7 +33,7 @@ class PurchaseRewardsController < ApplicationController
     Customer.transaction do
       begin
         data = []
-        if @venue.auth_code == params[:auth_code]
+        if @venue.authorization_codes.first(:auth_code => params[:auth_code])
           now = Time.now
           challenge = Challenge.first(:type => 'referral', :venues => Venue.all(:id => params[:venue_id]))
           if challenge && new_customer

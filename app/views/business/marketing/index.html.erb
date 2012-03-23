@@ -2,8 +2,7 @@
 	<% @venues.each do |venue| %>
 	<div><%= venue.name %></div>
 	<div>
-		<%= link_to 'Print', ::Common.generate_full_merchant_qr_code_image_file_path(current_merchant.id,venue.check_in_code.qr_code_img) %> |
-		<%= link_to 'Update', update_checkin_qr_code_venue_path(venue) %> 
+		<%= link_to 'Print', ::Common.generate_full_merchant_qr_code_image_file_path(current_merchant.id,venue.check_in_code.qr_code_img) %>
 	</div>
 	<% end %>
 </div>

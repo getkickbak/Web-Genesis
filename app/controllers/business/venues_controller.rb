@@ -63,7 +63,7 @@ module Business
     end
 
     def update
-      @venue = Venue.get( params[:id]) || not_found
+      @venue = Venue.get(params[:id]) || not_found
       authorize! :update, @venue
 
       Venue.transaction do
@@ -86,47 +86,36 @@ module Business
       end
     end
 
-    def update_qr_code
-      @venue = Venue.get( params[:id]) || not_found
-      authorize! :update, @venue
-
-      Venue.transaction do
-        begin
-          @venue.update_qr_code()
-          respond_to do |format|
-            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => 'QR Code was successfully updated.') }
-          #format.xml  { head :ok }
-          end
-        rescue DataMapper::SaveFailureError => e
-          logger.error("Exception: " + e.resource.errors.inspect)
-          @venue = e.resource
-          respond_to do |format|
-            format.html
-          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
-          end
-        end
-      end
-    end
-
-    def update_checkin_qr_code
+    def create_qr_code
       @venue = Venue.get(params[:id]) || not_found
       authorize! :update, @venue
 
-      Venue.transaction do
+      AuthorizationCode.transaction do
         begin
-          @venue.check_in_code.update_qr_code()
+          AuthorizationCode.create(@venue)
           respond_to do |format|
-            format.html { redirect_to marketing_path(:notice => 'QR Code was successfully updated.') }
+            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => 'QR Code was successfully created.') }
           #format.xml  { head :ok }
           end
         rescue DataMapper::SaveFailureError => e
           logger.error("Exception: " + e.resource.errors.inspect)
-          @venue = e.resource
           respond_to do |format|
-            format.html
+            format.html { redirect_to(:action => "show", :id => @venue.id, :error => 'Failed to delete QR Code.') }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
           end
         end
+      end  
+    end
+
+    def delete_qr_code
+      @venue = Venue.get(params[:id]) || not_found
+      @code = AuthorizationCode.get(params[:qr_code_id]) || not_found
+      authorize! :update, @venue
+      
+      @code.destroy
+      respond_to do |format|
+        format.html { redirect_to(:action => "show", :id => @venue.id, :notice => 'QR Code was successfully deleted.') }
+        #format.xml  { head :ok }
       end
     end
 
@@ -134,7 +123,7 @@ module Business
       venue = Venue.get(params[:id]) || not_found
       authorize! :manage, venue
       
-      @qr_code = venue.qr_code
+      @qr_code = venue.authorization_codes[0].qr_code
       @name = venue.name
       respond_to do |format|
         format.html
@@ -159,7 +148,7 @@ module Business
 
       if @venue.challenges.length > 0 || @venue.purchase_rewards.length > 0 || @venue.customer_rewards.length > 0
         respond_to do |format|
-          format.html { redirect_to(:action => "index", :notice => 'Failed to delete venue.  Please check to make sure no challenges or rewards are associated with this venue.') }
+          format.html { redirect_to(:action => "index", :error => 'Failed to delete venue.  Please check to make sure no challenges or rewards are associated with this venue.') }
         #format.xml  { head :ok }
         end
       else

@@ -6,22 +6,22 @@
 	</head>
 	<body>
 		<div style="position: absolute; top: 735px; left: 220px; width: 675px; height: 675px; background-color: none;">
-			<img src="<%= ::Common.generate_full_merchant_qr_code_file_path(@merchant.id,@qr_code) %>" width="675" height="675">
+			<img src="<%= ::Common.generate_full_merchant_qr_code_file_path(@venue.merchant.id,@qr_code) %>" width="675" height="675">
 		</div>
 		<div style="position: absolute; top: 735px; left: 1325px; width: 675px; height: 675px; background-color: none;">
-			<img src="<%= ::Common.generate_full_merchant_qr_code_file_path(@merchant.id,@qr_code) %>" width="675" height="675">
+			<img src="<%= ::Common.generate_full_merchant_qr_code_file_path(@venue.merchant.id,@qr_code) %>" width="675" height="675">
 		</div>
 		<div style="position: absolute; top: 735px; left: 2425px; width: 675px; height: 675px; background-color: none;">
-			<img src="<%= ::Common.generate_full_merchant_qr_code_file_path(@merchant.id,@qr_code) %>" width="675" height="675">
+			<img src="<%= ::Common.generate_full_merchant_qr_code_file_path(@venue.merchant.id,@qr_code) %>" width="675" height="675">
 		</div>
 		<div style="position: absolute; top: 2155px; left: 50px; width: 1000px; font-size: 80px; text-align: center;">
-			<%= @name %>
+			<%= @venue.name %>
 		</div>
 		<div style="position: absolute; top: 2155px; left: 1155px; width: 1000px;font-size: 80px; text-align: center;">
-			<%= @name %>
+			<%= @venue.name %>
 		</div>
 		<div style="position: absolute; top: 2155px; left: 2255px; width: 1000px; font-size: 80px; text-align: center;">
-			<%= @name %>
+			<%= @venue.name %>
 		</div>
 		<img src="http://photos.getkickbak.com/authcardweb.jpg" width="3300" height="2550" />
 	</body>

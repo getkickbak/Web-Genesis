@@ -12,13 +12,13 @@ Genesis::Application.routes.draw do
       resources :purchase_rewards
       resources :customer_rewards
       resources :venues do
-        get 'update_qr_code', :on => :member, :as => :update_qr_code
-        get 'update_checkin_qr_code', :on => :member, :as => :update_checkin_qr_code
+        get 'create_qr_code', :on => :member, :as => :create_qr_code
+        get 'delete_qr_code', :on => :member, :as => :delete_qr_code
         get 'qrcode_template', :on => :member
         get 'check_in_template', :on => :member
       end
       #resources :deals
-
+              
       match "/dashboard" => 'dashboard#index', :as => :dashboard
       match "/setup" => 'setup#index', :as => :setup
       match "/setup/activate" => 'setup#activate', :as => :setup_activate

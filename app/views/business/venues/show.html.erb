@@ -2,7 +2,7 @@
 	<%= notice %>
 </p>
 <div class="content row">
-	<div class="span15">
+	<div class="span19">
 		<p>
 			<b>Name:</b>
 			<%= @venue.name %>
@@ -43,9 +43,25 @@
 			<b>Latitude</b>
 			<%= @venue.latitude %>
 		</p>
+		<% @venue.authorization_codes.each do |code| %>
+		<div>
+			<div>
+				<%= code.auth_code %>
+			</div>
+			<div>
+				<%= link_to 'Print QR Code', ::Common.generate_full_merchant_qr_code_image_file_path(current_merchant.id,code.qr_code_img) %>
+			</div>
+			<div>
+				<%= link_to 'Delete QR Code', delete_qr_code_venue_path(@venue, :qr_code_id => code.id), :confirm => 'Are you sure?' %>
+			</div>
+		</div>
+		<% end %>
+	</div>
+	<div class="span10">
+		<div>
+			<%= link_to 'Create QR Code', create_qr_code_venue_path(@venue) %>
+		</div>	
 	</div>
 </div>
-<%= link_to 'Print QR Code', ::Common.generate_full_merchant_qr_code_image_file_path(current_merchant.id,@venue.qr_code_img) %> |
-<%= link_to 'Update QR Code', update_qr_code_venue_path(@venue) %> |
 <%= link_to 'Edit', edit_venue_path(@venue) %> |
 <%= link_to 'Back', venues_path %> 
