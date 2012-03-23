@@ -30,7 +30,7 @@ namespace :db do
     puts "Complete Staff creation"
     
     puts "Creating Merchants..."
-    2.times do |n|
+    1.times do |n|
       type = MerchantType.get(1)
       merchant = Merchant.create(type,
       {
@@ -50,14 +50,16 @@ namespace :db do
       AWS::S3::S3Object.copy(
         filename,
         "merchants/#{merchant.id}/#{filename}", 
-        APP_PROP["AMAZON_PHOTOS_BUCKET"]
+        APP_PROP["AMAZON_PHOTOS_BUCKET"],
+        :copy_acl => true
       )
       thumb_filenames = ["thumbnail_thai.jpg","thumbnail_chicken.jpg","thumbnail_burrito.jpg","thumbnail_salad.jpg","thumbnail_focaccia.jpg"]
       thumb_filename = thumb_filenames[file_idx] 
       AWS::S3::S3Object.copy(
         thumb_filename,
         "merchants/#{merchant.id}/#{thumb_filename}", 
-        APP_PROP["AMAZON_PHOTOS_BUCKET"]
+        APP_PROP["AMAZON_PHOTOS_BUCKET"],
+        :copy_acl => true
       )
       DataMapper.repository(:default).adapter.execute(
           "UPDATE merchants SET photo = ?, alt_photo = ? WHERE id = ?", filename, filename, merchant.id
