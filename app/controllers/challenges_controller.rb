@@ -107,9 +107,13 @@ class ChallengesController < ApplicationController
   
   def start_challenge(merchant, user)
     if challenge.type == "referral"
+      # Need to filter out which emails are already customers
+      # TBD
       params[:emails].each do |email|
         ReferralChallenge.create(merchant, user, { :ref_email => email })
       end
+      # Send email notification to new customers (registered or non-registered users)
+      # TBD
     end
   end
 end
