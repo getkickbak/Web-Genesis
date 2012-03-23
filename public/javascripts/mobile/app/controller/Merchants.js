@@ -23,9 +23,9 @@ Ext.define('Genesis.controller.Merchants',
          pagePanel : 'merchantaccountview dataview[tag=menchantPagePanel]',
          merchantFeedContainer : 'merchantaccountview container[tag=merchantFeedContainer]',
          merchantDescContainer : 'merchantaccountview container[tag=merchantDescContainer]',
-         merchantDescPanel : 'merchantaccountview container[tag=merchantDescPanel]',
-         merchantAddress : 'merchantaccountview component[tag=merchantAddress]',
-         merchantStats : 'merchantaccountview formpanel[tag=merchantStats]',
+         //merchantDescPanel : 'merchantaccountview container[tag=merchantDescPanel]',
+         //merchantAddress : 'merchantaccountview component[tag=merchantAddress]',
+         //merchantStats : 'merchantaccountview formpanel[tag=merchantStats]',
          explore :
          {
             selector : 'merchantaccountexploreview',
@@ -43,7 +43,7 @@ Ext.define('Genesis.controller.Merchants',
       },
       control :
       {
-         'merchantaccountview' :
+         main :
          {
             activate : 'onMainActivate',
             deactivate : 'onMainDeactivate'
@@ -82,26 +82,29 @@ Ext.define('Genesis.controller.Merchants',
    },
    onMainActivate : function()
    {
-      var viewport = this.getViewport();
+      var viewport = this.getViewPortCntlr();
       var page = this.getMain();
-      var customerId = viewport.getCustomerId();
-      var venueId = viewport.getVenueId();
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var vrecord = Ext.StoreMgr.get('VenueStore').getById(venueId);
+      var vrecord = viewport.getVenue();
+      var crecord = viewport.getCustomer();
+      var customerId = viewport.getCustomer().getId();
+      var venueId = vrecord.getId();
       var merchantId = vrecord.getMerchant().getId();
-      var crecord = cstore.getById(merchantId);
+
+      var cvenue = viewport.getCheckinInfo().venue;
 
       // Refresh Merchant Panel Info
       this.getPagePanel().getStore().setData(vrecord);
 
-      this.setCustomerStoreFilter(customerId, merchantId);
+      /*
       page.query('component[tag=photo]')[0].setData(
       {
          photoUrl : vrecord.getMerchant().get('icon_url')
       });
+      */
 
-      if(viewport.getCheckinInfo().venueId == venueId)
+      if(cvenue && (cvenue.getId() == venueId))
       {
+         /*
          page.query('formpanel')[0].setValues(
          {
             lastCheckin : crecord.getLastCheckin().get('time'),
@@ -110,25 +113,24 @@ Ext.define('Genesis.controller.Merchants',
             ptsSpent : 0,
             ptsAvail : crecord.get('points')
          });
+         */
          this.getMerchantDescContainer().hide();
          this.getMerchantFeedContainer().show();
-         this.getMerchantAddress().hide();
-         this.getMerchantStats().show();
+         //this.getMerchantAddress().hide();
+         //this.getMerchantStats().show();
       }
       else
       {
          this.getMerchantFeedContainer().hide();
-         this.getMerchantDescPanel().setData(vrecord.getMerchant());
+         //this.getMerchantDescPanel().setData(vrecord.getMerchant());
          this.getMerchantDescContainer().show();
-         this.getMerchantAddress().setData(vrecord.getData(true));
-         this.getMerchantAddress().show();
-         this.getMerchantStats().hide();
+         //this.getMerchantAddress().setData(vrecord.getData(true));
+         //this.getMerchantAddress().show();
+         //this.getMerchantStats().hide();
       }
 
-      var cvenueId = viewport.getCheckinInfo().venueId;
-      var show = (venueId != cvenueId) && (cvenueId > 0);
-      this.getMainBtn()[show ? 'show' : 'hide']();
-      
+      this.getMainBtn()[(cvenue && (cvenue.getId() != vrecord.getId())) ? 'show' : 'hide']();
+
       //
       // Scroll to the Top of the Screen
       //
@@ -159,9 +161,6 @@ Ext.define('Genesis.controller.Merchants',
    // --------------------------------------------------------------------------
    onPageActivate : function()
    {
-      var venueId = viewport.getVenueId();
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var vrecord = Ext.StoreMgr.get('VenueStore').getById(venueId);
    },
    onPageDeactivate : function()
    {

@@ -1,24 +1,38 @@
 Ext.define('Genesis.controller.MainPage',
 {
    extend : 'Genesis.controller.ControllerBase',
-   requires : ['Ext.data.Store'],
+   requires : ['Ext.data.Store', 'Genesis.model.EarnPrize'],
    statics :
    {
       mainPage_path : '/mainPage',
-      loginPage_path : '/loginPage'
+      loginPage_path : '/loginPage',
+      sign_in_path : '/sign_in',
+      sign_out_path : '/sign_out',
    },
    xtype : 'mainPageCntlr',
-   models : ['frontend.MainPage', 'EligibleReward', 'Customer', 'User'],
    config :
    {
+      models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'EligibleReward', 'Customer', 'User', 'Merchant', 'EarnPrize', 'CustomerReward'],
       refs :
       {
          // Login Page
          login :
          {
-            selector : 'loginPageview',
+            selector : 'loginpageview',
             autoCreate : true,
             xtype : 'loginpageview'
+         },
+         signin :
+         {
+            selector : 'signinpageview',
+            autoCreate : true,
+            xtype : 'signinpageview'
+         },
+         createAccount :
+         {
+            selector : 'createaccountpageview',
+            autoCreate : true,
+            xtype : 'createaccountpageview'
          },
          // Main Page
          main :
@@ -33,10 +47,36 @@ Ext.define('Genesis.controller.MainPage',
       },
       control :
       {
-         'loginPageview' :
+         login :
          {
-            select : 'onLoginItemSelect'
+            activate : 'onLoginActivate',
+            deactivate : 'onLoginDeactivate'
          },
+         'actionsheet button[tag=facebook]' :
+         {
+            tap : 'onFacebookTap'
+         },
+         'actionsheet button[tag=createAccount]' :
+         {
+            tap : 'onCreateAccountTap'
+         },
+         'actionsheet button[tag=signIn]' :
+         {
+            tap : 'onSignInTap'
+         },
+         'signinpageview button[tag=login]' :
+         {
+            tap : 'onSignInSubmit'
+         },
+         'createaccountpageview button[tag=createAccount]' :
+         {
+            tap : 'onCreateAccountSubmit'
+         },
+         'actionsheet button[tag=logout]' :
+         {
+            tap : 'onLogoutTap'
+         },
+
          'mainpageview dataview' :
          {
             //itemtap : 'onItemTap',
@@ -44,7 +84,7 @@ Ext.define('Genesis.controller.MainPage',
             itemtouchstart : 'onItemTouchStart',
             itemtouchend : 'onItemTouchEnd'
          },
-         'mainpageview' :
+         main :
          {
             activate : 'onActivate',
             deactivate : 'onDeactivate'
@@ -72,18 +112,20 @@ Ext.define('Genesis.controller.MainPage',
          model : 'Genesis.model.User',
          autoLoad : false
       });
-      Ext.regStore('CustomerStore',
-      {
-         model : 'Genesis.model.Customer',
-         autoLoad : true
-      });
       //
-      // Store storing the Venue currently viewing
+      // Prizes that a User Earned
       //
-      Ext.regStore('VenueStore',
+      Ext.regStore('MerchantPrizeStore',
       {
-         model : 'Genesis.model.Venue',
-         autoLoad : false
+         model : 'Genesis.model.EarnPrize',
+         autoLoad : false,
+         sorters : [
+         {
+            sorterFn : function(o1, o2)
+            {
+               return o2.getMerchant().getId() - o1.getMerchant().getId();
+            }
+         }]
       });
       //
       // Store storing the Customer's Eligible Rewards at a Venue
@@ -94,7 +136,7 @@ Ext.define('Genesis.controller.MainPage',
          model : 'Genesis.model.EligibleReward',
          autoLoad : false
       });
-      console.log("MainPage Init");
+      console.log("MainPage Controller Init");
    },
    // --------------------------------------------------------------------------
    // MainPage
@@ -138,61 +180,8 @@ Ext.define('Genesis.controller.MainPage',
    },
    onActivate : function(c, eOpts)
    {
-      var viewport = this.getViewport();
-      var show = viewport.getCheckinInfo().venueId > 0;
-
-      var carousel = this.getMainCarousel();
-      carousel.removeAll(true);
-
-      var items = Ext.StoreMgr.get('MainPageStore').getRange();
-      var list = Ext.Array.clone(items);
-      if(!show)
-      {
-         Ext.Array.forEach(list, function(item, index, all)
-         {
-            switch (item.get('pageCntlr'))
-            {
-               case 'MainPage' :
-               {
-                  Ext.Array.remove(items, item);
-                  break;
-               }
-            }
-         });
-      }
-      for(var i = 0; i < Math.ceil(items.length / 6); i++)
-      {
-         carousel.add(
-         {
-            xtype : 'dataview',
-            cls : 'mainMenuSelections',
-            scrollable : false,
-            deferInitialRefresh : false,
-            store :
-            {
-               model : 'Genesis.model.frontend.MainPage',
-               data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
-            },
-            itemTpl : Ext.create('Ext.XTemplate',
-            // @formatter:off
-            '<div class="mainPageItemWrapper">', '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>', '<div class="photoName">{name}</div>', '</div>',
-            // @formatter:on
-            {
-               getPhoto : function(photoURL)
-               {
-                  return Ext.isEmpty(photoURL) ? Ext.BLANK_IMAGE_URL : photoURL;
-               }
-            }),
-            autoScroll : true
-         });
-      }
-      if(carousel.getInnerItems().length > 0)
-      {
-         carousel.setActiveItem(0);
-      }
       this.getInfoBtn().show();
       this.getMainBtn().hide();
-
    },
    onDeactivate : function(c, eOpts)
    {
@@ -201,10 +190,174 @@ Ext.define('Genesis.controller.MainPage',
    // --------------------------------------------------------------------------
    // Login Page
    // --------------------------------------------------------------------------
-   onLoginItemSelect : function(d, model, eOpts)
+   onLoginActivate : function(c, eOpts)
    {
-      d.deselect([model]);
-      return false;
+      this.getInfoBtn().hide();
+      this.getMainBtn().hide();
+   },
+   onLoginDeactivate : function(c, eOpts)
+   {
+   },
+   onLogoutTap : function(b, e, eOpts)
+   {
+      var viewport = this.getViewport();
+      var vport = this.getViewPortCntlr();
+      vport.setLoggedIn(false);
+      b.parent.hide();
+      //
+      // Logout of Facebook
+      //
+      viewport.setFadeAnimation();
+      viewport.reset(this);
+      vport.onFeatureTap('MainPage', 'login');
+   },
+   onFacebookTap : function(b, e, eOpts)
+   {
+      Customer['setFbLoginUrl']();
+      if(!Ext.StoreMgr.get('CustomerStore'))
+      {
+         this.loginCommon();
+      }
+      Genesis.constants.fbLogin(function(params)
+      {
+         Ext.StoreMgr.get('CustomerStore').load(
+         {
+            params :
+            {
+               fullname : params.name,
+               username : params.email,
+               gender : params.gender,
+               faebook_id : params.facebook_id,
+               faecbook_uid : params.username,
+               birthday : params.birthday
+            }
+         });
+      });
+   },
+   onCreateAccountTap : function(b, e, eOpts)
+   {
+      this.pushView(this.getCreateAccount());
+   },
+   onSignInTap : function(b, e, eOpts)
+   {
+      this.pushView(this.getSignin());
+   },
+   // --------------------------------------------------------------------------
+   // SignIn and CreateAccount Page
+   // --------------------------------------------------------------------------
+   loginCommon : function()
+   {
+      Ext.regStore('CustomerStore',
+      {
+         model : 'Genesis.model.Customer',
+         autoLoad : false,
+         listeners :
+         {
+            scope : this,
+            "load" : function(store, records, successful, operation, eOpts)
+            {
+               if(successful)
+               {
+                  var vport = this.getViewPortCntlr();
+                  vport.setLoggedIn(true);
+                  this.getViewport().reset(this);
+                  vport.onFeatureTap('MainPage');
+               }
+            },
+            'metachange' : function(store, proxy, eOpts)
+            {
+               // Load Prizes into DataStore
+               var prizes = proxy.getReader().metaData['prizes'];
+               if(prizes)
+               {
+                  Ext.StoreMgr.get('MerchantPrizeStore').setData(prizes);
+               }
+            }
+         },
+         grouper :
+         {
+            groupFn : function(record)
+            {
+               return record.getMerchant().get('name');
+            }
+         },
+         sorters : [
+         {
+            sorterFn : function(o1, o2)
+            {
+               return o2.getMerchant().get('name') - o1.getMerchant().get('name');
+            }
+         }]
+      });
+   },
+   onCreateAccountSubmit : function(b, e, eOpts)
+   {
+      var account = this.getCreateAccount();
+      var values = account.getValues();
+      var user = Ext.create('Genesis.model.frontend.Account', values);
+      var validateErrors = user.validate();
+
+      if(!validateErrors.isValid())
+      {
+         var field = validateErrors.first();
+         var label = Ext.ComponentQuery.query('field[name='+field.getField()+']')[0].getLabel();
+         Ext.device.Notification.show(
+         {
+            title : 'Oops',
+            message : label + ' ' + field.getMessage() + ((Genesis.constants.isNative()) ? '.<br/>' : '\n') + 'Please Try Again'
+         });
+      }
+      else
+      {
+         Customer['setCreateAccountUrl']();
+         if(!Ext.StoreMgr.get('CustomerStore'))
+         {
+            this.loginCommon();
+         }
+         Ext.StoreMgr.get('CustomerStore').load(
+         {
+            params :
+            {
+               fullname : values.name,
+               username : values.username,
+               password : values.password
+            }
+         });
+      }
+   },
+   onSignInSubmit : function(b, e, eOpts)
+   {
+      var signin = this.getSignin();
+      var values = signin.getValues();
+      var user = Ext.create('Genesis.model.frontend.Signin', values);
+      var validateErrors = user.validate();
+
+      if(!validateErrors.isValid())
+      {
+         var field = validateErrors.first();
+         var label = Ext.ComponentQuery.query('field[name='+field.getField()+']')[0].getLabel();
+         Ext.device.Notification.show(
+         {
+            title : 'Oops',
+            message : label + ' ' + field.getMessage() + ((Genesis.constants.isNative()) ? '.<br/>' : '\n') + 'Please Try Again'
+         });
+      }
+      else
+      {
+         Customer['setLoginUrl']();
+         if(!Ext.StoreMgr.get('CustomerStore'))
+         {
+            this.loginCommon();
+         }
+         Ext.StoreMgr.get('CustomerStore').load(
+         {
+            params :
+            {
+               username : values.username,
+               password : values.password
+            }
+         });
+      }
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
@@ -215,8 +368,12 @@ Ext.define('Genesis.controller.MainPage',
       {
          case 'main' :
          {
-            var cntlr = this.getViewPortCntlr();
-            cntlr.onMainButtonTap();
+            this.getViewPortCntlr().onMainButtonTap();
+            break;
+         }
+         case 'login' :
+         {
+            this.pushView(this.getLogin());
             break;
          }
       }
@@ -229,13 +386,6 @@ Ext.define('Genesis.controller.MainPage',
    {
       var cntlr = this.getViewPortCntlr();
       this.pushView(this.getMainPage());
-      //
-      // Hide the initial Back Button on first page
-      //
-      if(!cntlr.loggedIn)
-      {
-         this.getViewport().getNavigationBar().getBackButton().hide();
-      }
       console.log("MainPage Opened");
    },
    isOpenAllowed : function()

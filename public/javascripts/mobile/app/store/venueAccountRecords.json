@@ -1,0 +1,245 @@
+{
+   "venues": [
+      {
+         "venue_id": 1,
+         "name": "The Runners Shop",
+         "address1": "180 Bloor Street West",
+         "address2": "",
+         "city": "Toronto",
+         "state": "Ontario",
+         "country": "Canada",
+         "zipcode": "M5C3C5",
+         "phone": "555-123-4567",
+         "website": "www.therunnersshop.com",
+         "latitude": 43.668842,
+         "longtitude": -79.394878,
+         "created_ts": "",
+         "update_ts": "",
+         "challenges": [
+            {
+               "type": "menu",
+               "name": "Menu",
+               "description": "Menu Description Text",
+               "require_verif": "true",
+               "points": 1,
+               "photo_url": "resources/img/sprites/menu.jpg"
+            }, {
+               "type": "checkin",
+               "name": "VIP",
+               "description": "VIP/Checkin Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/checkin.jpg"
+            }, {
+               "type": "photo",
+               "name": "Photo",
+               "description": "Photo Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/photo.jpg"
+            }, {
+               "type": "birthday",
+               "name": "Birthday",
+               "description": "Birthday Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/birthday.jpg"
+            }, {
+               "type": "referral",
+               "name": "Refer a Friend",
+               "description": "Referral Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/referral.jpg"
+            }, {
+               "type": "custom",
+               "name": "Mystery 1",
+               "description": "Custom Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": ""
+            }
+         ]
+      }, {
+         "venue_id": 2,
+         "name": "The Tim Hortons Coffee",
+         "address1": "181 Bloor Street West",
+         "address2": "",
+         "city": "Toronto",
+         "state": "Ontario",
+         "country": "Canada",
+         "zipcode": "M5C3C5",
+         "phone": "555-123-5678",
+         "website": "www.timhortons.com",
+         "latitude": 43.668842,
+         "longtitude": -79.394878,
+         "created_ts": "",
+         "update_ts": "",
+         "challenges": [
+            {
+               "type": "menu",
+               "name": "Menu",
+               "description": "Menu Description Text",
+               "require_verif": "true",
+               "points": 1,
+               "photo_url": "resources/img/sprites/menu.jpg"
+            }, {
+               "type": "checkin",
+               "name": "VIP",
+               "description": "VIP/Checkin Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/checkin.jpg"
+            }, {
+               "type": "photo",
+               "name": "Photo",
+               "description": "Photo Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/photo.jpg"
+            }, {
+               "type": "birthday",
+               "name": "Birthday",
+               "description": "Birthday Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/birthday.jpg"
+            }, {
+               "type": "referral",
+               "name": "Refer a Friend",
+               "description": "Referral Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/referral.jpg"
+            }, {
+               "type": "custom",
+               "name": "Mystery 1",
+               "description": "Custom Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": ""
+            }
+         ]
+      }, {
+         "venue_id": 3,
+         "name": "Photo Bo Ga",
+         "address1": "182 Bloor Street West",
+         "address2": "",
+         "city": "Toronto",
+         "state": "Ontario",
+         "country": "Canada",
+         "zipcode": "M5C3C5",
+         "phone": "555-234-5678",
+         "website": "www.phoboga.com",
+         "latitude": 43.668842,
+         "longtitude": -79.394878,
+         "created_ts": "",
+         "update_ts": "",
+         "challenges": [
+            {
+               "type": "menu",
+               "name": "Menu",
+               "description": "Menu Description Text",
+               "require_verif": "true",
+               "points": 1,
+               "photo_url": "resources/img/sprites/menu.jpg"
+            }, {
+               "type": "checkin",
+               "name": "VIP",
+               "description": "VIP/Checkin Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/checkin.jpg"
+            }, {
+               "type": "photo",
+               "name": "Photo",
+               "description": "Photo Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/photo.jpg"
+            }, {
+               "type": "birthday",
+               "name": "Birthday",
+               "description": "Birthday Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/birthday.jpg"
+            }, {
+               "type": "referral",
+               "name": "Refer a Friend",
+               "description": "Referral Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/referral.jpg"
+            }, {
+               "type": "custom",
+               "name": "Mystery 1",
+               "description": "Custom Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": ""
+            }
+         ]
+      }, {
+         "venue_id": 4,
+         "name": "Spring Rolls",
+         "address1": "183 Bloor Street West",
+         "address2": "",
+         "city": "Toronto",
+         "state": "Ontario",
+         "country": "Canada",
+         "zipcode": "M5C3C5",
+         "phone": "555-345-6789",
+         "website": "www.springrolls.com",
+         "latitude": 43.668842,
+         "longtitude": -79.394878,
+         "created_ts": "",
+         "update_ts": "",
+         "challenges": [
+            {
+               "type": "menu",
+               "name": "Menu",
+               "description": "Menu Description Text",
+               "require_verif": "true",
+               "points": 1,
+               "photo_url": "resources/img/sprites/menu.jpg"
+            }, {
+               "type": "checkin",
+               "name": "VIP",
+               "description": "VIP/Checkin Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/checkin.jpg"
+            }, {
+               "type": "photo",
+               "name": "Photo",
+               "description": "Photo Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/photo.jpg"
+            }, {
+               "type": "birthday",
+               "name": "Birthday",
+               "description": "Birthday Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/birthday.jpg"
+            }, {
+               "type": "referral",
+               "name": "Refer a Friend",
+               "description": "Referral Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": "resources/img/sprites/referral.jpg"
+            }, {
+               "type": "custom",
+               "name": "Mystery 1",
+               "description": "Custom Description Text",
+               "require_verif": "false",
+               "points": 1,
+               "photo_url": ""
+            }
+         ]
+      }
+   ]
+}

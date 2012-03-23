@@ -9,11 +9,13 @@ Ext.define('Genesis.model.Customer',
       belongsTo : [
       {
          model : 'Genesis.model.Merchant',
+         associationKey : 'merchant',
          getterName : 'getMerchant',
          setterName : 'setMerchant'
       },
       {
          model : 'Genesis.model.User',
+         associationKey : 'user',
          getterName : 'getUser',
          setterName : 'setUser'
       }],
@@ -28,22 +30,49 @@ Ext.define('Genesis.model.Customer',
       proxy :
       {
          type : 'ajax',
-         url : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json',
+         disableCaching : false,
+         defaultHeaders :
+         {
+            'If-None-Match' : ''
+         },
          reader :
          {
             type : 'json',
             rootProperty : 'customers'
          }
       },
-      fields : ['auth_code', 'qr_code', 'points', 'created_ts', 'update_ts', 'merchant_id', 'user_id'],
-      idProperty : 'merchant_id'
-   },
-   getMerchant : function()
-   {
-
+      fields : ['points', 'id'],
+      idProperty : 'id'
    },
    getUser : function()
    {
 
+   },
+   statics :
+   {
+      setFbLoginUrl : function()
+      {
+         this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+      },
+      setLoginUrl : function()
+      {
+         this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+      },
+      setCreateAccountUrl : function()
+      {
+         this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+      },
+      setVenueScanCheckinUrl : function()
+      {
+         this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
+      },
+      setVenueCheckinUrl : function()
+      {
+         this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
+      },
+      setVenueExploreUrl : function()
+      {
+         this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
+      }
    }
 });

@@ -61,10 +61,10 @@ JFQRCodeReader.prototype.getCode = function(filePath, server, successCallback, e
    switch (this.scanType)
    {
       case 'Nigma' :
-         PhoneGap.exec(successCallback, errorCallback, 'QRCodeReaderNigma', 'getCode', [options]);
+         Cordova.exec(successCallback, errorCallback, 'QRCodeReaderNigma', 'getCode', [options]);
          break;
       case 'RL' :
-         PhoneGap.exec(successCallback, errorCallback, 'QRCodeReaderRL', 'getCode', [options]);
+         Cordova.exec(successCallback, errorCallback, 'QRCodeReaderRL', 'getCode', [options]);
          break;
    }
 };
@@ -113,7 +113,7 @@ JFQRCodeReader.prototype._updateProgress = function(pluginResult)
     */
 }
 
-PhoneGap.addConstructor(function()
+Cordova.addConstructor(function()
 {
    if( typeof navigator.jfqrCodeReader == "undefined")
    {

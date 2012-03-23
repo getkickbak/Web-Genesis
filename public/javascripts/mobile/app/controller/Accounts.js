@@ -4,7 +4,7 @@ Ext.define('Genesis.controller.Accounts',
    requires : ['Ext.data.Store'],
    statics :
    {
-      checkin_path : '/checkin'
+      accounts_path : '/accounts'
    },
    xtype : 'accountsCntlr',
    config :
@@ -16,23 +16,20 @@ Ext.define('Genesis.controller.Accounts',
             selector : 'accountsview',
             autoCreate : true,
             xtype : 'accountsview'
-         }
+         },
+         accountsList : 'accountsview list[tag=accountsList]'
       },
       control :
       {
-         'accountsview' :
+         accounts :
          {
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
-         'accountsview list' :
+         accountsList :
          {
             select : 'onSelect',
             disclose : 'onDisclose'
-         },
-         'accountsview tabbar segmentedbutton[tag=accounts]' :
-         {
-            toggle : 'onViewToggle'
          }
       }
    },
@@ -40,7 +37,15 @@ Ext.define('Genesis.controller.Accounts',
    init : function()
    {
       this.callParent(arguments);
-      Ext.StoreMgr.get('AccountsStore').sort('sort_id', 'DESC');
+      //
+      // Venues for all the Associated with the Merchant Account
+      //
+      Ext.regStore('VenueAccountStore',
+      {
+         model : 'Genesis.model.Venue',
+         autoLoad : false
+      });
+      //Ext.StoreMgr.get('AccountsStore').sort('sort_id', 'DESC');
       console.log("Accounts Init");
    },
    // --------------------------------------------------------------------------
@@ -48,21 +53,13 @@ Ext.define('Genesis.controller.Accounts',
    // --------------------------------------------------------------------------
    onActivate : function()
    {
-      if(!this.loaded)
-      {
-         this.loadAccounts();
-      }
-      var sortbtns = this.getViewport().query('segmentedbutton[tag=accounts]')[0];
-      sortbtns.show();
       //
       // Scroll to the Top of the Screen
       //
-      this.getAccounts().getScrollable().getScroller().scrollTo(0, 0);
+      this.getAccountsList().getScrollable().getScroller().scrollTo(0, 0);
    },
    onDeactivate : function()
    {
-      var sortbtns = this.getViewport().query('segmentedbutton[tag=accounts]')[0];
-      sortbtns.hide();
    },
    onSelect : function(list, model, eOpts)
    {
@@ -72,63 +69,39 @@ Ext.define('Genesis.controller.Accounts',
    },
    onDisclose : function(list, record, target, index, e, eOpts)
    {
-      var controller = this.getApplication().getController('Checkins');
-      controller.mode = 'explore';
-      controller.onExploreDisclose(list, record, target, index, e, eOpts);
-      return true;
-   },
-   onViewToggle : function(container, button, pressed)
-   {
-      if(pressed)
-      {
-         var view = this.getAccounts().query('container[tag=accountsSelection]')[0];
-         var store = Ext.StoreMgr.get('AccountsStore');
-         switch(button.config.tag)
-         {
-            case 'usage' :
-            {
-               store.sort('sort_id', 'ASC');
-               view.setActiveItem(0);
-               break;
-            }
-            case 'alphabetical' :
-            {
-               store.sort('name', 'ASC');
-               view.setActiveItem(1);
-               break;
-            }
-         }
-      }
-      return true;
-   },
-   loadAccounts : function()
-   {
+      var me = this;
       //
-      // Normally, Retrieved UserId from login
+      // Load Venue Info
       //
-      //var userId = Ext.StoreMgr.get('UserStore).getAt(0).getId();
-      var userId = 1;
-      Ext.StoreMgr.get('AccountsStore').load(
+      Ext.StoreMgr.get('VenueAccountStore').load(
       {
-         parms :
-         {
-            user_id : userId,
-         },
          scope : this,
+         params :
+         {
+            'user_id' : record.getLastCheckin()['user_id'],
+            'merchant_id' : record.getMerchant()['merchant_id']
+         },
          callback : function(records, operation, success)
          {
             if(success)
             {
-               for(var i = 0; i < records.length; i++)
-               {
-                  records[i].data['sort_id'] = i;
-               }
-               this.loaded = true;
+               var controller = this.getApplication().getController('Checkins');
+               controller.mode = 'explore';
+               controller.onExploreDisclose(list, records[0], target, index, e, eOpts);
+               return true;
             }
             else
             {
+               Ext.device.Notification.show(
+               {
+                  title : 'Error',
+                  message : 'Error Loading Merchant Venues',
+                  callback : function(button)
+                  {
+                  }
+               });
             }
-         }
+         },
       });
    },
    // --------------------------------------------------------------------------

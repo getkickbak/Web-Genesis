@@ -56,6 +56,16 @@ $xlargeFontSize : 1.2em;
 body {
 }
 
+.bgImage {
+  background-image : url(../img/startup_640.jpg);
+  background-size : cover;
+}
+
+.prizeCheck {
+  background-image : url(../img/startup_640.jpg);
+  background-size : cover;  
+}
+
 .navigationBarTop, .navigationBarBottom {
    .x-button {
       &.x-iconalign-top, &.x-iconalign-bottom {
@@ -76,6 +86,13 @@ body {
       font-size:$largeFontSize;
    }
 
+}
+
+//------------------------------------------------------------------------------
+// CSS Overrides for default graphics
+//------------------------------------------------------------------------------
+.x-emptytext {
+  
 }
 //------------------------------------------------------------------------------
 // Utility CSS
@@ -144,6 +161,46 @@ body {
 }
 .bold {
   font-weight:bold;
+}
+
+//------------------------------------------------------------------------------
+// ListField
+//------------------------------------------------------------------------------
+
+@mixin listmark($color: #000){
+  @extend .x-listmark-base;
+  background-color: $color;
+}
+
+// Ext.field.Select
+.x-listmark-base {
+   @include insertion(1em, 1em, 50%, auto);
+   right: ($form-spacing + .1em);
+   -webkit-mask-size: 1em;
+   -webkit-mask-image: theme_image($theme-name, "disclosure2.png");
+   margin-top: -.5em;
+}
+  
+// Create the dropdown arrow
+// for select fields
+.x-field-list {
+   @extend .x-field-select;
+   .x-component-outer {
+      &:after {
+         @include listmark($form-light);
+         z-index: 2;
+      }
+      &:before {
+         @if $include-highlights { background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(rgba($form-field-bg-color, 0)), color-stop(.5, rgba($form-field-bg-color, 1))); }
+      }
+   }
+   .facebook {
+      .x-field-input .x-clear-icon {
+         position:absolute;
+         background: theme_image("../../../../../resources/images/"+$theme-name, "facebook.png") no-repeat 50% 50%;
+         z-index:3;
+      }
+   }
 }
 
 //------------------------------------------------------------------------------
@@ -246,6 +303,11 @@ body {
    }
 }
 
+.x-badge {
+   &.round {
+      @if $include-border-radius { @include border-radius(0.5em); }
+   }
+}
 @include sencha-button-ui('yellow', darken(saturate(yellow, 55%), 10%));
 @include sencha-button-ui('green', darken(saturate(green, 55%), 10%));
 @include sencha-button-ui('red', darken(saturate(red, 55%), 10%));
@@ -466,7 +528,7 @@ body {
 }
 
 //------------------------------------------------------------------------------
-// Merchant Account Page
+// Merchant Account Page and Merchant Prize Page
 //------------------------------------------------------------------------------
 .merchantPagePanel {
    //background-image: url('http://img1.jurko.net/wall/paper/donald_duck_4.jpg');
@@ -494,6 +556,56 @@ body {
    }
 }
 
+//------------------------------------------------------------------------------
+// Merchant Account Page and Merchant Prize Page
+//------------------------------------------------------------------------------
+.rewardItem {
+   .title {
+      font-size:$xlargeFontSize;
+      font-weight:bold;
+      min-height : 3.6em;
+      text-align:center;
+   }
+   .reward {
+      margin:auto;
+      text-align:center;
+      img {
+         width : $icon-size*3;
+         max-height : $icon-size*3;
+      }
+   }
+   .info {
+      position:relative;
+      padding:$panelTopGap $panelGap $panelTopGap*2 $panelGap;
+      min-height:6.50em;
+      .photo {
+         position:absolute;
+         right : 0.8em;
+         img {
+            width : $icon-size;
+            max-height : $icon-size;
+         }
+      }
+      .infoWrapper {
+         padding-right:$icon-size + 10px;
+         width:16em;
+         min-height:$icon-size*2;
+         .name {
+            font-size:$normalFontSize;
+            font-weight:bold;
+            @include ellipsis;
+            padding-bottom : $panelTopGap;
+         }
+         .disclaimer {
+            font-size:$smallFontSize;
+         }
+         .date {
+            font-size:$normalFontSize;
+            font-weight:bold;
+         }
+      }
+   }
+}
 //------------------------------------------------------------------------------
 // Merchant Account
 //------------------------------------------------------------------------------
@@ -701,73 +813,29 @@ body {
          line-height:$icon-size;
       }
    }
-   .redemptionsView {
-      .redemptionsDataviewWrapper {
-         @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
-         @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
-         background-color : #DDDAC4;
-         /*
-         .x-dataview-inner > div[id|=ext-element] {
-            display:table;
-         }
-         */
-      }
-      .redemptionsDataview {
-         height:4em;
-         background:transparent;
-         .x-list-item .x-list-item-label {
-            border : 0;
-            margin : 0;
-            padding : 0;
-         }
-         .x-list-item {
-            //display:table-cell;
-            //vertical-align:middle;
-            .photo {
-               width:$icon-size + 10;
-               height:$icon-size + 10;
-               margin: $panelGap*0.25;
-               @if $include-border-radius { @include border-radius(.4em) }
-               border: 2px solid transparent;
-               padding:6px;
-            }
-            &.x-item-selected .photo {
-               border-color:darken($list-bg-color, 15%);
-            }
-         }
-      }
-      .desc {
-         min-height:3em;
-         .x-innerhtml {
-            font-size:$normalFontSize;
-         }
-      }
-      .ptsContainer {
-         height:$icon-size;
-         .photo img {
-            width:$icon-size;
-            margin-left:$panelGap;
-         }
-         .points .x-innerhtml {
-            line-height:$icon-size;
-            font-weight:bold;
-            font-size:$xlargeFontSize*2;
-            text-align:center;
-         }
-      }
-      .x-inner {
-         margin:0 !important;
-         padding:0 !important;
-      }
-      .redemptionsList {
-         @extend .listScrollIndexWrapper;
-         .listItemDetailsWrapper {
-            width:13em !important;
-         }
+   .redemptionsList {
+      @extend .listScrollIndexWrapper;
+      .listItemDetailsWrapper {
+         width:13em !important;
       }
    }
 }
 
+//------------------------------------------------------------------------------
+// Accounts Page
+//------------------------------------------------------------------------------
+.merchatPrizesList {
+   @extend .listScrollWrapper;
+   &.x-list .x-list-item .x-list-item-label {
+      .listItemDetailsWrapper {
+         .itemTitle {
+            line-height : $icon-size;
+            font-size:$largeFontSize;
+            font-weight:bold;
+         }
+      }
+   }
+}
 //------------------------------------------------------------------------------
 // Accounts Page
 //------------------------------------------------------------------------------
@@ -778,12 +846,16 @@ body {
    .accountsPanelHdr:first-child {
       margin-top:$panelTopGap;
    }
-   .accountsPanel, .accountsList {
-     @extend .listScrollWrapper;
-   }
-   .accountsPanel {
+   .accountsList {
+      @extend .listScrollWrapper;
       .listItemDetailsWrapper {
          width:13em !important;
+         .points {
+            text-align:right;
+            font-size:$xlargeFontSize;
+            font-weight:bold;
+            line-height:$icon-size;
+         }
       }
    }
 }

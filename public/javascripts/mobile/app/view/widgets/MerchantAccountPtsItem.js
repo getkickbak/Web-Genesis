@@ -74,19 +74,21 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
    },
    setDataBackground : function(data)
    {
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var viewport = Ext.ComponentQuery.query('viewportview')[0];
-      var customerId = viewport.getCustomerId();
-      var crecord = cstore.getById(data.Merchant['merchant_id']);
+      var viewport = _application.getController('Viewport');
+      var customer = viewport.getCustomer();
+      //var crecord = cstore.getById(data.Merchant['merchant_id']);
       var bg = this.query('container[tag=background]')[0];
 
       // Update Background Photo
       this.setHeight(Ext.Viewport.getSize().width);
-      bg.setStyle('background-image:url(' + data.Merchant['photo_url'] + ')');
+      bg.setStyle(
+      {
+         'background-image' : 'url(' + data.Merchant['photo_url'] + ')'
+      });
 
       //Update Points
       var points = this.query('component[tag=points]')[0];
-      points.setData(crecord.getData());
+      points.setData(customer.getData());
    },
    /**
     * Updates this container's child items, passing through the dataMap.

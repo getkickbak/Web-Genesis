@@ -1,11 +1,14 @@
 Ext.define('Genesis.navigation.Bar',
 {
    extend : 'Ext.navigation.Bar',
+   requires : ['Ext.fx.layout.card.Style'],
    config :
    {
       defaultBackButtonText : 'Back',
       altBackButtonText : 'Close',
-      mode : 'slide'
+      mode : 'slide',
+      callbackFn : Ext.emptyFn,
+      hideNavBar : true
    },
    /**
     * @private
@@ -43,6 +46,7 @@ Ext.define('Genesis.navigation.Bar',
          backButton.hide();
       }
 
+      me.setMode(view.getFadeMode() ? 'fade' : 'slide');
       me.titleComponent.setTitle(me.getTitleText());
       if(animation && animation.isAnimation && view.isPainted() && me.elementGhost)
       {
@@ -75,6 +79,11 @@ Ext.define('Genesis.navigation.Bar',
             //this.popBackButton(this.getBackButtonText());
          }
       }
+      if(me.getHideNavBar())
+      {
+         me.hide();
+      }
+      me.getCallbackFn()();
    },
    /**
     * @private
@@ -99,6 +108,7 @@ Ext.define('Genesis.navigation.Bar',
       {
          titleComponent.setWidth(proxy.title.width);
       }
+      me.setMode(view.getFadeMode() ? 'fade' : 'slide');
       if(animation && animation.isAnimation && view.isPainted() && me.elementGhost)
       {
          me.popTbAnimated(me.getBackButtonText(), this.controller);
@@ -108,6 +118,11 @@ Ext.define('Genesis.navigation.Bar',
          me.popTb(me.getBackButtonText());
       }
       me.titleComponent.setTitle(me.getTitleText());
+      if(me.getHideNavBar())
+      {
+         me.hide();
+      }
+      me.getCallbackFn()();
    },
    /**
     * Calculates and returns the position values needed for the back button when you are pushing a title.
@@ -116,29 +131,56 @@ Ext.define('Genesis.navigation.Bar',
    getTbAnimationProperties : function()
    {
       var me = this, element = me.renderElement;
-      switch (this.getMode())
+      switch (me.getMode())
       {
          case 'slide' :
          {
-            if(!this.slideAnimation)
+            if(!me.slideAnimation)
             {
-               this.slideAnimation = new Ext.fx.layout.card.Slide(
+               me.slideAnimation = new Ext.fx.layout.card.Slide(
                {
                   direction : 'left'
                });
+               me.slideAnimation.getOutAnimation().on('animationend', function()
+               {
+                  me.elementGhost.destroy();
+                  delete me.elementGhost;
+                  /*
+                   if(!title)
+                   {
+                   backButton.setText(null);
+                   }
+                   */
+                  me.getCallbackFn()();
+               }, me);
             }
-            this.slideAnimation.setReverse(false);
-            return this.slideAnimation;
+            me.slideAnimation.setReverse(false);
+            return me.slideAnimation;
          }
          case 'fade' :
          {
-            if(!this.fadeAnimation)
+            if(!me.fadeAnimation)
             {
-               this.fadeAnimation = new Ext.fx.layout.card.Fade();
+               me.fadeAnimation = new Ext.fx.layout.card.Fade();
+               me.fadeAnimation.getOutAnimation().on('animationend', function()
+               {
+                  me.elementGhost.destroy();
+                  delete me.elementGhost;
+                  /*
+                   if(!title)
+                   {
+                   backButton.setText(null);
+                   }
+                   */
+                  me.getCallbackFn()();
+               }, me);
             }
-            this.fadeAnimation.setReverse(false);
-            return this.fadeAnimation;
+            me.fadeAnimation.setReverse(false);
+            return me.fadeAnimation;
          }
+         default :
+            console.log('Unkown Special Effect - [' + me.getMode() + ']');
+            return me.getLayout().getAnimation();
       }
 
    },
@@ -170,7 +212,6 @@ Ext.define('Genesis.navigation.Bar',
       {
          backButton.setWidth(buttonTo.width);
       }
-
    },
    /**
     * Pushes a new back button into the bar with animations
@@ -196,11 +237,11 @@ Ext.define('Genesis.navigation.Bar',
          backButton.setWidth(buttonTo.width);
       }
 
-      me.onActiveItemChange.call(properties, null, me.renderElement, me.elementGhost, null, controller, function()
+      me.onActiveItemChange.call(properties, null, me,
       {
-         me.elementGhost.destroy();
-         delete me.elementGhost;
-      });
+         renderElement : me.elementGhost,
+         isPainted : me.isPainted
+      }, null, controller);
    },
    /**
     * Pops the back button with no animations
@@ -262,15 +303,11 @@ Ext.define('Genesis.navigation.Bar',
          backButton.setWidth(buttonTo.width);
       }
 
-      me.onActiveItemChange.call(properties, null, me.renderElement, me.elementGhost, null, controller, function()
+      me.onActiveItemChange.call(properties, null, me,
       {
-         me.elementGhost.destroy();
-         delete me.elementGhost;
-         if(!title)
-         {
-            backButton.setText(null);
-         }
-      });
+         renderElement : me.elementGhost,
+         isPainted : me.isPainted
+      }, null, controller);
    },
    /**
     * This creates a proxy of the whole navigation bar and positions it out of the view.
@@ -406,39 +443,12 @@ Ext.define('Genesis.navigation.Bar',
       this.lastAnimationProperties =
       {
       };
-      this.animating = false;
    },
    //
    // Set "this" as Ext.fx.layout.card.* object
    //
-   onActiveItemChange : function(cardLayout, inElement, outElement, options, controller, onEnd)
+   onActiveItemChange : function(cardLayout, newItem, oldItem, options, controller)
    {
-      var inAnimation = this.getInAnimation(), outAnimation = this.getOutAnimation(), inElement, outElement;
-
-      if(inElement && outElement)
-      {
-         inAnimation.setElement(inElement);
-         outAnimation.setElement(outElement);
-
-         outAnimation.setOnBeforeEnd(function(element, interrupted)
-         {
-            if(interrupted || Ext.Animator.hasRunningAnimations(element))
-            {
-               controller.firingArguments[1] = null;
-               controller.firingArguments[2] = null;
-            }
-         });
-         outAnimation.setOnEnd(function()
-         {
-            controller.resume();
-            onEnd();
-         });
-
-         inElement.dom.style.setProperty('visibility', 'hidden', '!important');
-         //newItem.show();
-
-         Ext.Animator.run([outAnimation, inAnimation]);
-         controller.pause();
-      }
+      Ext.fx.layout.card.Style.prototype.onActiveItemChange.call(this, cardLayout, newItem, oldItem, options, controller);
    }
 });

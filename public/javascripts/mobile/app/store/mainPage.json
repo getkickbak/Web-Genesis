@@ -9,7 +9,7 @@
          "name": "Settings",
          "photo_url": "resources/img/sprites/settings.jpg",
          "desc": "Settings",
-         "pageCntlr": "UserProfile"
+         "pageCntlr": "Settings"
       }, {
          "name": "Check-ins",
          "photo_url": "resources/img/sprites/checkin.jpg",
@@ -28,6 +28,11 @@
          "desc": "Main Menu for your Checked-in Venue",
          "pageCntlr": "MainPage",
          "subFeature": "main"
+      }, {
+         "name": "Prizes",
+         "photo_url": "resources/img/sprites/prize.jpg",
+         "desc": "Prizes Won by you",
+         "pageCntlr": "Prizes"
       }
    ]
 }

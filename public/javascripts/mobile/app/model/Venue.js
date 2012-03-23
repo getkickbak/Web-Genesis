@@ -32,6 +32,11 @@ Ext.define('Genesis.model.Venue',
       proxy :
       {
          type : 'ajax',
+         disableCaching : false,
+         defaultHeaders :
+         {
+            'If-None-Match' : ''
+         },
          url : Ext.Loader.getPath("Genesis") + "/store/" + 'checkinRecords.json',
          reader :
          {

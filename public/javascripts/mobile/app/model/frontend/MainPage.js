@@ -13,6 +13,11 @@ Ext.define('Genesis.model.frontend.MainPage',
             rootProperty : 'features'
          },
          type : 'ajax',
+         disableCaching : false,
+         defaultHeaders :
+         {
+            'If-None-Match' : ''
+         },
          url : Ext.Loader.getPath("Genesis") + "/store/" + 'mainPage.json'
       }
    }

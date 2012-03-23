@@ -5,19 +5,15 @@ Ext.define('Genesis.view.Viewport',
    xtype : 'viewportview',
    config :
    {
+      fadeMode : false,
+      hideNavBar : false,
+      enableAnim : true,
       autoDestroy : false,
-      cls : 'viewport',
+      cls : 'viewport bgImage',
       fullscreen : true,
       useTitleForBackButtonText : false,
       defaultBackButtonText : 'Back',
       altBackButtonText : 'Close',
-      venueId : 0,
-      customerId : 0,
-      checkinInfo :
-      {
-         venueId : 0,
-         customerId : 0
-      },
       //--------------------------------------------------------------------
       // Navigation Toolbar
       //--------------------------------------------------------------------
@@ -42,12 +38,12 @@ Ext.define('Genesis.view.Viewport',
          },
          items : [
          /*{
-            align : 'left',
-            tag : 'close',
-            hidden : true,
-            text : 'Close'
-         },
-         */
+          align : 'left',
+          tag : 'close',
+          hidden : true,
+          text : 'Close'
+          },
+          */
          {
             align : 'right',
             iconCls : 'share',
@@ -127,17 +123,17 @@ Ext.define('Genesis.view.Viewport',
                      hideOnMaskTap : false,
                      defaults :
                      {
+                        xtype : 'button',
                         defaultUnit : 'em'
                      },
                      items : [
                      {
                         margin : '0 0 0.5 0',
                         text : 'Logout',
-                        handler : Ext.emptyFn
+                        tag : 'logout'
                      },
                      {
                         margin : '0.5 0 0 0',
-                        xtype : 'button',
                         text : 'Cancel',
                         scope : this,
                         handler : function()
@@ -167,6 +163,12 @@ Ext.define('Genesis.view.Viewport',
             align : 'right',
             tag : 'done',
             text : 'Done',
+            hidden : true
+         },
+         {
+            align : 'right',
+            tag : 'redeem',
+            text : 'Redeem',
             hidden : true
          }]
       },
@@ -198,18 +200,25 @@ Ext.define('Genesis.view.Viewport',
    initialize : function()
    {
       this.stack = [];
-      this.slideTop = new Ext.fx.layout.Card(
+      this.fadeAnimation =
       {
-         duration : 300,
-         easing : 'ease-out',
-         type : 'slide',
-         direction : 'top'
-      })
-      this.slideTop.on('animationend', this.onAnimationEnd, this);
+         type : 'fade',
+         outAnimation :
+         {
+            preserveEndState : false,
+            replacePrevious : true,
+            listeners :
+            {
+               scope : this,
+               animationend : 'resetFadeAnimation'
+            }
+         }
+      };
+
       this.callParent(arguments);
 
       var layout = this.getLayout(), defaultAnimation = layout.getAnimation();
-      defaultAnimation.getOutAnimation().on('animationend', 'resetAnimationCfg', this);
+      defaultAnimation.getOutAnimation().on('animationend', 'resetAnimation', this);
 
    },
    // @private
@@ -236,17 +245,18 @@ Ext.define('Genesis.view.Viewport',
 
       return Ext.factory(config, Genesis.navigation.Bar, this.getNavigationBar());
    },
-   resetAnimationCfg : function()
+   resetAnimation : function()
    {
-      if(!this.getActiveItem().getXTypes().match('viewbase'))
+      var xtypes = this.getActiveItem().getXTypes();
+      if(this.getFadeMode())
       {
-         var layout = this.getLayout(), defaultAnimation;
-         defaultAnimation = layout.getAnimation();
+         var defaultAnimation = this.getLayout().getAnimation(0);
          defaultAnimation.getInAnimation().setDirection(this.defaultInAnimationDir);
          defaultAnimation.getOutAnimation().setDirection(this.defaultOutAnimationDir);
+         this.setFadeMode(false);
       }
    },
-   changeAnimationCfg : function()
+   setAnimationDir : function(dir)
    {
       var layout = this.getLayout(), defaultAnimation;
       if(layout.isCard)
@@ -256,10 +266,27 @@ Ext.define('Genesis.view.Viewport',
          {
             this.defaultInAnimationDir = defaultAnimation.getInAnimation().getDirection();
             this.defaultOutAnimationDir = defaultAnimation.getOutAnimation().getDirection();
-            defaultAnimation.getInAnimation().setDirection('up');
-            defaultAnimation.getOutAnimation().setDirection('up');
+            defaultAnimation.getInAnimation().setDirection(dir);
+            defaultAnimation.getOutAnimation().setDirection(dir);
+            this.setFadeMode(true);
          }
       }
+   },
+   resetFadeAnimation : function()
+   {
+      if(this.getFadeMode())
+      {
+         var layout = this.getLayout();
+         layout.setAnimation(this.defaultAnimation);
+         this.setFadeMode(false);
+      }
+   },
+   setFadeAnimation : function()
+   {
+      var layout = this.getLayout();
+      this.defaultAnimation = layout.getAnimation();
+      layout.setAnimation(this.fadeAnimation);
+      this.setFadeMode(true);
    },
    /**
     * @private
@@ -270,19 +297,18 @@ Ext.define('Genesis.view.Viewport',
       me.stack.pop();
       var animation = me.getLayout().getAnimation();
       var view = me.stack[me.stack.length - 1];
+      var xtypes = me.getActiveItem().getXTypes();
 
-      if(animation && animation.isAnimation)
+      if(animation && animation.isAnimation && me.getEnableAnim())
       {
          animation.setReverse(true);
 
-         var slide = (me.getActiveItem() && !me.getActiveItem().getXTypes().match('viewbase'));
          var bar = me.getNavigationBar();
-         bar.setMode((slide) ? 'slide' : 'fade');
          bar.elementGhost = bar.createProxy(bar);
       }
 
-      me.getNavigationBar().onViewRemove(me, view, null);
       me.setActiveItem(view);
+      me.getNavigationBar().onViewRemove(me, view, null);
       if(animation && animation.isAnimation)
       {
          animation.setReverse(false);
@@ -308,7 +334,8 @@ Ext.define('Genesis.view.Viewport',
       var me = this;
       var animation = me.getLayout().getAnimation();
       var bar = me.getNavigationBar();
-      bar.controller = controller;
+      //bar.controller = controller || this.getEventDispatcher().controller;
+      bar.controller = this.getEventDispatcher().controller;
 
       // Default Title
       if((me.stack.length == 0) && (!bar.titleComponent.getTitle()))
@@ -316,10 +343,8 @@ Ext.define('Genesis.view.Viewport',
          bar.titleComponent.setTitle(view.config.title || bar.getDefaultBackButtonText());
       }
 
-      if(animation && animation.isAnimation)
+      if(animation && animation.isAnimation && me.getEnableAnim())
       {
-         var slide = (!view.getXTypes().match('viewbase'));
-         bar.setMode((slide) ? 'slide' : 'fade');
          bar.elementGhost = bar.createProxy(bar);
       }
 
@@ -350,22 +375,23 @@ Ext.define('Genesis.view.Viewport',
          // Get current Page Title name
          // Either it's the current venue we are browsing, or the one we checked-in
          //
-         var venueId = activeItem.venueId || this.getVenueId();
-         var vrecord = Ext.StoreMgr.get('VenueStore').getById(venueId);
+         var vrecord = activeItem.venue || ((activeItem.getMerchant) ? activeItem.getMerchant() : null) || _application.getController('Viewport').getVenue();
 
          activeItem.getInitialConfig().title = vrecord.get('name');
       }
-      activeItem.beforeActivate(activeItem, oldActiveItem);
       if(oldActiveItem)
       {
          oldActiveItem.beforeDeactivate(activeItem, oldActiveItem);
       }
+      activeItem.beforeActivate(activeItem, oldActiveItem);
+
       me.callParent(arguments);
-      activeItem.afterActivate(activeItem, oldActiveItem);
+
       if(oldActiveItem)
       {
          oldActiveItem.afterDeactivate(activeItem, oldActiveItem);
       }
+      activeItem.afterActivate(activeItem, oldActiveItem);
    },
    /**
     * @private
@@ -373,7 +399,7 @@ Ext.define('Genesis.view.Viewport',
     * item. If it does, it removes those views from the stack and returns `true`.
     * @return {Boolean} True if it has removed views
     */
-   onBeforePop : function(count)
+   beforePop : function(count)
    {
       var me = this;
       //var innerItems = this.getInnerItems();
@@ -428,7 +454,7 @@ Ext.define('Genesis.view.Viewport',
          else
          {
             //we need to reset the backButtonStack in the navigation bar
-            me.getNavigationBar().onBeforePop(count);
+            me.getNavigationBar().beforePop(count);
             /*
              toRemove = innerItems.splice(-count, count - 1);
              for( i = 0; i < toRemove.length; i++)
@@ -446,10 +472,11 @@ Ext.define('Genesis.view.Viewport',
 
       return false;
    },
-   pop : function(controller)
+   pop : function(count, controller)
    {
       var bar = this.getNavigationBar();
-      bar.controller = controller || this.getEventDispatcher().controller;
+      //bar.controller = controller || this.getEventDispatcher().controller;
+      bar.controller = this.getEventDispatcher().controller;
       this.callParent(arguments);
    },
    /**
@@ -461,6 +488,7 @@ Ext.define('Genesis.view.Viewport',
       //var count = me.getInnerItems().length;
       var count = me.stack.length;
 
-      this.pop(count, controller);
+      //this.pop(count, controller.getEventDispatcher().controller || this.getEventDispatcher().controller);
+      this.pop(count);
    }
 });

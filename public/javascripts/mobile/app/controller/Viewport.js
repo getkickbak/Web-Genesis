@@ -1,3 +1,5 @@
+var _application;
+
 Ext.define('Genesis.controller.Viewport',
 {
    extend : 'Genesis.controller.ControllerBase',
@@ -15,28 +17,30 @@ Ext.define('Genesis.controller.Viewport',
    //Page - Home Page for Feature
    config :
    {
+      loggedIn : false,
+      customer : null,
+      venue : null,
+      metaData : null,
+      checkinInfo :
+      {
+         venue : null,
+         customer : null,
+         metaData : null
+      },
       refs :
       {
-         view :
-         {
-            selector : 'viewportview'
-         },
-         shareBtn :
-         {
-            selector : 'viewportview button[tag=shareBtn]'
-         },
-         mainBtn :
-         {
-            selector : 'viewportview button[tag=main]'
-         }
+         view : 'viewportview',
+         shareBtn : 'viewportview button[tag=shareBtn]',
+         mainBtn : 'viewportview button[tag=main]',
+         checkInNowBar : 'container[tag=checkInNow]',
       },
       control :
       {
-         'viewportview' :
+         view :
          {
             push : 'onPush'
          },
-         'viewportview button[tag=shareBtn]' :
+         shareBtn :
          {
             tap : 'onShareMerchantTap'
          },
@@ -44,9 +48,13 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'popView'
          },
-         'viewportview button[tag=main]' :
+         mainBtn :
          {
             tap : 'onMainButtonTap'
+         },
+         'button[tag=checkInNow]' :
+         {
+            tap : 'onCheckinScanTap'
          },
          'tabbar[cls=navigationBarBottom] button[tag=info]' :
          {
@@ -55,6 +63,10 @@ Ext.define('Genesis.controller.Viewport',
          'tabbar[cls=navigationBarBottom] button[tag=home]' :
          {
             tap : 'onHomeButtonTap'
+         },
+         'tabbar[cls=navigationBarBottom] button[tag=prizes]' :
+         {
+            tap : 'onPrizesButtonTap'
          },
          'tabbar[cls=navigationBarBottom] button[tag=accounts]' :
          {
@@ -68,7 +80,7 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'onRewardsButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=redeem]' :
+         'tabbar[cls=navigationBarBottom] button[tag=redemption]' :
          {
             tap : 'onRedemptionsButtonTap'
          },
@@ -80,15 +92,26 @@ Ext.define('Genesis.controller.Viewport',
    },
    onFeatureTap : function(feature, subFeature)
    {
-      var controller = this.getApplication().getController(feature);
-      if(!subFeature)
+      var app = this.getApplication();
+      var controller = app.getController(feature);
+      app.dispatch(
       {
-         controller.openMainPage();
-      }
-      else
-      {
-         controller.openPage(subFeature);
-      }
+         action : (!subFeature) ? 'openMainPage' : 'openPage',
+         args : (!subFeature) ? [] : [subFeature],
+         controller : controller,
+         scope : controller
+      });
+      /*
+       var controller = app.getController(feature);
+       if(!subFeature)
+       {
+       controller.openMainPage();
+       }
+       else
+       {
+       controller.openPage(subFeature);
+       }
+       */
    },
    onShareMerchantTap : function(b, e, eOpts)
    {
@@ -98,12 +121,46 @@ Ext.define('Genesis.controller.Viewport',
       // Open Info ActiveSheet
       //this.getApplication().getView('Viewport').pushView(vp.getInfo());
    },
+   onCheckinScanTap : function(b, e, eOpts, einfo)
+   {
+      var me = this;
+      Ext.StoreMgr.get('CheckinExploreStore').load(
+      {
+         callback : function(records, operation, success)
+         {
+            if(success)
+            {
+               var app = this.getApplication();
+               var controller = app.getController('Checkins');
+               app.dispatch(
+               {
+                  action : 'onCheckinScanTap',
+                  controller : controller,
+                  args : arguments,
+                  scope : controller
+               });
+            }
+            else
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Warning',
+                  message : 'Error loading Nearby Venues'
+               });
+            }
+         },
+         scope : me
+      });
+   },
    onMainButtonTap : function(b, e, eOpts, eInfo)
    {
-      var viewport = this.getViewport();
-      var ccustomerId = viewport.getCheckinInfo().customerId;
-      var cvenueId = viewport.getCheckinInfo().venueId;
-      if((ccustomerId == 0) || (cvenueId == 0))
+      var viewport = this;
+      var vport = this.getViewport();
+      var ccustomer = viewport.getCheckinInfo().customer;
+      var cvenue = viewport.getCheckinInfo().venue;
+      var cmetaData = viewport.getCheckinInfo().metaData;
+
+      if(!ccustomer || !cvenue)
       {
          Ext.device.Notification.show(
          {
@@ -112,38 +169,39 @@ Ext.define('Genesis.controller.Viewport',
          });
          return;
       }
+      /*
+       Ext.Viewport.setMasked(
+       {
+       xtype : 'loadmask',
+       message : 'Reloading Merchant Info'
+       });
+       */
+      var ccntlr = this.getApplication().getController('Checkins');
+      var mcntlr = this.getApplication().getController('Merchants');
+      var estore = Ext.StoreMgr.get('EligibleRewardsStore');
+      var samePage = (mcntlr.getMainPage() == this.getViewport().getActiveItem());
 
-      var vrecord = Ext.StoreMgr.get('AccountsStore').getById(cvenueId);
-      var cntlr = this.getApplication().getController('Checkins');
-      var mCntlr = this.getApplication().getController('Merchants');
-      var samePage = mCntlr.getMainPage() == viewport.getActiveItem();
-
-      if((cvenueId > 0) && (viewport.getVenueId() != cvenueId))
+      if(viewport.getVenue().getId() != cvenue.getId())
       {
          // Restore Merchant Info
-         var cmerchantId = vrecord.getMerchant().getId();
-         cntlr.setupVenueInfoCommon(vrecord);
-
-         viewport.setCustomerId(ccustomerId);
-         viewport.setVenueId(cvenueId);
-         this.setCustomerStoreFilter(ccustomerId, cmerchantId);
+         ccntlr.setupCheckinInfo(cvenue, ccustomer, cmetaData);
       }
+
       console.log("Going to Merchant Home Account Page ...");
-      //this.onFeatureTap('Merchants');
 
-      cntlr.setVenueInfo(cvenueId, ccustomerId);
-      cntlr.onNonCheckinTap(b, e, eOpts, eInfo, Ext.bind(function()
+      estore.setData(cmetaData['eligible_rewards']);
+      this.getViewport().reset(this);
+      //Ext.Viewport.setMasked(false);
+
+      //
+      // Trigger the activeItem changes when refreshing page
+      //
+      if(samePage)
       {
-         var bar = viewport.getNavigationBar();
-         bar.titleComponent.setTitle(vrecord.get('name'));
-
-         // Doesn't get called when refreshing the same page
-         if(samePage)
-         {
-            bar.refreshNavigationBarProxy();
-            viewport.doSetActiveItem(mCntlr.getMainPage(), null);
-         }
-      }, this));
+         vport.setFadeAnimation();
+         vport.doSetActiveItem(mcntlr.getMainPage(), null);
+      }
+      mcntlr.openMainPage();
    },
    onAccountsButtonTap : function(b, e, eOpts)
    {
@@ -164,6 +222,11 @@ Ext.define('Genesis.controller.Viewport',
    {
       this.onFeatureTap('RewardsRedemptions', 'redemptions');
       console.log("Going to Redemptions Page ...");
+   },
+   onPrizesButtonTap : function(b, e, eOpts)
+   {
+      this.onFeatureTap('Prizes');
+      console.log("Going to Prizes Page ...");
    },
    onHomeButtonTap : function(b, e, eOpts)
    {
@@ -194,7 +257,19 @@ Ext.define('Genesis.controller.Viewport',
    {
       this.callParent(arguments);
       console.log("Viewport Init");
+      _application = app;
    },
+   openMainPage : function()
+   {
+      //
+      // To-do : Use remote call to check whether we have a active session or not
+      //
+      if(!this.getLoggedIn())
+         this.onFeatureTap('MainPage', 'login');
+      else
+         this.onFeatureTap('MainPage', 'main');
+
+   }
    /*
     onSwipe : function(e, touch, opts)
     {
@@ -224,20 +299,4 @@ Ext.define('Genesis.controller.Viewport',
     }
     },
     */
-   openMainPage : function()
-   {
-      // If not logged in, goto Login Page
-      if(!this.loggedIn)
-      {
-         Ext.StoreMgr.get('AccountsStore').load(
-         {
-            callback : function()
-            {
-               this.onFeatureTap('MainPage');
-               this.loggedIn = true;
-            },
-            scope : this
-         });
-      }
-   }
 });

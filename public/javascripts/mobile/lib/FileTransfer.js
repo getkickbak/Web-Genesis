@@ -47,7 +47,7 @@ JFFileTransfer.prototype.upload = function(filePath, server, successCallback, er
    
    console.log("Uploading file to [" + server + "]");
    console.log("filePath is [" + filePath + "]");
-   PhoneGap.exec(successCallback, errorCallback, 'FileTransfer', 'upload', [options]);
+   Cordova.exec(successCallback, errorCallback, 'FileTransfer', 'upload', [options]);
 };
 
 JFFileTransfer.prototype._castTransferError = function(pluginResult) {
@@ -90,6 +90,6 @@ JFFileTransfer.prototype._updateProgress = function(pluginResult) {
    */
 }
 
-PhoneGap.addConstructor(function()  {
+Cordova.addConstructor(function()  {
                         if (typeof navigator.jffileTransfer == "undefined") navigator.jffileTransfer = new JFFileTransfer();
                         });

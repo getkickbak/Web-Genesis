@@ -74,42 +74,19 @@ Ext.define('Genesis.controller.ControllerBase',
          success : successFn.createDelegate(this),
          failure : function(response, opts)
          {
-            if(phoneGapAvailable && response.status == 0 && response.responseText != '')
+            if(Genesis.constants.isNative() && response.status == 0 && response.responseText != '')
             {
                successFn.call(this, response);
             }
             else
             {
                console.error('failed to complete request');
-               console.error('phoneGapAvailable:' + phoneGapAvailable);
+               console.error('isNative:' + Genesis.constants.isNative());
                console.error('response.status:' + response.status);
                console.error('response.responseText:' + response.responseText);
             }
          }.createDelegate(this)
       });
-      /*
-       var navigation = this.getApplication().getView('Viewport'), toolbar;
-       switch (profile)
-       {
-       case 'desktop':
-       case 'tablet':
-       navigation.setDetailContainer(this.getMain());
-       break;
-
-       case 'phone':
-       toolbar = navigation.navigationBar()[0];
-       toolbar.add({
-       xtype : 'button',
-       id : 'viewSourceButton',
-       hidden : true,
-       align : 'right',
-       ui : 'action',
-       action : 'viewSource',
-       text : 'Source'
-       });
-       break;
-       }
-       */
    },
    getViewPortCntlr : function()
    {
@@ -119,22 +96,10 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return this.getViewPortCntlr().getView();
    },
-   setCustomerStoreFilter : function(customerId, merchantId)
-   {
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      cstore.clearFilter();
-      cstore.filter([
-      {
-         filterFn : Ext.bind(function(item)
-         {
-            return ((item.get("user_id") == customerId) && (item.get("merchant_id") == merchantId));
-         }, this)
-      }]);
-   },
    pushView : function(view)
    {
       var viewport = this.getViewport();
-      //var stack = viewport.getInnerItems();
+      var app = this.getApplication();
       var stack = viewport.stack;
       var lastView = (stack.length > 1) ? stack[stack.length - 2] : null;
       if(lastView && lastView == view)
@@ -143,24 +108,15 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       else
       {
-         /*
-          var items = viewport.getInnerItems();
-          if(items.indexOf(view) < 0)
-          {
-          viewport.push(view);
-          }
-          else
-          {
-          viewport.onItemAdd(view, items.length);
-          //viewport.setActiveItem(view);
-          }
-          */
-         viewport.push(view, this.getEventDispatcher().controller);
+         viewport.push(view, app.getEventDispatcher().controller);
       }
    },
    popView : function(b, e, eOpts)
    {
-      this.getViewport().pop(this.getEventDispatcher().controller);
+      var viewport = this.getViewport();
+      var app = this.getApplication();
+
+      viewport.pop(app.getEventDispatcher().controller);
    },
    getMainPage : Ext.emptyFn,
    openMainPage : Ext.emptyFn,
@@ -171,58 +127,57 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    getGeoLocation : function(callback)
    {
-      switch (Ext.os.deviceType.toLowerCase())
+      if(!Genesis.constants.isNative())
       {
-         case 'desktop':
-            callback(
+         callback(
+         {
+            coords :
             {
-               coords :
-               {
-                  latitude : "-50.000000",
-                  longitude : '50.000000'
-               }
-            });
-            break;
-         default:
-            var networkState = navigator.network.connection.type;
-            console.log('Checking Connectivity Type ...[' + networkState + ']');
-            console.log('Connection type: [' + Genesis.controller.ControllerBase.connection[networkState] + ']');
-            //console.log('Checking for Network Conncetivity for [' + location.origin + ']');
+               latitude : "-50.000000",
+               longitude : '50.000000'
+            }
+         });
+      }
+      else
+      {
+         var networkState = navigator.network.connection.type;
+         console.log('Checking Connectivity Type ...[' + networkState + ']');
+         console.log('Connection type: [' + Genesis.controller.ControllerBase.connection[networkState] + ']');
+         //console.log('Checking for Network Conncetivity for [' + location.origin + ']');
 
-            console.log('Getting GeoLocation ...');
-            navigator.geolocation.getCurrentPosition(function(position)
-            {
-               console.log('\n' + 'Latitude: ' + position.coords.latitude + '\n' + 'Longitude: ' + position.coords.longitude + '\n' + 'Altitude: ' + position.coords.altitude + '\n' + 'Accuracy: ' + position.coords.accuracy + '\n' + 'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '\n' + 'Heading: ' + position.coords.heading + '\n' + 'Speed: ' + position.coords.speed + '\n' + 'Timestamp: ' + new Date(position.timestamp) + '\n');
+         console.log('Getting GeoLocation ...');
+         navigator.geolocation.getCurrentPosition(function(position)
+         {
+            console.log('\n' + 'Latitude: ' + position.coords.latitude + '\n' + 'Longitude: ' + position.coords.longitude + '\n' + 'Altitude: ' + position.coords.altitude + '\n' + 'Accuracy: ' + position.coords.accuracy + '\n' + 'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '\n' + 'Heading: ' + position.coords.heading + '\n' + 'Speed: ' + position.coords.speed + '\n' + 'Timestamp: ' + new Date(position.timestamp) + '\n');
 
-               callback(position);
-            }, function(error)
+            callback(position);
+         }, function(error)
+         {
+            console.log('GeoLocation Error[' + error.message + ']');
+            switch (error.code)
             {
-               console.log('GeoLocation Error[' + error.message + ']');
-               switch (error.code)
+               case PositionError.PERMISSION_DENIED:
                {
-                  case PositionError.PERMISSION_DENIED:
-                  {
-                     console.log("PERMISSION_DENIED");
-                     break;
-                  }
-                  case PositionError.POSITION_UNAVAILABLE:
-                  {
-                     console.log("PERMISSION_UNAVAILABLE");
-                     break;
-                  }
-                  case PositionError.TIMEOUT:
-                  {
-                     console.log("TIMEOUT");
-                     break;
-                  }
+                  console.log("PERMISSION_DENIED");
+                  break;
                }
-            },
-            {
-               maximumAge : 30000,
-               timeout : 50000,
-               enableHighAccuracy : true
-            });
-            break;
+               case PositionError.POSITION_UNAVAILABLE:
+               {
+                  console.log("PERMISSION_UNAVAILABLE");
+                  break;
+               }
+               case PositionError.TIMEOUT:
+               {
+                  console.log("TIMEOUT");
+                  break;
+               }
+            }
+         },
+         {
+            maximumAge : 30000,
+            timeout : 50000,
+            enableHighAccuracy : true
+         });
       }
    },
    scanQRCode : function(config)
@@ -239,22 +194,21 @@ Ext.define('Genesis.controller.ControllerBase',
       };
 
       console.log("Scanning QR Code ...")
-      switch (Ext.os.deviceType.toLowerCase())
+      if(!Genesis.constants.isNative())
       {
-         case 'desktop':
-            callback(
+         callback(
+         {
+            responseCode : "Test QR Code",
+            response :
             {
-               responseCode : "Test QR Code",
-               response :
-               {
-                  response : "Test QR Code",
-               }
-            });
-            break;
-         default:
-            var qrCode = new JFQRCodeReader();
-            qrCode.getCode("file://localhost/test.jpg", "http://www.justformyfriends.com/test", callback, fail, new FileUploadOptions());
-            break;
+               response : "Test QR Code",
+            }
+         });
+      }
+      else
+      {
+         var qrCode = new JFQRCodeReader();
+         qrCode.getCode("file://localhost/test.jpg", "http://www.getkickbak.com/test", callback, fail, new FileUploadOptions());
       }
    }
 });

@@ -5,8 +5,8 @@ Ext.define('Genesis.view.Rewards',
    alias : 'widget.rewardsview',
    config :
    {
-      title : 'Venue Name',
-      changeTitle : true,
+      title : 'Earn Rewards',
+      changeTitle : false,
       scrollable : false,
       layout :
       {
@@ -71,7 +71,23 @@ Ext.define('Genesis.view.Rewards',
                xtype : 'list',
                flex : 1,
                scrollable : 'vertical',
-               store : 'RewardsStore',
+               store :
+               {
+                  model : 'Genesis.model.PurchaseReward',
+                  grouper :
+                  {
+                     groupFn : function(record)
+                     {
+                        return record.get('points') + ' Points';
+                     }
+                  },
+                  sorters : [
+                  {
+                     property : 'points',
+                     direction : 'ASC'
+                  }],
+                  autoLoad : false
+               },
                cls : 'rewardsMain',
                /*
                 indexBar :
@@ -114,6 +130,7 @@ Ext.define('Genesis.view.Rewards',
                flex : 1,
                cls : 'shadows',
                xtype : 'dataview',
+               maxItemCache : 0, // This attribute is needed to prevent caching of dynamic objects
                scrollable : 'vertical',
                useComponents : true,
                tag : 'rewardsCart',
@@ -151,11 +168,33 @@ Ext.define('Genesis.view.Rewards',
                text : 'Earn Points!',
                ui : 'yellow-large'
             }]
+         },
+         // -------------------------------------------------------------------
+         // Checking for Prizes Screen
+         // -------------------------------------------------------------------
+         {
+            xtype : 'component',
+            tag : 'prizeCheck',
+            cls : 'prizeCheck'
          }]
       },
       {
          docked : 'bottom',
          cls : 'navigationBarBottom',
+         showAnimation : !Ext.os.is.Android2 ?
+         {
+            type : 'slideIn',
+            direction : 'up',
+            duration : 250,
+            easing : 'ease-out'
+         } : null,
+         hideAnimation : !Ext.os.is.Android2 ?
+         {
+            type : 'scroll',
+            direction : 'up',
+            duration : 250,
+            easing : 'ease-out'
+         } : null,
          xtype : 'tabbar',
          layout :
          {
@@ -185,6 +224,7 @@ Ext.define('Genesis.view.Rewards',
          {
             iconCls : 'shop2',
             tag : 'cart',
+            badgeCls : 'x-badge round',
             title : 'Check Out'
          },
          //

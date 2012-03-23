@@ -20,7 +20,7 @@ Ext.define('Genesis.controller.Challenges',
       },
       control :
       {
-         'challengepageview' :
+         challengePage :
          {
             activate : 'onActivate',
             deactivate : 'onDeactivate'
@@ -68,11 +68,11 @@ Ext.define('Genesis.controller.Challenges',
    },
    onActivate : function()
    {
-      var venueId = this.getViewport().getVenueId();
-      var record = Ext.StoreMgr.get('VenueStore').getById(venueId);
+      var record = this.getViewPortCntlr().getVenue();
+      var venueId = record.getId();
       var carousel = this.getChallengePage().query('carousel')[0];
       var items = record.challenges().getRange();
-      
+
       carousel.removeAll(true);
       for(var i = 0; i < Math.ceil(items.length / 6); i++)
       {
@@ -113,6 +113,6 @@ Ext.define('Genesis.controller.Challenges',
    isOpenAllowed : function()
    {
       // Check whether Page cannot opened
-      return ((this.getViewport().getVenueId() > 0) ? true : "Cannot open Challenges until You have Checked-in into a Venue");
+      return ((this.getViewportCntlr().getVenue()) ? true : "Cannot open Challenges until You have Checked-in into a Venue");
    }
 });

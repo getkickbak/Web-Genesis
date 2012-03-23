@@ -13,6 +13,11 @@ Ext.define('Genesis.model.PurchaseReward',
       proxy :
       {
          type : 'ajax',
+         disableCaching : false,
+         defaultHeaders :
+         {
+            'If-None-Match' : ''
+         },
          url : Ext.Loader.getPath("Genesis") + "/store/" + 'rewards.json',
          reader :
          {

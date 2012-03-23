@@ -26,7 +26,11 @@ Ext.define('Genesis.view.CheckinMerchant',
          useComponents : true,
          defaultType : 'checkinmerchantdetailsitem',
          scrollable : false,
-         store : 'VenueStore'
+         store :
+         {
+            model : 'Genesis.model.Venue',
+            autoLoad : false
+         }
       },
       {
          xtype : 'container',

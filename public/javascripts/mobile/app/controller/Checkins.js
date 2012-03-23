@@ -39,10 +39,6 @@ Ext.define('Genesis.controller.Checkins',
             activate : 'onExploreActivate',
             deactivate : 'onExploreDeactivate'
          },
-         'checkinexploreview button[tag=checkInNow]' :
-         {
-            tap : 'onCheckinScanTap'
-         },
          'checkinexploreview list' :
          {
             select : 'onExploreSelect',
@@ -51,16 +47,16 @@ Ext.define('Genesis.controller.Checkins',
          //
          // Checkin Merchant Page
          //
-         'checkinmerchantview' :
+         checkinMerchant :
          {
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
-         'checkinmerchantview button[tag=checkinBtn]' :
+         checkinBtn :
          {
             tap : 'onCheckinTap'
          },
-         'checkinmerchantview button[tag=exploreBtn]' :
+         exploreBtn :
          {
             tap : 'onNonCheckinTap'
          },
@@ -72,27 +68,28 @@ Ext.define('Genesis.controller.Checkins',
          {
             widthchange : 'onMapWidthChange'
          }
-      }
+      },
+      models : ['Venue', 'Merchant', 'EarnPrize']
    },
-   models : ['Venue', 'Merchant'],
    init : function()
    {
+      var me = this;
       //
       // Clears all Markers on Google Map
       //
-      this.markersArray = [];
+      me.markersArray = [];
       if(window.google && window.google.maps && window.google.maps.Map)
       {
-         google.maps.Map.prototype.clearOverlays = Ext.bind(function()
+         google.maps.Map.prototype.clearOverlays = function()
          {
-            if(this.markersArray)
+            if(me.markersArray)
             {
-               for(var i = 0; i < this.markersArray.length; i++)
+               for(var i = 0; i < me.markersArray.length; i++)
                {
-                  this.markersArray[i].setMap(null);
+                  me.markersArray[i].setMap(null);
                }
             }
-         }, this);
+         }
       }
       else
       {
@@ -106,21 +103,20 @@ Ext.define('Genesis.controller.Checkins',
          model : 'Genesis.model.Venue',
          autoLoad : false
       });
-
-      Ext.StoreMgr.get('EligibleRewardsStore').on('metachange', function(store, proxy, eOpts)
+      //
+      // Store used for storing Customer Info
+      //
+      Ext.regStore('CheckinStore',
       {
-         var venueId;
-         //
-         // To-do : Used our own VenueId for now, remote VenueId after full integration
-         //
-         venueId = (!Ext.isDefined(this.getCheckinMerchant().venueId)) ? proxy.getReader().metaData['venue_id'] : this.getCheckinMerchant().venueId;
-         var record = Ext.StoreMgr.get('CheckinExploreStore').getById(venueId);
-
-         //store.getProxy().getReader().rawData.metaData = record;
-         // Update Metadata
-         proxy.getReader().metaData = record;
-         this.setupVenueInfoCommon(record);
-      }, this);
+         model : 'Genesis.model.Customer',
+         autoLoad : false,
+         listeners :
+         {
+            'metachange' : function(store, proxy, eOpts)
+            {
+            }
+         }
+      });
 
       console.log("Checkins Init");
    },
@@ -133,7 +129,6 @@ Ext.define('Genesis.controller.Checkins',
       url = url || 'setVenueCheckinUrl';
       type = type || 'scan'
       var qrcode;
-      var viewport = this.getViewport();
 
       switch(type)
       {
@@ -180,31 +175,19 @@ Ext.define('Genesis.controller.Checkins',
             break;
       }
    },
+   setupCheckinInfo : function(venue, customer, metaData)
+   {
+      var viewport = this.getViewPortCntlr();
+      viewport.setVenue(venue)
+      viewport.setCustomer(customer);
+      viewport.setMetaData(metaData);
+   },
    // --------------------------------------------------------------------------
    // CheckinExplore Page
    // --------------------------------------------------------------------------
-   setupVenueInfoCommon : function(record)
-   {
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var vstore = Ext.StoreMgr.get('VenueStore');
-
-      cstore.clearFilter();
-      vstore.setData([record],
-      {
-         addRecords : false
-      });
-   },
-   setupVenueInfo : function(record)
-   {
-      this.setupVenueInfoCommon(record);
-
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var customerId = cstore.getById(record.getMerchant().getId()).get('user_id');
-      this.setVenueInfo(record.getId(), customerId);
-   },
    onExploreActivate : function()
    {
-      var viewport = this.getViewport();
+      var viewport = this.getViewPortCntlr();
 
       Ext.StoreMgr.get('CheckinExploreStore').load(
       {
@@ -213,14 +196,6 @@ Ext.define('Genesis.controller.Checkins',
             if(success)
             {
                this.getCheckInNowBar().setDisabled(true);
-            }
-            else
-            {
-               Ext.device.Notification.show(
-               {
-                  title : 'Warning',
-                  message : 'Error loading Nearby Venues'
-               });
             }
          },
          scope : this
@@ -235,8 +210,9 @@ Ext.define('Genesis.controller.Checkins',
             this.getCheckInNowBar().hide();
             break;
       }
-      var cvenueId = viewport.getCheckinInfo().venueId;
-      this.getMainBtn()[(cvenueId > 0) ? 'show' : 'hide']();
+      var cvenue = viewport.getCheckinInfo().venue;
+      var venue = viewport.getVenue();
+      this.getMainBtn()[(cvenue && (venue.getId() != cvenue.getId())) ? 'show' : 'hide']();
       //
       // Scroll to the Top of the Screen
       //
@@ -279,25 +255,25 @@ Ext.define('Genesis.controller.Checkins',
          console.log("Cannot Retrieve Google Map Information.");
       }
 
-      this.setupVenueInfo(record);
+      this.setVenueInfo(record, null);
       this.pushView(this.getCheckinMerchant());
 
       return true;
    },
    // --------------------------------------------------------------------------
-   // Merchant Checkin  Page
+   // Merchant Checkin Page
    // --------------------------------------------------------------------------
-   setVenueInfo : function(venueId, customerId)
+   setVenueInfo : function(venue, customer)
    {
       var page = this.getCheckinMerchant();
-      page.venueId = venueId;
-      page.customerId = customerId;
+      page.venue = venue;
+      page.customer = customer;
    },
    clearVenueInfo : function()
    {
       var page = this.getCheckinMerchant();
-      delete page.venueId;
-      delete page.customerId;
+      delete page.venue;
+      delete page.customer;
    },
    onActivateCommon : function(map, gmap)
    {
@@ -321,6 +297,7 @@ Ext.define('Genesis.controller.Checkins',
    {
       var page = this.getCheckinMerchant();
       var map = page.query('component[tag=map]')[0];
+      page.query('dataview')[0].getStore().setData(page.venue);
       //var map = page.query('map')[0];
 
       //this.onActivateCommon(map, map.getMap());
@@ -347,18 +324,13 @@ Ext.define('Genesis.controller.Checkins',
    },
    onDeactivate : function()
    {
-      var viewport = this.getViewport();
+      var viewport = this.getViewPortCntlr();
       var page = this.getCheckinMerchant();
-      var venueId = viewport.getVenueId();
+      var venue = viewport.getVenue();
       // If we didn't check into this Venue, "reload" checked-in Venue info back
-      if((venueId != page.venueId) && (venueId > 0))
+      if(venue && page.venue && (venue.getId() != page.venue.getId()))
       {
-         var vstore = Ext.StoreMgr.get('VenueStore');
-         var cbstore = Ext.StoreMgr.get('CheckinExploreStore');
-         vstore.setData([cbstore.getById(venueId)],
-         {
-            addRecords : false
-         });
+         viewport.setVenue(viewport.getCheckinInfo().venue);
       }
       this.clearVenueInfo();
       this.getShareBtn().hide();
@@ -372,90 +344,118 @@ Ext.define('Genesis.controller.Checkins',
          currentLng = position.coords.longitude;
       }
 
-      var viewport = this.getViewport();
+      var viewport = this.getViewPortCntlr();
       var mcntlr = this.getApplication().getController('Merchants');
-      var store = Ext.StoreMgr.get('EligibleRewardsStore');
-      var cview = viewport.getActiveItem();
+      var cstore = Ext.StoreMgr.get('CheckinStore');
+      var custore = Ext.StoreMgr.get('CustomerStore');
+      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
+      var vstore = Ext.StoreMgr.get('VenueAccountStore');
+      var estore = Ext.StoreMgr.get('EligibleRewardsStore');
+      var page = this.getCheckinMerchant();
+      var cview = this.getViewport().getActiveItem();
+      var pvenueId = page.venue ? page.venue.getId() : 0;
 
-      // This is necessary for now to fix bug in Ext.List in getItemElementConfig()
-      // Cls are aggreated without spacing in between causing problems later in updating item
-      // when refreshed
-      store.removeAll();
-      store.clearFilter();
-
+      var showErrorMsg = function(mode)
       {
-         // Load Info into database
-         EligibleReward[url]();
-         store.load(
+         var msg;
+         switch (mode)
          {
-            parms :
-            {
-               latitude : currentLat || 0,
-               longtitude : currentLng || 0,
-               qrcode : qrcode || ""
-            },
-            scope : this,
-            callback : function(records, operation, success)
-            {
-               var metaData = store.getProxy().getReader().metaData;
-               if(success && metaData)
-               {
-                  var cstore = Ext.StoreMgr.get('CustomerStore');
-                  var venueId = metaData.get('venue_id');
-                  var customerId = cstore.getById(metaData.getMerchant().getId()).get('user_id');
-
-                  viewport.setVenueId(venueId);
-                  viewport.setCustomerId(customerId);
-
-                  for(var i = 0; i < records.length; i++)
-                  {
-                     records[i].data['venue_id'] = venueId;
-                  }
-                  store.filter([
-                  {
-                     filterFn : Ext.bind(function(item)
-                     {
-                        return item.get("venue_id") == venueId;
-                     }, this)
-                  }]);
-                  switch (mode)
-                  {
-                     case 'checkin' :
-                     {
-                        viewport.setCheckinInfo(
-                        {
-                           venueId : venueId,
-                           customerId : customerId
-                        })
-                        break;
-                     }
-                     default :
-                        break;
-                  }
-
-                  // Cleans up Back Buttons on Check-in
-                  viewport.reset(this);
-
-                  Ext.Viewport.setMasked(false);
-                  mcntlr.openMainPage();
-
-                  if(callback)
-                  {
-                     callback();
-                  }
-               }
-               else
-               {
-                  Ext.Viewport.setMasked(false);
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Error',
-                     message : 'Error loading Nearby Venues from Server'
-                  });
-               }
-            }
+            case 'checkin' :
+               msg = 'Checking info';
+               break;
+            default :
+               msg = 'Exploring'
+               break;
+         }
+         Ext.device.Notification.show(
+         {
+            title : 'Error',
+            message : 'Error ' + msg + ' Venue from Server'
          });
       }
+      // Load Info into database
+      Customer[url]();
+      cstore.load(
+      {
+         parms :
+         {
+            latitude : currentLat || 0,
+            longtitude : currentLng || 0,
+            qrcode : qrcode || "",
+            venueId : pvenueId
+         },
+         scope : this,
+         callback : function(records, operation, success)
+         {
+            var metaData = cstore.getProxy().getReader().metaData;
+            if(success && metaData)
+            {
+               for(var i = 0; i < records.length; i++)
+               {
+                  var customerId = records[i].getId();
+                  venueId = records[i].getLastCheckin().get('venue_id');
+
+                  // Find Matching Venue or pick the first one returned if no venueId is set
+                  if((pvenueId == venueId) || (pvenueId == 0))
+                  {
+                     //
+                     // Update our Database with the latest value from Server
+                     //
+                     var crecord = custore.getById(customerId);
+                     if(crecord != null)
+                     {
+                        crecord.set('points', records[i].get('points'));
+                        crecord.setLastCheckin(records[i].getLastCheckin());
+                     }
+
+                     var venue = cestore.getById(venueId) || vstore.getById(venueId);
+                     var customer = cstore.getById(customerId);
+
+                     this.setupCheckinInfo(venue, customer, metaData);
+                     estore.setData(metaData['eligible_rewards']);
+
+                     // Pick the first entry
+                     break;
+                  }
+               }
+               if(i > records.length)
+               {
+                  showErrorMsg();
+                  return;
+               }
+               switch (mode)
+               {
+                  case 'checkin' :
+                  {
+                     viewport.setCheckinInfo(
+                     {
+                        venue : viewport.getVenue(),
+                        customer : viewport.getCustomer(),
+                        metaData : viewport.getMetaData()
+                     });
+                     break;
+                  }
+                  default :
+                     break;
+               }
+
+               // Cleans up Back Buttons on Check-in
+               this.getViewport().reset(this);
+               Ext.Viewport.setMasked(false);
+               mcntlr.openMainPage();
+
+               if(callback)
+               {
+                  callback();
+               }
+            }
+            else
+            {
+               Ext.Viewport.setMasked(false);
+               showErrorMsg();
+            }
+         }
+      });
    },
    onCheckinScanTap : function(b, e, eOpts, einfo)
    {

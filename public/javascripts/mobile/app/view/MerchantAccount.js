@@ -32,6 +32,7 @@ Ext.define('Genesis.view.MerchantAccount',
       // -----------------------------------------------------------------------
       // Merchant Info
       // -----------------------------------------------------------------------
+      /*
       {
          xtype : 'toolbar',
          cls : 'merchantContactPanelHdr',
@@ -114,6 +115,7 @@ Ext.define('Genesis.view.MerchantAccount',
             }]
          }]
       },
+      */
       // -----------------------------------------------------------------------
       // Rewards / Redemption Button
       // -----------------------------------------------------------------------
@@ -156,6 +158,7 @@ Ext.define('Genesis.view.MerchantAccount',
             scrollable : false,
             ui : 'bottom-round',
             store : 'EligibleRewardsStore',
+            emptyText : ' ',
             cls : 'merchantFeedPanel separator',
             // @formatter:off
             itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>', '<div class="listItemDetailsWrapper">', '<div class="itemDesc wrap">{[this.getDesc(values)]}</div>', '</div>',
@@ -250,6 +253,11 @@ Ext.define('Genesis.view.MerchantAccount',
             title : 'Home'
          },
          {
+            iconCls : 'prize',
+            tag : 'prizes',
+            title : 'Prizes'
+         },
+         {
             iconCls : 'rewards',
             tag : 'rewards',
             title : 'Rewards'
@@ -272,8 +280,8 @@ Ext.define('Genesis.view.MerchantAccount',
             xtype : 'spacer'
          },
          {
-            iconCls : 'redeem',
-            tag : 'redeem',
+            iconCls : 'redemption',
+            tag : 'redemption',
             title : 'Redeem'
          },
          {
@@ -285,12 +293,7 @@ Ext.define('Genesis.view.MerchantAccount',
             tag : 'browse',
             iconCls : 'search1',
             title : 'Explore'
-         }/*,
-         {
-            iconCls : 'team',
-            tag : 'accounts',
-            title : 'Accounts'
-         }*/]
+         }]
       }]
    },
    statics :

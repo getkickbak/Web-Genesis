@@ -5,8 +5,8 @@ Ext.define('Genesis.view.Redemptions',
    alias : 'widget.redemptionsview',
    config :
    {
-      title : 'Venue Name',
-      changeTitle : true,
+      title : 'Redemptions',
+      changeTitle : false,
       scrollable : 'vertical',
       cls : 'redemptionsMain',
       layout :
@@ -34,11 +34,16 @@ Ext.define('Genesis.view.Redemptions',
       },
       {
          cls : 'ptsEarnPanel separator',
+         tag : 'ptsEarnPanel',
          xtype : 'dataview',
          useComponents : true,
          scrollable : false,
          defaultType : 'redemptionsptsitem',
-         store : 'CustomerStore'
+         store :
+         {
+            model : 'Genesis.model.Customer',
+            autoLoad : false
+         }
       },
       // ------------------------------------------------------------------------
       // Redemptions Available Panel
@@ -57,197 +62,61 @@ Ext.define('Genesis.view.Redemptions',
          }]
       },
       // ------------------------------------------------------------------------
-      // Redemptions AVailable CardsLayout
+      // Redemptions
       // ------------------------------------------------------------------------
       {
-         xtype : 'container',
-         height : 10000,
-         layout :
+         xtype : 'list',
+         scrollable : false,
+         ui : 'bottom-round',
+         store :
          {
-            type : 'card',
-            animation :
+            model : 'Genesis.model.CustomerReward',
+            autoLoad : false,
+            grouper :
             {
-               type : 'flip'
-
-            }
-         },
-         cls : 'redemptionsView separator',
-         tag : 'redemptionsView',
-         items : [
-         {
-            xtype : 'container',
-            cls : 'redemptionsDataviewWrapper',
-            tag : 'redemptionsDataviewWrapper',
-            layout :
-            {
-               type : 'vbox',
-               align : 'stretch',
-               pack : 'start'
-            },
-            items : [
-            {
-               xtype : 'list',
-               scrollable :
+               groupFn : function(record)
                {
-                  direction : 'horizontal',
-                  indicators : false
-               },
-               inline: { wrap: false },
-               cls : 'redemptionsDataview separator',
-               loadingText : null, // Disable Loading Mask
-               tag : 'redemptionsDataview',
-               store : 'RedemptionsStore',
-               // @formatter:off
-               itemTpl : Ext.create('Ext.XTemplate', '<img class="photo" src="{[this.getPhoto(values)]}"/>',
-               // @formatter:on
-               {
-                  getPhoto : function(values)
-                  {
-                     if(!values.photo_url)
-                     {
-                        return Genesis.view.Redemptions.getPhoto(values.type);
-                     }
-                     return values.photo_url;
-                  }
-               })
-            },
-            {
-               xtype : 'container',
-               cls : 'desc separator',
-               tag : 'desc',
-               data :
-               {
-                  title : 'Empty Description Empty Description Empty Description Empty Description Empty Description Empty Description Empty Description Empty Description Empty Description Empty Description'
-               },
-               tpl : '{title}'
-            },
-            {
-               xtype : 'container',
-               cls : 'ptsContainer separator',
-               layout :
-               {
-                  type : 'hbox',
-                  align : 'middle',
-                  pack : 'center'
-               },
-               height : '',
-               items : [
-               {
-                  xtype : 'component',
-                  data :
-                  {
-                     points : 0
-                  },
-                  tpl : '{points} ',
-                  tag : 'points',
-                  cls : 'points'
-               },
-               {
-                  xtype : 'component',
-                  cls : 'photo',
-                  data :
-                  {
-                     photo_url : 'resources/img/sprites/coin.jpg'
-                  },
-                  tpl : '<img src="{photo_url}"/>'
-               }]
-            },
-            {
-               xtype : 'button',
-               cls : 'separator',
-               tag : 'redeem',
-               ui : 'black-large',
-               text : 'Redeem it!'
-            }]
-         },
-         {
-            xtype : 'list',
-            scrollable : false,
-            ui : 'bottom-round',
-            store : 'RedemptionsStore',
-            cls : 'redemptionsList',
-            tag : 'redemptionsList',
-            /*
-             indexBar :
-             {
-             docked : 'right',
-             overlay : true,
-             alphabet : false,
-             centered : false,
-             letters : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
-             },
-             */
-            pinHeaders : false,
-            grouped : true,
-            // @formatter:off
-            itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>', '<div class="listItemDetailsWrapper">', '<div class="itemDesc wrap">{[this.getDesc(values)]}</div>', '</div>',
-            // @formatter:on
-            {
-               getPhoto : function(values)
-               {
-                  if(!values.photo_url)
-                  {
-                     return Genesis.view.Redemptions.getPhoto(values.type);
-                  }
-                  return values.photo_url;
-               },
-               getDesc : function(values)
-               {
-                  return values.title;
+                  return record.get('points') + ' Points';
                }
-            })
-         }]
-      },
-      {
-         docked : 'bottom',
-         cls : 'navigationBarBottom',
-         xtype : 'tabbar',
-         layout :
-         {
-            pack : 'justify',
-            align : 'center'
-         },
-         scrollable :
-         {
-            direction : 'horizontal',
-            indicators : false
-         },
-         defaults :
-         {
-            iconMask : true,
-            iconAlign : 'top'
-         },
-         items : [
-         //
-         // Left side Buttons
-         //
-         {
-            xtype : 'spacer'
-         },
-         //
-         // Middle Button
-         //
-         {
-            xtype : 'segmentedbutton',
-            allowMultiple : false,
-            tag : 'redemptions',
-            items : [
-            {
-               text : 'Detailed',
-               tag : 'detailed',
-               pressed : true
             },
+            sorters : [
             {
-               text : 'Summary',
-               tag : 'summary',
+               property : 'points',
+               direction : 'ASC'
             }]
          },
-         //
-         // Right side Buttons
-         //
+         cls : 'redemptionsList separator',
+         tag : 'redemptionsList',
+         /*
+          indexBar :
+          {
+          docked : 'right',
+          overlay : true,
+          alphabet : false,
+          centered : false,
+          letters : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
+          },
+          */
+         pinHeaders : false,
+         grouped : true,
+         // @formatter:off
+         itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>', '<div class="listItemDetailsWrapper">', '<div class="itemDesc wrap">{[this.getDesc(values)]}</div>', '</div>',
+         // @formatter:on
          {
-            xtype : 'spacer'
-         }]
+            getPhoto : function(values)
+            {
+               if(!values.photo_url)
+               {
+                  return Genesis.view.Redemptions.getPhoto(values.type);
+               }
+               return values.photo_url;
+            },
+            getDesc : function(values)
+            {
+               return values.title;
+            }
+         }),
+         onItemDisclosure : Ext.emptyFn
       }]
    },
    statics :

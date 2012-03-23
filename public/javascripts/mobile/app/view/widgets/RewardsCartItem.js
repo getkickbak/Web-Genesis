@@ -2,23 +2,22 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
 {
    extend : 'Ext.dataview.component.DataItem',
    requires : ['Ext.field.Select', 'Ext.XTemplate'],
-   mixins : ['Genesis.view.widgets.Animation'],
+   //mixins : ['Genesis.view.widgets.Animation'],
    xtype : 'rewardscartitem',
    alias : 'widget.rewardscartitem',
    config :
    {
+      hideAnimation : !Ext.os.is.Android2 ?
+      {
+         type : 'scroll',
+         direction : 'up',
+         duration : 250,
+         easing : 'ease-out'
+      } : null,
       layout :
       {
          type : 'hbox',
          align : 'center'
-      },
-      remove :
-      {
-         hidden : true,
-         iconCls : 'delete_black2',
-         tag : 'deleteItem',
-         iconMask : true,
-         cls : 'plain'
       },
       qty :
       {
@@ -91,6 +90,14 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
                return values.qty * values.points;
             }
          })
+      },
+      remove :
+      {
+         hidden : true,
+         iconCls : 'delete_black2',
+         tag : 'deleteItem',
+         iconMask : true,
+         cls : 'plain'
       },
       dataMap :
       {

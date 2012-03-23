@@ -3,9 +3,181 @@
 //---------------------------------------------------------------------------------------------------------------------------------
 Ext.ns('Genesis.constants');
 
-Genesis.contants =
+Genesis.constants =
 {
-   site : 'www.justformyfriends.com',
+   currFbId : 0,
+   access_token : null,
+   sign_in_path : '/sign_in',
+   sign_out_path : '/sign_out',
+   site : 'www.getkickbak.com',
+   weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+   isNative : function()
+   {
+      //return Ext.isDefined(Cordova);
+      return phoneGapAvailable;
+   },
+   // **************************************************************************
+   // Date Time
+   // **************************************************************************
+   convertDateCommon : function(v, dateFormat, noConvert)
+   {
+      var date;
+      var format = dateFormat || this.dateFormat;
+
+      if(!( v instanceof Date))
+      {
+         if( typeof (JSON) != 'undefined')
+         {
+            //v = (jQuery.browser.msie) ? v.split(/Z$/)[0] : v.split('.')[0];
+            //v = (Ext.os.deviceType.toLowerCase() != 'desktop') ? v : v.split('.')[0];
+            //v = (Genesis.constants.isNative()) ? v : v.split('.')[0];
+         }
+
+         if(Ext.isEmpty(v))
+         {
+            date = new Date();
+         }
+         else
+         {
+            if(format)
+            {
+               date = Date.parseDate(v, format);
+               if(Ext.isEmpty(date))
+               {
+                  date = new Date(v).format(format);
+               }
+               return [date, date];
+            }
+            date = new Date(v);
+            if(date.toString() == 'Invalid Date')
+            {
+               date = Date.parseDate(v, format);
+            }
+         }
+      }
+      else
+      {
+         date = v;
+      }
+      if(!noConvert)
+      {
+         var currentDate = new Date().getTime();
+         // Adjust for time drift between Client computer and Application Server
+         var offsetTime = Genesis.constants.currentDateTime(currentDate);
+
+         var timeExpiredSec = (offsetTime - date.getTime()) / 1000;
+
+         if(timeExpiredSec > -10)
+         {
+            if((timeExpiredSec) < 2)
+               return [timeExpiredSec, 'a second ago'];
+            if((timeExpiredSec) < 60)
+               return [timeExpiredSec, parseInt(timeExpiredSec) + ' secs ago'];
+            timeExpiredSec = timeExpiredSec / 60;
+            if((timeExpiredSec) < 2)
+               return [timeExpiredSec, 'a minute ago'];
+            if((timeExpiredSec) < 60)
+               return [timeExpiredSec, parseInt(timeExpiredSec) + ' minutes ago'];
+            timeExpiredSec = timeExpiredSec / 60;
+            if((timeExpiredSec) < 2)
+               return [date, 'an hour ago'];
+            if((timeExpiredSec) < 24)
+               return [date, parseInt(timeExpiredSec) + ' hours ago'];
+            timeExpiredSec = timeExpiredSec / 24;
+            if(((timeExpiredSec) < 2) && ((new Date().getDay() - date.getDay()) == 1))
+               return [date, 'Yesterday at ' + date.format('g:i A')];
+            if((timeExpiredSec) < 7)
+               return [date, Genesis.constants.weekday[date.getDay()] + ' at ' + date.format('g:i A')];
+            timeExpiredSec = timeExpiredSec / 7;
+            if(((timeExpiredSec) < 2) && (timeExpiredSec % 7 == 0))
+               return [date, 'a week ago'];
+            if(((timeExpiredSec) < 5) && (timeExpiredSec % 7 == 0))
+               return [date, parseInt(timeExpiredSec) + ' weeks ago'];
+
+            if(timeExpiredSec < 5)
+               return [date, parseInt(timeExpiredSec * 7) + ' days ago']
+            return [date, null];
+         }
+         // Back to the Future! Client might have changed it's local clock
+         else
+         {
+         }
+      }
+
+      return [date, -1];
+   },
+   convertDateFullTime : function(v)
+   {
+      return v.format('D, M d, Y \\a\\t g:i A');
+   },
+   convertDateReminder : function(v)
+   {
+      var today = new Date();
+      var todayDate = today.getDate();
+      var todayMonth = today.getMonth();
+      var todayYear = today.getFullYear();
+      var date = v.getDate();
+      var month = v.getMonth();
+      var year = v.getFullYear();
+      if(todayDate == date && todayMonth == month && todayYear == year)
+      {
+         return 'Today ' + v.format('g:i A');
+      }
+      return v.format('D g:i A');
+   },
+   convertDate : function(v, dateFormat)
+   {
+      var rc = Genesis.constants.convertDateCommon.call(this, v, dateFormat);
+      if(rc[1] != -1)
+      {
+         return (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
+      }
+      else
+      {
+         return rc[0].format('D, M d, Y \\a\\t g:i A');
+      }
+   },
+   convertDateNoTime : function(v)
+   {
+      var rc = Genesis.constants.convertDateCommon.call(this, v, null, true);
+      if(rc[1] != -1)
+      {
+         return (rc[1] == null) ? rc[0].format('D, M d, Y') : rc[1];
+      }
+      else
+      {
+         return rc[0].format('D, M d, Y')
+      }
+   },
+   convertDateNoTimeNoWeek : function(v)
+   {
+      var rc = Genesis.constants.convertDateCommon.call(this, v, null, true);
+      if(rc[1] != -1)
+      {
+         rc = (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
+      }
+      else
+      {
+         rc = rc[0].format('M d, Y');
+      }
+      return rc;
+   },
+   convertDateInMins : function(v)
+   {
+      var rc = Genesis.constants.convertDateCommon.call(this, v, null, true);
+      if(rc[1] != -1)
+      {
+         return (rc[1] == null) ? rc[0].format('h:ia T') : rc[1];
+      }
+      else
+      {
+         return rc[0].format('h:ia T');
+      }
+   },
+   currentDateTime : function(currentDate)
+   {
+      return systemTime + (currentDate - clientTime);
+   },
    // **************************************************************************
    // Facebook API
    /*
@@ -13,144 +185,220 @@ Genesis.contants =
    * One set for production domain, another for developement domain
    */
    // **************************************************************************
-   facebook_onLogout : function()
+   getFriendsList : function(callback)
    {
+      var uidField = "id";
+      var nameField = "name";
+      var me = this;
+      var fb = Genesis.constants;
+      FB.api('/me/friends&fields=' + nameField + ',' + uidField, function(response)
+      {
+         var friendsList = '';
+         me.friendsList = [];
+         if(response && response.data && (response.data.length > 0))
+         {
+            var data = response.data;
+            for(var i = 0; i < data.length; i++)
+            {
+               if(data[i][uidField] != Genesis.currFbId)
+               {
+                  me.friendsList.push(
+                  {
+                     label : data[i][nameField],
+                     value : data[i][uidField]
+                  });
+                  friendsList += ((friendsList.length > 0) ? ',' : '') + data[i][uidField];
+               }
+            }
+            me.friendsList.sort(function(a, b)
+            {
+               return a[uidField] - b[uidField];
+            });
+            Ext.device.Notification.show(
+            {
+               title : 'Facebook Connect',
+               message : 'We found ' + me.friendsList.length + ' Friends from your social network!'
+            });
+            //this.checkFriendReferral(friendsList, callback);
+         }
+         else
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Facebook Connect',
+               message : 'You cannot retrieve your Friends List from Facebook. Login and Try Again.',
+               buttons : ['Relogin', 'Cancel'],
+               callback : function(button)
+               {
+                  fb._fb_disconnect();
+                  FB.logout(function()
+                  {
+                     //FB.Auth.setAuthResponse(null, 'unknown');
+                     if(button == "Relogin")
+                     {
+                        fb.fbLogin(cb);
+                     }
+                     else
+                     {
+                        //fb.access_token = response.authResponse.accessToken;
+                        //fb.facebook_loginCallback(cb);
+                     }
+                  });
+               }
+            });
+         }
+      });
+   },
+   facebook_onLogout : function(cb)
+   {
+      var fb = Genesis.constants;
       try
       {
-         _fb_disconnect();
-         _logout();
+         fb._fb_disconnect();
          FB.logout(function(response)
          {
-            Genesis.ajax(false, Genesis.sign_out_path, 'GET', null, 'json', function()
-            {
-               setTimeout(function()
-               {
-                  window.location.reload(true);
-               }, 0);
-            });
+            //FB.Auth.setAuthResponse(null, 'unknown');
+            fb.fbLogin(cb);
          });
       }
       catch(e)
       {
-         Genesis.ajax(false, Genesis.sign_out_path, 'GET', null, 'json', function()
-         {
-            setTimeout(function()
-            {
-               window.location.reload(true);
-            }, 0);
-         });
       }
    },
-   facebook_loginCallback : function(forceReload)
+   //
+   // Log into Facebook
+   //
+   fbLogin : function(cb)
    {
-      FB.api('/me', function(response)
+      var fb = Genesis.constants;
+      console.log("Logging into Facebook ...");
+      FB.login(function(response)
       {
-         if(response.id == null)
+         if((response.status == 'connected') && response.authResponse)
          {
-            //if($("#fb_account")[0])
-            {
-               // Show Login Button to log into Facebook
-               facebook_onLogout();
-            }
-            return;
-         }
-         var facebook_id = response.id;
-         var showLogin = function()
-         {
-            $("#fb_login").css("display", "none");
-            $('#topbar .secondary-nav > li:not([id="fb_login"])').css('display', '');
-            $("#fb_login_img").html('<img src="http://graph.facebook.com/' + facebook_id + '/picture?type=square"/>');
-            $("#fb_login_img").css("display", "");
-
-            _fb_connect();
-            _login();
-            var msg = $("#notice").text();
-            if(msg)
-            {
-               Genesis.showWarningMsg(msg, null, true);
-            }
-         }
-         if(Genesis.popupDialog.data().modal.isShown)
-            Genesis.popupDialog.modal('hide');
-         if(!$("#fb_account")[0] || (Genesis.currFbId != facebook_id) || forceReload)
-         {
-            var name = response.name;
-            var email = response.email;
-            var facebook_uid = response.username;
-            var gender = response.gender == "male" ? "m" : "f";
-            var birthday = response.birthday.split('/');
-            birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1];
-            var params = "name=" + name + "&email=" + email + "&facebook_id=" + facebook_id + "&facebook_uid=" + facebook_uid + "&gender=" + gender + "&birthday=" + birthday;
-            Genesis.ajax(false, Genesis.sign_in_path, 'POST', params, 'json', function(response)
-            {
-               if(!$("#fb_account")[0] || forceReload)
-               {
-                  setTimeout(function()
-                  {
-                     window.location.reload(true);
-                  }, 0);
-               }
-               else
-               {
-                  Genesis.currFbId = facebook_id;
-                  if($("#fb_account")[0])
-                  {
-                     showLogin();
-                  }
-               }
-            });
+            console.log("Logged into Facebook!");
+            fb.access_token = response.authResponse.accessToken;
+            fb.facebook_loginCallback(cb);
          }
          else
          {
-            showLogin();
+            console.log("Login Failed! ...");
          }
+      },
+      {
+         scope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions'
       });
    },
-   facebook_onLogin : function(forceReload)
+   facebook_onLogin : function(cb)
    {
-      $("#fb_login").css("display", "none");
-      if($("#fb_account")[0])
+      var fb = Genesis.constants;
+      //Browser Quirks
+      //if($.client.browser == 'Safari')
       {
-         facebook_loginCallback(forceReload);
+         FB.getLoginStatus(function(response)
+         {
+            //
+            // Login as someone else?
+            //
+            if((response.status == 'connected') && response.authResponse)
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Facebook Connect',
+                  message : 'Your account is linked to your current Facebook session'
+               });
+            }
+            else
+            if(response.status === 'not_authorized')
+            {
+               // the user is logged in to Facebook,
+               // but has not authenticated your app
+               Ext.device.Notification.show(
+               {
+                  title : 'Facebook Connect',
+                  message : 'Your current Facebook Session hasn\'t been fully authorized for this application.' + ((Ext.os.deviceType.toLowerCase() == 'desktop') ? '.<br/>' : '\n') + 'Press OK to continue.',
+                  buttons : ['OK', 'Cancel'],
+                  callback : function(button)
+                  {
+                     // Logout to relogin for later
+                     fb._fb_disconnect();
+                     FB.logout(function(response)
+                     {
+                        //FB.Auth.setAuthResponse(null, 'unknown');
+                        if(button == "OK")
+                        {
+                           fb.fbLogin(cb);
+                        }
+                     });
+                  }
+               });
+            }
+            else
+            {
+               fb.fbLogin(cb);
+            }
+         });
       }
-      else
+      /*
+       else
+       {
+       fb.fbLogin(cb);
+       }
+       */
+   },
+   facebook_loginCallback : function(cb)
+   {
+      var fb = Genesis.constants;
+      console.log("Retrieving Facebook profile information ...");
+
+      Ext.Viewport.setMasked(
       {
-         var _fbLogin = function()
+         xtype : 'loadmask',
+         message : 'Logging into Facebook ...'
+      });
+      FB.api('/me', function(response)
+      {
+         Ext.Viewport.setMasked(false);
+
+         var facebook_id = response.id;
+         if(facebook_id == null)
          {
-            FB.login(function(response)
-            {
-               if((response.status == 'connected') && response.authResponse)
-               {
-                  Genesis.access_token = response.authResponse.accessToken;
-                  facebook_loginCallback(forceReload);
-               }
-            },
-            {
-               scope : Genesis.perms
-               //perms : Genesis.perms
-            });
-         };
-         //Browser Quirks
-         if($.client.browser == 'Safari')
-         {
-            FB.getLoginStatus(function(response)
-            {
-               if((response.status == 'connected') && response.authResponse)
-               {
-                  Genesis.access_token = response.authResponse.accessToken;
-                  facebook_loginCallback(forceReload);
-               }
-               else
-               {
-                  _fbLogin();
-               }
-            });
+            // Session Expired? Login again
+            facebook_onLogout(cb);
+            return;
          }
-         else
+
+         if(fb.currFbId != facebook_id)
          {
-            _fbLogin();
+            var birthday = response.birthday.split('/');
+            birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1];
+
+            var params =
+            {
+               name : response.name,
+               email : response.email,
+               faebook_id : facebook_id,
+               faecbook_uid : response.username,
+               gender : (response.gender == "male") ? "m" : "f",
+               birthday : birthday,
+               photoURL : 'http://graph.facebook.com/' + facebook_id + '/picture?type=square'
+            }
+
+            if(cb)
+            {
+               cb(params);
+            }
+            Ext.device.Notification.show(
+            {
+               title : 'Facebook Connect',
+               message : 'You have logged into Facebook! Email(' + params.email + ')'
+            });
+
+            fb.currFbId = facebook_id;
          }
-      }
+         fb._fb_connect();
+         fb.getFriendsList();
+      });
    },
    _fb_connect : function()
    {
@@ -165,7 +413,7 @@ Genesis.contants =
        */
    }
 };
-Genesis.contants._fb_disconnect = Genesis.constants._fb_connect;
+Genesis.constants._fb_disconnect = Genesis.constants._fb_connect;
 
 Genesis.fn =
 {
@@ -232,7 +480,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
    {
       var me = this, action = operation.getAction(), reader, resultSet;
 
-      if((success === true) || (phoneGapAvailable === true))
+      if((success === true) || (Genesis.constants.isNative() === true))
       {
          reader = me.getReader();
 
@@ -302,7 +550,7 @@ Ext.define('Genesis.data.Connection',
 
       var success = (status >= 200 && status < 300) || status == 304, isException = false;
 
-      if(phoneGapAvailable && (status === 0))
+      if(Genesis.constants.isNative() && (status === 0))
       {
          success = true;
       }
@@ -398,7 +646,19 @@ Ext.define('Genesis.dataview.element.List',
       if(disclosure && dataview.getOnItemDisclosure())
       {
          disclosureEl = extItem.down(me.disclosureClsCache);
-         disclosureEl[disclosure ? 'removeCls' : 'addCls'](me.hiddenDisplayCache);
+         //
+         // Fix bug in Sencha Touch where "x-clsClass" is missing spaces
+         //
+         if(!disclosureEl)
+         {
+            disclosureEl = extItem.down(me.disclosureClsCache + me.hiddenDisplayCache);
+            disclosureEl[disclosure ? 'removeCls' : 'addCls'](me.disclosureClsCache + me.hiddenDisplayCache);
+            disclosureEl['addCls'](me.disclosureClsCache);
+         }
+         else
+         {
+            disclosureEl[disclosure ? 'removeCls' : 'addCls'](me.hiddenDisplayCache);
+         }
       }
 
       if(dataview.getIcon())
@@ -430,120 +690,231 @@ Ext.define('Genesis.tab.Bar',
    }
 });
 
-//
-// Temporary Fix until Sencha Touch Team fixes Ext.Loader problem when running in PhoneGap
-//
+//---------------------------------------------------------------------------------------------------------------------------------
+// Ext.data.Store
+//---------------------------------------------------------------------------------------------------------------------------------
+Ext.define('Genesis.data.Store',
+{
+   override : 'Ext.data.Store',
+   /**
+    * @private
+    * Called internally when a Proxy has completed a load request
+    */
+   onProxyLoad : function(operation)
+   {
+
+      var me = this, successful = operation.wasSuccessful();
+
+      //
+      // Check Error Codes
+      //
+      if(!successful)
+      {
+         Ext.Viewport.setMasked(false);
+         
+         Ext.device.Notification.show(
+         {
+            title : 'Network Error',
+            message : 'No permission to access remote call.',
+            callback : function()
+            {
+               _application.getController('Viewport').onFeatureTap('MainPage', 'login');
+            }
+         });
+      }
+      else
+      {
+         this.callParent(arguments);
+      }
+   },
+   /**
+    * @private
+    * Callback for any write Operation over the Proxy. Updates the Store's MixedCollection to reflect
+    * the updates provided by the Proxy
+    */
+   onProxyWrite : function(operation)
+   {
+      var me = this, success = operation.wasSuccessful();
+
+      //
+      // Check Error Codes
+      //
+      if(!success)
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Network Error',
+            message : 'No permission to access remote call.',
+            callback : function()
+            {
+               _application.getController('Viewport').onFeatureTap('MainPage', 'login');
+            }
+         });
+      }
+      else
+      {
+         this.callParent(arguments);
+      }
+   }
+});
+
+//---------------------------------------------------------------------------------
+// Array
+//---------------------------------------------------------------------------------
+Array.prototype.binarySearch = function(find, comparator)
+{
+   var low = 0, high = this.length - 1, i, comparison;
+   while(low <= high)
+   {
+      i = Math.floor((low + high) / 2);
+      comparison = comparator(this[i], find);
+      if(comparison < 0)
+      {
+         low = i + 1;
+         continue;
+      };
+      if(comparison > 0)
+      {
+         high = i - 1;
+         continue;
+      };
+      return i;
+   }
+   return null;
+};
+//---------------------------------------------------------------------------------
+// String
+//---------------------------------------------------------------------------------
+String.prototype.getFuncBody = function()
+{
+   var str = this.toString();
+   str = str.replace(/[^{]+\{/, "");
+   str = str.substring(0, str.length - 1);
+   str = str.replace(/\n/gi, "");
+   if(!str.match(/\(.*\)/gi))
+      str += ")";
+   return str;
+}
+String.prototype.strip = function()
+{
+   return this.replace(/^\s+/, '').replace(/\s+$/, '');
+}
+String.prototype.stripScripts = function()
+{
+   //    return this.replace(new
+   // RegExp('\\bon[^=]*=[^>]*(?=>)|<\\s*(script|link|iframe|embed|object|applet|form|button|input)[^>]*[\\S\\s]*?<\\/\\1>|<[^>]*include[^>]*>',
+   // 'ig'),"");
+   return this.replace(new RegExp('<noscript[^>]*?>([\\S\\s]*?)<\/noscript>', 'img'), '').replace(new RegExp('<script[^>]*?>([\\S\\s]*?)<\/script>', 'img'), '').replace(new RegExp('<link[^>]*?>([\\S\\s]*?)<\/link>', 'img'), '').replace(new RegExp('<link[^>]*?>', 'img'), '').replace(new RegExp('<iframe[^>]*?>([\\S\\s]*?)<\/iframe>', 'img'), '').replace(new RegExp('<iframe[^>]*?>', 'img'), '').replace(new RegExp('<embed[^>]*?>([\\S\\s]*?)<\/embed>', 'img'), '').replace(new RegExp('<embed[^>]*?>', 'img'), '').replace(new RegExp('<object[^>]*?>([\\S\\s]*?)<\/object>', 'img'), '').replace(new RegExp('<object[^>]*?>', 'img'), '').replace(new RegExp('<applet[^>]*?>([\\S\\s]*?)<\/applet>', 'img'), '').replace(new RegExp('<applet[^>]*?>', 'img'), '').replace(new RegExp('<button[^>]*?>([\\S\\s]*?)<\/button>', 'img'), '').replace(new RegExp('<button[^>]*?>', 'img'), '').replace(new RegExp('<input[^>]*?>([\\S\\s]*?)<\/input>', 'img'), '').replace(new RegExp('<input[^>]*?>', 'img'), '').replace(new RegExp('<style[^>]*?>([\\S\\s]*?)<\/style>', 'img'), '').replace(new RegExp('<style[^>]*?>', 'img'), '')
+}
+String.prototype.stripTags = function()
+{
+   return this.replace(/<\/?[^>]+>/gi, '');
+}
+String.prototype.stripComments = function()
+{
+   return this.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
+}
+String.prototype.times = function(n)
+{
+   var s = '';
+   for(var i = 0; i < n; i++)
+   {
+      s += this;
+   }
+   return s;
+}
+String.prototype.zp = function(n)
+{
+   return ('0'.times(n - this.length) + this);
+}
+String.prototype.capitalize = function()
+{
+   return this.replace(/\w+/g, function(a)
+   {
+      return a.charAt(0).toUpperCase() + a.substr(1);
+   });
+}
+String.prototype.uncapitalize = function()
+{
+   return this.replace(/\w+/g, function(a)
+   {
+      return a.charAt(0).toLowerCase() + a.substr(1);
+   });
+}
+String.prototype.trim = function(x)
+{
+   if(x == 'left')
+      return this.replace(/^\s*/, '');
+   if(x == 'right')
+      return this.replace(/\s*$/, '');
+   if(x == 'normalize')
+      return this.replace(/\s{2,}/g, ' ').trim();
+
+   return this.trim('left').trim('right');
+}
+/**
+ * Convert certain characters (&, <, >, and ') to their HTML character equivalents for literal display in web pages.
+ * @param {String} value The string to encode
+ * @return {String} The encoded text
+ */
+String.htmlEncode = (function()
+{
+   var entities =
+   {
+      '&' : '&amp;',
+      '>' : '&gt;',
+      '<' : '&lt;',
+      '"' : '&quot;'
+   }, keys = [], p, regex;
+
+   for(p in entities)
+   {
+      keys.push(p);
+   }
+   regex = new RegExp('(' + keys.join('|') + ')', 'g');
+
+   return function(value)
+   {
+      return (!value) ? value : String(value).replace(regex, function(match, capture)
+      {
+         return entities[capture];
+      });
+   };
+})();
 
 /**
- * Load a script file, supports both asynchronous and synchronous approaches
- *
- * @param {String} url
- * @param {Function} onLoad
- * @param {Scope} scope
- * @param {Boolean} synchronous
- * @private
+ * Convert certain characters (&, <, >, and ') from their HTML character equivalents.
+ * @param {String} value The string to decode
+ * @return {String} The decoded text
  */
-/*
- Ext.Loader.loadScriptFile = function(url, onLoad, onError, scope, synchronous)
- {
- var isPhantomJS = ( typeof phantom != 'undefined' && phantom.fs);
- var me = this, isFileLoaded = this.isFileLoaded, scriptElements = this.scriptElements, noCacheUrl = url +
- (this.getConfig('disableCaching') ? ('?' + this.getConfig('disableCachingParam') + '=' + Ext.Date.now()) : ''),
- isCrossOriginRestricted = false, xhr, status, onScriptError;
+String.htmlDecode = (function()
+{
+   var entities =
+   {
+      '&amp;' : '&',
+      '&gt;' : '>',
+      '&lt;' : '<',
+      '&quot;' : '"'
+   }, keys = [], p, regex;
 
- if(isFileLoaded[url])
- {
- return this;
- }
- scope = scope || this;
+   for(p in entities)
+   {
+      keys.push(p);
+   }
+   regex = new RegExp('(' + keys.join('|') + '|&#[0-9]{1,5};' + ')', 'g');
 
- this.isLoading = true;
-
- if(!synchronous)
- {
- onScriptError = function()
- {
- //<debug error>
- onError.call(scope, "Failed loading '" + url + "', please verify that the file exists", synchronous);
- //</debug>
- };
- if(!Ext.isReady && Ext.onDocumentReady)
- {
- Ext.onDocumentReady(function()
- {
- if(!isFileLoaded[url])
- {
- scriptElements[url] = me.injectScriptElement(noCacheUrl, onLoad, onScriptError, scope);
- }
- });
- }
- else
- {
- scriptElements[url] = this.injectScriptElement(noCacheUrl, onLoad, onScriptError, scope);
- }
- }
- else
- {
- if( typeof XMLHttpRequest != 'undefined')
- {
- xhr = new XMLHttpRequest();
- }
- else
- {
- xhr = new ActiveXObject('Microsoft.XMLHTTP');
- }
-
- try
- {
- xhr.open('GET', noCacheUrl, false);
- xhr.send(null);
- }
- catch (e)
- {
- isCrossOriginRestricted = true;
- }
- status = (xhr.status === 1223) ? 204 : xhr.status;
-
- if(!isCrossOriginRestricted)
- {
- isCrossOriginRestricted = (status === 0);
- }
-
- if(isCrossOriginRestricted
- //<if isNonBrowser>
- && !isPhantomJS
- //</if>
- )
- {
- //<debug error>
- //onError.call(this, "Failed loading synchronously via XHR: '" + url + "'; It's likely that the file is either " + "being
- // loaded from a different domain or from the local file system whereby cross origin " + "requests are not allowed due to
- // security reasons. Use asynchronous loading with " + "Ext.require instead.", synchronous);
- //</debug>
- }
- else
- if(status >= 200 && status < 300
- //<if isNonBrowser>
- || isPhantomJS
- //</if>
- )
- {
- // Debugger friendly, file names are still shown even though they're eval'ed code
- // Breakpoints work on both Firebug and Chrome's Web Inspector
- Ext.globalEval(xhr.responseText + "\n//@ sourceURL=" + url);
-
- onLoad.call(scope);
- }
- else
- {
- //<debug>
- onError.call(this, "Failed loading synchronously via XHR: '" + url + "'; please " + "verify that the file exists. " + "XHR status
- code: " + status, synchronous);
- //</debug>
- }
-
- // Prevent potential IE memory leak
- xhr = null;
- }
- }
- */
+   return function(value)
+   {
+      return (!value) ? value : String(value).replace(regex, function(match, capture)
+      {
+         if( capture in entities)
+         {
+            return entities[capture];
+         }
+         else
+         {
+            return String.fromCharCode(parseInt(capture.substr(2), 10));
+         }
+      });
+   };
+})();
