@@ -30,7 +30,7 @@ namespace :db do
     puts "Complete Staff creation"
     
     puts "Creating Merchants..."
-    1.times do |n|
+    10.times do |n|
       type = MerchantType.get(1)
       merchant = Merchant.create(type,
       {
