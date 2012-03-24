@@ -26,6 +26,7 @@ class Challenge
   has n, :venues, :through => :challenge_venues
     
   validates_presence_of :type_id, :on => :save  
+  validates_with_method :name, :method => :check_name
   validates_with_method :check_data
   validates_with_method :points, :method => :check_points
   validates_with_method :check_venues
@@ -92,6 +93,25 @@ class Challenge
   end
   
   private
+  
+  def check_name
+    line_length = 10
+    current_line_length = 0
+    num_of_lines = 1
+    words = self.name.split
+    words.each do |word|
+      if word.length > line_length 
+        return [false, "Individual words cannot exceed 10 characters"]
+      end
+      current_line_length += word.length
+      if current_line_length > line_length
+        num_of_lines += 1
+        current_line_length = word.length 
+      end
+      current_line_length += 1
+    end
+    num_of_lines <= 2 ? true : [false, "Name must fit within 2 lines with max 10 characters per line"]
+  end
   
   def check_data
     if self.data
