@@ -30,7 +30,7 @@ class CustomerReward
     now = Time.now
     reward = CustomerReward.new(
       :type_id => type ? type.id : nil,
-      :title => reward_info[:title],
+      :title => reward_info[:title].strip,
       :price => reward_info[:price],
       :points => reward_info[:points]
     )

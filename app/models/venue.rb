@@ -44,14 +44,14 @@ class Venue
     
     venue = Venue.new(
       :type_id => type ? type.id : nil,
-      :name => venue_info[:name],
-      :address => venue_info[:address],
-      :city => venue_info[:city],
-      :state => venue_info[:state],
-      :zipcode => venue_info[:zipcode],
+      :name => venue_info[:name].strip,
+      :address => venue_info[:address].strip,
+      :city => venue_info[:city].strip,
+      :state => venue_info[:state].strip,
+      :zipcode => venue_info[:zipcode].strip,
       :country => venue_info[:country],
-      :phone => venue_info[:phone],
-      :website => venue_info[:website],
+      :phone => venue_info[:phone].strip,
+      :website => venue_info[:website].strip,
       :latitude => venue_info[:latitude].to_f,
       :longitude => venue_info[:longitude].to_f
     )

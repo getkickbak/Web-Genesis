@@ -35,8 +35,8 @@ class Challenge
     now = Time.now
     challenge = Challenge.new(
       :type_id => type ? type.id : nil,
-      :name => challenge_info[:name],
-      :description => challenge_info[:description],
+      :name => challenge_info[:name].strip,
+      :description => challenge_info[:description].strip,
       :require_verif => challenge_info[:require_verif],
       :points => challenge_info[:points]
     )
