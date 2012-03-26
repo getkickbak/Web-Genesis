@@ -35,6 +35,10 @@ Ext.define('Genesis.model.Customer',
          {
             'If-None-Match' : ''
          },
+         writer :
+         {
+            type : 'json'
+         },
          reader :
          {
             type : 'json',
@@ -52,26 +56,53 @@ Ext.define('Genesis.model.Customer',
    {
       setFbLoginUrl : function()
       {
-         this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl('/facebook_sign_in');
+         //this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
       },
       setLoginUrl : function()
       {
-         this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl('/sign_in');
+         //this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
       },
       setCreateAccountUrl : function()
       {
-         this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl('/sign_up');
+         //this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
       },
       setVenueScanCheckinUrl : function()
       {
+         this.getProxy().setActionMethods(
+         {
+            read : 'GET'
+         });
          this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
       },
       setVenueCheckinUrl : function()
       {
+         this.getProxy().setActionMethods(
+         {
+            read : 'GET'
+         });
          this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
       },
       setVenueExploreUrl : function()
       {
+         this.getProxy().setActionMethods(
+         {
+            read : 'GET'
+         });
          this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
       }
    }

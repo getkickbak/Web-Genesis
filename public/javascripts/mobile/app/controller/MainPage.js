@@ -224,11 +224,11 @@ Ext.define('Genesis.controller.MainPage',
          {
             params :
             {
-               fullname : params.name,
-               username : params.email,
+               name : params.name,
+               email : params.email,
                gender : params.gender,
-               faebook_id : params.facebook_id,
-               faecbook_uid : params.username,
+               facebook_id : params.facebook_id,
+               //faecbook_uid : params.username,
                birthday : params.birthday
             }
          });
@@ -318,8 +318,8 @@ Ext.define('Genesis.controller.MainPage',
          {
             params :
             {
-               fullname : values.name,
-               username : values.username,
+               name : values.name,
+               email : values.username,
                password : values.password
             }
          });
@@ -353,9 +353,14 @@ Ext.define('Genesis.controller.MainPage',
          {
             params :
             {
-               username : values.username,
+               email : values.username,
                password : values.password
-            }
+            },
+            jsonData : //JSON.stringify(
+            {
+               email : values.username,
+               password : values.password
+            }//)
          });
       }
    },

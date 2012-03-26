@@ -470,7 +470,7 @@ Ext.define('Genesis.Component',
 });
 
 //---------------------------------------------------------------------------------------------------------------------------------
-// Ext.data.AjaxProxy
+// Ext.data.proxy.Server
 //---------------------------------------------------------------------------------------------------------------------------------
 
 Ext.define('Genesis.data.proxy.OfflineServer',
@@ -527,11 +527,28 @@ Ext.define('Genesis.data.proxy.OfflineServer',
       }
 
       me.afterRequest(request, success);
+   },
+   /**
+    * Creates and returns an Ext.data.Request object based on the options passed by the {@link Ext.data.Store Store}
+    * that this Proxy is attached to.
+    * @param {Ext.data.Operation} operation The {@link Ext.data.Operation Operation} object to execute
+    * @return {Ext.data.Request} The request object
+    */
+   buildRequest : function(operation)
+   {
+      var request = this.callParent(arguments);
+
+      if(operation.initialConfig.jsonData)
+      {
+         request.setJsonData(operation.initialConfig.jsonData);
+      }
+
+      return request;
    }
 });
 
 //---------------------------------------------------------------------------------------------------------------------------------
-// Ext.data.AjaxProxy
+// Ext.data.Connection
 //---------------------------------------------------------------------------------------------------------------------------------
 
 Ext.define('Genesis.data.Connection',
@@ -711,11 +728,12 @@ Ext.define('Genesis.data.Store',
       if(!successful)
       {
          Ext.Viewport.setMasked(false);
-         
+
          Ext.device.Notification.show(
          {
             title : 'Network Error',
-            message : 'No permission to access remote call.',
+            message : '',
+            //message : 'No permission to access remote call.',
             callback : function()
             {
                _application.getController('Viewport').onFeatureTap('MainPage', 'login');
