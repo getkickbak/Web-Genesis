@@ -70,14 +70,14 @@ class Api::V1::ChallengesController < ApplicationController
           @customer.points += @challenge.points
           @customer.save
           success = true
-          data = { :msg => [""] }
+          msg = [""]
         else
           success = false
-          data = { :msg => [""] }   
+          msg = [""] 
         end
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => success, :data => data } }
+          format.json { render :json => { :success => success, :message => msg } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)

@@ -11,7 +11,7 @@ class Api::V1::EarnPrizesController < ApplicationController
     end
     respond_to do |format|
       #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @earn_prizes.to_json } }
+      format.json { render :json => { :success => true, :data => @earn_prizes } }
     end
   end
   
@@ -22,16 +22,18 @@ class Api::V1::EarnPrizesController < ApplicationController
     @reward = PurchaseReward.get(@earn_prize.reward.id)
     respond_to do |format|
       #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @reward.venues.to_json } }
+      format.json { render :json => { :success => true, :data => @reward.venues } }
     end
   end
   
   def show_winners
-    @prizes = EarnPrize.all(EarnPrize.merchant.id => params[:merchant_id], :order => [:created_ts.desc], :offset => 0, :limit => params[:max])
+    start = 0
+    max = params[:max].to_i
+    @prizes = EarnPrize.all(EarnPrize.merchant.id => params[:merchant_id], :order => [:created_ts.desc], :offset => start, :limit => max)
     
     respond_to do |format|
       #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @prizes.to_json({:only => [:created_ts], :methods => [:user, :reward]}) } }
+      format.json { render :json => { :success => true, :data => @prizes.as_json({:only => [:created_ts], :include => [:user]}) } }
     end
   end
   

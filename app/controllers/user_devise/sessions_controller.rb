@@ -1,16 +1,6 @@
 class UserDevise::SessionsController < Devise::SessionsController  
   # POST /resource/sign_in
   
-  def create
-    resource = warden.authenticate!(:scope => resource_name, :recall => "#{controller_path}#failure")
-    set_flash_message(:notice, :signed_in) if is_navigational_format?
-    sign_in(resource_name, resource)
-    respond_to do |format|
-      #format.html { redirect_to after_sign_in_path_for(resource) }
-      format.json { render :json => { :success => true, :data => resource.to_json } }
-    end
-  end
-  
   def create_from_facebook
     User.transaction do
       begin
@@ -63,13 +53,5 @@ class UserDevise::SessionsController < Devise::SessionsController
         render :text => text, :status => :ok
       end
     end
-  end
-  
-  def failure
-    render :json => { :success => false, :message => ["Login Failed"] }
-    #respond_to do |format|
-    #  format.html { render :action => "new" }
-    #  format.json { render :json => { :success => false, :message => [resource.errors.to_json] } }
-    #end
   end
 end

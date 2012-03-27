@@ -5,10 +5,12 @@ class Api::V1::CustomersController < ApplicationController
   def index
     authorize! :read, Customer
 
-    results = Customer.find(current_user.id, params[:start], params[:max])
+    start = params[:start].to_i
+    max = params[:limit].to_i
+    results = Customer.find(current_user.id, start, max)
 
     respond_to do |format|
-      format.json { render :json => { :success => true, :data => results[:items].to_json, :total => results[:total] } }
+      format.json { render :json => { :success => true, :data => results[:items], :total => results[:total] } }
     end
   end
   
@@ -20,17 +22,15 @@ class Api::V1::CustomersController < ApplicationController
       begin
         if @venue.authorization_codes.first(:auth_code => params[:auth_code])
           @customer = Customer.create(@venue.merchant, current_user)
-          success = true
-          msg = [""]
-          data = @customer.to_json
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => true, :data => @customer, :message => [""] } }
+          end
         else
-          success = false
-          msg = [""]   
-          data = { :msg => msg }
-        end
-        respond_to do |format|
-          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => success, :data => data } }
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => false, :message => [""] } }
+          end 
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)

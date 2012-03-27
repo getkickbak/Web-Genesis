@@ -17,7 +17,7 @@ class Api::V1::CreditCardsController < ApplicationController
 
     respond_to do |format|
     #format.xml  { render :xml => @users }
-      format.json  { render :json => { :success => true, :data => @credit_card.to_json } }
+      format.json  { render :json => { :success => true, :data => @credit_card } }
     end
   end
 

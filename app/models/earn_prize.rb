@@ -19,7 +19,7 @@ class EarnPrize
   belongs_to :user
   
   def as_json(options)
-    only = {:only => [:id, :expiry_date, :created_ts], :methods => [:merchant, :reward]}
+    only = {:only => [:id, :expiry_date, :created_ts], :include => [:merchant, :reward]}
     options = options.nil? ? only : options.merge(only)
     super(options)
   end

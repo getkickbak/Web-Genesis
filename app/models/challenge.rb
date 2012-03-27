@@ -82,7 +82,7 @@ class Challenge
   end
   
   def as_json(options)
-    only = {:only => [:id,:name,:description,:require_verif,:points], :methods => [:type]}
+    only = {:only => [:id,:name,:description,:require_verif,:points], :include => [:type]}
     options = options.nil? ? only : options.merge(only)
     super(options)
   end

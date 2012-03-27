@@ -6,7 +6,7 @@ class Api::V1::CouponsController < ApplicationController
     authorize! :read, @coupon
 
     respond_to do |format|
-      format.json  { render :json => { :success => true, :data => @coupon.to_json } }
+      format.json  { render :json => { :success => true, :data => @coupon } }
     end
   end
 

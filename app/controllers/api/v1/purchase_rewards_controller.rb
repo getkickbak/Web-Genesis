@@ -7,7 +7,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     @rewards = PurchaseReward.all(PurchaseReward.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]))
     respond_to do |format|
       #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @rewards.to_json } }
+      format.json { render :json => { :success => true, :data => @rewards } }
     end
    end
   
@@ -123,7 +123,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           mutex.release
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => success, :data => { :vip_challenge => vip_challenge, :vip_points => vip_points }, :metaData => { :prizes => data.to_json }, :message => [""] } }
+            format.json { render :json => { :success => success, :data => { :vip_challenge => vip_challenge, :vip_points => vip_points }, :metaData => { :prizes => data }, :message => [""] } }
           end
         else
           respond_to do |format|

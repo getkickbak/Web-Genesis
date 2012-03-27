@@ -61,7 +61,7 @@ class PurchaseReward
   end
 
   def as_json(options)
-    only = {:only => [:id,:title,:points], :methods => [:type]}
+    only = {:only => [:id,:title,:points], :include => [:type]}
     options = options.nil? ? only : options.merge(only)
     super(options)
   end

@@ -134,7 +134,7 @@ class Venue
   end
   
   def as_json(options)
-    only = {:only => [:id, :name, :longitude, :latitude, :distance], :methods => [:type, :merchant]}
+    only = {:only => [:id, :name, :longitude, :latitude, :distance], :include => [:type, :merchant]}
     options = options.nil? ? only : options.merge(only)
     super(options)
   end

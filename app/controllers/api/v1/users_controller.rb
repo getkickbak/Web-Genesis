@@ -8,7 +8,7 @@ class Api::V1::UsersController < ApplicationController
 
     respond_to do |format|
       #format.xml  { render :xml => @user }
-      format.json { render :json => { :success => false, :data => @user.to_json } }
+      format.json { render :json => { :success => false, :data => @user } }
     end
   end
 

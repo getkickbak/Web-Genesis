@@ -25,16 +25,16 @@ class Api::V1::VenuesController < ApplicationController
       data[:eligible_rewards] = @eligible_rewards
     end 
     respond_to do |format|
-      format.json { render :json => { :success => true, :data => @customer.to_json, :metaData => data.to_json } }
+      format.json { render :json => { :success => true, :data => @customer, :metaData => data.to_json } }
     end  
   end
   
   def find_nearest
     authorize! :read, Venue
 
-    venues = Venue.find_nearest(params[:merchant_id], params[:latitude], params[:longitude], params[:max])
+    @venues = Venue.find_nearest(params[:merchant_id], params[:latitude], params[:longitude], params[:max])
     respond_to do |format|
-      format.json { render :json => { :success => true, :data => venues.to_json } }
+      format.json { render :json => { :success => true, :data => @venues } }
     end
   end
 end
