@@ -6,8 +6,7 @@ $(document).ready($(function() {
 
 	
 	Genesis.ajax(false, location.pathname+'/show_charts', 'GET', null, 'json', function(response) {
-		var data = $.parseJSON(response.data);
-		google.setOnLoadCallback(drawCharts(data));
+		google.setOnLoadCallback(drawCharts(response.data));
 	});
 	function drawCharts(response_data) {
 		var data1 = new google.visualization.DataTable();
