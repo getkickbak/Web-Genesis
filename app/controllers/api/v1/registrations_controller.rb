@@ -9,7 +9,7 @@ class Api::V1::RegistrationsController < ApplicationController
         params[:user][:role] = "user"
         params[:user][:status] = :active
         @user = User.create(params[:user])
-        results = Customer.find(@user.id, start, max)
+        results = Customer.find(@user.id, params[:start], params[:max])
         render :json => { :success => true, :data => results[:items].to_json, :metaData => { :auth_token => @user.authentication_token }, :total => results[:total] }
       rescue DataMapper::SaveFailureError => e
         render :json => { :success => false, :metaData => e.resource.errors.to_json }

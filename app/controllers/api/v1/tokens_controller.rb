@@ -25,7 +25,7 @@ class Api::V1::TokensController < ApplicationController
     if not @user.valid_password?(password) 
       render :json => { :success => false, :message => ["Invalid email or passoword."] }
     else
-      results = Customer.find(@user.id, start, max)
+      results = Customer.find(@user.id, params[:start], params[:max])
       render :json => { :success => true, :data => results[:items].to_json, :metaData => { :auth_token => @user.authentication_token }, :total => results[:total] }
     end
   end
