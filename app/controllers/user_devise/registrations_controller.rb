@@ -12,14 +12,12 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
           sign_in(resource_name, resource)
           respond_to do |format|
             format.html { redirect_to redirect_location(resource_name, resource) }
-            format.json { render :json => { :success => true, :data => resource.to_json } }
           end
         else
           set_flash_message :notice, :inactive_signed_up, :reason => resource.inactive_message.to_s if is_navigational_format?
           expire_session_data_after_sign_in!
           respond_to do |format|
             format.html { redirect_to after_inactive_sign_up_path_for(resource) }
-            format.json { render :json => { :success => true, :data => resource.to_json } }
           end
         end  
       rescue DataMapper::SaveFailureError => e
@@ -27,14 +25,12 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
         clean_up_passwords resource
         respond_to do |format|
           format.html { redirect_to resource }
-          format.json { render :json => { :success => false, :metaData => resource.errors.to_json } }
         end  
       rescue
         t.rollback
         clean_up_passwords resource
         respond_to do |format|
           format.html { redirect_to resource }
-          format.json { render :json => { :success => false, :messasge => [""] } }
         end
       end
     end

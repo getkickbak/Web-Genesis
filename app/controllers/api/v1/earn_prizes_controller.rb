@@ -1,4 +1,4 @@
-class EarnPrizesController < ApplicationController
+class Api::V1::EarnPrizesController < ApplicationController
   before_filter :authenticate_user!
   
   def index
@@ -51,7 +51,6 @@ class EarnPrizesController < ApplicationController
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
-          #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => ["Something went wrong", "Please try again."] } }
         end

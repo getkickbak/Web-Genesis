@@ -1,4 +1,4 @@
-class CustomerRewardsController < ApplicationController
+class Api::V1::CustomerRewardsController < ApplicationController
   before_filter :authenticate_user!
   
   def index
@@ -38,14 +38,12 @@ class CustomerRewardsController < ApplicationController
           msg = [""]  
         end
         respond_to do |format|
-          #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
           format.json { render :json => { :success => success, :msg => msg } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
-          #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
         end

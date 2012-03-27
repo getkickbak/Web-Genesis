@@ -1,4 +1,4 @@
-class ChallengesController < ApplicationController
+class Api::V1::ChallengesController < ApplicationController
   before_filter :authenticate_user!
   
   def index
@@ -34,7 +34,6 @@ class ChallengesController < ApplicationController
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
-          #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => ["Something went wrong", "Trouble starting the challenge.  Please try again."] } }
         end
@@ -50,7 +49,6 @@ class ChallengesController < ApplicationController
     
     if !Common.within_geo_distance?(params[:latitude], params[:longitude], @venue.latitude, @venue.longitude)
       respond_to do |format|
-        #format.html { render :action => "new" }
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => ["Something went wrong", "Outside of check-in distance.  Please try again."] } }
       end
@@ -78,14 +76,12 @@ class ChallengesController < ApplicationController
           data = { :msg => [""] }   
         end
         respond_to do |format|
-          #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
           format.json { render :json => { :success => success, :data => data } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
-          #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
         end

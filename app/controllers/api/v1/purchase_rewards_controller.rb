@@ -1,4 +1,4 @@
-class PurchaseRewardsController < ApplicationController
+class Api::V1::PurchaseRewardsController < ApplicationController
   before_filter :authenticate_user!
   
   def index
@@ -23,7 +23,6 @@ class PurchaseRewardsController < ApplicationController
     
     if !Common.within_geo_distance?(params[:latitude], params[:longitude], @venue.latitude, @venue.longitude)
       respond_to do |format|
-        #format.html { render :action => "new" }
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => ["Something went wrong", "Outside of check-in distance.  Please try again."] } }
       end
@@ -123,13 +122,11 @@ class PurchaseRewardsController < ApplicationController
           end
           mutex.release
           respond_to do |format|
-            #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => success, :data => { :vip_challenge => vip_challenge, :vip_points => vip_points }, :metaData => { :prizes => data.to_json }, :message => [""] } }
           end
         else
           respond_to do |format|
-            #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => [""] } }
           end
@@ -137,13 +134,11 @@ class PurchaseRewardsController < ApplicationController
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
-          #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
         end
       rescue
         respond_to do |format|
-          #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
         end  

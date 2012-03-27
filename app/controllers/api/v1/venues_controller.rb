@@ -1,4 +1,4 @@
-class VenuesController < ApplicationController
+class Api::V1::VenuesController < ApplicationController
   before_filter :authenticate_user!
   #load_and_authorize_resource
 
@@ -25,7 +25,6 @@ class VenuesController < ApplicationController
       data[:eligible_rewards] = @eligible_rewards
     end 
     respond_to do |format|
-      format.html # index.html.erb
       format.json { render :json => { :success => true, :data => @customer.to_json, :metaData => data.to_json } }
     end  
   end
@@ -35,7 +34,6 @@ class VenuesController < ApplicationController
 
     venues = Venue.find_nearest(params[:merchant_id], params[:latitude], params[:longitude], params[:max])
     respond_to do |format|
-    #format.xml  { render :xml => referrals }
       format.json { render :json => { :success => true, :data => venues.to_json } }
     end
   end

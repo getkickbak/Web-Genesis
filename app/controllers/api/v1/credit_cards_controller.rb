@@ -1,4 +1,4 @@
-class CreditCardsController < ApplicationController
+class Api::V1::CreditCardsController < ApplicationController
   before_filter :authenticate_user!
   #load_and_authorize_resource
   def index
@@ -16,8 +16,8 @@ class CreditCardsController < ApplicationController
     )
 
     respond_to do |format|
-      format.html # index.html.erb
     #format.xml  { render :xml => @users }
+      format.json  { render :json => { :success => true, :data => @credit_card.to_json } }
     end
   end
 
@@ -54,7 +54,6 @@ class CreditCardsController < ApplicationController
           credit_card = CreditCard.create(current_user.id)
           current_user.add(credit_card)
           respond_to do |format|
-            format.html { redirect_to credit_card_path(:notice => 'Credit card was successfully added.') }
             format.json { render :json => { :success => true, :message => 'Credit card was successfully added.' } }
           end
         else  
@@ -62,7 +61,6 @@ class CreditCardsController < ApplicationController
         end
       rescue DataMapper::SaveFailureError => e
         respond_to do |format|
-          format.html { render :action => "index" }
           format.json { render :json => { :success => false } }
         end
       end
@@ -100,14 +98,12 @@ class CreditCardsController < ApplicationController
         if result.success?
           @credit_card.update()
           respond_to do |format|
-            format.html { redirect_to credit_card_path(:notice => 'Credit card was successfully added.') }
             format.json { render :json => { :success => true, :message => ['Credit card was successfully added.'] } }
           end
         else
         end  
       rescue DataMapper::SaveFailureError => e
         respond_to do |format|
-          format.html { render :action => "index" }
           format.json { render :json => { :success => false } }
         end
       end
@@ -123,12 +119,10 @@ class CreditCardsController < ApplicationController
         current_user.remove_credit_card(@credit_card)
         Braintree::CreditCard.delete(@credit_card.card_token)
         respond_to do |format|
-          format.html { redirect_to(credit_cards_url) }
           #format.xml  { head :ok }
         end
       rescue
         respond_to do |format|
-          format.html { redirect_to(credit_cards_url) }
           #format.xml  { head :ok }
         end 
       end

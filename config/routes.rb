@@ -69,7 +69,7 @@ Genesis::Application.routes.draw do
       
       match "/account" => 'account#show', :as => :account
       match "/account/edit" => 'account#edit', :as => :edit_account
-      match "/account/update" => 'account#update', :as => :update_account
+      match "/account/update" => 'account#update', :via => :post, :as => :update_account
             
       match '/jobs' => 'jobs#index', :as => :jobs
       match '/jobs/run' => 'jobs#run', :as => :job_run
@@ -87,17 +87,45 @@ Genesis::Application.routes.draw do
   end
 
   constraints Domain do
-    devise_for :users, :path => "", :controllers => {
-      :sessions => "user_devise/sessions",
-      :registrations => "user_devise/registrations",
-      :passwords => "user_devise/passwords",
-    } do
-      match "/facebook_sign_in" => 'user_devise/sessions#create_from_facebook'
+    #devise_for :users, :path => "", :controllers => {
+    #  :sessions => "user_devise/sessions",
+    #  :registrations => "user_devise/registrations",
+    #  :passwords => "user_devise/passwords",
+    #} do
+    #  match "/facebook_sign_in" => 'user_devise/sessions#create_from_facebook'
+    #end
+    
+    namespace :api do
+      namespace :v1  do
+        resources :tokens, :only => [:create, :destroy]
+        resources :check_ins, :only => [:create]
+        resources :customers, :only => [:index, :create]
+    
+        match "/facebook_sign_in" => 'tokens#create_from_facebook', :via => :post
+        match "/sign_up" => 'registrations#create', :via => :post
+        
+        match "/account" => 'users#show'
+        match "/account/update" => 'users#update', :via => :post
+    
+        match '/venues/find_nearest' => 'venues#find_nearest'
+        match '/venues/:id/show' => 'venues#show'
+
+        match '/challenges' => 'challenges#index'
+        match '/challenges/:id/start' => 'challenges#start'
+        match '/challenges/:id/complete' => 'challenges#complete'
+
+        match '/customer_rewards' => 'customer_rewards#index'
+        match '/customer_rewards/:id/redeem' => 'customer_rewards#redeem'
+
+        match '/purchase_rewards' => 'purchase_rewards#index'
+        match '/purchase_rewards/earn' => 'purchase_rewards#earn', :via => :post
+
+        match '/earn_prizes' => 'earn_prizes#index'
+        match '/earn_prizes/:id/show' => 'earn_prizes#show'
+        match '/earn_prizes/:id/redeem' => 'earn_prizes#redeem'
+      end
     end
-    
-    resources :check_ins, :only => [:create]
-    resources :customers, :only => [:index, :create]
-    
+  
     match "/how_it_works" => 'pages#how_it_works'
     #match "/privacy" => 'pages#privacy'
     match "/terms" => 'pages#terms'
@@ -107,28 +135,6 @@ Genesis::Application.routes.draw do
 
     match "/add_business" => 'pages#add_business'
     match "/add_business/create" => 'pages#add_business_create', :via => :post, :as => :create_merchant_contact
-
-    match "/account" => 'users#show', :as => :account
-    match "/account/edit" => 'users#edit', :as => :edit_account
-    match "/account/update" => 'users#update', :as => :update_account
-    match "/account/update_facebook_info" => "users#update_facebook_info"
-
-    match '/venues/find_nearest' => 'venues#find_nearest'
-    match '/venues/:id/show' => 'venues#show'
-
-    match '/challenges' => 'challenges#index'
-    match '/challenges/:id/start' => 'challenges#start'
-    match '/challenges/:id/complete' => 'challenges#complete'
-
-    match '/customer_rewards' => 'customer_rewards#index'
-    match '/customer_rewards/:id/redeem' => 'customer_rewards#redeem'
-
-    match '/purchase_rewards' => 'purchase_rewards#index'
-    match '/purchase_rewards/earn' => 'purchase_rewards#earn'
-
-    match '/earn_prizes' => 'earn_prizes#index'
-    match '/earn_prizes/:id/show' => 'earn_prizes#show'
-    match '/earn_prizes/:id/redeem' => 'earn_prizes#redeem'
     
     #match '/users/:id/account' => 'users#edit'
     #match '/users/:user_id/coupons' => 'orders#index', :via => :get , :as => :user_coupons

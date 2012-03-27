@@ -1,4 +1,4 @@
-class CheckInsController < ApplicationController
+class Api::V1::CheckInsController < ApplicationController
   before_filter :authenticate_user!
   
   def create
@@ -6,7 +6,6 @@ class CheckInsController < ApplicationController
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
     if @customer.nil?
       respond_to do |format|
-        #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => true, :data => Customer.new.to_json, :message => [""] } }
       end
@@ -16,7 +15,6 @@ class CheckInsController < ApplicationController
     
     if !Common.within_geo_distance?(params[:latitude], params[:longitude], @venue.latitude, @venue.longitude)
       respond_to do |format|
-        #format.html { render :action => "new" }
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => ["Something went wrong", "Outside of check-in distance.  Please try again."] } }
       end
@@ -45,14 +43,12 @@ class CheckInsController < ApplicationController
         end
         data[:eligible_rewards] = @eligible_rewards
         respond_to do |format|
-          #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
           format.json { render :json => { :success => true, :data => @customer.to_json, :metaData => data.to_json } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
-          #format.html { render :action => "new" }
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
         end

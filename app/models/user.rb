@@ -10,7 +10,7 @@ class User
 
   devise :database_authenticatable, :registerable, #:confirmable,
           :recoverable, :rememberable, :trackable, 
-          :validatable, :authentication_keys => [:email]
+          :validatable, :token_authenticatable, :authentication_keys => [:email]
           
   property :id, Serial
   property :name, String, :required => true, :default => ""
@@ -38,6 +38,8 @@ class User
   has n, :user_credit_cards, :child_key => [ :user_id ], :constraint => :destroy
   has n, :credit_cards, :through => :user_credit_cards, :via => :credit_card
     
+  before_save :ensure_authentication_token
+  
   def self.create(user_info)
     now = Time.now
     password = user_info[:password] ? user_info[:password].strip : user_info.password

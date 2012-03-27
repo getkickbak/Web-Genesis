@@ -45,7 +45,7 @@ class ApplicationController < ActionController::Base
   def render_not_found(exception)
     respond_to do |format|
       format.html { render :template => "/error/404.html.erb", :status => 404 }
-      format.json { render :json => { :success => false, :message => ['Something went wrong', 'Please try again.'] } }
+      format.json { render :json => { :success => false, :message => ['Something went wrong', 'Please try again.'], :status => 404 } }
     end
   end
 
@@ -53,7 +53,7 @@ class ApplicationController < ActionController::Base
     logger.error(exception)
     respond_to do |format|
       format.html { render :template => "/error/500.html.erb", :status => 500 }
-      format.json { render :json => { :success => false, :message => ['Something went wrong', 'Server Error.'] } }
+      format.json { render :json => { :success => false, :message => ['Something went wrong', 'Server Error.'], :status => 500 } }
     end
   end
 
@@ -61,7 +61,7 @@ class ApplicationController < ActionController::Base
     logger.error(exception)
     respond_to do |format|
       format.html { render :template => "/error/500.html.erb", :status => 500 }
-      format.json { render :json => { :success => false, :message => ['Something went wrong', exception.message] } }
+      format.json { render :json => { :success => false, :message => ['Something went wrong', exception.message], :status => 500 } }
     end
   end
 end

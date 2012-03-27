@@ -7,6 +7,7 @@ development:
   AMAZON_FILES_BUCKET: files.getkickbak.com
   AMAZON_PHOTOS_BUCKET: photos.getkickbak.com
   REDIS_URL: "redis://justformyfriends:5506b4d6a5868ccdfbf6c36531214b1a@stingfish.redistogo.com:9112/"  
+  API_KEY: UIYI1h9IjyH6I09eTK35ouBM
   
 test:  
   COMMISSION: 2.9
@@ -17,6 +18,7 @@ test:
   AMAZON_FILES_BUCKET: files.getkickbak.com
   AMAZON_PHOTOS_BUCKET: photos.getkickbak.com
   REDIS_URL: "redis://justformyfriends:5506b4d6a5868ccdfbf6c36531214b1a@stingfish.redistogo.com:9112/"  
+  API_KEY: UIYI1h9IjyH6I09eTK35ouBM
   
 production:
   COMMISSION: 2.9
@@ -27,3 +29,4 @@ production:
   AMAZON_FILES_BUCKET: files.getkickbak.com
   AMAZON_PHOTOS_BUCKET: photos.getkickbak.com
   REDIS_URL: "redis://username:password@127.0.0.1:6379/"
+  API_KEY: UIYI1h9IjyH6I09eTK35ouBM
