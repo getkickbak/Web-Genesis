@@ -25,7 +25,7 @@ class Api::V1::VenuesController < ApplicationController
       data[:eligible_rewards] = @eligible_rewards
     end 
     respond_to do |format|
-      format.json { render :json => { :success => true, :data => @customer, :metaData => data.to_json } }
+      format.json { render :json => { :success => true, :data => @customer, :metaData => data } }
     end  
   end
   

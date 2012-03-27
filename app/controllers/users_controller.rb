@@ -38,7 +38,7 @@ class UsersController < ApplicationController
         respond_to do |format|
           format.html { render :action => "edit" }
           #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => e.resource.errors.to_json } }
+          format.json { render :json => { :success => false, :message => e.resource.errors } }
         end
       end
     end
@@ -60,7 +60,7 @@ class UsersController < ApplicationController
         @user = e.resource
         respond_to do |format|
           #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => e.resource.errors.to_json } }
+          format.json { render :json => { :success => false, :message => e.resource.errors } }
         end
       end
     end

@@ -30,7 +30,7 @@ class Api::V1::UsersController < ApplicationController
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => e.resource.errors.to_json } }
+          format.json { render :json => { :success => false, :message => e.resource.errors } }
         end
       end
     end
@@ -51,7 +51,7 @@ class Api::V1::UsersController < ApplicationController
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => e.resource.errors.to_json } }
+          format.json { render :json => { :success => false, :message => e.resource.errors } }
         end
       end
     end

@@ -148,7 +148,7 @@ module Business
       data[:purchases] = { :names => earn_reward_records[:names], :data => earn_rewards }
       data[:challenges] = { :names => challenge_records[:names], :data => challenge_data }     
       respond_to do |format|
-         format.json { render :json => { :success => true, :data => data.to_json() } }
+         format.json { render :json => { :success => true, :data => data } }
       end
     end
     

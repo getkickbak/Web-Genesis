@@ -14,7 +14,7 @@ class Api::V1::RegistrationsController < ApplicationController
         results = Customer.find(@user.id, start, max)
         render :json => { :success => true, :data => results[:items], :metaData => { :auth_token => @user.authentication_token }, :total => results[:total] }
       rescue DataMapper::SaveFailureError => e
-        render :json => { :success => false, :metaData => e.resource.errors.to_json }
+        render :json => { :success => false, :metaData => e.resource.errors }
       rescue
         render :json => { :success => false, :messasge => [""] }
       end

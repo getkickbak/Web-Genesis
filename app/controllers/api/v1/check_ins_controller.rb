@@ -44,7 +44,7 @@ class Api::V1::CheckInsController < ApplicationController
         data[:eligible_rewards] = @eligible_rewards
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => true, :data => @customer, :metaData => data.to_json } }
+          format.json { render :json => { :success => true, :data => @customer, :metaData => data } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)

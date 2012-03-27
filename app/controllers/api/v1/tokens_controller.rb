@@ -28,7 +28,7 @@ class Api::V1::TokensController < ApplicationController
       start = params[:start].to_i
       max = params[:limit].to_i
       results = Customer.find(@user.id, start, max)
-      render :json => { :success => true, :data => results[:items].to_json, :metaData => { :auth_token => @user.authentication_token }, :total => results[:total] }
+      render :json => { :success => true, :data => results[:items], :metaData => { :auth_token => @user.authentication_token }, :total => results[:total] }
     end
   end
   
