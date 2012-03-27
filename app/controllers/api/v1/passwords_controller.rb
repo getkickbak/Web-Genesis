@@ -1,2 +1,2 @@
-class API::V1::PasswordsController < Devise::PasswordsController
+class Api::V1::PasswordsController < Devise::PasswordsController
 end
