@@ -23,9 +23,9 @@ module Business
       today = Date.today
       new_customers_data = []
       new_customers = DataMapper.repository(:default).adapter.select(
-          "SELECT DATE(created_ts), COUNT(*) FROM customers WHERE merchant_id = ? 
-              AND DATE(created_ts) >= ? AND deleted_ts IS NULL
-              GROUP BY DATE(created_ts)", current_merchant.id, today - 14
+          "SELECT DATE(created_ts) AS created_date, COUNT(*) AS count FROM customers WHERE merchant_id = ? 
+              AND created_date >= ? AND deleted_ts IS NULL
+              GROUP BY created_date", current_merchant.id, today - 14
         )
       
       i = 0
@@ -37,11 +37,11 @@ module Business
         #puts "new_customers_data: " + new_customers_data[i].to_s 
         inserted = false
         while x < new_customers.length
-          created_date = new_customers[x][0]
+          created_date = Date.strptime(new_customers[x][:created_date],"%Y-%m-%d")
           if created_date < date
             x += 1
           elsif created_date == date
-            new_customers_data[i] << new_customers[x][1]
+            new_customers_data[i] << new_customers[x][:count]
             inserted = true
             break  
           else
@@ -61,9 +61,9 @@ module Business
       earn_reward_records = { :names => [], :data => [] }
       purchase_rewards.each do |reward|
         data = DataMapper.repository(:default).adapter.select(
-          "SELECT DATE(created_ts), COUNT(*) FROM earn_reward_records WHERE reward_id = ? 
-              AND DATE(created_ts) >= ? AND deleted_ts IS NULL
-              GROUP BY DATE(created_ts)", reward.id, today >> -2
+          "SELECT DATE(created_ts) AS created_date, COUNT(*) AS count FROM earn_reward_records WHERE reward_id = ? 
+              AND created_date >= ? AND deleted_ts IS NULL
+              GROUP BY created_date", reward.id, today >> -2
         )
         earn_reward_records[:names] << reward.title
         earn_reward_records[:data] << { :data => data, :counter => 0 }
@@ -73,9 +73,9 @@ module Business
       challenge_records = { :names => [], :data => [] }
       challenges.each do |challenge|
         data = DataMapper.repository(:default).adapter.select(
-          "SELECT DATE(created_ts), COUNT(*) FROM earn_reward_records WHERE challenge_id = ? 
-              AND DATE(created_ts) >= ? AND deleted_ts IS NULL
-              GROUP BY DATE(created_ts)", challenge.id, today >> -2
+          "SELECT DATE(created_ts) AS created_date, COUNT(*) AS count FROM earn_reward_records WHERE challenge_id = ? 
+              AND created_date >= ? AND deleted_ts IS NULL
+              GROUP BY created_date", challenge.id, today >> -2
         )
         challenge_records[:names] << challenge.name
         challenge_records[:data] << { :data => data, :counter => 0 }
@@ -95,11 +95,11 @@ module Business
           x = records[:counter]
           inserted = false
           while x < records[:data].length
-            created_date = records[:data][x][0]
+            created_date = Date.strptime(records[:data][x][:created_date],"%Y-%m-%d")
             if created_date < date
               x += 1
             elsif created_date == date
-              earn_rewards[i] << records[:data][x][1]
+              earn_rewards[i] << records[:data][x][:count]
               records[:counter] = x
               inserted = true
               break
@@ -122,11 +122,11 @@ module Business
           x = records[:counter]
           inserted = false
           while x < records[:data].length
-            created_date = records[:data][x][0]
+            created_date = Date.strptime(records[:data][x][:created_date],"%Y-%m-%d")
             if created_date < date
               x += 1
             elsif created_date == date
-              challenge_data[i] << records[:data][x][1]
+              challenge_data[i] << records[:data][x][:count]
               records[:counter] = x
               break
             else
