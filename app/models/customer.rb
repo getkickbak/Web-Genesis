@@ -17,6 +17,7 @@ class Customer
   belongs_to :user, :key => true
   
   def self.create(merchant, user)
+    now = Time.now
     auth_code = String.random_alphanumeric
     customer = Customer.new
     customer[:auth_code] = auth_code
@@ -42,7 +43,7 @@ class Customer
     now = Time.now
     new_auth_code = String.random_alphanumeric
     self.auth_code = new_auth_code
-    self.qr_code = generate_qr_code(self.merchant.id, new_auth_code)
+    self.qr_code = self.class.generate_qr_code(self.merchant.id, new_auth_code)
     self.update_ts = now
     save  
   end
@@ -55,7 +56,7 @@ class Customer
   
   private
   
-  def generate_qr_code(merchant_id, auth_code)
+  def self.generate_qr_code(merchant_id, auth_code)
     qr = RQRCode::QRCode.new( auth_code, :size => 4, :level => :h )
     png = qr.to_img.resize(200,200)
     filename = "#{auth_code}.png"

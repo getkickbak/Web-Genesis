@@ -4,6 +4,7 @@ namespace :db do
     require 'faker'
 
     puts "Creating Users..."
+    users = []
     10.times do |n|
       user = User.create(
       :name => Faker::Name.name,
@@ -13,6 +14,7 @@ namespace :db do
       :role => "user",
       :status => :active
       )
+      users << user
     end
     puts "Complete User creation"
   
@@ -64,6 +66,9 @@ namespace :db do
       DataMapper.repository(:default).adapter.execute(
           "UPDATE merchants SET photo = ?, alt_photo = ? WHERE id = ?", filename, filename, merchant.id
       )
+      users.each do |user|
+        customer = Customer.create(merchant,user)
+      end
       RewardModel.create(merchant,
       {
         :rebate_rate => 9,
