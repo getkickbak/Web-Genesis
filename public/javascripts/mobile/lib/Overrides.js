@@ -316,7 +316,7 @@ Genesis.constants =
                Ext.device.Notification.show(
                {
                   title : 'Facebook Connect',
-                  message : 'Your current Facebook Session hasn\'t been fully authorized for this application.' + ((Ext.os.deviceType.toLowerCase() == 'desktop') ? '.<br/>' : '\n') + 'Press OK to continue.',
+                  message : 'Your current Facebook Session hasn\'t been fully authorized for this application.' + ((!Genesis.constants.isNative()) ? '.<br/>' : '\n') + 'Press OK to continue.',
                   buttons : ['OK', 'Cancel'],
                   callback : function(button)
                   {
@@ -470,6 +470,23 @@ Ext.define('Genesis.Component',
 });
 
 //---------------------------------------------------------------------------------------------------------------------------------
+// Ext.data.reader.Reader, Ext.data.reader.Json
+//---------------------------------------------------------------------------------------------------------------------------------
+
+Ext.define('Genesis.data.reader.Reader',
+{
+   override : 'Ext.data.reader.Reader',
+   constructor : function(config)
+   {
+      this.self.addConfig(
+      {
+         messageProperty : 'message'
+      }, true);
+      this.callParent(arguments);
+   }
+});
+
+//---------------------------------------------------------------------------------------------------------------------------------
 // Ext.data.proxy.Server
 //---------------------------------------------------------------------------------------------------------------------------------
 
@@ -479,7 +496,21 @@ Ext.define('Genesis.data.proxy.OfflineServer',
    processResponse : function(success, operation, request, response, callback, scope)
    {
       var me = this, action = operation.getAction(), reader, resultSet;
+      var errorHandler = function()
+      {
+         var messages = resultSet.getMessage();
+         Ext.Viewport.setMasked(false);
 
+         Ext.device.Notification.show(
+         {
+            title : 'Server Error(s)',
+            message : (messages) ? messages.join(((!Genesis.constants.isNative()) ? '<br/>' : '\n')) : 'Error Connecting to Server',
+            callback : function()
+            {
+               _application.getController('Viewport').onFeatureTap('MainPage', 'login');
+            }
+         });
+      }
       if((success === true) || (Genesis.constants.isNative() === true))
       {
          reader = me.getReader();
@@ -498,12 +529,14 @@ Ext.define('Genesis.data.proxy.OfflineServer',
             });
 
             me.fireEvent('exception', this, response, operation);
+            errorHandler();
             return;
          }
 
          if(operation.process(action, resultSet, request, response) === false)
          {
             this.fireEvent('exception', this, response, operation);
+            errorHandler();
          }
       }
       else
@@ -518,6 +551,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
           * @param {Ext.data.Operation} operation The operation that triggered request
           */
          me.fireEvent('exception', this, response, operation);
+         errorHandler();
       }
 
       //this callback is the one that was passed to the 'read' or 'write' function above
@@ -707,232 +741,169 @@ Ext.define('Genesis.tab.Bar',
    }
 });
 
-//---------------------------------------------------------------------------------------------------------------------------------
-// Ext.data.Store
-//---------------------------------------------------------------------------------------------------------------------------------
-Ext.define('Genesis.data.Store',
+//---------------------------------------------------------------------------------
+// Array
+//---------------------------------------------------------------------------------
+Ext.merge(Array.prototype,
 {
-   override : 'Ext.data.Store',
-   /**
-    * @private
-    * Called internally when a Proxy has completed a load request
-    */
-   onProxyLoad : function(operation)
+   binarySearch : function(find, comparator)
    {
-
-      var me = this, successful = operation.wasSuccessful();
-
-      //
-      // Check Error Codes
-      //
-      if(!successful)
+      var low = 0, high = this.length - 1, i, comparison;
+      while(low <= high)
       {
-         Ext.Viewport.setMasked(false);
-
-         Ext.device.Notification.show(
+         i = Math.floor((low + high) / 2);
+         comparison = comparator(this[i], find);
+         if(comparison < 0)
          {
-            title : 'Network Error',
-            message : '',
-            //message : 'No permission to access remote call.',
-            callback : function()
-            {
-               _application.getController('Viewport').onFeatureTap('MainPage', 'login');
-            }
-         });
-      }
-      else
-      {
-         this.callParent(arguments);
-      }
-   },
-   /**
-    * @private
-    * Callback for any write Operation over the Proxy. Updates the Store's MixedCollection to reflect
-    * the updates provided by the Proxy
-    */
-   onProxyWrite : function(operation)
-   {
-      var me = this, success = operation.wasSuccessful();
-
-      //
-      // Check Error Codes
-      //
-      if(!success)
-      {
-         Ext.device.Notification.show(
+            low = i + 1;
+            continue;
+         };
+         if(comparison > 0)
          {
-            title : 'Network Error',
-            message : 'No permission to access remote call.',
-            callback : function()
-            {
-               _application.getController('Viewport').onFeatureTap('MainPage', 'login');
-            }
-         });
+            high = i - 1;
+            continue;
+         };
+         return i;
       }
-      else
-      {
-         this.callParent(arguments);
-      }
+      return null;
    }
 });
 
 //---------------------------------------------------------------------------------
-// Array
-//---------------------------------------------------------------------------------
-Array.prototype.binarySearch = function(find, comparator)
-{
-   var low = 0, high = this.length - 1, i, comparison;
-   while(low <= high)
-   {
-      i = Math.floor((low + high) / 2);
-      comparison = comparator(this[i], find);
-      if(comparison < 0)
-      {
-         low = i + 1;
-         continue;
-      };
-      if(comparison > 0)
-      {
-         high = i - 1;
-         continue;
-      };
-      return i;
-   }
-   return null;
-};
-//---------------------------------------------------------------------------------
 // String
 //---------------------------------------------------------------------------------
-String.prototype.getFuncBody = function()
+Ext.merge(String.prototype,
 {
-   var str = this.toString();
-   str = str.replace(/[^{]+\{/, "");
-   str = str.substring(0, str.length - 1);
-   str = str.replace(/\n/gi, "");
-   if(!str.match(/\(.*\)/gi))
-      str += ")";
-   return str;
-}
-String.prototype.strip = function()
-{
-   return this.replace(/^\s+/, '').replace(/\s+$/, '');
-}
-String.prototype.stripScripts = function()
-{
-   //    return this.replace(new
-   // RegExp('\\bon[^=]*=[^>]*(?=>)|<\\s*(script|link|iframe|embed|object|applet|form|button|input)[^>]*[\\S\\s]*?<\\/\\1>|<[^>]*include[^>]*>',
-   // 'ig'),"");
-   return this.replace(new RegExp('<noscript[^>]*?>([\\S\\s]*?)<\/noscript>', 'img'), '').replace(new RegExp('<script[^>]*?>([\\S\\s]*?)<\/script>', 'img'), '').replace(new RegExp('<link[^>]*?>([\\S\\s]*?)<\/link>', 'img'), '').replace(new RegExp('<link[^>]*?>', 'img'), '').replace(new RegExp('<iframe[^>]*?>([\\S\\s]*?)<\/iframe>', 'img'), '').replace(new RegExp('<iframe[^>]*?>', 'img'), '').replace(new RegExp('<embed[^>]*?>([\\S\\s]*?)<\/embed>', 'img'), '').replace(new RegExp('<embed[^>]*?>', 'img'), '').replace(new RegExp('<object[^>]*?>([\\S\\s]*?)<\/object>', 'img'), '').replace(new RegExp('<object[^>]*?>', 'img'), '').replace(new RegExp('<applet[^>]*?>([\\S\\s]*?)<\/applet>', 'img'), '').replace(new RegExp('<applet[^>]*?>', 'img'), '').replace(new RegExp('<button[^>]*?>([\\S\\s]*?)<\/button>', 'img'), '').replace(new RegExp('<button[^>]*?>', 'img'), '').replace(new RegExp('<input[^>]*?>([\\S\\s]*?)<\/input>', 'img'), '').replace(new RegExp('<input[^>]*?>', 'img'), '').replace(new RegExp('<style[^>]*?>([\\S\\s]*?)<\/style>', 'img'), '').replace(new RegExp('<style[^>]*?>', 'img'), '')
-}
-String.prototype.stripTags = function()
-{
-   return this.replace(/<\/?[^>]+>/gi, '');
-}
-String.prototype.stripComments = function()
-{
-   return this.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
-}
-String.prototype.times = function(n)
-{
-   var s = '';
-   for(var i = 0; i < n; i++)
+   getFuncBody : function()
    {
-      s += this;
-   }
-   return s;
-}
-String.prototype.zp = function(n)
-{
-   return ('0'.times(n - this.length) + this);
-}
-String.prototype.capitalize = function()
-{
-   return this.replace(/\w+/g, function(a)
+      var str = this.toString();
+      str = str.replace(/[^{]+\{/, "");
+      str = str.substring(0, str.length - 1);
+      str = str.replace(/\n/gi, "");
+      if(!str.match(/\(.*\)/gi))
+         str += ")";
+      return str;
+   },
+   strip : function()
    {
-      return a.charAt(0).toUpperCase() + a.substr(1);
-   });
-}
-String.prototype.uncapitalize = function()
-{
-   return this.replace(/\w+/g, function(a)
+      return this.replace(/^\s+/, '').replace(/\s+$/, '');
+   },
+   stripScripts : function()
    {
-      return a.charAt(0).toLowerCase() + a.substr(1);
-   });
-}
-String.prototype.trim = function(x)
-{
-   if(x == 'left')
-      return this.replace(/^\s*/, '');
-   if(x == 'right')
-      return this.replace(/\s*$/, '');
-   if(x == 'normalize')
-      return this.replace(/\s{2,}/g, ' ').trim();
-
-   return this.trim('left').trim('right');
-}
-/**
- * Convert certain characters (&, <, >, and ') to their HTML character equivalents for literal display in web pages.
- * @param {String} value The string to encode
- * @return {String} The encoded text
- */
-String.htmlEncode = (function()
-{
-   var entities =
+      //    return this.replace(new
+      // RegExp('\\bon[^=]*=[^>]*(?=>)|<\\s*(script|link|iframe|embed|object|applet|form|button|input)[^>]*[\\S\\s]*?<\\/\\1>|<[^>]*include[^>]*>',
+      // 'ig'),"");
+      return this.replace(new RegExp('<noscript[^>]*?>([\\S\\s]*?)<\/noscript>', 'img'), '').replace(new RegExp('<script[^>]*?>([\\S\\s]*?)<\/script>', 'img'), '').replace(new RegExp('<link[^>]*?>([\\S\\s]*?)<\/link>', 'img'), '').replace(new RegExp('<link[^>]*?>', 'img'), '').replace(new RegExp('<iframe[^>]*?>([\\S\\s]*?)<\/iframe>', 'img'), '').replace(new RegExp('<iframe[^>]*?>', 'img'), '').replace(new RegExp('<embed[^>]*?>([\\S\\s]*?)<\/embed>', 'img'), '').replace(new RegExp('<embed[^>]*?>', 'img'), '').replace(new RegExp('<object[^>]*?>([\\S\\s]*?)<\/object>', 'img'), '').replace(new RegExp('<object[^>]*?>', 'img'), '').replace(new RegExp('<applet[^>]*?>([\\S\\s]*?)<\/applet>', 'img'), '').replace(new RegExp('<applet[^>]*?>', 'img'), '').replace(new RegExp('<button[^>]*?>([\\S\\s]*?)<\/button>', 'img'), '').replace(new RegExp('<button[^>]*?>', 'img'), '').replace(new RegExp('<input[^>]*?>([\\S\\s]*?)<\/input>', 'img'), '').replace(new RegExp('<input[^>]*?>', 'img'), '').replace(new RegExp('<style[^>]*?>([\\S\\s]*?)<\/style>', 'img'), '').replace(new RegExp('<style[^>]*?>', 'img'), '')
+   },
+   stripTags : function()
    {
-      '&' : '&amp;',
-      '>' : '&gt;',
-      '<' : '&lt;',
-      '"' : '&quot;'
-   }, keys = [], p, regex;
-
-   for(p in entities)
+      return this.replace(/<\/?[^>]+>/gi, '');
+   },
+   stripComments : function()
    {
-      keys.push(p);
-   }
-   regex = new RegExp('(' + keys.join('|') + ')', 'g');
-
-   return function(value)
+      return this.replace(/<!(?:--[\s\S]*?--\s*)?>\s*/g, '');
+   },
+   times : function(n)
    {
-      return (!value) ? value : String(value).replace(regex, function(match, capture)
+      var s = '';
+      for(var i = 0; i < n; i++)
       {
-         return entities[capture];
+         s += this;
+      }
+      return s;
+   },
+   zp : function(n)
+   {
+      return ('0'.times(n - this.length) + this);
+   },
+   capitalize : function()
+   {
+      return this.replace(/\w+/g, function(a)
+      {
+         return a.charAt(0).toUpperCase() + a.substr(1);
       });
-   };
-})();
-
-/**
- * Convert certain characters (&, <, >, and ') from their HTML character equivalents.
- * @param {String} value The string to decode
- * @return {String} The decoded text
- */
-String.htmlDecode = (function()
-{
-   var entities =
+   },
+   uncapitalize : function()
    {
-      '&amp;' : '&',
-      '&gt;' : '>',
-      '&lt;' : '<',
-      '&quot;' : '"'
-   }, keys = [], p, regex;
-
-   for(p in entities)
-   {
-      keys.push(p);
-   }
-   regex = new RegExp('(' + keys.join('|') + '|&#[0-9]{1,5};' + ')', 'g');
-
-   return function(value)
-   {
-      return (!value) ? value : String(value).replace(regex, function(match, capture)
+      return this.replace(/\w+/g, function(a)
       {
-         if( capture in entities)
+         return a.charAt(0).toLowerCase() + a.substr(1);
+      });
+   },
+   trim : function(x)
+   {
+      if(x == 'left')
+         return this.replace(/^\s*/, '');
+      if(x == 'right')
+         return this.replace(/\s*$/, '');
+      if(x == 'normalize')
+         return this.replace(/\s{2,}/g, ' ').trim();
+
+      return this.trim('left').trim('right');
+   },
+   /**
+    * Convert certain characters (&, <, >, and ') to their HTML character equivalents for literal display in web pages.
+    * @param {String} value The string to encode
+    * @return {String} The encoded text
+    */
+   htmlEncode : (function()
+   {
+      var entities =
+      {
+         '&' : '&amp;',
+         '>' : '&gt;',
+         '<' : '&lt;',
+         '"' : '&quot;'
+      }, keys = [], p, regex;
+
+      for(p in entities)
+      {
+         keys.push(p);
+      }
+      regex = new RegExp('(' + keys.join('|') + ')', 'g');
+
+      return function(value)
+      {
+         return (!value) ? value : String(value).replace(regex, function(match, capture)
          {
             return entities[capture];
-         }
-         else
+         });
+      };
+   })(),
+   /**
+    * Convert certain characters (&, <, >, and ') from their HTML character equivalents.
+    * @param {String} value The string to decode
+    * @return {String} The decoded text
+    */
+   htmlDecode : (function()
+   {
+      var entities =
+      {
+         '&amp;' : '&',
+         '&gt;' : '>',
+         '&lt;' : '<',
+         '&quot;' : '"'
+      }, keys = [], p, regex;
+
+      for(p in entities)
+      {
+         keys.push(p);
+      }
+      regex = new RegExp('(' + keys.join('|') + '|&#[0-9]{1,5};' + ')', 'g');
+
+      return function(value)
+      {
+         return (!value) ? value : String(value).replace(regex, function(match, capture)
          {
-            return String.fromCharCode(parseInt(capture.substr(2), 10));
-         }
-      });
-   };
-})();
+            if( capture in entities)
+            {
+               return entities[capture];
+            }
+            else
+            {
+               return String.fromCharCode(parseInt(capture.substr(2), 10));
+            }
+         });
+      }
+   })()
+});
