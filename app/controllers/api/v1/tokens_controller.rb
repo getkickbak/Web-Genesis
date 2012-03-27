@@ -19,6 +19,9 @@ class Api::V1::TokensController  < ApplicationController
       return
     end
     
+    @user.ensure_authentication_token!
+    @user.save!
+    
     if not @user.valid_password?(password) 
       render :json => { :success => false, :message => ["Invalid email or passoword."] }
     else
