@@ -25,19 +25,10 @@ class Api::V1::TokensController < ApplicationController
     if not @user.valid_password?(password) 
       render :json => { :success => false, :message => ["Invalid email or passoword."] }
     else
-      render :json => { :success => true, :data => { :token => @user.authentication_token } }
+      @customers = Customer.all(Customer.user.id => @user.id)
+      render :json => { :success => true, :data => @customers.to_json, :metaData => { :token => @user.authentication_token } }
     end
   end
-  
-  def destroy
-    @user = User.first(:authentication_token => params[:id]) 
-    if @user.nil?
-      render :json => { :success => false, :message => ["Invalid token."] }
-    else
-      @user.reset_authentication_token!
-      render :json => { :success => true }
-    end
-  end  
   
   def create_from_facebook
     User.transaction do
@@ -57,7 +48,8 @@ class Api::V1::TokensController < ApplicationController
           }
           @user.profile.update(profile_info)
         end      
-        render :json => { :success => true, :data => { :token => @user.authentication_token } }
+        @customers = Customer.all(Customer.user.id => @user.id)
+        render :json => { :success => true, :data => @customers.to_json, :metaData => { :token => @user.authentication_token } }
       rescue DataMapper::SaveFailureError => e
         render :json => { :success => false }  
       rescue
@@ -65,4 +57,14 @@ class Api::V1::TokensController < ApplicationController
       end
     end
   end
+  
+  def destroy
+    @user = User.first(:authentication_token => params[:id]) 
+    if @user.nil?
+      render :json => { :success => false, :message => ["Invalid token."] }
+    else
+      @user.reset_authentication_token!
+      render :json => { :success => true }
+    end
+  end  
 end
