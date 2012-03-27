@@ -26,7 +26,7 @@ class Api::V1::TokensController < ApplicationController
       render :json => { :success => false, :message => ["Invalid email or passoword."] }
     else
       @customers = Customer.all(Customer.user.id => @user.id)
-      render :json => { :success => true, :data => @customers.to_json, :metaData => { :token => @user.authentication_token } }
+      render :json => { :success => true, :data => @customers.to_json, :metaData => { :auth_token => @user.authentication_token } }
     end
   end
   
@@ -49,7 +49,7 @@ class Api::V1::TokensController < ApplicationController
           @user.profile.update(profile_info)
         end      
         @customers = Customer.all(Customer.user.id => @user.id)
-        render :json => { :success => true, :data => @customers.to_json, :metaData => { :token => @user.authentication_token } }
+        render :json => { :success => true, :data => @customers.to_json, :metaData => { :auth_token => @user.authentication_token } }
       rescue DataMapper::SaveFailureError => e
         render :json => { :success => false }  
       rescue
