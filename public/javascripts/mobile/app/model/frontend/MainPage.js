@@ -9,8 +9,7 @@ Ext.define('Genesis.model.frontend.MainPage',
       {
          reader :
          {
-            type : 'json',
-            rootProperty : 'features'
+            type : 'json'
          },
          type : 'ajax',
          disableCaching : false,

@@ -17,8 +17,7 @@ Ext.define('Genesis.store.VenueAccountStore',
          url : Ext.Loader.getPath("Genesis") + "/store/" + 'venueAccountRecords.json',
          reader :
          {
-            type : 'json',
-            rootProperty : 'venues'
+            type : 'json'
          }
       }
    }

@@ -203,13 +203,27 @@ Ext.define('Genesis.controller.MainPage',
       var viewport = this.getViewport();
       var vport = this.getViewPortCntlr();
       vport.setLoggedIn(false);
+      Genesis.constants.authToken = null;
       b.parent.hide();
       //
       // Logout of Facebook
       //
       viewport.setFadeAnimation();
       viewport.reset(this);
-      vport.onFeatureTap('MainPage', 'login');
+      Customer['setLogoutUrl']();
+      Ext.StoreMgr.get('CustomerStore').load(
+      {
+         jsonData :
+         {
+         },
+         callback : function(records, operation, success)
+         {
+            if(success)
+            {
+               vport.onFeatureTap('MainPage', 'login');
+            }
+         }
+      });
    },
    onFacebookTap : function(b, e, eOpts)
    {
@@ -251,6 +265,7 @@ Ext.define('Genesis.controller.MainPage',
       {
          model : 'Genesis.model.Customer',
          autoLoad : false,
+         pageSize : 1000,
          listeners :
          {
             scope : this,
@@ -267,10 +282,18 @@ Ext.define('Genesis.controller.MainPage',
             'metachange' : function(store, proxy, eOpts)
             {
                // Load Prizes into DataStore
-               var prizes = proxy.getReader().metaData['prizes'];
+               var metaData = proxy.getReader().metaData;
+
+               var prizes = metaData['prizes'];
                if(prizes)
                {
                   Ext.StoreMgr.get('MerchantPrizeStore').setData(prizes);
+               }
+
+               var authToken = metaData['auth_token'];
+               if(authToken)
+               {
+                  Genesis.constants.authToken = authToken;
                }
             }
          },
@@ -321,6 +344,9 @@ Ext.define('Genesis.controller.MainPage',
                name : values.name,
                email : values.username,
                password : values.password
+            },
+            jsonData :
+            {
             }
          });
       }
@@ -356,11 +382,9 @@ Ext.define('Genesis.controller.MainPage',
                email : values.username,
                password : values.password
             },
-            jsonData : //JSON.stringify(
+            jsonData :
             {
-               email : values.username,
-               password : values.password
-            }//)
+            }
          });
       }
    },

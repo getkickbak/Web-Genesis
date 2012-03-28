@@ -41,8 +41,7 @@ Ext.define('Genesis.model.Customer',
          },
          reader :
          {
-            type : 'json',
-            rootProperty : 'customers'
+            type : 'json'
          }
       },
       fields : ['points', 'id'],
@@ -69,8 +68,16 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl('/sign_in');
+         this.getProxy().setUrl('/api/v1/tokens');
          //this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+      },
+      setLogoutUrl : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'DELETE'
+         });
+         this.getProxy().setUrl('/api/v1/tokens');
       },
       setCreateAccountUrl : function()
       {

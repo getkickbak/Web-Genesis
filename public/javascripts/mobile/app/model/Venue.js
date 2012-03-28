@@ -40,8 +40,7 @@ Ext.define('Genesis.model.Venue',
          url : Ext.Loader.getPath("Genesis") + "/store/" + 'checkinRecords.json',
          reader :
          {
-            type : 'json',
-            rootProperty : 'venues'
+            type : 'json'
          }
       },
       idProperty : 'venue_id'

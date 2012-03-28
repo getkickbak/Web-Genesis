@@ -165,8 +165,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             url : Ext.Loader.getPath("Genesis") + "/store/" + 'redemptions.json',
             reader :
             {
-               type : 'json',
-               rootProperty : 'redemptions'
+               type : 'json'
             }
          }
       });

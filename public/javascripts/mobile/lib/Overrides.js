@@ -6,7 +6,7 @@ Ext.ns('Genesis.constants');
 Genesis.constants =
 {
    currFbId : 0,
-   access_token : null,
+   authToken : null,
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
@@ -480,7 +480,8 @@ Ext.define('Genesis.data.reader.Reader',
    {
       this.self.addConfig(
       {
-         messageProperty : 'message'
+         messageProperty : 'message',
+         rootProperty : 'data'
       }, true);
       this.callParent(arguments);
    }
@@ -507,7 +508,10 @@ Ext.define('Genesis.data.proxy.OfflineServer',
             message : (messages) ? messages.join(((!Genesis.constants.isNative()) ? '<br/>' : '\n')) : 'Error Connecting to Server',
             callback : function()
             {
-               _application.getController('Viewport').onFeatureTap('MainPage', 'login');
+               var vport = _application.getController('Viewport');
+               vport.setLoggedIn(false);
+               Genesis.constants.authToken = null;
+               vport.onFeatureTap('MainPage', 'login');
             }
          });
       }
@@ -570,6 +574,11 @@ Ext.define('Genesis.data.proxy.OfflineServer',
     */
    buildRequest : function(operation)
    {
+      if(Genesis.constants.authToken)
+      {
+         this.setExtraParam("auth_token", Genesis.constants.authToken);
+      }
+
       var request = this.callParent(arguments);
 
       if(operation.initialConfig.jsonData)

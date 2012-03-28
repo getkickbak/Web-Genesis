@@ -22,8 +22,7 @@ Ext.define('Genesis.model.User',
          url : Ext.Loader.getPath("Genesis") + "/store/" + 'users.json',
          reader :
          {
-            type : 'json',
-            rootProperty : 'users'
+            type : 'json'
          }
       },
       fields : ['user_id', 'name', 'email', 'facebook_id', 'photo_url', 'created_ts', 'update_ts', 'profile_id'],
