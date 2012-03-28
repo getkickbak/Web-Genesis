@@ -27,8 +27,8 @@ class Api::V1::TokensController < ApplicationController
     else
       start = params[:start].to_i
       max = params[:limit].to_i
-      results = Customer.find(@user.id, start, max)
-      render :json => { :success => true, :data => results[:items], :metaData => { :auth_token => @user.authentication_token }, :total => results[:total] }
+      @results = Customer.find(@user.id, start, max)
+      render :template => '/api/v1/tokens/create'
     end
   end
   
@@ -52,8 +52,8 @@ class Api::V1::TokensController < ApplicationController
         end      
         start = params[:start].to_i
         max = params[:limit].to_i
-        results = Customer.find(@user.id, start, max)
-        render :json => { :success => true, :data => results[:items], :metaData => { :auth_token => @user.authentication_token }, :total => results[:total] }
+        @results = Customer.find(@user.id, start, max)
+        render :template => '/api/v1/tokens/create'
       rescue DataMapper::SaveFailureError => e
         render :json => { :success => false }  
       rescue

@@ -47,13 +47,7 @@ class Customer
     self.update_ts = now
     save  
   end
-  
-  def as_json(options)
-    only = {:only => [:points], :include => [:last_check_in, :merchant] }
-    options = options.nil? ? only : options.merge(only)
-    super(options)
-  end
-  
+ 
   private
   
   def self.generate_qr_code(merchant_id, auth_code)

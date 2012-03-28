@@ -59,12 +59,6 @@ class PurchaseReward
     self.venues.concat(venues)
     save
   end
-
-  def as_json(options)
-    only = {:only => [:id,:title,:points], :include => [:type]}
-    options = options.nil? ? only : options.merge(only)
-    super(options)
-  end
   
   def destroy
     self.purchase_reward_venues.destroy

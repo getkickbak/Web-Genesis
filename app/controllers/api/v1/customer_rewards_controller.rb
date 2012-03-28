@@ -5,11 +5,8 @@ class Api::V1::CustomerRewardsController < ApplicationController
     authorize! :read, CustomerReward
     
     @rewards = CustomerReward.all(CustomerReward.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]))
-    respond_to do |format|
-      #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @rewards } }
-    end
-   end
+    render :template => '/api/v1/customer_rewards/index'
+  end
   
   def redeem
     @venue = Venue.first(:id => params[:venue_id], Venue.merchant.id => params[:merchant_id]) || not_found

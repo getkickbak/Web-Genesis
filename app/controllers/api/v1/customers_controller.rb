@@ -7,11 +7,8 @@ class Api::V1::CustomersController < ApplicationController
 
     start = params[:start].to_i
     max = params[:limit].to_i
-    results = Customer.find(current_user.id, start, max)
-
-    respond_to do |format|
-      format.json { render :json => { :success => true, :data => results[:items], :total => results[:total] } }
-    end
+    @results = Customer.find(current_user.id, start, max)
+    render :template => '/api/v1/customers/index'
   end
   
   def create
@@ -22,10 +19,7 @@ class Api::V1::CustomersController < ApplicationController
       begin
         if @venue.authorization_codes.first(:auth_code => params[:auth_code])
           @customer = Customer.create(@venue.merchant, current_user)
-          respond_to do |format|
-            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => true, :data => @customer, :message => [""] } }
-          end
+          render :template => '/api/v1/customers/create'
         else
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }

@@ -4,10 +4,7 @@ class Api::V1::ChallengesController < ApplicationController
   def index
     authorize! :read, Challenge
     @challenges = Challenge.all(Challenge.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]))
-    respond_to do |format|
-      #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @challenges } }
-    end
+    render :template => '/api/v1/challenges/index'
   end
 
   def start

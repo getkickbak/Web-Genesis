@@ -2,16 +2,6 @@ class Api::V1::UsersController < ApplicationController
   before_filter :authenticate_user!
   #load_and_authorize_resource
 
-  def show
-    @user = current_user
-    authorize! :read, @user
-
-    respond_to do |format|
-      #format.xml  { render :xml => @user }
-      format.json { render :json => { :success => false, :data => @user } }
-    end
-  end
-
   def update
     @user = current_user
     authorize! :update, @user
@@ -24,7 +14,7 @@ class Api::V1::UsersController < ApplicationController
         sign_in(current_user, :bypass => true)
         respond_to do |format|
           #format.xml  { head :ok }
-          format.json { render :json => { :success => true, :msg => [""] } }
+          format.json { render :json => { :success => true, :message => [""] } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)

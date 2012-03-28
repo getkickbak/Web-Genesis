@@ -105,8 +105,8 @@ Genesis::Application.routes.draw do
     
         match "/sign_up" => 'registrations#create', :via => :post
         
-        match "/account" => 'users#show'
         match "/account/update" => 'users#update', :via => :post
+        match "/account/update_facebook_info" => 'users#update_facebook_info', :via => :post
     
         match '/venues/find_nearest' => 'venues#find_nearest'
         match '/venues/:id/show' => 'venues#show'

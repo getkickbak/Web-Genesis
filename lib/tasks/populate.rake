@@ -68,6 +68,8 @@ namespace :db do
       )
       users.each do |user|
         customer = Customer.create(merchant,user)
+        customer.points = rand(30)
+        customer.save
       end
       RewardModel.create(merchant,
       {

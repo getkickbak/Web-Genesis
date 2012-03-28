@@ -21,10 +21,4 @@ class CheckIn
     checkin.save
     return checkin
   end
-  
-  def as_json(options)
-    only = {:only => [:time]}
-    options = options.nil? ? only : options.merge(only)
-    super(options)
-  end
 end

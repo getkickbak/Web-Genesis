@@ -154,6 +154,9 @@ GEM
     orm_adapter (0.0.6)
     pdfkit (0.5.2)
     polyglot (0.3.3)
+    rabl (0.6.5)
+      activesupport (>= 2.3.14)
+      multi_json (~> 1.0)
     rack (1.4.1)
     rack-cache (1.2)
       rack (>= 0.4)
@@ -281,6 +284,7 @@ DEPENDENCIES
   mini_magick
   mysql2
   pdfkit
+  rabl
   railties (~> 3.2.0)
   rake (~> 0.9.2.2)
   redis

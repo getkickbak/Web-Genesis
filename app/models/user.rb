@@ -165,10 +165,4 @@ class User
     reload
     self
   end
-    
-  def as_json(options)
-    only = {:only => [:name]}
-    options = options.nil? ? only : options.merge(only)
-    super(options)
-  end
 end

@@ -7,10 +7,8 @@ class Api::V1::VenuesController < ApplicationController
     authorize! :read, @venue
     
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.venue.id => @venue.id)
-    data = {}
     if @customer
       @prizes = EarnPrize.all(EarnPrize.merchant.id => @venue.merchant.id, EarnPrize.user.id => curent_user.id, :redeemd => false)
-      data[:prizes] = @prizes
       @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
       @rewards.push(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
       @eligible_rewards = []
@@ -22,19 +20,14 @@ class Api::V1::VenuesController < ApplicationController
         )
         @eligible_rewards << item  
       end
-      data[:eligible_rewards] = @eligible_rewards
     end 
-    respond_to do |format|
-      format.json { render :json => { :success => true, :data => @customer, :metaData => data } }
-    end  
+    render :template => '/api/v1/check_ins/create'  
   end
   
   def find_nearest
     authorize! :read, Venue
 
     @venues = Venue.find_nearest(params[:merchant_id], params[:latitude], params[:longitude], params[:max])
-    respond_to do |format|
-      format.json { render :json => { :success => true, :data => @venues } }
-    end
+    render :template => '/api/v1/venues/find_nearest'
   end
 end

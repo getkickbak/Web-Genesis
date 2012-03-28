@@ -5,10 +5,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     authorize! :read, PurchaseReward
     
     @rewards = PurchaseReward.all(PurchaseReward.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]))
-    respond_to do |format|
-      #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @rewards } }
-    end
+    render :template => '/api/v1/purchase_rewards/index'
    end
   
   def earn
@@ -31,7 +28,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     
     Customer.transaction do
       begin
-        data = []
+        @data = []
         if @venue.authorization_codes.first(:auth_code => params[:auth_code])
           now = Time.now
           challenge = Challenge.first(:type => 'referral', :venues => Venue.all(:id => params[:venue_id]))
@@ -44,8 +41,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             end
           end
           challenge = Challenge.first(:type => 'vip', :venues => Venue.all(:id => params[:venue_id]))
-          vip_challenge = false
-          vip_points = 0
+          @vip_challenge = false
+          @vip_points = 0
           if challenge && vip_challenge_met?(challenge)
             record = EarnRewardRecord.new(
               :challenge_id => challenge.id,
@@ -57,8 +54,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             record.user = current_user
             record.save
             @customer.points += challenge.points
-            vip_challenge = true
-            vip_points = challenge.points
+            @vip_challenge = true
+            @vip_points = challenge.points
           end
           reward_ids = params[:reward_ids]
           total_points = 0
@@ -93,7 +90,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               earn_prize.merchant = @venue.merchant
               earn_prize.user = current_user
               earn_prize.save
-              data << prize          
+              @data << prize          
           end
           prize_interval = (prize.points / Float(reward_model.prize_rebate_rate) * 100).to_i
           while current_point_offset >= prize_interval
@@ -117,14 +114,11 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               earn_prize.merchant = @venue.merchant
               earn_prize.user = current_user
               earn_prize.save 
-              data << prize       
+              @data << prize       
             end  
           end
           mutex.release
-          respond_to do |format|
-            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => success, :data => { :vip_challenge => vip_challenge, :vip_points => vip_points }, :metaData => { :prizes => data }, :message => [""] } }
-          end
+          render :template => '/api/v1/purchase_rewards/earn'
         else
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }

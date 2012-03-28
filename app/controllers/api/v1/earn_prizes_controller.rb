@@ -9,37 +9,28 @@ class Api::V1::EarnPrizesController < ApplicationController
     else
       @earn_prizes = EarnPrize.all(EarnPrize.user.id => current_user.id, :redeemed => false)
     end
-    respond_to do |format|
-      #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @earn_prizes } }
-    end
+    render :template => '/api/v1/earn_prizes/index'
   end
   
-  def show
-    @earn_prize = EarnPrize.get(params[:id])
+  def show_venues
+    @earn_prize = EarnPrize.get(params[:id]) || not_found
     authorize! :read, @earn_prize  
     
-    @reward = PurchaseReward.get(@earn_prize.reward.id)
-    respond_to do |format|
-      #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @reward.venues } }
-    end
+    render :template => '/api/v1/earn_prizes/show_venues'
   end
   
   def show_winners
+    authorize! :read, EarnPrize
+    
     start = 0
     max = params[:max].to_i
     @prizes = EarnPrize.all(EarnPrize.merchant.id => params[:merchant_id], :order => [:created_ts.desc], :offset => start, :limit => max)
-    
-    respond_to do |format|
-      #format.xml  { render :xml => referrals }
-      format.json { render :json => { :success => true, :data => @prizes.as_json({:only => [:created_ts], :include => [:user]}) } }
-    end
+    render :template => '/api/v1/earn_prizes/show_winners'
   end
   
   def redeem
-    @earn_prize = EarnPrize.get(params[:id])
-    authorize! :update, EarnPrize
+    @earn_prize = EarnPrize.get(params[:id]) || not_found
+    authorize! :update, @earn_prize
     
     EarnPrize.transaction do
       begin
