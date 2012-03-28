@@ -4,7 +4,7 @@ node :success do
 end
 node :data do
 	@results[:items].map do |r|
-		partial('api/v1/customers/show', :object => r) 
+		partial('api/v1/customers/base', :object => r) 
 	end
 end	
 node :total do 

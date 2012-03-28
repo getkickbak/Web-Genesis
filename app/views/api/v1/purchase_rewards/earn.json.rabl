@@ -13,7 +13,7 @@ end
 node :metaData do
 	node :prizes do
 		@data.map do |r|
-			partial('api/v1/earn_prizes/show', :object => r) 
+			partial('api/v1/earn_prizes/base', :object => r) 
 		end
 	end
 end	
