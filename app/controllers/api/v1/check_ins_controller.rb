@@ -2,7 +2,11 @@ class Api::V1::CheckInsController < ApplicationController
   before_filter :authenticate_user!
   
   def create
-    @venue = CheckInCode.first(:auth_code => params[:auth_code]).venue || not_found
+    if APP_PROP["DEBUG_MODE"]
+      @venue = CheckInCode.first(:auth_code => params[:auth_code]).venue || not_found
+    else
+      @venue = Venue.first(:offset => 0, :limit => 1) || not_found
+    end  
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
     if @customer.nil?
       render :template => '/api/v1/check_ins/create'
