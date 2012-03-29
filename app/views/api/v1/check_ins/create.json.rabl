@@ -11,10 +11,11 @@ else
 		partial('api/v1/customers/base', :object => @customer) 
 	end
 	node :metaData do
-		node :eligible_rewards do
-			@eligible_rewards.map do |r|
-		 		partial('api/v1/customer_rewards/base', :object => r)
-			end
-		end		 	
+		{ 
+			:eligible_rewards =>
+				@eligible_rewards.map do |r|
+		 			partial('api/v1/customers/eligible_reward', :object => r)
+				end
+		}		 	
 	end
 end

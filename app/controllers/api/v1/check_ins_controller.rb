@@ -2,10 +2,11 @@ class Api::V1::CheckInsController < ApplicationController
   before_filter :authenticate_user!
   
   def create
-    if APP_PROP["DEBUG_MODE"]
-      @venue = CheckInCode.first(:auth_code => params[:auth_code]).venue || not_found
+    if !APP_PROP["DEBUG_MODE"]
+      checkInCode = CheckInCode.first(:auth_code => params[:auth_code]) || not_found
+      @venue = checkInCode.venue
     else
-      @venue = Venue.first(:offset => 0, :limit => 1) || not_found
+      @venue = Venue.first(:offset => 0, :limit => 1)
     end  
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
     if @customer.nil?
@@ -25,17 +26,15 @@ class Api::V1::CheckInsController < ApplicationController
     CheckIn.transaction do
       begin
         now = Time.now
-        last_check_in = CheckIn.create(@venue, current_user) 
-        @customer.last_check_in = last_check_in
-        @customer.save
+        last_check_in = CheckIn.create(@venue, current_user, @customer)
         @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
-        @rewards.push(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
+        @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
         @eligible_rewards = []
         @rewards.each do |reward|
           item = EligibleReward.new(
-            :reward_id => reward.id,
-            :reward_title => reward.title,
-            :points_difference => (@customer.points - reward.points).abs
+            reward.id,
+            reward.title,
+            (@customer.points - reward.points).abs
           )
           @eligible_rewards << item  
         end

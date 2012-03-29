@@ -10,14 +10,16 @@ class CheckIn
   
   belongs_to :user
   belongs_to :venue
+  belongs_to :customer
   
-  def self.create(venue, user)
+  def self.create(venue, user, customer)
     now = Time.now
-    checkin = new CheckIn(
+    checkin = CheckIn.new(
       :time => now
     )
     checkin.user = user
     checkin.venue = venue
+    checkin.customer = customer
     checkin.save
     return checkin
   end
