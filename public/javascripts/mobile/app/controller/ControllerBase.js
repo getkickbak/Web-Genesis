@@ -190,18 +190,23 @@ Ext.define('Genesis.controller.ControllerBase',
       var callback = function(r)
       {
          config.callback(r.response);
-         console.log("Code = " + r.responseCode + " Sent = " + r.bytesSent + " bytes");
+         console.log("Code = " + r.response.responseCode + " Sent = " + r.bytesSent + " bytes");
       };
 
       console.log("Scanning QR Code ...")
       if(!Genesis.constants.isNative())
       {
+         //
+         // Pick whatever is currently showing on the Venue Explore screen,
+         // or pick the first one on the Neaby Venue in the store
+         //
+         var venueId = (this.getCheckinMerchant && this.getCheckinMerchant().venue) ? this.getCheckinMerchant().venue.getId() : Ext.StoreMgr.get('CheckinExploreStore').first().getId();
          callback(
          {
-            responseCode : "Test QR Code",
+            bytesSent : 0,
             response :
             {
-               response : "Test QR Code",
+               responseCode : venueId
             }
          });
       }

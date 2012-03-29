@@ -128,6 +128,9 @@ Ext.define('Genesis.controller.Viewport',
       {
          Ext.StoreMgr.get('CheckinExploreStore').load(
          {
+            jsonData :
+            {
+            },
             params :
             {
                latitude : position.coords.latitude,
@@ -139,6 +142,8 @@ Ext.define('Genesis.controller.Viewport',
                {
                   var app = me.getApplication();
                   var controller = app.getController('Checkins');
+
+                  controller.setPosition(position);
                   app.dispatch(
                   {
                      action : 'onCheckinScanTap',

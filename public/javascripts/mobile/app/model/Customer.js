@@ -89,7 +89,7 @@ Ext.define('Genesis.model.Customer',
       },
       setVenueScanCheckinUrl : function()
       {
-         this.self.setVenueCheckinUrl();
+         this.setVenueCheckinUrl();
       },
       setVenueCheckinUrl : function()
       {
@@ -97,7 +97,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : (!debugMode) ? 'POST' : 'GET'
          });
-         this.getProxy().setUrl((!debugMode) ? '/api/vi/check_ins' : Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
+         this.getProxy().setUrl((!debugMode) ? '/api/v1/check_ins' : Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
       },
       setVenueExploreUrl : function(venueId)
       {

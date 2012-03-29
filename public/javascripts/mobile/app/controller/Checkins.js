@@ -69,7 +69,8 @@ Ext.define('Genesis.controller.Checkins',
             widthchange : 'onMapWidthChange'
          }
       },
-      models : ['Venue', 'Merchant', 'EarnPrize']
+      models : ['Venue', 'Merchant', 'EarnPrize'],
+      position : null,
    },
    init : function()
    {
@@ -147,7 +148,7 @@ Ext.define('Genesis.controller.Checkins',
                      });
 
                      var qrcode = response.responseCode;
-                     console.log("response - " + response);
+                     console.log("qrcode - " + qrcode);
                      // Retrieve GPS Coordinates
                      me.onCheckinCommonTap(b, e, eOpts, mode, url, qrcode, me.getPosition(), callback);
                   }
@@ -383,11 +384,14 @@ Ext.define('Genesis.controller.Checkins',
       Customer[url](pvenueId);
       cstore.load(
       {
-         parms :
+         jsonData :
+         {
+         },
+         params :
          {
             latitude : currentLat || 0,
-            longtitude : currentLng || 0,
-            qrcode : qrcode || "",
+            longitude : currentLng || 0,
+            auth_code : qrcode || "",
             venueId : pvenueId
          },
          scope : this,
@@ -423,7 +427,7 @@ Ext.define('Genesis.controller.Checkins',
                }
                if(i > records.length)
                {
-                  showErrorMsg();
+                  //showErrorMsg();
                   return;
                }
                switch (mode)
@@ -454,8 +458,8 @@ Ext.define('Genesis.controller.Checkins',
             }
             else
             {
-               Ext.Viewport.setMasked(false);
-               showErrorMsg();
+               //Ext.Viewport.setMasked(false);
+               //showErrorMsg();
             }
          }
       });
