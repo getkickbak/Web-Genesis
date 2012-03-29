@@ -22,42 +22,54 @@
                "description": "Menu Description Text",
                "require_verif": "true",
                "points": 1,
-               "photo_url": "resources/img/sprites/menu.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/menu.jpg"
+               }
             }, {
                "type": "checkin",
                "name": "VIP",
                "description": "VIP/Checkin Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/checkin.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/checkin.jpg"
+               }
             }, {
                "type": "photo",
                "name": "Photo",
                "description": "Photo Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/photo.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/photo.jpg"
+               }
             }, {
                "type": "birthday",
                "name": "Birthday",
                "description": "Birthday Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/birthday.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/birthday.jpg"
+               }
             }, {
                "type": "referral",
                "name": "Refer a Friend",
                "description": "Referral Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/referral.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/referral.jpg"
+               }
             }, {
                "type": "custom",
                "name": "Mystery 1",
                "description": "Custom Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": ""
+               "photo": {
+                  "url": ""
+               }
             }
          ]
       }, {
@@ -82,42 +94,54 @@
                "description": "Menu Description Text",
                "require_verif": "true",
                "points": 1,
-               "photo_url": "resources/img/sprites/menu.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/menu.jpg"
+               }
             }, {
                "type": "checkin",
                "name": "VIP",
                "description": "VIP/Checkin Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/checkin.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/checkin.jpg"
+               }
             }, {
                "type": "photo",
                "name": "Photo",
                "description": "Photo Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/photo.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/photo.jpg"
+               }
             }, {
                "type": "birthday",
                "name": "Birthday",
                "description": "Birthday Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/birthday.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/birthday.jpg"
+               }
             }, {
                "type": "referral",
                "name": "Refer a Friend",
                "description": "Referral Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/referral.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/referral.jpg"
+               }
             }, {
                "type": "custom",
                "name": "Mystery 1",
                "description": "Custom Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": ""
+               "photo": {
+                  "url": ""
+               }
             }
          ]
       }, {
@@ -142,42 +166,54 @@
                "description": "Menu Description Text",
                "require_verif": "true",
                "points": 1,
-               "photo_url": "resources/img/sprites/menu.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/menu.jpg"
+               }
             }, {
                "type": "checkin",
                "name": "VIP",
                "description": "VIP/Checkin Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/checkin.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/checkin.jpg"
+               }
             }, {
                "type": "photo",
                "name": "Photo",
                "description": "Photo Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/photo.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/photo.jpg"
+               }
             }, {
                "type": "birthday",
                "name": "Birthday",
                "description": "Birthday Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/birthday.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/birthday.jpg"
+               }
             }, {
                "type": "referral",
                "name": "Refer a Friend",
                "description": "Referral Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/referral.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/referral.jpg"
+               }
             }, {
                "type": "custom",
                "name": "Mystery 1",
                "description": "Custom Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": ""
+               "photo": {
+                  "url": ""
+               }
             }
          ]
       }, {
@@ -202,42 +238,54 @@
                "description": "Menu Description Text",
                "require_verif": "true",
                "points": 1,
-               "photo_url": "resources/img/sprites/menu.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/menu.jpg"
+               }
             }, {
                "type": "checkin",
                "name": "VIP",
                "description": "VIP/Checkin Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/checkin.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/checkin.jpg"
+               }
             }, {
                "type": "photo",
                "name": "Photo",
                "description": "Photo Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/photo.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/photo.jpg"
+               }
             }, {
                "type": "birthday",
                "name": "Birthday",
                "description": "Birthday Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/birthday.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/birthday.jpg"
+               }
             }, {
                "type": "referral",
                "name": "Refer a Friend",
                "description": "Referral Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": "resources/img/sprites/referral.jpg"
+               "photo": {
+                  "url": "resources/img/sprites/referral.jpg"
+               }
             }, {
                "type": "custom",
                "name": "Mystery 1",
                "description": "Custom Description Text",
                "require_verif": "false",
                "points": 1,
-               "photo_url": ""
+               "photo": {
+                  "url": ""
+               }
             }
          ]
       }

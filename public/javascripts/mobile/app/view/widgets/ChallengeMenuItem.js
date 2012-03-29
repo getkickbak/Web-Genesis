@@ -22,7 +22,7 @@ Ext.define('Genesis.view.widgets.ChallengeMenuItem',
          {
             getPhoto : function(values)
             {
-               return Ext.isEmpty(values.photo_url) ? Ext.BLANK_IMAGE_URL : values.photo_url;
+               return Ext.isEmpty(values.photo) ? Ext.BLANK_IMAGE_URL : values.photo.url;
             }
          })
       },

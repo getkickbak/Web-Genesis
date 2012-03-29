@@ -26,7 +26,7 @@ Ext.define('Genesis.model.PurchaseReward',
             rootProperty : 'data'
          }
       },
-      fields : ['title', 'average_price', 'reward_ratio', 'points', 'type', 'photo_url', 'created_ts', 'update_ts', 'venue_id', 'merchant_id',
+      fields : ['title', 'average_price', 'reward_ratio', 'points', 'type', 'photo', 'created_ts', 'update_ts', 'venue_id', 'merchant_id',
       // Added in frontend of shopping cart tracking
       'qty']
    },

@@ -83,7 +83,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       this.setHeight(Ext.Viewport.getSize().width);
       bg.setStyle(
       {
-         'background-image' : 'url(' + data.Merchant['photo_url'] + ')'
+         'background-image' : 'url(' + data.Merchant['photo']['url'] + ')'
       });
 
       //Update Points

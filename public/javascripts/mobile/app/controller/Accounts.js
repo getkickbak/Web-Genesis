@@ -78,7 +78,7 @@ Ext.define('Genesis.controller.Accounts',
          scope : this,
          params :
          {
-            'user_id' : record.getLastCheckin()['user_id'],
+            'user_id' : record.getId(),
             'merchant_id' : record.getMerchant()['merchant_id']
          },
          callback : function(records, operation, success)

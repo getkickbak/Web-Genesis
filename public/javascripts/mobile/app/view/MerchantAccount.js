@@ -166,13 +166,13 @@ Ext.define('Genesis.view.MerchantAccount',
             {
                getPhoto : function(values)
                {
-                  if(!values.photo_url)
+                  if(!values.photo)
                   {
                      return Genesis.view.MerchantAccount.getPhoto(values.type);
                   }
                   else
                   {
-                     return values.photo_url;
+                     return values.photo.url;
                   }
                },
                getDesc : function(values)

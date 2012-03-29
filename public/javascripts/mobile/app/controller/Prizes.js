@@ -71,12 +71,19 @@ Ext.define('Genesis.controller.Prizes',
          case 'prizes' :
          {
             items = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
-            view.add(
+            if(items.length > 0)
             {
-               xtype : 'carousel',
-               scrollable : false
-            });
-            container = view.getItems().items[0];
+               view.add(
+               {
+                  xtype : 'carousel',
+                  scrollable : false
+               });
+               container = view.getItems().items[0];
+            }
+            else
+            {
+               container = view;
+            }
             break;
          }
          //
@@ -90,7 +97,6 @@ Ext.define('Genesis.controller.Prizes',
             break;
          }
       }
-      me.getRedeemBtn().show();
       var merchantId = viewport.getVenue().getMerchant().getId();
       for(var i = 0; i < items.length; i++)
       {
@@ -139,6 +145,11 @@ Ext.define('Genesis.controller.Prizes',
             defaultUnit : 'em',
             margin : '0 0 0.8 0'
          });
+         me.getRedeemBtn().hide();
+      }
+      else
+      {
+         me.getRedeemBtn().show();
       }
    },
    onDeactivate : function(oldActiveItem, c, activeItem, eOpts)
@@ -164,10 +175,10 @@ Ext.define('Genesis.controller.Prizes',
    },
    onPrizeCarouselItemChange : function(c, value, oldValue, eOpts)
    {
-      var data = value.getStore().getData().get(0);
+      var data = (value.getStore()) ? value.getStore().getData().get(0) : null;
+      var merchantId = (data) ? data.getMerchant().getId() : 0;
       var cvenue = this.getViewPortCntlr().getCheckinInfo().venue;
       var cmerchantId = (cvenue) ? cvenue.getMerchant().getId() : 0;
-      var merchantId = (data) ? data.getMerchant().getId() : 0;
 
       this.getRedeemBtn()[((merchantId == cmerchantId) && (merchantId > 0)) ? 'enable' : 'disable']();
    },

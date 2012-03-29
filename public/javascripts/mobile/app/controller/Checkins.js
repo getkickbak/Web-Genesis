@@ -186,7 +186,8 @@ Ext.define('Genesis.controller.Checkins',
    // --------------------------------------------------------------------------
    onExploreActivate : function()
    {
-      var viewport = this.getViewPortCntlr();
+      var me = this;
+      var viewport = me.getViewPortCntlr();
 
       me.getGeoLocation(function(position)
       {
@@ -202,25 +203,25 @@ Ext.define('Genesis.controller.Checkins',
             {
                if(success)
                {
-                  this.getCheckInNowBar().setDisabled(true);
+                  me.getCheckInNowBar().setDisabled(true);
                }
             },
             scope : this
          });
       });
-      switch (this.mode)
+      switch (me.mode)
       {
          case 'checkin':
-            this.getCheckInNowBar().show();
-            this.getCheckInNowBar().setDisabled(true);
+            me.getCheckInNowBar().show();
+            me.getCheckInNowBar().setDisabled(true);
             break;
          case 'explore' :
-            this.getCheckInNowBar().hide();
+            me.getCheckInNowBar().hide();
             break;
       }
       var cvenue = viewport.getCheckinInfo().venue;
       var venue = viewport.getVenue();
-      this.getMainBtn()[(cvenue && (venue.getId() != cvenue.getId())) ? 'show' : 'hide']();
+      me.getMainBtn()[(cvenue && (venue.getId() != cvenue.getId())) ? 'show' : 'hide']();
       //
       // Scroll to the Top of the Screen
       //
@@ -255,9 +256,13 @@ Ext.define('Genesis.controller.Checkins',
        */
       {
          this.latLng = record.get('latitude') + ',' + record.get('longtitude');
+         var color = 'red', label = '';
+         var address = record.get('address1') + (record.get('address2') ? ', ' + record.get('address2') : '') + ', ' + record.get('city') + ', ' + record.get('state') + ', ' + record.get('country') + ', ' + record.get('zipcode');
+
          this.markerOptions =
          {
-            center : this.latLng,
+            markers : 'color:' + color + '|' + 'label:' + label + '|' + this.latLng,
+            center : address,
             title : record.get('name')
          }
          console.log("Cannot Retrieve Google Map Information.");
@@ -296,9 +301,10 @@ Ext.define('Genesis.controller.Checkins',
          map.setMapCenter(this.latLng);
       }
       else
-      if(!gm)
+      //if(!gm)
       {
-         console.log("Cannot load Google Maps");
+         this.onMapWidthChange(map);
+         //console.log("Cannot load Google Maps");
       }
    },
    onActivate : function()
@@ -403,7 +409,9 @@ Ext.define('Genesis.controller.Checkins',
                for(var i = 0; i < records.length; i++)
                {
                   var customerId = records[i].getId();
-                  venueId = records[i].getLastCheckin().get('venue_id');
+                  var venueId = metaData['venue_id'];
+                  var venue = cestore.getById(venueId) || vstore.getById(venueId);
+                  var customer = cstore.getById(customerId);
 
                   // Find Matching Venue or pick the first one returned if no venueId is set
                   if((pvenueId == venueId) || (pvenueId == 0))
@@ -418,18 +426,17 @@ Ext.define('Genesis.controller.Checkins',
                         crecord.setLastCheckin(records[i].getLastCheckin());
                      }
 
-                     var venue = cestore.getById(venueId) || vstore.getById(venueId);
-                     var customer = cstore.getById(customerId);
-
                      this.setupCheckinInfo(venue, customer, metaData);
                      break;
                   }
                }
+               // Cannot find match?
                if(i > records.length)
                {
                   //showErrorMsg();
                   return;
                }
+
                switch (mode)
                {
                   case 'checkin' :
@@ -495,10 +502,9 @@ Ext.define('Genesis.controller.Checkins',
       var string = Ext.String.urlAppend(this.self.googleMapStaticUrl, Ext.Object.toQueryString(Ext.apply(
       {
          zoom : 15,
+         maptype : 'roadmap',
          sensor : false,
-         size : size.width + 'x' + size.height,
-         //center : this.latLng,
-         markers : 'color:blue|label:S|' + this.latLng
+         size : size.width + 'x' + size.height
       }, this.markerOptions)));
       map.setData(
       {

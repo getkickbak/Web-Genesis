@@ -16,14 +16,6 @@ Ext.define('Genesis.model.Checkin',
          getterName : 'getVenue',
          setterName : 'setVenue'
       }],
-      fields : ['id', 'time', 'user_id', 'venue_id']
-   },
-   getUser : function()
-   {
-
-   },
-   getVenue : function()
-   {
-
+      fields : ['id', 'time']
    }
 });

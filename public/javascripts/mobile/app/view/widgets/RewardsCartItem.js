@@ -67,11 +67,11 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
          {
             getPhoto : function(values)
             {
-               if(!values.photo_url)
+               if(!values.photo)
                {
                   return Genesis.view.Rewards.getPhoto(values.type);
                }
-               return values.photo_url;
+               return values.photo.url;
             }
          })
       },

@@ -4,15 +4,15 @@
          "id": 1,
          "points": 10,
          "last_check_in": {
-            "time": "",
-            "venue_id": 1,
-            "user_id": 1
+            "time": ""
          },
          "merchant": {
             "merchant_id": 1,
             "name": "The Runners Shop",
             "email": "elaine@therunnersshop.com",
-            "photo_url": "http://photos.getkickbak.com/paella9finish1.jpg",
+            "photo": {
+               "url": "http://photos.getkickbak.com/paella9finish1.jpg"
+            },
             "icon_url": "resources/img/sprites/runnersshop.jpg",
             "account_first_name": "Elaine",
             "account_last_name": "McCrea",
@@ -25,9 +25,7 @@
          "id": 2,
          "points": 20,
          "last_check_in": {
-            "time": "",
-            "venue_id": 2,
-            "user_id": 1
+            "time": ""
          },
          "merchant": {
             "merchant_id": 2,
@@ -46,15 +44,15 @@
          "id": 3,
          "points": 30,
          "last_check_in": {
-            "time": "",
-            "venue_id": 3,
-            "user_id": 1
+            "time": ""
          },
          "merchant": {
             "merchant_id": 3,
             "name": "Pho Bo Ga",
             "email": "elaine@phogoga.com",
-            "photo_url": "http://photos.getkickbak.com/paella9finish1.jpg",
+            "photo": {
+               "url": "http://photos.getkickbak.com/paella9finish1.jpg"
+            },
             "icon_url": "resources/img/sprites/phoboga.jpg",
             "account_first_name": "Pho Bo",
             "account_last_name": "Ga",
@@ -67,15 +65,15 @@
          "id": 4,
          "points": 40,
          "last_check_in": {
-            "time": "",
-            "venue_id": 4,
-            "user_id": 1
+            "time": ""
          },
          "merchant": {
             "merchant_id": 4,
             "name": "Spring Rolls",
             "email": "elaine@springrolls.com",
-            "photo_url": "http://photos.getkickbak.com/paella9finish1.jpg",
+            "photo": {
+               "url": "http://photos.getkickbak.com/paella9finish1.jpg"
+            },
             "icon_url": "resources/img/sprites/springrolls.jpg",
             "account_first_name": "Spring",
             "account_last_name": "Rolls",
@@ -90,19 +88,23 @@
       "prizes": [
          {
             "id": 1,
-            "expiry_date" : "2012-12-07T22:24:18.000Z",
+            "expiry_date": "2012-12-07T22:24:18.000Z",
             "reward": {
                "id": 1,
                "title": "Free Breakfast!",
                "points": 5,
                "type": "breakfast",
-               "photo_url": ""
+               "photo": {
+                  "url": ""
+               }
             },
             "merchant": {
                "merchant_id": 1,
                "name": "The Runners Shop",
                "email": "elaine@therunnersshop.com",
-               "photo_url": "http://photos.getkickbak.com/paella9finish1.jpg",
+               "photo": {
+                  "url": "http://photos.getkickbak.com/paella9finish1.jpg"
+               },
                "icon_url": "resources/img/sprites/runnersshop.jpg",
                "account_first_name": "Elaine",
                "account_last_name": "McCrea",
@@ -113,19 +115,23 @@
             }
          }, {
             "id": 2,
-            "expiry_date" : "2012-12-07T22:24:18.000Z",
+            "expiry_date": "2012-12-07T22:24:18.000Z",
             "reward": {
                "id": 2,
                "title": "Free Lunch for Two!",
                "points": 4,
                "type": "lunch",
-               "photo_url": ""
+               "photo": {
+                  "url": ""
+               }
             },
             "merchant": {
                "merchant_id": 1,
                "name": "The Runners Shop",
                "email": "elaine@therunnersshop.com",
-               "photo_url": "http://photos.getkickbak.com/paella9finish1.jpg",
+               "photo": {
+                  "url": "http://photos.getkickbak.com/paella9finish1.jpg"
+               },
                "icon_url": "resources/img/sprites/runnersshop.jpg",
                "account_first_name": "Elaine",
                "account_last_name": "McCrea",
@@ -136,19 +142,23 @@
             }
          }, {
             "id": 3,
-            "expiry_date" : "2012-12-07T22:24:18.000Z",
+            "expiry_date": "2012-12-07T22:24:18.000Z",
             "reward": {
                "id": 3,
                "title": "Free coffee @The Runner Shop",
                "points": 10,
                "type": "drinks",
-               "photo_url": ""
+               "photo": {
+                  "url": ""
+               }
             },
             "merchant": {
                "merchant_id": 2,
                "name": "The Tim Hortons Coffee",
                "email": "elaine@timhortons.com",
-               "photo_url": "http://photos.getkickbak.com/paella9finish1.jpg",
+               "photo": {
+                  "url": "http://photos.getkickbak.com/paella9finish1.jpg"
+               },
                "icon_url": "resources/img/sprites/timhortons.jpg",
                "account_first_name": "Tim",
                "account_last_name": "Hortons",
