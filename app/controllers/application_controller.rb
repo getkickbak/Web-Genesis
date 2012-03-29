@@ -43,25 +43,30 @@ class ApplicationController < ActionController::Base
   private
 
   def render_not_found(exception)
-    respond_to do |format|
-      format.html { render :template => "/error/404.html.erb", :status => 404 }
-      format.json { render :json => { :success => false, :message => ['Something went wrong', 'Please try again.'], :status => 404 } }
-    end
+    handle_error(['Something went wrong', 'Please try again'], "/error/404.html.erb", :status => 404)
   end
 
   def render_error(exception)
     logger.error(exception)
-    respond_to do |format|
-      format.html { render :template => "/error/500.html.erb", :status => 500 }
-      format.json { render :json => { :success => false, :message => ['Something went wrong', 'Server Error.'], :status => 500 } }
-    end
+    handle_error(['Something went wrong', 'Server Error'], "/error/500.html.erb", :status => 500)
   end
 
   def render_app_error(exception)
     logger.error(exception)
+    handle_error(['Something went wrong', exception.message], "/error/500.html.erb", :status => 500)
+  end
+  
+  def handle_error(message, template, params)
+    error = {
+      :success => false,
+      :message => message
+    }
+    status = params[:status] || :not_found
     respond_to do |format|
-      format.html { render :template => "/error/500.html.erb", :status => 500 }
-      format.json { render :json => { :success => false, :message => ['Something went wrong', exception.message], :status => 500 } }
+      format.html { render :template => template, :status => status }
+      format.xml  { render :xml  => error.to_xml, :status => status }
+      format.json { render :json => error.to_json, :status => status }
+      format.yaml { render :text => error.to_yaml, :status => status }
     end
   end
 end
