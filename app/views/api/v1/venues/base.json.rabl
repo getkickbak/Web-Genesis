@@ -1,5 +1,5 @@
 object @venue
-attributes :id, :name, :address, city, :longitude, :latitude, :distance
+attributes :id, :name, :address, :city, :state, :country, :longitude, :latitude, :distance
 child :type do
 	extends 'api/v1/venues/type'
 end
