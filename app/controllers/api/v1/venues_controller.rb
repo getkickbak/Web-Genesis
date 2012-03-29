@@ -26,7 +26,11 @@ class Api::V1::VenuesController < ApplicationController
   def find_nearest
     authorize! :read, Venue
 
-    @venues = Venue.find_nearest(params[:merchant_id], params[:latitude], params[:longitude], params[:max])
+    merchant_id = params[:merchant_id]
+    latitude = params[:latitude].to_f
+    longitude = params[:longitude].to_f
+    max = params[:limit].to_i
+    @venues = Venue.find_nearest(merchant_id, latitude, longitude, max)
     render :template => '/api/v1/venues/find_nearest'
   end
 end

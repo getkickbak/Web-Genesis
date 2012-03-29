@@ -1,7 +1,20 @@
 class UserDevise::SessionsController < Devise::SessionsController  
   # POST /resource/sign_in
   
+  def new
+    # Prevent users from sigining using devise for now
+    raise ActionController::RoutingError.new  
+  end
+  
+  def create
+    # Prevent users from sigining using devise for now
+    raise ActionController::RoutingError.new  
+  end
+  
   def create_from_facebook
+    # Prevent users from sigining using devise for now
+    raise ActionController::RoutingError.new
+    
     User.transaction do
       begin
         user = User.first(:facebook_id => params[:facebook_id])
@@ -38,6 +51,9 @@ class UserDevise::SessionsController < Devise::SessionsController
   
   # DELETE /resource/sign_out
   def destroy
+    # Prevent users from registering using devise for now
+    raise ActionController::RoutingError.new
+    
     redirect_path = after_sign_out_path_for(resource_name)
     signed_out = (Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name))
     set_flash_message :notice, :signed_out if signed_out

@@ -1,5 +1,14 @@
 class UserDevise::RegistrationsController < Devise::RegistrationsController
+  
+  def new
+    # Prevent users from registering using devise for now
+    raise ActionController::RoutingError.new
+  end
+  
   def create
+    # Prevent users from registering using devise for now
+    raise ActionController::RoutingError.new
+    
     User.transaction do |t|
       begin
         build_resource
@@ -34,5 +43,25 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
         end
       end
     end
+  end
+  
+  def edit
+    # Prevent users from registering using devise for now
+    raise ActionController::RoutingError.new
+  end
+  
+  def update
+    # Prevent users from registering using devise for now
+    raise ActionController::RoutingError.new
+  end
+  
+  def destroy
+    # Prevent users from registering using devise for now
+    raise ActionController::RoutingError.new
+  end
+  
+  def cancel
+    # Prevent users from registering using devise for now
+    raise ActionController::RoutingError.new
   end
 end 

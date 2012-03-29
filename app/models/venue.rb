@@ -81,32 +81,38 @@ class Venue
   end
   
   def self.find_nearest(merchant_id, latitude, longitude, max)
-    if merchant_id.nil?
-      venues_info = DataMapper.repository(:default).adapter.select(
-        "SELECT id, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance
-        FROM venues WHERE deleted_ts IS NULL
-        ORDER BY distance
-        ASC LIMIT 0,?", latitude, longitude, latitude, max 
-      )
+    if Rails.env == 'production'
+      if merchant_id.nil?
+        venues_info = DataMapper.repository(:default).adapter.select(
+          "SELECT id, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance
+          FROM venues WHERE deleted_ts IS NULL
+          ORDER BY distance
+          ASC LIMIT 0,?", latitude, longitude, latitude, max 
+        )
+      else
+        venues_info = DataMapper.repository(:default).adapter.select(
+          "SELECT id, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance
+          FROM venues WHERE merchant_id = ? AND deleted_ts IS NULL
+          ORDER BY distance
+          ASC LIMIT 0,?", latitude, longitude, latitude, merchant_id, max 
+        )
+      end   
+      venue_id_to_distance_map = {}
+      venue_ids = []
+      venues_info.each do |key,value|
+        venue_ids << value[:id] 
+        venue_id_to_distance_map[value[:id]] = value[:distance]
+      end
+      venues = Venue.all(:id => venue_ids)
+      venues.each do |venue|
+        venue.distance = venue_id_to_distance_map[venue.id]
+      end
     else
-      venues_info = DataMapper.repository(:default).adapter.select(
-        "SELECT id, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance
-        FROM venues WHERE merchant_id = ? AND deleted_ts IS NULL
-        ORDER BY distance
-        ASC LIMIT 0,?", latitude, longitude, latitude, merchant_id, max 
-      )
-    end   
-    venue_id_to_distance_map = {}
-    venue_ids = []
-    venues_info.each do |key,value|
-      venue_ids << value[:id] 
-      venue_id_to_distance_map[value[:id]] = value[:distance]
+      venues = Venue.all(:offset => 0, :limit => max)
+      venues.each do |venue|
+        venue.distance = rand * 10
+      end  
     end
-    venues = Venue.all(:id => venue_ids)
-    venues.each do |venue|
-      venue.distance = venue_id_to_distance_map[venue.id]
-    end
-    
     # Note: Venues are not ordered by distance. Should we do it on the client side or server side?
     return venues
   end
