@@ -24,7 +24,6 @@ class Api::V1::CheckInsController < ApplicationController
         last_check_in = CheckIn.create(@venue, current_user) 
         @customer.last_check_in = last_check_in
         @customer.save
-        @prizes = EarnPrize.all(EarnPrize.merchant.id => @venue.merchant.id, EarnPrize.user.id => curent_user.id, :redeemd => false)
         @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
         @rewards.push(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
         @eligible_rewards = []

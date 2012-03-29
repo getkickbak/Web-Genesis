@@ -8,7 +8,6 @@ class Api::V1::VenuesController < ApplicationController
     
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.venue.id => @venue.id)
     if @customer
-      @prizes = EarnPrize.all(EarnPrize.merchant.id => @venue.merchant.id, EarnPrize.user.id => curent_user.id, :redeemd => false)
       @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
       @rewards.push(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
       @eligible_rewards = []
