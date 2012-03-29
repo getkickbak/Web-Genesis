@@ -44,6 +44,7 @@ Ext.define('Genesis.view.ChallengePage',
          // Middle Button
          //
          {
+            tag : 'doit',
             iconCls : 'doit',
             title : 'Do it!'
          },
@@ -79,5 +80,47 @@ Ext.define('Genesis.view.ChallengePage',
             tpl : '{name}'
          }]
       }]
+   },
+   takePhoto : function()
+   {
+      if(!this.photoAction)
+      {
+         this.photoAction = Ext.create('Ext.ActionSheet',
+         {
+            hideOnMaskTap : false,
+            defaults :
+            {
+               defaultUnit : 'em',
+               margin : '0 0 0.5 0',
+               xtype : 'button',
+               handler : Ext.emptyFn
+            },
+            items : [
+            {
+               text : 'Use Photo from Library',
+               tag : 'library'
+            },
+            {
+               text : 'Use Photo from Photo Album',
+               tag : 'album'
+            },
+            {
+               text : 'Take a Picture',
+               tag : 'camera'
+            },
+            {
+               margin : '0.5 0 0 0',
+               text : 'Cancel',
+               ui : 'confirm',
+               scope : this,
+               handler : function()
+               {
+                  this.photoAction.hide();
+               }
+            }]
+         });
+         Ext.Viewport.add(this.photoAction);
+      }
+      this.photoAction.show();
    }
 });

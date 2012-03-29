@@ -50,15 +50,18 @@
       <script type="text/javascript" src="lib/cordova-1.5.0.js"></script>
       <script type="text/javascript">
          var phoneGapAvailable = false;
-         var appPath = "app";
+         var debugMode = false;
 
-         var browser = Ext.browser;
+         var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.0-commercial/src';
+         var _appId = "197968780267830";
+
+         var _browser = Ext.browser;
          if(!!window.isNK)
          {
-            browser.setFlag('WebView');
-            browser.setFlag('Sencha');
+            _browser.setFlag('WebView');
+            _browser.setFlag('Sencha');
          }
-         browser.setFlag('PhonGap', false);
+         _browser.setFlag('PhonGap', false);
 
          //
          // Bug fix to prevent bunching up of cls aggregation
@@ -70,16 +73,16 @@
             enabled : true,
             paths :
             {
-               Ext : 'lib/sencha-touch-2.0.0-commercial/src',
-               Genesis : appPath
+               Ext : _extPath,
+               Genesis : _appPath
             }
          });
-         
+
          window.fbAsyncInit = function()
          {
             FB.init(
             {
-               appId : "197968780267830",
+               appId : _appId,
                useCachedDialogs : true,
                frictionlessRequests : true,
                status : true,
@@ -214,7 +217,7 @@
                   this.getController('Viewport').openMainPage();
                   console.log("Launched App");
                },
-               appFolder : appPath,
+               appFolder : _appPath,
                name : 'Genesis'
             });
 

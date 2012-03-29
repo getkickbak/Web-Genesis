@@ -21,7 +21,9 @@ Ext.define('Genesis.model.PurchaseReward',
          url : Ext.Loader.getPath("Genesis") + "/store/" + 'rewards.json',
          reader :
          {
-            type : 'json'
+            type : 'json',
+            messageProperty : 'message',
+            rootProperty : 'data'
          }
       },
       fields : ['title', 'average_price', 'reward_ratio', 'points', 'type', 'photo_url', 'created_ts', 'update_ts', 'venue_id', 'merchant_id',

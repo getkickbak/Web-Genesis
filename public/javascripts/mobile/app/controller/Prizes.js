@@ -65,10 +65,12 @@ Ext.define('Genesis.controller.Prizes',
       view.removeAll();
       switch (me.getMode())
       {
+         //
+         // List all the prizes won by the Customer
+         //
          case 'prizes' :
          {
-            var store = Ext.StoreMgr.get('MerchantPrizeStore')
-            items = store.getRange();
+            items = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
             view.add(
             {
                xtype : 'carousel',
@@ -77,6 +79,9 @@ Ext.define('Genesis.controller.Prizes',
             container = view.getItems().items[0];
             break;
          }
+         //
+         // Show the Prize won by Customer on EarnPts
+         //
          case 'reward' :
          {
             items = [me.earnPrize];
@@ -86,6 +91,7 @@ Ext.define('Genesis.controller.Prizes',
          }
       }
       me.getRedeemBtn().show();
+      var merchantId = viewport.getVenue().getMerchant().getId();
       for(var i = 0; i < items.length; i++)
       {
          if(oldActiveItem)
@@ -93,7 +99,10 @@ Ext.define('Genesis.controller.Prizes',
             var xtypes = oldActiveItem.getXTypes();
             if(xtypes.match('merchantaccountview') || xtypes.match('rewardsview'))
             {
-               if(items[i].getMerchant().getId() != viewport.getVenue().getMerchant().getId())
+               //
+               // Only show prizes that matches the currently loaded Merchant Data
+               //
+               if(items[i].getMerchant().getId() != merchantId)
                {
                   continue;
                }
@@ -116,6 +125,9 @@ Ext.define('Genesis.controller.Prizes',
             margin : '0 0 0.8 0'
          });
       }
+      //
+      // To-do : show No Prize screen
+      //
       if(items.length == 0)
       {
          container.add(

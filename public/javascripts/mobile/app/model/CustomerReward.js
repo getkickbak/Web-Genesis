@@ -11,7 +11,23 @@ Ext.define('Genesis.model.CustomerReward',
          model : 'Genesis.model.Merchant',
          getterName : 'getMerchant',
          setterName : 'setMerchant'
-      }]
+      }],
+      proxy :
+      {
+         type : 'ajax',
+         disableCaching : false,
+         defaultHeaders :
+         {
+            'If-None-Match' : ''
+         },
+         url : Ext.Loader.getPath("Genesis") + "/store/" + 'redemptions.json',
+         reader :
+         {
+            type : 'json',
+            messageProperty : 'message',
+            rootProperty : 'data'
+         }
+      }
    },
    getMerchant : function()
    {

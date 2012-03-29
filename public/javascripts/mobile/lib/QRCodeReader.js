@@ -4,6 +4,12 @@
 JFQRCodeReader = function()
 {
 }
+JFQRCodeReader.ErrorResultType =
+{
+   Cancelled : 0,
+   Failed : 1,
+   Success : 2
+}
 //JFQRCodeReader.prototype.scanType = "Nigma";
 JFQRCodeReader.prototype.scanType = "RL";
 
@@ -60,63 +66,44 @@ JFQRCodeReader.prototype.getCode = function(filePath, server, successCallback, e
    console.log("ScanType is [" + this.scanType + "]");
    switch (this.scanType)
    {
-      case 'Nigma' :
-         Cordova.exec(successCallback, errorCallback, 'QRCodeReaderNigma', 'getCode', [options]);
-         break;
       case 'RL' :
-         Cordova.exec(successCallback, errorCallback, 'QRCodeReaderRL', 'getCode', [options]);
+      case 'Nigma' :
+      {
+         Cordova.exec(successCallback, errorCallback, 'org.apache.cordova.qrcodereader.' + this.scanType, 'getCode', [options]);
+         break;
+      }
+      default:
+         Cordova.exec(successCallback, errorCallback, 'org.apache.cordova.qrcodereader.RL', 'getCode', [options]);
          break;
    }
 };
 
-JFQRCodeReader.prototype._castOpenCodeError = function(pluginResult)
+JFQRCodeReader.prototype._didNotFinishWithResult = function(fileError)
 {
-   var fileError = new QRCodeReaderError(pluginResult.message);
-   //fileError.code = pluginResult.message;
    pluginResult.message = fileError;
-   Ext.Msg.hide();
+   //Ext.Msg.hide();
+   console.log("ErrorCode = " + fileError)
    return pluginResult;
 }
 
-JFQRCodeReader.prototype._castGetCodeResult = function(pluginResult)
+JFQRCodeReader.prototype._didFinishWithResult = function(pluginResult)
 {
    var result = new FileUploadResult();
    //result.responseCode = pluginResult.message.responseCode;
    result.response = decodeURIComponent(pluginResult.message.response);
    pluginResult.message = result;
 
-   Ext.Msg.hide();
+   //Ext.Msg.hide();
    return pluginResult;
-}
-
-JFQRCodeReader.prototype._updateProgress = function(pluginResult)
-{
-   var progress = pluginResult.message.progress;
-   var total = pluginResult.message.total;
-   console.log("Transferred " + progress + " of " + total + " bytes");
-   //if (Ext.Msg.isHidden())
-   {
-      Ext.Msg.show(
-      {
-         title : '',
-         msg : "Transferred " + progress + " of " + total + " bytes",
-         width : 300,
-         buttons : [],
-         fn : Ext.emptyFn
-      });
-   }
-   /*
-    else
-    {
-    Ext.Msg.updateMsg("Transferred " + progress + " of " + total + " bytes");
-    }
-    */
 }
 
 Cordova.addConstructor(function()
 {
-   if( typeof navigator.jfqrCodeReader == "undefined")
+   if(!window.plugins)
    {
-      navigator.jfqrCodeReader = new JFQRCodeReader();
+      window.plugins =
+      {
+      };
    }
+   window.plugins.qrCodeReader = new JFQRCodeReader();
 });

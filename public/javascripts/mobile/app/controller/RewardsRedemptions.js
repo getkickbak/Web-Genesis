@@ -153,21 +153,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          {
             property : 'points',
             direction : 'ASC'
-         }],
-         proxy :
-         {
-            type : 'ajax',
-            disableCaching : false,
-            defaultHeaders :
-            {
-               'If-None-Match' : ''
-            },
-            url : Ext.Loader.getPath("Genesis") + "/store/" + 'redemptions.json',
-            reader :
-            {
-               type : 'json'
-            }
-         }
+         }]
       });
    },
    // --------------------------------------------------------------------------

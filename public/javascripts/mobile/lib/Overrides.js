@@ -286,7 +286,7 @@ Genesis.constants =
          }
       },
       {
-         scope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions'
+         scope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions,user_photos'
       });
    },
    facebook_onLogin : function(cb)
@@ -470,24 +470,6 @@ Ext.define('Genesis.Component',
 });
 
 //---------------------------------------------------------------------------------------------------------------------------------
-// Ext.data.reader.Reader, Ext.data.reader.Json
-//---------------------------------------------------------------------------------------------------------------------------------
-
-Ext.define('Genesis.data.reader.Reader',
-{
-   override : 'Ext.data.reader.Reader',
-   constructor : function(config)
-   {
-      this.self.addConfig(
-      {
-         messageProperty : 'message',
-         rootProperty : 'data'
-      }, true);
-      this.callParent(arguments);
-   }
-});
-
-//---------------------------------------------------------------------------------------------------------------------------------
 // Ext.data.proxy.Server
 //---------------------------------------------------------------------------------------------------------------------------------
 
@@ -496,28 +478,49 @@ Ext.define('Genesis.data.proxy.OfflineServer',
    override : 'Ext.data.proxy.Server',
    processResponse : function(success, operation, request, response, callback, scope)
    {
-      var me = this, action = operation.getAction(), reader, resultSet;
+      var me = this, action = operation.getAction(), reader = me.getReader(), resultSet;
       var errorHandler = function()
       {
-         var messages = resultSet.getMessage();
+         var messages = ((resultSet && Ext.isDefined(resultSet.getMessage)) ? resultSet.getMessage().join(((!Genesis.constants.isNative()) ? '<br/>' : '\n')) : 'Error Connecting to Server');
+         var metaData = reader.metaData ||
+         {
+         };
          Ext.Viewport.setMasked(false);
 
          Ext.device.Notification.show(
          {
             title : 'Server Error(s)',
-            message : (messages) ? messages.join(((!Genesis.constants.isNative()) ? '<br/>' : '\n')) : 'Error Connecting to Server',
+            message : messages,
             callback : function()
             {
-               var vport = _application.getController('Viewport');
-               vport.setLoggedIn(false);
-               Genesis.constants.authToken = null;
-               vport.onFeatureTap('MainPage', 'login');
+               if(metaData['session_timeout'])
+               {
+                  var vport = _application.getController('Viewport');
+                  vport.setLoggedIn(false);
+                  Genesis.constants.authToken = null;
+                  vport.onFeatureTap('MainPage', 'login');
+               }
+               /*
+
+               else
+
+
+                if(metaData['session_timeout'])
+                {
+
+                }
+                */
+               else
+               {
+                  //
+                  // No need to take any action. Let to user try again.
+                  //
+               }
             }
          });
       }
       if((success === true) || (Genesis.constants.isNative() === true))
       {
-         reader = me.getReader();
 
          try
          {

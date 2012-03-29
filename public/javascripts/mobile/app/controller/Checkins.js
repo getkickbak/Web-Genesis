@@ -129,13 +129,14 @@ Ext.define('Genesis.controller.Checkins',
       url = url || 'setVenueCheckinUrl';
       type = type || 'scan'
       var qrcode;
+      var me = this;
 
       switch(type)
       {
          case 'scan' :
-            this.scanQRCode(
+            me.scanQRCode(
             {
-               callback : Ext.bind(function(response)
+               callback : function(response)
                {
                   if(response)
                   {
@@ -148,10 +149,7 @@ Ext.define('Genesis.controller.Checkins',
                      var qrcode = response.responseCode;
                      console.log("response - " + response);
                      // Retrieve GPS Coordinates
-                     this.getGeoLocation(Ext.bind(function(position)
-                     {
-                        this.onCheckinCommonTap(b, e, eOpts, mode, url, qrcode, position, callback);
-                     }, this));
+                     me.onCheckinCommonTap(b, e, eOpts, mode, url, qrcode, me.getPosition(), callback);
                   }
                   else
                   {
@@ -162,7 +160,7 @@ Ext.define('Genesis.controller.Checkins',
                         message : 'No QR Code Scanned!'
                      });
                   }
-               }, this)
+               }
             });
             break;
          default:
@@ -189,16 +187,25 @@ Ext.define('Genesis.controller.Checkins',
    {
       var viewport = this.getViewPortCntlr();
 
-      Ext.StoreMgr.get('CheckinExploreStore').load(
+      me.getGeoLocation(function(position)
       {
-         callback : function(records, operation, success)
+         me.setPosition(position);
+         Ext.StoreMgr.get('CheckinExploreStore').load(
          {
-            if(success)
+            params :
             {
-               this.getCheckInNowBar().setDisabled(true);
-            }
-         },
-         scope : this
+               latitude : position.coords.latitude,
+               longitude : position.coords.longitude
+            },
+            callback : function(records, operation, success)
+            {
+               if(success)
+               {
+                  this.getCheckInNowBar().setDisabled(true);
+               }
+            },
+            scope : this
+         });
       });
       switch (this.mode)
       {
@@ -350,7 +357,6 @@ Ext.define('Genesis.controller.Checkins',
       var custore = Ext.StoreMgr.get('CustomerStore');
       var cestore = Ext.StoreMgr.get('CheckinExploreStore');
       var vstore = Ext.StoreMgr.get('VenueAccountStore');
-      var estore = Ext.StoreMgr.get('EligibleRewardsStore');
       var page = this.getCheckinMerchant();
       var cview = this.getViewport().getActiveItem();
       var pvenueId = page.venue ? page.venue.getId() : 0;
@@ -374,7 +380,7 @@ Ext.define('Genesis.controller.Checkins',
          });
       }
       // Load Info into database
-      Customer[url]();
+      Customer[url](pvenueId);
       cstore.load(
       {
          parms :
@@ -412,9 +418,6 @@ Ext.define('Genesis.controller.Checkins',
                      var customer = cstore.getById(customerId);
 
                      this.setupCheckinInfo(venue, customer, metaData);
-                     estore.setData(metaData['eligible_rewards']);
-
-                     // Pick the first entry
                      break;
                   }
                }

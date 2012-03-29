@@ -284,16 +284,32 @@ Ext.define('Genesis.controller.MainPage',
                // Load Prizes into DataStore
                var metaData = proxy.getReader().metaData;
 
+               //
+               // Update MerchantPrizeStore
+               //
                var prizes = metaData['prizes'];
                if(prizes)
                {
                   Ext.StoreMgr.get('MerchantPrizeStore').setData(prizes);
                }
 
+               //
+               // Update Authentication Token
+               //
                var authToken = metaData['auth_token'];
                if(authToken)
                {
                   Genesis.constants.authToken = authToken;
+               }
+
+               //
+               // Update Authentication Token
+               //
+               var rewards = metaData['eligible_rewards'];
+               if(rewards)
+               {
+                  var estore = Ext.StoreMgr.get('EligibleRewardsStore');
+                  estore.setData(rewards);
                }
             }
          },

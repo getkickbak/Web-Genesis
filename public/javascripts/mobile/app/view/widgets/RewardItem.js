@@ -63,7 +63,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
                },
                getDisclaimer : function(values)
                {
-                  return 'Not valid with any other offer. No cash value. One coupon per customer per visit. Void where prohibited. Good at participating stores only.';
+                  return values.Merchant['prize_terms'] || 'Not valid with any other offer. No cash value. One coupon per customer per visit. Void where prohibited. Good at participating stores only.';
                },
                getPhoto : function(values)
                {

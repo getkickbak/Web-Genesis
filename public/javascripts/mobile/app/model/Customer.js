@@ -41,7 +41,9 @@ Ext.define('Genesis.model.Customer',
          },
          reader :
          {
-            type : 'json'
+            type : 'json',
+            messageProperty : 'message',
+            rootProperty : 'data'
          }
       },
       fields : ['points', 'id'],
@@ -57,19 +59,17 @@ Ext.define('Genesis.model.Customer',
       {
          this.getProxy().setActionMethods(
          {
-            read : 'POST'
+            read : (!debugMode) ? 'POST' : 'GET'
          });
-         this.getProxy().setUrl('/facebook_sign_in');
-         //this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+         this.getProxy().setUrl((!debugMode) ? '/facebook_sign_in' : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
       },
       setLoginUrl : function()
       {
          this.getProxy().setActionMethods(
          {
-            read : 'POST'
+            read : (!debugMode) ? 'POST' : 'GET'
          });
-         this.getProxy().setUrl('/api/v1/tokens');
-         //this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+         this.getProxy().setUrl((!debugMode) ? '/api/v1/tokens' : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
       },
       setLogoutUrl : function()
       {
@@ -83,34 +83,29 @@ Ext.define('Genesis.model.Customer',
       {
          this.getProxy().setActionMethods(
          {
-            read : 'POST'
+            read : (!debugMode) ? 'POST' : 'GET'
          });
-         this.getProxy().setUrl('/sign_up');
-         //this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+         this.getProxy().setUrl((!debugMode) ? '/sign_up' : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
       },
       setVenueScanCheckinUrl : function()
       {
-         this.getProxy().setActionMethods(
-         {
-            read : 'GET'
-         });
-         this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
+         this.self.setVenueCheckinUrl();
       },
       setVenueCheckinUrl : function()
       {
          this.getProxy().setActionMethods(
          {
-            read : 'GET'
+            read : (!debugMode) ? 'POST' : 'GET'
          });
-         this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
+         this.getProxy().setUrl((!debugMode) ? '/api/vi/check_ins' : Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
       },
-      setVenueExploreUrl : function()
+      setVenueExploreUrl : function(venueId)
       {
          this.getProxy().setActionMethods(
          {
             read : 'GET'
          });
-         this.getProxy().setUrl(Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
+         this.getProxy().setUrl((!debugMode) ? '/api/vi/venues/' + venueId + '/show' : Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
       }
    }
 });

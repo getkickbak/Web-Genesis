@@ -34,86 +34,86 @@ Ext.define('Genesis.view.MerchantAccount',
       // -----------------------------------------------------------------------
       /*
       {
-         xtype : 'toolbar',
-         cls : 'merchantContactPanelHdr',
-         centered : false,
-         items : [
-         {
-            xtype : 'title',
-            title : 'Contact Us'
-         },
-         {
-            xtype : 'spacer'
-         }]
+      xtype : 'toolbar',
+      cls : 'merchantContactPanelHdr',
+      centered : false,
+      items : [
+      {
+      xtype : 'title',
+      title : 'Contact Us'
       },
       {
-         xtype : 'container',
-         cls : 'merchantStatsPanel separator',
-         layout : 'fit',
-         defaults :
-         {
-            scrollable : false
-         },
-         items : [
-         // -----------------------------------------------------------------------
-         // Merchant Photo & Address
-         // -----------------------------------------------------------------------
-         {
-            docked : 'right',
-            xtype : 'component',
-            cls : 'merchantPhoto',
-            tag : 'photo',
-            tpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{photoUrl}"/></div>')
-         },
-         {
-            xtype : 'component',
-            cls : 'merchantAddress',
-            tag : 'merchantAddress',
-            tpl : Ext.create('Ext.XTemplate', '{[this.getAddress(values)]}',
-            {
-               getAddress : function(values)
-               {
-                  var address = (values.address2) ? values.address1 + ", " + values.address2 : values.address1;
-                  return (address + ",<br/>" + values.city + ", " + values.state + ", " + values.country + ",<br/>" + values.zipcode);
-               }
-            })
-         },
-         // -----------------------------------------------------------------------
-         // Customer's Stats
-         // -----------------------------------------------------------------------
-         {
-            xtype : 'formpanel',
-            tag : 'merchantStats',
-            cls : 'merchantStats',
-            defaults :
-            {
-               xtype : 'textfield',
-               readOnly : true,
-               labelAlign : 'left',
-               labelWidth : '60%'
-            },
-            items : [
-            {
-               label : 'Last Check-in',
-               name : 'lastCheckin',
-               value : new Date()
-            },
-            {
-               label : 'Registered Mobile Members',
-               name : 'regMembers',
-               value : 0
-            },
-            {
-               label : 'Total Points Earn this year',
-               name : 'ptsEarn',
-               value : 0
-            },
-            {
-               label : 'Total Points Spent this year',
-               name : 'ptsSpent',
-               value : 0
-            }]
-         }]
+      xtype : 'spacer'
+      }]
+      },
+      {
+      xtype : 'container',
+      cls : 'merchantStatsPanel separator',
+      layout : 'fit',
+      defaults :
+      {
+      scrollable : false
+      },
+      items : [
+      // -----------------------------------------------------------------------
+      // Merchant Photo & Address
+      // -----------------------------------------------------------------------
+      {
+      docked : 'right',
+      xtype : 'component',
+      cls : 'merchantPhoto',
+      tag : 'photo',
+      tpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{photoUrl}"/></div>')
+      },
+      {
+      xtype : 'component',
+      cls : 'merchantAddress',
+      tag : 'merchantAddress',
+      tpl : Ext.create('Ext.XTemplate', '{[this.getAddress(values)]}',
+      {
+      getAddress : function(values)
+      {
+      var address = (values.address2) ? values.address1 + ", " + values.address2 : values.address1;
+      return (address + ",<br/>" + values.city + ", " + values.state + ", " + values.country + ",<br/>" + values.zipcode);
+      }
+      })
+      },
+      // -----------------------------------------------------------------------
+      // Customer's Stats
+      // -----------------------------------------------------------------------
+      {
+      xtype : 'formpanel',
+      tag : 'merchantStats',
+      cls : 'merchantStats',
+      defaults :
+      {
+      xtype : 'textfield',
+      readOnly : true,
+      labelAlign : 'left',
+      labelWidth : '60%'
+      },
+      items : [
+      {
+      label : 'Last Check-in',
+      name : 'lastCheckin',
+      value : new Date()
+      },
+      {
+      label : 'Registered Mobile Members',
+      name : 'regMembers',
+      value : 0
+      },
+      {
+      label : 'Total Points Earn this year',
+      name : 'ptsEarn',
+      value : 0
+      },
+      {
+      label : 'Total Points Spent this year',
+      name : 'ptsSpent',
+      value : 0
+      }]
+      }]
       },
       */
       // -----------------------------------------------------------------------
@@ -255,6 +255,7 @@ Ext.define('Genesis.view.MerchantAccount',
          {
             iconCls : 'prize',
             tag : 'prizes',
+            badgeCls : 'x-badge round',
             title : 'Prizes'
          },
          {

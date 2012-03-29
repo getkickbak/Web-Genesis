@@ -10,7 +10,7 @@ Ext.define('Genesis.controller.Challenges',
    {
       refs :
       {
-         challengeBtn : 'button[iconCls=challenge]',
+         challengeBtn : 'challengepageview tabbar button[tag=doit]',
          challengePage :
          {
             selector : 'challengepageview',
@@ -29,9 +29,21 @@ Ext.define('Genesis.controller.Challenges',
          {
             select : 'onItemSelect'
          },
-         'challengepageview tabbar button[iconCls=doit]' :
+         challengeBtn :
          {
             tap : 'onChallengeBtnTap'
+         },
+         'actionsheet button[tag=library]' :
+         {
+            tap : 'onLibraryBtnTap'
+         },
+         'actionsheet button[tag=album]' :
+         {
+            tap : 'onAlbumBtnTap'
+         },
+         'actionsheet button[tag=camera]' :
+         {
+            tap : 'onCameraBtnTap'
          }
       }
    },
@@ -52,6 +64,7 @@ Ext.define('Genesis.controller.Challenges',
       {
          desc.getItems().getAt(i).updateData(model.getData());
       }
+      this.selectedItem = model;
       return true;
    },
    onItemTouchStart : function(d, index, target, e, eOpts)
@@ -63,8 +76,138 @@ Ext.define('Genesis.controller.Challenges',
    {
       Ext.fly(Ext.query('#'+target.id+' div.photo')[0]).unmask();
    },
-   onChallengeBtnTap : function(d, index, target, e, eOpts)
+   onChallengeBtnTap : function(b, e, eOpts)
    {
+      if(this.selectedItem)
+      {
+         switch (this.selectedItem.get('type'))
+         {
+            case 'menu' :
+               break;
+            case 'checkin' :
+               break;
+            case 'photo' :
+               {
+                  this.getChallengePage().takePhoto();
+                  break;
+               }s
+            case 'birthday' :
+               break;
+            case 'referral' :
+               break;
+            case 'custom' :
+               break;
+         }
+      }
+   },
+   onCameraSuccessFn : function(imageBase64)
+   {
+      var me = this;
+      var photoAction = me.getChallengePage().photoAction;
+      var points = me.selectedItem.get('points');
+      console.log("image size =[" + imageBase64.length + " bytes]");
+
+      //
+      // To-do : Add the points to customer
+      //
+
+      console.log("Points Earned = " + points + ' Pts');
+
+      if(Genesis.constants.isNative())
+      {
+      }
+      else
+      {
+      }
+      //
+      // Upload Photo to Facebook
+      //
+      var params =
+      {
+         'message' : 'Photo Description',
+         'url' : 'data:image/jpeg;base64,' + imageBase64,
+         'access_token' : FB.getAccessToken()
+      }
+
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : 'Uploading to Facebook ...'
+      });
+
+      FB.api('/me/photos', 'post', params, function(response)
+      {
+         Ext.Viewport.setMasked(false);
+         if(!response || response.error)
+         {
+            var message = (response && response.error) ? response.error.message : 'Failed to upload the photo onto your Facebook account';
+            Ext.device.Notification.show(
+            {
+               title : 'Upload Failed!',
+               message : message
+            });
+         }
+         else
+         {
+            console.log('Post ID - ' + response.id);
+
+            Ext.device.Notification.show(
+            {
+               title : 'Upload Complete',
+               message : 'Your Photo has been uploaded to your Facebook account',
+               callback : function()
+               {
+                  me.popView();
+               }
+            });
+         }
+      });
+   },
+   onCameraErrorFn : function(message)
+   {
+      console.log("onCameraErrorFn - message[" + message + "]");
+
+      Ext.device.Notification.show(
+      {
+         title : 'Error',
+         message : message + ((!Genesis.constants.isNative()) ? '<br/>' : '\n') + 'No Photos were taken.'
+      });
+   },
+   onPhotoBtnCommon : function(sourceType)
+   {
+      var me = this;
+      var photoAction = me.getChallengePage().photoAction;
+      photoAction.hide();
+      if(Genesis.constants.isNative())
+      {
+         var cameraOptions =
+         {
+            quality : 75,
+            destinationType : Camera.DestinationType.DATA_URL,
+            sourceType : sourceType,
+            allowEdit : true,
+            encodingType : Camera.EncodingType.JPEG,
+            targetWidth : 960
+            //targetHeight : 480
+         };
+         navigator.camera.getPicture(Ext.bind(me.onCameraSuccessFn, me), Ext.bind(me.onCameraErrorFn, me), cameraOptions);
+      }
+      else
+      {
+         me.onCameraSuccessFn('http://photos.getkickbak.com/paella9finish1.jpg');
+      }
+   },
+   onLibraryBtnTap : function(b, e, eOpts)
+   {
+      this.onPhotoBtnCommon(Camera.PictureSourceType.PHOTOLIBRARY);
+   },
+   onAlbumBtnTap : function(b, e, eOpts)
+   {
+      this.onPhotoBtnCommon(Camera.PictureSourceType.SAVEDPHOTOALBUM);
+   },
+   onCameraBtnTap : function(b, e, eOpts)
+   {
+      this.onPhotoBtnCommon(Camera.PictureSourceType.CAMERA);
    },
    onActivate : function()
    {

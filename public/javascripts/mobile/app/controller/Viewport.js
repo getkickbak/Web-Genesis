@@ -124,32 +124,40 @@ Ext.define('Genesis.controller.Viewport',
    onCheckinScanTap : function(b, e, eOpts, einfo)
    {
       var me = this;
-      Ext.StoreMgr.get('CheckinExploreStore').load(
+      me.getGeoLocation(function(position)
       {
-         callback : function(records, operation, success)
+         Ext.StoreMgr.get('CheckinExploreStore').load(
          {
-            if(success)
+            params :
             {
-               var app = this.getApplication();
-               var controller = app.getController('Checkins');
-               app.dispatch(
-               {
-                  action : 'onCheckinScanTap',
-                  controller : controller,
-                  args : arguments,
-                  scope : controller
-               });
-            }
-            else
+               latitude : position.coords.latitude,
+               longitude : position.coords.longitude
+            },
+            callback : function(records, operation, success)
             {
-               Ext.device.Notification.show(
+               if(success)
                {
-                  title : 'Warning',
-                  message : 'Error loading Nearby Venues'
-               });
-            }
-         },
-         scope : me
+                  var app = me.getApplication();
+                  var controller = app.getController('Checkins');
+                  app.dispatch(
+                  {
+                     action : 'onCheckinScanTap',
+                     controller : controller,
+                     args : arguments,
+                     scope : controller
+                  });
+               }
+               else
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Warning',
+                     message : 'Error loading Nearby Venues'
+                  });
+               }
+            },
+            scope : me
+         });
       });
    },
    onMainButtonTap : function(b, e, eOpts, eInfo)

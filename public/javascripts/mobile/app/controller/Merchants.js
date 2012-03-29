@@ -39,7 +39,8 @@ Ext.define('Genesis.controller.Merchants',
             xtype : 'merchantaccountview'
          },
          shareBtn : 'viewportview button[tag=shareBtn]',
-         mainBtn : 'viewportview button[tag=main]'
+         mainBtn : 'viewportview button[tag=main]',
+         prizesBtn : 'merchantaccountview tabbar[cls=navigationBarBottom] button[tag=prizes]'
       },
       control :
       {
@@ -96,24 +97,24 @@ Ext.define('Genesis.controller.Merchants',
       this.getPagePanel().getStore().setData(vrecord);
 
       /*
-      page.query('component[tag=photo]')[0].setData(
-      {
-         photoUrl : vrecord.getMerchant().get('icon_url')
-      });
-      */
+       page.query('component[tag=photo]')[0].setData(
+       {
+       photoUrl : vrecord.getMerchant().get('icon_url')
+       });
+       */
 
       if(cvenue && (cvenue.getId() == venueId))
       {
          /*
-         page.query('formpanel')[0].setValues(
-         {
-            lastCheckin : crecord.getLastCheckin().get('time'),
-            regMembers : 0,
-            ptsEarn : 0,
-            ptsSpent : 0,
-            ptsAvail : crecord.get('points')
-         });
-         */
+          page.query('formpanel')[0].setValues(
+          {
+          lastCheckin : crecord.getLastCheckin().get('time'),
+          regMembers : 0,
+          ptsEarn : 0,
+          ptsSpent : 0,
+          ptsAvail : crecord.get('points')
+          });
+          */
          this.getMerchantDescContainer().hide();
          this.getMerchantFeedContainer().show();
          //this.getMerchantAddress().hide();
@@ -130,6 +131,15 @@ Ext.define('Genesis.controller.Merchants',
       }
 
       this.getMainBtn()[(cvenue && (cvenue.getId() != vrecord.getId())) ? 'show' : 'hide']();
+      var prizesCount = Ext.StoreMgr.get('MerchantPrizeStore').getCount();
+      for(var i = 0; i < prizesCount; i++)
+      {
+         if (prizes[i].getMerchant().getId() != merchantId)
+         {
+            prizesCount--;            
+         }
+      }
+      this.getPrizesBtn().setBadgeText((prizesCount > 0) ? prizesCount + 'Pts' : null);
 
       //
       // Scroll to the Top of the Screen

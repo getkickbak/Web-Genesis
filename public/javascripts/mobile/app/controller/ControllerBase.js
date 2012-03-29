@@ -207,8 +207,7 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       else
       {
-         var qrCode = new JFQRCodeReader();
-         qrCode.getCode("file://localhost/test.jpg", "http://www.getkickbak.com/test", callback, fail, new FileUploadOptions());
+         window.plugins.qrCodeReader.getCode("file://localhost/test.jpg", "http://www.getkickbak.com/test", callback, fail, new FileUploadOptions());
       }
    }
 });

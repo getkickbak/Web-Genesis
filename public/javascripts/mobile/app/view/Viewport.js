@@ -98,7 +98,6 @@ Ext.define('Genesis.view.Viewport',
                      }]
                   });
                   Ext.Viewport.add(this.actions);
-                  this.actions.show();
                }
                this.actions.show();
             }
