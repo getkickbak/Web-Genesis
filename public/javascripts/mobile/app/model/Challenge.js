@@ -11,9 +11,25 @@ Ext.define('Genesis.model.Challenge',
          getterName : 'getMerchant',
          setterName : 'setMerchant'
       }],
-      fields : ['id', 'type', 'name', 'description',
+      fields : ['id', 'challenge_type', 'name', 'description',
       // Image associated with the Challenge
-      'photo_url', 'require_verif', 'data', 'points', 'created_ts', 'update_ts', 'merchant_id', 'venue_id']
+      'photo', 'require_verif', 'data', 'points', 'created_ts', 'update_ts', 'merchant_id', 'venue_id'],
+      proxy :
+      {
+         type : 'ajax',
+         disableCaching : false,
+         defaultHeaders :
+         {
+            'If-None-Match' : ''
+         },
+         url : (!debugMode) ? '/api/v1/challenges' : Ext.Loader.getPath("Genesis") + "/store/" + 'challenges.json',
+         reader :
+         {
+            type : 'json',
+            messageProperty : 'message',
+            rootProperty : 'data'
+         }
+      }
    },
    getMerchant : function()
    {

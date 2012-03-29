@@ -80,7 +80,7 @@ Ext.define('Genesis.controller.Challenges',
    {
       if(this.selectedItem)
       {
-         switch (this.selectedItem.get('type'))
+         switch (this.selectedItem.get('challenge_type'))
          {
             case 'menu' :
                break;
@@ -213,7 +213,7 @@ Ext.define('Genesis.controller.Challenges',
    {
       var record = this.getViewPortCntlr().getVenue();
       var venueId = record.getId();
-      var carousel = this.getChallengePage().query('carousel')[0];
+      var carousel = this.getChallengePage().query('carousel')[0];      
       var items = record.challenges().getRange();
 
       carousel.removeAll(true);

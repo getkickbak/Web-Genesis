@@ -223,8 +223,35 @@ Ext.define('Genesis.controller.Viewport',
    },
    onChallengesButtonTap : function(b, e, eOpts)
    {
-      this.onFeatureTap('Challenges');
-      console.log("Going to Challenges Page ...");
+      var me = this;
+      var venue = me.getVenue();
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : 'Retrieving Challenges ...'
+      });
+      Challenge.load(venue.getId(),
+      {
+         params :
+         {
+            merchant_id : venue.getMerchant().getId(),
+            venue_id : venue.getId()
+         },
+         callback : function(record, operation)
+         {
+            Ext.Viewport.setMasked(false);
+            if(operation.success)
+            {
+               //
+               // Load record into Venue Object
+               //
+               venue.challenges().add(record);
+
+               me.onFeatureTap('Challenges');
+               console.log("Going to Challenges Page ...");
+            }
+         }
+      });
    },
    onRewardsButtonTap : function(b, e, eOpts)
    {

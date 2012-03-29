@@ -7,7 +7,7 @@
             "time": ""
          },
          "merchant": {
-            "merchant_id": 1,
+            "id": 1,
             "name": "The Runners Shop",
             "email": "elaine@therunnersshop.com",
             "photo": {
@@ -28,10 +28,10 @@
             "time": ""
          },
          "merchant": {
-            "merchant_id": 2,
+            "id": 2,
             "name": "The Tim Hortons Coffee",
             "email": "elaine@timhortons.com",
-            "photo_url": "http://photos.getkickbak.com/paella9finish1.jpg",
+            "photo": {"url":"http://photos.getkickbak.com/paella9finish1.jpg"},
             "icon_url": "resources/img/sprites/timhortons.jpg",
             "account_first_name": "Tim",
             "account_last_name": "Hortons",
@@ -47,7 +47,7 @@
             "time": ""
          },
          "merchant": {
-            "merchant_id": 3,
+            "id": 3,
             "name": "Pho Bo Ga",
             "email": "elaine@phogoga.com",
             "photo": {
@@ -68,7 +68,7 @@
             "time": ""
          },
          "merchant": {
-            "merchant_id": 4,
+            "id": 4,
             "name": "Spring Rolls",
             "email": "elaine@springrolls.com",
             "photo": {
@@ -99,7 +99,7 @@
                }
             },
             "merchant": {
-               "merchant_id": 1,
+               "id": 1,
                "name": "The Runners Shop",
                "email": "elaine@therunnersshop.com",
                "photo": {
@@ -126,7 +126,7 @@
                }
             },
             "merchant": {
-               "merchant_id": 1,
+               "id": 1,
                "name": "The Runners Shop",
                "email": "elaine@therunnersshop.com",
                "photo": {
@@ -153,7 +153,7 @@
                }
             },
             "merchant": {
-               "merchant_id": 2,
+               "id": 2,
                "name": "The Tim Hortons Coffee",
                "email": "elaine@timhortons.com",
                "photo": {
