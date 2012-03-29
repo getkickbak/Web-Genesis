@@ -2,7 +2,7 @@ class Api::V1::CheckInsController < ApplicationController
   before_filter :authenticate_user!
   
   def create
-    @venue = CheckIn.first(:auth_code => params[:auth_code]).venue || not_found
+    @venue = CheckInCode.first(:auth_code => params[:auth_code]).venue || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
     if @customer.nil?
       render :template => '/api/v1/check_ins/create'
@@ -10,7 +10,7 @@ class Api::V1::CheckInsController < ApplicationController
     end
     authorize! :update, @customer
     
-    if !Common.within_geo_distance?(params[:latitude], params[:longitude], @venue.latitude, @venue.longitude)
+    if !Common.within_geo_distance?(params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => ["Something went wrong", "Outside of check-in distance.  Please try again."] } }
