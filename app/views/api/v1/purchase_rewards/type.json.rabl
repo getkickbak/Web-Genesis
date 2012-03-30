@@ -1,2 +1,2 @@
-@object purchase_reward_type
+object @purchase_reward_type
 attributes :value

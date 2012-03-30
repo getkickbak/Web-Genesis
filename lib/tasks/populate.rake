@@ -148,7 +148,7 @@ namespace :db do
       venues)
       challenges << challenge
       challenge_type = ChallengeType.get(3)
-      Challenge.create(merchant,challenge_type,
+      challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.photo.name"),
         :description => (I18n.t "challenge.type.photo.description"),
@@ -158,7 +158,7 @@ namespace :db do
       venues)
       challenges << challenge
       challenge_type = ChallengeType.get(4)
-      Challenge.create(merchant,challenge_type,
+      challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.referral.name"),
         :description => (I18n.t "challenge.type.referral.description"),
@@ -168,7 +168,7 @@ namespace :db do
       venues)
       challenges << challenge
       challenge_type = ChallengeType.get(5)
-      Challenge.create(merchant,challenge_type,
+      challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.vip.name"),
         :description => (I18n.t "challenge.type.vip.description"),
@@ -179,7 +179,7 @@ namespace :db do
       venues)
       challenges << challenge
       challenge_type = ChallengeType.get(6)
-      Challenge.create(merchant,challenge_type,
+      challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.custom.name"),
         :description => (I18n.t "challenge.type.custom.description"),
