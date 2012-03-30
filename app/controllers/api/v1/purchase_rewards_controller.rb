@@ -90,7 +90,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               earn_prize.merchant = @venue.merchant
               earn_prize.user = current_user
               earn_prize.save
-              @data << prize          
+              @data << earn_prize          
           end
           prize_interval = (prize.points / Float(reward_model.prize_rebate_rate) * 100).to_i
           while current_point_offset >= prize_interval
@@ -114,7 +114,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               earn_prize.merchant = @venue.merchant
               earn_prize.user = current_user
               earn_prize.save 
-              @data << prize       
+              @data << earn_prize       
             end  
           end
           mutex.release

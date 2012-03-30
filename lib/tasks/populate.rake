@@ -3,6 +3,7 @@ namespace :db do
   task :populate => :environment do
     require 'faker'
 
+    now = Time.now
     puts "Creating Users..."
     users = []
     10.times do |n|
@@ -93,9 +94,10 @@ namespace :db do
         })
         venues << venue
       end
+      purchase_rewards = []
       10.times do |n|
         reward_type = PurchaseRewardType.get(rand(11)+1)
-        PurchaseReward.create(merchant,reward_type,
+        reward = PurchaseReward.create(merchant,reward_type,
         {
           :title => Faker::Name.name[0..23],
           :price => rand(10) + 10.75,
@@ -103,19 +105,30 @@ namespace :db do
           :points => rand(10) + 10
         },
         venues)
+        purchase_rewards << reward
       end
       10.times do |n|
         reward_type = CustomerRewardType.get(rand(11)+1)
-        CustomerReward.create(merchant,reward_type,
+        reward = CustomerReward.create(merchant,reward_type,
         {
           :title => Faker::Name.name[0..23],
           :price => rand(10) + 10.75,
           :points => rand(10) + 80
         },
         venues)
+        earn_prize = EarnPrize.new(
+          :points => reward.points,
+          :expiry_date => 6.month.from_now,
+          :created_ts => now
+        )
+        earn_prize.reward = reward
+        earn_prize.merchant = merchant
+        earn_prize.user = users[n]
+        earn_prize.save
       end
+      challenges = []
       challenge_type = ChallengeType.get(1)
-      Challenge.create(merchant,challenge_type,
+      challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.birthday.name"),
         :description => (I18n.t "challenge.type.birthday.description"),
@@ -123,8 +136,9 @@ namespace :db do
         :points => rand(10) + 10
       },
       venues)
+      challenges << challenge
       challenge_type = ChallengeType.get(2)
-      Challenge.create(merchant,challenge_type,
+      challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.menu.name"),
         :description => (I18n.t "challenge.type.menu.description"),
@@ -132,6 +146,7 @@ namespace :db do
         :points => rand(10) + 10
       },
       venues)
+      challenges << challenge
       challenge_type = ChallengeType.get(3)
       Challenge.create(merchant,challenge_type,
       {
@@ -141,6 +156,7 @@ namespace :db do
         :points => rand(10) + 10
       },
       venues)
+      challenges << challenge
       challenge_type = ChallengeType.get(4)
       Challenge.create(merchant,challenge_type,
       {
@@ -150,6 +166,7 @@ namespace :db do
         :points => rand(10) + 10
       },
       venues)
+      challenges << challenge
       challenge_type = ChallengeType.get(5)
       Challenge.create(merchant,challenge_type,
       {
@@ -160,6 +177,7 @@ namespace :db do
         :points => rand(10) + 10
       },
       venues)
+      challenges << challenge
       challenge_type = ChallengeType.get(6)
       Challenge.create(merchant,challenge_type,
       {
@@ -169,6 +187,27 @@ namespace :db do
         :points => rand(10) + 10
       },
       venues)
+      challenges << challenge
+      10.times do |n|
+        record = EarnRewardRecord.new(
+          :challenge_id => challenges[rand(6)].id,
+          :venue_id => venues[rand(2)].id,
+          :points => challenges[rand(6)].points,
+          :created_ts => now
+        )
+        record.merchant = merchant
+        record.user = users[n]
+        record.save
+        record = EarnRewardRecord.new(
+          :reward_id => purchase_rewards[n].id,
+          :venue_id => venues[rand(2)].id,
+          :points => purchase_rewards[n].points,
+          :created_ts => now
+        )
+        record.merchant = merchant
+        record.user = users[n]
+        record.save
+      end        
     end
     puts "Complete Merchant creation"
   end
