@@ -28,6 +28,7 @@ class Api::V1::TokensController < ApplicationController
       start = params[:start].to_i
       max = params[:limit].to_i
       @results = Customer.find(@user.id, start, max)
+      @earn_prizes = EarnPrize.all(EarnPrize.user.id => @user.id, :redeemed => false)
       render :template => '/api/v1/tokens/create'
     end
   end
@@ -53,6 +54,7 @@ class Api::V1::TokensController < ApplicationController
         start = params[:start].to_i
         max = params[:limit].to_i
         @results = Customer.find(@user.id, start, max)
+        @earn_prizes = EarnPrize.all(EarnPrize.user.id => @user.id, :redeemed => false)
         render :template => '/api/v1/tokens/create'
       rescue DataMapper::SaveFailureError => e
         render :json => { :success => false }  

@@ -8,7 +8,12 @@ node :data do
 	end
 end
 node :metaData do
-	{ :auth_token => @user.authentication_token }
+	{ 
+		:auth_token => @user.authentication_token, 
+		:prizes => @earn_prizes.map do |r|
+						partial('api/v1/earn_prizes/base', :object => r)
+					end
+	}
 end	
 node :total do 
 	@results[:total]
