@@ -494,6 +494,9 @@ body {
 .checkinMerchant {
    .x-body {
    }
+   .gmap .x-innerhtml {
+      overflow:hidden;
+   }
 }
 .checkinMerchantWrapper {
    .x-inner {

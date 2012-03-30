@@ -66,7 +66,8 @@ Ext.define('Genesis.controller.Checkins',
          },
          'checkinmerchantview component[tag=map]' :
          {
-            widthchange : 'onMapWidthChange'
+            // Goto CheckinMerchant.js for "painted" support
+            //painted : 'onMapPainted'
          }
       },
       models : ['Venue', 'Merchant', 'EarnPrize'],
@@ -245,7 +246,7 @@ Ext.define('Genesis.controller.Checkins',
       /*
        if(gm)
        {
-       this.latLng = new gm.LatLng(record.get('latitude'), record.get('longtitude'));
+       this.latLng = new gm.LatLng(record.get('latitude'), record.get('longitude'));
        this.markerOptions =
        {
        position : this.latLng,
@@ -255,14 +256,15 @@ Ext.define('Genesis.controller.Checkins',
        else
        */
       {
-         this.latLng = record.get('latitude') + ',' + record.get('longtitude');
+         this.latLng = record.get('latitude') + ',' + record.get('longitude');
          var color = 'red', label = '';
          var address = record.get('address1') + (record.get('address2') ? ', ' + record.get('address2') : '') + ', ' + record.get('city') + ', ' + record.get('state') + ', ' + record.get('country') + ', ' + record.get('zipcode');
 
          this.markerOptions =
          {
             markers : 'color:' + color + '|' + 'label:' + label + '|' + this.latLng,
-            center : address,
+            //center : address,
+            center : this.latLng,
             title : record.get('name')
          }
          console.log("Cannot Retrieve Google Map Information.");
@@ -303,7 +305,7 @@ Ext.define('Genesis.controller.Checkins',
       else
       //if(!gm)
       {
-         this.onMapWidthChange(map);
+         //this.onMapWidthChange(map);
          //console.log("Cannot load Google Maps");
       }
    },
@@ -495,23 +497,6 @@ Ext.define('Genesis.controller.Checkins',
    onMapRender : function(map, gmap, eOpts)
    {
       this.onActivateCommon(map, gmap);
-   },
-   onMapWidthChange : function(map, value, oldValue, eOpts)
-   {
-      var size = map.element.getSize();
-      var string = Ext.String.urlAppend(this.self.googleMapStaticUrl, Ext.Object.toQueryString(Ext.apply(
-      {
-         zoom : 15,
-         maptype : 'roadmap',
-         sensor : false,
-         size : size.width + 'x' + size.height
-      }, this.markerOptions)));
-      map.setData(
-      {
-         width : size.width,
-         height : size.height,
-         photo : string
-      });
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
