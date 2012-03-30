@@ -109,7 +109,7 @@ Ext.define('Genesis.view.Rewards',
                   {
                      if(!values.photo)
                      {
-                        return Genesis.view.Rewards.getPhoto(values.type);
+                        return Genesis.view.Rewards.getPhoto(values['type']);
                      }
                      return values.photo.url;
                   },
@@ -241,21 +241,42 @@ Ext.define('Genesis.view.Rewards',
       getPhoto : function(type)
       {
          var photo_url;
-         switch (type)
+         switch (type.value)
          {
-            case 'breakfast' :
+            case 'appetizer' :
                photo_url = "resources/img/sprites/shoes.jpg";
                break;
-            case 'lunch' :
+            case 'bread' :
                photo_url = "resources/img/sprites/heroburgers.jpg";
                break;
-            case 'dinner' :
+            case 'dessert' :
                photo_url = "resources/img/sprites/springrolls.jpg";
                break;
             case 'drinks' :
                photo_url = "resources/img/sprites/phoboga.jpg";
                break;
-            case 'prize' :
+            case 'entrees' :
+               photo_url = "resources/img/sprites/star.jpg";
+               break;
+            case 'noodles' :
+               photo_url = "resources/img/sprites/star.jpg";
+               break;
+            case 'pasta' :
+               photo_url = "resources/img/sprites/star.jpg";
+               break;
+            case 'pastry' :
+               photo_url = "resources/img/sprites/star.jpg";
+               break;
+            case 'salad' :
+               photo_url = "resources/img/sprites/star.jpg";
+               break;
+            case 'sandwich' :
+               photo_url = "resources/img/sprites/shoes.jpg";
+               break;
+            case 'side_dish' :
+               photo_url = "resources/img/sprites/star.jpg";
+               break;
+            case 'soup' :
                photo_url = "resources/img/sprites/star.jpg";
                break;
          }

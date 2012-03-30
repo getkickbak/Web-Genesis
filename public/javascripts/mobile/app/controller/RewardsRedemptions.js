@@ -101,6 +101,9 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             tap : this.onCheckInTap
          }
       });
+      //
+      // Stores all the rewards from everybody
+      //
       Ext.regStore('RewardsStore',
       {
          model : 'Genesis.model.PurchaseReward',
@@ -109,6 +112,9 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             autoLoad : false
          }
       });
+      //
+      // Store the shopping cart for the user session
+      //
       Ext.regStore('RewardsCartStore',
       {
          model : 'Genesis.model.PurchaseReward',
@@ -585,10 +591,14 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    },
    openPage : function(subFeature)
    {
+      var page, store, rstore, list, scroll;
+
       var me = this;
       var viewport = me.getViewPortCntlr();
+      var cvenue = viewport.getCheckinInfo().venue;
       var venue = viewport.getVenue();
-      var page, store;
+      var venueId = venue.getId();
+      var merchantId = venue.getMerchant().getId();
 
       Ext.Viewport.setMasked(
       {
@@ -599,105 +609,88 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       {
          case 'rewards':
          {
-            store = Ext.StoreMgr.get('RewardsStore');
             page = me.getRewards();
-            store.clearFilter();
-            store.load(
-            {
-               parms :
-               {
-                  venue_id : venue.getId(),
-               },
-               scope : me,
-               callback : function(records, operation, success)
-               {
-                  Ext.Viewport.setMasked(false);
-                  if(success)
-                  {
-                     var cvenue = viewport.getCheckinInfo().venue;
-                     var list = this.getRewardsList();
-                     var merchantId = cvenue.getMerchant().getId();
-
-                     list.getScrollable().getScroller().scrollTo(0, 0);
-                     this.exploreMode = (cvenue && (cvenue.getId() != venue.getId()));
-
-                     for(var i = 0; i < records.length; i++)
-                     {
-                        records[i].data['merchant_id'] = merchantId;
-                     }
-                     store.filter([
-                     {
-                        filterFn : function(item)
-                        {
-                           return item.get("merchant_id") == merchantId;
-                        }
-                     }]);
-
-                     list.getStore().setData(store.getRange());
-
-                     this.pushView(page);
-                  }
-               }
-            });
+            list = me.getRewardsList();
+            store = Ext.StoreMgr.get('RewardsStore');
+            rstore = list.getStore();
+            scroll = list.getScrollable();
+            PurchaseReward['setGetRewardsURL']();
             break;
          }
          case 'redemptions':
          {
-            store = Ext.StoreMgr.get('RedemptionsStore');
             page = me.getRedemptions();
-            store.clearFilter();
-            store.load(
-            {
-               parms :
-               {
-                  venue_id : venue.getId()
-               },
-               scope : me,
-               callback : function(records, operation, success)
-               {
-                  Ext.Viewport.setMasked(false);
-                  if(success)
-                  {
-                     var cvenue = viewport.getCheckinInfo().venue;
-                     var epstore = this.getRedemptionsPtsEarnPanel().getStore();
-                     var list = this.getRedemptionsList();
-
-                     //
-                     // Update Customer info
-                     //
-                     epstore.setData(viewport.getCustomer().raw);
-
-                     this.exploreMode = cvenue && (cvenue.getId() != venue.getId());
-                     //
-                     // Scroll to the Top of the Screen
-                     //
-                     this.getRedemptions().getScrollable().getScroller().scrollTo(0, 0);
-
-                     for(var i = 0; i < records.length; i++)
-                     {
-                        records[i].data['venue_id'] = venue.getId();
-                     }
-                     store.filter([
-                     {
-                        filterFn : function(item)
-                        {
-                           return item.get("venue_id") == venue.getId();
-                        }
-                     }]);
-
-                     list.getStore().setData(store.getRange());
-
-                     this.pushView(page);
-                  }
-               }
-            });
+            list = me.getRedemptionsList();
+            store = Ext.StoreMgr.get('RedemptionsStore');
+            rstore = list.getStore();
+            scroll = page.getScrollable();
+            CustomerReward['setGetRedemptionsURL']();
             break;
          }
       }
+
+      store.clearFilter();
+      store.load(
+      {
+         jsonData :
+         {
+         },
+         params :
+         {
+            venue_id : venueId,
+            merchant_id : merchantId
+         },
+         scope : me,
+         callback : function(records, operation, success)
+         {
+            Ext.Viewport.setMasked(false);
+            if(success)
+            {
+               me.exploreMode = cvenue && (cvenue.getId() != venue.getId());
+               switch (subFeature)
+               {
+                  case 'redemptions':
+                  {
+                     //
+                     // Update Customer info
+                     //
+                     me.getRedemptionsPtsEarnPanel().getStore().setData(viewport.getCustomer().raw);
+                     break
+                  }
+                  default :
+                     break;
+               }
+
+               //
+               // Scroll to the Top of the Screen
+               //
+               scroll.getScroller().scrollTo(0, 0);
+
+               for(var i = 0; i < records.length; i++)
+               {
+                  records[i].data['venue_id'] = venueId;
+               }
+               //
+               // Show Redemptions for this merchant only
+               //
+               store.filter([
+               {
+                  filterFn : function(item)
+                  {
+                     return item.get("venue_id") == venueId;
+                  }
+               }]);
+
+               rstore.setData(store.getRange());
+
+               me.pushView(page);
+            }
+         }
+      });
    },
    isOpenAllowed : function()
    {
-      // VenueId can be found fater the User checks into a venue
-      return ((this.getViewport().getVenue()) ? true : "You need to Explore or Check-in to a Venue first");
+      // VenueId can be found after the User checks into a venue
+      return ((this.getViewPortCntlr().getVenue()) ? true : "You need to Explore or Check-in to a Venue first");
    }
 });

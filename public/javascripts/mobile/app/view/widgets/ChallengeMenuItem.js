@@ -22,7 +22,7 @@ Ext.define('Genesis.view.widgets.ChallengeMenuItem',
          {
             getPhoto : function(values)
             {
-               return Ext.isEmpty(values.photo) ? Ext.BLANK_IMAGE_URL : values.photo.url;
+               return Ext.isEmpty(values.photo) ? Genesis.view.widgets.ChallengeMenuItem.getPhoto(values['challenge_type']) : values.photo.url;
             }
          })
       },
@@ -90,5 +90,34 @@ Ext.define('Genesis.view.widgets.ChallengeMenuItem',
       }
       // Bypassing setter because sometimes we pass the same object (different properties)
       item.updateData(data);
+   },
+   statics :
+   {
+      getPhoto : function(type)
+      {
+         var photo_url;
+         switch (type.value)
+         {
+            case 'birthday' :
+               photo_url = "resources/img/sprites/birthday.jpg";
+               break;
+            case 'menu' :
+               photo_url = "resources/img/sprites/menu.jpg";
+               break;
+            case 'photo' :
+               photo_url = "resources/img/sprites/photo.jpg";
+               break;
+            case 'referral' :
+               photo_url = "resources/img/sprites/referral.jpg";
+               break;
+            case 'vip' :
+               photo_url = "resources/img/sprites/checkin.jpg";
+               break;
+            case 'custom' :
+               photo_url = "resources/img/sprites/star.jpg";
+               break;
+         }
+         return photo_url;
+      }
    }
 });

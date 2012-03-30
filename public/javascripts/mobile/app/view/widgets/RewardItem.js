@@ -67,7 +67,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
                },
                getPhoto : function(values)
                {
-                  return values.Merchant['icon_url'];
+                  return values.Merchant['photo']['thumbnail_ios_small'].url;
                },
                getName : function(values)
                {

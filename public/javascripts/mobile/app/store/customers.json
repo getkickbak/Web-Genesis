@@ -11,9 +11,17 @@
             "name": "The Runners Shop",
             "email": "elaine@therunnersshop.com",
             "photo": {
+               "url": "resources/img/sprites/runnersshop.jpg",
+               "thumbnail_ios_small": {
+                  "url": "resources/img/sprites/runnersshop.jpg"
+               },
+               "thumbnail_ios_medium": {
+                  "url": "resources/img/sprites/runnersshop.jpg"
+               }
+            },
+            "alt_photo": {
                "url": "http://photos.getkickbak.com/paella9finish1.jpg"
             },
-            "icon_url": "resources/img/sprites/runnersshop.jpg",
             "account_first_name": "Elaine",
             "account_last_name": "McCrea",
             "phone": "555-321-6768",
@@ -31,8 +39,18 @@
             "id": 2,
             "name": "The Tim Hortons Coffee",
             "email": "elaine@timhortons.com",
-            "photo": {"url":"http://photos.getkickbak.com/paella9finish1.jpg"},
-            "icon_url": "resources/img/sprites/timhortons.jpg",
+            "photo": {
+               "url": "resources/img/sprites/timhortons.jpg",
+               "thumbnail_ios_small": {
+                  "url": "resources/img/sprites/timhortons.jpg"
+               },
+               "thumbnail_ios_medium": {
+                  "url": "resources/img/sprites/timhortons.jpg"
+               }
+            },
+            "alt_photo": {
+               "url": "http://photos.getkickbak.com/paella9finish1.jpg"
+            },
             "account_first_name": "Tim",
             "account_last_name": "Hortons",
             "phone": "555-123-5678",
@@ -51,9 +69,17 @@
             "name": "Pho Bo Ga",
             "email": "elaine@phogoga.com",
             "photo": {
+               "url": "resources/img/sprites/phoboga.jpg",
+               "thumbnail_ios_small": {
+                  "url": "resources/img/sprites/phoboga.jpg"
+               },
+               "thumbnail_ios_medium": {
+                  "url": "resources/img/sprites/phoboga.jpg"
+               }
+            },
+            "alt_photo": {
                "url": "http://photos.getkickbak.com/paella9finish1.jpg"
             },
-            "icon_url": "resources/img/sprites/phoboga.jpg",
             "account_first_name": "Pho Bo",
             "account_last_name": "Ga",
             "phone": "555-234-5678",
@@ -72,9 +98,17 @@
             "name": "Spring Rolls",
             "email": "elaine@springrolls.com",
             "photo": {
+               "url": "resources/img/sprites/springrolls.jpg",
+               "thumbnail_ios_small": {
+                  "url": "resources/img/sprites/springrolls.jpg"
+               },
+               "thumbnail_ios_medium": {
+                  "url": "resources/img/sprites/springrolls.jpg"
+               }
+            },
+            "alt_photo": {
                "url": "http://photos.getkickbak.com/paella9finish1.jpg"
             },
-            "icon_url": "resources/img/sprites/springrolls.jpg",
             "account_first_name": "Spring",
             "account_last_name": "Rolls",
             "phone": "555-345-6789",
@@ -103,9 +137,17 @@
                "name": "The Runners Shop",
                "email": "elaine@therunnersshop.com",
                "photo": {
+                  "url": "resources/img/sprites/runnersshop.jpg",
+                  "thumbnail_ios_small": {
+                     "url": "resources/img/sprites/runnersshop.jpg"
+                  },
+                  "thumbnail_ios_medium": {
+                     "url": "resources/img/sprites/runnersshop.jpg"
+                  }
+               },
+               "alt_photo": {
                   "url": "http://photos.getkickbak.com/paella9finish1.jpg"
                },
-               "icon_url": "resources/img/sprites/runnersshop.jpg",
                "account_first_name": "Elaine",
                "account_last_name": "McCrea",
                "phone": "555-321-6768",
@@ -126,16 +168,24 @@
                }
             },
             "merchant": {
-               "id": 1,
-               "name": "The Runners Shop",
-               "email": "elaine@therunnersshop.com",
+               "id": 2,
+               "name": "The Tim Hortons Coffee",
+               "email": "elaine@timhortons.com",
                "photo": {
+                  "url": "resources/img/sprites/timhortons.jpg",
+                  "thumbnail_ios_small": {
+                     "url": "resources/img/sprites/timhortons.jpg"
+                  },
+                  "thumbnail_ios_medium": {
+                     "url": "resources/img/sprites/timhortons.jpg"
+                  }
+               },
+               "alt_photo": {
                   "url": "http://photos.getkickbak.com/paella9finish1.jpg"
                },
-               "icon_url": "resources/img/sprites/runnersshop.jpg",
-               "account_first_name": "Elaine",
-               "account_last_name": "McCrea",
-               "phone": "555-321-6768",
+               "account_first_name": "Tim",
+               "account_last_name": "Hortons",
+               "phone": "555-123-5678",
                "qr_code": "",
                "created_ts": "",
                "update_ts": ""
@@ -153,16 +203,24 @@
                }
             },
             "merchant": {
-               "id": 2,
-               "name": "The Tim Hortons Coffee",
-               "email": "elaine@timhortons.com",
+               "id": 3,
+               "name": "Pho Bo Ga",
+               "email": "elaine@phogoga.com",
                "photo": {
+                  "url": "resources/img/sprites/phoboga.jpg",
+                  "thumbnail_ios_small": {
+                     "url": "resources/img/sprites/phoboga.jpg"
+                  },
+                  "thumbnail_ios_medium": {
+                     "url": "resources/img/sprites/phoboga.jpg"
+                  }
+               },
+               "alt_photo": {
                   "url": "http://photos.getkickbak.com/paella9finish1.jpg"
                },
-               "icon_url": "resources/img/sprites/timhortons.jpg",
-               "account_first_name": "Tim",
-               "account_last_name": "Hortons",
-               "phone": "555-123-5678",
+               "account_first_name": "Pho Bo",
+               "account_last_name": "Ga",
+               "phone": "555-234-5678",
                "qr_code": "",
                "created_ts": "",
                "update_ts": ""

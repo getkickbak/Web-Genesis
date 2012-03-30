@@ -1,7 +1,8 @@
 Ext.define('Genesis.model.PurchaseReward',
 {
    extend : 'Ext.data.Model',
-   id : 'Venue',
+   id : 'PurchaseReward',
+   alternateClassName : 'PurchaseReward',
    config :
    {
       belongsTo : [
@@ -18,7 +19,10 @@ Ext.define('Genesis.model.PurchaseReward',
          {
             'If-None-Match' : ''
          },
-         url : Ext.Loader.getPath("Genesis") + "/store/" + 'rewards.json',
+         writer :
+         {
+            type : 'json'
+         },
          reader :
          {
             type : 'json',
@@ -33,5 +37,24 @@ Ext.define('Genesis.model.PurchaseReward',
    getMerchant : function()
    {
 
+   },
+   statics :
+   {
+      setGetRewardsURL : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'GET'
+         });
+         this.getProxy().setUrl((!debugMode) ? '/api/v1/purchase_rewards' : Ext.Loader.getPath("Genesis") + "/store/" + 'rewards.json');
+      },
+      setEarnRewardURL : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : (!debugMode) ? 'POST' : 'GET'
+         });
+         this.getProxy().setUrl((!debugMode) ? '/api/v1/purchase_rewards/earn' : Ext.Loader.getPath("Genesis") + "/store/" + 'rewards.json');
+      }
    }
 });

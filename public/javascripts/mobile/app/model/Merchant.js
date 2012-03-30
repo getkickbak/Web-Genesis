@@ -5,7 +5,7 @@ Ext.define('Genesis.model.Merchant',
    id : 'Merchant',
    config :
    {
-      fields : ['id', 'name', 'email', 'photo', 'icon_url', 'account_first_name', 'account_last_name', 'phone', 'auth_code', 'qr_code', 'payment_account_id', 'created_ts', 'update_ts'],
+      fields : ['id', 'name', 'email', 'photo', 'alt_photo', 'account_first_name', 'account_last_name', 'phone', 'auth_code', 'qr_code', 'payment_account_id', 'created_ts', 'update_ts', 'type'],
       idProperty : 'id'
    }
 });

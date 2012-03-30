@@ -13,7 +13,7 @@ Ext.define('Genesis.model.Challenge',
       }],
       fields : ['id', 'challenge_type', 'name', 'description',
       // Image associated with the Challenge
-      'photo', 'require_verif', 'data', 'points', 'created_ts', 'update_ts', 'merchant_id', 'venue_id'],
+      'require_verif', 'data', 'points', 'created_ts', 'update_ts', 'photo', 'merchant_id', 'venue_id'],
       proxy :
       {
          type : 'ajax',

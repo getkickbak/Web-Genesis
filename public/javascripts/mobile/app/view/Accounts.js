@@ -37,7 +37,7 @@ Ext.define('Genesis.view.Accounts',
          {
             getPhoto : function(values)
             {
-               return values.Merchant['icon_url'];
+               return values.Merchant['photo']['thumbnail_ios_small'].url;
             },
             getCoin : function()
             {

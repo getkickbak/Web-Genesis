@@ -41,7 +41,7 @@ Genesis.constants =
          {
             if(format)
             {
-               date = Date.parseDate(v, format);
+               date = Date.parse(v, format);
                if(Ext.isEmpty(date))
                {
                   date = new Date(v).format(format);
@@ -51,7 +51,7 @@ Genesis.constants =
             date = new Date(v);
             if(date.toString() == 'Invalid Date')
             {
-               date = Date.parseDate(v, format);
+               date = Date.parse(v, format);
             }
          }
       }

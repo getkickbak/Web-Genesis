@@ -1,7 +1,7 @@
 {
    "data": [
       {
-         "challenge_type": {
+         "type": {
             "value": "menu"
          },
          "name": "Menu",
@@ -12,7 +12,7 @@
             "url": "resources/img/sprites/menu.jpg"
          }
       }, {
-         "challenge_type": {
+         "type": {
             "value": "checkin"
          },
          "name": "VIP",
@@ -23,7 +23,7 @@
             "url": "resources/img/sprites/checkin.jpg"
          }
       }, {
-         "challenge_type": {
+         "type": {
             "value": "photo"
          },
          "name": "Photo",
@@ -34,7 +34,7 @@
             "url": "resources/img/sprites/photo.jpg"
          }
       }, {
-         "challenge_type": {
+         "type": {
             "value": "birthday"
          },
          "name": "Birthday",
@@ -45,7 +45,7 @@
             "url": "resources/img/sprites/birthday.jpg"
          }
       }, {
-         "challenge_type": {
+         "type": {
             "value": "referral"
          },
          "name": "Refer a Friend",
@@ -56,7 +56,7 @@
             "url": "resources/img/sprites/referral.jpg"
          }
       }, {
-         "challenge_type": {
+         "type": {
             "value": "custom"
          },
          "name": "Mystery 1",

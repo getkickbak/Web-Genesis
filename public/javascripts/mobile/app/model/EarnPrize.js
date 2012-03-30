@@ -11,7 +11,8 @@ Ext.define('Genesis.model.EarnPrize',
          type : 'date',
          convert : function(value, format)
          {
-            return (!value) ? null : Genesis.constants.convertDateNoTimeNoWeek.apply(this, arguments);
+            format = "yyyy-MM-dd";
+            return (!value) ? null : Genesis.constants.convertDate.apply(this, arguments);
          }
       }],
       idProperty : 'id',

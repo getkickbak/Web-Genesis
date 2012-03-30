@@ -1,10 +1,11 @@
 Ext.define('Genesis.model.CustomerReward',
 {
    extend : 'Ext.data.Model',
-   id : 'Venue',
+   id : 'CustomerReward',
+   alternateClassName : 'CustomerReward',
    config :
    {
-      fields : ['id', 'title', 'average_price', 'points', 'type', 'photo_url', 'created_ts', 'update_ts'],
+      fields : ['id', 'title', 'average_price', 'points', 'type', 'photo', 'created_ts', 'update_ts'],
       idProperty : 'id',
       belongsTo : [
       {
@@ -20,7 +21,10 @@ Ext.define('Genesis.model.CustomerReward',
          {
             'If-None-Match' : ''
          },
-         url : Ext.Loader.getPath("Genesis") + "/store/" + 'redemptions.json',
+         writer :
+         {
+            type : 'json'
+         },
          reader :
          {
             type : 'json',
@@ -31,5 +35,24 @@ Ext.define('Genesis.model.CustomerReward',
    },
    getMerchant : function()
    {
+   },
+   statics :
+   {
+      setGetRedemptionsURL : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'GET'
+         });
+         this.getProxy().setUrl((!debugMode) ? '/api/v1/purchase_rewards' : Ext.Loader.getPath("Genesis") + "/store/" + 'redemptions.json');
+      },
+      setRedeemRedemptionURL : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : (!debugMode) ? 'POST' : 'GET'
+         });
+         this.getProxy().setUrl((!debugMode) ? '/api/v1/purchase_rewards/earn' : Ext.Loader.getPath("Genesis") + "/store/" + 'redemptions.json');
+      }
    }
 });

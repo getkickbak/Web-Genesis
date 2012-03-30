@@ -99,7 +99,7 @@ Ext.define('Genesis.controller.Merchants',
       /*
        page.query('component[tag=photo]')[0].setData(
        {
-       photoUrl : vrecord.getMerchant().get('icon_url')
+       photoUrl : vrecord.getMerchant().get('photo').thumbnail.url
        });
        */
 
@@ -131,15 +131,15 @@ Ext.define('Genesis.controller.Merchants',
       }
 
       this.getMainBtn()[(cvenue && (cvenue.getId() != vrecord.getId())) ? 'show' : 'hide']();
-      var prizesCount = Ext.StoreMgr.get('MerchantPrizeStore').getCount();
-      for(var i = 0; i < prizesCount; i++)
+      var prizesCount = 0, prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
+      for(var i = 0; i < prizes.length; i++)
       {
-         if (prizes[i].getMerchant().getId() != merchantId)
+         if(prizes[i].getMerchant().getId() != merchantId)
          {
-            prizesCount--;            
+            prizesCount++;
          }
       }
-      this.getPrizesBtn().setBadgeText((prizesCount > 0) ? prizesCount + 'Pts' : null);
+      this.getPrizesBtn().setBadgeText((prizesCount > 0) ? prizesCount : null);
 
       //
       // Scroll to the Top of the Screen
