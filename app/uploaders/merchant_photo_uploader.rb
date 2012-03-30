@@ -58,10 +58,14 @@ class MerchantPhotoUploader < CarrierWave::Uploader::Base
   # end
 
   # Create different versions of your uploaded files:
-  version :thumbnail do
-    process :resize_to_limit => [50, 50]
+  version :thumbnail_ios_small do
+    process :resize_to_limit => [114, 114]
   end
-
+  
+  version :thumbnail_ios_medium do
+    process :resize_to_limit => [228, 228]
+  end
+  
   # Add a white list of extensions which are allowed to be uploaded.
   # For images you might use something like this:
   def extension_white_list
