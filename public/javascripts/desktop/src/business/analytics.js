@@ -49,6 +49,7 @@ $(document).ready($(function() {
 
 		var data3 = new google.visualization.DataTable();
 		data3.addColumn('string', 'Date');
+		
 		names = response_data.challenges.names;
 		for (i = 0; i < names.length; i++) {
 			data3.addColumn('number', names[i]);

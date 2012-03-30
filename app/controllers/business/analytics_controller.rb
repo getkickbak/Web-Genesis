@@ -128,10 +128,12 @@ module Business
             elsif created_date == date
               challenge_data[i] << records[:data][x][:count]
               records[:counter] = x
+              inserted = true
               break
             else
               challenge_data[i] << 0    
               records[:counter] = x
+              inserted = true
               break
             end
           end
