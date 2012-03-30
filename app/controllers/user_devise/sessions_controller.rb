@@ -3,17 +3,17 @@ class UserDevise::SessionsController < Devise::SessionsController
   
   def new
     # Prevent users from sigining using devise for now
-    raise ActionController::RoutingError.new  
+    raise ActionController::RoutingError.new("Not Found")  
   end
   
   def create
     # Prevent users from sigining using devise for now
-    raise ActionController::RoutingError.new  
+    raise ActionController::RoutingError.new("Not Found")  
   end
   
   def create_from_facebook
     # Prevent users from sigining using devise for now
-    raise ActionController::RoutingError.new
+    raise ActionController::RoutingError.new("Not Found")
     
     User.transaction do
       begin
@@ -52,7 +52,7 @@ class UserDevise::SessionsController < Devise::SessionsController
   # DELETE /resource/sign_out
   def destroy
     # Prevent users from registering using devise for now
-    raise ActionController::RoutingError.new
+    raise ActionController::RoutingError.new("Not Found")
     
     redirect_path = after_sign_out_path_for(resource_name)
     signed_out = (Devise.sign_out_all_scopes ? sign_out : sign_out(resource_name))
