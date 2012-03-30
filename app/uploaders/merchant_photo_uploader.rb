@@ -22,7 +22,7 @@ class MerchantPhotoUploader < CarrierWave::Uploader::Base
 
   # Process files as they are uploaded:
   process :cropper
-  process :resize_to_limit => [200,200]
+  process :resize_to_limit => [480,480]
 
   def cropper
     manipulate! do |img|
