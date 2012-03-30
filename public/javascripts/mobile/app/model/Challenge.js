@@ -22,7 +22,7 @@ Ext.define('Genesis.model.Challenge',
          {
             'If-None-Match' : ''
          },
-         url : (!debugMode) ? '/api/v1/challenges' : Ext.Loader.getPath("Genesis") + "/store/" + 'challenges.json',
+         url : (!debugMode) ? Genesis.constants.host + '/api/v1/challenges' : Ext.Loader.getPath("Genesis") + "/store/" + 'challenges.json',
          reader :
          {
             type : 'json',

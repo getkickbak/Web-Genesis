@@ -37,7 +37,7 @@ Ext.define('Genesis.model.Venue',
          {
             'If-None-Match' : ''
          },
-         url : (!debugMode) ? '/api/v1/venues/find_nearest' : Ext.Loader.getPath("Genesis") + "/store/" + 'checkinRecords.json',
+         url : (!debugMode) ? Genesis.constants.host + '/api/v1/venues/find_nearest' : Ext.Loader.getPath("Genesis") + "/store/" + 'checkinRecords.json',
          reader :
          {
             type : 'json',

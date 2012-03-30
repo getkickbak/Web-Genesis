@@ -5,6 +5,7 @@ Ext.ns('Genesis.constants');
 
 Genesis.constants =
 {
+   host : 'http://192.168.0.52:3000',
    currFbId : 0,
    authToken : null,
    sign_in_path : '/sign_in',

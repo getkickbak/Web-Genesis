@@ -44,7 +44,7 @@ Ext.define('Genesis.model.CustomerReward',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl((!debugMode) ? '/api/v1/purchase_rewards' : Ext.Loader.getPath("Genesis") + "/store/" + 'redemptions.json');
+         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/purchase_rewards' : Ext.Loader.getPath("Genesis") + "/store/" + 'redemptions.json');
       },
       setRedeemRedemptionURL : function()
       {
@@ -52,7 +52,7 @@ Ext.define('Genesis.model.CustomerReward',
          {
             read : (!debugMode) ? 'POST' : 'GET'
          });
-         this.getProxy().setUrl((!debugMode) ? '/api/v1/purchase_rewards/earn' : Ext.Loader.getPath("Genesis") + "/store/" + 'redemptions.json');
+         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/purchase_rewards/earn' : Ext.Loader.getPath("Genesis") + "/store/" + 'redemptions.json');
       }
    }
 });
