@@ -97,7 +97,7 @@ Ext.define('Genesis.controller.Prizes',
             break;
          }
       }
-      var merchantId = viewport.getVenue().getMerchant().getId();
+      var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
       for(var i = 0; i < items.length; i++)
       {
          if(oldActiveItem)
