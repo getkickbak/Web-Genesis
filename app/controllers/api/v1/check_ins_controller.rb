@@ -6,7 +6,12 @@ class Api::V1::CheckInsController < ApplicationController
       checkInCode = CheckInCode.first(:auth_code => params[:auth_code]) || not_found
       @venue = checkInCode.venue
     else
-      @venue = Venue.first(:offset => 0, :limit => 1)
+      checkInCode = CheckInCode.first(:auth_code => params[:auth_code])
+      if checkInCode
+        @venue = checkInCode.venue
+      else
+        @venue = Venue.first(:offset => 0, :limit => 1)
+      end
     end  
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
     if @customer.nil?

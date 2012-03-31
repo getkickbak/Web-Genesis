@@ -1,7 +1,6 @@
 <div class="content row">
 <div style="margin: 10px 0 10px 120px;">	
 <%= image_tag @merchant.photo_url.to_s %>
-<%= image_tag @merchant.photo_url(:thumbnail).to_s %>
 </div>
 <%= simple_form_for @merchant, :url => update_account_photo_path, :html => {:multipart => true} do |f| %>
 	<%= f.input :photo, :as => :file %>
@@ -11,7 +10,6 @@
 <div class="content row">
 <div style="margin: 10px 0 10px 120px;">	
 <%= image_tag @merchant.alt_photo_url.to_s %>
-<%= image_tag @merchant.alt_photo_url(:thumbnail).to_s %>
 </div>
 <%= simple_form_for @merchant, :url => update_account_alt_photo_path, :html => {:multipart => true} do |f| %>
 	<%= f.input :alt_photo, :as => :file %>
