@@ -6,9 +6,8 @@ class Api::V1::CheckInsController < ApplicationController
       checkInCode = CheckInCode.first(:auth_code => params[:auth_code]) || not_found
       @venue = checkInCode.venue
     else
-      checkInCode = CheckInCode.first(:auth_code => params[:auth_code])
-      if checkInCode
-        @venue = checkInCode.venue
+      if params[:venue_id]
+        @venue = Venue.get(params[:venue_id])
       else
         @venue = Venue.first(:offset => 0, :limit => 1)
       end
