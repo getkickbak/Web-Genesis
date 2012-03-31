@@ -3,10 +3,13 @@ node :success do
 	true
 end
 node :metaData do
+	node :points do
+		@total_points
+	end
 	if @vip_challenge
 		node :vip_challenge do
 			{
-				:points => @points
+				:points => @vip_points
 			}
 		end
 	end

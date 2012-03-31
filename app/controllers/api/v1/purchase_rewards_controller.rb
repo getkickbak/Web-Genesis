@@ -58,7 +58,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             @vip_points = challenge.points
           end
           reward_ids = params[:reward_ids]
-          total_points = 0
+          @total_points = 0
           rewards = PurchaseReward.all(:id => reward_ids)
           rewards.each do |reward|
             record = EarnRewardRecord.new(
@@ -71,7 +71,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             record.user = current_user
             record.save
             @customer.points += reward.points
-            total_points += reward.points
+            @total_points += reward.points
           end
           @customer.save
           
@@ -79,7 +79,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           mutex.acquire
           reward_model = @venue.merchant.reward_model
           prize = CustomerReward.get(reward_model.prize_reward_id) || pick_prize(@venue)
-          current_point_offset = reward_model.prize_point_offset + total_points
+          current_point_offset = reward_model.prize_point_offset + @total_points
           if (reward_model.prize_point_offset < reward_model.prize_win_offset) && (current_point_offset > reward_model.prize_win_offset)
               earn_prize = EarnPrize.new(
                 :points => prize.points,
