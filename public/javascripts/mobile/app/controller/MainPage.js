@@ -119,13 +119,80 @@ Ext.define('Genesis.controller.MainPage',
       {
          model : 'Genesis.model.EarnPrize',
          autoLoad : false,
+         clearOnPageLoad : false,
          sorters : [
          {
             sorterFn : function(o1, o2)
             {
                return o2.getMerchant().getId() - o1.getMerchant().getId();
             }
-         }]
+         },
+         {
+            sorterFn : function(o1, o2)
+            {
+               // Return reversed sorted order
+               return o1.getId() - o2.getId();
+            }
+         }],
+         proxy :
+         {
+            type : 'ajax',
+            disableCaching : false,
+            defaultHeaders :
+            {
+               'If-None-Match' : ''
+            },
+            actionMethods :
+            {
+               create : 'POST',
+               read : 'POST',
+               update : 'POST',
+               destroy : 'POST'
+            },
+            writer :
+            {
+               type : 'json'
+            },
+            reader :
+            {
+               type : 'json',
+               messageProperty : 'message',
+               rootProperty : 'data'
+            },
+            url : Genesis.constants.host + '/api/v1/purchase_rewards/earn'
+         },
+         listeners :
+         {
+            scope : this,
+            'metachange' : function(store, proxy, eOpts)
+            {
+               // Load Prizes into DataStore
+               var metaData = proxy.getReader().metaData;
+
+               //
+               // To-do : Update points earned from the purchase
+               //
+               if(metaData['points'])
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Earn Points',
+                     message : 'Your have earned ' + metaData['points'] + ' Points from this purchase!'
+                  });
+               }
+               //
+               // To-do : Update points earned from VIP Challenge
+               //
+               if(metaData['vip_challenge'])
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'VIP Challenge Alert!',
+                     message : 'Your have earned an additional' + metaData['vip_challenge'].points + ' Points!'
+                  });
+               }
+            }
+         }
       });
       //
       // Store storing the Customer's Eligible Rewards at a Venue

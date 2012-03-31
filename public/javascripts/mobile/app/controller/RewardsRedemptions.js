@@ -8,7 +8,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       redemption_path : '/redemption'
    },
    xtype : 'rewardsRedemptionsCntlr',
-   models : ['frontend.RewardsMainTemplate', 'PurchaseReward', 'CustomerReward'],
+   models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
       refs :
@@ -165,16 +165,18 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    // --------------------------------------------------------------------------
    // Rewards Page
    // --------------------------------------------------------------------------
-   onRewardsActivate : function(c, newActiveItem, oldActiveItem, eOpts)
+   showNavBar : function()
    {
+      var rcstore = Ext.StoreMgr.get('RewardsCartStore');
       var viewport = this.getViewPortCntlr();
       var venue = viewport.getVenue();
-      var customer = viewport.getCustomer();
-      var merchantId = venue.getMerchant().getId();
       var cvenue = viewport.getCheckinInfo().venue;
-      var rcstore = Ext.StoreMgr.get('RewardsCartStore');
 
-      // Revert Back to old standard view
+      var showBar = (cvenue && (cvenue.getId() == venue.getId())) && (rcstore.getCount() > 0);
+      this.getNavigationBarBottom()[(showBar) ? 'show':'hide' ]();
+   },
+   onRewardsActivate : function(c, newActiveItem, oldActiveItem, eOpts)
+   {
       var container = this.getRewardsContainer();
       if(container)
       {
@@ -195,8 +197,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          animation.enable();
       }
 
-      var showBar = (cvenue && (cvenue.getId() == venue.getId())) && (rcstore.getCount() > 0);
-      this.getNavigationBarBottom()[(showBar) ? 'show':'hide' ]();
+      this.showNavBar();
    },
    onRewardsDeactivate : function(c, newActiveItem, oldActiveItem, eOpts)
    {
@@ -230,7 +231,6 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             break;
          }
       }
-
       return true;
    },
    onRewardsContainerActivate : function(c, value, oldValue, eOpts)
@@ -249,6 +249,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             me.getBackButton().hide();
             earnPtsBtn.setTitle('Order Menu');
             animation.setReverse(false);
+            me.showNavBar();
             break;
          }
          case 'rewardMainList' :
@@ -258,6 +259,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             me.getBackButton().show();
             earnPtsBtn.setTitle('Check Out');
             animation.setReverse(true);
+            me.showNavBar();
             break;
          }
          case 'prizeCheck' :
@@ -265,26 +267,30 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             me.getDoneBtn().hide();
             me.getEditBtn().hide();
             me.getBackButton().hide();
-            me.clearRewardsCart();
             me.getNavigationBarBottom().hide();
+            break;
          }
       }
    },
    earnPtsFn : function()
    {
+      var me = this;
       var pstore = Ext.StoreMgr.get('MerchantPrizeStore')
+      var rcstore = Ext.StoreMgr.get('RewardsCartStore')
       var viewport = me.getViewPortCntlr();
       var cvenue = viewport.getCheckinInfo().venue;
       var venue = viewport.getVenue();
       var venueId = venue.getId();
       var merchantId = venue.getMerchant().getId();
 
-      var wonPrize = true;
-
       me.getGeoLocation(function(position)
       {
-         PurchaseReward['setEarnRewardURL']();
-         rcstore.load(
+         var rewardIds = [];
+         Ext.Array.forEach(rcstore.getRange(), function(item, index, all)
+         {
+            rewardIds.push(item.get(PurchaseReward.getIdProperty()));
+         }, me);
+         pstore.load(
          {
             jsonData :
             {
@@ -293,7 +299,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             {
                venue_id : venueId,
                merchant_id : merchantId,
-               reward_ids : Ext.Array.pluck(rcstore.getRange(), PurchaseReward.getIdProperty()),
+               reward_ids : rewardIds,
                latitude : position.coords.latitude,
                longitude : position.coords.longitude
             },
@@ -304,15 +310,19 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                //
                if(operation.wasSuccessful())
                {
+                  //
+                  // Clear the Shopping Cart
+                  //
+                  me.clearRewardsCart();
+
                   Ext.defer(function()
                   {
-                     if(!wonPrize)
+                     if(records.length == 0)
                      {
-                        // Send to Server for Approval
                         Ext.device.Notification.show(
                         {
-                           title : 'Oops, Play Again!',
-                           message : 'You still Earned XX Points towards more rewards!',
+                           title : 'Scan And Win!',
+                           message : 'Oops, Play Again!',
                            callback : function()
                            {
                               me.popView();
@@ -321,14 +331,10 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                      }
                      else
                      {
-                        //
-                        // To-do : Update Prize Store with the EarnPrize object you just won,
-                        // add it to the front of the list
-                        //
                         Ext.device.Notification.show(
                         {
-                           title : 'Surprise!',
-                           message : 'You haved won a PRIZE!',
+                           title : 'Scan And Win!',
+                           message : 'You haved won ' + ((records.length > 1) ? 'some Prizes' : 'a PRIZE') + '!',
                            callback : function()
                            {
                               var app = me.getApplication();
@@ -355,6 +361,14 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                      Ext.device.Notification.vibrate();
                   }, 2000);
                }
+               else
+               {
+                  Ext.defer(function()
+                  {
+                     var container = me.getRewardsContainer();
+                     container.setActiveItem(0);
+                  }, 2000);
+               }
             }
          });
       });
@@ -363,9 +377,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    {
       var me = this;
       var container = me.getRewardsContainer();
-      var activeItem = container.getActiveItem();
       var anim = container.getLayout().getAnimation();
-      var rcstore = Ext.StoreMgr.get('RewardsCartStore');
 
       me.scanQRCode(
       {
@@ -558,7 +570,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       // Clears the RewardsCart
       //
       var rcstore = Ext.StoreMgr.get('RewardsCartStore');
-      if(rstore)
+      if(rcstore)
       {
          rcstore.removeAll();
       }
@@ -712,7 +724,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                   records[i].data['venue_id'] = venueId;
                }
                //
-               // Show Redemptions for this merchant only
+               // Show Redemptions for this venue only
                //
                store.filter([
                {

@@ -36,7 +36,6 @@ Ext.define('Genesis.model.PurchaseReward',
    },
    getMerchant : function()
    {
-
    },
    statics :
    {
@@ -47,14 +46,6 @@ Ext.define('Genesis.model.PurchaseReward',
             read : 'GET'
          });
          this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/purchase_rewards' : Ext.Loader.getPath("Genesis") + "/store/" + 'rewards.json');
-      },
-      setEarnRewardURL : function()
-      {
-         this.getProxy().setActionMethods(
-         {
-            read : (!debugMode) ? 'POST' : 'GET'
-         });
-         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/purchase_rewards/earn' : Ext.Loader.getPath("Genesis") + "/store/" + 'rewards.json');
       }
    }
 });
