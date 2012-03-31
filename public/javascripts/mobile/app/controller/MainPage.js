@@ -290,6 +290,16 @@ Ext.define('Genesis.controller.MainPage',
                var prizes = metaData['prizes'];
                if(prizes)
                {
+                  for(var i = 0; i < prizes.length; i++)
+                  {
+                     //
+                     // CustomerReward's Model rootProperty is "data"
+                     //
+                     prizes[i].reward =
+                     {
+                        data : prizes[i].reward
+                     }
+                  }
                   Ext.StoreMgr.get('MerchantPrizeStore').setData(prizes);
                }
 

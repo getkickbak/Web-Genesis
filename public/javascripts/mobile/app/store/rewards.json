@@ -2,24 +2,32 @@
    "data": [
       {
          "title": "Any drinks including Coffees & Juices",
-         "type":"drinks",
+         "type": {
+            "value": "appetizer"
+         },
          "points": 1,
-         "merchant_id": 1
+         "id": 1
       }, {
          "title": "Any Breakfast on the menu",
-         "type":"breakfast",
+         "type": {
+            "value": "bread"
+         },
          "points": 2,
-         "merchant_id": 1
+         "id": 2
       }, {
          "title": "Any lunch items on the menu",
-         "type":"lunch",
+         "type": {
+            "value": "dessert"
+         },
          "points": 3,
-         "merchant_id": 1
+         "id": 3
       }, {
          "title": "Any dinner platters on the menu",
-         "type":"dinner",
+         "type": {
+            "value": "drinks"
+         },
          "points": 4,
-         "merchant_id": 1
+         "id": 4
       }
    ]
 }

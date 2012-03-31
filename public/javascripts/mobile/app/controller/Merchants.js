@@ -134,7 +134,7 @@ Ext.define('Genesis.controller.Merchants',
       var prizesCount = 0, prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
       for(var i = 0; i < prizes.length; i++)
       {
-         if(prizes[i].getMerchant().getId() != merchantId)
+         if(prizes[i].getMerchant().getId() == merchantId)
          {
             prizesCount++;
          }

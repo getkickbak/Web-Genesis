@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.widgets.RewardItem',
 {
    extend : 'Ext.dataview.component.DataItem',
-   requires : ['Ext.Button', 'Ext.XTemplate'],
+   requires : ['Ext.Button', 'Ext.XTemplate', 'Genesis.view.Redemptions'],
    xtype : 'rewarditem',
    alias : 'widget.rewarditem',
    config :
@@ -40,7 +40,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
             {
                getPhoto : function(values)
                {
-                  return Genesis.view.widgets.RewardItem.getPhoto(values['type']);
+                  return Genesis.view.Redemptions.getPhoto(values['type']);
                }
             })
          },
@@ -114,7 +114,6 @@ Ext.define('Genesis.view.widgets.RewardItem',
    },
    setDataBackground : function(data)
    {
-      //bg.setStyle('background-image:url(' + this.self.getPhoto(data.CustomerReward['type']) + ')');
       this.query("component[tag=title]")[0].setData(data.CustomerReward);
       this.query("component[tag=itemPhoto]")[0].setData(data.CustomerReward);
       this.query("component[tag=info]")[0].setData(data);
@@ -163,32 +162,5 @@ Ext.define('Genesis.view.widgets.RewardItem',
       }
       // Bypassing setter because sometimes we pass the same object (different properties)
       item.updateData(data);
-   },
-   statics :
-   {
-      getPhoto : function(type)
-      {
-         var photo_url;
-         switch (type)
-         {
-            case 'breakfast' :
-               photo_url = "resources/img/sprites/shoes.jpg";
-               break;
-            case 'lunch' :
-               photo_url = "resources/img/sprites/heroburgers.jpg";
-               break;
-            case 'dinner' :
-               photo_url = "resources/img/sprites/springrolls.jpg";
-               break;
-            case 'drinks' :
-               photo_url = "resources/img/sprites/phoboga.jpg";
-               break;
-            case 'prize' :
-               photo_url = "resources/img/sprites/star.jpg";
-               break;
-         }
-         return photo_url;
-      }
-   },
-
+   }
 });

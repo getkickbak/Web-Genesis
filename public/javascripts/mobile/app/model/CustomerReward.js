@@ -5,7 +5,7 @@ Ext.define('Genesis.model.CustomerReward',
    alternateClassName : 'CustomerReward',
    config :
    {
-      fields : ['id', 'title', 'average_price', 'points', 'type', 'photo', 'created_ts', 'update_ts'],
+      fields : ['id', 'title', 'points', 'type', 'photo'],
       idProperty : 'id',
       belongsTo : [
       {
