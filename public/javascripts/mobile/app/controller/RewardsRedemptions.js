@@ -195,7 +195,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          animation.enable();
       }
 
-      var showBar = (cvenue && (cvenue.getId() == venue.getId())) && (rcstore.getRange().length > 0);
+      var showBar = (cvenue && (cvenue.getId() == venue.getId())) && (rcstore.getCount() > 0);
       this.getNavigationBarBottom()[(showBar) ? 'show':'hide' ]();
    },
    onRewardsDeactivate : function(c, newActiveItem, oldActiveItem, eOpts)
@@ -270,12 +270,102 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          }
       }
    },
+   earnPtsFn : function()
+   {
+      var pstore = Ext.StoreMgr.get('MerchantPrizeStore')
+      var viewport = me.getViewPortCntlr();
+      var cvenue = viewport.getCheckinInfo().venue;
+      var venue = viewport.getVenue();
+      var venueId = venue.getId();
+      var merchantId = venue.getMerchant().getId();
+
+      var wonPrize = true;
+
+      me.getGeoLocation(function(position)
+      {
+         PurchaseReward['setEarnRewardURL']();
+         rcstore.load(
+         {
+            jsonData :
+            {
+            },
+            params :
+            {
+               venue_id : venueId,
+               merchant_id : merchantId,
+               reward_ids : Ext.Array.pluck(rcstore.getRange(), PurchaseReward.getIdProperty()),
+               latitude : position.coords.latitude,
+               longitude : position.coords.longitude
+            },
+            callback : function(records, operation)
+            {
+               //
+               // To-do : Update CustomerStore (Points) with returned value
+               //
+               if(operation.wasSuccessful())
+               {
+                  Ext.defer(function()
+                  {
+                     if(!wonPrize)
+                     {
+                        // Send to Server for Approval
+                        Ext.device.Notification.show(
+                        {
+                           title : 'Oops, Play Again!',
+                           message : 'You still Earned XX Points towards more rewards!',
+                           callback : function()
+                           {
+                              me.popView();
+                           }
+                        });
+                     }
+                     else
+                     {
+                        //
+                        // To-do : Update Prize Store with the EarnPrize object you just won,
+                        // add it to the front of the list
+                        //
+                        Ext.device.Notification.show(
+                        {
+                           title : 'Surprise!',
+                           message : 'You haved won a PRIZE!',
+                           callback : function()
+                           {
+                              var app = me.getApplication();
+                              var viewport = me.getViewPortCntlr();
+                              var vport = me.getViewport();
+                              vport.setEnableAnim(false);
+                              vport.getNavigationBar().setCallbackFn(function()
+                              {
+                                 vport.setEnableAnim(true);
+                                 vport.getNavigationBar().setCallbackFn(Ext.emptyFn);
+
+                                 app.dispatch(
+                                 {
+                                    action : 'onPrizesButtonTap',
+                                    args : arguments,
+                                    controller : viewport,
+                                    scope : viewport
+                                 });
+                              });
+                              me.popView();
+                           }
+                        });
+                     }
+                     Ext.device.Notification.vibrate();
+                  }, 2000);
+               }
+            }
+         });
+      });
+   },
    onRewardsEarnPtsTap : function(b, e, eOpts)
    {
       var me = this;
       var container = me.getRewardsContainer();
       var activeItem = container.getActiveItem();
       var anim = container.getLayout().getAnimation();
+      var rcstore = Ext.StoreMgr.get('RewardsCartStore');
 
       me.scanQRCode(
       {
@@ -283,68 +373,12 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          {
             if(response)
             {
-               var wonPrize = true;
-
                anim.disable();
                container.setActiveItem(2);
                anim.enable();
 
                console.log("response - " + response);
-
-               //
-               // To-do : Update CustomerStore (Points) with returned value
-               //
-               Ext.defer(function()
-               {
-                  if(!wonPrize)
-                  {
-                     // Send to Server for Approval
-                     Ext.device.Notification.show(
-                     {
-                        title : 'Oops, Play Again!',
-                        message : 'You still Earned XX Points towards more rewards!',
-                        callback : function()
-                        {
-                           me.popView();
-                        }
-                     });
-                  }
-                  else
-                  {
-                     var pstore = Ext.StoreMgr.get('MerchantPrizeStore')
-                     //
-                     // To-do : Update Prize Store with the EarnPrize object you just won,
-                     // add it to the front of the list
-                     //
-                     Ext.device.Notification.show(
-                     {
-                        title : 'Surprise!',
-                        message : 'You haved won a PRIZE!',
-                        callback : function()
-                        {
-                           var app = me.getApplication();
-                           var viewport = me.getViewPortCntlr();
-                           var vport = me.getViewport();
-                           vport.setEnableAnim(false);
-                           vport.getNavigationBar().setCallbackFn(function()
-                           {
-                              vport.setEnableAnim(true);
-                              vport.getNavigationBar().setCallbackFn(Ext.emptyFn);
-
-                              app.dispatch(
-                              {
-                                 action : 'onPrizesButtonTap',
-                                 args : arguments,
-                                 controller : viewport,
-                                 scope : viewport
-                              });
-                           });
-                           me.popView();
-                        }
-                     });
-                  }
-                  Ext.device.Notification.vibrate();
-               }, 2000);
+               me.earnPtsFn();
             }
             else
             {
@@ -523,10 +557,10 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       //
       // Clears the RewardsCart
       //
-      var rstore = Ext.StoreMgr.get('RewardsCartStore');
+      var rcstore = Ext.StoreMgr.get('RewardsCartStore');
       if(rstore)
       {
-         rstore.removeAll();
+         rcstore.removeAll();
       }
       // Automatically update totals
       this.updateRewardsCartTotal([]);
@@ -648,10 +682,10 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             merchant_id : merchantId
          },
          scope : me,
-         callback : function(records, operation, success)
+         callback : function(records, operation)
          {
             Ext.Viewport.setMasked(false);
-            if(success)
+            if(operation.wasSuccessful())
             {
                me.exploreMode = cvenue && (cvenue.getId() != venue.getId());
                switch (subFeature)

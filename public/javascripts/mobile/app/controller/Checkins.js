@@ -200,9 +200,9 @@ Ext.define('Genesis.controller.Checkins',
                latitude : position.coords.latitude,
                longitude : position.coords.longitude
             },
-            callback : function(records, operation, success)
+            callback : function(records, operation)
             {
-               if(success)
+               if(operation.wasSuccessful())
                {
                   me.getCheckInNowBar().setDisabled(true);
                }
@@ -400,13 +400,13 @@ Ext.define('Genesis.controller.Checkins',
             latitude : currentLat || 0,
             longitude : currentLng || 0,
             auth_code : qrcode || "",
-            venue_id : pvenueId
+            venue_id : (Genesis.constants.isNative()) ? pvenueId : qrcode
          },
          scope : this,
-         callback : function(records, operation, success)
+         callback : function(records, operation)
          {
             var metaData = cstore.getProxy().getReader().metaData;
-            if(success && metaData)
+            if(operation.wasSuccessful() && metaData)
             {
                for(var i = 0; i < records.length; i++)
                {

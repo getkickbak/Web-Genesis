@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.widgets.RewardItem',
 {
    extend : 'Ext.dataview.component.DataItem',
-   requires : ['Ext.Button', 'Ext.XTemplate', 'Genesis.view.Redemptions'],
+   requires : ['Ext.Button', 'Ext.XTemplate'],
    xtype : 'rewarditem',
    alias : 'widget.rewarditem',
    config :

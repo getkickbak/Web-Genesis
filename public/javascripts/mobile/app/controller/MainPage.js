@@ -216,9 +216,9 @@ Ext.define('Genesis.controller.MainPage',
          jsonData :
          {
          },
-         callback : function(records, operation, success)
+         callback : function(records, operation)
          {
-            if(success)
+            if(operation.wasSuccessful())
             {
                vport.onFeatureTap('MainPage', 'login');
             }

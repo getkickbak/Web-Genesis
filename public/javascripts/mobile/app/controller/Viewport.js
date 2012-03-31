@@ -136,9 +136,9 @@ Ext.define('Genesis.controller.Viewport',
                latitude : position.coords.latitude,
                longitude : position.coords.longitude
             },
-            callback : function(records, operation, success)
+            callback : function(records, operation)
             {
-               if(success)
+               if(operation.wasSuccessful())
                {
                   var app = me.getApplication();
                   var controller = app.getController('Checkins');

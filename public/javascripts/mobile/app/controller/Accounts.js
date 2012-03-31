@@ -81,9 +81,9 @@ Ext.define('Genesis.controller.Accounts',
             'user_id' : record.getId(),
             'merchant_id' : record.getMerchant()['merchant_id']
          },
-         callback : function(records, operation, success)
+         callback : function(records, operation)
          {
-            if(success)
+            if(operation.wasSuccessful())
             {
                var controller = this.getApplication().getController('Checkins');
                controller.mode = 'explore';
