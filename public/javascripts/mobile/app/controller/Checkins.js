@@ -258,7 +258,7 @@ Ext.define('Genesis.controller.Checkins',
       {
          this.latLng = record.get('latitude') + ',' + record.get('longitude');
          var color = 'red', label = '';
-         var address = record.get('address1') + (record.get('address2') ? ', ' + record.get('address2') : '') + ', ' + record.get('city') + ', ' + record.get('state') + ', ' + record.get('country') + ', ' + record.get('zipcode');
+         var address = record.get('address') + ', ' + record.get('city') + ', ' + record.get('state') + ', ' + record.get('country') + ', ' + record.get('zipcode');
 
          this.markerOptions =
          {
@@ -400,7 +400,7 @@ Ext.define('Genesis.controller.Checkins',
             latitude : currentLat || 0,
             longitude : currentLng || 0,
             auth_code : qrcode || "",
-            venueId : pvenueId
+            venue_id : pvenueId
          },
          scope : this,
          callback : function(records, operation, success)

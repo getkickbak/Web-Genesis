@@ -25,8 +25,7 @@ Ext.define('Genesis.view.CheckinExplore',
             },
             getAddress : function(values)
             {
-               var address = (values.address2) ? values.address1 + ", " + values.address2 : values.address1;
-               return (address + ",<br/>" + values.city + ", " + values.state + ", " + values.country + ",<br/>" + values.zipcode);
+               return (values.address + ",<br/>" + values.city + ", " + values.state + ", " + values.country + ",<br/>" + values.zipcode);
             }
          }),
          onItemDisclosure : Ext.emptyFn,

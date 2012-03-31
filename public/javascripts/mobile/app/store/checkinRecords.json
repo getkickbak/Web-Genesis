@@ -3,8 +3,7 @@
       {
          "venue_id": 1,
          "name": "The Runners Shop",
-         "address1": "180 Bloor Street West",
-         "address2": "",
+         "address": "180 Bloor Street West",
          "city": "Toronto",
          "state": "Ontario",
          "country": "Canada",
@@ -41,8 +40,7 @@
       }, {
          "venue_id": 2,
          "name": "The Tim Hortons Coffee",
-         "address1": "181 Bloor Street West",
-         "address2": "",
+         "address": "181 Bloor Street West",
          "city": "Toronto",
          "state": "Ontario",
          "country": "Canada",
@@ -80,8 +78,7 @@
       }, {
          "venue_id": 3,
          "name": "Photo Bo Ga",
-         "address1": "182 Bloor Street West",
-         "address2": "",
+         "address": "182 Bloor Street West",
          "city": "Toronto",
          "state": "Ontario",
          "country": "Canada",
@@ -118,8 +115,7 @@
       }, {
          "venue_id": 4,
          "name": "Spring Rolls",
-         "address1": "183 Bloor Street West",
-         "address2": "",
+         "address": "183 Bloor Street West",
          "city": "Toronto",
          "state": "Ontario",
          "country": "Canada",

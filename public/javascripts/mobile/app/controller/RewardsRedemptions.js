@@ -490,12 +490,19 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       //
       // Update Cart Badge
       //
-      Ext.Anim.run(this.getEarnPtsBtn().badgeElement, 'pop',
+      var earnPtsBtn = this.getEarnPtsBtn();
+      //
+      // Don't update the badge if it's not rendered yet.
+      //
+      if(earnPtsBtn)
       {
-         out : false,
-         autoClear : false
-      });
-      this.getEarnPtsBtn().setBadgeText((cartItems.length > 0) ? totalPts + 'Pts' : null);
+         Ext.Anim.run(earnPtsBtn.badgeElement, 'pop',
+         {
+            out : false,
+            autoClear : false
+         });
+         this.getEarnPtsBtn().setBadgeText((cartItems.length > 0) ? totalPts + 'Pts' : null);
+      }
       return totalPts;
    },
    onRewardsCartItemSelectChange : function(f, newValue, oldValue, eOpts)
