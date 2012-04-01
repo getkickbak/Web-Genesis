@@ -9,7 +9,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
    end
   
   def earn
-    @venue = Venue.all(:id => params[:venue_id], Venue.merchant.id => params[:merchant_id]) || not_found
+    @venue = Venue.first(:id => params[:venue_id], Venue.merchant.id => params[:merchant_id]) || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
     new_customer = false
     if @customer.nil?
@@ -26,10 +26,10 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       return
     end
     
-    Customer.transaction do
+    #Customer.transaction do
       begin
         @prizes = []
-        if @venue.authorization_codes.first(:auth_code => params[:auth_code])
+        if @venue.authorization_codes.first(:auth_code => params[:auth_code]) || APP_PROP["DEBUG_MODE"]
           now = Time.now
           challenge = Challenge.first(:type => 'referral', :venues => Venue.all(:id => params[:venue_id]))
           if challenge && new_customer
@@ -127,19 +127,19 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         end  
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
+        mutex.release if (defined? mutex && mutex)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
         end
       rescue
+        mutex.release if (defined? mutex && mutex)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
         end  
-      ensure 
-        mutex.release if defined? mutex && mutex  
       end
-    end
+    #end
   end
   
   private
