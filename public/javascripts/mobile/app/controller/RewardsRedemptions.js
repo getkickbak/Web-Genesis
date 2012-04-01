@@ -292,10 +292,11 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             //
             // Pass as many times as the customer ordered the item
             //
-            for(var i = 0; i < item.get('qty'); i++)
+            rewardIds.push(
             {
-               rewardIds.push(rewardId);
-            }
+               quantity : item.get('qty'),
+               id : rewardId
+            });
          }, me);
          pstore.load(
          {
@@ -315,15 +316,20 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                //
                // To-do : Update CustomerStore (Points) with returned value
                //
-               if(operation.wasSuccessful())
+               Ext.defer(function()
                {
-                  //
-                  // Clear the Shopping Cart
-                  //
-                  me.clearRewardsCart();
-
-                  Ext.defer(function()
+                  if(!operation.wasSuccessful())
                   {
+                     var container = me.getRewardsContainer();
+                     container.setActiveItem(0);
+                  }
+                  else
+                  {
+                     //
+                     // Clear the Shopping Cart
+                     //
+                     me.clearRewardsCart();
+
                      if(records.length == 0)
                      {
                         Ext.device.Notification.show(
@@ -366,16 +372,8 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                         });
                      }
                      Ext.device.Notification.vibrate();
-                  }, 2000);
-               }
-               else
-               {
-                  Ext.defer(function()
-                  {
-                     var container = me.getRewardsContainer();
-                     container.setActiveItem(0);
-                  }, 2000);
-               }
+                  }
+               }, 2000);
             }
          });
       });
