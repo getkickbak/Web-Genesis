@@ -28,7 +28,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     
     #Customer.transaction do
       begin
-        @prizes = []
+        @prize = nil
         if @venue.authorization_codes.first(:auth_code => params[:auth_code]) || APP_PROP["DEBUG_MODE"]
           now = Time.now
           challenge = Challenge.first(:type => 'referral', :venues => Venue.all(:id => params[:venue_id]))
@@ -105,15 +105,15 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             earn_prize.merchant = @venue.merchant
             earn_prize.user = current_user
             earn_prize.save
-            @prizes << earn_prize          
+            @prize = earn_prize          
           end
-          while current_point_offset >= prize_interval
+          if current_point_offset >= prize_interval
             current_point_offset -= prize_interval
             prize = pick_prize(@venue)
             reward_model.prize_reward_id = prize.id
             prize_interval = (prize.points / Float(reward_model.prize_rebate_rate) * 100).to_i  
-            reward_model.prize_win_offset = pick_prize_win_offset(prize_interval)  
-            if current_point_offset >= reward_model.prize_win_offset
+            reward_model.prize_win_offset = pick_prize_win_offset(prize_interval) 
+            if @prize.nil? && current_point_offset >= reward_model.prize_win_offset
               earn_prize = EarnPrize.new(
                 :points => prize.points,
                 :expiry_date => 6.month.from_now,
@@ -122,9 +122,16 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               earn_prize.reward = prize
               earn_prize.merchant = @venue.merchant
               earn_prize.user = current_user
-              earn_prize.save 
-              @prizes << earn_prize       
-            end  
+              earn_prize.save
+              @prize = earn_prize
+              prize = pick_prize(@venue)
+              reward_model.prize_reward_id = prize.id
+              prize_interval = (prize.points / Float(reward_model.prize_rebate_rate) * 100).to_i  
+              reward_model.prize_win_offset = pick_prize_win_offset(prize_interval)
+              current_point_offset = current_point_offset % prize_interval
+            elsif current_point_offset >= reward_model.prize_win_offset
+              current_point_offset = pick_prize_win_offset(reward_model.prize_win_offset)  
+            end
           end
           reward_model.prize_point_offset = current_point_offset
           reward_model.save
