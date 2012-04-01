@@ -288,7 +288,14 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          var rewardIds = [];
          Ext.Array.forEach(rcstore.getRange(), function(item, index, all)
          {
-            rewardIds.push(item.get(PurchaseReward.getIdProperty()));
+            var rewardId = item.get(PurchaseReward.getIdProperty());
+            //
+            // Pass as many times as the customer ordered the item
+            //
+            for(var i = 0; i < item.get('qty'); i++)
+            {
+               rewardIds.push(rewardId);
+            }
          }, me);
          pstore.load(
          {
@@ -299,7 +306,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             {
                venue_id : venueId,
                merchant_id : merchantId,
-               reward_ids : rewardIds,
+               reward_ids : JSON.stringify(rewardIds),
                latitude : position.coords.latitude,
                longitude : position.coords.longitude
             },
@@ -411,6 +418,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          var cartList = this.getRewardsCart();
          //Add to Shopping Cart
          var store = cartList.getStore();
+         //RewardsCartStore
          var index = store.indexOf(record);
          var items;
          if(index < 0)
@@ -487,8 +495,9 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       var item = b.up('rewardscartitem');
       var cart = me.getRewardsCart();
       var index = cart.getViewItems().indexOf(item);
-      var record = cart.getStore().getAt(index);
       var store = cart.getStore();
+      //RewardsCartStore
+      var record = store.getAt(index);
 
       item.onAfter(
       {
@@ -561,6 +570,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       record.set('qty', newValue.get(f.getValueField()));
       item.updateRecord(record);
       this.updateRewardsCartTotal(cart.getStore().getRange());
+      //RewardsCartStore
 
       return true;
    },
@@ -573,6 +583,8 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       if(rcstore)
       {
          rcstore.removeAll();
+         rcstore.data.updateIndices();
+         //bug fix for Store when we call "indexOf" utilizing indices
       }
       // Automatically update totals
       this.updateRewardsCartTotal([]);
