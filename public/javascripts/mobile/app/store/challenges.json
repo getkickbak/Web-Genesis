@@ -39,7 +39,7 @@
          },
          "name": "Birthday",
          "description": "Birthday Description Text",
-         "require_verif": "false",
+         "require_verif": "true",
          "points": 1,
          "photo_": {
             "url": "resources/img/sprites/birthday.jpg"

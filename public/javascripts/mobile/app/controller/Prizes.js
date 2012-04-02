@@ -11,7 +11,7 @@ Ext.define('Genesis.controller.Prizes',
    {
       timeoutPeriod : 10,
       mode : 'prizes',
-      models : ['Venue', 'Merchant', 'EarnPrize'],
+      models : ['Venue', 'Merchant', 'EarnPrize', 'CustomerReward'],
       refs :
       {
          closeBackButton : 'viewportview button[text=Close]',
@@ -97,7 +97,7 @@ Ext.define('Genesis.controller.Prizes',
             break;
          }
       }
-      
+
       var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
       for(var i = 0; i < items.length; i++)
       {
@@ -123,7 +123,7 @@ Ext.define('Genesis.controller.Prizes',
             {
                model : 'Genesis.model.EarnPrize',
                autoLoad : false,
-               data : items[i].raw
+               data : items[i]
             },
             useComponents : true,
             scrollable : false,
@@ -186,22 +186,55 @@ Ext.define('Genesis.controller.Prizes',
    onRedeemPrizeTap : function(b, e, eOpts)
    {
       var me = this;
+      var view = me.getPrizes();
+      var viewport = me.getViewPortCntlr();
+      var venue = viewport.getVenue();
+      var venueId = venue.getId();
+      var merchantId = venue.getMerchant().getId();
+
       var btn = me.getCloseBackButton() || me.getBackButton();
       btn.hide();
-      //
-      // To-do : Talk to server to claim this prize, on success, start the timer!
-      // Update Prizes DB on Prizes
-      //
+
+      var store;
+      var item = view.query('carousel')[0] ? view.query('carousel')[0].getActiveItem() : view.getItems().items[0];
+      var id = item.getStore().first().getId();
       switch (me.getMode())
       {
          case 'prizes' :
+         {
+            store = Ext.StoreMgr.get('MerchantPrizeStore');
+            EarnPrize['setRedeemPrizeURL'](id);
             break;
+         }
          case 'reward' :
+         {
+            store = Ext.StoreMgr.get('RedemptionsStore');
+            CustomerReward['setRedeemPointsURL'](id);
             break;
+         }
       }
-      me.notificationPopup(me.getTimeoutPeriod());
-      me.getRedeemBtn().hide();
-      me.getDoneBtn().show();
+      store.load(
+      {
+         addRecords : true, //Append data
+         scope : me,
+         jsonData :
+         {
+         },
+         params :
+         {
+            venue_id : venueId,
+            merchant_id : merchantId
+         },
+         callback : function(records, operation)
+         {
+            if(operation.wasSuccessful())
+            {
+               me.notificationPopup(me.getTimeoutPeriod());
+               me.getRedeemBtn().hide();
+               me.getDoneBtn().show();
+            }
+         }
+      })
    },
    notificationPopup : function(timeout)
    {

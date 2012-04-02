@@ -22,7 +22,6 @@ Ext.define('Genesis.model.Challenge',
          {
             'If-None-Match' : ''
          },
-         url : (!debugMode) ? Genesis.constants.host + '/api/v1/challenges' : Ext.Loader.getPath("Genesis") + "/store/" + 'challenges.json',
          reader :
          {
             type : 'json',
@@ -34,5 +33,24 @@ Ext.define('Genesis.model.Challenge',
    getMerchant : function()
    {
 
+   },
+   statics :
+   {
+      setGetChallengesURL : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'GET'
+         });
+         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/challenges' : Ext.Loader.getPath("Genesis") + "/store/" + 'challenges.json');
+      },
+      setCompleteChallengeURL : function(id)
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/challenges/' + id + '/complete');
+      },
    }
 });

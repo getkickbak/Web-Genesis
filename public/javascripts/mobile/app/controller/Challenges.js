@@ -56,6 +56,10 @@ Ext.define('Genesis.controller.Challenges',
    // --------------------------------------------------------------------------
    // Challenge Page
    // --------------------------------------------------------------------------
+   getPointsMsg : function(points)
+   {
+      return 'You\'ve earned ' + points + ' Points from this challenge!';
+   },
    onItemSelect : function(d, model, eOpts)
    {
       d.deselect([model], false);
@@ -78,9 +82,19 @@ Ext.define('Genesis.controller.Challenges',
    },
    onChallengeBtnTap : function(b, e, eOpts)
    {
-      if(this.selectedItem)
+      var me = this;
+      var cstore = Ext.StoreMgr.get('CustomerStore');
+      var viewport = me.getViewPortCntlr();
+      var venue = viewport.getVenue();
+      var venueId = venue.getId();
+      var customerId = viewport.getCustomer().getId();
+      var merchantId = venue.getMerchant().getId();
+      var selectedItem = me.selectedItem;
+      var id = selectedItem.getId();
+
+      if(selectedItem)
       {
-         switch (this.selectedItem.get('challenge_type'))
+         switch (selectedItem.get('challenge_type'))
          {
             case 'menu' :
                break;
@@ -88,16 +102,82 @@ Ext.define('Genesis.controller.Challenges',
                break;
             case 'photo' :
                {
-                  this.getChallengePage().takePhoto();
+                  me.getChallengePage().takePhoto();
                   break;
                }s
             case 'birthday' :
+            {
                break;
+            }
             case 'referral' :
                break;
             case 'custom' :
                break;
          }
+      }
+      if(selectedItem.get('require_verif'))
+      {
+         Ext.device.Notification.show(
+         {
+            title : me.selectedItem.get('name') + ' Challenge',
+            message : 'Show this to your server before proceeding.',
+            callback : function()
+            {
+               me.getGeoLocation(function(position)
+               {
+                  me.scanQRCode(
+                  {
+                     callback : function(response)
+                     {
+                        if(response && response.responseCode)
+                        {
+                           var qrcode = response.responseCode;
+                           console.log("qrcode - " + qrcode);
+
+                           Challenge['setCompleteChallengeURL'](id);
+                           Challenge.load(id,
+                           {
+                              jsonData :
+                              {
+                              },
+                              params :
+                              {
+                                 venue_id : venueId,
+                                 merchant_id : merchantId,
+                                 latitude : position.coords.latitude,
+                                 longitude : position.coords.longitude,
+                                 auth_code : qrcode
+                              },
+                              callback : function()
+                              {
+                                 var metaData = Challenge.getProxy().getReader().metaData;
+                                 //
+                                 // Update points from the purchase or redemption
+                                 //
+                                 Ext.device.Notification.show(
+                                 {
+                                    title : 'Earn Points',
+                                    message : me.getPointsMsg(metaData['account_points'])
+                                 });
+                                 cstore.getById(customerId).set('points', metaData['account_points']);
+                              }
+                           })
+
+                        }
+                        else
+                        {
+                           console.log("No QR Code Scanned!");
+                           Ext.device.Notification.show(
+                           {
+                              title : 'Error',
+                              message : 'No QR Code Scanned!'
+                           });
+                        }
+                     }
+                  });
+               });
+            }
+         });
       }
    },
    onCameraSuccessFn : function(imageBase64)
@@ -213,7 +293,7 @@ Ext.define('Genesis.controller.Challenges',
    {
       var record = this.getViewPortCntlr().getVenue();
       var venueId = record.getId();
-      var carousel = this.getChallengePage().query('carousel')[0];      
+      var carousel = this.getChallengePage().query('carousel')[0];
       var items = record.challenges().getRange();
 
       carousel.removeAll(true);

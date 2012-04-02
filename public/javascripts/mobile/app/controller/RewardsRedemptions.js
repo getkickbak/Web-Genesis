@@ -11,6 +11,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
+      prizeCheckMsg : 'Find out if you won a PRIZE!',
       refs :
       {
          backButton : 'viewportview button[text=Close]',
@@ -43,7 +44,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          },
          redemptionsList : 'redemptionsview list[tag=redemptionsList]',
          redemptionsPts : 'redemptionsview component[tag=points]',
-         redemptionsPtsEarnPanel : 'redemptionsview dataview[tag=ptsEarnPanel]',
+         redemptionsPtsEarnPanel : 'redemptionsview dataview[tag=ptsEarnPanel]'
       },
       control :
       {
@@ -159,8 +160,24 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          {
             property : 'points',
             direction : 'ASC'
-         }]
+         }],
+         listeners :
+         {
+            scope : this,
+            'metachange' : function(store, proxy, eOpts)
+            {
+               this.onRedeemMetaChange(store, proxy.getReader().metaData);
+            }
+         }
       });
+   },
+   getPointsMsg : function(points)
+   {
+      return 'You\'ve earned ' + points + ' Points from this purchase!';
+   },
+   getVipMsg : function(points)
+   {
+      return 'You\'ve earned an additional' + points + ' Points!' + ((!Genesis.constants.isNative()) ? '<br/>' : '\n') + this.getPrizeCheckMsg();
    },
    // --------------------------------------------------------------------------
    // Rewards Page
@@ -174,6 +191,165 @@ Ext.define('Genesis.controller.RewardsRedemptions',
 
       var showBar = (cvenue && (cvenue.getId() == venue.getId())) && (rcstore.getCount() > 0);
       this.getNavigationBarBottom()[(showBar) ? 'show':'hide' ]();
+   },
+   updateRewardsCartTotal : function(cartItems)
+   {
+      var total = this.getRewardsCartTotal(), totalPts = 0;
+      for(var i = 0; i < cartItems.length; i++)
+      {
+         totalPts += cartItems[i].get('qty') * cartItems[i].get('points');
+      }
+      if(total)
+      {
+         total.setData(
+         {
+            points : totalPts
+         });
+      }
+
+      //
+      // Update Cart Badge
+      //
+      var earnPtsBtn = this.getEarnPtsBtn();
+      //
+      // Don't update the badge if it's not rendered yet.
+      //
+      if(earnPtsBtn)
+      {
+         Ext.Anim.run(earnPtsBtn.badgeElement, 'pop',
+         {
+            out : false,
+            autoClear : false
+         });
+         this.getEarnPtsBtn().setBadgeText((cartItems.length > 0) ? totalPts + 'Pts' : null);
+      }
+      return totalPts;
+   },
+   clearRewardsCart : function()
+   {
+      //
+      // Clears the RewardsCart
+      //
+      var rcstore = Ext.StoreMgr.get('RewardsCartStore');
+      if(rcstore)
+      {
+         rcstore.removeAll();
+         rcstore.data.updateIndices();
+         //bug fix for Store when we call "indexOf" utilizing indices
+      }
+      // Automatically update totals
+      this.updateRewardsCartTotal([]);
+   },
+   prizeCheck : function(store)
+   {
+      var me = this;
+      var records = store.loadCallback[0];
+      var operation = store.loadCallback[1];
+
+      var viewport = me.getViewPortCntlr();
+      //
+      // To-do : Update CustomerStore (Points) with returned value
+      //
+      if(!operation.wasSuccessful())
+      {
+         var container = me.getRewardsContainer();
+         container.setActiveItem(0);
+      }
+      else
+      {
+         //
+         // Clear the Shopping Cart
+         //
+         me.clearRewardsCart();
+
+         if(records.length == 0)
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Scan And Win!',
+               message : 'Oops, Play Again!',
+               callback : function()
+               {
+                  me.popView();
+               }
+            });
+         }
+         else
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Scan And Win!',
+               message : 'You haved won ' + ((records.length > 1) ? 'some Prizes' : 'a PRIZE') + '!',
+               callback : function()
+               {
+                  var app = me.getApplication();
+                  var vport = me.getViewport();
+                  vport.setEnableAnim(false);
+                  vport.getNavigationBar().setCallbackFn(function()
+                  {
+                     vport.setEnableAnim(true);
+                     vport.getNavigationBar().setCallbackFn(Ext.emptyFn);
+
+                     app.dispatch(
+                     {
+                        action : 'onPrizesButtonTap',
+                        args : arguments,
+                        controller : viewport,
+                        scope : viewport
+                     });
+                  });
+                  me.popView();
+               }
+            });
+         }
+         Ext.device.Notification.vibrate();
+      }
+   },
+   earnPts : function()
+   {
+      var me = this;
+      var pstore = Ext.StoreMgr.get('MerchantPrizeStore')
+      var rcstore = Ext.StoreMgr.get('RewardsCartStore')
+      var viewport = me.getViewPortCntlr();
+      var cvenue = viewport.getCheckinInfo().venue;
+      var venue = viewport.getVenue();
+      var venueId = venue.getId();
+      var merchantId = venue.getMerchant().getId();
+
+      me.getGeoLocation(function(position)
+      {
+         var rewardIds = [];
+         Ext.Array.forEach(rcstore.getRange(), function(item, index, all)
+         {
+            var rewardId = item.get(PurchaseReward.getIdProperty());
+            //
+            // Pass as many times as the customer ordered the item
+            //
+            rewardIds.push(
+            {
+               quantity : item.get('qty'),
+               id : rewardId
+            });
+         }, me);
+         //
+         // Triggers PrizeCheck and MetaDataChange
+         //
+         EarnPrize['setEarnPrizeURL']();
+         pstore.loadPage(1,
+         {
+            jsonData :
+            {
+            },
+            params :
+            {
+               venue_id : venueId,
+               merchant_id : merchantId,
+               reward_ids : JSON.stringify(rewardIds),
+               latitude : position.coords.latitude,
+               longitude : position.coords.longitude
+            }
+         });
+      });
    },
    onRewardsActivate : function(c, newActiveItem, oldActiveItem, eOpts)
    {
@@ -272,111 +448,70 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          }
       }
    },
-   earnPtsFn : function()
+   onRedeemMetaChange : function(store, metaData)
    {
       var me = this;
-      var pstore = Ext.StoreMgr.get('MerchantPrizeStore')
-      var rcstore = Ext.StoreMgr.get('RewardsCartStore')
       var viewport = me.getViewPortCntlr();
-      var cvenue = viewport.getCheckinInfo().venue;
-      var venue = viewport.getVenue();
-      var venueId = venue.getId();
-      var merchantId = venue.getMerchant().getId();
+      var cstore = Ext.StoreMgr.get('CustomerStore');
+      var customerId = viewport.getCustomer().getId();
+      //
+      // Update points from the purchase or redemption
+      //
+      cstore.getById(customerId).set('points', metaData['account_points']);
+   },
+   onRewardMetaChange : function(store, metaData)
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      var cstore = Ext.StoreMgr.get('CustomerStore');
+      var customerId = viewport.getCustomer().getId();
 
-      me.getGeoLocation(function(position)
+      var vipPopup = function()
       {
-         var rewardIds = [];
-         Ext.Array.forEach(rcstore.getRange(), function(item, index, all)
+         Ext.device.Notification.show(
          {
-            var rewardId = item.get(PurchaseReward.getIdProperty());
-            //
-            // Pass as many times as the customer ordered the item
-            //
-            rewardIds.push(
+            title : 'VIP Challenge Alert!',
+            message : me.getVipMsg(metaData['vip_challenge']),
+            callback : function()
             {
-               quantity : item.get('qty'),
-               id : rewardId
-            });
-         }, me);
-         pstore.load(
-         {
-            jsonData :
-            {
-            },
-            params :
-            {
-               venue_id : venueId,
-               merchant_id : merchantId,
-               reward_ids : JSON.stringify(rewardIds),
-               latitude : position.coords.latitude,
-               longitude : position.coords.longitude
-            },
-            callback : function(records, operation)
-            {
-               //
-               // To-do : Update CustomerStore (Points) with returned value
-               //
                Ext.defer(function()
                {
-                  if(!operation.wasSuccessful())
-                  {
-                     var container = me.getRewardsContainer();
-                     container.setActiveItem(0);
-                  }
-                  else
-                  {
-                     //
-                     // Clear the Shopping Cart
-                     //
-                     me.clearRewardsCart();
-
-                     if(records.length == 0)
-                     {
-                        Ext.device.Notification.show(
-                        {
-                           title : 'Scan And Win!',
-                           message : 'Oops, Play Again!',
-                           callback : function()
-                           {
-                              me.popView();
-                           }
-                        });
-                     }
-                     else
-                     {
-                        Ext.device.Notification.show(
-                        {
-                           title : 'Scan And Win!',
-                           message : 'You haved won ' + ((records.length > 1) ? 'some Prizes' : 'a PRIZE') + '!',
-                           callback : function()
-                           {
-                              var app = me.getApplication();
-                              var viewport = me.getViewPortCntlr();
-                              var vport = me.getViewport();
-                              vport.setEnableAnim(false);
-                              vport.getNavigationBar().setCallbackFn(function()
-                              {
-                                 vport.setEnableAnim(true);
-                                 vport.getNavigationBar().setCallbackFn(Ext.emptyFn);
-
-                                 app.dispatch(
-                                 {
-                                    action : 'onPrizesButtonTap',
-                                    args : arguments,
-                                    controller : viewport,
-                                    scope : viewport
-                                 });
-                              });
-                              me.popView();
-                           }
-                        });
-                     }
-                     Ext.device.Notification.vibrate();
-                  }
+                  me.prizeCheck(store);
                }, 2000);
             }
          });
-      });
+      }
+      if(metaData['points'])
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Earn Points',
+            message : me.getPointsMsg(metaData['points']) + ((!metaData['vip_challenge']) ? ((!Genesis.constants.isNative()) ? '<br/>' : '\n') + me.getPrizeCheckMsg() : ''),
+            callback : function()
+            {
+               if((metaData['vip_challenge']))
+               {
+                  vipPopup();
+               }
+               else
+               {
+                  Ext.defer(function()
+                  {
+                     me.prizeCheck(store);
+                  }, 2000);
+               }
+            }
+         });
+      }
+      else
+      if(metaData['vip_challenge'])
+      {
+         vipPopup();
+      }
+      //
+      // Update points from the purchase or redemption
+      //
+      cstore.getById(customerId).set('points', metaData['account_points']);
    },
    onRewardsEarnPtsTap : function(b, e, eOpts)
    {
@@ -395,7 +530,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                anim.enable();
 
                console.log("response - " + response);
-               me.earnPtsFn();
+               me.earnPts();
             }
             else
             {
@@ -525,39 +660,6 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       });
       item.hide();
    },
-   updateRewardsCartTotal : function(cartItems)
-   {
-      var total = this.getRewardsCartTotal(), totalPts = 0;
-      for(var i = 0; i < cartItems.length; i++)
-      {
-         totalPts += cartItems[i].get('qty') * cartItems[i].get('points');
-      }
-      if(total)
-      {
-         total.setData(
-         {
-            points : totalPts
-         });
-      }
-
-      //
-      // Update Cart Badge
-      //
-      var earnPtsBtn = this.getEarnPtsBtn();
-      //
-      // Don't update the badge if it's not rendered yet.
-      //
-      if(earnPtsBtn)
-      {
-         Ext.Anim.run(earnPtsBtn.badgeElement, 'pop',
-         {
-            out : false,
-            autoClear : false
-         });
-         this.getEarnPtsBtn().setBadgeText((cartItems.length > 0) ? totalPts + 'Pts' : null);
-      }
-      return totalPts;
-   },
    onRewardsCartItemSelectChange : function(f, newValue, oldValue, eOpts)
    {
       var item = f.up('rewardscartitem');
@@ -571,21 +673,6 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       //RewardsCartStore
 
       return true;
-   },
-   clearRewardsCart : function()
-   {
-      //
-      // Clears the RewardsCart
-      //
-      var rcstore = Ext.StoreMgr.get('RewardsCartStore');
-      if(rcstore)
-      {
-         rcstore.removeAll();
-         rcstore.data.updateIndices();
-         //bug fix for Store when we call "indexOf" utilizing indices
-      }
-      // Automatically update totals
-      this.updateRewardsCartTotal([]);
    },
    onCheckInTap : function(b, e, eOpts)
    {
@@ -617,9 +704,6 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       {
          var app = me.getApplication();
          var controller = app.getController('Prizes');
-         //
-         // To-do : Talk to Server and deduct points
-         //
          app.dispatch(
          {
             action : 'onRedeemRewards',
@@ -627,8 +711,8 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             {
                'id' : 1,
                'expiry_date' : null,
-               'reward' : record.raw,
-               'merchant' : viewport.getCheckinInfo().venue.getMerchant().raw
+               'reward' : record,
+               'merchant' : viewport.getCheckinInfo().venue.getMerchant()
             })],
             controller : controller,
             scope : controller
@@ -717,7 +801,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                      //
                      // Update Customer info
                      //
-                     me.getRedemptionsPtsEarnPanel().getStore().setData(viewport.getCustomer().raw);
+                     me.getRedemptionsPtsEarnPanel().getStore().setData(viewport.getCustomer());
                      break
                   }
                   default :

@@ -34,9 +34,54 @@ Ext.define('Genesis.model.EarnPrize',
          associationKey : 'user',
          getterName : 'getUser',
          setterName : 'setUser'
-      }]
+      }],
+      proxy :
+      {
+         type : 'ajax',
+         disableCaching : false,
+         defaultHeaders :
+         {
+            'If-None-Match' : ''
+         },
+         actionMethods :
+         {
+            create : 'POST',
+            read : 'POST',
+            update : 'POST',
+            destroy : 'POST'
+         },
+         writer :
+         {
+            type : 'json'
+         },
+         reader :
+         {
+            type : 'json',
+            messageProperty : 'message',
+            rootProperty : 'data'
+         }
+      }
    },
    getUser : function()
    {
+   },
+   statics :
+   {
+      setEarnPrizeURL : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/purchase_rewards/earn');
+      },
+      setRedeemPrizeURL : function(id)
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/earn_prizes/' + id + '/redeem');
+      }
    }
 });

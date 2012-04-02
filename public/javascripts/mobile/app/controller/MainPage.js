@@ -95,6 +95,7 @@ Ext.define('Genesis.controller.MainPage',
    {
       this.callParent(arguments);
 
+      var me = this;
       //
       // Loads Front Page Metadata
       //
@@ -134,63 +135,24 @@ Ext.define('Genesis.controller.MainPage',
                return o1.getId() - o2.getId();
             }
          }],
-         proxy :
-         {
-            type : 'ajax',
-            disableCaching : false,
-            defaultHeaders :
-            {
-               'If-None-Match' : ''
-            },
-            actionMethods :
-            {
-               create : 'POST',
-               read : 'POST',
-               update : 'POST',
-               destroy : 'POST'
-            },
-            writer :
-            {
-               type : 'json'
-            },
-            reader :
-            {
-               type : 'json',
-               messageProperty : 'message',
-               rootProperty : 'data'
-            },
-            url : Genesis.constants.host + '/api/v1/purchase_rewards/earn'
-         },
          listeners :
          {
             scope : this,
+            'load' : function(store, records, successful, operation, eOpts)
+            {
+               store.loadCallback = [records, operation];
+            },
             'metachange' : function(store, proxy, eOpts)
             {
-               // Load Prizes into DataStore
-               var metaData = proxy.getReader().metaData;
-
-               //
-               // To-do : Update points earned from the purchase
-               //
-               if(metaData['points'])
+               var app = me.getApplication();
+               var controller = app.getController('RewardsRedemptions');
+               app.dispatch(
                {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Earn Points',
-                     message : 'Your have earned ' + metaData['points'] + ' Points from this purchase!'
-                  });
-               }
-               //
-               // To-do : Update points earned from VIP Challenge
-               //
-               if(metaData['vip_challenge'])
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'VIP Challenge Alert!',
-                     message : 'Your have earned an additional' + metaData['vip_challenge'].points + ' Points!'
-                  });
-               }
+                  action : 'onRewardMetaChange',
+                  args : [store, proxy.getReader().metaData],
+                  controller : controller,
+                  scope : controller
+               });
             }
          }
       });

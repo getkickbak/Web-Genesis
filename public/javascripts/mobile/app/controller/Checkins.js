@@ -428,7 +428,7 @@ Ext.define('Genesis.controller.Checkins',
                         crecord.setLastCheckin(records[i].getLastCheckin());
                      }
 
-                     this.setupCheckinInfo(venue, customer, metaData);
+                     this.setupCheckinInfo(venue, crecord, metaData);
                      break;
                   }
                }

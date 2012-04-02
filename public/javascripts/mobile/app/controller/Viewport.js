@@ -230,6 +230,7 @@ Ext.define('Genesis.controller.Viewport',
          xtype : 'loadmask',
          message : 'Retrieving Challenges ...'
       });
+      Challenge['setGetChallengesURL']();
       Challenge.load(venue.getId(),
       {
          params :
