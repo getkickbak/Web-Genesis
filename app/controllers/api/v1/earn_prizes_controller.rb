@@ -5,7 +5,7 @@ class Api::V1::EarnPrizesController < ApplicationController
     authorize! :read, EarnPrize
     
     if params[:merchant_id]
-      @earn_prizes = EarnPrize.all(EarnPrize.merchant.id => params[:merchant_id], EarnPrize.user.id => current_user.id, :redeemed => false)
+      @earn_prizes = EarnPrize.all(EarnPrize.merchant.id => params[:merchant_id], EarnPrize.user.id => current_user.id, :expiry_ts.gte => Time.now, :redeemed => false)
     else
       @earn_prizes = EarnPrize.all(EarnPrize.user.id => current_user.id, :redeemed => false)
     end
