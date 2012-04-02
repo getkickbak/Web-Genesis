@@ -9,6 +9,7 @@ if @prize
 end
 node :metaData do
 	{
+		:account_points => @customer.points,
 		:points => @total_points,
 		:vip_challenge => (
 				{

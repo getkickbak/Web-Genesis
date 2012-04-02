@@ -74,7 +74,7 @@ class Api::V1::ChallengesController < ApplicationController
         end
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => success, :message => msg } }
+          format.json { render :json => { :success => success, :metaData => { :account_points => @customer.points, :points => @challenge.points }, :message => msg } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
