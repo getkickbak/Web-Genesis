@@ -51,9 +51,9 @@ class Api::V1::ChallengesController < ApplicationController
       return
     end
 
-    Customer.transaction do
+    #Customer.transaction do
       begin
-        if is_challenge_satisfied(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && (@venue.authorization_codes.first(:auth_code => params[:auth_code] || APP_PROP["DEBUG_MODE"]))))
+        if is_challenge_satisfied(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && (@venue.authorization_codes.first(:auth_code => params[:auth_code]) || APP_PROP["DEBUG_MODE"])))
           record = EarnRewardRecord.new(
             :challenge_id => @challenge.id,
             :venue_id => @venue.id,
@@ -82,7 +82,7 @@ class Api::V1::ChallengesController < ApplicationController
           format.json { render :json => { :success => false, :message => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
         end
       end
-    end
+    #end
   end
   
   protected
@@ -95,6 +95,7 @@ class Api::V1::ChallengesController < ApplicationController
     if challenge.type == "referral"
       return true
     end
+    return false
   end
   
   def start_challenge(merchant, user)
