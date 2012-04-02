@@ -2,27 +2,62 @@
 <script type="text/javascript" src="/javascripts/desktop/src/business/analytics.js"></script>
 <% end %>
 <div class="content row">
-	<div class="span19">
-		<div id="new_customers">&nbsp;</div>
-		<div id="purchases">&nbsp;</div>
-		<div id="challenges">&nbsp;</div>
-	</div>
-	<div class="span10">
-		<div>
-			<%= @customers_total %> people in your loyalty program
+	<div class="span29">
+		<div class="row">
+			<div class="span18">
+				<div id="new_customers">
+					&nbsp;
+				</div>
+			</div>
+			<div class="span11">
+				<div>
+					<%= @customers_total %> people in your loyalty program
+				</div>
+			</div>
 		</div>
-		<div>
-			<% @purchases_total.each do |purchases| %>
-			<p>
-				<%= purchases[:total] %> <%= purchases[:name] %> purchases
-			</p>
-			<% end %>
+		<div class="row">
+			<div class="span18">
+				<div id="purchases_line_chart">
+					&nbsp;
+				</div>
+			</div>
+			<div class="span11">
+				<div id="purchases_pie_chart">
+					&nbsp;
+				</div>
+			</div>
 		</div>
-		<div>
-			<% @challenges_total.each do |challenges| %>
-			<p>
-				<%= challenges[:total] %> <%= challenges[:name] %> challenges completed</pp>
-				<% end %>
+		<div class="row">
+			<div class="span18">
+				<div id="challenges_line_chart">
+					&nbsp;
+				</div>
+			</div>
+			<div class="span11">
+				<div id="challenges_pie_chart">
+					&nbsp;
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
+<!--
+<div class="span10">
+<div>
+<%= @customers_total %> people in your loyalty program
+</div>
+<div>
+<% @purchases_total.each do |purchases| %>
+<p>
+<%= purchases[:total] %> <%= purchases[:name] %> purchases
+</p>
+<% end %>
+</div>
+<div>
+<% @challenges_total.each do |challenges| %>
+<p>
+<%= challenges[:total] %> <%= challenges[:name] %> challenges completed</pp>
+<% end %>
+</div>
+</div>
+-->

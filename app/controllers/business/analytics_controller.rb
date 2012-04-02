@@ -57,20 +57,25 @@ module Business
         #puts "end"
       end
       
+      two_months_ago = today >> -2
       purchase_rewards = PurchaseReward.all(PurchaseReward.merchant.id => current_merchant.id)
       earn_reward_records = { :names => [], :data => [] }
+      earn_rewards_total = []
       purchase_rewards.each do |reward|
         data = DataMapper.repository(:default).adapter.select(
           "SELECT DATE(created_ts) AS created_date, COUNT(*) AS count FROM earn_reward_records WHERE reward_id = ? 
               AND created_date >= ? AND deleted_ts IS NULL
-              GROUP BY created_date", reward.id, today >> -2
+              GROUP BY created_date", reward.id, two_months_ago
         )
         earn_reward_records[:names] << reward.title
         earn_reward_records[:data] << { :data => data, :counter => 0 }
+        reward_count = EarnRewardRecord.count(:reward_id => reward.id, :created_ts.gte => two_months_ago)
+        earn_rewards_total << [reward.title, reward_count]
       end
       
       challenges = Challenge.all(Challenge.merchant.id => current_merchant.id)
       challenge_records = { :names => [], :data => [] }
+      challenges_total = []
       challenges.each do |challenge|
         data = DataMapper.repository(:default).adapter.select(
           "SELECT DATE(created_ts) AS created_date, COUNT(*) AS count FROM earn_reward_records WHERE challenge_id = ? 
@@ -79,13 +84,14 @@ module Business
         )
         challenge_records[:names] << challenge.name
         challenge_records[:data] << { :data => data, :counter => 0 }
+        challenge_count = EarnRewardRecord.count(:challenge_id => challenge.id, :created_ts.gte => two_months_ago)
+        challenges_total << [challenge.name, challenge_count]
       end
       
       earn_rewards = []
       challenge_data = []
       
       i = 0
-      two_months_ago = today >> -2
       two_months_ago.upto(today) do |date|
         #puts "begin"
         earn_rewards[i] = [date]
@@ -147,8 +153,8 @@ module Business
       
       data = {}
       data[:new_customers] = new_customers_data
-      data[:purchases] = { :names => earn_reward_records[:names], :data => earn_rewards }
-      data[:challenges] = { :names => challenge_records[:names], :data => challenge_data }     
+      data[:purchases] = { :line_data => { :names => earn_reward_records[:names], :data => earn_rewards }, :pie_data => earn_rewards_total }
+      data[:challenges] = { :line_data => { :names => challenge_records[:names], :data => challenge_data }, :pie_data => challenges_total }    
       respond_to do |format|
          format.json { render :json => { :success => true, :data => data } }
       end

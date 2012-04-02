@@ -9,62 +9,110 @@ $(document).ready($(function() {
 		google.setOnLoadCallback(drawCharts(response.data));
 	});
 	function drawCharts(response_data) {
-		var data1 = new google.visualization.DataTable();
-		data1.addColumn('string', 'Date');
-		data1.addColumn('number', 'New Customers');
-		data1.addRows(response_data.new_customers);
+		var new_customers_line_data = new google.visualization.DataTable();
+		new_customers_line_data.addColumn('string', 'Date');
+		new_customers_line_data.addColumn('number', 'New Customers');
+		new_customers_line_data.addRows(response_data.new_customers);
 
-		var options1 = {
-			width : 520,
+		var new_customers_line_options = {
+			width : 500,
 			height : 340,
 			title : 'New Customers - Last 2 Weeks',
 			animation : { duration : 1 },
 			chartArea : { left : 80, top : 50 },
-			legend : { position : 'none' },
-			vAxis : { minValue : 0, maxValue : 8, viewWindowMode : 'explicit', viewWindow : { min : 0 } }
+			legend : { position : 'none', textStyle : { fontSize: 12 } },
+			hAxis : { textStyle : { fontSize: 12 } },
+			vAxis : { textStyle : { fontSize: 12 }, minValue : 0, maxValue : 8, viewWindowMode : 'explicit', viewWindow : { min : 0 } },
+			tooltip : { textStyle : { fontSize: 12 } }
 		};
 
 		var new_customers_chart = new google.visualization.LineChart(document.getElementById('new_customers'));
-		new_customers_chart.draw(data1, options1);
+		new_customers_chart.draw(new_customers_line_data, new_customers_line_options);
 
-		var data2 = new google.visualization.DataTable();
-		data2.addColumn('string', 'Date');
+		var purchases_line_data = new google.visualization.DataTable();
+		purchases_line_data.addColumn('string', 'Date');
 		
 		var i;
-		var names = response_data.purchases.names
+		var names = response_data.purchases.line_data.names
 		for (i = 0; i < names.length; i++) {
-			data2.addColumn('number', names[i]);
+			purchases_line_data.addColumn('number', names[i]);
 		}
-		data2.addRows(response_data.purchases.data);
+		purchases_line_data.addRows(response_data.purchases.line_data.data);
 
-		var options2 = {
-			width : 520,
+		var purchases_line_options = {
+			width : 500,
 			height : 340,
 			title : 'Purchases Per Day - Last 2 Months',
 			chartArea : { left : 80, top : 50 },
-			vAxis : { minValue : 0, maxValue : 8, viewWindowMode : 'explicit', viewWindow : { min : 0 } }
+			legend : { position : 'bottom', textStyle : { fontSize: 12 } },
+			hAxis : { textStyle : { fontSize: 12 } },
+			vAxis : { textStyle : { fontSize: 12 }, minValue : 0, maxValue : 8, viewWindowMode : 'explicit', viewWindow : { min : 0 } },
+			tooltip : { textStyle : { fontSize: 12 } }
 		};
-		var purchases_chart = new google.visualization.LineChart(document.getElementById('purchases'));
-		purchases_chart.draw(data2, options2);
+		var purchases_line_chart = new google.visualization.LineChart(document.getElementById('purchases_line_chart'));
+		purchases_line_chart.draw(purchases_line_data, purchases_line_options);
 
-		var data3 = new google.visualization.DataTable();
-		data3.addColumn('string', 'Date');
-		
-		names = response_data.challenges.names;
-		for (i = 0; i < names.length; i++) {
-			data3.addColumn('number', names[i]);
-		}
-		data3.addRows(response_data.challenges.data);
+		var purchases_pie_data = new google.visualization.DataTable();
+        purchases_pie_data.addColumn('string', 'Category');
+        purchases_pie_data.addColumn('number', 'Purchases');
+        
+        purchases_pie_data.addRows(response_data.purchases.pie_data);
 
-		var options3 = {
-			width : 520,
+        var purchases_pie_options = {
+        	width : 340,
 			height : 340,
-			title : 'Challenges Completed - Last 2 Months',
+          	title: 'Purchases - Last 2 Months',
+          	titleTextStyle : { fontSize: 12 },
+          	chartArea : { top : 50 },
+          	legend : { position : 'bottom', textStyle : { fontSize: 12 } },
+          	pieSliceTextStyle : { fontSize: 12 },
+          	tooltip : { textStyle : { fontSize: 12 } }
+        };
+
+        var purchases_pie_chart = new google.visualization.PieChart(document.getElementById('purchases_pie_chart'));
+        purchases_pie_chart.draw(purchases_pie_data, purchases_pie_options);
+        
+		var challenges_line_data = new google.visualization.DataTable();
+		challenges_line_data.addColumn('string', 'Date');
+		
+		names = response_data.challenges.line_data.names;
+		for (i = 0; i < names.length; i++) {
+			challenges_line_data.addColumn('number', names[i]);
+		}
+		challenges_line_data.addRows(response_data.challenges.line_data.data);
+
+		var challenges_line_options = {
+			width : 500,
+			height : 340,
+			title : 'Challenges Per Day - Last 2 Months',
 			chartArea : { left : 80, top : 50 },
-			vAxis : { minValue : 0, maxValue : 8, viewWindowMode : 'explicit', viewWindow : { min : 0 } }
+			legend : { position : 'bottom', textStyle : { fontSize: 12 } },
+			hAxis : { textStyle : { fontSize: 12 } },
+			vAxis : { textStyle : { fontSize: 12 }, minValue : 0, maxValue : 8, viewWindowMode : 'explicit', viewWindow : { min : 0 } },
+			tooltip : { textStyle : { fontSize: 12 } }
 		};
-		var challenges_chart = new google.visualization.LineChart(document.getElementById('challenges'));
-		challenges_chart.draw(data3, options3);
+		var challenges_line_chart = new google.visualization.LineChart(document.getElementById('challenges_line_chart'));
+		challenges_line_chart.draw(challenges_line_data, challenges_line_options);
+		
+		var challenges_pie_data = new google.visualization.DataTable();
+        challenges_pie_data.addColumn('string', 'Category');
+        challenges_pie_data.addColumn('number', 'Challenges');
+        
+        challenges_pie_data.addRows(response_data.challenges.pie_data);
+
+        var challenges_pie_options = {
+        	width : 340,
+			height : 340,
+          	title: 'Challenges - Last 2 Months',
+          	titleTextStyle : { fontSize: 12 },
+          	chartArea : { top : 50 },
+          	legend : { position : 'bottom', textStyle : { fontSize: 12 } },
+          	pieSliceTextStyle : { fontSize: 12 },
+          	tooltip : { textStyle : { fontSize: 12 } }
+        };
+
+        var challenges_pie_chart = new google.visualization.PieChart(document.getElementById('challenges_pie_chart'));
+        challenges_pie_chart.draw(challenges_pie_data, challenges_pie_options);
 	}
 
 }))
