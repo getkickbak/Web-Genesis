@@ -170,7 +170,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
   
   def pick_prize(venue)
     idx = Random.rand(venue.customer_rewards.length)
-    return venue.customer_rewards.get(idx)
+    return venue.customer_rewards[idx]
   end
   
   def pick_prize_win_offset(prize_interval)
