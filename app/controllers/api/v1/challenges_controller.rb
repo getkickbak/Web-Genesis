@@ -53,7 +53,7 @@ class Api::V1::ChallengesController < ApplicationController
 
     Customer.transaction do
       begin
-        if is_challenge_satisfied(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && @venue.authorization_codes.first(:auth_code => params[:auth_code])))
+        if is_challenge_satisfied(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && (@venue.authorization_codes.first(:auth_code => params[:auth_code] || APP_PROP["DEBUG_MODE"]))))
           record = EarnRewardRecord.new(
             :challenge_id => @challenge.id,
             :venue_id => @venue.id,
