@@ -17,16 +17,15 @@ class Api::V1::ChallengesController < ApplicationController
       begin
         if is_startable_challenge?(@challenge)
           start_challenge(@merchant, current_user)
-          success = true
-          msg = [""]
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => true } }
+          end
         else
-          success = false
-          msg = [""]  
-        end
-        respond_to do |format|
-          #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
-          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => success, :message => msg } }
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => false, :message => [""] } }
+          end  
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
@@ -66,11 +65,15 @@ class Api::V1::ChallengesController < ApplicationController
           record.save
           @customer.points += @challenge.points
           @customer.save
-          success = true
-          msg = [""]
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => @challenge.points } } }
+          end
         else
-          success = false
-          msg = [""] 
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => false, :message => [""] } }
+          end 
         end
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }

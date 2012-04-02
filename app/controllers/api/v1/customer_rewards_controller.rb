@@ -21,22 +21,22 @@ class Api::V1::CustomerRewardsController < ApplicationController
             :reward_id => reward.id,
             :venue_id => @venue.id,
             :points => reward.points,
-            :created_ts => now
+            :created_ts => Time.now
           )
           record.merchant = @venue.merchant
           record.user = current_user
           record.save
           @customer.points -= reward.points
           @customer.save
-          success = true
-          msg = [""]
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points } } }
+          end
         else
-          success = false
-          msg = [""]  
-        end
-        respond_to do |format|
-          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => success, :metaData => { :account_points => @customer.points }, :msg => msg } }
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => false, :message => [""] } }
+          end  
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
