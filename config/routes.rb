@@ -113,17 +113,17 @@ Genesis::Application.routes.draw do
 
         match '/challenges' => 'challenges#index'
         match '/challenges/:id/start' => 'challenges#start'
-        match '/challenges/:id/complete' => 'challenges#complete'
+        match '/challenges/:id/complete' => 'challenges#complete', :via => :post
 
         match '/customer_rewards' => 'customer_rewards#index'
-        match '/customer_rewards/:id/redeem' => 'customer_rewards#redeem'
+        match '/customer_rewards/:id/redeem' => 'customer_rewards#redeem', :via => :post
 
         match '/purchase_rewards' => 'purchase_rewards#index'
         match '/purchase_rewards/earn' => 'purchase_rewards#earn', :via => :post
 
         match '/earn_prizes' => 'earn_prizes#index'
         match '/earn_prizes/:id/show' => 'earn_prizes#show'
-        match '/earn_prizes/:id/redeem' => 'earn_prizes#redeem'
+        match '/earn_prizes/:id/redeem' => 'earn_prizes#redeem', :via => :post
       end
     end
   
