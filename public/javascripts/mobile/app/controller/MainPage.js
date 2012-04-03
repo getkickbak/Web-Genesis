@@ -123,15 +123,23 @@ Ext.define('Genesis.controller.MainPage',
          clearOnPageLoad : false,
          sorters : [
          {
+            // Clump by merchant
             sorterFn : function(o1, o2)
             {
-               return o2.getMerchant().getId() - o1.getMerchant().getId();
+               return o1.getMerchant().getId() - o2.getMerchant().getId();
             }
          },
          {
             sorterFn : function(o1, o2)
             {
-               // Return reversed sorted order
+               // Return based on expiry date
+               return o1.get('expiry_date') - o2.get('expiry_date');
+            }
+         },
+         {
+            sorterFn : function(o1, o2)
+            {
+               // Return based on issue date
                return o1.getId() - o2.getId();
             }
          }],
