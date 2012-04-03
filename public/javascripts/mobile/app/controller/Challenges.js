@@ -157,7 +157,7 @@ Ext.define('Genesis.controller.Challenges',
                                  Ext.device.Notification.show(
                                  {
                                     title : 'Earn Points',
-                                    message : me.getPointsMsg(metaData['account_points'])
+                                    message : me.getPointsMsg(metaData['points'])
                                  });
                                  cstore.getById(customerId).set('points', metaData['account_points']);
                               }

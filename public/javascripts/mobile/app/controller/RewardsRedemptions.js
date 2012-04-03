@@ -279,11 +279,13 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             Ext.device.Notification.show(
             {
                title : 'Scan And Win!',
-               message : 'You haved won ' + ((records.length > 1) ? 'some Prizes' : 'a PRIZE') + '!',
+               message : 'You haved won ' + ((records.length > 1) ? 'some PRIZES' : 'a PRIZE') + '!',
                callback : function()
                {
                   var app = me.getApplication();
+                  var controller = app.getController('Prizes');
                   var vport = me.getViewport();
+
                   vport.setEnableAnim(false);
                   vport.getNavigationBar().setCallbackFn(function()
                   {
@@ -292,10 +294,10 @@ Ext.define('Genesis.controller.RewardsRedemptions',
 
                      app.dispatch(
                      {
-                        action : 'onPrizesButtonTap',
-                        args : arguments,
-                        controller : viewport,
-                        scope : viewport
+                        action : 'onShowPrize',
+                        args : [records[0]],
+                        controller : controller,
+                        scope : controller
                      });
                   });
                   me.popView();
@@ -315,6 +317,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       var venue = viewport.getVenue();
       var venueId = venue.getId();
       var merchantId = venue.getMerchant().getId();
+      var reader = CustomerReward.getProxy().getReader();
 
       me.getGeoLocation(function(position)
       {
@@ -333,8 +336,11 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          }, me);
          //
          // Triggers PrizeCheck and MetaDataChange
+         // - subject CustomerReward also needs to be reset to ensure property processing of objects
          //
          EarnPrize['setEarnPrizeURL']();
+         reader.setRootProperty('');
+         reader.buildExtractors();
          pstore.loadPage(1,
          {
             jsonData :
@@ -347,6 +353,11 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                reward_ids : JSON.stringify(rewardIds),
                latitude : position.coords.latitude,
                longitude : position.coords.longitude
+            },
+            callback : function()
+            {
+               reader.setRootProperty('data');
+               reader.buildExtractors();
             }
          });
       });

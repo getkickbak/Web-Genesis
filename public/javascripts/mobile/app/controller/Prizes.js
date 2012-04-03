@@ -90,9 +90,10 @@ Ext.define('Genesis.controller.Prizes',
          // Show the Prize won by Customer on EarnPts
          //
          case 'reward' :
+         case 'showPrize' :
          {
-            items = [me.earnPrize];
-            delete me.earnPrize;
+            items = [me.showPrize];
+            delete me.showPrize;
             container = view;
             break;
          }
@@ -165,9 +166,30 @@ Ext.define('Genesis.controller.Prizes',
       if(prizes.isPainted() && !prizes.isHidden())
       {
          var me = this;
+         var store = Ext.StoreMgr.get('MerchantPrizeStore');
          clearTimeout(me.cancelId);
          delete me.cancelId;
 
+         switch (me.getMode())
+         {
+            case 'prizes' :
+            case 'showPrize' :
+            {
+               var carousel = prizes.query('carousel')[0];
+               var container = carousel || prizes;
+               var item = carousel ? container.getActiveItem() : container.getItems().items[0];
+               //
+               // Remove Prize
+               //
+               container.remove(item, true);
+               store.remove(item);
+               break;
+            }
+            case 'reward' :
+            {
+               break;
+            }
+         }
          me.getDoneBtn().hide();
          me.getRedeemBtn().hide();
          Ext.device.Notification.vibrate();
@@ -196,10 +218,12 @@ Ext.define('Genesis.controller.Prizes',
       btn.hide();
 
       var store;
-      var item = view.query('carousel')[0] ? view.query('carousel')[0].getActiveItem() : view.getItems().items[0];
+      var carousel = prizes.query('carousel')[0];
+      var item = carousel ? carousel.getActiveItem() : view.getItems().items[0];
       var id = item.getStore().first().getId();
       switch (me.getMode())
       {
+         case 'showPrize' :
          case 'prizes' :
          {
             store = Ext.StoreMgr.get('MerchantPrizeStore');
@@ -242,6 +266,7 @@ Ext.define('Genesis.controller.Prizes',
       var title;
       switch (me.getMode())
       {
+         case 'showPrize' :
          case 'prizes' :
             title = 'Prize Redemption Alert!';
             break;
@@ -277,8 +302,14 @@ Ext.define('Genesis.controller.Prizes',
    },
    onRedeemRewards : function(earnPrize)
    {
-      this.earnPrize = earnPrize;
+      this.showPrize = showPrize;
       this.setMode('reward');
+      this.pushView(this.getMainPage());
+   },
+   onShowPrize : function(showPrize)
+   {
+      this.showPrize = showPrize;
+      this.setMode('showPrize');
       this.pushView(this.getMainPage());
    },
    // --------------------------------------------------------------------------
