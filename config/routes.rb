@@ -97,12 +97,12 @@ Genesis::Application.routes.draw do
     
     namespace :api do
       namespace :v1  do
-        resources :tokens, :only => [:create, :destroy] do
-          post 'create_from_facebook', :on => :member
-        end
+        resources :tokens, :only => [:create, :destroy]
         resources :check_ins, :only => [:create]
         resources :customers, :only => [:index, :create]
-    
+        
+        match "/tokens/create_from_facebook" => 'tokens#create_from_facebook', :via => :post
+        
         match "/sign_up" => 'registrations#create', :via => :post
         
         match "/account/update" => 'users#update', :via => :post
