@@ -19,29 +19,23 @@ en:
         carrierwave_processing_error: 'Cannot resize image.'
         carrierwave_integrity_error: 'Not an image.'
         challenge:
-          type_blank: "Type can't be blank" 
           name_min_word_length: "Individual words cannot exceed 10 characters"
           name_max_num_of_lines: "Name must fit within 2 lines with max 10 characters per line"
           min_venues: "Must belong to at least one venue" 
         customer_reward:
-          type_blank: "Type can't be blank" 
           min_venues: "Must belong to at least one venue"
         merchant:
-          type_blank: "Type can't be blank" 
           incorrect_password: "Incorrect password"
           reuse_password: "New password must be different from current password"
           no_photo: "Please upload photo"
         purchase_reward:
-          type_blank: "Type can't be blank" 
           min_venues: "Must belong to at least one venue"
         staff:
           incorrect_password: "Incorrect password"
           reuse_password: "New password must be different from current password"
         user:
           incorrect_password: "Incorrect password"
-          reuse_password: "New password must be different from current password"
-        venue:
-          type_blank: "Type can't be blank"  
+          reuse_password: "New password must be different from current password"  
         exception:
           400: "Something went wrong.  Please try again."
           500: "Something went wrong.  Server error." 

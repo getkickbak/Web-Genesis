@@ -65,7 +65,7 @@ class CustomerReward
     if self.type && self.type.id
       return true  
     end
-    return [false, I18n.t("errors.messages.customer_reward.type_blank")]
+    return [false, ValidationErrors.default_error_message(:blank, :type_id)]
   end
   
   def check_venues
