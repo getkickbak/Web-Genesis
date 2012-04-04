@@ -114,11 +114,11 @@ class User
     if !user_info[:current_password].empty?
       self.current_password = user_info[:current_password].strip
       if self.current_password && !valid_password?(self.current_password)
-        errors.add(:current_password, "Incorrect password")
+        errors.add(:current_password, I18n.t("errors.messages.user.incorrect_password"))
         raise DataMapper::SaveFailureError.new("", self)
       end
       if self.current_password == user_info[:password].strip
-        errors.add(:password, "New password must be different from current password")
+        errors.add(:password, I18n.t("errors.messages.user.reuse_password"))
         raise DataMapper::SaveFailureError.new("", self)
       end
       self.password = user_info[:password].strip

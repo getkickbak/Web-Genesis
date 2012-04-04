@@ -37,7 +37,7 @@ class Venue
   has n, :purchase_rewards, :through => :purchase_reward_venues
   has n, :customer_rewards, :through => :customer_reward_venues
   
-  validates_presence_of :type_id, :on => :save
+  validates_with_method :type_id, :method => :check_type_id
 
   def self.create(merchant, type, venue_info)
     now = Time.now
@@ -59,6 +59,7 @@ class Venue
     venue[:update_ts] = now
     venue.type = type
     venue.merchant = merchant
+    venue.save
     
     auth_code = String.random_alphanumeric
     authorization_code = venue.authorization_codes.new
@@ -69,7 +70,7 @@ class Venue
     authorization_code[:update_ts] = now
     
     merchant.venues.reload
-    check_in_auth_code = "#{merchant.id}-#{merchant.venues.length+1}" 
+    check_in_auth_code = "#{merchant.id}-#{merchant.venues.length}" 
     venue.check_in_code = CheckInCode.new
     venue.check_in_code[:auth_code] = check_in_auth_code
     venue.check_in_code[:qr_code] = CheckInCode.generate_qr_code(merchant.id, check_in_auth_code)
@@ -137,5 +138,14 @@ class Venue
     self.update_ts = now
     self.type = type
     save
+  end
+  
+  private
+  
+  def check_type_id
+    if self.type && self.type.id
+      return true  
+    end
+    return [false, I18n.t("errors.messages.venue.type_blank")]
   end
 end

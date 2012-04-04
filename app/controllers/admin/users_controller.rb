@@ -47,7 +47,7 @@ module Admin
         begin
           @user = User.create(params[:user])
           respond_to do |format|
-            format.html { redirect_to(user_path(@user), :notice => 'User was successfully created.') }
+            format.html { redirect_to(user_path(@user), :notice => t("admin.users.create_success")) }
           #format.xml  { render :xml => @user, :status => :created, :location => @user }
           #format.json { render :json => { :success => true, :data => @user, :total => 1 } }
           end
@@ -74,7 +74,7 @@ module Admin
             sign_in(current_user, :bypass => true)
           end
           respond_to do |format|
-            format.html { redirect_to(user_path(@user), :notice => 'User was successfully updated.') }
+            format.html { redirect_to(user_path(@user), :notice => t("admin.users.update_success")) }
           #format.xml  { head :ok }
           #format.json { render :json => { :success => true, :data => @user, :total => 1 } }
           end

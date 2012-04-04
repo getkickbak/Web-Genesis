@@ -28,7 +28,7 @@ module Business
           @merchant.update_all(@merchant.type, params[:merchant])
           sign_in(current_merchant, :bypass => true)
           respond_to do |format|
-            format.html { redirect_to(:action => "show", :notice => 'Merchant was successfully updated.') }
+            format.html { redirect_to(:action => "show", :notice => t("business.merchants.update_success")) }
           #format.xml  { head :ok }
           end
         rescue DataMapper::SaveFailureError => e
@@ -60,7 +60,7 @@ module Business
         begin
           @merchant.update_photo(params[:merchant])
           respond_to do |format|
-            format.html { redirect_to(:action => "photo", :notice => 'Merchant photo was successfully updated.') }
+            format.html { redirect_to(:action => "photo", :notice => t("business.merchants.update_photo_success")) }
           #format.xml  { head :ok }
           end
         rescue DataMapper::SaveFailureError => e
@@ -82,7 +82,7 @@ module Business
         begin
           @merchant.update_alt_photo(params[:merchant])
           respond_to do |format|
-            format.html { redirect_to(:action => "photo", :notice => 'Merchant photo was successfully updated.') }
+            format.html { redirect_to(:action => "photo", :notice => t("business.merchants.update_photo_success")) }
           #format.xml  { head :ok }
           end
         rescue DataMapper::SaveFailureError => e

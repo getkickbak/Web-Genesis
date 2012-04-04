@@ -16,7 +16,7 @@ class Api::V1::RegistrationsController < ApplicationController
       rescue DataMapper::SaveFailureError => e
         render :json => { :success => false, :metaData => e.resource.errors }
       rescue
-        render :json => { :success => false, :messasge => [""] }
+        render :json => { :success => false, :messasge => [t("api.registrations.create_failure")] }
       end
     end
   end

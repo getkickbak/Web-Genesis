@@ -35,7 +35,6 @@ module Business
       if current_merchants.credit_cards.to_a.size > 0
         respond_to do |format|
           format.html { render :action => "index" }
-          format.json { render :json => { :success => false } }
         end
         return  
       end
@@ -46,13 +45,11 @@ module Business
           credit_card = CreditCard.create({ :card_token => "test"})
           current_merchant.add_credit_card(credit_card)
           respond_to do |format|
-            format.html { redirect_to credit_cards_path(:notice => 'Credit card was successfully added.') }
-            format.json { render :json => { :success => true, :msg => 'Credit card was successfully added.' } }
+            format.html { redirect_to credit_cards_path(:notice => t("business.credit_cards.create_success")) }
           end
         rescue DataMapper::SaveFailureError => e
           respond_to do |format|
             format.html { render :action => "index" }
-            format.json { render :json => { :success => false } }
           end  
         end
       end
@@ -137,8 +134,7 @@ module Business
       authorize! :update, @credit_card
       
       respond_to do |format|
-        format.html { redirect_to credit_cards_path(:notice => 'Credit card was successfully updated.') }
-        format.json { render :json => { :success => true, :msg => 'Credit card was successfully updated.' } }
+        format.html { redirect_to credit_cards_path(:notice => t("business.credit_cards.update_success")) }
       end
 =begin      
       CreditCard.transaction do

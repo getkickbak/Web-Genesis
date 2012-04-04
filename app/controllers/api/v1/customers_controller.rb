@@ -23,14 +23,14 @@ class Api::V1::CustomersController < ApplicationController
         else
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => [""] } }
+            format.json { render :json => { :success => false, :message => [t("api.customers.create_failure")] } }
           end 
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => ["Something went wrong", "Please try again."] } }
+          format.json { render :json => { :success => false, :message => [t("api.customers.create_failure")] } }
         end
       end
     end  

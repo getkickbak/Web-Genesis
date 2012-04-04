@@ -42,7 +42,7 @@ class Merchant
   mount_uploader :photo, MerchantPhotoUploader
   mount_uploader :alt_photo, MerchantPhotoUploader
 
-  validates_presence_of :type_id, :on => :save  
+  validates_with_method :type_id, :method => :check_type_id
 
   def self.get_cache_key(id)
     "Merchant-#{id}"  
@@ -121,11 +121,11 @@ class Merchant
     if !merchant_info[:current_password].empty?
       self.current_password = merchant_info[:current_password].strip
       if self.current_password && !valid_password?(self.current_password)
-        errors.add(:current_password, "Incorrect password")
+        errors.add(:current_password, I18n.t("errors.messages.merchant.incorrect_password"))
         raise DataMapper::SaveFailureError.new("", self)
       end
       if self.current_password == merchant_info[:password].strip
-        errors.add(:password, "New password must be different from current password")
+        errors.add(:password, I18n.t("errors.messages.merchant.reuse_password"))
         raise DataMapper::SaveFailureError.new("", self)
       end
       self.password = merchant_info[:password].strip
@@ -144,7 +144,7 @@ class Merchant
     
   def update_photo(merchant_info)
     if merchant_info.nil?
-      errors.add(:photo, "Please upload photo")
+      errors.add(:photo, I18n.t("errors.messages.merchant.no_photo"))
       raise DataMapper::SaveFailureError.new("", self)
     end
     now = Time.now
@@ -157,7 +157,7 @@ class Merchant
     
   def update_alt_photo(merchant_info)
     if merchant_info.nil?
-      errors.add(:alt_photo, "Please upload photo")
+      errors.add(:alt_photo, I18n.t("errors.messages.merchant.no_photo"))
       raise DataMapper::SaveFailureError.new("", self)
     end
     now = Time.now
@@ -178,5 +178,14 @@ class Merchant
     merchant_credit_cards.all(:credit_card => Array(credit_card)).destroy
     reload
     self
+  end
+  
+  private
+  
+   def check_type_id
+    if self.type && self.type.id
+      return true  
+    end
+    return [false, I18n.t("errors.messages.merchant.type_blank")]
   end
 end

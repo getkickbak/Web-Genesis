@@ -21,12 +21,12 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     if !Common.within_geo_distance?(params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => ["Something went wrong", "Outside of check-in distance.  Please try again."] } }
+        format.json { render :json => { :success => false, :message => [t("api.out_of_distance")] } }
       end
       return
     end
     
-    #Customer.transaction do
+    Customer.transaction do
       begin
         @prize = nil
         if @venue.authorization_codes.first(:auth_code => params[:auth_code]) || APP_PROP["DEBUG_MODE"]
@@ -140,7 +140,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         else
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => [""] } }
+            format.json { render :json => { :success => false, :message => [t("api.purchase_rewards.earn_failure")] } }
           end
         end  
       rescue DataMapper::SaveFailureError => e
@@ -148,17 +148,17 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         mutex.release if (defined? mutex && mutex)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
+          format.json { render :json => { :success => false, :message => [t("api.purchase_rewards.earn_failure")] } }
         end
       rescue StandardError => e
         logger.error("Exception: " + e.message)
         mutex.release if (defined? mutex && mutex)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
+          format.json { render :json => { :success => false, :message => [t("api.purchase_rewards.earn_failure")] } }
         end  
       end
-    #end
+    end
   end
   
   private

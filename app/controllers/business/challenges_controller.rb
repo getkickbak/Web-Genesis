@@ -81,7 +81,7 @@ module Business
           end
           @challenge = Challenge.create(current_merchant, type, params[:challenge], venues)
           respond_to do |format|
-            format.html { redirect_to challenges_path(:notice => 'Challenge was successfully created.') }
+            format.html { redirect_to challenges_path(:notice => t("business.challenges.create_success")) }
           #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
           #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
           end
@@ -164,7 +164,7 @@ module Business
           end
           @challenge.update(type, params[:challenge], venues)
           respond_to do |format|
-            format.html { redirect_to(:action => "show", :id => @challenge.id, :notice => 'Challenge was successfully updated.') }
+            format.html { redirect_to(:action => "show", :id => @challenge.id, :notice => t("business.challenges.update_success")) }
             format.xml  { head :ok }
           end
         rescue DataMapper::SaveFailureError => e

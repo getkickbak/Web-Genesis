@@ -50,7 +50,7 @@ module Admin
           params[:merchant][:prize_terms] = I18n.t 'prize.terms'
           @merchant = Merchant.create(type, params[:merchant])
           respond_to do |format|
-            format.html { redirect_to(merchant_path(@merchant), :notice => 'Merchant was successfully created.') }
+            format.html { redirect_to(merchant_path(@merchant), :notice => t("admin.merchants.create_success")) }
           #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
           end
         rescue DataMapper::SaveFailureError => e
@@ -74,7 +74,7 @@ module Admin
           type = MerchantType.get(params[:merchant][:type_id])
           @merchant.update_all(type, params[:merchant])
           respond_to do |format|
-            format.html { redirect_to(merchant_path(@merchant), :notice => 'Merchant was successfully updated.') }
+            format.html { redirect_to(merchant_path(@merchant), :notice => t("admin.merchants.update_success")) }
           #format.xml  { head :ok }
           end
         rescue DataMapper::SaveFailureError => e

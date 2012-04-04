@@ -39,13 +39,13 @@ class Api::V1::EarnPrizesController < ApplicationController
         respond_to do |format|
           #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => true, :message => [""] } }
+          format.json { render :json => { :success => true, :message => [t("api.earn_prizes.redeem_failure")] } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => ["Something went wrong", "Please try again."] } }
+          format.json { render :json => { :success => false, :message => [t("api.earn_prizes.redeem_failure")] } }
         end
       end
     end

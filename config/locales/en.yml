@@ -18,6 +18,33 @@ en:
         not_an_integer: "%{attribute} must be an integer"
         carrierwave_processing_error: 'Cannot resize image.'
         carrierwave_integrity_error: 'Not an image.'
+        challenge:
+          type_blank: "Type can't be blank" 
+          name_min_word_length: "Individual words cannot exceed 10 characters"
+          name_max_num_of_lines: "Name must fit within 2 lines with max 10 characters per line"
+          min_venues: "Must belong to at least one venue" 
+        customer_reward:
+          type_blank: "Type can't be blank" 
+          min_venues: "Must belong to at least one venue"
+        merchant:
+          type_blank: "Type can't be blank" 
+          incorrect_password: "Incorrect password"
+          reuse_password: "New password must be different from current password"
+          no_photo: "Please upload photo"
+        purchase_reward:
+          type_blank: "Type can't be blank" 
+          min_venues: "Must belong to at least one venue"
+        staff:
+          incorrect_password: "Incorrect password"
+          reuse_password: "New password must be different from current password"
+        user:
+          incorrect_password: "Incorrect password"
+          reuse_password: "New password must be different from current password"
+        venue:
+          type_blank: "Type can't be blank"  
+        exception:
+          400: "Something went wrong.  Please try again."
+          500: "Something went wrong.  Server error." 
   datamapper:
       errors:
         messages:
@@ -85,4 +112,62 @@ en:
         soup: "Soup"
         custom: "Custom"
   prize:
-      terms: "No cash value.  Non-transferable."        
+      terms: "No cash value.  Non-transferable."    
+  api:
+      out_of_distance: "Outside of distance.  Please try again."
+      challenges:
+        start_failure: "Trouble starting the challenge.  Please try again."
+        complete_failure: "Trouble completing the challenge.  Please try again."
+      check_ins:
+        create_failure: "Trouble with check-in.  Please try again."
+      customers:
+        create_failure: "Trouble creating customer account.  Please try again."  
+      customer_rewards:
+        redeem_failure: "Trouble redeeming the reward.  Please try again."
+      earn_prizes:
+        redeem_failure: "Trouble redeeming the prize.  Please try again."
+      purchase_rewards:
+        earn_failure: "Trouble earning points.  Please try again."
+      registrations:
+        create_failure: "Trouble with sign up.  Please try again."
+      tokens:
+        create_missing_info: "Missing email or password."
+        create_invalid_info: "Invalid email or password."
+        create_from_facebook_failure: "Trouble with facebook sign in.  Please try again."
+        destroy_failure: "Trouble with logout.  Please try again."   
+  admin:
+      merchants:
+        create_success: "Merchant was successfully created."
+        update_success: "Merchant was successfully updated."
+      staffs:
+        create_success: "Staff was successfully created."
+        update_success: "Staff was successfully updated."
+      users:     
+        create_success: "Account was successfully created."
+        update_success: "Account was successfully updated."   
+  business:
+      challenges:
+        create_success: "Challenge was successfully created."
+        update_success: "Challenge was successfully updated."
+      credit_cards:
+        create_success: "Credit card was successfully added."
+        update_success: "Credit card was successfully updated."
+      customer_rewards:
+        create_success: "Reward was successfully created."
+        update_success: "Reward was successfully updated."
+      merchants:
+        update_success: "Merchant was successfully updated."
+        update_photo_success: "Merchant photo was successfully updated."
+      purchase_rewards:
+        create_success: "Reward was successfully created."
+        update_success: "Reward was successfully updated."
+      reward_model:
+        setup_success: "Reward model was setup successfully."
+        update_success: "Reward model was successfully updated."
+      venues:
+        create_success: "Venue was successfully created."
+        update_success: "Venue was successfully updated."
+        create_qrcode_success: "QR Code was successfully created."
+        create_qrcode_failure: "Failed to create QR Code."
+        delete_qrcode_success: "QR Code was successfully deleted."
+        destroy_failure: "Failed to delete venue.  Please check to make sure no challenges or rewards are associated with this venue."

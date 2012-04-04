@@ -46,7 +46,7 @@ module Admin
         begin
           @staff = Staff.create(params[:staff])
           respond_to do |format|
-            format.html { redirect_to(staff_path(@staff), :notice => 'Staff was successfully created.') }
+            format.html { redirect_to(staff_path(@staff), :notice => t("admin.staffs.create_success")) }
           #format.xml  { render :xml => @staff, :status => :created, :location => @staff }
           #format.json { render :json => { :success => true, :data => @staff, :total => 1 } }
           end
@@ -73,7 +73,7 @@ module Admin
           @staff.update_all(params[:staff])
           sign_in(current_staff, :bypass => true)
           respond_to do |format|
-            format.html { redirect_to(staff_path(@staff), :notice => 'Staff was successfully updated.') }
+            format.html { redirect_to(staff_path(@staff), :notice => t("admin.staffs.update_success")) }
           #format.xml  { head :ok }
           #format.json { render :json => { :success => true, :data => @staff, :total => 1 } }
           end

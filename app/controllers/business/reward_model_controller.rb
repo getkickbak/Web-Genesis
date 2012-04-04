@@ -17,7 +17,7 @@ module Business
         begin
           if @reward_model.nil?
             RewardModel.create(current_merchant, params[:reward_model])
-            msg = 'Reward model was setup successfully.'
+            msg = t("business.reward_model.setup_success")
           else
             @reward_model.update(params[:reward_model])
             @purchase_rewards = PurchaseReward.all(PurchaseReward.merchant.id => current_merchant.id)
@@ -30,7 +30,7 @@ module Business
               end
               reward.save
             end
-            msg = 'Reward model was successfully updated.'
+            msg = t("business.reward_model.update_success")
           end
           respond_to do |format|
             format.html { redirect_to reward_model_path(:notice => msg) }

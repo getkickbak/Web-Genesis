@@ -3,9 +3,9 @@ class PurchaseReward
 
   property :id, Serial
   property :title, String, :length => 24, :required => true, :default => ""
-  property :price, Decimal, :required => true, :scale => 2
-  property :rebate_rate, Integer, :required => true
-  property :points, Integer, :required => true
+  property :price, Decimal, :required => true, :scale => 2, :min => 0.1
+  property :rebate_rate, Integer, :required => true, :min => 1
+  property :points, Integer, :required => true, :min => 1
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -22,10 +22,7 @@ class PurchaseReward
   has n, :purchase_reward_venues, :constraint => :destroy
   has n, :venues, :through => :purchase_reward_venues
 
-  validates_presence_of :type_id, :on => :save
-  validates_with_method :check_price
-  validates_with_method :check_rebate_rate
-  validates_with_method :points, :methods => :check_points
+  validates_with_method :type_id, :method => :check_type_id
   validates_with_method :check_venues
   
   def self.create(merchant, type, reward_info, venues)
@@ -66,31 +63,17 @@ class PurchaseReward
   end
   
   private
-
-  def check_price
-    if self.price.is_a? Decimal
-      return self.price > 0.0 ? true : [false, "Price must be greater than 0"]  
-    end
-    return true
-  end
   
-  def check_rebate_rate
-    if self.rebate_rate.is_a? Integer
-      return self.rebate_rate > 0 ? true : [false, "Rebate rate must be greater than 0"]
+  def check_type_id
+    if self.type && self.type.id
+      return true  
     end
-    return true
-  end
-  
-  def check_points
-    if self.points.is_a? Integer
-      return self.points > 0 ? true : [false, "Points must be greater than 0"]
-    end
-    return true
+    return [false, I18n.t("errors.messages.purchase_reward.type_blank")]
   end
   
   def check_venues
     if self.venues.length == 0
-      return [false, "Must belong to at least one venue"]
+      return [false, I18n.t("errors.messages.purchase_reward.min_venues")]
     end
     return true
   end

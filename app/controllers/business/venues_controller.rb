@@ -47,7 +47,7 @@ module Business
           type = VenueType.get(params[:venue][:type_id])
           @venue = Venue.create(current_merchant, type, params[:venue])
           respond_to do |format|
-            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => 'Venue was successfully created.') }
+            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.create_success")) }
           #format.xml  { head :ok }
           end
         rescue DataMapper::SaveFailureError => e
@@ -71,7 +71,7 @@ module Business
           type = VenueType.get(params[:venue][:type_id])
           @venue.update(type, params[:venue])
           respond_to do |format|
-            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => 'Venue was successfully updated.') }
+            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.update_success")) }
           #format.xml  { head :ok }
           end
         rescue DataMapper::SaveFailureError => e
@@ -94,13 +94,13 @@ module Business
         begin
           AuthorizationCode.create(@venue)
           respond_to do |format|
-            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => 'QR Code was successfully created.') }
+            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.create_qrcode_success")) }
           #format.xml  { head :ok }
           end
         rescue DataMapper::SaveFailureError => e
           logger.error("Exception: " + e.resource.errors.inspect)
           respond_to do |format|
-            format.html { redirect_to(:action => "show", :id => @venue.id, :error => 'Failed to delete QR Code.') }
+            format.html { redirect_to(:action => "show", :id => @venue.id, :error => t("business.venues.create_qrcode_failure")) }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
           end
         end
@@ -114,7 +114,7 @@ module Business
       
       @code.destroy
       respond_to do |format|
-        format.html { redirect_to(:action => "show", :id => @venue.id, :notice => 'QR Code was successfully deleted.') }
+        format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.delete_qrcode_success")) }
         #format.xml  { head :ok }
       end
     end
@@ -148,7 +148,7 @@ module Business
 
       if @venue.challenges.length > 0 || @venue.purchase_rewards.length > 0 || @venue.customer_rewards.length > 0
         respond_to do |format|
-          format.html { redirect_to(:action => "index", :error => 'Failed to delete venue.  Please check to make sure no challenges or rewards are associated with this venue.') }
+          format.html { redirect_to(:action => "index", :error => t("business.venues.destroy_failure")) }
         #format.xml  { head :ok }
         end
       else

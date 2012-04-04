@@ -29,7 +29,7 @@ class ApplicationController < ActionController::Base
   
   unless Rails.application.config.consider_all_requests_local
     rescue_from Exception, :with => :render_error
-    rescue_from Exceptions::AppException, :with => :render_app_error
+    rescue_from Exceptions::AppException, :with => :render_error
     rescue_from CanCan::AccessDenied, :with => :render_not_found
     rescue_from ActionController::RoutingError, :with => :render_not_found
     rescue_from ActionController::UnknownController, :with => :render_not_found
@@ -43,17 +43,12 @@ class ApplicationController < ActionController::Base
   private
 
   def render_not_found(exception)
-    handle_error(['Something went wrong', 'Please try again'], "/error/404.html.erb", :status => 404)
+    handle_error([t("errors.messages.exceptions.404")], "/error/404.html.erb", :status => 404)
   end
 
   def render_error(exception)
     logger.error(exception)
-    handle_error(['Something went wrong', 'Server Error'], "/error/500.html.erb", :status => 500)
-  end
-
-  def render_app_error(exception)
-    logger.error(exception)
-    handle_error(['Something went wrong', exception.message], "/error/500.html.erb", :status => 500)
+    handle_error([t("errors.messages.exceptions.500")], "/error/500.html.erb", :status => 500)
   end
   
   def handle_error(message, template, params)

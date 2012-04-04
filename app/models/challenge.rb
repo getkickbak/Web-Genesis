@@ -8,7 +8,7 @@ class Challenge
   property :description, String, :required => true, :default => ""
   property :require_verif, Boolean, :required => true, :default => false
   property :data, Object
-  property :points, Integer, :required => true
+  property :points, Integer, :required => true, :min => 1
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -25,10 +25,9 @@ class Challenge
   has n, :challenge_venues, :constraint => :destroy
   has n, :venues, :through => :challenge_venues
     
-  validates_presence_of :type_id, :on => :save  
+  validates_with_method :type_id, :method => :check_type_id
   validates_with_method :name, :method => :check_name
   validates_with_method :check_data
-  validates_with_method :points, :method => :check_points
   validates_with_method :check_venues
   
   def self.create(merchant, type, challenge_info, venues)
@@ -88,6 +87,13 @@ class Challenge
   
   private
   
+  def check_type_id
+    if self.type && self.type.id
+      return true  
+    end
+    return [false, I18n.t("errors.messages.challenge.type_blank")]
+  end
+  
   def check_name
     line_length = 10
     current_line_length = 0
@@ -95,7 +101,7 @@ class Challenge
     words = self.name.split
     words.each do |word|
       if word.length > line_length 
-        return [false, "Individual words cannot exceed 10 characters"]
+        return [false, I18n.t("errors.messages.challenge.name_min_word_length")]
       end
       current_line_length += word.length
       if current_line_length > line_length
@@ -104,7 +110,7 @@ class Challenge
       end
       current_line_length += 1
     end
-    num_of_lines <= 2 ? true : [false, "Name must fit within 2 lines with max 10 characters per line"]
+    num_of_lines <= 2 ? true : [false, I18n.t("errors.messages.challenge.name_max_num_of_lines")]
   end
   
   def check_data
@@ -123,17 +129,10 @@ class Challenge
     end
     return true
   end
-  
-  def check_points
-    if self.points.is_a? Integer
-      return self.points > 0 ? true : [false, "Points must be greater than 0"]  
-    end
-    return true
-  end
     
   def check_venues
     if self.venues.length == 0
-      return [false, "Must belong to at least one venue"]
+      return [false, I18n.t("errors.messages.challenge.min_venues")]
     end
     return true
   end

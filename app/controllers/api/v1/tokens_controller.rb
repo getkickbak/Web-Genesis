@@ -8,14 +8,14 @@ class Api::V1::TokensController < ApplicationController
     password = params[:password]
     
     if email.nil? or password.nil? 
-      render :json => { :success => false, :message => ["The request must contain the user email and password."] }
+      render :json => { :success => false, :message => [t("api.tokens.create_missing_info")] }
       return
     end
     
     @user = User.first(:email => email.downcase)
     
     if @user.nil?
-      render :json => { :success => false, :message => ["Invalid email or passoword."] }
+      render :json => { :success => false, :message => [t("api.tokens.create_invalid_info")] }
       return
     end
     
@@ -23,7 +23,7 @@ class Api::V1::TokensController < ApplicationController
     @user.save!
     
     if not @user.valid_password?(password) 
-      render :json => { :success => false, :message => ["Invalid email or passoword."] }
+      render :json => { :success => false, :message => [t("api.tokens.create_invalid_info")] }
     else
       start = params[:start].to_i
       max = params[:limit].to_i
@@ -57,9 +57,9 @@ class Api::V1::TokensController < ApplicationController
         @earn_prizes = EarnPrize.all(EarnPrize.user.id => @user.id, :redeemed => false)
         render :template => '/api/v1/tokens/create'
       rescue DataMapper::SaveFailureError => e
-        render :json => { :success => false }  
+        render :json => { :success => false, :message => [t("api.tokens.create_from_facebook_failure")] }  
       rescue
-        render :json => { :success => false }
+        render :json => { :success => false, :message => [t("api.tokens.create_from_facebook_failure")] }
       end
     end
   end
@@ -67,7 +67,7 @@ class Api::V1::TokensController < ApplicationController
   def destroy
     @user = User.first(:authentication_token => params[:id]) 
     if @user.nil?
-      render :json => { :success => false, :message => ["Invalid token."] }
+      render :json => { :success => false, :message => [t("api.tokens.destroy_failure")] }
     else
       @user.reset_authentication_token!
       render :json => { :success => true }

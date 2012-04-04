@@ -47,7 +47,7 @@ module Business
           end
           CustomerReward.create(current_merchant, type, params[:customer_reward], venues)
           respond_to do |format|
-            format.html { redirect_to customer_rewards_path(:notice => 'Reward was successfully created.') }
+            format.html { redirect_to customer_rewards_path(:notice => t("business.customer_rewards.create_success")) }
             #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
             #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
           end
@@ -90,7 +90,7 @@ module Business
             end
             @customer_reward.update(type, params[:customer_reward], venues)
             respond_to do |format|
-               format.html { redirect_to(:action => "show", :id => @customer_reward.id, :notice => 'Reward was successfully updated.') }
+               format.html { redirect_to(:action => "show", :id => @customer_reward.id, :notice => t("business.customer_rewards.update_success")) }
                #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
             #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
             end

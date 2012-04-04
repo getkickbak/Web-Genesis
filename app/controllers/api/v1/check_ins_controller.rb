@@ -22,7 +22,7 @@ class Api::V1::CheckInsController < ApplicationController
     if !Common.within_geo_distance?(params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => ["Something went wrong", "Outside of check-in distance.  Please try again."] } }
+        format.json { render :json => { :success => false, :message => [t("api.out_of_distance")] } }
       end
       return
     end
@@ -47,7 +47,7 @@ class Api::V1::CheckInsController < ApplicationController
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => ["Something went wrong", "Trouble completing the challenge.  Please try again."] } }
+          format.json { render :json => { :success => false, :message => [t("api.check_ins.create_failure")] } }
         end
       end
     end
