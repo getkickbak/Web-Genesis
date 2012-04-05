@@ -87,13 +87,14 @@ Genesis::Application.routes.draw do
   end
 
   constraints Domain do
-    devise_for :users, :path => "", :controllers => {
-      :sessions => "user_devise/sessions",
-      :registrations => "user_devise/registrations",
-      :passwords => "user_devise/passwords",
-    } do
-      match "/facebook_sign_in" => 'user_devise/sessions#create_from_facebook'
-    end
+    devise_for :users, :skip => [:sessions, :registrations, :passwords]
+    #devise_for :users, :path => "", :controllers => {
+    #  :sessions => "user_devise/sessions",
+    #  :registrations => "user_devise/registrations",
+    #  :passwords => "user_devise/passwords",
+    #} do
+    #  match "/facebook_sign_in" => 'user_devise/sessions#create_from_facebook'
+    #end
     
     namespace :api do
       namespace :v1  do

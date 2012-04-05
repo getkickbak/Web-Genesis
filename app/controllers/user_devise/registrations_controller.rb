@@ -1,14 +1,6 @@
 class UserDevise::RegistrationsController < Devise::RegistrationsController
   
-  def new
-    # Prevent users from registering using devise for now
-    raise ActionController::RoutingError.new("Not Found")
-  end
-  
   def create
-    # Prevent users from registering using devise for now
-    raise ActionController::RoutingError.new("Not Found")
-    
     User.transaction do |t|
       begin
         build_resource
@@ -43,25 +35,5 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
         end
       end
     end
-  end
-  
-  def edit
-    # Prevent users from registering using devise for now
-    raise ActionController::RoutingError.new("Not Found")
-  end
-  
-  def update
-    # Prevent users from registering using devise for now
-    raise ActionController::RoutingError.new("Not Found")
-  end
-  
-  def destroy
-    # Prevent users from registering using devise for now
-    raise ActionController::RoutingError.new("Not Found")
-  end
-  
-  def cancel
-    # Prevent users from registering using devise for now
-    raise ActionController::RoutingError.new("Not Found")
   end
 end 
