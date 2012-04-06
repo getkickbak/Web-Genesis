@@ -1,7 +1,7 @@
 module Admin
   class StaffDevise::RegistrationsController < Devise::RegistrationsController
     def create
-      Staff.transaction do |t|
+      Staff.transaction do
         begin
           build_resource
           resource[:role] = "admin"
@@ -18,7 +18,7 @@ module Admin
             respond_with resource, :location => after_inactive_sign_up_path_for(resource)
           end
         rescue StandardError => e
-          t.rollback
+          resource = e.resource
           clean_up_passwords(resource)
           respond_with resource
         end

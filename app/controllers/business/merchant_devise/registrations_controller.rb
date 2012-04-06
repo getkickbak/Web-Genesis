@@ -1,7 +1,7 @@
 module Business
   class MerchantDevise::RegistrationsController < Devise::RegistrationsController
     def create
-      Merchant.transaction do |t|
+      Merchant.transaction do
         begin
           build_resource
           merchant = Merchant.create(resource)
@@ -16,7 +16,7 @@ module Business
             respond_with resource, :location => after_inactive_sign_up_path_for(resource)
           end
         rescue StandardError => e
-          t.rollback
+          resoure = e.resource
           clean_up_passwords(resource)
           respond_with resource
         end
