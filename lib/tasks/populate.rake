@@ -56,7 +56,15 @@ namespace :db do
         APP_PROP["AMAZON_PHOTOS_BUCKET"],
         :copy_acl => true
       )
-      thumb_filenames = ["thumbnail_thai.jpg","thumbnail_chicken.jpg","thumbnail_burrito.jpg","thumbnail_salad.jpg","thumbnail_focaccia.jpg"]
+      thumb_filenames = ["thumbnail_ios_small_thai.jpg","thumbnail_ios_small_chicken.jpg","thumbnail_ios_small_burrito.jpg","thumbnail_ios_small_salad.jpg","thumbnail_ios_small_focaccia.jpg"]
+      thumb_filename = thumb_filenames[file_idx] 
+      AWS::S3::S3Object.copy(
+        thumb_filename,
+        "merchants/#{merchant.id}/#{thumb_filename}", 
+        APP_PROP["AMAZON_PHOTOS_BUCKET"],
+        :copy_acl => true
+      )
+      thumb_filenames = ["thumbnail_ios_medium_thai.jpg","thumbnail_ios_medium_chicken.jpg","thumbnail_ios_medium_burrito.jpg","thumbnail_ios_medium_salad.jpg","thumbnail_ios_medium_focaccia.jpg"]
       thumb_filename = thumb_filenames[file_idx] 
       AWS::S3::S3Object.copy(
         thumb_filename,
