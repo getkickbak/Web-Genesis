@@ -244,6 +244,11 @@ Ext.define('Genesis.controller.MainPage',
       //
       // Logout of Facebook
       //
+      var _fbLogout = function()
+      {
+         viewport.setFadeAnimation();
+         vport.onFeatureTap('MainPage', 'login');
+      }
       var _logout = function()
       {
          console.log("Logging out ...")
@@ -260,9 +265,17 @@ Ext.define('Genesis.controller.MainPage',
                   console.log("Logout Successful!")
                   vport.setLoggedIn(false);
                   fb.authToken = null;
-                  fb.currFbId = null;
-                  viewport.setFadeAnimation();
-                  vport.onFeatureTap('MainPage', 'login');
+                  if(fb.currFbId)
+                  {
+                     Genesis.constants.facebook_onLogout(function()
+                     {
+                        _fbLogout();
+                     });
+                  }
+                  else
+                  {
+                     _fbLogout();
+                  }
                }
             }
          });
@@ -309,6 +322,9 @@ Ext.define('Genesis.controller.MainPage',
       {
          this.loginCommon();
       }
+      //
+      // Login to Facebook
+      //
       Genesis.constants.fbLogin(function(params)
       {
          console.log("Logging into Kickbak using Facebook account ...");
