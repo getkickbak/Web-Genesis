@@ -132,7 +132,7 @@ Ext.define('Genesis.controller.Challenges',
                         if(response && response.responseCode)
                         {
                            var qrcode = response.responseCode;
-                           console.log("qrcode - " + qrcode);
+                           console.debug("qrcode - " + qrcode);
 
                            Challenge['setCompleteChallengeURL'](id);
                            Challenge.load(id,
@@ -166,7 +166,7 @@ Ext.define('Genesis.controller.Challenges',
                         }
                         else
                         {
-                           console.log("No QR Code Scanned!");
+                           console.debug("No QR Code Scanned!");
                            Ext.device.Notification.show(
                            {
                               title : 'Error',
@@ -185,13 +185,13 @@ Ext.define('Genesis.controller.Challenges',
       var me = this;
       var photoAction = me.getChallengePage().photoAction;
       var points = me.selectedItem.get('points');
-      console.log("image size =[" + imageBase64.length + " bytes]");
+      console.debug("image size =[" + imageBase64.length + " bytes]");
 
       //
       // To-do : Add the points to customer
       //
 
-      console.log("Points Earned = " + points + ' Pts');
+      console.debug("Points Earned = " + points + ' Pts');
 
       if(Genesis.constants.isNative())
       {
@@ -229,7 +229,7 @@ Ext.define('Genesis.controller.Challenges',
          }
          else
          {
-            console.log('Post ID - ' + response.id);
+            console.debug('Post ID - ' + response.id);
 
             Ext.device.Notification.show(
             {
@@ -245,7 +245,7 @@ Ext.define('Genesis.controller.Challenges',
    },
    onCameraErrorFn : function(message)
    {
-      console.log("onCameraErrorFn - message[" + message + "]");
+      console.debug("onCameraErrorFn - message[" + message + "]");
 
       Ext.device.Notification.show(
       {

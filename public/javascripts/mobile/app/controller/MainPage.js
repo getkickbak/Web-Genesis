@@ -380,7 +380,7 @@ Ext.define('Genesis.controller.MainPage',
                var prizes = metaData['prizes'];
                if(prizes)
                {
-                  console.log("Total Prizes - " + prizes.length);
+                  console.debug("Total Prizes - " + prizes.length);
                   for(var i = 0; i < prizes.length; i++)
                   {
                      //
@@ -398,7 +398,7 @@ Ext.define('Genesis.controller.MainPage',
                // Update Authentication Token
                //
                var authToken = metaData['auth_token'];
-               console.log("AuthToken - " + authToken)
+               console.debug("AuthToken - " + authToken)
                if(authToken)
                {
                   Genesis.constants.authToken = authToken;
@@ -410,7 +410,7 @@ Ext.define('Genesis.controller.MainPage',
                var rewards = metaData['eligible_rewards'];
                if(rewards)
                {
-                  console.log("Total Eligible Rewards - " + rewards.length);
+                  console.debug("Total Eligible Rewards - " + rewards.length);
                   var estore = Ext.StoreMgr.get('EligibleRewardsStore');
                   estore.setData(rewards);
                }

@@ -54,40 +54,6 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       this.callParent(arguments);
    },
-   login : function()
-   {
-      var profile = this.self.profile;
-
-      // initialize opening screen ...
-      // If Logged in, goto MainPage, otherwise, goto LoginPage
-      var successFn = function(response)
-      {
-         this.getViewPort().getMainPage();
-      };
-
-      Ext.Ajax.request(
-      {
-         url : Genesis.site + this.self.sign_in_path,
-         params :
-         {
-         },
-         success : successFn.createDelegate(this),
-         failure : function(response, opts)
-         {
-            if(Genesis.constants.isNative() && response.status == 0 && response.responseText != '')
-            {
-               successFn.call(this, response);
-            }
-            else
-            {
-               console.error('failed to complete request');
-               console.error('isNative:' + Genesis.constants.isNative());
-               console.error('response.status:' + response.status);
-               console.error('response.responseText:' + response.responseText);
-            }
-         }.createDelegate(this)
-      });
-   },
    getViewPortCntlr : function()
    {
       return this.getApplication().getController('Viewport');
@@ -141,34 +107,34 @@ Ext.define('Genesis.controller.ControllerBase',
       else
       {
          var networkState = navigator.network.connection.type;
-         console.log('Checking Connectivity Type ...[' + networkState + ']');
-         console.log('Connection type: [' + Genesis.controller.ControllerBase.connection[networkState] + ']');
-         //console.log('Checking for Network Conncetivity for [' + location.origin + ']');
+         console.debug('Checking Connectivity Type ...[' + networkState + ']');
+         console.debug('Connection type: [' + Genesis.controller.ControllerBase.connection[networkState] + ']');
+         //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
 
-         console.log('Getting GeoLocation ...');
+         console.debug('Getting GeoLocation ...');
          navigator.geolocation.getCurrentPosition(function(position)
          {
-            console.log('\n' + 'Latitude: ' + position.coords.latitude + '\n' + 'Longitude: ' + position.coords.longitude + '\n' + 'Altitude: ' + position.coords.altitude + '\n' + 'Accuracy: ' + position.coords.accuracy + '\n' + 'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '\n' + 'Heading: ' + position.coords.heading + '\n' + 'Speed: ' + position.coords.speed + '\n' + 'Timestamp: ' + new Date(position.timestamp) + '\n');
+            console.debug('\n' + 'Latitude: ' + position.coords.latitude + '\n' + 'Longitude: ' + position.coords.longitude + '\n' + 'Altitude: ' + position.coords.altitude + '\n' + 'Accuracy: ' + position.coords.accuracy + '\n' + 'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '\n' + 'Heading: ' + position.coords.heading + '\n' + 'Speed: ' + position.coords.speed + '\n' + 'Timestamp: ' + new Date(position.timestamp) + '\n');
 
             callback(position);
          }, function(error)
          {
-            console.log('GeoLocation Error[' + error.message + ']');
+            console.debug('GeoLocation Error[' + error.message + ']');
             switch (error.code)
             {
                case PositionError.PERMISSION_DENIED:
                {
-                  console.log("PERMISSION_DENIED");
+                  console.debug("PERMISSION_DENIED");
                   break;
                }
                case PositionError.POSITION_UNAVAILABLE:
                {
-                  console.log("PERMISSION_UNAVAILABLE");
+                  console.debug("PERMISSION_UNAVAILABLE");
                   break;
                }
                case PositionError.TIMEOUT:
                {
-                  console.log("TIMEOUT");
+                  console.debug("TIMEOUT");
                   break;
                }
             }
@@ -185,15 +151,15 @@ Ext.define('Genesis.controller.ControllerBase',
       var fail = function(message)
       {
          config.callback();
-         console.log('Failed because: ' + ftError[message.code]);
+         console.debug('Failed because: ' + ftError[message.code]);
       };
       var callback = function(r)
       {
          config.callback(r.response);
-         console.log("Code = " + r.response.responseCode + " Sent = " + r.bytesSent + " bytes");
+         console.debug("Code = " + r.response.responseCode + " Sent = " + r.bytesSent + " bytes");
       };
 
-      console.log("Scanning QR Code ...")
+      console.debug("Scanning QR Code ...")
       if(!Genesis.constants.isNative())
       {
          //

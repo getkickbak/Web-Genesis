@@ -161,7 +161,7 @@ Ext.define('Genesis.navigation.Bar',
                   }
                }
             });
-            console.log("Toolbar set to Slide Transition");
+            console.debug("Toolbar set to Slide Transition");
             break;
          }
          case 'fade' :
@@ -187,11 +187,11 @@ Ext.define('Genesis.navigation.Bar',
                   }
                }
             });
-            console.log("Toolbar set to Fade Transition");
+            console.debug("Toolbar set to Fade Transition");
             break;
          }
          default :
-            console.log('Unkown Special Effect - [' + me.getMode() + ']');
+            console.debug('Unkown Special Effect - [' + me.getMode() + ']');
             animation = me.getLayout().getAnimation();
             break;
       }
@@ -465,9 +465,6 @@ Ext.define('Genesis.navigation.Bar',
       {
       };
    },
-   //
-   // Set "this" as Ext.fx.layout.card.* object
-   //
    onActiveItemChange : function(view, newItem, oldItem, options, controller)
    {
       var me = this, animation, layout = me.getLayout();

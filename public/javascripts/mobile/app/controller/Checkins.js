@@ -95,7 +95,7 @@ Ext.define('Genesis.controller.Checkins',
       }
       else
       {
-         console.log("Google Maps API cannot be instantiated");
+         console.debug("Google Maps API cannot be instantiated");
       }
       //
       // Store storing the Venue checked-in / Explore
@@ -149,13 +149,13 @@ Ext.define('Genesis.controller.Checkins',
                      });
 
                      var qrcode = response.responseCode || '';
-                     console.log("qrcode - " + qrcode);
+                     console.debug("qrcode - " + qrcode);
                      // Retrieve GPS Coordinates
                      me.onCheckinCommonTap(b, e, eOpts, mode, url, qrcode, me.getPosition(), callback);
                   }
                   else
                   {
-                     console.log("No QR Code Scanned!");
+                     console.debug("No QR Code Scanned!");
                      Ext.device.Notification.show(
                      {
                         title : 'Warning',
@@ -288,7 +288,7 @@ Ext.define('Genesis.controller.Checkins',
             center : this.latLng,
             title : record.get('name')
          }
-         console.log("Cannot Retrieve Google Map Information.");
+         console.debug("Cannot Retrieve Google Map Information.");
       }
 
       this.setVenueInfo(record, null);
@@ -327,7 +327,7 @@ Ext.define('Genesis.controller.Checkins',
       //if(!gm)
       {
          //this.onMapWidthChange(map);
-         //console.log("Cannot load Google Maps");
+         //console.debug("Cannot load Google Maps");
       }
    },
    onActivate : function()
@@ -392,7 +392,7 @@ Ext.define('Genesis.controller.Checkins',
       var pvenueId = page.venue ? page.venue.getId() : null;
       var venueId = (Genesis.constants.isNative()) ? pvenueId : qrcode;
 
-      console.log("CheckIn - auth_code:'" + qrcode + "' venue_id:'" + venueId + "'");
+      console.debug("CheckIn - auth_code:'" + qrcode + "' venue_id:'" + venueId + "'");
       var showErrorMsg = function(mode)
       {
          var msg;
@@ -449,7 +449,7 @@ Ext.define('Genesis.controller.Checkins',
                   customer = cstore.getById(customerId);
 
                   // Find Matching Venue or pick the first one returned if no venueId is set
-                  console.log("CheckIn - pvenueId:'" + pvenueId + "' venue_id:'" + venueId + "'");
+                  console.debug("CheckIn - pvenueId:'" + pvenueId + "' venue_id:'" + venueId + "'");
                   if((pvenueId == venueId) || (pvenueId == null))
                   {
                      //
@@ -458,7 +458,7 @@ Ext.define('Genesis.controller.Checkins',
                      var crecord = custore.getById(customerId);
                      if(crecord != null)
                      {
-                        console.log("CheckIn - points:'" + points + "'");
+                        console.debug("CheckIn - points:'" + points + "'");
                         crecord.set('points', points);
                         crecord.setLastCheckin(record.getLastCheckin());
                      }
@@ -488,7 +488,7 @@ Ext.define('Genesis.controller.Checkins',
 
                if(callback)
                {
-                  console.log("CheckIn - Done");
+                  console.debug("CheckIn - Done");
                   callback();
                }
             }
