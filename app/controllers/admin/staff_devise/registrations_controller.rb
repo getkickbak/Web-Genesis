@@ -1,7 +1,7 @@
 module Admin
   class StaffDevise::RegistrationsController < Devise::RegistrationsController
     def create
-      #Staff.transaction do
+      Staff.transaction do
         begin
           build_resource
           resource[:role] = "admin"
@@ -25,7 +25,7 @@ module Admin
           clean_up_passwords(resource)
           respond_with resource
         end
-      #end
+      end
     end
   end
 end
