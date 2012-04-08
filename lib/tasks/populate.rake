@@ -96,7 +96,7 @@ namespace :db do
           :zipcode => Faker::Address.zip_code,
           :country => "Canada",
           :phone => Faker::PhoneNumber.phone_number,
-          :website => "www.sample.com",
+          :website => "http://www.sample.com",
           :latitude => 43.649546,
           :longitude => -79.376982
         })
