@@ -51,6 +51,8 @@ class Api::V1::TokensController < ApplicationController
           }
           @user.profile.update(profile_info)
         end      
+        @user.ensure_authentication_token!
+        @user.save!
         start = params[:start].to_i
         max = params[:limit].to_i
         @results = Customer.find(@user.id, start, max)
