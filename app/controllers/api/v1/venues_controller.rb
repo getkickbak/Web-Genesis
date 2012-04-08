@@ -14,6 +14,7 @@ class Api::V1::VenuesController < ApplicationController
       @rewards.each do |reward|
         item = EligibleReward.new(
           reward.id,
+          reward.type.value,
           reward.title,
           (@customer.points - reward.points).abs
         )
