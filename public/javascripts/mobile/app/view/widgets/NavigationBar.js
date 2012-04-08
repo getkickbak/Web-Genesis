@@ -172,7 +172,6 @@ Ext.define('Genesis.navigation.Bar',
                {
                   'animationend' : function()
                   {
-                     var me = this;
                      if(me.elementGhost)
                      {
                         me.elementGhost.destroy();

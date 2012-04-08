@@ -197,7 +197,7 @@ Ext.define('Genesis.controller.Viewport',
       if(viewport.getVenue().getId() != cvenue.getId())
       {
          // Restore Merchant Info
-         ccntlr.setupCheckinInfo(cvenue, ccustomer, cmetaData);
+         ccntlr.setupCheckinInfo('checkin', cvenue, ccustomer, cmetaData);
       }
 
       console.log("Going to Merchant Home Account Page ...");
