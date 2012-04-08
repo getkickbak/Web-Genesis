@@ -10,12 +10,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
   
   def earn
     @venue = Venue.first(:id => params[:venue_id], Venue.merchant.id => params[:merchant_id]) || not_found
-    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
-    new_customer = false
-    if @customer.nil?
-      @customer = Customer.create(@venue.merchant,current_user)        
-      new_customer = true
-    end
+    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
     if !Common.within_geo_distance?(params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
@@ -31,16 +26,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         @prize = nil
         if @venue.authorization_codes.first(:auth_code => params[:auth_code]) || APP_PROP["DEBUG_MODE"]
           now = Time.now
-          challenge = Challenge.first(:type => 'referral', :venues => Venue.all(:id => params[:venue_id]))
-          if challenge && new_customer
-            referral_challenge = ReferralChallenge.first(ReferralChallenge.merchant.id => @venue.merchant.id, :ref_email => current_user.email)
-            if referral_challenge
-              referral_customer = Customer.first(Customer.merchant.id => @venue.merchant.id, :user_id => referral_challenge.user.id)
-              referral_customer.points += challenge.points
-              referral_customer.save
-            end
-          end
-          challenge = Challenge.first(:type => 'vip', :venues => Venue.all(:id => params[:venue_id]))
+          challenge = Challenge.first(:type => 'vip', :venues => Venue.all(:id => @venue.id))
           @vip_challenge = false
           @vip_points = 0
           if challenge && vip_challenge_met?(challenge)
