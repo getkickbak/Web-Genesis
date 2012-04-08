@@ -540,12 +540,12 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                container.setActiveItem(2);
                anim.enable();
 
-               console.log("response - " + response);
+               console.debug("response - " + response);
                me.earnPts();
             }
             else
             {
-               console.log("response - NONE");
+               console.debug("response - NONE");
                Ext.device.Notification.show(
                {
                   title : 'Error',

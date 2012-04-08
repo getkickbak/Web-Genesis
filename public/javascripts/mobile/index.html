@@ -107,6 +107,7 @@
 
          function appInit()
          {
+            console.debug = console.debug || console.log;
             console.log("appInit - start");
             if( typeof Cordova == 'undefined')
                Ext.device.Notification.show(

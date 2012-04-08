@@ -276,18 +276,18 @@ Genesis.constants =
    fbLogin : function(cb)
    {
       var fb = Genesis.constants;
-      console.log("Logging into Facebook ...");
+      console.debug("Logging into Facebook ...");
       FB.login(function(response)
       {
          if((response.status == 'connected') && response.authResponse)
          {
-            console.log("Logged into Facebook!");
+            console.debug("Logged into Facebook!");
             fb.access_token = response.authResponse.accessToken;
             fb.facebook_loginCallback(cb);
          }
          else
          {
-            console.log("Login Failed! ...");
+            console.debug("Login Failed! ...");
             Ext.device.Notification.show(
             {
                title : 'Facebook Connect',
@@ -356,7 +356,7 @@ Genesis.constants =
    facebook_loginCallback : function(cb)
    {
       var fb = Genesis.constants;
-      console.log("Retrieving Facebook profile information ...");
+      console.debug("Retrieving Facebook profile information ...");
 
       Ext.Viewport.setMasked(
       {
@@ -541,7 +541,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          }
          catch(e)
          {
-            console.log('Ajax call is failed message=[' + e.message + '] url=[' + request.getUrl() + ']');
+            console.debug('Ajax call is failed message=[' + e.message + '] url=[' + request.getUrl() + ']');
             operation.setException(operation,
             {
                status : null,
@@ -561,7 +561,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
       }
       else
       {
-         console.log('Ajax call is failed status=[' + response.status + '] url=[' + request.getUrl() + ']');
+         console.debug('Ajax call is failed status=[' + response.status + '] url=[' + request.getUrl() + ']');
          me.setException(operation, response);
          /**
           * @event exception
