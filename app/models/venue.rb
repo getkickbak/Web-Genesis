@@ -11,7 +11,7 @@ class Venue
   property :zipcode, String, :required => true, :default => ""
   property :country, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
-  property :website, String, :required => true, :default => ""
+  property :website, String, :required => true, :default => "", :format => :url 
   # Disable auto-validation http://j.mp/gMORhy 
   property :photo, String, :auto_validation => false
   property :latitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0

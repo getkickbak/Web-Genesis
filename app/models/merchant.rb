@@ -12,8 +12,8 @@ class Merchant
           
   property :id, Serial
   property :name, String, :length => 24, :required => true, :default => ""
-  property :email, String, :required => true, :unique => true,
-            :format => :email_address
+  property :email, String, :unique_index => true, :required => true, 
+            :format => :email_address, :default => ""
   # Disable auto-validation http://j.mp/gMORhy 
   property :photo, String, :auto_validation => false
   property :alt_photo, String, :auto_validation => false           

@@ -15,8 +15,11 @@ module Business
             expire_session_data_after_sign_in!
             respond_with resource, :location => after_inactive_sign_up_path_for(resource)
           end
+        rescue DataMapper::SaveFailureError => e
+          resource = e.resource
+          clean_up_passwords(resource)
+          respond_with resource
         rescue StandardError => e
-          resoure = e.resource
           clean_up_passwords(resource)
           respond_with resource
         end
