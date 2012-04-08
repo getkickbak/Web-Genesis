@@ -8,7 +8,11 @@ Ext.define('Genesis.navigation.Bar',
       altBackButtonText : 'Close',
       mode : 'slide',
       callbackFn : Ext.emptyFn,
-      hideNavBar : true
+      //layout : 'card',
+      listeners :
+      {
+         'activeitemchange' : 'onActiveItemChange'
+      }
    },
    /**
     * @private
@@ -53,7 +57,7 @@ Ext.define('Genesis.navigation.Bar',
          //if(this.backButtonStack.length > 1)
          if(view.getInnerItems().length > 1)
          {
-            me.pushTbAnimated(me.getBackButtonText(), this.controller);
+            me.pushTbAnimated(item, me.getBackButtonText());
          }
          else
          {
@@ -72,16 +76,12 @@ Ext.define('Genesis.navigation.Bar',
          //if(this.backButtonStack.length > 1)
          if(view.getInnerItems().length > 1)
          {
-            me.pushTb(me.getBackButtonText());
+            me.pushTb(item, me.getBackButtonText());
          }
          else
          {
             //this.popBackButton(this.getBackButtonText());
          }
-      }
-      if(me.getHideNavBar())
-      {
-         me.hide();
       }
       me.getCallbackFn()();
    },
@@ -111,86 +111,104 @@ Ext.define('Genesis.navigation.Bar',
       me.setMode(view.getFadeMode() ? 'fade' : 'slide');
       if(animation && animation.isAnimation && view.isPainted() && me.elementGhost)
       {
-         me.popTbAnimated(me.getBackButtonText(), this.controller);
+         me.popTbAnimated(item, me.getBackButtonText());
       }
       else
       {
-         me.popTb(me.getBackButtonText());
+         me.popTb(item, me.getBackButtonText());
       }
       me.titleComponent.setTitle(me.getTitleText());
-      if(me.getHideNavBar())
-      {
-         me.hide();
-      }
       me.getCallbackFn()();
    },
    /**
     * Calculates and returns the position values needed for the back button when you are pushing a title.
     * @private
     */
-   getTbAnimationProperties : function()
+   getTbAnimationProperties : function(view)
    {
-      var me = this, element = me.renderElement;
+      var me = this, element = me.renderElement, animation, layout = me.getLayout();
+      if(me.slideAnimation)
+      {
+         me.slideAnimation.destroy();
+      }
+      if(me.fadeAnimation)
+      {
+         me.fadeAnimation.destroy();
+      }
       switch (me.getMode())
       {
          case 'slide' :
          {
-            if(!me.slideAnimation)
+            me.slideAnimation = animation = new Ext.fx.layout.card.Slide(
             {
-               me.slideAnimation = new Ext.fx.layout.card.Slide(
+               direction : 'left',
+               listeners :
                {
-                  direction : 'left'
-               });
-               me.slideAnimation.getOutAnimation().on('animationend', function()
-               {
-                  me.elementGhost.destroy();
-                  delete me.elementGhost;
-                  /*
-                   if(!title)
-                   {
-                   backButton.setText(null);
-                   }
-                   */
-                  me.getCallbackFn()();
-               }, me);
-            }
-            me.slideAnimation.setReverse(false);
-            return me.slideAnimation;
+                  'animationend' : function()
+                  {
+                     if(me.elementGhost)
+                     {
+                        me.elementGhost.destroy();
+                        delete me.elementGhost;
+                        /*
+                         if(!title)
+                         {
+                         backButton.setText(null);
+                         }
+                         */
+                        me.getCallbackFn()();
+                     }
+                  }
+               }
+            });
+            console.log("Toolbar set to Slide Transition");
+            break;
          }
          case 'fade' :
          {
-            if(!me.fadeAnimation)
+            me.fadeAnimation = animation = new Ext.fx.layout.card.Fade(
             {
-               me.fadeAnimation = new Ext.fx.layout.card.Fade();
-               me.fadeAnimation.getOutAnimation().on('animationend', function()
+               listeners :
                {
-                  me.elementGhost.destroy();
-                  delete me.elementGhost;
-                  /*
-                   if(!title)
-                   {
-                   backButton.setText(null);
-                   }
-                   */
-                  me.getCallbackFn()();
-               }, me);
-            }
-            me.fadeAnimation.setReverse(false);
-            return me.fadeAnimation;
+                  'animationend' : function()
+                  {
+                     var me = this;
+                     if(me.elementGhost)
+                     {
+                        me.elementGhost.destroy();
+                        delete me.elementGhost;
+                        /*
+                         if(!title)
+                         {
+                         backButton.setText(null);
+                         }
+                         */
+                        me.getCallbackFn()();
+                     }
+                  }
+               }
+            });
+            console.log("Toolbar set to Fade Transition");
+            break;
          }
          default :
             console.log('Unkown Special Effect - [' + me.getMode() + ']');
-            return me.getLayout().getAnimation();
+            animation = me.getLayout().getAnimation();
+            break;
       }
+      animation.setReverse(false);
+      animation.setLayout(layout);
+      layout.setAnimation(animation);
+      return animation;
 
    },
    /**
     * Calculates and returns the position values needed for the back button when you are popping a title.
     * @private
     */
-   getTbAnimationReverseProperties : function()
+   getTbAnimationReverseProperties : function(view)
    {
-      var rc = this.getTbAnimationProperties();
+      var rc = this.getTbAnimationProperties(view);
       rc.setReverse(true);
       return rc;
    },
@@ -198,7 +216,7 @@ Ext.define('Genesis.navigation.Bar',
     * Pushes a back button into the bar with no animations
     * @private
     */
-   pushTb : function(title)
+   pushTb : function(view, title)
    {
       var me = this;
       var proxy = me.getNavigationBarProxyProperties();
@@ -212,18 +230,19 @@ Ext.define('Genesis.navigation.Bar',
       {
          backButton.setWidth(buttonTo.width);
       }
+      me[(!view.getHideNavBar()) ? 'show':'hide']();
    },
    /**
     * Pushes a new back button into the bar with animations
     * @private
     */
-   pushTbAnimated : function(title, controller)
+   pushTbAnimated : function(view, title)
    {
       var me = this;
       var done = 0;
 
       var backButton = me.getBackButton(), previousTitle = backButton.getText();
-      var properties = me.getTbAnimationProperties();
+      var properties = me.getTbAnimationProperties(view);
       var proxy = me.getNavigationBarProxyProperties();
 
       //animate the backButton, which always has the new title
@@ -237,17 +256,17 @@ Ext.define('Genesis.navigation.Bar',
          backButton.setWidth(buttonTo.width);
       }
 
-      me.onActiveItemChange.call(properties, null, me,
+      me.fireEvent('activeitemchange', view, me,
       {
          renderElement : me.elementGhost,
          isPainted : me.isPainted
-      }, null, controller);
+      });
    },
    /**
     * Pops the back button with no animations
     * @private
     */
-   popTb : function(title)
+   popTb : function(view, title)
    {
       var me = this, backButton = me.getBackButton();
       var proxy = this.getNavigationBarProxyProperties();
@@ -271,19 +290,20 @@ Ext.define('Genesis.navigation.Bar',
       {
          backButton.setWidth(buttonTo.width);
       }
+      me[(!view.getHideNavBar()) ? 'show':'hide']();
    },
    /**
     * Pops the current back button with animations.
     * It will automatically know whether or not it should show the previous backButton or not. And proceed accordingly
     * @private
     */
-   popTbAnimated : function(title, controller)
+   popTbAnimated : function(view, title)
    {
       var me = this;
 
       var element = me.element, renderElement = me.renderElement, backButton = me.getBackButton();
       var previousTitle = backButton.getText();
-      var properties = me.getTbAnimationReverseProperties();
+      var properties = me.getTbAnimationReverseProperties(view);
       var proxy = this.getNavigationBarProxyProperties();
 
       //update the back button, and make sure it is visible
@@ -303,11 +323,11 @@ Ext.define('Genesis.navigation.Bar',
          backButton.setWidth(buttonTo.width);
       }
 
-      me.onActiveItemChange.call(properties, null, me,
+      me.fireEvent('activeitemchange', view, me,
       {
          renderElement : me.elementGhost,
          isPainted : me.isPainted
-      }, null, controller);
+      });
    },
    /**
     * This creates a proxy of the whole navigation bar and positions it out of the view.
@@ -413,8 +433,9 @@ Ext.define('Genesis.navigation.Bar',
     * The createNavigationBarProxy method uses this to create proxies of the backButton and the title elements.
     * @private
     */
-   createProxy : function(component, useParent)
+   createProxy : function(container, component, view, useParent)
    {
+      var me = this;
       var element = (useParent) ? component.element.getParent() : component.element, ghost = Ext.get(element.id + '-proxy');
 
       if(!ghost)
@@ -434,6 +455,7 @@ Ext.define('Genesis.navigation.Bar',
          ghost.setWidth(element.getWidth());
          ghost.dom.style.setProperty('z-index', 1, 'important');
       }
+      me[!Ext.isEmpty(view.getHideNavBar) ? (view.getHideNavBar() ? 'hide' : 'show') : 'show']();
 
       return ghost;
    },
@@ -447,8 +469,49 @@ Ext.define('Genesis.navigation.Bar',
    //
    // Set "this" as Ext.fx.layout.card.* object
    //
-   onActiveItemChange : function(cardLayout, newItem, oldItem, options, controller)
+   onActiveItemChange : function(view, newItem, oldItem, options, controller)
    {
-      Ext.fx.layout.card.Style.prototype.onActiveItemChange.call(this, cardLayout, newItem, oldItem, options, controller);
+      var me = this, animation, layout = me.getLayout();
+      var inAnimation = layout.getAnimation().getInAnimation(), outAnimation = layout.getAnimation().getOutAnimation(), inElement, outElement;
+
+      if(newItem && oldItem && oldItem.isPainted())
+      {
+         inElement = newItem.renderElement;
+         outElement = oldItem.renderElement;
+
+         //
+         // Hide MenuBar?
+         //
+         inAnimation.setOut(!Ext.isEmpty(view.getHideNavBar) && view.getHideNavBar());
+         //
+         //
+         //
+         inAnimation.setElement(inElement);
+         outAnimation.setElement(outElement);
+
+         outAnimation.setOnBeforeEnd(function(element, interrupted)
+         {
+            if(interrupted || Ext.Animator.hasRunningAnimations(element))
+            {
+               controller.firingArguments[1] = null;
+               controller.firingArguments[2] = null;
+            }
+         });
+         outAnimation.setOnEnd(function()
+         {
+            controller.resume();
+         });
+         inElement.dom.style.setProperty('visibility', 'hidden', '!important');
+         if(Ext.isEmpty(view.getHideNavBar) || !view.getHideNavBar())
+         {
+            newItem.show();
+         }
+         me.activeAnimations = [outAnimation, inAnimation];
+         Ext.Animator.run(me.activeAnimations);
+         controller.pause();
+      }
+      //Ext.fx.layout.card.Style.prototype.onActiveItemChange.apply(this, arguments);
+
+      return animation;
    }
 });

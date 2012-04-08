@@ -33,17 +33,16 @@ Ext.define('Genesis.view.CheckinExplore',
          {
             xclass : 'Ext.plugin.PullRefresh',
             //pullRefreshText: 'Pull down for more new Tweets!',
-            refreshFn : function(callback, plugin)
+            refreshFn : function(plugin)
             {
-               var store = plugin.getList().getStore();
-               store.removeAll();
-               // call the plugins processComplete method to hide the 'loading' indicator
-               store.on('load', callback, plugin,
+               var controller = _application.getController('Checkins');
+               _application.dispatch(
                {
-                  single : true
+                  action : 'onExploreLoad',
+                  args : [],
+                  controller : controller,
+                  scope : controller
                });
-               // do whatever needs to happen for reload
-               store.load();
             }
          }]
       },

@@ -61,7 +61,15 @@ Ext.define('Genesis.model.Customer',
          {
             read : (!debugMode) ? 'POST' : 'GET'
          });
-         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/facebook_sign_in' : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/tokens/create_from_facebook' : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+      },
+      setUpdateFbLoginUrl : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/account/update_facebook_info');
       },
       setLoginUrl : function()
       {
@@ -77,7 +85,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'DELETE'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/tokens');
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/tokens/' + Genesis.constants.authToken);
       },
       setCreateAccountUrl : function()
       {
@@ -85,7 +93,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : (!debugMode) ? 'POST' : 'GET'
          });
-         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/sign_up' : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/sign_up' : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
       },
       setVenueScanCheckinUrl : function()
       {

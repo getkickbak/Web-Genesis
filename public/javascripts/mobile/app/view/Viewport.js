@@ -6,7 +6,6 @@ Ext.define('Genesis.view.Viewport',
    config :
    {
       fadeMode : false,
-      hideNavBar : false,
       enableAnim : true,
       autoDestroy : false,
       cls : 'viewport bgImage',
@@ -202,22 +201,17 @@ Ext.define('Genesis.view.Viewport',
       this.fadeAnimation =
       {
          type : 'fade',
-         outAnimation :
+         listeners :
          {
-            preserveEndState : false,
-            replacePrevious : true,
-            listeners :
-            {
-               scope : this,
-               animationend : 'resetFadeAnimation'
-            }
+            scope : this,
+            animationend : 'resetFadeAnimation'
          }
       };
 
       this.callParent(arguments);
 
       var layout = this.getLayout(), defaultAnimation = layout.getAnimation();
-      defaultAnimation.getOutAnimation().on('animationend', 'resetAnimation', this);
+      defaultAnimation.on('animationend', 'resetAnimation', this);
 
    },
    // @private
@@ -247,7 +241,7 @@ Ext.define('Genesis.view.Viewport',
    resetAnimation : function()
    {
       var xtypes = this.getActiveItem().getXTypes();
-      if(this.getFadeMode())
+      //if(this.getFadeMode())
       {
          var defaultAnimation = this.getLayout().getAnimation(0);
          defaultAnimation.getInAnimation().setDirection(this.defaultInAnimationDir);
@@ -267,13 +261,13 @@ Ext.define('Genesis.view.Viewport',
             this.defaultOutAnimationDir = defaultAnimation.getOutAnimation().getDirection();
             defaultAnimation.getInAnimation().setDirection(dir);
             defaultAnimation.getOutAnimation().setDirection(dir);
-            this.setFadeMode(true);
+            this.setFadeMode(dir == 'up');
          }
       }
    },
    resetFadeAnimation : function()
    {
-      if(this.getFadeMode())
+      //if(this.getFadeMode())
       {
          var layout = this.getLayout();
          layout.setAnimation(this.defaultAnimation);
@@ -303,15 +297,17 @@ Ext.define('Genesis.view.Viewport',
          animation.setReverse(true);
 
          var bar = me.getNavigationBar();
-         bar.elementGhost = bar.createProxy(bar);
+         bar.elementGhost = bar.createProxy(me, bar, view);
       }
 
       me.setActiveItem(view);
       me.getNavigationBar().onViewRemove(me, view, null);
-      if(animation && animation.isAnimation)
-      {
-         animation.setReverse(false);
-      }
+      /*
+       if(animation && animation.isAnimation)
+       {
+       animation.setReverse(false);
+       }
+       */
       return view;
    },
    /**
@@ -328,13 +324,11 @@ Ext.define('Genesis.view.Viewport',
     * @param {Object} view The view to push
     * @return {Ext.Component} The new item you just pushed
     */
-   push : function(view, controller)
+   push : function(view)
    {
       var me = this;
       var animation = me.getLayout().getAnimation();
       var bar = me.getNavigationBar();
-      //bar.controller = controller || this.getEventDispatcher().controller;
-      bar.controller = this.getEventDispatcher().controller;
 
       // Default Title
       if((me.stack.length == 0) && (!bar.titleComponent.getTitle()))
@@ -344,7 +338,8 @@ Ext.define('Genesis.view.Viewport',
 
       if(animation && animation.isAnimation && me.getEnableAnim())
       {
-         bar.elementGhost = bar.createProxy(bar);
+         animation.setReverse(false);
+         bar.elementGhost = bar.createProxy(me, bar, view);
       }
 
       if(me.getInnerItems().indexOf(view) < 0)
@@ -471,23 +466,21 @@ Ext.define('Genesis.view.Viewport',
 
       return false;
    },
-   pop : function(count, controller)
+   pop : function(count)
    {
-      var bar = this.getNavigationBar();
-      //bar.controller = controller || this.getEventDispatcher().controller;
-      bar.controller = this.getEventDispatcher().controller;
-      this.callParent(arguments);
+      var me = this;
+      var bar = me.getNavigationBar();
+      me.callParent(arguments);
    },
    /**
     * Resets the view by removing all items
     */
-   reset : function(controller)
+   reset : function()
    {
       var me = this;
       //var count = me.getInnerItems().length;
       var count = me.stack.length;
 
-      //this.pop(count, controller.getEventDispatcher().controller || this.getEventDispatcher().controller);
       this.pop(count);
    }
 });

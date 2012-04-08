@@ -231,10 +231,8 @@ Genesis.constants =
                buttons : ['Relogin', 'Cancel'],
                callback : function(button)
                {
-                  fb._fb_disconnect();
-                  FB.logout(function()
+                  Genesis.constants.facebook_onLogout(function()
                   {
-                     //FB.Auth.setAuthResponse(null, 'unknown');
                      if(button == "Relogin")
                      {
                         fb.fbLogin(cb);
@@ -258,8 +256,13 @@ Genesis.constants =
          fb._fb_disconnect();
          FB.logout(function(response)
          {
+            fb.authToken = null;
+            fb.currFbId = null;
             //FB.Auth.setAuthResponse(null, 'unknown');
-            fb.fbLogin(cb);
+            if(cb)
+            {
+               cb()
+            };
          });
       }
       catch(e)
@@ -284,10 +287,15 @@ Genesis.constants =
          else
          {
             console.log("Login Failed! ...");
+            Ext.device.Notification.show(
+            {
+               title : 'Facebook Connect',
+               message : 'Failed to login to Facebook!'
+            });
          }
       },
       {
-         scope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions,user_photos'
+         scope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions'
       });
    },
    facebook_onLogin : function(cb)
@@ -321,11 +329,8 @@ Genesis.constants =
                   buttons : ['OK', 'Cancel'],
                   callback : function(button)
                   {
-                     // Logout to relogin for later
-                     fb._fb_disconnect();
-                     FB.logout(function(response)
+                     Genesis.constants.facebook_onLogout(function()
                      {
-                        //FB.Auth.setAuthResponse(null, 'unknown');
                         if(button == "OK")
                         {
                            fb.fbLogin(cb);
@@ -365,7 +370,10 @@ Genesis.constants =
          if(facebook_id == null)
          {
             // Session Expired? Login again
-            facebook_onLogout(cb);
+            Genesis.constants.facebook_onLogout(function()
+            {
+               fb.fbLogin(cb);
+            });
             return;
          }
 
@@ -378,8 +386,9 @@ Genesis.constants =
             {
                name : response.name,
                email : response.email,
-               faebook_id : facebook_id,
-               faecbook_uid : response.username,
+               facebook_email : response.email,
+               facebook_id : facebook_id,
+               facebook_uid : response.username,
                gender : (response.gender == "male") ? "m" : "f",
                birthday : birthday,
                photoURL : 'http://graph.facebook.com/' + facebook_id + '/picture?type=square'
@@ -502,6 +511,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   vport.onFeatureTap('MainPage', 'login');
                }
                /*
+
 
                else
 

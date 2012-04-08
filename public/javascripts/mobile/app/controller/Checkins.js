@@ -185,11 +185,9 @@ Ext.define('Genesis.controller.Checkins',
    // --------------------------------------------------------------------------
    // CheckinExplore Page
    // --------------------------------------------------------------------------
-   onExploreActivate : function()
+   onExploreLoad : function()
    {
       var me = this;
-      var viewport = me.getViewPortCntlr();
-
       me.getGeoLocation(function(position)
       {
          me.setPosition(position);
@@ -204,12 +202,19 @@ Ext.define('Genesis.controller.Checkins',
             {
                if(operation.wasSuccessful())
                {
-                  me.getCheckInNowBar().setDisabled(true);
+                  me.getCheckInNowBar().setDisabled(false);
                }
             },
-            scope : this
+            scope : me
          });
       });
+   },
+   onExploreActivate : function()
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+
+      me.onExploreLoad();
       switch (me.mode)
       {
          case 'checkin':

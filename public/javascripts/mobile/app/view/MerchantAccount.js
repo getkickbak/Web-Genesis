@@ -167,12 +167,12 @@ Ext.define('Genesis.view.MerchantAccount',
                {
                   if(!values.photo)
                   {
-                     return Genesis.view.MerchantAccount.getPhoto(values.type);
+                     return Genesis.view.Rewards.getPhoto(
+                     {
+                        value : values['reward_type']
+                     });
                   }
-                  else
-                  {
-                     return values.photo.url;
-                  }
+                  return values.photo.url;
                },
                getDesc : function(values)
                {
@@ -298,29 +298,6 @@ Ext.define('Genesis.view.MerchantAccount',
    },
    statics :
    {
-      getPhoto : function(type)
-      {
-         var photo_url;
-         switch (type)
-         {
-            case 'breakfast' :
-               photo_url = "resources/img/sprites/shoes.jpg";
-               break;
-            case 'lunch' :
-               photo_url = "resources/img/sprites/heroburgers.jpg";
-               break;
-            case 'dinner' :
-               photo_url = "resources/img/sprites/springrolls.jpg";
-               break;
-            case 'drinks' :
-               photo_url = "resources/img/sprites/phoboga.jpg";
-               break;
-            case 'prize' :
-               photo_url = "resources/img/sprites/star.jpg";
-               break;
-         }
-         return photo_url;
-      }
    },
    beforeActivate : function()
    {

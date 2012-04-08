@@ -239,49 +239,86 @@ Ext.define('Genesis.controller.MainPage',
    {
       var viewport = this.getViewport();
       var vport = this.getViewPortCntlr();
-      vport.setLoggedIn(false);
-      Genesis.constants.authToken = null;
-      b.parent.hide();
+      var fb = Genesis.constants;
+      var flag = 0;
       //
       // Logout of Facebook
       //
-      viewport.setFadeAnimation();
-      viewport.reset(this);
-      Customer['setLogoutUrl']();
-      Ext.StoreMgr.get('CustomerStore').load(
+      var _logout = function()
       {
-         jsonData :
+         console.log("Logging out ...")
+         Customer['setLogoutUrl']();
+         Ext.StoreMgr.get('CustomerStore').load(
          {
-         },
-         callback : function(records, operation)
-         {
-            if(operation.wasSuccessful())
+            jsonData :
             {
-               vport.onFeatureTap('MainPage', 'login');
+            },
+            callback : function(records, operation)
+            {
+               if(operation.wasSuccessful())
+               {
+                  console.log("Logout Successful!")
+                  vport.setLoggedIn(false);
+                  fb.authToken = null;
+                  fb.currFbId = null;
+                  viewport.setFadeAnimation();
+                  vport.onFeatureTap('MainPage', 'login');
+               }
             }
-         }
+         });
+      }
+
+      b.parent.onAfter(
+      {
+         hiddenchange : function()
+         {
+            if((flag |= 0x01) == 0x11)
+            {
+               _logout();
+            }
+         },
+         single : true
       });
+      b.parent.hide();
+      if(fb.currFbId)
+      {
+         console.log("Logging out of Facebook ...")
+         Genesis.constants.facebook_onLogout(function()
+         {
+            //
+            // Login as someone else?
+            //
+            if((flag |= 0x10) == 0x11)
+            {
+               _logout();
+            }
+         });
+      }
+      else
+      {
+         console.log("No Login info found from Facebook ...")
+         if((flag |= 0x10) == 0x11)
+         {
+            _logout();
+         }
+      }
    },
    onFacebookTap : function(b, e, eOpts)
    {
-      Customer['setFbLoginUrl']();
       if(!Ext.StoreMgr.get('CustomerStore'))
       {
          this.loginCommon();
       }
       Genesis.constants.fbLogin(function(params)
       {
+         console.log("Logging into Kickbak using Facebook account ...");
+         Customer['setFbLoginUrl']();
          Ext.StoreMgr.get('CustomerStore').load(
          {
-            params :
+            jsonData :
             {
-               name : params.name,
-               email : params.email,
-               gender : params.gender,
-               facebook_id : params.facebook_id,
-               //faecbook_uid : params.username,
-               birthday : params.birthday
-            }
+            },
+            params : params
          });
       });
    },
@@ -327,6 +364,7 @@ Ext.define('Genesis.controller.MainPage',
                var prizes = metaData['prizes'];
                if(prizes)
                {
+                  console.log("Total Prizes - " + prizes.length);
                   for(var i = 0; i < prizes.length; i++)
                   {
                      //
@@ -344,17 +382,19 @@ Ext.define('Genesis.controller.MainPage',
                // Update Authentication Token
                //
                var authToken = metaData['auth_token'];
+               console.log("AuthToken - " + authToken)
                if(authToken)
                {
                   Genesis.constants.authToken = authToken;
                }
 
                //
-               // Update Authentication Token
+               // Update Eligible Rewards
                //
                var rewards = metaData['eligible_rewards'];
                if(rewards)
                {
+                  console.log("Total Eligible Rewards - " + rewards.length);
                   var estore = Ext.StoreMgr.get('EligibleRewardsStore');
                   estore.setData(rewards);
                }

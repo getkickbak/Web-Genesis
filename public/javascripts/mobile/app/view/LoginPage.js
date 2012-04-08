@@ -6,6 +6,7 @@ Ext.define('Genesis.view.LoginPage',
    config :
    {
       title : '',
+      hideNavBar : true,
       changeTitle : false,
       scrollable : false,
       style : 'background:transparent'
@@ -50,13 +51,9 @@ Ext.define('Genesis.view.LoginPage',
    },
    beforeActivate : function(activeItem, oldActiveItem)
    {
-      var view = Ext.ComponentQuery.query('viewportview')[0];
-      view.getNavigationBar().setHideNavBar(true);
    },
    beforeDeactivate : function()
    {
-      var view = Ext.ComponentQuery.query('viewportview')[0];
-      view.getNavigationBar().setHideNavBar(false);
    },
    afterActivate : function()
    {

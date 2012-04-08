@@ -300,7 +300,7 @@ Ext.define('Genesis.controller.Prizes',
          });
       }
    },
-   onRedeemRewards : function(earnPrize)
+   onRedeemRewards : function(showPrize)
    {
       this.showPrize = showPrize;
       this.setMode('reward');

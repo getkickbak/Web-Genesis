@@ -108,7 +108,7 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       else
       {
-         viewport.push(view, app.getEventDispatcher().controller);
+         viewport.push(view);
       }
    },
    popView : function(b, e, eOpts)
@@ -116,7 +116,7 @@ Ext.define('Genesis.controller.ControllerBase',
       var viewport = this.getViewport();
       var app = this.getApplication();
 
-      viewport.pop(app.getEventDispatcher().controller);
+      viewport.pop();
    },
    getMainPage : Ext.emptyFn,
    openMainPage : Ext.emptyFn,
