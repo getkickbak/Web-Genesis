@@ -417,7 +417,7 @@ Ext.define('Genesis.controller.Checkins',
       {
          latitude : currentLat || 0,
          longitude : currentLng || 0,
-         auth_code : qrcode
+         auth_code : qrcode || 0
       }
       if(venueId)
       {
@@ -461,6 +461,13 @@ Ext.define('Genesis.controller.Checkins',
                         console.log("CheckIn - points:'" + points + "'");
                         crecord.set('points', points);
                         crecord.setLastCheckin(record.getLastCheckin());
+                     }
+                     //
+                     // First time Customer ... add it to CustomerStore
+                     //
+                     else
+                     {
+                        crecord = custore.add(record);
                      }
 
                      this.setupCheckinInfo(mode, venue, crecord, metaData);

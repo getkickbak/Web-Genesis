@@ -6,8 +6,9 @@ Ext.ns('Genesis.constants');
 Genesis.constants =
 {
    host : 'http://192.168.0.52:3000',
-   currFbId : 0,
    authToken : null,
+   currFbId : 0,
+   fbAccountId : null,
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
@@ -256,8 +257,8 @@ Genesis.constants =
          fb._fb_disconnect();
          FB.logout(function(response)
          {
-            fb.authToken = null;
             fb.currFbId = null;
+            fb.fbAccountId = null;
             //FB.Auth.setAuthResponse(null, 'unknown');
             if(cb)
             {
@@ -314,7 +315,7 @@ Genesis.constants =
                Ext.device.Notification.show(
                {
                   title : 'Facebook Connect',
-                  message : 'Your account is linked to your current Facebook session'
+                  message : 'Account ID: ' + fb.fbAccountId + ((!Genesis.constants.isNative()) ? '.<br/>' : '\n') + 'is used for your current Facebook session.'
                });
             }
             else
@@ -405,6 +406,7 @@ Genesis.constants =
             });
 
             fb.currFbId = facebook_id;
+            fb.fbAccountId = response.email
          }
          fb._fb_connect();
          fb.getFriendsList();
