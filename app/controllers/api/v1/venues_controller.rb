@@ -13,8 +13,6 @@ class Api::V1::VenuesController < ApplicationController
       @customer.points = 0
       is_customer = false
     end
-    @eligible_rewards = []
-=begin    
     if is_customer
       @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
       @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
@@ -31,7 +29,6 @@ class Api::V1::VenuesController < ApplicationController
       )
       @eligible_rewards << item
     end
-=end    
     render :template => '/api/v1/check_ins/create'
   end
 
