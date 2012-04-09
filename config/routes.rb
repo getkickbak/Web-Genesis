@@ -110,7 +110,7 @@ Genesis::Application.routes.draw do
         match "/account/update_facebook_info" => 'users#update_facebook_info', :via => :post
     
         match '/venues/find_nearest' => 'venues#find_nearest'
-        match '/venues/:id/show' => 'venues#show'
+        match '/venues/:id/explore' => 'venues#explore'
 
         match '/challenges' => 'challenges#index'
         match '/challenges/:id/start' => 'challenges#start'

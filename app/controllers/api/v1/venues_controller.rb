@@ -1,14 +1,13 @@
 class Api::V1::VenuesController < ApplicationController
   before_filter :authenticate_user!
   
-  def show
+  def explore
     @venue = Venue.get(params[:id]) || not_found
     authorize! :read, @venue
 
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
     if @customer.nil?
       @customer = Customer.new
-      @customer.id = 0  
     end
     @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
     @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
