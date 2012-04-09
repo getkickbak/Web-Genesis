@@ -6,11 +6,21 @@ class Api::V1::VenuesController < ApplicationController
     authorize! :read, @venue
 
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
+    is_customer = true
     if @customer.nil?
       @customer = Customer.new
+      @customer.id = 0
+      @customer.points = 0
+      is_customer = false
     end
-    @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
-    @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
+    @eligible_rewards = []
+=begin    
+    if is_customer
+      @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
+      @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
+    else
+      @rewards = []  
+    end  
     @eligible_rewards = []
     @rewards.each do |reward|
       item = EligibleReward.new(
@@ -21,6 +31,7 @@ class Api::V1::VenuesController < ApplicationController
       )
       @eligible_rewards << item
     end
+=end    
     render :template => '/api/v1/check_ins/create'
   end
 
