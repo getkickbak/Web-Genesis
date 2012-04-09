@@ -1,6 +1,5 @@
 class Api::V1::CustomersController < ApplicationController
   before_filter :authenticate_user!, :only => [:edit, :update, :destroy]
-  #load_and_authorize_resource
    
   def index
     authorize! :read, Customer

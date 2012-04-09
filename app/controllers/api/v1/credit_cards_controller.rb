@@ -1,6 +1,6 @@
 class Api::V1::CreditCardsController < ApplicationController
   before_filter :authenticate_user!
-  #load_and_authorize_resource
+
   def index
     authorize! :read, CreditCard
     result = BILLING_GATEWAY.query(current_user.id)
