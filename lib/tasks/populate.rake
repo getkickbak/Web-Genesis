@@ -75,11 +75,6 @@ namespace :db do
       DataMapper.repository(:default).adapter.execute(
           "UPDATE merchants SET photo = ?, alt_photo = ? WHERE id = ?", filename, filename, merchant.id
       )
-      users.each do |user|
-        customer = Customer.create(merchant,user)
-        customer.points = rand(30)
-        customer.save
-      end
       RewardModel.create(merchant,
       {
         :rebate_rate => 9,
@@ -101,6 +96,14 @@ namespace :db do
           :longitude => -79.376982
         })
         venues << venue
+      end
+      users.each do |user|
+        customer = Customer.create(merchant,user)
+        customer.points = rand(30)
+        customer.save
+        venues.each do |venue|
+          CheckIn.create(venue, user, customer)
+        end  
       end
       purchase_rewards = []
       10.times do |n|

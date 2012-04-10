@@ -109,7 +109,11 @@ class Venue
         venue.distance = venue_id_to_distance_map[venue.id]
       end
     else
-      venues = Venue.all(:offset => 0, :limit => max)
+      if merchant_id.nil?
+        venues = Venue.all(:offset => 0, :limit => max)
+      else
+        venues = Venue.all(Venue.merchant.id => merchant_id, :offset => 0, :limit => max)
+      end    
       venues.each do |venue|
         venue.distance = rand * 10
       end  
