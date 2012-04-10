@@ -39,7 +39,8 @@ class Api::V1::VenuesController < ApplicationController
     latitude = params[:latitude].to_f
     longitude = params[:longitude].to_f
     @venue = Venue.find_nearest(@merchant.id, latitude, longitude, 1).first
-    @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
+    @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id)
+    @rewards = CustomerReward.all(CustomerReward.merchant.id => @merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
     @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
     @eligible_rewards = []
     @rewards.each do |reward|
