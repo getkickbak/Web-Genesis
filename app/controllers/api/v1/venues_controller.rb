@@ -5,6 +5,38 @@ class Api::V1::VenuesController < ApplicationController
     @venue = Venue.get(params[:id]) || not_found
     authorize! :read, @venue
 
+    get_venue_info
+    render :template => '/api/v1/check_ins/create'
+  end
+
+  def find_closest
+    @merchant = Merchant.get(params[:merchant_id]) || not_found
+    authorize! :read, Venue
+    
+    latitude = params[:latitude].to_f
+    longitude = params[:longitude].to_f
+    @venue = Venue.find_nearest(@merchant.id, latitude, longitude, 1).first
+    get_venue_info
+    render :template => '/api/v1/check_ins/create'
+  end
+  
+  def find_nearest
+    authorize! :read, Venue
+
+    merchant_id = params[:merchant_id]
+    if merchant_id
+      Merchant.get(merchant_id) || not_found
+    end
+    latitude = params[:latitude].to_f
+    longitude = params[:longitude].to_f
+    max = params[:limit].to_i
+    @venues = Venue.find_nearest(merchant_id, latitude, longitude, max)
+    render :template => '/api/v1/venues/find_nearest'
+  end
+  
+  private
+  
+  def get_venue_info
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
     is_customer = true
     if @customer.nil?
@@ -29,17 +61,5 @@ class Api::V1::VenuesController < ApplicationController
       )
       @eligible_rewards << item
     end
-    render :template => '/api/v1/check_ins/create'
-  end
-
-  def find_nearest
-    authorize! :read, Venue
-
-    merchant_id = params[:merchant_id]
-    latitude = params[:latitude].to_f
-    longitude = params[:longitude].to_f
-    max = params[:limit].to_i
-    @venues = Venue.find_nearest(merchant_id, latitude, longitude, max)
-    render :template => '/api/v1/venues/find_nearest'
   end
 end
