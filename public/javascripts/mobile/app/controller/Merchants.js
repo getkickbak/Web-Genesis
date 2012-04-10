@@ -230,7 +230,7 @@ Ext.define('Genesis.controller.Merchants',
       //
       // CheckIn button
       //
-      me.getCheckinBtn()[(checkedIn && !checkedInMatch) ? 'show' : 'hide']();
+      me.getCheckinBtn()[(!checkedIn || !checkedInMatch) ? 'show' : 'hide']();
       //
       // Main Menu button
       //
@@ -272,6 +272,7 @@ Ext.define('Genesis.controller.Merchants',
    {
       var me = this;
       var app = me.getApplication();
+      var vport = me.getViewport();
       var viewport = me.getViewPortCntlr();
       var controller = app.getController('Checkins');
       me.getGeoLocation(function(position)
@@ -315,18 +316,6 @@ Ext.define('Genesis.controller.Merchants',
       var cvenue = viewport.getCheckinInfo().venue;
       var cmetaData = viewport.getCheckinInfo().metaData;
 
-      /*
-       if(!ccustomer || !cvenue)
-       {
-       Ext.device.Notification.show(
-       {
-       title : 'Error',
-       message : 'You cannot visit Merchant Main Page until you Check in'
-       });
-       return;
-       }
-       */
-
       var ccntlr = app.getController('Checkins');
       var estore = Ext.StoreMgr.get('EligibleRewardsStore');
       var samePage = (me.getMainPage() == vport.getActiveItem());
@@ -351,7 +340,8 @@ Ext.define('Genesis.controller.Merchants',
          vport.setFadeAnimation();
          vport.doSetActiveItem(me.getMainPage(), null);
       }
-      me.openMainPage();
+
+      me.pushView(me.getMainPage());
    },
    onMapBtnTap : function(b, e, eOpts)
    {
@@ -401,8 +391,19 @@ Ext.define('Genesis.controller.Merchants',
    },
    openMainPage : function()
    {
+      var me = this;
+      var vport = me.getViewport();
+      var samePage = (me.getMainPage() == vport.getActiveItem());
+
       // Check if this is the first time logging into the venue
-      this.pushView(this.getMainPage());
+      if(!samePage)
+      {
+         me.pushView(me.getMainPage());
+      }
+      else
+      {
+         me.onMainButtonTap();
+      }
       console.log("Merchant Account Opened");
    }
 });
