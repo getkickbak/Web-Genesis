@@ -49,7 +49,9 @@ $xlargeFontSize : 1.2em;
 @include pictos-iconmask('mail');
 @include pictos-iconmask('shop2');
 @include pictos-iconmask('team');
+@include pictos-iconmask('maps');
 @include pictos-iconmask('search1');
+@include pictos-iconmask('favorites_circle');
 @include pictos-iconmask('check_black1');
 @include pictos-iconmask('delete_black2');
 
@@ -368,9 +370,9 @@ body {
       }
       .listItemDetailsWrapper {
          padding-left:$icon-size + 10px;
-         //padding-right:$icon-size + 10px;
+         padding-right:$list-disclosure-size*1.5;
          //width:20em;
-         width:14.5em;
+         //width:14.5em;
          min-height:$icon-size;
          .itemTitle {
             font-size:$normalFontSize;
@@ -487,44 +489,10 @@ body {
 .checkInExploreList {
    @extend .listScrollWrapper;
    .listItemDetailsWrapper {
-      width:12em !important;
+      //width:12em !important;
    }
 }
 
-.checkinMerchant {
-   .x-body {
-   }
-   .gmap .x-innerhtml {
-      overflow:hidden;
-   }
-}
-.checkinMerchantWrapper {
-   .x-inner {
-      margin:0!important;
-      padding:0!important;
-   }
-   .photo {
-      height:$icon-size*2+10;
-      img {
-         width : $icon-size*2;
-         max-height:$icon-size*2;
-         @include box-shadow(0.2em 0.2em 0.2em rgba(0,0,0,.6));
-         margin-right:$panelGap;
-      }
-   }
-   .checkinMerchantDetailsWrapper {
-      //margin-left:$icon-size*1.5 + 10px;
-      //padding-right:$icon-size;
-      width:8.5em !important;
-      .itemTitle {
-         font-size:$largeFontSize;
-      }
-      .itemDesc {
-         font-size:$normalFontSize;
-         @include ellipsis
-      }
-   }
-}
 .checkInNow {
   background : black;
   padding: $panelTopGap 2*$panelGap;
@@ -556,6 +524,39 @@ body {
      .x-innerhtml {
         line-height:$xlargeFontSize;
      }
+   }
+}
+
+.merchantDetails {
+   .x-body {
+   }
+   .gmap .x-innerhtml {
+      overflow:hidden;
+   }
+   .x-dataview {
+      .x-inner {
+         margin:0!important;
+         padding:0!important;
+      }
+      .photo {
+         height:$icon-size*2+10;
+         img {
+            width : $icon-size*2;
+            max-height:$icon-size*2;
+            @include box-shadow(0.2em 0.2em 0.2em rgba(0,0,0,.6));
+            margin-right:$panelGap;
+         }
+      }
+      //margin-left:$icon-size*1.5 + 10px;
+      padding-right:0;
+      //width:8.5em !important;
+      .itemTitle {
+         font-size:$largeFontSize;
+      }
+      .itemDesc {
+         font-size:$normalFontSize;
+         @include ellipsis
+      }
    }
 }
 
@@ -852,7 +853,7 @@ body {
    .accountsList {
       @extend .listScrollWrapper;
       .listItemDetailsWrapper {
-         width:13em !important;
+         padding-left:0 !important;
          .points {
             text-align:right;
             font-size:$xlargeFontSize;

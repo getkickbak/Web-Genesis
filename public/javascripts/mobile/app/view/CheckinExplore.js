@@ -8,6 +8,7 @@ Ext.define('Genesis.view.CheckinExplore',
       title : 'Check-in Nearby Places',
       changeTitle : false,
       layout : 'fit',
+      merchant : null,
       items : [
       {
          xtype : 'list',

@@ -36,13 +36,12 @@ Ext.define('Genesis.view.Viewport',
             align : 'center'
          },
          items : [
-         /*{
-          align : 'left',
-          tag : 'close',
-          hidden : true,
-          text : 'Close'
-          },
-          */
+         {
+            align : 'left',
+            iconCls : 'maps',
+            tag : 'mapBtn',
+            hidden : true
+         },
          {
             align : 'right',
             iconCls : 'share',
@@ -148,6 +147,12 @@ Ext.define('Genesis.view.Viewport',
          {
             align : 'right',
             tag : 'main',
+            iconCls : 'check_black1',
+            hidden : true
+         },
+         {
+            align : 'right',
+            tag : 'checkin',
             iconCls : 'check_black1',
             hidden : true
          },
@@ -369,7 +374,7 @@ Ext.define('Genesis.view.Viewport',
          // Get current Page Title name
          // Either it's the current venue we are browsing, or the one we checked-in
          //
-         var vrecord = activeItem.venue || ((activeItem.getMerchant) ? activeItem.getMerchant() : null) || _application.getController('Viewport').getVenue();
+         var vrecord = ((oldActiveItem && oldActiveItem.getMerchant) ? oldActiveItem.getMerchant() : null) || _application.getController('Viewport').getVenue();
 
          activeItem.getInitialConfig().title = vrecord.get('name');
       }

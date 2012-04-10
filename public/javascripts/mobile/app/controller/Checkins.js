@@ -3,8 +3,7 @@ Ext.define('Genesis.controller.Checkins',
    extend : 'Genesis.controller.ControllerBase',
    statics :
    {
-      checkin_path : '/checkin',
-      googleMapStaticUrl : 'http://maps.googleapis.com/maps/api/staticmap'
+      checkin_path : '/checkin'
    },
    xtype : 'checkinsCntlr',
    config :
@@ -17,17 +16,8 @@ Ext.define('Genesis.controller.Checkins',
             autoCreate : true,
             xtype : 'checkinexploreview'
          },
-         checkinMerchant :
-         {
-            selector : 'checkinmerchantview',
-            autoCreate : true,
-            xtype : 'checkinmerchantview'
-         },
-         checkinBtn : 'checkinmerchantview button[tag=checkinBtn]',
-         exploreBtn : 'checkinmerchantview button[tag=exploreBtn]',
          checkInNowBar : 'checkinexploreview container[tag=checkInNow]',
-         shareBtn : 'viewportview button[tag=shareBtn]',
-         mainBtn : 'viewportview button[tag=main]'
+         shareBtn : 'viewportview button[tag=shareBtn]'
       },
       control :
       {
@@ -43,31 +33,6 @@ Ext.define('Genesis.controller.Checkins',
          {
             select : 'onExploreSelect',
             disclose : 'onExploreDisclose'
-         },
-         //
-         // Checkin Merchant Page
-         //
-         checkinMerchant :
-         {
-            activate : 'onActivate',
-            deactivate : 'onDeactivate'
-         },
-         checkinBtn :
-         {
-            tap : 'onCheckinTap'
-         },
-         exploreBtn :
-         {
-            tap : 'onNonCheckinTap'
-         },
-         'checkinmerchantview map' :
-         {
-            maprender : 'onMapRender'
-         },
-         'checkinmerchantview component[tag=map]' :
-         {
-            // Goto CheckinMerchant.js for "painted" support
-            //painted : 'onMapPainted'
          }
       },
       models : ['Venue', 'Merchant', 'EarnPrize'],
@@ -75,35 +40,33 @@ Ext.define('Genesis.controller.Checkins',
    },
    init : function()
    {
-      var me = this;
-      //
-      // Clears all Markers on Google Map
-      //
-      me.markersArray = [];
-      if(window.google && window.google.maps && window.google.maps.Map)
-      {
-         google.maps.Map.prototype.clearOverlays = function()
-         {
-            if(me.markersArray)
-            {
-               for(var i = 0; i < me.markersArray.length; i++)
-               {
-                  me.markersArray[i].setMap(null);
-               }
-            }
-         }
-      }
-      else
-      {
-         console.debug("Google Maps API cannot be instantiated");
-      }
       //
       // Store storing the Venue checked-in / Explore
       //
       Ext.regStore('CheckinExploreStore',
       {
          model : 'Genesis.model.Venue',
-         autoLoad : false
+         autoLoad : false,
+         listeners :
+         {
+            'metachange' : function(store, proxy, eOpts)
+            {
+               // Load Prizes into DataStore
+               var metaData = proxy.getReader().metaData;
+
+               //
+               // Update Eligible Rewards
+               //
+               var rewards = metaData['eligible_rewards'];
+               if(rewards)
+               {
+                  console.debug("Total Eligible Rewards - " + rewards.length);
+                  var estore = Ext.StoreMgr.get('EligibleRewardsStore');
+                  estore.setData(rewards);
+               }
+            }
+         }
+
       });
       //
       // Store used for storing Customer Info
@@ -197,6 +160,96 @@ Ext.define('Genesis.controller.Checkins',
          default :
             break;
       }
+      this.getExplore().setMerchant(null);
+   },
+   onCheckinTap : function(b, e, eOpts, einfo)
+   {
+      // Scan QR Code to confirm Checkin
+      this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueCheckinUrl', 'scan', function()
+      {
+         Ext.device.Notification.vibrate();
+      });
+   },
+   onNonCheckinTap : function(b, e, eOpts, einfo, callback)
+   {
+      // No scanning required
+      this.onCheckInScanNow(b, e, eOpts, einfo, 'explore', 'setVenueExploreUrl', 'noscan', callback);
+   },
+   onCheckinHandler : function(mode, metaData, cstore, venueId, records, operation, callback)
+   {
+      var app = this.getApplication();
+      var custore = Ext.StoreMgr.get('CustomerStore');
+      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
+      var mcntlr = app.getController('Merchants');
+
+      var record, customerId, customer, venue, points;
+      if(operation.wasSuccessful() && metaData)
+      {
+         for(var i = 0; i < records.length; i++)
+         {
+            record = records[i];
+            customerId = record.getId();
+            points = record.get('points');
+            var new_venueId = metaData['venue_id'] || cestore.first().getId();
+            venue = cestore.getById(new_venueId);
+            customer = cstore.getById(customerId);
+
+            // Find Matching Venue or pick the first one returned if no venueId is set
+            console.debug("CheckIn - new_venueId:'" + new_venueId + "' venue_id:'" + venueId + "'");
+            if((new_venueId == venueId) || (venueId == null))
+            {
+               //
+               // Update our Database with the latest value from Server
+               //
+               var crecord = custore.getById(customerId);
+               if(crecord != null)
+               {
+                  crecord.set('points', points);
+                  crecord.setLastCheckin(record.getLastCheckin());
+               }
+               //
+               // First time Customer ... add it to CustomerStore
+               //
+               else
+               {
+                  crecord = custore.add(record)[0];
+                  console.debug("CheckIn - Not in current Customer DB! CustomerId=[" + crecord.getId() + "]");
+               }
+               console.debug("CheckIn - points:'" + points + "'");
+
+               this.setupCheckinInfo(mode, venue, crecord, metaData);
+               break;
+            }
+         }
+         // Cannot find match?
+         if(i > records.length)
+         {
+            console.debug("CheckIn - No Merchants Found!");
+            return;
+         }
+
+         console.debug("CheckIn - Opening Merchant Account Page ...");
+
+         //
+         // Cleans up Back Buttons on Check-in
+         //
+         this.getViewport().reset();
+         Ext.Viewport.setMasked(false);
+
+         app.dispatch(
+         {
+            action : 'openMainPage',
+            args : [],
+            controller : mcntlr,
+            scope : mcntlr
+         });
+
+         if(callback)
+         {
+            callback();
+         }
+         console.debug("CheckIn - Done");
+      }
    },
    // --------------------------------------------------------------------------
    // CheckinExplore Page
@@ -207,6 +260,7 @@ Ext.define('Genesis.controller.Checkins',
       me.getGeoLocation(function(position)
       {
          me.setPosition(position);
+         Venue['setFindNearestURL']();
          Ext.StoreMgr.get('CheckinExploreStore').load(
          {
             params :
@@ -229,6 +283,7 @@ Ext.define('Genesis.controller.Checkins',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
+      me.getExplore().setMerchant(null);
 
       me.onExploreLoad();
       switch (me.mode)
@@ -241,9 +296,9 @@ Ext.define('Genesis.controller.Checkins',
             me.getCheckInNowBar().hide();
             break;
       }
-      var cvenue = viewport.getCheckinInfo().venue;
-      var venue = viewport.getVenue();
-      me.getMainBtn()[(cvenue && (venue.getId() != cvenue.getId())) ? 'show' : 'hide']();
+      //var cvenue = viewport.getCheckinInfo().venue;
+      //var venue = viewport.getVenue();
+      //me.getMainBtn()[(cvenue && (venue.getId() != cvenue.getId())) ? 'show' : 'hide']();
       //
       // Scroll to the Top of the Screen
       //
@@ -258,119 +313,24 @@ Ext.define('Genesis.controller.Checkins',
       this.onExploreDisclose(d, model);
       return false;
    },
-   onExploreDisclose : function(list, record, target, index, e, eOpts)
+   onExploreDisclose : function(list, record, target, index, e, eOpts, eInfo)
    {
-      var gm = (window.google && window.google.maps && window.google.maps.LatLng) ? window.google.maps : null;
-      //
-      // Loads currently checked-in / explore Venue into the store
-      //
-      /*
-       if(gm)
-       {
-       this.latLng = new gm.LatLng(record.get('latitude'), record.get('longitude'));
-       this.markerOptions =
-       {
-       position : this.latLng,
-       title : record.get('name')
-       }
-       }
-       else
-       */
-      {
-         this.latLng = record.get('latitude') + ',' + record.get('longitude');
-         var color = 'red', label = '';
-         var address = record.get('address') + ', ' + record.get('city') + ', ' + record.get('state') + ', ' + record.get('country') + ', ' + record.get('zipcode');
+      this.getExplore().setMerchant( record ? record.getMerchant() : null);
+      this.getViewPortCntlr().setVenue(record);
 
-         this.markerOptions =
-         {
-            markers : 'color:' + color + '|' + 'label:' + label + '|' + this.latLng,
-            //center : address,
-            center : this.latLng,
-            title : record.get('name')
-         }
-         console.debug("Cannot Retrieve Google Map Information.");
-      }
-
-      this.setVenueInfo(record, null);
-      this.pushView(this.getCheckinMerchant());
-
-      return true;
-   },
-   // --------------------------------------------------------------------------
-   // Merchant Checkin Page
-   // --------------------------------------------------------------------------
-   setVenueInfo : function(venue, customer)
-   {
-      var page = this.getCheckinMerchant();
-      page.venue = venue;
-      page.customer = customer;
-   },
-   clearVenueInfo : function()
-   {
-      var page = this.getCheckinMerchant();
-      delete page.venue;
-      delete page.customer;
-   },
-   onActivateCommon : function(map, gmap)
-   {
-      var gm = (window.google && window.google.maps && window.google.maps.Marker) ? window.google.maps : null;
-      if(gmap && gm)
-      {
-         map.getMap().clearOverlays();
-         this.marker = new gm.Marker(Ext.apply(this.markerOptions,
-         {
-            map : gmap
-         }));
-         map.setMapCenter(this.latLng);
-      }
-      else
-      //if(!gm)
-      {
-         //this.onMapWidthChange(map);
-         //console.debug("Cannot load Google Maps");
-      }
-   },
-   onActivate : function()
-   {
-      var page = this.getCheckinMerchant();
-      var map = page.query('component[tag=map]')[0];
-      page.query('dataview')[0].getStore().setData(page.venue);
-      //var map = page.query('map')[0];
-
-      //this.onActivateCommon(map, map.getMap());
       switch (this.mode)
       {
          case 'checkin':
-            this.getCheckinBtn().show();
-            this.getExploreBtn().hide();
+         {
+            this.onCheckinTap(null, e, eOpts, eInfo);
             break;
+         }
          case 'explore' :
-            this.getExploreBtn().show();
-            this.getCheckinBtn().hide();
+         {
+            this.onNonCheckinTap(null, e, eOpts, eInfo);
             break;
+         }
       }
-      // Show Share Icon
-      this.getShareBtn().show();
-      this.getMainBtn().hide();
-
-      this.onActivateCommon(map, null);
-      //
-      // Scroll to the Top of the Screen
-      //
-      page.getScrollable().getScroller().scrollTo(0, 0);
-   },
-   onDeactivate : function()
-   {
-      var viewport = this.getViewPortCntlr();
-      var page = this.getCheckinMerchant();
-      var venue = viewport.getVenue();
-      // If we didn't check into this Venue, "reload" checked-in Venue info back
-      if(venue && page.venue && (venue.getId() != page.venue.getId()))
-      {
-         viewport.setVenue(viewport.getCheckinInfo().venue);
-      }
-      this.clearVenueInfo();
-      this.getShareBtn().hide();
    },
    onCheckinCommonTap : function(b, e, eOpts, mode, url, qrcode, position, callback)
    {
@@ -382,37 +342,14 @@ Ext.define('Genesis.controller.Checkins',
       }
 
       var viewport = this.getViewPortCntlr();
-      var mcntlr = this.getApplication().getController('Merchants');
       var cstore = Ext.StoreMgr.get('CheckinStore');
-      var custore = Ext.StoreMgr.get('CustomerStore');
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-      var vstore = Ext.StoreMgr.get('VenueAccountStore');
-      var page = this.getCheckinMerchant();
       var cview = this.getViewport().getActiveItem();
-      var pvenueId = page.venue ? page.venue.getId() : null;
-      var venueId = (Genesis.constants.isNative()) ? pvenueId : qrcode;
+      var venueId = (viewport.getVenue() ? viewport.getVenue().getId() : null);
 
       console.debug("CheckIn - auth_code:'" + qrcode + "' venue_id:'" + venueId + "'");
-      var showErrorMsg = function(mode)
-      {
-         var msg;
-         switch (mode)
-         {
-            case 'checkin' :
-               msg = 'Checking info';
-               break;
-            default :
-               msg = 'Exploring'
-               break;
-         }
-         Ext.device.Notification.show(
-         {
-            title : 'Error',
-            message : 'Error ' + msg + ' Venue from Server'
-         });
-      }
+
       // Load Info into database
-      Customer[url](pvenueId);
+      Customer[url](venueId);
       var params =
       {
          latitude : currentLat || 0,
@@ -436,94 +373,22 @@ Ext.define('Genesis.controller.Checkins',
          scope : this,
          callback : function(records, operation)
          {
-            var metaData = cstore.getProxy().getReader().metaData, record, customerId, customer, venue, points;
-            if(operation.wasSuccessful() && metaData)
-            {
-               for(var i = 0; i < records.length; i++)
-               {
-                  record = records[i];
-                  customerId = record.getId();
-                  points = record.get('points');
-                  venueId = metaData['venue_id'];
-                  venue = cestore.getById(venueId) || vstore.getById(venueId);
-                  customer = cstore.getById(customerId);
-
-                  // Find Matching Venue or pick the first one returned if no venueId is set
-                  console.debug("CheckIn - pvenueId:'" + pvenueId + "' venue_id:'" + venueId + "'");
-                  if((pvenueId == venueId) || (pvenueId == null))
-                  {
-                     //
-                     // Update our Database with the latest value from Server
-                     //
-                     var crecord = custore.getById(customerId);
-                     if(crecord != null)
-                     {
-                        console.debug("CheckIn - points:'" + points + "'");
-                        crecord.set('points', points);
-                        crecord.setLastCheckin(record.getLastCheckin());
-                     }
-                     //
-                     // First time Customer ... add it to CustomerStore
-                     //
-                     else
-                     {
-                        crecord = custore.add(record);
-                     }
-
-                     this.setupCheckinInfo(mode, venue, crecord, metaData);
-                     break;
-                  }
-               }
-               // Cannot find match?
-               if(i > records.length)
-               {
-                  //showErrorMsg();
-                  return;
-               }
-
-               // Cleans up Back Buttons on Check-in
-               this.getViewport().reset(this);
-               Ext.Viewport.setMasked(false);
-               mcntlr.openMainPage();
-
-               if(callback)
-               {
-                  console.debug("CheckIn - Done");
-                  callback();
-               }
-            }
-            else
-            {
-               //Ext.Viewport.setMasked(false);
-               //showErrorMsg();
-            }
+            this.onCheckinHandler(mode, cstore.getProxy().getReader().metaData, cstore, venueId, records, operation, callback);
          }
       });
    },
    onCheckinScanTap : function(b, e, eOpts, einfo)
    {
+      //
+      // Clear Venue info, let server determine from QR Code
+      //
+      this.getExplore().setMerchant(null);
+      this.getViewPortCntlr().setVenue(null);
       // Scan QR Code to confirm Checkin
       this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueScanCheckinUrl', 'scan', function()
       {
          Ext.device.Notification.vibrate();
       });
-   },
-   onCheckinTap : function(b, e, eOpts, einfo)
-   {
-      // Scan QR Code to confirm Checkin
-      this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueCheckinUrl', 'scan', function()
-      {
-         Ext.device.Notification.vibrate();
-      });
-   },
-   onNonCheckinTap : function(b, e, eOpts, einfo, callback)
-   {
-      // No scanning required
-      this.onCheckInScanNow(b, e, eOpts, einfo, 'explore', 'setVenueExploreUrl', 'noscan', callback);
-   },
-   onMapRender : function(map, gmap, eOpts)
-   {
-      this.onActivateCommon(map, gmap);
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
@@ -543,6 +408,7 @@ Ext.define('Genesis.controller.Checkins',
       return this.getExplore();
    },
    openMainPage : function()
+
    {
       var page = this.getMainPage();
       // Hack to fix bug in Sencha Touch API

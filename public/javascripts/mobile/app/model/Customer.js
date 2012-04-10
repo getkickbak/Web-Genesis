@@ -113,7 +113,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/vi/venues/' + venueId + '/show' : Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
+         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/venues/' + venueId + '/explore' : Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
       }
    }
 });

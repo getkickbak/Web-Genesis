@@ -398,9 +398,9 @@ Ext.define('Genesis.controller.MainPage',
                // Update Authentication Token
                //
                var authToken = metaData['auth_token'];
-               console.debug("AuthToken - " + authToken)
                if(authToken)
                {
+                  console.debug("AuthToken - " + authToken)
                   Genesis.constants.authToken = authToken;
                }
 
@@ -516,7 +516,15 @@ Ext.define('Genesis.controller.MainPage',
       {
          case 'main' :
          {
-            this.getViewPortCntlr().onMainButtonTap();
+            var app = this.getApplication();
+            var controller = app.getController('Merchants');
+            app.dispatch(
+            {
+               action : 'onMainButtonTap',
+               args : ['checkin'],
+               controller : controller,
+               scope : controller
+            });
             break;
          }
          case 'login' :

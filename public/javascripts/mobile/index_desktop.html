@@ -106,7 +106,7 @@
       <script type="text/javascript" src="app/view/widgets/Scroll.js"></script>
       <script type="text/javascript" src="app/view/widgets/ListField.js"></script>
       <script type="text/javascript" src="app/view/widgets/NavigationBar.js"></script>
-      <script type="text/javascript" src="app/view/widgets/CheckinMerchantDetailsItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/MerchantDetailsItem.js"></script>
       <script type="text/javascript" src="app/view/widgets/ChallengeMenuItem.js"></script>
       <script type="text/javascript" src="app/view/widgets/RewardItem.js"></script>
       <script type="text/javascript" src="app/view/widgets/MerchantAccountPtsItem.js"></script>
@@ -129,7 +129,6 @@
       <script type="text/javascript" src="app/model/frontend/Signin.js"></script>
       <!-- Views -->
       <script type="text/javascript" src="app/view/ViewBase.js"></script>
-      <script type="text/javascript" src="app/view/CheckinMerchant.js"></script>
       <script type="text/javascript" src="app/view/CheckinExplore.js"></script>
       <script type="text/javascript" src="app/view/Viewport.js"></script>
       <script type="text/javascript" src="app/view/ChallengePage.js"></script>
@@ -138,6 +137,7 @@
       <script type="text/javascript" src="app/view/LoginPage.js"></script>
       <script type="text/javascript" src="app/view/Accounts.js"></script>
       <script type="text/javascript" src="app/view/MerchantAccount.js"></script>
+      <script type="text/javascript" src="app/view/MerchantDetails.js"></script>
       <script type="text/javascript" src="app/view/Rewards.js"></script>
       <script type="text/javascript" src="app/view/Redemptions.js"></script>
       <script type="text/javascript" src="app/view/Prizes.js"></script>
@@ -199,9 +199,9 @@
                // Main Page when the user has never checked-in before
                //,'CheckinMerchantMainPage'
                // Main Page when the user has checked-in before
-               'CheckinMerchant', 'LoginPage', 'SignInPage', 'MainPage',
+               'LoginPage', 'SignInPage', 'MainPage',
                //'MerchantAccountBrowse','MerchantAcountPage',
-               'MerchantAccount',
+               'MerchantAccount', 'MerchantDetails',
                //'QRCodeDisplayMode', 'QRCodeScanMode'
                'Rewards', 'Redemptions', 'Accounts', 'Prizes', 'SettingsPage', 'Viewport'],
                controllers : ['Viewport', 'MainPage', 'Challenges', 'Merchants', 'RewardsRedemptions', 'Accounts',

@@ -76,6 +76,10 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
    {
       var viewport = _application.getController('Viewport');
       var customer = viewport.getCustomer();
+      var venue = viewport.getVenue();
+      var venueId = venue.getId();
+      var cvenue = viewport.getCheckinInfo().venue;
+
       //var crecord = cstore.getById(data.Merchant['merchant_id']);
       var bg = this.query('container[tag=background]')[0];
 
@@ -86,9 +90,20 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          'background-image' : 'url(' + data.Merchant['alt_photo']['url'] + ')'
       });
 
-      //Update Points
-      var points = this.query('component[tag=points]')[0];
-      points.setData(customer.getData());
+      //
+      // Hide Points if we are Exploring
+      //
+      if(cvenue && (cvenue.getId() == venueId))
+      {
+         bg.getItems().items[0].show();
+         //Update Points
+         var points = this.query('component[tag=points]')[0];
+         points.setData(customer.getData());
+      }
+      else
+      {
+         bg.getItems().items[0].hide();
+      }
    },
    /**
     * Updates this container's child items, passing through the dataMap.
