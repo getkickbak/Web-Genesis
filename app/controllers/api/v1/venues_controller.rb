@@ -11,6 +11,8 @@ class Api::V1::VenuesController < ApplicationController
       @customer = Customer.new
       @customer.id = 0
       @customer.points = 0
+      @customer.last_check_in = CheckIn.new
+      @customer.merchant = @venue.merchant
       is_customer = false
     end
     if is_customer
