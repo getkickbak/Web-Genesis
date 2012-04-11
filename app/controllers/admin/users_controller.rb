@@ -91,7 +91,7 @@ module Admin
     end
 
     def destroy
-      @user = User.first(params[:id]) || not_found
+      @user = User.get(params[:id]) || not_found
       authorize! :destroy, @user
 
       @user.destroy

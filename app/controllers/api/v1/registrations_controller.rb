@@ -12,6 +12,7 @@ class Api::V1::RegistrationsController < ApplicationController
         max = params[:limit].to_i
         @user = User.create(params[:user])
         @results = Customer.find(@user.id, start, max)
+        @earn_prizes = []
         render :template => '/api/v1/tokens/create'
       rescue DataMapper::SaveFailureError => e
         render :json => { :success => false, :metaData => e.resource.errors }

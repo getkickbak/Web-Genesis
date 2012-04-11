@@ -127,6 +127,7 @@ en:
       tokens:
         create_missing_info: "Missing email or password."
         create_invalid_info: "Invalid email or password."
+        create_invalid_facebook_info: "Invalid facebook sign in."
         create_from_facebook_failure: "Trouble with facebook sign in.  Please try again."
         destroy_failure: "Trouble with logout.  Please try again."   
   admin:
