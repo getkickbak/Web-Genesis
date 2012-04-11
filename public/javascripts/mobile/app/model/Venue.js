@@ -37,7 +37,6 @@ Ext.define('Genesis.model.Venue',
          {
             'If-None-Match' : ''
          },
-         url : (!debugMode) ? Genesis.constants.host + '/api/v1/venues/find_nearest' : Ext.Loader.getPath("Genesis") + "/store/" + 'checkinRecords.json',
          reader :
          {
             type : 'json',
@@ -45,6 +44,22 @@ Ext.define('Genesis.model.Venue',
             rootProperty : 'data'
          }
       },
-      idProperty : 'id'
+      idProperty : 'id',
+   },
+   statics :
+   {
+      setFindNearestURL : function()
+      {
+         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/venues/find_nearest' : Ext.Loader.getPath("Genesis") + "/store/" + 'checkinRecords.json');
+      },
+      setGetClosestVenueURL : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'GET'
+         });
+         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/venues/find_closest' : Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
+      }
    }
+
 });

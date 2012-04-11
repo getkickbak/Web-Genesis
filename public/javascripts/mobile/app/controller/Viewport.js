@@ -31,7 +31,6 @@ Ext.define('Genesis.controller.Viewport',
       {
          view : 'viewportview',
          shareBtn : 'viewportview button[tag=shareBtn]',
-         mainBtn : 'viewportview button[tag=main]',
          checkInNowBar : 'container[tag=checkInNow]',
       },
       control :
@@ -47,10 +46,6 @@ Ext.define('Genesis.controller.Viewport',
          'viewportview button[tag=close]' :
          {
             tap : 'popView'
-         },
-         mainBtn :
-         {
-            tap : 'onMainButtonTap'
          },
          'button[tag=checkInNow]' :
          {
@@ -124,9 +119,10 @@ Ext.define('Genesis.controller.Viewport',
    onCheckinScanTap : function(b, e, eOpts, einfo)
    {
       var me = this;
+      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
       me.getGeoLocation(function(position)
       {
-         Ext.StoreMgr.get('CheckinExploreStore').load(
+         cestore.load(
          {
             jsonData :
             {
@@ -157,64 +153,13 @@ Ext.define('Genesis.controller.Viewport',
                   Ext.device.Notification.show(
                   {
                      title : 'Warning',
-                     message : 'Error loading Nearby Venues'
+                     message : 'Error loading Venue information.'
                   });
                }
             },
             scope : me
          });
       });
-   },
-   onMainButtonTap : function(b, e, eOpts, eInfo)
-   {
-      var viewport = this;
-      var vport = this.getViewport();
-      var ccustomer = viewport.getCheckinInfo().customer;
-      var cvenue = viewport.getCheckinInfo().venue;
-      var cmetaData = viewport.getCheckinInfo().metaData;
-
-      if(!ccustomer || !cvenue)
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Error',
-            message : 'You cannot visit Merchant Main Page until you Check in'
-         });
-         return;
-      }
-      /*
-       Ext.Viewport.setMasked(
-       {
-       xtype : 'loadmask',
-       message : 'Reloading Merchant Info'
-       });
-       */
-      var ccntlr = this.getApplication().getController('Checkins');
-      var mcntlr = this.getApplication().getController('Merchants');
-      var estore = Ext.StoreMgr.get('EligibleRewardsStore');
-      var samePage = (mcntlr.getMainPage() == this.getViewport().getActiveItem());
-
-      if(viewport.getVenue().getId() != cvenue.getId())
-      {
-         // Restore Merchant Info
-         ccntlr.setupCheckinInfo('checkin', cvenue, ccustomer, cmetaData);
-      }
-
-      console.log("Going to Merchant Home Account Page ...");
-
-      estore.setData(cmetaData['eligible_rewards']);
-      this.getViewport().reset(this);
-      //Ext.Viewport.setMasked(false);
-
-      //
-      // Trigger the activeItem changes when refreshing page
-      //
-      if(samePage)
-      {
-         vport.setFadeAnimation();
-         vport.doSetActiveItem(mcntlr.getMainPage(), null);
-      }
-      mcntlr.openMainPage();
    },
    onAccountsButtonTap : function(b, e, eOpts)
    {
@@ -271,7 +216,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    onHomeButtonTap : function(b, e, eOpts)
    {
-      this.getViewport().reset(this);
+      this.getViewport().reset();
       this.onFeatureTap('MainPage');
       console.log("Going back to HomePage ...");
    },

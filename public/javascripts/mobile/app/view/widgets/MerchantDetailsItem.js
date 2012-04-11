@@ -1,9 +1,9 @@
-Ext.define('Genesis.view.widgets.CheckinMerchantDetailsItem',
+Ext.define('Genesis.view.widgets.MerchantDetailsItem',
 {
    extend : 'Ext.dataview.component.DataItem',
    requires : ['Ext.XTemplate'],
-   xtype : 'checkinmerchantdetailsitem',
-   alias : 'widget.checkinmerchantdetailsitem',
+   xtype : 'merchantdetailsitem',
+   alias : 'widget.merchantdetailsitem',
    config :
    {
       layout :
@@ -26,7 +26,7 @@ Ext.define('Genesis.view.widgets.CheckinMerchantDetailsItem',
       address :
       {
          flex : 1,
-         tpl : Ext.create('Ext.XTemplate', '<div class="checkinMerchantDetailsWrapper">' + '<div class="itemTitle">{name}</div>' + '<div class="itemDesc">{[this.getAddress(values)]}</div>' + '</div>',
+         tpl : Ext.create('Ext.XTemplate', '<div class="merchantDetailsWrapper">' + '<div class="itemTitle">{name}</div>' + '<div class="itemDesc">{[this.getAddress(values)]}</div>' + '</div>',
          // @formatter:on
          {
             getAddress : function(values)

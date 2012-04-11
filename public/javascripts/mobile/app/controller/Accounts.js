@@ -33,19 +33,10 @@ Ext.define('Genesis.controller.Accounts',
          }
       }
    },
-   models : ['Venue', 'Merchant'],
+   models : ['Venue'],
    init : function()
    {
       this.callParent(arguments);
-      //
-      // Venues for all the Associated with the Merchant Account
-      //
-      Ext.regStore('VenueAccountStore',
-      {
-         model : 'Genesis.model.Venue',
-         autoLoad : false
-      });
-      //Ext.StoreMgr.get('AccountsStore').sort('sort_id', 'DESC');
       console.log("Accounts Init");
    },
    // --------------------------------------------------------------------------
@@ -70,38 +61,57 @@ Ext.define('Genesis.controller.Accounts',
    onDisclose : function(list, record, target, index, e, eOpts)
    {
       var me = this;
-      //
+      var app = me.getApplication();
+      var controller = app.getController('Checkins');
+      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
+      var cstore = Ext.StoreMgr.get('CustomerStore');
+      var merchantId = record.getMerchant().getId();
+      var viewport = me.getViewPortCntlr();
+
       // Load Venue Info
       //
-      Ext.StoreMgr.get('VenueAccountStore').load(
+      me.getGeoLocation(function(position)
       {
-         scope : this,
-         params :
+         Venue['setGetClosestVenueURL']();
+         cestore.load(
          {
-            'user_id' : record.getId(),
-            'merchant_id' : record.getMerchant()['merchant_id']
-         },
-         callback : function(records, operation)
-         {
-            if(operation.wasSuccessful())
+            scope : me,
+            params :
             {
-               var controller = this.getApplication().getController('Checkins');
-               controller.mode = 'explore';
-               controller.onExploreDisclose(list, records[0], target, index, e, eOpts);
-               return true;
-            }
-            else
+               'merchant_id' : merchantId,
+               latitude : position.coords.latitude,
+               longitude : position.coords.longitude
+            },
+            callback : function(records, operation)
             {
-               Ext.device.Notification.show(
+               if(operation.wasSuccessful())
                {
-                  title : 'Error',
-                  message : 'Error Loading Merchant Venues',
-                  callback : function(button)
+                  for(var i = 0; i < records.length; i++)
                   {
+                     viewport.setVenue(records[i]);
+                     app.dispatch(
+                     {
+                        action : 'onCheckinHandler',
+                        args : ['explore',  cestore.getProxy().getReader().metaData, cstore, null, [record], operation],
+                        controller : controller,
+                        scope : controller
+                     });
+                     //
+                     // Return to first match
+                     //
+                     break;
                   }
-               });
-            }
-         },
+               }
+               else
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Error',
+                     message : 'Error Loading Venue information'
+                  });
+               }
+            },
+         });
       });
    },
    // --------------------------------------------------------------------------

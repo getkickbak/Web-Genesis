@@ -285,13 +285,13 @@ Ext.define('Genesis.view.MerchantAccount',
             title : 'Redeem'
          },
          {
-            iconCls : 'check_black1',
-            tag : 'checkin',
-            title : 'Check-In'
+            iconCls : 'favorites_circle',
+            tag : 'main',
+            title : 'Main Menu'
          },
          {
-            tag : 'browse',
             iconCls : 'search1',
+            tag : 'browse',
             title : 'Explore'
          }]
       }]

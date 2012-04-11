@@ -1,13 +1,13 @@
-Ext.define('Genesis.view.CheckinMerchant',
+Ext.define('Genesis.view.MerchantDetails',
 {
    extend : 'Ext.Container',
-   requires : ['Ext.dataview.DataView', 'Ext.XTemplate', 'Ext.Map', 'Genesis.view.widgets.CheckinMerchantDetailsItem'],
-   alias : 'widget.checkinmerchantview',
+   requires : ['Ext.dataview.DataView', 'Ext.XTemplate', 'Ext.Map', 'Genesis.view.widgets.MerchantDetailsItem'],
+   alias : 'widget.merchantdetailsview',
    config :
    {
       title : 'Venue Name',
       changeTitle : true,
-      cls : 'checkinMerchant',
+      cls : 'merchantDetails',
       scrollable : 'vertical',
       layout :
       {
@@ -22,42 +22,15 @@ Ext.define('Genesis.view.CheckinMerchant',
       items : [
       {
          xtype : 'dataview',
-         cls : 'checkinMerchantWrapper separator',
+         cls : 'separator',
          useComponents : true,
-         defaultType : 'checkinmerchantdetailsitem',
+         defaultType : 'merchantdetailsitem',
          scrollable : false,
          store :
          {
             model : 'Genesis.model.Venue',
             autoLoad : false
          }
-      },
-      {
-         xtype : 'container',
-         margin : 0,
-         layout :
-         {
-            type : 'hbox',
-            align : 'stretch',
-            pack : 'center'
-         },
-         items : [
-         {
-            flex : 1,
-            xtype : 'button',
-            ui : 'green-large',
-            tag : 'checkinBtn',
-            text : 'Check in'
-         },
-         {
-            flex : 1,
-            xtype : 'button',
-            //margin : '0 0 0 0.8',
-            //defaultUnit : 'em',
-            ui : 'red-large',
-            tag : 'exploreBtn',
-            text : 'Explore'
-         }]
       },
       /*
        {
@@ -83,7 +56,7 @@ Ext.define('Genesis.view.CheckinMerchant',
          {
             painted : function(map, eOpts)
             {
-               cntlr = _application.getController('Checkins');
+               cntlr = _application.getController('Merchants');
                var size = map.innerElement.getSize();
                map.setSize(size.width, size.height);
                var queryString = Ext.Object.toQueryString(Ext.apply(
