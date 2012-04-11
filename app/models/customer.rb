@@ -12,7 +12,7 @@ class Customer
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
     
-  has 1, :last_check_in, 'CheckIn'
+  has 1, :last_check_in, 'CheckIn', :constraint => :destroy
   belongs_to :merchant, :key => true
   belongs_to :user, :key => true
   

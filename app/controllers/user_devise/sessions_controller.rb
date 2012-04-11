@@ -6,19 +6,18 @@ class UserDevise::SessionsController < Devise::SessionsController
       begin
         user = User.first(:facebook_id => params[:facebook_id])
         if user.nil?
-          user = User.create_from_facebook(params)
-        else
-          account_info = {
-            :name => params[:name],
-            :email => params[:email]
-          }
-          user.update(account_info)
-          profile_info = {
-            :gender => params[:gender],
-            :birthday => params[:birthday]
-          }
-          user.profile.update(profile_info)
-        end      
+          raise Exception.new
+        end
+        account_info = {
+          :name => params[:name],
+          :email => params[:email]
+        }
+        user.update(account_info)
+        profile_info = {
+          :gender => params[:gender],
+          :birthday => params[:birthday]
+        }
+        user.profile.update(profile_info)      
         resource = user
         sign_in(resource_name, resource)
         respond_to do |format|
