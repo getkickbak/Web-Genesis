@@ -123,24 +123,24 @@ Ext.define('Genesis.controller.MainPage',
          clearOnPageLoad : false,
          sorters : [
          {
-            // Clump by merchant
+            // Clump by merchant (ascending order)
             sorterFn : function(o1, o2)
             {
                return o1.getMerchant().getId() - o2.getMerchant().getId();
             }
          },
          {
+            // Return based on expiry date (descending order)
             sorterFn : function(o1, o2)
             {
-               // Return based on expiry date
-               return o1.get('expiry_date') - o2.get('expiry_date');
+               return Date.parse(o2.get('expiry_date')) - Date.parse(o1.get('expiry_date'));
             }
          },
          {
+            // Return based on issue date (Bigger Id == issued later)
             sorterFn : function(o1, o2)
             {
-               // Return based on issue date
-               return o1.getId() - o2.getId();
+               return o2.getId() - o1.getId();
             }
          }],
          listeners :
@@ -427,7 +427,12 @@ Ext.define('Genesis.controller.MainPage',
          {
             sorterFn : function(o1, o2)
             {
-               return o2.getMerchant().get('name') - o1.getMerchant().get('name');
+               var name1 = o1.getMerchant().get('name'), name2 = o2.getMerchant().get('name');
+               if(name1 < name2)//sort string ascending
+                  return -1
+               if(name1 > name2)
+                  return 1
+               return 0 //default return value (no sorting)
             }
          }]
       });

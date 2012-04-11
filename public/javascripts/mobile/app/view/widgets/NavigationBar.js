@@ -229,7 +229,7 @@ Ext.define('Genesis.navigation.Bar',
       {
          backButton.setWidth(buttonTo.width);
       }
-      me[(!view.getHideNavBar()) ? 'show':'hide']();
+      me[(Ext.isEmpty(view.getHideNavBar) || !view.getHideNavBar()) ? 'show':'hide']();
    },
    /**
     * Pushes a new back button into the bar with animations
@@ -289,7 +289,7 @@ Ext.define('Genesis.navigation.Bar',
       {
          backButton.setWidth(buttonTo.width);
       }
-      me[(!view.getHideNavBar()) ? 'show':'hide']();
+      me[(Ext.isEmpty(view.getHideNavBar) || !view.getHideNavBar()) ? 'show':'hide']();
    },
    /**
     * Pops the current back button with animations.

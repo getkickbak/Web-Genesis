@@ -43,7 +43,7 @@ Ext.define('Genesis.controller.Merchants',
          mapBtn : 'viewportview button[tag=mapBtn]',
          shareBtn : 'viewportview button[tag=shareBtn]',
          checkinBtn : 'viewportview button[tag=checkin]',
-         mainBtn : 'merchantaccountview tabbar[cls=navigationBarBottom] button[tag=main]',
+         //mainBtn : 'merchantaccountview tabbar[cls=navigationBarBottom] button[tag=main]',
          prizesBtn : 'merchantaccountview tabbar[cls=navigationBarBottom] button[tag=prizes]'
       },
       control :
@@ -159,7 +159,7 @@ Ext.define('Genesis.controller.Merchants',
       //this.onActivateCommon(map, map.getMap());
       // Show Share Icon
       this.getShareBtn().show();
-      this.getMainBtn().hide();
+      //this.getMainBtn().hide();
 
       this.onActivateCommon(map, null);
       //
@@ -234,7 +234,7 @@ Ext.define('Genesis.controller.Merchants',
       //
       // Main Menu button
       //
-      me.getMainBtn()[(checkedIn && !checkedInMatch) ? 'show' : 'hide']();
+      //me.getMainBtn()[(checkedIn && !checkedInMatch) ? 'show' : 'hide']();
 
       //
       // Update Badges

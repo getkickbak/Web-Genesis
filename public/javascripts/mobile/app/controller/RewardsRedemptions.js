@@ -131,6 +131,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    },
    initRedemptions : function()
    {
+      this.initSound = false;
       this.control(
       {
          redemptions :
@@ -240,16 +241,32 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       // Automatically update totals
       this.updateRewardsCartTotal([]);
    },
-   prizeCheck : function(store)
+   prizeCheck : function(pstore)
    {
       var me = this;
-      var records = store.loadCallback[0];
-      var operation = store.loadCallback[1];
+      var flag = 0;
+      var custore = Ext.StoreMgr.get('CustomerStore');
+      var app = me.getApplication();
+      var controller = app.getController('Prizes');
+      var vport = me.getViewport();
 
+      //
+      // Information stored from "load" event
+      //
+      var records = pstore.loadCallback[0];
+      var operation = pstore.loadCallback[1];
+
+      var wonPrizeCallBack = function()
+      {
+         app.dispatch(
+         {
+            action : 'onShowPrize',
+            args : [records[0]],
+            controller : controller,
+            scope : controller
+         });
+      }
       var viewport = me.getViewPortCntlr();
-      //
-      // To-do : Update CustomerStore (Points) with returned value
-      //
       if(!operation.wasSuccessful())
       {
          var container = me.getRewardsContainer();
@@ -276,35 +293,49 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          }
          else
          {
+            if(!this.initSound)
+            {
+               this.initSound = true;
+               Ext.get('winPrize').dom.addEventListener('ended', function()
+               {
+                  if(flag & 0x10)
+                  {
+                     me.popView();
+                  }
+                  if((flag |= 0x01) == 0x11)
+                  {
+                     wonPrizeCallBack();
+                  }
+               });
+            }
+            vport.setEnableAnim(false);
+            vport.getNavigationBar().setCallbackFn(function()
+            {
+               vport.setEnableAnim(true);
+               vport.getNavigationBar().setCallbackFn(Ext.emptyFn);
+            });
+            //
+            // Play the prize winning music!
+            //
+            Ext.device.Notification.vibrate();
+            Ext.get('winPrize').dom.play();
             Ext.device.Notification.show(
             {
                title : 'Scan And Win!',
                message : 'You haved won ' + ((records.length > 1) ? 'some PRIZES' : 'a PRIZE') + '!',
                callback : function()
                {
-                  var app = me.getApplication();
-                  var controller = app.getController('Prizes');
-                  var vport = me.getViewport();
-
-                  vport.setEnableAnim(false);
-                  vport.getNavigationBar().setCallbackFn(function()
+                  if(flag & 0x01)
                   {
-                     vport.setEnableAnim(true);
-                     vport.getNavigationBar().setCallbackFn(Ext.emptyFn);
-
-                     app.dispatch(
-                     {
-                        action : 'onShowPrize',
-                        args : [records[0]],
-                        controller : controller,
-                        scope : controller
-                     });
-                  });
-                  me.popView();
+                     me.popView();
+                  }
+                  if((flag |= 0x10) == 0x11)
+                  {
+                     wonPrizeCallBack();
+                  }
                }
             });
          }
-         Ext.device.Notification.vibrate();
       }
    },
    earnPts : function()
@@ -470,34 +501,46 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       //
       cstore.getById(customerId).set('points', metaData['account_points']);
    },
-   onRewardMetaChange : function(store, metaData)
+   onRewardMetaChange : function(pstore, metaData)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
       var cstore = Ext.StoreMgr.get('CustomerStore');
       var customerId = viewport.getCustomer().getId();
+      var message;
 
       var vipPopup = function()
       {
+         message = me.getVipMsg(metaData['vip_challenge']);
          Ext.device.Notification.show(
          {
             title : 'VIP Challenge Alert!',
-            message : me.getVipMsg(metaData['vip_challenge']),
+            message : message,
             callback : function()
             {
                Ext.defer(function()
                {
-                  me.prizeCheck(store);
+                  me.prizeCheck(pstore);
                }, 2000);
             }
          });
       }
+      //
+      // Update points from the purchase or redemption
+      //
+      cstore.getById(customerId).set('points', metaData['account_points']);
+
       if(metaData['points'])
       {
+         message = me.getPointsMsg(metaData['points']);
+         if(!metaData['vip_challenge'])
+         {
+            message += ((!Genesis.constants.isNative()) ? '<br/>' : '\n') + me.getPrizeCheckMsg();
+         }
          Ext.device.Notification.show(
          {
             title : 'Earn Points',
-            message : me.getPointsMsg(metaData['points']) + ((!metaData['vip_challenge']) ? ((!Genesis.constants.isNative()) ? '<br/>' : '\n') + me.getPrizeCheckMsg() : ''),
+            message : message,
             callback : function()
             {
                if((metaData['vip_challenge']))
@@ -508,7 +551,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                {
                   Ext.defer(function()
                   {
-                     me.prizeCheck(store);
+                     me.prizeCheck(pstore);
                   }, 2000);
                }
             }
@@ -519,10 +562,6 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       {
          vipPopup();
       }
-      //
-      // Update points from the purchase or redemption
-      //
-      cstore.getById(customerId).set('points', metaData['account_points']);
    },
    onRewardsEarnPtsTap : function(b, e, eOpts)
    {
