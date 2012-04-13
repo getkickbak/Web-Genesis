@@ -156,18 +156,20 @@ Ext.define('Genesis.view.Viewport',
             iconCls : 'check_black1',
             hidden : true
          },
-         {
-            align : 'right',
-            tag : 'edit',
-            text : 'Edit',
-            hidden : true
-         },
-         {
-            align : 'right',
-            tag : 'done',
-            text : 'Done',
-            hidden : true
-         },
+         /*
+          {
+          align : 'right',
+          tag : 'edit',
+          text : 'Edit',
+          hidden : true
+          },
+          {
+          align : 'right',
+          tag : 'done',
+          text : 'Done',
+          hidden : true
+          },
+          */
          {
             align : 'right',
             tag : 'redeem',

@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.Rewards',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RewardsCartItem'],
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.ComponentList', 'Genesis.view.widgets.RewardsCartItem'],
    alias : 'widget.rewardsview',
    config :
    {
@@ -68,8 +68,9 @@ Ext.define('Genesis.view.Rewards',
                }]
             },
             {
-               xtype : 'list',
+               xtype : 'componentlist',
                flex : 1,
+               defaultType : 'rewardscartitem',
                scrollable : 'vertical',
                store :
                {
@@ -100,24 +101,7 @@ Ext.define('Genesis.view.Rewards',
                 },
                 */
                pinHeaders : false,
-               grouped : true,
-               // @formatter:off
-               itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>', '<div class="listItemDetailsWrapper">', '<div class="itemDesc wrap">{[this.getDesc(values)]}</div>', '</div>',
-               // @formatter:on
-               {
-                  getPhoto : function(values)
-                  {
-                     if(!values.photo)
-                     {
-                        return Genesis.view.Rewards.getPhoto(values['type']);
-                     }
-                     return values.photo.url;
-                  },
-                  getDesc : function(values)
-                  {
-                     return values.title;
-                  }
-               })
+               grouped : true
             }]
          },
          // -------------------------------------------------------------------
@@ -127,16 +111,20 @@ Ext.define('Genesis.view.Rewards',
             tag : 'rewardTallyList',
             items : [
             {
+               xtype : 'componentlist',
                flex : 1,
-               cls : 'shadows',
-               xtype : 'dataview',
-               maxItemCache : 0, // This attribute is needed to prevent caching of dynamic objects
+               defaultType : 'rewardscheckoutitem',
+               //cls : 'shadows',
                scrollable : 'vertical',
-               useComponents : true,
                tag : 'rewardsCart',
-               defaultType : 'rewardscartitem',
-               cls : 'rewardsCart separator_pad',
-               store : 'RewardsCartStore'
+               //useComponents : true,
+               cls : 'rewardsCart',
+               store : 'RewardsCartStore',
+               sorters : [
+               {
+                  property : 'points',
+                  direction : 'DESC'
+               }]
             },
             {
                xtype : 'container',

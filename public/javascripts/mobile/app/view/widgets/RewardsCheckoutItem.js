@@ -1,10 +1,10 @@
-Ext.define('Genesis.view.widgets.RewardsCartItem',
+Ext.define('Genesis.view.widgets.RewardsCheckoutItem',
 {
    extend : 'Ext.dataview.component.DataItem',
    requires : ['Ext.Button', 'Ext.XTemplate'],
    //mixins : ['Genesis.view.widgets.Animation'],
-   xtype : 'rewardscartitem',
-   alias : 'widget.rewardscartitem',
+   xtype : 'rewardscheckoutitem',
+   alias : 'widget.rewardscheckoutitem',
    config :
    {
       hideAnimation : !Ext.os.is.Android2 ?
@@ -18,6 +18,24 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
       {
          type : 'hbox',
          align : 'center'
+      },
+      qty :
+      {
+         cls : 'qty',
+         tpl : Ext.create('Ext.XTemplate', '{[this.getQty(values)]}',
+         {
+            getQty : function(values)
+            {
+               return values['qty'];
+            }
+         })
+      },
+      multiplier :
+      {
+         iconCls : 'delete_black2',
+         disabled : true,
+         iconMask : true,
+         cls : 'plain'
       },
       image :
       {
@@ -37,31 +55,29 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
       title :
       {
          flex : 1,
-         cls : 'title'
+         cls : 'title',
       },
-      addQty :
+      points :
       {
-         iconCls : 'arrow_up',
-         tag : 'addQty',
-         iconMask : true
-      },
-      qty :
-      {
-         cls : 'qty',
-         tpl : Ext.create('Ext.XTemplate', '{[this.getQty(values)]}',
+         cls : 'points',
+         tpl : Ext.create('Ext.XTemplate', '{[this.getPoints(values)]} Pts',
          {
-            getQty : function(values)
+            getPoints : function(values)
             {
-               return Ext.isEmpty(values['qty']) ? 0 : values['qty'];
+               return values.qty * values.points;
             }
          })
       },
-      subQty :
-      {
-         iconCls : 'arrow_down',
-         tag : 'subQty',
-         iconMask : true
-      },
+      /*
+       remove :
+       {
+       hidden : true,
+       iconCls : 'delete_black2',
+       tag : 'deleteItem',
+       iconMask : true,
+       cls : 'plain'
+       },
+       */
       dataMap :
       {
          getImage :
@@ -72,66 +88,54 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
          {
             setHtml : 'title'
          },
+         getPoints :
+         {
+            setData : 'points'
+         },
          getQty :
          {
             setData : 'qty'
          }
       }
    },
-   applyAddQty : function(config)
+   applyMultiplier : function(config)
    {
       return Ext.factory(Ext.apply(config,
       {
-      }), Ext.Button, this.getAddQty());
+      }), Ext.Button, this.getMultiplier());
    },
-   updateAddQty : function(newAddQty, oldAddQty)
+   updateMultiplier : function(newMultiplier, oldMultiplier)
    {
-      if(newAddQty)
+      if(newMultiplier)
       {
-         this.add(newAddQty);
+         this.add(newMultiplier);
       }
 
-      if(oldAddQty)
+      if(oldMultiplier)
       {
-         this.remove(oldAddQty);
+         this.remove(oldMultiplier);
       }
    },
-   applyQty : function(config)
-   {
-      return Ext.factory(Ext.apply(config,
-      {
-      }), Ext.Component, this.getQty());
-   },
-   updateQty : function(newQty, oldQty)
-   {
-      if(newQty)
-      {
-         this.add(newQty);
-      }
+   /*
+    applyRemove : function(config)
+    {
+    return Ext.factory(Ext.apply(config,
+    {
+    }), Ext.Button, this.getRemove());
+    }
+    updateRemove : function(newRemove, oldRemove)
+    {
+    if(newRemove)
+    {
+    this.add(newRemove);
+    }
 
-      if(oldQty)
-      {
-         this.remove(oldQty);
-      }
-   },
-   applySubQty : function(config)
-   {
-      return Ext.factory(Ext.apply(config,
-      {
-      }), Ext.Button, this.getSubQty());
-   },
-   updateSubQty : function(newSubQty, oldSubQty)
-   {
-      if(newSubQty)
-      {
-         this.add(newSubQty);
-      }
-
-      if(oldSubQty)
-      {
-         this.remove(oldSubQty);
-      }
-   },
+    if(oldRemove)
+    {
+    this.remove(oldRemove);
+    }
+    },
+    */
    applyImage : function(config)
    {
       return Ext.factory(Ext.apply(config,
@@ -168,6 +172,42 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
          this.remove(oldTitle);
       }
    },
+   applyPoints : function(config)
+   {
+      return Ext.factory(Ext.apply(config,
+      {
+      }), Ext.Component, this.getPoints());
+   },
+   updatePoints : function(newPoints, oldPoints)
+   {
+      if(newPoints)
+      {
+         this.add(newPoints);
+      }
+
+      if(oldPoints)
+      {
+         this.remove(oldPoints);
+      }
+   },
+   applyQty : function(config)
+   {
+      return Ext.factory(Ext.apply(config,
+      {
+      }), Ext.Component, this.getQty());
+   },
+   updateQty : function(newQty, oldQty)
+   {
+      if(newQty)
+      {
+         this.add(newQty);
+      }
+
+      if(oldQty)
+      {
+         this.remove(oldQty);
+      }
+   },
    updateRecord : function(newRecord)
    {
       if(!newRecord)
@@ -194,6 +234,7 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
                   switch (setterMap[setterName])
                   {
                      case 'qty':
+                     case 'points':
                      case 'photo_url':
                         component[setterName](data);
                         break;

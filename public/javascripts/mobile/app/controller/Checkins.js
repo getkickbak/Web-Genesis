@@ -38,6 +38,7 @@ Ext.define('Genesis.controller.Checkins',
       models : ['Venue', 'Merchant', 'EarnPrize'],
       position : null,
    },
+   noCheckinCodeMsg : 'No Checkin Code were found!',
    init : function()
    {
       //
@@ -118,11 +119,11 @@ Ext.define('Genesis.controller.Checkins',
                   }
                   else
                   {
-                     console.debug("No QR Code Scanned!");
+                     console.debug(me.noCheckinCodeMsg);
                      Ext.device.Notification.show(
                      {
                         title : 'Warning',
-                        message : 'No QR Code Scanned!'
+                        message : me.noCheckinCodeMsg
                      });
                   }
                }
@@ -132,7 +133,7 @@ Ext.define('Genesis.controller.Checkins',
             Ext.Viewport.setMasked(
             {
                xtype : 'loadmask',
-               message : 'Retrieving Merchant Info'
+               message : 'Retrieving Merchant Info ...'
             });
             this.onCheckinCommonTap(b, e, eOpts, mode, url, "", null, callback);
             break;

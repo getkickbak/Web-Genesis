@@ -15,8 +15,8 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       refs :
       {
          backButton : 'viewportview button[text=Close]',
-         doneBtn : 'viewportview button[tag=done]',
-         editBtn : 'viewportview button[tag=edit]',
+         //doneBtn : 'viewportview button[tag=done]',
+         //editBtn : 'viewportview button[tag=edit]',
          //
          // Rewards
          //
@@ -26,7 +26,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             autoCreate : true,
             xtype : 'rewardsview'
          },
-         rewardsCart : 'rewardsview dataview[tag=rewardsCart]',
+         rewardsCart : 'rewardsview list[tag=rewardsCart]',
          rewardsCartTotal : 'rewardsview component[tag=total]',
          rewardsTallyList : 'rewardsview container[tag=rewardTallyList]',
          rewardsContainer : 'rewardsview container[tag=rewards]',
@@ -50,6 +50,8 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       {
       }
    },
+   orderTitle : 'Rewards List',
+   checkoutTitle : 'Check Out',
    init : function()
    {
       this.initRewards();
@@ -73,7 +75,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             activate : this.onRewardsActivate,
             deactivate : this.onRewardsDeactivate
          },
-         'rewardsview list' :
+         rewardsList :
          {
             select : this.onRewardsItemSelect
          },
@@ -85,17 +87,27 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          {
             activeitemchange : this.onRewardsContainerActivate
          },
-         'rewardsview dataview[tag=rewardsCart] rewardscartitem button[iconCls=delete_black2]' :
-         {
-            tap : this.onRewardsCartItemDeleteTap
-         },
-         'rewardsview dataview[tag=rewardsCart] rewardscartitem selectfield' :
-         {
-            change : this.onRewardsCartItemSelectChange
-         },
+         /*
+          'rewardsview dataview[tag=rewardsCart] rewardscartitem button[iconCls=delete_black2]' :
+          {
+          tap : this.onRewardsCartItemDeleteTap
+          },
+          'rewardsview dataview[tag=rewardsCart] rewardscartitem selectfield' :
+          {
+          change : this.onRewardsCartItemSelectChange
+          },
+          */
          'rewardsview container[tag=rewardTallyList] button[tag=earnPts]' :
          {
             tap : this.onRewardsEarnPtsTap
+         },
+         'rewardscartitem button[tag=addQty]' :
+         {
+            tap : this.onRewardCartAddQty
+         },
+         'rewardscartitem button[tag=subQty]' :
+         {
+            tap : this.onRewardCartSubQty
          },
          'checkinmerchantview button[tag=checkinBtn]' :
          {
@@ -193,6 +205,10 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       var showBar = (cvenue && (cvenue.getId() == venue.getId())) && (rcstore.getCount() > 0);
       this.getNavigationBarBottom()[(showBar) ? 'show':'hide' ]();
    },
+   hideNavBar : function()
+   {
+      this.getNavigationBarBottom()['hide' ]();
+   },
    updateRewardsCartTotal : function(cartItems)
    {
       var total = this.getRewardsCartTotal(), totalPts = 0;
@@ -235,8 +251,8 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       if(rcstore)
       {
          rcstore.removeAll();
-         rcstore.data.updateIndices();
          //bug fix for Store when we call "indexOf" utilizing indices
+         rcstore.data.updateIndices();
       }
       // Automatically update totals
       this.updateRewardsCartTotal([]);
@@ -425,7 +441,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       var earnPtsBtn = this.getEarnPtsBtn();
       var container = this.getRewardsContainer();
       var activeItem = container.getActiveItem();
-      var rcstore = Ext.StoreMgr.get('RewardsCartStore');
+      //var rcstore = Ext.StoreMgr.get('RewardsCartStore');
 
       earnPtsBtn.updateActive(false);
       switch (activeItem.config.tag)
@@ -441,10 +457,12 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             //
             // Exit Edit Mode if we are getting out
             //
-            if(!this.getDoneBtn().isHidden())
-            {
-               this.onRewardsCartDoneTap(this.getDoneBtn(), e, eOpts);
-            }
+            /*
+             if(!this.getDoneBtn().isHidden())
+             {
+             this.onRewardsCartDoneTap(this.getDoneBtn(), e, eOpts);
+             }
+             */
             container.setActiveItem(0);
             break;
          }
@@ -462,44 +480,74 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       {
          case 'rewardTallyList' :
          {
-            me.getDoneBtn().hide();
-            me.getEditBtn().show();
+            //me.getDoneBtn().hide();
+            //me.getEditBtn().show();
             me.getBackButton().hide();
-            earnPtsBtn.setTitle('Order Menu');
+            earnPtsBtn.setTitle(me.orderTitle);
             animation.setReverse(false);
             me.showNavBar();
             break;
          }
          case 'rewardMainList' :
          {
-            me.getDoneBtn().hide();
-            me.getEditBtn().hide();
+            //me.getDoneBtn().hide();
+            //me.getEditBtn().hide();
             me.getBackButton().show();
-            earnPtsBtn.setTitle('Check Out');
+            earnPtsBtn.setTitle(me.checkoutTitle);
             animation.setReverse(true);
             me.showNavBar();
             break;
          }
          case 'prizeCheck' :
          {
-            me.getDoneBtn().hide();
-            me.getEditBtn().hide();
+            //me.getDoneBtn().hide();
+            //me.getEditBtn().hide();
             me.getBackButton().hide();
-            me.getNavigationBarBottom().hide();
+            me.hideNavBar();
             break;
          }
       }
    },
-   onRedeemMetaChange : function(store, metaData)
+   onRewardCartAddQty : function(b, e, eOpts)
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var customerId = viewport.getCustomer().getId();
+      this.onRewardCartChangeQty(b, e, eOpts, 1);
+   },
+   onRewardCartSubQty : function(b, e, eOpts)
+   {
+      this.onRewardCartChangeQty(b, e, eOpts, -1);
+   },
+   onRewardCartChangeQty : function(b, e, eOpts, pointsOffset)
+   {
+      var item = b.up('rewardscartitem');
+      var list = this.getRewardsList();
+      var cart = this.getRewardsCart();
+      var record = list.getStore().getById(item.getRecord().getId());
+
+      var qty = pointsOffset + (Ext.isEmpty(record.get('qty')) ? 0 : record.get('qty'));
+      record.set('qty', Math.max(0, qty));
+      if(qty == 0)
+      {
+         cart.getStore().remove(record);
+      }
+      else
+      if((qty == pointsOffset) && (pointsOffset > 0))
+      {
+         cart.getStore().add(record);
+      }
+      else
+      if(qty > 0)
+      {
+         item.updateRecord(record);
+         item.setRecord(record);
+      }
+      // Automatically update totals
+      this.updateRewardsCartTotal(cart.getStore().getRange());
       //
-      // Update points from the purchase or redemption
+      // Show the Bottom Toolbar
       //
-      cstore.getById(customerId).set('points', metaData['account_points']);
+      this.showNavBar();
+
+      return true;
    },
    onRewardMetaChange : function(pstore, metaData)
    {
@@ -598,132 +646,116 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    {
       if(!this.exploreMode)
       {
-         var cartList = this.getRewardsCart();
-         //Add to Shopping Cart
-         var store = cartList.getStore();
-         //RewardsCartStore
-         var index = store.indexOf(record);
-         var items;
-         if(index < 0)
-         {
-            record.getData().qty = 1;
-            store.add(record);
-         }
-         else
-         {
-            record.set('qty', record.get('qty') + 1);
-            cartList.getViewItems()[index].updateRecord(record);
-         }
-         // Automatically update totals
-         this.updateRewardsCartTotal(store.getRange());
-         //
-         // Show the Bottom Toolbar
-         //
-         this.getNavigationBarBottom().show();
+         /*
+          var cartList = this.getRewardsCart();
+          //Add to Shopping Cart
+          var store = cartList.getStore();
+          //RewardsCartStore
+          var index = store.indexOf(record);
+          var items;
+          if(index < 0)
+          {
+          record.set('qty', 1);
+          store.add(record);
+          }
+          else
+          {
+          record.set('qty', record.get('qty') + 1);
+          //cartList.getViewItems()[index].updateRecord(record);
+          }
+          */
       }
       else
       {
          Ext.device.Notification.show(
          {
             title : 'Warning',
-            message : 'You need to Check-In first before you are elibigle for Rewards'
+            message : 'You need to Check-In first before you are elibigle to Earn Rewards'
          });
       }
       // Deselect item
       list.deselect([record]);
       return false;
    },
-   onRewardsCartEditTapCommon : function(b, toggle)
-   {
-      this.getDoneBtn()[toggle[0]]();
-      this.getEditBtn()[toggle[1]]();
-      b.hide();
-      var buttons = Ext.ComponentQuery.query('rewardscartitem button[tag=deleteItem]');
-      var pts = Ext.ComponentQuery.query('rewardscartitem component[cls=points]');
-      Ext.each(buttons, function(item)
-      {
-         item[toggle[0]]();
-      });
-      Ext.each(pts, function(item)
-      {
-         item[toggle[1]]();
-      });
-      var tallyList = this.getRewardsTallyList();
-      Ext.each(tallyList.getItems().items, function(item)
-      {
-         //
-         // Toggle everything except the tallyList
-         //
-         if(!item.getXTypes().match('dataview'))
-         {
-            item[toggle[1]]();
-         }
-      });
-   },
-   onRewardsCartEditTap : function(b, e, eOpts)
-   {
-      this.onRewardsCartEditTapCommon(b, ['show', 'hide']);
-   },
-   onRewardsCartDoneTap : function(b, e, eOpts)
-   {
-      var rewards = this.getRewards();
-      if(rewards.isPainted() && !rewards.isHidden())
-      {
-         this.onRewardsCartEditTapCommon(b, ['hide', 'show']);
-      }
-   },
-   onRewardsCartItemDeleteTap : function(b, e, eOpts)
-   {
-      var me = this;
-      var item = b.up('rewardscartitem');
-      var cart = me.getRewardsCart();
-      var index = cart.getViewItems().indexOf(item);
-      var store = cart.getStore();
-      //RewardsCartStore
-      var record = store.getAt(index);
+   /*
+    onRewardsCartEditTapCommon : function(b, toggle)
+    {
+    this.getDoneBtn()[toggle[0]]();
+    this.getEditBtn()[toggle[1]]();
+    b.hide();
+    var buttons = Ext.ComponentQuery.query('rewardscartitem button[tag=deleteItem]');
+    var pts = Ext.ComponentQuery.query('rewardscartitem component[cls=points]');
+    Ext.each(buttons, function(item)
+    {
+    item[toggle[0]]();
+    });
+    Ext.each(pts, function(item)
+    {
+    item[toggle[1]]();
+    });
+    var tallyList = this.getRewardsTallyList();
+    Ext.each(tallyList.getItems().items, function(item)
+    {
+    //
+    // Toggle everything except the tallyList
+    //
+    if(!item.getXTypes().match('dataview'))
+    {
+    item[toggle[1]]();
+    }
+    });
+    },
+    onRewardsCartEditTap : function(b, e, eOpts)
+    {
+    this.onRewardsCartEditTapCommon(b, ['show', 'hide']);
+    },
+    onRewardsCartDoneTap : function(b, e, eOpts)
+    {
+    var rewards = this.getRewards();
+    if(rewards.isPainted() && !rewards.isHidden())
+    {
+    this.onRewardsCartEditTapCommon(b, ['hide', 'show']);
+    }
+    },
+    onRewardsCartItemDeleteTap : function(b, e, eOpts)
+    {
+    var me = this;
+    var item = b.up('rewardscartitem');
+    var cart = me.getRewardsCart();
+    var index = cart.getViewItems().indexOf(item);
+    var store = cart.getStore();
+    //RewardsCartStore
+    var record = store.getAt(index);
 
-      item.onAfter(
-      {
-         hiddenchange : function()
-         {
-            store.remove(record);
-            var total = me.updateRewardsCartTotal(store.getRange());
+    item.onAfter(
+    {
+    hiddenchange : function()
+    {
+    store.remove(record);
+    var total = me.updateRewardsCartTotal(store.getRange());
 
-            //
-            // Exit Edit Mode and hide NavigationBar when there are no more items to delete
-            //
-            if(total == 0)
-            {
-               var bar = me.getNavigationBarBottom();
-               bar.onAfter(
-               {
-                  hiddenchange : function()
-                  {
-                     me.onRewardsShopCartTap(b, e, eOpts);
-                  },
-                  single : true
-               });
-               bar.hide();
-            }
-         },
-         single : true
-      });
-      item.hide();
-   },
-   onRewardsCartItemSelectChange : function(f, newValue, oldValue, eOpts)
-   {
-      var item = f.up('rewardscartitem');
-      var cart = this.getRewardsCart();
-      var index = cart.getViewItems().indexOf(item);
-      var record = cart.getStore().getAt(index);
-
-      record.set('qty', newValue.get(f.getValueField()));
-      item.updateRecord(record);
-      this.updateRewardsCartTotal(cart.getStore().getRange());
-      //RewardsCartStore
-
-      return true;
-   },
+    //
+    // Exit Edit Mode and hide NavigationBar when there are no more items to delete
+    //
+    if(total == 0)
+    {
+    var bar = me.getNavigationBarBottom();
+    bar.onAfter(
+    {
+    hiddenchange : function()
+    {
+    me.onRewardsShopCartTap(b, e, eOpts);
+    },
+    single : true
+    });
+    bar.hide();
+    }
+    },
+    single : true
+    });
+    item.hide();
+    },
+    */
    onCheckInTap : function(b, e, eOpts)
    {
       this.clearRewardsCart();
@@ -778,6 +810,17 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       }
 
       return true;
+   },
+   onRedeemMetaChange : function(store, metaData)
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      var cstore = Ext.StoreMgr.get('CustomerStore');
+      var customerId = viewport.getCustomer().getId();
+      //
+      // Update points from the purchase or redemption
+      //
+      cstore.getById(customerId).set('points', metaData['account_points']);
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
