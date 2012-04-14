@@ -80,12 +80,12 @@ class Api::V1::VenuesController < ApplicationController
         format.json { render :json => { :success => false, :message => [t("api.photo_blank")] } }
       end
     else
-      filename = "#{String.random_alphanumeric}.png"
+      filename = "#{String.random_alphanumeric}.jpg"
       AWS::S3::S3Object.store(
         ::Common.generate_temp_file_path(filename), 
         params[:image],
         APP_PROP["AMAZON_PHOTOS_BUCKET"], 
-        :content_type => 'image/png', 
+        :content_type => 'image/jpg', 
         :access => :public_read
       )
       @photo_url = ::Common.generate_full_temp_file_path(filename)
