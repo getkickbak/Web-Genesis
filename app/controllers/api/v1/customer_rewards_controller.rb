@@ -2,9 +2,10 @@ class Api::V1::CustomerRewardsController < ApplicationController
   before_filter :authenticate_user!
   
   def index
+    @venue = Venue.get(params[:venue_id]) || not_found
     authorize! :read, CustomerReward
     
-    @rewards = CustomerReward.all(CustomerReward.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]))
+    @rewards = @venue.customer_rewards
     render :template => '/api/v1/customer_rewards/index'
   end
   

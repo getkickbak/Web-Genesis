@@ -2,9 +2,10 @@ class Api::V1::ChallengesController < ApplicationController
   before_filter :authenticate_user!
   
   def index
+    @venue = Venue.get(params[:venue_id]) || not_found
     authorize! :read, Challenge
     
-    @challenges = Challenge.all(Challenge.merchant.id => params[:merchant_id], :venues => Venue.all(:id => params[:venue_id]))
+    @challenges = @venue.challenges
     render :template => '/api/v1/challenges/index'
   end
 
