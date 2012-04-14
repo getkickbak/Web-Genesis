@@ -155,18 +155,21 @@ Ext.define('Genesis.controller.Challenges',
                                  longitude : position.coords.longitude,
                                  auth_code : qrcode
                               },
-                              callback : function()
+                              callback : function(record, operation)
                               {
                                  var metaData = Challenge.getProxy().getReader().metaData;
-                                 //
-                                 // Update points from the purchase or redemption
-                                 //
-                                 Ext.device.Notification.show(
+                                 if(operation.wasSuccessful() && metaData)
                                  {
-                                    title : 'Earn Points',
-                                    message : me.getPointsMsg(metaData['points'])
-                                 });
-                                 cstore.getById(customerId).set('points', metaData['account_points']);
+                                    //
+                                    // Update points from the purchase or redemption
+                                    //
+                                    Ext.device.Notification.show(
+                                    {
+                                       title : 'Earn Points',
+                                       message : me.getPointsMsg(metaData['points'])
+                                    });
+                                    cstore.getById(customerId).set('points', metaData['account_points']);
+                                 }
                               }
                            });
                         }
