@@ -142,7 +142,6 @@ Ext.define('Genesis.controller.Checkins',
    },
    onCheckInScanNow : function(b, e, eOpts, eInfo, mode, url, type, callback)
    {
-      var qrcode;
       var me = this;
 
       switch(type)
@@ -152,8 +151,9 @@ Ext.define('Genesis.controller.Checkins',
             {
                callback : function(qrcode)
                {
-                  if(!Ext.isEmpty(qrcode))
+                  if(qrcode)
                   {
+                     console.log("Checking in ... [qrcode = " + qrcode + "]");
                      Ext.Viewport.setMasked(
                      {
                         xtype : 'loadmask',

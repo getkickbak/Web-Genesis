@@ -155,25 +155,25 @@ Ext.define('Genesis.controller.ControllerBase',
       };
       var callback = function(r)
       {
-         var qrcode = r.response;
+         var qrcode = (r.response == 'undefined') ? "" : (r.response || "");
          if(Genesis.constants.isNative())
          {
             switch(window.plugins.qrCodeReader.scanType)
             {
                case 'RL' :
                {
-                  console.debug("QR Code = " + qrcode);
+                  console.debug("QR Code RL  = " + qrcode);
                   break;
                }
                case 'Nigma' :
                {
                   if(!qrcode)
                   {
-                     console.debug("QR Code = Empty");
+                     console.debug("QR Code Nigma = Empty");
                   }
                   else
                   {
-                     console.debug("QR Code = " + ((qrcode.responseCode) ? qrcode.responseCode : "NONE") + " Sent = " + qrcode.bytesSent + " bytes");
+                     console.debug("QR Code Nigma = " + ((qrcode.responseCode) ? qrcode.responseCode : "NONE") + " Sent = " + qrcode.bytesSent + " bytes");
                   }
                   if(qrcode && qrcode.responseCode)
                   {
