@@ -55,7 +55,18 @@ Ext.define('Genesis.view.widgets.RewardsCheckoutItem',
       title :
       {
          flex : 1,
-         cls : 'title',
+         cls : 'itemDetails',
+         tpl : Ext.create('Ext.XTemplate', '<div class="itemTitle">{[this.getTitle(values)]}</div>', '<div class="itemDesc">{[this.getDesc(values)]}</div>',
+         {
+            getTitle : function(values)
+            {
+               return values['type'].value.capitalize();
+            },
+            getDesc : function(values)
+            {
+               return values['title'];
+            }
+         })
       },
       points :
       {
@@ -86,7 +97,7 @@ Ext.define('Genesis.view.widgets.RewardsCheckoutItem',
          },
          getTitle :
          {
-            setHtml : 'title'
+            setData : 'title'
          },
          getPoints :
          {
@@ -236,6 +247,7 @@ Ext.define('Genesis.view.widgets.RewardsCheckoutItem',
                      case 'qty':
                      case 'points':
                      case 'photo_url':
+                     case 'title':
                         component[setterName](data);
                         break;
                      /*

@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.widgets.RewardsCartItem',
 {
    extend : 'Ext.dataview.component.DataItem',
-   requires : ['Ext.Button', 'Ext.XTemplate'],
+   requires : ['Ext.Button', 'Ext.field.Spinner', 'Ext.XTemplate'],
    //mixins : ['Genesis.view.widgets.Animation'],
    xtype : 'rewardscartitem',
    alias : 'widget.rewardscartitem',
@@ -17,7 +17,7 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
       layout :
       {
          type : 'hbox',
-         align : 'center'
+         align : 'top'
       },
       image :
       {
@@ -37,30 +37,26 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
       title :
       {
          flex : 1,
-         cls : 'title'
-      },
-      addQty :
-      {
-         iconCls : 'arrow_up',
-         tag : 'addQty',
-         iconMask : true
-      },
-      qty :
-      {
-         cls : 'qty',
-         tpl : Ext.create('Ext.XTemplate', '{[this.getQty(values)]}',
+         cls : 'itemDetails',
+         tpl : Ext.create('Ext.XTemplate', '<div class="itemTitle">{[this.getTitle(values)]}</div>', '<div class="itemDesc">{[this.getDesc(values)]}</div>',
          {
-            getQty : function(values)
+            getTitle : function(values)
             {
-               return Ext.isEmpty(values['qty']) ? 0 : values['qty'];
+               return values['type'].value.capitalize();
+            },
+            getDesc : function(values)
+            {
+               return values['title'];
             }
          })
       },
-      subQty :
+      qty :
       {
-         iconCls : 'arrow_down',
-         tag : 'subQty',
-         iconMask : true
+         minValue : 0,
+         maxValue : 99,
+         increment : 1,
+         cycle : true,
+         value : 0
       },
       dataMap :
       {
@@ -70,7 +66,7 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
          },
          getTitle :
          {
-            setHtml : 'title'
+            setData : 'title'
          },
          getQty :
          {
@@ -78,29 +74,11 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
          }
       }
    },
-   applyAddQty : function(config)
-   {
-      return Ext.factory(Ext.apply(config,
-      {
-      }), Ext.Button, this.getAddQty());
-   },
-   updateAddQty : function(newAddQty, oldAddQty)
-   {
-      if(newAddQty)
-      {
-         this.add(newAddQty);
-      }
-
-      if(oldAddQty)
-      {
-         this.remove(oldAddQty);
-      }
-   },
    applyQty : function(config)
    {
       return Ext.factory(Ext.apply(config,
       {
-      }), Ext.Component, this.getQty());
+      }), Ext.field.Spinner, this.getQty());
    },
    updateQty : function(newQty, oldQty)
    {
@@ -112,24 +90,6 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
       if(oldQty)
       {
          this.remove(oldQty);
-      }
-   },
-   applySubQty : function(config)
-   {
-      return Ext.factory(Ext.apply(config,
-      {
-      }), Ext.Button, this.getSubQty());
-   },
-   updateSubQty : function(newSubQty, oldSubQty)
-   {
-      if(newSubQty)
-      {
-         this.add(newSubQty);
-      }
-
-      if(oldSubQty)
-      {
-         this.remove(oldSubQty);
       }
    },
    applyImage : function(config)
@@ -195,6 +155,7 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
                   {
                      case 'qty':
                      case 'photo_url':
+                     case 'title':
                         component[setterName](data);
                         break;
                      /*

@@ -101,13 +101,9 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          {
             tap : this.onRewardsEarnPtsTap
          },
-         'rewardscartitem button[tag=addQty]' :
+         'rewardscartitem spinnerfield' :
          {
-            tap : this.onRewardCartAddQty
-         },
-         'rewardscartitem button[tag=subQty]' :
-         {
-            tap : this.onRewardCartSubQty
+            spin : this.onRewardCartChangeQty
          },
          'checkinmerchantview button[tag=checkinBtn]' :
          {
@@ -508,29 +504,20 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          }
       }
    },
-   onRewardCartAddQty : function(b, e, eOpts)
+   onRewardCartChangeQty : function(spinner, qty, direction, eOpts)
    {
-      this.onRewardCartChangeQty(b, e, eOpts, 1);
-   },
-   onRewardCartSubQty : function(b, e, eOpts)
-   {
-      this.onRewardCartChangeQty(b, e, eOpts, -1);
-   },
-   onRewardCartChangeQty : function(b, e, eOpts, pointsOffset)
-   {
-      var item = b.up('rewardscartitem');
+      var item = spinner.up('rewardscartitem');
       var list = this.getRewardsList();
       var cart = this.getRewardsCart();
       var record = list.getStore().getById(item.getRecord().getId());
 
-      var qty = pointsOffset + (Ext.isEmpty(record.get('qty')) ? 0 : record.get('qty'));
-      record.set('qty', Math.max(0, qty));
+      record.set('qty', qty);
       if(qty == 0)
       {
          cart.getStore().remove(record);
       }
       else
-      if((qty == pointsOffset) && (pointsOffset > 0))
+      if((qty == spinner.getIncrement()) && (direction == 'up'))
       {
          cart.getStore().add(record);
       }

@@ -688,7 +688,7 @@ body {
 .merchantFeedPanel {
    @extend .listNoScrollWrapper;
    .listItemDetailsWrapper {
-       width:13em !important;
+       //width:13em !important;
    }
 }
 
@@ -726,6 +726,30 @@ body {
    }
    .photo {
      position:static !important;
+     height:$icon-size;
+   }
+   .itemDetails {
+      margin-left:$panelGap;
+      min-height:$icon-size;
+      .itemTitle {
+         font-weight:bold;
+         font-size:$largeFontSize;
+         margin-bottom:$panelTopGap/3;
+      }
+      .itemDesc {
+         font-size:$normalFontSize;        
+         @include ellipsis
+      }
+   }
+   .x-spinner {
+      background:transparent;
+      .x-field-input {
+         width:2em;
+      }
+      .x-input-el {
+         text-align:right;
+         //font-size:$xlargeFontSize;
+      }
    }
 }
 
@@ -761,7 +785,7 @@ body {
    .redemptionsList {
       @extend .listScrollIndexWrapper;
       .listItemDetailsWrapper {
-         width:13em !important;
+         //width:13em !important;
       }
    }
 }
