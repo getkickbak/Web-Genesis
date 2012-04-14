@@ -89,11 +89,59 @@ Ext.define('Genesis.controller.Checkins',
    // --------------------------------------------------------------------------
    // Common Functions
    // --------------------------------------------------------------------------
+   onCheckinCommonTap : function(b, e, eOpts, mode, url, qrcode, position, callback)
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      var cstore = Ext.StoreMgr.get('CheckinStore');
+      var venueId = (viewport.getVenue() ? viewport.getVenue().getId() : null);
+
+      console.debug("CheckIn - auth_code:'" + qrcode + "' venue_id:'" + venueId + "'");
+
+      // Load Info into database
+      Customer[url](venueId);
+      var params =
+      {
+         latitude : (position) ? position.coords.latitude : 0,
+         longitude : (position) ? position.coords.longitude : 0,
+         auth_code : qrcode || 0
+      }
+      if(venueId)
+      {
+         params = Ext.apply(params,
+         {
+            venue_id : venueId
+         });
+      }
+
+      cstore.load(
+      {
+         jsonData :
+         {
+         },
+         params : params,
+         scope : me,
+         callback : function(records, operation)
+         {
+            var metaData = cstore.getProxy().getReader().metaData;
+            if(operation.wasSuccessful() && metaData)
+            {
+               me.onCheckinHandler(mode, metaData, cstore, venueId, records, operation, callback);
+            }
+            else
+            if(!operation.wasSuccessful() && !metaData)
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Error',
+                  message : 'Missing Checkin MetaData information.'
+               });
+            }
+         }
+      });
+   },
    onCheckInScanNow : function(b, e, eOpts, eInfo, mode, url, type, callback)
    {
-      mode = mode || 'checkin';
-      url = url || 'setVenueCheckinUrl';
-      type = type || 'scan'
       var qrcode;
       var me = this;
 
@@ -104,7 +152,7 @@ Ext.define('Genesis.controller.Checkins',
             {
                callback : function(response)
                {
-                  if(response)
+                  if(response && response.responseCode)
                   {
                      Ext.Viewport.setMasked(
                      {
@@ -112,7 +160,7 @@ Ext.define('Genesis.controller.Checkins',
                         message : 'Checking in ...'
                      });
 
-                     var qrcode = response.responseCode || '';
+                     var qrcode = response.responseCode;
                      console.debug("qrcode - " + qrcode);
                      // Retrieve GPS Coordinates
                      me.onCheckinCommonTap(b, e, eOpts, mode, url, qrcode, me.getPosition(), callback);
@@ -122,7 +170,7 @@ Ext.define('Genesis.controller.Checkins',
                      console.debug(me.noCheckinCodeMsg);
                      Ext.device.Notification.show(
                      {
-                        title : 'Warning',
+                        title : 'Error',
                         message : me.noCheckinCodeMsg
                      });
                   }
@@ -163,6 +211,20 @@ Ext.define('Genesis.controller.Checkins',
       }
       this.getExplore().setMerchant(null);
    },
+   onCheckinScanTap : function(b, e, eOpts, einfo)
+   {
+      //
+      // Clear Venue info, let server determine from QR Code
+      //
+      this.getExplore().setMerchant(null);
+      this.getViewPortCntlr().setVenue(null);
+
+      // Scan QR Code to confirm Checkin
+      this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueScanCheckinUrl', 'scan', function()
+      {
+         Ext.device.Notification.vibrate();
+      });
+   },
    onCheckinTap : function(b, e, eOpts, einfo)
    {
       // Scan QR Code to confirm Checkin
@@ -184,73 +246,70 @@ Ext.define('Genesis.controller.Checkins',
       var mcntlr = app.getController('Merchants');
 
       var record, customerId, customer, venue, points;
-      if(operation.wasSuccessful() && metaData)
+      for(var i = 0; i < records.length; i++)
       {
-         for(var i = 0; i < records.length; i++)
-         {
-            record = records[i];
-            customerId = record.getId();
-            points = record.get('points');
-            var new_venueId = metaData['venue_id'] || cestore.first().getId();
-            venue = cestore.getById(new_venueId);
-            customer = cstore.getById(customerId);
+         record = records[i];
+         customerId = record.getId();
+         points = record.get('points');
+         var new_venueId = metaData['venue_id'] || cestore.first().getId();
+         venue = cestore.getById(new_venueId);
+         customer = cstore.getById(customerId);
 
-            // Find Matching Venue or pick the first one returned if no venueId is set
-            console.debug("CheckIn - new_venueId:'" + new_venueId + "' venue_id:'" + venueId + "'");
-            if((new_venueId == venueId) || (venueId == null))
+         // Find Matching Venue or pick the first one returned if no venueId is set
+         console.debug("CheckIn - new_venueId:'" + new_venueId + "' venue_id:'" + venueId + "'");
+         if((new_venueId == venueId) || (venueId == null))
+         {
+            //
+            // Update our Database with the latest value from Server
+            //
+            var crecord = custore.getById(customerId);
+            if(crecord != null)
             {
-               //
-               // Update our Database with the latest value from Server
-               //
-               var crecord = custore.getById(customerId);
-               if(crecord != null)
-               {
-                  crecord.set('points', points);
-                  crecord.setLastCheckin(record.getLastCheckin());
-               }
-               //
-               // First time Customer ... add it to CustomerStore
-               //
-               else
-               {
-                  crecord = custore.add(record)[0];
-                  console.debug("CheckIn - Not in current Customer DB! CustomerId=[" + crecord.getId() + "]");
-               }
-               console.debug("CheckIn - points:'" + points + "'");
-
-               this.setupCheckinInfo(mode, venue, crecord, metaData);
-               break;
+               crecord.set('points', points);
+               crecord.setLastCheckin(record.getLastCheckin());
             }
+            //
+            // First time Customer ... add it to CustomerStore
+            //
+            else
+            {
+               crecord = custore.add(record)[0];
+               console.debug("CheckIn - Not in current Customer DB! CustomerId=[" + crecord.getId() + "]");
+            }
+            console.debug("CheckIn - points:'" + points + "'");
+
+            this.setupCheckinInfo(mode, venue, crecord, metaData);
+            break;
          }
-         // Cannot find match?
-         if(i > records.length)
-         {
-            console.debug("CheckIn - No Merchants Found!");
-            return;
-         }
-
-         console.debug("CheckIn - Opening Merchant Account Page ...");
-
-         //
-         // Cleans up Back Buttons on Check-in
-         //
-         this.getViewport().reset();
-         Ext.Viewport.setMasked(false);
-
-         app.dispatch(
-         {
-            action : 'openMainPage',
-            args : [],
-            controller : mcntlr,
-            scope : mcntlr
-         });
-
-         if(callback)
-         {
-            callback();
-         }
-         console.debug("CheckIn - Done");
       }
+      // Cannot find match?
+      if(i > records.length)
+      {
+         console.debug("CheckIn - No Merchants Found!");
+         return;
+      }
+
+      console.debug("CheckIn - Opening Merchant Account Page ...");
+
+      //
+      // Cleans up Back Buttons on Check-in
+      //
+      this.getViewport().reset();
+      Ext.Viewport.setMasked(false);
+
+      app.dispatch(
+      {
+         action : 'openMainPage',
+         args : [],
+         controller : mcntlr,
+         scope : mcntlr
+      });
+
+      if(callback)
+      {
+         callback();
+      }
+      console.debug("CheckIn - Done");
    },
    // --------------------------------------------------------------------------
    // CheckinExplore Page
@@ -260,7 +319,6 @@ Ext.define('Genesis.controller.Checkins',
       var me = this;
       me.getGeoLocation(function(position)
       {
-         me.setPosition(position);
          Venue['setFindNearestURL']();
          Ext.StoreMgr.get('CheckinExploreStore').load(
          {
@@ -273,7 +331,16 @@ Ext.define('Genesis.controller.Checkins',
             {
                if(operation.wasSuccessful())
                {
+                  me.setPosition(position);
                   me.getCheckInNowBar().setDisabled(false);
+               }
+               else
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Warning',
+                     message : 'Error loading Venue information.'
+                  });
                }
             },
             scope : me
@@ -332,64 +399,6 @@ Ext.define('Genesis.controller.Checkins',
             break;
          }
       }
-   },
-   onCheckinCommonTap : function(b, e, eOpts, mode, url, qrcode, position, callback)
-   {
-      var currentLat, currentLng;
-      if(position)
-      {
-         currentLat = position.coords.latitude
-         currentLng = position.coords.longitude;
-      }
-
-      var viewport = this.getViewPortCntlr();
-      var cstore = Ext.StoreMgr.get('CheckinStore');
-      var cview = this.getViewport().getActiveItem();
-      var venueId = (viewport.getVenue() ? viewport.getVenue().getId() : null);
-
-      console.debug("CheckIn - auth_code:'" + qrcode + "' venue_id:'" + venueId + "'");
-
-      // Load Info into database
-      Customer[url](venueId);
-      var params =
-      {
-         latitude : currentLat || 0,
-         longitude : currentLng || 0,
-         auth_code : qrcode || 0
-      }
-      if(venueId)
-      {
-         params = Ext.apply(params,
-         {
-            venue_id : venueId
-         });
-      }
-
-      cstore.load(
-      {
-         jsonData :
-         {
-         },
-         params : params,
-         scope : this,
-         callback : function(records, operation)
-         {
-            this.onCheckinHandler(mode, cstore.getProxy().getReader().metaData, cstore, venueId, records, operation, callback);
-         }
-      });
-   },
-   onCheckinScanTap : function(b, e, eOpts, einfo)
-   {
-      //
-      // Clear Venue info, let server determine from QR Code
-      //
-      this.getExplore().setMerchant(null);
-      this.getViewPortCntlr().setVenue(null);
-      // Scan QR Code to confirm Checkin
-      this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueScanCheckinUrl', 'scan', function()
-      {
-         Ext.device.Notification.vibrate();
-      });
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
