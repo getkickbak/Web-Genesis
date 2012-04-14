@@ -70,4 +70,26 @@ class Api::V1::VenuesController < ApplicationController
     @venues = Venue.find_nearest(merchant_id, latitude, longitude, max)
     render :template => '/api/v1/venues/find_nearest'
   end
+  
+  def share_photo
+    authorize! :read, Venue
+    
+    if params[:image].blank?
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => [t("api.photo_blank")] } }
+      end
+    else
+      filename = "#{String.random_alphanumeric}.png"
+      AWS::S3::S3Object.store(
+        ::Common.generate_temp_file_path(filename), 
+        params[:image],
+        APP_PROP["AMAZON_PHOTOS_BUCKET"], 
+        :content_type => 'image/png', 
+        :access => :public_read
+      )
+      @photo_url = ::Common.generate_full_temp_file_path(filename)
+      render :template => '/api/v1/venues/share_photo'
+    end
+  end  
 end
