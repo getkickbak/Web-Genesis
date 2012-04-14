@@ -152,7 +152,7 @@ Ext.define('Genesis.controller.Checkins',
             {
                callback : function(qrcode)
                {
-                  if(qrcode)
+                  if(!Ext.isEmpty(qrcode))
                   {
                      Ext.Viewport.setMasked(
                      {
@@ -160,7 +160,6 @@ Ext.define('Genesis.controller.Checkins',
                         message : 'Checking in ...'
                      });
 
-                     console.debug("qrcode - " + qrcode);
                      // Retrieve GPS Coordinates
                      me.onCheckinCommonTap(b, e, eOpts, mode, url, qrcode, me.getPosition(), callback);
                   }
