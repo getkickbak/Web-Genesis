@@ -88,18 +88,25 @@ class Api::V1::ChallengesController < ApplicationController
   protected
   
   def is_challenge_satisfied(challenge)
+    if challenge.type.value == "photo"
+      if session[:photo_upload_token] == params[:upload_token]
+        session.delete :photo_upload_token
+        return true
+      end
+      return false
+    end
     return true
   end
   
   def is_startable_challenge?(challenge)
-    if challenge.type == "referral"
+    if challenge.type.value == "referral"
       return true
     end
     return false
   end
   
   def start_challenge(merchant, user)
-    if challenge.type == "referral"
+    if challenge.type.value == "referral"
       # Need to filter out which emails are already customers
       # TBD
       params[:emails].each do |email|

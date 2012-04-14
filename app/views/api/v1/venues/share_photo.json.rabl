@@ -4,6 +4,7 @@ node :success do
 end
 node :metaData do
 	{ 
-		:photo_url => @photo_url
+		:photo_url => @photo_url,
+		:upload_token => @upload_token
 	}		 	
 end

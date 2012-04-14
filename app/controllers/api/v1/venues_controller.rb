@@ -89,6 +89,8 @@ class Api::V1::VenuesController < ApplicationController
         :access => :public_read
       )
       @photo_url = ::Common.generate_full_temp_file_path(filename)
+      @upload_token = String.random_alphanumeric
+      session[:photo_upload_token] = @upload_token
       render :template => '/api/v1/venues/share_photo'
     end
   end  
