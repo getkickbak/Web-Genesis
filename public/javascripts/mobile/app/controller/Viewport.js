@@ -184,12 +184,12 @@ Ext.define('Genesis.controller.Viewport',
          callback : function(record, operation)
          {
             Ext.Viewport.setMasked(false);
-            if(operation.success)
+            if(operation.wasSuccessful())
             {
                //
                // Load record into Venue Object
                //
-               venue.challenges().add(record);
+               venue.challenges().add(operation.getRecords());
 
                me.onFeatureTap('Challenges');
                console.log("Going to Challenges Page ...");
