@@ -218,7 +218,7 @@ Ext.define('Genesis.controller.Prizes',
       btn.hide();
 
       var store;
-      var carousel = prizes.query('carousel')[0];
+      var carousel = view.query('carousel')[0];
       var item = carousel ? carousel.getActiveItem() : view.getItems().items[0];
       var id = item.getStore().first().getId();
       switch (me.getMode())

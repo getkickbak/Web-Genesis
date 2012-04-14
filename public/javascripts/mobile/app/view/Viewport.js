@@ -163,13 +163,13 @@ Ext.define('Genesis.view.Viewport',
           text : 'Edit',
           hidden : true
           },
+          */
           {
           align : 'right',
           tag : 'done',
           text : 'Done',
           hidden : true
           },
-          */
          {
             align : 'right',
             tag : 'redeem',
