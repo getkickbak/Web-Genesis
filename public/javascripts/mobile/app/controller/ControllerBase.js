@@ -155,8 +155,40 @@ Ext.define('Genesis.controller.ControllerBase',
       };
       var callback = function(r)
       {
-         config.callback(r.response);
-         console.debug("Code = " + r.response.responseCode + " Sent = " + r.bytesSent + " bytes");
+         var qrcode = r.response;
+         if(Genesis.constants.isNative())
+         {
+            switch(window.plugins.qrCodeReader.scanType)
+            {
+               case 'RL' :
+               {
+                  console.debug("QR Code = " + qrcode);
+                  break;
+               }
+               case 'Nigma' :
+               {
+                  if(!qrcode)
+                  {
+                     console.debug("QR Code = Empty");
+                  }
+                  else
+                  {
+                     console.debug("QR Code = " + ((qrcode.responseCode) ? qrcode.responseCode : "NONE") + " Sent = " + qrcode.bytesSent + " bytes");
+                  }
+                  if(qrcode && qrcode.responseCode)
+                  {
+                     qrcode = qrcode.responseCode;
+                  }
+                  break;
+               }
+            }
+         }
+         else
+         {
+            console.debug("QR Code = " + qrcode);
+         }
+
+         config.callback(qrcode);
       };
 
       console.debug("Scanning QR Code ...")
@@ -169,11 +201,7 @@ Ext.define('Genesis.controller.ControllerBase',
          var venueId = (this.getCheckinMerchant && this.getCheckinMerchant().venue) ? this.getCheckinMerchant().venue.getId() : Ext.StoreMgr.get('CheckinExploreStore').first().getId();
          callback(
          {
-            bytesSent : 0,
-            response :
-            {
-               responseCode : venueId
-            }
+            response : venueId
          });
       }
       else

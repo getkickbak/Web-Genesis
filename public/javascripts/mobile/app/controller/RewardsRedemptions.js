@@ -607,20 +607,19 @@ Ext.define('Genesis.controller.RewardsRedemptions',
 
       me.scanQRCode(
       {
-         callback : function(response)
+         callback : function(qrcode)
          {
-            if(response && response.responseCode)
+            if(qrcode)
             {
                anim.disable();
                container.setActiveItem(2);
                anim.enable();
 
-               console.debug("responseCode - " + response.responseCode);
                me.earnPts();
             }
             else
             {
-               console.debug("response - NONE");
+               console.debug(me.missingEarnPtsCodeMsg);
                Ext.device.Notification.show(
                {
                   title : 'Error',

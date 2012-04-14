@@ -47,6 +47,7 @@ Ext.define('Genesis.controller.Challenges',
          }
       }
    },
+   noChallengeCodeScannedMsg : 'No QR Code Scanned!',
    model : ['Challenge'],
    init : function(app)
    {
@@ -127,13 +128,10 @@ Ext.define('Genesis.controller.Challenges',
                {
                   me.scanQRCode(
                   {
-                     callback : function(response)
+                     callback : function(qrcode)
                      {
-                        if(response && response.responseCode)
+                        if(qrcode)
                         {
-                           var qrcode = response.responseCode;
-                           console.debug("qrcode - " + qrcode);
-
                            Challenge['setCompleteChallengeURL'](id);
                            Challenge.load(id,
                            {
@@ -166,11 +164,11 @@ Ext.define('Genesis.controller.Challenges',
                         }
                         else
                         {
-                           console.debug("No QR Code Scanned!");
+                           console.debug(me.noChallengeCodeScannedMsg);
                            Ext.device.Notification.show(
                            {
                               title : 'Error',
-                              message : 'No QR Code Scanned!'
+                              message : me.noChallengeCodeScannedMsg
                            });
                         }
                      }
