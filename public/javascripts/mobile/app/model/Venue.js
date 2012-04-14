@@ -59,6 +59,17 @@ Ext.define('Genesis.model.Venue',
             read : 'GET'
          });
          this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/venues/find_closest' : Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
+      },
+      setSharePhotoURL : function()
+      {
+         //
+         // Not used because we need to use Multipart/form upload
+         //
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/venues/share_photo' : Ext.Loader.getPath("Genesis") + "/store/" + 'sharePhoto.json');
       }
    }
 
