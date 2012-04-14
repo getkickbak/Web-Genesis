@@ -109,6 +109,7 @@ en:
       terms: "No cash value.  Non-transferable."    
   api:
       out_of_distance: "Outside of distance.  Please try again."
+      photo_blank: "Uploaded photo is blank."
       challenges:
         start_failure: "Trouble starting the challenge.  Please try again."
         complete_failure: "Trouble completing the challenge.  Please try again."

@@ -111,6 +111,7 @@ Genesis::Application.routes.draw do
     
         match '/venues/find_closest' => 'venues#find_closest'
         match '/venues/find_nearest' => 'venues#find_nearest'
+        match '/venues/share_photo' => 'venues#share_photo', :via => :post
         match '/venues/:id/explore' => 'venues#explore'
 
         match '/challenges' => 'challenges#index'
