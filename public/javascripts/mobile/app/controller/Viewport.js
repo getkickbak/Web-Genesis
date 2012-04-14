@@ -31,7 +31,7 @@ Ext.define('Genesis.controller.Viewport',
       {
          view : 'viewportview',
          shareBtn : 'viewportview button[tag=shareBtn]',
-         checkInNowBar : 'container[tag=checkInNow]',
+         checkInNowBtn : 'button[tag=checkInNow]'
       },
       control :
       {
@@ -47,7 +47,7 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'popView'
          },
-         'button[tag=checkInNow]' :
+         checkInNowBtn :
          {
             tap : 'onCheckinScanTap'
          },
@@ -119,14 +119,15 @@ Ext.define('Genesis.controller.Viewport',
    onCheckinScanTap : function(b, e, eOpts, einfo)
    {
       var me = this;
+      var app = me.getApplication();
+      var controller = app.getController('Checkins');
       var cestore = Ext.StoreMgr.get('CheckinExploreStore');
+
       me.getGeoLocation(function(position)
       {
+         Venue['setFindNearestURL']();
          cestore.load(
          {
-            jsonData :
-            {
-            },
             params :
             {
                latitude : position.coords.latitude,
@@ -136,15 +137,12 @@ Ext.define('Genesis.controller.Viewport',
             {
                if(operation.wasSuccessful())
                {
-                  var app = me.getApplication();
-                  var controller = app.getController('Checkins');
-
                   controller.setPosition(position);
                   app.dispatch(
                   {
                      action : 'onCheckinScanTap',
                      controller : controller,
-                     args : arguments,
+                     args : [b, e, eOpts, einfo],
                      scope : controller
                   });
                }
@@ -152,7 +150,7 @@ Ext.define('Genesis.controller.Viewport',
                {
                   Ext.device.Notification.show(
                   {
-                     title : 'Warning',
+                     title : 'Error',
                      message : 'Error loading Venue information.'
                   });
                }

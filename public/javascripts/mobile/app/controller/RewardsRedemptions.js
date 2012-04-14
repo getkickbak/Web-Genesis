@@ -50,6 +50,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       {
       }
    },
+   missingEarnPtsCodeMsg : 'No Authorization Code was found.',
    orderTitle : 'Rewards List',
    checkoutTitle : 'Check Out',
    init : function()
@@ -107,7 +108,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          },
          'checkinmerchantview button[tag=checkinBtn]' :
          {
-            tap : this.onCheckInTap
+            tap : this.onCheckinTap
          }
       });
       //
@@ -606,24 +607,23 @@ Ext.define('Genesis.controller.RewardsRedemptions',
 
       me.scanQRCode(
       {
-         callback : function(response)
+         callback : function(qrcode)
          {
-            if(response)
+            if(qrcode)
             {
                anim.disable();
                container.setActiveItem(2);
                anim.enable();
 
-               console.debug("response - " + response);
                me.earnPts();
             }
             else
             {
-               console.debug("response - NONE");
+               console.debug(me.missingEarnPtsCodeMsg);
                Ext.device.Notification.show(
                {
                   title : 'Error',
-                  message : 'Error Processing Your Earned Points'
+                  message : me.missingEarnPtsCodeMsg
                });
             }
          }
@@ -743,7 +743,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
     item.hide();
     },
     */
-   onCheckInTap : function(b, e, eOpts)
+   onCheckinTap : function(b, e, eOpts)
    {
       this.clearRewardsCart();
    },
