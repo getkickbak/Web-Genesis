@@ -74,14 +74,14 @@ class Api::V1::ChallengesController < ApplicationController
         else
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => [t("api.challenge.complete_failure")] } }
+            format.json { render :json => { :success => false, :message => [t("api.challenges.complete_failure")] } }
           end 
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => [t("api.challenge.complete_failure")] } }
+          format.json { render :json => { :success => false, :message => [t("api.challenges.complete_failure")] } }
         end
       end
     end
