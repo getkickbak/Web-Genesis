@@ -201,122 +201,145 @@ Ext.define('Genesis.controller.Challenges',
       var points = me.selectedItem.get('points');
 
       console.debug("image URI =[" + imageURI + "]");
-      console.debug("Points Earned = " + points + ' Pts');
 
-      if(Genesis.constants.isNative())
+      me.getGeoLocation(function(position)
       {
-         var options = new FileUploadOptions();
-         options.fileKey = "image";
-         options.fileName = "PhotoChallenge.jpg";
-         options.mimeType = "image/jpg";
-         options.params =
+         if(Genesis.constants.isNative())
          {
-            //value1 : "test",
-            //value2 : "param"
-         };
-         options.chunkedMode = true;
-
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : 'Uploading to Facebook ...'
-         });
-
-         var ft = new FileTransfer();
-         ft.upload(imageURI, Genesis.constants.host + '/api/v1/venues/share_photo', function(r)
-         {
-            console.log("Code = " + r.responseCode + '\n' + "Response = " + r.response + '\n' + "Sent = " + r.bytesSent);
-            var metaData = r.response.metaData || '';
-
-            if(metaData && metaData['photo_url'] && metaData['upload_token'])
+            var options = new FileUploadOptions();
+            options.fileKey = "image";
+            options.fileName = "PhotoChallenge.jpg";
+            options.mimeType = "image/jpg";
+            options.params =
             {
-               //
-               // Upload Photo to Facebook
-               //
-               var params =
-               {
-                  'message' : 'Photo Description',
-                  'url' : r.response.metaData['photo_url'],
-                  'access_token' : FB.getAccessToken()
-               }
+               "auth_token" : Genesis.constants.authToken
+               //value2 : "param"
+            };
+            options.chunkedMode = true;
 
-               FB.api('/me/photos', 'post', params, function(response)
+            Ext.Viewport.setMasked(
+            {
+               xtype : 'loadmask',
+               message : 'Uploading to Facebook ...'
+            });
+
+            var ft = new FileTransfer();
+            var res, metaData;
+            ft.upload(imageURI, Genesis.constants.host + '/api/v1/venues/share_photo', function(r)
+            {
+               res = decodeURIComponent(r.response) || '';
+               console.debug("Response = " + res);
+               try
                {
-                  if(!response || response.error)
+                  console.debug("Code = " + r.responseCode + '\n' + "Sent = " + r.bytesSent);
+                  res = Ext.decode(res);
+                  if(res)
                   {
-                     var message = (response && response.error) ? response.error.message : me.fbUploadFailedMsg;
-                     Ext.Viewport.setMasked(false);
-                     Ext.device.Notification.show(
-                     {
-                        title : 'Upload Failed!',
-                        message : message
-                     });
+                     metaData = res.metaData || '';
                   }
                   else
                   {
-                     console.debug('Facebook Post ID - ' + response.id);
-
-                     Challenge['setCompleteChallengeURL'](me.challengeId);
-                     Challenge.load(me.challengeId,
-                     {
-                        jsonData :
-                        {
-                        },
-                        params :
-                        {
-                           venue_id : venueId,
-                           merchant_id : merchantId,
-                           'upload_token' : metaData['upload_token']
-                        },
-                        callback : function(records, operation)
-                        {
-                           metaData = Challenge.getProxy().getReader().metaData;
-                           if(operation.wasSuccessful() && metaData)
-                           {
-                              //
-                              // Update points from the purchase or redemption
-                              //
-                              cstore.getById(customerId).set('points', metaData['account_points']);
-                              Ext.device.Notification.show(
-                              {
-                                 title : 'Upload Complete',
-                                 message : me.photoUploadSuccessMsg(metaData['points']),
-                                 callback : function()
-                                 {
-                                    me.popView();
-                                 }
-                              });
-                           }
-                        }
-                     });
+                     Ext.Logger.warn('No Data returned by the server.');
                   }
-               });
-            }
-            else
+               }
+               catch (ex)
+               {
+                  Ext.Logger.warn('Unable to parse the JSON returned by the server: ' + ex.toString());
+               }
+
+               if(metaData && metaData['photo_url'] && metaData['upload_token'])
+               {
+                  console.log("Uploading to Facebook using upload_token[" + metaData['upload_token'] + "]...");
+                  //
+                  // Upload Photo to Facebook
+                  //
+                  var params =
+                  {
+                     'message' : 'Photo Description',
+                     'url' : metaData['photo_url'],
+                     'access_token' : FB.getAccessToken()
+                  }
+
+                  FB.api('/me/photos', 'post', params, function(response)
+                  {
+                     if(!response || response.error)
+                     {
+                        var message = (response && response.error) ? response.error.message : me.fbUploadFailedMsg;
+                        Ext.Viewport.setMasked(false);
+                        Ext.device.Notification.show(
+                        {
+                           title : 'Upload Failed!',
+                           message : message
+                        });
+                     }
+                     else
+                     {
+                        console.debug('Facebook Post ID - ' + response.id);
+
+                        Challenge['setCompleteChallengeURL'](me.challengeId);
+                        Challenge.load(me.challengeId,
+                        {
+                           jsonData :
+                           {
+                           },
+                           params :
+                           {
+                              venue_id : venueId,
+                              merchant_id : merchantId,
+                              latitude : position.coords.latitude,
+                              longitude : position.coords.longitude,
+                              'upload_token' : metaData['upload_token']
+                           },
+                           callback : function(records, operation)
+                           {
+                              metaData = Challenge.getProxy().getReader().metaData;
+                              if(operation.wasSuccessful() && metaData)
+                              {
+                                 //
+                                 // Update points from the purchase or redemption
+                                 //
+                                 cstore.getById(customerId).set('points', metaData['account_points']);
+                                 console.debug("Points Earned = " + points + ' Pts');
+                                 Ext.device.Notification.show(
+                                 {
+                                    title : 'Upload Complete',
+                                    message : me.photoUploadSuccessMsg(metaData['points']),
+                                    callback : function()
+                                    {
+                                       me.popView();
+                                    }
+                                 });
+                              }
+                           }
+                        });
+                     }
+                  });
+               }
+               else
+               {
+                  Ext.Viewport.setMasked(false);
+               }
+            }, function(error)
             {
+               console.log(me.noPhotoUploadedMsg);
+               console.log("An error has occurred: Code = " + error.code);
                Ext.Viewport.setMasked(false);
-            }
-         }, function(error)
+               Ext.device.Notification.show(
+               {
+                  title : 'Error',
+                  message : me.noPhotoUploadedMsg
+               });
+            }, options);
+         }
+         else
          {
-            console.log(me.noPhotoUploadedMsg);
-            console.log("An error has occurred: Code = " + error.code);
-            Ext.Viewport.setMasked(false);
             Ext.device.Notification.show(
             {
                title : 'Error',
-               message : me.noPhotoUploadedMsg
+               message : "Cannot upload photo in Non-Native Mode"
             });
-         }, options);
-      }
-      else
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Error',
-            message : "Cannot upload photo in Non-Native Mode"
-         });
-      }
-
+         }
+      });
       /*
        Venue['setSharePhotoURL']();
        Venue.load(1,
