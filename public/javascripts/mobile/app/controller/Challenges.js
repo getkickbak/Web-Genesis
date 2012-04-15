@@ -188,7 +188,7 @@ Ext.define('Genesis.controller.Challenges',
          });
       }
    },
-   onCameraSuccessFn : function(imageURL)
+   onCameraSuccessFn : function(imageURI)
    {
       var me = this;
       var photoAction = me.getChallengePage().photoAction;
@@ -200,7 +200,7 @@ Ext.define('Genesis.controller.Challenges',
       var customerId = viewport.getCustomer().getId();
       var points = me.selectedItem.get('points');
 
-      console.debug("image URL =[" + imageURL + "]");
+      console.debug("image URI =[" + imageURI + "]");
       console.debug("Points Earned = " + points + ' Pts');
 
       if(Genesis.constants.isNative())
@@ -214,7 +214,7 @@ Ext.define('Genesis.controller.Challenges',
             //value1 : "test",
             //value2 : "param"
          };
-         options.chunkedMode = false;
+         options.chunkedMode = true;
 
          Ext.Viewport.setMasked(
          {
