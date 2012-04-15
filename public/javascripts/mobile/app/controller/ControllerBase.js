@@ -6,49 +6,51 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       sign_in_path : '/sign_in',
       sign_out_path : '/sign_out',
-      error : function()
-      {
-         var error =
-         {
-         };
-         error[FileError.NOT_FOUND_ERR] = 'File not found';
-         error[FileError.SECURITY_ERR] = 'Security error';
-         error[FileError.ABORT_ERR] = 'Abort error';
-         error[FileError.NOT_READABLE_ERR] = 'Not readable';
-         error[FileError.ENCODING_ERR] = 'Encoding error';
-         error[FileError.NO_MODIFICATION_ALLOWED_ERR] = 'No mobification allowed';
-         error[FileError.INVALID_STATE_ERR] = 'Invalid state';
-         error[FileError.SYFNTAX_ERR] = 'Syntax error';
-         error[FileError.INVALID_MODIFICATION_ERR] = 'Invalid modification';
-         error[FileError.QUOTA_EXCEEDED_ERR] = 'Quota exceeded';
-         error[FileError.TYPE_MISMATCH_ERR] = 'Type mismatch';
-         error[FileError.PATH_EXISTS_ERR] = 'Path does not exist';
-         return error;
-      }(),
-      ftError : function()
-      {
-         var ftError =
-         {
-         };
-         ftError[FileTransferError.FILE_NOT_FOUND_ERR] = 'File not found';
-         ftError[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
-         ftError[FileTransferError.CONNECTION_ERR] = 'Connection Error';
-         return ftError;
-      }(),
-      connection : function()
-      {
-         var connection =
-         {
-         };
-         connection[Connection.UNKNOWN] = 'Unknown connection';
-         connection[Connection.ETHERNET] = 'Ethernet connection';
-         connection[Connection.WIFI] = 'WiFi connection';
-         connection[Connection.CELL_2G] = 'Cell 2G connection';
-         connection[Connection.CELL_3G] = 'Cell 3G connection';
-         connection[Connection.CELL_4G] = 'Cell 4G connection';
-         connection[Connection.NONE] = 'No network connection';
-         return connection;
-      }()
+      /*
+       error : function()
+       {
+       var error =
+       {
+       };
+       error[FileError.NOT_FOUND_ERR] = 'File not found';
+       error[FileError.SECURITY_ERR] = 'Security error';
+       error[FileError.ABORT_ERR] = 'Abort error';
+       error[FileError.NOT_READABLE_ERR] = 'Not readable';
+       error[FileError.ENCODING_ERR] = 'Encoding error';
+       error[FileError.NO_MODIFICATION_ALLOWED_ERR] = 'No mobification allowed';
+       error[FileError.INVALID_STATE_ERR] = 'Invalid state';
+       error[FileError.SYFNTAX_ERR] = 'Syntax error';
+       error[FileError.INVALID_MODIFICATION_ERR] = 'Invalid modification';
+       error[FileError.QUOTA_EXCEEDED_ERR] = 'Quota exceeded';
+       error[FileError.TYPE_MISMATCH_ERR] = 'Type mismatch';
+       error[FileError.PATH_EXISTS_ERR] = 'Path does not exist';
+       return error;
+       }(),
+       ftError : function()
+       {
+       var ftError =
+       {
+       };
+       ftError[FileTransferError.FILE_NOT_FOUND_ERR] = 'File not found';
+       ftError[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
+       ftError[FileTransferError.CONNECTION_ERR] = 'Connection Error';
+       return ftError;
+       }(),
+       connection : function()
+       {
+       var connection =
+       {
+       };
+       connection[Connection.UNKNOWN] = 'Unknown connection';
+       connection[Connection.ETHERNET] = 'Ethernet connection';
+       connection[Connection.WIFI] = 'WiFi connection';
+       connection[Connection.CELL_2G] = 'Cell 2G connection';
+       connection[Connection.CELL_3G] = 'Cell 3G connection';
+       connection[Connection.CELL_4G] = 'Cell 4G connection';
+       connection[Connection.NONE] = 'No network connection';
+       return connection;
+       }()
+       */
    },
    init : function()
    {
@@ -93,6 +95,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    getGeoLocation : function(callback)
    {
+      console.debug('Getting GeoLocation ...');
       if(!Genesis.constants.isNative())
       {
          callback(
@@ -108,10 +111,9 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          var networkState = navigator.network.connection.type;
          console.debug('Checking Connectivity Type ...[' + networkState + ']');
-         console.debug('Connection type: [' + Genesis.controller.ControllerBase.connection[networkState] + ']');
+         //console.debug('Connection type: [' + Genesis.controller.ControllerBase.connection[networkState] + ']');
          //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
 
-         console.debug('Getting GeoLocation ...');
          navigator.geolocation.getCurrentPosition(function(position)
          {
             console.debug('\n' + 'Latitude: ' + position.coords.latitude + '\n' + 'Longitude: ' + position.coords.longitude + '\n' + 'Altitude: ' + position.coords.altitude + '\n' + 'Accuracy: ' + position.coords.accuracy + '\n' + 'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '\n' + 'Heading: ' + position.coords.heading + '\n' + 'Speed: ' + position.coords.speed + '\n' + 'Timestamp: ' + new Date(position.timestamp) + '\n');

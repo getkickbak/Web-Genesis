@@ -15,7 +15,7 @@ Genesis.constants =
    weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
    isNative : function()
    {
-      //return Ext.isDefined(Cordova);
+      //return Ext.isDefined(cordova);
       return phoneGapAvailable;
    },
    // **************************************************************************

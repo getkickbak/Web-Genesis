@@ -102,18 +102,17 @@ Ext.define('Genesis.controller.Challenges',
 
       if(selectedItem)
       {
-         switch (selectedItem.get('challenge_type'))
+         switch (selectedItem.get('type'))
          {
             case 'menu' :
                break;
             case 'checkin' :
                break;
             case 'photo' :
-               {
-                  me.getChallengePage().takePhoto();
-                  return;
-                  break;
-               }s
+            {
+               me.getChallengePage().takePhoto();
+               return;
+            }
             case 'birthday' :
             {
                break;
