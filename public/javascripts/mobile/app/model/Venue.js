@@ -33,10 +33,6 @@ Ext.define('Genesis.model.Venue',
       {
          type : 'ajax',
          disableCaching : false,
-         defaultHeaders :
-         {
-            'If-None-Match' : ''
-         },
          reader :
          {
             type : 'json',

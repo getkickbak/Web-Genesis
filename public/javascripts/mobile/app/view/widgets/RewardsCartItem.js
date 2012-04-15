@@ -21,9 +21,13 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
       },
       image :
       {
-         cls : 'photo',
-         tpl : Ext.create('Ext.XTemplate', '<img src="{[this.getPhoto(values)]}"/>',
+         cls : 'photo x-hasbadge',
+         tpl : Ext.create('Ext.XTemplate', '<span class="x-badge round">{[this.getPoints(values)]} Pts</span>', '<img src="{[this.getPhoto(values)]}"/>',
          {
+            getPoints : function(values)
+            {
+               return values['points'];
+            },
             getPhoto : function(values)
             {
                if(!values.photo)
@@ -55,8 +59,17 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
          minValue : 0,
          maxValue : 99,
          increment : 1,
-         cycle : true,
-         value : 0
+         groupButtons : false,
+         cycle : false,
+         value : 0,
+         listeners :
+         {
+            initialize : function(f, eOpts)
+            {
+               var field = Ext.fly(Ext.DomQuery.select('div.x-field-input',f.element.dom)[0]);
+               field[(f.getValue() > 0)?'removeCls':'addCls']('x-item-hidden');
+            }
+         }
       },
       dataMap :
       {

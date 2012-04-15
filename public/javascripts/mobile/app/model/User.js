@@ -15,10 +15,6 @@ Ext.define('Genesis.model.User',
       {
          type : 'ajax',
          disableCaching : false,
-         defaultHeaders :
-         {
-            'If-None-Match' : ''
-         },
          url : Ext.Loader.getPath("Genesis") + "/store/" + 'users.json',
          reader :
          {

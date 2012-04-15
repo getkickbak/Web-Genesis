@@ -15,10 +15,6 @@ Ext.define('Genesis.model.PurchaseReward',
       {
          type : 'ajax',
          disableCaching : false,
-         defaultHeaders :
-         {
-            'If-None-Match' : ''
-         },
          writer :
          {
             type : 'json'

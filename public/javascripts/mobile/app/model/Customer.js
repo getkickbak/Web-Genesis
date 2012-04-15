@@ -31,10 +31,6 @@ Ext.define('Genesis.model.Customer',
       {
          type : 'ajax',
          disableCaching : false,
-         defaultHeaders :
-         {
-            'If-None-Match' : ''
-         },
          writer :
          {
             type : 'json'

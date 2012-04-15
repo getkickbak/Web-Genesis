@@ -511,22 +511,26 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       var list = this.getRewardsList();
       var cart = this.getRewardsCart();
       var record = list.getStore().getById(item.getRecord().getId());
+      var field = Ext.get(Ext.DomQuery.select('div.x-field-input',item.element.dom)[0]);
 
       record.set('qty', qty);
       if(qty == 0)
       {
          cart.getStore().remove(record);
+         field.addCls('x-item-hidden');
       }
       else
       if((qty == spinner.getIncrement()) && (direction == 'up'))
       {
          cart.getStore().add(record);
+         field.removeCls('x-item-hidden');
       }
       else
       if(qty > 0)
       {
          item.updateRecord(record);
          item.setRecord(record);
+         field.removeCls('x-item-hidden');
       }
       // Automatically update totals
       this.updateRewardsCartTotal(cart.getStore().getRange());
