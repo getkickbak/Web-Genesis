@@ -10,6 +10,7 @@ end
 node :metaData do
 	{ 
 		:auth_token => @user.authentication_token, 
+		:csrf_token => session[:_csrf_token],
 		:prizes => @earn_prizes.map do |r|
 						partial('api/v1/earn_prizes/base', :object => r)
 					end
