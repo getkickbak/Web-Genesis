@@ -102,7 +102,7 @@ Ext.define('Genesis.controller.Challenges',
 
       if(selectedItem)
       {
-         switch (selectedItem.get('type'))
+         switch (selectedItem.get('type').value)
          {
             case 'menu' :
                break;
