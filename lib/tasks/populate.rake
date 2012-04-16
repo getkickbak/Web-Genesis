@@ -34,7 +34,7 @@ namespace :db do
     
     puts "Creating Merchants..."
     merchant_names = ["Cavacchio","Mario's Fine Dinning","Angelo's Pizza","Dynasty","Little Jerusalem","Korean House","Namasaki","Clinton's Bar and Grill","NataRajh","Quesadilla"]
-    merchant_names.length.times do |n|
+    10.times do |n|
       type = MerchantType.get(1)
       merchant = Merchant.create(type,
       {
@@ -107,12 +107,15 @@ namespace :db do
         end  
       end
       purchase_rewards = []
-      reward_names = ["Entree","Appetizer","Drinks","Dessert","Soup","Bread","Salad","Noodles","Side Dish","Sandwich"]
+      reward_names = {:entrees => "Entrees", :appetizers => "Appetizers", :drinks => "Drinks", :desserts => "Desserts", :soup => "Soup",
+                      :bread => "Bread", :salad => "Salad", :noodles => "Noodles", :side_dishes => "Side Dishes", :sandwiches => "Sandwiches",
+                      :pasta => "Pasta", :pastry => "Pastry"}
       reward_names.length.times do |n|
-        reward_type = PurchaseRewardType.get(rand(11)+1)
+        idx = rand(reward_names.length)+1
+        reward_type = PurchaseRewardType.get(idx)
         reward = PurchaseReward.create(merchant,reward_type,
         {
-          :title => reward_names[rand(reward_names.length)],
+          :title => reward_names[reward_type.value.to_sym],
           :price => rand(10) + 10.75,
           :rebate_rate => 9,
           :points => rand(10) + 10
@@ -121,10 +124,11 @@ namespace :db do
         purchase_rewards << reward
       end
       reward_names.length.times do |n|
-        reward_type = CustomerRewardType.get(rand(11)+1)
+        idx = rand(reward_names.length)+1
+        reward_type = CustomerRewardType.get(idx)
         reward = CustomerReward.create(merchant,reward_type,
         {
-          :title => reward_names[rand(reward_names.length)],
+          :title => reward_names[reward_type.value.to_sym],
           :price => rand(10) + 10.75,
           :points => rand(10) + 80
         },
@@ -136,7 +140,7 @@ namespace :db do
         )
         earn_prize.reward = reward
         earn_prize.merchant = merchant
-        earn_prize.user = users[n]
+        earn_prize.user = users[rand(users.length)]
         earn_prize.save
       end
       challenges = []
@@ -202,23 +206,25 @@ namespace :db do
       venues)
       challenges << challenge
       10.times do |n|
+        challenge = challenges[rand(6)]
         record = EarnRewardRecord.new(
-          :challenge_id => challenges[rand(6)].id,
+          :challenge_id => challenge.id,
           :venue_id => venues[rand(2)].id,
-          :points => challenges[rand(6)].points,
+          :points => challenge.points,
           :created_ts => now
         )
         record.merchant = merchant
-        record.user = users[n]
+        record.user = users[rand(users.length)]
         record.save
+        reward = purchase_rewards[rand(purchase_rewards.length)]
         record = EarnRewardRecord.new(
-          :reward_id => purchase_rewards[n].id,
+          :reward_id => reward.id,
           :venue_id => venues[rand(2)].id,
-          :points => purchase_rewards[n].points,
+          :points => reward.points,
           :created_ts => now
         )
         record.merchant = merchant
-        record.user = users[n]
+        record.user = users[rand(users.length)]
         record.save
       end        
     end
