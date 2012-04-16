@@ -36,7 +36,7 @@ class Api::V1::TokensController < ApplicationController
   def create_from_facebook
     @user = User.first(:facebook_id => params[:facebook_id])
     if @user.nil?
-      render :json => { :success => false, :message => [t("api.tokens.create_invalid_facebook_info")] }
+      render :json => { :success => false, :metaData => { :rescode => 'invalid_info' }, :message => [t("api.tokens.create_invalid_facebook_info")] }
       return
     end
     
@@ -55,9 +55,9 @@ class Api::V1::TokensController < ApplicationController
         @earn_prizes = EarnPrize.all(EarnPrize.user.id => @user.id, :redeemed => false)
         render :template => '/api/v1/tokens/create'
       rescue DataMapper::SaveFailureError => e
-        render :json => { :success => false, :message => [t("api.tokens.create_from_facebook_failure")] }
+        render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => [t("api.tokens.create_from_facebook_failure")] }
       rescue
-        render :json => { :success => false, :message => [t("api.tokens.create_from_facebook_failure")] }
+        render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => [t("api.tokens.create_from_facebook_failure")] }
       end
     end
   end
