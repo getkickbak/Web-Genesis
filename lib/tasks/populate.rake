@@ -10,8 +10,8 @@ namespace :db do
       user = User.create(
       :name => Faker::Name.name,
       :email => Faker::Internet.email,
-      :password => "Gravispc",
-      :password_confirmation => "Gravispc",
+      :password => "getkickbak",
+      :password_confirmation => "getkickbak",
       :role => "user",
       :status => :active
       )
@@ -24,8 +24,8 @@ namespace :db do
       staff = Staff.create(
       :name => Faker::Name.name,
       :email => Faker::Internet.email,
-      :password => "Gravispc",
-      :password_confirmation => "Gravispc",
+      :password => "getkickbak",
+      :password_confirmation => "getkickbak",
       :role => "admin",
       :status => :active
       )
@@ -33,14 +33,15 @@ namespace :db do
     puts "Complete Staff creation"
     
     puts "Creating Merchants..."
-    10.times do |n|
+    merchant_names = ["Cavacchio","Mario's Fine Dinning","Angelo's Pizza","Dynasty","Little Jerusalem","Korean House","Namasaki","Clinton's Bar and Grill","NataRajh","Quesadilla"]
+    merchant_names.length.times do |n|
       type = MerchantType.get(1)
       merchant = Merchant.create(type,
       {
-        :name => Faker::Name.name[0..23],
+        :name => merchant_names[n],
         :email => Faker::Internet.email,
-        :password => "Gravispc",
-        :password_confirmation => "Gravispc",
+        :password => "getkickbak",
+        :password_confirmation => "getkickbak",
         :account_first_name => Faker::Name.name,
         :account_last_name => Faker::Name.name,
         :phone => Faker::PhoneNumber.phone_number,
@@ -84,7 +85,7 @@ namespace :db do
       2.times do |n|
         venue = Venue.create(merchant,type,
         {
-          :name => Faker::Name.name[0..23],
+          :name => merchant.name,
           :address => Faker::Address.street_address,
           :city => Faker::Address.city,
           :state => Faker::Address.us_state_abbr,
@@ -106,11 +107,12 @@ namespace :db do
         end  
       end
       purchase_rewards = []
-      10.times do |n|
+      reward_names = ["Entree","Appetizer","Drinks","Dessert","Soup","Bread","Salad","Noodles","Side Dish","Sandwich"]
+      reward_names.length.times do |n|
         reward_type = PurchaseRewardType.get(rand(11)+1)
         reward = PurchaseReward.create(merchant,reward_type,
         {
-          :title => Faker::Name.name[0..23],
+          :title => reward_names[reward_names.length],
           :price => rand(10) + 10.75,
           :rebate_rate => 9,
           :points => rand(10) + 10
@@ -118,11 +120,11 @@ namespace :db do
         venues)
         purchase_rewards << reward
       end
-      10.times do |n|
+      reward_names.length.times do |n|
         reward_type = CustomerRewardType.get(rand(11)+1)
         reward = CustomerReward.create(merchant,reward_type,
         {
-          :title => Faker::Name.name[0..23],
+          :title => reward_names[rand(reward_names.length)],
           :price => rand(10) + 10.75,
           :points => rand(10) + 80
         },
