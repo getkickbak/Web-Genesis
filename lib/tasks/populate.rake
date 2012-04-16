@@ -112,7 +112,7 @@ namespace :db do
         reward_type = PurchaseRewardType.get(rand(11)+1)
         reward = PurchaseReward.create(merchant,reward_type,
         {
-          :title => reward_names[reward_names.length],
+          :title => reward_names[rand(reward_names.length)],
           :price => rand(10) + 10.75,
           :rebate_rate => 9,
           :points => rand(10) + 10
