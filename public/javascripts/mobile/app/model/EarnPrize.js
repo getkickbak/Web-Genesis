@@ -39,10 +39,6 @@ Ext.define('Genesis.model.EarnPrize',
       {
          type : 'ajax',
          disableCaching : false,
-         defaultHeaders :
-         {
-            'If-None-Match' : ''
-         },
          actionMethods :
          {
             create : 'POST',

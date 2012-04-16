@@ -75,33 +75,46 @@ Ext.define('Genesis.view.Rewards',
                store :
                {
                   model : 'Genesis.model.PurchaseReward',
-                  grouper :
-                  {
-                     groupFn : function(record)
-                     {
-                        return record.get('points') + ' Points';
-                     }
-                  },
+                  /*
+                   grouper :
+                   {
+                   groupFn : function(record)
+                   {
+                   return record.get('points') + ' Points';
+                   }
+                   },
+                   pinHeaders : false,
+                   grouped : true,
+                   */
                   sorters : [
                   {
+                     sorterFn : function(o1, o2)
+                     {
+                        var name1 = o1.get('type').value, name2 = o2.get('type').value;
+                        if(name1 < name2)//sort string ascending
+                           return -1;
+                        if(name1 > name2)
+                           return 1;
+                        //default return value (no sorting)
+                        return 0;
+                     }
+                  },
+                  {
                      property : 'points',
-                     direction : 'ASC'
+                     direction : 'DESC'
                   }],
                   autoLoad : false
                },
-               cls : 'rewardsMain',
+               cls : 'rewardsMain'
                /*
-                indexBar :
-                {
-                docked : 'right',
-                overlay : true,
-                alphabet : false,
-                centered : false,
-                letters : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
-                },
-                */
-               pinHeaders : false,
-               grouped : true
+               indexBar :
+               {
+                  docked : 'right',
+                  overlay : true,
+                  alphabet : true,
+                  centered : false,
+               }
+               */
             }]
          },
          // -------------------------------------------------------------------

@@ -18,10 +18,6 @@ Ext.define('Genesis.model.Challenge',
       {
          type : 'ajax',
          disableCaching : false,
-         defaultHeaders :
-         {
-            'If-None-Match' : ''
-         },
          reader :
          {
             type : 'json',

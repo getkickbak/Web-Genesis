@@ -42,6 +42,10 @@ $normalFontSize : 0.6em;
 $largeFontSize : 0.8em;
 $xlargeFontSize : 1.2em;
 
+$badgePoints-bg-color: darken(green, 10%) !default;
+$badgePoints-bg-gradient: $base-gradient !default;
+
+
 //Enhancements
 @include pictos-iconmask('list');
 @include pictos-iconmask('info_plain');
@@ -729,6 +733,18 @@ body {
    .photo {
      position:static !important;
      height:$icon-size;
+     .x-innerhtml {
+        position:relative;
+        .x-badge {
+           @include opacity(.8);
+           @if $include-button-highlights {
+              @include bevel-by-background($badgePoints-bg-color);
+           }
+           @include color-by-background($badgePoints-bg-color, $contrast: 50%);
+           border: 1px solid darken($badgePoints-bg-color, 10%);
+           @include background-gradient($badgePoints-bg-color, $badgePoints-bg-gradient);
+        }
+     }
    }
    .itemDetails {
       margin-left:$panelGap;
@@ -747,9 +763,12 @@ body {
       background:transparent;
       .x-field-input {
          width:2em;
+         &.x-item-hidden {
+            visibility:hidden;
+         }
       }
       .x-input-el {
-         text-align:right;
+         //text-align:right;
          //font-size:$xlargeFontSize;
       }
    }
