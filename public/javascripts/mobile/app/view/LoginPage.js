@@ -88,14 +88,14 @@ Ext.define('Genesis.view.SignInPage',
             xtype : 'emailfield',
             name : 'username',
             label : 'User Name',
-            useClearIcon : true,
+            clearIcon : true,
             placeHolder : 'Email Address'
          },
          {
             xtype : 'passwordfield',
             name : 'password',
             label : 'Password',
-            useClearIcon : false
+            clearIcon : false
          }]
       },
       {
@@ -146,21 +146,21 @@ Ext.define('Genesis.view.CreateAccountPage',
             xtype : 'textfield',
             name : 'name',
             label : 'Full Name',
-            useClearIcon : true,
+            clearIcon : true,
             placeHolder : 'John Smith'
          },
          {
             xtype : 'emailfield',
             name : 'username',
             label : 'User Name',
-            useClearIcon : true,
+            clearIcon : true,
             placeHolder : 'Email Address'
          },
          {
             xtype : 'passwordfield',
             name : 'password',
             label : 'Password',
-            useClearIcon : false
+            clearIcon : false
          }]
       },
       {

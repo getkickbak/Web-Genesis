@@ -17,7 +17,8 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
       layout :
       {
          type : 'hbox',
-         align : 'top'
+         align : 'center',
+         pack : 'start'
       },
       image :
       {
