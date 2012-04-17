@@ -520,7 +520,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
       var vport = app.getController('Viewport');
       var errorHandler = function()
       {
-         var messages = ((resultSet && Ext.isDefined(resultSet.getMessage)) ? resultSet.getMessage().join(((!Genesis.constants.isNative()) ? '<br/>' : '\n')) : 'Error Connecting to Server');
+         var messages = ((resultSet && Ext.isDefined(resultSet.getMessage)) ? (Ext.isArray(resultSet.getMessage()) ? resultSet.getMessage().join(Genesis.constants.addCRLF()) : resultSet.getMessage()) : 'Error Connecting to Server');
          var metaData = reader.metaData ||
          {
          };
@@ -577,6 +577,20 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                         scope : controller
                      });
                   }
+               });
+               break;
+            }
+            case 'signup_invalid_info' :
+            {
+               var errors = [];
+               for(var i in messages)
+               {
+                  errors.push(messages[i]);
+               }
+               Ext.device.Notification.show(
+               {
+                  title : 'Error',
+                  message : errors
                });
                break;
             }
