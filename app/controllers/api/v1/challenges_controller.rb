@@ -55,18 +55,20 @@ class Api::V1::ChallengesController < ApplicationController
 
     Customer.transaction do
       begin
-        if is_challenge_satisfied(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && (@venue.authorization_codes.first(:auth_code => params[:auth_code]) || APP_PROP["DEBUG_MODE"])))
-          record = EarnRewardRecord.new(
-            :challenge_id => @challenge.id,
-            :venue_id => @venue.id,
-            :points => @challenge.points,
-            :created_ts => Time.now
-          )
-          record.merchant = @venue.merchant
-          record.user = current_user
-          record.save
-          @customer.points += @challenge.points
-          @customer.save
+        if is_challenge_satisfied?(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && (@venue.authorization_codes.first(:auth_code => params[:auth_code]) || APP_PROP["DEBUG_MODE"])))
+          if not challenge_limit_reached?(@challenge)
+            record = EarnRewardRecord.new(
+              :challenge_id => @challenge.id,
+              :venue_id => @venue.id,
+              :points => @challenge.points,
+              :created_ts => Time.now
+            )
+            record.merchant = @venue.merchant
+            record.user = current_user
+            record.save
+            @customer.points += @challenge.points
+            @customer.save
+          end
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => @challenge.points } } }
@@ -89,7 +91,7 @@ class Api::V1::ChallengesController < ApplicationController
   
   protected
   
-  def is_challenge_satisfied(challenge)
+  def is_challenge_satisfied?(challenge)
     if challenge.type.value == "photo"
       if session[:photo_upload_token] == params[:upload_token]
         session.delete :photo_upload_token
@@ -98,6 +100,13 @@ class Api::V1::ChallengesController < ApplicationController
       return false
     end
     return true
+  end
+  
+  def challenge_limit_reached?(challenge)
+    if challenge.type.value == "photo"
+      return EarnRewardRecord.count(:challenge_id => challenge.id, :merchant => challenge.merchant, :user => current_user, :created_ts.gte => Date.today.to_time) > 0
+    end
+    return false  
   end
   
   def is_startable_challenge?(challenge)
