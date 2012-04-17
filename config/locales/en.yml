@@ -110,6 +110,7 @@ en:
   api:
       out_of_distance: "Outside of distance.  Please try again."
       photo_blank: "Uploaded photo is blank."
+      facebook_account_already_exists_failure: "Facebook account already exists."
       challenges:
         start_failure: "Trouble starting the challenge.  Please try again."
         complete_failure: "Trouble completing the challenge.  Please try again."
@@ -131,8 +132,6 @@ en:
         create_invalid_facebook_info: "Invalid facebook sign in."
         create_from_facebook_failure: "Trouble with facebook sign in.  Please try again."
         destroy_failure: "Trouble with logout.  Please try again."  
-      users:
-        update_facebook_info_failure: "Facebook account already exists."
   admin:
       merchants:
         create_success: "Merchant was successfully created."

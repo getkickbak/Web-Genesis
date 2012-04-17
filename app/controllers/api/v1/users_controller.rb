@@ -37,14 +37,17 @@ class Api::V1::UsersController < ApplicationController
         facebook_id = user_info[:facebook_id]
         facebook_email = user_info[:facebook_email]
         existing_user = User.first(:facebook_id => facebook_id)
-        if existing_user.nil?
+        if existing_user.nil? || (existing_user.id == current_user.id)
           @user.update_without_password(:facebook_id => facebook_id, :facebook_email => facebook_email, :update_ts => Time.now)
           respond_to do |format|
             #format.xml  { head :ok }
             format.json { render :json => { :success => true } }
           end
         else
-          format.json { render :json => { :success => false, :message => [t("api.users.update_facebook_info_failure")] } }
+          respond_to do |format|
+            #format.xml  { head :ok }
+            format.json { render :json => { :success => false, :message => [t("api.facebook_account_already_exists_failure")] } }
+          end  
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
