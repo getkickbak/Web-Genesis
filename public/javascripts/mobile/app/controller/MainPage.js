@@ -497,7 +497,10 @@ Ext.define('Genesis.controller.MainPage',
             jsonData :
             {
             },
-            params : params
+            params :
+            {
+               user : Ext.encode(params)
+            }
          });
       }
    },

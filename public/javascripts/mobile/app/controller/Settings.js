@@ -70,7 +70,10 @@ Ext.define('Genesis.controller.Settings',
             jsonData :
             {
             },
-            params : params
+            params :
+            {
+               user : Ext.encode(params)
+            }
          });
       });
    },
