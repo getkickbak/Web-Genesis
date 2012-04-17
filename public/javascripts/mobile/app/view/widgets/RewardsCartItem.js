@@ -43,11 +43,13 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
       {
          flex : 1,
          cls : 'itemDetails',
-         tpl : Ext.create('Ext.XTemplate', '<div class="itemTitle">{[this.getTitle(values)]}</div>', '<div class="itemDesc">{[this.getDesc(values)]}</div>',
+         tpl : Ext.create('Ext.XTemplate', '<div class="itemTitle">{[this.getTitle(values)]}</div>',
+         //'<div class="itemDesc">{[this.getDesc(values)]}</div>',
          {
             getTitle : function(values)
             {
-               return values['type'].value.capitalize();
+               return values['title'];
+               //return values['type'].value.capitalize();
             },
             getDesc : function(values)
             {

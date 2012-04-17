@@ -9,6 +9,7 @@ Genesis.constants =
    authToken : null,
    currFbId : 0,
    fbAccountId : null,
+   fbResponse : null,
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
@@ -17,6 +18,10 @@ Genesis.constants =
    {
       //return Ext.isDefined(cordova);
       return phoneGapAvailable;
+   },
+   addCRLF : function()
+   {
+      return ((!this.isNative()) ? '<br/>' : '\n');
    },
    // **************************************************************************
    // Date Time
@@ -259,6 +264,7 @@ Genesis.constants =
          {
             fb.currFbId = null;
             fb.fbAccountId = null;
+            fb.fbResponse = null;
             //FB.Auth.setAuthResponse(null, 'unknown');
             if(cb)
             {
@@ -315,7 +321,7 @@ Genesis.constants =
                Ext.device.Notification.show(
                {
                   title : 'Facebook Connect',
-                  message : 'Account ID: ' + fb.fbAccountId + ((!Genesis.constants.isNative()) ? '.<br/>' : '\n') + 'is used for your current Facebook session.'
+                  message : 'Account ID: ' + fb.fbAccountId + Genesis.constants.addCRLF() + 'is used for your current Facebook session.'
                });
             }
             else
@@ -326,7 +332,7 @@ Genesis.constants =
                Ext.device.Notification.show(
                {
                   title : 'Facebook Connect',
-                  message : 'Your current Facebook Session hasn\'t been fully authorized for this application.' + ((!Genesis.constants.isNative()) ? '.<br/>' : '\n') + 'Press OK to continue.',
+                  message : 'Your current Facebook Session hasn\'t been fully authorized for this application.' + Genesis.constants.addCRLF() + 'Press OK to continue.',
                   buttons : ['OK', 'Cancel'],
                   callback : function(button)
                   {
@@ -370,6 +376,7 @@ Genesis.constants =
          var facebook_id = response.id;
          if(facebook_id == null)
          {
+            console.debug("Missing Facebook Session information, Retrying ...");
             // Session Expired? Login again
             Genesis.constants.facebook_onLogout(function()
             {
@@ -380,6 +387,8 @@ Genesis.constants =
 
          if(fb.currFbId != facebook_id)
          {
+            fb.fbResponse = response;
+
             var birthday = response.birthday.split('/');
             birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1];
 
@@ -399,14 +408,14 @@ Genesis.constants =
             {
                cb(params);
             }
-            Ext.device.Notification.show(
-            {
-               title : 'Facebook Connect',
-               message : 'You have logged into Facebook! Email(' + params.email + ')'
-            });
+            console.debug('You have logged into Facebook! Email(' + params.email + ')');
 
             fb.currFbId = facebook_id;
             fb.fbAccountId = response.email
+         }
+         else
+         {
+            console.debug("Session information same as previous session.");
          }
          fb._fb_connect();
          fb.getFriendsList();
@@ -482,6 +491,22 @@ Ext.define('Genesis.Component',
 });
 
 //---------------------------------------------------------------------------------------------------------------------------------
+// Ext.data.reader.Json
+//---------------------------------------------------------------------------------------------------------------------------------
+Ext.define('Genesis.data.reader.Json',
+{
+   override : 'Ext.data.reader.Json',
+   getResponseData : function(response)
+   {
+      var data = this.callParent(arguments);
+      if(!data.metaData)
+      {
+         delete this.metaData;
+      }
+      return data;
+   }
+});
+//---------------------------------------------------------------------------------------------------------------------------------
 // Ext.data.proxy.Server
 //---------------------------------------------------------------------------------------------------------------------------------
 
@@ -491,6 +516,8 @@ Ext.define('Genesis.data.proxy.OfflineServer',
    processResponse : function(success, operation, request, response, callback, scope)
    {
       var me = this, action = operation.getAction(), reader = me.getReader(), resultSet;
+      var app = _application;
+      var vport = app.getController('Viewport');
       var errorHandler = function()
       {
          var messages = ((resultSet && Ext.isDefined(resultSet.getMessage)) ? resultSet.getMessage().join(((!Genesis.constants.isNative()) ? '<br/>' : '\n')) : 'Error Connecting to Server');
@@ -499,38 +526,68 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          };
          Ext.Viewport.setMasked(false);
 
-         Ext.device.Notification.show(
+         switch (metaData['rescode'])
          {
-            title : 'Server Error(s)',
-            message : messages,
-            callback : function()
+            //
+            // Error from server, display this to user
+            //
+            case 'server_error' :
             {
-               if(metaData['session_timeout'])
+               Ext.device.Notification.show(
                {
-                  var vport = _application.getController('Viewport');
-                  vport.setLoggedIn(false);
-                  Genesis.constants.authToken = null;
-                  vport.onFeatureTap('MainPage', 'login');
-               }
-               /*
-
-
-               else
-
-
-                if(metaData['session_timeout'])
-                {
-
-                }
-                */
-               else
-               {
-                  //
-                  // No need to take any action. Let to user try again.
-                  //
-               }
+                  title : 'Server Error(s)',
+                  message : messages,
+                  callback : function()
+                  {
+                     if(metaData['session_timeout'])
+                     {
+                        vport.setLoggedIn(false);
+                        Genesis.constants.authToken = null;
+                        vport.onFeatureTap('MainPage', 'login');
+                     }
+                     else
+                     {
+                        //
+                        // No need to take any action. Let to user try again.
+                        //
+                     }
+                  }
+               });
+               break;
             }
-         });
+            //
+            // Sign in failed due to invalid Facebook info, Create Account.
+            //
+            case 'invalid_info' :
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Create Account',
+                  message : 'Create user account using Facebook Profile information',
+                  callback : function(button)
+                  {
+                     vport.setLoggedIn(false);
+                     Genesis.constants.authToken = null;
+                     var controller = app.getController('MainPage');
+                     app.dispatch(
+                     {
+                        action : 'onCreateAccountTap',
+                        args : [null, null, null, null],
+                        controller : controller,
+                        scope : controller
+                     });
+                  }
+               });
+               break;
+            }
+            default:
+               Ext.device.Notification.show(
+               {
+                  title : 'Error',
+                  message : messages
+               });
+               break;
+         }
       }
       if((success === true) || (Genesis.constants.isNative() === true))
       {

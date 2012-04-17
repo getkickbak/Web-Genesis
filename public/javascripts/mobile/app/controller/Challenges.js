@@ -372,7 +372,7 @@ Ext.define('Genesis.controller.Challenges',
       Ext.device.Notification.show(
       {
          title : 'Error',
-         message : message + ((!Genesis.constants.isNative()) ? '<br/>' : '\n') + 'No Photos were taken.'
+         message : message + Genesis.constants.addCRLF()+ 'No Photos were taken.'
       });
    },
    onPhotoBtnCommon : function(sourceType)

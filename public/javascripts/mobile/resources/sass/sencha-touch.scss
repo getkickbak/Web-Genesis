@@ -178,6 +178,12 @@ body {
    word-wrap:break-word;
 }
 
+.itemDesc {
+   @include ellipsis;
+   white-space:normal;         
+}
+
+
 //------------------------------------------------------------------------------
 // ListField
 //------------------------------------------------------------------------------
@@ -392,7 +398,6 @@ body {
          }
          .itemDesc {
             font-size:$normalFontSize;
-            @include ellipsis
          }
       }
    }
@@ -570,7 +575,6 @@ body {
       }
       .itemDesc {
          font-size:$normalFontSize;
-         @include ellipsis
       }
    }
 }
@@ -746,7 +750,7 @@ body {
       }
       .photo {
         position:static !important;
-        height:$icon-size;
+        //height:$icon-size;
         .x-innerhtml {
            position:relative;
            .x-badge {
@@ -762,15 +766,17 @@ body {
       }
       .itemDetails {
          margin-left:$panelGap;
-         min-height:$icon-size;
+         //min-height:$icon-size;
          .itemTitle {
             font-weight:bold;
             font-size:$largeFontSize;
             margin-bottom:$panelTopGap/3;
+            white-space: normal;
+            background:transparent;
+            -webkit-text-fill-color:$list-color;
          }
          .itemDesc {
             font-size:$smallFontSize;
-            white-space:normal;         
           }
       }
       .x-spinner {

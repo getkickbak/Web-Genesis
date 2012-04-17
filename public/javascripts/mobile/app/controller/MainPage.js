@@ -68,15 +68,15 @@ Ext.define('Genesis.controller.MainPage',
          {
             tap : 'onSignInSubmit'
          },
-         'createaccountpageview button[tag=createAccount]' :
-         {
-            tap : 'onCreateAccountSubmit'
-         },
          'actionsheet button[tag=logout]' :
          {
             tap : 'onLogoutTap'
          },
-
+         main :
+         {
+            activate : 'onActivate',
+            deactivate : 'onDeactivate'
+         },
          'mainpageview dataview' :
          {
             //itemtap : 'onItemTap',
@@ -84,10 +84,14 @@ Ext.define('Genesis.controller.MainPage',
             itemtouchstart : 'onItemTouchStart',
             itemtouchend : 'onItemTouchEnd'
          },
-         main :
+         createAccount :
          {
-            activate : 'onActivate',
-            deactivate : 'onDeactivate'
+            activate : 'onCreateActivate',
+            deactivate : 'onCreateDeactivate'
+         },
+         'createaccountpageview button[tag=createAccount]' :
+         {
+            tap : 'onCreateAccountSubmit'
          }
       }
    },
@@ -443,19 +447,46 @@ Ext.define('Genesis.controller.MainPage',
       var values = account.getValues();
       var user = Ext.create('Genesis.model.frontend.Account', values);
       var validateErrors = user.validate();
+      var fb = Genesis.constants;
+      var response = fb.fbResponse || null;
 
       if(!validateErrors.isValid())
       {
          var field = validateErrors.first();
          var label = Ext.ComponentQuery.query('field[name='+field.getField()+']')[0].getLabel();
+         var message = label + ' ' + field.getMessage() + Genesis.constants.addCRLF() + 'Please Try Again';
+         console.log(message);
          Ext.device.Notification.show(
          {
             title : 'Oops',
-            message : label + ' ' + field.getMessage() + ((Genesis.constants.isNative()) ? '.<br/>' : '\n') + 'Please Try Again'
+            message : message
          });
       }
       else
       {
+         console.debug("Creating Account ...");
+         var params =
+         {
+            name : values.name,
+            email : values.username,
+            password : values.password
+         };
+
+         if(response)
+         {
+            var birthday = response.birthday.split('/');
+            birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1];
+            params = Ext.apply(params,
+            {
+               facebook_email : response.email,
+               facebook_id : response.id,
+               facebook_uid : response.username,
+               gender : (response.gender == "male") ? "m" : "f",
+               birthday : birthday,
+               photoURL : 'http://graph.facebook.com/' + response.id + '/picture?type=square'
+            });
+         }
+
          Customer['setCreateAccountUrl']();
          if(!Ext.StoreMgr.get('CustomerStore'))
          {
@@ -463,15 +494,10 @@ Ext.define('Genesis.controller.MainPage',
          }
          Ext.StoreMgr.get('CustomerStore').load(
          {
-            params :
-            {
-               name : values.name,
-               email : values.username,
-               password : values.password
-            },
             jsonData :
             {
-            }
+            },
+            params : params
          });
       }
    },
@@ -489,7 +515,7 @@ Ext.define('Genesis.controller.MainPage',
          Ext.device.Notification.show(
          {
             title : 'Oops',
-            message : label + ' ' + field.getMessage() + ((Genesis.constants.isNative()) ? '.<br/>' : '\n') + 'Please Try Again'
+            message : label + ' ' + field.getMessage() + Genesis.constants.addCRLF() + 'Please Try Again'
          });
       }
       else
@@ -511,6 +537,23 @@ Ext.define('Genesis.controller.MainPage',
             }
          });
       }
+   },
+   onCreateActivate : function(c, eOpts)
+   {
+      var fb = Genesis.constants;
+      var response = fb.fbResponse || null;
+      if(response)
+      {
+         var form = this.getCreateAccount();
+         form.setValues(
+         {
+            name : response.name,
+            username : response.email
+         });
+      }
+   },
+   onCreateDeactivate : function(c, eOpts)
+   {
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
