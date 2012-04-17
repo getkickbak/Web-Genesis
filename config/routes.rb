@@ -120,7 +120,7 @@ Genesis::Application.routes.draw do
         match '/purchase_rewards/earn' => 'purchase_rewards#earn', :via => :post
 
         match '/earn_prizes' => 'earn_prizes#index'
-        match '/earn_prizes/:id/show' => 'earn_prizes#show'
+        match '/earn_prizes/show_venues' => 'earn_prizes#show_venues'
         match '/earn_prizes/:id/redeem' => 'earn_prizes#redeem', :via => :post
       end
     end

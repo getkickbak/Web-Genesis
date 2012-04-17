@@ -20,15 +20,6 @@ class Api::V1::EarnPrizesController < ApplicationController
     render :template => '/api/v1/earn_prizes/show_venues'
   end
   
-  def show_winners
-    authorize! :read, EarnPrize
-    
-    start = 0
-    max = params[:max].to_i
-    @prizes = EarnPrize.all(EarnPrize.merchant.id => params[:merchant_id], :order => [:created_ts.desc], :offset => start, :limit => max)
-    render :template => '/api/v1/earn_prizes/show_winners'
-  end
-  
   def redeem
     @earn_prize = EarnPrize.get(params[:id]) || not_found
     authorize! :update, @earn_prize
