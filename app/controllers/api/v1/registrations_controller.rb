@@ -6,7 +6,7 @@ class Api::V1::RegistrationsController < ApplicationController
   def create
     User.transaction do
       begin
-        user_info = JSON.parse(params[:user])
+        user_info = JSON.parse(params[:user], { :symbolize_names => true })
         user_info[:role] = "user"
         user_info[:status] = :active
         start = params[:start].to_i
