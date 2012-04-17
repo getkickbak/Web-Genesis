@@ -90,7 +90,8 @@ Ext.define('Genesis.view.Rewards',
                   {
                      sorterFn : function(o1, o2)
                      {
-                        var name1 = o1.get('type').value, name2 = o2.get('type').value;
+                        //var name1 = o1.get('type').value, name2 = o2.get('type').value;
+                        var name1 = o1.get('title').toLowerCase(), name2 = o2.get('title').toLowerCase();
                         if(name1 < name2)//sort string ascending
                            return -1;
                         if(name1 > name2)
@@ -107,14 +108,14 @@ Ext.define('Genesis.view.Rewards',
                },
                cls : 'rewardsMain'
                /*
-               indexBar :
-               {
-                  docked : 'right',
-                  overlay : true,
-                  alphabet : true,
-                  centered : false,
-               }
-               */
+                indexBar :
+                {
+                docked : 'right',
+                overlay : true,
+                alphabet : true,
+                centered : false,
+                }
+                */
             }]
          },
          // -------------------------------------------------------------------

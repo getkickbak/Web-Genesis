@@ -187,7 +187,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    },
    getVipMsg : function(points)
    {
-      return 'You\'ve earned an additional' + points + ' Points!' + ((!Genesis.constants.isNative()) ? '<br/>' : '\n') + this.getPrizeCheckMsg();
+      return 'You\'ve earned an additional' + points + ' Points!' + Genesis.constants.addCRLF()+ this.getPrizeCheckMsg();
    },
    // --------------------------------------------------------------------------
    // Rewards Page
@@ -575,7 +575,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          message = me.getPointsMsg(metaData['points']);
          if(!metaData['vip_challenge'])
          {
-            message += ((!Genesis.constants.isNative()) ? '<br/>' : '\n') + me.getPrizeCheckMsg();
+            message += Genesis.constants.addCRLF()+ me.getPrizeCheckMsg();
          }
          Ext.device.Notification.show(
          {
