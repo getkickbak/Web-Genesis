@@ -558,7 +558,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
             //
             // Sign in failed due to invalid Facebook info, Create Account.
             //
-            case 'invalid_info' :
+            case 'login_invalid_facebook_info' :
             {
                Ext.device.Notification.show(
                {
