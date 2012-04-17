@@ -3,10 +3,9 @@ class Api::V1::ChallengesController < ApplicationController
   before_filter :authenticate_user!
   
   def index
-    @venue = Venue.get(params[:venue_id]) || not_found
     authorize! :read, Challenge
     
-    @challenges = @venue.challenges
+    @challenges = Challenge.all(:challenge_venues => { :venue_id => params[:venue_id] })
     render :template => '/api/v1/challenges/index'
   end
 
@@ -41,7 +40,7 @@ class Api::V1::ChallengesController < ApplicationController
   end
   
   def complete    
-    @venue = Venue.first(Venue.merchant.id => params[:merchant_id], :id => params[:venue_id]) || not_found
+    @venue = Venue.get(params[:venue_id]) || not_found
     @challenge = Challenge.first(:id => params[:id], Challenge.merchant.id => @venue.merchant.id) || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer

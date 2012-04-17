@@ -3,15 +3,14 @@ class Api::V1::CustomerRewardsController < ApplicationController
   before_filter :authenticate_user!
   
   def index
-    @venue = Venue.get(params[:venue_id]) || not_found
     authorize! :read, CustomerReward
     
-    @rewards = @venue.customer_rewards
+    @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => params[:venue_id] })
     render :template => '/api/v1/customer_rewards/index'
   end
   
   def redeem
-    @venue = Venue.first(:id => params[:venue_id], Venue.merchant.id => params[:merchant_id]) || not_found
+    @venue = Venue.get(params[:venue_id]) || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     

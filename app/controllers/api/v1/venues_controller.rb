@@ -17,8 +17,8 @@ class Api::V1::VenuesController < ApplicationController
       is_customer = false
     end
     if is_customer
-      @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
-      @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
+      @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :customer_reward_venues => { :venue_id => @venue.id }, :points.lte => @customer.points)
+      @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :customer_reward_venues => { :venue_id => @venue.id }, :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
     else
       @rewards = []  
     end  
@@ -43,8 +43,8 @@ class Api::V1::VenuesController < ApplicationController
     longitude = params[:longitude].to_f
     @venue = Venue.find_nearest(@merchant.id, latitude, longitude, 1).first
     @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id)
-    @rewards = CustomerReward.all(CustomerReward.merchant.id => @merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
-    @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
+    @rewards = CustomerReward.all(CustomerReward.merchant.id => @merchant.id, :customer_reward_venues => { :venue_id => @venue.id }, :points.lte => @customer.points)
+    @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :customer_reward_venues => { :venue_id => @venue.id }, :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
     @eligible_rewards = []
     @rewards.each do |reward|
       item = EligibleReward.new(

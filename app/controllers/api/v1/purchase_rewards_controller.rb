@@ -3,15 +3,14 @@ class Api::V1::PurchaseRewardsController < ApplicationController
   before_filter :authenticate_user!
   
   def index
-    @venue = Venue.get(params[:venue_id]) || not_found
     authorize! :read, PurchaseReward
     
-    @rewards = @venue.purchase_rewards
+    @rewards = PurchaseReward.all(:purchase_reward_venues => { :venue_id => params[:venue_id] })
     render :template => '/api/v1/purchase_rewards/index'
    end
   
   def earn
-    @venue = Venue.first(:id => params[:venue_id], Venue.merchant.id => params[:merchant_id]) || not_found
+    @venue = Venue.get(params[:venue_id]) || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
@@ -28,7 +27,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         @prize = nil
         if @venue.authorization_codes.first(:auth_code => params[:auth_code]) || APP_PROP["DEBUG_MODE"]
           now = Time.now
-          challenge = Challenge.first(:type => 'vip', :venues => Venue.all(:id => @venue.id))
+          challenge = Challenge.first(:type => 'vip', :challenge_venues => { :venue_id => @venue.id })
           @vip_challenge = false
           @vip_points = 0
           if challenge && vip_challenge_met?(challenge)

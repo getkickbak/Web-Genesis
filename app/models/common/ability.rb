@@ -25,6 +25,7 @@ class Ability
     can :read, PurchaseReward
     can :read, Challenge 
     can :read, Venue
-    can [:read, :update], EarnPrize
+    can :read, EarnPrize
+    can :update, EarnPrize, :user => { :id => @user.id }
   end
 end

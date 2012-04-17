@@ -32,7 +32,7 @@ class Api::V1::CheckInsController < ApplicationController
     CheckIn.transaction do
       begin
         now = Time.now
-        challenge = Challenge.first(:type => 'referral', :venues => Venue.all(:id => @venue.id))
+        challenge = Challenge.first(:type => 'referral', :challenge_venues => { :venue_id => @venue.id })
         if challenge && new_customer
           referral_challenge = ReferralChallenge.first(ReferralChallenge.merchant.id => @venue.merchant.id, :ref_email => current_user.email)
           if referral_challenge
@@ -42,8 +42,8 @@ class Api::V1::CheckInsController < ApplicationController
           end
         end
         last_check_in = CheckIn.create(@venue, current_user, @customer)
-        @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.lte => @customer.points)
-        @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :venues => Venue.all(:id => @venue.id), :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
+        @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :customer_reward_venues => { :venue_id => @venue.id }, :points.lte => @customer.points)
+        @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :customer_reward_venues => { :venue_id => @venue.id }, :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
         @eligible_rewards = []
         @rewards.each do |reward|
           item = EligibleReward.new(
