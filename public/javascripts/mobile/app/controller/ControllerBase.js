@@ -131,7 +131,7 @@ Ext.define('Genesis.controller.ControllerBase',
                }
                case PositionError.POSITION_UNAVAILABLE:
                {
-                  console.debug("PERMISSION_UNAVAILABLE");
+                  console.debug("POSITION_UNAVAILABLE");
                   break;
                }
                case PositionError.TIMEOUT:
@@ -143,8 +143,8 @@ Ext.define('Genesis.controller.ControllerBase',
          },
          {
             maximumAge : 30000,
-            timeout : 50000,
-            enableHighAccuracy : true
+            timeout : 50000
+            //enableHighAccuracy : true
          });
       }
    },
