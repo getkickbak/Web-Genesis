@@ -8,14 +8,20 @@ class Api::V1::TokensController < ApplicationController
     password = params[:password]
 
     if email.nil? or password.nil?
-      render :json => { :success => false, :message => [t("api.tokens.create_missing_info")] }
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => [t("api.tokens.create_missing_info")] } }
+      end  
       return
     end
 
     @user = User.first(:email => email.downcase)
 
     if @user.nil?
-      render :json => { :success => false, :message => [t("api.tokens.create_invalid_info")] }
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => [t("api.tokens.create_invalid_info")] } }
+      end  
       return
     end
 
@@ -23,7 +29,10 @@ class Api::V1::TokensController < ApplicationController
     @user.save!
 
     if not @user.valid_password?(password)
-      render :json => { :success => false, :message => [t("api.tokens.create_invalid_info")] }
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => [t("api.tokens.create_invalid_info")] } }
+      end  
     else
       start = params[:start].to_i
       max = params[:limit].to_i
@@ -36,7 +45,10 @@ class Api::V1::TokensController < ApplicationController
   def create_from_facebook
     @user = User.first(:facebook_id => params[:facebook_id])
     if @user.nil?
-      render :json => { :success => false, :metaData => { :rescode => 'login_invalid_facebook_info' }, :message => [t("api.tokens.create_invalid_facebook_info")] }
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :metaData => { :rescode => 'login_invalid_facebook_info' }, :message => [t("api.tokens.create_invalid_facebook_info")] } }
+      end  
       return
     end
     
@@ -55,9 +67,16 @@ class Api::V1::TokensController < ApplicationController
         @earn_prizes = EarnPrize.all(EarnPrize.user.id => @user.id, :redeemed => false)
         render :template => '/api/v1/tokens/create'
       rescue DataMapper::SaveFailureError => e
-        render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => [t("api.tokens.create_from_facebook_failure")] }
+        logger.error("Exception: " + e.resource.errors.inspect)
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => [t("api.tokens.create_from_facebook_failure")] } }
+        end
       rescue
-        render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => [t("api.tokens.create_from_facebook_failure")] }
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => [t("api.tokens.create_from_facebook_failure")] } }
+        end
       end
     end
   end
@@ -65,10 +84,16 @@ class Api::V1::TokensController < ApplicationController
   def destroy
     @user = User.first(:authentication_token => params[:id])
     if @user.nil?
-      render :json => { :success => false, :message => [t("api.tokens.destroy_failure")] }
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => [t("api.tokens.destroy_failure")] } }
+      end  
     else
       @user.reset_authentication_token!
-      render :json => { :success => true }
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => true } }
+      end  
     end
   end
 end
