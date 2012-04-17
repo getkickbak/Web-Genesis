@@ -36,10 +36,15 @@ class Api::V1::UsersController < ApplicationController
         user_info = JSON.parse(params[:user], { :symbolize_names => true })
         facebook_id = user_info[:facebook_id]
         facebook_email = user_info[:facebook_email]
-        @user.update_without_password(:facebook_id => facebook_id, :facebook_email => facebook_email, :update_ts => Time.now)
-        respond_to do |format|
-          #format.xml  { head :ok }
-          format.json { render :json => { :success => true } }
+        existing_user = User.first(:facebook_id => facebook_id)
+        if existing_user.nil?
+          @user.update_without_password(:facebook_id => facebook_id, :facebook_email => facebook_email, :update_ts => Time.now)
+          respond_to do |format|
+            #format.xml  { head :ok }
+            format.json { render :json => { :success => true } }
+          end
+        else
+          format.json { render :json => { :success => false, :message => [t("api.users.update_facebook_info_failure")] } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)

@@ -130,7 +130,9 @@ en:
         create_invalid_info: "The email/password you entered is incorrect.  Please try again."
         create_invalid_facebook_info: "Invalid facebook sign in."
         create_from_facebook_failure: "Trouble with facebook sign in.  Please try again."
-        destroy_failure: "Trouble with logout.  Please try again."   
+        destroy_failure: "Trouble with logout.  Please try again."  
+      users:
+        update_facebook_info_failure: "Facebook account already exists."
   admin:
       merchants:
         create_success: "Merchant was successfully created."
