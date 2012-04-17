@@ -98,6 +98,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    getGeoLocation : function(callback, i)
    {
+      var me = this;
       i = i || 0;
       console.debug('Getting GeoLocation ...');
       if(!Genesis.constants.isNative())
@@ -120,9 +121,12 @@ Ext.define('Genesis.controller.ControllerBase',
 
          navigator.geolocation.getCurrentPosition(function(position)
          {
-            console.debug('\n' + 'Latitude: ' + position.coords.latitude + '\n' + 'Longitude: ' + position.coords.longitude + '\n' + 'Altitude: ' + position.coords.altitude + '\n' + 'Accuracy: ' + position.coords.accuracy + '\n' + 'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '\n' + 'Heading: ' + position.coords.heading + '\n' + 'Speed: ' + position.coords.speed + '\n' + 'Timestamp: ' + new Date(position.timestamp) + '\n');
+            if(position)
+            {
+               console.debug('\n' + 'Latitude: ' + position.coords.latitude + '\n' + 'Longitude: ' + position.coords.longitude + '\n' + 'Altitude: ' + position.coords.altitude + '\n' + 'Accuracy: ' + position.coords.accuracy + '\n' + 'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '\n' + 'Heading: ' + position.coords.heading + '\n' + 'Speed: ' + position.coords.speed + '\n' + 'Timestamp: ' + new Date(position.timestamp) + '\n');
 
-            callback(position);
+               callback(position);
+            }
          }, function(error)
          {
             console.debug('GeoLocation Error[' + error.message + ']');
@@ -134,7 +138,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   Ext.device.Notification.show(
                   {
                      title : 'Permission Error',
-                     message : this.geoLocationPermissionErrorMsg
+                     message : me.geoLocationPermissionErrorMsg
                   });
 
                   break;
@@ -142,16 +146,17 @@ Ext.define('Genesis.controller.ControllerBase',
                case PositionError.POSITION_UNAVAILABLE:
                {
                   console.debug("POSITION_UNAVAILABLE");
-                  if(i <= 5)
+                  if(++i <= 5)
                   {
-                     Ext.defer(this.getGeoLocation, 1 * 1000, this, [callback, ++i]);
+                     Ext.Function.defer(me.getGeoLocation, 1 * 1000, me, [callback, i]);
+                     console.debug("Retry getting current location(" + i + ") ...");
                   }
                   else
                   {
                      Ext.device.Notification.show(
                      {
                         title : 'Error',
-                        message : this.geoLocationErrorMsg
+                        message : me.geoLocationErrorMsg
                      });
                   }
                   break;
@@ -162,7 +167,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   Ext.device.Notification.show(
                   {
                      title : 'Timeout Error',
-                     message : this.geoLocationTimeoutErrorMsg
+                     message : me.geoLocationTimeoutErrorMsg
                   });
                   break;
                }
