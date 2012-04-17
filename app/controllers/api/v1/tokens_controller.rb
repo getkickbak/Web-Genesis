@@ -36,7 +36,7 @@ class Api::V1::TokensController < ApplicationController
   def create_from_facebook
     @user = User.first(:facebook_id => params[:facebook_id])
     if @user.nil?
-      render :json => { :success => false, :metaData => { :rescode => 'invalid_info' }, :message => [t("api.tokens.create_invalid_facebook_info")] }
+      render :json => { :success => false, :metaData => { :rescode => 'login_invalid_facebook_info' }, :message => [t("api.tokens.create_invalid_facebook_info")] }
       return
     end
     
