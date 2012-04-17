@@ -53,6 +53,8 @@ Ext.define('Genesis.controller.ControllerBase',
        */
    },
    geoLocationErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
+   geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
+   geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
    init : function()
    {
       this.callParent(arguments);
@@ -129,6 +131,12 @@ Ext.define('Genesis.controller.ControllerBase',
                case PositionError.PERMISSION_DENIED:
                {
                   console.debug("PERMISSION_DENIED");
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Permission Error',
+                     message : this.geoLocationPermissionErrorMsg
+                  });
+
                   break;
                }
                case PositionError.POSITION_UNAVAILABLE:
@@ -136,7 +144,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   console.debug("POSITION_UNAVAILABLE");
                   if(i <= 5)
                   {
-                     Ext.defer(this.getGeoLocation, 1 * 1000, [callback, ++i], this);
+                     Ext.defer(this.getGeoLocation, 1 * 1000, this, [callback, ++i]);
                   }
                   else
                   {
@@ -151,6 +159,11 @@ Ext.define('Genesis.controller.ControllerBase',
                case PositionError.TIMEOUT:
                {
                   console.debug("TIMEOUT");
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Timeout Error',
+                     message : this.geoLocationTimeoutErrorMsg
+                  });
                   break;
                }
             }
