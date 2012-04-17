@@ -8,9 +8,10 @@ class Api::V1::UsersController < ApplicationController
 
     User.transaction do
       begin
-        params[:user][:role] = @user.role
-        params[:user][:status] = @user.status
-        @user.update_all(params[:user])
+        user_info = JSON.parse(params[:user], { :symbolize_names => true })
+        user_info[:role] = @user.role
+        user_info[:status] = @user.status
+        @user.update_all(user_info)
         sign_in(current_user, :bypass => true)
         respond_to do |format|
           #format.xml  { head :ok }
@@ -32,7 +33,10 @@ class Api::V1::UsersController < ApplicationController
 
     User.transaction do
       begin
-        @user.update_without_password(params[:facebook_id], params[:facebook_email], :update_ts => Time.now)
+        user_info = JSON.parse(params[:user], { :symbolize_names => true })
+        facebook_id = user_info[:facebook_id]
+        facebook_email = user_info[:facebook_email]
+        @user.update_without_password(:facebook_id => facebook_id, :facebook_email => facebook_email, :update_ts => Time.now)
         respond_to do |format|
           #format.xml  { head :ok }
           format.json { render :json => { :success => true } }
