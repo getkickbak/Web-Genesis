@@ -6,18 +6,19 @@ class Api::V1::RegistrationsController < ApplicationController
   def create
     User.transaction do
       begin
-        params[:user][:role] = "user"
-        params[:user][:status] = :active
+        user_info = JSON.parse(params[:user])
+        user_info[:role] = "user"
+        user_info[:status] = :active
         start = params[:start].to_i
         max = params[:limit].to_i
-        @user = User.create(params[:user])
+        @user = User.create(user_info)
         @results = Customer.find(@user.id, start, max)
         @earn_prizes = []
         render :template => '/api/v1/tokens/create'
       rescue DataMapper::SaveFailureError => e
-        render :json => { :success => false, :metaData => e.resource.errors }
+        render :json => { :success => false, :metaData => { :rescode => 'signup_invalid_info' }, :message => e.resource.errors }
       rescue
-        render :json => { :success => false, :messasge => [t("api.registrations.create_failure")] }
+        render :json => { :success => false, :message => [t("api.registrations.create_failure")] }
       end
     end
   end
