@@ -143,8 +143,8 @@ Ext.define('Genesis.controller.ControllerBase',
          },
          {
             maximumAge : 30000,
-            timeout : 50000
-            //enableHighAccuracy : true
+            timeout : 50000,
+            enableHighAccuracy : true
          });
       }
    },
