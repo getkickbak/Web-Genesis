@@ -580,7 +580,9 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                });
                break;
             }
+            case 'update_account_invalid_info' :
             case 'signup_invalid_info' :
+            case 'update_account_invalid_facebook_info' :
             {
                var errors = [];
                for(var i in messages)

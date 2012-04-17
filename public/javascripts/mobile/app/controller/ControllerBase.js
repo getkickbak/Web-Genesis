@@ -52,6 +52,9 @@ Ext.define('Genesis.controller.ControllerBase',
        }()
        */
    },
+   geoLocationErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
+   geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
+   geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
    init : function()
    {
       this.callParent(arguments);
@@ -93,8 +96,9 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return "Cannot Open Folder";
    },
-   getGeoLocation : function(callback)
+   getGeoLocation : function(callback, i)
    {
+      i = i || 0;
       console.debug('Getting GeoLocation ...');
       if(!Genesis.constants.isNative())
       {
@@ -127,16 +131,39 @@ Ext.define('Genesis.controller.ControllerBase',
                case PositionError.PERMISSION_DENIED:
                {
                   console.debug("PERMISSION_DENIED");
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Permission Error',
+                     message : this.geoLocationPermissionErrorMsg
+                  });
+
                   break;
                }
                case PositionError.POSITION_UNAVAILABLE:
                {
-                  console.debug("PERMISSION_UNAVAILABLE");
+                  console.debug("POSITION_UNAVAILABLE");
+                  if(i <= 5)
+                  {
+                     Ext.defer(this.getGeoLocation, 1 * 1000, this, [callback, ++i]);
+                  }
+                  else
+                  {
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Error',
+                        message : this.geoLocationErrorMsg
+                     });
+                  }
                   break;
                }
                case PositionError.TIMEOUT:
                {
                   console.debug("TIMEOUT");
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Timeout Error',
+                     message : this.geoLocationTimeoutErrorMsg
+                  });
                   break;
                }
             }
