@@ -34,7 +34,7 @@ namespace :db do
     
     puts "Creating Merchants..."
     merchant_names = ["Cavacchio","Mario's Fine Dinning","Angelo's Pizza","Dynasty","Little Jerusalem","Korean House","Namasaki","Clinton's Bar and Grill","NataRajh","Quesadilla"]
-    10.times do |n|
+    merchant_names.length.times do |n|
       type = MerchantType.get(1)
       merchant = Merchant.create(type,
       {
@@ -110,25 +110,32 @@ namespace :db do
       reward_names = {:entrees => "Entrees", :appetizers => "Appetizers", :drinks => "Drinks", :desserts => "Desserts", :soup => "Soup",
                       :bread => "Bread", :salad => "Salad", :noodles => "Noodles", :side_dishes => "Side Dishes", :sandwiches => "Sandwiches",
                       :pasta => "Pasta", :pastry => "Pastry"}
+      reward_names_count = {:entrees => 0, :appetizers => 0, :drinks => 0, :desserts => 0, :soup => 0,
+                      :bread => 0, :salad => 0, :noodles => 0, :side_dishes => 0, :sandwiches => 0,
+                      :pasta => 0, :pastry => 0}                
       reward_names.length.times do |n|
         idx = rand(reward_names.length)+1
         reward_type = PurchaseRewardType.get(idx)
         reward = PurchaseReward.create(merchant,reward_type,
         {
-          :title => reward_names[reward_type.value.to_sym],
+          :title => "#{reward_names[reward_type.value.to_sym]}_#{reward_names_count[reward_type.value.to_sym]+1}",
           :price => rand(10) + 10.75,
           :rebate_rate => 9,
           :points => rand(10) + 10
         },
         venues)
         purchase_rewards << reward
+        reward_names_count[reward_type.value.to_sym] += 1
       end
+      reward_names_count = {:entrees => 0, :appetizers => 0, :drinks => 0, :desserts => 0, :soup => 0,
+                      :bread => 0, :salad => 0, :noodles => 0, :side_dishes => 0, :sandwiches => 0,
+                      :pasta => 0, :pastry => 0}
       reward_names.length.times do |n|
         idx = rand(reward_names.length)+1
         reward_type = CustomerRewardType.get(idx)
         reward = CustomerReward.create(merchant,reward_type,
         {
-          :title => reward_names[reward_type.value.to_sym],
+          :title => "#{reward_names[reward_type.value.to_sym]}_#{reward_names_count[reward_type.value.to_sym]+1}",
           :price => rand(10) + 10.75,
           :points => rand(10) + 80
         },
@@ -142,6 +149,7 @@ namespace :db do
         earn_prize.merchant = merchant
         earn_prize.user = users[rand(users.length)]
         earn_prize.save
+        reward_names_count[reward_type.value.to_sym] += 1
       end
       challenges = []
       challenge_type = ChallengeType.get(1)
