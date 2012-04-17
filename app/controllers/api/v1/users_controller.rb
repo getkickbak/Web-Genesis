@@ -32,7 +32,7 @@ class Api::V1::UsersController < ApplicationController
 
     User.transaction do
       begin
-        @user.update_without_password(params[:facebook_id], params[:facebook_email], :update_ts => now)
+        @user.update_without_password(params[:facebook_id], params[:facebook_email], :update_ts => Time.now)
         respond_to do |format|
           #format.xml  { head :ok }
           format.json { render :json => { :success => true } }
