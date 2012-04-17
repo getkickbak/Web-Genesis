@@ -1,3 +1,11 @@
+merchant_newsletters:
+  cron: 0 0 * * Mon
+  class: MerchantNewsletters
+  description: Merchant Newsletters
+expire_user_points:
+  cron: 0 0 1 * *
+  class: ExpireUserPoints
+  description: Expire User Points  
 voucher_reminders:
   cron: 0 1 * * *
   class: VoucherReminders

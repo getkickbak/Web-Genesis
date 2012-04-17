@@ -70,15 +70,10 @@ Genesis::Application.routes.draw do
       match "/account" => 'account#show', :as => :account
       match "/account/edit" => 'account#edit', :as => :edit_account
       match "/account/update" => 'account#update', :via => :post, :as => :update_account
-            
-      match '/jobs' => 'jobs#index', :as => :jobs
-      match '/jobs/run' => 'jobs#run', :as => :job_run
 
       constraints CanAccessResque do
         mount Resque::Server, at: '/resque'
       end
-      match '/resque', :to => redirect("/")
-      match '/resque/*path', :to => redirect("/")
 
       match '*a', :to => 'errors#routing'
       
