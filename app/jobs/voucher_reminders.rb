@@ -6,6 +6,7 @@ module VoucherReminders
   end
   
   def self.perform()
+=begin    
     if RAILS_ENV == 'production'
       sql = "SELECT coupon_id FROM coupons WHERE user_id = ? 
               AND expiry_date > ? AND (DATEDIFF(expiry_date - ?) % 30 = 0 OR DATEDIFF(expiry_date - ?) = 5) AND deleted_ts IS NULL"
@@ -27,5 +28,6 @@ module VoucherReminders
       end
     end
     logger.info("VoucherReminders completed successfully at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+=end    
   end
 end
