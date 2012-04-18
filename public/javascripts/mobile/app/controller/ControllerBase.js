@@ -36,6 +36,7 @@ Ext.define('Genesis.controller.ControllerBase',
        }()
        */
    },
+   loadingScannerMsg : 'Loading Scanner ...',
    geoLocationErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
@@ -122,7 +123,6 @@ Ext.define('Genesis.controller.ControllerBase',
                      title : 'Permission Error',
                      message : me.geoLocationPermissionErrorMsg
                   });
-
                   break;
                }
                case PositionError.POSITION_UNAVAILABLE:
@@ -164,13 +164,16 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    scanQRCode : function(config)
    {
+      var me = this;
       var fail = function(message)
       {
+         Ext.Viewport.setMasked(false);
          config.callback();
          console.debug('Failed because: ' + ftError[message.code]);
       };
       var callback = function(r)
       {
+         Ext.Viewport.setMasked(false);
          var qrcode = (r.response == 'undefined') ? "" : (r.response || "");
          if(Genesis.constants.isNative())
          {
@@ -214,7 +217,7 @@ Ext.define('Genesis.controller.ControllerBase',
          // Pick whatever is currently showing on the Venue Explore screen,
          // or pick the first one on the Neaby Venue in the store
          //
-         var venueId = (this.getCheckinMerchant && this.getCheckinMerchant().venue) ? this.getCheckinMerchant().venue.getId() : Ext.StoreMgr.get('CheckinExploreStore').first().getId();
+         var venueId = (me.getCheckinMerchant && me.getCheckinMerchant().venue) ? me.getCheckinMerchant().venue.getId() : Ext.StoreMgr.get('CheckinExploreStore').first().getId();
          callback(
          {
             response : venueId
@@ -222,6 +225,11 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       else
       {
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.loadingScannerMsg
+         });
          window.plugins.qrCodeReader.getCode("file://localhost/test.jpg", "http://www.getkickbak.com/test", callback, fail, new FileUploadOptions());
       }
    }
