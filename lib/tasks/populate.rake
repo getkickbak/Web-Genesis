@@ -118,7 +118,7 @@ namespace :db do
         reward_type = PurchaseRewardType.get(idx)
         reward = PurchaseReward.create(merchant,reward_type,
         {
-          :title => "#{reward_names[reward_type.value.to_sym]}_#{reward_names_count[reward_type.value.to_sym]+1}",
+          :title => "#{reward_names[reward_type.value.to_sym]} #{reward_names_count[reward_type.value.to_sym]+1}",
           :price => rand(10) + 10.75,
           :rebate_rate => 9,
           :points => rand(10) + 10
@@ -135,7 +135,7 @@ namespace :db do
         reward_type = CustomerRewardType.get(idx)
         reward = CustomerReward.create(merchant,reward_type,
         {
-          :title => "#{reward_names[reward_type.value.to_sym]}_#{reward_names_count[reward_type.value.to_sym]+1}",
+          :title => "#{reward_names[reward_type.value.to_sym]} #{reward_names_count[reward_type.value.to_sym]+1}",
           :price => rand(10) + 10.75,
           :points => rand(10) + 80
         },
