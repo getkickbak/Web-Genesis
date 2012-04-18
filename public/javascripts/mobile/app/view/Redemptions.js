@@ -9,12 +9,7 @@ Ext.define('Genesis.view.Redemptions',
       changeTitle : false,
       scrollable : 'vertical',
       cls : 'redemptionsMain',
-      layout :
-      {
-         type : 'vbox',
-         align : 'stretch',
-         pack : 'start'
-      },
+      layout : 'vbox',
       items : [
       // ------------------------------------------------------------------------
       // Redemptions Points Earned Panel
@@ -37,7 +32,7 @@ Ext.define('Genesis.view.Redemptions',
          tag : 'ptsEarnPanel',
          xtype : 'dataview',
          useComponents : true,
-         scrollable : false,
+         scrollable : undefined,
          defaultType : 'redemptionsptsitem',
          store :
          {
@@ -66,8 +61,10 @@ Ext.define('Genesis.view.Redemptions',
       // ------------------------------------------------------------------------
       {
          xtype : 'list',
-         scrollable : false,
+         scrollable : undefined,
+         //scrollable : 'vertical',
          ui : 'bottom-round',
+         flex : 1,
          store :
          {
             model : 'Genesis.model.CustomerReward',
@@ -85,7 +82,7 @@ Ext.define('Genesis.view.Redemptions',
                direction : 'ASC'
             }]
          },
-         cls : 'redemptionsList separator',
+         cls : 'redemptionsList separator_pad',
          tag : 'redemptionsList',
          /*
           indexBar :
@@ -97,10 +94,10 @@ Ext.define('Genesis.view.Redemptions',
           letters : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
           },
           */
-         pinHeaders : false,
+         //pinHeaders : true,
          grouped : true,
          // @formatter:off
-         itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>', '<div class="listItemDetailsWrapper">', '<div class="itemDesc wrap">{[this.getDesc(values)]}</div>', '</div>',
+         itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>', '<div class="listItemDetailsWrapper">', '<div class="itemTitle">{[this.getTitle(values)]}</div>', '</div>',
          // @formatter:on
          {
             getPhoto : function(values)
@@ -111,9 +108,9 @@ Ext.define('Genesis.view.Redemptions',
                }
                return values.photo.url;
             },
-            getDesc : function(values)
+            getTitle : function(values)
             {
-               return values.title;
+               return values['title'];
             }
          }),
          onItemDisclosure : Ext.emptyFn

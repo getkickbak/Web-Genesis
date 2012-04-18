@@ -7,13 +7,8 @@ Ext.define('Genesis.view.Rewards',
    {
       title : 'Earn Rewards',
       changeTitle : false,
-      scrollable : false,
-      layout :
-      {
-         type : 'vbox',
-         align : 'stretch',
-         pack : 'start'
-      },
+      scrollable : 'vertical',
+      layout : 'vbox',
       items : [
       {
          xtype : 'container',
@@ -71,7 +66,7 @@ Ext.define('Genesis.view.Rewards',
                xtype : 'componentlist',
                flex : 1,
                defaultType : 'rewardscartitem',
-               scrollable : 'vertical',
+               //scrollable : false,
                store :
                {
                   model : 'Genesis.model.PurchaseReward',
@@ -129,7 +124,7 @@ Ext.define('Genesis.view.Rewards',
                flex : 1,
                defaultType : 'rewardscheckoutitem',
                //cls : 'shadows',
-               scrollable : 'vertical',
+               //scrollable : false,
                tag : 'rewardsCart',
                //useComponents : true,
                cls : 'rewardsCart',
@@ -230,7 +225,7 @@ Ext.define('Genesis.view.Rewards',
             title : 'Check Out'
          },
          {
-            hidden:true,
+            hidden : true,
             iconCls : 'shop2',
             tag : 'rewardsMain',
             title : 'Rewards List'
