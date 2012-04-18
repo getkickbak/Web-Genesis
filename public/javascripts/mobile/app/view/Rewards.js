@@ -281,7 +281,7 @@ Ext.define('Genesis.view.Rewards',
             case 'sandwiches' :
                photo_url = "resources/img/sprites/shoes.jpg";
                break;
-            case 'side_dish' :
+            case 'side_dishes' :
                photo_url = "resources/img/sprites/star.jpg";
                break;
             case 'soup' :
