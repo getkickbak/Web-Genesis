@@ -64,7 +64,6 @@ Ext.define('Genesis.view.Redemptions',
          scrollable : undefined,
          //scrollable : 'vertical',
          ui : 'bottom-round',
-         flex : 1,
          store :
          {
             model : 'Genesis.model.CustomerReward',
