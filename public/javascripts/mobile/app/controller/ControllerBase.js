@@ -37,9 +37,21 @@ Ext.define('Genesis.controller.ControllerBase',
        */
    },
    loadingScannerMsg : 'Loading Scanner ...',
+   loadingMsg : 'Loading ...',
    geoLocationErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
+   missingVenueInfoMsg : 'Error loading Venue information.',
+   showToServerMsg : 'Show this to your server before proceeding.',
+   showScreenTimeoutExpireMsg : function(duration)
+   {
+      return duration + ' are up! Press OK to confirm.';
+   },
+   showScreenTimeoutMsg : function(duration)
+   {
+      return 'You have ' + duration + ' to show this screen to a employee before it disappears!';
+   },
+   uploadFbMsg : 'Uploading to Facebook ...',
    init : function()
    {
       this.callParent(arguments);
@@ -230,7 +242,11 @@ Ext.define('Genesis.controller.ControllerBase',
             xtype : 'loadmask',
             message : me.loadingScannerMsg
          });
-         window.plugins.qrCodeReader.getCode("file://localhost/test.jpg", "http://www.getkickbak.com/test", callback, fail, new FileUploadOptions());
+         Ext.defer(function()
+         {
+            window.plugins.qrCodeReader.getCode(callback, fail);
+         }, 500);
       }
+
    }
 });

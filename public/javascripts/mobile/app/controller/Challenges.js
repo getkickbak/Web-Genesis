@@ -54,6 +54,10 @@ Ext.define('Genesis.controller.Challenges',
    {
       return 'You\'ve earned ' + points + ' Pts for uploading it to Facebook!';
    },
+   photoTakenFailMsg : function(msg)
+   {
+      return msg + 'No Photos were taken.'
+   },
    challengeId : null,
    model : ['Challenge'],
    init : function(app)
@@ -129,7 +133,7 @@ Ext.define('Genesis.controller.Challenges',
          Ext.device.Notification.show(
          {
             title : me.selectedItem.get('name') + ' Challenge',
-            message : 'Show this to your server before proceeding.',
+            message : me.showToServerMsg,
             callback : function()
             {
                me.getGeoLocation(function(position)
@@ -220,7 +224,7 @@ Ext.define('Genesis.controller.Challenges',
             Ext.Viewport.setMasked(
             {
                xtype : 'loadmask',
-               message : 'Uploading to Facebook ...'
+               message : me.uploadFbMsg
             });
 
             var ft = new FileTransfer();
@@ -327,7 +331,7 @@ Ext.define('Genesis.controller.Challenges',
                Ext.device.Notification.show(
                {
                   title : 'Error',
-                  message : me.noPhotoUploadedMsg
+                  message : me.noPhotoUploadedMsg(message + Genesis.constants.addCRLF())
                });
             }, options);
          }
@@ -372,7 +376,7 @@ Ext.define('Genesis.controller.Challenges',
       Ext.device.Notification.show(
       {
          title : 'Error',
-         message : message + Genesis.constants.addCRLF()+ 'No Photos were taken.'
+         message : me.photoTakenFailMsg(msg)
       });
    },
    onPhotoBtnCommon : function(sourceType)

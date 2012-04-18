@@ -50,6 +50,13 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       }
    },
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
+   lostPrizeMsg : 'Oops, Play Again!',
+   checkinFirstRewardsMsg : 'You need to Check-In first before you are elibigle to Earn Rewards',
+   checkinFirstRedemptionsMsg : 'You need to Check-In first before you are elibigle for Redemptions',
+   wonPrizeMsg : function(numPrizes)
+   {
+      return 'You haved won ' + ((numPrizes > 1) ? 'some PRIZES' : 'a PRIZE') + '!'
+   },
    //orderTitle : 'Rewards List',
    //checkoutTitle : 'Check Out',
    init : function()
@@ -282,7 +289,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             Ext.device.Notification.show(
             {
                title : 'Scan And Win!',
-               message : 'Oops, Play Again!',
+               message : me.lostPrizeMsg,
                callback : function()
                {
                   me.popView();
@@ -320,7 +327,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             Ext.device.Notification.show(
             {
                title : 'Scan And Win!',
-               message : 'You haved won ' + ((records.length > 1) ? 'some PRIZES' : 'a PRIZE') + '!',
+               message : me.wonPrizeMsg(records.length),
                callback : function()
                {
                   if(flag & 0x01)
@@ -638,7 +645,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          Ext.device.Notification.show(
          {
             title : 'Warning',
-            message : 'You need to Check-In first before you are elibigle to Earn Rewards'
+            message : me.checkinFirstRewardsMsg
          });
       }
       // Deselect item
@@ -694,7 +701,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          Ext.device.Notification.show(
          {
             title : 'Warning',
-            message : 'You need to Check-In first before you are elibigle for Redemptions'
+            message : me.checkinFirstRedemptionsMsg
          });
       }
 
@@ -732,7 +739,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       Ext.Viewport.setMasked(
       {
          xtype : 'loadmask',
-         message : 'Loading ...'
+         message : me.loadingMsg
       });
       switch (subFeature)
       {

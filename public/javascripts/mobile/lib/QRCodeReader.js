@@ -27,58 +27,35 @@
     * @param errorCallback {Function}    Callback to be invoked upon error
     * @param options {FileUploadOptions} Optional parameters such as file name and mimetype
     */
-   QRCodeReader.prototype.getCode = function(filePath, server, successCallback, errorCallback, options)
+   QRCodeReader.prototype.getCode = function(successCallback, errorCallback)
    {
-      if(!options.params)
-      {
-         options.params =
-         {
-         };
-      }
-      options.filePath = filePath;
-      options.server = server;
-      if(!options.fileKey)
-      {
-         options.fileKey = 'file';
-      }
-      if(!options.fileName)
-      {
-         options.fileName = 'image.jpg';
-      }
-      if(!options.mimeType)
-      {
-         options.mimeType = 'image/jpeg';
-      }
-      if(!options.chunkedMode)
-      {
-         options.chunkedMode = false;
-      }
-      // successCallback required
-      if( typeof successCallback != "function")
-      {
-         console.log("QRCodeReader Error: successCallback is not a function");
-         return;
-      }
+      /*
+       // successCallback required
+       if( typeof successCallback != "function")
+       {
+       console.log("QRCodeReader Error: successCallback is not a function");
+       return;
+       }
 
-      // errorCallback optional
-      if(errorCallback && ( typeof errorCallback != "function"))
-      {
-         console.log("QRCodeReader Error: errorCallback is not a function");
-         return;
-      }
+       // errorCallback optional
+       if(errorCallback && ( typeof errorCallback != "function"))
+       {
+       console.log("QRCodeReader Error: errorCallback is not a function");
+       return;
+       }
+       */
 
-      console.log("Uploading file to [" + server + "]\nfilePath is [" + filePath + "]");
       console.log("ScanType is [" + this.scanType + "]");
       switch (this.scanType)
       {
          case 'RL' :
          case 'Nigma' :
          {
-            cordovaRef.exec(successCallback, errorCallback, 'QRCodeReader' + this.scanType, 'getCode', [options]);
+            cordovaRef.exec(successCallback, errorCallback, 'QRCodeReader' + this.scanType, 'getCode', []);
             break;
          }
          default:
-            cordovaRef.exec(successCallback, errorCallback, 'QRCodeReaderRL', 'getCode', [options]);
+            cordovaRef.exec(successCallback, errorCallback, 'QRCodeReaderRL', 'getCode', []);
             break;
       }
    };

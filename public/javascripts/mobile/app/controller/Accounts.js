@@ -92,7 +92,7 @@ Ext.define('Genesis.controller.Accounts',
                      app.dispatch(
                      {
                         action : 'onCheckinHandler',
-                        args : ['explore',  cestore.getProxy().getReader().metaData, cstore, null, [record], operation],
+                        args : ['explore', cestore.getProxy().getReader().metaData, cstore, null, [record], operation],
                         controller : controller,
                         scope : controller
                      });
@@ -107,7 +107,7 @@ Ext.define('Genesis.controller.Accounts',
                   Ext.device.Notification.show(
                   {
                      title : 'Error',
-                     message : 'Error Loading Venue information'
+                     message : me.missingVenueInfoMsg
                   });
                }
             },
