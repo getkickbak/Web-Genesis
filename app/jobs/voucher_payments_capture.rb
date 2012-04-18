@@ -5,6 +5,7 @@ module VoucherPaymentsCapture
   end
 
   def self.perform(auto)
+=begin    
     now = Time.now
     logger.info("VoucherPaymentsCapture started at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
     deals = Deal.all(:conditions => ["limit_count >= min_limit"] , :offset => 0, :limit => 100)
@@ -45,5 +46,6 @@ module VoucherPaymentsCapture
       #logger.debug("end")
     end
     logger.info("VoucherPaymentsCapture completed successfully at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+=end    
   end
 end

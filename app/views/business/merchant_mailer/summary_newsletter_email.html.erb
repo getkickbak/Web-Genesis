@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+	</head>
+	<body>
+		<div>
+			<center>
+				<div style="text-align:left;width:643px;border:#000000 1px solid;background:#ffffff;font-family:Arial, Helvetica, sans-serif;font-size:13px;">
+					<div style="background-color:#FFFFFF;">
+						<a rel="nofollow" target="_blank" href="http://www.justformyfriends.com"> <img src="http://photos.justformyfriends.com/logo.png" border="0" alt="justformyfriends.com"> </a>
+					</div>
+					<div style="padding: 0 15px 0 15px;">
+						<br>
+						<br>
+						<b>Hi <%= @merchant.account_first_name %>,</b>
+						<br>
+						<br>
+						Here is your KICKBAK summary for this past week:
+						<br>
+						<br>
+						Total # of customers: <%= @stats[:total_customer_count] %>
+						<br>
+						<br>
+						New customers: <%= @stats[:new_customer_count] %>
+						<br>
+						<br>
+						Purchases: (Total <%= @stats[:total_reward_count] %>)
+						<br>
+						<table style="margin-bottom:0px;margin-top:10px;border:1px solid #DDD;background-color:white;width:100%;margin-bottom:18px;border-collapse:collapse;font-size:13px;">
+							<thead>
+								<tr>
+									<th style="padding:10px 10px 9px;border:0 !important;">Name</th>
+									<th style="padding:10px 10px 9px;border:0 !important;">Count</th>
+									<th style="padding:10px 10px 9px;border:0 !important;">Percentage</th>
+								</tr>
+							</thead>
+							<% @stats[:reward_count].each do |reward| %>
+							<tr>
+								<td style="padding:10px 10px 9px;border:0 !important;"><%= reward[:name] %></td>
+								<td style="padding:10px 10px 9px;border:0 !important;"><%= reward[:count] %></td>
+								<td style="padding:10px 10px 9px;border:0 !important;"><%= reward[:percentage] %></td>
+							</tr>
+							<% end %>
+						</table>
+						<br>
+						Challenges: (Total <%= @stats[:total_challenge_count] %>)
+						<br>
+						<table style="margin-bottom:0px;margin-top:10px;border:1px solid #DDD;background-color:white;width:100%;margin-bottom:18px;border-collapse:collapse;font-size:13px;">
+							<thead>
+								<tr>
+									<th style="padding:10px 10px 9px;border:0 !important;">Challenge</th>
+									<th style="padding:10px 10px 9px;border:0 !important;">Count</th>
+									<th style="padding:10px 10px 9px;border:0 !important;">Percentage</th>
+								</tr>
+							</thead>
+							<% @stats[:challenge_count].each do |challenge| %>
+							<tr>
+								<td style="padding:10px 10px 9px;border:0 !important;"><%= challenge[:name] %></td>
+								<td style="padding:10px 10px 9px;border:0 !important;"><%= challenge[:count] %></td>
+								<td style="padding:10px 10px 9px;border:0 !important;"><%= challenge[:percentage] %></td>
+							</tr>
+							<% end %>
+						</table>
+						<br>
+						<center>
+							Questions or comments? Email us at <a rel="nofollow" ymailto="mailto:help@getkickbak.com" target="_blank" href="mailto:help@getkickbak.com">help@getkickbak.com</a>
+						</center>
+						<br>
+						<center>
+							Thanks from the <a rel="nofollow" target="_blank" href="<%= root_url %>">KICKBAK</a> team.
+						</center>
+						<br>
+						<br>
+					</div>
+				</div>
+			</center>
+		</div>
+	</body>
+</html>

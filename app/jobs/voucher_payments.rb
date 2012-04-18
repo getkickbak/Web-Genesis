@@ -5,6 +5,7 @@ module VoucherPayments
   end
 
   def self.perform(auto)
+=begin    
     week_um = Date.today.cweek
     if auto && (week_num % 2 == 1)
       return
@@ -52,5 +53,6 @@ module VoucherPayments
       #logger.debug("end")
     end
     logger.info("VoucherPayments completed successfully at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+=end    
   end
 end

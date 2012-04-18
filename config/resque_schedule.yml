@@ -1,7 +1,7 @@
-merchant_newsletters:
+merchant_summary_newsletters:
   cron: 0 0 * * Mon
-  class: MerchantNewsletters
-  description: Merchant Newsletters
+  class: MerchantSummaryNewsletters
+  description: Merchant Summary Newsletters
 expire_user_points:
   cron: 0 0 1 * *
   class: ExpireUserPoints
