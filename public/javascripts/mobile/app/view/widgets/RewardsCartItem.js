@@ -64,7 +64,6 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
          increment : 1,
          groupButtons : false,
          cycle : false,
-         value : 0,
          listeners :
          {
             initialize : function(f, eOpts)
@@ -94,6 +93,7 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
    {
       return Ext.factory(Ext.apply(config,
       {
+         value : this.config.record.get('qty') || 0
       }), Ext.field.Spinner, this.getQty());
    },
    updateQty : function(newQty, oldQty)

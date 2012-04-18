@@ -4,8 +4,6 @@ Ext.define('Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
    statics :
    {
-      sign_in_path : '/sign_in',
-      sign_out_path : '/sign_out',
       /*
        error : function()
        {
@@ -35,20 +33,6 @@ Ext.define('Genesis.controller.ControllerBase',
        ftError[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
        ftError[FileTransferError.CONNECTION_ERR] = 'Connection Error';
        return ftError;
-       }(),
-       connection : function()
-       {
-       var connection =
-       {
-       };
-       connection[Connection.UNKNOWN] = 'Unknown connection';
-       connection[Connection.ETHERNET] = 'Ethernet connection';
-       connection[Connection.WIFI] = 'WiFi connection';
-       connection[Connection.CELL_2G] = 'Cell 2G connection';
-       connection[Connection.CELL_3G] = 'Cell 3G connection';
-       connection[Connection.CELL_4G] = 'Cell 4G connection';
-       connection[Connection.NONE] = 'No network connection';
-       return connection;
        }()
        */
    },
@@ -114,9 +98,7 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       else
       {
-         var networkState = navigator.network.connection.type;
-         console.debug('Checking Connectivity Type ...[' + networkState + ']');
-         //console.debug('Connection type: [' + Genesis.controller.ControllerBase.connection[networkState] + ']');
+         console.debug('Connection type: [' + Ext.device.Connection.getType() + ']');
          //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
 
          navigator.geolocation.getCurrentPosition(function(position)

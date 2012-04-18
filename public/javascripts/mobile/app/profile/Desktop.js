@@ -9,3 +9,28 @@ Ext.define('Genesis.profile.Desktop',
       return Ext.os.deviceType == 'Desktop';
    }
 });
+
+
+//---------------------------------------------------------------------------------------------------------------------------------
+// Ext.device.notification.Simulator
+//---------------------------------------------------------------------------------------------------------------------------------
+Ext.define('Genesis.device.notification.Simulator',
+{
+   override : 'Ext.device.notification.Simulator',
+   beep : function(times)
+   {
+      console.log("Beep " + times + " times.")
+   }
+});
+
+//---------------------------------------------------------------------------------------------------------------------------------
+// Ext.device.notification.Desktop
+//---------------------------------------------------------------------------------------------------------------------------------
+Ext.define('Genesis.device.notification.Desktop',
+{
+   override : 'Ext.device.notification.Desktop',
+   beep : function(times)
+   {
+      console.log("Beep " + times + " times.")
+   }
+});

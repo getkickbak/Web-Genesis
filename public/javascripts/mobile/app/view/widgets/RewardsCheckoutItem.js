@@ -56,11 +56,13 @@ Ext.define('Genesis.view.widgets.RewardsCheckoutItem',
       {
          flex : 1,
          cls : 'itemDetails',
-         tpl : Ext.create('Ext.XTemplate', '<div class="itemTitle">{[this.getTitle(values)]}</div>', '<div class="itemDesc">{[this.getDesc(values)]}</div>',
+         tpl : Ext.create('Ext.XTemplate', '<div class="itemTitle">{[this.getTitle(values)]}</div>',
+         //'<div class="itemDesc">{[this.getDesc(values)]}</div>',
          {
             getTitle : function(values)
             {
-               return values['type'].value.capitalize();
+               return values['title'];
+               //return values['type'].value.capitalize();
             },
             getDesc : function(values)
             {
@@ -79,16 +81,6 @@ Ext.define('Genesis.view.widgets.RewardsCheckoutItem',
             }
          })
       },
-      /*
-       remove :
-       {
-       hidden : true,
-       iconCls : 'delete_black2',
-       tag : 'deleteItem',
-       iconMask : true,
-       cls : 'plain'
-       },
-       */
       dataMap :
       {
          getImage :
@@ -127,26 +119,6 @@ Ext.define('Genesis.view.widgets.RewardsCheckoutItem',
          this.remove(oldMultiplier);
       }
    },
-   /*
-    applyRemove : function(config)
-    {
-    return Ext.factory(Ext.apply(config,
-    {
-    }), Ext.Button, this.getRemove());
-    }
-    updateRemove : function(newRemove, oldRemove)
-    {
-    if(newRemove)
-    {
-    this.add(newRemove);
-    }
-
-    if(oldRemove)
-    {
-    this.remove(oldRemove);
-    }
-    },
-    */
    applyImage : function(config)
    {
       return Ext.factory(Ext.apply(config,

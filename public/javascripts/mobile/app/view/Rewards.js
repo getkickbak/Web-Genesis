@@ -229,6 +229,12 @@ Ext.define('Genesis.view.Rewards',
             badgeCls : 'x-badge round',
             title : 'Check Out'
          },
+         {
+            hidden:true,
+            iconCls : 'shop2',
+            tag : 'rewardsMain',
+            title : 'Rewards List'
+         },
          //
          // Right side Buttons
          //
@@ -245,13 +251,13 @@ Ext.define('Genesis.view.Rewards',
          var photo_url;
          switch (type.value)
          {
-            case 'appetizer' :
+            case 'appetizers' :
                photo_url = "resources/img/sprites/shoes.jpg";
                break;
             case 'bread' :
                photo_url = "resources/img/sprites/heroburgers.jpg";
                break;
-            case 'dessert' :
+            case 'desserts' :
                photo_url = "resources/img/sprites/springrolls.jpg";
                break;
             case 'drinks' :
@@ -272,7 +278,7 @@ Ext.define('Genesis.view.Rewards',
             case 'salad' :
                photo_url = "resources/img/sprites/star.jpg";
                break;
-            case 'sandwich' :
+            case 'sandwiches' :
                photo_url = "resources/img/sprites/shoes.jpg";
                break;
             case 'side_dish' :
