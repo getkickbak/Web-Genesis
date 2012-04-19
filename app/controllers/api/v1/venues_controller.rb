@@ -25,8 +25,7 @@ class Api::V1::VenuesController < ApplicationController
         item = EligibleReward.new(
           reward.id,
           reward.type.value,
-          reward.title,
-          (@customer.points - reward.points).abs
+          ::Common.get_reward_text(reward.title, (@customer.points - reward.points).abs)
         )
         @eligible_rewards << item
       end 

@@ -47,6 +47,14 @@ class Common
     return true
   end
 
+  def self.get_reward_text(reward_title, points)
+    if points >= 0
+      I18n.t("api.customer_rewards.qualified_rewards")
+    else  
+      I18n.t('api.customer_rewards.potential_rewads')
+    end
+  end
+  
   private
 
   def self.get_photo_host_bucket
