@@ -18,10 +18,10 @@ class Api::V1::VenuesController < ApplicationController
     end
     if is_customer
       @winners_count = EarnPrize.count(EarnPrize.merchant.id => @venue.merchant.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
-      @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :customer_reward_venues => { :venue_id => @venue.id }, :points.lte => @customer.points)
-      n = @venue.customer_rewards.length - @rewards.length
+      @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :points.lte => @customer.points)
+      n = CustomerReward.count(:customer_reward_venues => { :venue_id => @venue.id }) - @rewards.length
       if n > 0
-        @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :customer_reward_venues => { :venue_id => @venue.id }, :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => n))
+        @rewards.concat(CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => n))
       end
       @eligible_rewards = []
       @rewards.each do |reward|
@@ -44,10 +44,10 @@ class Api::V1::VenuesController < ApplicationController
     longitude = params[:longitude].to_f
     @venue = Venue.find_nearest(@merchant.id, latitude, longitude, 1).first
     @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id)
-    @rewards = CustomerReward.all(CustomerReward.merchant.id => @merchant.id, :customer_reward_venues => { :venue_id => @venue.id }, :points.lte => @customer.points)
-    n = @venue.customer_rewards.length - @rewards.length
+    @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :points.lte => @customer.points)
+    n = CustomerReward.count(:customer_reward_venues => { :venue_id => @venue.id }) - @rewards.length
     if n > 0
-      @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :customer_reward_venues => { :venue_id => @venue.id }, :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => n))
+      @rewards.concat(CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => n))
     end
     @eligible_rewards = []
     @rewards.each do |reward|
