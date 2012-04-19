@@ -43,14 +43,18 @@ class Api::V1::CheckInsController < ApplicationController
         end
         last_check_in = CheckIn.create(@venue, current_user, @customer)
         @winners_count = EarnPrize.count(EarnPrize.merchant.id => @venue.merchant.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
-        @rewards = CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :customer_reward_venues => { :venue_id => @venue.id }, :points.lte => @customer.points)
-        @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :customer_reward_venues => { :venue_id => @venue.id }, :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
+        @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :points.lte => @customer.points)
+        n = CustomerReward.count(:customer_reward_venues => { :venue_id => @venue.id }) - @rewards.length
+        if n > 0
+          @rewards.concat(CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => n))
+        end
         @eligible_rewards = []
         @rewards.each do |reward|
           item = EligibleReward.new(
             reward.id,
             reward.type.value,
-            ::Common.get_reward_text(reward.title, (@customer.points - reward.points).abs)
+            reward.title,
+            ::Common.get_reward_text(@customer.points - reward.points).abs)
           )
           @eligible_rewards << item  
         end
