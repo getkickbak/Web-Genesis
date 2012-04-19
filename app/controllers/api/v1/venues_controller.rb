@@ -45,14 +45,16 @@ class Api::V1::VenuesController < ApplicationController
     @venue = Venue.find_nearest(@merchant.id, latitude, longitude, 1).first
     @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id)
     @rewards = CustomerReward.all(CustomerReward.merchant.id => @merchant.id, :customer_reward_venues => { :venue_id => @venue.id }, :points.lte => @customer.points)
-    @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :customer_reward_venues => { :venue_id => @venue.id }, :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => 1))
+    n = @venue.customer_rewards.length - @rewards.length
+    if n > 0
+      @rewards.concat(CustomerReward.all(CustomerReward.merchant.id => @venue.merchant.id, :customer_reward_venues => { :venue_id => @venue.id }, :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => n))
+    end
     @eligible_rewards = []
     @rewards.each do |reward|
       item = EligibleReward.new(
         reward.id,
         reward.type.value,
-        reward.title,
-        (@customer.points - reward.points).abs
+        ::Common.get_reward_text(reward.title, (@customer.points - reward.points).abs)
       )
       @eligible_rewards << item
     end
