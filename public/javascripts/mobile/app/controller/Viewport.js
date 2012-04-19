@@ -85,6 +85,7 @@ Ext.define('Genesis.controller.Viewport',
          }
       }
    },
+   retrieveChallengesMsg : 'Retrieving Challenges ...',
    onFeatureTap : function(feature, subFeature)
    {
       var app = this.getApplication();
@@ -151,7 +152,7 @@ Ext.define('Genesis.controller.Viewport',
                   Ext.device.Notification.show(
                   {
                      title : 'Error',
-                     message : 'Error loading Venue information.'
+                     message : me.missingVenueInfoMsg
                   });
                }
             },
@@ -171,7 +172,7 @@ Ext.define('Genesis.controller.Viewport',
       Ext.Viewport.setMasked(
       {
          xtype : 'loadmask',
-         message : 'Retrieving Challenges ...'
+         message : me.retrieveChallengesMsg
       });
       Challenge['setGetChallengesURL']();
       Challenge.load(venue.getId(),

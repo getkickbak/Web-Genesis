@@ -36,9 +36,22 @@ Ext.define('Genesis.controller.ControllerBase',
        }()
        */
    },
+   loadingScannerMsg : 'Loading Scanner ...',
+   loadingMsg : 'Loading ...',
    geoLocationErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
+   missingVenueInfoMsg : 'Error loading Venue information.',
+   showToServerMsg : 'Show this to your server before proceeding.',
+   showScreenTimeoutExpireMsg : function(duration)
+   {
+      return duration + ' are up! Press OK to confirm.';
+   },
+   showScreenTimeoutMsg : function(duration)
+   {
+      return 'You have ' + duration + ' to show this screen to a employee before it disappears!';
+   },
+   uploadFbMsg : 'Uploading to Facebook ...',
    init : function()
    {
       this.callParent(arguments);
@@ -122,7 +135,6 @@ Ext.define('Genesis.controller.ControllerBase',
                      title : 'Permission Error',
                      message : me.geoLocationPermissionErrorMsg
                   });
-
                   break;
                }
                case PositionError.POSITION_UNAVAILABLE:
@@ -164,13 +176,16 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    scanQRCode : function(config)
    {
+      var me = this;
       var fail = function(message)
       {
+         Ext.Viewport.setMasked(false);
          config.callback();
          console.debug('Failed because: ' + ftError[message.code]);
       };
       var callback = function(r)
       {
+         Ext.Viewport.setMasked(false);
          var qrcode = (r.response == 'undefined') ? "" : (r.response || "");
          if(Genesis.constants.isNative())
          {
@@ -214,7 +229,7 @@ Ext.define('Genesis.controller.ControllerBase',
          // Pick whatever is currently showing on the Venue Explore screen,
          // or pick the first one on the Neaby Venue in the store
          //
-         var venueId = (this.getCheckinMerchant && this.getCheckinMerchant().venue) ? this.getCheckinMerchant().venue.getId() : Ext.StoreMgr.get('CheckinExploreStore').first().getId();
+         var venueId = (me.getCheckinMerchant && me.getCheckinMerchant().venue) ? me.getCheckinMerchant().venue.getId() : Ext.StoreMgr.get('CheckinExploreStore').first().getId();
          callback(
          {
             response : venueId
@@ -222,7 +237,16 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       else
       {
-         window.plugins.qrCodeReader.getCode("file://localhost/test.jpg", "http://www.getkickbak.com/test", callback, fail, new FileUploadOptions());
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.loadingScannerMsg
+         });
+         Ext.defer(function()
+         {
+            window.plugins.qrCodeReader.getCode(callback, fail);
+         }, 500);
       }
+
    }
 });

@@ -272,6 +272,9 @@ body {
         //@include border-bottom-radius(.4em)
      }
    }
+   &.x-list-grouped .x-list-footer-item {
+     margin-bottom : 0;
+   }
    .x-list-container {
      padding : 0;
    }
@@ -375,7 +378,7 @@ body {
    &.x-list .x-list-disclosure {
       bottom:1.0em;
    }
-   &.x-list .x-list-item .x-list-item-label {
+   .x-list-item-label {
       position:relative;
       padding-top:$panelTopGap*0.5;
       padding-bottom:$panelTopGap*0.5;
@@ -770,7 +773,6 @@ body {
          .itemTitle {
             font-weight:bold;
             font-size:$largeFontSize;
-            margin-bottom:$panelTopGap/3;
             white-space: normal;
             background:transparent;
             -webkit-text-fill-color:$list-color;
@@ -824,10 +826,20 @@ body {
          line-height:$icon-size;
       }
    }
+   .x-scroll-scroller {
+      position:static;
+   }
    .redemptionsList {
       @extend .listScrollIndexWrapper;
-      .listItemDetailsWrapper {
-         //width:13em !important;
+      .x-list-item {
+         .listItemDetailsWrapper {
+            .itemTitle {
+               font-weight:bold;
+               font-size:$largeFontSize;
+               white-space: nowrap;
+               line-height : $icon-size;
+            }
+         }
       }
    }
 }

@@ -95,6 +95,10 @@ Ext.define('Genesis.controller.MainPage',
          }
       }
    },
+   signInFailMsg : function(msg)
+   {
+      return msg + 'Please Try Again';
+   },
    init : function(app)
    {
       this.callParent(arguments);
@@ -518,7 +522,7 @@ Ext.define('Genesis.controller.MainPage',
          Ext.device.Notification.show(
          {
             title : 'Oops',
-            message : label + ' ' + field.getMessage() + Genesis.constants.addCRLF() + 'Please Try Again'
+            message : signInFailMsg(label + ' ' + field.getMessage() + Genesis.constants.addCRLF())
          });
       }
       else

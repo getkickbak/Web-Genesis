@@ -38,7 +38,10 @@ Ext.define('Genesis.controller.Checkins',
       models : ['Venue', 'Merchant', 'EarnPrize'],
       position : null,
    },
+   checkinMsg : 'Checking in ...',
+   metaDataMissingMsg : 'Missing Checkin MetaData information.',
    noCheckinCodeMsg : 'No Checkin Code were found!',
+   getMerchantInfoMsg : 'Retrieving Merchant Info ...',
    init : function()
    {
       //
@@ -134,7 +137,7 @@ Ext.define('Genesis.controller.Checkins',
                Ext.device.Notification.show(
                {
                   title : 'Error',
-                  message : 'Missing Checkin MetaData information.'
+                  message : me.metaDataMissingMsg
                });
             }
          }
@@ -157,7 +160,7 @@ Ext.define('Genesis.controller.Checkins',
                      Ext.Viewport.setMasked(
                      {
                         xtype : 'loadmask',
-                        message : 'Checking in ...'
+                        message : me.checkinMsg
                      });
 
                      // Retrieve GPS Coordinates
@@ -179,7 +182,7 @@ Ext.define('Genesis.controller.Checkins',
             Ext.Viewport.setMasked(
             {
                xtype : 'loadmask',
-               message : 'Retrieving Merchant Info ...'
+               message : me.getMerchantInfoMsg
             });
             this.onCheckinCommonTap(b, e, eOpts, mode, url, "", null, callback);
             break;
@@ -337,7 +340,7 @@ Ext.define('Genesis.controller.Checkins',
                   Ext.device.Notification.show(
                   {
                      title : 'Warning',
-                     message : 'Error loading Venue information.'
+                     message : me.missingVenueInfoMsg
                   });
                }
             },
