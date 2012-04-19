@@ -49,9 +49,9 @@ class Common
 
   def self.get_reward_text(reward_title, points)
     if points >= 0
-      I18n.t("api.customer_rewards.qualified_rewards")
+      I18n.t("api.customer_rewards.qualified_rewards") % [reward_title]
     else  
-      I18n.t('api.customer_rewards.potential_rewads')
+      I18n.t('api.customer_rewards.potential_rewads') % [reward_title, points]
     end
   end
   
