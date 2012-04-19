@@ -85,14 +85,14 @@ class Venue
     if Rails.env == 'production'
       if merchant_id.nil?
         venues_info = DataMapper.repository(:default).adapter.select(
-          "SELECT id, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance
+          "SELECT id, round( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
           FROM venues WHERE deleted_ts IS NULL
           ORDER BY distance
           ASC LIMIT 0,?", latitude, longitude, latitude, max 
         )
       else
         venues_info = DataMapper.repository(:default).adapter.select(
-          "SELECT id, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance
+          "SELECT id, round( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
           FROM venues WHERE merchant_id = ? AND deleted_ts IS NULL
           ORDER BY distance
           ASC LIMIT 0,?", latitude, longitude, latitude, merchant_id, max 
@@ -115,10 +115,9 @@ class Venue
         venues = Venue.all(Venue.merchant.id => merchant_id, :offset => 0, :limit => max)
       end    
       venues.each do |venue|
-        venue.distance = rand * 10
+        venue.distance = (rand * 10).round(1)
       end  
     end
-    # Note: Venues are not ordered by distance. Should we do it on the client side or server side?
     return venues
   end
   

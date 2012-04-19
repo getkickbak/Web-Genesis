@@ -120,6 +120,8 @@ en:
         create_failure: "Trouble creating customer account.  Please try again."  
       customer_rewards:
         redeem_failure: "Trouble redeeming the reward.  Please try again."
+        qualified_rewards: "%s can be redeemed now."
+        potential_rewards: "%s can be redeemed with %s more points."
       earn_prizes:
         redeem_failure: "Trouble redeeming the prize.  Please try again."
       purchase_rewards:
