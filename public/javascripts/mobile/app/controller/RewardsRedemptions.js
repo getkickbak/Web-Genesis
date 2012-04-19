@@ -50,13 +50,8 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       }
    },
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
-   lostPrizeMsg : 'Oops, Play Again!',
    checkinFirstRewardsMsg : 'You need to Check-In first before you are elibigle to Earn Rewards',
    checkinFirstRedemptionsMsg : 'You need to Check-In first before you are elibigle for Redemptions',
-   wonPrizeMsg : function(numPrizes)
-   {
-      return 'You haved won ' + ((numPrizes > 1) ? 'some PRIZES' : 'a PRIZE') + '!'
-   },
    needPointsMsg : function(pointsDiff)
    {
       return 'You need ' + pointsDiff + ' more points ' + Genesis.constants.addCRLF() + 'to be eligible for this item.';
@@ -136,7 +131,6 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    },
    initRedemptions : function()
    {
-      this.initSound = false;
       this.control(
       {
          redemptions :
@@ -253,99 +247,35 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    prizeCheck : function(pstore)
    {
       var me = this;
-      var flag = 0;
-      var custore = Ext.StoreMgr.get('CustomerStore');
       var app = me.getApplication();
       var controller = app.getController('Prizes');
       var vport = me.getViewport();
 
-      //
-      // Information stored from "load" event
-      //
-      var records = pstore.loadCallback[0];
-      var operation = pstore.loadCallback[1];
-
-      var wonPrizeCallBack = function()
+      app.dispatch(
       {
-         app.dispatch(
+         action : 'onPrizeCheck',
+         args : psotre.loadCallback.concat([
+         function(success)
          {
-            action : 'onShowPrize',
-            args : [records[0]],
-            controller : controller,
-            scope : controller
-         });
-      }
-      var viewport = me.getViewPortCntlr();
-      if(!operation.wasSuccessful())
-      {
-         var container = me.getRewardsContainer();
-         container.setActiveItem(0);
-      }
-      else
-      {
-         //
-         // Clear the Shopping Cart
-         //
-         me.clearRewardsCart();
-
-         if(records.length == 0)
-         {
-            Ext.device.Notification.show(
+            if(success)
             {
-               title : 'Scan And Win!',
-               message : me.lostPrizeMsg,
-               callback : function()
-               {
-                  me.popView();
-               }
-            });
-         }
-         else
-         {
-            if(!this.initSound)
-            {
-               this.initSound = true;
-               Ext.get('winPrizeSound').dom.addEventListener('ended', function()
-               {
-                  if(flag & 0x10)
-                  {
-                     me.popView();
-                  }
-                  if((flag |= 0x01) == 0x11)
-                  {
-                     wonPrizeCallBack();
-                  }
-               });
+               //
+               // Clear the Shopping Cart
+               //
+               me.clearRewardsCart();
             }
-            vport.setEnableAnim(false);
-            vport.getNavigationBar().setCallbackFn(function()
+            else
             {
-               vport.setEnableAnim(true);
-               vport.getNavigationBar().setCallbackFn(Ext.emptyFn);
-            });
-            //
-            // Play the prize winning music!
-            //
-            Ext.device.Notification.vibrate();
-            Ext.get('winPrizeSound').dom.play();
-            Ext.device.Notification.show(
-            {
-               title : 'Scan And Win!',
-               message : me.wonPrizeMsg(records.length),
-               callback : function()
-               {
-                  if(flag & 0x01)
-                  {
-                     me.popView();
-                  }
-                  if((flag |= 0x10) == 0x11)
-                  {
-                     wonPrizeCallBack();
-                  }
-               }
-            });
-         }
-      }
+               //
+               // Go back to Main Reward Screen
+               //
+               var container = me.getRewardsContainer();
+               container.setActiveItem(0);
+            }
+         }]),
+         controller : controller,
+         scope : controller
+      });
    },
    earnPts : function()
    {

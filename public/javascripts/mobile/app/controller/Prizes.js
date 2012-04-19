@@ -47,10 +47,87 @@ Ext.define('Genesis.controller.Prizes',
          }
       }
    },
+   initSound : false,
+   wonPrizeMsg : function(numPrizes)
+   {
+      return 'You haved won ' + ((numPrizes > 1) ? 'some PRIZES' : 'a PRIZE') + '!'
+   },
+   lostPrizeMsg : 'Oops, Play Again!',
    init : function()
    {
       this.callParent(arguments);
       console.log("Prizes Init");
+   },
+   onPrizeCheck : function(records, operation, callback)
+   {
+      var me = this;
+      var flag = 0;
+      var custore = Ext.StoreMgr.get('CustomerStore');
+      var app = me.getApplication();
+      var viewport = me.getViewPortCntlr();
+      var vport = me.getViewport();
+
+      if(operation.wasSuccessful())
+      {
+         if(records.length == 0)
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Scan And Win!',
+               message : me.lostPrizeMsg,
+               callback : function()
+               {
+                  me.popView();
+               }
+            });
+         }
+         else
+         {
+            if(!this.initSound)
+            {
+               this.initSound = true;
+               Ext.get('winPrizeSound').dom.addEventListener('ended', function()
+               {
+                  if(flag & 0x10)
+                  {
+                     me.popView();
+                  }
+                  if((flag |= 0x01) == 0x11)
+                  {
+                     me.onShowPrize(records[0]);
+                  }
+               });
+            }
+            vport.setEnableAnim(false);
+            vport.getNavigationBar().setCallbackFn(function()
+            {
+               vport.setEnableAnim(true);
+               vport.getNavigationBar().setCallbackFn(Ext.emptyFn);
+            });
+            //
+            // Play the prize winning music!
+            //
+            Ext.device.Notification.vibrate();
+            Ext.get('winPrizeSound').dom.play();
+            Ext.device.Notification.show(
+            {
+               title : 'Scan And Win!',
+               message : me.wonPrizeMsg(records.length),
+               callback : function()
+               {
+                  if(flag & 0x01)
+                  {
+                     me.popView();
+                  }
+                  if((flag |= 0x10) == 0x11)
+                  {
+                     me.onShowPrize(records[0]);
+                  }
+               }
+            });
+         }
+      }
+      callback(operation.wasSuccessful());
    },
    // --------------------------------------------------------------------------
    // Prizes Page

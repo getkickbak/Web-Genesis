@@ -176,6 +176,7 @@ body {
    overflow:hidden;
    white-space:nowrap;
    word-wrap:break-word;
+   margin-bottom:$panelTopGap/4;
 }
 
 .itemDesc {
@@ -377,12 +378,12 @@ body {
 .listScrollWrapper, .listNoScrollWrapper, .listScrollIndexWrapper {
    &.x-list {
       .x-list-disclosure {
-         top:1.75em;
+         top:1.50em;
          bottom: 0em;
       }
       .x-list-item {
          &.x-list-header-item .x-list-disclosure {
-            top:1.75em + 1.7em;
+            top:1.50em + 1.7em;
          }
          .x-list-item-label {
             position:relative;
@@ -435,6 +436,12 @@ body {
    }
    .x-list-container {
       padding : 0;
+   }
+}
+
+.x-list-normal {
+   .x-list-header {
+      line-height:1.7em;
    }
 }
 
