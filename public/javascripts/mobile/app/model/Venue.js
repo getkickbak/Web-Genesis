@@ -6,7 +6,7 @@ Ext.define('Genesis.model.Venue',
    id : 'Venue',
    config :
    {
-      fields : ['id', 'name', 'address', 'city', 'state', 'country', 'zipcode', 'phone', 'website', 'latitude', 'longitude', 'created_ts', 'update_ts', 'type', 'merchant_id',
+      fields : ['id', 'name', 'address', 'distance', 'city', 'state', 'country', 'zipcode', 'phone', 'website', 'latitude', 'longitude', 'created_ts', 'update_ts', 'type', 'merchant_id',
       // Used for Frontend sorting purposes
       'sort_id'],
       belongsTo : [

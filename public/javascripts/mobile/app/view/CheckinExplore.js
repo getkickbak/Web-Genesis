@@ -16,8 +16,16 @@ Ext.define('Genesis.view.CheckinExplore',
          scrollable : 'vertical',
          emptyText : ' ',
          cls : 'checkInExploreList',
-         itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>' + '<div class="listItemDetailsWrapper">' + '<div class="itemTitle">{name}</div>' + '<div class="itemDesc">{[this.getAddress(values)]}</div>' + '</div>',
          // @formatter:off
+         itemTpl : Ext.create('Ext.XTemplate',
+         '<div class="photo">'+
+            '<img src="{[this.getPhoto(values)]}"/>'+
+         '</div>' +
+         '<div class="listItemDetailsWrapper">' +
+            '<div class="itemDistance">{[this.getDistance(values)]}</div>' +
+            '<div class="itemTitle">{name}</div>' +
+            '<div class="itemDesc">{[this.getAddress(values)]}</div>' +
+         '</div>',
          // @formatter:on
          {
             getPhoto : function(values)
@@ -26,7 +34,11 @@ Ext.define('Genesis.view.CheckinExplore',
             },
             getAddress : function(values)
             {
-               return (values.address + ",<br/>" + values.city + ", " + values.state + ", " + values.country + ",<br/>" + values.zipcode);
+               return (values['address'] + ",<br/>" + values['city'] + ", " + values['state'] + ", " + values['country'] + ",<br/>" + values.zipcode);
+            },
+            getDistance : function(values)
+            {
+               return values['distance'].toFixed(1) + 'km';
             }
          }),
          onItemDisclosure : Ext.emptyFn,

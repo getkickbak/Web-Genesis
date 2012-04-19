@@ -422,6 +422,17 @@ Ext.define('Genesis.controller.MainPage',
                   var estore = Ext.StoreMgr.get('EligibleRewardsStore');
                   estore.setData(rewards);
                }
+
+               //
+               // Winners' Circle'
+               //
+               var prizesCount = metaData['winners_count'];
+               if(prizesCount > 0)
+               {
+                  console.debug("Prizes won by customer this month - [" + prizesCount + "]");
+                  var estore = Ext.StoreMgr.get('EligibleRewardsStore');
+                  estore.setData(rewards);
+               }
             }
          },
          grouper :

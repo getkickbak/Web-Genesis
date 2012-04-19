@@ -6,6 +6,6 @@ Ext.define('Genesis.model.EligibleReward',
    config :
    {
       idProperty : 'reward_id',
-      fields : ['reward_id', 'reward_title', 'points_difference', 'reward_type', 'photo']
+      fields : ['reward_id', 'reward_title', 'reward_text', 'reward_type', 'photo']
    }
 });

@@ -57,6 +57,10 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    {
       return 'You haved won ' + ((numPrizes > 1) ? 'some PRIZES' : 'a PRIZE') + '!'
    },
+   needPointsMsg : function(pointsDiff)
+   {
+      return 'You need ' + pointsDiff + ' more points ' + Genesis.constants.addCRLF() + 'to be eligible for this item.';
+   },
    //orderTitle : 'Rewards List',
    //checkoutTitle : 'Check Out',
    init : function()
@@ -680,21 +684,34 @@ Ext.define('Genesis.controller.RewardsRedemptions',
 
       if(!me.exploreMode)
       {
-         var app = me.getApplication();
-         var controller = app.getController('Prizes');
-         app.dispatch(
+         var totalPts = viewport.getCustomer().get('points');
+         var points = record.get('points');
+         if(points > totalPts)
          {
-            action : 'onRedeemRewards',
-            args : [Ext.create('Genesis.model.EarnPrize',
+            Ext.device.Notification.show(
             {
-               'id' : 1,
-               'expiry_date' : null,
-               'reward' : record,
-               'merchant' : viewport.getCheckinInfo().venue.getMerchant()
-            })],
-            controller : controller,
-            scope : controller
-         });
+               title : 'Oops!',
+               message : me.needPointsMsg(points - totalPts)
+            });
+         }
+         else
+         {
+            var app = me.getApplication();
+            var controller = app.getController('Prizes');
+            app.dispatch(
+            {
+               action : 'onRedeemRewards',
+               args : [Ext.create('Genesis.model.EarnPrize',
+               {
+                  'id' : 1,
+                  'expiry_date' : null,
+                  'reward' : record,
+                  'merchant' : viewport.getCheckinInfo().venue.getMerchant()
+               })],
+               controller : controller,
+               scope : controller
+            });
+         }
       }
       else
       {
