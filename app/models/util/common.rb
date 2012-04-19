@@ -47,11 +47,11 @@ class Common
     return true
   end
 
-  def self.get_reward_text(reward_title, points)
+  def self.get_reward_text(points)
     if points >= 0
-      I18n.t("api.customer_rewards.qualified_rewards") % [reward_title]
+      I18n.t("api.customer_rewards.qualified_rewards")
     else  
-      I18n.t('api.customer_rewards.potential_rewards') % [reward_title, points]
+      I18n.t('api.customer_rewards.potential_rewards') % [points]
     end
   end
   
