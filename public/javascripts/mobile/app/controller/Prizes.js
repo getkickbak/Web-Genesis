@@ -66,6 +66,7 @@ Ext.define('Genesis.controller.Prizes',
       var app = me.getApplication();
       var viewport = me.getViewPortCntlr();
       var vport = me.getViewport();
+      var fb = Genesis.constants;
 
       if(operation.wasSuccessful())
       {
@@ -107,8 +108,36 @@ Ext.define('Genesis.controller.Prizes',
             //
             // Play the prize winning music!
             //
-            Ext.device.Notification.vibrate();
             Ext.get('winPrizeSound').dom.play();
+            //
+            // Update Facebook
+            //
+            if(fb.currFbId > 0)
+            {
+               var merchant = viewport.getVenue().getMerchant();
+               FB.ui(
+               {
+                  method : 'stream.publish',
+                  name : merchant.get('name'),
+                  //link : href,
+                  link : Genesis.constants.site,
+                  caption : Genesis.constants.site,
+                  description : merchant.get('desc'),
+                  piture : Genesis.view.Rewards.getPhoto(records[0].getCustomerReward().get('type')),
+                  message : 'I just won a prize visiting ' + merchant.get('name') + '!'
+               }, function(response)
+               {
+                  if(response && response.post_id)
+                  {
+                     console.log('Posted to your Facebook Newsfeed. Post ID(' + response.post_id + ')');
+                  }
+                  else
+                  {
+                     console.log('Post was not published to Facebook.');
+                  }
+               });
+            }
+            Ext.device.Notification.vibrate();
             Ext.device.Notification.show(
             {
                title : 'Scan And Win!',

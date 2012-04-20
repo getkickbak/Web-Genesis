@@ -207,7 +207,7 @@ Genesis.constants =
             var data = response.data;
             for(var i = 0; i < data.length; i++)
             {
-               if(data[i][uidField] != Genesis.currFbId)
+               if(data[i][uidField] != fb.currFbId)
                {
                   me.friendsList.push(
                   {
