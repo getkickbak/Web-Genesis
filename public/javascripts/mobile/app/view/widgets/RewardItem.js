@@ -53,7 +53,14 @@ Ext.define('Genesis.view.widgets.RewardItem',
             cls : 'info',
             tpl : Ext.create('Ext.XTemplate',
             // @formatter:off
-            '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>', '<div class="infoWrapper">' + '<div class="name">{[this.getName(values)]}</div>' + '<div class="disclaimer">{[this.getDisclaimer(values)]}</div>' + '<div class="date">{[this.getExpiryDate(values)]}</div>' + '</div>',
+            '<div class="photo">'+
+               '<img src="{[this.getPhoto(values)]}"/>'+
+            '</div>',
+            '<div class="infoWrapper">' +
+               '<div class="name">{[this.getName(values)]}</div>' +
+               '<div class="disclaimer">{[this.getDisclaimer(values)]}</div>' +
+               '<div class="date">{[this.getExpiryDate(values)]}</div>' +
+            '</div>',
             // @formatter:on
             {
                getExpiryDate : function(values)

@@ -26,7 +26,12 @@ Ext.define('Genesis.view.widgets.MerchantDetailsItem',
       address :
       {
          flex : 1,
-         tpl : Ext.create('Ext.XTemplate', '<div class="merchantDetailsWrapper">' + '<div class="itemTitle">{name}</div>' + '<div class="itemDesc">{[this.getAddress(values)]}</div>' + '</div>',
+         // @formatter:off
+         tpl : Ext.create('Ext.XTemplate',
+         '<div class="merchantDetailsWrapper">' +
+            '<div class="itemTitle">{name}</div>' +
+            '<div class="itemDesc">{[this.getAddress(values)]}</div>' +
+         '</div>',
          // @formatter:on
          {
             getAddress : function(values)

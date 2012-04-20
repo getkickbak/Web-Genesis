@@ -47,10 +47,116 @@ Ext.define('Genesis.controller.Prizes',
          }
       }
    },
+   initSound : false,
+   wonPrizeMsg : function(numPrizes)
+   {
+      return 'You haved won ' + ((numPrizes > 1) ? 'some PRIZES' : 'a PRIZE') + '!'
+   },
+   lostPrizeMsg : 'Oops, Play Again!',
    init : function()
    {
       this.callParent(arguments);
       console.log("Prizes Init");
+   },
+   onPrizeCheck : function(records, operation, callback)
+   {
+      var me = this;
+      var flag = 0;
+      var custore = Ext.StoreMgr.get('CustomerStore');
+      var app = me.getApplication();
+      var viewport = me.getViewPortCntlr();
+      var vport = me.getViewport();
+      var fb = Genesis.constants;
+
+      if(operation.wasSuccessful())
+      {
+         if(records.length == 0)
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Scan And Win!',
+               message : me.lostPrizeMsg,
+               callback : function()
+               {
+                  me.popView();
+               }
+            });
+         }
+         else
+         {
+            if(!this.initSound)
+            {
+               this.initSound = true;
+               Ext.get('winPrizeSound').dom.addEventListener('ended', function()
+               {
+                  if(flag & 0x10)
+                  {
+                     me.popView();
+                  }
+                  if((flag |= 0x01) == 0x11)
+                  {
+                     me.onShowPrize(records[0]);
+                  }
+               });
+            }
+            vport.setEnableAnim(false);
+            vport.getNavigationBar().setCallbackFn(function()
+            {
+               vport.setEnableAnim(true);
+               vport.getNavigationBar().setCallbackFn(Ext.emptyFn);
+            });
+            //
+            // Play the prize winning music!
+            //
+            Ext.get('winPrizeSound').dom.play();
+            //
+            // Update Facebook
+            //
+            if(fb.currFbId > 0)
+            {
+               var merchant = viewport.getVenue().getMerchant();
+               FB.ui(
+               {
+                  method : 'stream.publish',
+                  name : merchant.get('name'),
+                  //link : href,
+                  link : Genesis.constants.site,
+                  caption : Genesis.constants.site,
+                  description : merchant.get('desc'),
+                  piture : Genesis.view.Rewards.getPhoto(records[0].getCustomerReward().get('type')),
+                  message : 'I just won a prize visiting ' + merchant.get('name') + '!'
+               }, function(response)
+               {
+                  if(response && response.post_id)
+                  {
+                     console.log('Posted to your Facebook Newsfeed. Post ID(' + response.post_id + ')');
+                  }
+                  else
+                  {
+                     console.log('Post was not published to Facebook.');
+                  }
+               });
+            }
+            Ext.device.Notification.vibrate();
+            Ext.device.Notification.show(
+            {
+               title : 'Scan And Win!',
+               message : me.wonPrizeMsg(records.length),
+               callback : function()
+               {
+                  if(flag & 0x01)
+                  {
+                     me.popView();
+                  }
+                  if((flag |= 0x10) == 0x11)
+                  {
+                     me.onShowPrize(records[0]);
+                  }
+               }
+            });
+         }
+      }
+      callback(operation.wasSuccessful());
    },
    // --------------------------------------------------------------------------
    // Prizes Page

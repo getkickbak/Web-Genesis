@@ -23,7 +23,11 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
       image :
       {
          cls : 'photo x-hasbadge',
-         tpl : Ext.create('Ext.XTemplate', '<span class="x-badge round">{[this.getPoints(values)]} Pts</span>', '<img src="{[this.getPhoto(values)]}"/>',
+         // @formatter:off
+        tpl : Ext.create('Ext.XTemplate',
+         '<span class="x-badge round">{[this.getPoints(values)]} Pts</span>',
+         '<img src="{[this.getPhoto(values)]}"/>',
+         // @formatter:on
          {
             getPoints : function(values)
             {
@@ -49,7 +53,6 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
             getTitle : function(values)
             {
                return values['title'];
-               //return values['type'].value.capitalize();
             },
             getDesc : function(values)
             {

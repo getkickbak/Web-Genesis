@@ -255,6 +255,7 @@ Ext.define('Genesis.controller.Challenges',
                {
                   console.log("Uploading to Facebook using upload_token[" + metaData['upload_token'] + "]...");
                   //
+                  // To-do : Change Photo Description
                   // Upload Photo to Facebook
                   //
                   var params =

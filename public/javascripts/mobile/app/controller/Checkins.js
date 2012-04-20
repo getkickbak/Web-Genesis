@@ -51,6 +51,11 @@ Ext.define('Genesis.controller.Checkins',
       {
          model : 'Genesis.model.Venue',
          autoLoad : false,
+         sorters : [
+         {
+            property : 'distance',
+            direction : 'ASC'
+         }],
          listeners :
          {
             'metachange' : function(store, proxy, eOpts)
@@ -318,35 +323,39 @@ Ext.define('Genesis.controller.Checkins',
    onExploreLoad : function()
    {
       var me = this;
-      me.getGeoLocation(function(position)
+      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
+      if(cestore.getCount() == 0)
       {
-         Venue['setFindNearestURL']();
-         Ext.StoreMgr.get('CheckinExploreStore').load(
+         me.getGeoLocation(function(position)
          {
-            params :
+            Venue['setFindNearestURL']();
+            cestore.load(
             {
-               latitude : position.coords.latitude,
-               longitude : position.coords.longitude
-            },
-            callback : function(records, operation)
-            {
-               if(operation.wasSuccessful())
+               params :
                {
-                  me.setPosition(position);
-                  me.getCheckInNowBar().setDisabled(false);
-               }
-               else
+                  latitude : position.coords.latitude,
+                  longitude : position.coords.longitude
+               },
+               callback : function(records, operation)
                {
-                  Ext.device.Notification.show(
+                  if(operation.wasSuccessful())
                   {
-                     title : 'Warning',
-                     message : me.missingVenueInfoMsg
-                  });
-               }
-            },
-            scope : me
+                     me.setPosition(position);
+                     me.getCheckInNowBar().setDisabled(false);
+                  }
+                  else
+                  {
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Warning',
+                        message : me.missingVenueInfoMsg
+                     });
+                  }
+               },
+               scope : me
+            });
          });
-      });
+      }
    },
    onExploreActivate : function()
    {
@@ -365,13 +374,6 @@ Ext.define('Genesis.controller.Checkins',
             me.getCheckInNowBar().hide();
             break;
       }
-      //var cvenue = viewport.getCheckinInfo().venue;
-      //var venue = viewport.getVenue();
-      //me.getMainBtn()[(cvenue && (venue.getId() != cvenue.getId())) ? 'show' : 'hide']();
-      //
-      // Scroll to the Top of the Screen
-      //
-      //this.getExplore().getScrollable().getScroller().scrollTo(0, 0);
    },
    onExploreDeactivate : function()
    {

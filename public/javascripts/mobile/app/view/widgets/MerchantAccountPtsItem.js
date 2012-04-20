@@ -38,11 +38,12 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             {
                docked : 'right',
                tag : 'coinphoto',
+               cls : 'coinphoto',
                data :
                {
                   photo_url : 'resources/img/sprites/coin.jpg'
                },
-               tpl : '<img class="coinphoto" src="{photo_url}" />'
+               tpl : '<img src="{photo_url}" />'
             }],
          }],
       },

@@ -30,104 +30,7 @@ Ext.define('Genesis.view.MerchantAccount',
          margin : '0 0 0.8 0'
       },
       // -----------------------------------------------------------------------
-      // Merchant Info
-      // -----------------------------------------------------------------------
-      /*
-      {
-      xtype : 'toolbar',
-      cls : 'merchantContactPanelHdr',
-      centered : false,
-      items : [
-      {
-      xtype : 'title',
-      title : 'Contact Us'
-      },
-      {
-      xtype : 'spacer'
-      }]
-      },
-      {
-      xtype : 'container',
-      cls : 'merchantStatsPanel separator',
-      layout : 'fit',
-      defaults :
-      {
-      scrollable : false
-      },
-      items : [
-      // -----------------------------------------------------------------------
-      // Merchant Photo & Address
-      // -----------------------------------------------------------------------
-      {
-      docked : 'right',
-      xtype : 'component',
-      cls : 'merchantPhoto',
-      tag : 'photo',
-      tpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{photoUrl}"/></div>')
-      },
-      {
-      xtype : 'component',
-      cls : 'merchantAddress',
-      tag : 'merchantAddress',
-      tpl : Ext.create('Ext.XTemplate', '{[this.getAddress(values)]}',
-      {
-      getAddress : function(values)
-      {
-      return (values.address + ",<br/>" + values.city + ", " + values.state + ", " + values.country + ",<br/>" + values.zipcode);
-      }
-      })
-      },
-      // -----------------------------------------------------------------------
-      // Customer's Stats
-      // -----------------------------------------------------------------------
-      {
-      xtype : 'formpanel',
-      tag : 'merchantStats',
-      cls : 'merchantStats',
-      defaults :
-      {
-      xtype : 'textfield',
-      readOnly : true,
-      labelAlign : 'left',
-      labelWidth : '60%'
-      },
-      items : [
-      {
-      label : 'Last Check-in',
-      name : 'lastCheckin',
-      value : new Date()
-      },
-      {
-      label : 'Registered Mobile Members',
-      name : 'regMembers',
-      value : 0
-      },
-      {
-      label : 'Total Points Earn this year',
-      name : 'ptsEarn',
-      value : 0
-      },
-      {
-      label : 'Total Points Spent this year',
-      name : 'ptsSpent',
-      value : 0
-      }]
-      }]
-      },
-      */
-      // -----------------------------------------------------------------------
-      // Rewards / Redemption Button
-      // -----------------------------------------------------------------------
-      /*
-      {
-      xtype : 'button',
-      ui : 'yellow-large',
-      cls : 'separator',
-      text : 'Earn & Redeem Rewards'
-      },
-      */
-      // -----------------------------------------------------------------------
-      // Latest Newsfeed Panel
+      // Prizes won by customers!
       // -----------------------------------------------------------------------
       {
          xtype : 'container',
@@ -146,21 +49,24 @@ Ext.define('Genesis.view.MerchantAccount',
             items : [
             {
                xtype : 'title',
-               title : 'Latest News'
+               title : 'Prizes won this month'
             },
             {
                xtype : 'spacer'
             }]
          },
          {
-            xtype : 'list',
-            scrollable : false,
-            ui : 'bottom-round',
-            store : 'EligibleRewardsStore',
-            emptyText : ' ',
-            cls : 'merchantFeedPanel separator',
+            tag : 'menchantPrizeWonPanel',
+            xtype : 'dataview',
             // @formatter:off
-            itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>', '<div class="listItemDetailsWrapper">', '<div class="itemDesc wrap">{[this.getDesc(values)]}</div>', '</div>',
+            itemTpl : Ext.create('Ext.XTemplate',
+            '<div class="photo">'+
+               '<img src="{[this.getPhoto(values)]}"/>'+
+            '</div>',
+            '<div class="listItemDetailsWrapper">',
+               '<div class="itemTitle">{[this.getTitle(values)]}</div>',
+               '<div class="itemDesc">{[this.getDesc(values)]}</div>',
+            '</div>',
             // @formatter:on
             {
                getPhoto : function(values)
@@ -174,14 +80,80 @@ Ext.define('Genesis.view.MerchantAccount',
                   }
                   return values.photo.url;
                },
+               getTitle : function(values)
+               {
+                  return values['reward_title'];
+               },
                getDesc : function(values)
                {
-                  // Not eligible for reward yet, don't show disclosure button
-                  if(values.points_difference > 0)
+                  return values['reward_text'];
+               }
+            }),
+         }]
+      },
+
+      // -----------------------------------------------------------------------
+      // What can I get ?
+      // -----------------------------------------------------------------------
+      {
+         xtype : 'container',
+         tag : 'merchantFeedContainer',
+         layout :
+         {
+            type : 'vbox',
+            align : 'stretch',
+            pack : 'start'
+         },
+         items : [
+         {
+            xtype : 'toolbar',
+            cls : 'merchantFeedPanelHdr',
+            centered : false,
+            items : [
+            {
+               xtype : 'title',
+               title : 'What can I get?'
+            },
+            {
+               xtype : 'spacer'
+            }]
+         },
+         {
+            xtype : 'list',
+            scrollable : false,
+            ui : 'bottom-round',
+            store : 'EligibleRewardsStore',
+            emptyText : ' ',
+            cls : 'merchantFeedPanel separator',
+            // @formatter:off
+            itemTpl : Ext.create('Ext.XTemplate',
+            '<div class="photo">'+
+               '<img src="{[this.getPhoto(values)]}"/>'+
+            '</div>',
+            '<div class="listItemDetailsWrapper">',
+               '<div class="itemTitle">{[this.getTitle(values)]}</div>',
+               '<div class="itemDesc">{[this.getDesc(values)]}</div>',
+            '</div>',
+            // @formatter:on
+            {
+               getPhoto : function(values)
+               {
+                  if(!values.photo)
                   {
-                     values.disclosure = false;
+                     return Genesis.view.Rewards.getPhoto(
+                     {
+                        value : values['reward_type']
+                     });
                   }
-                  return values.reward_title;
+                  return values.photo.url;
+               },
+               getTitle : function(values)
+               {
+                  return values['reward_title'];
+               },
+               getDesc : function(values)
+               {
+                  return values['reward_text'];
                }
             }),
             onItemDisclosure : Ext.emptyFn
