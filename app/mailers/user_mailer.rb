@@ -13,6 +13,14 @@ class UserMailer < ActionMailer::Base
     mail(:from => "#{@contact.name} <#{@contact.email}>", :to => 'add_business@getkickbak.com', :subject => 'Business Inquiry')
   end
   
+  def referral_email(user, venue, ref_email, ref_name)
+    @user = user
+    @venue = venue
+    @ref_email = ref_email
+    @ref_name = ref__name 
+    mail(:to => ref_email, :subject => '#{user.name} thinks you should give {venue.name} a try...')  
+  end
+  
   def voucher_reminder_email(user, coupons)
     @user = user
     @coupons = coupons

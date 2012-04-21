@@ -39,7 +39,7 @@
 							<tr>
 								<td style="padding:10px 10px 9px;border:0 !important;"><%= reward[:name] %></td>
 								<td style="padding:10px 10px 9px;border:0 !important;"><%= reward[:count] %></td>
-								<td style="padding:10px 10px 9px;border:0 !important;"><%= reward[:percentage] %></td>
+								<td style="padding:10px 10px 9px;border:0 !important;"><%= "#{reward[:percentage]}%" %></td>
 							</tr>
 							<% end %>
 						</table>
@@ -58,7 +58,7 @@
 							<tr>
 								<td style="padding:10px 10px 9px;border:0 !important;"><%= challenge[:name] %></td>
 								<td style="padding:10px 10px 9px;border:0 !important;"><%= challenge[:count] %></td>
-								<td style="padding:10px 10px 9px;border:0 !important;"><%= challenge[:percentage] %></td>
+								<td style="padding:10px 10px 9px;border:0 !important;"><%= "#{challenge[:percentage]}%" %></td>
 							</tr>
 							<% end %>
 						</table>

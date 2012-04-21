@@ -10,15 +10,15 @@ class Api::V1::ChallengesController < ApplicationController
   end
 
   def start
-    @merchant = Merchant.get(params[:merchant_id]) || not_found
-    @challenge = Challenge.first(:id => params[:id], Challenge.merchant.id => @merchant.id) || not_found
-    @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id) || not_found
+    @venue = Veie.get(params[:venue_id]) || not_found
+    @challenge = Challenge.first(:id => params[:id], Challenge.merchant.id => @venue.merchant.id) || not_found
+    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
     Customer.transaction do
       begin
         if is_startable_challenge?(@challenge)
-          start_challenge(@merchant, current_user)
+          start_challenge(@venue)
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => true } }
@@ -116,15 +116,21 @@ class Api::V1::ChallengesController < ApplicationController
     return false
   end
   
-  def start_challenge(merchant, user)
+  def start_challenge(venue)
     if challenge.type.value == "referral"
       # Need to filter out which emails are already customers
-      # TBD
-      params[:emails].each do |email|
-        ReferralChallenge.create(merchant, user, { :ref_email => email })
+      emails = JSON.parse(params[:emails])
+      users = User.all(:fields => [:name, :email], :email => emails)
+      emails_to_user = {}
+      users.each do |user|
+        emails_to_user[user.email] = user.name
       end
-      # Send email notification to new customers (registered or non-registered users)
-      # TBD
+      emails.each do |email|
+        ReferralChallenge.create(venue.merchant, current_user, { :ref_email => email })
+        
+        # Send email notification to new customers (registered or non-registered users)
+        UserMailer.referral_email(current_user, venue, email, emails_to_user[email])
+      end
     end
   end
 end
