@@ -5,7 +5,8 @@ Ext.ns('Genesis.constants');
 
 Genesis.constants =
 {
-   host : 'http://192.168.0.52:3000',
+   //host : 'http://192.168.0.52:3000',
+   host : 'http://www.getkickbak.com',
    authToken : null,
    currFbId : 0,
    fbAccountId : null,
@@ -192,6 +193,57 @@ Genesis.constants =
    * One set for production domain, another for developement domain
    */
    // **************************************************************************
+   //
+   initFb : function()
+   {
+      var fb = Genesis.constants;
+      //Detect when Facebook tells us that the user's session has been returned
+      FB.Event.monitor('auth.statusChange', function(session)
+      {
+         console.log('Got the user\'s session: ', session);
+
+         if(session && session.status != 'not_authorized' && session.status != 'notConnected')
+         {
+            var authToken = session.authResponse['accessToken'];
+            if(authToken)
+            {
+               //Fetch user's id, name, and picture
+               FB.api('/me', function(response)
+               {
+                  if(!response.error)
+                  {
+                     fb.authToken = authToken;
+                     fb.fbResponse = response;
+                     fb.currFbId = response.id;
+                     fb.fbAccountId = response.email;
+                  }
+               });
+            }
+         }
+         else
+         if((session === undefined) || (session && session.status == 'not_authorized'))
+         {
+            console.log('User\'s session terminated');
+
+            fb._fb_disconnect();
+            if(session)
+            {
+               FB.logout(function(response)
+               {
+                  fb.currFbId = null;
+                  fb.fbAccountId = null;
+                  fb.fbResponse = null;
+               });
+            }
+            else
+            {
+               fb.currFbId = null;
+               fb.fbAccountId = null;
+               fb.fbResponse = null;
+            }
+         }
+      });
+   },
    getFriendsList : function(callback)
    {
       var uidField = "id";

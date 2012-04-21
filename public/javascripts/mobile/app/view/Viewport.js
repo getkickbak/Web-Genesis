@@ -164,12 +164,12 @@ Ext.define('Genesis.view.Viewport',
           hidden : true
           },
           */
-          {
-          align : 'right',
-          tag : 'done',
-          text : 'Done',
-          hidden : true
-          },
+         {
+            align : 'right',
+            tag : 'done',
+            text : 'Done',
+            hidden : true
+         },
          {
             align : 'right',
             tag : 'redeem',
@@ -219,7 +219,7 @@ Ext.define('Genesis.view.Viewport',
 
       var layout = this.getLayout(), defaultAnimation = layout.getAnimation();
       defaultAnimation.on('animationend', 'resetAnimation', this);
-
+      Genesis.constants.initFb();
    },
    // @private
    applyNavigationBar : function(config)
