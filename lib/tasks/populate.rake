@@ -206,7 +206,7 @@ namespace :db do
       2.times do |i|
         venue = Venue.create(merchant,type,
         {
-          :name => merchant.name,
+          :name => "#{merchant.name} #{i}",
           :address => merchant_info[n][:address],
           :city => merchant_info[n][:city],
           :state => merchant_info[n][:state],
