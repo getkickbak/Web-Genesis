@@ -36,15 +36,15 @@ namespace :db do
     merchant_info = [
       {
         :name => "Cavacchio",
-        :address => "499 King St. W",
+        :address => "7 King St. E",
         :city => "Toronto",
         :state => "Ontario",
         :country => "Canada",
-        :zipcode => "M5V 1K4",
+        :zipcode => "M5C 3C5",
         :phone => "(416) 849-1808",
         :website => "http://www.cavacchio.ca",
-        :latitude => 43.64547,
-        :longitude => -79.396455
+        :latitude => 43.649647,
+        :longitude => -79.377036
       },
       {
         :name => "Mario's Fine Dinning",
