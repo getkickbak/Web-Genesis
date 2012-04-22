@@ -33,18 +33,139 @@ namespace :db do
     puts "Complete Staff creation"
     
     puts "Creating Merchants..."
-    merchant_names = ["Cavacchio","Mario's Fine Dinning","Angelo's Pizza","Dynasty","Little Jerusalem","Korean House","Namasaki","Clinton's Bar and Grill","NataRajh","Quesadilla"]
-    merchant_names.length.times do |n|
+    merchant_info = [
+      {
+        :name => "Cavacchio",
+        :address => "499 King St. W",
+        :city => "Toronto",
+        :state => "Ontario",
+        :country => "Canada",
+        :zipcode => "M5V 1K4",
+        :phone => "(416) 849-1808",
+        :website => "http://www.cavacchio.ca",
+        :latitude => 43.64547,
+        :longitude => -79.396455
+      },
+      {
+        :name => "Mario's Fine Dinning",
+        :address => "640 Queen Street West",
+        :city => "Toronto",
+        :state => "Ontario",
+        :country => "Canada",
+        :zipcode => "M56 1E4",
+        :phone => "(416) 703-3377",
+        :website => "http://www.marios.ca",
+        :latitude => 43.647224,
+        :longitude => -79.406068
+      },
+      {
+        :name => "Angelo's Pizza",
+        :address => "2448 Bloor St. W",
+        :city => "Toronto",
+        :state => "Ontario",
+        :country => "Canada",
+        :zipcode => "M6S 1R2",
+        :phone => "(416) 763-2222",
+        :website => "http://www.angelospizza.ca",
+        :latitude => 43.649274,
+        :longitude => -79.485183
+      },
+      {
+        :name => "Dynasty",
+        :address => "1055 Yonge St.",
+        :city => "Toronto",
+        :state => "Ontario",
+        :country => "Canada",
+        :zipcode => "M4W 2L2",
+        :phone => "(416) 551-9890",
+        :website => "http://www.dynasty.ca",
+        :latitude => 43.678705,
+        :longitude => -79.38976
+      },
+      {
+        :name => "Little Jerusalem",
+        :address => "318 Wellington St.",
+        :city => "Toronto",
+        :state => "Ontario",
+        :country => "Canada",
+        :zipcode => "M5V 3T4",
+        :phone => "(416) 935-0400",
+        :website => "http://www.littlejerusalem.ca",
+        :latitude => 43.645159,
+        :longitude => -79.391949
+      },
+      {
+        :name => "Korean House",
+        :address => "36 Wellington St. E",
+        :city => "Toronto",
+        :state => "Ontario",
+        :country => "Canada",
+        :zipcode => "M5E 1C7",
+        :phone => "(416) 504-9990",
+        :website => "http://www.koreanhouse.ca",
+        :latitude => 43.648824,
+        :longitude => -79.375105
+      },
+      {
+        :name => "Namasaki",
+        :address => "504 Jarvis St.",
+        :city => "Toronto",
+        :state => "Ontario",
+        :country => "Canada",
+        :zipcode => "M4Y 2H6",
+        :phone => "(647) 348-6520",
+        :website => "http://www.namasaki.ca",
+        :latitude => 43.66767,
+        :longitude => -79.378903
+      },
+      {
+        :name => "Clinton's Bar and Grill",
+        :address => "9 Church St.",
+        :city => "Toronto",
+        :state => "Ontario",
+        :country => "Canada",
+        :zipcode => "M5E 1M2",
+        :phone => "(416) 504-9463",
+        :website => "http://www.clintonsbarngrill.ca",
+        :latitude => 43.648156,
+        :longitude => -79.373517
+      },
+      {
+        :name => "NataRajh",
+        :address => "303 Augusta Avenue",
+        :city => "Toronto",
+        :state => "Ontario",
+        :country => "Canada",
+        :zipcode => "M5T 2M2",
+        :phone => "(647) 343-1932",
+        :website => "http://www.nataRajh.ca",
+        :latitude => 43.656975,
+        :longitude => -79.402678
+      },
+      {
+        :name => "Quesadilla",
+        :address => "106 Front St. E",
+        :city => "Toronto",
+        :state => "Ontario",
+        :country => "Canada",
+        :zipcode => "M5A 1E1",
+        :phone => "(416) 363-8370",
+        :website => "http://www.quesadilla.ca",
+        :latitude => 43.650221,
+        :longitude => -79.370642
+      }
+    ]
+    merchant_info.length.times do |n|
       type = MerchantType.get(1)
       merchant = Merchant.create(type,
       {
-        :name => merchant_names[n],
+        :name => merchant_info[n][:name],
         :email => Faker::Internet.email,
         :password => "getkickbak",
         :password_confirmation => "getkickbak",
         :account_first_name => Faker::Name.name,
         :account_last_name => Faker::Name.name,
-        :phone => Faker::PhoneNumber.phone_number,
+        :phone => merchant_info[n][:phone],
         :status => :active,
         :prize_terms => I18n.t('prize.terms')
       })
@@ -82,19 +203,19 @@ namespace :db do
         :prize_rebate_rate => 5
       })
       venues = []
-      2.times do |n|
+      2.times do |i|
         venue = Venue.create(merchant,type,
         {
           :name => merchant.name,
-          :address => Faker::Address.street_address,
-          :city => Faker::Address.city,
-          :state => Faker::Address.us_state_abbr,
-          :zipcode => Faker::Address.zip_code,
-          :country => "Canada",
-          :phone => Faker::PhoneNumber.phone_number,
-          :website => "http://www.sample.com",
-          :latitude => 43.649546,
-          :longitude => -79.376982
+          :address => merchant_info[n][:address],
+          :city => merchant_info[n][:city],
+          :state => merchant_info[n][:state],
+          :zipcode => merchant_info[n][:zipcode],
+          :country => merchant_info[n][:country],
+          :phone => merchant_info[n][:phone],
+          :website => merchant_info[n][:website],
+          :latitude => merchant_info[n][:latitude],
+          :longitude => merchant_info[n][:longitude]
         })
         venues << venue
       end
@@ -113,7 +234,7 @@ namespace :db do
       reward_names_count = {:entrees => 0, :appetizers => 0, :drinks => 0, :desserts => 0, :soup => 0,
                       :bread => 0, :salad => 0, :noodles => 0, :side_dishes => 0, :sandwiches => 0,
                       :pasta => 0, :pastry => 0}                
-      reward_names.length.times do |n|
+      reward_names.length.times do |i|
         idx = rand(reward_names.length)+1
         reward_type = PurchaseRewardType.get(idx)
         reward = PurchaseReward.create(merchant,reward_type,
@@ -130,7 +251,7 @@ namespace :db do
       reward_names_count = {:entrees => 0, :appetizers => 0, :drinks => 0, :desserts => 0, :soup => 0,
                       :bread => 0, :salad => 0, :noodles => 0, :side_dishes => 0, :sandwiches => 0,
                       :pasta => 0, :pastry => 0}
-      reward_names.length.times do |n|
+      reward_names.length.times do |i|
         idx = rand(reward_names.length)+1
         reward_type = CustomerRewardType.get(idx)
         reward = CustomerReward.create(merchant,reward_type,
@@ -213,7 +334,7 @@ namespace :db do
       },
       venues)
       challenges << challenge
-      10.times do |n|
+      10.times do |i|
         challenge = challenges[rand(6)]
         record = EarnRewardRecord.new(
           :challenge_id => challenge.id,
