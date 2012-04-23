@@ -180,6 +180,7 @@ namespace :db do
         :status => :active,
         :prize_terms => I18n.t('prize.terms')
       })
+      puts "Finished creating Merchant(#{merchant.name})"
       filenames = ["thai.jpg","chicken.jpg","burrito.jpg","salad.jpg","focaccia.jpg"]
       file_idx = rand(filenames.length)
       filename = filenames[file_idx]
@@ -229,6 +230,7 @@ namespace :db do
           :latitude => merchant_info[n][:latitude],
           :longitude => merchant_info[n][:longitude]
         })
+        puts "Finished creating Venue(#{venue.name})"
         venues << venue
       end
       users.each do |user|
