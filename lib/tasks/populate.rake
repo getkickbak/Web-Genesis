@@ -36,6 +36,7 @@ namespace :db do
     merchant_info = [
       {
         :name => "Cavacchio",
+        :description => "Impressive in scope, marvelously detailed, laced with drama; the Cavacchio pays homage to a phenomenon shrouded in mystery. The experience at Cavacchio is sheer bliss. From the moment one enters, the design is relaxing and indulging. The mixture of eclectic Asian decor, mesmerizing music, and distinctive cuisine is the soul of this spot.",
         :address => "7 King St. E",
         :city => "Toronto",
         :state => "Ontario",
@@ -48,6 +49,7 @@ namespace :db do
       },
       {
         :name => "Mario's Fine Dinning",
+        :description => "In the heart of Toronto's financial district, chef Greg Argent has created a menu that revisits favourite bistro classics while respectfully incorporating modern techniques and global influences. Whether visiting Forte for lunch, dinner, or cocktails and imaginative hors d'oeuvres, Mario's promises to be as comfortable and unpretentious as it is delicious.",
         :address => "640 Queen Street West",
         :city => "Toronto",
         :state => "Ontario",
@@ -60,6 +62,7 @@ namespace :db do
       },
       {
         :name => "Angelo's Pizza",
+        :description => "At Angelo's Pizza, we strive to always bring you a little more. More delicious ways to discover great times and more smiles per minute. Honest home style cooking is our obsession that we can't help. We go out of our way to bring you tasty flavours and fresh dishes that keep you craving another bite at Angelo's Pizza.",
         :address => "2448 Bloor St. W",
         :city => "Toronto",
         :state => "Ontario",
@@ -72,6 +75,7 @@ namespace :db do
       },
       {
         :name => "Dynasty",
+        :description => "Dynasty is located on the ground floor of The SoHo Metropolitan Hotel. The arrival of Vincent Leung as head of the kitchen marks a new phase in the development of Senses' cuisine. Chef Leung has long leveraged his ethnic Chinese heritage and classical French culinary training to create food best known for its East-meets-West signature style. However, his new Senses menu, which took a year to develop, promises more.",
         :address => "1055 Yonge St.",
         :city => "Toronto",
         :state => "Ontario",
@@ -84,6 +88,7 @@ namespace :db do
       },
       {
         :name => "Little Jerusalem",
+        :description => "Little Jerusalem offers Continental cuisine with Italian and Mediterranean influences. Chef Mike Crockford, utilizes seasonal and local product whenever possible. We offer a magnificent wine list that spans the wine producing regions of the world, with outstanding matching wines by the glass to compliment the bright, precise flavours of our cuisine.",
         :address => "318 Wellington St.",
         :city => "Toronto",
         :state => "Ontario",
@@ -96,6 +101,7 @@ namespace :db do
       },
       {
         :name => "Korean House",
+        :description => " This unique cook-it-yourself concept provides for a delicious and entertaining dining experience. Dine with a few friends or dine with a large group! Our charming dining room, exquisite cuisine and top notch service will keep you coming back!",
         :address => "36 Wellington St. E",
         :city => "Toronto",
         :state => "Ontario",
@@ -108,6 +114,7 @@ namespace :db do
       },
       {
         :name => "Namasaki",
+        :description => "At Namasaki, chefs prepare dishes in both the open principal kitchen and at our sushi bar. Choose the environment and cuisine that suits your pleasure.  Dishes are meant to be shared, with a sensation of flavours brought steadily to the table throughout the meal. The experience flows and the enjoyment unfolds - a fresh take on the Japanese style of leisurely eating and drinking with friends.",
         :address => "504 Jarvis St.",
         :city => "Toronto",
         :state => "Ontario",
@@ -120,6 +127,7 @@ namespace :db do
       },
       {
         :name => "Clinton's Bar and Grill",
+        :description => "Clinton's Bar and Grill is the exciting interactive dining experience that presents your meal cooking on a heated stone at your table. Clinton's unique method sears in all natural juices and nutrients, enhancing the full flavor and tenderness of your meal.",
         :address => "9 Church St.",
         :city => "Toronto",
         :state => "Ontario",
@@ -132,6 +140,7 @@ namespace :db do
       },
       {
         :name => "NataRajh",
+        :description => "The menu includes appetizers like panir and Brie cheese croquettes in a savory crust of gram flour and lentil flakes and tangy chaat of rice cakes served with crispy spinach fritters, yoghurt and fresh date chutney. Main courses such as lobster tail coated with fresh red pepper paste, coconut, and baby spinach (cooked in a tandoor) are offered. Four-year-old aged basmati rice accompanies each dish.",
         :address => "303 Augusta Avenue",
         :city => "Toronto",
         :state => "Ontario",
@@ -144,6 +153,7 @@ namespace :db do
       },
       {
         :name => "Quesadilla",
+        :description => "Quesadilla is a Canadian-owned, fast-casual, California-style Burrito concept. We opened our first location in Toronto in 2007, with the idea of serving high quality, fresh, healthy \"new-age\" Mexican food, such as two-handed Burritos, Salads, Tacos and Quesadillas, all made to order.",
         :address => "106 Front St. E",
         :city => "Toronto",
         :state => "Ontario",
@@ -160,6 +170,7 @@ namespace :db do
       merchant = Merchant.create(type,
       {
         :name => merchant_info[n][:name],
+        :description => merchant_info[n][:description],
         :email => Faker::Internet.email,
         :password => "getkickbak",
         :password_confirmation => "getkickbak",
@@ -207,6 +218,7 @@ namespace :db do
         venue = Venue.create(merchant,type,
         {
           :name => "#{merchant.name} #{i}",
+          :description => merchant_info[n][:description],
           :address => merchant_info[n][:address],
           :city => merchant_info[n][:city],
           :state => merchant_info[n][:state],

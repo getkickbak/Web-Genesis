@@ -8,7 +8,7 @@ development:
   AMAZON_PHOTOS_BUCKET: photos.getkickbak.com
   REDIS_URL: "redis://kickbak:028ab069d968aa7768089e0f7f02c8ac@drum.redistogo.com:9431/"  
   DEBUG_MODE: true
-  
+  SIMULATOR_MODE: true
 test:  
   COMMISSION: 2.9
   PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
@@ -18,8 +18,8 @@ test:
   AMAZON_FILES_BUCKET: files.getkickbak.com
   AMAZON_PHOTOS_BUCKET: photos.getkickbak.com
   REDIS_URL: "redis://kickbak:028ab069d968aa7768089e0f7f02c8ac@drum.redistogo.com:9431/"  
-  DEBUG_MODE: false
-  
+  DEBUG_MODE: true
+  SIMULATOR_MODE: true
 production:
   COMMISSION: 2.9
   PAYPAL_ACCOUNT: payment@justformyfriends.com
@@ -31,3 +31,4 @@ production:
   #REDIS_URL: "redis://username:password@127.0.0.1:6379/"
   REDIS_URL: "redis://kickbak:4581c2433f1c544dbac343b89388d88e@gar.redistogo.com:9108"
   DEBUG_MODE: false
+  SIMULATOR_MODE: false

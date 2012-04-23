@@ -5,6 +5,7 @@ class Venue
 
   property :id, Serial
   property :name, String, :length => 24, :required => true, :default => ""
+  property :description, String, :length => 512, :required => true, :default => ""
   property :address, String, :required => true, :default => ""
   property :city, String, :required => true, :default => ""
   property :state, String, :required => true, :default => ""
@@ -23,7 +24,7 @@ class Venue
   
   attr_accessor :type_id, :distance
   
-  attr_accessible :type_id, :name, :address, :city, :state, :zipcode, :country, :phone, :website, :latitude, :longitude
+  attr_accessible :type_id, :name, :description, :address, :city, :state, :zipcode, :country, :phone, :website, :latitude, :longitude
   
   belongs_to :merchant
   has 1, :venue_to_type, :constraint => :destroy
@@ -45,6 +46,7 @@ class Venue
     venue = Venue.new(
       :type_id => type ? type.id : nil,
       :name => venue_info[:name].strip,
+      :description => venue_info[:description].strip,
       :address => venue_info[:address].strip,
       :city => venue_info[:city].strip,
       :state => venue_info[:state].strip,
@@ -130,6 +132,7 @@ class Venue
     now = Time.now
     self.type_id = type ? type.id : nil
     self.name = venue_info[:name]
+    self.descrption = venue_infp[:description]
     self.address = venue_info[:address]
     self.city = venue_info[:city]
     self.state = venue_info[:state]

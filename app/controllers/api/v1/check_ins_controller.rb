@@ -4,8 +4,19 @@ class Api::V1::CheckInsController < ApplicationController
   
   def create
     if !APP_PROP["DEBUG_MODE"]
-      checkInCode = CheckInCode.first(:auth_code => params[:auth_code]) || not_found
-      @venue = checkInCode.venue
+      if APP_PROP["SIMULATOR_MODE"]
+        @venue = Venue.first(:offset => 0, :limit => 1)
+      else
+        checkInCode = CheckInCode.first(:auth_code => params[:auth_code])
+        if checkInCode.nil?
+          respond_to do |format|
+            #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+            format.json { render :json => { :success => false, :message => [t("api.check_ins.invalid_code")] } }  
+          end
+          return
+        end
+        @venue = checkInCode.venue
+      end  
     else
       if params[:venue_id]
         @venue = Venue.get(params[:venue_id])

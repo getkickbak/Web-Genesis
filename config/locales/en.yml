@@ -115,6 +115,7 @@ en:
         start_failure: "Trouble starting the challenge.  Please try again."
         complete_failure: "Trouble completing the challenge.  Please try again."
       check_ins:
+        invalid_code: "Invalid check-in code.  Please try again."
         create_failure: "Trouble with check-in.  Please try again."
       customers:
         create_failure: "Trouble creating customer account.  Please try again."  

@@ -12,6 +12,7 @@ class Merchant
           
   property :id, Serial
   property :name, String, :length => 24, :required => true, :default => ""
+  property :description, String, :length => 512, :required => true, :default => ""
   property :email, String, :unique_index => true, :required => true, 
             :format => :email_address, :default => ""
   # Disable auto-validation http://j.mp/gMORhy 
@@ -31,7 +32,7 @@ class Merchant
   attr_accessor :type_id, :current_password
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :name, :email, :account_first_name, :account_last_name, :phone, :photo, :alt_photo, :status, :prize_terms, :current_password, :password, :password_confirmation
+  attr_accessible :type_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :photo, :alt_photo, :status, :prize_terms, :current_password, :password, :password_confirmation
   
   has 1, :merchant_to_type, :constraint => :destroy
   has 1, :type, 'MerchantType', :through => :merchant_to_type, :via => :merchant_type
@@ -56,6 +57,7 @@ class Merchant
     merchant = Merchant.new(
       :type_id => type ? type.id : nil,
       :name => merchant_name,
+      :description => merchant_info[:description].strip,
       :email => merchant_info[:email].strip,
       :current_password => password,
       :password => password,
@@ -117,6 +119,7 @@ class Merchant
     self.type_id = type ? type.id : nil
     merchant_name = merchant_info[:name].squeeze(' ').strip
     self.name = merchant_name
+    self.description = merchant_info[:description].strip
     self.email = merchant_info[:email].strip
     if !merchant_info[:current_password].empty?
       self.current_password = merchant_info[:current_password].strip
