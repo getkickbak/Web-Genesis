@@ -126,8 +126,8 @@ namespace :db do
         :longitude => -79.378903
       },
       {
-        :name => "Clinton's Bar and Grill",
-        :description => "Clinton's Bar and Grill is the exciting interactive dining experience that presents your meal cooking on a heated stone at your table. Clinton's unique method sears in all natural juices and nutrients, enhancing the full flavor and tenderness of your meal.",
+        :name => "Clinton's Bar n Grill",
+        :description => "Clinton's Bar n Grill is the exciting interactive dining experience that presents your meal cooking on a heated stone at your table.  Clinton's unique method sears in all natural juices and nutrients, enhancing the full flavor and tenderness of your meal.",
         :address => "9 Church St.",
         :city => "Toronto",
         :state => "Ontario",
@@ -216,7 +216,8 @@ namespace :db do
       })
       venues = []
       2.times do |i|
-        venue = Venue.create(merchant,type,
+        venue_type = VenueType.first(:value => "restaurant")
+        venue = Venue.create(merchant,venue_type,
         {
           :name => "#{merchant.name} #{i}",
           :description => merchant_info[n][:description],
