@@ -8,7 +8,7 @@ Ext.define('Genesis.view.MerchantDetails',
       title : 'Venue Name',
       changeTitle : true,
       cls : 'merchantDetails',
-      scrollable : 'vertical',
+      //scrollable : 'vertical',
       layout :
       {
          type : 'vbox',
@@ -25,7 +25,7 @@ Ext.define('Genesis.view.MerchantDetails',
          cls : 'separator',
          useComponents : true,
          defaultType : 'merchantdetailsitem',
-         scrollable : false,
+         scrollable : undefined,
          store :
          {
             model : 'Genesis.model.Venue',

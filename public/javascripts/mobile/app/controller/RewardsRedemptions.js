@@ -238,8 +238,6 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       if(rcstore)
       {
          rcstore.removeAll();
-         //bug fix for Store when we call "indexOf" utilizing indices
-         rcstore.data.updateIndices();
       }
       // Automatically update totals
       this.updateRewardsCartTotal([]);

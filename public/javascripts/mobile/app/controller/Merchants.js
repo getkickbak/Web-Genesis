@@ -164,7 +164,7 @@ Ext.define('Genesis.controller.Merchants',
       //
       // Scroll to the Top of the Screen
       //
-      page.getScrollable().getScroller().scrollTo(0, 0);
+      //page.getScrollable().getScroller().scrollTo(0, 0);
    },
    onDetailsDeactivate : function()
    {

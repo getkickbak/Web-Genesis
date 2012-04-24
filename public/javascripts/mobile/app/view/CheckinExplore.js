@@ -52,7 +52,7 @@ Ext.define('Genesis.view.CheckinExplore',
                _application.dispatch(
                {
                   action : 'onExploreLoad',
-                  args : [],
+                  args : [true],
                   controller : controller,
                   scope : controller
                });

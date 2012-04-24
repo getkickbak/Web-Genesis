@@ -320,11 +320,11 @@ Ext.define('Genesis.controller.Checkins',
    // --------------------------------------------------------------------------
    // CheckinExplore Page
    // --------------------------------------------------------------------------
-   onExploreLoad : function()
+   onExploreLoad : function(forceReload)
    {
       var me = this;
       var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-      if(cestore.getCount() == 0)
+      if((cestore.getCount() == 0) || (forceReload))
       {
          me.getGeoLocation(function(position)
          {

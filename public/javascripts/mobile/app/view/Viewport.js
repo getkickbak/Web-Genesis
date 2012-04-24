@@ -78,7 +78,7 @@ Ext.define('Genesis.view.Viewport',
                      },
                      {
                         text : 'Facebook',
-                        tag : 'facebook',
+                        tag : 'fbShareBtn',
                         ui : 'blue',
                         iconCls : 'facebook',
                         handler : Ext.emptyFn

@@ -216,6 +216,7 @@ Genesis.constants =
                      fb.fbResponse = response;
                      fb.currFbId = response.id;
                      fb.fbAccountId = response.email;
+                     console.log('Updating Session to use\n' + 'AuthToken[' + fb.authToken + ']\n' + 'FbID[' + fb.currFbId + ']\n' + 'AccountID[' + fb.fbAccountId + ']');
                   }
                });
             }
@@ -357,7 +358,7 @@ Genesis.constants =
          scope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions'
       });
    },
-   facebook_onLogin : function(cb)
+   facebook_onLogin : function(cb, supress)
    {
       var fb = Genesis.constants;
       //Browser Quirks
@@ -365,16 +366,32 @@ Genesis.constants =
       {
          FB.getLoginStatus(function(response)
          {
+            var cb = cb || Ext.emptyFn
             //
             // Login as someone else?
             //
             if((response.status == 'connected') && response.authResponse)
             {
-               Ext.device.Notification.show(
+               if(!supress)
                {
-                  title : 'Facebook Connect',
-                  message : 'Account ID: ' + fb.fbAccountId + Genesis.constants.addCRLF() + 'is used for your current Facebook session.'
-               });
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Facebook Connect',
+                     message : 'Account ID: ' + fb.fbAccountId + Genesis.constants.addCRLF() + 'will be used for your current Facebook session.',
+                     buttons : ['OK', 'Cancel'],
+                     callback : function(button)
+                     {
+                        if(button == "OK")
+                        {
+                           cb();
+                        }
+                     }
+                  });
+               }
+               else
+               {
+                  cb();
+               }
             }
             else
             if(response.status === 'not_authorized')
@@ -430,17 +447,30 @@ Genesis.constants =
          {
             console.debug("Missing Facebook Session information, Retrying ...");
             // Session Expired? Login again
-            Genesis.constants.facebook_onLogout(function()
+            Ext.defer(function()
             {
-               fb.fbLogin(cb);
-            });
+               Genesis.constants.facebook_onLogout(function()
+               {
+                  fb.fbLogin(cb);
+               });
+            }, 100);
             return;
          }
 
-         if(fb.currFbId != facebook_id)
+         if(fb.currFbId == facebook_id)
          {
-            fb.fbResponse = response;
+            console.debug("Session information same as previous session.");
+         }
+         fb.fbResponse = response;
+         fb.currFbId = facebook_id;
+         fb.fbAccountId = response.email
+         console.debug('You have logged into Facebook! Email(' + params.email + ')');
 
+         fb._fb_connect();
+         fb.getFriendsList();
+
+         if(cb)
+         {
             var birthday = response.birthday.split('/');
             birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1];
 
@@ -456,21 +486,8 @@ Genesis.constants =
                photoURL : 'http://graph.facebook.com/' + facebook_id + '/picture?type=square'
             }
 
-            if(cb)
-            {
-               cb(params);
-            }
-            console.debug('You have logged into Facebook! Email(' + params.email + ')');
-
-            fb.currFbId = facebook_id;
-            fb.fbAccountId = response.email
+            cb(params);
          }
-         else
-         {
-            console.debug("Session information same as previous session.");
-         }
-         fb._fb_connect();
-         fb.getFriendsList();
       });
    },
    _fb_connect : function()
@@ -504,6 +521,7 @@ Genesis.fn =
 Ext.define('Genesis.dom.Element',
 {
    override : 'Ext.dom.Element',
+   // Bug fix for adding units
    setMargin : function(margin, unit)
    {
       if(margin || margin === 0)
@@ -532,6 +550,7 @@ Ext.define('Genesis.dom.Element',
 Ext.define('Genesis.Component',
 {
    override : 'Ext.Component',
+   // Bug fix for adding "units"
    updatePadding : function(padding)
    {
       this.innerElement.setPadding(padding, this.getInitialConfig().defaultUnit);
@@ -539,6 +558,19 @@ Ext.define('Genesis.Component',
    updateMargin : function(margin)
    {
       this.element.setMargin(margin, this.getInitialConfig().defaultUnit);
+   }
+});
+
+Ext.define('Genesis.util.Collection',
+{
+   override : 'Ext.util.Collection',
+   // Bug fix
+   clear : function()
+   {
+      this.callParent(arguments);
+      this.indices =
+      {
+      };
    }
 });
 
@@ -888,6 +920,164 @@ Ext.define('Genesis.tab.Bar',
    {
       this.callParent(arguments);
       this.fireAction('tabchange', [this, newTab, oldTab]);
+   }
+});
+
+//
+//  FixedButton.js
+//  GT.FixedButton
+//
+//  Created by Roy Yang on 2012-04-21.
+//  Extended from Sencha Ext.Button
+//  For latest and greatest, go to https://github.com/roycyang/Sencha-Touch-Extensions
+
+Ext.define('Genesis.Button',
+{
+   override : 'Ext.Button',
+   //xtype : 'fixedbutton',
+
+   // removed the tap event and rolling our own logic
+   initialize : function()
+   {
+      this.callParent();
+
+      this.element.on(
+      {
+         scope : this,
+         touchstart : 'onPress',
+         dragend : 'onRelease',
+         drag : 'onMove',
+         tap : 'onTap'
+      });
+   },
+   // @private
+   onPress : function(e)
+   {
+      var element = this.element, pressedCls = this.getPressedCls();
+
+      if(!this.getDisabled())
+      {
+         this.isPressed = true;
+         // console.log('e.target', e);
+         // adding a pressed flag
+         if(!e.target.children.length)
+         {
+            this.pressedTarget = e.target.parentElement.id;
+         }
+         else
+         {
+            this.pressedTarget = e.target.id;
+         }
+
+         // console.log('onPress ' + this.pressTarget);
+
+         if(this.hasOwnProperty('releasedTimeout'))
+         {
+            clearTimeout(this.releasedTimeout);
+            delete this.releasedTimeout;
+         }
+
+         element.addCls(pressedCls);
+
+      }
+   },
+   // @private
+   // when user moves, test to see if touch even is still the target
+   onMove : function(e, element)
+   {
+      if(!this.isPressed)
+      {
+         return;
+      }
+
+      var currentPressedTarget;
+      var elem = Ext.get(element);
+
+      if(Ext.getCmp('debugconsole'))
+      {
+         Ext.getCmp('debugconsole').setHtml(Ext.getCmp('debugconsole').getHtml() + '<br/>touchmove target id: ' + element.id);
+         Ext.getCmp('debugconsole').getScrollable().getScroller().scrollToEnd();
+      }
+
+      // clicked on the label or icon instead of the button
+      if(elem.parent('.x-button'))
+      {
+         currentPressedTarget = elem.parent('.x-button').id;
+      }
+      else
+      if(elem.hasCls('x-button'))
+      {
+         currentPressedTarget = elem.id;
+      }
+
+      if(currentPressedTarget != this.pressedTarget)
+      {
+         this.element.removeCls(this.getPressedCls());
+      }
+      else
+      {
+         this.element.addCls(this.getPressedCls());
+      }
+   },
+   // @private
+   onRelease : function(e, element)
+   {
+      this.fireAction('release', [this, e, element], 'doRelease');
+   },
+   // @private
+   doRelease : function(me, e, element)
+   {
+      var currentPressedTarget;
+      var elem = Ext.get(element);
+
+      // clicked on the label or icon instead of the button
+      if(elem.parent('.x-button'))
+      {
+         //console.log('inside!');
+         currentPressedTarget = elem.parent('.x-button').id;
+      }
+      else
+      if(elem.hasCls('x-button'))
+      {
+         currentPressedTarget = elem.id;
+      }
+
+      console.log('doRelease' + currentPressedTarget);
+
+      if(!me.isPressed)
+      {
+         return;
+      }
+
+      me.isPressed = false;
+
+      if(me.hasOwnProperty('pressedTimeout'))
+      {
+         clearTimeout(me.pressedTimeout);
+         delete me.pressedTimeout;
+      }
+
+      me.releasedTimeout = setTimeout(function()
+      {
+         if(me && me.element)
+         {
+            me.element.removeCls(me.getPressedCls());
+            if(currentPressedTarget == me.pressedTarget)
+            {
+               me.fireAction('tap', [me, e], 'doTap');
+            }
+
+         }
+
+         // remove the pressedTarget flag
+         me.pressedTarget = null;
+      }, 10);
+   },
+   // @private
+   // disable the existing onTap function from Ext.Button
+   onTap : function(e)
+   {
+      return false;
    }
 });
 

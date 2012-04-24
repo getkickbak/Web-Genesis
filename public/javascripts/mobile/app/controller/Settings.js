@@ -75,7 +75,7 @@ Ext.define('Genesis.controller.Settings',
                user : Ext.encode(params)
             }
          });
-      });
+      }, true);
    },
    onTermsTap : function(b, e)
    {

@@ -254,6 +254,7 @@ Ext.define('Genesis.controller.Challenges',
                if(metaData && metaData['photo_url'] && metaData['upload_token'])
                {
                   console.log("Uploading to Facebook using upload_token[" + metaData['upload_token'] + "]...");
+
                   //
                   // To-do : Change Photo Description
                   // Upload Photo to Facebook
@@ -262,7 +263,20 @@ Ext.define('Genesis.controller.Challenges',
                   {
                      'message' : 'Photo Description',
                      'url' : metaData['photo_url'],
-                     'access_token' : FB.getAccessToken()
+                     'access_token' : FB.getAccessToken(),
+                     "place" :
+                     {
+                        "name" : venue.get('name'),
+                        "location" :
+                        {
+                           "street" : venue.get('address'),
+                           "city" : venue.get('city'),
+                           "state" : venue.get('state'),
+                           "country" : venue.get('country'),
+                           "latitude" : venue.get('latitude'),
+                           "longitude" : venue.get('longitude')
+                        }
+                     }
                   }
 
                   FB.api('/me/photos', 'post', params, function(response)
@@ -383,26 +397,29 @@ Ext.define('Genesis.controller.Challenges',
    onPhotoBtnCommon : function(sourceType)
    {
       var me = this;
-      var photoAction = me.getChallengePage().photoAction;
-      photoAction.hide();
-      if(Genesis.constants.isNative())
+      Genesis.constants.facebook_onLogin(function(params)
       {
-         var cameraOptions =
+         var photoAction = me.getChallengePage().photoAction;
+         photoAction.hide();
+         if(Genesis.constants.isNative())
          {
-            quality : 75,
-            destinationType : Camera.DestinationType.FILE_URI,
-            sourceType : sourceType,
-            allowEdit : true,
-            encodingType : Camera.EncodingType.JPEG,
-            targetWidth : 960
-            //targetHeight : 480
-         };
-         navigator.camera.getPicture(Ext.bind(me.onCameraSuccessFn, me), Ext.bind(me.onCameraErrorFn, me), cameraOptions);
-      }
-      else
-      {
-         me.onCameraSuccessFn('http://photos.getkickbak.com/paella9finish1.jpg');
-      }
+            var cameraOptions =
+            {
+               quality : 75,
+               destinationType : Camera.DestinationType.FILE_URI,
+               sourceType : sourceType,
+               allowEdit : true,
+               encodingType : Camera.EncodingType.JPEG,
+               targetWidth : 960
+               //targetHeight : 480
+            };
+            navigator.camera.getPicture(Ext.bind(me.onCameraSuccessFn, me), Ext.bind(me.onCameraErrorFn, me), cameraOptions);
+         }
+         else
+         {
+            me.onCameraSuccessFn('http://photos.getkickbak.com/paella9finish1.jpg');
+         }
+      }, true);
    },
    onLibraryBtnTap : function(b, e, eOpts)
    {

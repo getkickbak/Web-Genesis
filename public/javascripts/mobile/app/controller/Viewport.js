@@ -31,6 +31,7 @@ Ext.define('Genesis.controller.Viewport',
       {
          view : 'viewportview',
          shareBtn : 'viewportview button[tag=shareBtn]',
+         fbShareBtn : 'actionsheet button[tag=fbShareBtn]',
          checkInNowBtn : 'button[tag=checkInNow]'
       },
       control :
@@ -39,7 +40,7 @@ Ext.define('Genesis.controller.Viewport',
          {
             push : 'onPush'
          },
-         shareBtn :
+         fbShareBtn :
          {
             tap : 'onShareMerchantTap'
          },
@@ -111,6 +112,32 @@ Ext.define('Genesis.controller.Viewport',
    },
    onShareMerchantTap : function(b, e, eOpts)
    {
+      var fb = Genesis.constants;
+      Genesis.constants.facebook_onLogin(function(params)
+      {
+         var merchant = this.getVenue().getMerchant();
+         FB.ui(
+         {
+            method : 'stream.publish',
+            name : merchant.get('name'),
+            //link : href,
+            link : Genesis.constants.site,
+            caption : Genesis.constants.site,
+            description : merchant.get('desc'),
+            piture : merchant.get('photo')['thumbnail_ios_medium'].url,
+            message : 'Comment'
+         }, function(response)
+         {
+            if(response && response.post_id)
+            {
+               console.log('Posted to your Facebook Newsfeed. Post ID(' + response.post_id + ')');
+            }
+            else
+            {
+               console.log('Post was not published to Facebook.');
+            }
+         });
+      });
    },
    onInfoTap : function(b, e, eOpts)
    {
