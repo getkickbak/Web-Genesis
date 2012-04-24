@@ -198,7 +198,7 @@ Genesis.constants =
    {
       var fb = Genesis.constants;
       //Detect when Facebook tells us that the user's session has been returned
-      FB.Event.monitor('auth.statusChange', function(session)
+      FB.Event.monitor('auth.authResponseChange', function(session)
       {
          console.log('Got the user\'s session: ', session);
 
@@ -341,7 +341,7 @@ Genesis.constants =
          if((response.status == 'connected') && response.authResponse)
          {
             console.debug("Logged into Facebook!");
-            fb.access_token = response.authResponse.accessToken;
+            fb.access_token = response.authResponse['accessToken'];
             fb.facebook_loginCallback(cb);
          }
          else
@@ -464,7 +464,7 @@ Genesis.constants =
          fb.fbResponse = response;
          fb.currFbId = facebook_id;
          fb.fbAccountId = response.email
-         console.debug('You have logged into Facebook! Email(' + params.email + ')');
+         console.debug('You have logged into Facebook! Email(' + fb.fbAccountId + ')');
 
          fb._fb_connect();
          fb.getFriendsList();
