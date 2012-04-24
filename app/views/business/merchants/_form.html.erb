@@ -1,6 +1,7 @@
 <div class="content row">
 <%= simple_form_for @merchant, :url => update_account_path do |f| %>
 	<%= f.input :name %>
+	<%= f.input :description, :as => :text, :input_html => { :rows => 10 } %>
 	<%= f.input :email %>
 	<%= f.input :account_first_name %>
 	<%= f.input :account_last_name %>
