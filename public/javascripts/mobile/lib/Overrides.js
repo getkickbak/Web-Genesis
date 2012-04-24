@@ -1009,6 +1009,18 @@ Ext.define('Genesis.Button',
       {
          currentPressedTarget = elem.id;
       }
+      if(elem.parent('.x-tab'))
+      {
+         currentPressedTarget = elem.parent('.x-tab').id;
+      }
+      //
+      // TabBar Buttons
+      //
+      else
+      if(elem.hasCls('x-tab'))
+      {
+         currentPressedTarget = elem.id;
+      }
 
       if(currentPressedTarget != this.pressedTarget)
       {
@@ -1038,6 +1050,18 @@ Ext.define('Genesis.Button',
       }
       else
       if(elem.hasCls('x-button'))
+      {
+         currentPressedTarget = elem.id;
+      }
+      //
+      // TabBar Buttons
+      //
+      if(elem.parent('.x-tab'))
+      {
+         currentPressedTarget = elem.parent('.x-tab').id;
+      }
+      else
+      if(elem.hasCls('x-tab'))
       {
          currentPressedTarget = elem.id;
       }
