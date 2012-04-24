@@ -25,9 +25,16 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     Customer.transaction do
       begin
         @prize = nil
-        if @venue.authorization_codes.first(:auth_code => params[:auth_code]) || APP_PROP["DEBUG_MODE"]
+        authorized = false
+        if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
+          authorized = true
+        elsif @venue.authorization_codes.first(:auth_code => params[:auth_code])
+          authorized = true
+        end  
+        if authorized
           now = Time.now
-          challenge = Challenge.first(:type => 'vip', :challenge_venues => { :venue_id => @venue.id })
+          challenge_type_id = ChallengeType.value_to_id["vip"]
+          challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
           @vip_challenge = false
           @vip_points = 0
           if challenge && vip_challenge_met?(challenge)
