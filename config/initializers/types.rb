@@ -87,6 +87,7 @@ if exists
   challenge_type_values = {}
   challenge_type_id_to_type = {}
   challenge_type_id_to_value = {}
+  challenge_type_value_to_id = {}
   challenge_type_value_to_name = {}
   challenge_types.each do |type|
     challenge_type_id_to_type[type.id] = type
@@ -101,6 +102,7 @@ if exists
       challenge_type_value_to_name[challenge_type.value] = {}
     end
     challenge_type_id_to_value[challenge_type.id] = challenge_type.value
+    challenge_type_value_to_id[challenge_type.value] = challenge_type.id
     I18n.available_locales.each do |locale|
       name = I18n.t "challenge.type.#{challenge_type.value}.name", :locale => locale
       if !challenge_type_values[merchant_type_value].include? locale
@@ -120,5 +122,6 @@ if exists
   CustomerRewardType.value_to_name = customer_reward_type_value_to_name
   ChallengeType.values = challenge_type_values
   ChallengeType.id_to_value = challenge_type_id_to_value
+  ChallengeType.value_to_id = challenge_type_value_to_id
   ChallengeType.value_to_name = challenge_type_value_to_name
 end

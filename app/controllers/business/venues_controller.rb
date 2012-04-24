@@ -25,7 +25,8 @@ module Business
     def new
       authorize! :create, Venue
       @venue = Venue.new
-
+      @venue[:description] = current_merchant.description
+      
       respond_to do |format|
         format.html # index.html.erb
       #format.xml  { render :xml => @merchants }

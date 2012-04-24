@@ -2,6 +2,7 @@ class ChallengeType
   include DataMapper::Resource
 
   @@values = {}
+  @@value_to_id = {}
   @@value_to_name = {}
   @@id_to_value = {}
 
@@ -14,6 +15,14 @@ class ChallengeType
   
   def self.values=(values)
     @@values = values  
+  end
+  
+  def self.value_to_id
+    @@value_to_id  
+  end
+  
+  def self.value_to_id=(value_to_id)
+    @@value_to_id = value_to_id  
   end
   
   def self.value_to_name

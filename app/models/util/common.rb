@@ -42,7 +42,7 @@ class Common
   def self.within_geo_distance?(latitude_1, longitude_1, latitude_2, longitude_2)
     if !APP_PROP["DEBUG_MODE"]
       cal_distance = 6371000 * Math.acos( Math.cos( Math.radians( latitude_1 ) ) * Math.cos( Math.radians( latitude_2 ) ) * Math.cos( Math.radians( longitude_2 ) - Math.radians( longitude_1 ) ) + Math.sin( Math.radians( latitude_1 ) ) * Math.sin( Math.radians( latitude_2 ) ) )
-      return cal_distance <= 50
+      return cal_distance <= 100
     end
     return true
   end
