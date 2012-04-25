@@ -56,7 +56,7 @@ class Common
   end
   
   def self.get_eligible_challenge_vip_text(points, visits)
-    I18.t("api.challenges.qualified_visits") % [points, visits]
+    I18n.t("api.challenges.qualified_visits") % [points, visits]
   end
   
   private
