@@ -68,6 +68,7 @@ Ext.define('Genesis.controller.Prizes',
       var vport = me.getViewport();
       var fb = Genesis.constants;
 
+      callback = callback || Ext.emptyFn;
       if(operation.wasSuccessful())
       {
          if(records.length == 0)

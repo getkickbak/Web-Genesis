@@ -420,7 +420,7 @@ Ext.define('Genesis.controller.Challenges',
             message : me.photoUploadFailValidationMsg,
             callback : function()
             {
-               textareafield.focus();
+               textareafield.select();
             }
          });
          return;

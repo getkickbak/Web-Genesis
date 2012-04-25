@@ -177,7 +177,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
    },
    getVipMsg : function(points)
    {
-      return 'You\'ve earned an additional' + points + ' Points!' + Genesis.constants.addCRLF() + this.getPrizeCheckMsg();
+      return 'You\'ve earned an additional ' + points + ' Points!' + Genesis.constants.addCRLF() + this.getPrizeCheckMsg();
    },
    // --------------------------------------------------------------------------
    // Rewards Page
@@ -234,10 +234,16 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       //
       // Clears the RewardsCart
       //
+      console.log("RewardCart Cleared.");
       var rcstore = Ext.StoreMgr.get('RewardsCartStore');
+      var items = rcstore.getRange();
       if(rcstore)
       {
          rcstore.removeAll();
+      }
+      for(var i = 0; i < items.length; i++)
+      {
+         items[i].set('qty', 0);
       }
       // Automatically update totals
       this.updateRewardsCartTotal([]);
