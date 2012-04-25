@@ -275,7 +275,9 @@ Ext.define('Genesis.controller.Prizes',
          var me = this;
          var store = Ext.StoreMgr.get('MerchantPrizeStore');
          clearTimeout(me.cancelId);
+         clearTimeout(me.hideId);
          delete me.cancelId;
+         delete me.hidelId;
 
          switch (me.getMode())
          {
@@ -383,21 +385,29 @@ Ext.define('Genesis.controller.Prizes',
       }
       if(timeout > 0)
       {
-         Ext.device.Notification.show(
+         Ext.Viewport.setMasked(
          {
-            title : title,
+            xtype : 'loadmask',
+            indicator : false,
             message : me.showScreenTimeoutMsg(timeout + ' minute(s)')
          });
          me.cancelId = Ext.defer(function(timeout)
          {
             me.notificationPopup(timeout);
          }, 1 * 60 * 1000, me, [--timeout]);
+         me.hidelId = Ext.defer(function(timeout)
+         {
+            delete me.hidelId;
+            Ext.Viewport.setMasked(false);
+         }, 0.25 * 1 * 60 * 1000);
       }
       else
       {
+         clearTimeout(me.hideId);
+         Ext.Viewport.setMasked(false);
          Ext.device.Notification.show(
          {
-            title : 'Prize Redemption Alert!',
+            title : 'Prize Redemption',
             message : me.showScreenTimeoutExpireMsg(me.getTimeoutPeriod() + ' minutes'),
             buttons : ['OK'],
             callback : function()
