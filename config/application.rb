@@ -62,5 +62,7 @@ module Genesis
     require "will_paginate/array"
     
     config.delete_tmp_file_after_storage = false
+    
+    config.logger.auto_flushing = true
   end
 end
