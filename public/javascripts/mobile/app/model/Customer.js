@@ -42,7 +42,7 @@ Ext.define('Genesis.model.Customer',
             rootProperty : 'data'
          }
       },
-      fields : ['points', 'id'],
+      fields : ['points', 'visits', 'id'],
       idProperty : 'id'
    },
    getUser : function()

@@ -32,7 +32,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             {
                docked : 'right',
                tag : 'points',
-               tpl : '+{points} Pts',
+               tpl : '{points}',
                cls : 'points'
             },
             {
@@ -44,6 +44,22 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                   photo_url : 'resources/img/sprites/coin.jpg'
                },
                tpl : '<img src="{photo_url}" />'
+            },
+            {
+               docked : 'left',
+               tag : 'visitsphoto',
+               cls : 'visitsphoto',
+               data :
+               {
+                  photo_url : 'resources/img/sprites/coin.jpg'
+               },
+               tpl : '<img src="{photo_url}" />'
+            },
+            {
+               docked : 'left',
+               tag : 'visits',
+               tpl : '{visits}',
+               cls : 'visits'
             }],
          }]
       },
@@ -100,6 +116,8 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          //Update Points
          var points = this.query('component[tag=points]')[0];
          points.setData(customer.getData());
+         var visits = this.query('component[tag=visits]')[0];
+         visits.setData(customer.getData());
       }
       else
       {
