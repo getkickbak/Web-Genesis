@@ -252,6 +252,33 @@ Ext.define('Genesis.controller.Merchants',
    },
    onMainDisclose : function(list, record, target, index, e, eOpts)
    {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+
+      switch (record.get('reward_type'))
+      {
+         case 'vip' :
+         {
+            break;
+         }
+         default:
+            var app = me.getApplication();
+            var controller = app.getController('Prizes');
+            app.dispatch(
+            {
+               action : 'onRedeemRewards',
+               args : [Ext.create('Genesis.model.EarnPrize',
+               {
+                  'id' : 1,
+                  'expiry_date' : null,
+                  'reward' : record,
+                  'merchant' : viewport.getCheckinInfo().venue.getMerchant()
+               })],
+               controller : controller,
+               scope : controller
+            });
+            break;
+      }
    },
    onMainSelect : function(d, model, eOpts)
    {
