@@ -62,7 +62,5 @@ module Genesis
     require "will_paginate/array"
     
     config.delete_tmp_file_after_storage = false
-    
-    Rails.logger.instance_variable_get(:@logger).instance_variable_get(:@log_dest).sync = true if Rails.logger
   end
 end
