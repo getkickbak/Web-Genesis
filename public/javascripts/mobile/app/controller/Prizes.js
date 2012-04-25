@@ -386,7 +386,7 @@ Ext.define('Genesis.controller.Prizes',
          Ext.device.Notification.show(
          {
             title : title,
-            message : main.showScreenTimeoutMsg(duration + ' minute(s)')
+            message : me.showScreenTimeoutMsg(duration + ' minute(s)')
          });
          me.cancelId = Ext.defer(function(timeout)
          {
