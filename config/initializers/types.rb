@@ -13,7 +13,7 @@ if exists
     I18n.available_locales.each do |locale|
       name = I18n.t "merchant.type.#{type.value}", :locale => locale
       if !merchant_type_values.include? locale
-      merchant_type_values[locale] = []
+        merchant_type_values[locale] = []
       end
       merchant_type_values[locale] << [name, type.id]
       if !merchant_type_value_to_name.include? type.value
@@ -36,7 +36,7 @@ if exists
     I18n.available_locales.each do |locale|
       name = I18n.t "venue.type.#{type.value}", :locale => locale
       if !venue_type_values[merchant_type_value].include? locale
-      venue_type_values[merchant_type_value][locale] = []
+        venue_type_values[merchant_type_value][locale] = []
       end
       venue_type_values[merchant_type_value][locale] << [name, type.id]
       venue_type_value_to_name[type.value][locale] = name
@@ -56,7 +56,7 @@ if exists
     I18n.available_locales.each do |locale|
       name = I18n.t "purchase_reward.type.#{type.value}", :locale => locale
       if !purchase_reward_type_values[merchant_type_value].include? locale
-      purchase_reward_type_values[merchant_type_value][locale] = []
+        purchase_reward_type_values[merchant_type_value][locale] = []
       end
       purchase_reward_type_values[merchant_type_value][locale] << [name, type.id]
       purchase_reward_type_value_to_name[type.value][locale] = name
@@ -76,7 +76,7 @@ if exists
     I18n.available_locales.each do |locale|
       name = I18n.t "customer_reward.type.#{type.value}", :locale => locale
       if !customer_reward_type_values[merchant_type_value].include? locale
-      customer_reward_type_values[merchant_type_value][locale] = []
+        customer_reward_type_values[merchant_type_value][locale] = []
       end
       customer_reward_type_values[merchant_type_value][locale] << [name, type.id]
       customer_reward_type_value_to_name[type.value][locale] = name
@@ -106,7 +106,7 @@ if exists
     I18n.available_locales.each do |locale|
       name = I18n.t "challenge.type.#{challenge_type.value}.name", :locale => locale
       if !challenge_type_values[merchant_type_value].include? locale
-      challenge_type_values[merchant_type_value][locale] = []
+        challenge_type_values[merchant_type_value][locale] = []
       end
       challenge_type_values[merchant_type_value][locale] << [name, challenge_type.id]
       challenge_type_value_to_name[challenge_type.value][locale] = name

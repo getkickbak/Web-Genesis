@@ -44,7 +44,7 @@ class Api::V1::CheckInsController < ApplicationController
       begin
         now = Time.now
         if new_customer
-          challenge_type_id = ChallengeType.value_to_id['referral']
+          challenge_type_id = ChallengeType.value_to_id["referral"]
           challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
           if challenge
             referral_challenge = ReferralChallenge.first(ReferralChallenge.merchant.id => @venue.merchant.id, :ref_email => current_user.email)
