@@ -52,6 +52,7 @@ Ext.define('Genesis.controller.ControllerBase',
       return 'You have ' + duration + ' to show this screen to a employee before it disappears!';
    },
    uploadFbMsg : 'Uploading to Facebook ...',
+   uploadServerMsg : 'Uploading to server ...',
    init : function()
    {
       this.callParent(arguments);

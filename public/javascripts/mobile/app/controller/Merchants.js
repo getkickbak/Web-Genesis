@@ -14,14 +14,6 @@ Ext.define('Genesis.controller.Merchants',
    {
       refs :
       {
-         /*
-          page :
-          {
-          selector : 'merchantaccountpageview',
-          autoCreate : true,
-          xtype : 'merchantaccountpageview'
-          },
-          */
          main :
          {
             selector : 'merchantaccountview',

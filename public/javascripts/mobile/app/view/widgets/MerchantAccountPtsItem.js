@@ -45,7 +45,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                },
                tpl : '<img src="{photo_url}" />'
             }],
-         }],
+         }]
       },
       dataMap :
       {

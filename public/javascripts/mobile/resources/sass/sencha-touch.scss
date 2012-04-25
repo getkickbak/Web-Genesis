@@ -870,3 +870,19 @@ body {
       }
    }
 }
+
+//------------------------------------------------------------------------------
+// Accounts Page
+//------------------------------------------------------------------------------
+.photoUploadPage {
+   .background {
+   }
+   .desc {
+     background: rgba(0,0,0,0.3) center center no-repeat;
+     //padding : $panelTopGap $panelGap;
+     textarea {
+        color: white;
+        font-size:$normalFontSize;
+     }
+   }
+}

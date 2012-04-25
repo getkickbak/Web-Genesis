@@ -252,7 +252,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       app.dispatch(
       {
          action : 'onPrizeCheck',
-         args : psotre.loadCallback.concat([
+         args : pstore.loadCallback.concat([
          function(success)
          {
             if(success)
@@ -467,7 +467,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
 
       var vipPopup = function()
       {
-         message = me.getVipMsg(metaData['vip_challenge']);
+         message = me.getVipMsg(metaData['vip_challenge'].points);
          Ext.device.Notification.show(
          {
             title : 'VIP Challenge Alert!',

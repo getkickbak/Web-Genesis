@@ -16,7 +16,16 @@ Ext.define('Genesis.controller.Challenges',
             selector : 'challengepageview',
             autoCreate : true,
             xtype : 'challengepageview'
-         }
+         },
+         uploadPhotosPage :
+         {
+            selector : 'uploadphotospageview',
+            autoCreate : true,
+            xtype : 'uploadphotospageview'
+         },
+         uploadPhotosBackground : 'uploadphotospageview component[tag=background]',
+         postBtn : 'viewportview button[tag=post]'
+
       },
       control :
       {
@@ -44,9 +53,20 @@ Ext.define('Genesis.controller.Challenges',
          'actionsheet button[tag=camera]' :
          {
             tap : 'onCameraBtnTap'
+         },
+         uploadPhotosPage :
+         {
+            activate : 'onUploadPhotosActivate',
+            deactivate : 'onUploadPhotosDeactivate'
+         },
+         postBtn :
+         {
+            tap : 'onUploadPhotosTap'
          }
+
       }
    },
+   metaData : null,
    noChallengeCodeScannedMsg : 'No QR Code Scanned!',
    noPhotoUploadedMsg : 'Failed to upload photo to server.',
    fbUploadFailedMsg : 'Failed to upload the photo onto your Facebook account',
@@ -58,6 +78,8 @@ Ext.define('Genesis.controller.Challenges',
    {
       return msg + 'No Photos were taken.'
    },
+   photoUploadIncompletesMsg : 'Trouble updating to server.',
+   photoUploadFailValidationMsg : 'Please enter a comment with at least 16 characters in length',
    challengeId : null,
    model : ['Challenge'],
    init : function(app)
@@ -195,14 +217,6 @@ Ext.define('Genesis.controller.Challenges',
    onCameraSuccessFn : function(imageURI)
    {
       var me = this;
-      var photoAction = me.getChallengePage().photoAction;
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var viewport = me.getViewPortCntlr();
-      var venue = viewport.getVenue();
-      var venueId = venue.getId();
-      var merchantId = venue.getMerchant().getId();
-      var customerId = viewport.getCustomer().getId();
-      var points = me.selectedItem.get('points');
 
       console.debug("image URI =[" + imageURI + "]");
 
@@ -217,14 +231,13 @@ Ext.define('Genesis.controller.Challenges',
             options.params =
             {
                "auth_token" : Genesis.constants.authToken
-               //value2 : "param"
             };
             options.chunkedMode = true;
 
             Ext.Viewport.setMasked(
             {
                xtype : 'loadmask',
-               message : me.uploadFbMsg
+               message : me.uploadServerMsg
             });
 
             var ft = new FileTransfer();
@@ -239,7 +252,7 @@ Ext.define('Genesis.controller.Challenges',
                   res = Ext.decode(res);
                   if(res)
                   {
-                     metaData = res.metaData || '';
+                     metaData = me.metaData = res.metaData || null;
                   }
                   else
                   {
@@ -251,92 +264,13 @@ Ext.define('Genesis.controller.Challenges',
                   Ext.Logger.warn('Unable to parse the JSON returned by the server: ' + ex.toString());
                }
 
+               Ext.Viewport.setMasked(false);
                if(metaData && metaData['photo_url'] && metaData['upload_token'])
                {
                   console.log("Uploading to Facebook using upload_token[" + metaData['upload_token'] + "]...");
+                  metaData['position'] = position;
 
-                  //
-                  // To-do : Change Photo Description
-                  // Upload Photo to Facebook
-                  //
-                  var params =
-                  {
-                     'message' : 'Photo Description',
-                     'url' : metaData['photo_url'],
-                     'access_token' : FB.getAccessToken(),
-                     "place" :
-                     {
-                        "name" : venue.get('name'),
-                        "location" :
-                        {
-                           "street" : venue.get('address'),
-                           "city" : venue.get('city'),
-                           "state" : venue.get('state'),
-                           "country" : venue.get('country'),
-                           "latitude" : venue.get('latitude'),
-                           "longitude" : venue.get('longitude')
-                        }
-                     }
-                  }
-
-                  FB.api('/me/photos', 'post', params, function(response)
-                  {
-                     if(!response || response.error)
-                     {
-                        var message = (response && response.error) ? response.error.message : me.fbUploadFailedMsg;
-                        Ext.Viewport.setMasked(false);
-                        Ext.device.Notification.show(
-                        {
-                           title : 'Upload Failed!',
-                           message : message
-                        });
-                     }
-                     else
-                     {
-                        console.debug('Facebook Post ID - ' + response.id);
-
-                        Challenge['setCompleteChallengeURL'](me.challengeId);
-                        Challenge.load(me.challengeId,
-                        {
-                           jsonData :
-                           {
-                           },
-                           params :
-                           {
-                              venue_id : venueId,
-                              merchant_id : merchantId,
-                              latitude : position.coords.latitude,
-                              longitude : position.coords.longitude,
-                              'upload_token' : metaData['upload_token']
-                           },
-                           callback : function(records, operation)
-                           {
-                              metaData = Challenge.getProxy().getReader().metaData;
-                              if(operation.wasSuccessful() && metaData)
-                              {
-                                 //
-                                 // Update points from the purchase or redemption
-                                 //
-                                 cstore.getById(customerId).set('points', metaData['account_points']);
-                                 console.debug("Points Earned = " + points + ' Pts');
-                                 Ext.device.Notification.show(
-                                 {
-                                    title : 'Upload Complete',
-                                    message : me.photoUploadSuccessMsg(metaData['points']),
-                                    callback : function()
-                                    {
-                                       me.popView();
-                                    }
-                                 });
-                              }
-                           }
-                        });
-                     }
-                  });
-               }
-               else
-               {
-                  Ext.Viewport.setMasked(false);
+                  me.pushView(me.getUploadPhotosPage());
                }
             }, function(error)
             {
@@ -346,7 +280,7 @@ Ext.define('Genesis.controller.Challenges',
                Ext.device.Notification.show(
                {
                   title : 'Error',
-                  message : me.noPhotoUploadedMsg(message + Genesis.constants.addCRLF())
+                  message : me.noPhotoUploadedMsg(error.message + Genesis.constants.addCRLF())
                });
             }, options);
          }
@@ -359,33 +293,10 @@ Ext.define('Genesis.controller.Challenges',
             });
          }
       });
-      /*
-       Venue['setSharePhotoURL']();
-       Venue.load(1,
-       {
-       jsonData :
-       {
-       },
-       params :
-       {
-       image : 'data:image/jpeg;base64,' + imageBase64
-       },
-       callback : function(records, operation)
-       {
-       var metaData = Venue.getProxy().getReader().metaData;
-       if(operation.wasSuccessful() && metaData)
-       {
-       }
-       else
-       if(operation.wasSuccessful() && !metaData)
-       {
-       }
-       }
-       });
-       */
    },
    onCameraErrorFn : function(message)
    {
+      var me = this;
       console.debug("onCameraErrorFn - message[" + message + "]");
 
       Ext.device.Notification.show(
@@ -396,9 +307,15 @@ Ext.define('Genesis.controller.Challenges',
    },
    onPhotoBtnCommon : function(sourceType)
    {
+
       var me = this;
+      //me.pushView(me.getUploadPhotosPage());
+      //return;
+      console.log("Checking for Facebook Plugin ...");
       Genesis.constants.facebook_onLogin(function(params)
       {
+         console.log("Accessing Camera Plugin ...");
+
          var photoAction = me.getChallengePage().photoAction;
          photoAction.hide();
          if(Genesis.constants.isNative())
@@ -420,20 +337,21 @@ Ext.define('Genesis.controller.Challenges',
             me.onCameraSuccessFn('http://photos.getkickbak.com/paella9finish1.jpg');
          }
       }, true);
+
    },
    onLibraryBtnTap : function(b, e, eOpts)
    {
-      this.onPhotoBtnCommon(Camera.PictureSourceType.PHOTOLIBRARY);
+      this.onPhotoBtnCommon(Genesis.constants.isNative() ? Camera.PictureSourceType.PHOTOLIBRARY : null);
    },
    onAlbumBtnTap : function(b, e, eOpts)
    {
-      this.onPhotoBtnCommon(Camera.PictureSourceType.SAVEDPHOTOALBUM);
+      this.onPhotoBtnCommon(Genesis.constants.isNative() ? Camera.PictureSourceType.SAVEDPHOTOALBUM : null);
    },
    onCameraBtnTap : function(b, e, eOpts)
    {
-      this.onPhotoBtnCommon(Camera.PictureSourceType.CAMERA);
+      this.onPhotoBtnCommon(Genesis.constants.isNative() ? Camera.PictureSourceType.CAMERA : null);
    },
-   onActivate : function()
+   onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var record = this.getViewPortCntlr().getVenue();
       var venueId = record.getId();
@@ -462,8 +380,186 @@ Ext.define('Genesis.controller.Challenges',
          carousel.setActiveItem(0);
       }
    },
-   onDeactivate : function()
+   onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {
+   },
+   // --------------------------------------------------------------------------
+   // Photos Upload Page
+   // --------------------------------------------------------------------------
+   onUploadPhotosActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+      var bg = me.getUploadPhotosBackground();
+
+      me.getPostBtn().show();
+      bg.setStyle(
+      {
+         'background-color' : 'black',
+         'background-image' : 'url(' + me.metaData['photo_url'] + ')',
+         'background-position' : 'center center',
+         'background-repeat' : 'no-repeat',
+         'background-size' : 'contain'
+      });
+   },
+   onUploadPhotosDeactivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      this.getPostBtn().hide();
+   },
+   onUploadPhotosTap : function(b, e, eOpts)
+   {
+      var me = this;
+      var page = me.getUploadPhotosPage();
+      var textareafield = page.query('textareafield')[0];
+      var desc = textareafield.getValue();
+
+      if((desc.length > textareafield.getMaxLength()) || (desc.length < 16))
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Error',
+            message : me.photoUploadFailValidationMsg,
+            callback : function()
+            {
+               textareafield.focus();
+            }
+         });
+         return;
+      }
+
+      var photoAction = me.getChallengePage().photoAction;
+      var cstore = Ext.StoreMgr.get('CustomerStore');
+      var viewport = me.getViewPortCntlr();
+      var venue = viewport.getVenue();
+      var venueId = venue.getId();
+      var merchantId = venue.getMerchant().getId();
+      var customerId = viewport.getCustomer().getId();
+      var points = me.selectedItem.get('points');
+      var metaData = me.metaData;
+      var position = metaData['position'];
+      var params =
+      {
+         'message' : desc,
+         'url' : metaData['photo_url'],
+         'access_token' : FB.getAccessToken()
+         /*
+         ,"place" :
+         {
+            "name" : venue.get('name'),
+            "location" :
+            {
+               "street" : venue.get('address'),
+               "city" : venue.get('city'),
+               "state" : venue.get('state'),
+               "country" : venue.get('country'),
+               "latitude" : venue.get('latitude'),
+               "longitude" : venue.get('longitude')
+            }
+         }
+         */
+      }
+
+      completeUploadPhotosChallenge = function()
+      {
+         Challenge['setCompleteChallengeURL'](me.challengeId);
+         Challenge.load(me.challengeId,
+         {
+            jsonData :
+            {
+            },
+            params :
+            {
+               venue_id : venueId,
+               merchant_id : merchantId,
+               latitude : position.coords.latitude,
+               longitude : position.coords.longitude,
+               'upload_token' : metaData['upload_token']
+            },
+            callback : function(records, operation)
+            {
+               metaData = Challenge.getProxy().getReader().metaData;
+               if(operation.wasSuccessful() && metaData)
+               {
+                  //
+                  // Update points from the purchase or redemption
+                  //
+                  cstore.getById(customerId).set('points', metaData['account_points']);
+                  console.debug("Points Earned = " + points + ' Pts');
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Upload Complete',
+                     message : me.photoUploadSuccessMsg(metaData['points']),
+                     callback : function()
+                     {
+                        //
+                        // Go back to Checked-in Merchant Account
+                        //
+                        me.metaData = null;
+                        viewport.onFeatureTap('MainPage', 'main');
+                     }
+                  });
+               }
+               else
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Upload InComplete!',
+                     message : me.photoUploadIncompletesMsg,
+                     buttons : ['Try Again', 'Cancel'],
+                     callback : function(btn)
+                     {
+                        if(btn == 'Try Again')
+                        {
+                           Ext.defer(completeUploadPhotosChallenge, 100);
+                        }
+                        else
+                        {
+                           //
+                           // Go back to Checked-in Merchant Account
+                           //
+                           me.metaData = null;
+                           viewport.onFeatureTap('MainPage', 'main');
+                        }
+                     }
+                  });
+               }
+            }
+         });
+      }
+
+      FB.api('/me/photos', 'post', params, function(response)
+      {
+         if(!response || response.error)
+         {
+            var message = (response && response.error) ? response.error.message : me.fbUploadFailedMsg;
+            Ext.Viewport.setMasked(false);
+            Ext.device.Notification.show(
+            {
+               title : 'Upload Failed!',
+               message : message,
+               buttons : ['Try Again', 'Cancel'],
+               callback : function(btn)
+               {
+                  if(btn == 'Try Again')
+                  {
+                     Ext.defer(me.onUploadPhotosTap, 100, me);
+                  }
+                  else
+                  {
+                     //
+                     // Go back to Checked-in Merchant Account
+                     //
+                     me.metaData = null;
+                     viewport.onFeatureTap('MainPage', 'main');
+                  }
+               }
+            });
+         }
+         else
+         {
+            console.debug('Facebook Post ID - ' + response.id);
+            completeUploadPhotosChallenge();
+         }
+      });
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

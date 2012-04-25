@@ -156,14 +156,6 @@ Ext.define('Genesis.view.Viewport',
             iconCls : 'check_black1',
             hidden : true
          },
-         /*
-          {
-          align : 'right',
-          tag : 'edit',
-          text : 'Edit',
-          hidden : true
-          },
-          */
          {
             align : 'right',
             tag : 'done',
@@ -174,6 +166,12 @@ Ext.define('Genesis.view.Viewport',
             align : 'right',
             tag : 'redeem',
             text : 'Redeem',
+            hidden : true
+         },
+         {
+            align : 'right',
+            tag : 'post',
+            text : 'Post',
             hidden : true
          }]
       },

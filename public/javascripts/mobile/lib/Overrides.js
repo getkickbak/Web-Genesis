@@ -5,8 +5,8 @@ Ext.ns('Genesis.constants');
 
 Genesis.constants =
 {
-   //host : 'http://192.168.0.52:3000',
-   host : 'http://www.getkickbak.com',
+   host : 'http://192.168.0.52:3000',
+   //host : 'http://www.getkickbak.com',
    authToken : null,
    currFbId : 0,
    fbAccountId : null,
@@ -361,12 +361,12 @@ Genesis.constants =
    facebook_onLogin : function(cb, supress)
    {
       var fb = Genesis.constants;
+      cb = cb || Ext.emptyFn
       //Browser Quirks
       //if($.client.browser == 'Safari')
       {
          FB.getLoginStatus(function(response)
          {
-            var cb = cb || Ext.emptyFn
             //
             // Login as someone else?
             //
@@ -1066,7 +1066,7 @@ Ext.define('Genesis.Button',
          currentPressedTarget = elem.id;
       }
 
-      console.log('doRelease' + currentPressedTarget);
+      //console.log('doRelease' + currentPressedTarget);
 
       if(!me.isPressed)
       {
