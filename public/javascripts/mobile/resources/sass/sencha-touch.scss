@@ -552,7 +552,7 @@ body {
      color: white;
      padding : $panelTopGap $panelGap;
    }
-   .coinphoto {
+   .coinphoto, .visitsphoto {
      height:$icon-size;
      img {
         width:$icon-size;
@@ -560,9 +560,9 @@ body {
         margin-right : $panelGap;
      }
    }
-   .points {
+   .points, .visits {
      line-height:$icon-size;
-     font-size:$xlargeFontSize*1.5;
+     font-size:$xlargeFontSize*1.25;
      text-align:center;
    }
 }
@@ -682,10 +682,10 @@ body {
       width:$icon-size;
    }
    .points {
-     font-size:$xlargeFontSize*1.5;
+     font-size:$xlargeFontSize*1.25;
      text-align:center;
      .x-innerhtml {
-        line-height:$xlargeFontSize*1.5;
+        line-height:$xlargeFontSize*1.25;
      }
    }
 }

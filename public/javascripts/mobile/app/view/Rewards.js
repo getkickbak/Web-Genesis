@@ -282,6 +282,9 @@ Ext.define('Genesis.view.Rewards',
             case 'soup' :
                photo_url = "resources/img/sprites/star.jpg";
                break;
+            case 'vip' :
+               photo_url = "resources/img/sprites/star.jpg";
+               break;
          }
          return photo_url;
       }
