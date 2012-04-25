@@ -53,8 +53,6 @@ module Genesis
     DataMapper::Model.append_inclusions(DataMapper::MassAssignmentSecurity)
     DataMapper::Model.raise_on_save_failure = true
     DataMapper::Property::String.length(255)
-
-    Rails.logger.auto_flushing = true
     
     require 'string_extension'
     require 'math_extension'
