@@ -169,7 +169,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
   def vip_challenge_met?(challenge)
     count = EarnRewardRecord.count(EarnRewardRecord.user.id => current_user.id, EarnRewardRecord.merchant.id => challenge.merchant.id)
     if count > 0
-      return challenge.data.visits % count == 0 ? true : false
+      return count % challenge.data.visits == 0 ? true : false
     end  
     return false
   end
