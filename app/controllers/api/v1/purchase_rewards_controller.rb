@@ -32,7 +32,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           authorized = true
         end  
         if authorized
-          logger.debug("Authorized to earn points.")
+          #logger.debug("Authorized to earn points.")
           now = Time.now
           challenge_type_id = ChallengeType.value_to_id["vip"]
           challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
@@ -52,7 +52,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             @vip_challenge = true
             @vip_points = challenge.points
           end
-          logger.debug("Parse reward ids.")
+          #logger.debug("Parse reward ids.")
           rewards_info = JSON.parse(params[:reward_ids])
           reward_id_quantity = {}
           reward_ids = []
@@ -62,7 +62,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           end
           @total_points = 0
           rewards = PurchaseReward.all(:id => reward_ids)
-          logger.debug("Create EarnRewardRecords.")
+          #logger.debug("Create EarnRewardRecords.")
           rewards.each do |reward|
             points = reward.points * reward_id_quantity[reward.id]
             record = EarnRewardRecord.new(
@@ -79,11 +79,10 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           end
           @customer.save
           
-          logger.debug("Before acquiring cache mutex.")
+          #logger.debug("Before acquiring cache mutex.")
           mutex = CacheMutex.new(@venue.merchant.cache_key, Cache.memcache)
           acquired = mutex.acquire
-          logger.debug("Cache mutex acquired#{acquired}.")
-          logger.debug("Reward Model - Prize Rebate Rate(#{Float(reward_model.prize_rebate_rate)})")
+          #logger.debug("Cache mutex acquired(#{acquired}).")
           reward_model = @venue.merchant.reward_model
           prize = CustomerReward.get(reward_model.prize_reward_id)
           if prize.nil?
@@ -95,7 +94,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             prize_interval = (prize.points / Float(reward_model.prize_rebate_rate) * 100).to_i  
           end
           current_point_offset = reward_model.prize_point_offset + @total_points
-          logger.debug("Check if Prize has been won yet.")
+          #logger.debug("Check if Prize has been won yet.")
           if (reward_model.prize_point_offset < reward_model.prize_win_offset) && (current_point_offset >= reward_model.prize_win_offset)
             earn_prize = EarnPrize.new(
               :points => prize.points,
@@ -109,7 +108,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             @prize = earn_prize          
           end
           if current_point_offset >= prize_interval
-            logger.debug("Current Point Offset >= Prize Interval.")
+            #logger.debug("Current Point Offset >= Prize Interval.")
             current_point_offset -= prize_interval
             prize = pick_prize(@venue)
             reward_model.prize_reward_id = prize.id
@@ -135,11 +134,11 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               current_point_offset = pick_prize_win_offset(reward_model.prize_win_offset)  
             end
           end
-          logger.debug("Set Prize Point Offset = Current Point Offset.")
+          #logger.debug("Set Prize Point Offset = Current Point Offset.")
           reward_model.prize_point_offset = current_point_offset
           reward_model.save
           mutex.release
-          logger.debug("Cache mutex released.")
+          #logger.debug("Cache mutex released.")
           render :template => '/api/v1/purchase_rewards/earn'
         else
           respond_to do |format|
