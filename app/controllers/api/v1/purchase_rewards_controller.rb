@@ -78,10 +78,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           
           mutex = CacheMutex.new(@venue.merchant.cache_key, Cache.memcache)
           acquired = mutex.acquire
-          logger.debug("Cache mutex acquired#{acquired}.")
-          logger.flush
-          logger.debug("Reward Model - Prize Rebate Rate(#{Float(reward_model.prize_rebate_rate)})")
-          logger.flush
+          logger.error("Cache mutex acquired#{acquired}.")
+          logger.error("Reward Model - Prize Rebate Rate(#{Float(reward_model.prize_rebate_rate)})")
           reward_model = @venue.merchant.reward_model
           prize = CustomerReward.get(reward_model.prize_reward_id)
           if prize.nil?
@@ -93,8 +91,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             prize_interval = (prize.points / Float(reward_model.prize_rebate_rate) * 100).to_i  
           end
           current_point_offset = reward_model.prize_point_offset + @total_points
-          logger.debug("Check if Prize has been won yet.")
-          logger.flush
+          logger.error("Check if Prize has been won yet.")
           if (reward_model.prize_point_offset < reward_model.prize_win_offset) && (current_point_offset >= reward_model.prize_win_offset)
             earn_prize = EarnPrize.new(
               :points => prize.points,
@@ -108,8 +105,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             @prize = earn_prize          
           end
           if current_point_offset >= prize_interval
-            logger.debug("Current Point Offset >= Prize Interval.")
-            logger.flush
+            logger.error("Current Point Offset >= Prize Interval.")
             current_point_offset -= prize_interval
             prize = pick_prize(@venue)
             reward_model.prize_reward_id = prize.id
@@ -135,13 +131,11 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               current_point_offset = pick_prize_win_offset(reward_model.prize_win_offset)  
             end
           end
-          logger.debug("Set Prize Point Offset = Current Point Offset.")
-          logger.flush
+          logger.error("Set Prize Point Offset = Current Point Offset.")
           reward_model.prize_point_offset = current_point_offset
           reward_model.save
           mutex.release
-          logger.debug("Cache mutex released.")
-          logger.flush
+          logger.error("Cache mutex released.")
           render :template => '/api/v1/purchase_rewards/earn'
         else
           respond_to do |format|
