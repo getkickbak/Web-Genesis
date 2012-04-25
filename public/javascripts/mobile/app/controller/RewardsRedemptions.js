@@ -328,10 +328,20 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                latitude : position.coords.latitude,
                longitude : position.coords.longitude
             },
-            callback : function()
+            callback : function(records, operation)
             {
                reader.setRootProperty('data');
                reader.buildExtractors();
+               if(!operation.wasSuccessful())
+               {
+                  //
+                  // Go back to Main Reward Screen
+                  //
+                  var container = me.getRewardsContainer();
+                  container.setActiveItem(0);
+                  
+                  me.clearRewardsCart();
+               }
             }
          });
       });
@@ -428,7 +438,6 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       var list = this.getRewardsList();
       var cart = this.getRewardsCart();
       var record = list.getStore().getById(item.getRecord().getId());
-      var field = Ext.get(Ext.DomQuery.select('div.x-field-input',item.element.dom)[0]);
 
       if(qty == 0)
       {
@@ -437,8 +446,6 @@ Ext.define('Genesis.controller.RewardsRedemptions',
          // Bug fix for store when we call "indexOf" utilizing indices
          //
          cart.getStore().data.updateIndices();
-
-         field.addCls('x-item-hidden');
       }
 
       // set property triggers events, do them before we associate the record to a store
@@ -446,12 +453,6 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       if((qty == spinner.getIncrement()) && (direction == 'up'))
       {
          cart.getStore().add(record);
-         field.removeCls('x-item-hidden');
-      }
-      else
-      if(qty > 0)
-      {
-         field.removeCls('x-item-hidden');
       }
 
       // Automatically update totals

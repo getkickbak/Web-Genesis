@@ -88,7 +88,7 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
          },
          getQty :
          {
-            setData : 'qty'
+            setValue : 'qty'
          }
       }
    },
@@ -172,21 +172,18 @@ Ext.define('Genesis.view.widgets.RewardsCartItem',
                {
                   switch (setterMap[setterName])
                   {
-                     case 'qty':
                      case 'photo_url':
                      case 'title':
                         component[setterName](data);
                         break;
-                     /*
-                      case 'qty' :
-                      var value = data[setterMap[setterName]];
-                      var store = component.getStore();
-                      var index = store.find(component.getValueField(), value, null, null, null, true);
-                      var record = store.getAt(index);
-
-                      component[setterName](record);
-                      break;
-                      */
+                     case 'qty' :
+                     {
+                        var qty = data[setterMap[setterName]];
+                        component[setterName](qty);
+                        var field = Ext.get(Ext.DomQuery.select('div.x-field-input',component.element.dom)[0]);
+                        field[(qty > 0)?'removeCls':'addCls']('x-item-hidden');
+                        break;
+                     }
                      default :
                         component[setterName](data[setterMap[setterName]]);
                         break;
