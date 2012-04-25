@@ -36,7 +36,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
         else
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => [t("api.customer_rewards.redeem_failure")] } }
+            format.json { render :json => { :success => false, :message => [t("api.customer_rewards.insufficient_points")] } }
           end  
         end
       rescue DataMapper::SaveFailureError => e
