@@ -615,8 +615,6 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      list.deselect([record]);
-
       if(!me.exploreMode)
       {
          var totalPts = viewport.getCustomer().get('points');
