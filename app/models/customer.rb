@@ -7,6 +7,7 @@ class Customer
   property :auth_code, String, :required => true, :default => ""
   property :qr_code, String, :required => true, :default => ""
   property :points, Integer, :default => 0
+  property :visits, Integer, :default => 0
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime

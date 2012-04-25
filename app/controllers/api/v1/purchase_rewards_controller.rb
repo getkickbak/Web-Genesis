@@ -38,7 +38,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
           @vip_challenge = false
           @vip_points = 0
-          if challenge && vip_challenge_met?(challenge)
+          if challenge && vip_challenge_met?(@customer.visits+1, challenge)
             record = EarnRewardRecord.new(
               :challenge_id => challenge.id,
               :venue_id => @venue.id,
@@ -49,6 +49,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             record.user = current_user
             record.save
             @customer.points += challenge.points
+            @customer.visits += 1
             @vip_challenge = true
             @vip_points = challenge.points
           end
@@ -166,10 +167,9 @@ class Api::V1::PurchaseRewardsController < ApplicationController
   
   private
     
-  def vip_challenge_met?(challenge)
-    count = EarnRewardRecord.count(EarnRewardRecord.user.id => current_user.id, EarnRewardRecord.merchant.id => challenge.merchant.id)
-    if count > 0
-      return count % challenge.data.visits == 0 ? true : false
+  def vip_challenge_met?(customer_visits, challenge)
+    if customer_visits > 0
+      return customer_visits % challenge.data.visits == 0 ? true : false
     end  
     return false
   end
