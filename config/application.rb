@@ -63,6 +63,6 @@ module Genesis
     
     config.delete_tmp_file_after_storage = false
     
-    config.logger.auto_flushing = true
+    Rails.logger.instance_variable_get(:@logger).instance_variable_get(:@log_dest).sync = true if Rails.logger
   end
 end
