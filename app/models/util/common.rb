@@ -47,12 +47,16 @@ class Common
     return true
   end
 
-  def self.get_reward_text(points)
+  def self.get_eligible_reward_text(points)
     if points >= 0
       I18n.t("api.customer_rewards.qualified_rewards")
     else  
       I18n.t('api.customer_rewards.potential_rewards') % [points]
     end
+  end
+  
+  def self.get_eligible_challenge_vip_text(points, visits)
+    I18n.t("api.challenges.qualified_visits") % [points, visits]
   end
   
   private
