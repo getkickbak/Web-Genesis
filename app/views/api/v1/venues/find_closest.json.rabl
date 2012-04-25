@@ -7,6 +7,11 @@ node :data do
 end
 node :metaData do
 	{ 
+		:rewards => (
+			@rewards.map do |r|
+		 		partial('api/v1/customer_rewards/base', :object => r)
+			end
+		),
 		:eligible_rewards =>
 			@eligible_rewards.map do |r|
 		 		partial('api/v1/customers/eligible_reward', :object => r)

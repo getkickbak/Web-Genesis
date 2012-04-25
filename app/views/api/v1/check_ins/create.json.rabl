@@ -9,6 +9,11 @@ node :metaData do
 	{ 
 		:venue_id => @venue.id,
 		:winners_count => (@winners_count if defined? @winners_count),
+		:rewards => (
+			@rewards.map do |r|
+		 		partial('api/v1/customer_rewards/base', :object => r)
+			end if defined? @rewards
+		),
 		:eligible_rewards => (
 			@eligible_rewards.map do |r|
 		 		partial('api/v1/customers/eligible_reward', :object => r)
