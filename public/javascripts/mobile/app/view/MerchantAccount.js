@@ -138,6 +138,14 @@ Ext.define('Genesis.view.MerchantAccount',
             {
                getPhoto : function(values)
                {
+                  switch (values['reward_type'])
+                  {
+                     case 'vip' :
+                     {
+                        values['disclosure'] = false;
+                        break;
+                     }
+                  }
                   if(!values.photo)
                   {
                      return Genesis.view.Rewards.getPhoto(
