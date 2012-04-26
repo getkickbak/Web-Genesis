@@ -735,6 +735,10 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             store = Ext.StoreMgr.get('RewardsStore');
             rstore = list.getStore();
             scroll = list.getScrollable();
+            //
+            // Scroll to the Top of the Screen
+            //
+            me.getRewardsTallyList().getScrollable().getScroller().scrollTo(0, 0);
             PurchaseReward['setGetRewardsURL']();
             store.clearFilter();
             Ext.Viewport.setMasked(

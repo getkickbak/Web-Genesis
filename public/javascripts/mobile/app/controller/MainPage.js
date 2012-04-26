@@ -271,19 +271,23 @@ Ext.define('Genesis.controller.MainPage',
                if(operation.wasSuccessful())
                {
                   console.log("Logout Successful!")
-                  vport.setLoggedIn(false);
-                  fb.authToken = null;
-                  if(fb.currFbId)
-                  {
-                     Genesis.constants.facebook_onLogout(function()
-                     {
-                        _fbLogout();
-                     });
-                  }
-                  else
+               }
+               else
+               {
+                  console.log("Logout Failed!")                  
+               }
+               vport.setLoggedIn(false);
+               fb.authToken = null;
+               if(fb.currFbId)
+               {
+                  Genesis.constants.facebook_onLogout(function()
                   {
                      _fbLogout();
-                  }
+                  });
+               }
+               else
+               {
+                  _fbLogout();
                }
             }
          });

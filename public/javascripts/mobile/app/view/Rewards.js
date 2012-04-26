@@ -7,7 +7,7 @@ Ext.define('Genesis.view.Rewards',
    {
       title : 'Earn Rewards',
       changeTitle : false,
-      scrollable : 'vertical',
+      //scrollable : 'vertical',
       layout : 'vbox',
       items : [
       {
@@ -67,25 +67,14 @@ Ext.define('Genesis.view.Rewards',
                flex : 1,
                defaultType : 'rewardscartitem',
                //scrollable : false,
+               scrollable : 'vertical',
                store :
                {
                   model : 'Genesis.model.PurchaseReward',
-                  /*
-                   grouper :
-                   {
-                   groupFn : function(record)
-                   {
-                   return record.get('points') + ' Points';
-                   }
-                   },
-                   pinHeaders : false,
-                   grouped : true,
-                   */
                   sorters : [
                   {
                      sorterFn : function(o1, o2)
                      {
-                        //var name1 = o1.get('type').value, name2 = o2.get('type').value;
                         var name1 = o1.get('title').toLowerCase(), name2 = o2.get('title').toLowerCase();
                         if(name1 < name2)//sort string ascending
                            return -1;
@@ -102,15 +91,6 @@ Ext.define('Genesis.view.Rewards',
                   autoLoad : false
                },
                cls : 'rewardsMain'
-               /*
-                indexBar :
-                {
-                docked : 'right',
-                overlay : true,
-                alphabet : true,
-                centered : false,
-                }
-                */
             }]
          },
          // -------------------------------------------------------------------
@@ -118,13 +98,13 @@ Ext.define('Genesis.view.Rewards',
          // -------------------------------------------------------------------
          {
             tag : 'rewardTallyList',
+            scrollable : 'vertical',
             items : [
             {
                xtype : 'componentlist',
                flex : 1,
                defaultType : 'rewardscheckoutitem',
                //cls : 'shadows',
-               //scrollable : false,
                tag : 'rewardsCart',
                //useComponents : true,
                cls : 'rewardsCart',
