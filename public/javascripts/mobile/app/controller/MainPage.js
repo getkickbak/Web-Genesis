@@ -415,12 +415,26 @@ Ext.define('Genesis.controller.MainPage',
                //
                // Update Eligible Rewards
                //
-               var rewards = metaData['eligible_rewards'];
+               var erewards = metaData['eligible_rewards'];
+               if(erewards)
+               {
+                  console.debug("Total Eligible Rewards - " + erewards.length);
+                  var estore = Ext.StoreMgr.get('EligibleRewardsStore');
+                  estore.setData(erewards);
+               }
+               //
+               // Update Customer Rewards (Redemptions)
+               //
+               var rewards = metaData['rewards'];
                if(rewards)
                {
-                  console.debug("Total Eligible Rewards - " + rewards.length);
-                  var estore = Ext.StoreMgr.get('EligibleRewardsStore');
-                  estore.setData(rewards);
+                  console.debug("Total Redemption Rewards - " + rewards.length);
+                  var rstore = Ext.StoreMgr.get('RedemptionsStore');
+                  for(var i = 0; i < records.length; i++)
+                  {
+                     rewards[i]['venue_id'] = metaData['venue_id'];
+                  }
+                  rstore.setData(rewards);
                }
 
                //
@@ -429,9 +443,7 @@ Ext.define('Genesis.controller.MainPage',
                var prizesCount = metaData['winners_count'];
                if(prizesCount > 0)
                {
-                  console.debug("Prizes won by customer this month - [" + prizesCount + "]");
-                  var estore = Ext.StoreMgr.get('EligibleRewardsStore');
-                  estore.setData(rewards);
+                  console.debug("Prizes won by customers of this Merchant this month - [" + prizesCount + "]");
                }
             }
          },

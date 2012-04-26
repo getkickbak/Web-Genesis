@@ -74,17 +74,6 @@ Ext.define('Genesis.controller.Checkins',
                   var estore = Ext.StoreMgr.get('EligibleRewardsStore');
                   estore.setData(erewards);
                }
-               var rewards = metaData['rewards'];
-               if(rewards)
-               {
-                  console.debug("Total Redemption Rewards - " + rewards.length);
-                  var rstore = Ext.StoreMgr.get('RedemptionsStore');
-                  for(var i = 0; i < records.length; i++)
-                  {
-                     rewards[i]['venue_id'] = metaData['venue_id'];
-                  }
-                  rstore.setData(rewards);
-               }
             }
          }
 
