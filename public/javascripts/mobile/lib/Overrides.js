@@ -15,6 +15,7 @@ Genesis.constants =
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
    weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+   fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
    isNative : function()
    {
       //return Ext.isDefined(cordova);
@@ -197,6 +198,7 @@ Genesis.constants =
    initFb : function()
    {
       var fb = Genesis.constants;
+      var me = this;
       //Detect when Facebook tells us that the user's session has been returned
       FB.Event.monitor('auth.authResponseChange', function(session)
       {
@@ -218,7 +220,15 @@ Genesis.constants =
                      fb.fbAccountId = response.email;
                      console.log('Updating Session to use\n' + 'AuthToken[' + fb.authToken + ']\n' + 'FbID[' + fb.currFbId + ']\n' + 'AccountID[' + fb.fbAccountId + ']');
                   }
+                  else
+                  {
+                     me.facebook_onLogout(null, false);
+                  }
                });
+            }
+            else
+            {
+               me.facebook_onLogout(null, false);
             }
          }
          else
@@ -226,22 +236,7 @@ Genesis.constants =
          {
             console.log('User\'s session terminated');
 
-            fb._fb_disconnect();
-            if(session)
-            {
-               FB.logout(function(response)
-               {
-                  fb.currFbId = null;
-                  fb.fbAccountId = null;
-                  fb.fbResponse = null;
-               });
-            }
-            else
-            {
-               fb.currFbId = null;
-               fb.fbAccountId = null;
-               fb.fbResponse = null;
-            }
+            me.facebook_onLogout(null, (session) ? true : false);
          }
       });
    },
@@ -290,7 +285,7 @@ Genesis.constants =
                buttons : ['Relogin', 'Cancel'],
                callback : function(button)
                {
-                  Genesis.constants.facebook_onLogout(function()
+                  me.facebook_onLogout(function()
                   {
                      if(button == "Relogin")
                      {
@@ -301,33 +296,11 @@ Genesis.constants =
                         //fb.access_token = response.authResponse.accessToken;
                         //fb.facebook_loginCallback(cb);
                      }
-                  });
+                  }, true);
                }
             });
          }
       });
-   },
-   facebook_onLogout : function(cb)
-   {
-      var fb = Genesis.constants;
-      try
-      {
-         fb._fb_disconnect();
-         FB.logout(function(response)
-         {
-            fb.currFbId = null;
-            fb.fbAccountId = null;
-            fb.fbResponse = null;
-            //FB.Auth.setAuthResponse(null, 'unknown');
-            if(cb)
-            {
-               cb()
-            };
-         });
-      }
-      catch(e)
-      {
-      }
    },
    //
    // Log into Facebook
@@ -336,6 +309,11 @@ Genesis.constants =
    {
       var fb = Genesis.constants;
       console.debug("Logging into Facebook ...");
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : 'Logging into Facebook ...'
+      });
       FB.login(function(response)
       {
          if((response.status == 'connected') && response.authResponse)
@@ -346,6 +324,7 @@ Genesis.constants =
          }
          else
          {
+            Ext.Viewport.setMasked(false);
             console.debug("Login Failed! ...");
             Ext.device.Notification.show(
             {
@@ -361,110 +340,131 @@ Genesis.constants =
    facebook_onLogin : function(cb, supress)
    {
       var fb = Genesis.constants;
+      var me = this;
       cb = cb || Ext.emptyFn
-      //Browser Quirks
-      //if($.client.browser == 'Safari')
+
+      if(fb.currFbId > 0)
       {
-         FB.getLoginStatus(function(response)
+         if(!supress)
          {
-            //
-            // Login as someone else?
-            //
-            if((response.status == 'connected') && response.authResponse)
+            Ext.device.Notification.show(
             {
-               if(!supress)
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Facebook Connect',
-                     message : 'Account ID: ' + fb.fbAccountId + Genesis.constants.addCRLF() + 'will be used for your current Facebook session.',
-                     buttons : ['OK', 'Cancel'],
-                     callback : function(button)
-                     {
-                        if(button == "OK")
-                        {
-                           cb();
-                        }
-                     }
-                  });
-               }
-               else
-               {
-                  cb();
-               }
-            }
-            else
-            if(response.status === 'not_authorized')
-            {
-               // the user is logged in to Facebook,
-               // but has not authenticated your app
-               Ext.device.Notification.show(
-               {
-                  title : 'Facebook Connect',
-                  message : 'Your current Facebook Session hasn\'t been fully authorized for this application.' + Genesis.constants.addCRLF() + 'Press OK to continue.',
-                  buttons : ['OK', 'Cancel'],
-                  callback : function(button)
-                  {
-                     Genesis.constants.facebook_onLogout(function()
-                     {
-                        if(button == "OK")
-                        {
-                           fb.fbLogin(cb);
-                        }
-                     });
-                  }
-               });
-            }
-            else
-            {
-               fb.fbLogin(cb);
-            }
-         });
+               title : 'Facebook Connect',
+               message : 'Account ID: ' + fb.fbAccountId + Genesis.constants.addCRLF() + 'is used for your current Facebook session.'
+            });
+         }
+         //cb();
+         //me.facebook_loginCallback(cb);
+      }
+      else
+      {
+         me.fbLogin(cb);
       }
       /*
+       FB.getLoginStatus(function(response)
+       {
+       //
+       // Login as someone else?
+       //
+       if((response.status == 'connected') && response.authResponse)
+       {
+       if(!supress)
+       {
+       Ext.device.Notification.show(
+       {
+       title : 'Facebook Connect',
+       message : 'Account ID: ' + fb.fbAccountId + Genesis.constants.addCRLF() + 'will be used for your current Facebook session.',
+       buttons : ['OK', 'Cancel'],
+       callback : function(button)
+       {
+       if(button == "OK")
+       {
+       cb();
+       }
+       }
+       });
+       }
+       else
+       {
+       cb();
+       }
+       }
+       else
+       if(response.status === 'not_authorized')
+       {
+       // the user is logged in to Facebook,
+       // but has not authenticated your app
+       Ext.device.Notification.show(
+       {
+       title : 'Facebook Connect',
+       message : 'Your current Facebook Session hasn\'t been fully authorized for this application.' + Genesis.constants.addCRLF() +
+       'Press OK to continue.',
+       buttons : ['OK', 'Cancel'],
+       callback : function(button)
+       {
+       me.facebook_onLogout(function()
+       {
+       if(button == "OK")
+       {
+       fb.fbLogin(cb);
+       }
+       }, true);
+       }
+       });
+       }
        else
        {
        fb.fbLogin(cb);
        }
+       });
        */
    },
-   facebook_loginCallback : function(cb)
+   facebook_loginCallback : function(cb, count)
    {
+      var me = this;
       var fb = Genesis.constants;
-      console.debug("Retrieving Facebook profile information ...");
 
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : 'Logging into Facebook ...'
-      });
+      console.debug("Retrieving Facebook profile information ...");
+      count = count || 0;
+      cb = cb || Ext.emptyFn;
+
       FB.api('/me', function(response)
       {
-         Ext.Viewport.setMasked(false);
-
+         if(count >= 5)
+         {
+            Ext.Viewport.setMasked(false);
+            Ext.device.Notification.show(
+            {
+               title : 'Facebook Connect',
+               message : me.fbConnectErrorMsg
+            });
+            // Clean up session information
+            me.facebook_onLogout(null, true);
+            return;
+         }
          var facebook_id = response.id;
          if(facebook_id == null)
          {
             console.debug("Missing Facebook Session information, Retrying ...");
             // Session Expired? Login again
-            Ext.defer(function()
+            ++count;
+            Ext.defer(function(count)
             {
-               Genesis.constants.facebook_onLogout(function()
-               {
-                  fb.fbLogin(cb);
-               });
-            }, 100);
+               me.facebook_loginCallback(cb, count);
+            }, count * 1000, me, [count]);
             return;
          }
+         Ext.Viewport.setMasked(false);
 
          if(fb.currFbId == facebook_id)
          {
             console.debug("Session information same as previous session.");
          }
+
          fb.fbResponse = response;
          fb.currFbId = facebook_id;
          fb.fbAccountId = response.email
-         console.debug('You have logged into Facebook! Email(' + fb.fbAccountId + ')');
+         console.debug('You\`ve logged into Facebook! Email(' + fb.fbAccountId + ')');
 
          fb._fb_connect();
          fb.getFriendsList();
@@ -501,6 +501,33 @@ Genesis.constants =
        $.cookie("base_domain_", null);
        $.cookie("fbsr_" + Genesis.fbAppId, null);
        */
+   },
+   facebook_onLogout : function(cb, contactFB)
+   {
+      var fb = Genesis.constants;
+      cb = cb || Ext.emptyFn;
+      try
+      {
+         fb._fb_disconnect();
+         fb.currFbId = 0;
+         fb.fbAccountId = null;
+         fb.fbResponse = null;
+         if(contactFB)
+         {
+            FB.logout(function(response)
+            {
+               //FB.Auth.setAuthResponse(null, 'unknown');
+               cb();
+            });
+         }
+         else
+         {
+            cb();
+         }
+      }
+      catch(e)
+      {
+      }
    }
 };
 Genesis.constants._fb_disconnect = Genesis.constants._fb_connect;

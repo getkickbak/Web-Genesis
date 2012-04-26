@@ -62,9 +62,9 @@ Ext.define('Genesis.controller.Settings',
    },
    onFacebookTap : function(b, e)
    {
-      Customer['setUpdateFbLoginUrl']();
       Genesis.constants.facebook_onLogin(function(params)
       {
+         Customer['setUpdateFbLoginUrl']();
          Ext.StoreMgr.get('CustomerStore').load(
          {
             jsonData :
@@ -75,7 +75,7 @@ Ext.define('Genesis.controller.Settings',
                user : Ext.encode(params)
             }
          });
-      }, true);
+      }, false);
    },
    onTermsTap : function(b, e)
    {
