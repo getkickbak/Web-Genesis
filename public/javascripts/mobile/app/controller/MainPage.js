@@ -430,7 +430,7 @@ Ext.define('Genesis.controller.MainPage',
                {
                   console.debug("Total Redemption Rewards - " + rewards.length);
                   var rstore = Ext.StoreMgr.get('RedemptionsStore');
-                  for(var i = 0; i < records.length; i++)
+                  for(var i = 0; i < rewards.length; i++)
                   {
                      rewards[i]['venue_id'] = metaData['venue_id'];
                   }
