@@ -44,6 +44,7 @@ Ext.define('Genesis.controller.Checkins',
    getMerchantInfoMsg : 'Retrieving Merchant Info ...',
    init : function()
    {
+      var me = this;
       //
       // Store storing the Venue checked-in / Explore
       //
@@ -66,12 +67,23 @@ Ext.define('Genesis.controller.Checkins',
                //
                // Update Eligible Rewards
                //
-               var rewards = metaData['eligible_rewards'];
+               var erewards = metaData['eligible_rewards'];
+               if(erewards)
+               {
+                  console.debug("Total Eligible Rewards - " + erewards.length);
+                  var estore = Ext.StoreMgr.get('EligibleRewardsStore');
+                  estore.setData(erewards);
+               }
+               var rewards = metaData['rewards'];
                if(rewards)
                {
-                  console.debug("Total Eligible Rewards - " + rewards.length);
-                  var estore = Ext.StoreMgr.get('EligibleRewardsStore');
-                  estore.setData(rewards);
+                  console.debug("Total Redemption Rewards - " + rewards.length);
+                  var rstore = Ext.StoreMgr.get('RedemptionsStore');
+                  for(var i = 0; i < records.length; i++)
+                  {
+                     rewards[i]['venue_id'] = metaData['venue_id'];
+                  }
+                  rstore.setData(rewards);
                }
             }
          }
@@ -139,11 +151,7 @@ Ext.define('Genesis.controller.Checkins',
             else
             if(!operation.wasSuccessful() && !metaData)
             {
-               Ext.device.Notification.show(
-               {
-                  title : 'Error',
-                  message : me.metaDataMissingMsg
-               });
+               console.log(me.metaDataMissingMsg);
             }
          }
       });

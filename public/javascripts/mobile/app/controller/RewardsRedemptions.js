@@ -339,7 +339,7 @@ Ext.define('Genesis.controller.RewardsRedemptions',
                   //
                   var container = me.getRewardsContainer();
                   container.setActiveItem(0);
-                  
+
                   me.clearRewardsCart();
                }
             }
@@ -685,12 +685,47 @@ Ext.define('Genesis.controller.RewardsRedemptions',
       var venue = viewport.getVenue();
       var venueId = venue.getId();
       var merchantId = venue.getMerchant().getId();
-
-      Ext.Viewport.setMasked(
+      var successCallback = function(records, operation)
       {
-         xtype : 'loadmask',
-         message : me.loadingMsg
-      });
+         //
+         // Scroll to the Top of the Screen
+         //
+         scroll.getScroller().scrollTo(0, 0);
+
+         me.exploreMode = cvenue && (cvenue.getId() != venue.getId());
+         switch (subFeature)
+         {
+            case 'redemptions':
+            {
+               //
+               // Update Customer info
+               //
+               me.getRedemptionsPtsEarnPanel().getStore().setData(viewport.getCustomer());
+               break
+            }
+            default :
+               for(var i = 0; i < records.length; i++)
+               {
+                  records[i].data['venue_id'] = venueId;
+               }
+               break;
+         }
+
+         //
+         // Show Redemptions for this venue only
+         //
+         store.filter([
+         {
+            filterFn : function(item)
+            {
+               return item.get("venue_id") == venueId;
+            }
+         }]);
+
+         rstore.setData(store.getRange());
+
+         me.pushView(page);
+      }
       switch (subFeature)
       {
          case 'rewards':
@@ -701,6 +736,32 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             rstore = list.getStore();
             scroll = list.getScrollable();
             PurchaseReward['setGetRewardsURL']();
+            store.clearFilter();
+            Ext.Viewport.setMasked(
+            {
+               xtype : 'loadmask',
+               message : me.loadingMsg
+            });
+            store.load(
+            {
+               jsonData :
+               {
+               },
+               params :
+               {
+                  venue_id : venueId,
+                  merchant_id : merchantId
+               },
+               scope : me,
+               callback : function(records, operation)
+               {
+                  Ext.Viewport.setMasked(false);
+                  if(operation.wasSuccessful())
+                  {
+                     successCallback(records, operation);
+                  }
+               }
+            });
             break;
          }
          case 'redemptions':
@@ -710,69 +771,12 @@ Ext.define('Genesis.controller.RewardsRedemptions',
             store = Ext.StoreMgr.get('RedemptionsStore');
             rstore = list.getStore();
             scroll = page.getScrollable();
-            CustomerReward['setGetRedemptionsURL']();
+            //CustomerReward['setGetRedemptionsURL']();
+            store.clearFilter();
+            successCallback();
             break;
          }
       }
-
-      store.clearFilter();
-      store.load(
-      {
-         jsonData :
-         {
-         },
-         params :
-         {
-            venue_id : venueId,
-            merchant_id : merchantId
-         },
-         scope : me,
-         callback : function(records, operation)
-         {
-            Ext.Viewport.setMasked(false);
-            if(operation.wasSuccessful())
-            {
-               me.exploreMode = cvenue && (cvenue.getId() != venue.getId());
-               switch (subFeature)
-               {
-                  case 'redemptions':
-                  {
-                     //
-                     // Update Customer info
-                     //
-                     me.getRedemptionsPtsEarnPanel().getStore().setData(viewport.getCustomer());
-                     break
-                  }
-                  default :
-                     break;
-               }
-
-               //
-               // Scroll to the Top of the Screen
-               //
-               scroll.getScroller().scrollTo(0, 0);
-
-               for(var i = 0; i < records.length; i++)
-               {
-                  records[i].data['venue_id'] = venueId;
-               }
-               //
-               // Show Redemptions for this venue only
-               //
-               store.filter([
-               {
-                  filterFn : function(item)
-                  {
-                     return item.get("venue_id") == venueId;
-                  }
-               }]);
-
-               rstore.setData(store.getRange());
-
-               me.pushView(page);
-            }
-         }
-      });
    },
    isOpenAllowed : function()
    {

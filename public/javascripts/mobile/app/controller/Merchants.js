@@ -264,6 +264,8 @@ Ext.define('Genesis.controller.Merchants',
          default:
             var app = me.getApplication();
             var controller = app.getController('Prizes');
+            var rstore = Ext.StoreMgr.get('RedemptionsStore');
+            record = rstore.getById(record.get('reward_id'));
             app.dispatch(
             {
                action : 'onRedeemRewards',
