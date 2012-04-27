@@ -217,6 +217,7 @@ Ext.define('Genesis.controller.Challenges',
    onCameraSuccessFn : function(imageURI)
    {
       var me = this;
+      var local = window.localStorage;
 
       console.debug("image URI =[" + imageURI + "]");
 
@@ -230,7 +231,7 @@ Ext.define('Genesis.controller.Challenges',
             options.mimeType = "image/jpg";
             options.params =
             {
-               "auth_token" : Genesis.constants.authToken
+               "auth_token" : local.getItem('authToken')
             };
             options.chunkedMode = true;
 
@@ -442,20 +443,20 @@ Ext.define('Genesis.controller.Challenges',
          'url' : metaData['photo_url'],
          'access_token' : FB.getAccessToken()
          /*
-         ,"place" :
-         {
-            "name" : venue.get('name'),
-            "location" :
-            {
-               "street" : venue.get('address'),
-               "city" : venue.get('city'),
-               "state" : venue.get('state'),
-               "country" : venue.get('country'),
-               "latitude" : venue.get('latitude'),
-               "longitude" : venue.get('longitude')
-            }
-         }
-         */
+          ,"place" :
+          {
+          "name" : venue.get('name'),
+          "location" :
+          {
+          "street" : venue.get('address'),
+          "city" : venue.get('city'),
+          "state" : venue.get('state'),
+          "country" : venue.get('country'),
+          "latitude" : venue.get('latitude'),
+          "longitude" : venue.get('longitude')
+          }
+          }
+          */
       }
 
       completeUploadPhotosChallenge = function()

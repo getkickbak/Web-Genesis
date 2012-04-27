@@ -66,7 +66,7 @@ Ext.define('Genesis.controller.Prizes',
       var app = me.getApplication();
       var viewport = me.getViewPortCntlr();
       var vport = me.getViewport();
-      var fb = Genesis.constants;
+      var fb = window.localStorage;
 
       callback = callback || Ext.emptyFn;
       if(operation.wasSuccessful())
@@ -113,7 +113,7 @@ Ext.define('Genesis.controller.Prizes',
             //
             // Update Facebook
             //
-            if(fb.currFbId > 0)
+            if(fb.getItem('currFbId') > 0)
             {
                var merchant = viewport.getVenue().getMerchant();
                FB.ui(

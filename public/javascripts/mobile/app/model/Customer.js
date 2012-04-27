@@ -77,11 +77,12 @@ Ext.define('Genesis.model.Customer',
       },
       setLogoutUrl : function()
       {
+         var local = window.localStorage;
          this.getProxy().setActionMethods(
          {
             read : 'DELETE'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/tokens/' + Genesis.constants.authToken);
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/tokens/' + local.getItem('authToken'));
       },
       setCreateAccountUrl : function()
       {
