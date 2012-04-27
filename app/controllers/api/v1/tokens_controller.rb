@@ -4,18 +4,22 @@ class Api::V1::TokensController < ApplicationController
   respond_to :json
   
   def create
-    email = params[:email]
-    password = params[:password]
-
-    if email.nil? or password.nil?
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => [t("api.tokens.create_missing_info")] } }
-      end  
-      return
+    auth_token = params[Devise.token_authentication_key]
+    if auth_token.nil?
+      email = params[:email]
+      password = params[:password]
+      if email.nil? or password.nil?
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => [t("api.tokens.create_missing_info")] } }
+        end  
+        return  
+      else
+        @user = User.first(:email => email.downcase) 
+      end
+    else
+      @user = User.first(:authentication_token => auth_token)  
     end
-
-    @user = User.first(:email => email.downcase)
 
     if @user.nil?
       respond_to do |format|
@@ -43,7 +47,21 @@ class Api::V1::TokensController < ApplicationController
   end
 
   def create_from_facebook
-    @user = User.first(:facebook_id => params[:facebook_id])
+    auth_token = params[Devise.token_authentication_key]
+    if auth_token.nil?
+      facebook_id = params[:facebook_id]
+      if facebook_id.nil?
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => [t("api.tokens.create_missing_facebook_info")] } }
+        end  
+        return
+      end
+      @user = User.first(:facebook_id => facebook_id)
+    else
+      @user = User.first(:authentication_token => auth_token)  
+    end
+    
     if @user.nil?
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }

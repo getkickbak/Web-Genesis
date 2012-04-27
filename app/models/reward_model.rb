@@ -6,7 +6,7 @@ class RewardModel
   property :id, Serial
   property :rebate_rate, Integer, :required => true, :min => 1
   property :prize_rebate_rate, Integer, :required => true, :min => 1
-  property :price_per_point, Decimal, :scale => 2, :min => 0.10, :default => 0.10
+  property :price_per_point, Decimal, :scale => 2, :min => 1.00, :default => 1.00
   property :prize_reward_id, Integer, :default => 0
   property :prize_point_offset, Integer, :default => 0
   property :prize_win_offset, Integer, :default => 0

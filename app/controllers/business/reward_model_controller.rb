@@ -20,16 +20,6 @@ module Business
             msg = t("business.reward_model.setup_success")
           else
             @reward_model.update(params[:reward_model])
-            @purchase_rewards = PurchaseReward.all(PurchaseReward.merchant.id => current_merchant.id)
-            @purchase_rewards.each do |reward|
-              reward.type_id = reward.type.id
-              reward.rebate_rate = @reward_model.rebate_rate
-              reward.points = (reward.price * reward.rebate_rate / 100 / @reward_model.price_per_point).to_i
-              if reward.points == 0
-                reward.points = 1
-              end
-              reward.save
-            end
             msg = t("business.reward_model.update_success")
           end
           respond_to do |format|

@@ -36,14 +36,6 @@
 		<% end %>
 	</div>
 	<div>
-		<% if !@checklist[:data][:purchase_rewards] && proceed_next_step %>
-		<% proceed_next_step = false %>
-		<a href="<%= new_purchase_reward_path %>">Create Purchase Reward</a>
-		<% else %>
-		Create Purchase Reward
-		<% end %>
-	</div>
-	<div>
 		<% if !@checklist[:data][:customer_rewards] && proceed_next_step %>
 		<% proceed_next_step = false %>
 		<a href="<%= new_customer_reward_path %>">Create Customer Reward</a>

@@ -10,7 +10,7 @@ end
 node :metaData do
 	{
 		:account_points => @customer.points,
-		:points => @total_points,
+		:points => @points,
 		:vip_challenge => (
 				{
 					:points => @vip_points

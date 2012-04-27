@@ -9,7 +9,6 @@ Genesis::Application.routes.draw do
       }
 
       resources :challenges
-      resources :purchase_rewards
       resources :customer_rewards
       resources :venues do
         get 'create_qr_code', :on => :member, :as => :create_qr_code
@@ -116,7 +115,6 @@ Genesis::Application.routes.draw do
         match '/customer_rewards' => 'customer_rewards#index'
         match '/customer_rewards/:id/redeem' => 'customer_rewards#redeem', :via => :post
 
-        match '/purchase_rewards' => 'purchase_rewards#index'
         match '/purchase_rewards/earn' => 'purchase_rewards#earn', :via => :post
 
         match '/earn_prizes' => 'earn_prizes#index'

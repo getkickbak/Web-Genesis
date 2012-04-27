@@ -134,6 +134,7 @@ en:
         create_failure: "Trouble with sign up.  Please try again."
       tokens:
         create_missing_info: "Missing email or password."
+        create_missing_facebook_info: "Missing facebook info."
         create_invalid_info: "The email/password you entered is incorrect.  Please try again."
         create_invalid_facebook_info: "Invalid facebook sign in."
         create_from_facebook_failure: "Trouble with facebook sign in.  Please try again."

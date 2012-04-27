@@ -52,7 +52,6 @@ module Business
       @checklist[:data][:upload_photo] = upload_photo?
       @checklist[:data][:venues] = has_venues?
       @checklist[:data][:reward_model] = set_reward_model?
-      @checklist[:data][:purchase_rewards] = has_purchase_rewards?
       @checklist[:data][:customer_rewards] = has_customer_rewards?
       @checklist[:data][:challenges] = has_challenges?
       @checklist[:total] = @checklist[:data].length
@@ -74,10 +73,6 @@ module Business
     
     def set_reward_model?
       current_merchant.reward_model.nil? ? false : true  
-    end
-    
-    def has_purchase_rewards?
-      PurchaseReward.count(PurchaseReward.merchant.id => current_merchant.id) > 0 ? true : false
     end
     
     def has_customer_rewards?

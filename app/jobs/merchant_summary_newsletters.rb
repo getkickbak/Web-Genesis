@@ -18,14 +18,8 @@ module MerchantSummaryNewsletters
       new_customer_count = Customer.count(Customer.merchant.id => merchant.id, :created_ts => (beginning_of_last_week..end_of_last_week))
       reward_count = []
       challenge_count = []
-      total_reward_count = EarnRewardRecord.count(:merchant => merchant, :reward_id.gt => 0, :created_ts => (beginning_of_last_week..end_of_last_week))
+      total_reward_count = EarnRewardRecord.count(:merchant => merchant, :challenge_id => 0, :created_ts => (beginning_of_last_week..end_of_last_week))
       total_challenge_count = EarnRewardRecord.count(:merchant => merchant, :challenge_id.gt => 0, :created_ts => (beginning_of_last_week..end_of_last_week))
-      purchase_rewards = PurchaseReward.all(PurchaseReward.merchant.id => merchant.id)
-      purchase_rewards.each do |reward|
-        count = EarnRewardRecord.count(:reward_id => reward.id, :created_ts => (beginning_of_last_week..end_of_last_week))
-        percentage = total_reward_count > 0 ? (count / Float(total_reward_count) * 100) : 0
-        reward_count << {:name => reward.title, :count => count, :percentage => percentage}
-      end
       challenges = Challenge.all(Challenge.merchant.id => merchant.id)
       challenges.each do |challenge|
         count = EarnRewardRecord.count(:challenge_id => challenge.id, :created_ts => (beginning_of_last_week..end_of_last_week))
@@ -37,7 +31,6 @@ module MerchantSummaryNewsletters
         :new_customer_count => new_customer_count,
         :total_reward_count => total_reward_count,
         :total_challenge_count => total_challenge_count,
-        :reward_count => reward_count,
         :challenge_count => challenge_count
       }
       Business::MerchantMailer.summary_newsletter_email(merchant,stats).deliver

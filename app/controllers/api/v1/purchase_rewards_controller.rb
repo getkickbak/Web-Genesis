@@ -2,13 +2,6 @@ class Api::V1::PurchaseRewardsController < ApplicationController
   skip_before_filter :verify_authenticity_token  
   before_filter :authenticate_user!
   
-  def index
-    authorize! :read, PurchaseReward
-    
-    @rewards = PurchaseReward.all(:purchase_reward_venues => { :venue_id => params[:venue_id] })
-    render :template => '/api/v1/purchase_rewards/index'
-   end
-  
   def earn
     @venue = Venue.get(params[:venue_id]) || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
@@ -53,31 +46,18 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             @vip_challenge = true
             @vip_points = challenge.points
           end
-          #logger.debug("Parse reward ids.")
-          rewards_info = JSON.parse(params[:reward_ids])
-          reward_id_quantity = {}
-          reward_ids = []
-          rewards_info.each do |info|
-            reward_ids << info['id']
-            reward_id_quantity[info['id']] = info['quantity']
-          end
-          @total_points = 0
-          rewards = PurchaseReward.all(:id => reward_ids)
-          #logger.debug("Create EarnRewardRecords.")
-          rewards.each do |reward|
-            points = reward.points * reward_id_quantity[reward.id]
-            record = EarnRewardRecord.new(
-              :reward_id => reward.id,
-              :venue_id => @venue.id,
-              :points => points,
-              :created_ts => now
-            )
-            record.merchant = @venue.merchant
-            record.user = current_user
-            record.save
-            @customer.points += points
-            @total_points += points
-          end
+          amount = params[:amount].to_f
+          reward_model = @venue.merchant.reward_model
+          @points = (amount * reward_model.rebate_rate / 100 / reward_model.price_per_point).to_i
+          record = EarnRewardRecord.new(
+            :venue_id => @venue.id,
+            :points => @points,
+            :created_ts => now
+          )
+          record.merchant = @venue.merchant
+          record.user = current_user
+          record.save
+          @customer.points += @points
           @customer.save
           
           #logger.debug("Before acquiring cache mutex.")
@@ -94,7 +74,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           else
             prize_interval = (prize.points / Float(reward_model.prize_rebate_rate) * 100).to_i  
           end
-          current_point_offset = reward_model.prize_point_offset + @total_points
+          current_point_offset = reward_model.prize_point_offset + @points
           #logger.debug("Check if Prize has been won yet.")
           if (reward_model.prize_point_offset < reward_model.prize_win_offset) && (current_point_offset >= reward_model.prize_win_offset)
             earn_prize = EarnPrize.new(

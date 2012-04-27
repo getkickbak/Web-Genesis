@@ -25,24 +25,8 @@
 						New customers: <%= @stats[:new_customer_count] %>
 						<br>
 						<br>
-						Purchases: (Total <%= @stats[:total_reward_count] %>)
+						Purchases: <%= @stats[:total_reward_count] %>
 						<br>
-						<table style="margin-bottom:0px;margin-top:10px;border:1px solid #DDD;background-color:white;width:100%;margin-bottom:18px;border-collapse:collapse;font-size:13px;">
-							<thead>
-								<tr>
-									<th style="padding:10px 10px 9px;border:0 !important;">Name</th>
-									<th style="padding:10px 10px 9px;border:0 !important;">Count</th>
-									<th style="padding:10px 10px 9px;border:0 !important;">Percentage</th>
-								</tr>
-							</thead>
-							<% @stats[:reward_count].each do |reward| %>
-							<tr>
-								<td style="padding:10px 10px 9px;border:0 !important;"><%= reward[:name] %></td>
-								<td style="padding:10px 10px 9px;border:0 !important;"><%= reward[:count] %></td>
-								<td style="padding:10px 10px 9px;border:0 !important;"><%= "#{reward[:percentage]}%" %></td>
-							</tr>
-							<% end %>
-						</table>
 						<br>
 						Challenges: (Total <%= @stats[:total_challenge_count] %>)
 						<br>

@@ -22,8 +22,8 @@
 				</div>
 			</div>
 			<div class="span11">
-				<div id="purchases_pie_chart">
-					&nbsp;
+				<div>
+					<%= @purchases_total %> purchases in the last 2 months
 				</div>
 			</div>
 		</div>
@@ -41,23 +41,3 @@
 		</div>
 	</div>
 </div>
-<!--
-<div class="span10">
-<div>
-<%= @customers_total %> people in your loyalty program
-</div>
-<div>
-<% @purchases_total.each do |purchases| %>
-<p>
-<%= purchases[:total] %> <%= purchases[:name] %> purchases
-</p>
-<% end %>
-</div>
-<div>
-<% @challenges_total.each do |challenges| %>
-<p>
-<%= challenges[:total] %> <%= challenges[:name] %> challenges completed</pp>
-<% end %>
-</div>
-</div>
--->
