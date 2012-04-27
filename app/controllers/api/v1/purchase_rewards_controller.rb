@@ -52,6 +52,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           record = EarnRewardRecord.new(
             :venue_id => @venue.id,
             :points => @points,
+            :amount => amount,
             :created_ts => now
           )
           record.merchant = @venue.merchant

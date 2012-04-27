@@ -236,8 +236,6 @@ namespace :db do
       end
       users.each do |user|
         customer = Customer.create(merchant,user)
-        customer.points = rand(30)
-        customer.save
         venues.each do |venue|
           CheckIn.create(venue, user, customer)
         end  
@@ -343,15 +341,20 @@ namespace :db do
         record.merchant = merchant
         record.user = users[rand(users.length)]
         record.save
+        amount = rand(30) + 1
         record = EarnRewardRecord.new(
           :challenge_id => 0,
           :venue_id => venues[rand(2)].id,
-          :points => rand(10)+1,
+          :points => (amount * merchant.reward_model.rebate_rate / 100 / merchant.reward_model.price_per_point).to_i,
+          :amount => amount,
           :created_ts => now
         )
         record.merchant = merchant
         record.user = users[rand(users.length)]
         record.save
+        customer = Customer.first(Customer.merchant.id => merchant.id, Customer.user.id => record.user.id)
+        customer.points += (record.points + challenge.points)
+        customer.save
       end        
     end
     puts "Complete Merchant creation"

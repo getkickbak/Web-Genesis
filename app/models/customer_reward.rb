@@ -3,7 +3,7 @@ class CustomerReward
 
   property :id, Serial
   property :title, String, :length => 24, :required => true, :default => ""
-  property :price, Decimal, :required => true, :scale => 2, :min => 0.1
+  property :price, Decimal, :required => true, :scale => 2, :min => 1.00
   property :points, Integer, :required => true, :min => 1
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
