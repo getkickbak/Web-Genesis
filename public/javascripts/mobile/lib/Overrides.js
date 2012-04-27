@@ -7,10 +7,12 @@ Genesis.constants =
 {
    //host : 'http://192.168.0.52:3000',
    host : 'http://www.getkickbak.com',
-   authToken : null,
-   currFbId : 0,
-   fbAccountId : null,
-   fbResponse : null,
+   /*
+    authToken : null,
+    currFbId : 0,
+    fbAccountId : null,
+    fbResponse : null,
+    */
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
@@ -197,7 +199,8 @@ Genesis.constants =
    //
    initFb : function()
    {
-      var fb = Genesis.constants;
+      var fb = window.localStorage;
+      var local = window.localStorage;
       var me = this;
       //Detect when Facebook tells us that the user's session has been returned
       FB.Event.monitor('auth.authResponseChange', function(session)
@@ -214,11 +217,11 @@ Genesis.constants =
                {
                   if(!response.error)
                   {
-                     fb.authToken = authToken;
-                     fb.fbResponse = response;
-                     fb.currFbId = response.id;
-                     fb.fbAccountId = response.email;
-                     console.log('Updating Session to use\n' + 'AuthToken[' + fb.authToken + ']\n' + 'FbID[' + fb.currFbId + ']\n' + 'AccountID[' + fb.fbAccountId + ']');
+                     local.setItem('authToken', authToken);
+                     fb.setItem('fbResponse', response);
+                     fb.setItem('currFbId', response.id);
+                     fb.setItem('fbAccountId', response.email);
+                     console.log('Updating Session to use\n' + 'AuthToken[' + local.getItem('authToken') + ']\n' + 'FbID[' + fb.getItem('currFbId') + ']\n' + 'AccountID[' + fb.getItem('fbAccountId') + ']');
                   }
                   else
                   {
@@ -245,7 +248,7 @@ Genesis.constants =
       var uidField = "id";
       var nameField = "name";
       var me = this;
-      var fb = Genesis.constants;
+      var fb = window.localStorage;
       FB.api('/me/friends&fields=' + nameField + ',' + uidField, function(response)
       {
          var friendsList = '';
@@ -255,7 +258,7 @@ Genesis.constants =
             var data = response.data;
             for(var i = 0; i < data.length; i++)
             {
-               if(data[i][uidField] != fb.currFbId)
+               if(data[i][uidField] != fb.getItem('currFbId'))
                {
                   me.friendsList.push(
                   {
@@ -289,12 +292,12 @@ Genesis.constants =
                   {
                      if(button == "Relogin")
                      {
-                        fb.fbLogin(cb);
+                        me.fbLogin(cb);
                      }
                      else
                      {
-                        //fb.access_token = response.authResponse.accessToken;
-                        //fb.facebook_loginCallback(cb);
+                        //fb.setItem('access_token', response.authResponse.accessToken);
+                        //me.facebook_loginCallback(cb);
                      }
                   }, true);
                }
@@ -307,7 +310,8 @@ Genesis.constants =
    //
    fbLogin : function(cb)
    {
-      var fb = Genesis.constants;
+      var fb = window.localStorage;
+      var me = this;
       console.debug("Logging into Facebook ...");
       Ext.Viewport.setMasked(
       {
@@ -319,8 +323,8 @@ Genesis.constants =
          if((response.status == 'connected') && response.authResponse)
          {
             console.debug("Logged into Facebook!");
-            fb.access_token = response.authResponse['accessToken'];
-            fb.facebook_loginCallback(cb);
+            fb.setItem('access_token', response.authResponse['accessToken']);
+            me.facebook_loginCallback(cb);
          }
          else
          {
@@ -339,18 +343,18 @@ Genesis.constants =
    },
    facebook_onLogin : function(cb, supress)
    {
-      var fb = Genesis.constants;
+      var fb = window.localStorage;
       var me = this;
       cb = cb || Ext.emptyFn
 
-      if(fb.currFbId > 0)
+      if(fb.getItem('currFbId') > 0)
       {
          if(!supress)
          {
             Ext.device.Notification.show(
             {
                title : 'Facebook Connect',
-               message : 'Account ID: ' + fb.fbAccountId + Genesis.constants.addCRLF() + 'is used for your current Facebook session.'
+               message : 'Account ID: ' + getItem('fbAccountId') + Genesis.constants.addCRLF() + 'is used for your current Facebook session.'
             });
          }
          //cb();
@@ -373,7 +377,8 @@ Genesis.constants =
        Ext.device.Notification.show(
        {
        title : 'Facebook Connect',
-       message : 'Account ID: ' + fb.fbAccountId + Genesis.constants.addCRLF() + 'will be used for your current Facebook session.',
+       message : 'Account ID: ' + fb.getItem('fbAccountId') + Genesis.constants.addCRLF() + 'will be used for your current Facebook
+       session.',
        buttons : ['OK', 'Cancel'],
        callback : function(button)
        {
@@ -406,7 +411,7 @@ Genesis.constants =
        {
        if(button == "OK")
        {
-       fb.fbLogin(cb);
+       me.fbLogin(cb);
        }
        }, true);
        }
@@ -414,7 +419,7 @@ Genesis.constants =
        }
        else
        {
-       fb.fbLogin(cb);
+       me.fbLogin(cb);
        }
        });
        */
@@ -422,7 +427,7 @@ Genesis.constants =
    facebook_loginCallback : function(cb, count)
    {
       var me = this;
-      var fb = Genesis.constants;
+      var fb = window.localStorage;
 
       console.debug("Retrieving Facebook profile information ...");
       count = count || 0;
@@ -456,18 +461,18 @@ Genesis.constants =
          }
          Ext.Viewport.setMasked(false);
 
-         if(fb.currFbId == facebook_id)
+         if(fb.getItem('currFbId') == facebook_id)
          {
             console.debug("Session information same as previous session.");
          }
 
-         fb.fbResponse = response;
-         fb.currFbId = facebook_id;
-         fb.fbAccountId = response.email
-         console.debug('You\`ve logged into Facebook! Email(' + fb.fbAccountId + ')');
+         fb.setItem('fbResponse', response);
+         fb.setItem('currFbId ', facebook_id);
+         fb.setItem('fbAccountId', response.email);
+         console.debug('You\`ve logged into Facebook! Email(' + fb.getItem('fbAccountId') + ')');
 
-         fb._fb_connect();
-         fb.getFriendsList();
+         me._fb_connect();
+         me.getFriendsList();
 
          if(cb)
          {
@@ -504,14 +509,15 @@ Genesis.constants =
    },
    facebook_onLogout : function(cb, contactFB)
    {
-      var fb = Genesis.constants;
+      var fb = window.localStorage;
+      var me = this;
       cb = cb || Ext.emptyFn;
       try
       {
-         fb._fb_disconnect();
-         fb.currFbId = 0;
-         fb.fbAccountId = null;
-         fb.fbResponse = null;
+         me._fb_disconnect();
+         fb.setItem('currFbId', 0);
+         fb.setItem('fbAccountId', null);
+         fb.setItem('fbResponse', null);
          if(contactFB)
          {
             FB.logout(function(response)
@@ -652,8 +658,9 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   {
                      if(metaData['session_timeout'])
                      {
+                        var local = window.localStorage;
                         vport.setLoggedIn(false);
-                        Genesis.constants.authToken = null;
+                        local.setItem('authToken', null);
                         vport.onFeatureTap('MainPage', 'login');
                      }
                      else
@@ -677,8 +684,9 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   message : 'Create user account using Facebook Profile information',
                   callback : function(button)
                   {
+                     var local = window.localStorage;
                      vport.setLoggedIn(false);
-                     Genesis.constants.authToken = null;
+                     local.setItem('authToken', null);
                      var controller = app.getController('MainPage');
                      app.dispatch(
                      {
@@ -774,9 +782,10 @@ Ext.define('Genesis.data.proxy.OfflineServer',
     */
    buildRequest : function(operation)
    {
-      if(Genesis.constants.authToken)
+      var local = window.localStorage;
+      if(local.getItem('authToken'))
       {
-         this.setExtraParam("auth_token", Genesis.constants.authToken);
+         this.setExtraParam("auth_token", local.getItem('authToken'));
       }
 
       var request = this.callParent(arguments);

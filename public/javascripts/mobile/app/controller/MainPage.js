@@ -247,7 +247,7 @@ Ext.define('Genesis.controller.MainPage',
    {
       var viewport = this.getViewport();
       var vport = this.getViewPortCntlr();
-      var fb = Genesis.constants;
+      var local = window.localStorage;
       var flag = 0;
       //
       // Logout of Facebook
@@ -274,20 +274,14 @@ Ext.define('Genesis.controller.MainPage',
                }
                else
                {
-                  console.log("Logout Failed!")                  
+                  console.log("Logout Failed!")
                }
                vport.setLoggedIn(false);
-               fb.authToken = null;
-               if(fb.currFbId)
+               local.setItem('authToken', null);
+               _fbLogout();
+               if(fb.getItem('currFbId'))
                {
-                  Genesis.constants.facebook_onLogout(function()
-                  {
-                     _fbLogout();
-                  });
-               }
-               else
-               {
-                  _fbLogout();
+                  Genesis.constants.facebook_onLogout(null, true);
                }
             }
          });
@@ -305,7 +299,7 @@ Ext.define('Genesis.controller.MainPage',
          single : true
       });
       b.parent.hide();
-      if(fb.currFbId)
+      if(fb.getItem('currFbId'))
       {
          console.log("Logging out of Facebook ...")
          Genesis.constants.facebook_onLogout(function()
@@ -337,7 +331,7 @@ Ext.define('Genesis.controller.MainPage',
       //
       // Login to Facebook
       //
-      Genesis.constants.fbLogin(function(params)
+      Genesis.constants.facebook_onLogin(function(params)
       {
          console.log("Logging into Kickbak using Facebook account ...");
          Customer['setFbLoginUrl']();
@@ -348,7 +342,7 @@ Ext.define('Genesis.controller.MainPage',
             },
             params : params
          });
-      });
+      }, true);
    },
    onCreateAccountTap : function(b, e, eOpts)
    {
@@ -363,6 +357,8 @@ Ext.define('Genesis.controller.MainPage',
    // --------------------------------------------------------------------------
    loginCommon : function()
    {
+      var local = window.localStorage;
+
       Ext.regStore('CustomerStore',
       {
          model : 'Genesis.model.Customer',
@@ -413,7 +409,7 @@ Ext.define('Genesis.controller.MainPage',
                if(authToken)
                {
                   console.debug("AuthToken - " + authToken)
-                  Genesis.constants.authToken = authToken;
+                  local.setItem('authToken', authToken);
                }
 
                //
@@ -478,8 +474,8 @@ Ext.define('Genesis.controller.MainPage',
       var values = account.getValues();
       var user = Ext.create('Genesis.model.frontend.Account', values);
       var validateErrors = user.validate();
-      var fb = Genesis.constants;
-      var response = fb.fbResponse || null;
+      var fb = window.localStorage;
+      var response = fb.getItem('fbResponse') || null;
 
       if(!validateErrors.isValid())
       {
@@ -535,6 +531,33 @@ Ext.define('Genesis.controller.MainPage',
          });
       }
    },
+   onSignIn : function(username, password)
+   {
+      var params =
+      {
+      };
+
+      if(username)
+      {
+         params =
+         {
+            email : username,
+            password : password
+         };
+      }
+      Customer['setLoginUrl']();
+      if(!Ext.StoreMgr.get('CustomerStore'))
+      {
+         this.loginCommon();
+      }
+      Ext.StoreMgr.get('CustomerStore').load(
+      {
+         params : params,
+         jsonData :
+         {
+         }
+      });
+   },
    onSignInSubmit : function(b, e, eOpts)
    {
       var signin = this.getSignin();
@@ -554,28 +577,13 @@ Ext.define('Genesis.controller.MainPage',
       }
       else
       {
-         Customer['setLoginUrl']();
-         if(!Ext.StoreMgr.get('CustomerStore'))
-         {
-            this.loginCommon();
-         }
-         Ext.StoreMgr.get('CustomerStore').load(
-         {
-            params :
-            {
-               email : values.username,
-               password : values.password
-            },
-            jsonData :
-            {
-            }
-         });
+         this.onSign(values.username, values.password);
       }
    },
    onCreateActivate : function(c, eOpts)
    {
-      var fb = Genesis.constants;
-      var response = fb.fbResponse || null;
+      var fb = window.localStorage;
+      var response = fb.getItem('fbResponse') || null;
       if(response)
       {
          var form = this.getCreateAccount();
@@ -598,15 +606,18 @@ Ext.define('Genesis.controller.MainPage',
       {
          case 'main' :
          {
-            var app = this.getApplication();
-            var controller = app.getController('Merchants');
-            app.dispatch(
-            {
-               action : 'onMainButtonTap',
-               args : ['checkin'],
-               controller : controller,
-               scope : controller
-            });
+            this.pushView(this.getMainPage());
+            /*
+             var app = this.getApplication();
+             var controller = app.getController('Merchants');
+             app.dispatch(
+             {
+             action : 'onMainButtonTap',
+             args : ['checkin'],
+             controller : controller,
+             scope : controller
+             });
+             */
             break;
          }
          case 'login' :

@@ -112,7 +112,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    onShareMerchantTap : function(b, e, eOpts)
    {
-      var fb = Genesis.constants;
+      var fb = window.localStorage;
       Genesis.constants.facebook_onLogin(function(params)
       {
          var merchant = this.getVenue().getMerchant();
@@ -273,42 +273,36 @@ Ext.define('Genesis.controller.Viewport',
    },
    openMainPage : function()
    {
-      //
-      // To-do : Use remote call to check whether we have a active session or not
-      //
-      if(!this.getLoggedIn())
-         this.onFeatureTap('MainPage', 'login');
+      var local = window.localStorage;
+      var app = this.getApplication();
+      var controller = app.getController('MainPage');
+      this.setLoggedIn((local.getItem('authToken')) ? true : false);
+      if(this.getLoggedIn())
+      {
+         if(local.getItem('currFbId') > 0)
+         {
+            app.dispatch(
+            {
+               action : 'onFacebookTap',
+               args : [],
+               controller : controller,
+               scope : controller
+            });
+         }
+         else
+         {
+            app.dispatch(
+            {
+               action : 'onSignIn',
+               args : [],
+               controller : controller,
+               scope : controller
+            });
+         }
+      }
       else
-         this.onFeatureTap('MainPage', 'main');
-
+      {
+         this.onFeatureTap('MainPage', 'login');
+      }
    }
-   /*
-    onSwipe : function(e, touch, opts)
-    {
-    var viewport = this.getView();
-    var bar = viewport.getNavigationBar();
-    switch (opts.direction)
-    {
-    case 'up' :
-    case 'left' :
-    break;
-    case 'down' :
-    {
-    if(bar.getDefaultBackButtonText() == bar.config.altBackButtonText)
-    {
-    viewport.popView();
-    }
-    break;
-    }
-    case 'right' :
-    {
-    if(bar.getDefaultBackButtonText() == bar.config.defaultBackButtonText)
-    {
-    viewport.popView();
-    }
-    break;
-    }
-    }
-    },
-    */
 });
