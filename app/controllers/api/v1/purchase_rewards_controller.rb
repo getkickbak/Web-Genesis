@@ -20,9 +20,20 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         @prize = nil
         authorized = false
         if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
+          auth_data = String.random_alphanumeric
+          amount = rand(100)+1
           authorized = true
-        elsif @venue.authorization_codes.first(:auth_code => params[:auth_code])
-          authorized = true
+        else
+          data = params[:data].split('$')
+          iv = data[0]
+          auth_data = data[1]
+          aes = Aes.new('128', 'CBC')
+          decrypted = aes.decrypt(auth_data, @venue.auth_code, iv)
+          data = JSON.parse(decrypted)
+          if (data[:expiry_date] >= Date.today) && (not EarnRewardRecord.first(:auth_data => auth_data).nil?)
+            amount = data[:amount]
+            authorized = true
+          end  
         end  
         if authorized
           #logger.debug("Authorized to earn points.")
@@ -35,6 +46,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             record = EarnRewardRecord.new(
               :challenge_id => challenge.id,
               :venue_id => @venue.id,
+              :auth_data => auth_data,
               :points => challenge.points,
               :created_ts => now
             )
@@ -46,11 +58,11 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             @vip_challenge = true
             @vip_points = challenge.points
           end
-          amount = params[:amount].to_f
           reward_model = @venue.merchant.reward_model
           @points = (amount * reward_model.rebate_rate / 100 / reward_model.price_per_point).to_i
           record = EarnRewardRecord.new(
             :venue_id => @venue.id,
+            :auth_data => auth_data,
             :points => @points,
             :amount => amount,
             :created_ts => now

@@ -32,35 +32,24 @@
 			<%= @venue.phone %>
 		</p>
 		<p>
-			<b>Website</b>
+			<b>Website:</b>
 			<%= @venue.website %>
 		</p>
 		<p>
-			<b>Longitude</b>
+			<b>Longitude:</b>
 			<%= @venue.longitude %>
 		</p>
 		<p>
-			<b>Latitude</b>
+			<b>Latitude:</b>
 			<%= @venue.latitude %>
 		</p>
-		<% @venue.authorization_codes.each do |code| %>
+		<p>
+			<b>Authorization Code:</b>
+			<%= @venue.auth_code %>
+		</p>
 		<div>
-			<div>
-				<%= code.auth_code %>
-			</div>
-			<div>
-				<%= link_to 'Print QR Code', ::Common.generate_full_merchant_qr_code_image_file_path(current_merchant.id,code.qr_code_img) %>
-			</div>
-			<div>
-				<%= link_to 'Delete QR Code', delete_qr_code_venue_path(@venue, :qr_code_id => code.id), :confirm => 'Are you sure?' %>
-			</div>
+			<%= link_to 'Update Authorization Code', update_auth_code_venue_path(@venue) %>
 		</div>
-		<% end %>
-	</div>
-	<div class="span10">
-		<div>
-			<%= link_to 'Create QR Code', create_qr_code_venue_path(@venue) %>
-		</div>	
 	</div>
 </div>
 <%= link_to 'Edit', edit_venue_path(@venue) %> |

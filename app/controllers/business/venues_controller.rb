@@ -87,49 +87,25 @@ module Business
       end
     end
 
-    def create_qr_code
+    def update_auth_code
       @venue = Venue.get(params[:id]) || not_found
       authorize! :update, @venue
 
-      AuthorizationCode.transaction do
+      Venue.transaction do
         begin
-          AuthorizationCode.create(@venue)
+          @venue.update_auth_code()
           respond_to do |format|
-            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.create_qrcode_success")) }
+            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.update_authcode_success")) }
           #format.xml  { head :ok }
           end
         rescue DataMapper::SaveFailureError => e
           logger.error("Exception: " + e.resource.errors.inspect)
           respond_to do |format|
-            format.html { redirect_to(:action => "show", :id => @venue.id, :error => t("business.venues.create_qrcode_failure")) }
+            format.html { redirect_to(:action => "show", :id => @venue.id, :error => t("business.venues.update_authcode_failure")) }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
           end
         end
       end  
-    end
-
-    def delete_qr_code
-      @venue = Venue.get(params[:id]) || not_found
-      @code = AuthorizationCode.get(params[:qr_code_id]) || not_found
-      authorize! :update, @venue
-      
-      @code.destroy
-      respond_to do |format|
-        format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.delete_qrcode_success")) }
-        #format.xml  { head :ok }
-      end
-    end
-
-    def qrcode_template
-      venue = Venue.get(params[:id]) || not_found
-      authorize! :manage, venue
-      
-      @qr_code = venue.authorization_codes[0].qr_code
-      @name = venue.name
-      respond_to do |format|
-        format.html
-      #format.xml  { render :xml => @order }
-      end
     end
     
     def check_in_template

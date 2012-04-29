@@ -55,11 +55,20 @@ class Api::V1::ChallengesController < ApplicationController
 
     Customer.transaction do
       begin
-        if is_challenge_satisfied?(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && (@venue.authorization_codes.first(:auth_code => params[:auth_code]) || APP_PROP["DEBUG_MODE"])))
+        if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
+          iv = String.random_alphanumeric
+          auth_data = String.random_alphanumeric
+        else
+          data = params[:data].split('$')
+          iv = data[0]
+          auth_data = data[1]
+        end
+        if is_challenge_satisfied?(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && authenticated?(iv, auth_data, @venue.auth_code)))
           if not challenge_limit_reached?(@challenge)
             record = EarnRewardRecord.new(
               :challenge_id => @challenge.id,
               :venue_id => @venue.id,
+              :auth_data => auth_data,
               :points => @challenge.points,
               :created_ts => Time.now
             )
@@ -89,7 +98,21 @@ class Api::V1::ChallengesController < ApplicationController
     end
   end
   
-  protected
+  private
+  
+  def authenticated?(iv, auth_data, auth_code)
+    if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
+      return true
+    else
+      aes = Aes.new('128', 'CBC')
+      decrypted = aes.decrypt(auth_data, auth_code, iv)
+      data = JSON.parse(decrypted)
+      if (data[:expiry_date] >= Date.today) && (not EarnRewardRecord.first(:auth_data => auth_data).nil?)
+        return true
+      end
+      return false
+    end
+  end
   
   def is_challenge_satisfied?(challenge)
     if challenge.type.value == "photo"

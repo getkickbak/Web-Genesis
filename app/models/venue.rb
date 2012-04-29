@@ -17,6 +17,7 @@ class Venue
   property :photo, String, :auto_validation => false
   property :latitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :longitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
+  property :auth_code, String, :unique_index => true, :required => true, :default => ""
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -24,13 +25,12 @@ class Venue
   
   attr_accessor :type_id, :distance
   
-  attr_accessible :type_id, :name, :description, :address, :city, :state, :zipcode, :country, :phone, :website, :latitude, :longitude
+  attr_accessible :type_id, :name, :description, :address, :city, :state, :zipcode, :country, :phone, :website, :latitude, :longitude, :auth_code
   
   belongs_to :merchant
   has 1, :venue_to_type, :constraint => :destroy
   has 1, :type, 'VenueType', :through => :venue_to_type, :via => :venue_type
   has 1, :check_in_code, :constraint => :destroy
-  has n, :authorization_codes, :constraint => :destroy
   has n, :challenge_venues, :constraint => :destroy
   has n, :purchase_reward_venues, :constraint => :destroy
   has n, :customer_reward_venues, :constraint => :destroy
@@ -55,21 +55,14 @@ class Venue
       :phone => venue_info[:phone].strip,
       :website => venue_info[:website].strip,
       :latitude => venue_info[:latitude].to_f,
-      :longitude => venue_info[:longitude].to_f
+      :longitude => venue_info[:longitude].to_f,
+      :auth_code => String.random_alphanumeric
     )
     venue[:created_ts] = now
     venue[:update_ts] = now
     venue.type = type
     venue.merchant = merchant
     venue.save
-    
-    auth_code = String.random_alphanumeric
-    authorization_code = venue.authorization_codes.new
-    authorization_code[:auth_code] = auth_code
-    authorization_code[:qr_code] = AuthorizationCode.generate_qr_code(merchant.id, auth_code)
-    authorization_code[:qr_code_img] = authorization_code.generate_qr_code_image(merchant.id)
-    authorization_code[:created_ts] = now
-    authorization_code[:update_ts] = now
     
     merchant.venues.reload
     check_in_auth_code = "#{merchant.id}-#{merchant.venues.length}" 
@@ -145,6 +138,13 @@ class Venue
     self.update_ts = now
     self.type = type
     save
+  end
+  
+  def update_auth_code
+    now = Time.now
+    self.auth_code = String.random_alphanumeric
+    self.update_ts = now
+    save  
   end
   
   private

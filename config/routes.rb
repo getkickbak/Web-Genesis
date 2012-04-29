@@ -11,9 +11,7 @@ Genesis::Application.routes.draw do
       resources :challenges
       resources :customer_rewards
       resources :venues do
-        get 'create_qr_code', :on => :member, :as => :create_qr_code
-        get 'delete_qr_code', :on => :member, :as => :delete_qr_code
-        get 'qrcode_template', :on => :member
+        get 'update_auth_code', :on => :member, :as => :update_auth_code
         get 'check_in_template', :on => :member
       end
       #resources :deals
@@ -96,7 +94,7 @@ Genesis::Application.routes.draw do
           post "create_from_facebook", :on => :collection
         end
         resources :check_ins, :only => [:create]
-        resources :customers, :only => [:index, :create]
+        resources :customers, :only => [:index]
                 
         match "/sign_up" => 'registrations#create', :via => :post
         

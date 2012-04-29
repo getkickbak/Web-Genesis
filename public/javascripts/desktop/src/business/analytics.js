@@ -31,46 +31,23 @@ $(document).ready($(function() {
 
 		var purchases_line_data = new google.visualization.DataTable();
 		purchases_line_data.addColumn('string', 'Date');
-		
-		var i;
-		var names = response_data.purchases.line_data.names
-		for (i = 0; i < names.length; i++) {
-			purchases_line_data.addColumn('number', names[i]);
-		}
-		purchases_line_data.addRows(response_data.purchases.line_data.data);
+		purchases_line_data.addColumn('number', 'Purchases');
+		purchases_line_data.addRows(response_data.purchases);
 
 		var purchases_line_options = {
 			width : 500,
 			height : 340,
 			title : 'Purchases Per Day - Last 2 Months',
 			chartArea : { left : 80, top : 50 },
-			legend : { position : 'bottom', textStyle : { fontSize: 12 } },
+			legend : { position : 'none', textStyle : { fontSize: 12 } },
 			hAxis : { textStyle : { fontSize: 12 } },
 			vAxis : { textStyle : { fontSize: 12 }, minValue : 0, maxValue : 8, viewWindowMode : 'explicit', viewWindow : { min : 0 } },
 			tooltip : { textStyle : { fontSize: 12 } }
 		};
 		var purchases_line_chart = new google.visualization.LineChart(document.getElementById('purchases_line_chart'));
 		purchases_line_chart.draw(purchases_line_data, purchases_line_options);
-
-		var purchases_pie_data = new google.visualization.DataTable();
-        purchases_pie_data.addColumn('string', 'Category');
-        purchases_pie_data.addColumn('number', 'Purchases');
         
-        purchases_pie_data.addRows(response_data.purchases.pie_data);
-
-        var purchases_pie_options = {
-        	width : 340,
-			height : 340,
-          	title: 'Purchases - Last 2 Months',
-          	titleTextStyle : { fontSize: 12 },
-          	chartArea : { top : 50 },
-          	legend : { position : 'bottom', textStyle : { fontSize: 12 } },
-          	pieSliceTextStyle : { fontSize: 12 },
-          	tooltip : { textStyle : { fontSize: 12 } }
-        };
-
-        var purchases_pie_chart = new google.visualization.PieChart(document.getElementById('purchases_pie_chart'));
-        purchases_pie_chart.draw(purchases_pie_data, purchases_pie_options);
+        var i;
         
 		var challenges_line_data = new google.visualization.DataTable();
 		challenges_line_data.addColumn('string', 'Date');

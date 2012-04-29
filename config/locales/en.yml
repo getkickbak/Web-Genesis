@@ -117,9 +117,7 @@ en:
         complete_failure: "Trouble completing the challenge.  Please try again."
       check_ins:
         invalid_code: "Invalid check-in code.  Please try again."
-        create_failure: "Trouble with check-in.  Please try again."
-      customers:
-        create_failure: "Trouble creating customer account.  Please try again."  
+        create_failure: "Trouble with check-in.  Please try again." 
       customer_rewards:
         insufficient_points: "Not enough points to redeem reward."
         redeem_failure: "Trouble redeeming the reward.  Please try again."
@@ -171,7 +169,6 @@ en:
       venues:
         create_success: "Venue was successfully created."
         update_success: "Venue was successfully updated."
-        create_qrcode_success: "QR Code was successfully created."
-        create_qrcode_failure: "Failed to create QR Code."
-        delete_qrcode_success: "QR Code was successfully deleted."
+        update_authcode_success: "Authentication Code was successfully updated."
+        update_authcode_failure: "Failed to update Authentication Code."
         destroy_failure: "Failed to delete venue.  Please check to make sure no challenges or rewards are associated with this venue."
