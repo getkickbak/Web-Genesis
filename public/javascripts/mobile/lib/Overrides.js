@@ -9,6 +9,7 @@ Genesis.constants =
    host : 'http://www.getkickbak.com',
    /*
     authToken : null,
+    auth_code : null,
     currFbId : 0,
     fbAccountId : null,
     fbResponse : null,
@@ -218,7 +219,7 @@ Genesis.constants =
                   if(!response.error)
                   {
                      local.setItem('authToken', authToken);
-                     fb.setItem('fbResponse', response);
+                     fb.setItem('fbResponse', Ext.encode(response));
                      fb.setItem('currFbId', response.id);
                      fb.setItem('fbAccountId', response.email);
                      console.log('Updating Session to use\n' + 'AuthToken[' + local.getItem('authToken') + ']\n' + 'FbID[' + fb.getItem('currFbId') + ']\n' + 'AccountID[' + fb.getItem('fbAccountId') + ']');
@@ -249,6 +250,11 @@ Genesis.constants =
       var nameField = "name";
       var me = this;
       var fb = window.localStorage;
+      var message = function(num)
+      {
+         return 'We found ' + num + ' Friends from your social network!';
+      }
+
       FB.api('/me/friends&fields=' + nameField + ',' + uidField, function(response)
       {
          var friendsList = '';
@@ -272,11 +278,7 @@ Genesis.constants =
             {
                return a[uidField] - b[uidField];
             });
-            Ext.device.Notification.show(
-            {
-               title : 'Facebook Connect',
-               message : 'We found ' + me.friendsList.length + ' Friends from your social network!'
-            });
+            console.log(message(me.friendsList.length));
             //this.checkFriendReferral(friendsList, callback);
          }
          else
@@ -288,18 +290,18 @@ Genesis.constants =
                buttons : ['Relogin', 'Cancel'],
                callback : function(button)
                {
-                  me.facebook_onLogout(function()
+                  if(button == "Relogin")
                   {
-                     if(button == "Relogin")
+                     me.facebook_onLogout(function()
                      {
                         me.fbLogin(cb);
-                     }
-                     else
-                     {
-                        //fb.setItem('access_token', response.authResponse.accessToken);
-                        //me.facebook_loginCallback(cb);
-                     }
-                  }, true);
+                     }, true);
+                  }
+                  else
+                  {
+                     //fb.setItem('access_token', response.authResponse.accessToken);
+                     //me.facebook_loginCallback(cb);
+                  }
                }
             });
          }
@@ -354,10 +356,10 @@ Genesis.constants =
             Ext.device.Notification.show(
             {
                title : 'Facebook Connect',
-               message : 'Account ID: ' + getItem('fbAccountId') + Genesis.constants.addCRLF() + 'is used for your current Facebook session.'
+               message : 'Account ID: ' + fb.getItem('fbAccountId') + Genesis.constants.addCRLF() + 'is used for your current Facebook session.'
             });
          }
-         //cb();
+         cb(Ext.decode(fb.getItem('fbResponse')));
          //me.facebook_loginCallback(cb);
       }
       else
@@ -466,7 +468,7 @@ Genesis.constants =
             console.debug("Session information same as previous session.");
          }
 
-         fb.setItem('fbResponse', response);
+         fb.setItem('fbResponse', Ext.encode(response));
          fb.setItem('currFbId ', facebook_id);
          fb.setItem('fbAccountId', response.email);
          console.debug('You\`ve logged into Facebook! Email(' + fb.getItem('fbAccountId') + ')');
@@ -516,8 +518,8 @@ Genesis.constants =
       {
          me._fb_disconnect();
          fb.setItem('currFbId', 0);
-         fb.setItem('fbAccountId', null);
-         fb.setItem('fbResponse', null);
+         fb.removeItem('fbAccountId');
+         fb.removeItem('fbResponse');
          if(contactFB)
          {
             FB.logout(function(response)
@@ -660,7 +662,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                      {
                         var local = window.localStorage;
                         vport.setLoggedIn(false);
-                        local.setItem('authToken', null);
+                        local.removeItem('auth_code');
                         vport.onFeatureTap('MainPage', 'login');
                      }
                      else
@@ -686,7 +688,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   {
                      var local = window.localStorage;
                      vport.setLoggedIn(false);
-                     local.setItem('authToken', null);
+                     local.removeItem('auth_code');
                      var controller = app.getController('MainPage');
                      app.dispatch(
                      {
@@ -783,9 +785,9 @@ Ext.define('Genesis.data.proxy.OfflineServer',
    buildRequest : function(operation)
    {
       var local = window.localStorage;
-      if(local.getItem('authToken'))
+      if(local.getItem('auth_code'))
       {
-         this.setExtraParam("auth_token", local.getItem('authToken'));
+         this.setExtraParam("auth_token", local.getItem('auth_code'));
       }
 
       var request = this.callParent(arguments);
