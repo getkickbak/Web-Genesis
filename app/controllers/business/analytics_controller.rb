@@ -9,7 +9,8 @@ module Business
           format.html { redirect_to setup_path }
         end
       else
-        @customers_total = get_customers_total
+        @customers_total = get_customers_total(nil)
+        @new_customers_total = get_customers_total(Date.today - 14) 
         @purchases_total = get_purchases_total(nil, Date.today >> -2)
         respond_to do |format|
           format.html # index.html.erb
@@ -147,8 +148,12 @@ module Business
     
     private 
     
-    def get_customers_total
-      Customer.count(Customer.merchant.id => current_merchant.id)  
+    def get_customers_total(date)
+      if date.nil?
+        Customer.count(Customer.merchant.id => current_merchant.id)
+      else
+        Customer.count(Customer.merchant.id => current_merchant.id, :created_ts.gte => date)
+      end  
     end
     
     def get_purchases_total(venue, date)
