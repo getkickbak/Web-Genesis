@@ -97,7 +97,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    signInFailMsg : function(msg)
    {
-      return msg + 'Please Try Again';
+      return msg + Genesis.constants.addCRLF() + 'Please Try Again';
    },
    init : function(app)
    {
@@ -121,9 +121,145 @@ Ext.define('Genesis.controller.MainPage',
          model : 'Genesis.model.User',
          autoLoad : false
       });
+
       //
       // Prizes that a User Earned
       //
+      me.initMerchantPrizeStore();
+
+      //
+      // Store storing the Customer's Eligible Rewards at a Venue
+      // Used during Checkin
+      //
+      Ext.regStore('EligibleRewardsStore',
+      {
+         model : 'Genesis.model.EligibleReward',
+         autoLoad : false
+      });
+
+      //
+      // Customer Accounts for an user
+      //
+      me.initCustomerStore();
+
+      console.log("MainPage Controller Init");
+   },
+   initCustomerStore : function()
+   {
+      var me = this;
+      var local = window.localStorage;
+
+      Ext.regStore('CustomerStore',
+      {
+         model : 'Genesis.model.Customer',
+         autoLoad : false,
+         pageSize : 1000,
+         listeners :
+         {
+            scope : me,
+            "load" : function(store, records, successful, operation, eOpts)
+            {
+               if(successful)
+               {
+                  var vport = me.getViewPortCntlr();
+                  vport.setLoggedIn(true);
+                  me.getViewport().reset(me);
+                  vport.onFeatureTap('MainPage');
+               }
+            },
+            'metachange' : function(store, proxy, eOpts)
+            {
+               // Load Prizes into DataStore
+               var metaData = proxy.getReader().metaData;
+
+               //
+               // Update MerchantPrizeStore
+               //
+               var prizes = metaData['prizes'];
+               if(prizes)
+               {
+                  console.debug("Total Prizes - " + prizes.length);
+                  for(var i = 0; i < prizes.length; i++)
+                  {
+                     //
+                     // CustomerReward's Model rootProperty is "data"
+                     //
+                     prizes[i].reward =
+                     {
+                        data : prizes[i].reward
+                     }
+                  }
+                  Ext.StoreMgr.get('MerchantPrizeStore').setData(prizes);
+               }
+
+               //
+               // Update Authentication Token
+               //
+               var authToken = metaData['auth_token'];
+               if(authToken)
+               {
+                  console.debug("Auth Code - " + authToken)
+                  local.setItem('auth_code', authToken);
+               }
+
+               //
+               // Update Eligible Rewards
+               //
+               var erewards = metaData['eligible_rewards'];
+               if(erewards)
+               {
+                  console.debug("Total Eligible Rewards - " + erewards.length);
+                  var estore = Ext.StoreMgr.get('EligibleRewardsStore');
+                  estore.setData(erewards);
+               }
+               //
+               // Update Customer Rewards (Redemptions)
+               //
+               var rewards = metaData['rewards'];
+               if(rewards)
+               {
+                  console.debug("Total Redemption Rewards - " + rewards.length);
+                  var rstore = Ext.StoreMgr.get('RedemptionsStore');
+                  for(var i = 0; i < rewards.length; i++)
+                  {
+                     rewards[i]['venue_id'] = metaData['venue_id'];
+                  }
+                  rstore.setData(rewards);
+               }
+
+               //
+               // Winners' Circle'
+               //
+               var prizesCount = metaData['winners_count'];
+               if(prizesCount > 0)
+               {
+                  console.debug("Prizes won by customers of this Merchant this month - [" + prizesCount + "]");
+               }
+            }
+         },
+         grouper :
+         {
+            groupFn : function(record)
+            {
+               return record.getMerchant().get('name');
+            }
+         },
+         sorters : [
+         {
+            sorterFn : function(o1, o2)
+            {
+               var name1 = o1.getMerchant().get('name'), name2 = o2.getMerchant().get('name');
+               if(name1 < name2)//sort string ascending
+                  return -1
+               if(name1 > name2)
+                  return 1
+               return 0 //default return value (no sorting)
+            }
+         }]
+      });
+   },
+   initMerchantPrizeStore : function()
+   {
       Ext.regStore('MerchantPrizeStore',
       {
          model : 'Genesis.model.EarnPrize',
@@ -172,16 +308,6 @@ Ext.define('Genesis.controller.MainPage',
             }
          }
       });
-      //
-      // Store storing the Customer's Eligible Rewards at a Venue
-      // Used during Checkin
-      //
-      Ext.regStore('EligibleRewardsStore',
-      {
-         model : 'Genesis.model.EligibleReward',
-         autoLoad : false
-      });
-      console.log("MainPage Controller Init");
    },
    // --------------------------------------------------------------------------
    // MainPage
@@ -324,10 +450,6 @@ Ext.define('Genesis.controller.MainPage',
    },
    onFacebookTap : function(b, e, eOpts)
    {
-      if(!Ext.StoreMgr.get('CustomerStore'))
-      {
-         this.loginCommon();
-      }
       //
       // Login to Facebook
       //
@@ -355,119 +477,6 @@ Ext.define('Genesis.controller.MainPage',
    // --------------------------------------------------------------------------
    // SignIn and CreateAccount Page
    // --------------------------------------------------------------------------
-   loginCommon : function()
-   {
-      var local = window.localStorage;
-
-      Ext.regStore('CustomerStore',
-      {
-         model : 'Genesis.model.Customer',
-         autoLoad : false,
-         pageSize : 1000,
-         listeners :
-         {
-            scope : this,
-            "load" : function(store, records, successful, operation, eOpts)
-            {
-               if(successful)
-               {
-                  var vport = this.getViewPortCntlr();
-                  vport.setLoggedIn(true);
-                  this.getViewport().reset(this);
-                  vport.onFeatureTap('MainPage');
-               }
-            },
-            'metachange' : function(store, proxy, eOpts)
-            {
-               // Load Prizes into DataStore
-               var metaData = proxy.getReader().metaData;
-
-               //
-               // Update MerchantPrizeStore
-               //
-               var prizes = metaData['prizes'];
-               if(prizes)
-               {
-                  console.debug("Total Prizes - " + prizes.length);
-                  for(var i = 0; i < prizes.length; i++)
-                  {
-                     //
-                     // CustomerReward's Model rootProperty is "data"
-                     //
-                     prizes[i].reward =
-                     {
-                        data : prizes[i].reward
-                     }
-                  }
-                  Ext.StoreMgr.get('MerchantPrizeStore').setData(prizes);
-               }
-
-               //
-               // Update Authentication Token
-               //
-               var authToken = metaData['auth_token'];
-               if(authToken)
-               {
-                  console.debug("AuthToken - " + authToken)
-                  local.setItem('authToken', authToken);
-               }
-
-               //
-               // Update Eligible Rewards
-               //
-               var erewards = metaData['eligible_rewards'];
-               if(erewards)
-               {
-                  console.debug("Total Eligible Rewards - " + erewards.length);
-                  var estore = Ext.StoreMgr.get('EligibleRewardsStore');
-                  estore.setData(erewards);
-               }
-               //
-               // Update Customer Rewards (Redemptions)
-               //
-               var rewards = metaData['rewards'];
-               if(rewards)
-               {
-                  console.debug("Total Redemption Rewards - " + rewards.length);
-                  var rstore = Ext.StoreMgr.get('RedemptionsStore');
-                  for(var i = 0; i < rewards.length; i++)
-                  {
-                     rewards[i]['venue_id'] = metaData['venue_id'];
-                  }
-                  rstore.setData(rewards);
-               }
-
-               //
-               // Winners' Circle'
-               //
-               var prizesCount = metaData['winners_count'];
-               if(prizesCount > 0)
-               {
-                  console.debug("Prizes won by customers of this Merchant this month - [" + prizesCount + "]");
-               }
-            }
-         },
-         grouper :
-         {
-            groupFn : function(record)
-            {
-               return record.getMerchant().get('name');
-            }
-         },
-         sorters : [
-         {
-            sorterFn : function(o1, o2)
-            {
-               var name1 = o1.getMerchant().get('name'), name2 = o2.getMerchant().get('name');
-               if(name1 < name2)//sort string ascending
-                  return -1
-               if(name1 > name2)
-                  return 1
-               return 0 //default return value (no sorting)
-            }
-         }]
-      });
-   },
    onCreateAccountSubmit : function(b, e, eOpts)
    {
       var account = this.getCreateAccount();
@@ -501,6 +510,8 @@ Ext.define('Genesis.controller.MainPage',
 
          if(response)
          {
+            response = Ext.decode(response);
+            
             var birthday = response.birthday.split('/');
             birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1];
             params = Ext.apply(params,
@@ -515,10 +526,6 @@ Ext.define('Genesis.controller.MainPage',
          }
 
          Customer['setCreateAccountUrl']();
-         if(!Ext.StoreMgr.get('CustomerStore'))
-         {
-            this.loginCommon();
-         }
          Ext.StoreMgr.get('CustomerStore').load(
          {
             jsonData :
@@ -546,10 +553,6 @@ Ext.define('Genesis.controller.MainPage',
          };
       }
       Customer['setLoginUrl']();
-      if(!Ext.StoreMgr.get('CustomerStore'))
-      {
-         this.loginCommon();
-      }
       Ext.StoreMgr.get('CustomerStore').load(
       {
          params : params,
@@ -572,12 +575,12 @@ Ext.define('Genesis.controller.MainPage',
          Ext.device.Notification.show(
          {
             title : 'Oops',
-            message : signInFailMsg(label + ' ' + field.getMessage() + Genesis.constants.addCRLF())
+            message : signInFailMsg(label + ' ' + field.getMessage())
          });
       }
       else
       {
-         this.onSign(values.username, values.password);
+         this.onSignIn(values.username, values.password);
       }
    },
    onCreateActivate : function(c, eOpts)
@@ -586,6 +589,7 @@ Ext.define('Genesis.controller.MainPage',
       var response = fb.getItem('fbResponse') || null;
       if(response)
       {
+         response = Ext.decode(response);
          var form = this.getCreateAccount();
          form.setValues(
          {

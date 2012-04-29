@@ -276,7 +276,7 @@ Ext.define('Genesis.controller.Viewport',
       var local = window.localStorage;
       var app = this.getApplication();
       var controller = app.getController('MainPage');
-      this.setLoggedIn((local.getItem('authToken')) ? true : false);
+      this.setLoggedIn((local.getItem('auth_code')) ? true : false);
       if(this.getLoggedIn())
       {
          if(local.getItem('currFbId') > 0)
