@@ -56,6 +56,7 @@ class Api::V1::ChallengesController < ApplicationController
     Customer.transaction do
       begin
         if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
+          data = String.random_alphanumeric
           iv = String.random_alphanumeric
           auth_data = String.random_alphanumeric
         else
@@ -63,12 +64,12 @@ class Api::V1::ChallengesController < ApplicationController
           iv = data[0]
           auth_data = data[1]
         end
-        if is_challenge_satisfied?(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && authenticated?(iv, auth_data, @venue.auth_code)))
+        if is_challenge_satisfied?(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && authenticated?(data, iv, auth_data, @venue.auth_code)))
           if not challenge_limit_reached?(@challenge)
             record = EarnRewardRecord.new(
               :challenge_id => @challenge.id,
               :venue_id => @venue.id,
-              :auth_data => auth_data,
+              :data => data,
               :points => @challenge.points,
               :created_ts => Time.now
             )
@@ -94,20 +95,26 @@ class Api::V1::ChallengesController < ApplicationController
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => [t("api.challenges.complete_failure")] } }
         end
+      rescue StandardError => e
+        logger.error("Exception: " + e.message)
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => [t("api.challenges.complete_failure")] } }
+        end  
       end
     end
   end
   
   private
   
-  def authenticated?(iv, auth_data, auth_code)
+  def authenticated?(data, iv, auth_data, auth_code)
     if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
       return true
     else
       aes = Aes.new('128', 'CBC')
       decrypted = aes.decrypt(auth_data, auth_code, iv)
-      data = JSON.parse(decrypted)
-      if (data[:expiry_date] >= Date.today) && (not EarnRewardRecord.first(:auth_data => auth_data).nil?)
+      decrypted_data = JSON.parse(decrypted)
+      if (decrypted_data[:expiry_date] >= Date.today) && (not EarnRewardRecord.first(:data => data).nil?)
         return true
       end
       return false

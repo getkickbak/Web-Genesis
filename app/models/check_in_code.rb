@@ -16,14 +16,18 @@ class CheckInCode
   
   belongs_to :venue
   
-  def update_qr_code
-    now = Time.now
-    new_auth_code = "#{self.venue.merchant.id}-#{rand(1000)}"
-    self.auth_code = new_auth_code
-    self.qr_code = self.class.generate_qr_code(self.venue.merchant.id, new_auth_code)
-    self.qr_code_img = generate_qr_code_image(self.venue.merchant.id)
-    self.update_ts = now
-    save
+  def self.generate_qr_code(merchant_id, code)
+    qr = RQRCode::QRCode.new( code, :size => 4, :level => :h )
+    png = qr.to_img.resize(85,85) 
+    filename = "#{code}.png"
+    AWS::S3::S3Object.store(
+      ::Common.generate_merchant_qr_code_file_path(merchant_id,filename), 
+      png.to_string,
+      APP_PROP["AMAZON_FILES_BUCKET"], 
+      :content_type => 'image/png', 
+      :access => :public_read
+    )
+    return filename
   end
   
   def generate_qr_code_image(merchant_id)
@@ -43,21 +47,5 @@ class CheckInCode
       :access => :public_read
     )
     return filename 
-  end
-  
-  private
-  
-  def self.generate_qr_code(merchant_id, code)
-    qr = RQRCode::QRCode.new( code, :size => 4, :level => :h )
-    png = qr.to_img.resize(85,85) 
-    filename = "#{code}.png"
-    AWS::S3::S3Object.store(
-      ::Common.generate_merchant_qr_code_file_path(merchant_id,filename), 
-      png.to_string,
-      APP_PROP["AMAZON_FILES_BUCKET"], 
-      :content_type => 'image/png', 
-      :access => :public_read
-    )
-    return filename
   end
 end

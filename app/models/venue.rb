@@ -17,7 +17,7 @@ class Venue
   property :photo, String, :auto_validation => false
   property :latitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :longitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
-  property :auth_code, String, :unique_index => true, :required => true, :default => ""
+  property :auth_code, String, :required => true, :default => ""
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime

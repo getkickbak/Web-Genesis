@@ -25,6 +25,7 @@ module Business
     def new
       authorize! :create, Venue
       @venue = Venue.new
+      @venue[:name] = current_merchant.name
       @venue[:description] = current_merchant.description
       
       respond_to do |format|

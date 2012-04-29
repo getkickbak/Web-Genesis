@@ -4,8 +4,7 @@ class Customer
   include DataMapper::Resource
 
   property :id, Serial
-  property :auth_code, String, :required => true, :default => ""
-  property :qr_code, String, :required => true, :default => ""
+  property :auth_code, String, :unique_index => true, :required => true, :default => ""
   property :points, Integer, :default => 0
   property :visits, Integer, :default => 0
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -19,10 +18,9 @@ class Customer
   
   def self.create(merchant, user)
     now = Time.now
-    auth_code = String.random_alphanumeric
+    auth_code = "#{String.random_alphanumeric}-#{merchant.id}-#{user.id}"
     customer = Customer.new
     customer[:auth_code] = auth_code
-    customer[:qr_code] = generate_qr_code(merchant.id, auth_code)
     customer[:created_ts] = now
     customer[:update_ts] = now
     customer.merchant = merchant
@@ -44,24 +42,7 @@ class Customer
     now = Time.now
     new_auth_code = String.random_alphanumeric
     self.auth_code = new_auth_code
-    self.qr_code = self.class.generate_qr_code(self.merchant.id, new_auth_code)
     self.update_ts = now
     save  
-  end
- 
-  private
-  
-  def self.generate_qr_code(merchant_id, auth_code)
-    qr = RQRCode::QRCode.new( auth_code, :size => 4, :level => :h )
-    png = qr.to_img.resize(200,200)
-    filename = "#{auth_code}.png"
-    AWS::S3::S3Object.store(
-      ::Common.generate_merchant_qr_code_file_path(merchant_id,filename), 
-      png.to_string,
-      APP_PROP["AMAZON_FILES_BUCKET"], 
-      :content_type => 'image/png', 
-      :access => :public_read
-    )
-    return filename
   end
 end

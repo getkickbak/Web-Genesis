@@ -113,7 +113,7 @@ class Api::V1::VenuesController < ApplicationController
         format.json { render :json => { :success => false, :message => [t("api.photo_blank")] } }
       end
     else
-      filename = "#{String.random_alphanumeric}.jpg"
+      filename = "#{String.random_alphanumeric(32)}.jpg"
       AWS::S3::S3Object.store(
         ::Common.generate_temp_file_path(filename), 
         params[:image],
