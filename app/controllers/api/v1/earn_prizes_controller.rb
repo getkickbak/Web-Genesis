@@ -32,10 +32,14 @@ class Api::V1::EarnPrizesController < ApplicationController
           @earn_prize.redeemed = true
           @earn_prize.update_ts = Time.now
           @earn_prize.save
+          aes = Aes.new('128', 'CBC')
+          iv = String.random_alphanumeric
+          data = { :expiry_date => Date.today }.to_json
+          encrypted_data = "#{iv}$#{aes.encrypt(data, @venue.auth_code, iv)}"
           respond_to do |format|
             #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => true } }
+            format.json { render :json => { :success => true, :metaData => { :data => encrypted_data } } }
           end
         else
           respond_to do |format|
