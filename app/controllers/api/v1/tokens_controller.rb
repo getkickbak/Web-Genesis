@@ -32,7 +32,7 @@ class Api::V1::TokensController < ApplicationController
     @user.ensure_authentication_token!
     @user.save!
 
-    if not @user.valid_password?(password)
+    if auth_tokien.nil? && (not @user.valid_password?(password))
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => [t("api.tokens.create_invalid_info")] } }
