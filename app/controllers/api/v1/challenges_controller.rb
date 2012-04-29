@@ -130,6 +130,8 @@ class Api::V1::ChallengesController < ApplicationController
         return true
       end
       return false
+    elsif challenge.type.value == "vip"
+      return false  
     end
     return true
   end
