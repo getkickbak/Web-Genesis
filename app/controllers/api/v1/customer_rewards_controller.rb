@@ -14,6 +14,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
+    Time.zone = @venue.time_zone
     Customer.transaction do
       begin
         reward = CustomerReward.first(:id => params[:id], CustomerReward.merchant.id => @venue.merchant.id)

@@ -21,13 +21,16 @@ class Api::V1::EarnPrizesController < ApplicationController
   end
   
   def redeem
+    @venue = Venue.get(params[:venue_id]) || not_found
     @earn_prize = EarnPrize.get(params[:id]) || not_found
     authorize! :update, @earn_prize
-    
+ 
+    Time.zone = @venue.time_zone   
     EarnPrize.transaction do
       begin
         if not @earn_prize.redeemed
           @earn_prize.redeemed = true
+          @earn_prize.update_ts = Time.now
           @earn_prize.save
           respond_to do |format|
             #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }

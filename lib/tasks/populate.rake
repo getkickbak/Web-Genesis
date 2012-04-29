@@ -3,6 +3,7 @@ namespace :db do
   task :populate => :environment do
     require 'faker'
 
+    Time.zone = "Eastern Time (US & Canada)"
     now = Time.now
     puts "Creating Users..."
     users = []
@@ -42,6 +43,7 @@ namespace :db do
         :state => "Ontario",
         :country => "Canada",
         :zipcode => "M5C 3C5",
+        :time_zone => "Eastern Time (US & Canada)",
         :phone => "(416) 849-1808",
         :website => "http://www.cavacchio.ca",
         :latitude => 43.649647,
@@ -55,6 +57,7 @@ namespace :db do
         :state => "Ontario",
         :country => "Canada",
         :zipcode => "M56 1E4",
+        :time_zone => "Eastern Time (US & Canada)",
         :phone => "(416) 703-3377",
         :website => "http://www.marios.ca",
         :latitude => 43.647224,
@@ -68,6 +71,7 @@ namespace :db do
         :state => "Ontario",
         :country => "Canada",
         :zipcode => "M6S 1R2",
+        :time_zone => "Eastern Time (US & Canada)",
         :phone => "(416) 763-2222",
         :website => "http://www.angelospizza.ca",
         :latitude => 43.649274,
@@ -81,6 +85,7 @@ namespace :db do
         :state => "Ontario",
         :country => "Canada",
         :zipcode => "M4W 2L2",
+        :time_zone => "Eastern Time (US & Canada)",
         :phone => "(416) 551-9890",
         :website => "http://www.dynasty.ca",
         :latitude => 43.678705,
@@ -94,6 +99,7 @@ namespace :db do
         :state => "Ontario",
         :country => "Canada",
         :zipcode => "M5V 3T4",
+        :time_zone => "Eastern Time (US & Canada)",
         :phone => "(416) 935-0400",
         :website => "http://www.littlejerusalem.ca",
         :latitude => 43.645159,
@@ -107,6 +113,7 @@ namespace :db do
         :state => "Ontario",
         :country => "Canada",
         :zipcode => "M5E 1C7",
+        :time_zone => "Eastern Time (US & Canada)",
         :phone => "(416) 504-9990",
         :website => "http://www.koreanhouse.ca",
         :latitude => 43.648824,
@@ -120,6 +127,7 @@ namespace :db do
         :state => "Ontario",
         :country => "Canada",
         :zipcode => "M4Y 2H6",
+        :time_zone => "Eastern Time (US & Canada)",
         :phone => "(647) 348-6520",
         :website => "http://www.namasaki.ca",
         :latitude => 43.66767,
@@ -133,6 +141,7 @@ namespace :db do
         :state => "Ontario",
         :country => "Canada",
         :zipcode => "M5E 1M2",
+        :time_zone => "Eastern Time (US & Canada)",
         :phone => "(416) 504-9463",
         :website => "http://www.clintonsbarngrill.ca",
         :latitude => 43.648156,
@@ -146,6 +155,7 @@ namespace :db do
         :state => "Ontario",
         :country => "Canada",
         :zipcode => "M5T 2M2",
+        :time_zone => "Eastern Time (US & Canada)",
         :phone => "(647) 343-1932",
         :website => "http://www.nataRajh.ca",
         :latitude => 43.656975,
@@ -159,6 +169,7 @@ namespace :db do
         :state => "Ontario",
         :country => "Canada",
         :zipcode => "M5A 1E1",
+        :time_zone => "Eastern Time (US & Canada)",
         :phone => "(416) 363-8370",
         :website => "http://www.quesadilla.ca",
         :latitude => 43.650221,
@@ -226,6 +237,7 @@ namespace :db do
           :state => merchant_info[n][:state],
           :zipcode => merchant_info[n][:zipcode],
           :country => merchant_info[n][:country],
+          :time_zone => merchant_info[n][:time_zone],
           :phone => merchant_info[n][:phone],
           :website => merchant_info[n][:website],
           :latitude => merchant_info[n][:latitude],

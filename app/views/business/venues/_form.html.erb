@@ -11,6 +11,7 @@
 		<%= f.input :state %>
 		<%= f.input :zipcode %>
 		<%= f.input :country %>
+		<%= f.input :time_zone, :as => :time_zone %>
 		<%= f.input :phone %>
 		<%= f.input :website %>
 		<%= f.input :longitude, :as => :hidden, :input_html => { :value => @venue.longitude } %>

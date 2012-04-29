@@ -11,6 +11,7 @@ class Venue
   property :state, String, :required => true, :default => ""
   property :zipcode, String, :required => true, :default => ""
   property :country, String, :required => true, :default => ""
+  property :time_zone, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
   property :website, String, :required => true, :default => "", :format => :url 
   # Disable auto-validation http://j.mp/gMORhy 
@@ -25,7 +26,7 @@ class Venue
   
   attr_accessor :type_id, :distance
   
-  attr_accessible :type_id, :name, :description, :address, :city, :state, :zipcode, :country, :phone, :website, :latitude, :longitude, :auth_code
+  attr_accessible :type_id, :name, :description, :address, :city, :state, :zipcode, :country, :time_zone, :phone, :website, :latitude, :longitude, :auth_code
   
   belongs_to :merchant
   has 1, :venue_to_type, :constraint => :destroy
@@ -52,6 +53,7 @@ class Venue
       :state => venue_info[:state].strip,
       :zipcode => venue_info[:zipcode].strip,
       :country => venue_info[:country],
+      :time_zone => venue_info[:time_zone],
       :phone => venue_info[:phone].strip,
       :website => venue_info[:website].strip,
       :latitude => venue_info[:latitude].to_f,
@@ -131,6 +133,7 @@ class Venue
     self.state = venue_info[:state]
     self.zipcode = venue_info[:zipcode]
     self.country = venue_info[:country]
+    self.time_zone = venue_info[:time_zone]
     self.phone = venue_info[:phone]
     self.website = venue_info[:website]
     self.longitude = venue_info[:longitude].to_f
