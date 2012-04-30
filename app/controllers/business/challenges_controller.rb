@@ -75,9 +75,9 @@ module Business
             venues = []
           end
           if type.value == 'menu'  
-            params[:challenge][:description] = (t "challenge.type.menu.description") % [params[:challenge][:name]]
+            params[:challenge][:description] = ((t "challenge.type.menu.description") % [params[:challenge][:name]])
           elsif type.value == 'vip'
-            params[:challenge][:description] = (t "challenge.type.vip.description") % [params[:challenge][:data][:visits]]
+            params[:challenge][:description] = ((t "challenge.type.vip.description") % [params[:challenge][:data][:visits]])
           end
           @challenge = Challenge.create(current_merchant, type, params[:challenge], venues)
           respond_to do |format|
@@ -158,9 +158,9 @@ module Business
             venues = []
           end
           if type.value == 'menu'  
-            params[:challenge][:description] = (t "challenge.type.menu.description") % [params[:challenge][:name]]
+            params[:challenge][:description] = ((t "challenge.type.menu.description") % [params[:challenge][:name]])
           elsif type.value == 'vip'
-            params[:challenge][:description] = (t "challenge.type.vip.description") % [params[:challenge][:data][:visits]]
+            params[:challenge][:description] = ((t "challenge.type.vip.description") % [params[:challenge][:data][:visits]])
           end
           @challenge.update(type, params[:challenge], venues)
           respond_to do |format|
