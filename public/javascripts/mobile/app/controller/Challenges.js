@@ -175,7 +175,7 @@ Ext.define('Genesis.controller.Challenges',
                               params :
                               {
                                  venue_id : venueId,
-                                 merchant_id : merchantId,
+                                 //merchant_id : merchantId,
                                  latitude : position.coords.latitude,
                                  longitude : position.coords.longitude,
                                  auth_code : qrcode
@@ -470,7 +470,7 @@ Ext.define('Genesis.controller.Challenges',
             params :
             {
                venue_id : venueId,
-               merchant_id : merchantId,
+               //merchant_id : merchantId,
                latitude : position.coords.latitude,
                longitude : position.coords.longitude,
                'upload_token' : metaData['upload_token']
