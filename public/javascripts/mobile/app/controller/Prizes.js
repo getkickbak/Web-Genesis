@@ -355,8 +355,8 @@ Ext.define('Genesis.controller.Prizes',
          },
          params :
          {
-            venue_id : venueId,
-            merchant_id : merchantId
+            venue_id : venueId
+            //merchant_id : merchantId
          },
          callback : function(records, operation)
          {
