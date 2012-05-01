@@ -1,8 +1,8 @@
-Ext.define('Genesis.view.RedemptionsServer',
+Ext.define('Genesis.view.client.Redemptions',
 {
    extend : 'Genesis.view.ViewBase',
    requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RedemptionsPtsItem'],
-   alias : 'widget.redemptionsserverview',
+   alias : 'widget.clientredemptionsview',
    config :
    {
       title : 'Redemptions',
@@ -84,15 +84,15 @@ Ext.define('Genesis.view.RedemptionsServer',
          cls : 'redemptionsList separator_pad',
          tag : 'redemptionsList',
          /*
-          indexBar :
-          {
-          docked : 'right',
-          overlay : true,
-          alphabet : false,
-          centered : false,
-          letters : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
-          },
-          */
+         indexBar :
+         {
+         docked : 'right',
+         overlay : true,
+         alphabet : false,
+         centered : false,
+         letters : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
+         },
+         */
          //pinHeaders : true,
          grouped : true,
          // @formatter:off
@@ -103,7 +103,7 @@ Ext.define('Genesis.view.RedemptionsServer',
             {
                if(!values.photo)
                {
-                  return Genesis.view.RedemptionsServer.getPhoto(values['type']);
+                  return Genesis.view.client.Redemptions.getPhoto(values['type']);
                }
                return values.photo.url;
             },

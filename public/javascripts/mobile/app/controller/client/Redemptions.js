@@ -1,16 +1,15 @@
-Ext.define('Genesis.controller.RedemptionsClient',
+Ext.define('Genesis.controller.client.Redemptions',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
    statics :
    {
-      redemption_path : '/redemptionClient'
+      clientRedemption_path : '/clientRedemptions'
    },
-   xtype : 'redemptionsClientCntlr',
+   xtype : 'clientRedemptionsCntlr',
    models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
-      prizeCheckMsg : 'Find out if you won a PRIZE!',
       refs :
       {
          backButton : 'viewportview button[text=Close]',
@@ -19,13 +18,13 @@ Ext.define('Genesis.controller.RedemptionsClient',
          //
          redemptions :
          {
-            selector : 'redemptionsclientview',
+            selector : 'clientredemptionsview',
             autoCreate : true,
-            xtype : 'redemptionsclientview'
+            xtype : 'clientredemptionsview'
          },
-         redemptionsList : 'redemptionsclientview list[tag=redemptionsList]',
-         redemptionsPts : 'redemptionsclientview component[tag=points]',
-         redemptionsPtsEarnPanel : 'redemptionsclientview dataview[tag=ptsEarnPanel]'
+         redemptionsList : 'clientredemptionsview list[tag=redemptionsList]',
+         redemptionsPts : 'clientredemptionsview component[tag=points]',
+         redemptionsPtsEarnPanel : 'clientredemptionsview dataview[tag=ptsEarnPanel]'
       },
       control :
       {
@@ -76,7 +75,7 @@ Ext.define('Genesis.controller.RedemptionsClient',
             }
          }
       });
-      console.log("RedemptionsClient Init");
+      console.log("Client Redemptions Init");
    },
    // --------------------------------------------------------------------------
    // Redemptions Page

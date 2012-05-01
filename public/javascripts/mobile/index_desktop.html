@@ -146,8 +146,8 @@
       <!--
       <script type="text/javascript" src="app/view/Rewards.js"></script>
       -->
-      <script type="text/javascript" src="app/view/RewardsClient.js"></script>
-      <script type="text/javascript" src="app/view/RedemptionsClient.js"></script>
+      <script type="text/javascript" src="app/view/client/Rewards.js"></script>
+      <script type="text/javascript" src="app/view/client/Redemptions.js"></script>
       <script type="text/javascript" src="app/view/Prizes.js"></script>
       <!-- Controllers -->
       <script type="text/javascript" src="app/controller/ControllerBase.js"></script>
@@ -160,8 +160,8 @@
       <!--
       <script type="text/javascript" src="app/controller/Rewards.js"></script>
       -->
-      <script type="text/javascript" src="app/controller/RewardsClient.js"></script>
-      <script type="text/javascript" src="app/controller/RedemptionsClient.js"></script>
+      <script type="text/javascript" src="app/controller/client/Rewards.js"></script>
+      <script type="text/javascript" src="app/controller/client/Redemptions.js"></script>
       <script type="text/javascript" src="app/controller/Accounts.js"></script>
       <script type="text/javascript" src="app/controller/Prizes.js"></script>
       <!-- External Libs -->
@@ -213,11 +213,8 @@
                // Main Page when the user has checked-in before
                'LoginPage', 'SignInPage', 'MainPage',
                //'MerchantAccountBrowse','MerchantAcountPage',
-               'MerchantAccount', 'MerchantDetails',
-               'RewardsClient', 'RedemptionsClient', 'Accounts', 'Prizes', 'SettingsPage', 'Viewport'],
-               controllers : ['Viewport', 'MainPage', 'Challenges', 'Merchants', 'RewardsClient', 'RedemptionsClient', 'Accounts',
-               //'Coupons','Newsfeeds', 'QrCodeDisplay',
-               'Settings', 'Checkins', 'Prizes'],
+               'MerchantAccount', 'MerchantDetails', 'client.Rewards', 'client.Redemptions', 'Accounts', 'Prizes', 'SettingsPage', 'Viewport'],
+               controllers : ['Viewport', 'MainPage', 'Challenges', 'Merchants', 'client.Rewards', 'client.Redemptions', 'Accounts', 'Settings', 'Checkins', 'Prizes'],
                stores : [],
                launch : function()
                {

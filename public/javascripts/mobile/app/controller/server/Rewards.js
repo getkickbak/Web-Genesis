@@ -1,12 +1,12 @@
-Ext.define('Genesis.controller.RewardsServer',
+Ext.define('Genesis.controller.server.Rewards',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
    statics :
    {
-      rewardsServer_path : '/rewardsServer'
+      serverRewards_path : '/serverRewards'
    },
-   xtype : 'rewardsServerCntlr',
+   xtype : 'serverRewardsCntlr',
    models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
@@ -18,18 +18,18 @@ Ext.define('Genesis.controller.RewardsServer',
          //
          rewards :
          {
-            selector : 'rewardsserverview',
+            selector : 'serverrewardsview',
             autoCreate : true,
-            xtype : 'rewardsserverview'
+            xtype : 'serverrewardsview'
          },
-         rewardsContainer : 'rewardsserverview container[tag=rewards]',
-         price : 'rewardsserverview textfield',
-         qrcode : 'rewardsserverview component[tag=qrcode]',
+         rewardsContainer : 'serverrewardsview container[tag=rewards]',
+         price : 'serverrewardsview textfield',
+         qrcode : 'serverrewardsview component[tag=qrcode]',
          infoBtn : 'viewportview button[tag=info]'
       },
       control :
       {
-         rewardsServer :
+         rewards :
          {
             activate : 'onActivate',
             deactivate : 'onDeactivate'
@@ -38,15 +38,15 @@ Ext.define('Genesis.controller.RewardsServer',
          {
             activeitemchange : 'onContainerActivate'
          },
-         'rewardsserverview container[tag=dialpad] button' :
+         'serverrewardsview container[tag=dialpad] button' :
          {
             tap : 'onCalcBtnTap'
          },
-         'rewardsserverview container[tag=rewardsMainCalculator] button[tag=showQrCode]' :
+         'serverrewardsview container[tag=rewardsMainCalculator] button[tag=showQrCode]' :
          {
             tap : 'onShowQrCodeTap'
          },
-         'rewardsserverview container[tag=qrcodeContainer] button[tag=done]' :
+         'serverrewardsview container[tag=qrcodeContainer] button[tag=done]' :
          {
             tap : 'onDoneTap'
          }
@@ -54,7 +54,7 @@ Ext.define('Genesis.controller.RewardsServer',
    },
    init : function()
    {
-      console.log("Rewards Calculator Server Init");
+      console.log("Server Rewards Init");
    },
    // --------------------------------------------------------------------------
    // Rewards Page

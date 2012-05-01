@@ -227,13 +227,13 @@ Ext.define('Genesis.controller.Viewport',
    },
    onRewardsButtonTap : function(b, e, eOpts)
    {
-      this.onFeatureTap('RewardsClient', 'rewards');
-      console.log("Going to RewardsClient Page ...");
+      this.onFeatureTap('client.Rewards', 'rewards');
+      console.log("Going to Client Rewards Page ...");
    },
    onRedemptionsButtonTap : function(b, e, eOpts)
    {
-      this.onFeatureTap('RedemptionsClient', 'redemptions');
-      console.log("Going to RedemptionsClient Page ...");
+      this.onFeatureTap('client.Redemptions', 'redemptions');
+      console.log("Going to Client Redemptions Page ...");
    },
    onPrizesButtonTap : function(b, e, eOpts)
    {

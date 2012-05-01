@@ -10,7 +10,6 @@ Ext.define('Genesis.controller.Rewards',
    models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
-      prizeCheckMsg : 'Find out if you won a PRIZE!',
       refs :
       {
          backButton : 'viewportview button[text=Close]',
@@ -69,6 +68,7 @@ Ext.define('Genesis.controller.Rewards',
          }
       }
    },
+   prizeCheckMsg : 'Find out if you won a PRIZE!',
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
    checkinFirstRewardsMsg : 'You need to Check-In first before you are elibigle to Earn Rewards',
    checkinFirstRedemptionsMsg : 'You need to Check-In first before you are elibigle for Redemptions',

@@ -4,13 +4,13 @@
          "name": "Rewards",
          "photo_url": "resources/img/sprites/rewards.jpg",
          "desc": "Rewards",
-         "pageCntlr": "RewardsServer",
+         "pageCntlr": "server.Rewards",
          "subFeature": "rewards"
       }, {
          "name": "Redemptions",
          "photo_url": "resources/img/sprites/redemptions.jpg",
          "desc": "Redemptions",
-         "pageCntlr": "MainPage",
+         "pageCntlr": "server.Redemptions",
          "subFeature": "redemptions"
       }
    ]

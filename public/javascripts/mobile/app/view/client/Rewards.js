@@ -1,8 +1,8 @@
-Ext.define('Genesis.view.RewardsClient',
+Ext.define('Genesis.view.client.Rewards',
 {
    extend : 'Genesis.view.ViewBase',
    requires : ['Ext.Toolbar'],
-   alias : 'widget.rewardsclientview',
+   alias : 'widget.clientrewardsview',
    config :
    {
       title : 'Earn Rewards',

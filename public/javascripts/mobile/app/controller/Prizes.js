@@ -126,7 +126,7 @@ Ext.define('Genesis.controller.Prizes',
                   link : Genesis.constants.site,
                   caption : Genesis.constants.site,
                   description : merchant.get('desc'),
-                  piture : Genesis.view.RewardsClient.getPhoto(records[0].getCustomerReward().get('type')),
+                  piture : Genesis.view.client.Rewards.getPhoto(records[0].getCustomerReward().get('type')),
                   message : 'I just won a prize visiting ' + merchant.get('name') + '!'
                }, function(response)
                {

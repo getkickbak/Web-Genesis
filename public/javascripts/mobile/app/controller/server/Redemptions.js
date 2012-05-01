@@ -1,0 +1,146 @@
+Ext.define('Genesis.controller.server.Redemptions',
+{
+   extend : 'Genesis.controller.ControllerBase',
+   requires : ['Ext.data.Store'],
+   statics :
+   {
+      serverRedemption_path : '/serverRedemptions'
+   },
+   xtype : 'serverRedemptionsCntlr',
+   models : ['PurchaseReward', 'CustomerReward'],
+   config :
+   {
+      refs :
+      {
+         backButton : 'viewportview button[text=Close]',
+         //
+         // Redemptions
+         //
+         redemptions :
+         {
+            selector : 'serverredemptionsview',
+            autoCreate : true,
+            xtype : 'serverredemptionsview'
+         }
+      },
+      control :
+      {
+         redemptions :
+         {
+            activate : 'onActivate',
+            deactivate : 'onDeactivate'
+         }
+      }
+   },
+   //orderTitle : 'Rewards List',
+   //checkoutTitle : 'Check Out',
+   init : function()
+   {
+      console.log("Server Redemptions Init");
+   },
+   // --------------------------------------------------------------------------
+   // Redemptions Page
+   // --------------------------------------------------------------------------
+   onActivate : function()
+   {
+   },
+   onDeactivate : function()
+   {
+   },
+   onRedeemVerification : function()
+   {
+      var me = this;
+      var verify = function()
+      {
+         me.scanQRCode(
+         {
+            callback : function(encrypted)
+            {
+               var privkey = CryptoJS.enc.Hex.parse(me.getPrivKey());
+               if(!encrypted)
+               {
+                  if(Ext.isDefined(encrypted))
+                  {
+                     var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
+
+                     encrypted = iv + '$' + CryptoJS.AES.encrypt(Ext.encode(
+                     {
+                        ":expirydate" : new Date().addDays(1).format('Y-M-d')
+                     }), privkey,
+                     {
+                        iv : iv
+                     });
+                  }
+                  else
+                  {
+                     return;
+                  }
+               }
+
+               console.log("Encrypted Code :\n" + encrypted);
+               console.log("Encrypted Code Length: " + encrypted.length);
+
+               var message = encrypted.split('$');
+               var decrypted = Ext.decode(CryptoJS.enc.Utf8.stringify((CryptoJS.AES.decrypt(message[1], privkey,
+                  {
+                     iv : iv
+                  }))));
+
+               var expiryDate = decrypted[":expirydate"];
+
+               if((Date.parse(expiryDate) - Date.parse(new Date().format('Y-M-d'))) > 0)
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Success!',
+                     message : 'Authorization Code is Valid'
+                  });
+               }
+               else
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Error!',
+                     message : 'Authorization Code is Invalid'
+                  });
+               }
+            }
+         });
+      }
+      Ext.device.Notification.show(
+      {
+         title : 'Redemption Verification',
+         message : 'Proceed to scan your customer\'s Authorization Code',
+         buttons : ['OK', 'Cancel'],
+         callback : function(btn)
+         {
+            if(btn == 'ok')
+            {
+               verify();
+            }
+         }
+      });
+   },
+   // --------------------------------------------------------------------------
+   // Base Class Overrides
+   // --------------------------------------------------------------------------
+   getMainPage : function()
+   {
+      return this.getRedemptios();
+   },
+   openPage : function(subFeature)
+   {
+      switch(subFeature)
+      {
+         case 'redemptions' :
+         {
+            this.onRedeemVerification();
+            break;
+         }
+      }
+   },
+   isOpenAllowed : function()
+   {
+      return true;
+   }
+});

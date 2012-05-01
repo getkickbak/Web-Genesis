@@ -1,16 +1,15 @@
-Ext.define('Genesis.controller.RewardsClient',
+Ext.define('Genesis.controller.client.Rewards',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
    statics :
    {
-      rewardsClient_path : '/rewardsClient'
+      clientRewards_path : '/clientRewards'
    },
-   xtype : 'rewardsClientCntlr',
+   xtype : 'clientRewardsCntlr',
    models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
-      prizeCheckMsg : 'Find out if you won a PRIZE!',
       refs :
       {
          backButton : 'viewportview button[text=Close]',
@@ -19,12 +18,12 @@ Ext.define('Genesis.controller.RewardsClient',
          //
          rewards :
          {
-            selector : 'rewardsclientview',
+            selector : 'clientrewardsview',
             autoCreate : true,
-            xtype : 'rewardsclientview'
+            xtype : 'clientrewardsview'
          },
-         rewardsContainer : 'rewardsclientview container[tag=rewards]',
-         price : 'rewardsclientview textfield'
+         rewardsContainer : 'clientrewardsview container[tag=rewards]',
+         price : 'clientrewardsview textfield'
       },
       control :
       {
@@ -39,11 +38,12 @@ Ext.define('Genesis.controller.RewardsClient',
          }
       }
    },
+   prizeCheckMsg : 'Find out if you won a PRIZE!',
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
    checkinFirstRewardsMsg : 'You need to Check-In first before you are elibigle to Earn Rewards',
    init : function()
    {
-      console.log("Rewards Calculator Client Init");
+      console.log("Client Rewards Init");
    },
    getPointsMsg : function(points)
    {
@@ -51,7 +51,7 @@ Ext.define('Genesis.controller.RewardsClient',
    },
    getVipMsg : function(points)
    {
-      return 'You\'ve earned an additional ' + points + ' Points!' + Genesis.constants.addCRLF() + this.getPrizeCheckMsg();
+      return 'You\'ve earned an additional ' + points + ' Points!' + Genesis.constants.addCRLF() + this.prizeCheckMsg;
    },
    // --------------------------------------------------------------------------
    // Rewards Page
@@ -90,17 +90,6 @@ Ext.define('Genesis.controller.RewardsClient',
    earnPts : function(qrcode)
    {
       var me = this;
-      var allowedMsg = me.isOpenAllowed();
-
-      if(allowedMsg !== true)
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Error',
-            message : allowedMsg
-         });
-         return;
-      }
       var pstore = Ext.StoreMgr.get('MerchantPrizeStore')
       var viewport = me.getViewPortCntlr();
       var cvenue = viewport.getCheckinInfo().venue;
@@ -242,7 +231,7 @@ Ext.define('Genesis.controller.RewardsClient',
          message = me.getPointsMsg(metaData['points']);
          if(!metaData['vip_challenge'])
          {
-            message += Genesis.constants.addCRLF() + me.getPrizeCheckMsg();
+            message += Genesis.constants.addCRLF() + me.prizeCheckMsg;
          }
          Ext.device.Notification.show(
          {
@@ -275,6 +264,18 @@ Ext.define('Genesis.controller.RewardsClient',
       var me = this;
       //var container = me.getRewardsContainer();
       //var anim = container.getLayout().getAnimation();
+
+      var allowedMsg = me.isOpenAllowed();
+
+      if(allowedMsg !== true)
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Error',
+            message : allowedMsg
+         });
+         return;
+      }
 
       me.scanQRCode(
       {
@@ -331,7 +332,12 @@ Ext.define('Genesis.controller.RewardsClient',
    },
    isOpenAllowed : function()
    {
+      var viewport = this.getViewPortCntlr();
+      var cvenue = viewport.getCheckinInfo().venue;
+      var venue = viewport.getVenue();
+
       // VenueId can be found after the User checks into a venue
-      return ((this.getViewPortCntlr().getVenue()) ? true : this.checkinFirstRewardsMsg);
+      //return ((this.getViewPortCntlr().getVenue()) ? true : this.checkinFirstRewardsMsg);
+      return ((cvenue && venue && (cvenue.getId() == venue.getId())) ? true : this.checkinFirstRewardsMsg);
    }
 });

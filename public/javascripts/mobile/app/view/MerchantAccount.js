@@ -73,7 +73,7 @@ Ext.define('Genesis.view.MerchantAccount',
                {
                   if(!values.photo)
                   {
-                     return Genesis.view.RewardsClient.getPhoto(
+                     return Genesis.view.client.Rewards.getPhoto(
                      {
                         value : values['reward_type']
                      });
@@ -148,7 +148,7 @@ Ext.define('Genesis.view.MerchantAccount',
                   }
                   if(!values.photo)
                   {
-                     return Genesis.view.RewardsClient.getPhoto(
+                     return Genesis.view.client.Rewards.getPhoto(
                      {
                         value : values['reward_type']
                      });

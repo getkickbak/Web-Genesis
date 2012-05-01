@@ -40,7 +40,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
             {
                getPhoto : function(values)
                {
-                  return Genesis.view.RedemptionsClient.getPhoto(values['type']);
+                  return Genesis.view.client.Redemptions.getPhoto(values['type']);
                }
             })
          },

@@ -112,12 +112,14 @@
       <script type="text/javascript" src="app/view/ViewBase.js"></script>
       <script type="text/javascript" src="app/view/Viewport.js"></script>
       <script type="text/javascript" src="app/view/MainPage.js"></script>
-      <script type="text/javascript" src="app/view/RewardsServer.js"></script>
+      <script type="text/javascript" src="app/view/server/Rewards.js"></script>
+      <script type="text/javascript" src="app/view/server/Redemptions.js"></script>
       <!-- Controllers -->
       <script type="text/javascript" src="app/controller/ControllerBase.js"></script>
       <script type="text/javascript" src="app/controller/Viewport.js"></script>
       <script type="text/javascript" src="app/controller/MainPage.js"></script>
-      <script type="text/javascript" src="app/controller/RewardsServer.js"></script>
+      <script type="text/javascript" src="app/controller/server/Rewards.js"></script>
+      <script type="text/javascript" src="app/controller/server/Redemptions.js"></script>
       <!-- External Libs -->
    </head>
    <body>
@@ -156,8 +158,8 @@
                // 'PurchaseReward',
                //'SubDeal', 'User', 'UserProfile',
                //'Venue'],
-               views : ['RewardsServer', 'RedemptionsServer', 'MainPage', 'Viewport'],
-               controllers : ['Viewport', 'MainPage', 'RewardsServer'],
+               views : ['server.Rewards', 'server.Redemptions', 'MainPage', 'Viewport'],
+               controllers : ['Viewport', 'MainPage', 'server.Rewards', 'server.Redemptions'],
                stores : [],
                launch : function()
                {
