@@ -27,7 +27,8 @@
          "photo_url": "resources/img/sprites/main.jpg",
          "desc": "Main Menu for your Checked-in Venue",
          "pageCntlr": "MainPage",
-         "subFeature": "main"
+         "subFeature": "merchant",
+         "hide" : "true"
       }, {
          "name": "Prizes",
          "photo_url": "resources/img/sprites/prize.jpg",

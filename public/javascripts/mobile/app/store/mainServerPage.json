@@ -1,0 +1,17 @@
+{
+   "data": [
+      {
+         "name": "Rewards",
+         "photo_url": "resources/img/sprites/rewards.jpg",
+         "desc": "Rewards",
+         "pageCntlr": "RewardsServer",
+         "subFeature": "rewards"
+      }, {
+         "name": "Redemptions",
+         "photo_url": "resources/img/sprites/redemptions.jpg",
+         "desc": "Redemptions",
+         "pageCntlr": "MainPage",
+         "subFeature": "redemptions"
+      }
+   ]
+}

@@ -67,7 +67,6 @@ Ext.define('Genesis.controller.Challenges',
       }
    },
    metaData : null,
-   noChallengeCodeScannedMsg : 'No QR Code Scanned!',
    noPhotoUploadedMsg : 'Failed to upload photo to server.',
    fbUploadFailedMsg : 'Failed to upload the photo onto your Facebook account',
    photoUploadSuccessMsg : function(points)
@@ -176,8 +175,8 @@ Ext.define('Genesis.controller.Challenges',
                               {
                                  venue_id : venueId,
                                  //merchant_id : merchantId,
-                                 latitude : position.coords.latitude,
-                                 longitude : position.coords.longitude,
+                                 latitude : position.coords.getLatitude(),
+                                 longitude : position.coords.getLongitude(),
                                  auth_code : qrcode
                               },
                               callback : function(record, operation)
@@ -200,11 +199,11 @@ Ext.define('Genesis.controller.Challenges',
                         }
                         else
                         {
-                           console.debug(me.noChallengeCodeScannedMsg);
+                           console.debug(me.noCodeScannedMsg);
                            Ext.device.Notification.show(
                            {
                               title : 'Error',
-                              message : me.noChallengeCodeScannedMsg
+                              message : me.noCodeScannedMsg
                            });
                         }
                      }

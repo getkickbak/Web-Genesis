@@ -8,7 +8,8 @@ Ext.define('Genesis.view.MainPage',
       title : 'KickBak',
       changeTitle : false,
       direction : 'horizontal',
-      items : [
+      items : (!merchantMode) ? [
+
       {
          docked : 'bottom',
          cls : 'checkInNow',
@@ -26,7 +27,7 @@ Ext.define('Genesis.view.MainPage',
             tag : 'checkInNow',
             text : 'Check In Now!'
          }]
-      }]
+      }] : null
    },
    beforeActivate : function()
    {
@@ -42,9 +43,9 @@ Ext.define('Genesis.view.MainPage',
       {
          Ext.Array.forEach(list, function(item, index, all)
          {
-            switch (item.get('pageCntlr'))
+            switch (item.get('hide'))
             {
-               case 'MainPage' :
+               case 'true' :
                {
                   Ext.Array.remove(items, item);
                   break;

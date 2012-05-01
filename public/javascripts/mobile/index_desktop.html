@@ -5,8 +5,6 @@
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta property="fb:admins" content="725565520"/>
       <meta property="fb:app_id" content="197968780267830"/>
-      <meta content="authenticity_token" name="csrf-param" />
-      <meta content="CXiDQAYZfzLs8J4MKAXD9AFIyFejvFXl1XbjPxxlyg4=" name="csrf-token" />
       <!-- Default Fontsize = 11px
       iPad @132dpi = 100% - iPhone @163dpi = 114% - iPhone Retina @326dpi = 228%
       -->
@@ -38,10 +36,10 @@
       <title>KickBak</title>
       <link rel="stylesheet" href="resources/css/sencha-touch.css" type="text/css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
-      <script type="text/javascript" src="lib/sencha-touch-2.0.0-pr3/a/all-classes.js"></script>
       directory and include it here -->
+      <script type="text/javascript" src="lib/amanuel-JS-HTML5-QRCode-Generator-3944c71/qrcode.js"></script>
       <script type="text/javascript" src="lib/date.js"></script>
-      <script type="text/javascript" src="lib/Datejs-all/src/extras.js"></script>
+      <script type="text/javascript" src="lib/extras.js"></script>
       <!-- Debug Javascript on mobile browser -->
       <script type="text/javascript" src="lib/sencha-touch-2.0.0-commercial/sencha-touch-all-debug.js"></script>
       <!--
@@ -51,6 +49,7 @@
       <script type="text/javascript">
          var phoneGapAvailable = false;
          var debugMode = false;
+         var merchantMode = false;
 
          var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.0-commercial/src';
          var _appId = "197968780267830";
@@ -144,8 +143,11 @@
       <script type="text/javascript" src="app/view/Accounts.js"></script>
       <script type="text/javascript" src="app/view/MerchantAccount.js"></script>
       <script type="text/javascript" src="app/view/MerchantDetails.js"></script>
+      <!--
       <script type="text/javascript" src="app/view/Rewards.js"></script>
-      <script type="text/javascript" src="app/view/Redemptions.js"></script>
+      -->
+      <script type="text/javascript" src="app/view/RewardsClient.js"></script>
+      <script type="text/javascript" src="app/view/RedemptionsClient.js"></script>
       <script type="text/javascript" src="app/view/Prizes.js"></script>
       <!-- Controllers -->
       <script type="text/javascript" src="app/controller/ControllerBase.js"></script>
@@ -155,7 +157,11 @@
       <script type="text/javascript" src="app/controller/Checkins.js"></script>
       <script type="text/javascript" src="app/controller/Challenges.js"></script>
       <script type="text/javascript" src="app/controller/Merchants.js"></script>
-      <script type="text/javascript" src="app/controller/RewardsRedemptions.js"></script>
+      <!--
+      <script type="text/javascript" src="app/controller/Rewards.js"></script>
+      -->
+      <script type="text/javascript" src="app/controller/RewardsClient.js"></script>
+      <script type="text/javascript" src="app/controller/RedemptionsClient.js"></script>
       <script type="text/javascript" src="app/controller/Accounts.js"></script>
       <script type="text/javascript" src="app/controller/Prizes.js"></script>
       <!-- External Libs -->
@@ -208,9 +214,8 @@
                'LoginPage', 'SignInPage', 'MainPage',
                //'MerchantAccountBrowse','MerchantAcountPage',
                'MerchantAccount', 'MerchantDetails',
-               //'QRCodeDisplayMode', 'QRCodeScanMode'
-               'Rewards', 'Redemptions', 'Accounts', 'Prizes', 'SettingsPage', 'Viewport'],
-               controllers : ['Viewport', 'MainPage', 'Challenges', 'Merchants', 'RewardsRedemptions', 'Accounts',
+               'RewardsClient', 'RedemptionsClient', 'Accounts', 'Prizes', 'SettingsPage', 'Viewport'],
+               controllers : ['Viewport', 'MainPage', 'Challenges', 'Merchants', 'RewardsClient', 'RedemptionsClient', 'Accounts',
                //'Coupons','Newsfeeds', 'QrCodeDisplay',
                'Settings', 'Checkins', 'Prizes'],
                stores : [],

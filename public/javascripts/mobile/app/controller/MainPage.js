@@ -112,35 +112,39 @@ Ext.define('Genesis.controller.MainPage',
          model : 'Genesis.model.frontend.MainPage',
          autoLoad : true
       });
-      //
-      // Load all the info into Stores
-      // Normally we do this in the Login screen
-      //
-      Ext.regStore('UserStore',
+
+      if(!merchantMode)
       {
-         model : 'Genesis.model.User',
-         autoLoad : false
-      });
+         //
+         // Load all the info into Stores
+         // Normally we do this in the Login screen
+         //
+         Ext.regStore('UserStore',
+         {
+            model : 'Genesis.model.User',
+            autoLoad : false
+         });
 
-      //
-      // Prizes that a User Earned
-      //
-      me.initMerchantPrizeStore();
+         //
+         // Prizes that a User Earned
+         //
+         me.initMerchantPrizeStore();
 
-      //
-      // Store storing the Customer's Eligible Rewards at a Venue
-      // Used during Checkin
-      //
-      Ext.regStore('EligibleRewardsStore',
-      {
-         model : 'Genesis.model.EligibleReward',
-         autoLoad : false
-      });
+         //
+         // Store storing the Customer's Eligible Rewards at a Venue
+         // Used during Checkin
+         //
+         Ext.regStore('EligibleRewardsStore',
+         {
+            model : 'Genesis.model.EligibleReward',
+            autoLoad : false
+         });
 
-      //
-      // Customer Accounts for an user
-      //
-      me.initCustomerStore();
+         //
+         // Customer Accounts for an user
+         //
+         me.initCustomerStore();
+      }
 
       console.log("MainPage Controller Init");
    },
@@ -163,7 +167,7 @@ Ext.define('Genesis.controller.MainPage',
                {
                   var vport = me.getViewPortCntlr();
                   vport.setLoggedIn(true);
-                  me.getViewport().reset(me);
+                  me.getViewport().reset();
                   vport.onFeatureTap('MainPage');
                }
             },
@@ -260,6 +264,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    initMerchantPrizeStore : function()
    {
+      var me = this;
       Ext.regStore('MerchantPrizeStore',
       {
          model : 'Genesis.model.EarnPrize',
@@ -297,10 +302,10 @@ Ext.define('Genesis.controller.MainPage',
             'metachange' : function(store, proxy, eOpts)
             {
                var app = me.getApplication();
-               var controller = app.getController('RewardsRedemptions');
+               var controller = app.getController('RewardsClient');
                app.dispatch(
                {
-                  action : 'onRewardMetaChange',
+                  action : 'onMetaChange',
                   args : [store, proxy.getReader().metaData],
                   controller : controller,
                   scope : controller
@@ -351,7 +356,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    onActivate : function(c, eOpts)
    {
-      this.getInfoBtn().show();
+      this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
       this.getMainBtn().hide();
    },
    onDeactivate : function(c, eOpts)
@@ -511,7 +516,7 @@ Ext.define('Genesis.controller.MainPage',
          if(response)
          {
             response = Ext.decode(response);
-            
+
             var birthday = response.birthday.split('/');
             birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1];
             params = Ext.apply(params,
@@ -601,6 +606,80 @@ Ext.define('Genesis.controller.MainPage',
    onCreateDeactivate : function(c, eOpts)
    {
    },
+   onRedeemVerification : function()
+   {
+      var me = this;
+      var verify = function()
+      {
+         me.scanQRCode(
+         {
+            callback : function(encrypted)
+            {
+               var privkey = CryptoJS.enc.Hex.parse(me.getPrivKey());
+               if(!encrypted)
+               {
+                  if(Ext.isDefined(encrypted))
+                  {
+                     var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
+
+                     encrypted = iv + '$' + CryptoJS.AES.encrypt(Ext.encode(
+                     {
+                        ":expirydate" : new Date().addDays(1).format('Y-M-d')
+                     }), privkey,
+                     {
+                        iv : iv
+                     });
+                  }
+                  else
+                  {
+                     return;
+                  }
+               }
+
+               console.log("Encrypted Code :\n" + encrypted);
+               console.log("Encrypted Code Length: " + encrypted.length);
+
+               var message = encrypted.split('$');
+               var decrypted = Ext.decode(CryptoJS.enc.Utf8.stringify((CryptoJS.AES.decrypt(message[1], privkey,
+                  {
+                     iv : iv
+                  }))));
+
+               var expiryDate = decrypted[":expirydate"];
+
+               if((Date.parse(expiryDate) - Date.parse(new Date().format('Y-M-d'))) > 0)
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Success!',
+                     message : 'Authorization Code is Valid'
+                  });
+               }
+               else
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Error!',
+                     message : 'Authorization Code is Invalid'
+                  });
+               }
+            }
+         });
+      }
+      Ext.device.Notification.show(
+      {
+         title : 'Redemption Verification',
+         message : 'Proceed to scan your customer\'s Authorization Code',
+         buttons : ['OK', 'Cancel'],
+         callback : function(btn)
+         {
+            if(btn == 'ok')
+            {
+               verify();
+            }
+         }
+      });
+   },
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
@@ -611,17 +690,24 @@ Ext.define('Genesis.controller.MainPage',
          case 'main' :
          {
             this.pushView(this.getMainPage());
-            /*
-             var app = this.getApplication();
-             var controller = app.getController('Merchants');
-             app.dispatch(
-             {
-             action : 'onMainButtonTap',
-             args : ['checkin'],
-             controller : controller,
-             scope : controller
-             });
-             */
+            break;
+         }
+         case 'merchant' :
+         {
+            var app = this.getApplication();
+            var controller = app.getController('Merchants');
+            app.dispatch(
+            {
+               action : 'onMainButtonTap',
+               args : ['checkin'],
+               controller : controller,
+               scope : controller
+            });
+            break;
+         }
+         case 'redemptions' :
+         {
+            this.onRedeemVerification();
             break;
          }
          case 'login' :

@@ -53,6 +53,7 @@ Ext.define('Genesis.controller.Prizes',
       return 'You haved won ' + ((numPrizes > 1) ? 'some PRIZES' : 'a PRIZE') + '!'
    },
    lostPrizeMsg : 'Oops, Play Again!',
+   showQrCodeMsg : 'Show this Authorization Code to your server to redeem!',
    init : function()
    {
       this.callParent(arguments);
@@ -96,6 +97,7 @@ Ext.define('Genesis.controller.Prizes',
                   }
                   if((flag |= 0x01) == 0x11)
                   {
+                     viewport.reset();
                      me.onShowPrize(records[0]);
                   }
                });
@@ -124,7 +126,7 @@ Ext.define('Genesis.controller.Prizes',
                   link : Genesis.constants.site,
                   caption : Genesis.constants.site,
                   description : merchant.get('desc'),
-                  piture : Genesis.view.Rewards.getPhoto(records[0].getCustomerReward().get('type')),
+                  piture : Genesis.view.RewardsClient.getPhoto(records[0].getCustomerReward().get('type')),
                   message : 'I just won a prize visiting ' + merchant.get('name') + '!'
                }, function(response)
                {
@@ -362,60 +364,88 @@ Ext.define('Genesis.controller.Prizes',
          {
             if(operation.wasSuccessful())
             {
-               me.notificationPopup(me.getTimeoutPeriod());
+               //
+               // To-do : Get QR Code
+               //
+               me.notificationPopup(me.getTimeoutPeriod(), null);
                me.getRedeemBtn().hide();
                me.getDoneBtn().show();
             }
          }
       })
    },
-   notificationPopup : function(timeout)
+   notificationPopup : function(timeout, encrypted)
    {
       var me = this;
-      var title;
-      switch (me.getMode())
+      var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
+      encrypted = encrypted || iv + '$' + Ext.encode('{":expirydate" : ' + new Date().addDays(1).format('Y-M-d'));
+      /*
+       switch (me.getMode())
+       {
+       case 'showPrize' :
+       case 'prizes' :
+       title = 'Prize Redemption Alert!';
+       break;
+       case 'reward' :
+       title = 'Reward Redemption Alert!';
+       break;
+       }
+       if(timeout > 0)
+       {
+       Ext.Viewport.setMasked(
+       {
+       xtype : 'loadmask',
+       indicator : false,
+       message : me.showScreenTimeoutMsg(timeout + ' minute(s)')
+       });
+       me.cancelId = Ext.defer(function(timeout)
+       {
+       me.notificationPopup(timeout);
+       }, 1 * 60 * 1000, me, [--timeout]);
+       me.hidelId = Ext.defer(function(timeout)
+       {
+       delete me.hidelId;
+       Ext.Viewport.setMasked(false);
+       }, 0.25 * 1 * 60 * 1000);
+       }
+       else
+       {
+       clearTimeout(me.hideId);
+       Ext.Viewport.setMasked(false);
+       Ext.device.Notification.show(
+       {
+       title : title
+       message : me.showScreenTimeoutExpireMsg(me.getTimeoutPeriod() + ' minutes'),
+       callback : function()
+       {
+       me.onDoneTap();
+       }
+       });
+       }
+       */
+      console.log("Encripted Code :\n" + encrypted);
+      console.log("Encripted Code Length: " + encrypted.length);
+
+      var view = me.getPrizes();
+      var carousel = view.query('carousel')[0];
+      var item = carousel ? carousel.getActiveItem() : view.getItems().items[0];
+      var photo = item.query('componet[tag=itemPhoto]')[0];
+      element = Ext.fly(Ext.DomQuery.select( 'img', photo.element.dom)[0]);
+      element.set(
       {
-         case 'showPrize' :
-         case 'prizes' :
-            title = 'Prize Redemption Alert!';
-            break;
-         case 'reward' :
-            title = 'Reward Redemption Alert!';
-            break;
-      }
-      if(timeout > 0)
+         'src' : Genesis.constants.showQRCode(encrypted)
+      });
+      Ext.device.Notification.show(
       {
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            indicator : false,
-            message : me.showScreenTimeoutMsg(timeout + ' minute(s)')
-         });
-         me.cancelId = Ext.defer(function(timeout)
-         {
-            me.notificationPopup(timeout);
-         }, 1 * 60 * 1000, me, [--timeout]);
-         me.hidelId = Ext.defer(function(timeout)
-         {
-            delete me.hidelId;
-            Ext.Viewport.setMasked(false);
-         }, 0.25 * 1 * 60 * 1000);
-      }
-      else
-      {
-         clearTimeout(me.hideId);
-         Ext.Viewport.setMasked(false);
-         Ext.device.Notification.show(
-         {
-            title : 'Prize Redemption',
-            message : me.showScreenTimeoutExpireMsg(me.getTimeoutPeriod() + ' minutes'),
-            buttons : ['OK'],
-            callback : function()
-            {
-               me.onDoneTap();
-            }
-         });
-      }
+         title : 'Redemption Alert',
+         message : me.showQrCodeMsg
+         /*,callback : function()
+          {
+          me.onDoneTap();
+          }
+          */
+      });
+
    },
    onRedeemRewards : function(showPrize)
    {

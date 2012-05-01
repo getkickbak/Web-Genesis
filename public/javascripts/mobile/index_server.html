@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <!-- Default Fontsize = 11px
+      iPad @132dpi = 100% - iPhone @163dpi = 114% - iPhone Retina @326dpi = 228%
+      -->
+      <style rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 2)">
+         body {
+            font-size : 228%;
+         }
+      </style>
+      <!-- Dirty hack for Android qHD devices -->
+      <style rel="stylesheet"type="text/css"  media="screen and (-webkit-device-pixel-ratio: 1.5) and (min-device-width: 360px) and (max-device-width: 360px)">
+         body {
+            font-size : 171%;
+         }
+      </style>
+      <!-- iPad/iPhone specific css below, add after your main css >
+      <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
+      <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
+      -->
+      <!--
+      <link rel="apple-touch-startup-image" media="screen and (resolution: 326dpi)" href="resources/img/startup_640.jpg" />
+      <link rel="apple-touch-startup-image" media="screen and (resolution: 163dpi)" href="resources/img/startup.jpg" />
+      <link rel="apple-touch-icon-precomposed" href="resouces/img/icon_57.png">
+      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="resources/img/icon_72.png"/>
+      <link rel="apple-touch-icon-precomposed" sizes="114x114" href="resources/img/icon_114.png"/>
+      -->
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <title>KickBak</title>
+      <link rel="stylesheet" href="resources/css/sencha-touch.css" type="text/css">
+      <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
+      <script type="text/javascript" src="http://127.0.0.1:8080/target/target-script-min.js"></script>
+      directory and include it here -->
+      <script type="text/javascript" src="lib/aes.js"></script>
+      <script type="text/javascript" src="lib/amanuel-JS-HTML5-QRCode-Generator-3944c71/qrcode.js"></script>
+      <script type="text/javascript" src="lib/date.js"></script>
+      <script type="text/javascript" src="lib/extras.js"></script>
+      <!-- Debug Javascript on mobile browser -->
+      <script type="text/javascript" src="lib/sencha-touch-2.0.0-commercial/sencha-touch-all.js"></script>
+      <!--
+      Phone Gap Libs
+      -->
+      <script type="text/javascript" src="lib/cordova-1.7.0rc1.js"></script>
+      <script type="text/javascript">
+         var phoneGapAvailable = true;
+         var debugMode = false;
+         var merchantMode = true;
+
+         var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.0-commercial/src';
+
+         var _browser = Ext.browser;
+         _browser.setFlag('WebView');
+         _browser.setFlag('PhoneGap');
+
+         //
+         // Bug fix to prevent bunching up of cls aggregation
+         //
+         //Ext.baseCSSPrefix = ' ' + Ext.baseCSSPrefix;
+
+         Ext.Loader.setConfig(
+         {
+            enabled : false,
+            paths :
+            {
+               Ext : _extPath,
+               Genesis : _appPath
+            }
+         });
+
+         // If you want to prevent dragging, uncomment this section
+         /*
+          function preventBehavior(e)
+          {
+          e.preventDefault();
+          };
+          document.addEventListener("touchmove", preventBehavior, false);
+          */
+
+         /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+          see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+          for more details -jm */
+         /*
+          function handleOpenURL(url)
+          {
+          // TODO: do something with the url passed in.
+          }
+          */
+         /* When this function is called, PhoneGap has been initialized and is ready to roll */
+         /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+          see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+          for more details -jm */
+
+         function appInit()
+         {
+            console.debug = console.debug || console.log;
+            console.log("appInit - start");
+            if( typeof cordova == 'undefined')
+               Ext.device.Notification.show(
+               {
+                  title : 'Alert',
+                  message : 'PhoneGap variable does not exist. Check that you have included phonegap.js correctly'
+               });
+            if( typeof CDV == 'undefined')
+               Ext.device.Notification.show(
+               {
+                  title : 'Alert',
+                  message : 'PG variable does not exist. Check that you have included pg-plugin-fb-connect.js correctly'
+               });
+            //Ext.require(['Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Connection', 'Ext.device.Notification',
+            // 'Ext.device.Orientation']);
+            Ext.application(
+            {
+               profiles : ['Iphone', 'Android', 'Desktop'],
+               //models : ['Checkin', 'Customer', 'Deal', 'EarnRewardRecord', 'Merchant', 'Reward', 'CustomerReward',
+               // 'PurchaseReward',
+               //'SubDeal', 'User', 'UserProfile',
+               //'Venue'],
+               views : ['RewardsServer', 'RedemptionsServer', 'MainPage', 'Viewport'],
+               controllers : ['Viewport', 'MainPage', 'RewardsServer'],
+               stores : [],
+               launch : function()
+               {
+                  console.log("Launching App");
+                  Ext.create('Genesis.view.Viewport');
+                  this.getController('Viewport').openMainPage();
+                  console.log("Launched App");
+               },
+               appFolder : _appPath,
+               name : 'Genesis'
+            });
+
+            console.log("appInit - end");
+         }
+
+         function onDeviceReady()
+         {
+            Ext.triggerReady();
+            document.addEventListener("online", function()
+            {
+               console.log("Phone is Online");
+               /*
+                if(Ext.device)
+                {
+                if(Ext.device.Connection.isOnline())
+                {
+                Ext.device.Notification.show(
+                {
+                title : 'Network Connection Established',
+                message : 'You are currently connected via ' + Ext.device.Connection.getType()
+                });
+                }
+                else
+                {
+                Ext.device.Notification.show(
+                {
+                title : 'Network Error',
+                message : 'You are not currently connected'
+                });
+                }
+                }
+                */
+            }, false);
+
+            document.addEventListener("offline", function()
+            {
+               console.log("Phone is Offline");
+               if(Ext.device)
+               {
+                  /*
+                   if(Ext.device.Connection.isOnline())
+                   {
+                   Ext.device.Notification.show(
+                   {
+                   title : 'Network Connection Established',
+                   message : 'You are currently connected via ' + Ext.device.Connection.getType()
+                   });
+                   }
+                   else
+                   {
+                   Ext.device.Notification.show(
+                   {
+                   title : 'Network Error',
+                   messsage : 'You are not currently connected'
+                   });
+                   }
+                   */
+               }
+            }, false);
+            document.addEventListener("pause", function()
+            {
+               console.log("App is Paused");
+            }, false);
+
+            document.addEventListener("resume", function()
+            {
+               console.log("App is Resumed");
+               if(Ext.device)
+               {
+                  /*
+                   if(!Ext.device.Connection.isOnline())
+                   {
+                   Ext.device.Notification.show(
+                   {
+                   title : 'Network Error',
+                   messsage : 'You are not currently connected'
+                   });
+                   }
+                   */
+               }
+            }, false);
+            console.log("onDeviceReady");
+            appInit();
+         }
+      </script>
+      <script type="text/javascript" src="core.js"></script>
+      <script type="text/javascript" src="server-all.js"></script>
+   </head>
+   <body>
+      <div id="fb-root"></div>
+      <script type="text/javascript" src="pg-plugin-fb-connect.js"></script>
+      <script type="text/javascript" src="facebook_js_sdk.js"></script>
+      <script type="text/javascript">
+         window.onerror = function(e, url, linenum)
+         {
+            console.log("Error on Line#" + linenum + "\n" + e);
+         }
+
+         document.addEventListener("deviceready", onDeviceReady, false);
+         console.log("SystemInit");
+         //appInit();
+      </script>
+   </body>
+</html>

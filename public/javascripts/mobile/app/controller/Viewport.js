@@ -158,8 +158,8 @@ Ext.define('Genesis.controller.Viewport',
          {
             params :
             {
-               latitude : position.coords.latitude,
-               longitude : position.coords.longitude
+               latitude : position.coords.getLatitude(),
+               longitude : position.coords.getLongitude()
             },
             callback : function(records, operation)
             {
@@ -227,13 +227,13 @@ Ext.define('Genesis.controller.Viewport',
    },
    onRewardsButtonTap : function(b, e, eOpts)
    {
-      this.onFeatureTap('RewardsRedemptions', 'rewards');
-      console.log("Going to Rewards Page ...");
+      this.onFeatureTap('RewardsClient', 'rewards');
+      console.log("Going to RewardsClient Page ...");
    },
    onRedemptionsButtonTap : function(b, e, eOpts)
    {
-      this.onFeatureTap('RewardsRedemptions', 'redemptions');
-      console.log("Going to Redemptions Page ...");
+      this.onFeatureTap('RedemptionsClient', 'redemptions');
+      console.log("Going to RedemptionsClient Page ...");
    },
    onPrizesButtonTap : function(b, e, eOpts)
    {
@@ -275,10 +275,12 @@ Ext.define('Genesis.controller.Viewport',
    {
       var local = window.localStorage;
       var app = this.getApplication();
-      var controller = app.getController('MainPage');
-      this.setLoggedIn((local.getItem('auth_code')) ? true : false);
-      if(this.getLoggedIn())
+      var controller;
+      var loggedIn = (local.getItem('auth_code')) ? true : false;
+      if(loggedIn && !merchantMode)
       {
+         this.setLoggedIn(loggedIn);
+         controller = app.getController('MainPage');
          if(local.getItem('currFbId') > 0)
          {
             app.dispatch(
@@ -302,7 +304,19 @@ Ext.define('Genesis.controller.Viewport',
       }
       else
       {
-         this.onFeatureTap('MainPage', 'login');
+         if(merchantMode)
+         {
+            Ext.defer(function()
+            {
+               this.setLoggedIn(true);
+               this.getViewport().reset();
+               this.onFeatureTap('MainPage', 'main');
+            }, 100, this);
+         }
+         else
+         {
+            this.onFeatureTap('MainPage', 'login');
+         }
       }
    }
 });

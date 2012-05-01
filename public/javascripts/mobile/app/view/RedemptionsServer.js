@@ -1,8 +1,8 @@
-Ext.define('Genesis.view.Redemptions',
+Ext.define('Genesis.view.RedemptionsServer',
 {
    extend : 'Genesis.view.ViewBase',
    requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RedemptionsPtsItem'],
-   alias : 'widget.redemptionsview',
+   alias : 'widget.redemptionsserverview',
    config :
    {
       title : 'Redemptions',
@@ -103,7 +103,7 @@ Ext.define('Genesis.view.Redemptions',
             {
                if(!values.photo)
                {
-                  return Genesis.view.Redemptions.getPhoto(values['type']);
+                  return Genesis.view.RedemptionsServer.getPhoto(values['type']);
                }
                return values.photo.url;
             },

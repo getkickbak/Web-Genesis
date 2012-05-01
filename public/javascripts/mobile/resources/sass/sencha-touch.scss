@@ -727,6 +727,47 @@ body {
    }
    //margin:0em $panelGap;
 }
+.rewardsMainCalculator {
+   //background : url('')
+   background : black;
+   .x-field-text .x-input-el {
+      font-size:$xlargeFontSize*2;
+      padding: $panelGap/4;
+      min-height: 1.0em + $panelGap/2;
+      text-align:right;
+   }
+   .dialpad {
+      .x-container .x-inner {
+          margin-top:$panelTopGap;
+      }
+      .x-button {
+          margin-left:$panelGap;
+          .x-button-label {
+             font-size:$xlargeFontSize*1.25;
+          }
+      }
+      .x-button:last-child {
+          margin-right:$panelGap;        
+      }
+   }
+   .x-button.separator {
+      margin-top :$panelTopGap;
+   }
+}
+.qrcodeContainer  {
+   background : white;
+   .x-inner {
+      margin: $panelTopGap*2 $panelGap*2;
+   }
+   .qrcode {
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: contain;
+   }
+   .done {
+      background : black;
+   }
+}
 .rewardsMain, .rewardsCart {
    @extend .listScrollIndexWrapper;
    .x-inner div[id|=ext-element] {

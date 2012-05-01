@@ -38,6 +38,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    loadingScannerMsg : 'Loading Scanner ...',
    loadingMsg : 'Loading ...',
+   noCodeScannedMsg : 'No QR Code Scanned!',
    geoLocationErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
@@ -64,6 +65,10 @@ Ext.define('Genesis.controller.ControllerBase',
    getViewport : function()
    {
       return this.getViewPortCntlr().getView();
+   },
+   getPrivKey : function()
+   {
+      return '000102030405060708090a0b0c0d0e0f';
    },
    pushView : function(view)
    {
@@ -105,8 +110,14 @@ Ext.define('Genesis.controller.ControllerBase',
          {
             coords :
             {
-               latitude : "-50.000000",
-               longitude : '50.000000'
+               getLatitude : function()
+               {
+                  return "-50.000000";
+               },
+               getLongitude : function()
+               {
+                  return '50.000000';
+               }
             }
          });
       }
@@ -119,22 +130,30 @@ Ext.define('Genesis.controller.ControllerBase',
             me.geoLocation = Ext.create('Ext.util.Geolocation',
             {
                autoUpdate : false,
-               frequency : 0,
+               frequency : 1,
                maximumAge : 30000,
                timeout : 50000,
                allowHighAccuracy : true,
                listeners :
                {
-                  locationupdate : function(geo)
+                  locationupdate : function(geo, eOpts)
                   {
+                     if(!geo)
+                     {
+                        console.log("No GeoLocation found!");
+                        return;
+                     }
                      var position =
                      {
                         coords : geo
                      }
-                     //alert('New latitude: ' + geo.getLatitude());
-                     console.debug('\n' + 'Latitude: ' + geo.latitude + '\n' + 'Longitude: ' + geo.longitude + '\n' + 'Altitude: ' + geo.altitude + '\n' + 'Accuracy: ' + geo.accuracy + '\n' + 'Altitude Accuracy: ' + geo.altitudeAccuracy + '\n' + 'Heading: ' + geo.heading + '\n' + 'Speed: ' + geo.speed + '\n'
-                     //+ 'Timestamp: ' + new Date(position.timestamp) + '\n'
-                     );
+                     console.debug('\n' + 'Latitude: ' + geo.getLatitude() + '\n' + 'Longitude: ' + geo.getLongitude() + '\n' +
+                     //
+                     'Altitude: ' + geo.getAltitude() + '\n' + 'Accuracy: ' + geo.getAccuracy() + '\n' +
+                     //
+                     'Altitude Accuracy: ' + geo.getAltitudeAccuracy() + '\n' + 'Heading: ' + geo.getHeading() + '\n' +
+                     //
+                     'Speed: ' + geo.getSpeed() + '\n' + 'Timestamp: ' + new Date(geo.getTimestamp()) + '\n');
 
                      callback(position);
                   },
@@ -193,7 +212,7 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          Ext.Viewport.setMasked(false);
          config.callback();
-         console.debug('Failed because: ' + ftError[message.code]);
+         console.debug('Failed because: ' + message);
       };
       var callback = function(r)
       {
@@ -241,7 +260,11 @@ Ext.define('Genesis.controller.ControllerBase',
          // Pick whatever is currently showing on the Venue Explore screen,
          // or pick the first one on the Neaby Venue in the store
          //
-         var venueId = (me.getCheckinMerchant && me.getCheckinMerchant().venue) ? me.getCheckinMerchant().venue.getId() : Ext.StoreMgr.get('CheckinExploreStore').first().getId();
+         var venueId = 0;
+         if(!merchantMode)
+         {
+            venueId = (me.getCheckinMerchant && me.getCheckinMerchant().venue) ? me.getCheckinMerchant().venue.getId() : Ext.StoreMgr.get('CheckinExploreStore').first().getId();
+         }
          callback(
          {
             response : venueId

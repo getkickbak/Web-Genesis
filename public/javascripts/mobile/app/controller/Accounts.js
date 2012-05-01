@@ -79,8 +79,8 @@ Ext.define('Genesis.controller.Accounts',
             params :
             {
                'merchant_id' : merchantId,
-               latitude : position.coords.latitude,
-               longitude : position.coords.longitude
+               latitude : position.coords.getLatitude(),
+               longitude : position.coords.getLongitude()
             },
             callback : function(records, operation)
             {

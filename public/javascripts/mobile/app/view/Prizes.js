@@ -12,7 +12,7 @@ Ext.define('Genesis.view.Prizes',
    },
    beforeActivate : function(activeItem, oldActiveItem)
    {
-      var prizeMode = !(oldActiveItem && oldActiveItem.getXTypes().match('redemptionsview'));
+      var prizeMode = !(oldActiveItem && oldActiveItem.getXTypes().match('redemptionsclientview'));
       activeItem.getInitialConfig().title = (prizeMode) ? 'Prizes' : 'Redeem Reward';
       this.callParent(arguments);
       if(!prizeMode)
@@ -23,7 +23,7 @@ Ext.define('Genesis.view.Prizes',
    },
    beforeDeactivate : function(activeItem, oldActiveItem)
    {
-      var prizeMode = !activeItem.getXTypes().match('redemptionsview');
+      var prizeMode = !activeItem.getXTypes().match('redemptionsclientview');
       this.callParent(arguments);
       if(!prizeMode)
       {

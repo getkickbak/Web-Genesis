@@ -38,8 +38,9 @@
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
       <script type="text/javascript" src="http://127.0.0.1:8080/target/target-script-min.js"></script>
       directory and include it here -->
+      <script type="text/javascript" src="lib/amanuel-JS-HTML5-QRCode-Generator-3944c71/qrcode.js"></script>
       <script type="text/javascript" src="lib/date.js"></script>
-      <script type="text/javascript" src="lib/Datejs-all/src/extras.js"></script>
+      <script type="text/javascript" src="lib/extras.js"></script>
       <!-- Debug Javascript on mobile browser -->
       <script type="text/javascript" src="lib/sencha-touch-2.0.0-commercial/sencha-touch-all.js"></script>
       <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
@@ -50,6 +51,7 @@
       <script type="text/javascript">
          var phoneGapAvailable = true;
          var debugMode = false;
+         var merchantMode = false;
 
          var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.0-commercial/src';
          var _appId = "197968780267830";
@@ -148,9 +150,8 @@
                //'MerchantAccountBrowse','MerchantAcountPage',
                'MerchantAccount', 'MerchantDetails',
                //'QRCodeDisplayMode', 'QRCodeScanMode'
-               'Rewards', 'Redemptions', 'Accounts', 'Prizes', 'SettingsPage', 'Viewport'],
-               controllers : ['Viewport', 'MainPage', 'Challenges', 'Merchants', 'RewardsRedemptions', 'Accounts',
-               //'Coupons','Newsfeeds', 'QrCodeDisplay',
+               'RewardsClient', 'RedemptionsClient', 'Accounts', 'Prizes', 'SettingsPage', 'Viewport'],
+               controllers : ['Viewport', 'MainPage', 'Challenges', 'Merchants', 'RewardsClient', 'RedemptionsClient', 'Accounts',
                'Settings', 'Checkins', 'Prizes'],
                stores : [],
                launch : function()
@@ -242,7 +243,7 @@
          }
       </script>
       <script type="text/javascript" src="core.js"></script>
-      <script type="text/javascript" src="app-all.js"></script>
+      <script type="text/javascript" src="client-all.js"></script>
    </head>
    <body>
       <div id="fb-root"></div>

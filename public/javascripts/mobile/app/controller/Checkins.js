@@ -111,8 +111,8 @@ Ext.define('Genesis.controller.Checkins',
       Customer[url](venueId);
       var params =
       {
-         latitude : (position) ? position.coords.latitude : 0,
-         longitude : (position) ? position.coords.longitude : 0,
+         latitude : (position) ? position.coords.getLatitude() : 0,
+         longitude : (position) ? position.coords.getLongitude() : 0,
          auth_code : qrcode || 0
       }
       if(venueId)
