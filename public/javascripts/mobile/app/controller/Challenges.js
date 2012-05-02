@@ -507,7 +507,7 @@ Ext.define('Genesis.controller.Challenges',
                      buttons : ['Try Again', 'Cancel'],
                      callback : function(btn)
                      {
-                        if(btn == 'Try Again')
+                        if(btn.toLowerCase() == 'try again')
                         {
                            Ext.defer(completeUploadPhotosChallenge, 100);
                         }
@@ -539,7 +539,7 @@ Ext.define('Genesis.controller.Challenges',
                buttons : ['Try Again', 'Cancel'],
                callback : function(btn)
                {
-                  if(btn == 'Try Again')
+                  if(btn.toLowerCase() == 'try again')
                   {
                      Ext.defer(me.onUploadPhotosTap, 100, me);
                   }

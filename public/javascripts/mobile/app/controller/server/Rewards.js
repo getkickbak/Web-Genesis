@@ -150,7 +150,7 @@ Ext.define('Genesis.controller.server.Rewards',
       console.log("Encripted Code :\n" + encrypted);
       console.log("Encripted Code Length: " + encrypted.length);
 
-      var qrcode = Genesis.constants.showQRCode(encrypted);
+      var qrcode = me.genQRCode(encrypted);
       me.getQrcode().setStyle(
       {
          'background-image' : 'url(' + qrcode + ')'

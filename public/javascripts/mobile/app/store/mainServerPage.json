@@ -12,6 +12,12 @@
          "desc": "Redemptions",
          "pageCntlr": "server.Redemptions",
          "subFeature": "redemptions"
+      }, {
+         "name": "Settings",
+         "photo_url": "resources/img/sprites/settings.jpg",
+         "desc": "Settings",
+         "pageCntlr": "Settings",
+         "subFeature": "server"
       }
    ]
 }

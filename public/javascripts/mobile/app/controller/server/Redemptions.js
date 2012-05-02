@@ -50,6 +50,14 @@ Ext.define('Genesis.controller.server.Redemptions',
    onRedeemVerification : function()
    {
       var me = this;
+      var invalidCode = function()
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Error!',
+            message : 'Authorization Code is Invalid'
+         });
+      }
       var verify = function()
       {
          me.scanQRCode(
@@ -77,32 +85,35 @@ Ext.define('Genesis.controller.server.Redemptions',
                   }
                }
 
-               console.log("Encrypted Code :\n" + encrypted);
-               console.log("Encrypted Code Length: " + encrypted.length);
-
-               var message = encrypted.split('$');
-               var decrypted = Ext.decode(CryptoJS.enc.Utf8.stringify((CryptoJS.AES.decrypt(message[1], privkey,
-                  {
-                     iv : iv
-                  }))));
-
-               var expiryDate = decrypted[":expirydate"];
-
-               if((Date.parse(expiryDate) - Date.parse(new Date().format('Y-M-d'))) > 0)
+               try
                {
-                  Ext.device.Notification.show(
+                  console.log("Encrypted Code Length: " + encrypted.length);
+
+                  var message = encrypted.split('$');
+                  var decrypted = Ext.decode(CryptoJS.enc.Utf8.stringify((CryptoJS.AES.decrypt(message[1], privkey,
+                     {
+                        iv : iv
+                     }))));
+
+                  var expiryDate = decrypted[":expirydate"];
+
+                  if((Date.parse(expiryDate) - Date.parse(new Date().format('Y-M-d'))) > 0)
                   {
-                     title : 'Success!',
-                     message : 'Authorization Code is Valid'
-                  });
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Success!',
+                        message : 'Authorization Code is Valid'
+                     });
+                  }
+                  else
+                  {
+                     invalidCode();
+                  }
                }
-               else
+               catch(e)
                {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Error!',
-                     message : 'Authorization Code is Invalid'
-                  });
+                  console.log("Exception reading QR Code - [" + e.message + "]");
+                  invalidCode();
                }
             }
          });
@@ -114,8 +125,9 @@ Ext.define('Genesis.controller.server.Redemptions',
          buttons : ['OK', 'Cancel'],
          callback : function(btn)
          {
-            if(btn == 'ok')
+            if(btn.toLowerCase() == 'ok')
             {
+               console.log("Verifying Authorization Code ...");
                verify();
             }
          }

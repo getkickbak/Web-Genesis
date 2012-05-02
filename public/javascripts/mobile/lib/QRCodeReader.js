@@ -21,29 +21,24 @@
    /**
     * Given an absolute file path, uploads a file on the device to a remote server
     * using a multipart HTTP request.
-    * @param filePath {String}           Full path of the file on the device
-    * @param server {String}             URL of the server to receive the file
     * @param successCallback (Function}  Callback to be invoked when upload has completed
     * @param errorCallback {Function}    Callback to be invoked upon error
-    * @param options {FileUploadOptions} Optional parameters such as file name and mimetype
     */
    QRCodeReader.prototype.getCode = function(successCallback, errorCallback)
    {
-      /*
-       // successCallback required
-       if( typeof successCallback != "function")
-       {
-       console.log("QRCodeReader Error: successCallback is not a function");
-       return;
-       }
+      // successCallback required
+      if( typeof successCallback != "function")
+      {
+         console.log("QRCodeReader Error: successCallback is not a function");
+         return;
+      }
 
-       // errorCallback optional
-       if(errorCallback && ( typeof errorCallback != "function"))
-       {
-       console.log("QRCodeReader Error: errorCallback is not a function");
-       return;
-       }
-       */
+      // errorCallback optional
+      if(errorCallback && ( typeof errorCallback != "function"))
+      {
+         console.log("QRCodeReader Error: errorCallback is not a function");
+         return;
+      }
 
       console.log("ScanType is [" + this.scanType + "]");
       switch (this.scanType)
@@ -62,22 +57,22 @@
 
    QRCodeReader.prototype._didNotFinishWithResult = function(fileError)
    {
-      pluginResult.message = fileError;
-      //Ext.Msg.hide();
       console.log("ErrorCode = " + fileError)
+      pluginResult.message = fileError;
       return pluginResult;
    }
 
    QRCodeReader.prototype._didFinishWithResult = function(pluginResult)
    {
-      var result = new FileUploadResult();
-      //result.responseCode = pluginResult.message.responseCode;
-      result.response = decodeURIComponent(pluginResult.message.response);
+      var result =
+      {
+         //responseCode = pluginResult.message.responseCode
+         response : decodeURIComponent(pluginResult.message.response)
+      }
       pluginResult.message = result;
 
-      //Ext.Msg.hide();
       return pluginResult;
-   }
+   };
 
    cordovaRef.addConstructor(function()
    {

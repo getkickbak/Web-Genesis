@@ -2,7 +2,7 @@ Ext.define('Genesis.view.server.Rewards',
 {
    extend : 'Genesis.view.ViewBase',
    requires : ['Ext.Toolbar'],
-   alias : 'widget.server.rewardsview',
+   alias : 'widget.serverrewardsview',
    config :
    {
       title : 'Kickbak Rewards',

@@ -37,7 +37,6 @@
       <script type="text/javascript" src="http://127.0.0.1:8080/target/target-script-min.js"></script>
       directory and include it here -->
       <script type="text/javascript" src="lib/aes.js"></script>
-      <script type="text/javascript" src="lib/amanuel-JS-HTML5-QRCode-Generator-3944c71/qrcode.js"></script>
       <script type="text/javascript" src="lib/date.js"></script>
       <script type="text/javascript" src="lib/extras.js"></script>
       <!-- Debug Javascript on mobile browser -->
@@ -105,12 +104,6 @@
                   title : 'Alert',
                   message : 'PhoneGap variable does not exist. Check that you have included phonegap.js correctly'
                });
-            if( typeof CDV == 'undefined')
-               Ext.device.Notification.show(
-               {
-                  title : 'Alert',
-                  message : 'PG variable does not exist. Check that you have included pg-plugin-fb-connect.js correctly'
-               });
             //Ext.require(['Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Connection', 'Ext.device.Notification',
             // 'Ext.device.Orientation']);
             Ext.application(
@@ -120,8 +113,8 @@
                // 'PurchaseReward',
                //'SubDeal', 'User', 'UserProfile',
                //'Venue'],
-               views : ['server.Rewards', 'server.Redemptions', 'MainPage', 'Viewport'],
-               controllers : ['Viewport', 'MainPage', 'server.Rewards', 'server.Redemptions'],
+               views : ['server.Rewards', 'server.Redemptions', 'MainPage', 'server.SettingsPage', 'Viewport'],
+               controllers : ['Viewport', 'MainPage', 'server.Rewards', 'server.Redemptions', 'Settings'],
                stores : [],
                launch : function()
                {
@@ -221,9 +214,6 @@
       <script type="text/javascript" src="server-all.js"></script>
    </head>
    <body>
-      <div id="fb-root"></div>
-      <script type="text/javascript" src="pg-plugin-fb-connect.js"></script>
-      <script type="text/javascript" src="facebook_js_sdk.js"></script>
       <script type="text/javascript">
          window.onerror = function(e, url, linenum)
          {

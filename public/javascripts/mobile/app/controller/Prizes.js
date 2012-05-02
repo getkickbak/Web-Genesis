@@ -364,21 +364,24 @@ Ext.define('Genesis.controller.Prizes',
          {
             if(operation.wasSuccessful())
             {
-               //
-               // To-do : Get QR Code
-               //
-               me.notificationPopup(me.getTimeoutPeriod(), null);
-               me.getRedeemBtn().hide();
-               me.getDoneBtn().show();
             }
          }
       })
    },
-   notificationPopup : function(timeout, encrypted)
+   showPrizeQrCode : function(timeout, qrcode)
    {
       var me = this;
-      var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
-      encrypted = encrypted || iv + '$' + Ext.encode('{":expirydate" : ' + new Date().addDays(1).format('Y-M-d'));
+
+      //
+      // For Debugging purposes
+      //
+      if(!qrcode)
+      {
+         console.log("Generaintg QR Code ... we lack one");
+         var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
+         qrcode = iv + '$' + Ext.encode('{":expirydate" : ' + new Date().addDays(1).format('Y-M-d'));
+      }
+
       /*
        switch (me.getMode())
        {
@@ -400,7 +403,7 @@ Ext.define('Genesis.controller.Prizes',
        });
        me.cancelId = Ext.defer(function(timeout)
        {
-       me.notificationPopup(timeout);
+       me.showPrizeQrCode(timeout);
        }, 1 * 60 * 1000, me, [--timeout]);
        me.hidelId = Ext.defer(function(timeout)
        {
@@ -423,9 +426,12 @@ Ext.define('Genesis.controller.Prizes',
        });
        }
        */
-      console.log("Encripted Code :\n" + encrypted);
-      console.log("Encripted Code Length: " + encrypted.length);
+      console.log("Encripted Code :\n" + qrcode);
+      console.log("Encripted Code Length: " + qrcode.length);
 
+      me.getRedeemBtn().hide();
+      me.getDoneBtn().show();
+      
       var view = me.getPrizes();
       var carousel = view.query('carousel')[0];
       var item = carousel ? carousel.getActiveItem() : view.getItems().items[0];
@@ -433,7 +439,7 @@ Ext.define('Genesis.controller.Prizes',
       element = Ext.fly(Ext.DomQuery.select( 'img', photo.element.dom)[0]);
       element.set(
       {
-         'src' : Genesis.constants.showQRCode(encrypted)
+         'src' : me.genQRCode(qrcode)
       });
       Ext.device.Notification.show(
       {
@@ -445,7 +451,6 @@ Ext.define('Genesis.controller.Prizes',
           }
           */
       });
-
    },
    onRedeemRewards : function(showPrize)
    {

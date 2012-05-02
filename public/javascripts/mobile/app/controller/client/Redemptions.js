@@ -149,6 +149,19 @@ Ext.define('Genesis.controller.client.Redemptions',
       // Update points from the purchase or redemption
       //
       cstore.getById(customerId).set('points', metaData['account_points']);
+
+      if(metaData['data'])
+      {
+         var app = me.getApplication();
+         var controller = app.getController('Prizes');
+         app.dispatch(
+         {
+            action : 'showPrizeQrCode',
+            args : [0, metaData['data']],
+            controller : controller,
+            scope : controller
+         });
+      }
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

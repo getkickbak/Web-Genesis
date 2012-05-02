@@ -9,7 +9,8 @@
          "name": "Settings",
          "photo_url": "resources/img/sprites/settings.jpg",
          "desc": "Settings",
-         "pageCntlr": "Settings"
+         "pageCntlr": "Settings",
+         "subFeature": "client",
       }, {
          "name": "Check-ins",
          "photo_url": "resources/img/sprites/checkin.jpg",

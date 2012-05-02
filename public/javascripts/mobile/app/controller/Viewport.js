@@ -274,44 +274,35 @@ Ext.define('Genesis.controller.Viewport',
    openMainPage : function()
    {
       var local = window.localStorage;
-      var app = this.getApplication();
-      var controller;
       var loggedIn = (local.getItem('auth_code')) ? true : false;
-      if(loggedIn && !merchantMode)
+      if(!merchantMode)
       {
-         this.setLoggedIn(loggedIn);
-         controller = app.getController('MainPage');
-         if(local.getItem('currFbId') > 0)
+         if(loggedIn)
          {
-            app.dispatch(
+            var app = this.getApplication();
+            var controller = app.getController('MainPage');
+
+            this.setLoggedIn(loggedIn);
+            if(local.getItem('currFbId') > 0)
             {
-               action : 'onFacebookTap',
-               args : [],
-               controller : controller,
-               scope : controller
-            });
-         }
-         else
-         {
-            app.dispatch(
+               app.dispatch(
+               {
+                  action : 'onFacebookTap',
+                  args : [],
+                  controller : controller,
+                  scope : controller
+               });
+            }
+            else
             {
-               action : 'onSignIn',
-               args : [],
-               controller : controller,
-               scope : controller
-            });
-         }
-      }
-      else
-      {
-         if(merchantMode)
-         {
-            Ext.defer(function()
-            {
-               this.setLoggedIn(true);
-               this.getViewport().reset();
-               this.onFeatureTap('MainPage', 'main');
-            }, 100, this);
+               app.dispatch(
+               {
+                  action : 'onSignIn',
+                  args : [],
+                  controller : controller,
+                  scope : controller
+               });
+            }
          }
          else
          {

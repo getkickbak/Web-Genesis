@@ -110,7 +110,18 @@ Ext.define('Genesis.controller.MainPage',
       Ext.regStore('MainPageStore',
       {
          model : 'Genesis.model.frontend.MainPage',
-         autoLoad : true
+         autoLoad : true,
+         listeners :
+         {
+            scope : me,
+            "load" : function(store, records, successful, operation, eOpts)
+            {
+               if(merchantMode)
+               {
+                  me.goToMain();
+               }
+            }
+         }
       });
 
       if(!merchantMode)
@@ -165,10 +176,7 @@ Ext.define('Genesis.controller.MainPage',
             {
                if(successful)
                {
-                  var vport = me.getViewPortCntlr();
-                  vport.setLoggedIn(true);
-                  me.getViewport().reset();
-                  vport.onFeatureTap('MainPage');
+                  me.goToMain();
                }
             },
             'metachange' : function(store, proxy, eOpts)

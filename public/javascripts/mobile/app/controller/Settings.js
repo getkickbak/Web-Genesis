@@ -10,37 +10,69 @@ Ext.define('Genesis.controller.Settings',
    {
       refs :
       {
-         settingsPage :
+         clientSettingsPage :
          {
-            selector : 'settingspageview',
+            selector : 'clientsettingspageview',
             autoCreate : true,
-            xtype : 'settingspageview'
+            xtype : 'clientsettingspageview'
+         },
+         serverSettingsPage :
+         {
+            selector : 'serversettingspageview',
+            autoCreate : true,
+            xtype : 'serversettingspageview'
          }
       },
       control :
       {
-         'settingspageview listfield[name=terms]' :
-         {
-            clearicontap : 'onTermsTap'
-         },
-         'settingspageview listfield[name=privacy]' :
-         {
-            clearicontap : 'onPrivacyTap'
-         },
-         'settingspageview listfield[name=aboutus]' :
-         {
-            clearicontap : 'onAboutUsTap'
-         },
-         'settingspageview listfield[name=facebook]' :
-         {
-            clearicontap : 'onFacebookTap'
-         }
       }
    },
    init : function()
    {
       this.callParent(arguments);
+      this.initClientControl();
+      this.initServerControl();
       console.log("Settings Init");
+   },
+   initClientControl : function()
+   {
+      this.control(
+      {
+         'clientsettingspageview listfield[name=terms]' :
+         {
+            clearicontap : 'onTermsTap'
+         },
+         'clientsettingspageview listfield[name=privacy]' :
+         {
+            clearicontap : 'onPrivacyTap'
+         },
+         'clientsettingspageview listfield[name=aboutus]' :
+         {
+            clearicontap : 'onAboutUsTap'
+         },
+         'clientsettingspageview listfield[name=facebook]' :
+         {
+            clearicontap : 'onFacebookTap'
+         }
+      });
+   },
+   initServerControl : function()
+   {
+      this.control(
+      {
+         'serversettingspageview listfield[name=terms]' :
+         {
+            clearicontap : 'onTermsTap'
+         },
+         'serversettingspageview listfield[name=privacy]' :
+         {
+            clearicontap : 'onPrivacyTap'
+         },
+         'serversettingspageview listfield[name=aboutus]' :
+         {
+            clearicontap : 'onAboutUsTap'
+         }
+      });
    },
    getMainPage : function()
    {
@@ -100,6 +132,27 @@ Ext.define('Genesis.controller.Settings',
          title : 'About Us Tapped',
          message : 'Disclose List Item'
       });
+   },
+   // --------------------------------------------------------------------------
+   // Base Class Overrides
+   // --------------------------------------------------------------------------
+   openPage : function(subFeature)
+   {
+      var page;
+      switch(subFeature)
+      {
+         case 'client' :
+         {
+            page = this.getClientSettingsPage();
+            break;
+         }
+         case 'server' :
+         {
+            page = this.getServerSettingsPage();
+            break;
+         }
+      }
+      this.pushView(page);
    },
    isOpenAllowed : function()
    {

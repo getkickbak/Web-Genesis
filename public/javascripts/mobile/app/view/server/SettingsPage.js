@@ -1,8 +1,8 @@
-Ext.define('Genesis.view.SettingsPage',
+Ext.define('Genesis.view.server.SettingsPage',
 {
    extend : 'Ext.form.Panel',
    requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Genesis.view.widgets.ListField'],
-   alias : 'widget.settingspageview',
+   alias : 'widget.serversettingspageview',
    config :
    {
       title : 'Settings',
@@ -17,21 +17,14 @@ Ext.define('Genesis.view.SettingsPage',
       items : [
       {
          xtype : 'fieldset',
-         title : 'Login Profile',
-         //instructions : 'Tell us all about yourself',
-         items : [
-         {
-            xtype : 'listfield',
-            iconCls : 'facebook',
-            name : 'facebook',
-            value : 'Facebook'
-         }]
-      },
-      {
-         xtype : 'fieldset',
          title : 'About Kickbak',
          //instructions : 'Tell us all about yourself',
          items : [
+         {
+            xtype : 'textfield',
+            value : 'Version 1.0',
+            readOnly : true
+         },
          {
             xtype : 'listfield',
             name : 'terms',
