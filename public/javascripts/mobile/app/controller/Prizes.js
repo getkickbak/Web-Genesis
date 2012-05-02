@@ -435,7 +435,7 @@ Ext.define('Genesis.controller.Prizes',
       var view = me.getPrizes();
       var carousel = view.query('carousel')[0];
       var item = carousel ? carousel.getActiveItem() : view.getItems().items[0];
-      var photo = item.query('componet[tag=itemPhoto]')[0];
+      var photo = item.query('component[tag=itemPhoto]')[0];
       element = Ext.fly(Ext.DomQuery.select( 'img', photo.element.dom)[0]);
       element.set(
       {
