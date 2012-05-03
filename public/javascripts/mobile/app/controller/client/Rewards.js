@@ -151,7 +151,7 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             case 'prizeCheck' :
             {
-               this.onToggleBtnTap(null, null, null);
+               this.onToggleBtnTap(null, null, null,null);
                break;
             }
             default :
@@ -164,7 +164,7 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       this.getBackButton().enable();
    },
-   onToggleBtnTap : function(b, e, eOpts)
+   onToggleBtnTap : function(b, e, eOpts, eInfo)
    {
       var container = this.getRewardsContainer();
       var activeItem = container.getActiveItem();
@@ -259,7 +259,7 @@ Ext.define('Genesis.controller.client.Rewards',
          vipPopup();
       }
    },
-   onEarnPtsTap : function(b, e, eOpts)
+   onEarnPtsTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
       //var container = me.getRewardsContainer();

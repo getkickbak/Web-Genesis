@@ -47,7 +47,7 @@ Ext.define('Genesis.controller.Merchants',
          },
          mainBtn :
          {
-            tap : 'onMainButtonTap'
+            tap : 'onGotoCheckedInAccountTap'
          },
          mapBtn :
          {
@@ -139,26 +139,31 @@ Ext.define('Genesis.controller.Merchants',
          //console.debug("Cannot load Google Maps");
       }
    },
-   onDetailsActivate : function()
+   onDetailsActivate : function(oldActiveItem, c, activeItem, eOpts)
    {
       var page = this.getMerchantDetails();
       var venue = this.getViewPortCntlr().getVenue();
       var map = page.query('component[tag=map]')[0];
-      page.query('dataview')[0].getStore().setData(venue);
+      var store = page.query('dataview')[0].getStore();
+      if((store.getData().length == 0) || (store.first().getId() != venue.getId()))
+      {
+         console.debug("Refreshing Merchant Account Details ...");
+         store.setData(venue);
+      }
       //var map = page.query('map')[0];
 
-      //this.onActivateCommon(map, map.getMap());
       // Show Share Icon
       this.getShareBtn().show();
       //this.getMainBtn().hide();
 
+      //this.onActivateCommon(map, map.getMap());
       this.onActivateCommon(map, null);
       //
       // Scroll to the Top of the Screen
       //
       //page.getScrollable().getScroller().scrollTo(0, 0);
    },
-   onDetailsDeactivate : function()
+   onDetailsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
       var viewport = this.getViewPortCntlr();
       var page = this.getMerchantDetails();
@@ -172,7 +177,7 @@ Ext.define('Genesis.controller.Merchants',
    // --------------------------------------------------------------------------
    // Merchant Account Page
    // --------------------------------------------------------------------------
-   onMainActivate : function()
+   onMainActivate : function(oldActiveItem, c, activeItem, eOpts)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
@@ -245,7 +250,7 @@ Ext.define('Genesis.controller.Merchants',
       //
       me.getMain().getScrollable().getScroller().scrollTo(0, 0);
    },
-   onMainDeactivate : function()
+   onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
       this.getMapBtn().hide();
       this.getCheckinBtn().hide();
@@ -288,7 +293,7 @@ Ext.define('Genesis.controller.Merchants',
       this.onMainDisclose(d, model);
       return false;
    },
-   onCheckinTap : function(b, e, eOpts)
+   onCheckinTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
       var app = me.getApplication();
@@ -307,7 +312,7 @@ Ext.define('Genesis.controller.Merchants',
          });
       });
    },
-   onBrowseTap : function(b, e, eOpts)
+   onBrowseTap : function(b, e, eOpts, eInfo)
    {
       var app = this.getApplication();
       var controller = app.getController('Checkins');
@@ -319,43 +324,40 @@ Ext.define('Genesis.controller.Merchants',
          scope : controller
       });
    },
-   onPageActivate : function()
-   {
-
-   },
-   onPageDeactivate : function()
-   {
-   },
-   onMainButtonTap : function(b, e, eOpts, eInfo)
+   onGotoCheckedInAccountTap : function(b, e, eOpts, eInfo, dontRefreshPage)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
       var vport = me.getViewport();
       var app = me.getApplication();
-      var ccustomer = viewport.getCheckinInfo().customer;
-      var cvenue = viewport.getCheckinInfo().venue;
-      var cmetaData = viewport.getCheckinInfo().metaData;
-
       var ccntlr = app.getController('Checkins');
       var estore = Ext.StoreMgr.get('EligibleRewardsStore');
-      var samePage = (me.getMainPage() == vport.getActiveItem());
+      var cinfo = viewport.getCheckinInfo();
 
-      if(viewport.getVenue().getId() != cvenue.getId())
+      var ccustomer = cinfo.customer;
+      var cvenue = cinfo.venue;
+      var cmetaData = cinfo.metaData;
+      var venue = viewport.getVenue();
+
+      console.log("Going to Merchant Home Account Page ...");
+
+      if(venue.getId() != cvenue.getId())
       {
          // Restore Merchant Info
          ccntlr.setupCheckinInfo('checkin', cvenue, ccustomer, cmetaData);
       }
 
-      console.log("Going to Merchant Home Account Page ...");
-
-      estore.setData(cmetaData['eligible_rewards']);
+      if(!dontRefreshPage && (venue.getId() != cvenue.getId()))
+      {
+         console.log("Updating Customer\'s Eligible Rewards ...");
+         estore.setData(cmetaData['eligible_rewards']);
+      }
       vport.reset();
-      //Ext.Viewport.setMasked(false);
 
       //
-      // Trigger the activeItem changes when refreshing page
+      // Force Page to refresh
       //
-      if(samePage)
+      if(me.getMainPage() == vport.getActiveItem())
       {
          vport.setFadeAnimation();
          vport.doSetActiveItem(me.getMainPage(), null);
@@ -363,14 +365,13 @@ Ext.define('Genesis.controller.Merchants',
 
       me.pushView(me.getMainPage());
    },
-   onMapBtnTap : function(b, e, eOpts)
+   onMapBtnTap : function(b, e, eOpts, eInfo)
    {
-      var gm = (window.google && window.google.maps && window.google.maps.LatLng) ? window.google.maps : null;
-      var record = this.getViewPortCntlr().getVenue();
-      //
-      // Loads currently checked-in / explore Venue into the store
-      //
       /*
+       var gm = (window.google && window.google.maps && window.google.maps.LatLng) ? window.google.maps : null;
+       //
+       // Loads currently checked-in / explore Venue into the store
+       //
        if(gm)
        {
        this.latLng = new gm.LatLng(record.get('latitude'), record.get('longitude'));
@@ -383,9 +384,12 @@ Ext.define('Genesis.controller.Merchants',
        else
        */
       {
+         var record = this.getViewPortCntlr().getVenue();
          this.latLng = record.get('latitude') + ',' + record.get('longitude');
          var color = 'red', label = '';
-         var address = record.get('address') + ', ' + record.get('city') + ', ' + record.get('state') + ', ' + record.get('country') + ', ' + record.get('zipcode');
+         var address = record.get('address') + ', ' + record.get('city') + ', ' +
+         //
+         record.get('state') + ', ' + record.get('country') + ', ' + record.get('zipcode');
 
          this.markerOptions =
          {
@@ -394,7 +398,7 @@ Ext.define('Genesis.controller.Merchants',
             center : this.latLng,
             title : record.get('name')
          }
-         console.debug("Cannot Retrieve Google Map Information.");
+         //console.debug("Cannot Retrieve Google Map Information.");
       }
 
       this.pushView(this.getMerchantDetails());
@@ -422,7 +426,7 @@ Ext.define('Genesis.controller.Merchants',
       }
       else
       {
-         me.onMainButtonTap();
+         me.onGotoCheckedInAccountTap();
       }
       console.log("Merchant Account Opened");
    }

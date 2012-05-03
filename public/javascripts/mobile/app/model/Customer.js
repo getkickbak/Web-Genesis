@@ -75,14 +75,14 @@ Ext.define('Genesis.model.Customer',
          });
          this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/tokens' : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
       },
-      setLogoutUrl : function()
+      setLogoutUrl : function(auth_code)
       {
          var local = window.localStorage;
          this.getProxy().setActionMethods(
          {
             read : 'DELETE'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/tokens/' + local.getItem('authToken'));
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/tokens/' + auth_code);
       },
       setCreateAccountUrl : function()
       {

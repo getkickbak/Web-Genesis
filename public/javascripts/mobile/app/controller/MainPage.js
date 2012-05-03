@@ -157,7 +157,7 @@ Ext.define('Genesis.controller.MainPage',
          me.initCustomerStore();
       }
 
-      console.log("MainPage Controller Init");
+      console.log("MainPage Init");
    },
    initCustomerStore : function()
    {
@@ -174,7 +174,7 @@ Ext.define('Genesis.controller.MainPage',
             scope : me,
             "load" : function(store, records, successful, operation, eOpts)
             {
-               if(successful)
+               if(successful && local.getItem('auth_code'))
                {
                   me.goToMain();
                }
@@ -210,7 +210,7 @@ Ext.define('Genesis.controller.MainPage',
                var authToken = metaData['auth_token'];
                if(authToken)
                {
-                  console.debug("Auth Code - " + authToken)
+                  console.debug("Login Auth Code - " + authToken)
                   local.setItem('auth_code', authToken);
                }
 
@@ -382,48 +382,53 @@ Ext.define('Genesis.controller.MainPage',
    onLoginDeactivate : function(c, eOpts)
    {
    },
-   onLogoutTap : function(b, e, eOpts)
+   onLogoutTap : function(b, e, eOpts, eInfo)
    {
       var viewport = this.getViewport();
       var vport = this.getViewPortCntlr();
       var local = window.localStorage;
+      var fb = window.localStorage;
       var flag = 0;
       //
       // Logout of Facebook
       //
-      var _fbLogout = function()
+      var _onLogout = function()
       {
+         console.log("Resetting Session information ...")
          viewport.setFadeAnimation();
+         vport.setLoggedIn(false);
+         local.removeItem('auth_code');
+         if(fb.getItem('currFbId') > 0)
+         {
+            Genesis.constants.facebook_onLogout(null, true);
+         }
          vport.onFeatureTap('MainPage', 'login');
       }
       var _logout = function()
       {
-         console.log("Logging out ...")
-         Customer['setLogoutUrl']();
-         Ext.StoreMgr.get('CustomerStore').load(
+         if(local.getItem('auth_code'))
          {
-            jsonData :
+            console.log("Logging out ...")
+            Customer['setLogoutUrl'](local.getItem('auth_code'));
+            Ext.StoreMgr.get('CustomerStore').load(
             {
-            },
-            callback : function(records, operation)
-            {
-               if(operation.wasSuccessful())
+               jsonData :
                {
-                  console.log("Logout Successful!")
-               }
-               else
+               },
+               callback : function(records, operation)
                {
-                  console.log("Logout Failed!")
+                  if(operation.wasSuccessful())
+                  {
+                     console.log("Logout Successful!")
+                  }
+                  else
+                  {
+                     console.log("Logout Failed!")
+                  }
                }
-               vport.setLoggedIn(false);
-               local.setItem('authToken', null);
-               _fbLogout();
-               if(fb.getItem('currFbId'))
-               {
-                  Genesis.constants.facebook_onLogout(null, true);
-               }
-            }
-         });
+            });
+         }
+         _onLogout();
       }
 
       b.parent.onAfter(
@@ -438,7 +443,7 @@ Ext.define('Genesis.controller.MainPage',
          single : true
       });
       b.parent.hide();
-      if(fb.getItem('currFbId'))
+      if(fb.getItem('currFbId') > 0)
       {
          console.log("Logging out of Facebook ...")
          Genesis.constants.facebook_onLogout(function()
@@ -461,7 +466,7 @@ Ext.define('Genesis.controller.MainPage',
          }
       }
    },
-   onFacebookTap : function(b, e, eOpts)
+   onFacebookTap : function(b, e, eOpts, eInfo)
    {
       //
       // Login to Facebook
@@ -479,18 +484,18 @@ Ext.define('Genesis.controller.MainPage',
          });
       }, true);
    },
-   onCreateAccountTap : function(b, e, eOpts)
+   onCreateAccountTap : function(b, e, eOpts, eInfo)
    {
       this.pushView(this.getCreateAccount());
    },
-   onSignInTap : function(b, e, eOpts)
+   onSignInTap : function(b, e, eOpts, eInfo)
    {
       this.pushView(this.getSignin());
    },
    // --------------------------------------------------------------------------
    // SignIn and CreateAccount Page
    // --------------------------------------------------------------------------
-   onCreateAccountSubmit : function(b, e, eOpts)
+   onCreateAccountSubmit : function(b, e, eOpts, eInfo)
    {
       var account = this.getCreateAccount();
       var values = account.getValues();
@@ -574,7 +579,7 @@ Ext.define('Genesis.controller.MainPage',
          }
       });
    },
-   onSignInSubmit : function(b, e, eOpts)
+   onSignInSubmit : function(b, e, eOpts, eInfo)
    {
       var signin = this.getSignin();
       var values = signin.getValues();
@@ -632,8 +637,8 @@ Ext.define('Genesis.controller.MainPage',
             var controller = app.getController('Merchants');
             app.dispatch(
             {
-               action : 'onMainButtonTap',
-               args : ['checkin'],
+               action : 'onGotoCheckedInAccountTap',
+               args : [null, null, null, null, true],
                controller : controller,
                scope : controller
             });

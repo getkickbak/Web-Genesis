@@ -8,7 +8,6 @@ Ext.define('Genesis.view.MerchantDetails',
       title : 'Venue Name',
       changeTitle : true,
       cls : 'merchantDetails',
-      //scrollable : 'vertical',
       layout :
       {
          type : 'vbox',
@@ -62,6 +61,7 @@ Ext.define('Genesis.view.MerchantDetails',
                var queryString = Ext.Object.toQueryString(Ext.apply(
                {
                   zoom : 15,
+                  scale : window.devicePixelRatio,
                   maptype : 'roadmap',
                   sensor : false,
                   size : size.width + 'x' + size.height

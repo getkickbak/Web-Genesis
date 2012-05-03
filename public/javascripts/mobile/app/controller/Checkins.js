@@ -158,7 +158,7 @@ Ext.define('Genesis.controller.Checkins',
                {
                   if(qrcode)
                   {
-                     console.log("Checking in ... [qrcode = " + qrcode + "]");
+                     console.log(me.checkinMsg);
                      Ext.Viewport.setMasked(
                      {
                         xtype : 'loadmask',
@@ -270,6 +270,7 @@ Ext.define('Genesis.controller.Checkins',
             {
                crecord.set('points', points);
                crecord.setLastCheckin(record.getLastCheckin());
+               console.debug("Customer ID=[" + crecord.getId() + "] is in Acct Database");
             }
             //
             // First time Customer ... add it to CustomerStore
@@ -277,7 +278,7 @@ Ext.define('Genesis.controller.Checkins',
             else
             {
                crecord = custore.add(record)[0];
-               console.debug("CheckIn - Not in current Customer DB! CustomerId=[" + crecord.getId() + "]");
+               console.debug("Customer ID=[" + crecord.getId() + "] is ADDED to Acct Database");
             }
             console.debug("CheckIn - points:'" + points + "'");
 

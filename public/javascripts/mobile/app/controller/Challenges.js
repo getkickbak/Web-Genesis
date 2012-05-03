@@ -113,7 +113,7 @@ Ext.define('Genesis.controller.Challenges',
    {
       Ext.fly(Ext.query('#'+target.id+' div.photo')[0]).unmask();
    },
-   onChallengeBtnTap : function(b, e, eOpts)
+   onChallengeBtnTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
       var cstore = Ext.StoreMgr.get('CustomerStore');
@@ -339,15 +339,15 @@ Ext.define('Genesis.controller.Challenges',
       }, true);
 
    },
-   onLibraryBtnTap : function(b, e, eOpts)
+   onLibraryBtnTap : function(b, e, eOpts, eInfo)
    {
       this.onPhotoBtnCommon(Genesis.constants.isNative() ? Camera.PictureSourceType.PHOTOLIBRARY : null);
    },
-   onAlbumBtnTap : function(b, e, eOpts)
+   onAlbumBtnTap : function(b, e, eOpts, eInfo)
    {
       this.onPhotoBtnCommon(Genesis.constants.isNative() ? Camera.PictureSourceType.SAVEDPHOTOALBUM : null);
    },
-   onCameraBtnTap : function(b, e, eOpts)
+   onCameraBtnTap : function(b, e, eOpts, eInfo)
    {
       this.onPhotoBtnCommon(Genesis.constants.isNative() ? Camera.PictureSourceType.CAMERA : null);
    },
@@ -405,7 +405,7 @@ Ext.define('Genesis.controller.Challenges',
    {
       this.getPostBtn().hide();
    },
-   onUploadPhotosTap : function(b, e, eOpts)
+   onUploadPhotosTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
       var page = me.getUploadPhotosPage();

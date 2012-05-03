@@ -52,9 +52,15 @@ Ext.define('Genesis.controller.server.Rewards',
          }
       }
    },
+   invalidPriceMsg : 'Please enter a valid price',
    init : function()
    {
       console.log("Server Rewards Init");
+   },
+   getPricePrecision : function(num)
+   {
+      var precision = num.split('.');
+      return ((precision.length > 1) ? precision[1].length : 0);
    },
    // --------------------------------------------------------------------------
    // Rewards Page
@@ -71,7 +77,7 @@ Ext.define('Genesis.controller.server.Rewards',
          {
             case 'qrcodeContainer' :
             {
-               this.onToggleBtnTap(null, null, null);
+               this.onToggleBtnTap(null, null, null, null);
                break;
             }
             default :
@@ -83,7 +89,7 @@ Ext.define('Genesis.controller.server.Rewards',
    onDeactivate : function(c, newActiveItem, oldActiveItem, eOpts)
    {
    },
-   onToggleBtnTap : function(b, e, eOpts)
+   onToggleBtnTap : function(b, e, eOpts, eInfo)
    {
       var container = this.getRewardsContainer();
       var activeItem = container.getActiveItem();
@@ -125,19 +131,29 @@ Ext.define('Genesis.controller.server.Rewards',
          }
       }
    },
-   onShowQrCodeTap : function(b, e, eOpts)
+   onShowQrCodeTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
       var container = me.getRewardsContainer();
       //var anim = container.getLayout().getAnimation();
 
+      var price = me.getPrice().getValue();
+      var precision = this.getPricePrecision(price);
+      if(precision < 2)
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Validation Error',
+            message : me.invalidPriceMsg
+         });
+         return;
+      }
       //
       // Show QRCode
       //
       var privkey = CryptoJS.enc.Hex.parse(me.getPrivKey());
       var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
       var expiryDate = new Date().addDays(1).format('Y-M-d');
-      var price = me.getPrice().getValue();
 
       var encrypted = iv + '$' + CryptoJS.AES.encrypt(Ext.encode(
       {
@@ -160,17 +176,15 @@ Ext.define('Genesis.controller.server.Rewards',
       //anim.enable();
 
    },
-   onCalcBtnTap : function(b, e, eOpts)
+   onCalcBtnTap : function(b, e, eOpts, eInfo)
    {
+      // CloneNode allows for overlaping of same sound file to be played
+      Ext.get('clickSound').dom.cloneNode(true).play();
+
       var value = b.getText();
       var priceField = this.getPrice();
       var price = Number(priceField.getValue() || 0);
-      var getPrecision = function(num)
-      {
-         var precision = num.split('.');
-         return ((precision.length > 1) ? precision[1].length : 0);
-      }
-      var precision = getPrecision(priceField.getValue());
+      var precision = this.getPricePrecision(priceField.getValue());
       switch (value)
       {
          case '.' :
@@ -206,7 +220,7 @@ Ext.define('Genesis.controller.server.Rewards',
       }
       priceField.setValue(price);
    },
-   onDoneTap : function(b, e, eOpts)
+   onDoneTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
       var priceField = me.getPrice();

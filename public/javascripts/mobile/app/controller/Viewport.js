@@ -3,18 +3,9 @@ var _application;
 Ext.define('Genesis.controller.Viewport',
 {
    extend : 'Genesis.controller.ControllerBase',
-   /*
-    requires : ['Genesis.controller.MainPage'
-    //,'Genesis.controller.LoginPage'
-    ],
-    */
    statics :
    {
    },
-   //Postfix convention
-   //Browse - Feature Browse
-   //Mode - Modes supported by the Feature
-   //Page - Home Page for Feature
    config :
    {
       loggedIn : false,
@@ -98,19 +89,8 @@ Ext.define('Genesis.controller.Viewport',
          controller : controller,
          scope : controller
       });
-      /*
-       var controller = app.getController(feature);
-       if(!subFeature)
-       {
-       controller.openMainPage();
-       }
-       else
-       {
-       controller.openPage(subFeature);
-       }
-       */
    },
-   onShareMerchantTap : function(b, e, eOpts)
+   onShareMerchantTap : function(b, e, eOpts, eInfo)
    {
       var fb = window.localStorage;
       Genesis.constants.facebook_onLogin(function(params)
@@ -139,7 +119,7 @@ Ext.define('Genesis.controller.Viewport',
          });
       });
    },
-   onInfoTap : function(b, e, eOpts)
+   onInfoTap : function(b, e, eOpts, eInfo)
    {
       // Open Info ActiveSheet
       //this.getApplication().getView('Viewport').pushView(vp.getInfo());
@@ -187,12 +167,12 @@ Ext.define('Genesis.controller.Viewport',
          });
       });
    },
-   onAccountsButtonTap : function(b, e, eOpts)
+   onAccountsButtonTap : function(b, e, eOpts, eInfo)
    {
       this.onFeatureTap('Accounts');
       console.log("Going to Accounts Page ...");
    },
-   onChallengesButtonTap : function(b, e, eOpts)
+   onChallengesButtonTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
       var venue = me.getVenue();
@@ -225,22 +205,22 @@ Ext.define('Genesis.controller.Viewport',
          }
       });
    },
-   onRewardsButtonTap : function(b, e, eOpts)
+   onRewardsButtonTap : function(b, e, eOpts, eInfo)
    {
       this.onFeatureTap('client.Rewards', 'rewards');
       console.log("Going to Client Rewards Page ...");
    },
-   onRedemptionsButtonTap : function(b, e, eOpts)
+   onRedemptionsButtonTap : function(b, e, eOpts, eInfo)
    {
       this.onFeatureTap('client.Redemptions', 'redemptions');
       console.log("Going to Client Redemptions Page ...");
    },
-   onPrizesButtonTap : function(b, e, eOpts)
+   onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
       this.onFeatureTap('Prizes');
       console.log("Going to Prizes Page ...");
    },
-   onHomeButtonTap : function(b, e, eOpts)
+   onHomeButtonTap : function(b, e, eOpts, eInfo)
    {
       this.getViewport().reset();
       this.onFeatureTap('MainPage');

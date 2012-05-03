@@ -1,6 +1,9 @@
 // Let's start with the basics
 $base-color: #7c92ae;
-$base-gradient: 'glossy';
+$base-gradient: 'smooth';
+
+// Forms
+//$form-dark: #FFF !default;
 
 // Lists
 $list-active-gradient: 'bevel';
@@ -11,6 +14,126 @@ $list-header-gradient: 'matte';
 $tabs-dark: #111;
 
 @import 'sencha-touch/default/all';
+
+/**
+ * Add a background radial gradient to a selector.
+ *
+ *     .my-element {
+ *       @include background-gradient(green, 'recessed')
+ *     }
+ *
+ * @param {start-color} The start color of the gradient.
+ * @param {end-color} The end color of the gradient.
+ * @param {position} The position to go with the gradient/image.
+ * @param {image} The image to go with the gradient.
+ */
+@mixin custom-radial-gradient($start-color, $end-color, $position, $image : false) {
+  background-color: $end-color;
+  @if $image {
+     @include background-image($image, radial-gradient($position, color_stops($start-color, $end-color)));
+  } @else {
+     @include background-image(radial-gradient($position, color_stops($start-color, $end-color)));    
+  }
+}
+
+/**
+ * Add a background radial gradient to a selector.
+ *
+ *     .my-element {
+ *       @include background-gradient(green, 'recessed')
+ *     }
+ *
+ * @param {start-color} The start color of the gradient.
+ * @param {end-color} The end color of the gradient.
+ * @param {position} The position to go with the gradient/image.
+ * @param {image} The image to go with the gradient.
+ */
+@mixin custom-linear-gradient($start-color, $end-color, $position, $image : false) {
+  background-color: $end-color;
+  @if $image {
+     @include background-image($image, lienar-gradient($position, color_stops($start-color, $end-color)));
+  } @else {
+     @include background-image(linear-gradient($position, color_stops($start-color, $end-color)));    
+  }
+}
+
+/**
+ * Add a background radial gradient to a selector.
+ *
+ *     .my-element {
+ *       @include background-gradient(green, 'recessed')
+ *     }
+ *
+ * @param {bg-color} The start bg color of the gradient.
+ * @param {position} The position to go with the gradient/image.
+ * @param {image} The image to go with the gradient.
+ * @param {type} predefined custom style settings.
+ */
+@mixin custom-background-gradient($bg-color, $position : 'top', $image : false, $type : 'smooth') {
+  background-color: darken($bg-color, 15%);
+  @if $image {
+     @if $type == smooth {
+        @include background-image($image, linear-gradient($position, color_stops($bg-color 30%, darken($bg-color, 20%))));
+     } @else if $type == recessed {
+        @include background-image($image, linear-gradient($position, color_stops(darken($bg-color, 10%), darken($bg-color, 5%) 10%, $bg-color 65%, lighten($bg-color, .5%))));
+     }
+  } @else {
+     @if $type == smooth {
+        @include background-image(linear-gradient($position, color_stops($bg-color 30%, darken($bg-color, 20%))));    
+     } @else if $type == recessed {
+        @include background-image(linear-gradient($position, color_stops(darken($bg-color, 10%), darken($bg-color, 5%) 10%, $bg-color 65%, lighten($bg-color, .5%))));
+     }
+  }
+}
+
+/**
+ * Includes the default styles for toolbar buttons, mostly used as a helper function.
+ *
+ * @param {color} $bg-color Base color to be used for the button.
+ * @param {color} $type Gradient style for the button, will automatically use "recessed" when pressed.
+ */
+@mixin toolbar-button($bg-color, $type: $button-gradient){
+  &, .x-toolbar & {
+    border: 1px solid darken($bg-color, 20%);
+    border-top-color: darken($bg-color, 15%);
+    @include color-by-background($bg-color, 75%);
+
+    &.x-button-back:before, &.x-button-forward:before {
+      background: darken($bg-color, 20%);
+    }
+
+    &, &.x-button-back:after, &.x-button-forward:after {
+      @include custom-background-gradient($bg-color, top, false, $type);
+    }
+
+    .x-button-icon.x-icon-mask {
+      @include mask-by-background($bg-color);
+    }
+
+    &.x-button-pressing, &.x-button-pressed, &.x-button-active {
+      &, &:after {
+        @include custom-background-gradient(darken($bg-color, 3%), top, false, 'recessed');
+      }
+    }
+  }
+}
+
+@mixin sencha-button-ui($ui-label, $color, $gradient: $button-gradient) {
+  .x-button.x-button-#{$ui-label}, .x-button.x-button-#{$ui-label}-round, .x-button.x-button-#{$ui-label}-small, .x-button.x-button-#{$ui-label}-large {
+    @include toolbar-button($color, $gradient);
+  }
+
+  .x-button.x-button-#{$ui-label}-round {
+    @extend .x-button-round;
+  }
+
+  .x-button.x-button-#{$ui-label}-small {
+    @extend .x-button-small;
+  }
+  .x-button.x-button-#{$ui-label}-large {
+    @extend .x-button-large;
+  }
+}
 
 @include sencha-panel;
 @include sencha-buttons;
@@ -62,14 +185,10 @@ $badgePoints-bg-gradient: $base-gradient !default;
 body {
 }
 
-.bgImage {
-  background-image : url(../img/startup_640.jpg);
-  background-size : cover;
-}
-
 .prizeCheck {
-  background-image : url(../img/startup_640.jpg);
-  background-size : cover;  
+  background-image : url(../img/green_roulette_bg.png);
+  background-position : center center;
+  background-size : cover;
 }
 
 .navigationBarTop, .navigationBarBottom {
@@ -226,7 +345,12 @@ body {
 }
 
 //------------------------------------------------------------------------------
-// List
+// Toolbar CSS
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+// List CSS
 //------------------------------------------------------------------------------
 .x-list-round {
    .x-inner, .x-list-inner {
@@ -284,6 +408,10 @@ body {
 //------------------------------------------------------------------------------
 // Button
 //------------------------------------------------------------------------------
+.x-button {
+   @include toolbar-button(#F3F3F4, $button-gradient);
+}
+
 .x-button-large, .x-toolbar .x-button-large {
    @if $include-border-radius { @include border-radius($panelBorderRadius); }
    padding: .6em 1.2em;
@@ -297,22 +425,6 @@ body {
       width: 1.5em;
       height: 1.5em;
    }
-}
-@mixin sencha-button-ui($ui-label, $color, $gradient: $button-gradient) {
-  .x-button.x-button-#{$ui-label}, .x-button.x-button-#{$ui-label}-round, .x-button.x-button-#{$ui-label}-small, .x-button.x-button-#{$ui-label}-large {
-    @include toolbar-button($color, $gradient);
-  }
-
-  .x-button.x-button-#{$ui-label}-round {
-    @extend .x-button-round;
-  }
-
-  .x-button.x-button-#{$ui-label}-small {
-    @extend .x-button-small;
-  }
-  .x-button.x-button-#{$ui-label}-large {
-    @extend .x-button-large;
-  }
 }
 
 .wrap {
@@ -340,6 +452,27 @@ body {
 @include sencha-button-ui('black', darken(saturate(black, 55%), 10%));
 @include sencha-button-ui('fbBlue', desaturate(darken(blue, 10%), 5%));
 
+
+//------------------------------------------------------------------------------
+// Form CSS
+//------------------------------------------------------------------------------
+//
+// Transparent colors to make texture background show up on all screens
+//
+.x-form .x-scroll-container {
+   background : transparent;
+}
+.x-form-fieldset .x-form-fieldset-inner {
+   border : none;
+   background : #F3F3F4;
+}
+.x-form-fieldset .x-form-label {
+  border : none;
+}
+.x-form-label {
+   @include custom-linear-gradient(#00ADEE 10%, #0A78BE 85%, top);
+   color : white;
+}
 //------------------------------------------------------------------------------
 // List CSS
 //------------------------------------------------------------------------------
@@ -519,6 +652,24 @@ body {
    }
    .itemDescName {
       text-align:center;
+   }
+}
+
+//------------------------------------------------------------------------------
+// Login Pages
+//------------------------------------------------------------------------------
+.viewport {
+   @include custom-radial-gradient(#F3F3F4 40%, #D1D2D4 70%, center center, url('../img/texture.png'));
+   background-repeat : repeat;
+   background-size : contain;
+}
+.x-navigationview .x-navigationview-inner > .x-layout-card-item {
+   background-color:transparent;
+   background-repeat : no-repeat;
+   &.bgImage {
+      @include custom-radial-gradient(#00ADEE 50%, #0A78BE 80%, center center, url('../img/logohomescreen.png'));
+      background-position : center center;
+      background-size : 75%, 100%;
    }
 }
 

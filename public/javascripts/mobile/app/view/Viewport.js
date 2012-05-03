@@ -8,10 +8,12 @@ Ext.define('Genesis.view.Viewport',
       fadeMode : false,
       enableAnim : true,
       autoDestroy : false,
-      cls : 'viewport bgImage',
+      cls : 'viewport',
       fullscreen : true,
       useTitleForBackButtonText : false,
-      defaultBackButtonText : 'Back',
+      defaultBackButtonText :
+      //'&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;',
+      'Back',
       altBackButtonText : 'Close',
       //--------------------------------------------------------------------
       // Navigation Toolbar

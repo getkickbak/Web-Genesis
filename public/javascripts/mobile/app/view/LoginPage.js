@@ -6,10 +6,10 @@ Ext.define('Genesis.view.LoginPage',
    config :
    {
       title : '',
+      cls : 'bgImage',
       hideNavBar : true,
       changeTitle : false,
-      scrollable : false,
-      style : 'background:transparent'
+      scrollable : false
    },
    initialize : function()
    {
@@ -73,7 +73,6 @@ Ext.define('Genesis.view.SignInPage',
       title : 'Sign In',
       changeTitle : false,
       scrollable : 'vertical',
-      style : 'background:transparent',
       items : [
       {
          xtype : 'fieldset',
@@ -130,7 +129,6 @@ Ext.define('Genesis.view.CreateAccountPage',
       title : 'Create Account',
       changeTitle : false,
       scrollable : 'vertical',
-      style : 'background:transparent',
       items : [
       {
          xtype : 'fieldset',

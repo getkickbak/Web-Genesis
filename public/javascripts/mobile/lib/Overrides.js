@@ -206,10 +206,10 @@ Genesis.constants =
       //Detect when Facebook tells us that the user's session has been returned
       FB.Event.monitor('auth.authResponseChange', function(session)
       {
-         console.log('Got the user\'s session: ', session);
-
          if(session && session.status != 'not_authorized' && session.status != 'notConnected')
          {
+            console.log('Got FB user\'s session: ' + session.status);
+
             var authToken = session.authResponse['accessToken'];
             if(authToken)
             {
@@ -238,7 +238,7 @@ Genesis.constants =
          else
          if((session === undefined) || (session && session.status == 'not_authorized'))
          {
-            console.log('User\'s session terminated');
+            console.log('FB Account Session was terminated or not authorized');
 
             me.facebook_onLogout(null, (session) ? true : false);
          }
@@ -520,6 +520,7 @@ Genesis.constants =
          fb.setItem('currFbId', 0);
          fb.removeItem('fbAccountId');
          fb.removeItem('fbResponse');
+         fb.removeItem('authToken');
          if(contactFB)
          {
             FB.logout(function(response)
@@ -789,6 +790,10 @@ Ext.define('Genesis.data.proxy.OfflineServer',
       {
          this.setExtraParam("auth_token", local.getItem('auth_code'));
       }
+      else
+      {
+         delete this.getExtraParams()["auth_token"];
+      }
 
       var request = this.callParent(arguments);
 
@@ -961,6 +966,7 @@ Ext.define('Genesis.tab.Bar',
    }
 });
 
+/*
 //
 //  FixedButton.js
 //  GT.FixedButton
@@ -971,177 +977,178 @@ Ext.define('Genesis.tab.Bar',
 
 Ext.define('Genesis.Button',
 {
-   override : 'Ext.Button',
-   //xtype : 'fixedbutton',
+override : 'Ext.Button',
+//xtype : 'fixedbutton',
 
-   // removed the tap event and rolling our own logic
-   initialize : function()
-   {
-      this.callParent();
+// removed the tap event and rolling our own logic
+initialize : function()
+{
+this.callParent();
 
-      this.element.on(
-      {
-         scope : this,
-         touchstart : 'onPress',
-         dragend : 'onRelease',
-         drag : 'onMove',
-         tap : 'onTap'
-      });
-   },
-   // @private
-   onPress : function(e)
-   {
-      var element = this.element, pressedCls = this.getPressedCls();
-
-      if(!this.getDisabled())
-      {
-         this.isPressed = true;
-         // console.log('e.target', e);
-         // adding a pressed flag
-         if(!e.target.children.length)
-         {
-            this.pressedTarget = e.target.parentElement.id;
-         }
-         else
-         {
-            this.pressedTarget = e.target.id;
-         }
-
-         // console.log('onPress ' + this.pressTarget);
-
-         if(this.hasOwnProperty('releasedTimeout'))
-         {
-            clearTimeout(this.releasedTimeout);
-            delete this.releasedTimeout;
-         }
-
-         element.addCls(pressedCls);
-
-      }
-   },
-   // @private
-   // when user moves, test to see if touch even is still the target
-   onMove : function(e, element)
-   {
-      if(!this.isPressed)
-      {
-         return;
-      }
-
-      var currentPressedTarget;
-      var elem = Ext.get(element);
-
-      if(Ext.getCmp('debugconsole'))
-      {
-         Ext.getCmp('debugconsole').setHtml(Ext.getCmp('debugconsole').getHtml() + '<br/>touchmove target id: ' + element.id);
-         Ext.getCmp('debugconsole').getScrollable().getScroller().scrollToEnd();
-      }
-
-      // clicked on the label or icon instead of the button
-      if(elem.parent('.x-button'))
-      {
-         currentPressedTarget = elem.parent('.x-button').id;
-      }
-      else
-      if(elem.hasCls('x-button'))
-      {
-         currentPressedTarget = elem.id;
-      }
-      if(elem.parent('.x-tab'))
-      {
-         currentPressedTarget = elem.parent('.x-tab').id;
-      }
-      //
-      // TabBar Buttons
-      //
-      else
-      if(elem.hasCls('x-tab'))
-      {
-         currentPressedTarget = elem.id;
-      }
-
-      if(currentPressedTarget != this.pressedTarget)
-      {
-         this.element.removeCls(this.getPressedCls());
-      }
-      else
-      {
-         this.element.addCls(this.getPressedCls());
-      }
-   },
-   // @private
-   onRelease : function(e, element)
-   {
-      this.fireAction('release', [this, e, element], 'doRelease');
-   },
-   // @private
-   doRelease : function(me, e, element)
-   {
-      var currentPressedTarget;
-      var elem = Ext.get(element);
-
-      // clicked on the label or icon instead of the button
-      if(elem.parent('.x-button'))
-      {
-         //console.log('inside!');
-         currentPressedTarget = elem.parent('.x-button').id;
-      }
-      else
-      if(elem.hasCls('x-button'))
-      {
-         currentPressedTarget = elem.id;
-      }
-      //
-      // TabBar Buttons
-      //
-      if(elem.parent('.x-tab'))
-      {
-         currentPressedTarget = elem.parent('.x-tab').id;
-      }
-      else
-      if(elem.hasCls('x-tab'))
-      {
-         currentPressedTarget = elem.id;
-      }
-
-      //console.log('doRelease' + currentPressedTarget);
-
-      if(!me.isPressed)
-      {
-         return;
-      }
-
-      me.isPressed = false;
-
-      if(me.hasOwnProperty('pressedTimeout'))
-      {
-         clearTimeout(me.pressedTimeout);
-         delete me.pressedTimeout;
-      }
-
-      me.releasedTimeout = setTimeout(function()
-      {
-         if(me && me.element)
-         {
-            me.element.removeCls(me.getPressedCls());
-            if(currentPressedTarget == me.pressedTarget)
-            {
-               me.fireAction('tap', [me, e], 'doTap');
-            }
-
-         }
-
-         // remove the pressedTarget flag
-         me.pressedTarget = null;
-      }, 10);
-   },
-   // @private
-   // disable the existing onTap function from Ext.Button
-   onTap : function(e)
-   {
-      return false;
-   }
+this.element.on(
+{
+scope : this,
+touchstart : 'onPress',
+dragend : 'onRelease',
+drag : 'onMove',
+tap : 'onTap'
 });
+},
+// @private
+onPress : function(e)
+{
+var element = this.element, pressedCls = this.getPressedCls();
+
+if(!this.getDisabled())
+{
+this.isPressed = true;
+// console.log('e.target', e);
+// adding a pressed flag
+if(!e.target.children.length)
+{
+this.pressedTarget = e.target.parentElement.id;
+}
+else
+{
+this.pressedTarget = e.target.id;
+}
+
+// console.log('onPress ' + this.pressTarget);
+
+if(this.hasOwnProperty('releasedTimeout'))
+{
+clearTimeout(this.releasedTimeout);
+delete this.releasedTimeout;
+}
+
+element.addCls(pressedCls);
+
+}
+},
+// @private
+// when user moves, test to see if touch even is still the target
+onMove : function(e, element)
+{
+if(!this.isPressed)
+{
+return;
+}
+
+var currentPressedTarget;
+var elem = Ext.get(element);
+
+if(Ext.getCmp('debugconsole'))
+{
+Ext.getCmp('debugconsole').setHtml(Ext.getCmp('debugconsole').getHtml() + '<br/>touchmove target id: ' + element.id);
+Ext.getCmp('debugconsole').getScrollable().getScroller().scrollToEnd();
+}
+
+// clicked on the label or icon instead of the button
+if(elem.parent('.x-button'))
+{
+currentPressedTarget = elem.parent('.x-button').id;
+}
+else
+if(elem.hasCls('x-button'))
+{
+currentPressedTarget = elem.id;
+}
+if(elem.parent('.x-tab'))
+{
+currentPressedTarget = elem.parent('.x-tab').id;
+}
+//
+// TabBar Buttons
+//
+else
+if(elem.hasCls('x-tab'))
+{
+currentPressedTarget = elem.id;
+}
+
+if(currentPressedTarget != this.pressedTarget)
+{
+this.element.removeCls(this.getPressedCls());
+}
+else
+{
+this.element.addCls(this.getPressedCls());
+}
+},
+// @private
+onRelease : function(e, element)
+{
+this.fireAction('release', [this, e, element], 'doRelease');
+},
+// @private
+doRelease : function(me, e, element)
+{
+var currentPressedTarget;
+var elem = Ext.get(element);
+
+// clicked on the label or icon instead of the button
+if(elem.parent('.x-button'))
+{
+//console.log('inside!');
+currentPressedTarget = elem.parent('.x-button').id;
+}
+else
+if(elem.hasCls('x-button'))
+{
+currentPressedTarget = elem.id;
+}
+//
+// TabBar Buttons
+//
+if(elem.parent('.x-tab'))
+{
+currentPressedTarget = elem.parent('.x-tab').id;
+}
+else
+if(elem.hasCls('x-tab'))
+{
+currentPressedTarget = elem.id;
+}
+
+//console.log('doRelease' + currentPressedTarget);
+
+if(!me.isPressed)
+{
+return;
+}
+
+me.isPressed = false;
+
+if(me.hasOwnProperty('pressedTimeout'))
+{
+clearTimeout(me.pressedTimeout);
+delete me.pressedTimeout;
+}
+
+me.releasedTimeout = setTimeout(function()
+{
+if(me && me.element)
+{
+me.element.removeCls(me.getPressedCls());
+if(currentPressedTarget == me.pressedTarget)
+{
+me.fireAction('tap', [me, e], 'doTap');
+}
+
+}
+
+// remove the pressedTarget flag
+me.pressedTarget = null;
+}, 10);
+},
+// @private
+// disable the existing onTap function from Ext.Button
+onTap : function(e)
+{
+return false;
+}
+});
+*/
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Ext.plugin.PullRefresh

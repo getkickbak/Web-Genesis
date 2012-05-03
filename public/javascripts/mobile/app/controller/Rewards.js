@@ -296,7 +296,7 @@ Ext.define('Genesis.controller.Rewards',
             case 'rewardTallyList' :
             case 'prizeCheck' :
             {
-               this.onToggleBtnTap(null, null, null);
+               this.onToggleBtnTap(null, null, null, null);
                break;
             }
             default :
@@ -310,7 +310,7 @@ Ext.define('Genesis.controller.Rewards',
    onDeactivate : function(c, newActiveItem, oldActiveItem, eOpts)
    {
    },
-   onToggleBtnTap : function(b, e, eOpts)
+   onToggleBtnTap : function(b, e, eOpts, eInfo)
    {
       var checkoutBtn = this.getCheckoutBtn();
       var container = this.getRewardsContainer();
@@ -463,7 +463,7 @@ Ext.define('Genesis.controller.Rewards',
          vipPopup();
       }
    },
-   onEarnPtsTap : function(b, e, eOpts)
+   onEarnPtsTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
       var container = me.getRewardsContainer();
@@ -528,7 +528,7 @@ Ext.define('Genesis.controller.Rewards',
       list.deselect([record]);
       return false;
    },
-   onCheckinTap : function(b, e, eOpts)
+   onCheckinTap : function(b, e, eOpts, eInfo)
    {
       this.clearRewardsCart();
    },

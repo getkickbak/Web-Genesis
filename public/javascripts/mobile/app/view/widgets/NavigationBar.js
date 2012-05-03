@@ -4,7 +4,7 @@ Ext.define('Genesis.navigation.Bar',
    requires : ['Ext.fx.layout.card.Style'],
    config :
    {
-      defaultBackButtonText : 'Back',
+      defaultBackButtonText : ' ',//'Back',
       altBackButtonText : 'Close',
       mode : 'slide',
       callbackFn : Ext.emptyFn,
@@ -161,7 +161,7 @@ Ext.define('Genesis.navigation.Bar',
                   }
                }
             });
-            console.debug("Toolbar set to Slide Transition");
+            //console.debug("Toolbar set to Slide Transition");
             break;
          }
          case 'fade' :
@@ -187,7 +187,7 @@ Ext.define('Genesis.navigation.Bar',
                   }
                }
             });
-            console.debug("Toolbar set to Fade Transition");
+            //console.debug("Toolbar set to Fade Transition");
             break;
          }
          default :

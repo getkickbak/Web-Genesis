@@ -269,7 +269,7 @@ Ext.define('Genesis.controller.Prizes',
       me.getDoneBtn().hide();
       me.getRedeemBtn().hide();
    },
-   onDoneTap : function(b, e, eOpts)
+   onDoneTap : function(b, e, eOpts, eInfo)
    {
       var prizes = this.getPrizes();
       if(prizes.isPainted() && !prizes.isHidden())
@@ -316,7 +316,7 @@ Ext.define('Genesis.controller.Prizes',
 
       this.getRedeemBtn()[((merchantId == cmerchantId) && (merchantId > 0)) ? 'enable' : 'disable']();
    },
-   onRedeemPrizeTap : function(b, e, eOpts)
+   onRedeemPrizeTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
       var view = me.getPrizes();

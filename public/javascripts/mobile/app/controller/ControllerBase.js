@@ -85,7 +85,7 @@ Ext.define('Genesis.controller.ControllerBase',
          viewport.push(view);
       }
    },
-   popView : function(b, e, eOpts)
+   popView : function(b, e, eOpts, eInfo)
    {
       var viewport = this.getViewport();
       var app = this.getApplication();
