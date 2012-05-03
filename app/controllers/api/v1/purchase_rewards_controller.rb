@@ -85,10 +85,10 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           if prize.nil?
             prize = pick_prize()
             reward_model.prize_reward_id = prize.id
-            prize_interval = prize.points
+            prize_interval = (prize.price / reward_model.price_per_point / reward_model.prize_rebate_rate * 100).to_i
             reward_model.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
           else
-            prize_interval = prize.points  
+            prize_interval = (prize.price / reward_model.price_per_point / reward_model.prize_rebate_rate * 100).to_i  
           end
           current_point_offset = reward_model.prize_point_offset + @points
           #logger.debug("Check if Prize has been won yet.")
@@ -109,7 +109,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             current_point_offset -= prize_interval
             prize = pick_prize()
             reward_model.prize_reward_id = prize.id
-            prize_interval = prize.points  
+            prize_interval = (prize.price / reward_model.price_per_point / reward_model.prize_rebate_rate * 100).to_i  
             reward_model.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
             if @prize.nil? && current_point_offset >= reward_model.prize_win_offset
               earn_prize = EarnPrize.new(
@@ -124,7 +124,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               @prize = earn_prize
               prize = pick_prize()
               reward_model.prize_reward_id = prize.id
-              prize_interval = prize.points  
+              prize_interval = (prize.price / reward_model.price_per_point / reward_model.prize_rebate_rate * 100).to_i  
               reward_model.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
               current_point_offset = current_point_offset % prize_interval
             elsif current_point_offset >= reward_model.prize_win_offset
