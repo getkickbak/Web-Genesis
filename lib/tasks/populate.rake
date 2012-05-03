@@ -222,7 +222,7 @@ namespace :db do
       )
       RewardModel.create(merchant,
       {
-        :rebate_rate => 9,
+        :rebate_rate => 10,
         :prize_rebate_rate => 5
       })
       venues = []
@@ -262,11 +262,13 @@ namespace :db do
       reward_names.length.times do |i|
         idx = rand(reward_names.length)+1
         reward_type = CustomerRewardType.get(idx)
+        price = rand(10) + 10.75
+        points = (price / merchant.reward_model.price_per_point / merchant.reward_model.rebate_rate * 100).to_i
         reward = CustomerReward.create(merchant,reward_type,
         {
           :title => "#{reward_names[reward_type.value.to_sym]} #{reward_names_count[reward_type.value.to_sym]+1}",
-          :price => rand(10) + 10.75,
-          :points => rand(10) + 80
+          :price => price,
+          :points => points
         },
         venues)
         earn_prize = EarnPrize.new(
@@ -295,7 +297,7 @@ namespace :db do
       challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.menu.name"),
-        :description => (I18n.t "challenge.type.menu.description"),
+        :description => ((I18n.t "challenge.type.menu.description") % [(I18n.t "challenge.type.menu.name")]),
         :require_verif => true,
         :points => rand(10) + 10
       },
@@ -325,7 +327,7 @@ namespace :db do
       challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.vip.name"),
-        :description => (I18n.t "challenge.type.vip.description"),
+        :description => ((I18n.t "challenge.type.vip.description") % [24]),
         :data => ActiveSupport::HashWithIndifferentAccess.new(:visits => 24),
         :require_verif => false,
         :points => rand(10) + 10
@@ -358,7 +360,7 @@ namespace :db do
         record = EarnRewardRecord.new(
           :venue_id => venues[rand(2)].id,
           :data => String.random_alphanumeric,
-          :points => (amount * merchant.reward_model.rebate_rate / 100 / merchant.reward_model.price_per_point).to_i,
+          :points => (amount / merchant.reward_model.price_per_point).to_i,
           :amount => amount,
           :created_ts => now
         )

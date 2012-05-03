@@ -56,6 +56,7 @@ module Genesis
     
     require 'string_extension'
     require 'math_extension'
+    require 'bsearch'
     
     WillPaginate.per_page = 10
     

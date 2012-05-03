@@ -32,7 +32,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           aes = Aes.new('128', 'CBC')
           decrypted = aes.decrypt(auth_data, @venue.auth_code, iv)
           decrypted_data = JSON.parse(decrypted)
-          if (decrypted_data[:expiry_date] >= Date.today) && (not EarnRewardRecord.first(:data => data).nil?)
+          if (decrypted_data[:type] == "earn_points") && (decrypted_data[:expiry_date] >= Date.today) && (not EarnRewardRecord.first(:data => data).nil?)
             amount = decrypted_data[:amount]
             authorized = true
           end  
@@ -61,7 +61,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             @vip_points = challenge.points
           end
           reward_model = @venue.merchant.reward_model
-          @points = (amount * reward_model.rebate_rate / 100 / reward_model.price_per_point).to_i
+          @points = (amount / reward_model.price_per_point).to_i
           record = EarnRewardRecord.new(
             :venue_id => @venue.id,
             :data => data,
@@ -74,20 +74,21 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           record.save
           @customer.points += @points
           @customer.save
-          
+                    
           #logger.debug("Before acquiring cache mutex.")
           mutex = CacheMutex.new(@venue.merchant.cache_key, Cache.memcache)
           acquired = mutex.acquire
           #logger.debug("Cache mutex acquired(#{acquired}).")
+          @prick_prize_initialized = false
           reward_model = @venue.merchant.reward_model
           prize = CustomerReward.get(reward_model.prize_reward_id)
           if prize.nil?
-            prize = pick_prize(@venue)
+            prize = pick_prize()
             reward_model.prize_reward_id = prize.id
-            prize_interval = (prize.points / Float(reward_model.prize_rebate_rate) * 100).to_i
-            reward_model.prize_win_offset = pick_prize_win_offset(prize_interval)
+            prize_interval = prize.points
+            reward_model.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
           else
-            prize_interval = (prize.points / Float(reward_model.prize_rebate_rate) * 100).to_i  
+            prize_interval = prize.points  
           end
           current_point_offset = reward_model.prize_point_offset + @points
           #logger.debug("Check if Prize has been won yet.")
@@ -106,10 +107,10 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           if current_point_offset >= prize_interval
             #logger.debug("Current Point Offset >= Prize Interval.")
             current_point_offset -= prize_interval
-            prize = pick_prize(@venue)
+            prize = pick_prize()
             reward_model.prize_reward_id = prize.id
-            prize_interval = (prize.points / Float(reward_model.prize_rebate_rate) * 100).to_i  
-            reward_model.prize_win_offset = pick_prize_win_offset(prize_interval) 
+            prize_interval = prize.points  
+            reward_model.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
             if @prize.nil? && current_point_offset >= reward_model.prize_win_offset
               earn_prize = EarnPrize.new(
                 :points => prize.points,
@@ -121,13 +122,13 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               earn_prize.user = current_user
               earn_prize.save
               @prize = earn_prize
-              prize = pick_prize(@venue)
+              prize = pick_prize()
               reward_model.prize_reward_id = prize.id
-              prize_interval = (prize.points / Float(reward_model.prize_rebate_rate) * 100).to_i  
-              reward_model.prize_win_offset = pick_prize_win_offset(prize_interval)
+              prize_interval = prize.points  
+              reward_model.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
               current_point_offset = current_point_offset % prize_interval
             elsif current_point_offset >= reward_model.prize_win_offset
-              current_point_offset = pick_prize_win_offset(reward_model.prize_win_offset)  
+              current_point_offset = pick_prize_win_offset(reward_model.prize_win_offset - 1) + 1  
             end
           end
           #logger.debug("Set Prize Point Offset = Current Point Offset.")
@@ -169,9 +170,30 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     return false
   end
   
-  def pick_prize(venue)
-    idx = Random.rand(venue.customer_rewards.length)
-    return venue.customer_rewards[idx]
+  def pick_prize
+    if not @pick_prize_initialized
+      @prize_section = []
+      total_points = 0
+      new_total_points = 1
+      @venue.customer_rewards.each do |reward|
+        total_points += reward.points
+        #logger.debug("reward: #{reward.title} - points: #{reward.points}")
+        new_total_points = new_total_points * reward.points
+        #logger.debug("new_total_points: #{new_total_points}")
+      end
+      @total_prize_section_points = 0
+      @venue.customer_rewards.each do |reward|
+        @total_prize_section_points += (new_total_points / reward.points * total_points)  
+        #logger.debug("total_prize_section_points: #{@total_prize_section_points}")
+        @prize_section << @total_prize_section_points
+      end
+      @pick_prize_initialized = true
+    end
+    chosen_section = Random.rand(@total_prize_section_points) + 1
+    #logger.debug("chosen section: #{chosen_section}")
+    idx = @prize_section.bsearch_upper_boundary {|x| x <=> chosen_section}
+    #logger.debug("chosen idx: #{idx}")
+    return @venue.customer_rewards[idx]
   end
   
   def pick_prize_win_offset(prize_interval)

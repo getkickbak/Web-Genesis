@@ -3,6 +3,7 @@
 <% end %>
 <div style="display:none;">
 	<div id="price_per_point"><%= current_merchant.reward_model.price_per_point %></div>
+	<div id="rebate_rate"><%= current_merchant.reward_model.rebate_rate %></div>
 </div>
 <div class="content row">
 <%= simple_form_for @customer_reward do |f| %>

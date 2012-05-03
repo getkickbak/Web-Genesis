@@ -32,12 +32,13 @@ class Api::V1::CustomerRewardsController < ApplicationController
           @customer.save
           aes = Aes.new('128', 'CBC')
           iv = String.random_alphanumeric
-          data = { :expiry_date => Date.today }.to_json
-          encrypted_data = "#{iv}$#{aes.encrypt(data, @venue.auth_code, iv)}"
-          respond_to do |format|
-            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :data => encrypted_data } } }
-          end
+          data = { 
+            :type => "redeem_reward",
+            :title => reward.title,
+            :expiry_date => Date.today 
+          }.to_json
+          @encrypted_data = "#{iv}$#{aes.encrypt(data, @venue.auth_code, iv)}"
+          render :template => '/api/v1/customer_rewards/redeem'
         else
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
