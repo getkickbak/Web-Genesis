@@ -174,25 +174,25 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     if not @pick_prize_initialized
       @prize_section = []
       total_points = 0
-      new_total_points = 1
+      lcm = 1
       @venue.customer_rewards.each do |reward|
         total_points += reward.points
-        #logger.debug("reward: #{reward.title} - points: #{reward.points}")
-        new_total_points = new_total_points * reward.points
-        #logger.debug("new_total_points: #{new_total_points}")
+        #puts("reward: #{reward.title} - points: #{reward.points}")
+        lcm = lcm.lcm(reward.points)
+        #puts("lcm: #{lcm}")
       end
       @total_prize_section_points = 0
       @venue.customer_rewards.each do |reward|
-        @total_prize_section_points += (new_total_points / reward.points * total_points)  
-        #logger.debug("total_prize_section_points: #{@total_prize_section_points}")
+        @total_prize_section_points += (lcm / reward.points * total_points)  
+        #puts("total_prize_section_points: #{@total_prize_section_points}")
         @prize_section << @total_prize_section_points
       end
       @pick_prize_initialized = true
     end
     chosen_section = Random.rand(@total_prize_section_points) + 1
-    #logger.debug("chosen section: #{chosen_section}")
+    #puts("chosen section: #{chosen_section}")
     idx = @prize_section.bsearch_upper_boundary {|x| x <=> chosen_section}
-    #logger.debug("chosen idx: #{idx}")
+    #puts("chosen idx: #{idx}")
     return @venue.customer_rewards[idx]
   end
   
