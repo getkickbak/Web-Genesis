@@ -97,7 +97,7 @@ Ext.define('Genesis.controller.Prizes',
                   }
                   if((flag |= 0x01) == 0x11)
                   {
-                     viewport.reset();
+                     vport.reset();
                      me.onShowPrize(records[0]);
                   }
                });
@@ -153,6 +153,7 @@ Ext.define('Genesis.controller.Prizes',
                   }
                   if((flag |= 0x10) == 0x11)
                   {
+                     vport.reset();
                      me.onShowPrize(records[0]);
                   }
                }
@@ -431,7 +432,7 @@ Ext.define('Genesis.controller.Prizes',
 
       me.getRedeemBtn().hide();
       me.getDoneBtn().show();
-      
+
       var view = me.getPrizes();
       var carousel = view.query('carousel')[0];
       var item = carousel ? carousel.getActiveItem() : view.getItems().items[0];
