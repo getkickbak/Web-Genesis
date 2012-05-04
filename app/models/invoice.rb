@@ -16,7 +16,7 @@ class Invoice
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessible :invoice_id, :amount, :transactions, :monthly_fee, :cost_per_trans
+  attr_accessible :invoice_id, :amount, :transactions, :monthly_fee, :cost_per_trans, :start_date, :end_date
   
   def self.create(merchant, invoice_info)
     now = Time.now
