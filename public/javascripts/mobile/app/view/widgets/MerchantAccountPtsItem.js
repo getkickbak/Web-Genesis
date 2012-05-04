@@ -10,12 +10,12 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       background :
       {
          // Backgrond Image
-         cls : 'merchantPagePanel',
+         cls : 'tbPanel',
          tag : 'background',
          items : [
+         // Display Points
          {
             xtype : 'container',
-            // Display Points
             docked : 'bottom',
             cls : 'container',
             layout :
@@ -23,7 +23,6 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                type : 'hbox',
                align : 'stretch'
             },
-            //height : '3.2em',
             defaults :
             {
                xtype : 'component'
@@ -41,7 +40,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                cls : 'coinphoto',
                data :
                {
-                  photo_url : Genesis.constants.getIconPath('miscicons','points')
+                  photo_url : Genesis.constants.getIconPath('miscicons', 'points')
                },
                tpl : '<img src="{photo_url}" />'
             },
@@ -51,7 +50,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                cls : 'visitsphoto',
                data :
                {
-                  photo_url : Genesis.constants.getIconPath('miscicons','points')
+                  photo_url : Genesis.constants.getIconPath('miscicons', 'points')
                },
                tpl : '<img src="{photo_url}" />'
             },

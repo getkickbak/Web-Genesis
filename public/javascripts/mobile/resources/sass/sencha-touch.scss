@@ -381,6 +381,9 @@ body {
    white-space:normal;         
 }
 
+.round {
+   @if $include-border-radius { @include border-radius(0.5em); }
+}
 
 //------------------------------------------------------------------------------
 // ListField
@@ -780,30 +783,73 @@ body {
 //------------------------------------------------------------------------------
 // Merchant Account Page and Merchant Prize Page
 //------------------------------------------------------------------------------
-.merchantPagePanel {
-   //background-image: url('http://img1.jurko.net/wall/paper/donald_duck_4.jpg');
-   background-position: center;
-   /* Make the background image cover the area of the <div>, and clip the excess */
-   background-size: cover;
-   //padding : $panelTopGap $panelGap 0 $panelGap;
-   .container {
-     //height : $icon-size;
-     background: rgba(0,0,0,0.3) center center no-repeat;
-     color: white;
-     padding : $panelTopGap $panelGap;
+.merchantMain {
+   .tbPanel {
+      background-position: center;
+      background-size: cover;
+      .container {
+        background: rgba(0,0,0,0.3) center center no-repeat;
+        color: white;
+        padding : $panelTopGap $panelGap;
+      }
+      .coinphoto, .visitsphoto {
+        height:$icon-size;
+        img {
+           width:$icon-size;
+           max-height : $icon-size;
+           margin-right : $panelGap;
+        }
+      }
+      .points, .visits {
+        line-height:$icon-size;
+        font-size:$xlargeFontSize*1.25;
+        text-align:center;
+      }
    }
-   .coinphoto, .visitsphoto {
-     height:$icon-size;
-     img {
-        width:$icon-size;
-        max-height : $icon-size;
-        margin-right : $panelGap;
-     }
+   .prizeWonPanel {
+      @if $include-border-radius { @include border-radius(0.5em); }
+      border:1px solid #E7E7E8;
+      position:relative;
+      margin: 0 $panelGap $panelTopGap $panelGap;
+      min-height : $icon-size;
+      .x-innerhtml {
+        margin :0 !important;
+        padding:0 !important;
+      }
+      .detailsWrapper {
+         background-color: #F3F3F4;
+         padding-left:$icon-size + 10px;
+         .itemTitle {
+            font-size:$normalFontSize !important;
+            line-height:$icon-size;
+         }
+      }
+      .photo {
+         position:absolute;
+         @include custom-linear-gradient(#F3F3F4 10%, #D1D2D4 85%, top);
+         height:$icon-size;
+         top : 0;
+         left : 0;
+         img {
+            width : $icon-size;
+            max-height : $icon-size;
+         }
+      }
    }
-   .points, .visits {
-     line-height:$icon-size;
-     font-size:$xlargeFontSize*1.25;
-     text-align:center;
+   .descPanel {
+      padding: $panelTopGap $panelGap;
+      @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
+      @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+   }
+   .feedPanel {
+      @extend .listNoScrollWrapper;
+      @extend .viewport;
+      .listItemDetailsWrapper {
+         .itemTitle {
+            font-weight:bold;
+            font-size:$largeFontSize !important;
+         }
+      }
    }
 }
 
@@ -840,7 +886,7 @@ body {
 }
 
 //------------------------------------------------------------------------------
-// Merchant Account Page and Merchant Prize Page
+// Rewards Page
 //------------------------------------------------------------------------------
 .rewardItem {
    .title {
@@ -889,64 +935,7 @@ body {
       }
    }
 }
-//------------------------------------------------------------------------------
-// Merchant Account
-//------------------------------------------------------------------------------
-.merchantDescPanel {
-   padding: $panelTopGap $panelGap;
-   @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
-   @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
-}
 
-.ptsEarnPanelHdr, .merchantFeedPanelHdr, .merchantContactPanelHdr, .merchantDescPanelHdr {
-   &.x-toolbar {
-      height : $global-row-height*0.75;
-      @if $include-border-radius { @include border-top-radius($panelBorderRadius); }
-   }
-   .x-title {
-      font-size:$normalFontSize;
-   }
-   margin:0em $panelGap;
-}
-
-.ptsEarnPanel {
-   padding:$panelGap*0.5;
-   //border: 1px solid darken($list-bg-color, 15%);
-   @if $include-border-radius { @include border-radius($panelBorderRadius); }
-   @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
-   .x-inner {
-     margin:0 !important;
-     height:$icon-size;
-   }
-   .photo img {
-      width:$icon-size;
-   }
-   .points {
-     font-size:$xlargeFontSize*1.25;
-     text-align:center;
-     .x-innerhtml {
-        line-height:$xlargeFontSize*1.25;
-     }
-   }
-}
-
-.merchantFeedPanel {
-   @extend .listNoScrollWrapper;
-   @extend .viewport;
-   .listItemDetailsWrapper {
-      //display:table-cell;
-      //height:$icon-size;
-      //vertical-align:middle;
-      .itemTitle {
-         font-weight:bold;
-         font-size:$largeFontSize !important;
-      }
-   }
-}
-
-//------------------------------------------------------------------------------
-// Rewards & Redemption Page
-//------------------------------------------------------------------------------
 .rewardsRedemptionsPanelHdr {
    &.x-toolbar {
       height : $global-row-height*0.75;
@@ -956,59 +945,50 @@ body {
    }
    //margin:0em $panelGap;  
 }
-//------------------------------------------------------------------------------
-// Rewards Page
-//------------------------------------------------------------------------------
-.earnPtsPanelHdr {
-   &.x-toolbar { 
-      height : $global-row-height*0.75;
-   }
-   .x-title {
-      font-size:$normalFontSize;
-   }
-   //margin:0em $panelGap;
-}
-.rewardsMainCalculator {
-   //background : url('')
-   background : black;
-   .x-field-text .x-input-el {
-      font-size:$xlargeFontSize*2;
-      padding: $panelGap/4;
-      min-height: 1.0em + $panelGap/2;
-      text-align:right;
-   }
-   .dialpad {
-      .x-container .x-inner {
-          margin-top:$panelTopGap;
-      }
-      .x-button {
-          margin-left:$panelGap;
-          .x-button-label {
-             font-size:$xlargeFontSize*1.25;
-          }
-      }
-      .x-button:last-child {
-          margin-right:$panelGap;        
-      }
-   }
-   .x-button.separator {
-      margin-top :$panelTopGap;
-   }
-}
-.qrcodeContainer  {
-   background : white;
-   .x-inner {
-      margin: $panelTopGap*2 $panelGap*2;
-   }
-   .qrcode {
-      background-position: center center;
-      background-repeat: no-repeat;
-      background-size: contain;
-   }
-   .done {
+
+.rewardsServerMain {
+   .rewardsMainCalculator {
       background : black;
+      .x-field-text .x-input-el {
+         font-size:$xlargeFontSize*2;
+         padding: $panelGap/4;
+         min-height: 1.0em + $panelGap/2;
+         text-align:right;
+      }
+      .dialpad {
+         .x-container .x-inner {
+             margin-top:$panelTopGap;
+         }
+         .x-button {
+             margin-left:$panelGap;
+             .x-button-label {
+                font-size:$xlargeFontSize*1.25;
+             }
+         }
+         .x-button:last-child {
+             margin-right:$panelGap;        
+         }
+      }
+      .x-button.separator {
+         margin-top :$panelTopGap;
+      }
+   }
+   .qrcodeContainer  {
+      background : white;
+      .x-inner {
+         margin: $panelTopGap*2 $panelGap*2;
+      }
+      .qrcode {
+         background-position: center center;
+         background-repeat: no-repeat;
+         background-size: contain;
+      }
+      .done {
+         background : black;
+      }
    }
 }
+
 .rewardsMain, .rewardsCart {
    @extend .listScrollIndexWrapper;
    .x-inner div[id|=ext-element] {
@@ -1065,6 +1045,14 @@ body {
          }
       }
    }
+   .earnPtsPanelHdr {
+      &.x-toolbar { 
+         height : $global-row-height*0.75;
+      }
+      .x-title {
+         font-size:$normalFontSize;
+      }
+   }
 }
 
 .rewardsCart {
@@ -1080,10 +1068,41 @@ body {
       text-align:right;
    }
 }
-
 //------------------------------------------------------------------------------
 // Redemptions Page
 //------------------------------------------------------------------------------
+.ptsEarnPanelHdr, .feedPanelHdr, .descPanelHdr {
+   &.x-toolbar {
+      height : $global-row-height*0.75;
+      @if $include-border-radius { @include border-top-radius($panelBorderRadius); }
+   }
+   .x-title {
+      font-size:$normalFontSize;
+   }
+   margin:0em $panelGap;
+}
+
+.ptsEarnPanel {
+   padding:$panelGap*0.5;
+   //border: 1px solid darken($list-bg-color, 15%);
+   @if $include-border-radius { @include border-radius($panelBorderRadius); }
+   @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+   .x-inner {
+     margin:0 !important;
+     height:$icon-size;
+   }
+   .photo img {
+      width:$icon-size;
+   }
+   .points {
+     font-size:$xlargeFontSize*1.25;
+     text-align:center;
+     .x-innerhtml {
+        line-height:$xlargeFontSize*1.25;
+     }
+   }
+}
+
 .redemptionsMain {
    .ptsEarnPanelHdr:first-child {
       margin-top:$panelTopGap;
@@ -1117,21 +1136,6 @@ body {
 //------------------------------------------------------------------------------
 // Accounts Page
 //------------------------------------------------------------------------------
-.merchatPrizesList {
-   @extend .listScrollWrapper;
-   &.x-list .x-list-item .x-list-item-label {
-      .listItemDetailsWrapper {
-         .itemTitle {
-            line-height : $icon-size;
-            font-size:$largeFontSize !important;
-            font-weight:bold;
-         }
-      }
-   }
-}
-//------------------------------------------------------------------------------
-// Accounts Page
-//------------------------------------------------------------------------------
 .accountsMain {
    .accountsPanelHdr {
       @extend .ptsEarnPanelHdr;
@@ -1154,7 +1158,7 @@ body {
 }
 
 //------------------------------------------------------------------------------
-// Accounts Page
+// Photo Upload Page
 //------------------------------------------------------------------------------
 .photoUploadPage {
    .background {

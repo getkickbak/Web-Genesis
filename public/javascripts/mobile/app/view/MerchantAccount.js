@@ -5,6 +5,8 @@ Ext.define('Genesis.view.MerchantAccount',
    alias : 'widget.merchantaccountview',
    config :
    {
+      tag : 'merchantMain',
+      cls : 'merchantMain',
       title : 'Venue Name',
       changeTitle : false,
       scrollable : 'vertical',
@@ -16,7 +18,7 @@ Ext.define('Genesis.view.MerchantAccount',
       },
       items : [
       {
-         tag : 'menchantPagePanel',
+         tag : 'tbPanel',
          xtype : 'dataview',
          store :
          {
@@ -33,71 +35,39 @@ Ext.define('Genesis.view.MerchantAccount',
       // Prizes won by customers!
       // -----------------------------------------------------------------------
       {
-         xtype : 'container',
-         tag : 'merchantFeedContainer',
-         layout :
+         tag : 'prizeWonPanel',
+         xtype : 'component',
+         cls : 'prizeWonPanel',
+         tpl : Ext.create('Ext.XTemplate',
+         // @formatter:off
+         '<div class="photo">'+
+            '<img src="{[this.getPhoto(values)]}"/>'+
+         '</div>',
+         '<div class="detailsWrapper">',
+            '<div class="itemTitle">{[this.getTitle(values)]}</div>',
+         '</div>',
+         // @formatter:on
          {
-            type : 'vbox',
-            align : 'stretch',
-            pack : 'start'
-         },
-         items : [
-         {
-            xtype : 'toolbar',
-            cls : 'merchantFeedPanelHdr',
-            centered : false,
-            items : [
+            getPhoto : function(values)
             {
-               xtype : 'title',
-               title : 'Prizes won this month'
-            },
-            {
-               xtype : 'spacer'
-            }]
-         },
-         {
-            tag : 'menchantPrizeWonPanel',
-            xtype : 'dataview',
-            // @formatter:off
-            itemTpl : Ext.create('Ext.XTemplate',
-            '<div class="photo">'+
-               '<img src="{[this.getPhoto(values)]}"/>'+
-            '</div>',
-            '<div class="listItemDetailsWrapper">',
-               '<div class="itemTitle">{[this.getTitle(values)]}</div>',
-               '<div class="itemDesc">{[this.getDesc(values)]}</div>',
-            '</div>',
-            // @formatter:on
-            {
-               getPhoto : function(values)
+               if(!values.photo)
                {
-                  if(!values.photo)
-                  {
-                     return Genesis.view.client.Rewards.getPhoto(
-                     {
-                        value : values['reward_type']
-                     });
-                  }
-                  return values.photo.url;
-               },
-               getTitle : function(values)
-               {
-                  return values['reward_title'];
-               },
-               getDesc : function(values)
-               {
-                  return values['reward_text'];
+                  return Genesis.constants.getIconPath('miscicons', 'prizes');
                }
-            }),
-         }]
+               return values.photo.url;
+            },
+            getTitle : function(values)
+            {
+               return values['winners_count'] + ' Prizes won this month at current Location';
+            }
+         }),
       },
-
       // -----------------------------------------------------------------------
       // What can I get ?
       // -----------------------------------------------------------------------
       {
          xtype : 'container',
-         tag : 'merchantFeedContainer',
+         tag : 'feedContainer',
          layout :
          {
             type : 'vbox',
@@ -107,7 +77,7 @@ Ext.define('Genesis.view.MerchantAccount',
          items : [
          {
             xtype : 'toolbar',
-            cls : 'merchantFeedPanelHdr',
+            cls : 'feedPanelHdr',
             centered : false,
             items : [
             {
@@ -124,7 +94,7 @@ Ext.define('Genesis.view.MerchantAccount',
             ui : 'bottom-round',
             store : 'EligibleRewardsStore',
             emptyText : ' ',
-            cls : 'merchantFeedPanel separator',
+            cls : 'feedPanel separator',
             // @formatter:off
             itemTpl : Ext.create('Ext.XTemplate',
             '<div class="photo">'+
@@ -172,7 +142,7 @@ Ext.define('Genesis.view.MerchantAccount',
       // -----------------------------------------------------------------------
       {
          xtype : 'container',
-         tag : 'merchantDescContainer',
+         tag : 'descContainer',
          layout :
          {
             type : 'vbox',
@@ -182,7 +152,7 @@ Ext.define('Genesis.view.MerchantAccount',
          items : [
          {
             xtype : 'toolbar',
-            cls : 'merchantDescPanelHdr',
+            cls : 'descPanelHdr',
             centered : false,
             items : [
             {
@@ -195,8 +165,8 @@ Ext.define('Genesis.view.MerchantAccount',
          },
          {
             xtype : 'container',
-            cls : 'merchantDescPanel separator',
-            tag : 'merchantDescPanel',
+            cls : 'descPanel separator',
+            tag : 'descPanel',
             tpl : '{desc}'
          }]
       },

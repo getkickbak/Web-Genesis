@@ -12,6 +12,7 @@ Ext.define('Genesis.view.server.Rewards',
       {
          xtype : 'container',
          tag : 'rewards',
+         cls : 'rewardsServerMain',
          flex : 1,
          layout :
          {
@@ -41,7 +42,6 @@ Ext.define('Genesis.view.server.Rewards',
             {
                docked : 'top',
                xtype : 'toolbar',
-               cls : 'earnPtsPanelHdr',
                centered : false,
                defaults :
                {

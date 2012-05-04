@@ -20,18 +20,20 @@ Ext.define('Genesis.controller.Merchants',
             autoCreate : true,
             xtype : 'merchantaccountview'
          },
+         merchantMain : 'merchantaccountview container[tag=merchantMain]',
+         tbPanel : 'merchantaccountview dataview[tag=tbPanel]',
+         prizeWonPanel : 'merchantaccountview component[tag=prizeWonPanel]',
+         feedContainer : 'merchantaccountview container[tag=feedContainer]',
+         descContainer : 'merchantaccountview container[tag=descContainer]',
+         descPanel : 'merchantaccountview container[tag=descPanel]',
+         //address : 'merchantaccountview component[tag=address]',
+         //stats : 'merchantaccountview formpanel[tag=stats]',
          merchantDetails :
          {
             selector : 'merchantdetailsview',
             autoCreate : true,
             xtype : 'merchantdetailsview'
          },
-         pagePanel : 'merchantaccountview dataview[tag=menchantPagePanel]',
-         merchantFeedContainer : 'merchantaccountview container[tag=merchantFeedContainer]',
-         merchantDescContainer : 'merchantaccountview container[tag=merchantDescContainer]',
-         merchantDescPanel : 'merchantaccountview container[tag=merchantDescPanel]',
-         //merchantAddress : 'merchantaccountview component[tag=merchantAddress]',
-         //merchantStats : 'merchantaccountview formpanel[tag=merchantStats]',
          mapBtn : 'viewportview button[tag=mapBtn]',
          shareBtn : 'viewportview button[tag=shareBtn]',
          checkinBtn : 'viewportview button[tag=checkin]',
@@ -177,6 +179,17 @@ Ext.define('Genesis.controller.Merchants',
    // --------------------------------------------------------------------------
    // Merchant Account Page
    // --------------------------------------------------------------------------
+   onUpdateWinnersCount : function(metaData)
+   {
+      var panel = this.getPrizeWonPanel();
+      // Initial Main Page Object
+      if(!panel)
+      {
+         this.getMain();
+         panel = this.getPrizeWonPanel();
+      }
+      panel.setData(metaData);
+   },
    onMainActivate : function(oldActiveItem, c, activeItem, eOpts)
    {
       var me = this;
@@ -193,29 +206,29 @@ Ext.define('Genesis.controller.Merchants',
       var checkedInMatch = (checkedIn && (cvenue.getId() == venueId));
 
       // Refresh Merchant Panel Info
-      me.getPagePanel().getStore().setData(vrecord);
+      me.getTbPanel().getStore().setData(vrecord);
 
       //
       // If the CustomerId is not reserved for Exploring ...
       //
-      if(customerId > 0)
+      if(checkedInMatch)
       {
-         me.getMerchantDescContainer().hide();
-         me.getMerchantFeedContainer().show();
-         //me.getMerchantAddress().hide();
-         //me.getMerchantStats().show();
+         me.getDescContainer().hide();
+         me.getFeedContainer().show();
+         //me.getAddress().hide();
+         //me.getStats().show();
       }
       //
       // Explore Mode
       //
       else
       {
-         me.getMerchantFeedContainer().hide();
-         me.getMerchantDescPanel().setData(vrecord.getMerchant());
-         me.getMerchantDescContainer().show();
-         //me.getMerchantAddress().setData(vrecord.getData(true));
-         //me.getMerchantAddress().show();
-         //me.getMerchantStats().hide();
+         me.getFeedContainer().hide();
+         me.getDescPanel().setData(vrecord.getMerchant());
+         me.getDescContainer().show();
+         //me.getAddress().setData(vrecord.getData(true));
+         //me.getAddress().show();
+         //me.getStats().hide();
       }
 
       //
