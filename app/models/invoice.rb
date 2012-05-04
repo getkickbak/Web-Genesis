@@ -4,6 +4,7 @@ class Invoice
   include DataMapper::Resource
   
   property :id, Serial
+  property :invoice_id, Integer, :required => true, :default => ""
   property :amount, Decimal, :required => true, :default => 0.00
   property :transactions, Integer, :required => true, :default => 0
   property :monthly_fee, Decimal, :required => true, :default => 0.00
@@ -15,7 +16,7 @@ class Invoice
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessible :amount, :transactions, :monthly_fee, :cost_per_trans
+  attr_accessible :invoice_id, :amount, :transactions, :monthly_fee, :cost_per_trans
   
   def self.create(merchant, invoice_info)
     now = Time.now
@@ -36,4 +37,8 @@ class Invoice
   end
   
   belongs_to :merchant
+  
+  def to_param
+    self.invoice_id
+  end
 end

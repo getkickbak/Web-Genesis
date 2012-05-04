@@ -13,7 +13,7 @@ module Business
     end
     
     def show
-      @invoice = Invoice.get(params[:id]) || not_found
+      @invoice = Invoice.first(:invoice_id => params[:id]) || not_found
       authorize! :read, @invoice
 
       respond_to do |format|
