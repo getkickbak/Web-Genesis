@@ -116,7 +116,7 @@ class Api::V1::ChallengesController < ApplicationController
       aes = Aes.new('128', 'CBC')
       decrypted = aes.decrypt(auth_data, auth_code, iv)
       decrypted_data = JSON.parse(decrypted)
-      if (decrypted_data[:expiry_date] >= Date.today) && (not EarnRewardRecord.first(:data => data).nil?)
+      if ((decrypted_data[:type] == "earn_points") && decrypted_data[:expiry_date] >= Date.today) && (not EarnRewardRecord.first(:data => data).nil?)
         return true
       end
       return false

@@ -5,6 +5,7 @@ class MerchantAbility
     @merchant = merchant
     can :manage, Merchant, :id => @merchant.id
     can [:read, :update], [Coupon], :order => { :deal => { :merchant => {:id => @merchant.id } } }
+    can :read, Invoice, :merchant => { :id => @merchant.id }
     can :manage, CreditCard
     can :manage, Challenge, :merchant => { :id => @merchant.id }
     can :manage, Venue, :merchant => { :id => @merchant.id }

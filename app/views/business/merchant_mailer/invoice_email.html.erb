@@ -1,0 +1,29 @@
+Invoice #<%= @invoice.invoice_id %>
+<br>
+Receipt Date: <%= Time.now.strftime("%m/%d/%Y") %>
+<br>
+Order Total: $ <%= @invoice.amount %>
+<br>
+<br>
+Billed To: <%= @invoice.merchant.name %>
+<br>
+<br>
+Monthly Fee: $ <%= @invoice.monthly_fee %>
+<br>
+# of Transactions: <%= @invoice.transactions %>
+<br>
+Transactions Costs: $ <%= @invoice.transactions * @invoice.cost_per_trans %>
+<br>
+Total Amount Billed: $ <%= @invoice.amount %>
+<br>
+<br>
+Your credit card has been charged.
+<br>
+<br>
+You can view your receipt online at https://merchant.getkickbak.com/invoices/<%= @invoice.invoice_id %>
+<br>
+<br>
+If you have any questions please contact us at billing@getkickbak.com or 1-866-518-9271.
+<br>
+<br>
+KICKBAK, Inc
