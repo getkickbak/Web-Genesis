@@ -24,12 +24,6 @@ Ext.define('Genesis.view.Viewport',
          {
             iconMask : true
          },
-         rightButton :
-         {
-            align : 'right',
-            iconMask : true,
-            iconCls : 'check_black1'
-         },
          docked : 'top',
          cls : 'navigationBarTop',
          layout :
@@ -105,7 +99,7 @@ Ext.define('Genesis.view.Viewport',
          {
             align : 'right',
             tag : 'info',
-            iconCls : 'info_plain',
+            iconCls : 'info',
             destroy : function()
             {
                this.actions.destroy();
@@ -145,12 +139,6 @@ Ext.define('Genesis.view.Viewport',
                }
                this.actions.show();
             }
-         },
-         {
-            align : 'right',
-            tag : 'main',
-            iconCls : 'check_black1',
-            hidden : true
          },
          {
             align : 'right',
@@ -380,9 +368,11 @@ Ext.define('Genesis.view.Viewport',
          // Get current Page Title name
          // Either it's the current venue we are browsing, or the one we checked-in
          //
-         var vrecord = ((oldActiveItem && oldActiveItem.getMerchant) ? oldActiveItem.getMerchant() : null) || _application.getController('Viewport').getVenue();
-
-         activeItem.getInitialConfig().title = vrecord.get('name');
+         var vrecord = _application.getController('Viewport').getVenue();
+         if(vrecord)
+         {
+            activeItem.getInitialConfig().title = vrecord.get('name');
+         }
       }
       if(oldActiveItem)
       {
@@ -493,5 +483,15 @@ Ext.define('Genesis.view.Viewport',
       var count = me.stack.length;
 
       this.pop(count);
+   },
+   silentPop : function(count)
+   {
+      var i;
+      var bar = this.getNavigationBar();
+      for( i = 0; i < count; i++)
+      {
+         this.stack.pop();
+         bar.backButtonStack.pop();
+      }
    }
 });

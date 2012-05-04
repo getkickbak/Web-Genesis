@@ -45,7 +45,7 @@ Ext.define('Genesis.view.ChallengePage',
          //
          {
             tag : 'doit',
-            iconCls : 'doit',
+            iconCls : 'dochallenges',
             title : 'Do it!'
          },
          //

@@ -95,26 +95,15 @@ Ext.define('Genesis.view.widgets.ChallengeMenuItem',
    {
       getPhoto : function(type)
       {
-         var photo_url;
-         switch (type.value)
+         var photo_url = null;
+         var value = type.value;
+         switch (value)
          {
-            case 'birthday' :
-               photo_url = "resources/img/sprites/birthday.jpg";
-               break;
-            case 'menu' :
-               photo_url = "resources/img/sprites/menu.jpg";
-               break;
-            case 'photo' :
-               photo_url = "resources/img/sprites/photo.jpg";
-               break;
-            case 'referral' :
-               photo_url = "resources/img/sprites/referral.jpg";
-               break;
-            case 'vip' :
-               photo_url = "resources/img/sprites/checkin.jpg";
-               break;
             case 'custom' :
-               photo_url = "resources/img/sprites/star.jpg";
+               value = 'mystery';
+            default :
+               photo_url = Genesis.constants.getIconPath('mainicons', value);
+               console.debug("Icon Path [" + photo_url + "]");
                break;
          }
          return photo_url;

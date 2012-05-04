@@ -9,7 +9,7 @@
          "require_verif": "true",
          "points": 1,
          "photo": {
-            "url": "resources/img/sprites/menu.jpg"
+            "url": "resources/themes/images/v1/mainicons/menu.png"
          }
       }, {
          "type": {
@@ -20,7 +20,7 @@
          "require_verif": "false",
          "points": 1,
          "photo": {
-            "url": "resources/img/sprites/checkin.jpg"
+            "url": "resources/themes/images/v1/mainicons/checkin.png"
          }
       }, {
          "type": {
@@ -31,7 +31,7 @@
          "require_verif": "false",
          "points": 1,
          "photo": {
-            "url": "resources/img/sprites/photo.jpg"
+            "url": "resources/themes/images/v1/mainicons/photo.png"
          }
       }, {
          "type": {
@@ -42,7 +42,7 @@
          "require_verif": "true",
          "points": 1,
          "photo_": {
-            "url": "resources/img/sprites/birthday.jpg"
+            "url": "resources/themes/images/v1/mainicons/birthday.png"
          }
       }, {
          "type": {
@@ -53,7 +53,7 @@
          "require_verif": "false",
          "points": 1,
          "photo": {
-            "url": "resources/img/sprites/referral.jpg"
+            "url": "resources/themes/images/v1/mainicons/referral.png"
          }
       }, {
          "type": {
@@ -64,7 +64,7 @@
          "require_verif": "false",
          "points": 1,
          "photo": {
-            "url": ""
+            "url": "resources/themes/images/v1/mainicons/mystery.png"
          }
       }
    ]

@@ -42,7 +42,6 @@ Ext.define('Genesis.controller.MainPage',
             xtype : 'mainpageview'
          },
          mainCarousel : 'mainpageview',
-         mainBtn : 'viewportview button[tag=main]',
          infoBtn : 'viewportview button[tag=info]'
       },
       control :
@@ -365,7 +364,6 @@ Ext.define('Genesis.controller.MainPage',
    onActivate : function(c, eOpts)
    {
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
-      this.getMainBtn().hide();
    },
    onDeactivate : function(c, eOpts)
    {
@@ -377,7 +375,6 @@ Ext.define('Genesis.controller.MainPage',
    onLoginActivate : function(c, eOpts)
    {
       this.getInfoBtn().hide();
-      this.getMainBtn().hide();
    },
    onLoginDeactivate : function(c, eOpts)
    {

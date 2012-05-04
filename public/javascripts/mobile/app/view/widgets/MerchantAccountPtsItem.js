@@ -41,7 +41,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                cls : 'coinphoto',
                data :
                {
-                  photo_url : 'resources/img/sprites/coin.jpg'
+                  photo_url : Genesis.constants.getIconPath('miscicons','points')
                },
                tpl : '<img src="{photo_url}" />'
             },
@@ -51,7 +51,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                cls : 'visitsphoto',
                data :
                {
-                  photo_url : 'resources/img/sprites/coin.jpg'
+                  photo_url : Genesis.constants.getIconPath('miscicons','points')
                },
                tpl : '<img src="{photo_url}" />'
             },

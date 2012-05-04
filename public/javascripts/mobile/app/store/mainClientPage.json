@@ -2,37 +2,37 @@
    "data": [
       {
          "name": "Accounts",
-         "photo_url": "resources/img/sprites/account.jpg",
+         "photo_url": "resources/themes/images/v1/mainicons/accounts.png",
          "desc": "Accounts",
          "pageCntlr": "Accounts"
       }, {
          "name": "Settings",
-         "photo_url": "resources/img/sprites/settings.jpg",
+         "photo_url": "resources/themes/images/v1/mainicons/settings.png",
          "desc": "Settings",
          "pageCntlr": "Settings",
          "subFeature": "client",
       }, {
          "name": "Check-ins",
-         "photo_url": "resources/img/sprites/checkin.jpg",
+         "photo_url": "resources/themes/images/v1/mainicons/checkin.png",
          "desc": "Check-ins Menu for Merchants Nearby",
          "pageCntlr": "Checkins",
          "subFeature": "checkin"
       }, {
          "name": "Explore",
-         "photo_url": "resources/img/sprites/checkin.jpg",
+         "photo_url": "resources/themes/images/v1/mainicons/explore.png",
          "desc": "Explore Merchants Nearby",
          "pageCntlr": "Checkins",
          "subFeature": "explore"
       }, {
          "name": "Main Menu",
-         "photo_url": "resources/img/sprites/main.jpg",
+         "photo_url": "resources/themes/images/v1/mainicons/tocheckedinmerch.png",
          "desc": "Main Menu for your Checked-in Venue",
          "pageCntlr": "MainPage",
          "subFeature": "merchant",
          "hide" : "true"
       }, {
          "name": "Prizes",
-         "photo_url": "resources/img/sprites/prize.jpg",
+         "photo_url": "resources/themes/images/v1/mainicons/prizes.png",
          "desc": "Prizes Won by you",
          "pageCntlr": "Prizes"
       }

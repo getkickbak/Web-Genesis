@@ -5,30 +5,44 @@ Ext.define('Genesis.view.Prizes',
    alias : 'widget.prizesview',
    config :
    {
-      title : 'Prizes',
-      changeTitle : false,
+      title : 'Prizes Header',
+      changeTitle : true,
       scrollable : false,
       layout : 'fit'
    },
    beforeActivate : function(activeItem, oldActiveItem)
    {
-      var prizeMode = !(oldActiveItem && oldActiveItem.getXTypes().match('redemptionsclientview'));
-      activeItem.getInitialConfig().title = (prizeMode) ? 'Prizes' : 'Redeem Reward';
-      this.callParent(arguments);
-      if(!prizeMode)
+      var prizeMode = _application.getController('Prizes').getMode();
+      switch (prizeMode)
       {
-         var viewport = Ext.ComponentQuery.query('viewportview')[0];
-         viewport.setAnimationDir('up');
+         case 'showPrize':
+         case 'prizes' :
+            activeItem.getInitialConfig().title = 'Prizes';
+            break;
+         case 'reward' :
+            break;
+            activeItem.getInitialConfig().title = 'Rewards';
       }
+      this.callParent(arguments);
    },
    beforeDeactivate : function(activeItem, oldActiveItem)
    {
-      var prizeMode = !activeItem.getXTypes().match('redemptionsclientview');
       this.callParent(arguments);
-      if(!prizeMode)
+   },
+   statics :
+   {
+      getPhoto : function(type)
       {
-         var viewport = Ext.ComponentQuery.query('viewportview')[0];
-         viewport.setAnimationDir('up');
+         var photo_url = null;
+         switch (type.value)
+         {
+            case 'custom' :
+               break;
+            default :
+               photo_url = Genesis.constants.getIconPath('prizewon', type.value);
+               break;
+         }
+         return photo_url;
       }
    }
 });

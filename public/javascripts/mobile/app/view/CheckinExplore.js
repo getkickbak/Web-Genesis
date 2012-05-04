@@ -5,7 +5,7 @@ Ext.define('Genesis.view.CheckinExplore',
    alias : 'widget.checkinexploreview',
    config :
    {
-      title : 'Check-in Nearby Places',
+      title : 'Nearby Places',
       changeTitle : false,
       layout : 'fit',
       merchant : null,
@@ -83,10 +83,10 @@ Ext.define('Genesis.view.CheckinExplore',
       switch (this.mode)
       {
          case 'checkin':
-            this.getInitialConfig().title = 'Check-in Nearby Places';
+            this.getInitialConfig().title = 'Nearby Places';
             break;
          case 'explore' :
-            this.getInitialConfig().title = 'Explore Nearby Places';
+            this.getInitialConfig().title = 'Explore Places';
             break;
       }
       if(oldActiveItem)

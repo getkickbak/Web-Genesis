@@ -4,11 +4,10 @@ Ext.define('Genesis.navigation.Bar',
    requires : ['Ext.fx.layout.card.Style'],
    config :
    {
-      defaultBackButtonText : ' ',//'Back',
+      defaultBackButtonText : 'Back',
       altBackButtonText : 'Close',
       mode : 'slide',
       callbackFn : Ext.emptyFn,
-      //layout : 'card',
       listeners :
       {
          'activeitemchange' : 'onActiveItemChange'

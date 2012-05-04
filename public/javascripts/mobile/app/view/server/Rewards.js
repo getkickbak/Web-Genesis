@@ -171,47 +171,13 @@ Ext.define('Genesis.view.server.Rewards',
    {
       getPhoto : function(type)
       {
-         var photo_url;
+         var photo_url = null;
          switch (type.value)
          {
-            case 'appetizers' :
-               photo_url = "resources/img/sprites/shoes.jpg";
+            case 'custom' :
                break;
-            case 'bread' :
-               photo_url = "resources/img/sprites/heroburgers.jpg";
-               break;
-            case 'desserts' :
-               photo_url = "resources/img/sprites/springrolls.jpg";
-               break;
-            case 'drinks' :
-               photo_url = "resources/img/sprites/phoboga.jpg";
-               break;
-            case 'entrees' :
-               photo_url = "resources/img/sprites/star.jpg";
-               break;
-            case 'noodles' :
-               photo_url = "resources/img/sprites/star.jpg";
-               break;
-            case 'pasta' :
-               photo_url = "resources/img/sprites/star.jpg";
-               break;
-            case 'pastry' :
-               photo_url = "resources/img/sprites/star.jpg";
-               break;
-            case 'salad' :
-               photo_url = "resources/img/sprites/star.jpg";
-               break;
-            case 'sandwiches' :
-               photo_url = "resources/img/sprites/shoes.jpg";
-               break;
-            case 'side_dishes' :
-               photo_url = "resources/img/sprites/star.jpg";
-               break;
-            case 'soup' :
-               photo_url = "resources/img/sprites/star.jpg";
-               break;
-            case 'vip' :
-               photo_url = "resources/img/sprites/star.jpg";
+            default :
+               photo_url = Genesis.constants.getIconPath('fooditems', type.value);
                break;
          }
          return photo_url;

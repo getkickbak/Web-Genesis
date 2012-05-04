@@ -14,6 +14,11 @@ Genesis.constants =
     fbAccountId : null,
     fbResponse : null,
     */
+   themeName : 'v1',
+   getIconPath : function(type, name)
+   {
+      return 'resources/themes/images/' + this.themeName + '/' + type + '/' + name + '.png';
+   },
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',

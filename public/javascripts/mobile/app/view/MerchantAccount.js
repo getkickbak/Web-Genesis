@@ -6,7 +6,7 @@ Ext.define('Genesis.view.MerchantAccount',
    config :
    {
       title : 'Venue Name',
-      changeTitle : true,
+      changeTitle : false,
       scrollable : 'vertical',
       layout :
       {
@@ -232,7 +232,7 @@ Ext.define('Genesis.view.MerchantAccount',
             title : 'Home'
          },
          {
-            iconCls : 'prize',
+            iconCls : 'prizes',
             tag : 'prizes',
             badgeCls : 'x-badge round',
             title : 'Prizes'
@@ -260,17 +260,17 @@ Ext.define('Genesis.view.MerchantAccount',
             xtype : 'spacer'
          },
          {
-            iconCls : 'redemption',
+            iconCls : 'redeem',
             tag : 'redemption',
             title : 'Redeem'
          },
          {
-            iconCls : 'favorites_circle',
+            iconCls : 'tocheckedinmerch',
             tag : 'main',
             title : 'Main Menu'
          },
          {
-            iconCls : 'search1',
+            iconCls : 'explore',
             tag : 'browse',
             title : 'Explore'
          }]
@@ -279,16 +279,21 @@ Ext.define('Genesis.view.MerchantAccount',
    statics :
    {
    },
-   beforeActivate : function()
+   beforeActivate : function(activeItem, oldActiveItem)
+   {
+      var vrecord = ((oldActiveItem && oldActiveItem.getMerchant) ? oldActiveItem.getMerchant() : _application.getController('Viewport').getVenue());
+      if(vrecord)
+      {
+         activeItem.getInitialConfig().title = vrecord.get('name');
+      }
+   },
+   beforeDeactivate : function(activeItem, oldActiveItem)
    {
    },
-   beforeDeactivate : function()
+   afterActivate : function(activeItem, oldActiveItem)
    {
    },
-   afterActivate : function()
-   {
-   },
-   afterDeactivate : function()
+   afterDeactivate : function(activeItem, oldActiveItem)
    {
    }
 });

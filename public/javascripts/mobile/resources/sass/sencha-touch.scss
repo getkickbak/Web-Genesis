@@ -1,11 +1,17 @@
-// Let's start with the basics
-$base-color: #7c92ae;
+//------------------------------------------------------------------------------
+// Global Vars Default Theme Override
+//------------------------------------------------------------------------------
+//$base-color: #7c92ae;
+$base-color: #00adee;
 $base-gradient: 'smooth';
 
 // Forms
 //$form-dark: #FFF !default;
+$form-light: #0a78be;
+$form-field-bg-color : #F3F3F4;
 
 // Lists
+$list-bg-color: #F3F3F4;
 $list-active-gradient: 'bevel';
 $list-header-bg-color: transparentize(saturate($base-color, 10%), .25);
 $list-header-gradient: 'matte';
@@ -13,7 +19,51 @@ $list-header-gradient: 'matte';
 // Tabs
 $tabs-dark: #111;
 
+//------------------------------------------------------------------------------
+// Global Vars Theme
+//------------------------------------------------------------------------------
+
+// Icon Reference size
+$icon-size: 57px;
+// Panel Gaps
+$panelGap: 0.8em;
+$panelTopGap: 0.7em;
+$panelBorderRadius : 0.6em;
+// Font sizes
+$xsmallFontSize : 0.3em;
+$smallFontSize : 0.4em;
+$normalFontSize : 0.6em;
+$largeFontSize : 0.8em;
+$xlargeFontSize : 1.2em;
+// Theme Name
+$gtheme-name : 'v1';
+// Theme Path
+$theme-path : '../../../../../resources/themes';
+$theme-path-rel : '../themes';
+
+//------------------------------------------------------------------------------
+// Default Theme Includes
+//------------------------------------------------------------------------------
 @import 'sencha-touch/default/all';
+
+//------------------------------------------------------------------------------
+// Default Theme Function Overrides
+//------------------------------------------------------------------------------
+/**
+ * Includes a base64-encoded icon for use within tab bars and buttons (With the component parameter iconMask: true).
+ *
+ *     @include pictos-iconmask('attachment');
+ *
+ * @param {string} $name The name of the icon to be included. This is to match the name of the icon file (located at resources/themes/images/default/pictos) without its extention (.png).
+ */
+@mixin pictos-iconmask($name) {
+}
+@mixin toolbar-iconmask($name) {
+  .x-tab .x-button-icon.#{$name},
+  .x-button .x-button-icon.x-icon-mask.#{$name} {
+    -webkit-mask-image: theme_image($theme-path + "/images/" + $gtheme-name,  "toolbar/" + $name + ".png");
+  }
+}
 
 /**
  * Add a background radial gradient to a selector.
@@ -93,16 +143,12 @@ $tabs-dark: #111;
  * @param {color} $type Gradient style for the button, will automatically use "recessed" when pressed.
  */
 @mixin toolbar-button($bg-color, $type: $button-gradient){
-  &, .x-toolbar & {
+  & {
     border: 1px solid darken($bg-color, 20%);
     border-top-color: darken($bg-color, 15%);
     @include color-by-background($bg-color, 75%);
 
-    &.x-button-back:before, &.x-button-forward:before {
-      background: darken($bg-color, 20%);
-    }
-
-    &, &.x-button-back:after, &.x-button-forward:after {
+    & {
       @include custom-background-gradient($bg-color, top, false, $type);
     }
 
@@ -114,6 +160,16 @@ $tabs-dark: #111;
       &, &:after {
         @include custom-background-gradient(darken($bg-color, 3%), top, false, 'recessed');
       }
+    }
+  }
+  .x-toolbar & {
+    &.x-button-back:before, &.x-button-forward:before {
+      background: darken($bg-color, 20%);
+    }
+
+    //&.x-button-back, &.x-button-forward, &.x-button-back:after, &.x-button-forward:after {
+    &.x-button-back, &.x-button-forward, &:after, &:after {
+      background:transparent;
     }
   }
 }
@@ -135,6 +191,10 @@ $tabs-dark: #111;
   }
 }
 
+//------------------------------------------------------------------------------
+// Default Theme Includes and CSS Overrides
+//------------------------------------------------------------------------------
+
 @include sencha-panel;
 @include sencha-buttons;
 @include sencha-sheet;
@@ -153,23 +213,37 @@ $tabs-dark: #111;
 @include sencha-loading-spinner;
 
 //------------------------------------------------------------------------------
-// Global Vars
+// Badges Theme
 //------------------------------------------------------------------------------
-$icon-size: 57px;
-$panelGap: 0.8em;
-$panelTopGap: 0.7em;
-$panelBorderRadius : 0.6em;
-$xsmallFontSize : 0.3em;
-$smallFontSize : 0.4em;
-$normalFontSize : 0.6em;
-$largeFontSize : 0.8em;
-$xlargeFontSize : 1.2em;
 
 $badgePoints-bg-color: darken(green, 10%) !default;
 $badgePoints-bg-gradient: $base-gradient !default;
 
+//------------------------------------------------------------------------------
+// Theme Icons
+//------------------------------------------------------------------------------
+@include toolbar-iconmask('accounts');
+@include toolbar-iconmask('back');
+//@include toolbar-iconmask('dochallenges');
+@include toolbar-iconmask('challenges');
+@include toolbar-iconmask('close');
+@include toolbar-iconmask('delete');
+@include toolbar-iconmask('disclose');
+@include toolbar-iconmask('earnpointscart');
+@include toolbar-iconmask('explore');
+@include toolbar-iconmask('home');
+@include toolbar-iconmask('info');
+@include toolbar-iconmask('mail');
+@include toolbar-iconmask('order');
+@include toolbar-iconmask('prizes');
+@include toolbar-iconmask('redeem');
+@include toolbar-iconmask('rewards');
+@include toolbar-iconmask('share');
+@include toolbar-iconmask('tocheckedinmerch');
+//@include toolbar-iconmask('checkin');
+//@include toolbar-iconmask('maps');
 
-//Enhancements
+/*
 @include pictos-iconmask('list');
 @include pictos-iconmask('info_plain');
 @include pictos-iconmask('share');
@@ -181,12 +255,16 @@ $badgePoints-bg-gradient: $base-gradient !default;
 @include pictos-iconmask('favorites_circle');
 @include pictos-iconmask('check_black1');
 @include pictos-iconmask('delete_black2');
+*/
 
+//------------------------------------------------------------------------------
+// Default Theme CSS Overrides
+//------------------------------------------------------------------------------
 body {
 }
 
 .prizeCheck {
-  background-image : url(../img/green_roulette_bg.png);
+  background-image : theme_image($theme-path + "/images/" + $gtheme-name, "green_roulette_bg" + ".png");
   background-position : center center;
   background-size : cover;
 }
@@ -318,7 +396,7 @@ body {
    @include insertion(1em, 1em, 50%, auto);
    right: ($form-spacing + .1em);
    -webkit-mask-size: 1em;
-   -webkit-mask-image: theme_image($theme-name, "disclosure2.png");
+   -webkit-mask-image: theme_image($theme-path + "/images/" + $gtheme-name, "toolbar/" + "disclose" + ".png");
    margin-top: -.5em;
 }
   
@@ -338,7 +416,7 @@ body {
    .facebook {
       .x-field-input .x-clear-icon {
          position:absolute;
-         background: theme_image("../../../../../resources/images/"+$theme-name, "facebook.png") no-repeat 50% 50%;
+         background: theme_image($theme-path + "/images/" + $gtheme-name,  "toolbar/" + "facebook" + ".png") no-repeat 50% 50%;
          z-index:3;
       }
    }
@@ -388,7 +466,7 @@ body {
    }
    */
    &.x-list-ungrouped .x-list-item-label, &.x-list-grouped .x-list-item-label {
-      background : transparent;
+      background : #F3F3F4;
    }
    &.x-list-ungrouped .x-list-item:last-child {
      margin : 0;
@@ -410,6 +488,17 @@ body {
 //------------------------------------------------------------------------------
 .x-button {
    @include toolbar-button(#F3F3F4, $button-gradient);
+   .x-button-forward, .x-button-back {
+      &:before, &:after {
+         //-webkit-mask: $mask-offset 0 theme_image($theme-name, "tip.png") no-repeat;
+      }
+   }
+   .x-button-forward,
+   .x-toolbar .x-button-forward {
+      &:before, &:after {
+         //-webkit-mask: -$mask-offset 0 theme_image($theme-name, "tip_right.png") no-repeat;
+      }
+   }
 }
 
 .x-button-large, .x-toolbar .x-button-large {
@@ -659,7 +748,7 @@ body {
 // Login Pages
 //------------------------------------------------------------------------------
 .viewport {
-   @include custom-radial-gradient(#F3F3F4 40%, #D1D2D4 70%, center center, url('../img/texture.png'));
+   @include custom-radial-gradient(#F3F3F4 40%, #D1D2D4 70%, center center, url($theme-path-rel + '/images/' + $gtheme-name + '/texture.png'));
    background-repeat : repeat;
    background-size : contain;
 }
@@ -667,7 +756,7 @@ body {
    background-color:transparent;
    background-repeat : no-repeat;
    &.bgImage {
-      @include custom-radial-gradient(#00ADEE 50%, #0A78BE 80%, center center, url('../img/logohomescreen.png'));
+      @include custom-radial-gradient(#00ADEE 50%, #0A78BE 80%, center center, url($theme-path-rel + '/images/' + $gtheme-name + '/logohomescreen.png'));
       background-position : center center;
       background-size : 75%, 100%;
    }
@@ -843,6 +932,7 @@ body {
 
 .merchantFeedPanel {
    @extend .listNoScrollWrapper;
+   @extend .viewport;
    .listItemDetailsWrapper {
       //display:table-cell;
       //height:$icon-size;

@@ -2,19 +2,19 @@
    "data": [
       {
          "name": "Rewards",
-         "photo_url": "resources/img/sprites/rewards.jpg",
+         "photo_url": "resources/themes/images/v1/mainicons/rewards.png",
          "desc": "Rewards",
          "pageCntlr": "server.Rewards",
          "subFeature": "rewards"
       }, {
          "name": "Redemptions",
-         "photo_url": "resources/img/sprites/redemptions.jpg",
+         "photo_url": "resources/themes/images/v1/mainicons/redemptions.png",
          "desc": "Redemptions",
          "pageCntlr": "server.Redemptions",
          "subFeature": "redemptions"
       }, {
          "name": "Settings",
-         "photo_url": "resources/img/sprites/settings.jpg",
+         "photo_url": "resources/themes/images/v1/mainicons/settings.png",
          "desc": "Settings",
          "pageCntlr": "Settings",
          "subFeature": "server"

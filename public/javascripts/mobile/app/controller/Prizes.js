@@ -86,28 +86,29 @@ Ext.define('Genesis.controller.Prizes',
          }
          else
          {
-            if(!this.initSound)
+            if(!me.initSound)
             {
-               this.initSound = true;
+               me.initSound = true;
                Ext.get('winPrizeSound').dom.addEventListener('ended', function()
                {
                   if(flag & 0x10)
                   {
-                     me.popView();
+                     vport.silentPop(1);
                   }
                   if((flag |= 0x01) == 0x11)
                   {
-                     vport.reset();
                      me.onShowPrize(records[0]);
                   }
                });
             }
+            /*
             vport.setEnableAnim(false);
             vport.getNavigationBar().setCallbackFn(function()
             {
                vport.setEnableAnim(true);
                vport.getNavigationBar().setCallbackFn(Ext.emptyFn);
             });
+            */
             //
             // Play the prize winning music!
             //
@@ -149,11 +150,10 @@ Ext.define('Genesis.controller.Prizes',
                {
                   if(flag & 0x01)
                   {
-                     me.popView();
+                     vport.silentPop(1);
                   }
                   if((flag |= 0x10) == 0x11)
                   {
-                     vport.reset();
                      me.onShowPrize(records[0]);
                   }
                }
