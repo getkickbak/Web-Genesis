@@ -42,7 +42,7 @@ module Business
       
       CreditCard.transaction do
         begin
-          credit_card = CreditCard.create({ :card_token => "test"})
+          credit_card = CreditCard.create(:card_token => "test")
           current_merchant.add_credit_card(credit_card)
           respond_to do |format|
             format.html { redirect_to credit_cards_path(:notice => t("business.credit_cards.create_success")) }
@@ -81,7 +81,7 @@ module Business
             }
           )        
           
-          ApplicaitonException.new unless result.success?
+          ApplicationException.new unless result.success?
           
           result = BILLING_GATEWAY.recurring(
             amount,
@@ -105,7 +105,7 @@ module Business
             }
           )
           if result.success?
-            credit_card = CreditCard.create(current_merchant.id)
+            credit_card = CreditCard.create(:card_token => current_merchant.id)
             current_merchant.add_credit_card(credit_card)
             current_merchant.payment_account_id = result.params['rbAccountId']
             current_merchant.save

@@ -11,7 +11,12 @@ module Business
     def summary_newsletter_email(merchant, stats)
       @merchant = merchant
       @stats = stats
-      mail(:to => 'wayofdragon@gmail.com', :subject => "Weekly Summary Newsletter - #{@merchant.name}")
+      mail(:from => "", :to => 'wayofdragon@gmail.com', :subject => "Weekly Summary Newsletter - #{@merchant.name}")
+    end
+    
+    def invoice_email(invoice)
+      @invoice = invoice
+      mail(:from => "", :to => 'wayofdragon@gmail.com', :subject => "Monthly KICKBAK Invoice ##{invoice.invoice_id}")
     end
   end
 end

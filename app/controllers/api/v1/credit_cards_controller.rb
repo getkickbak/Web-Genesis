@@ -4,6 +4,7 @@ class Api::V1::CreditCardsController < ApplicationController
 
   def index
     authorize! :read, CreditCard
+    
     result = BILLING_GATEWAY.query(current_user.id)
     @credit_card = CreditCardForm.new(
       :name => result.params['ordName'],
@@ -52,7 +53,7 @@ class Api::V1::CreditCardsController < ApplicationController
           }
         )
         if result.success?
-          credit_card = CreditCard.create(current_user.id)
+          credit_card = CreditCard.create(:card_token => current_user.id)
           current_user.add(credit_card)
           respond_to do |format|
             format.json { render :json => { :success => true, :message => 'Credit card was successfully added.' } }

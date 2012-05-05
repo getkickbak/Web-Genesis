@@ -1,7 +1,6 @@
 development:
-  COMMISSION: 2.9
-  PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
-  FEES_PAYER: EACHRECEIVER
+  MONTHLY_FEE: 19
+  COST_PER_TRANS: 0.1
   FILE_HOST: files.getkickbak.com
   PHOTO_HOST : photos.getkickbak.com
   AMAZON_FILES_BUCKET: files.getkickbak.com
@@ -10,9 +9,8 @@ development:
   DEBUG_MODE: true
   SIMULATOR_MODE: true
 test:  
-  COMMISSION: 2.9
-  PAYPAL_ACCOUNT: middle_1312472948_biz@gmail.com
-  FEES_PAYER: EACHRECEIVER
+  MONTHLY_FEE: 19
+  COST_PER_TRANS: 0.1
   FILE_HOST: files.getkickbak.com
   PHOTO_HOST : photos.getkickbak.com
   AMAZON_FILES_BUCKET: files.getkickbak.com
@@ -21,9 +19,8 @@ test:
   DEBUG_MODE: true
   SIMULATOR_MODE: true
 production:
-  COMMISSION: 2.9
-  PAYPAL_ACCOUNT: payment@justformyfriends.com
-  FEES_PAYER: EACHRECEIVER
+  MONTHLY_FEE: 19
+  COST_PER_TRANS: 0.1
   FILE_HOST: files.getkickbak.com
   PHOTO_HOST : photos.getkickbak.com
   AMAZON_FILES_BUCKET: files.getkickbak.com

@@ -1,0 +1,7 @@
+<h1>Listing Invoices</h1>
+
+<div class="content row">
+	<% @invoices.each do |invoice| %>
+	<div><%= link_to invoice.created_ts.strftime("%b %Y"), invoice_path(invoice) %></div>
+	<% end %>
+</div>
