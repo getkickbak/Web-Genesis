@@ -34,6 +34,8 @@
   <b>Status:</b>
   <%= @merchant.status %>
 </p>
-
+<div>
+	<%= button_to 'Login', merchant_session_url(:subdomain => "merchant", :auth_token => @merchant.authentication_token) %>	
+</div>
 <%= link_to 'Edit', edit_merchant_path(@merchant) %> |
 <%= link_to 'Back', merchants_path %>

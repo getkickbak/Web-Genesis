@@ -8,7 +8,7 @@ class Merchant
 
   devise :database_authenticatable, #:registerable, #:confirmable,
           :recoverable, :rememberable, :trackable, :timeoutable,
-          :validatable, :authentication_keys => [:email]
+          :validatable, :token_authenticatable, :authentication_keys => [:email]
           
   property :id, Serial
   property :name, String, :length => 24, :required => true, :default => ""
@@ -43,6 +43,8 @@ class Merchant
   mount_uploader :photo, MerchantPhotoUploader
   mount_uploader :alt_photo, MerchantPhotoUploader
 
+  before_save :ensure_authentication_token
+  
   validates_with_method :type_id, :method => :check_type_id
 
   def self.get_cache_key(id)
