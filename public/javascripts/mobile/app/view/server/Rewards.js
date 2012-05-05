@@ -139,7 +139,7 @@ Ext.define('Genesis.view.server.Rewards',
                cls : 'separator',
                tag : 'showQrCode',
                text : 'Show QRCode',
-               ui : 'yellow-large'
+               ui : 'orange-large'
             }]
          },
          // -------------------------------------------------------------------
@@ -162,7 +162,7 @@ Ext.define('Genesis.view.server.Rewards',
                cls : 'separator done',
                tag : 'done',
                text : 'Done',
-               ui : 'yellow-large'
+               ui : 'large'
             }]
          }]
       }]

@@ -4,6 +4,7 @@
 //$base-color: #7c92ae;
 $base-color: #00adee;
 $base-gradient: 'smooth';
+$include-default-icons : false;
 
 // Forms
 //$form-dark: #FFF !default;
@@ -13,11 +14,13 @@ $form-field-bg-color : #F3F3F4;
 // Lists
 $list-bg-color: #F3F3F4;
 $list-active-gradient: 'bevel';
-$list-header-bg-color: transparentize(saturate($base-color, 10%), .25);
+//$list-header-bg-color: transparentize(saturate($base-color, 10%), .25);
+$list-header-bg-color: #E86025;
 $list-header-gradient: 'matte';
 
 // Tabs
 $tabs-dark: #111;
+$include-toolbar-uis : false;
 
 //------------------------------------------------------------------------------
 // Global Vars Theme
@@ -101,7 +104,7 @@ $theme-path-rel : '../themes';
 @mixin custom-linear-gradient($start-color, $end-color, $position, $image : false) {
   background-color: $end-color;
   @if $image {
-     @include background-image($image, lienar-gradient($position, color_stops($start-color, $end-color)));
+     @include background-image($image, linear-gradient($position, color_stops($start-color, $end-color)));
   } @else {
      @include background-image(linear-gradient($position, color_stops($start-color, $end-color)));    
   }
@@ -144,8 +147,7 @@ $theme-path-rel : '../themes';
  */
 @mixin toolbar-button($bg-color, $type: $button-gradient){
   & {
-    border: 1px solid darken($bg-color, 20%);
-    border-top-color: darken($bg-color, 15%);
+    border: 1px solid #F3F3F4;
     @include color-by-background($bg-color, 75%);
 
     & {
@@ -177,6 +179,8 @@ $theme-path-rel : '../themes';
 @mixin sencha-button-ui($ui-label, $color, $gradient: $button-gradient) {
   .x-button.x-button-#{$ui-label}, .x-button.x-button-#{$ui-label}-round, .x-button.x-button-#{$ui-label}-small, .x-button.x-button-#{$ui-label}-large {
     @include toolbar-button($color, $gradient);
+    border: 1px solid darken($color, 20%);
+    border-top-color: darken($color, 15%);
   }
 
   .x-button.x-button-#{$ui-label}-round {
@@ -263,12 +267,94 @@ $badgePoints-bg-gradient: $base-gradient !default;
 body {
 }
 
-.prizeCheck {
-  background-image : theme_image($theme-path + "/images/" + $gtheme-name, "green_roulette_bg" + ".png");
-  background-position : center center;
-  background-size : cover;
+@-webkit-keyframes roulette-table-rotate {
+   0%{     -webkit-transform: rotate(0deg);   }         
+   4.17%{     -webkit-transform: rotate(15deg);   }
+   8.33%{  -webkit-transform: rotate(30deg);  }
+   12.5%{  -webkit-transform: rotate(45deg);  }
+   16.66%{ -webkit-transform: rotate(60deg);  }
+   20.83%{ -webkit-transform: rotate(75deg);  }
+   25.00%{    -webkit-transform: rotate(90deg);  }
+   29.17%{    -webkit-transform: rotate(105deg);  }
+   33.33%{ -webkit-transform: rotate(120deg); }
+   37.50%{ -webkit-transform: rotate(135deg); }
+   41.67%{ -webkit-transform: rotate(150deg); }
+   45.83%{ -webkit-transform: rotate(165deg); }
+   50.00%{    -webkit-transform: rotate(180deg); }
+   54.17%{    -webkit-transform: rotate(195deg); }
+   58.33%{ -webkit-transform: rotate(210deg); }
+   62.50%{ -webkit-transform: rotate(225deg); }
+   66.66%{ -webkit-transform: rotate(240deg); }
+   70.83%{ -webkit-transform: rotate(255deg); }
+   75.00%{    -webkit-transform: rotate(270deg); }
+   79.17%{    -webkit-transform: rotate(285deg); }
+   83.33%{ -webkit-transform: rotate(300deg); }
+   87.50%{ -webkit-transform: rotate(315deg); }
+   91.67%{   -webkit-transform: rotate(330deg); }
+   95.83%{   -webkit-transform: rotate(345deg); }
+   100%{   -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes roulette-table-rotate-back {
+   0%{     -webkit-transform: rotate(0deg);   }         
+   4.17%{     -webkit-transform: rotate(345deg);   }
+   8.33%{  -webkit-transform: rotate(330deg);  }
+   12.5%{  -webkit-transform: rotate(315deg);  }
+   16.66%{ -webkit-transform: rotate(300deg);  }
+   20.83%{ -webkit-transform: rotate(285deg);  }
+   25.00%{    -webkit-transform: rotate(270deg);  }
+   29.17%{    -webkit-transform: rotate(255deg);  }
+   33.33%{ -webkit-transform: rotate(240deg); }
+   37.50%{ -webkit-transform: rotate(225deg); }
+   41.67%{ -webkit-transform: rotate(210deg); }
+   45.83%{ -webkit-transform: rotate(195deg); }
+   50.00%{    -webkit-transform: rotate(180deg); }
+   54.17%{    -webkit-transform: rotate(165deg); }
+   58.33%{ -webkit-transform: rotate(150deg); }
+   62.50%{ -webkit-transform: rotate(135deg); }
+   66.66%{ -webkit-transform: rotate(120deg); }
+   70.83%{ -webkit-transform: rotate(105deg); }
+   75.00%{    -webkit-transform: rotate(90deg); }
+   79.17%{    -webkit-transform: rotate(75deg); }
+   83.33%{ -webkit-transform: rotate(60deg); }
+   87.50%{ -webkit-transform: rotate(45deg); }
+   91.67%{   -webkit-transform: rotate(30deg); }
+   95.83%{   -webkit-transform: rotate(15deg); }
+   100%{   -webkit-transform: rotate(0deg); }
 }
 
+.prizeCheck {
+   position:relative;
+   .rouletteBg, .rouletteTable, .rouletteBall {
+      top:0;
+      left:0;
+      position:absolute;
+      background-position : center center;
+      background-color:transparent;
+      background-repeat : no-repeat;
+      width:100%;
+      height:100%;
+   }
+   .rouletteBg {
+      background-image : theme_image($theme-path + "/images/" + $gtheme-name, "green_roulette_bg" + ".png");
+      background-size : cover;
+      z-index:1
+   }
+   .rouletteTable, .rouletteBall {
+      -webkit-transform-origin: 50% 50%;
+      background-size : contain;
+   }
+   .rouletteTable {
+      -webkit-animation: roulette-table-rotate 3.0s infinite linear;
+      background-image : theme_image($theme-path + "/images/" + $gtheme-name, "roulette2" + ".png");
+      z-index:2;
+   }
+   .rouletteBall {
+      -webkit-animation: roulette-table-rotate-back 5.0s infinite linear;
+      background-image : theme_image($theme-path + "/images/" + $gtheme-name, "ball" + ".png");
+      z-index:3;
+   }
+}
+      
 .navigationBarTop, .navigationBarBottom {
    .x-button {
       &.x-iconalign-top, &.x-iconalign-bottom {
@@ -289,6 +375,36 @@ body {
       font-size:$largeFontSize;
    }
 
+}
+
+.pointsphoto {
+   line-height:$icon-size;
+   font-size:$xlargeFontSize*1.25;
+   text-align:center;
+   padding-left:$icon-size + 10px;
+   position:relative;
+   &:before {
+      position:absolute;
+      z-index:1;
+      top:0;
+      left:0;
+      content:" ";
+      width : $icon-size;
+      height : $icon-size;
+      max-height: $icon-size;
+      background-position: top;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-color: transparent;
+      background-image: theme_image($theme-path + "/images/" + $gtheme-name,  "fooditems/" + "pasta" + ".png");
+   }
+}
+.visitsphoto {
+   @extend .pointsphoto;
+   &:before {
+      //background-image: theme_image($theme-path + "/images/" + $gtheme-name,  "miscicons/" + "visits" + ".png");
+      background-image: theme_image($theme-path + "/images/" + $gtheme-name,  "fooditems/" + "pasta" + ".png");
+   }
 }
 
 //------------------------------------------------------------------------------
@@ -382,7 +498,18 @@ body {
 }
 
 .round {
-   @if $include-border-radius { @include border-radius(0.5em); }
+   @if $include-border-radius { @include border-radius(0.6em); }
+}
+
+.panelHdr {
+   &.x-toolbar {
+      height : $global-row-height*0.75;
+      @if $include-border-radius { @include border-top-radius($panelBorderRadius); }
+   }
+   .x-title {
+      font-size:$normalFontSize;
+   }
+   margin:0em $panelGap;
 }
 
 //------------------------------------------------------------------------------
@@ -428,11 +555,31 @@ body {
 //------------------------------------------------------------------------------
 // Toolbar CSS
 //------------------------------------------------------------------------------
+@include sencha-toolbar-ui('dark', #555658);
+@include sencha-toolbar-ui('light', #00ADEE);
+.x-toolbar-dark, .x-tabbar-dark {
+   @include custom-linear-gradient(#555658 10%, #000000 85%, top);
+   color : #F3F3F4;
+}
+.x-toolbar-light, .x-tabbar-light {
+   @include custom-linear-gradient(#00ADEE 0%, #0A78BE 75%, top);
+   color : #F3F3F4;
+}
 
 
 //------------------------------------------------------------------------------
 // List CSS
 //------------------------------------------------------------------------------
+.x-list {
+   .x-list-disclosure {
+      -webkit-mask : 0 0 url($theme-path-rel + '/images/' + $gtheme-name + '/toolbar/' + 'disclose' + '.png');  
+   }
+   .x-list-container .x-list-header {
+      @include custom-linear-gradient(#FAA845, $list-header-bg-color, top);
+      color : #F3F3F4;
+   }
+}
+
 .x-list-round {
    .x-inner, .x-list-inner {
       .x-list-container {
@@ -441,8 +588,6 @@ body {
       }
    }
    .x-list-header {
-      @include background-gradient($list-header-bg-color, $list-header-gradient);
-      @include color-by-background($list-header-bg-color, 30%);
       @include bevel-by-background($list-header-bg-color);
       border-top: 1px solid $list-header-bg-color;
       border-bottom: 1px solid darken($list-header-bg-color, 20%);
@@ -537,7 +682,7 @@ body {
       @if $include-border-radius { @include border-radius(0.5em); }
    }
 }
-@include sencha-button-ui('yellow', darken(saturate(yellow, 55%), 10%));
+@include sencha-button-ui('orange', #E86025);
 @include sencha-button-ui('green', darken(saturate(green, 55%), 10%));
 @include sencha-button-ui('red', darken(saturate(red, 55%), 10%));
 @include sencha-button-ui('blue', darken(saturate(blue, 55%), 10%));
@@ -776,8 +921,9 @@ body {
 }
 
 .checkInNow {
-  background : black;
-  padding: $panelTopGap 2*$panelGap;
+   @include custom-linear-gradient(#00ADEE 0%, #0A78BE 75%, top);
+   color : #F3F3F4;
+   padding: $panelTopGap 2*$panelGap;
 }
 
 //------------------------------------------------------------------------------
@@ -792,50 +938,38 @@ body {
         color: white;
         padding : $panelTopGap $panelGap;
       }
-      .coinphoto, .visitsphoto {
-        height:$icon-size;
-        img {
-           width:$icon-size;
-           max-height : $icon-size;
-           margin-right : $panelGap;
-        }
-      }
-      .points, .visits {
-        line-height:$icon-size;
-        font-size:$xlargeFontSize*1.25;
-        text-align:center;
-      }
    }
-   .prizeWonPanel {
-      @if $include-border-radius { @include border-radius(0.5em); }
+   .prizesWonPanel {
+      @if $include-border-radius { @include border-radius(0.6em); }
+      @include box-shadow(0.2em 0.2em 0em rgba(80,81,82,0.6));
       border:1px solid #E7E7E8;
       position:relative;
       margin: 0 $panelGap $panelTopGap $panelGap;
       min-height : $icon-size;
       .x-innerhtml {
-        margin :0 !important;
-        padding:0 !important;
+         margin :0 !important;
+         padding:0 !important;
       }
-      .detailsWrapper {
+      .prizeswonphoto {
+         @if $include-border-radius { @include border-radius(0.6em); }
+         @extend .pointsphoto;
+         text-align:left;
          background-color: #F3F3F4;
-         padding-left:$icon-size + 10px;
-         .itemTitle {
-            font-size:$normalFontSize !important;
-            line-height:$icon-size;
-         }
-      }
-      .photo {
-         position:absolute;
-         @include custom-linear-gradient(#F3F3F4 10%, #D1D2D4 85%, top);
-         height:$icon-size;
-         top : 0;
-         left : 0;
-         img {
-            width : $icon-size;
-            max-height : $icon-size;
+         font-size:$normalFontSize !important;
+         &:before {
+           @if $include-border-radius { @include border-left-radius(0.6em); }
+           @include custom-linear-gradient(#00ADEE 10%, #0A78BE 85%, top, url($theme-path-rel + "/images/" + $gtheme-name + "/fooditems/" + "pasta" + ".png"));
          }
       }
    }
+   .feedPanelHdr {
+      @extend .panelHdr;
+      @include custom-linear-gradient(darken(#F3F3F4, 25%) 10%, darken(#D1D2D4, 30%) 85%, top);
+   }
+   .descPanelHdr {
+      @extend .panelHdr;
+   }
+
    .descPanel {
       padding: $panelTopGap $panelGap;
       @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
@@ -1071,50 +1205,34 @@ body {
 //------------------------------------------------------------------------------
 // Redemptions Page
 //------------------------------------------------------------------------------
-.ptsEarnPanelHdr, .feedPanelHdr, .descPanelHdr {
-   &.x-toolbar {
-      height : $global-row-height*0.75;
-      @if $include-border-radius { @include border-top-radius($panelBorderRadius); }
-   }
-   .x-title {
-      font-size:$normalFontSize;
-   }
-   margin:0em $panelGap;
-}
-
-.ptsEarnPanel {
-   padding:$panelGap*0.5;
-   //border: 1px solid darken($list-bg-color, 15%);
-   @if $include-border-radius { @include border-radius($panelBorderRadius); }
-   @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
-   .x-inner {
-     margin:0 !important;
-     height:$icon-size;
-   }
-   .photo img {
-      width:$icon-size;
-   }
-   .points {
-     font-size:$xlargeFontSize*1.25;
-     text-align:center;
-     .x-innerhtml {
-        line-height:$xlargeFontSize*1.25;
-     }
-   }
-}
-
 .redemptionsMain {
-   .ptsEarnPanelHdr:first-child {
-      margin-top:$panelTopGap;
-   }
-   .ptsEarnPanel {
-      @if $include-border-radius { @include border-top-radius(0); }
-      .points .x-innerhtml {
-         font-size:$xlargeFontSize;
-         font-weight:bold;
-         line-height:$icon-size;
+   .ptsEarnPanelHdr {
+      @extend .panelHdr;
+      &:first-child {
+         margin-top:$panelTopGap;
       }
    }
+   .ptsEarnPanel {
+      padding:$panelGap*0.5;
+      @if $include-border-radius { @include border-top-radius(0); }
+      //@if $include-border-radius { @include border-radius($panelBorderRadius); }
+      @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+      .x-inner {
+        margin:0 !important;
+        height:$icon-size;
+      }
+      .pointsphoto {
+         font-size:$xlargeFontSize*1.25;
+         color : #E86025;
+         text-align:center;
+         .x-innerhtml {
+            font-size:$xlargeFontSize;
+            font-weight:bold;
+            line-height:$icon-size;
+         }
+      }
+   }
+
    .x-scroll-scroller {
       position:static;
    }
@@ -1140,9 +1258,6 @@ body {
    .accountsPanelHdr {
       @extend .ptsEarnPanelHdr;
    }
-   .accountsPanelHdr:first-child {
-      margin-top:$panelTopGap;
-   }
    .accountsList {
       @extend .listScrollWrapper;
       .listItemDetailsWrapper {
@@ -1154,6 +1269,20 @@ body {
             line-height:$icon-size;
          }
       }
+      .x-emptytext {
+         background: theme_image($theme-path + "/images/" + $gtheme-name,  "noaccounts" + ".png") center no-repeat;
+         background-size:contain;
+      }
+   }
+}
+
+//------------------------------------------------------------------------------
+// Prizes Page
+//------------------------------------------------------------------------------
+.prizesMain {
+   .noprizes {
+      background: theme_image($theme-path + "/images/" + $gtheme-name,  "noprizes" + ".png") center no-repeat;
+      background-size:contain;
    }
 }
 

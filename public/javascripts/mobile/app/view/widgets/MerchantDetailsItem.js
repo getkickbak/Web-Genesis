@@ -39,7 +39,7 @@ Ext.define('Genesis.view.widgets.MerchantDetailsItem',
                return (values.address + ",<br/>" + values.city + ", " + values.state + ", " + values.country + ",</br>" + values.zipcode);
             }
          }),
-         cls : 'points'
+         cls : 'address'
       },
       dataMap :
       {

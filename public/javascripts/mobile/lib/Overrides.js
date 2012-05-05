@@ -711,15 +711,18 @@ Ext.define('Genesis.data.proxy.OfflineServer',
             case 'signup_invalid_info' :
             case 'update_account_invalid_facebook_info' :
             {
-               var errors = [];
-               for(var i in messages)
-               {
-                  errors.push(messages[i]);
-               }
                Ext.device.Notification.show(
                {
                   title : 'Error',
-                  message : errors
+                  message : messages,
+                  callback : function()
+                  {
+                     var local = window.localStorage;
+                     vport.setLoggedIn(false);
+                     local.removeItem('auth_code');
+                     me.facebook_onLogout(null, false);
+                     vport.onFeatureTap('MainPage', 'login');
+                  }
                });
                break;
             }

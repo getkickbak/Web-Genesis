@@ -72,7 +72,6 @@ Ext.define('Genesis.view.CheckinExplore',
          items : [
          {
             xtype : 'button',
-            ui : 'checkInNow',
             tag : 'checkInNow',
             text : 'Check In Now!'
          }]

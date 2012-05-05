@@ -105,8 +105,8 @@ Ext.define('Genesis.controller.Prizes',
             vport.setEnableAnim(false);
             vport.getNavigationBar().setCallbackFn(function()
             {
-               vport.setEnableAnim(true);
-               vport.getNavigationBar().setCallbackFn(Ext.emptyFn);
+            vport.setEnableAnim(true);
+            vport.getNavigationBar().setCallbackFn(Ext.emptyFn);
             });
             */
             //
@@ -251,8 +251,8 @@ Ext.define('Genesis.controller.Prizes',
          container.add(
          {
             tag : 'rewardPanel',
-            xtype : 'dataview',
-            emptyText : ' ',
+            cls : 'noprizes',
+            xtype : 'component',
             scrollable : false,
             defaultUnit : 'em',
             margin : '0 0 0.8 0'
@@ -294,7 +294,7 @@ Ext.define('Genesis.controller.Prizes',
                // Remove Prize
                //
                container.remove(item, true);
-               store.remove(item);
+               store.remove(item.getStore().getData().items[0])
                break;
             }
             case 'reward' :
@@ -304,7 +304,6 @@ Ext.define('Genesis.controller.Prizes',
          }
          me.getDoneBtn().hide();
          me.getRedeemBtn().hide();
-         Ext.device.Notification.vibrate();
          me.popView();
       }
    },
@@ -363,8 +362,9 @@ Ext.define('Genesis.controller.Prizes',
          },
          callback : function(records, operation)
          {
-            if(operation.wasSuccessful())
+            if(!operation.wasSuccessful())
             {
+               btn.show();
             }
          }
       })
@@ -452,6 +452,7 @@ Ext.define('Genesis.controller.Prizes',
           }
           */
       });
+      Ext.device.Notification.vibrate();
    },
    onRedeemRewards : function(showPrize)
    {

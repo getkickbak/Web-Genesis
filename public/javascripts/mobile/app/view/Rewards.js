@@ -143,7 +143,7 @@ Ext.define('Genesis.view.Rewards',
                cls : 'separator',
                tag : 'earnPts',
                text : 'Earn Points!',
-               ui : 'yellow-large'
+               ui : 'orange-large'
             }]
          },
          // -------------------------------------------------------------------

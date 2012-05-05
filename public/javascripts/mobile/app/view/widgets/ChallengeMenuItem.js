@@ -17,7 +17,12 @@ Ext.define('Genesis.view.widgets.ChallengeMenuItem',
          cls : 'photo',
          tpl : Ext.create('Ext.XTemplate',
          // @formatter:off
-         '<div class="mainPageItemWrapper">', '<div class="photo"><img src="{[this.getPhoto(values)]}" /></div>', '<div class="photoName">{name}</div>', '</div>',
+         '<div class="mainPageItemWrapper">',
+            '<div class="photo">'+
+               '<img src="{[this.getPhoto(values)]}" />'+
+            '</div>',
+            '<div class="photoName">{name}</div>',
+         '</div>',
          // @formatter:on
          {
             getPhoto : function(values)

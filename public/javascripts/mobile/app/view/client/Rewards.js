@@ -36,7 +36,16 @@ Ext.define('Genesis.view.client.Rewards',
          {
             xtype : 'component',
             tag : 'prizeCheck',
-            cls : 'prizeCheck'
+            cls : 'prizeCheck',
+            data :
+            {
+            },
+            tpl :
+            // @formatter:off
+            '<div class="rouletteBg"></div>'+
+            '<div class="rouletteTable"></div>'+
+            '<div class="rouletteBall"></div>'
+            // @formatter:off
          }]
       }]
    },

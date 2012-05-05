@@ -29,36 +29,16 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             },
             items : [
             {
-               docked : 'right',
-               tag : 'points',
-               tpl : '{points}',
-               cls : 'points'
-            },
-            {
-               docked : 'right',
-               tag : 'coinphoto',
-               cls : 'coinphoto',
-               data :
-               {
-                  photo_url : Genesis.constants.getIconPath('miscicons', 'points')
-               },
-               tpl : '<img src="{photo_url}" />'
-            },
-            {
-               docked : 'left',
-               tag : 'visitsphoto',
-               cls : 'visitsphoto',
-               data :
-               {
-                  photo_url : Genesis.constants.getIconPath('miscicons', 'points')
-               },
-               tpl : '<img src="{photo_url}" />'
-            },
-            {
                docked : 'left',
                tag : 'visits',
                tpl : '{visits}',
-               cls : 'visits'
+               cls : 'visitsphoto'
+            },
+            {
+               docked : 'right',
+               tag : 'points',
+               tpl : '{points}',
+               cls : 'pointsphoto'
             }],
          }]
       },

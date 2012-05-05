@@ -11,22 +11,11 @@ Ext.define('Genesis.view.widgets.RedemptionsPtsItem',
          type : 'hbox',
          align : 'stretch'
       },
-      //height : '5em',
-      image :
-      {
-         docked : 'left',
-         cls : 'photo',
-         data :
-         {
-            photo_url : 'resources/img/sprites/coin.jpg'
-         },
-         tpl : '<img src="{photo_url}"/>'
-      },
       points :
       {
          flex : 1,
          tpl : '{points} Points',
-         cls : 'points'
+         cls : 'pointsphoto'
       },
       dataMap :
       {
@@ -34,24 +23,6 @@ Ext.define('Genesis.view.widgets.RedemptionsPtsItem',
          {
             setData : 'points'
          }
-      }
-   },
-   applyImage : function(config)
-   {
-      return Ext.factory(Ext.apply(config,
-      {
-      }), Ext.Component, this.getImage());
-   },
-   updateImage : function(newImage, oldImage)
-   {
-      if(newImage)
-      {
-         this.add(newImage);
-      }
-
-      if(oldImage)
-      {
-         this.remove(oldImage);
       }
    },
    applyPoints : function(config)

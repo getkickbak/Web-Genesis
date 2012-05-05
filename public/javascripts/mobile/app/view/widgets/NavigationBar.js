@@ -4,6 +4,7 @@ Ext.define('Genesis.navigation.Bar',
    requires : ['Ext.fx.layout.card.Style'],
    config :
    {
+      ui : 'dark',
       defaultBackButtonText : 'Back',
       altBackButtonText : 'Close',
       mode : 'slide',

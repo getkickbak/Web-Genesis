@@ -35,30 +35,14 @@ Ext.define('Genesis.view.MerchantAccount',
       // Prizes won by customers!
       // -----------------------------------------------------------------------
       {
-         tag : 'prizeWonPanel',
+         tag : 'prizesWonPanel',
          xtype : 'component',
-         cls : 'prizeWonPanel',
-         tpl : Ext.create('Ext.XTemplate',
-         // @formatter:off
-         '<div class="photo">'+
-            '<img src="{[this.getPhoto(values)]}"/>'+
-         '</div>',
-         '<div class="detailsWrapper">',
-            '<div class="itemTitle">{[this.getTitle(values)]}</div>',
-         '</div>',
-         // @formatter:on
+         cls : 'prizesWonPanel',
+         tpl : Ext.create('Ext.XTemplate', '<div class="prizeswonphoto">{[this.getTitle(values)]}</div>',
          {
-            getPhoto : function(values)
-            {
-               if(!values.photo)
-               {
-                  return Genesis.constants.getIconPath('miscicons', 'prizes');
-               }
-               return values.photo.url;
-            },
             getTitle : function(values)
             {
-               return values['winners_count'] + ' Prizes won this month at current Location';
+               return values['winners_count'] + ' Prizes won this month';
             }
          }),
       },
@@ -77,6 +61,7 @@ Ext.define('Genesis.view.MerchantAccount',
          items : [
          {
             xtype : 'toolbar',
+            ui : 'dark',
             cls : 'feedPanelHdr',
             centered : false,
             items : [
@@ -100,13 +85,13 @@ Ext.define('Genesis.view.MerchantAccount',
             '<div class="photo">'+
                '<img src="{[this.getPhoto(values)]}"/>'+
             '</div>',
-            '<div class="listItemDetailsWrapper">',
+            '<div class="listItemDetailsWrapper" style="{[this.getDisclose(values)]}">',
                '<div class="itemTitle">{[this.getTitle(values)]}</div>',
                '<div class="itemDesc">{[this.getDesc(values)]}</div>',
             '</div>',
             // @formatter:on
             {
-               getPhoto : function(values)
+               getDisclose : function(values)
                {
                   switch (values['reward_type'])
                   {
@@ -116,6 +101,10 @@ Ext.define('Genesis.view.MerchantAccount',
                         break;
                      }
                   }
+                  return ((values['disclosure'] === false) ? 'padding-right:0;' : '');
+               },
+               getPhoto : function(values)
+               {
                   if(!values.photo)
                   {
                      return Genesis.view.client.Rewards.getPhoto(
@@ -153,6 +142,7 @@ Ext.define('Genesis.view.MerchantAccount',
          {
             xtype : 'toolbar',
             cls : 'descPanelHdr',
+            ui:'light',
             centered : false,
             items : [
             {
@@ -177,6 +167,7 @@ Ext.define('Genesis.view.MerchantAccount',
          docked : 'bottom',
          cls : 'navigationBarBottom',
          xtype : 'tabbar',
+         ui : 'light',
          layout :
          {
             pack : 'justify',

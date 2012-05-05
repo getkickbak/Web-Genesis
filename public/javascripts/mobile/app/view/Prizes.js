@@ -8,7 +8,8 @@ Ext.define('Genesis.view.Prizes',
       title : 'Prizes Header',
       changeTitle : true,
       scrollable : false,
-      layout : 'fit'
+      layout : 'fit',
+      cls : 'prizesMain'
    },
    beforeActivate : function(activeItem, oldActiveItem)
    {

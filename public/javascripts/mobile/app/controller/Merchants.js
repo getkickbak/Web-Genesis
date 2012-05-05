@@ -22,7 +22,7 @@ Ext.define('Genesis.controller.Merchants',
          },
          merchantMain : 'merchantaccountview container[tag=merchantMain]',
          tbPanel : 'merchantaccountview dataview[tag=tbPanel]',
-         prizeWonPanel : 'merchantaccountview component[tag=prizeWonPanel]',
+         prizesWonPanel : 'merchantaccountview component[tag=prizesWonPanel]',
          feedContainer : 'merchantaccountview container[tag=feedContainer]',
          descContainer : 'merchantaccountview container[tag=descContainer]',
          descPanel : 'merchantaccountview container[tag=descPanel]',
@@ -55,7 +55,7 @@ Ext.define('Genesis.controller.Merchants',
          {
             tap : 'onMapBtnTap'
          },
-         'merchantaccountview button[ui=yellow]' :
+         'merchantaccountview button[ui=orange]' :
          {
             tap : 'onMerchantAccountRewardsTap'
          },
@@ -181,12 +181,12 @@ Ext.define('Genesis.controller.Merchants',
    // --------------------------------------------------------------------------
    onUpdateWinnersCount : function(metaData)
    {
-      var panel = this.getPrizeWonPanel();
+      var panel = this.getPrizesWonPanel();
       // Initial Main Page Object
       if(!panel)
       {
          this.getMain();
-         panel = this.getPrizeWonPanel();
+         panel = this.getPrizesWonPanel();
       }
       panel.setData(metaData);
    },

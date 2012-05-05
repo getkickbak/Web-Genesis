@@ -16,6 +16,7 @@ Ext.define('Genesis.view.client.Redemptions',
       // ------------------------------------------------------------------------
       {
          xtype : 'toolbar',
+         ui : 'light',
          cls : 'ptsEarnPanelHdr',
          centered : false,
          items : [
@@ -46,6 +47,7 @@ Ext.define('Genesis.view.client.Redemptions',
       {
          xtype : 'toolbar',
          cls : 'ptsEarnPanelHdr',
+         ui : 'light',
          centered : false,
          items : [
          {
