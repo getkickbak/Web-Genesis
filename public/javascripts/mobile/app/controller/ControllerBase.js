@@ -72,6 +72,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    updateRewards : function(metaData)
    {
+      var me = this;
       //
       // Update Eligible Rewards
       //
@@ -98,7 +99,7 @@ Ext.define('Genesis.controller.ControllerBase',
          }
          rstore.setData(rewards);
       }
-      
+
       //
       // Winners' Circle'
       //
