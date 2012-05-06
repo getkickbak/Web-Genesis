@@ -4,7 +4,7 @@ class Invoice
   include DataMapper::Resource
   
   property :id, Serial
-  property :invoice_id, Integer, :required => true, :default => ""
+  property :invoice_id, String, :required => true, :default => ""
   property :amount, Decimal, :required => true, :default => 0.00
   property :transactions, Integer, :required => true, :default => 0
   property :monthly_fee, Decimal, :required => true, :default => 0.00
