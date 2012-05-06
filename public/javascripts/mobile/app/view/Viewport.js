@@ -86,7 +86,7 @@ Ext.define('Genesis.view.Viewport',
                         margin : '0.5 0 0 0',
                         text : 'Cancel',
                         iconMaskCls : 'dummymask',
-                        ui : 'confirm',
+                        ui : 'cancel',
                         scope : this,
                         handler : function()
                         {
@@ -131,6 +131,7 @@ Ext.define('Genesis.view.Viewport',
                      {
                         margin : '0.5 0 0 0',
                         text : 'Cancel',
+                        ui : 'cancel',
                         scope : this,
                         handler : function()
                         {

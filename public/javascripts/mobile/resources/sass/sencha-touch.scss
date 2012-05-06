@@ -296,6 +296,23 @@ body {
       background-image: theme_image($theme-path + "/images/" + $gtheme-name, "logo" + ".png");
    }
 }
+
+.emptyPage {
+   background-size:contain;
+   &:before {
+      position:absolute;
+      top:0em;
+      left:0;
+      width:100%;
+      height:100%;
+      text-align:center;
+      font-size:$xlargeFontSize;
+      font-weight:bold;
+      padding:2em;
+      background:transparent;
+      color : #555658;
+   }
+}
 //------------------------------------------------------------------------------
 // CSS Overrides for default graphics
 //------------------------------------------------------------------------------
@@ -399,6 +416,20 @@ body {
       font-size:$normalFontSize;
    }
    margin:0em $panelGap;
+}
+
+//------------------------------------------------------------------------------
+// Mask
+//------------------------------------------------------------------------------
+.x-mask {
+   background:rgba(#25aae1, 0.4) center center no-repeat;
+}
+
+//------------------------------------------------------------------------------
+// Sheet
+//------------------------------------------------------------------------------
+.x-sheet, .x-sheet-action {
+   @include custom-linear-gradient(#00ADEE 10%, #0A78BE 65%, top);
 }
 
 //------------------------------------------------------------------------------
@@ -595,8 +626,9 @@ body {
 @mixin sencha-button-ui($ui-label, $color, $gradient: $button-gradient) {
   .x-button.x-button-#{$ui-label}, .x-button.x-button-#{$ui-label}-round, .x-button.x-button-#{$ui-label}-small, .x-button.x-button-#{$ui-label}-large {
     @include toolbar-button($color, $gradient);
-    border: 1px solid darken($color, 20%);
-    border-top-color: darken($color, 15%);
+    //border: 1px solid darken($color, 20%);
+    border: 1px solid $color !important;
+    //border-top-color: darken($color, 15%) !important;
   }
 
   .x-button.x-button-#{$ui-label}-round {
@@ -619,8 +651,7 @@ body {
 @include sencha-button-ui('fbBlue', desaturate(darken(blue, 10%), 5%));
 
 @include sencha-button-ui('action', $active-color);
-@include sencha-button-ui('confirm', desaturate(darken($confirm-color, 10%), 5%));
-@include sencha-button-ui('decline', desaturate(darken($alert-color, 10%), 5%));
+@include sencha-button-ui('cancel', #555658);
 
 .x-button {
    @include toolbar-button(#F3F3F4, $button-gradient);
@@ -971,7 +1002,7 @@ body {
    .descPanel {
       padding: $panelTopGap $panelGap;
       @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
-      @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+      //@include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
    }
    .feedPanel {
       @extend .listNoScrollWrapper;
@@ -1293,8 +1324,11 @@ body {
          }
       }
       .x-emptytext {
+         @extend .emptyPage;
          background: theme_image($theme-path + "/images/" + $gtheme-name,  "noaccounts" + ".png") center no-repeat;
-         background-size:contain;
+         &:before {
+            content:"You have No Accounts Opened";
+         }
       }
    }
 }
@@ -1304,8 +1338,11 @@ body {
 //------------------------------------------------------------------------------
 .prizesMain {
    .noprizes {
+      @extend .emptyPage;
       background: theme_image($theme-path + "/images/" + $gtheme-name,  "noprizes" + ".png") center no-repeat;
-      background-size:contain;
+      &:before {
+         content:"You have No Prizes";
+      }
    }
 }
       
