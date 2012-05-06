@@ -157,7 +157,7 @@ Ext.define('Genesis.view.MerchantAccount',
             xtype : 'container',
             cls : 'descPanel separator',
             tag : 'descPanel',
-            tpl : '{desc}'
+            tpl : '{description}'
          }]
       },
       // -----------------------------------------------------------------------
