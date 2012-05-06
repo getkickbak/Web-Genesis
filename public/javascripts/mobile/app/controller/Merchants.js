@@ -92,6 +92,7 @@ Ext.define('Genesis.controller.Merchants',
 
       }
    },
+   checkinFirstMsg : 'Please Check-in before redeeming rewards',
    init : function()
    {
       var me = this;
@@ -209,9 +210,10 @@ Ext.define('Genesis.controller.Merchants',
       me.getTbPanel().getStore().setData(vrecord);
 
       //
-      // If the CustomerId is not reserved for Exploring ...
+      // Either we are checked-in or
+      // customer exploring a venue they checked-in in the past ...
       //
-      if(checkedInMatch)
+      if(checkedInMatch || me.showFeed)
       {
          me.getDescContainer().hide();
          me.getFeedContainer().show();
@@ -272,7 +274,18 @@ Ext.define('Genesis.controller.Merchants',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
+      var cvenue = viewport.getCheckinInfo().venue;
+      var venue = viewport.getVenue();
 
+      if(!cvenue || !venue || (venue.getId() != cvenue.getId()))
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Rewards',
+            message : me.checkinFirstMsg
+         });
+         return;
+      }
       switch (record.get('reward_type'))
       {
          case 'vip' :
@@ -426,13 +439,14 @@ Ext.define('Genesis.controller.Merchants',
       //return this[view ? 'getMain' : 'getPage']();
       return this.getMain();
    },
-   openMainPage : function()
+   openMainPage : function(showFeed)
    {
       var me = this;
       var vport = me.getViewport();
       var samePage = (me.getMainPage() == vport.getActiveItem());
 
       // Check if this is the first time logging into the venue
+      me.showFeed = showFeed;
       if(!samePage)
       {
          me.pushView(me.getMainPage());

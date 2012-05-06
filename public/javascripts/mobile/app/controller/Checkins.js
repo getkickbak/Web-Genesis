@@ -64,16 +64,8 @@ Ext.define('Genesis.controller.Checkins',
                // Load Prizes into DataStore
                var metaData = proxy.getReader().metaData;
 
-               //
-               // Update Eligible Rewards
-               //
-               var erewards = metaData['eligible_rewards'];
-               if(erewards)
-               {
-                  console.debug("Total Eligible Rewards - " + erewards.length);
-                  var estore = Ext.StoreMgr.get('EligibleRewardsStore');
-                  estore.setData(erewards);
-               }
+               me.updateEligibleRewards(metaData);
+
             }
          }
 
@@ -212,14 +204,12 @@ Ext.define('Genesis.controller.Checkins',
          default :
             break;
       }
-      this.getExplore().setMerchant(null);
    },
    onCheckinScanTap : function(b, e, eOpts, einfo)
    {
       //
       // Clear Venue info, let server determine from QR Code
       //
-      this.getExplore().setMerchant(null);
       this.getViewPortCntlr().setVenue(null);
 
       // Scan QR Code to confirm Checkin
@@ -247,6 +237,9 @@ Ext.define('Genesis.controller.Checkins',
       var custore = Ext.StoreMgr.get('CustomerStore');
       var cestore = Ext.StoreMgr.get('CheckinExploreStore');
       var mcntlr = app.getController('Merchants');
+      var viewport = this.getViewPortCntlr();
+      var vport = this.getViewport();
+      var showFeed = false;
 
       var record, customerId, customer, venue, points;
       for(var i = 0; i < records.length; i++)
@@ -254,8 +247,12 @@ Ext.define('Genesis.controller.Checkins',
          record = records[i];
          customerId = record.getId();
          points = record.get('points');
+
+         // Find venueId from metaData or from DataStore
          var new_venueId = metaData['venue_id'] || cestore.first().getId();
-         venue = cestore.getById(new_venueId);
+         // Find venue from DataStore or current venue info
+         venue = cestore.getById(new_venueId) || viewport.getVenue();
+
          customer = cstore.getById(customerId);
 
          // Find Matching Venue or pick the first one returned if no venueId is set
@@ -271,6 +268,7 @@ Ext.define('Genesis.controller.Checkins',
                crecord.set('points', points);
                crecord.setLastCheckin(record.getLastCheckin());
                console.debug("Customer ID=[" + crecord.getId() + "] is in Acct Database");
+               showFeed = true;
             }
             //
             // First time Customer ... add it to CustomerStore
@@ -298,13 +296,13 @@ Ext.define('Genesis.controller.Checkins',
       //
       // Cleans up Back Buttons on Check-in
       //
-      this.getViewport().reset();
+      vport.reset();
       Ext.Viewport.setMasked(false);
 
       app.dispatch(
       {
          action : 'openMainPage',
-         args : [],
+         args : [showFeed],
          controller : mcntlr,
          scope : mcntlr
       });
@@ -359,7 +357,6 @@ Ext.define('Genesis.controller.Checkins',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      me.getExplore().setMerchant(null);
 
       me.onExploreLoad();
       switch (me.mode)
@@ -384,7 +381,6 @@ Ext.define('Genesis.controller.Checkins',
    },
    onExploreDisclose : function(list, record, target, index, e, eOpts, eInfo)
    {
-      this.getExplore().setMerchant( record ? record.getMerchant() : null);
       this.getViewPortCntlr().setVenue(record);
 
       switch (this.mode)

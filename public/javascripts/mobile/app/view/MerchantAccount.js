@@ -242,7 +242,7 @@ Ext.define('Genesis.view.MerchantAccount',
    },
    beforeActivate : function(activeItem, oldActiveItem)
    {
-      var vrecord = ((oldActiveItem && oldActiveItem.getMerchant) ? oldActiveItem.getMerchant() : _application.getController('Viewport').getVenue());
+      var vrecord = _application.getController('Viewport').getVenue();
       if(vrecord)
       {
          activeItem.getInitialConfig().title = vrecord.get('name');

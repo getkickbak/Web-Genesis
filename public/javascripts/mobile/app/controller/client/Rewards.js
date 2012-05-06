@@ -40,7 +40,7 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    prizeCheckMsg : 'Find out if you won a PRIZE!',
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
-   checkinFirstRewardsMsg : 'You need to Check-In first before you are elibigle to Earn Rewards',
+   checkinFirstMsg : 'Please Check-In before redeeming rewards',
    init : function()
    {
       console.log("Client Rewards Init");
@@ -349,7 +349,7 @@ Ext.define('Genesis.controller.client.Rewards',
       var venue = viewport.getVenue();
 
       // VenueId can be found after the User checks into a venue
-      //return ((this.getViewPortCntlr().getVenue()) ? true : this.checkinFirstRewardsMsg);
-      return ((cvenue && venue && (cvenue.getId() == venue.getId())) ? true : this.checkinFirstRewardsMsg);
+      //return ((this.getViewPortCntlr().getVenue()) ? true : this.checkinFirstMsg);
+      return ((cvenue && venue && (cvenue.getId() == venue.getId())) ? true : this.checkinFirstMsg);
    }
 });

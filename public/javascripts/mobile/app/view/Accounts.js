@@ -6,7 +6,7 @@ Ext.define('Genesis.view.Accounts',
    config :
    {
       title : 'Loyalty Accounts',
-      scrollable : false,
+      //scrollable : false,
       changeTitle : false,
       cls : 'accountsMain',
       layout : 'fit',
@@ -29,19 +29,19 @@ Ext.define('Genesis.view.Accounts',
           */
          pinHeaders : false,
          grouped : true,
+         itemTpl : Ext.create('Ext.XTemplate',
          // @formatter:off
-         itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>', '<div class="listItemDetailsWrapper">', '<div class="points">{[this.getPoints(values)]}</div>' +
-         // //'<div class="coin"><img src="{[this.getCoin()]}" /></div>',
+         '<div class="photo">',
+            '<img src="{[this.getPhoto(values)]}"/>',
+         '</div>',
+         '<div class="listItemDetailsWrapper">',
+            '<div class="points">{[this.getPoints(values)]}</div>',
          '</div>',
          // @formatter:on
          {
             getPhoto : function(values)
             {
                return values.Merchant['photo']['thumbnail_ios_small'].url;
-            },
-            getCoin : function()
-            {
-               return 'resources/img/sprites/coin.jpg';
             },
             getPoints : function(values)
             {

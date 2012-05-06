@@ -70,6 +70,19 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return '000102030405060708090a0b0c0d0e0f';
    },
+   updateEligibleRewards : function(metaData)
+   {
+      //
+      // Update Eligible Rewards
+      //
+      var erewards = metaData['eligible_rewards'];
+      if(erewards)
+      {
+         console.debug("Total Eligible Rewards - " + erewards.length);
+         var estore = Ext.StoreMgr.get('EligibleRewardsStore');
+         estore.setData(erewards);
+      }
+   },
    pushView : function(view)
    {
       var viewport = this.getViewport();

@@ -54,6 +54,7 @@ Ext.define('Genesis.controller.Prizes',
    },
    lostPrizeMsg : 'Oops, Play Again!',
    showQrCodeMsg : 'Show this Authorization Code to your server to redeem!',
+   checkinFirstMsg : 'Please Check-in before claiming any prize(s)',
    init : function()
    {
       this.callParent(arguments);
@@ -215,7 +216,7 @@ Ext.define('Genesis.controller.Prizes',
          if(oldActiveItem)
          {
             var xtypes = oldActiveItem.getXTypes();
-            if(xtypes.match('merchantaccountview') || xtypes.match('rewardsview'))
+            if(xtypes.match('merchantaccountview') || xtypes.match('clientrewardsview'))
             {
                //
                // Only show prizes that matches the currently loaded Merchant Data
@@ -314,7 +315,7 @@ Ext.define('Genesis.controller.Prizes',
       var cvenue = this.getViewPortCntlr().getCheckinInfo().venue;
       var cmerchantId = (cvenue) ? cvenue.getMerchant().getId() : 0;
 
-      this.getRedeemBtn()[((merchantId == cmerchantId) && (merchantId > 0)) ? 'enable' : 'disable']();
+      //this.getRedeemBtn()[((merchantId == cmerchantId) && (merchantId > 0)) ? 'enable' : 'disable']();
    },
    onRedeemPrizeTap : function(b, e, eOpts, eInfo)
    {
@@ -322,6 +323,18 @@ Ext.define('Genesis.controller.Prizes',
       var view = me.getPrizes();
       var viewport = me.getViewPortCntlr();
       var venue = viewport.getVenue();
+      var cvenue = viewport.getCheckinInfo().venue;
+      
+      if(!cvenue || !venue || (venue.getId() != cvenue.getId()))
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Prizes',
+            message : me.checkinFirstMsg
+         });
+         return;
+      }
+      
       var venueId = venue.getId();
       var merchantId = venue.getMerchant().getId();
 

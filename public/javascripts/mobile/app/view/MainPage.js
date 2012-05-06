@@ -5,7 +5,7 @@ Ext.define('Genesis.view.MainPage',
    alias : 'widget.mainpageview',
    config :
    {
-      title : 'KickBak',
+      title : ' ',
       changeTitle : false,
       direction : 'horizontal',
       items : (!merchantMode) ? [
@@ -86,9 +86,13 @@ Ext.define('Genesis.view.MainPage',
    },
    beforeDeactivate : function()
    {
+      var viewport = Ext.ComponentQuery.query('viewportview')[0];
+      viewport.getNavigationBar().removeCls('kbTitle');
    },
    afterActivate : function()
    {
+      var viewport = Ext.ComponentQuery.query('viewportview')[0];
+      viewport.getNavigationBar().addCls('kbTitle');
    },
    afterDeactivate : function()
    {
