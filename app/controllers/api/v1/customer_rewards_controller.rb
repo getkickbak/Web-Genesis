@@ -11,30 +11,40 @@ class Api::V1::CustomerRewardsController < ApplicationController
   
   def redeem
     @venue = Venue.get(params[:venue_id]) || not_found
+    @reward = CustomerReward.first(:id => params[:id], CustomerReward.merchant.id => @venue.merchant.id) || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
+    
+    reward_venue = CustomerRewardVenue.first(:customer_reward_id => @reward.id, :venue_id => @venue.id)
+    if reward_venue.nil?
+      respond_to do |format|
+        #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => [t("api.customer_rewards.not_available")] } }
+      end
+      return
+    end
     
     Time.zone = @venue.time_zone
     Customer.transaction do
       begin
-        reward = CustomerReward.first(:id => params[:id], CustomerReward.merchant.id => @venue.merchant.id)
         if @customer.points - reward.points >= 0
           record = RedeemRewardRecord.new(
-            :reward_id => reward.id,
+            :reward_id => @reward.id,
             :venue_id => @venue.id,
-            :points => reward.points,
+            :points => @reward.points,
             :created_ts => Time.now
           )
           record.merchant = @venue.merchant
           record.user = current_user
           record.save
-          @customer.points -= reward.points
+          @customer.points -= @reward.points
           @customer.save
           aes = Aes.new('128', 'CBC')
           iv = String.random_alphanumeric
           data = { 
             :type => "redeem_reward",
-            :title => reward.title,
+            :title => @reward.title,
             :expiry_date => Date.today 
           }.to_json
           @encrypted_data = "#{iv}$#{aes.encrypt(data, @venue.auth_code, iv)}"

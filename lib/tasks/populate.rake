@@ -278,6 +278,7 @@ namespace :db do
         )
         earn_prize.reward = reward
         earn_prize.merchant = merchant
+        earn_prize.venue = venues[rand(venues.length)]
         earn_prize.user = users[rand(users.length)]
         earn_prize.save
         reward_names_count[reward_type.value.to_sym] += 1

@@ -16,8 +16,8 @@ class Api::V1::VenuesController < ApplicationController
       @customer.merchant = @venue.merchant
       is_customer = false
     end
+    @winners_count = EarnPrize.count(EarnPrize.venue.id => @venue.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     if is_customer
-      @winners_count = EarnPrize.count(EarnPrize.merchant.id => @venue.merchant.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
       @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :points.lte => @customer.points)
       n = CustomerReward.count(:customer_reward_venues => { :venue_id => @venue.id }) - @rewards.length
       if n > 0
@@ -58,7 +58,7 @@ class Api::V1::VenuesController < ApplicationController
     longitude = params[:longitude].to_f
     @venue = Venue.find_nearest(@merchant.id, latitude, longitude, 1).first
     @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id)
-    @winners_count = EarnPrize.count(EarnPrize.merchant.id => @merchant.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+    @winners_count = EarnPrize.count(EarnPrize.venue.id => @venue.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :points.lte => @customer.points)
     n = CustomerReward.count(:customer_reward_venues => { :venue_id => @venue.id }) - @rewards.length
     if n > 0
