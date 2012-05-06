@@ -41,7 +41,7 @@ Ext.define('Genesis.controller.client.Redemptions',
          }
       }
    },
-   checkinFirstRedemptionsMsg : 'You need to Check-In first before you are elibigle for Redemptions',
+   checkinFirstMsg : 'Please Check-In before redeeming rewards',
    needPointsMsg : function(pointsDiff)
    {
       return 'You need ' + pointsDiff + ' more points ' + Genesis.constants.addCRLF() + 'to be eligible for this item.';
@@ -133,7 +133,7 @@ Ext.define('Genesis.controller.client.Redemptions',
          Ext.device.Notification.show(
          {
             title : 'Warning',
-            message : me.checkinFirstRedemptionsMsg
+            message : me.checkinFirstMsg
          });
       }
 
@@ -187,7 +187,7 @@ Ext.define('Genesis.controller.client.Redemptions',
          //
          scroll.getScroller().scrollTo(0, 0);
 
-         me.exploreMode = cvenue && (cvenue.getId() != venue.getId());
+         me.exploreMode = !cvenue || (cvenue && (cvenue.getId() != venue.getId()));
          switch (subFeature)
          {
             case 'redemptions':

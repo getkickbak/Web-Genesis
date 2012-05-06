@@ -5,7 +5,7 @@ Ext.define('Genesis.view.MainPage',
    alias : 'widget.mainpageview',
    config :
    {
-      title : 'KickBak',
+      title : ' ',
       changeTitle : false,
       direction : 'horizontal',
       items : (!merchantMode) ? [
@@ -68,7 +68,10 @@ Ext.define('Genesis.view.MainPage',
             },
             itemTpl : Ext.create('Ext.XTemplate',
             // @formatter:off
-            '<div class="mainPageItemWrapper">', '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>', '<div class="photoName">{name}</div>', '</div>',
+            '<div class="mainPageItemWrapper">',
+               '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
+               '<div class="photoName">{name}</div>',
+            '</div>',
             // @formatter:on
             {
                getPhoto : function(photoURL)
@@ -86,9 +89,13 @@ Ext.define('Genesis.view.MainPage',
    },
    beforeDeactivate : function()
    {
+      var viewport = Ext.ComponentQuery.query('viewportview')[0];
+      viewport.getNavigationBar().removeCls('kbTitle');
    },
    afterActivate : function()
    {
+      var viewport = Ext.ComponentQuery.query('viewportview')[0];
+      viewport.getNavigationBar().addCls('kbTitle');
    },
    afterDeactivate : function()
    {

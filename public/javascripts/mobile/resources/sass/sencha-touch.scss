@@ -1,18 +1,21 @@
 //------------------------------------------------------------------------------
 // Global Vars Default Theme Override
 //------------------------------------------------------------------------------
-//$base-color: #7c92ae;
-$base-color: #00adee;
+$base-color: #00ADEE !default;
 $base-gradient: 'smooth';
+$active-color: darken(saturate(#FAA845, 55%), 10%) !default;
+
+//Buttons
+$include-buttons-uis : false;
 $include-default-icons : false;
 
 // Forms
 //$form-dark: #FFF !default;
-$form-light: #0a78be;
-$form-field-bg-color : #F3F3F4;
+$form-light: #0A78BE !default;
+$form-field-bg-color : #F3F3F4 !default;
 
 // Lists
-$list-bg-color: #F3F3F4;
+$list-bg-color: #F3F3F4 !default;
 $list-active-gradient: 'bevel';
 //$list-header-bg-color: transparentize(saturate($base-color, 10%), .25);
 $list-header-bg-color: #E86025;
@@ -43,6 +46,10 @@ $gtheme-name : 'v1';
 // Theme Path
 $theme-path : '../../../../../resources/themes';
 $theme-path-rel : '../themes';
+
+// Badges Theme
+$badgePoints-bg-color: darken(green, 10%) !default;
+$badgePoints-bg-gradient: $base-gradient !default;
 
 //------------------------------------------------------------------------------
 // Default Theme Includes
@@ -139,62 +146,6 @@ $theme-path-rel : '../themes';
   }
 }
 
-/**
- * Includes the default styles for toolbar buttons, mostly used as a helper function.
- *
- * @param {color} $bg-color Base color to be used for the button.
- * @param {color} $type Gradient style for the button, will automatically use "recessed" when pressed.
- */
-@mixin toolbar-button($bg-color, $type: $button-gradient){
-  & {
-    border: 1px solid #F3F3F4;
-    @include color-by-background($bg-color, 75%);
-
-    & {
-      @include custom-background-gradient($bg-color, top, false, $type);
-    }
-
-    .x-button-icon.x-icon-mask {
-      @include mask-by-background($bg-color);
-    }
-
-    &.x-button-pressing, &.x-button-pressed, &.x-button-active {
-      &, &:after {
-        @include custom-background-gradient(darken($bg-color, 3%), top, false, 'recessed');
-      }
-    }
-  }
-  .x-toolbar & {
-    &.x-button-back:before, &.x-button-forward:before {
-      background: darken($bg-color, 20%);
-    }
-
-    //&.x-button-back, &.x-button-forward, &.x-button-back:after, &.x-button-forward:after {
-    &.x-button-back, &.x-button-forward, &:after, &:after {
-      background:transparent;
-    }
-  }
-}
-
-@mixin sencha-button-ui($ui-label, $color, $gradient: $button-gradient) {
-  .x-button.x-button-#{$ui-label}, .x-button.x-button-#{$ui-label}-round, .x-button.x-button-#{$ui-label}-small, .x-button.x-button-#{$ui-label}-large {
-    @include toolbar-button($color, $gradient);
-    border: 1px solid darken($color, 20%);
-    border-top-color: darken($color, 15%);
-  }
-
-  .x-button.x-button-#{$ui-label}-round {
-    @extend .x-button-round;
-  }
-
-  .x-button.x-button-#{$ui-label}-small {
-    @extend .x-button-small;
-  }
-  .x-button.x-button-#{$ui-label}-large {
-    @extend .x-button-large;
-  }
-}
-
 //------------------------------------------------------------------------------
 // Default Theme Includes and CSS Overrides
 //------------------------------------------------------------------------------
@@ -202,7 +153,7 @@ $theme-path-rel : '../themes';
 @include sencha-panel;
 @include sencha-buttons;
 @include sencha-sheet;
-@include sencha-picker;
+//@include sencha-picker;
 @include sencha-tabs;
 @include sencha-toolbar;
 @include sencha-toolbar-forms;
@@ -213,60 +164,12 @@ $theme-path-rel : '../themes';
 @include sencha-layout;
 @include sencha-carousel;
 @include sencha-form;
-@include sencha-msgbox;
+//@include sencha-msgbox;
 @include sencha-loading-spinner;
 
 //------------------------------------------------------------------------------
-// Badges Theme
+// Default Theme CSS Classes
 //------------------------------------------------------------------------------
-
-$badgePoints-bg-color: darken(green, 10%) !default;
-$badgePoints-bg-gradient: $base-gradient !default;
-
-//------------------------------------------------------------------------------
-// Theme Icons
-//------------------------------------------------------------------------------
-@include toolbar-iconmask('accounts');
-@include toolbar-iconmask('back');
-//@include toolbar-iconmask('dochallenges');
-@include toolbar-iconmask('challenges');
-@include toolbar-iconmask('close');
-@include toolbar-iconmask('delete');
-@include toolbar-iconmask('disclose');
-@include toolbar-iconmask('earnpointscart');
-@include toolbar-iconmask('explore');
-@include toolbar-iconmask('home');
-@include toolbar-iconmask('info');
-@include toolbar-iconmask('mail');
-@include toolbar-iconmask('order');
-@include toolbar-iconmask('prizes');
-@include toolbar-iconmask('redeem');
-@include toolbar-iconmask('rewards');
-@include toolbar-iconmask('share');
-@include toolbar-iconmask('tocheckedinmerch');
-//@include toolbar-iconmask('checkin');
-//@include toolbar-iconmask('maps');
-
-/*
-@include pictos-iconmask('list');
-@include pictos-iconmask('info_plain');
-@include pictos-iconmask('share');
-@include pictos-iconmask('mail');
-@include pictos-iconmask('shop2');
-@include pictos-iconmask('team');
-@include pictos-iconmask('maps');
-@include pictos-iconmask('search1');
-@include pictos-iconmask('favorites_circle');
-@include pictos-iconmask('check_black1');
-@include pictos-iconmask('delete_black2');
-*/
-
-//------------------------------------------------------------------------------
-// Default Theme CSS Overrides
-//------------------------------------------------------------------------------
-body {
-}
-
 @-webkit-keyframes roulette-table-rotate {
    0%{     -webkit-transform: rotate(0deg);   }         
    4.17%{     -webkit-transform: rotate(15deg);   }
@@ -322,39 +225,9 @@ body {
    100%{   -webkit-transform: rotate(0deg); }
 }
 
-.prizeCheck {
-   position:relative;
-   .rouletteBg, .rouletteTable, .rouletteBall {
-      top:0;
-      left:0;
-      position:absolute;
-      background-position : center center;
-      background-color:transparent;
-      background-repeat : no-repeat;
-      width:100%;
-      height:100%;
-   }
-   .rouletteBg {
-      background-image : theme_image($theme-path + "/images/" + $gtheme-name, "green_roulette_bg" + ".png");
-      background-size : cover;
-      z-index:1
-   }
-   .rouletteTable, .rouletteBall {
-      -webkit-transform-origin: 50% 50%;
-      background-size : contain;
-   }
-   .rouletteTable {
-      -webkit-animation: roulette-table-rotate 3.0s infinite linear;
-      background-image : theme_image($theme-path + "/images/" + $gtheme-name, "roulette2" + ".png");
-      z-index:2;
-   }
-   .rouletteBall {
-      -webkit-animation: roulette-table-rotate-back 5.0s infinite linear;
-      background-image : theme_image($theme-path + "/images/" + $gtheme-name, "ball" + ".png");
-      z-index:3;
-   }
+body {
 }
-      
+
 .navigationBarTop, .navigationBarBottom {
    .x-button {
       &.x-iconalign-top, &.x-iconalign-bottom {
@@ -407,6 +280,39 @@ body {
    }
 }
 
+.kbTitle {
+   &:before {
+      position:absolute;
+      z-index:1;
+      top:25%;
+      left:0;
+      content:" ";
+      width :100%;
+      height :50%;
+      background-position: center center;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-color: transparent;
+      background-image: theme_image($theme-path + "/images/" + $gtheme-name, "logo" + ".png");
+   }
+}
+
+.emptyPage {
+   background-size:contain;
+   &:before {
+      position:absolute;
+      top:0em;
+      left:0;
+      width:100%;
+      height:100%;
+      text-align:center;
+      font-size:$xlargeFontSize;
+      font-weight:bold;
+      padding:2em;
+      background:transparent;
+      color : #555658;
+   }
+}
 //------------------------------------------------------------------------------
 // CSS Overrides for default graphics
 //------------------------------------------------------------------------------
@@ -498,7 +404,7 @@ body {
 }
 
 .round {
-   @if $include-border-radius { @include border-radius(0.6em); }
+   @if $include-border-radius { @include border-radius($panelBorderRadius); }
 }
 
 .panelHdr {
@@ -510,6 +416,20 @@ body {
       font-size:$normalFontSize;
    }
    margin:0em $panelGap;
+}
+
+//------------------------------------------------------------------------------
+// Mask
+//------------------------------------------------------------------------------
+.x-mask {
+   background:rgba(#25aae1, 0.4) center center no-repeat;
+}
+
+//------------------------------------------------------------------------------
+// Sheet
+//------------------------------------------------------------------------------
+.x-sheet, .x-sheet-action {
+   @include custom-linear-gradient(#00ADEE 10%, #0A78BE 65%, top);
 }
 
 //------------------------------------------------------------------------------
@@ -555,8 +475,72 @@ body {
 //------------------------------------------------------------------------------
 // Toolbar CSS
 //------------------------------------------------------------------------------
+/**
+ * Includes the default styles for toolbar buttons, mostly used as a helper function.
+ *
+ * @param {color} $bg-color Base color to be used for the button.
+ * @param {color} $type Gradient style for the button, will automatically use "recessed" when pressed.
+ */
+@mixin toolbar-button($bg-color, $type: $button-gradient){
+  & {
+    border: 1px solid #D1D2D4;
+    @include color-by-background($bg-color, 75%);
+    @include custom-background-gradient($bg-color, top, false, $type);
+
+    .x-button-icon.x-icon-mask {
+      @include mask-by-background($bg-color);
+    }
+
+    &.x-button-pressing, &.x-button-pressed, &.x-button-active {
+      &, &:after {
+        @include custom-background-gradient(darken($bg-color, 3%), top, false, 'recessed');
+      }
+    }
+  }
+  .x-toolbar & {
+    &.x-button-back:before, &.x-button-forward:before {
+      //background: darken($bg-color, 20%);
+    }
+
+    //&.x-button-back, &.x-button-forward, &.x-button-back:after, &.x-button-forward:after {
+    &.x-button-back, &.x-button-forward, &:after, &:after {
+      background:transparent;
+    }
+    background:transparent;
+    border: 1px solid #F3F3F4;
+  }
+}
+
+//------------------------------------------------------------------------------
+// Create Default Button UIs
+//------------------------------------------------------------------------------
 @include sencha-toolbar-ui('dark', #555658);
 @include sencha-toolbar-ui('light', #00ADEE);
+
+//------------------------------------------------------------------------------
+// Theme Icons
+//------------------------------------------------------------------------------
+@include toolbar-iconmask('accounts');
+@include toolbar-iconmask('back');
+//@include toolbar-iconmask('dochallenges');
+@include toolbar-iconmask('challenges');
+@include toolbar-iconmask('close');
+@include toolbar-iconmask('delete');
+@include toolbar-iconmask('disclose');
+@include toolbar-iconmask('earnpointscart');
+@include toolbar-iconmask('explore');
+@include toolbar-iconmask('home');
+@include toolbar-iconmask('info');
+@include toolbar-iconmask('mail');
+@include toolbar-iconmask('order');
+@include toolbar-iconmask('prizes');
+@include toolbar-iconmask('redeem');
+@include toolbar-iconmask('rewards');
+@include toolbar-iconmask('share');
+@include toolbar-iconmask('tocheckedinmerch');
+//@include toolbar-iconmask('checkin');
+//@include toolbar-iconmask('maps');
+
 .x-toolbar-dark, .x-tabbar-dark {
    @include custom-linear-gradient(#555658 10%, #000000 85%, top);
    color : #F3F3F4;
@@ -566,24 +550,29 @@ body {
    color : #F3F3F4;
 }
 
-
 //------------------------------------------------------------------------------
 // List CSS
 //------------------------------------------------------------------------------
 .x-list {
+   background:transparent;
    .x-list-disclosure {
       -webkit-mask : 0 0 url($theme-path-rel + '/images/' + $gtheme-name + '/toolbar/' + 'disclose' + '.png');  
    }
-   .x-list-container .x-list-header {
-      @include custom-linear-gradient(#FAA845, $list-header-bg-color, top);
-      color : #F3F3F4;
+   .x-list-container {
+      .x-list-header {
+         @include custom-linear-gradient(#FAA845, $list-header-bg-color, top);
+         color : #F3F3F4;
+      }
+      .x-list-item-label {
+         background : #F3F3F4;
+      }
    }
 }
 
 .x-list-round {
    .x-inner, .x-list-inner {
       .x-list-container {
-         @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+         //@include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
          @if $include-border-radius { @include border-radius($panelBorderRadius) }
       }
    }
@@ -601,7 +590,7 @@ body {
    @extend .x-list-round;
    .x-inner, .x-list-inner {
       .x-list-container {
-         @if $include-border-radius { @include border-top-radius(0) }
+         @if $include-border-radius { @include border-bottom-radius($panelBorderRadius) }
      }
    }
 }
@@ -610,17 +599,17 @@ body {
    /*
    .x-list-item:first-child {
       border-top: 1px solid darken($list-bg-color, 15%);
-      @include border-top-radius(.4em)
+      @include border-top-radius($panelBorderRadius)
    }
    */
-   &.x-list-ungrouped .x-list-item-label, &.x-list-grouped .x-list-item-label {
+   &.x-list-ungrouped * .x-list-item-label, &.x-list-grouped * .x-list-item-label {
       background : #F3F3F4;
+      @if $include-border-radius { @include border-radius(0); }
    }
-   &.x-list-ungrouped .x-list-item:last-child {
+   &.x-list-ungrouped .x-list-item:last-child, &.x-list-grouped .x-list-item:last-child {
      margin : 0;
      .x-list-item-label {
         border-width : 1px 0 0 0;
-        //@include border-bottom-radius(.4em)
      }
    }
    &.x-list-grouped .x-list-footer-item {
@@ -634,6 +623,36 @@ body {
 //------------------------------------------------------------------------------
 // Button
 //------------------------------------------------------------------------------
+@mixin sencha-button-ui($ui-label, $color, $gradient: $button-gradient) {
+  .x-button.x-button-#{$ui-label}, .x-button.x-button-#{$ui-label}-round, .x-button.x-button-#{$ui-label}-small, .x-button.x-button-#{$ui-label}-large {
+    @include toolbar-button($color, $gradient);
+    //border: 1px solid darken($color, 20%);
+    border: 1px solid $color !important;
+    //border-top-color: darken($color, 15%) !important;
+  }
+
+  .x-button.x-button-#{$ui-label}-round {
+    @extend .x-button-round;
+  }
+
+  .x-button.x-button-#{$ui-label}-small {
+    @extend .x-button-small;
+  }
+  .x-button.x-button-#{$ui-label}-large {
+    @extend .x-button-large;
+  }
+}
+
+@include sencha-button-ui('orange', #E86025);
+@include sencha-button-ui('green', darken(saturate(green, 55%), 10%));
+@include sencha-button-ui('red', darken(saturate(red, 55%), 10%));
+@include sencha-button-ui('blue', darken(saturate(blue, 55%), 10%));
+@include sencha-button-ui('black', darken(saturate(black, 55%), 10%));
+@include sencha-button-ui('fbBlue', desaturate(darken(blue, 10%), 5%));
+
+@include sencha-button-ui('action', $active-color);
+@include sencha-button-ui('cancel', #555658);
+
 .x-button {
    @include toolbar-button(#F3F3F4, $button-gradient);
    .x-button-forward, .x-button-back {
@@ -682,13 +701,6 @@ body {
       @if $include-border-radius { @include border-radius(0.5em); }
    }
 }
-@include sencha-button-ui('orange', #E86025);
-@include sencha-button-ui('green', darken(saturate(green, 55%), 10%));
-@include sencha-button-ui('red', darken(saturate(red, 55%), 10%));
-@include sencha-button-ui('blue', darken(saturate(blue, 55%), 10%));
-@include sencha-button-ui('black', darken(saturate(black, 55%), 10%));
-@include sencha-button-ui('fbBlue', desaturate(darken(blue, 10%), 5%));
-
 
 //------------------------------------------------------------------------------
 // Form CSS
@@ -756,6 +768,7 @@ body {
             top:1.50em + 1.7em;
          }
          .x-list-item-label {
+            //@if $include-border-radius { @include border-radius(0); }
             position:relative;
             padding:$panelTopGap $panelGap;
             min-height:3.25em;
@@ -793,14 +806,11 @@ body {
             border: none;
             @if $include-border-radius { @include border-radius(0); }
          }
-         &:last-child .x-list-item-label {
-            @if $include-border-radius { @include border-radius(0); }
-         }
       }
    }
    .x-inner, .x-list-inner {
       .x-list-container {
-         @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+         //@include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
          //border: 1px solid darken($list-bg-color, 15%);
       }
    }
@@ -812,6 +822,25 @@ body {
 .x-list-normal {
    .x-list-header {
       line-height:1.7em;
+   }
+}
+
+.x-list-normal, .x-list-round, .x-list-bottom-round {
+   &.x-list-ungrouped, &.x-list-grouped {
+      .x-list-container .x-list-item {
+         &.x-list-header-item, &.x-list-footer-item {
+            .x-list-item-label {
+               @if $include-border-radius { @include border-radius(0); }
+            }
+         }
+         &:last-child {
+            &.x-list-footer-item {
+               .x-list-item-label {
+                  @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
+               }
+            }
+         }
+      }
    }
 }
 
@@ -940,7 +969,7 @@ body {
       }
    }
    .prizesWonPanel {
-      @if $include-border-radius { @include border-radius(0.6em); }
+      @if $include-border-radius { @include border-radius($panelBorderRadius); }
       @include box-shadow(0.2em 0.2em 0em rgba(80,81,82,0.6));
       border:1px solid #E7E7E8;
       position:relative;
@@ -951,20 +980,20 @@ body {
          padding:0 !important;
       }
       .prizeswonphoto {
-         @if $include-border-radius { @include border-radius(0.6em); }
+         @if $include-border-radius { @include border-radius($panelBorderRadius); }
          @extend .pointsphoto;
          text-align:left;
          background-color: #F3F3F4;
          font-size:$normalFontSize !important;
          &:before {
-           @if $include-border-radius { @include border-left-radius(0.6em); }
+           @if $include-border-radius { @include border-left-radius($panelBorderRadius); }
            @include custom-linear-gradient(#00ADEE 10%, #0A78BE 85%, top, url($theme-path-rel + "/images/" + $gtheme-name + "/fooditems/" + "pasta" + ".png"));
          }
       }
    }
    .feedPanelHdr {
       @extend .panelHdr;
-      @include custom-linear-gradient(darken(#F3F3F4, 25%) 10%, darken(#D1D2D4, 30%) 85%, top);
+      @include custom-linear-gradient(#A7A9AC 10%, #77787B 85%, top);
    }
    .descPanelHdr {
       @extend .panelHdr;
@@ -973,11 +1002,11 @@ body {
    .descPanel {
       padding: $panelTopGap $panelGap;
       @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
-      @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+      //@include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
    }
    .feedPanel {
       @extend .listNoScrollWrapper;
-      @extend .viewport;
+      //@extend .viewport;
       .listItemDetailsWrapper {
          .itemTitle {
             font-weight:bold;
@@ -1028,6 +1057,7 @@ body {
       font-weight:bold;
       min-height : 3.6em;
       text-align:center;
+      color : #00ADEE;
    }
    .reward {
       margin:auto;
@@ -1071,13 +1101,7 @@ body {
 }
 
 .rewardsRedemptionsPanelHdr {
-   &.x-toolbar {
-      height : $global-row-height*0.75;
-   }
-   .x-title {
-      font-size:$normalFontSize;
-   }
-   //margin:0em $panelGap;  
+   @extend .panelHdr;
 }
 
 .rewardsServerMain {
@@ -1180,12 +1204,7 @@ body {
       }
    }
    .earnPtsPanelHdr {
-      &.x-toolbar { 
-         height : $global-row-height*0.75;
-      }
-      .x-title {
-         font-size:$normalFontSize;
-      }
+      @extend .panelHdr;
    }
 }
 
@@ -1202,6 +1221,40 @@ body {
       text-align:right;
    }
 }
+
+.prizeCheck {
+   position:relative;
+   .rouletteBg, .rouletteTable, .rouletteBall {
+      top:0;
+      left:0;
+      position:absolute;
+      background-position : center center;
+      background-color:transparent;
+      background-repeat : no-repeat;
+      width:100%;
+      height:100%;
+   }
+   .rouletteBg {
+      background-image : theme_image($theme-path + "/images/" + $gtheme-name, "green_roulette_bg" + ".png");
+      background-size : cover;
+      z-index:1
+   }
+   .rouletteTable, .rouletteBall {
+      -webkit-transform-origin: 50% 50%;
+      background-size : contain;
+   }
+   .rouletteTable {
+      -webkit-animation: roulette-table-rotate 3.0s infinite linear;
+      background-image : theme_image($theme-path + "/images/" + $gtheme-name, "roulette2" + ".png");
+      z-index:2;
+   }
+   .rouletteBall {
+      -webkit-animation: roulette-table-rotate-back 5.0s infinite linear;
+      background-image : theme_image($theme-path + "/images/" + $gtheme-name, "ball" + ".png");
+      z-index:3;
+   }
+}
+
 //------------------------------------------------------------------------------
 // Redemptions Page
 //------------------------------------------------------------------------------
@@ -1214,9 +1267,10 @@ body {
    }
    .ptsEarnPanel {
       padding:$panelGap*0.5;
-      @if $include-border-radius { @include border-top-radius(0); }
-      //@if $include-border-radius { @include border-radius($panelBorderRadius); }
-      @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+      border: 1px solid #D1D2D4;
+      background : #F3F3F4;
+      @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
+      //@include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
       .x-inner {
         margin:0 !important;
         height:$icon-size;
@@ -1270,8 +1324,11 @@ body {
          }
       }
       .x-emptytext {
+         @extend .emptyPage;
          background: theme_image($theme-path + "/images/" + $gtheme-name,  "noaccounts" + ".png") center no-repeat;
-         background-size:contain;
+         &:before {
+            content:"You have no accounts opened";
+         }
       }
    }
 }
@@ -1281,11 +1338,14 @@ body {
 //------------------------------------------------------------------------------
 .prizesMain {
    .noprizes {
+      @extend .emptyPage;
       background: theme_image($theme-path + "/images/" + $gtheme-name,  "noprizes" + ".png") center no-repeat;
-      background-size:contain;
+      &:before {
+         content:"You have no prizes";
+      }
    }
 }
-
+      
 //------------------------------------------------------------------------------
 // Photo Upload Page
 //------------------------------------------------------------------------------
@@ -1294,7 +1354,6 @@ body {
    }
    .desc {
      background: rgba(0,0,0,0.3) center center no-repeat;
-     //padding : $panelTopGap $panelGap;
      textarea {
         color: white;
         font-size:$normalFontSize;

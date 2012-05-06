@@ -34,7 +34,8 @@ Ext.define('Genesis.view.Viewport',
          items : [
          {
             align : 'left',
-            iconCls : 'maps',
+            //i//conCls : 'maps',
+            iconCls : 'disclose',
             tag : 'mapBtn',
             hidden : true
          },
@@ -54,36 +55,38 @@ Ext.define('Genesis.view.Viewport',
                      {
                         defaultUnit : 'em',
                         margin : '0 0 0.5 0',
-                        xtype : 'button',
-                        iconCls : 'dummy',
-                        iconAlign : 'left',
-                        iconMask : true
+                        xtype : 'button'
+                        //,iconCls : 'dummy',
+                        //iconAlign : 'left',
+                        //iconMask : true
                      },
                      items : [
                      {
                         text : 'Email',
-                        iconCls : 'mail',
+                        ui : 'action',
+                        //iconCls : 'mail',
                         tag : 'mail',
                         handler : Ext.emptyFn
                      },
                      {
                         text : 'SMS Message',
                         tag : 'sms',
-                        iconCls : 'compose',
+                        ui : 'action',
+                        //iconCls : 'compose',
                         handler : Ext.emptyFn
                      },
                      {
                         text : 'Facebook',
                         tag : 'fbShareBtn',
                         ui : 'blue',
-                        iconCls : 'facebook',
+                        //iconCls : 'facebook',
                         handler : Ext.emptyFn
                      },
                      {
                         margin : '0.5 0 0 0',
                         text : 'Cancel',
                         iconMaskCls : 'dummymask',
-                        ui : 'confirm',
+                        ui : 'cancel',
                         scope : this,
                         handler : function()
                         {
@@ -128,6 +131,7 @@ Ext.define('Genesis.view.Viewport',
                      {
                         margin : '0.5 0 0 0',
                         text : 'Cancel',
+                        ui : 'cancel',
                         scope : this,
                         handler : function()
                         {
@@ -143,7 +147,8 @@ Ext.define('Genesis.view.Viewport',
          {
             align : 'right',
             tag : 'checkin',
-            iconCls : 'check_black1',
+            //iconCls : 'checkin',
+            iconCls : 'tocheckedinmerch',
             hidden : true
          },
          {

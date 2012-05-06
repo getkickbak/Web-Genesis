@@ -213,48 +213,7 @@ Ext.define('Genesis.controller.MainPage',
                   local.setItem('auth_code', authToken);
                }
 
-               //
-               // Update Eligible Rewards
-               //
-               var erewards = metaData['eligible_rewards'];
-               if(erewards)
-               {
-                  console.debug("Total Eligible Rewards - " + erewards.length);
-                  var estore = Ext.StoreMgr.get('EligibleRewardsStore');
-                  estore.setData(erewards);
-               }
-               //
-               // Update Customer Rewards (Redemptions)
-               //
-               var rewards = metaData['rewards'];
-               if(rewards)
-               {
-                  console.debug("Total Redemption Rewards - " + rewards.length);
-                  var rstore = Ext.StoreMgr.get('RedemptionsStore');
-                  for(var i = 0; i < rewards.length; i++)
-                  {
-                     rewards[i]['venue_id'] = metaData['venue_id'];
-                  }
-                  rstore.setData(rewards);
-               }
-
-               //
-               // Winners' Circle'
-               //
-               var prizesCount = metaData['winners_count'];
-               if(prizesCount >= 0)
-               {
-                  console.debug("Prizes won by customers of at this venue this month - [" + prizesCount + "]");
-                  var app = me.getApplication();
-                  var controller = app.getController('Merchants');
-                  app.dispatch(
-                  {
-                     action : 'onUpdateWinnersCount',
-                     args : [metaData],
-                     controller : controller,
-                     scope : controller
-                  });
-               }
+               me.updateRewards(metaData);
             }
          },
          grouper :

@@ -70,6 +70,54 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return '000102030405060708090a0b0c0d0e0f';
    },
+   updateRewards : function(metaData)
+   {
+      var me = this;
+      //
+      // Update Eligible Rewards
+      //
+      var erewards = metaData['eligible_rewards'];
+      if(erewards)
+      {
+         console.debug("Total Eligible Rewards - " + erewards.length);
+         var estore = Ext.StoreMgr.get('EligibleRewardsStore');
+         estore.setData(erewards);
+      }
+      //
+      // Update Customer Rewards (Redemptions)
+      //
+      var rewards = metaData['rewards'];
+      if(rewards)
+      {
+         var viewport = this.getViewPortCntlr();
+         var venueId = metaData['venue_id'] || viewport.getVenue().getId();
+         console.debug("Total Redemption Rewards - " + rewards.length);
+         var rstore = Ext.StoreMgr.get('RedemptionsStore');
+         for(var i = 0; i < rewards.length; i++)
+         {
+            rewards[i]['venue_id'] = venueId;
+         }
+         rstore.setData(rewards);
+      }
+
+      //
+      // Winners' Circle'
+      //
+      var prizesCount = metaData['winners_count'];
+      if(prizesCount >= 0)
+      {
+         console.debug("Prizes won by customers at this merchant this month - [" + prizesCount + "]");
+         var app = me.getApplication();
+         var controller = app.getController('Merchants');
+         app.dispatch(
+         {
+            action : 'onUpdateWinnersCount',
+            args : [metaData],
+            controller : controller,
+            scope : controller
+         });
+      }
+   },
    pushView : function(view)
    {
       var viewport = this.getViewport();

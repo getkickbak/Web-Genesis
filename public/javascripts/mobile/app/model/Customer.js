@@ -77,7 +77,6 @@ Ext.define('Genesis.model.Customer',
       },
       setLogoutUrl : function(auth_code)
       {
-         var local = window.localStorage;
          this.getProxy().setActionMethods(
          {
             read : 'DELETE'

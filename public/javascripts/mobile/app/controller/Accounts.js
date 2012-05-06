@@ -58,14 +58,14 @@ Ext.define('Genesis.controller.Accounts',
       this.onDisclose(list, model);
       return false;
    },
-   onDisclose : function(list, record, target, index, e, eOpts)
+   onDisclose : function(list, rec, target, index, e, eOpts)
    {
       var me = this;
       var app = me.getApplication();
       var controller = app.getController('Checkins');
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
+      //var cestore = Ext.StoreMgr.get('CheckinExploreStore');
       var cstore = Ext.StoreMgr.get('CustomerStore');
-      var merchantId = record.getMerchant().getId();
+      var merchantId = rec.getMerchant().getId();
       var viewport = me.getViewPortCntlr();
 
       // Load Venue Info
@@ -73,7 +73,8 @@ Ext.define('Genesis.controller.Accounts',
       me.getGeoLocation(function(position)
       {
          Venue['setGetClosestVenueURL']();
-         cestore.load(
+         Venue.load(merchantId,
+         //cestore.load(
          {
             scope : me,
             params :
@@ -82,24 +83,34 @@ Ext.define('Genesis.controller.Accounts',
                latitude : position.coords.getLatitude(),
                longitude : position.coords.getLongitude()
             },
-            callback : function(records, operation)
+            callback : function(record, operation)
             {
                if(operation.wasSuccessful())
                {
-                  for(var i = 0; i < records.length; i++)
+                  var metaData = Venue.getProxy().getReader().metaData;
+                  if(metaData)
                   {
-                     viewport.setVenue(records[i]);
+                     //
+                     // Automatically trigger "metachagne" event
+                     // updateRewards(metaData);
+                     //
+                     
+                     //
+                     // Setup minimum customer information require for explore
+                     //
+                     metaData['venue_id'] = record.getId();
+                     viewport.setVenue(record);
                      app.dispatch(
                      {
                         action : 'onCheckinHandler',
-                        args : ['explore', cestore.getProxy().getReader().metaData, cstore, null, [record], operation],
+                        args : ['explore', metaData, cstore, null, [rec], operation],
                         controller : controller,
                         scope : controller
                      });
-                     //
-                     // Return to first match
-                     //
-                     break;
+                  }
+                  else
+                  {
+                     console.log("No MetaData found on Venue!");
                   }
                }
                else
