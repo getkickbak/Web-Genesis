@@ -213,7 +213,7 @@ Ext.define('Genesis.controller.Merchants',
       // Either we are checked-in or
       // customer exploring a venue they checked-in in the past ...
       //
-      if(checkedInMatch || me.showFeed)
+      if(checkedInMatch)
       {
          me.getDescContainer().hide();
          me.getFeedContainer().show();
@@ -225,7 +225,7 @@ Ext.define('Genesis.controller.Merchants',
       //
       else
       {
-         me.getFeedContainer().hide();
+         me.getFeedContainer()[me.showFeed ? 'show' : 'hide']();
          me.getDescPanel().setData(vrecord.getMerchant());
          me.getDescContainer().show();
          //me.getAddress().setData(vrecord.getData(true));

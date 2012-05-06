@@ -98,6 +98,24 @@ Ext.define('Genesis.controller.ControllerBase',
          }
          rstore.setData(rewards);
       }
+      
+      //
+      // Winners' Circle'
+      //
+      var prizesCount = metaData['winners_count'];
+      if(prizesCount >= 0)
+      {
+         console.debug("Prizes won by customers at this merchant this month - [" + prizesCount + "]");
+         var app = me.getApplication();
+         var controller = app.getController('Merchants');
+         app.dispatch(
+         {
+            action : 'onUpdateWinnersCount',
+            args : [metaData],
+            controller : controller,
+            scope : controller
+         });
+      }
    },
    pushView : function(view)
    {
