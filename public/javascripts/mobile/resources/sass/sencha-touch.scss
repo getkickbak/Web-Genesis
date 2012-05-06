@@ -1327,7 +1327,7 @@ body {
          @extend .emptyPage;
          background: theme_image($theme-path + "/images/" + $gtheme-name,  "noaccounts" + ".png") center no-repeat;
          &:before {
-            content:"You have No Accounts Opened";
+            content:"You have no accounts opened";
          }
       }
    }
@@ -1341,7 +1341,7 @@ body {
       @extend .emptyPage;
       background: theme_image($theme-path + "/images/" + $gtheme-name,  "noprizes" + ".png") center no-repeat;
       &:before {
-         content:"You have No Prizes";
+         content:"You have no prizes";
       }
    }
 }
