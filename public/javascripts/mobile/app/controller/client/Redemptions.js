@@ -187,7 +187,7 @@ Ext.define('Genesis.controller.client.Redemptions',
          //
          scroll.getScroller().scrollTo(0, 0);
 
-         me.exploreMode = cvenue && (cvenue.getId() != venue.getId());
+         me.exploreMode = !cvenue || (cvenue && (cvenue.getId() != venue.getId()));
          switch (subFeature)
          {
             case 'redemptions':
