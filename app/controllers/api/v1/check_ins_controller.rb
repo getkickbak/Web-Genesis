@@ -57,7 +57,7 @@ class Api::V1::CheckInsController < ApplicationController
           end
         end
         last_check_in = CheckIn.create(@venue, current_user, @customer)
-        @winners_count = EarnPrize.count(EarnPrize.merchant.id => @venue.merchant.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+        @winners_count = EarnPrize.count(EarnPrize.venue.id => @venue.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
         @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :points.lte => @customer.points)
         n = CustomerReward.count(:customer_reward_venues => { :venue_id => @venue.id }) - @rewards.length
         if n > 0

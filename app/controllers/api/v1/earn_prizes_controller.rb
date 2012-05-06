@@ -21,11 +21,20 @@ class Api::V1::EarnPrizesController < ApplicationController
   end
   
   def redeem
-    @venue = Venue.get(params[:venue_id]) || not_found
     @earn_prize = EarnPrize.get(params[:id]) || not_found
     authorize! :update, @earn_prize
  
-    Time.zone = @venue.time_zone   
+    reward_venue = CustomerRewardVenue.first(:customer_reward_id => @earn_prize.reward.id, :venue_id => @earn_prize.venue.id)
+    if reward_venue.nil?
+      respond_to do |format|
+        #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => [t("api.earn_prizes.not_available")] } }
+      end
+      return
+    end
+    
+    Time.zone = @earn_prize.venue.time_zone   
     EarnPrize.transaction do
       begin
         if not @earn_prize.redeemed
@@ -34,7 +43,11 @@ class Api::V1::EarnPrizesController < ApplicationController
           @earn_prize.save
           aes = Aes.new('128', 'CBC')
           iv = String.random_alphanumeric
-          data = { :type => "redeem_prize", :title => @earn_prize.reward.title, :expiry_date => Date.today }.to_json
+          data = { 
+            :type => "redeem_prize", 
+            :title => @earn_prize.reward.title,
+            :expiry_date => Date.today 
+          }.to_json
           @encrypted_data = "#{iv}$#{aes.encrypt(data, @venue.auth_code, iv)}"
           render :template => '/api/v1/earn_prizes/redeem'
         else

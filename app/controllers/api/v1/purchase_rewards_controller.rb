@@ -100,6 +100,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             )
             earn_prize.reward = prize
             earn_prize.merchant = @venue.merchant
+            earn_prize.venue = @venue
             earn_prize.user = current_user
             earn_prize.save
             @prize = earn_prize          
@@ -119,6 +120,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               )
               earn_prize.reward = prize
               earn_prize.merchant = @venue.merchant
+              earn_prize.venue = @venue
               earn_prize.user = current_user
               earn_prize.save
               @prize = earn_prize

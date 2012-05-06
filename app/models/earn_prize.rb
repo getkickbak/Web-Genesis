@@ -16,5 +16,6 @@ class EarnPrize
   
   belongs_to :reward, 'CustomerReward'
   belongs_to :merchant
+  belongs_to :venue
   belongs_to :user
 end

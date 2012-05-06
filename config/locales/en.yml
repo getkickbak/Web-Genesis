@@ -119,11 +119,13 @@ en:
         invalid_code: "Invalid check-in code.  Please try again."
         create_failure: "Trouble with check-in.  Please try again." 
       customer_rewards:
+        not_available: "Sorry, but the reward is not available at this venue!"
         insufficient_points: "Not enough points to redeem reward."
         redeem_failure: "Trouble redeeming the reward.  Please try again."
         qualified_rewards: "Go ahead and redeem it now."
         potential_rewards: "Earn %s more points and it's yours!"
       earn_prizes:
+        not_available: "Sorry, but the prize is not available at this venue!"
         already_redeemed: "Prize has already been redeemed."
         redeem_failure: "Trouble redeeming the prize.  Please try again."
       purchase_rewards:
