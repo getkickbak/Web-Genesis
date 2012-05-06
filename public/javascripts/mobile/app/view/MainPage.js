@@ -68,7 +68,10 @@ Ext.define('Genesis.view.MainPage',
             },
             itemTpl : Ext.create('Ext.XTemplate',
             // @formatter:off
-            '<div class="mainPageItemWrapper">', '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>', '<div class="photoName">{name}</div>', '</div>',
+            '<div class="mainPageItemWrapper">',
+               '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
+               '<div class="photoName">{name}</div>',
+            '</div>',
             // @formatter:on
             {
                getPhoto : function(photoURL)

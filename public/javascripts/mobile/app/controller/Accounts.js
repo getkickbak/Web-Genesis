@@ -92,7 +92,7 @@ Ext.define('Genesis.controller.Accounts',
                   {
                      //
                      // Automatically trigger "metachagne" event
-                     // updateEligibleRewards(metaData);
+                     // updateRewards(metaData);
                      //
                      
                      //

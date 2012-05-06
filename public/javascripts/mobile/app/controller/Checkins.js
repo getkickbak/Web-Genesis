@@ -64,8 +64,8 @@ Ext.define('Genesis.controller.Checkins',
                // Load Prizes into DataStore
                var metaData = proxy.getReader().metaData;
 
-               me.updateEligibleRewards(metaData);
-
+               // Let Other event handlers udpate the metaData first ...
+               Ext.defer(me.updateRewards, 1, me, [metaData]);
             }
          }
 

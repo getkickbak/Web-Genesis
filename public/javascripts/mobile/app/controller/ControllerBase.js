@@ -70,7 +70,7 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return '000102030405060708090a0b0c0d0e0f';
    },
-   updateEligibleRewards : function(metaData)
+   updateRewards : function(metaData)
    {
       //
       // Update Eligible Rewards
@@ -81,6 +81,22 @@ Ext.define('Genesis.controller.ControllerBase',
          console.debug("Total Eligible Rewards - " + erewards.length);
          var estore = Ext.StoreMgr.get('EligibleRewardsStore');
          estore.setData(erewards);
+      }
+      //
+      // Update Customer Rewards (Redemptions)
+      //
+      var rewards = metaData['rewards'];
+      if(rewards)
+      {
+         var viewport = this.getViewPortCntlr();
+         var venueId = metaData['venue_id'] || viewport.getVenue().getId();
+         console.debug("Total Redemption Rewards - " + rewards.length);
+         var rstore = Ext.StoreMgr.get('RedemptionsStore');
+         for(var i = 0; i < rewards.length; i++)
+         {
+            rewards[i]['venue_id'] = venueId;
+         }
+         rstore.setData(rewards);
       }
    },
    pushView : function(view)
