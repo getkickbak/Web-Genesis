@@ -8,6 +8,7 @@ development:
   REDIS_URL: "redis://kickbak:028ab069d968aa7768089e0f7f02c8ac@drum.redistogo.com:9431/"  
   DEBUG_MODE: true
   SIMULATOR_MODE: true
+  GENERATE_QRCODE: true
 test:  
   MONTHLY_FEE: 19
   COST_PER_TRANS: 0.1
@@ -18,6 +19,7 @@ test:
   REDIS_URL: "redis://kickbak:028ab069d968aa7768089e0f7f02c8ac@drum.redistogo.com:9431/"  
   DEBUG_MODE: true
   SIMULATOR_MODE: true
+  GENERATE_QRCODE: true
 production:
   MONTHLY_FEE: 19
   COST_PER_TRANS: 0.1
@@ -29,3 +31,4 @@ production:
   REDIS_URL: "redis://kickbak:4581c2433f1c544dbac343b89388d88e@gar.redistogo.com:9108"
   DEBUG_MODE: false
   SIMULATOR_MODE: true
+  GENERATE_QRCODE: true
