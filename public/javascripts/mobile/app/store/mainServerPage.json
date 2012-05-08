@@ -8,7 +8,7 @@
          "subFeature": "rewards"
       }, {
          "name": "Redemptions",
-         "photo_url": "resources/themes/images/v1/mainicons/redemptions.png",
+         "photo_url": "resources/themes/images/v1/mainicons/redeem.png",
          "desc": "Redemptions",
          "pageCntlr": "server.Redemptions",
          "subFeature": "redemptions"
