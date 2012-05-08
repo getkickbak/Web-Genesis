@@ -265,9 +265,8 @@ Ext.define('Genesis.controller.Checkins',
                var customer = custore.getById(customerId);
                if(customer != null)
                {
-                  customer = custore.add(record)[0];
-                  //crecord.set('points', points);
-                  //crecord.setLastCheckin(record.getLastCheckin());
+                  Customer.updateCustomer(customer, record);
+                  //customer = custore.add(record)[0];
                   console.debug("Customer ID=[" + customer.getId() + "] is in CustAcct Database");
                   showFeed = true;
                }

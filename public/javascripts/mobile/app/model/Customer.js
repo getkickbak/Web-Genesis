@@ -55,6 +55,16 @@ Ext.define('Genesis.model.Customer',
       {
          return customerId != 0;
       },
+      updateCustomer : function(cOld, cNew)
+      {
+         var attrib;
+         for(var i = 0; i < cOld.fields.length; i++)
+         {
+            attrib = cOld.items[i].getName();
+            cOld.set(attrib, cNew.get(attrib));
+         }
+         cOld.setLastCheckin(cNew.getLastCheckin());
+      },
       setFbLoginUrl : function()
       {
          this.getProxy().setActionMethods(

@@ -108,7 +108,7 @@ Ext.define('Genesis.view.widgets.ChallengeMenuItem',
                value = 'mystery';
             default :
                photo_url = Genesis.constants.getIconPath('mainicons', value);
-               console.debug("Icon Path [" + photo_url + "]");
+               //console.debug("Icon Path [" + photo_url + "]");
                break;
          }
          return photo_url;
