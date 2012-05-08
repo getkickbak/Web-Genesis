@@ -93,7 +93,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    onShareMerchantTap : function(b, e, eOpts, eInfo)
    {
-      var fb = window.localStorage;
+      var fb = Genesis.constants.getLocalStorage();
       Genesis.constants.facebook_onLogin(function(params)
       {
          var merchant = this.getVenue().getMerchant();
@@ -254,29 +254,31 @@ Ext.define('Genesis.controller.Viewport',
    },
    loadSoundFile : function(sound_file, type)
    {
-      switch (type)
+      if(Genesis.constants.isNative())
       {
-         case 'FX' :
-            LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + '.mp3', function()
-            {
-               console.debug("loaded " + sound_file);
-            }, function(err)
-            {
-               console.debug("Audio Error: " + err);
-            });
-            break;
-         case 'Audio' :
-            LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + '.mp3', 3, function()
-            {
-               console.debug("loaded " + sound_file);
-            }, function(err)
-            {
-               console.debug("Audio Error: " + err);
-            });
-            break;
+         switch (type)
+         {
+            case 'FX' :
+               LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + '.mp3', function()
+               {
+                  console.debug("loaded " + sound_file);
+               }, function(err)
+               {
+                  console.debug("Audio Error: " + err);
+               });
+               break;
+            case 'Audio' :
+               LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + '.mp3', 3, function()
+               {
+                  console.debug("loaded " + sound_file);
+               }, function(err)
+               {
+                  console.debug("Audio Error: " + err);
+               });
+               break;
+         }
       }
       //console.debug("Preloading " + sound_file + " ...");
-      return sound_file;
       /*
        return new Media('resources/audio/' + sound_file, function()
        {
@@ -286,10 +288,11 @@ Ext.define('Genesis.controller.Viewport',
        console.log("Audio Error: " + err);
        });
        */
+      return sound_file;
    },
    openMainPage : function()
    {
-      var local = window.localStorage;
+      var local = Genesis.constants.getLocalStorage();
       var loggedIn = (local.getItem('auth_code')) ? true : false;
       if(!merchantMode)
       {
@@ -326,14 +329,11 @@ Ext.define('Genesis.controller.Viewport',
             this.onFeatureTap('MainPage', 'login');
          }
       }
-      if(Genesis.constants.isNative())
+      this.sound_files =
       {
-         this.sound_files =
-         {
-            winPrizeSound : this.loadSoundFile('win_prize_sound', 'Audio'),
-            clickSound : this.loadSoundFile('click_sound', 'FX'),
-            refreshListSound : this.loadSoundFile('refresh_list_sound', 'FX')
-         };
-      }
+         winPrizeSound : this.loadSoundFile('win_prize_sound', 'Audio'),
+         clickSound : this.loadSoundFile('click_sound', 'FX'),
+         refreshListSound : this.loadSoundFile('refresh_list_sound', 'FX')
+      };
    }
 });

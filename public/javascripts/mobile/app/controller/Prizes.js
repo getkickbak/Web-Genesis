@@ -68,7 +68,7 @@ Ext.define('Genesis.controller.Prizes',
       var app = me.getApplication();
       var viewport = me.getViewPortCntlr();
       var vport = me.getViewport();
-      var fb = window.localStorage;
+      var fb = Genesis.constants.getLocalStorage();
 
       callback = callback || Ext.emptyFn;
       if(operation.wasSuccessful())
@@ -194,16 +194,15 @@ Ext.define('Genesis.controller.Prizes',
                         {
                            continue;
                         }
-                        else
-                        if(!container)
+                     }
+                     if(!container)
+                     {
+                        view.add(
                         {
-                           view.add(
-                           {
-                              xtype : 'carousel',
-                              scrollable : undefined
-                           });
-                           container = view.getItems().items[0];
-                        }
+                           xtype : 'carousel',
+                           scrollable : undefined
+                        });
+                        container = view.getItems().items[0];
                      }
                   }
                   else
@@ -235,7 +234,7 @@ Ext.define('Genesis.controller.Prizes',
                      });
                   }
                }
-               
+
                if(!container)
                {
                   container = view;

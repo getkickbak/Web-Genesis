@@ -5,7 +5,7 @@ Ext.define('Genesis.view.server.Rewards',
    alias : 'widget.serverrewardsview',
    config :
    {
-      title : 'Kickbak Rewards',
+      title : ' ',
       changeTitle : false,
       layout : 'vbox',
       items : [
@@ -62,7 +62,7 @@ Ext.define('Genesis.view.server.Rewards',
                xtype : 'textfield',
                name : 'price',
                clearIcon : false,
-               placeHolder : 'Enter the price',
+               placeHolder : 'Enter Sales Price',
                readOnly : true,
                required : true,
                cls : 'rewardsCalculator'
@@ -151,6 +151,21 @@ Ext.define('Genesis.view.server.Rewards',
             cls : 'qrcodeContainer',
             items : [
             {
+               docked : 'top',
+               xtype : 'component',
+               tag : 'title',
+               width : '100%',
+               cls : 'title',
+               defaultUnit : 'em',
+               tpl : Ext.create('Ext.XTemplate', '{[this.getPrice(values)]}',
+               {
+                  getPrice : function(values)
+                  {
+                     return values['price'];
+                  }
+               })
+            },
+            {
                xtype : 'component',
                tag : 'qrcode',
                cls : 'qrcode'
@@ -165,6 +180,18 @@ Ext.define('Genesis.view.server.Rewards',
             }]
          }]
       }]
+   },
+   beforeActivate : function(activeItem, oldActiveItem)
+   {
+      var viewport = Ext.ComponentQuery.query('viewportview')[0];
+      viewport.getNavigationBar().addCls('kbTitle');
+      this.callParent(arguments);
+   },
+   beforeDeactivate : function(activeItem, oldActiveItem)
+   {
+      var viewport = Ext.ComponentQuery.query('viewportview')[0];
+      viewport.getNavigationBar().removeCls('kbTitle');
+      this.callParent(arguments);
    },
    statics :
    {

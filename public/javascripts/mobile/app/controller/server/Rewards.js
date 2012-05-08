@@ -25,6 +25,7 @@ Ext.define('Genesis.controller.server.Rewards',
          rewardsContainer : 'serverrewardsview container[tag=rewards]',
          price : 'serverrewardsview textfield',
          qrcode : 'serverrewardsview component[tag=qrcode]',
+         title : 'serverrewardsview component[tag=title]',
          infoBtn : 'viewportview button[tag=info]'
       },
       control :
@@ -52,7 +53,7 @@ Ext.define('Genesis.controller.server.Rewards',
          }
       }
    },
-   invalidPriceMsg : 'Please enter a valid price',
+   invalidPriceMsg : 'Please enter a valid price (eg. 5.00)',
    init : function()
    {
       console.log("Server Rewards Init");
@@ -171,6 +172,10 @@ Ext.define('Genesis.controller.server.Rewards',
       {
          'background-image' : 'url(' + qrcode + ')'
       });
+      me.getTitle().setData(
+      {
+         price : '$' + price
+      });
       //anim.disable();
       container.setActiveItem(1);
       //anim.enable();
@@ -180,7 +185,7 @@ Ext.define('Genesis.controller.server.Rewards',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      
+
       me.playSoundFile(viewport.sound_files['clickSound']);
       var value = b.getText();
       var priceField = me.getPrice();

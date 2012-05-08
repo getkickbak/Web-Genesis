@@ -19,6 +19,10 @@ Genesis.constants =
    {
       return 'resources/themes/images/' + this.themeName + '/' + type + '/' + name + '.png';
    },
+   getLocalStorage : function()
+   {
+      return window.localStorage;
+   },
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
@@ -545,7 +549,7 @@ Genesis.constants =
    },
    resetStorage : function()
    {
-      this.facebook_onLogout(null,false);
+      this.facebook_onLogout(null, false);
       window.localStorage.removeItem('auth_code');
    }
 };

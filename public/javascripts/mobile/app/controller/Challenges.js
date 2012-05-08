@@ -230,7 +230,7 @@ Ext.define('Genesis.controller.Challenges',
    onCameraSuccessFn : function(imageURI)
    {
       var me = this;
-      var local = window.localStorage;
+      var local = Genesis.constants.getLocalStorage();
 
       console.debug("image URI =[" + imageURI + "]");
 

@@ -275,8 +275,7 @@ body {
 .visitsphoto {
    @extend .pointsphoto;
    &:before {
-      //background-image: theme_image($theme-path + "/images/" + $gtheme-name,  "miscicons/" + "visits" + ".png");
-      background-image: theme_image($theme-path + "/images/" + $gtheme-name,  "fooditems/" + "pasta" + ".png");
+      background-image: theme_image($theme-path + "/images/" + $gtheme-name,  "miscicons/" + "number_visits" + ".png");
    }
 }
 
@@ -284,11 +283,11 @@ body {
    &:before {
       position:absolute;
       z-index:1;
-      top:25%;
+      top:0;
       left:0;
       content:" ";
       width :100%;
-      height :50%;
+      height :100%;
       background-position: center center;
       background-size: contain;
       background-repeat: no-repeat;
@@ -416,6 +415,13 @@ body {
       font-size:$normalFontSize;
    }
    margin:0em $panelGap;
+}
+.title {
+   font-size:$xlargeFontSize;
+   font-weight:bold;
+   min-height : 3.6em;
+   text-align:center;
+   color : #00ADEE;
 }
 
 //------------------------------------------------------------------------------
@@ -723,6 +729,9 @@ body {
 .x-form-fieldset .x-form-label {
   border : none;
 }
+.x-field {
+   background : #F3F3F4;
+}
 .x-form-label {
    @include custom-linear-gradient(#00ADEE 10%, #0A78BE 85%, top);
    color : white;
@@ -998,7 +1007,7 @@ body {
          font-size:$normalFontSize !important;
          &:before {
            @if $include-border-radius { @include border-left-radius($panelBorderRadius); }
-           @include custom-linear-gradient(#00ADEE 10%, #0A78BE 85%, top, url($theme-path-rel + "/images/" + $gtheme-name + "/miscicons/" + "points" + ".png"));
+           @include custom-linear-gradient(#00ADEE 10%, #0A78BE 85%, top, url($theme-path-rel + "/images/" + $gtheme-name + "/miscicons/" + "number_won" + ".png"));
          }
       }
    }
@@ -1079,11 +1088,7 @@ body {
 //------------------------------------------------------------------------------
 .rewardItem {
    .title {
-      font-size:$xlargeFontSize;
-      font-weight:bold;
-      min-height : 3.6em;
-      text-align:center;
-      color : #00ADEE;
+     @extend .title;
    }
    .reward {
       margin:auto;
@@ -1131,13 +1136,22 @@ body {
 }
 
 .rewardsServerMain {
-   .rewardsMainCalculator {
+   .rewardsMainCalculator, .x-field {
       background : black;
-      .x-field-text .x-input-el {
-         font-size:$xlargeFontSize*2;
-         padding: $panelGap/4;
-         min-height: 1.0em + $panelGap/2;
-         text-align:right;
+   }
+   .rewardsMainCalculator {
+      .x-field.x-field-text {
+         .x-component-outer {
+            margin: $panelGap $panelGap*2;
+            outline: darken(#F3F3F4, 10%) inset $panelGap;
+            .x-input-el {
+               background : #F3F3F4;
+               padding: $panelTopGap/4;
+               font-size:$xlargeFontSize*1.75;
+               min-height: 1.0em + $panelGap/2;
+               text-align:right;
+            }
+         }
       }
       .dialpad {
          .x-container .x-inner {
@@ -1162,12 +1176,19 @@ body {
       .x-inner {
          margin: $panelTopGap*2 $panelGap*2;
       }
+      .title {
+        @extend .title;
+        min-height:$xlargeFontSize*2;
+        max-height:$xlargeFontSize*2;
+        font-size:$xlargeFontSize*2;
+        line-height:$xlargeFontSize*2;
+      }
       .qrcode {
          background-position: center center;
          background-repeat: no-repeat;
          width:100%;
          height:100%%;
-         background-size: 50% 50%;
+         background-size: 123px*1.5 123px*1.5; // Size of generated QR Code
       }
       .done {
          background : black;
