@@ -5,7 +5,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
   def index
     authorize! :read, CustomerReward
     
-    @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => params[:venue_id] })
+    @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => params[:venue_id] }, :order => [:points.asc])
     render :template => '/api/v1/customer_rewards/index'
   end
   
