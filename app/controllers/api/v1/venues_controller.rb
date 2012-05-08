@@ -17,12 +17,8 @@ class Api::V1::VenuesController < ApplicationController
       is_customer = false
     end
     @winners_count = EarnPrize.count(EarnPrize.venue.id => @venue.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+    @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])
     if is_customer
-      @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :points.lte => @customer.points)
-      n = CustomerReward.count(:customer_reward_venues => { :venue_id => @venue.id }) - @rewards.length
-      if n > 0
-        @rewards.concat(CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => n))
-      end
       @eligible_rewards = []
       challenge_type_id = ChallengeType.value_to_id["vip"]
       challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
@@ -59,11 +55,7 @@ class Api::V1::VenuesController < ApplicationController
     @venue = Venue.find_nearest(@merchant.id, latitude, longitude, 1).first
     @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id)
     @winners_count = EarnPrize.count(EarnPrize.venue.id => @venue.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
-    @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :points.lte => @customer.points)
-    n = CustomerReward.count(:customer_reward_venues => { :venue_id => @venue.id }) - @rewards.length
-    if n > 0
-      @rewards.concat(CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :points.gt => @customer.points, :order => [:points.asc], :offset => 0, :limit => n))
-    end
+    @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])
     @eligible_rewards = []
     challenge_type_id = ChallengeType.value_to_id["vip"]
     challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })

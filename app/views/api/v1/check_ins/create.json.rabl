@@ -12,7 +12,7 @@ node :metaData do
 		:rewards => (
 			@rewards.map do |r|
 		 		partial('api/v1/customer_rewards/base', :object => r)
-			end if defined? @rewards
+			end
 		),
 		:eligible_rewards => (
 			@eligible_rewards.map do |r|
