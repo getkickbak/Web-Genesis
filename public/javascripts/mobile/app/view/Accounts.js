@@ -17,6 +17,7 @@ Ext.define('Genesis.view.Accounts',
          tag : 'accountsList',
          scrollable : 'vertical',
          cls : 'accountsList',
+         emptyText : ' ',
          /*
           indexBar :
           {
@@ -31,14 +32,21 @@ Ext.define('Genesis.view.Accounts',
          grouped : true,
          itemTpl : Ext.create('Ext.XTemplate',
          // @formatter:off
-         '<div class="photo">',
-            '<img src="{[this.getPhoto(values)]}"/>',
-         '</div>',
-         '<div class="listItemDetailsWrapper">',
-            '<div class="points">{[this.getPoints(values)]}</div>',
-         '</div>',
+         '<tpl if="this.isValidCustomer(values)">',
+            '<div class="photo">',
+               '<img src="{[this.getPhoto(values)]}"/>',
+            '</div>',
+            '<div class="listItemDetailsWrapper">',
+               '<div class="points">{[this.getPoints(values)]}</div>',
+            '</div>',
+         '</tpl>',
          // @formatter:on
          {
+            isValidCustomer : function(values)
+            {
+               //return Customer.isValidCustomer(values['id']);
+               return true;
+            },
             getPhoto : function(values)
             {
                return values.Merchant['photo']['thumbnail_ios_small'].url;

@@ -16,6 +16,7 @@ Ext.define('Genesis.view.ChallengePage',
       },
       {
          docked : 'bottom',
+         ui : 'light',
          cls : 'navigationBarBottom',
          xtype : 'tabbar',
          layout :

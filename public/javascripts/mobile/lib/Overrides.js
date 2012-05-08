@@ -5,8 +5,8 @@ Ext.ns('Genesis.constants');
 
 Genesis.constants =
 {
-   //host : 'http://192.168.0.52:3000',
-   host : 'http://www.getkickbak.com',
+   host : 'http://192.168.0.52:3000',
+   //host : 'http://www.getkickbak.com',
    /*
     authToken : null,
     auth_code : null,
@@ -542,6 +542,11 @@ Genesis.constants =
       catch(e)
       {
       }
+   },
+   resetStorage : function()
+   {
+      this.facebook_onLogout(null,false);
+      window.localStorage.removeItem('auth_code');
    }
 };
 Genesis.constants._fb_disconnect = Genesis.constants._fb_connect;

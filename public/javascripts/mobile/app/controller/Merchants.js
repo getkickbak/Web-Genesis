@@ -219,6 +219,7 @@ Ext.define('Genesis.controller.Merchants',
          me.getFeedContainer().show();
          //me.getAddress().hide();
          //me.getStats().show();
+         console.debug("Checkin Mode");
       }
       //
       // Explore Mode
@@ -226,11 +227,12 @@ Ext.define('Genesis.controller.Merchants',
       else
       {
          me.getFeedContainer()[me.showFeed ? 'show' : 'hide']();
-         me.getDescPanel().setData(vrecord.getMerchant());
+         me.getDescPanel().setData(vrecord);
          me.getDescContainer().show();
          //me.getAddress().setData(vrecord.getData(true));
          //me.getAddress().show();
          //me.getStats().hide();
+         console.debug("Explore Mode");
       }
 
       //

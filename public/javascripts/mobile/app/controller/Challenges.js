@@ -69,6 +69,7 @@ Ext.define('Genesis.controller.Challenges',
    metaData : null,
    noPhotoUploadedMsg : 'Failed to upload photo to server.',
    fbUploadFailedMsg : 'Failed to upload the photo onto your Facebook account',
+   checkinFirstMsg : 'Please Check-In before performing challenges',
    photoUploadSuccessMsg : function(points)
    {
       return 'You\'ve earned ' + points + ' Pts for uploading it to Facebook!';
@@ -118,12 +119,25 @@ Ext.define('Genesis.controller.Challenges',
       var me = this;
       var cstore = Ext.StoreMgr.get('CustomerStore');
       var viewport = me.getViewPortCntlr();
+      var cvenue = viewport.getCheckinInfo().venue;
       var venue = viewport.getVenue();
       var venueId = venue.getId();
       var customerId = viewport.getCustomer().getId();
       var merchantId = venue.getMerchant().getId();
       var selectedItem = me.selectedItem;
       var id = me.challengeId = selectedItem.getId();
+
+      // VenueId can be found after the User checks into a venue
+      //return ((this.getViewPortCntlr().getVenue()) ? true : this.checkinFirstMsg);
+      if(!(cvenue && venue && (cvenue.getId() == venue.getId())))
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Error',
+            message : me.checkinFirstMsg
+         });
+         return;
+      }
 
       if(selectedItem)
       {

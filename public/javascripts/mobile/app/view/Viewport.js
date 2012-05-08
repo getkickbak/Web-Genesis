@@ -34,8 +34,7 @@ Ext.define('Genesis.view.Viewport',
          items : [
          {
             align : 'left',
-            //i//conCls : 'maps',
-            iconCls : 'disclose',
+            iconCls : 'maps',
             tag : 'mapBtn',
             hidden : true
          },
@@ -147,8 +146,7 @@ Ext.define('Genesis.view.Viewport',
          {
             align : 'right',
             tag : 'checkin',
-            //iconCls : 'checkin',
-            iconCls : 'tocheckedinmerch',
+            iconCls : 'checkin',
             hidden : true
          },
          {

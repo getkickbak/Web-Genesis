@@ -87,21 +87,6 @@ Ext.define('Genesis.controller.Prizes',
          }
          else
          {
-            if(!me.initSound)
-            {
-               me.initSound = true;
-               Ext.get('winPrizeSound').dom.addEventListener('ended', function()
-               {
-                  if(flag & 0x10)
-                  {
-                     vport.silentPop(1);
-                  }
-                  if((flag |= 0x01) == 0x11)
-                  {
-                     me.onShowPrize(records[0]);
-                  }
-               });
-            }
             /*
             vport.setEnableAnim(false);
             vport.getNavigationBar().setCallbackFn(function()
@@ -113,7 +98,17 @@ Ext.define('Genesis.controller.Prizes',
             //
             // Play the prize winning music!
             //
-            Ext.get('winPrizeSound').dom.play();
+            me.playSoundFile(viewport.sound_files['winPrizeSound'], function()
+            {
+               if(flag & 0x10)
+               {
+                  vport.silentPop(1);
+               }
+               if((flag |= 0x01) == 0x11)
+               {
+                  me.onShowPrize(records[0]);
+               }
+            });
             //
             // Update Facebook
             //
@@ -184,12 +179,67 @@ Ext.define('Genesis.controller.Prizes',
             items = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
             if(items.length > 0)
             {
-               view.add(
+               var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
+               for(var i = 0; i < items.length; i++)
                {
-                  xtype : 'carousel',
-                  scrollable : false
-               });
-               container = view.getItems().items[0];
+                  if(oldActiveItem)
+                  {
+                     var xtypes = oldActiveItem.getXTypes();
+                     if(xtypes.match('merchantaccountview') || xtypes.match('clientrewardsview'))
+                     {
+                        //
+                        // Only show prizes that matches the currently loaded Merchant Data
+                        //
+                        if(items[i].getMerchant().getId() != merchantId)
+                        {
+                           continue;
+                        }
+                        else
+                        if(!container)
+                        {
+                           view.add(
+                           {
+                              xtype : 'carousel',
+                              scrollable : undefined
+                           });
+                           container = view.getItems().items[0];
+                        }
+                     }
+                  }
+                  else
+                  {
+                     view.add(
+                     {
+                        xtype : 'carousel',
+                        scrollable : undefined
+                     });
+                     container = view.getItems().items[0];
+                  }
+                  if(container)
+                  {
+                     container.add(
+                     {
+                        tag : 'rewardPanel',
+                        xtype : 'dataview',
+                        store :
+                        {
+                           model : 'Genesis.model.EarnPrize',
+                           autoLoad : false,
+                           data : items[i]
+                        },
+                        useComponents : true,
+                        scrollable : false,
+                        defaultType : 'rewarditem',
+                        defaultUnit : 'em',
+                        margin : '0 0 0.8 0'
+                     });
+                  }
+               }
+               
+               if(!container)
+               {
+                  container = view;
+               }
             }
             else
             {
@@ -210,44 +260,10 @@ Ext.define('Genesis.controller.Prizes',
          }
       }
 
-      var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
-      for(var i = 0; i < items.length; i++)
-      {
-         if(oldActiveItem)
-         {
-            var xtypes = oldActiveItem.getXTypes();
-            if(xtypes.match('merchantaccountview') || xtypes.match('clientrewardsview'))
-            {
-               //
-               // Only show prizes that matches the currently loaded Merchant Data
-               //
-               if(items[i].getMerchant().getId() != merchantId)
-               {
-                  continue;
-               }
-            }
-         }
-         container.add(
-         {
-            tag : 'rewardPanel',
-            xtype : 'dataview',
-            store :
-            {
-               model : 'Genesis.model.EarnPrize',
-               autoLoad : false,
-               data : items[i]
-            },
-            useComponents : true,
-            scrollable : false,
-            defaultType : 'rewarditem',
-            defaultUnit : 'em',
-            margin : '0 0 0.8 0'
-         });
-      }
       //
       // To-do : show No Prize screen
       //
-      if(items.length == 0)
+      if(container.getItems().length == 0)
       {
          container.add(
          {
@@ -324,7 +340,7 @@ Ext.define('Genesis.controller.Prizes',
       var viewport = me.getViewPortCntlr();
       var venue = viewport.getVenue();
       var cvenue = viewport.getCheckinInfo().venue;
-      
+
       if(!cvenue || !venue || (venue.getId() != cvenue.getId()))
       {
          Ext.device.Notification.show(
@@ -334,7 +350,7 @@ Ext.define('Genesis.controller.Prizes',
          });
          return;
       }
-      
+
       var venueId = venue.getId();
       var merchantId = venue.getMerchant().getId();
 

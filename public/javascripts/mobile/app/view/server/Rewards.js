@@ -154,7 +154,6 @@ Ext.define('Genesis.view.server.Rewards',
                xtype : 'component',
                tag : 'qrcode',
                cls : 'qrcode'
-               //itemTpl : Ext.create('Ext.XTemplate', '<img src="{photo_url}"/>')
             },
             {
                docked : 'bottom',

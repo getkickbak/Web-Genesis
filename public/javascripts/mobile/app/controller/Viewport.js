@@ -8,6 +8,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    config :
    {
+      sound_files : null,
       loggedIn : false,
       customer : null,
       venue : null,
@@ -251,6 +252,41 @@ Ext.define('Genesis.controller.Viewport',
       console.log("Viewport Init");
       _application = app;
    },
+   loadSoundFile : function(sound_file, type)
+   {
+      switch (type)
+      {
+         case 'FX' :
+            LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + '.mp3', function()
+            {
+               console.debug("loaded " + sound_file);
+            }, function(err)
+            {
+               console.debug("Audio Error: " + err);
+            });
+            break;
+         case 'Audio' :
+            LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + '.mp3', 3, function()
+            {
+               console.debug("loaded " + sound_file);
+            }, function(err)
+            {
+               console.debug("Audio Error: " + err);
+            });
+            break;
+      }
+      //console.debug("Preloading " + sound_file + " ...");
+      return sound_file;
+      /*
+       return new Media('resources/audio/' + sound_file, function()
+       {
+       console.log("loaded " + sound_file);
+       }, function(err)
+       {
+       console.log("Audio Error: " + err);
+       });
+       */
+   },
    openMainPage : function()
    {
       var local = window.localStorage;
@@ -288,6 +324,15 @@ Ext.define('Genesis.controller.Viewport',
          {
             this.onFeatureTap('MainPage', 'login');
          }
+      }
+      if(Genesis.constants.isNative())
+      {
+         this.sound_files =
+         {
+            winPrizeSound : this.loadSoundFile('win_prize_sound', 'Audio'),
+            clickSound : this.loadSoundFile('click_sound', 'FX'),
+            refreshListSound : this.loadSoundFile('refresh_list_sound', 'FX')
+         };
       }
    }
 });

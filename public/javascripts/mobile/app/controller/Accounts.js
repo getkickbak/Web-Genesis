@@ -63,7 +63,6 @@ Ext.define('Genesis.controller.Accounts',
       var me = this;
       var app = me.getApplication();
       var controller = app.getController('Checkins');
-      //var cestore = Ext.StoreMgr.get('CheckinExploreStore');
       var cstore = Ext.StoreMgr.get('CustomerStore');
       var merchantId = rec.getMerchant().getId();
       var viewport = me.getViewPortCntlr();
@@ -74,7 +73,6 @@ Ext.define('Genesis.controller.Accounts',
       {
          Venue['setGetClosestVenueURL']();
          Venue.load(merchantId,
-         //cestore.load(
          {
             scope : me,
             params :

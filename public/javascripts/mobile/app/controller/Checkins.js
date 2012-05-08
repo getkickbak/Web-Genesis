@@ -71,7 +71,7 @@ Ext.define('Genesis.controller.Checkins',
 
       });
       //
-      // Store used for storing Customer Info
+      // Store used for storing the current Customer Info, temporary basis
       //
       Ext.regStore('CheckinStore',
       {
@@ -253,8 +253,6 @@ Ext.define('Genesis.controller.Checkins',
          // Find venue from DataStore or current venue info
          venue = cestore.getById(new_venueId) || viewport.getVenue();
 
-         customer = cstore.getById(customerId);
-
          // Find Matching Venue or pick the first one returned if no venueId is set
          console.debug("CheckIn - new_venueId:'" + new_venueId + "' venue_id:'" + venueId + "'");
          if((new_venueId == venueId) || (venueId == null))
@@ -262,25 +260,33 @@ Ext.define('Genesis.controller.Checkins',
             //
             // Update our Database with the latest value from Server
             //
-            var crecord = custore.getById(customerId);
-            if(crecord != null)
+            if(Customer.isValidCustomer(customerId))
             {
-               crecord.set('points', points);
-               crecord.setLastCheckin(record.getLastCheckin());
-               console.debug("Customer ID=[" + crecord.getId() + "] is in Acct Database");
-               showFeed = true;
+               var customer = custore.getById(customerId);
+               if(customer != null)
+               {
+                  customer = custore.add(record)[0];
+                  //crecord.set('points', points);
+                  //crecord.setLastCheckin(record.getLastCheckin());
+                  console.debug("Customer ID=[" + customer.getId() + "] is in CustAcct Database");
+                  showFeed = true;
+               }
+               //
+               // First time Customer ... add it to CustomerStore
+               //
+               else
+               {
+                  customer = custore.add(record)[0];
+                  console.debug("Customer ID=[" + customer.getId() + "] is ADDED to CustAcct Database");
+               }
             }
-            //
-            // First time Customer ... add it to CustomerStore
-            //
             else
             {
-               crecord = custore.add(record)[0];
-               console.debug("Customer ID=[" + crecord.getId() + "] is ADDED to Acct Database");
+               console.debug("Exploring Venue ...");
             }
             console.debug("CheckIn - points:'" + points + "'");
 
-            this.setupCheckinInfo(mode, venue, crecord, metaData);
+            this.setupCheckinInfo(mode, venue, customer || record, metaData);
             break;
          }
       }

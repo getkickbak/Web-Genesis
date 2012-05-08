@@ -178,18 +178,19 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    onCalcBtnTap : function(b, e, eOpts, eInfo)
    {
-      // CloneNode allows for overlaping of same sound file to be played
-      Ext.get('clickSound').dom.cloneNode(true).play();
-
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      
+      me.playSoundFile(viewport.sound_files['clickSound']);
       var value = b.getText();
-      var priceField = this.getPrice();
+      var priceField = me.getPrice();
       var price = Number(priceField.getValue() || 0);
-      var precision = this.getPricePrecision(priceField.getValue());
+      var precision = me.getPricePrecision(priceField.getValue());
       switch (value)
       {
          case '.' :
          {
-            this.enablePrecision = true;
+            me.enablePrecision = true;
             if(precision == 0)
             {
                var num = price.toString().split('.');
@@ -199,12 +200,12 @@ Ext.define('Genesis.controller.server.Rewards',
          }
          case 'AC' :
          {
-            this.enablePrecision = false;
+            me.enablePrecision = false;
             price = null;
             break;
          }
          default :
-            if(this.enablePrecision)
+            if(me.enablePrecision)
             {
                if(precision < 2)
                {

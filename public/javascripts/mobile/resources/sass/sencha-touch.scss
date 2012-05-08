@@ -269,7 +269,7 @@ body {
       background-size: contain;
       background-repeat: no-repeat;
       background-color: transparent;
-      background-image: theme_image($theme-path + "/images/" + $gtheme-name,  "fooditems/" + "pasta" + ".png");
+      background-image: theme_image($theme-path + "/images/" + $gtheme-name,  "miscicons/" + "points" + ".png");
    }
 }
 .visitsphoto {
@@ -299,16 +299,16 @@ body {
 
 .emptyPage {
    background-size:contain;
+   font-size:$largeFontSize;
+   font-weight:bold;
    &:before {
       position:absolute;
-      top:0em;
+      top:3em;
       left:0;
       width:100%;
       height:100%;
       text-align:center;
-      font-size:$xlargeFontSize;
-      font-weight:bold;
-      padding:2em;
+      padding:$panelTopGap $panelGap;
       background:transparent;
       color : #555658;
    }
@@ -445,8 +445,10 @@ body {
 .x-listmark-base {
    @include insertion(1em, 1em, 50%, auto);
    right: ($form-spacing + .1em);
-   -webkit-mask-size: 1em;
-   -webkit-mask-image: theme_image($theme-path + "/images/" + $gtheme-name, "toolbar/" + "disclose" + ".png");
+   background: theme_image($theme-path + "/images/" + $gtheme-name, "miscicons/" + "disclose" + ".png");
+   background-size: 2em;
+   background-position:center center;
+   background-repeat:no-repeat;
    margin-top: -.5em;
 }
   
@@ -522,11 +524,11 @@ body {
 //------------------------------------------------------------------------------
 @include toolbar-iconmask('accounts');
 @include toolbar-iconmask('back');
-//@include toolbar-iconmask('dochallenges');
+@include toolbar-iconmask('dochallenges');
 @include toolbar-iconmask('challenges');
 @include toolbar-iconmask('close');
 @include toolbar-iconmask('delete');
-@include toolbar-iconmask('disclose');
+//@include toolbar-iconmask('disclose');
 @include toolbar-iconmask('earnpointscart');
 @include toolbar-iconmask('explore');
 @include toolbar-iconmask('home');
@@ -538,8 +540,8 @@ body {
 @include toolbar-iconmask('rewards');
 @include toolbar-iconmask('share');
 @include toolbar-iconmask('tocheckedinmerch');
-//@include toolbar-iconmask('checkin');
-//@include toolbar-iconmask('maps');
+@include toolbar-iconmask('checkin');
+@include toolbar-iconmask('maps');
 
 .x-toolbar-dark, .x-tabbar-dark {
    @include custom-linear-gradient(#555658 10%, #000000 85%, top);
@@ -556,7 +558,10 @@ body {
 .x-list {
    background:transparent;
    .x-list-disclosure {
-      -webkit-mask : 0 0 url($theme-path-rel + '/images/' + $gtheme-name + '/toolbar/' + 'disclose' + '.png');  
+      background: theme_image($theme-path + "/images/" + $gtheme-name, "miscicons/" + "disclose" + ".png");
+      background-size: 2em;
+      background-position:center center;
+      background-repeat:no-repeat;
    }
    .x-list-container {
       .x-list-header {
@@ -655,16 +660,16 @@ body {
 
 .x-button {
    @include toolbar-button(#F3F3F4, $button-gradient);
-   .x-button-forward, .x-button-back {
+}
+.x-button-forward, .x-button-back {
       &:before, &:after {
-         //-webkit-mask: $mask-offset 0 theme_image($theme-name, "tip.png") no-repeat;
+         -webkit-mask-image: theme_image($theme-path + "/images/" + $gtheme-name, "toolbar/"+ "tip" + ".png");
       }
    }
-   .x-button-forward,
-   .x-toolbar .x-button-forward {
-      &:before, &:after {
-         //-webkit-mask: -$mask-offset 0 theme_image($theme-name, "tip_right.png") no-repeat;
-      }
+.x-button-forward,
+.x-toolbar .x-button-forward {
+   &:before, &:after {
+      //-webkit-mask: -$mask-offset 0 theme_image($theme-name, "tip_right.png") no-repeat;
    }
 }
 
@@ -833,6 +838,12 @@ body {
                @if $include-border-radius { @include border-radius(0); }
             }
          }
+      }
+   }
+}
+.x-list-round, .x-list-bottom-round {
+   &.x-list-ungrouped, &.x-list-grouped {
+      .x-list-container .x-list-item {
          &:last-child {
             &.x-list-footer-item {
                .x-list-item-label {
@@ -987,7 +998,7 @@ body {
          font-size:$normalFontSize !important;
          &:before {
            @if $include-border-radius { @include border-left-radius($panelBorderRadius); }
-           @include custom-linear-gradient(#00ADEE 10%, #0A78BE 85%, top, url($theme-path-rel + "/images/" + $gtheme-name + "/fooditems/" + "pasta" + ".png"));
+           @include custom-linear-gradient(#00ADEE 10%, #0A78BE 85%, top, url($theme-path-rel + "/images/" + $gtheme-name + "/miscicons/" + "points" + ".png"));
          }
       }
    }
@@ -1001,8 +1012,23 @@ body {
 
    .descPanel {
       padding: $panelTopGap $panelGap;
+      background:#F3F3F4;
       @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
       //@include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+      .x-inner {
+         padding:0 !important;
+         margin:0 !important;
+         .x-innerhtml {
+            font-size : $normalFontSize;
+            text-align:justify;
+            line-height : $normalFontSize + 1.0em;
+            &:first-letter, p:first-letter {
+               font-size:400%;
+               font-weight:bold;
+               line-height : 0.8em;
+            }
+         }
+      }
    }
    .feedPanel {
       @extend .listNoScrollWrapper;
@@ -1139,7 +1165,9 @@ body {
       .qrcode {
          background-position: center center;
          background-repeat: no-repeat;
-         background-size: contain;
+         width:100%;
+         height:100%%;
+         background-size: 50% 50%;
       }
       .done {
          background : black;
@@ -1323,7 +1351,10 @@ body {
             line-height:$icon-size;
          }
       }
-      .x-emptytext {
+      .x-list-emptytext {
+         position:absolute;
+         width:100%;
+         height:100%;
          @extend .emptyPage;
          background: theme_image($theme-path + "/images/" + $gtheme-name,  "noaccounts" + ".png") center no-repeat;
          &:before {

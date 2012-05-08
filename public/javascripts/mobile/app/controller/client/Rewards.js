@@ -40,7 +40,7 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    prizeCheckMsg : 'Find out if you won a PRIZE!',
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
-   checkinFirstMsg : 'Please Check-In before redeeming rewards',
+   checkinFirstMsg : 'Please Check-In before earning rewards',
    init : function()
    {
       console.log("Client Rewards Init");

@@ -51,6 +51,10 @@ Ext.define('Genesis.model.Customer',
    },
    statics :
    {
+      isValidCustomer : function(customerId)
+      {
+         return customerId != 0;
+      },
       setFbLoginUrl : function()
       {
          this.getProxy().setActionMethods(

@@ -40,6 +40,7 @@ Ext.define('Genesis.view.MerchantAccount',
          cls : 'prizesWonPanel',
          tpl : Ext.create('Ext.XTemplate', '<div class="prizeswonphoto">{[this.getTitle(values)]}</div>',
          {
+            // Updated Automatically when the Customer\'s metadata is updated
             getTitle : function(values)
             {
                return values['winners_count'] + ' Prizes won this month';
@@ -142,7 +143,7 @@ Ext.define('Genesis.view.MerchantAccount',
          {
             xtype : 'toolbar',
             cls : 'descPanelHdr',
-            ui:'light',
+            ui : 'light',
             centered : false,
             items : [
             {
@@ -157,7 +158,13 @@ Ext.define('Genesis.view.MerchantAccount',
             xtype : 'container',
             cls : 'descPanel separator',
             tag : 'descPanel',
-            tpl : '{description}'
+            tpl : Ext.create('Ext.XTemplate', '{[this.getDesc(values)]}',
+            {
+               getDesc : function(values)
+               {
+                  return values.get('description');
+               }
+            })
          }]
       },
       // -----------------------------------------------------------------------

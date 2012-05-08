@@ -315,13 +315,13 @@ Ext.define('Genesis.controller.ControllerBase',
       if(!Genesis.constants.isNative())
       {
          //
-         // Pick whatever is currently showing on the Venue Explore screen,
-         // or pick the first one on the Neaby Venue in the store
+         // pick the first one on the Neaby Venue in the store
          //
          var venueId = 0;
          if(!merchantMode)
          {
-            venueId = (me.getCheckinMerchant && me.getCheckinMerchant().venue) ? me.getCheckinMerchant().venue.getId() : Ext.StoreMgr.get('CheckinExploreStore').first().getId();
+            var venue  = Ext.StoreMgr.get('CheckinExploreStore').first();
+            venueId = venue ? venue.getId() : me.getViewPortCntlr().getVenue().getId()
          }
          callback(
          {
@@ -398,5 +398,20 @@ Ext.define('Genesis.controller.ControllerBase',
          }
       }
       return canvas.toDataURL("image/png");
+   },
+   playSoundFile : function(sound_file, successCallback, failCallback)
+   {
+      if(Genesis.constants.isNative())
+      {
+         LowLatencyAudio.play(sound_file, successCallback || Ext.emptyFn, failCallback || Ext.emptyFn);
+         //sound_file.play(successCallback || Ext.emptyFn, failCallback || Ext.emptyFn);
+      }
+      else
+      {
+         successCallback = successCallback || Ext.emptyFn;
+
+         Ext.get(sound_file).dom.cloneNode(true).play();
+         successCallback();
+      }
    }
 });
