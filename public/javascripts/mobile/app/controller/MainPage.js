@@ -523,6 +523,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    onSignIn : function(username, password)
    {
+      var me = this;
       var params =
       {
       };
@@ -541,6 +542,17 @@ Ext.define('Genesis.controller.MainPage',
          params : params,
          jsonData :
          {
+         },
+         callback : function(records, operation)
+         {
+            //
+            // Login Error, redo login
+            //
+            if(!operation.wasSuccessful())
+            {
+               Genesis.constants.resetStorage();
+               me.getViewPortCntlr().onFeatureTap('MainPage', 'login');
+            }
          }
       });
    },
