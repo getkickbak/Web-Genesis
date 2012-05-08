@@ -6,9 +6,9 @@ class Api::V1::EarnPrizesController < ApplicationController
     authorize! :read, EarnPrize
     
     if params[:merchant_id]
-      @earn_prizes = EarnPrize.all(EarnPrize.merchant.id => params[:merchant_id], EarnPrize.user.id => current_user.id, :expiry_ts.gte => Time.now, :redeemed => false)
+      @earn_prizes = EarnPrize.all(EarnPrize.merchant.id => params[:merchant_id], EarnPrize.user.id => current_user.id, :expiry_date.gte => Date.today, :redeemed => false)
     else
-      @earn_prizes = EarnPrize.all(EarnPrize.user.id => current_user.id, :expiry_ts.gte => Time.now, :redeemed => false)
+      @earn_prizes = EarnPrize.all(EarnPrize.user.id => current_user.id, :expiry_date.gte => Date.today, :redeemed => false)
     end
     render :template => '/api/v1/earn_prizes/index'
   end
@@ -37,8 +37,8 @@ class Api::V1::EarnPrizesController < ApplicationController
     Time.zone = @earn_prize.venue.time_zone   
     EarnPrize.transaction do
       begin
-        now = Time.now
-        if (@earn_prize.expiry_ts >= now) && (not @earn_prize.redeemed)
+        today = Date.today
+        if (@earn_prize.expiry_date >= today) && (not @earn_prize.redeemed)
           @earn_prize.redeemed = true
           @earn_prize.update_ts = Time.now
           @earn_prize.save
@@ -47,12 +47,12 @@ class Api::V1::EarnPrizesController < ApplicationController
           data = { 
             :type => "redeem_prize", 
             :title => @earn_prize.reward.title,
-            :expiry_date => Date.today 
+            :expiry_date => @earn_prize.expiry_date 
           }.to_json
           @encrypted_data = "#{iv}$#{aes.encrypt(data, @venue.auth_code, iv)}"
           render :template => '/api/v1/earn_prizes/redeem'
         else
-          if @earn_prize.expiry_ts < now
+          if @earn_prize.expiry_date < today
             msg = t("api.earn_prizes.expired")
           else
             msg = t("api.earn_prizes.already_redeemed")
