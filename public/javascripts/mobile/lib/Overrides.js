@@ -724,8 +724,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   {
                      var local = window.localStorage;
                      vport.setLoggedIn(false);
-                     local.removeItem('auth_code');
-                     me.facebook_onLogout(null, false);
+                     Genesis.constants.resetStorage();
                      vport.onFeatureTap('MainPage', 'login');
                   }
                });

@@ -311,6 +311,7 @@ Ext.define('Genesis.controller.Viewport',
             }
             else
             {
+               // No need to pass login info, the auth_code will take care of that!
                app.dispatch(
                {
                   action : 'onSignIn',
