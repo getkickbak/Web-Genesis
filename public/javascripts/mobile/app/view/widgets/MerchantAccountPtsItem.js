@@ -87,9 +87,9 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       });
 
       //
-      // Hide Points if we are Exploring
+      // Hide Points if we are not a customer of the Merchant
       //
-      if(cvenue && (cvenue.getId() == venueId))
+      if(Ext.StoreMgr.get('CustomerStore').getById(customer.getId()))
       {
          bg.getItems().items[0].show();
          //Update Points
