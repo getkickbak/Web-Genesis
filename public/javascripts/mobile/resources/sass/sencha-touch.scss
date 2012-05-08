@@ -449,13 +449,22 @@ body {
 
 // Ext.field.Select
 .x-listmark-base {
-   @include insertion(1em, 1em, 50%, auto);
-   right: ($form-spacing + .1em);
-   background: theme_image($theme-path + "/images/" + $gtheme-name, "miscicons/" + "disclose" + ".png");
-   background-size: 2em;
-   background-position:center center;
-   background-repeat:no-repeat;
-   margin-top: -.5em;
+   & {
+      @include insertion(2em, 2em, $panelTopGap, auto);
+      right: ($form-spacing + .1em);
+      background: theme_image($theme-path + "/images/" + $gtheme-name, "miscicons/" + "disclose" + ".png") no-repeat center center;
+      background-size: 2em;
+      background-color:transparent !important;
+      margin-top: -.5em;
+      -webkit-mask:none;
+   }
+   &.facebook {
+      right: ($form-spacing + .5em);
+      @include insertion(1.3em, 1.3em, $panelTopGap, auto);
+      background: theme_image($theme-path + "/images/" + $gtheme-name,  "toolbar/" + "facebook" + ".png") no-repeat 50% 50%;
+      background-size: 1.3em;
+      margin-top: 0;
+   }
 }
   
 // Create the dropdown arrow
@@ -469,13 +478,6 @@ body {
       }
       &:before {
          @if $include-highlights { background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(rgba($form-field-bg-color, 0)), color-stop(.5, rgba($form-field-bg-color, 1))); }
-      }
-   }
-   .facebook {
-      .x-field-input .x-clear-icon {
-         position:absolute;
-         background: theme_image($theme-path + "/images/" + $gtheme-name,  "toolbar/" + "facebook" + ".png") no-repeat 50% 50%;
-         z-index:3;
       }
    }
 }
