@@ -126,6 +126,7 @@ en:
         potential_rewards: "Earn %s more points and it's yours!"
       earn_prizes:
         not_available: "Sorry, but the prize is not available at this venue!"
+        expired: "Prize has expired."
         already_redeemed: "Prize has already been redeemed."
         redeem_failure: "Trouble redeeming the prize.  Please try again."
       purchase_rewards:
