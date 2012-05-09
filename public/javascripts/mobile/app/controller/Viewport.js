@@ -254,7 +254,8 @@ Ext.define('Genesis.controller.Viewport',
    },
    loadSoundFile : function(sound_file, type)
    {
-      var ext = sound_file.split('.')[1] || '.mp3';
+      var ext = '.' + (sound_file.split('.')[1] || 'mp3');
+      sound_file = sound_file.split('.')[0];
       if(Genesis.constants.isNative())
       {
          switch (type)

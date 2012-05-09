@@ -228,10 +228,18 @@ Genesis.constants =
                   if(!response.error)
                   {
                      local.setItem('authToken', authToken);
-                     fb.setItem('fbResponse', Ext.encode(response));
+                     fb.setItem('fbResponse', Ext.encode(me.createFbResponse(response)));
                      fb.setItem('currFbId', response.id);
                      fb.setItem('fbAccountId', response.email);
                      console.log('Updating Session to use\n' + 'AuthToken[' + local.getItem('authToken') + ']\n' + 'FbID[' + fb.getItem('currFbId') + ']\n' + 'AccountID[' + fb.getItem('fbAccountId') + ']');
+
+                     console.debug("Reponse JSON = [" + fb.getItem('fbResponse') + "]");
+                     if(me.cb)
+                     {
+                        Ext.Viewport.setMasked(false);
+                        me.cb(Ext.decode(fb.getItem('fbResponse')));
+                        delete me.cb;
+                     }
                   }
                   else
                   {
@@ -316,6 +324,24 @@ Genesis.constants =
          }
       });
    },
+   createFbResponse : function(response)
+   {
+      var birthday = response.birthday.split('/');
+      birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1];
+      var params =
+      {
+         name : response.name,
+         email : response.email,
+         facebook_email : response.email,
+         facebook_id : response.id,
+         facebook_uid : response.username,
+         gender : (response.gender == "male") ? "m" : "f",
+         birthday : birthday,
+         photoURL : 'http://graph.facebook.com/' + response.id + '/picture?type=square'
+      }
+
+      return params;
+   },
    //
    // Log into Facebook
    //
@@ -335,7 +361,8 @@ Genesis.constants =
          {
             console.debug("Logged into Facebook!");
             fb.setItem('access_token', response.authResponse['accessToken']);
-            me.facebook_loginCallback(cb);
+            me.cb = cb;
+            //me.facebook_loginCallback(cb);
          }
          else
          {
@@ -360,6 +387,9 @@ Genesis.constants =
 
       if(fb.getItem('currFbId') > 0)
       {
+         console.debug("facebook_onLogin - FbId = [" + fb.getItem('currFbId') + "]")
+         console.debug("facebook_onLogin - AccountId = [" + fb.getItem('fbAccountId') + "]");
+         console.debug("facebook_onLogin - Reponse JSON = [" + fb.getItem('fbResponse') + "]");
          if(!supress)
          {
             Ext.device.Notification.show(
@@ -477,31 +507,24 @@ Genesis.constants =
             console.debug("Session information same as previous session.");
          }
 
-         fb.setItem('fbResponse', Ext.encode(response));
          fb.setItem('currFbId ', facebook_id);
          fb.setItem('fbAccountId', response.email);
-         console.debug('You\`ve logged into Facebook! Email(' + fb.getItem('fbAccountId') + ')');
+         console.debug('You\`ve logged into Facebook! ' + '\n' +
+         //
+         'Email(' + fb.getItem('fbAccountId') + ')' + '\n' +
+         //
+         'ID(' + fb.getItem('currFbId') + ')' + '\n'
+         //
+         );
 
          me._fb_connect();
-         me.getFriendsList();
+         //me.getFriendsList();
+
+         var params = me.createFbResponse(response);
+         fb.setItem('fbResponse', Ext.encode(params));
 
          if(cb)
          {
-            var birthday = response.birthday.split('/');
-            birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1];
-
-            var params =
-            {
-               name : response.name,
-               email : response.email,
-               facebook_email : response.email,
-               facebook_id : facebook_id,
-               facebook_uid : response.username,
-               gender : (response.gender == "male") ? "m" : "f",
-               birthday : birthday,
-               photoURL : 'http://graph.facebook.com/' + facebook_id + '/picture?type=square'
-            }
-
             cb(params);
          }
       });

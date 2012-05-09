@@ -493,19 +493,7 @@ Ext.define('Genesis.controller.MainPage',
 
          if(response)
          {
-            response = Ext.decode(response);
-
-            var birthday = response.birthday.split('/');
-            birthday = birthday[2] + "-" + birthday[0] + "-" + birthday[1];
-            params = Ext.apply(params,
-            {
-               facebook_email : response.email,
-               facebook_id : response.id,
-               facebook_uid : response.username,
-               gender : (response.gender == "male") ? "m" : "f",
-               birthday : birthday,
-               photoURL : 'http://graph.facebook.com/' + response.id + '/picture?type=square'
-            });
+            params = Ext.apply(params, Ext.decode(response));
          }
 
          Customer['setCreateAccountUrl']();
@@ -526,7 +514,7 @@ Ext.define('Genesis.controller.MainPage',
       var fb = Genesis.constants.getLocalStorage();
       //Cleanup any outstanding registrations
       Genesis.constants.facebook_onLogout(null, fb.getItem('currFbId') > 0);
-      
+
       var me = this;
       var params =
       {
