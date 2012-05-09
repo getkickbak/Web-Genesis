@@ -39,6 +39,77 @@ Ext.define('Genesis.controller.Accounts',
       this.callParent(arguments);
       console.log("Accounts Init");
    },
+   onLoadClosestVenue : function(merchantId, rec, position)
+   {
+      var me = this;
+      var mId = rec.getMerchant().getId();
+      var customerId = rec.getId();
+      var merchantName = rec.getMerchant().get('name');
+
+      /*
+      console.debug("AFTER\n" + //
+      "Merchant Name : [" + merchantName + "]" + "\n" +
+      //
+      "Merchant ID : [" + merchantId + "]" + "\n" +
+      //
+      "Customer ID : [" + customerId + "]");
+      */
+      Venue['setGetClosestVenueURL']();
+      Venue.load(merchantId,
+      {
+         scope : me,
+         params :
+         {
+            'merchant_id' : merchantId,
+            latitude : position.coords.getLatitude(),
+            longitude : position.coords.getLongitude()
+         },
+         callback : function(record, operation)
+         {
+            if(operation.wasSuccessful())
+            {
+               var metaData = Venue.getProxy().getReader().metaData;
+               if(metaData)
+               {
+                  var app = me.getApplication();
+                  var controller = app.getController('Checkins');
+                  var cstore = Ext.StoreMgr.get('CustomerStore');
+                  var viewport = me.getViewPortCntlr();
+
+                  //
+                  // Automatically trigger "metachagne" event
+                  // updateRewards(metaData);
+                  //
+
+                  //
+                  // Setup minimum customer information require for explore
+                  //
+                  metaData['venue_id'] = record.getId();
+                  viewport.setVenue(record);
+                  app.dispatch(
+                  {
+                     action : 'onCheckinHandler',
+                     args : ['explore', metaData, cstore, null, [rec], operation],
+                     controller : controller,
+                     scope : controller
+                  });
+               }
+               else
+               {
+                  console.log("No MetaData found on Venue!");
+               }
+            }
+            else
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Error',
+                  message : me.missingVenueInfoMsg
+               });
+            }
+         },
+      });
+   },
    // --------------------------------------------------------------------------
    // Accounts Page
    // --------------------------------------------------------------------------
@@ -58,69 +129,29 @@ Ext.define('Genesis.controller.Accounts',
       this.onDisclose(list, model);
       return false;
    },
-   onDisclose : function(list, rec, target, index, e, eOpts)
+   onDisclose : function(list, record, target, index, e, eOpts)
    {
       var me = this;
-      var app = me.getApplication();
-      var controller = app.getController('Checkins');
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var merchantId = rec.getMerchant().getId();
-      var viewport = me.getViewPortCntlr();
+      var customerId = record.getId();
+      var merchantName = record.getMerchant().get('name');
 
-      // Load Venue Info
+      me.merchantId = record.getMerchant().getId();
+      me.rec = record;
+
       //
+      // Stack Corruption from JS interpreter, probably a JS compiler bug
+      //
+      /*
+      console.debug("BEFORE\n" + //
+      "Merchant Name : [" + merchantName + "]" + "\n" +
+      //
+      "Merchant ID : [" + me.merchantId + "]" + "\n" +
+      //
+      "Customer ID : [" + customerId + "]");
+      */
       me.getGeoLocation(function(position)
       {
-         Venue['setGetClosestVenueURL']();
-         Venue.load(merchantId,
-         {
-            scope : me,
-            params :
-            {
-               'merchant_id' : merchantId,
-               latitude : position.coords.getLatitude(),
-               longitude : position.coords.getLongitude()
-            },
-            callback : function(record, operation)
-            {
-               if(operation.wasSuccessful())
-               {
-                  var metaData = Venue.getProxy().getReader().metaData;
-                  if(metaData)
-                  {
-                     //
-                     // Automatically trigger "metachagne" event
-                     // updateRewards(metaData);
-                     //
-                     
-                     //
-                     // Setup minimum customer information require for explore
-                     //
-                     metaData['venue_id'] = record.getId();
-                     viewport.setVenue(record);
-                     app.dispatch(
-                     {
-                        action : 'onCheckinHandler',
-                        args : ['explore', metaData, cstore, null, [rec], operation],
-                        controller : controller,
-                        scope : controller
-                     });
-                  }
-                  else
-                  {
-                     console.log("No MetaData found on Venue!");
-                  }
-               }
-               else
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Error',
-                     message : me.missingVenueInfoMsg
-                  });
-               }
-            },
-         });
+         me.onLoadClosestVenue(me.merchantId, me.rec, position);
       });
    },
    // --------------------------------------------------------------------------
