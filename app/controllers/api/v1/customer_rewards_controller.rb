@@ -28,7 +28,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
     Time.zone = @venue.time_zone
     Customer.transaction do
       begin
-        if @customer.points - reward.points >= 0
+        if @customer.points - @reward.points >= 0
           record = RedeemRewardRecord.new(
             :reward_id => @reward.id,
             :venue_id => @venue.id,

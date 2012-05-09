@@ -110,9 +110,15 @@ en:
   api:
       out_of_distance: "Outside of distance.  Please try again."
       photo_blank: "Uploaded photo is blank."
+      point:
+        one: "point"
+        other: "points"
+      visit:
+        one: "visit"
+        other: "visits"  
       facebook_account_already_exists_failure: "Facebook account already exists."
       challenges:
-        qualified_visits: "Earn %s bonus points with %s more visits!"
+        qualified_visits: "Earn %s bonus %s with %s more %s!"
         start_failure: "Trouble starting the challenge.  Please try again."
         complete_failure: "Trouble completing the challenge.  Please try again."
       check_ins:
@@ -123,7 +129,7 @@ en:
         insufficient_points: "Not enough points to redeem reward."
         redeem_failure: "Trouble redeeming the reward.  Please try again."
         qualified_rewards: "Go ahead and redeem it now."
-        potential_rewards: "Earn %s more points and it's yours!"
+        potential_rewards: "Earn %s more %s and it's yours!"
       earn_prizes:
         not_available: "Sorry, but the prize is not available at this venue!"
         expired: "Prize has expired."
