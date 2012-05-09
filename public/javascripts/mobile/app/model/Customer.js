@@ -60,7 +60,7 @@ Ext.define('Genesis.model.Customer',
          var attrib;
          for(var i = 0; i < cOld.fields.length; i++)
          {
-            attrib = cOld.items[i].getName();
+            attrib = cOld.fields.items[i].getName();
             cOld.set(attrib, cNew.get(attrib));
          }
          cOld.setLastCheckin(cNew.getLastCheckin());
