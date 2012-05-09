@@ -254,12 +254,13 @@ Ext.define('Genesis.controller.Viewport',
    },
    loadSoundFile : function(sound_file, type)
    {
+      var ext = sound_file.split('.')[1] || '.mp3';
       if(Genesis.constants.isNative())
       {
          switch (type)
          {
             case 'FX' :
-               LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + '.mp3', function()
+               LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, function()
                {
                   console.debug("loaded " + sound_file);
                }, function(err)
@@ -268,7 +269,7 @@ Ext.define('Genesis.controller.Viewport',
                });
                break;
             case 'Audio' :
-               LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + '.mp3', 3, function()
+               LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, 3, function()
                {
                   console.debug("loaded " + sound_file);
                }, function(err)
@@ -280,7 +281,7 @@ Ext.define('Genesis.controller.Viewport',
       }
       //console.debug("Preloading " + sound_file + " ...");
       /*
-       return new Media('resources/audio/' + sound_file, function()
+       return new Media('resources/audio/' + sound_file + ext, function()
        {
        console.log("loaded " + sound_file);
        }, function(err)
@@ -333,7 +334,8 @@ Ext.define('Genesis.controller.Viewport',
       {
          winPrizeSound : this.loadSoundFile('win_prize_sound', 'Audio'),
          clickSound : this.loadSoundFile('click_sound', 'FX'),
-         refreshListSound : this.loadSoundFile('refresh_list_sound', 'FX')
+         refreshListSound : this.loadSoundFile('refresh_list_sound', 'FX'),
+         beepSound : this.loadSoundFile('beep.wav', 'FX')
       };
    }
 });

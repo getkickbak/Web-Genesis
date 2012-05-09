@@ -18,10 +18,11 @@ Ext.define('Genesis.device.notification.PhoneGap',
    override : 'Ext.device.notification.PhoneGap',
    beep : function(times)
    {
-      navigator.notification.beep(times);
+      _application.getController('Viewport').playSoundFile('beepSound');
+      //navigator.notification.beep(times);
    },
    vibrate : function(duration)
    {
       navigator.notification.vibrate(duration || 2000);
    }
-});
+}); 
