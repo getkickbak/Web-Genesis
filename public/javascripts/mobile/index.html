@@ -236,6 +236,12 @@
                   }
                }
             }, false);
+            cordova.exec(null, null, "CDVLocalStorage", "verifyAndFixDatabaseLocations", []);
+            cordova.exec(function(success)
+            {
+            }, function(error)
+            {
+            }, "CDVLocalStorage", "restore", []);
             console.log("onDeviceReady");
             appInit();
          }

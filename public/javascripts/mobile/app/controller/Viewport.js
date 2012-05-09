@@ -304,6 +304,7 @@ Ext.define('Genesis.controller.Viewport',
             var controller = app.getController('MainPage');
 
             this.setLoggedIn(loggedIn);
+            console.debug("Going to Main Page ...");
             if(local.getItem('currFbId') > 0)
             {
                app.dispatch(
@@ -328,6 +329,7 @@ Ext.define('Genesis.controller.Viewport',
          }
          else
          {
+            console.debug("Going to Login Page ...");
             this.onFeatureTap('MainPage', 'login');
          }
       }

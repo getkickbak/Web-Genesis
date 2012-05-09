@@ -175,6 +175,8 @@ Ext.define('Genesis.controller.MainPage',
             {
                if(successful && local.getItem('auth_code'))
                {
+                  console.log("auth_code [" + local.getItem('auth_code') + "]");
+                  console.log("currFbId [" + local.getItem('currFbId') + "]");
                   me.goToMain();
                }
             },
@@ -207,10 +209,18 @@ Ext.define('Genesis.controller.MainPage',
                // Update Authentication Token
                //
                var authToken = metaData['auth_token'];
-               if(authToken)
+               console.debug("Login Auth Code - " + authToken)
+               if(authToken != local.setItem('auth_code'))
                {
-                  console.debug("Login Auth Code - " + authToken)
                   local.setItem('auth_code', authToken);
+                  if(Genesis.constants.isNative())
+                  {
+                     cordova.exec(function(success)
+                     {
+                     }, function(error)
+                     {
+                     }, "CDVLocalStorage", "backup", []);
+                  }
                }
 
                me.updateRewards(metaData);

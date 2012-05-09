@@ -97,7 +97,7 @@ Ext.define('Genesis.controller.Settings',
       Genesis.constants.facebook_onLogin(function(params)
       {
          Customer['setUpdateFbLoginUrl']();
-         Ext.StoreMgr.get('CustomerStore').load(
+         Customer.load(1,
          {
             jsonData :
             {
