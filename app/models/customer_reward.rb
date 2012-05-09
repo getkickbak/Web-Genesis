@@ -54,6 +54,15 @@ class CustomerReward
     save
   end
   
+  def to_redeemd
+    RedeemedReward.new(
+      type => {
+        value => "reward"
+      },
+      title => self.title
+    )
+  end
+  
   def destroy
     self.customer_reward_venues.destroy
     super  

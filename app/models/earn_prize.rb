@@ -18,4 +18,13 @@ class EarnPrize
   belongs_to :merchant
   belongs_to :venue
   belongs_to :user
+  
+  def to_redeemed
+    RedeemedReward.new(
+      type => {
+        value => "prize"
+      },
+      title => reward.title
+    )
+  end
 end
