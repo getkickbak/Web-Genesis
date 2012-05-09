@@ -51,12 +51,12 @@ class Common
     if points >= 0
       I18n.t("api.customer_rewards.qualified_rewards")
     else  
-      I18n.t('api.customer_rewards.potential_rewards') % [points]
+      I18n.t('api.customer_rewards.potential_rewards') % [points.abs, I18n.t('api.point', :count => points.abs)]
     end
   end
   
   def self.get_eligible_challenge_vip_text(points, visits)
-    I18n.t("api.challenges.qualified_visits") % [points, visits]
+    I18n.t("api.challenges.qualified_visits") % [points, I18n.t('api.point', :count => points), visits, I18n.t('api.visit', :count => visits)]
   end
   
   private

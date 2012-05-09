@@ -79,7 +79,6 @@ class Venue
   end
   
   def self.find_nearest(merchant_id, latitude, longitude, max)
-    logger.debug("Find nearest venue for Merchant(#{merchant_id})")
     if Rails.env == 'production'
       if merchant_id.nil?
         venues_info = DataMapper.repository(:default).adapter.select(
@@ -100,7 +99,6 @@ class Venue
       venue_ids = []
       venues_info.each do |venue|
         venue_ids << venue[:id]
-        logger.debug("Venue(#{venue[:id]})") 
         venue_id_to_distance_map[venue[:id]] = venue[:distance]
       end
       venues = Venue.all(:id => venue_ids)

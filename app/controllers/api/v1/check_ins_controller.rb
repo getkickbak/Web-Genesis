@@ -78,7 +78,7 @@ class Api::V1::CheckInsController < ApplicationController
             reward.id,
             reward.type.value,
             reward.title,
-            ::Common.get_eligible_reward_text((@customer.points - reward.points).abs)
+            ::Common.get_eligible_reward_text(@customer.points - reward.points)
           )
           @eligible_rewards << item  
         end
