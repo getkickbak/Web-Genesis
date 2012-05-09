@@ -875,7 +875,7 @@ body {
       width:50%;
       float:left;
       font-size:$largeFontSize;
-      color:#fff;
+      color:#555658;
       position:relative; // Used for add Icon Mask to the selection
       .mainPageItemWrapper {
          text-align:center;
@@ -888,7 +888,7 @@ body {
          }
          .photoName {
             font-weight:bold;
-            text-shadow:0em 0.1em 0.03em #000;
+            //text-shadow:0em 0.1em 0.03em #000;
             padding-bottom:$panelTopGap*2
          }
       }
@@ -899,27 +899,13 @@ body {
 }
 
 .challengeMenuSelections {
-   padding:$panelGap;
+   @extend .mainMenuSelections;
    .x-dataview-item, .x-data-item {
       width:33%;
-      float:left;
       font-size:$normalFontSize;
-      color:#fff;
-      position:relative; // Used for add Icon Mask to the selection
       .mainPageItemWrapper {
-         text-align:center;
-         .photo {
-            height : $icon-size*1.25;
-            img {
-               width : $icon-size*1.25;
-               max-height : $icon-size*1.25;
-            }
-         }
          .photoName {
-            font-weight:bold;
-            text-shadow:0em 0.1em 0.03em #000;
             padding-top:$panelTopGap;
-            padding-bottom:$panelTopGap*2;
             height:($panelTopGap*3)+($normalFontSize*2)+1em;
          }
       }
