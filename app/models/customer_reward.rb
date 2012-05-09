@@ -57,7 +57,7 @@ class CustomerReward
   def to_redeemd
     RedeemedReward.new(
       type => {
-        value => "reward"
+        value => RedeemedReward::TYPE_REWARD
       },
       title => self.title
     )

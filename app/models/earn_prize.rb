@@ -22,7 +22,7 @@ class EarnPrize
   def to_redeemed
     RedeemedReward.new(
       type => {
-        value => "prize"
+        value => RedeemedReward::TYPE_PRIZE
       },
       title => reward.title
     )
