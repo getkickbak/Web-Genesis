@@ -49,7 +49,7 @@ class Api::V1::EarnPrizesController < ApplicationController
             :title => @earn_prize.reward.title,
             :expiry_date => @earn_prize.expiry_date 
           }.to_json
-          @encrypted_data = "#{iv}$#{aes.encrypt(data, @venue.auth_code, iv)}"
+          @encrypted_data = "#{iv}$#{aes.encrypt(data, @earn_prize.venue.auth_code, iv)}"
           render :template => '/api/v1/earn_prizes/redeem'
         else
           if @earn_prize.expiry_date < today
