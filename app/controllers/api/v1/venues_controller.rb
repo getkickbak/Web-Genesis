@@ -47,12 +47,14 @@ class Api::V1::VenuesController < ApplicationController
   end
 
   def find_closest
+    logger.debug("Merchant(#{params[:merchant_id]})")
     @merchant = Merchant.get(params[:merchant_id]) || not_found
     authorize! :read, Venue
     
     latitude = params[:latitude].to_f
     longitude = params[:longitude].to_f
     @venue = Venue.find_nearest(@merchant.id, latitude, longitude, 1).first
+    logger.debug("Venue(#{@venue.id}) is closest for Merchant(#{@merchant.id})")
     @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id)
     @winners_count = EarnPrize.count(EarnPrize.venue.id => @venue.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])
