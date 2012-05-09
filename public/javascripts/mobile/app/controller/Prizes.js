@@ -239,13 +239,9 @@ Ext.define('Genesis.controller.Prizes',
                      createPrize(prizes[i]);
                   }
                }
-
-               if(!container)
-               {
-                  container = view;
-               }
             }
-            else
+            
+            if(!container)
             {
                container = view;
             }
@@ -257,7 +253,7 @@ Ext.define('Genesis.controller.Prizes',
          case 'reward' :
          case 'showPrize' :
          {
-            items.push(createPrize(me.showPrize));
+            createPrize(me.showPrize);
             delete me.showPrize;
             container = view;
             break;
