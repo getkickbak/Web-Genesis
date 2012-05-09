@@ -168,6 +168,26 @@ Ext.define('Genesis.controller.Prizes',
       var viewport = me.getViewPortCntlr();
       var items = [], container;
 
+      var createPrize = function(prize)
+      {
+         items.push(
+         {
+            tag : 'rewardPanel',
+            xtype : 'dataview',
+            store :
+            {
+               model : 'Genesis.model.EarnPrize',
+               autoLoad : false,
+               data : prize
+            },
+            useComponents : true,
+            scrollable : false,
+            defaultType : 'rewarditem',
+            defaultUnit : 'em',
+            margin : '0 0 0.8 0'
+         });
+      }
+
       view.removeAll();
       switch (me.getMode())
       {
@@ -216,22 +236,7 @@ Ext.define('Genesis.controller.Prizes',
                   }
                   if(container)
                   {
-                     items.push(
-                     {
-                        tag : 'rewardPanel',
-                        xtype : 'dataview',
-                        store :
-                        {
-                           model : 'Genesis.model.EarnPrize',
-                           autoLoad : false,
-                           data : prizes[i]
-                        },
-                        useComponents : true,
-                        scrollable : false,
-                        defaultType : 'rewarditem',
-                        defaultUnit : 'em',
-                        margin : '0 0 0.8 0'
-                     });
+                     createPrize(prizes[i]);
                   }
                }
 
@@ -252,7 +257,7 @@ Ext.define('Genesis.controller.Prizes',
          case 'reward' :
          case 'showPrize' :
          {
-            items = items.push(me.showPrize);
+            items.push(createPrize(me.showPrize));
             delete me.showPrize;
             container = view;
             break;
