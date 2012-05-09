@@ -47,6 +47,7 @@ class Api::V1::VenuesController < ApplicationController
   end
 
   def find_closest
+    logger.debug("Merchant(#{params[:merchant_id]})")
     @merchant = Merchant.get(params[:merchant_id]) || not_found
     authorize! :read, Venue
     
