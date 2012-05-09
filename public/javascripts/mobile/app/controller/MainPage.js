@@ -619,7 +619,7 @@ Ext.define('Genesis.controller.MainPage',
             app.dispatch(
             {
                action : 'onGotoCheckedInAccountTap',
-               args : [null, null, null, null, true],
+               args : [],
                controller : controller,
                scope : controller
             });

@@ -377,8 +377,7 @@ Ext.define('Genesis.controller.Merchants',
 
       if(!dontRefreshPage && (venue.getId() != cvenue.getId()))
       {
-         console.log("Updating Customer\'s Eligible Rewards ...");
-         estore.setData(cmetaData['eligible_rewards']);
+         me.updateRewards(cmetaData);
       }
       vport.reset();
 
