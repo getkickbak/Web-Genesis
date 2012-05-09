@@ -215,7 +215,6 @@ Ext.define('Genesis.controller.Merchants',
       //
       if(checkedInMatch)
       {
-         me.getDescContainer().hide();
          me.getFeedContainer().show();
          //me.getAddress().hide();
          //me.getStats().show();
@@ -227,13 +226,13 @@ Ext.define('Genesis.controller.Merchants',
       else
       {
          me.getFeedContainer()[me.showFeed ? 'show' : 'hide']();
-         me.getDescPanel().setData(vrecord);
-         me.getDescContainer().show();
          //me.getAddress().setData(vrecord.getData(true));
          //me.getAddress().show();
          //me.getStats().hide();
          console.debug("Explore Mode");
       }
+      me.getDescPanel().setData(vrecord);
+      me.getDescContainer().show();
 
       //
       // Show Map Buttons
