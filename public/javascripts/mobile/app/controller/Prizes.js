@@ -224,7 +224,7 @@ Ext.define('Genesis.controller.Prizes',
                         {
                            model : 'Genesis.model.EarnPrize',
                            autoLoad : false,
-                           data : items[i]
+                           data : prizes[i]
                         },
                         useComponents : true,
                         scrollable : false,
