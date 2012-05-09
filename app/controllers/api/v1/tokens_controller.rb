@@ -50,6 +50,10 @@ class Api::V1::TokensController < ApplicationController
     auth_token = params[Devise.token_authentication_key]
     logger.debug("auth_token: #{auth_token}")
     logger.debug("facebook_id: #{params[:facebook_id]}")
+    users = User.all
+    users.each do |user|
+      logger.debug("user: #{user.id}, name: #{user.name}, email: #{user.email}, facebook_id: #{user.facebook_id}")
+    end
     if auth_token.nil?
       facebook_id = params[:facebook_id]
       if facebook_id.nil?
