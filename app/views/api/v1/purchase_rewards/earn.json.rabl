@@ -16,11 +16,6 @@ node :metaData do
 				{
 					:points => @vip_points
 				} if @vip_challenge
-			),
-		:eligible_rewards => (
-			@eligible_rewards.map do |r|
-		 		partial('api/v1/customers/eligible_reward', :object => r)
-			end
-		)
+			)
 	}.delete_if { |k,v| v.nil? }
 end	

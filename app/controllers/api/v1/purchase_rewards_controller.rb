@@ -74,31 +74,6 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           record.save
           @customer.points += @points
           @customer.save
-                    
-          @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])
-          @eligible_rewards = []  
-          challenge_type_id = ChallengeType.value_to_id["vip"]
-          challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
-          if challenge
-            visits_to_go = @customer.visits % challenge.data.visits
-            (visits_to_go = challenge.data.visits) unless visits_to_go > 0
-            item = EligibleReward.new(
-              challenge.id,
-              challenge.type.value,
-              challenge.name,
-              ::Common.get_eligible_challenge_vip_text(challenge.points, visits_to_go)
-            )
-            @eligible_rewards << item
-          end        
-          @rewards.each do |reward|
-            item = EligibleReward.new(
-              reward.id,
-              reward.type.value,
-              reward.title,
-              ::Common.get_eligible_reward_text(@customer.points - reward.points)
-            )
-            @eligible_rewards << item  
-          end
         
           #logger.debug("Before acquiring cache mutex.")
           mutex = CacheMutex.new(@venue.merchant.cache_key, Cache.memcache)
