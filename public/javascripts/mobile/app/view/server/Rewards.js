@@ -62,7 +62,7 @@ Ext.define('Genesis.view.server.Rewards',
                xtype : 'textfield',
                name : 'price',
                clearIcon : false,
-               placeHolder : 'Enter Sales Price',
+               placeHolder : '0',
                readOnly : true,
                required : true,
                cls : 'rewardsCalculator'

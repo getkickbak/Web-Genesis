@@ -888,7 +888,6 @@ body {
          }
          .photoName {
             font-weight:bold;
-            //text-shadow:0em 0.1em 0.03em #000;
             padding-bottom:$panelTopGap*2
          }
       }
@@ -902,7 +901,6 @@ body {
    @extend .mainMenuSelections;
    .x-dataview-item, .x-data-item {
       width:33%;
-      font-size:$normalFontSize;
       .mainPageItemWrapper {
          .photoName {
             padding-top:$panelTopGap;
@@ -1132,7 +1130,10 @@ body {
          .x-component-outer {
             margin: $panelGap $panelGap*2;
             outline: darken(#F3F3F4, 10%) inset $panelGap;
-            .x-input-el {
+            input.x-input-el {
+               &::-webkit-input-placeholder {
+                  direction:rtl;
+               }
                background : #F3F3F4;
                padding: $panelTopGap/4;
                font-size:$xlargeFontSize*1.75;
