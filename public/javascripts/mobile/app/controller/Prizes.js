@@ -166,7 +166,7 @@ Ext.define('Genesis.controller.Prizes',
       var me = this;
       var view = me.getPrizes();
       var viewport = me.getViewPortCntlr();
-      var items, container;
+      var items = [], container;
 
       view.removeAll();
       switch (me.getMode())
@@ -176,11 +176,11 @@ Ext.define('Genesis.controller.Prizes',
          //
          case 'prizes' :
          {
-            items = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
-            if(items.length > 0)
+            var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
+            if(prizes.length > 0)
             {
                var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
-               for(var i = 0; i < items.length; i++)
+               for(var i = 0; i < prizes.length; i++)
                {
                   if(oldActiveItem)
                   {
@@ -190,7 +190,7 @@ Ext.define('Genesis.controller.Prizes',
                         //
                         // Only show prizes that matches the currently loaded Merchant Data
                         //
-                        if(items[i].getMerchant().getId() != merchantId)
+                        if(prizes[i].getMerchant().getId() != merchantId)
                         {
                            continue;
                         }
@@ -216,7 +216,7 @@ Ext.define('Genesis.controller.Prizes',
                   }
                   if(container)
                   {
-                     container.add(
+                     items.push(
                      {
                         tag : 'rewardPanel',
                         xtype : 'dataview',
@@ -252,7 +252,7 @@ Ext.define('Genesis.controller.Prizes',
          case 'reward' :
          case 'showPrize' :
          {
-            items = [me.showPrize];
+            items = items.push(me.showPrize);
             delete me.showPrize;
             container = view;
             break;
@@ -262,7 +262,7 @@ Ext.define('Genesis.controller.Prizes',
       //
       // To-do : show No Prize screen
       //
-      if(container.getItems().length == 0)
+      if(items.length == 0)
       {
          container.add(
          {
@@ -277,6 +277,7 @@ Ext.define('Genesis.controller.Prizes',
       }
       else
       {
+         container.add(items);
          me.getRedeemBtn().show();
       }
    },
