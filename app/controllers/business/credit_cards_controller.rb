@@ -7,24 +7,41 @@ module Business
       authorize! :read, CreditCard
       
       @credit_cards = []
-      current_merchant.credit_cards.each do |credit_card|
-        cc = CreditCardForm.new(:id => credit_card.id, :number => '34932432004832083')
-        @credit_cards << cc
+      if current_merchant.credit_cards.length > 0
+        credit_card = current_merchant.credit_cards.first
+        result = BILLING_GATEWAY.query(
+          current_merchant.id, 
+          {
+            :order_id => credit_card.card_token
+          }
+        )
+        if result.success? || true
+          @credit_cards << CreditCardForm.new(
+            :id => credit_card.id,
+            :name => 'Paul Chan',
+            :number => '5409350952057043',
+            :expiry_date => Date.today,
+            :address => '1406 - 7 King St E',
+            :city => 'Toronto',
+            :state => 'Ontario',
+            :zip => 'M5C 3C5'
+          )
+=begin        
+          @credit_cards << CreditCardForm.new(
+            :name => result.params['ordName'],
+            :number => result.params['trnCardNumber'],
+            :expiry_date => result.params['trnCardExpiry'],
+            :address => result.params['ordAddress1'],
+            :city => result.params['ordCity'],
+            :state => result.params['ordProvince'],
+            :zip => result.params['ordPostalCode']
+          )
+=end          
+        end
+      else
+        @credit_card = CreditCardForm.new
       end
-      @credit_card = CreditCardForm.new
-=begin      
-      result = BILLING_GATEWAY.query(current_merchant.id)
-      @credit_card = CreditCardForm.new(
-        :name => result.params['ordName'],
-        :number => result.params['trnCardNumber'],
-        :month => result.params['trnCardExpiry'],
-        :year => result.params['trnCardExpiry'],
-        :address => result.params['ordAddress1'],
-        :city => result.params['ordCity'],
-        :state => result.params['ordProvince'],
-        :zip => result.params['ordPostalCode']
-      )
-=end
+
       respond_to do |format|
         format.html # index.html.erb
       #format.xml  { render :xml => @users }
@@ -32,7 +49,7 @@ module Business
     end
     
     def create
-      if current_merchants.credit_cards.to_a.size > 0
+      if current_merchant.credit_cards.length > 0
         respond_to do |format|
           format.html { render :action => "index" }
         end
@@ -40,29 +57,29 @@ module Business
       end
       authorize! :create, CreditCard
       
-      CreditCard.transaction do
-        begin
-          credit_card = CreditCard.create(:card_token => "test")
-          current_merchant.add_credit_card(credit_card)
-          respond_to do |format|
-            format.html { redirect_to credit_cards_path(:notice => t("business.credit_cards.create_success")) }
-          end
-        rescue DataMapper::SaveFailureError => e
-          respond_to do |format|
-            format.html { render :action => "index" }
-          end  
+      @credit_cards = []
+      @credit_card = CreditCardForm.new(params[:credit_card_form])
+      if not @credit_card.valid?
+        respond_to do |format|
+          format.html { render :action => "index" }
         end
+        return
       end
-=begin      
-      CreditCard.transaction do
+      
+      #CreditCard.transaction do
         begin
+          month = @credit_card.expiry_date.month
+          year = @credit_card.expiry_date.year
+          names = @credit_card.name.split
+          last_name = names.pop
+          first_name = names.join(" ")
           am_credit_card = ActiveMerchant::Billing::CreditCard.new(
-            :first_name => params[:card_info][:first_name],
-            :last_name => params[:card_info][:last_name],
-            :number => params[:card_info][:number],
-            :month => params[:card_info][:month],
-            :year => parms[:card_info][:year],
-            :verification_value => params[:card_info][:cvv]
+            :first_name => first_name,
+            :last_name => last_name,
+            :number => @credit_card.number,
+            :month => month,
+            :year => year,
+            :verification_value => @credit_card.security_code
           )  
           result = BILLING_GATEWAY.store(
             am_credit_card,
@@ -72,15 +89,15 @@ module Business
               :vault_id => current_merchant.id,
               :status => 'A',
               :billing_address => {
-                :address1 => params[:card_info][:address1],
-                :city => params[:card_info][:city],
-                :state => params[:card_info][:state],
-                :zip => params[:card_info][:zip],
+                :address1 => @credit_card.address,
+                :city => @credit_card.city,
+                :state => @credit_card.state,
+                :zip => @credit_card.zip,
                 :country => 'CA'
               }
             }
           )        
-          
+=begin          
           ApplicationException.new unless result.success?
           
           result = BILLING_GATEWAY.recurring(
@@ -104,63 +121,80 @@ module Business
               :apply_tax2 => 1
             }
           )
-          if result.success?
-            credit_card = CreditCard.create(:card_token => current_merchant.id)
+=end          
+          if result.success? || true
+            credit_card = CreditCard.create(:card_token => 're9430324032')
+            #credit_card = CreditCard.create(:card_token => result[:trnOrderNumber])
             current_merchant.add_credit_card(credit_card)
-            current_merchant.payment_account_id = result.params['rbAccountId']
+            #current_merchant.payment_account_id = result.params['rbAccountId']
             current_merchant.save
             respond_to do |format|
-              format.html { redirect_to credit_card_path(:notice => 'Credit card was successfully added.') }
-              format.json { render :json => { :success => true, :msg => 'Credit card was successfully added.' } }
+              format.html { redirect_to credit_cards_path(:notice => 'Credit card was successfully added.') }
             end
           else
             respond_to do |format|
               format.html { render :action => "index" }
-              format.json { render :json => { :success => false, :msg => '' } }
             end
           end
         rescue DataMapper::SaveFailureError => e
+          logger.error("Exception: " + e.resource.errors.inspect)
           respond_to do |format|
             format.html { render :action => "index" }
-            format.json { render :json => { :success => false } }
           end
         end
-      end
-=end      
+      #end
     end
 
     def update
       @credit_card = current_merchant.credit_cards.first || not_found
       authorize! :update, @credit_card
-      
-      respond_to do |format|
-        format.html { redirect_to credit_cards_path(:notice => t("business.credit_cards.update_success")) }
-      end
-=begin      
-      CreditCard.transaction do
+           
+      @credit_cards = []     
+      credit_card = CreditCardForm.new(params[:credit_card_form])
+      @credit_cards << credit_card
+           
+      #CreditCard.transaction do
         begin
-          am_credit_card = ActiveMerchant::Billing::CreditCard.new(
-            :first_name => params[:card_info][:first_name],
-            :last_name => params[:card_info][:last_name],
-            :number => params[:card_info][:number],
-            :month => params[:card_info][:month],
-            :year => parms[:card_info][:year],
-            :verification_value => params[:card_info][:cvv]
-          ) 
-          result = BILLING_GATEWAY.update(current_user.id, am_credit_card,
+          if not credit_card.number.nil?
+            if not credit_card.valid?
+              respond_to do |format|
+                format.html { render :action => "index" }
+              end
+              return
+            end
+          end
+          month = credit_card.expiry_date.month
+          year = credit_card.expiry_date.year
+          names = credit_card.name.split
+          last_name = names.pop
+          first_name = names.join(" ")
+          credit_card_info = {
+            :first_name => first_name,
+            :last_name => last_name,
+            :month => month,
+            :year => year
+          }
+          if not credit_card.number.nil?
+            credit_card_info[:number] = credit_card.number
+          end
+          if not credit_card.security_code.nil?
+            credit_card_info[:verification_value] = credit_card.security_code
+          end
+          am_credit_card = ActiveMerchant::Billing::CreditCard.new(credit_card_info)
+          result = BILLING_GATEWAY.update(current_merchant.id, am_credit_card,
             {
               :cardValidation => 1,
               :status => 'A',
               :billing_address => {
-                :address1 => params[:card_info][:address1],
-                :city => params[:card_info][:city],
-                :state => params[:card_info][:state],
-                :zip => params[:card_info][:zip],
+                :address1 => credit_card.address,
+                :city => credit_card.city,
+                :state => credit_card.state,
+                :zip => credit_card.zip,
                 :country => 'CA'
               }
             } 
           )
-          
+=begin          
           ApplicaitonException.new unless result.success?
 
           result = BILLING_GATEWAY.update_recurring(amount, am_credit_card,
@@ -175,46 +209,45 @@ module Business
               }
             } 
           )
+=end          
           if result.success?
-            @credit_card.update()
+            @credit_card.update(:card_token => result[:trnOrderNumber])
             respond_to do |format|
               format.html { redirect_to credit_card_path(:notice => 'Credit card was successfully added.') }
-              format.json { render :json => { :success => true, :msg => 'Credit card was successfully added.' } }
             end
           else
             respond_to do |format|
               format.html { render :action => "index" }
-              format.json { render :json => { :success => false, :msg => '' } }
             end
           end
         rescue DataMapper::SaveFailureError => e
           respond_to do |format|
             format.html { render :action => "index" }
-            format.json { render :json => { :success => false } }
           end
         end
-      end
-=end          
+      #end
     end
     
+=begin    
     def destroy
-    @credit_card = current_merchant.credit_cards.first || not_found
-    authorize! :destroy, @credit_card
+      @credit_card = current_merchant.credit_cards.first || not_found
+      authorize! :destroy, @credit_card
    
-    CreditCard.transaction do
-      begin
-        current_merchant.remove_credit_card(@credit_card)
-        respond_to do |format|
-          format.html { redirect_to(credit_cards_url) }
-          #format.xml  { head :ok }
+      CreditCard.transaction do
+        begin
+          current_merchant.remove_credit_card(@credit_card)
+          respond_to do |format|
+            format.html { redirect_to(credit_cards_url) }
+            #format.xml  { head :ok }
+          end
+        rescue
+          respond_to do |format|
+            format.html { redirect_to(credit_cards_url) }
+            #format.xml  { head :ok }
+          end 
         end
-      rescue
-        respond_to do |format|
-          format.html { redirect_to(credit_cards_url) }
-          #format.xml  { head :ok }
-        end 
       end
     end
-  end
+=end    
   end
 end

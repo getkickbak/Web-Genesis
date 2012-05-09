@@ -16,6 +16,13 @@ class CreditCardForm
   
   def initialize(attributes = {})
     @attributes = attributes
+    if (not @attributes.empty?) && (not @attributes.include? :expiry_date)
+      date_str = "#{@attributes['expiry_date(1i)']}-#{@attributes['expiry_date(2i)']}-#{@attributes['expiry_date(3i)']}"
+      @attributes['expiry_date'] = Time.zone.parse(date_str).to_date
+      @attributes.delete('expiry_date(1i)')
+      @attributes.delete('expiry_date(2i)')
+      @attributes.delete('expiry_date(3i)')
+    end
     @attributes.each do |key,value|
       send "#{key}=".to_sym, value
     end

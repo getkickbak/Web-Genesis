@@ -39,14 +39,15 @@ Genesis::Application.configure do
   PDFKit.configure do |config|
     config.wkhtmltopdf = '/usr/local/rvm/gems/ruby-1.9.2-p290/bin/wkhtmltopdf'
   end
+
 =begin
-  ActiveMerchant::Billing::Base.mode = :production
+  ActiveMerchant::Billing::Base.mode = :test
   ::BILLING_GATEWAY = ActiveMerchant::Billing::BeanstreamGateway.new(
     :login => '158670000',
-    :user => 'paymentprocessor',
-    :password => 'GOL2YDgb7exMjD',
-    :secure_profile_api_key => 'A5B59392C6304f7288b2d7793742a6a6',
-    :recurring_api_key => 'A5B59392C6304f7288b2d7793742a6a6'
+    :user => 'guest',
+    :password => 'test1234',
+    :secure_profile_api_key => 'A5B59392C6304f7288b2d7793742a6a6'
+    #:recurring_api_key => 'A5B59392C6304f7288b2d7793742a6a6'
   )
 =end
 
