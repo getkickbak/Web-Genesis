@@ -160,9 +160,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    initCustomerStore : function()
    {
-      var me = this;
-      var local = Genesis.constants.getLocalStorage();
-
+      var me = this, db;
       Ext.regStore('CustomerStore',
       {
          model : 'Genesis.model.Customer',
@@ -173,10 +171,11 @@ Ext.define('Genesis.controller.MainPage',
             scope : me,
             "load" : function(store, records, successful, operation, eOpts)
             {
-               if(successful && local.getItem('auth_code'))
+               db = Genesis.constants.getLocalDB();
+               if(successful && db['auth_code'])
                {
-                  console.log("auth_code [" + local.getItem('auth_code') + "]");
-                  console.log("currFbId [" + local.getItem('currFbId') + "]");
+                  console.log("auth_code [" + db['auth_code'] + "]");
+                  console.log("currFbId [" + db['currFbId'] + "]");
                   me.goToMain();
                }
             },
@@ -210,17 +209,10 @@ Ext.define('Genesis.controller.MainPage',
                //
                var authToken = metaData['auth_token'];
                console.debug("Login Auth Code - " + authToken)
-               if(authToken != local.setItem('auth_code'))
+               db = Genesis.constants.getLocalDB();
+               if(authToken != db['auth_code'])
                {
-                  local.setItem('auth_code', authToken);
-                  if(Genesis.constants.isNative())
-                  {
-                     cordova.exec(function(success)
-                     {
-                     }, function(error)
-                     {
-                     }, "CDVLocalStorage", "backup", []);
-                  }
+                  Genesis.constants.setLocalDBAttrib('auth_code', authToken);
                }
 
                me.updateRewards(metaData);
@@ -361,8 +353,7 @@ Ext.define('Genesis.controller.MainPage',
    {
       var viewport = this.getViewport();
       var vport = this.getViewPortCntlr();
-      var local = Genesis.constants.getLocalStorage();
-      var fb = Genesis.constants.getLocalStorage();
+      var db = Genesis.constants.getLocalDB();
       var flag = 0;
       //
       // Logout of Facebook
@@ -372,8 +363,8 @@ Ext.define('Genesis.controller.MainPage',
          console.log("Resetting Session information ...")
          viewport.setFadeAnimation();
          vport.setLoggedIn(false);
-         local.removeItem('auth_code');
-         if(fb.getItem('currFbId') > 0)
+         Genesis.contants.setLocalDBAttrib('auth_code', authToken);
+         if(db['currFbId'] > 0)
          {
             Genesis.constants.facebook_onLogout(null, true);
          }
@@ -381,10 +372,10 @@ Ext.define('Genesis.controller.MainPage',
       }
       var _logout = function()
       {
-         if(local.getItem('auth_code'))
+         if(db['auth_code'])
          {
             console.log("Logging out ...")
-            Customer['setLogoutUrl'](local.getItem('auth_code'));
+            Customer['setLogoutUrl'](db['auth_code']);
             Ext.StoreMgr.get('CustomerStore').load(
             {
                jsonData :
@@ -418,7 +409,7 @@ Ext.define('Genesis.controller.MainPage',
          single : true
       });
       b.parent.hide();
-      if(fb.getItem('currFbId') > 0)
+      if(db['currFbId'] > 0)
       {
          console.log("Logging out of Facebook ...")
          Genesis.constants.facebook_onLogout(function()
@@ -476,8 +467,8 @@ Ext.define('Genesis.controller.MainPage',
       var values = account.getValues();
       var user = Ext.create('Genesis.model.frontend.Account', values);
       var validateErrors = user.validate();
-      var fb = Genesis.constants.getLocalStorage();
-      var response = fb.getItem('fbResponse') || null;
+      var db = Genesis.constants.getLocalDB();
+      var response = db['fbResponse'] || null;
 
       if(!validateErrors.isValid())
       {
@@ -503,7 +494,7 @@ Ext.define('Genesis.controller.MainPage',
 
          if(response)
          {
-            params = Ext.apply(params, Ext.decode(response));
+            params = Ext.apply(params, response);
          }
 
          Customer['setCreateAccountUrl']();
@@ -521,9 +512,9 @@ Ext.define('Genesis.controller.MainPage',
    },
    onSignIn : function(username, password)
    {
-      var fb = Genesis.constants.getLocalStorage();
+      var db = Genesis.constants.getLocalDB();
       //Cleanup any outstanding registrations
-      Genesis.constants.facebook_onLogout(null, fb.getItem('currFbId') > 0);
+      Genesis.constants.facebook_onLogout(null, db['currFbId'] > 0);
 
       var me = this;
       var params =
@@ -582,11 +573,10 @@ Ext.define('Genesis.controller.MainPage',
    },
    onCreateActivate : function(c, eOpts)
    {
-      var fb = Genesis.constants.getLocalStorage();
-      var response = fb.getItem('fbResponse') || null;
+      var db = Genesis.constants.getLocalDB();
+      var response = db['fbResponse'] || null;
       if(response)
       {
-         response = Ext.decode(response);
          var form = this.getCreateAccount();
          form.setValues(
          {

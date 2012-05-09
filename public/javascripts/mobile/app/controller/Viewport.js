@@ -93,7 +93,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    onShareMerchantTap : function(b, e, eOpts, eInfo)
    {
-      var fb = Genesis.constants.getLocalStorage();
+      //var db = Genesis.constants.getLocaDB();
       Genesis.constants.facebook_onLogin(function(params)
       {
          var merchant = this.getVenue().getMerchant();
@@ -294,8 +294,8 @@ Ext.define('Genesis.controller.Viewport',
    },
    openMainPage : function()
    {
-      var local = Genesis.constants.getLocalStorage();
-      var loggedIn = (local.getItem('auth_code')) ? true : false;
+      var db = Genesis.constants.getLocalDB();
+      var loggedIn = (db['auth_code']) ? true : false;
       if(!merchantMode)
       {
          if(loggedIn)
@@ -305,7 +305,7 @@ Ext.define('Genesis.controller.Viewport',
 
             this.setLoggedIn(loggedIn);
             console.debug("Going to Main Page ...");
-            if(local.getItem('currFbId') > 0)
+            if(db['currFbId'] > 0)
             {
                app.dispatch(
                {

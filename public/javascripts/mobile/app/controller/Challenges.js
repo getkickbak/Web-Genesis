@@ -230,7 +230,7 @@ Ext.define('Genesis.controller.Challenges',
    onCameraSuccessFn : function(imageURI)
    {
       var me = this;
-      var local = Genesis.constants.getLocalStorage();
+      var db = Genesis.constants.getLocalDB();
 
       console.debug("image URI =[" + imageURI + "]");
 
@@ -244,7 +244,7 @@ Ext.define('Genesis.controller.Challenges',
             options.mimeType = "image/jpg";
             options.params =
             {
-               "auth_token" : local.getItem('authToken')
+               "auth_token" : db['authToken']
             };
             options.chunkedMode = true;
 
