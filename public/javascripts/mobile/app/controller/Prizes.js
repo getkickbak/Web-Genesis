@@ -281,7 +281,14 @@ Ext.define('Genesis.controller.Prizes',
       else
       {
          container.add(items);
-         me.getRedeemBtn().show();
+         switch (me.getMode())
+         {
+            case 'authReward' :
+               break;
+            default:
+               me.getRedeemBtn().show();
+               break;
+         }
       }
    },
    onDeactivate : function(oldActiveItem, c, activeItem, eOpts)
@@ -502,11 +509,6 @@ Ext.define('Genesis.controller.Prizes',
       this.showPrize = showPrize;
       this.setMode('authReward');
       this.pushView(this.getMainPage());
-      Ext.device.Notification.show(
-      {
-         title : 'Success!',
-         message : this.authRewardVerifiedMsg
-      });
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

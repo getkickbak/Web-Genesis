@@ -33,7 +33,7 @@ Ext.define('Genesis.controller.server.Challenges',
       }
    },
    invalidAuthCodeMsg : 'Authorization Code is Invalid',
-   scanAuthCodeMsg : 'Proceed to scan your customer\'s Authorization Code',
+   genAuthCodeMsg : 'Proceed to generate Authorization Code',
    init : function()
    {
       console.log("Server Challenges Init");
@@ -47,83 +47,42 @@ Ext.define('Genesis.controller.server.Challenges',
    onDeactivate : function()
    {
    },
-   onVerifyChallenges : function()
+   generateQRCode : function()
    {
       var me = this;
-      var invalidCode = function()
+      var qrcode = me.genQRCodeFromParams(
       {
-         Ext.device.Notification.show(
-         {
-            title : 'Error!',
-            message : me.invalidAuthCodeMsg
-         });
-      }
-      me.scanQRCode(
+         "type" : 'earn_points'
+      });
+      var app = me.getApplication();
+      var controller = app.getController('Prizes');
+      app.dispatch(
       {
-         callback : function(encrypted)
+         action : 'onAuthReward',
+         args : [Ext.create('Genesis.model.EarnPrize',
          {
-            var privkey = CryptoJS.enc.Hex.parse(me.getPrivKey());
-            if(!encrypted)
+            'id' : 1,
+            'expiry_date' : null,
+            'reward' : Ext.create('Genesis.model.CustomerReward',
             {
-               if(Ext.isDefined(encrypted))
+               id : 0,
+               title : 'Authorization Code',
+               type :
                {
-                  var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
-
-                  encrypted = iv + '$' + CryptoJS.AES.encrypt(Ext.encode(
-                  {
-                     ":expirydate" : new Date().addDays(1).format('Y-M-d')
-                  }), privkey,
-                  {
-                     iv : iv
-                  });
-               }
-               else
+                  value : 'earn_points'
+               },
+               photo :
                {
-                  return;
-               }
-            }
-
-            try
-            {
-               console.log("Encrypted Code Length: " + encrypted.length);
-
-               var message = encrypted.split('$');
-               var decrypted = Ext.decode(CryptoJS.enc.Utf8.stringify((CryptoJS.AES.decrypt(message[1], privkey,
+                  'thumbnail_ios_medium' :
                   {
-                     iv : iv
-                  }))));
-
-               var expiryDate = decrypted[":expirydate"];
-
-               if((Date.parse(expiryDate) - Date.parse(new Date().format('Y-M-d'))) > 0)
-               {
-                  var app = me.getApplication();
-                  var controller = app.getController('Prizes');
-                  app.dispatch(
-                  {
-                     action : 'onAuthReward',
-                     args : [Ext.create('Genesis.model.EarnPrize',
-                     {
-                        'id' : 1,
-                        'expiry_date' : null,
-                        'reward' : record,
-                        'merchant' : null
-                     })],
-                     controller : controller,
-                     scope : controller
-                  });
+                     url : qrcode
+                  }
                }
-               else
-               {
-                  invalidCode();
-               }
-            }
-            catch(e)
-            {
-               console.log("Exception reading QR Code - [" + e.message + "]");
-               invalidCode();
-            }
-         }
+            }),
+            'merchant' : null
+         })],
+         controller : controller,
+         scope : controller
       });
    },
    // --------------------------------------------------------------------------
@@ -134,15 +93,15 @@ Ext.define('Genesis.controller.server.Challenges',
       var me = this;
       Ext.device.Notification.show(
       {
-         title : 'Verify Challenges',
-         message : me.scanAuthCodeMsg,
+         title : 'Authorize Challenges',
+         message : me.genAuthCodeMsg,
          buttons : ['OK', 'Cancel'],
          callback : function(btn)
          {
             if(btn.toLowerCase() == 'ok')
             {
-               console.log("Verifying Authorization Code ...");
-               me.onVerifyChallenges();
+               console.log(me.genAuthCodeMsg);
+               me.generateQRCode();
             }
          }
       });

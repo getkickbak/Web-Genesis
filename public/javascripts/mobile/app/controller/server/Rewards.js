@@ -149,28 +149,13 @@ Ext.define('Genesis.controller.server.Rewards',
          });
          return;
       }
-      //
-      // Show QRCode
-      //
-      var privkey = CryptoJS.enc.Hex.parse(me.getPrivKey());
-      var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
-      var expiryDate = new Date().addDays(1).format('Y-M-d');
-
-      var encrypted = iv + '$' + CryptoJS.AES.encrypt(Ext.encode(
-      {
-         ":expirydate" : expiryDate,
-         ":amount" : price
-      }), privkey,
-      {
-         iv : iv
-      });
-      console.log("Encripted Code :\n" + encrypted);
-      console.log("Encripted Code Length: " + encrypted.length);
-
-      var qrcode = me.genQRCode(encrypted);
       me.getQrcode().setStyle(
       {
-         'background-image' : 'url(' + qrcode + ')'
+         'background-image' : 'url(' + me.genQRCodeFromParams(
+         {
+            "amount" : price,
+            "type" : 'earn_points'
+         }) + ')'
       });
       me.getTitle().setData(
       {

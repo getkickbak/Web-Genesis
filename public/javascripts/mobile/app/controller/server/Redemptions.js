@@ -95,10 +95,17 @@ Ext.define('Genesis.controller.server.Redemptions',
                         iv : iv
                      }))));
 
-                  var expiryDate = decrypted[":expirydate"];
-
-                  if((Date.parse(expiryDate) - Date.parse(new Date().format('Y-M-d'))) > 0)
+                  if(Date.parse(decrypted["expiry_ts"]) >= Date.now())
                   {
+                     console.log("Found QRCode type[" + decrypted['type'] + "]");
+                     switch (decrypted['type'])
+                     {
+                        case 'prize' :
+                           break;
+                        case 'reward' :
+                           break;
+                     }
+
                      var app = me.getApplication();
                      var controller = app.getController('Prizes');
                      app.dispatch(
@@ -108,7 +115,11 @@ Ext.define('Genesis.controller.server.Redemptions',
                         {
                            'id' : 1,
                            'expiry_date' : null,
-                           'reward' : record,
+                           'reward' : Ext.create('Genesis.model.CustomerReward',
+                           {
+                              type : decrypted['reward'].type,
+                              title : decrypted['reward'].title
+                           }),
                            'merchant' : null
                         })],
                         controller : controller,

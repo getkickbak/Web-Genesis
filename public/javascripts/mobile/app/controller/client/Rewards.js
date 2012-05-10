@@ -116,8 +116,7 @@ Ext.define('Genesis.controller.client.Rewards',
             params :
             {
                venue_id : venueId,
-               data : qrcode,
-               //merchant_id : merchantId,
+               'data' : qrcode,
                latitude : position.coords.getLatitude(),
                longitude : position.coords.getLongitude()
             },

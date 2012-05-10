@@ -33,16 +33,10 @@ Ext.define('Genesis.view.widgets.RewardItem',
          },
          {
             xtype : 'component',
-            width : 57 * 3,
+            flex : 1,
+            //width : 57 * 3,
             tag : 'itemPhoto',
-            cls : 'reward',
-            tpl : Ext.create('Ext.XTemplate', '<img src="{[this.getPhoto(values)]}" />',
-            {
-               getPhoto : function(values)
-               {
-                  return Genesis.view.Prizes.getPhoto(values['type']);
-               }
-            })
+            cls : 'itemPhoto'
          },
          {
             docked : 'bottom',
@@ -121,13 +115,13 @@ Ext.define('Genesis.view.widgets.RewardItem',
    },
    setDataBackground : function(data)
    {
-      this.query("component[tag=title]")[0].setData(data.CustomerReward);
-      this.query("component[tag=itemPhoto]")[0].setData(data.CustomerReward);
+      var reward = data.CustomerReward;
+      var photo = Genesis.view.Prizes.getPhoto(reward['type']) || reward['photo']['thumbnail_ios_medium'].url;
       var info = this.query("component[tag=info]")[0];
-
       //
       // Hide Merchant Information if it's missing
       //
+      
       if(data.Merchant)
       {
          info.setData(data);
@@ -137,6 +131,9 @@ Ext.define('Genesis.view.widgets.RewardItem',
       {
          info.hide();
       }
+      
+      this.query("component[tag=title]")[0].setData(reward);
+      this.query("component[tag=itemPhoto]")[0].element.setStyle('background-image', 'url(' + photo + ')');
    },
    /**
     * Updates this container's child items, passing through the dataMap.

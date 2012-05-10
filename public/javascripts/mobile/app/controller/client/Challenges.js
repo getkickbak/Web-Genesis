@@ -113,7 +113,7 @@ Ext.define('Genesis.controller.client.Challenges',
                         //merchant_id : merchantId,
                         latitude : position.coords.getLatitude(),
                         longitude : position.coords.getLongitude(),
-                        auth_code : qrcode
+                        'data' : qrcode
                      },
                      callback : function(record, operation)
                      {

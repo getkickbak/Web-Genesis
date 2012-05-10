@@ -320,7 +320,7 @@ Ext.define('Genesis.controller.ControllerBase',
          var venueId = 0;
          if(!merchantMode)
          {
-            var venue  = Ext.StoreMgr.get('CheckinExploreStore').first();
+            var venue = Ext.StoreMgr.get('CheckinExploreStore').first();
             venueId = venue ? venue.getId() : me.getViewPortCntlr().getVenue().getId()
          }
          callback(
@@ -344,13 +344,13 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    genQRCode : function(text)
    {
-      var dotsize = 3;
+      var dotsize = 2;
       // size of box drawn on canvas
       var padding = 0;
       // (white area around your QRCode)
       var black = "rgb(0,0,0)";
       var white = "rgb(255,255,255)";
-      var QRCodeVersion = 6;
+      var QRCodeVersion = 7;
       // 1-40 see http://www.denso-wave.com/qrcode/qrgene2-e.html
 
       var canvas = document.createElement('canvas');
@@ -398,6 +398,30 @@ Ext.define('Genesis.controller.ControllerBase',
          }
       }
       return canvas.toDataURL("image/png");
+   },
+   genQRCodeFromParams : function(params)
+   {
+      var me = this;
+      //
+      // Show QRCode
+      //
+      var privkey = CryptoJS.enc.Hex.parse(me.getPrivKey());
+      var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
+      var expiryDate = new Date().addHours(3).format("isoDateTime");
+
+      var encrypted = iv + '$' + CryptoJS.AES.encrypt(Ext.encode(Ext.applyIf(
+      {
+         "expiry_ts" : expiryDate
+      }, params)), privkey,
+      {
+         iv : iv
+      });
+
+      console.log('\n' + //
+      "Encrypted Code Length: " + encrypted.length + '\n' + //
+      'Encrypted Code [' + encrypted + ']');
+
+      return me.genQRCode(encrypted);
    },
    playSoundFile : function(sound_file, successCallback, failCallback)
    {

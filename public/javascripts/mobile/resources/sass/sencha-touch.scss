@@ -1111,14 +1111,12 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
 .rewardItem {
    .title {
      @extend .title;
+     line-height:$xlargeFontSize + 2*$panelTopGap;
    }
-   .reward {
-      margin:auto;
-      text-align:center;
-      img {
-         width : $icon-size*3;
-         max-height : $icon-size*3;
-      }
+   .itemPhoto {
+      background-size : $icon-size*3 $icon-size*3;
+      background-position : center center;
+      background-repeat : no-repeat;
    }
    .info {
       position:relative;
