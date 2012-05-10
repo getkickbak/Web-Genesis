@@ -146,6 +146,7 @@ Ext.define('Genesis.navigation.Bar',
                {
                   'animationend' : function()
                   {
+                     //console.debug("Done Sliding ...");
                      if(me.elementGhost)
                      {
                         me.elementGhost.destroy();
@@ -172,6 +173,7 @@ Ext.define('Genesis.navigation.Bar',
                {
                   'animationend' : function()
                   {
+                     //console.debug("Done Fading ...");
                      if(me.elementGhost)
                      {
                         me.elementGhost.destroy();

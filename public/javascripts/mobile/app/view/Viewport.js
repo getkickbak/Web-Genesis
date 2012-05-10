@@ -289,8 +289,9 @@ Ext.define('Genesis.view.Viewport',
    doPop : function(config)
    {
       var me = this;
-      me.stack.pop();
       var animation = me.getLayout().getAnimation();
+
+      me.stack.pop();
       var view = me.stack[me.stack.length - 1];
       var xtypes = me.getActiveItem().getXTypes();
 
@@ -332,6 +333,12 @@ Ext.define('Genesis.view.Viewport',
       var animation = me.getLayout().getAnimation();
       var bar = me.getNavigationBar();
 
+      if (view == me.stack[me.stack.length - 1])
+      {
+         console.log("Cannot push the current view into stack ...");
+         return;
+      }
+      
       // Default Title
       if((me.stack.length == 0) && (!bar.titleComponent.getTitle()))
       {
