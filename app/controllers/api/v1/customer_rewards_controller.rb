@@ -45,7 +45,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
           data = { 
             :type => EncryptedDataType::REDEEM_REWARD,
             :reward => @reward.to_redeemed,
-            :expiry_ts => Time.now+1.hour 
+            :expiry_ts => Time.now+3.hour 
           }.to_json
           @encrypted_data = "#{iv}$#{aes.encrypt(data, @venue.auth_code, iv)}"
           render :template => '/api/v1/customer_rewards/redeem'

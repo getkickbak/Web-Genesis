@@ -77,7 +77,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         
           #logger.debug("Before acquiring cache mutex.")
           mutex = CacheMutex.new(@venue.merchant.cache_key, Cache.memcache)
-          acquired = mutex.acquire
+          mutex.acquire
           #logger.debug("Cache mutex acquired(#{acquired}).")
           @prick_prize_initialized = false
           reward_model = @venue.merchant.reward_model
