@@ -55,12 +55,10 @@ class CustomerReward
   end
   
   def to_redeemed
-    RedeemedReward.new(
-      :type => {
-        :value => RedeemedReward::TYPE_REWARD
-      },
-      :title => self.title
-    )
+    type = {
+      :value => RedeemedReward::TYPE_REWARD
+    }
+    RedeemedReward.new(type, self.title)
   end
   
   def destroy

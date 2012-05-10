@@ -20,11 +20,9 @@ class EarnPrize
   belongs_to :user
   
   def to_redeemed
-    RedeemedReward.new(
-      :type => {
-        :value => RedeemedReward::TYPE_PRIZE
-      },
-      :title => reward.title
-    )
+    type = {
+      :value => RedeemedReward::TYPE_PRIZE
+    }
+    RedeemedReward.new(type, reward.title)
   end
 end
