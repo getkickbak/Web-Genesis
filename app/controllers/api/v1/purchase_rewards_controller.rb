@@ -32,7 +32,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           aes = Aes.new('128', 'CBC')
           decrypted = aes.decrypt(auth_data, @venue.auth_code, iv)
           decrypted_data = JSON.parse(decrypted)
-          if (decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && (decrypted_data[:expiry_date] >= Date.today) && (not EarnRewardRecord.first(:data => data).nil?)
+          if (decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && (decrypted_data[:expiry_ts] >= Time.now) && (not EarnRewardRecord.first(:data => data).nil?)
             amount = decrypted_data[:amount]
             authorized = true
           end  
