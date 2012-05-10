@@ -943,7 +943,7 @@ body {
    &.bgImage {
       @include custom-radial-gradient(#00ADEE 50%, #0A78BE 80%, center center, url($theme-path-rel + '/images/' + $gtheme-name + '/logohomescreen.png'));
       background-position : center center;
-      background-size : 75%, 100%;
+      background-size : 90%, 100%;
    }
 }
 
