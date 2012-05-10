@@ -174,8 +174,9 @@ Ext.define('Genesis.controller.MainPage',
                db = Genesis.constants.getLocalDB();
                if(successful && db['auth_code'])
                {
-                  console.log("auth_code [" + db['auth_code'] + "]");
-                  console.log("currFbId [" + db['currFbId'] + "]");
+                  console.debug(//
+                  "auth_code [" + db['auth_code'] + "]" + "\n" + //
+                  "currFbId [" + db['currFbId'] + "]");
                   me.goToMain();
                }
             },
@@ -207,14 +208,14 @@ Ext.define('Genesis.controller.MainPage',
                //
                // Update Authentication Token
                //
-               var authToken = metaData['auth_token'];
-               console.debug("Login Auth Code - " + authToken)
-               if(authToken)
+               var authCode = metaData['auth_token'];
+               if(authCode)
                {
+                  console.debug("Login Auth Code - " + authCode)
                   db = Genesis.constants.getLocalDB();
-                  if(authToken != db['auth_code'])
+                  if(authCode != db['auth_code'])
                   {
-                     Genesis.constants.setLocalDBAttrib('auth_code', authToken);
+                     Genesis.constants.setLocalDBAttrib('auth_code', authCode);
                   }
                }
 
@@ -366,7 +367,7 @@ Ext.define('Genesis.controller.MainPage',
          console.log("Resetting Session information ...")
          viewport.setFadeAnimation();
          vport.setLoggedIn(false);
-         Genesis.contants.setLocalDBAttrib('auth_code', authToken);
+         Genesis.constants.setLocalDBAttrib('auth_code', db['authToken']);
          if(db['currFbId'] > 0)
          {
             Genesis.constants.facebook_onLogout(null, true);

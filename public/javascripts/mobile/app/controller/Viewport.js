@@ -79,6 +79,7 @@ Ext.define('Genesis.controller.Viewport',
       }
    },
    retrieveChallengesMsg : 'Retrieving Challenges ...',
+   fbShareSuccessMsg : 'Posted on your Timeline!',
    onFeatureTap : function(feature, subFeature)
    {
       var app = this.getApplication();
@@ -93,32 +94,40 @@ Ext.define('Genesis.controller.Viewport',
    },
    onShareMerchantTap : function(b, e, eOpts, eInfo)
    {
+      var me = this;
+      var site = Genesis.constants.site;
       //var db = Genesis.constants.getLocaDB();
       Genesis.constants.facebook_onLogin(function(params)
       {
-         var merchant = this.getVenue().getMerchant();
-         FB.ui(
+         var venue = me.getVenue();
+         var merchant = venue.getMerchant();
+         console.log('Posting to Facebook ...');
+         FB.api('/me/feed', 'post',
          {
-            method : 'stream.publish',
             name : merchant.get('name'),
             //link : href,
-            link : Genesis.constants.site,
-            caption : Genesis.constants.site,
-            description : merchant.get('desc'),
-            piture : merchant.get('photo')['thumbnail_ios_medium'].url,
-            message : 'Comment'
+            link : site,
+            caption : site,
+            description : venue.get('description'),
+            picture : merchant.get('photo')['thumbnail_ios_medium'].url,
+            message : 'Check out this place!'
          }, function(response)
          {
-            if(response && response.post_id)
-            {
-               console.log('Posted to your Facebook Newsfeed. Post ID(' + response.post_id + ')');
-            }
-            else
+            if(!response || response.error)
             {
                console.log('Post was not published to Facebook.');
             }
+            else
+            {
+               console.log(me.fbShareSuccessMsg);
+               Ext.device.Notification.show(
+               {
+                  title : 'Facebook Connect',
+                  message : me.fbShareSuccessMsg
+               });
+            }
          });
-      });
+      }, true);
    },
    onInfoTap : function(b, e, eOpts, eInfo)
    {

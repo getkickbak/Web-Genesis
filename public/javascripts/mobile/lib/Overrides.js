@@ -689,9 +689,8 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   message : 'Create user account using Facebook Profile information',
                   callback : function(button)
                   {
-                     var db = Genesis.constants.getLocalDB();
                      vport.setLoggedIn(false);
-                     me.removeLocalDBAttrib('auth_code');
+                     Genesis.constants.removeLocalDBAttrib('auth_code');
                      var controller = app.getController('MainPage');
                      app.dispatch(
                      {

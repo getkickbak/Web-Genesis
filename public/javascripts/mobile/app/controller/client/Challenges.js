@@ -248,7 +248,7 @@ Ext.define('Genesis.controller.client.Challenges',
             options.mimeType = "image/jpg";
             options.params =
             {
-               "auth_token" : db['authToken']
+               "auth_token" : db['auth_code']
             };
             options.chunkedMode = true;
 
