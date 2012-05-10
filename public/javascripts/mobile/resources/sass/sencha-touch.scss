@@ -508,16 +508,18 @@ body {
     }
   }
   .x-toolbar & {
+    background:transparent;
+    border: 1px solid #F3F3F4;
     &.x-button-back:before, &.x-button-forward:before {
+      background:white;
       //background: darken($bg-color, 20%);
     }
 
     //&.x-button-back, &.x-button-forward, &.x-button-back:after, &.x-button-forward:after {
     &.x-button-back, &.x-button-forward, &:after, &:after {
       background:transparent;
+      border-left: 1px solid transparent;
     }
-    background:transparent;
-    border: 1px solid #F3F3F4;
   }
 }
 
@@ -677,7 +679,7 @@ body {
 .x-button-forward,
 .x-toolbar .x-button-forward {
    &:before, &:after {
-      //-webkit-mask: -$mask-offset 0 theme_image($theme-name, "tip_right.png") no-repeat;
+      -webkit-mask-image: theme_image($theme-path + "/images/" + $gtheme-name, "toolbar/"+ "tip-right" + ".png");
    }
 }
 
@@ -982,18 +984,37 @@ body {
       margin: 0 $panelGap $panelTopGap $panelGap;
       min-height : $icon-size;
       .x-innerhtml {
+         @extend .pointsphoto;
+         @if $include-border-radius { @include border-radius($panelBorderRadius); }
+         background-color: #F3F3F4;
          margin :0 !important;
-         padding:0 !important;
+         padding:$panelTopGap $panelGap;
+         font-size:1em;
+         &:before {
+            @if $include-border-radius { @include border-left-radius($panelBorderRadius); }
+            @include custom-linear-gradient(#00ADEE 10%, #0A78BE 85%, top);
+            width:57px + 1.5*12px;
+            height:57px + 2*12px;
+            max-height:57px + 2*12px;
+         }
       }
       .prizeswonphoto {
-         @if $include-border-radius { @include border-radius($panelBorderRadius); }
          @extend .pointsphoto;
          text-align:left;
-         background-color: #F3F3F4;
-         font-size:$normalFontSize !important;
+         background-color: transparent;
+         font-size:1em;
          &:before {
-           @if $include-border-radius { @include border-left-radius($panelBorderRadius); }
-           @include custom-linear-gradient(#00ADEE 10%, #0A78BE 85%, top, url($theme-path-rel + "/images/" + $gtheme-name + "/miscicons/" + "number_won" + ".png"));
+           @include custom-linear-gradient(#00ADEE 10%, #0A78BE 85%, top, url($theme-path-rel + "/images/" + $gtheme-name + "/miscicons/" + "prizeswon" + ".png"));
+         }
+         .itemTitle {
+            font-weight:bold;
+            line-height:1em;
+            font-size:$largeFontSize !important;
+         }
+         .itemDesc {
+            line-height:2.25em;
+            font-style:italic;
+            //font-size:$largeFontSize !important;
          }
       }
    }

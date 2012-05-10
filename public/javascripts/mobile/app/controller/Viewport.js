@@ -200,7 +200,7 @@ Ext.define('Genesis.controller.Viewport',
                //
                venue.challenges().add(operation.getRecords());
 
-               me.onFeatureTap('Challenges');
+               me.onFeatureTap('client.Challenges');
                console.log("Going to Challenges Page ...");
             }
          }

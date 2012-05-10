@@ -34,7 +34,7 @@
       <title>KickBak</title>
       <link rel="stylesheet" href="resources/css/sencha-touch.css" type="text/css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
-      <script type="text/javascript" src="http://127.0.0.1:8080/target/target-script-min.js"></script>
+      <script type="text/javascript" src="http://192.168.0.52:8080/target/target-script-min.js"></script>
       directory and include it here -->
       <script type="text/javascript" src="lib/aes.js"></script>
       <script type="text/javascript" src="lib/date.js"></script>
@@ -104,18 +104,11 @@
                   title : 'Alert',
                   message : 'PhoneGap variable does not exist. Check that you have included phonegap.js correctly'
                });
-            //Ext.require(['Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Connection', 'Ext.device.Notification',
-            // 'Ext.device.Orientation']);
             Ext.application(
             {
                profiles : ['Iphone', 'Android', 'Desktop'],
-               //models : ['Checkin', 'Customer', 'Deal', 'EarnRewardRecord', 'Merchant', 'Reward', 'CustomerReward',
-               // 'PurchaseReward',
-               //'SubDeal', 'User', 'UserProfile',
-               //'Venue'],
-               views : ['server.Rewards', 'server.Redemptions', 'MainPage', 'server.SettingsPage', 'Viewport'],
-               controllers : ['Viewport', 'MainPage', 'server.Rewards', 'server.Redemptions', 'Settings'],
-               stores : [],
+               views : ['server.Rewards', 'server.Redemptions', 'MainPage', 'server.SettingsPage', 'Prizes', 'Viewport'],
+               controllers : ['Viewport', 'MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'Settings', 'Prizes'],
                launch : function()
                {
                   console.log("Launching App");

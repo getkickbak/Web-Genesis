@@ -209,10 +209,13 @@ Ext.define('Genesis.controller.MainPage',
                //
                var authToken = metaData['auth_token'];
                console.debug("Login Auth Code - " + authToken)
-               db = Genesis.constants.getLocalDB();
-               if(authToken != db['auth_code'])
+               if(authToken)
                {
-                  Genesis.constants.setLocalDBAttrib('auth_code', authToken);
+                  db = Genesis.constants.getLocalDB();
+                  if(authToken != db['auth_code'])
+                  {
+                     Genesis.constants.setLocalDBAttrib('auth_code', authToken);
+                  }
                }
 
                me.updateRewards(metaData);

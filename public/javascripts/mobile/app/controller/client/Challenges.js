@@ -1,21 +1,21 @@
-Ext.define('Genesis.controller.Challenges',
+Ext.define('Genesis.controller.client.Challenges',
 {
    extend : 'Genesis.controller.ControllerBase',
    statics :
    {
-      challenges_path : '/challenges'
+      challenges_path : '/clientChallenges'
    },
-   xtype : 'challengesCntlr',
+   xtype : 'clientChallengesCntlr',
    config :
    {
       refs :
       {
-         challengeBtn : 'challengepageview tabbar button[tag=doit]',
+         challengeBtn : 'clientchallengepageview tabbar button[tag=doit]',
          challengePage :
          {
-            selector : 'challengepageview',
+            selector : 'clientchallengepageview',
             autoCreate : true,
-            xtype : 'challengepageview'
+            xtype : 'clientchallengepageview'
          },
          uploadPhotosPage :
          {
@@ -34,7 +34,7 @@ Ext.define('Genesis.controller.Challenges',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
-         'challengepageview > carousel dataview' :
+         'clientchallengepageview > carousel dataview' :
          {
             select : 'onItemSelect'
          },
@@ -80,6 +80,10 @@ Ext.define('Genesis.controller.Challenges',
    },
    photoUploadIncompletesMsg : 'Trouble updating to server.',
    photoUploadFailValidationMsg : 'Please enter a comment with at least 16 characters in length',
+   getPointsMsg : function(points)
+   {
+      return 'You\'ve earned ' + points + ' Points from this challenge!';
+   },
    challengeId : null,
    model : ['Challenge'],
    init : function(app)
@@ -87,13 +91,64 @@ Ext.define('Genesis.controller.Challenges',
       this.callParent(arguments);
       console.log("Challenge Init");
    },
+   onVerifyChallenge : function(venueId, customerId, id)
+   {
+      me.getGeoLocation(function(position)
+      {
+         me.scanQRCode(
+         {
+            callback : function(qrcode)
+            {
+               if(qrcode)
+               {
+                  Challenge['setCompleteChallengeURL'](id);
+                  Challenge.load(id,
+                  {
+                     jsonData :
+                     {
+                     },
+                     params :
+                     {
+                        venue_id : venueId,
+                        //merchant_id : merchantId,
+                        latitude : position.coords.getLatitude(),
+                        longitude : position.coords.getLongitude(),
+                        auth_code : qrcode
+                     },
+                     callback : function(record, operation)
+                     {
+                        var metaData = Challenge.getProxy().getReader().metaData;
+                        if(operation.wasSuccessful() && metaData)
+                        {
+                           //
+                           // Update points from the purchase or redemption
+                           //
+                           Ext.device.Notification.show(
+                           {
+                              title : 'Earn Points',
+                              message : me.getPointsMsg(metaData['points'])
+                           });
+                           cstore.getById(customerId).set('points', metaData['account_points']);
+                        }
+                     }
+                  });
+               }
+               else
+               {
+                  console.debug(me.noCodeScannedMsg);
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Error',
+                     message : me.noCodeScannedMsg
+                  });
+               }
+            }
+         });
+      });
+   },
    // --------------------------------------------------------------------------
    // Challenge Page
    // --------------------------------------------------------------------------
-   getPointsMsg : function(points)
-   {
-      return 'You\'ve earned ' + points + ' Points from this challenge!';
-   },
    onItemSelect : function(d, model, eOpts)
    {
       d.deselect([model], false);
@@ -171,58 +226,7 @@ Ext.define('Genesis.controller.Challenges',
             message : me.showToServerMsg,
             callback : function()
             {
-               me.getGeoLocation(function(position)
-               {
-                  me.scanQRCode(
-                  {
-                     callback : function(qrcode)
-                     {
-                        if(qrcode)
-                        {
-                           Challenge['setCompleteChallengeURL'](id);
-                           Challenge.load(id,
-                           {
-                              jsonData :
-                              {
-                              },
-                              params :
-                              {
-                                 venue_id : venueId,
-                                 //merchant_id : merchantId,
-                                 latitude : position.coords.getLatitude(),
-                                 longitude : position.coords.getLongitude(),
-                                 auth_code : qrcode
-                              },
-                              callback : function(record, operation)
-                              {
-                                 var metaData = Challenge.getProxy().getReader().metaData;
-                                 if(operation.wasSuccessful() && metaData)
-                                 {
-                                    //
-                                    // Update points from the purchase or redemption
-                                    //
-                                    Ext.device.Notification.show(
-                                    {
-                                       title : 'Earn Points',
-                                       message : me.getPointsMsg(metaData['points'])
-                                    });
-                                    cstore.getById(customerId).set('points', metaData['account_points']);
-                                 }
-                              }
-                           });
-                        }
-                        else
-                        {
-                           console.debug(me.noCodeScannedMsg);
-                           Ext.device.Notification.show(
-                           {
-                              title : 'Error',
-                              message : me.noCodeScannedMsg
-                           });
-                        }
-                     }
-                  });
-               });
+               me.onVerifyChallenge(venueId, customerId, id);
             }
          });
       }
@@ -585,7 +589,7 @@ Ext.define('Genesis.controller.Challenges',
    openMainPage : function()
    {
       this.pushView(this.getMainPage());
-      console.log("ChallengePage Opened");
+      console.log("Client ChallengePage Opened");
    },
    isOpenAllowed : function()
    {

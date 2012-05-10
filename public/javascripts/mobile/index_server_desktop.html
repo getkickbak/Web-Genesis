@@ -93,6 +93,7 @@
       <script type="text/javascript" src="app/view/widgets/ComponentListItem.js"></script>
       <script type="text/javascript" src="app/view/widgets/ComponentList.js"></script>
       <script type="text/javascript" src="app/view/widgets/NavigationBar.js"></script>
+      <script type="text/javascript" src="app/view/widgets/RewardItem.js"></script>
       <!-- Models -->
       <script type="text/javascript" src="app/model/frontend/MainPage.js"></script>
       <script type="text/javascript" src="app/model/UserProfile.js"></script>
@@ -115,13 +116,18 @@
       <script type="text/javascript" src="app/view/server/SettingsPage.js"></script>
       <script type="text/javascript" src="app/view/server/Rewards.js"></script>
       <script type="text/javascript" src="app/view/server/Redemptions.js"></script>
+      <script type="text/javascript" src="app/view/Prizes.js"></script>
+
       <!-- Controllers -->
       <script type="text/javascript" src="app/controller/ControllerBase.js"></script>
       <script type="text/javascript" src="app/controller/Viewport.js"></script>
       <script type="text/javascript" src="app/controller/Settings.js"></script>
       <script type="text/javascript" src="app/controller/MainPage.js"></script>
+      <script type="text/javascript" src="app/controller/server/Challenges.js"></script>
       <script type="text/javascript" src="app/controller/server/Rewards.js"></script>
       <script type="text/javascript" src="app/controller/server/Redemptions.js"></script>
+      <script type="text/javascript" src="app/controller/Prizes.js"></script>
+
       <!-- External Libs -->
    </head>
    <body>
@@ -160,8 +166,8 @@
                // 'PurchaseReward',
                //'SubDeal', 'User', 'UserProfile',
                //'Venue'],
-               views : ['server.Rewards', 'server.Redemptions', 'MainPage', 'server.SettingsPage', 'Viewport'],
-               controllers : ['Viewport', 'MainPage', 'server.Rewards', 'server.Redemptions', 'Settings'],
+               views : ['server.Rewards', 'server.Redemptions', 'MainPage', 'server.SettingsPage', 'Prizes', 'Viewport'],
+               controllers : ['Viewport', 'MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'Settings', 'Prizes'],
                stores : [],
                launch : function()
                {

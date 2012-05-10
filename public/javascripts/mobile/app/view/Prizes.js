@@ -21,13 +21,30 @@ Ext.define('Genesis.view.Prizes',
             activeItem.getInitialConfig().title = 'Prizes';
             break;
          case 'reward' :
-            break;
             activeItem.getInitialConfig().title = 'Rewards';
+            break;
+         case 'authReward':
+            activeItem.getInitialConfig().title = ' ';
+            var viewport = Ext.ComponentQuery.query('viewportview')[0];
+            viewport.getNavigationBar().addCls('kbTitle');
+            break;
       }
       this.callParent(arguments);
    },
    beforeDeactivate : function(activeItem, oldActiveItem)
    {
+      var prizeMode = _application.getController('Prizes').getMode();
+      switch (prizeMode)
+      {
+         case 'showPrize':
+         case 'prizes' :
+         case 'reward' :
+            break;
+         case 'authReward':
+            var viewport = Ext.ComponentQuery.query('viewportview')[0];
+            viewport.getNavigationBar().removeCls('kbTitle');
+            break;
+      }
       this.callParent(arguments);
    },
    statics :

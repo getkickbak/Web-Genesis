@@ -13,6 +13,11 @@
          "pageCntlr": "server.Redemptions",
          "subFeature": "redemptions"
       }, {
+         "name": "Challenges",
+         "photo_url": "resources/themes/images/v1/mainicons/challenges.png",
+         "desc": "Challenges",
+         "pageCntlr": "server.Challenges"
+      }, {
          "name": "Settings",
          "photo_url": "resources/themes/images/v1/mainicons/settings.png",
          "desc": "Settings",

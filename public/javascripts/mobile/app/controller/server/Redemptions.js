@@ -99,10 +99,20 @@ Ext.define('Genesis.controller.server.Redemptions',
 
                   if((Date.parse(expiryDate) - Date.parse(new Date().format('Y-M-d'))) > 0)
                   {
-                     Ext.device.Notification.show(
+                     var app = me.getApplication();
+                     var controller = app.getController('Prizes');
+                     app.dispatch(
                      {
-                        title : 'Success!',
-                        message : 'Authorization Code is Valid'
+                        action : 'onAuthReward',
+                        args : [Ext.create('Genesis.model.EarnPrize',
+                        {
+                           'id' : 1,
+                           'expiry_date' : null,
+                           'reward' : record,
+                           'merchant' : null
+                        })],
+                        controller : controller,
+                        scope : controller
                      });
                   }
                   else

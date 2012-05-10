@@ -48,6 +48,7 @@ Ext.define('Genesis.controller.Prizes',
       }
    },
    initSound : false,
+   authRewardVerifiedMsg : 'Verified',
    wonPrizeMsg : function(numPrizes)
    {
       return 'You haved won ' + ((numPrizes > 1) ? 'some PRIZES' : 'a PRIZE') + '!'
@@ -240,7 +241,7 @@ Ext.define('Genesis.controller.Prizes',
                   }
                }
             }
-            
+
             if(!container)
             {
                container = view;
@@ -251,6 +252,7 @@ Ext.define('Genesis.controller.Prizes',
          // Show the Prize won by Customer on EarnPts
          //
          case 'reward' :
+         case 'authReward' :
          case 'showPrize' :
          {
             createPrize(me.showPrize);
@@ -495,6 +497,17 @@ Ext.define('Genesis.controller.Prizes',
       this.showPrize = showPrize;
       this.setMode('showPrize');
       this.pushView(this.getMainPage());
+   },
+   onAuthReward : function(showPrize)
+   {
+      this.showPrize = showPrize;
+      this.setMode('authReward');
+      this.pushView(this.getMainPage());
+      Ext.device.Notification.show(
+      {
+         title : 'Success!',
+         message : this.authRewardVerifiedMsg
+      });
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

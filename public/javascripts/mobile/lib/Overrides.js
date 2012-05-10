@@ -7,18 +7,28 @@ Genesis.constants =
 {
    //host : 'http://192.168.0.52:3000',
    host : 'http://www.getkickbak.com',
-   /*
-    authToken : null,
-    auth_code : null,
-    currFbId : 0,
-    fbAccountId : null,
-    fbResponse : null,
-    */
    themeName : 'v1',
+   sign_in_path : '/sign_in',
+   sign_out_path : '/sign_out',
+   site : 'www.getkickbak.com',
+   weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+   fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
+   isNative : function()
+   {
+      //return Ext.isDefined(cordova);
+      return phoneGapAvailable;
+   },
+   addCRLF : function()
+   {
+      return ((!this.isNative()) ? '<br/>' : '\n');
+   },
    getIconPath : function(type, name)
    {
       return 'resources/themes/images/' + this.themeName + '/' + type + '/' + name + '.png';
    },
+   // **************************************************************************
+   // Persistent DB API
+   // **************************************************************************
    getLocalStorage : function()
    {
       return window.localStorage;
@@ -26,14 +36,9 @@ Genesis.constants =
    getLocalDB : function()
    {
       var db = this.getLocalStorage().getItem('kickbak');
-      if(db)
+      return ((db) ? Ext.decode(db) :
       {
-         return Ext.decode(db);
-      }
-
-      return (
-         {
-         });
+      });
    },
    setLocalDB : function(db)
    {
@@ -53,19 +58,10 @@ Genesis.constants =
       delete db[attrib];
       this.setLocalDB(db);
    },
-   sign_in_path : '/sign_in',
-   sign_out_path : '/sign_out',
-   site : 'www.getkickbak.com',
-   weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-   fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
-   isNative : function()
+   resetStorage : function()
    {
-      //return Ext.isDefined(cordova);
-      return phoneGapAvailable;
-   },
-   addCRLF : function()
-   {
-      return ((!this.isNative()) ? '<br/>' : '\n');
+      this.facebook_onLogout(null, false);
+      Genesis.constants.removeLocalDBAttrib('auth_code');
    },
    // **************************************************************************
    // Date Time
@@ -256,30 +252,7 @@ Genesis.constants =
                   Genesis.constants.setLocalDBAttrib('authToken', authToken);
                   me.facebook_loginCallback(me.cb);
                   delete me.cb;
-                  return;
                }
-               /*
-
-                //Fetch user's id, name, and picture
-                FB.api('/me', function(response)
-                {
-                if(!response.error)
-                {
-                db['authToken']= authToken;
-                db[bResponse']=me.createFbResponse(response);
-                db['currFbId']=response.id;
-                db['fbAccountId'=response.email;
-                console.log('Updating Session to use\n' + 'AuthToken[' + db['authToken'] + ']\n' + 'FbID[' +
-                db['currFbId'] + ']\n' + 'AccountID[' + db['fbAccountId'] + ']');
-
-                console.debug("Response JSON = [" + Ext.encode(db['fbResponse']) + "]");
-                }
-                else
-                {
-                me.facebook_onLogout(null, false);
-                }
-                });
-                */
             }
             else
             {
@@ -427,11 +400,14 @@ Genesis.constants =
       var db = me.getLocalDB();
       cb = cb || Ext.emptyFn
 
-      console.debug("facebook_onLogin - FbId = [" + db['currFbId'] + "]")
+      console.debug("facebook_onLogin - \n" +
+      //
+      "FbId = [" + db['currFbId'] + "]");
       if(db['currFbId'] > 0)
       {
-         console.debug("facebook_onLogin - AccountId = [" + db['fbAccountId'] + "]");
-         console.debug("facebook_onLogin - Response JSON = [" + Ext.encode(db['fbResponse']) + "]");
+         console.debug(//
+         "AccountId = [" + db['fbAccountId'] + "]" + "\n" + //
+         "facebook_onLogin - Response JSON = [" + Ext.encode(db['fbResponse']) + "]");
          if(!supress)
          {
             Ext.device.Notification.show(
@@ -446,65 +422,6 @@ Genesis.constants =
       {
          me.fbLogin(cb);
       }
-      /*
-       FB.getLoginStatus(function(response)
-       {
-       //
-       // Login as someone else?
-       //
-       if((response.status == 'connected') && response.authResponse)
-       {
-       if(!supress)
-       {
-       Ext.device.Notification.show(
-       {
-       title : 'Facebook Connect',
-       message : 'Account ID: ' + fb.getItem('fbAccountId') + Genesis.constants.addCRLF() + 'will be used for your current Facebook
-       session.',
-       buttons : ['OK', 'Cancel'],
-       callback : function(button)
-       {
-       if(button == "OK")
-       {
-       cb();
-       }
-       }
-       });
-       }
-       else
-       {
-       cb();
-       }
-       }
-       else
-       if(response.status === 'not_authorized')
-       {
-       // the user is logged in to Facebook,
-       // but has not authenticated your app
-       Ext.device.Notification.show(
-       {
-       title : 'Facebook Connect',
-       message : 'Your current Facebook Session hasn\'t been fully authorized for this application.' + Genesis.constants.addCRLF() +
-       'Press OK to continue.',
-       buttons : ['OK', 'Cancel'],
-       callback : function(button)
-       {
-       me.facebook_onLogout(function()
-       {
-       if(button == "OK")
-       {
-       me.fbLogin(cb);
-       }
-       }, true);
-       }
-       });
-       }
-       else
-       {
-       me.fbLogin(cb);
-       }
-       });
-       */
    },
    facebook_loginCallback : function(cb, count)
    {
@@ -561,13 +478,9 @@ Genesis.constants =
             db['fbResponse'] = params;
             Genesis.constants.setLocalDB(db);
 
-            console.debug('You\`ve logged into Facebook! ' + '\n' +
-            //
-            'Email(' + db['fbAccountId'] + ')' + '\n' +
-            //
-            'ID(' + facebook_id + ')' + '\n'
-            //
-            );
+            console.debug('You\`ve logged into Facebook! ' + '\n' + //
+            'Email(' + db['fbAccountId'] + ')' + '\n' + //
+            'ID(' + facebook_id + ')' + '\n');
             me._fb_connect();
             //me.getFriendsList();
 
@@ -598,16 +511,18 @@ Genesis.constants =
    {
       var me = this;
       var db = me.getLocalDB();
+
       cb = cb || Ext.emptyFn;
+      me._fb_disconnect();
+      db['currFbId'] = 0;
+      delete db['fbAccountId'];
+      delete db['fbResponse'];
+      delete db['authToken'];
+      Genesis.constants.setLocalDB(db);
+
+      Ext.Viewport.setMasked(false);
       try
       {
-         Ext.Viewport.setMasked(false);
-         me._fb_disconnect();
-         db['currFbId'] = 0;
-         delete db['fbAccountId'];
-         delete db['fbResponse'];
-         delete db['authToken'];
-         Genesis.constants.setLocalDB(db);
          if(contactFB)
          {
             FB.logout(function(response)
@@ -623,12 +538,8 @@ Genesis.constants =
       }
       catch(e)
       {
+         cb();
       }
-   },
-   resetStorage : function()
-   {
-      this.facebook_onLogout(null, false);
-      Genesis.constants.removeLocalDBAttrib('auth_code');
    }
 };
 Genesis.constants._fb_disconnect = Genesis.constants._fb_connect;

@@ -123,7 +123,20 @@ Ext.define('Genesis.view.widgets.RewardItem',
    {
       this.query("component[tag=title]")[0].setData(data.CustomerReward);
       this.query("component[tag=itemPhoto]")[0].setData(data.CustomerReward);
-      this.query("component[tag=info]")[0].setData(data);
+      var info = this.query("component[tag=info]")[0];
+
+      //
+      // Hide Merchant Information if it's missing
+      //
+      if(data.Merchant)
+      {
+         info.setData(data);
+         info.show();
+      }
+      else
+      {
+         info.hide();
+      }
    },
    /**
     * Updates this container's child items, passing through the dataMap.
