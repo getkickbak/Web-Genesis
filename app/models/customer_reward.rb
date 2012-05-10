@@ -54,7 +54,7 @@ class CustomerReward
     save
   end
   
-  def to_redeemd
+  def to_redeemed
     RedeemedReward.new(
       type => {
         value => RedeemedReward::TYPE_REWARD
