@@ -226,8 +226,6 @@ Ext.define('Genesis.view.Rewards',
          var photo_url = null;
          switch (type.value)
          {
-            case 'custom' :
-               break;
             default :
                photo_url = Genesis.constants.getIconPath('fooditems', type.value);
                //console.debug("Icon Path [" + photo_url + "]");

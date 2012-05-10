@@ -54,8 +54,6 @@ Ext.define('Genesis.view.Prizes',
          var photo_url = null;
          switch (type.value)
          {
-            case 'custom' :
-               break;
             default :
                photo_url = Genesis.constants.getIconPath('prizewon', type.value);
                break;
