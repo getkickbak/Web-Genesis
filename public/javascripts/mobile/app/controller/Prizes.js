@@ -363,20 +363,19 @@ Ext.define('Genesis.controller.Prizes',
       var store;
       var carousel = view.query('carousel')[0];
       var item = carousel ? carousel.getActiveItem() : view.getItems().items[0];
-      var id = item.getStore().first().getId();
       switch (me.getMode())
       {
          case 'showPrize' :
          case 'prizes' :
          {
             store = Ext.StoreMgr.get('MerchantPrizeStore');
-            EarnPrize['setRedeemPrizeURL'](id);
+            EarnPrize['setRedeemPrizeURL'](item.getStore().first().getId());
             break;
          }
          case 'reward' :
          {
             store = Ext.StoreMgr.get('RedemptionsStore');
-            CustomerReward['setRedeemPointsURL'](id);
+            CustomerReward['setRedeemPointsURL'](item.getStore().first().getCustomerReward().getId());
             break;
          }
       }
