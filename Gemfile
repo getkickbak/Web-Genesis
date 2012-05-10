@@ -61,6 +61,7 @@ gem 'carrierwave'
 gem 'carrierwave-datamapper', :require => 'carrierwave/datamapper'
 gem 'faker'
 gem 'rabl'
+gem 'activemerchant', :require => 'active_merchant', :git => 'git@github.com:justformyfriends/active_merchant'
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION

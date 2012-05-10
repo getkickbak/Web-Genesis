@@ -15,7 +15,7 @@ class CreditCard
   def self.create(card_info)
     now = Time.now
     credit_card = CreditCard.new(
-      :card_token=> card_info[:card_token]
+      :card_token => card_info[:card_token]
     )  
     credit_card[:created_ts] = now
     credit_card[:update_ts] = now
@@ -23,8 +23,9 @@ class CreditCard
     return credit_card
   end
     
-  def update
+  def update(card_info)
     now = Time.now
+    self.card_token = card_info[:card_token]
     self.update_ts = now
     save
   end

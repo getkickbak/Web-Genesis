@@ -43,8 +43,8 @@ class Api::V1::CustomerRewardsController < ApplicationController
           aes = Aes.new('128', 'CBC')
           iv = String.random_alphanumeric
           data = { 
-            :type => "redeem_reward",
-            :title => @reward.title,
+            :type => EncryptedDataType::REDEEM_REWARD,
+            :reward => @reward.to_redeemed,
             :expiry_date => Date.today 
           }.to_json
           @encrypted_data = "#{iv}$#{aes.encrypt(data, @venue.auth_code, iv)}"

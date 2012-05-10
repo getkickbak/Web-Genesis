@@ -255,10 +255,10 @@ namespace :db do
       purchase_rewards = []
       reward_names = {:entrees => "Entrees", :appetizers => "Appetizers", :drinks => "Drinks", :desserts => "Desserts", :soup => "Soup",
                       :bread => "Bread", :salad => "Salad", :noodles => "Noodles", :side_dishes => "Side Dishes", :sandwiches => "Sandwiches",
-                      :pasta => "Pasta", :pastry => "Pastry"}
+                      :pasta => "Pasta", :pastry => "Pastry", :custom => "Custom"}
       reward_names_count = {:entrees => 0, :appetizers => 0, :drinks => 0, :desserts => 0, :soup => 0,
                       :bread => 0, :salad => 0, :noodles => 0, :side_dishes => 0, :sandwiches => 0,
-                      :pasta => 0, :pastry => 0}
+                      :pasta => 0, :pastry => 0, :custom => 0}
       reward_names.length.times do |i|
         idx = rand(reward_names.length)+1
         reward_type = CustomerRewardType.get(idx)
