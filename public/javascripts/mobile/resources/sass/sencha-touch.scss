@@ -668,18 +668,33 @@ body {
 @include sencha-button-ui('action', $active-color);
 @include sencha-button-ui('cancel', #555658);
 
+// Back/Forward buttons
+$shadow-width: .065em; // Space between tip and its shadow
+$overlap-width: .2em; // how far the mask is clipped
+
+// $mask-height: $button-height + $button-stroke-weight * 2; // Ugh, this is non-specific... borders?
+$mask-height: $button-height;
+$mask-width: $mask-height/2;
+
+$mask-offset: $button-radius - $overlap-width - $button-stroke-weight + $shadow-width - .06em;
+
+$tip-width: $mask-width - $mask-offset + $shadow-width;
+
 .x-button {
    @include toolbar-button(#F3F3F4, $button-gradient);
 }
-.x-button-forward, .x-button-back {
-      &:before, &:after {
-         -webkit-mask-image: theme_image($theme-path + "/images/" + $gtheme-name, "toolbar/"+ "tip" + ".png");
-      }
+.x-button-back,
+.x-toolbar .x-button-back {
+   &:before, &:after {
+      -webkit-mask: $mask-offset 0 theme_image($theme-path + "/images/" + $gtheme-name, "toolbar/"+ "tip" + ".png");
+      -webkit-mask-size: $mask-width $mask-height;
    }
+}
 .x-button-forward,
 .x-toolbar .x-button-forward {
    &:before, &:after {
-      -webkit-mask-image: theme_image($theme-path + "/images/" + $gtheme-name, "toolbar/"+ "tip-right" + ".png");
+      -webkit-mask: -$mask-offset 0 theme_image($theme-path + "/images/" + $gtheme-name, "toolbar/"+ "tip-right" + ".png");
+      -webkit-mask-size: $mask-width $mask-height;
    }
 }
 
