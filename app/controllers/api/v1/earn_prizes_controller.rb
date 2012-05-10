@@ -46,7 +46,7 @@ class Api::V1::EarnPrizesController < ApplicationController
           iv = String.random_alphanumeric
           data = { 
             :type => EncryptedDataType::REDEEM_PRIZE, 
-            :reward => earn_prize.to_redeemed,
+            :reward => @earn_prize.to_redeemed,
             :expiry_date => @earn_prize.expiry_date 
           }.to_json
           @encrypted_data = "#{iv}$#{aes.encrypt(data, @earn_prize.venue.auth_code, iv)}"
