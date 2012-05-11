@@ -111,6 +111,8 @@
                controllers : ['Viewport', 'MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'Settings', 'Prizes'],
                launch : function()
                {
+                  console.log("Loading License Keys ...");
+                  this.getController('Viewport').getPrivKey();
                   console.log("Launching App");
                   Ext.create('Genesis.view.Viewport');
                   this.getController('Viewport').openMainPage();

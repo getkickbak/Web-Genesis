@@ -154,6 +154,8 @@
                stores : [],
                launch : function()
                {
+                  console.log("Loading License Keys ...");
+                  this.getController('Viewport').getPrivKey();
                   console.log("Launching App");
                   Ext.create('Genesis.view.Viewport');
                   this.getController('Viewport').openMainPage();

@@ -68,7 +68,37 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    getPrivKey : function()
    {
-      return '000102030405060708090a0b0c0d0e0f';
+      if(!this.privKey)
+      {
+         if(Genesis.constants.isNative())
+         {
+            var failHandler = function(error)
+            {
+               console.log(error.code);
+            }
+            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
+            {
+               fileSystem.root.getFile("www/resources/keys.txt", null, function(fileEntry)
+               {
+                  fileEntry.file(function(file)
+                  {
+                     var reader = new FileReader();
+                     reader.onloadend = function(evt)
+                     {
+                        this.privKey = evt.target.result;
+                        console.debug("Encryption Key = [" + this.privKey + "]");
+                     };
+                     reader.readAsText(file);
+                  }, failHandler);
+               }, failHandler);
+            }, failHandler);
+         }
+         else
+         {
+            this.privKey = 'Ctech8oVNcpzkKMQ'; // Hardcoded for now ...
+         }
+      }
+      return this.privKey;
    },
    updateRewards : function(metaData)
    {
