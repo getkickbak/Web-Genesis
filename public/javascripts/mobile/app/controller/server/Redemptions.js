@@ -64,24 +64,28 @@ Ext.define('Genesis.controller.server.Redemptions',
          {
             callback : function(encrypted)
             {
-               var privkey = CryptoJS.enc.Hex.parse(me.getPrivKey());
                if(!encrypted)
                {
                   if(Ext.isDefined(encrypted))
                   {
                      var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
 
-                     encrypted = iv + '$' + CryptoJS.AES.encrypt(Ext.encode(
+                     encrypted = me.genQRCodeFromParams(
                      {
-                        ":expirydate" : new Date().addDays(1).format('Y-M-d')
-                     }), privkey,
-                     {
-                        iv : iv
+                        "type" : 'redeem_reward',
+                        "reward" :
+                        {
+                           type :
+                           {
+                              value : 'reward'
+                           },
+                           title : 'Test QR Code'
+                        }
                      });
                   }
                   else
                   {
-                     return;
+                     return invalidCode();
                   }
                }
 
@@ -89,6 +93,7 @@ Ext.define('Genesis.controller.server.Redemptions',
                {
                   console.log("Encrypted Code Length: " + encrypted.length);
 
+                  var privkey = CryptoJS.enc.Hex.parse(me.getPrivKey());
                   var message = encrypted.split('$');
                   var decrypted = Ext.decode(CryptoJS.enc.Utf8.stringify((CryptoJS.AES.decrypt(message[1], privkey,
                      {
@@ -100,9 +105,9 @@ Ext.define('Genesis.controller.server.Redemptions',
                      console.log("Found QRCode type[" + decrypted['type'] + "]");
                      switch (decrypted['type'])
                      {
-                        case 'prize' :
+                        case 'redeem_prize' :
                            break;
-                        case 'reward' :
+                        case 'redeem_reward' :
                            break;
                      }
 

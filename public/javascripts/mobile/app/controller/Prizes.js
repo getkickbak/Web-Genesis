@@ -417,56 +417,27 @@ Ext.define('Genesis.controller.Prizes',
       if(!qrcode)
       {
          console.log("Generaintg QR Code ... we lack one");
-         var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
-         qrcode = iv + '$' + Ext.encode('{":expirydate" : ' + new Date().addDays(1).format('Y-M-d'));
+         qrcode = me.genQRCodeFromParams(
+         {
+            type : 'redeem_prize',
+            reward :
+            {
+               type :
+               {
+                  value : 'prize'
+               },
+               title : 'Test QR Code'
+            }
+         });
       }
+      else
+      {
+         console.log("\n" + //
+         "Encripted Code :\n" + qrcode + "\n" + //
+         "Encripted Code Length: " + qrcode.length);
 
-      /*
-       switch (me.getMode())
-       {
-       case 'showPrize' :
-       case 'prizes' :
-       title = 'Prize Redemption Alert!';
-       break;
-       case 'reward' :
-       title = 'Reward Redemption Alert!';
-       break;
-       }
-       if(timeout > 0)
-       {
-       Ext.Viewport.setMasked(
-       {
-       xtype : 'loadmask',
-       indicator : false,
-       message : me.showScreenTimeoutMsg(timeout + ' minute(s)')
-       });
-       me.cancelId = Ext.defer(function(timeout)
-       {
-       me.showPrizeQrCode(timeout);
-       }, 1 * 60 * 1000, me, [--timeout]);
-       me.hidelId = Ext.defer(function(timeout)
-       {
-       delete me.hidelId;
-       Ext.Viewport.setMasked(false);
-       }, 0.25 * 1 * 60 * 1000);
-       }
-       else
-       {
-       clearTimeout(me.hideId);
-       Ext.Viewport.setMasked(false);
-       Ext.device.Notification.show(
-       {
-       title : title
-       message : me.showScreenTimeoutExpireMsg(me.getTimeoutPeriod() + ' minutes'),
-       callback : function()
-       {
-       me.onDoneTap();
-       }
-       });
-       }
-       */
-      console.log("Encripted Code :\n" + qrcode);
-      console.log("Encripted Code Length: " + qrcode.length);
+         qrcode = me.genQRCode(qrcode);
+      }
 
       me.getRedeemBtn().hide();
       me.getDoneBtn().show();
@@ -478,17 +449,12 @@ Ext.define('Genesis.controller.Prizes',
       element = Ext.fly(Ext.DomQuery.select( 'img', photo.element.dom)[0]);
       element.set(
       {
-         'src' : me.genQRCode(qrcode)
+         'src' : qrcode
       });
       Ext.device.Notification.show(
       {
          title : 'Redemption Alert',
          message : me.showQrCodeMsg
-         /*,callback : function()
-          {
-          me.onDoneTap();
-          }
-          */
       });
       Ext.device.Notification.vibrate();
    },

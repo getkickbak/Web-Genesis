@@ -399,7 +399,7 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       return canvas.toDataURL("image/png");
    },
-   genQRCodeFromParams : function(params)
+   genQRCodeFromParams : function(params, encryptOnly)
    {
       var me = this;
       //
@@ -407,7 +407,7 @@ Ext.define('Genesis.controller.ControllerBase',
       //
       var privkey = CryptoJS.enc.Hex.parse(me.getPrivKey());
       var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
-      var expiryDate = new Date().addHours(3).format("isoDateTime");
+      var expiryDate = new Date().addHours(3).format("c");
 
       var encrypted = iv + '$' + CryptoJS.AES.encrypt(Ext.encode(Ext.applyIf(
       {
@@ -421,7 +421,7 @@ Ext.define('Genesis.controller.ControllerBase',
       "Encrypted Code Length: " + encrypted.length + '\n' + //
       'Encrypted Code [' + encrypted + ']');
 
-      return me.genQRCode(encrypted);
+      return (encryptOnly) ? encrypted : me.genQRCode(encrypted);
    },
    playSoundFile : function(sound_file, successCallback, failCallback)
    {
