@@ -111,11 +111,13 @@
                controllers : ['Viewport', 'MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'Settings', 'Prizes'],
                launch : function()
                {
+                  var viewport = this.getController('Viewport');
+                  viewport.appName = 'MerchantKickBak';
                   console.log("Loading License Keys ...");
-                  this.getController('Viewport').getPrivKey();
+                  viewport.getPrivKey();
                   console.log("Launching App");
                   Ext.create('Genesis.view.Viewport');
-                  this.getController('Viewport').openMainPage();
+                  viewport.openMainPage();
                   console.log("Launched App");
                },
                appFolder : _appPath,

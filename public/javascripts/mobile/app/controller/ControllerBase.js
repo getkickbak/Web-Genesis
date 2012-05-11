@@ -4,37 +4,6 @@ Ext.define('Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store', 'Ext.util.Geolocation'],
    statics :
    {
-      /*
-       error : function()
-       {
-       var error =
-       {
-       };
-       error[FileError.NOT_FOUND_ERR] = 'File not found';
-       error[FileError.SECURITY_ERR] = 'Security error';
-       error[FileError.ABORT_ERR] = 'Abort error';
-       error[FileError.NOT_READABLE_ERR] = 'Not readable';
-       error[FileError.ENCODING_ERR] = 'Encoding error';
-       error[FileError.NO_MODIFICATION_ALLOWED_ERR] = 'No mobification allowed';
-       error[FileError.INVALID_STATE_ERR] = 'Invalid state';
-       error[FileError.SYFNTAX_ERR] = 'Syntax error';
-       error[FileError.INVALID_MODIFICATION_ERR] = 'Invalid modification';
-       error[FileError.QUOTA_EXCEEDED_ERR] = 'Quota exceeded';
-       error[FileError.TYPE_MISMATCH_ERR] = 'Type mismatch';
-       error[FileError.PATH_EXISTS_ERR] = 'Path does not exist';
-       return error;
-       }(),
-       ftError : function()
-       {
-       var ftError =
-       {
-       };
-       ftError[FileTransferError.FILE_NOT_FOUND_ERR] = 'File not found';
-       ftError[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
-       ftError[FileTransferError.CONNECTION_ERR] = 'Connection Error';
-       return ftError;
-       }()
-       */
    },
    loadingScannerMsg : 'Loading Scanner ...',
    loadingMsg : 'Loading ...',
@@ -66,39 +35,70 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return this.getViewPortCntlr().getView();
    },
-   getPrivKey : function()
+   getPrivKey : function(id)
    {
       if(!this.privKey)
       {
          if(Genesis.constants.isNative())
          {
+            var appName = _application.getController('Viewport').appName;
             var failHandler = function(error)
             {
-               console.log(error.code);
-            }
+               var errorCode =
+               {
+               };
+               errorCode[FileError.NOT_FOUND_ERR] = 'File not found';
+               errorCode[FileError.SECURITY_ERR] = 'Security error';
+               errorCode[FileError.ABORT_ERR] = 'Abort error';
+               errorCode[FileError.NOT_READABLE_ERR] = 'Not readable';
+               errorCode[FileError.ENCODING_ERR] = 'Encoding error';
+               errorCode[FileError.NO_MODIFICATION_ALLOWED_ERR] = 'No mobification allowed';
+               errorCode[FileError.INVALID_STATE_ERR] = 'Invalid state';
+               errorCode[FileError.SYFNTAX_ERR] = 'Syntax error';
+               errorCode[FileError.INVALID_MODIFICATION_ERR] = 'Invalid modification';
+               errorCode[FileError.QUOTA_EXCEEDED_ERR] = 'Quota exceeded';
+               errorCode[FileError.TYPE_MISMATCH_ERR] = 'Type mismatch';
+               errorCode[FileError.PATH_EXISTS_ERR] = 'Path does not exist';
+               var ftErrorCode =
+               {
+               };
+               ftErrorCode[FileTransferError.FILE_NOT_FOUND_ERR] = 'File not found';
+               ftErrorCode[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
+               ftErrorCode[FileTransferError.CONNECTION_ERR] = 'Connection Error';
+
+               console.log("Reading License File Error - [" + errorCode[error.code] + "]");
+            };
+
             window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
             {
-               fileSystem.root.getFile("www/resources/keys.txt", null, function(fileEntry)
+               var licenseKeyFile = fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/resources/keys.txt';
+               fileSystem.root.getFile(licenseKeyFile, null, function(fileEntry)
                {
                   fileEntry.file(function(file)
                   {
                      var reader = new FileReader();
                      reader.onloadend = function(evt)
                      {
-                        this.privKey = evt.target.result;
-                        console.debug("Encryption Key = [" + this.privKey + "]");
+                        this.privKey = Ext.decode(evt.target.result);
+                        for(var i in this.privKey)
+                        {
+                           console.debug("Encryption Key[" + i + "] = [" + this.privKey[i] + "]");
+                        }
                      };
                      reader.readAsText(file);
                   }, failHandler);
                }, failHandler);
             }, failHandler);
+
+            return null;
          }
          else
          {
-            this.privKey = 'Ctech8oVNcpzkKMQ'; // Hardcoded for now ...
+            // Hardcoded for now ...
+            this.privKey['v' + id] = 'Ctech8oVNcpzkKMQ';
          }
       }
-      return this.privKey;
+      return (id) ? this.privKey['v' + id] : this.privKey;
    },
    updateRewards : function(metaData)
    {
@@ -431,22 +431,33 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    genQRCodeFromParams : function(params, encryptOnly)
    {
-      var me = this;
+      var me = this, encrypted;
+
       //
       // Show QRCode
       //
-      var privkey = CryptoJS.enc.Hex.parse(me.getPrivKey());
-      var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
-      var expiryDate = new Date().addHours(3).format("c");
-
-      var encrypted = iv + '$' + CryptoJS.AES.encrypt(Ext.encode(Ext.applyIf(
+      var keys = me.getPrivKey();
+      for(key in keys)
       {
-         "expiry_ts" : expiryDate
-      }, params)), privkey,
-      {
-         iv : iv
-      });
+         try
+         {
+            var privkey = CryptoJS.enc.Hex.parse(keys[key]);
+            var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
+            var expiryDate = new Date().addHours(3).format("c");
 
+            encrypted = iv + '$' + CryptoJS.AES.encrypt(Ext.encode(Ext.applyIf(
+            {
+               "expiry_ts" : expiryDate
+            }, params)), privkey,
+            {
+               iv : iv
+            });
+         }
+         catch (e)
+         {
+         }
+         break;
+      }
       console.log('\n' + //
       "Encrypted Code Length: " + encrypted.length + '\n' + //
       'Encrypted Code [' + encrypted + ']');

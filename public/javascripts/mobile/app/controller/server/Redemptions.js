@@ -38,6 +38,66 @@ Ext.define('Genesis.controller.server.Redemptions',
    {
       console.log("Server Redemptions Init");
    },
+   verifyQRCode : function(encrypted)
+   {
+      console.log("Encrypted Code Length: " + encrypted.length);
+
+      var keys = me.getPrivKey();
+      for(var key in keys)
+      {
+         try
+         {
+            var privkey = CryptoJS.enc.Hex.parse(keys[key]);
+            var message = encrypted.split('$');
+            var decrypted = Ext.decode(CryptoJS.enc.Utf8.stringify((CryptoJS.AES.decrypt(message[1], privkey,
+               {
+                  iv : iv
+               }))));
+
+            if(Date.parse(decrypted["expiry_ts"]) >= Date.now())
+            {
+               console.log("Found QRCode type[" + decrypted['type'] + "]");
+               switch (decrypted['type'])
+               {
+                  case 'redeem_prize' :
+                     break;
+                  case 'redeem_reward' :
+                     break;
+               }
+
+               var app = me.getApplication();
+               var controller = app.getController('Prizes');
+               app.dispatch(
+               {
+                  action : 'onAuthReward',
+                  args : [Ext.create('Genesis.model.EarnPrize',
+                  {
+                     'id' : 1,
+                     'expiry_date' : null,
+                     'reward' : Ext.create('Genesis.model.CustomerReward',
+                     {
+                        type : decrypted['reward'].type,
+                        title : decrypted['reward'].title
+                     }),
+                     'merchant' : null
+                  })],
+                  controller : controller,
+                  scope : controller
+               });
+
+               return;
+            }
+         }
+         catch(e)
+         {
+         }
+      }
+      Ext.device.Notification.show(
+      {
+         title : 'Error!',
+         message : 'Authorization Code is Invalid'
+      });
+   },
    // --------------------------------------------------------------------------
    // Redemptions Page
    // --------------------------------------------------------------------------
@@ -88,59 +148,7 @@ Ext.define('Genesis.controller.server.Redemptions',
                      return invalidCode();
                   }
                }
-
-               try
-               {
-                  console.log("Encrypted Code Length: " + encrypted.length);
-
-                  var privkey = CryptoJS.enc.Hex.parse(me.getPrivKey());
-                  var message = encrypted.split('$');
-                  var decrypted = Ext.decode(CryptoJS.enc.Utf8.stringify((CryptoJS.AES.decrypt(message[1], privkey,
-                     {
-                        iv : iv
-                     }))));
-
-                  if(Date.parse(decrypted["expiry_ts"]) >= Date.now())
-                  {
-                     console.log("Found QRCode type[" + decrypted['type'] + "]");
-                     switch (decrypted['type'])
-                     {
-                        case 'redeem_prize' :
-                           break;
-                        case 'redeem_reward' :
-                           break;
-                     }
-
-                     var app = me.getApplication();
-                     var controller = app.getController('Prizes');
-                     app.dispatch(
-                     {
-                        action : 'onAuthReward',
-                        args : [Ext.create('Genesis.model.EarnPrize',
-                        {
-                           'id' : 1,
-                           'expiry_date' : null,
-                           'reward' : Ext.create('Genesis.model.CustomerReward',
-                           {
-                              type : decrypted['reward'].type,
-                              title : decrypted['reward'].title
-                           }),
-                           'merchant' : null
-                        })],
-                        controller : controller,
-                        scope : controller
-                     });
-                  }
-                  else
-                  {
-                     invalidCode();
-                  }
-               }
-               catch(e)
-               {
-                  console.log("Exception reading QR Code - [" + e.message + "]");
-                  invalidCode();
-               }
+               me.verifyQRCode(encrypted);
             }
          });
       }
