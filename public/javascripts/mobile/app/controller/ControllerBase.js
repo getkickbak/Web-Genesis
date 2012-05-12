@@ -35,71 +35,6 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return this.getViewPortCntlr().getView();
    },
-   getPrivKey : function(id)
-   {
-      if(!this.privKey)
-      {
-         if(Genesis.constants.isNative())
-         {
-            var appName = _application.getController('Viewport').appName;
-            var failHandler = function(error)
-            {
-               var errorCode =
-               {
-               };
-               errorCode[FileError.NOT_FOUND_ERR] = 'File not found';
-               errorCode[FileError.SECURITY_ERR] = 'Security error';
-               errorCode[FileError.ABORT_ERR] = 'Abort error';
-               errorCode[FileError.NOT_READABLE_ERR] = 'Not readable';
-               errorCode[FileError.ENCODING_ERR] = 'Encoding error';
-               errorCode[FileError.NO_MODIFICATION_ALLOWED_ERR] = 'No mobification allowed';
-               errorCode[FileError.INVALID_STATE_ERR] = 'Invalid state';
-               errorCode[FileError.SYFNTAX_ERR] = 'Syntax error';
-               errorCode[FileError.INVALID_MODIFICATION_ERR] = 'Invalid modification';
-               errorCode[FileError.QUOTA_EXCEEDED_ERR] = 'Quota exceeded';
-               errorCode[FileError.TYPE_MISMATCH_ERR] = 'Type mismatch';
-               errorCode[FileError.PATH_EXISTS_ERR] = 'Path does not exist';
-               var ftErrorCode =
-               {
-               };
-               ftErrorCode[FileTransferError.FILE_NOT_FOUND_ERR] = 'File not found';
-               ftErrorCode[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
-               ftErrorCode[FileTransferError.CONNECTION_ERR] = 'Connection Error';
-
-               console.log("Reading License File Error - [" + errorCode[error.code] + "]");
-            };
-
-            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
-            {
-               var licenseKeyFile = fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/resources/keys.txt';
-               fileSystem.root.getFile(licenseKeyFile, null, function(fileEntry)
-               {
-                  fileEntry.file(function(file)
-                  {
-                     var reader = new FileReader();
-                     reader.onloadend = function(evt)
-                     {
-                        this.privKey = Ext.decode(evt.target.result);
-                        for(var i in this.privKey)
-                        {
-                           console.debug("Encryption Key[" + i + "] = [" + this.privKey[i] + "]");
-                        }
-                     };
-                     reader.readAsText(file);
-                  }, failHandler);
-               }, failHandler);
-            }, failHandler);
-
-            return null;
-         }
-         else
-         {
-            // Hardcoded for now ...
-            this.privKey['v' + id] = 'Ctech8oVNcpzkKMQ';
-         }
-      }
-      return (id) ? this.privKey['v' + id] : this.privKey;
-   },
    updateRewards : function(metaData)
    {
       var me = this;
@@ -436,7 +371,7 @@ Ext.define('Genesis.controller.ControllerBase',
       //
       // Show QRCode
       //
-      var keys = me.getPrivKey();
+      var keys = Genesis.constants.getPrivKey();
       for(key in keys)
       {
          try
@@ -468,15 +403,34 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       if(Genesis.constants.isNative())
       {
-         LowLatencyAudio.play(sound_file, successCallback || Ext.emptyFn, failCallback || Ext.emptyFn);
-         //sound_file.play(successCallback || Ext.emptyFn, failCallback || Ext.emptyFn);
+         switch (sound_file['type'])
+         {
+            case 'FX' :
+            case 'Audio' :
+               LowLatencyAudio.play(sound_file['name'], successCallback || Ext.emptyFn, failCallback || Ext.emptyFn);
+               break;
+            case 'Media' :
+               sound_file['name'].play(successCallback || Ext.emptyFn, failCallback || Ext.emptyFn);
+               break;
+         }
       }
       else
       {
-         successCallback = successCallback || Ext.emptyFn;
-
-         Ext.get(sound_file).dom.cloneNode(true).play();
-         successCallback();
+         sound_file['successCallback'] = successCallback || Ext.emptyFn;
+         Ext.get(sound_file['name']).dom.play();
+      }
+   },
+   stopSoundFile : function(sound_file)
+   {
+      if(Genesis.constants.isNative())
+      {
+         LowLatencyAudio.stop(sound_file['name']);
+      }
+      else
+      {
+         var sound = Ext.get(sound_file['name']).dom;
+         sound.pause();
+         sound.currentTime = 0;
       }
    }
 });

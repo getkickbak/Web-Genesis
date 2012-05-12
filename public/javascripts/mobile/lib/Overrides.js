@@ -63,6 +63,79 @@ Genesis.constants =
       this.facebook_onLogout(null, false);
       Genesis.constants.removeLocalDBAttrib('auth_code');
    },
+   getPrivKey : function(id)
+   {
+      var me = this;
+      if(!me.privKey)
+      {
+         if(me.isNative())
+         {
+            var appName = _application.getController('Viewport').appName;
+            var failHandler = function(error)
+            {
+               var errorCode =
+               {
+               };
+               errorCode[FileError.NOT_FOUND_ERR] = 'File not found';
+               errorCode[FileError.SECURITY_ERR] = 'Security error';
+               errorCode[FileError.ABORT_ERR] = 'Abort error';
+               errorCode[FileError.NOT_READABLE_ERR] = 'Not readable';
+               errorCode[FileError.ENCODING_ERR] = 'Encoding error';
+               errorCode[FileError.NO_MODIFICATION_ALLOWED_ERR] = 'No mobification allowed';
+               errorCode[FileError.INVALID_STATE_ERR] = 'Invalid state';
+               errorCode[FileError.SYFNTAX_ERR] = 'Syntax error';
+               errorCode[FileError.INVALID_MODIFICATION_ERR] = 'Invalid modification';
+               errorCode[FileError.QUOTA_EXCEEDED_ERR] = 'Quota exceeded';
+               errorCode[FileError.TYPE_MISMATCH_ERR] = 'Type mismatch';
+               errorCode[FileError.PATH_EXISTS_ERR] = 'Path does not exist';
+               var ftErrorCode =
+               {
+               };
+               ftErrorCode[FileTransferError.FILE_NOT_FOUND_ERR] = 'File not found';
+               ftErrorCode[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
+               ftErrorCode[FileTransferError.CONNECTION_ERR] = 'Connection Error';
+
+               console.log("Reading License File Error - [" + errorCode[error.code] + "]");
+            };
+
+            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
+            {
+               var licenseKeyFile = fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/resources/keys.txt';
+               fileSystem.root.getFile(licenseKeyFile, null, function(fileEntry)
+               {
+                  fileEntry.file(function(file)
+                  {
+                     var reader = new FileReader();
+                     reader.onloadend = function(evt)
+                     {
+                        me.privKey = Ext.decode(evt.target.result);
+                        for(var i in me.privKey)
+                        {
+                           console.debug("Encryption Key[" + i + "] = [" + me.privKey[i] + "]");
+                        }
+                     };
+                     reader.readAsText(file);
+                  }, failHandler);
+               }, failHandler);
+            }, failHandler);
+
+            return null;
+         }
+         else
+         {
+            // Hardcoded for now ...
+            me.privKey =
+            {
+               'v1' : 'Ctech8oVNcpzkKMQ'
+            };
+            for(var i in me.privKey)
+            {
+               console.debug("Encryption Key[" + i + "] = [" + me.privKey[i] + "]");
+            }
+         }
+      }
+      return (id) ? me.privKey['v' + id] : me.privKey;
+   },
    // **************************************************************************
    // Date Time
    // **************************************************************************

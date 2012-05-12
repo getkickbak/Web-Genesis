@@ -93,6 +93,7 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    onVerifyChallenge : function(venueId, customerId, id)
    {
+      var me = this;
       me.getGeoLocation(function(position)
       {
          me.scanQRCode(
@@ -110,7 +111,6 @@ Ext.define('Genesis.controller.client.Challenges',
                      params :
                      {
                         venue_id : venueId,
-                        //merchant_id : merchantId,
                         latitude : position.coords.getLatitude(),
                         longitude : position.coords.getLongitude(),
                         'data' : qrcode

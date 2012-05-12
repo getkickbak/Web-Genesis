@@ -42,7 +42,7 @@ Ext.define('Genesis.controller.server.Redemptions',
    {
       console.log("Encrypted Code Length: " + encrypted.length);
 
-      var keys = me.getPrivKey();
+      var keys = Genesis.constants.getPrivKey();
       for(var key in keys)
       {
          try

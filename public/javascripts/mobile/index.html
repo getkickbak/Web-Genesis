@@ -157,7 +157,7 @@
                   var viewport = this.getController('Viewport');
                   viewport.appName  = 'GetKickBak';
                   console.log("Loading License Keys ...");
-                  viewport.getPrivKey();
+                  Genesis.constants.getPrivKey();
                   console.log("Launching App");
                   Ext.create('Genesis.view.Viewport');
                   viewport.openMainPage();
