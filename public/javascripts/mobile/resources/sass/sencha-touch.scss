@@ -1315,14 +1315,18 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
       background-size : contain;
    }
    .rouletteTable {
-      -webkit-animation: roulette-table-rotate 3.0s infinite linear;
       background-image : theme_image($theme-path + "/images/" + $gtheme-name, "roulette2" + ".png");
       z-index:2;
    }
    .rouletteBall {
-      -webkit-animation: roulette-table-rotate-back 1.5s infinite linear;
       background-image : theme_image($theme-path + "/images/" + $gtheme-name, "ball" + ".png");
       z-index:3;
+   }
+   .spinFwd {
+      -webkit-animation: roulette-table-rotate 3.0s infinite linear;     
+   }
+   .spinBack {
+      -webkit-animation: roulette-table-rotate-back 2.0s infinite linear;     
    }
 }
 

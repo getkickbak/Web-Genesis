@@ -18,6 +18,7 @@ Ext.define('Genesis.controller.Prizes',
          backButton : 'viewportview button[ui=back]',
          doneBtn : 'viewportview button[tag=done]',
          redeemBtn : 'viewportview button[tag=redeem]',
+         prizeCheckScreen : 'clientrewardsview component[tag=prizeCheck]',
          prizes :
          {
             selector : 'prizesview',
@@ -63,14 +64,133 @@ Ext.define('Genesis.controller.Prizes',
       this.callParent(arguments);
       console.log("Prizes Init");
    },
+   stopRouletteTable : function()
+   {
+      var scn = this.getPrizeCheckScreen();
+      var rouletteTable = Ext.get(Ext.DomQuery.select('div.rouletteTable',scn.element.dom)[0]);
+      rouletteTable.removeCls('spinFwd');
+      rouletteTable.removeCls('spinBack');
+   },
+   stopRouletteBall : function()
+   {
+      var scn = this.getPrizeCheckScreen();
+      var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
+      rouletteBall.removeCls('spinBack');
+      rouletteBall.addCls('spinFwd');
+      // Match the speed of Roulette Table to make it look like it stopped
+   },
+   stopRouletteScreen : function()
+   {
+      this.stopRouletteTable();
+      var scn = this.getPrizeCheckScreen();
+      var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
+      rouletteBall.removeCls('spinBack');
+      rouletteBall.removeCls('spinFwd');
+   },
    // --------------------------------------------------------------------------
    // Prizes Page
    // --------------------------------------------------------------------------
+   onPrizeCheckComplete : function()
+   {
+      var me = this;
+      me.evtFlag = 0;
+
+      if(me.loadCallback[1].length == 0)
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Scan And Win!',
+            message : me.lostPrizeMsg,
+            callback : function()
+            {
+               me.loadCallback = null;
+               me.popView();
+            }
+         });
+      }
+      else
+      {
+         var viewport = me.getViewPortCntlr();
+         var flag = 0;
+         var custore = Ext.StoreMgr.get('CustomerStore');
+         var app = me.getApplication();
+         var vport = me.getViewport();
+         var db = Genesis.constants.getLocalDB();
+         var site = Genesis.constants.site;
+
+         /*
+         vport.setEnableAnim(false);
+         vport.getNavigationBar().setCallbackFn(function()
+         {
+         vport.setEnableAnim(true);
+         vport.getNavigationBar().setCallbackFn(Ext.emptyFn);
+         });
+         */
+         //
+         // Play the prize winning music!
+         //
+         me.playSoundFile(viewport.sound_files['winPrizeSound'], function()
+         {
+            if(flag & 0x10)
+            {
+               vport.silentPop(1);
+            }
+            if((flag |= 0x01) == 0x11)
+            {
+               me.onShowPrize(me.loadCallback[1][0]);
+            }
+         });
+         //
+         // Update Facebook
+         //
+         if(db['currFbId'] > 0)
+         {
+            var venue = viewport.getVenue();
+            FB.api('/me/feed', 'post',
+            {
+               name : venue.get('name'),
+               //link : href,
+               link : site,
+               caption : site,
+               description : venue.get('description'),
+               picture : Genesis.view.client.Rewards.getPhoto(me.loadCallback[1][0].getCustomerReward().get('type')),
+               message : 'I just won a prize for purchasing at ' + venue.get('name') + '!'
+            }, function(response)
+            {
+               if(response && response.post_id)
+               {
+                  console.log('Posted to your Facebook Newsfeed. Post ID(' + response.post_id + ')');
+               }
+               else
+               {
+                  console.log('Post was not published to Facebook.');
+               }
+            });
+         }
+         Ext.device.Notification.vibrate();
+         Ext.device.Notification.show(
+         {
+            title : 'Scan And Win!',
+            message : me.wonPrizeMsg(me.loadCallback[1].length),
+            callback : function()
+            {
+               if(flag & 0x01)
+               {
+                  vport.silentPop(1);
+               }
+               if((flag |= 0x10) == 0x11)
+               {
+                  me.onShowPrize(me.loadCallback[1][0]);
+               }
+            }
+         });
+      }
+   },
    onPrizeCheck : function(evtFlag, records, operation)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      
+
       //
       // 0x00 = MetaData was received
       // 0x10 = Finished Clicking on "Notification Popup"
@@ -94,6 +214,7 @@ Ext.define('Genesis.controller.Prizes',
                if(!(me.evtFlag & 0x100))
                {
                   me.stopSoundFile(viewport.sound_files['rouletteSpinSound']);
+                  me.stopRouletteScreen();
                }
                me.loadCallback = null;
                //
@@ -119,97 +240,8 @@ Ext.define('Genesis.controller.Prizes',
       if(me.evtFlag == ((1 << 3) - 1))
       {
          console.debug("onPrizeCheck Completed!");
-
-         me.evtFlag = 0;
-         if(me.loadCallback[1].length == 0)
-         {
-            Ext.device.Notification.show(
-            {
-               title : 'Scan And Win!',
-               message : me.lostPrizeMsg,
-               callback : function()
-               {
-                  me.loadCallback = null;
-                  me.popView();
-               }
-            });
-         }
-         else
-         {
-            var flag = 0;
-            var custore = Ext.StoreMgr.get('CustomerStore');
-            var app = me.getApplication();
-            var vport = me.getViewport();
-            var db = Genesis.constants.getLocalDB();
-            var site = Genesis.constants.site;
-
-            /*
-            vport.setEnableAnim(false);
-            vport.getNavigationBar().setCallbackFn(function()
-            {
-            vport.setEnableAnim(true);
-            vport.getNavigationBar().setCallbackFn(Ext.emptyFn);
-            });
-            */
-            //
-            // Play the prize winning music!
-            //
-            me.playSoundFile(viewport.sound_files['winPrizeSound'], function()
-            {
-               if(flag & 0x10)
-               {
-                  vport.silentPop(1);
-               }
-               if((flag |= 0x01) == 0x11)
-               {
-                  me.onShowPrize(me.loadCallback[1][0]);
-               }
-            });
-            //
-            // Update Facebook
-            //
-            if(db['currFbId'] > 0)
-            {
-               var venue = viewport.getVenue();
-               FB.api('/me/feed', 'post',
-               {
-                  name : venue.get('name'),
-                  //link : href,
-                  link : site,
-                  caption : site,
-                  description : venue.get('description'),
-                  picture : Genesis.view.client.Rewards.getPhoto(me.loadCallback[1][0].getCustomerReward().get('type')),
-                  message : 'I just won a prize for purchasing at ' + venue.get('name') + '!'
-               }, function(response)
-               {
-                  if(response && response.post_id)
-                  {
-                     console.log('Posted to your Facebook Newsfeed. Post ID(' + response.post_id + ')');
-                  }
-                  else
-                  {
-                     console.log('Post was not published to Facebook.');
-                  }
-               });
-            }
-            Ext.device.Notification.vibrate();
-            Ext.device.Notification.show(
-            {
-               title : 'Scan And Win!',
-               message : me.wonPrizeMsg(me.loadCallback[1].length),
-               callback : function()
-               {
-                  if(flag & 0x01)
-                  {
-                     vport.silentPop(1);
-                  }
-                  if((flag |= 0x10) == 0x11)
-                  {
-                     me.onShowPrize(me.loadCallback[1][0]);
-                  }
-               }
-            });
-         }
+         me.stopRouletteBall();
+         Ext.defer(me.onPrizeCheckComplete, 3 * 1000, me);
       }
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -516,6 +548,7 @@ Ext.define('Genesis.controller.Prizes',
    },
    onShowPrize : function(showPrize)
    {
+      this.stopRouletteScreen();
       this.showPrize = showPrize;
       this.loadCallback = null;
       this.setMode('showPrize');

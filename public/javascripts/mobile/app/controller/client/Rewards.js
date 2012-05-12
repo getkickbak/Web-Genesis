@@ -23,7 +23,8 @@ Ext.define('Genesis.controller.client.Rewards',
             xtype : 'clientrewardsview'
          },
          rewardsContainer : 'clientrewardsview container[tag=rewards]',
-         price : 'clientrewardsview textfield'
+         price : 'clientrewardsview textfield',
+         prizeCheckScreen : 'clientrewardsview component[tag=prizeCheck]'
       },
       control :
       {
@@ -66,6 +67,14 @@ Ext.define('Genesis.controller.client.Rewards',
    // --------------------------------------------------------------------------
    // Rewards Page
    // --------------------------------------------------------------------------
+   startRouletteScreen : function()
+   {
+      var scn = this.getPrizeCheckScreen();
+      var rouletteTable = Ext.get(Ext.DomQuery.select('div.rouletteTable',scn.element.dom)[0]);
+      rouletteTable.addCls('spinFwd');
+      var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
+      rouletteBall.addCls('spinBack');
+   },
    onEarnPtsTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
@@ -133,9 +142,10 @@ Ext.define('Genesis.controller.client.Rewards',
          }
          delete me.deferDisplayPopup;
       }, 5 * 1000);
-      
+
       me.getGeoLocation(function(position)
       {
+         me.startRouletteScreen();
          me.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
          {
             me.onPrizeCheck([3]);
