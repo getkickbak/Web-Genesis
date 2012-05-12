@@ -92,18 +92,24 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           end
           current_point_offset = reward_model.prize_point_offset + @points
           #logger.debug("Check if Prize has been won yet.")
-          if (reward_model.prize_point_offset < reward_model.prize_win_offset) && (current_point_offset >= reward_model.prize_win_offset)
-            earn_prize = EarnPrize.new(
-              :points => prize.points,
-              :expiry_date => 6.month.from_now,
-              :created_ts => now
-            )
-            earn_prize.reward = prize
-            earn_prize.merchant = @venue.merchant
-            earn_prize.venue = @venue
-            earn_prize.user = current_user
-            earn_prize.save
-            @prize = earn_prize          
+          last_prize_won = EarnPrize.first(EarnPrize.user.id => current_user.id, :order => [:created_ts.desc], :offset => 0, :limit => 1)
+          if (reward_model.prize_point_offset < reward_model.prize_win_offset)
+            if (current_point_offset >= reward_model.prize_win_offset) || ((@customer.visits == 2) && last_prize_won.nil?)
+              earn_prize = EarnPrize.new(
+                :points => prize.points,
+                :expiry_date => 6.month.from_now,
+                :created_ts => now
+              )
+              earn_prize.reward = prize
+              earn_prize.merchant = @venue.merchant
+              earn_prize.venue = @venue
+              earn_prize.user = current_user
+              earn_prize.save
+              @prize = earn_prize 
+            end             
+            if (@customer.visits == 2) && last_prize_won.nil? && (current_point_offset < reward_model.prize_win_offset)
+              reward_model.prize_win_offset = current_point_offset
+            end
           end
           if current_point_offset >= prize_interval
             #logger.debug("Current Point Offset >= Prize Interval.")
@@ -112,7 +118,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             reward_model.prize_reward_id = prize.id
             prize_interval = (prize.price / reward_model.price_per_point / reward_model.prize_rebate_rate * 100).to_i  
             reward_model.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
-            if @prize.nil? && current_point_offset >= reward_model.prize_win_offset
+            if @prize.nil? && ((current_point_offset >= reward_model.prize_win_offset) || ((@customer.visits == 2) && last_prize_won.nil?))
               earn_prize = EarnPrize.new(
                 :points => prize.points,
                 :expiry_date => 6.month.from_now,
@@ -124,11 +130,15 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               earn_prize.user = current_user
               earn_prize.save
               @prize = earn_prize
-              prize = pick_prize()
-              reward_model.prize_reward_id = prize.id
-              prize_interval = (prize.price / reward_model.price_per_point / reward_model.prize_rebate_rate * 100).to_i  
-              reward_model.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
-              current_point_offset = current_point_offset % prize_interval
+              if current_point_offset >= reward_model.prize_win_offset
+                prize = pick_prize()
+                reward_model.prize_reward_id = prize.id
+                prize_interval = (prize.price / reward_model.price_per_point / reward_model.prize_rebate_rate * 100).to_i  
+                reward_model.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
+                current_point_offset = current_point_offset % prize_interval
+              else
+                reward_model.prize_win_offset = current_point_offset  
+              end
             elsif current_point_offset >= reward_model.prize_win_offset
               current_point_offset = pick_prize_win_offset(reward_model.prize_win_offset - 1) + 1  
             end
