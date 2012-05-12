@@ -235,6 +235,9 @@ Ext.define('Genesis.controller.Prizes',
          {
             break;
          }
+         default:
+            console.log("Invalid Event" + evtFlag + " detected!");
+            break;
       }
 
       if(me.evtFlag == ((1 << 3) - 1))
@@ -528,11 +531,7 @@ Ext.define('Genesis.controller.Prizes',
       var carousel = view.query('carousel')[0];
       var item = carousel ? carousel.getActiveItem() : view.getItems().items[0];
       var photo = item.query('component[tag=itemPhoto]')[0];
-      element = Ext.fly(Ext.DomQuery.select( 'img', photo.element.dom)[0]);
-      element.set(
-      {
-         'src' : qrcode
-      });
+      photo.element.setStyle('background-image', 'url(' + qrcode + ')');
       Ext.device.Notification.show(
       {
          title : 'Redemption Alert',

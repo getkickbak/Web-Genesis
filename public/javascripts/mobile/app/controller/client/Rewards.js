@@ -148,6 +148,7 @@ Ext.define('Genesis.controller.client.Rewards',
          me.startRouletteScreen();
          me.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
          {
+            console.debug("RouletteSound Done, checking for prizes ...");
             me.onPrizeCheck([3]);
          });
          //me.getBackButton().hide();

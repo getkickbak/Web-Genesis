@@ -315,7 +315,7 @@ Ext.define('Genesis.controller.ControllerBase',
       // (white area around your QRCode)
       var black = "rgb(0,0,0)";
       var white = "rgb(255,255,255)";
-      var QRCodeVersion = 7;
+      var QRCodeVersion = 8;
       // 1-40 see http://www.denso-wave.com/qrcode/qrgene2-e.html
 
       var canvas = document.createElement('canvas');
@@ -377,7 +377,9 @@ Ext.define('Genesis.controller.ControllerBase',
          try
          {
             var privkey = CryptoJS.enc.Hex.parse(keys[key]);
-            var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
+            var ivseed1 = Math.random().toFixed(16).toString().split('.')[1];
+            var ivseed2 = Math.random().toFixed(16).toString().split('.')[1];
+            var iv = CryptoJS.enc.Hex.parse(ivseed1 + ivseed2);
             var expiryDate = new Date().addHours(3).format("c");
 
             encrypted = iv + '$' + CryptoJS.AES.encrypt(Ext.encode(Ext.applyIf(
@@ -410,7 +412,8 @@ Ext.define('Genesis.controller.ControllerBase',
                LowLatencyAudio.play(sound_file['name'], successCallback || Ext.emptyFn, failCallback || Ext.emptyFn);
                break;
             case 'Media' :
-               sound_file['name'].play(successCallback || Ext.emptyFn, failCallback || Ext.emptyFn);
+               sound_file['successCallback'] = successCallback || Ext.emptyFn;
+               sound_file['name'].play();
                break;
          }
       }

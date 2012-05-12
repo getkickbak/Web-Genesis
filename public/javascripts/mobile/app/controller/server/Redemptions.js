@@ -51,10 +51,11 @@ Ext.define('Genesis.controller.server.Redemptions',
             var message = encrypted.split('$');
             var decrypted = Ext.decode(CryptoJS.enc.Utf8.stringify((CryptoJS.AES.decrypt(message[1], privkey,
                {
-                  iv : iv
+                  iv : message[0]
                }))));
 
-            if(Date.parse(decrypted["expiry_ts"]) >= Date.now())
+            if((Date.parse(decrypted["expiry_ts"]) >= Date.now()) && //
+            (Date.parse(decrypted["expiry_ts"]) <= Date.now().addHours(3*2)))
             {
                console.log("Found QRCode type[" + decrypted['type'] + "]");
                switch (decrypted['type'])
@@ -128,7 +129,9 @@ Ext.define('Genesis.controller.server.Redemptions',
                {
                   if(Ext.isDefined(encrypted))
                   {
-                     var iv = CryptoJS.enc.Hex.parse(Math.random().toFixed(20).toString().split('.')[1]);
+                     var ivseed1 = Math.random().toFixed(16).toString().split('.')[1];
+                     var ivseed2 = Math.random().toFixed(16).toString().split('.')[1];
+                     var iv = CryptoJS.enc.Hex.parse(ivseed1 + ivseed2);
 
                      encrypted = me.genQRCodeFromParams(
                      {
