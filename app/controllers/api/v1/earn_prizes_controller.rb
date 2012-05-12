@@ -42,8 +42,8 @@ class Api::V1::EarnPrizesController < ApplicationController
           @earn_prize.redeemed = true
           @earn_prize.update_ts = Time.now
           @earn_prize.save
-          aes = Aes.new('128', 'CBC')
-          iv = String.random_alphanumeric
+          aes = Aes.new('256', 'CBC')
+          iv = String.random_alphanumeric(32)
           data = { 
             :type => EncryptedDataType::REDEEM_PRIZE, 
             :reward => @earn_prize.to_redeemed,

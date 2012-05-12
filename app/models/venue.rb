@@ -58,7 +58,7 @@ class Venue
       :website => venue_info[:website].strip,
       :latitude => venue_info[:latitude].to_f,
       :longitude => venue_info[:longitude].to_f,
-      :auth_code => String.random_alphanumeric
+      :auth_code => String.random_alphanumeric(32)
     )
     venue[:created_ts] = now
     venue[:update_ts] = now
