@@ -53,39 +53,65 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       return 'You\'ve earned an additional ' + points + ' Points!' + Genesis.constants.addCRLF() + this.prizeCheckMsg;
    },
+   vipPopUp : function(points, callback)
+   {
+      callback = callback || Ext.emptyFn;
+      Ext.device.Notification.show(
+      {
+         title : 'VIP Challenge Update',
+         message : this.getVipMsg(points),
+         callback : callback
+      });
+   },
    // --------------------------------------------------------------------------
    // Rewards Page
    // --------------------------------------------------------------------------
-   prizeCheck : function(pstore)
+   onEarnPtsTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      var app = me.getApplication();
-      var controller = app.getController('Prizes');
-      var pstore = Ext.StoreMgr.get('MerchantPrizeStore')
-      var vport = me.getViewport();
+      //var container = me.getRewardsContainer();
+      //var anim = container.getLayout().getAnimation();
 
-      app.dispatch(
+      var allowedMsg = me.isOpenAllowed();
+
+      if(allowedMsg !== true)
       {
-         action : 'onPrizeCheck',
-         args : pstore.loadCallback.concat([
-         function(success)
+         Ext.device.Notification.show(
          {
-            if(success)
+            title : 'Error',
+            message : allowedMsg
+         });
+         return;
+      }
+
+      me.scanQRCode(
+      {
+         callback : function(qrcode)
+         {
+            if(qrcode)
             {
+               //anim.disable();
+               //container.setActiveItem(0);
+               //anim.enable();
+
+               me.earnPts(qrcode);
             }
             else
             {
-               //
-               // Go back to Main Reward Screen
-               //
-               //var container = me.getRewardsContainer();
-               //container.setActiveItem(0);
-               me.popView();
+               console.debug(me.missingEarnPtsCodeMsg);
+               Ext.device.Notification.show(
+               {
+                  title : 'Error',
+                  message : me.missingEarnPtsCodeMsg,
+                  callback : function()
+                  {
+                     me.popView();
+                  }
+               });
             }
-         }]),
-         controller : controller,
-         scope : controller
+         }
       });
+      me.pushView(me.getRewards());
    },
    earnPts : function(qrcode)
    {
@@ -97,10 +123,24 @@ Ext.define('Genesis.controller.client.Rewards',
       var venueId = venue.getId();
       var merchantId = venue.getMerchant().getId();
       var reader = CustomerReward.getProxy().getReader();
+      var rec, opt;
 
+      me.deferDisplayPopup = Ext.defer(function()
+      {
+         if(me.deferDisplayPopup)
+         {
+            me.onPrizeCheck([1, rec, opt]);
+         }
+         delete me.deferDisplayPopup;
+      }, 5 * 1000);
+      
       me.getGeoLocation(function(position)
       {
-         me.getBackButton().hide();
+         me.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
+         {
+            me.onPrizeCheck([3]);
+         });
+         //me.getBackButton().hide();
          //
          // Triggers PrizeCheck and MetaDataChange
          // - subject CustomerReward also needs to be reset to ensure property processing of objects
@@ -124,17 +164,93 @@ Ext.define('Genesis.controller.client.Rewards',
             {
                reader.setRootProperty('data');
                reader.buildExtractors();
-               if(!operation.wasSuccessful())
+               //if(operation.wasSuccessful())
+               if(!me.deferDisplayPopup)
                {
-                  //
-                  // Go back to Main Reward Screen
-                  //
-                  //var container = me.getRewardsContainer();
-                  //container.setActiveItem(0);
-                  me.popView();
+                  me.onPrizeCheck([1, records, operation]);
+               }
+               else
+               {
+                  rec = records;
+                  opt = operation;
                }
             }
          });
+      });
+   },
+   onPrizeStoreMetaChange : function(pstore, metaData)
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      var cstore = Ext.StoreMgr.get('CustomerStore');
+      var customerId = viewport.getCustomer().getId();
+      var message;
+
+      //
+      // Update points from the purchase or redemption
+      //
+      cstore.getById(customerId).set('points', metaData['account_points']);
+
+      if(Ext.isDefined(metaData['points']))
+      {
+         message = me.getPointsMsg(metaData['points']);
+         if(!metaData['vip_challenge'])
+         {
+            message += Genesis.constants.addCRLF() + me.prizeCheckMsg;
+         }
+         Ext.device.Notification.show(
+         {
+            title : 'Reward Points Update',
+            message : message,
+            callback : function()
+            {
+               if((metaData['vip_challenge']))
+               {
+                  me.vipPopUp(metaData['vip_challenge'].points, function()
+                  {
+                     me.onPrizeCheck([2]);
+                  });
+               }
+               else
+               {
+                  me.onPrizeCheck([2]);
+               }
+            }
+         });
+      }
+      else
+      if(metaData['vip_challenge'])
+      {
+         me.vipPopUp(metaData['vip_challenge'].points, function()
+         {
+            me.onPrizeCheck([2]);
+         });
+      }
+      else
+      if(metaData['data'])
+      {
+         var app = me.getApplication();
+         var controller = app.getController('Prizes');
+         app.dispatch(
+         {
+            action : 'showPrizeQrCode',
+            args : [0, metaData['data']],
+            controller : controller,
+            scope : controller
+         });
+      }
+   },
+   onPrizeCheck : function(args)
+   {
+      var me = this;
+      var app = me.getApplication();
+      var controller = app.getController('Prizes');
+      app.dispatch(
+      {
+         action : 'onPrizeCheck',
+         args : args || [],
+         controller : controller,
+         scope : controller
       });
    },
    onActivate : function(c, newActiveItem, oldActiveItem, eOpts)
@@ -164,7 +280,8 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    onToggleBtnTap : function(b, e, eOpts, eInfo)
    {
-      var container = this.getRewardsContainer();
+      var me = this;
+      var container = me.getRewardsContainer();
       var activeItem = container.getActiveItem();
 
       switch (activeItem.config.tag)
@@ -194,125 +311,6 @@ Ext.define('Genesis.controller.client.Rewards',
             me.onEarnPtsTap();
             break;
       }
-   },
-   onMetaChange : function(pstore, metaData)
-   {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var customerId = viewport.getCustomer().getId();
-      var message;
-
-      var vipPopup = function()
-      {
-         message = me.getVipMsg(metaData['vip_challenge'].points);
-         Ext.device.Notification.show(
-         {
-            title : 'VIP Challenge Alert!',
-            message : message,
-            callback : function()
-            {
-               Ext.defer(function()
-               {
-                  me.prizeCheck(pstore);
-               }, 2000);
-            }
-         });
-      }
-      //
-      // Update points from the purchase or redemption
-      //
-      cstore.getById(customerId).set('points', metaData['account_points']);
-
-      if(Ext.isDefined(metaData['points']))
-      {
-         message = me.getPointsMsg(metaData['points']);
-         if(!metaData['vip_challenge'])
-         {
-            message += Genesis.constants.addCRLF() + me.prizeCheckMsg;
-         }
-         Ext.device.Notification.show(
-         {
-            title : 'Earn Points',
-            message : message,
-            callback : function()
-            {
-               if((metaData['vip_challenge']))
-               {
-                  vipPopup();
-               }
-               else
-               {
-                  Ext.defer(function()
-                  {
-                     me.prizeCheck(pstore);
-                  }, 2000);
-               }
-            }
-         });
-      }
-      else
-      if(metaData['vip_challenge'])
-      {
-         vipPopup();
-      }
-      else
-      if(metaData['data'])
-      {
-         var app = me.getApplication();
-         var controller = app.getController('Prizes');
-         app.dispatch(
-         {
-            action : 'showPrizeQrCode',
-            args : [0, metaData['data']],
-            controller : controller,
-            scope : controller
-         });
-      }
-   },
-   onEarnPtsTap : function(b, e, eOpts, eInfo)
-   {
-      var me = this;
-      //var container = me.getRewardsContainer();
-      //var anim = container.getLayout().getAnimation();
-
-      var allowedMsg = me.isOpenAllowed();
-
-      if(allowedMsg !== true)
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Error',
-            message : allowedMsg
-         });
-         return;
-      }
-
-      me.scanQRCode(
-      {
-         callback : function(qrcode)
-         {
-            if(qrcode)
-            {
-               //anim.disable();
-               //container.setActiveItem(0);
-               //anim.enable();
-
-               me.pushView(me.getRewards());
-
-               me.earnPts(qrcode);
-            }
-            else
-            {
-               console.debug(me.missingEarnPtsCodeMsg);
-               Ext.device.Notification.show(
-               {
-                  title : 'Error',
-                  message : me.missingEarnPtsCodeMsg
-               });
-            }
-         }
-      });
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

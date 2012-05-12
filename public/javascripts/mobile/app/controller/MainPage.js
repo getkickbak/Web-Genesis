@@ -246,6 +246,7 @@ Ext.define('Genesis.controller.MainPage',
    initMerchantPrizeStore : function()
    {
       var me = this;
+      var app = me.getApplication();
       Ext.regStore('MerchantPrizeStore',
       {
          model : 'Genesis.model.EarnPrize',
@@ -276,17 +277,12 @@ Ext.define('Genesis.controller.MainPage',
          listeners :
          {
             scope : this,
-            'load' : function(store, records, successful, operation, eOpts)
-            {
-               store.loadCallback = [records, operation];
-            },
             'metachange' : function(store, proxy, eOpts)
             {
-               var app = me.getApplication();
                var controller = app.getController('client.Rewards');
                app.dispatch(
                {
-                  action : 'onMetaChange',
+                  action : 'onPrizeStoreMetaChange',
                   args : [store, proxy.getReader().metaData],
                   controller : controller,
                   scope : controller

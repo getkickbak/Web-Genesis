@@ -510,13 +510,13 @@ body {
   .x-toolbar & {
     background:transparent;
     border: 1px solid #F3F3F4;
-    &.x-button-back:before, &.x-button-forward:before {
-      background:white;
-      //background: darken($bg-color, 20%);
+    &.x-button-back:before, &.x-button-forward:after {
+       background:#F3F3F4;
+       //background: darken($bg-color, 20%);
     }
 
     //&.x-button-back, &.x-button-forward, &.x-button-back:after, &.x-button-forward:after {
-    &.x-button-back, &.x-button-forward, &:after, &:after {
+    &.x-button-back, &.x-button-forward {
       background:transparent;
       border-left: 1px solid transparent;
     }
@@ -676,25 +676,24 @@ $overlap-width: .2em; // how far the mask is clipped
 $mask-height: $button-height;
 $mask-width: $mask-height/2;
 
-$mask-offset: $button-radius - $overlap-width - $button-stroke-weight + $shadow-width - .06em;
+$mask-offset: $button-radius - $overlap-width - $button-stroke-weight + $shadow-width - 0.2em;
 
 $tip-width: $mask-width - $mask-offset + $shadow-width;
 
 .x-button {
    @include toolbar-button(#F3F3F4, $button-gradient);
 }
-.x-button-back,
-.x-toolbar .x-button-back {
+.x-button-forward, .x-button-back {
    &:before, &:after {
-      -webkit-mask: $mask-offset 0 theme_image($theme-path + "/images/" + $gtheme-name, "toolbar/"+ "tip" + ".png");
+      @include insertion($mask-width, $mask-height, -$button-stroke-weight, auto);
+      -webkit-mask: $mask-offset 0 theme_image($theme-path + "/images/" + $gtheme-name, "toolbar/"+ "tip" + ".png") no-repeat;
       -webkit-mask-size: $mask-width $mask-height;
    }
 }
 .x-button-forward,
 .x-toolbar .x-button-forward {
    &:before, &:after {
-      -webkit-mask: -$mask-offset 0 theme_image($theme-path + "/images/" + $gtheme-name, "toolbar/"+ "tip-right" + ".png");
-      -webkit-mask-size: $mask-width $mask-height;
+      -webkit-mask: $mask-offset 0 theme_image($theme-path + "/images/" + $gtheme-name, "toolbar/"+ "tip" + ".png") no-repeat;
    }
 }
 
@@ -1321,7 +1320,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
       z-index:2;
    }
    .rouletteBall {
-      -webkit-animation: roulette-table-rotate-back 5.0s infinite linear;
+      -webkit-animation: roulette-table-rotate-back 1.5s infinite linear;
       background-image : theme_image($theme-path + "/images/" + $gtheme-name, "ball" + ".png");
       z-index:3;
    }

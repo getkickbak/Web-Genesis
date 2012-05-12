@@ -78,6 +78,7 @@ Ext.define('Genesis.controller.Viewport',
          }
       }
    },
+   appName : null,
    retrieveChallengesMsg : 'Retrieving Challenges ...',
    fbShareSuccessMsg : 'Posted on your Timeline!',
    onFeatureTap : function(feature, subFeature)
@@ -261,8 +262,9 @@ Ext.define('Genesis.controller.Viewport',
       console.log("Viewport Init");
       _application = app;
    },
-   loadSoundFile : function(sound_file, type)
+   loadSoundFile : function(tag, sound_file, type)
    {
+      var me = this;
       var ext = '.' + (sound_file.split('.')[1] || 'mp3');
       sound_file = sound_file.split('.')[0];
       if(Genesis.constants.isNative())
@@ -287,19 +289,37 @@ Ext.define('Genesis.controller.Viewport',
                   console.debug("Audio Error: " + err);
                });
                break;
+            case 'Media' :
+               sound_file = new Media('resources/audio/' + sound_file + ext, function()
+               {
+                  //console.log("loaded " + sound_file);
+                  me.sound_files[tag].successCallback();
+               }, function(err)
+               {
+                  console.log("Audio Error: " + err);
+               });
+               break;
          }
       }
+      else
+      {
+         var elem = Ext.get(sound_file);
+         if(elem)
+         {
+            elem.dom.addEventListener('ended', function()
+            {
+               me.sound_files[tag].successCallback();
+            }, false);
+         }
+      }
+
       //console.debug("Preloading " + sound_file + " ...");
-      /*
-       return new Media('resources/audio/' + sound_file + ext, function()
-       {
-       console.log("loaded " + sound_file);
-       }, function(err)
-       {
-       console.log("Audio Error: " + err);
-       });
-       */
-      return sound_file;
+
+      me.sound_files[tag] =
+      {
+         name : sound_file,
+         type : type
+      };
    },
    openMainPage : function()
    {
@@ -344,10 +364,11 @@ Ext.define('Genesis.controller.Viewport',
       }
       this.sound_files =
       {
-         winPrizeSound : this.loadSoundFile('win_prize_sound', 'Audio'),
-         clickSound : this.loadSoundFile('click_sound', 'FX'),
-         refreshListSound : this.loadSoundFile('refresh_list_sound', 'FX'),
-         beepSound : this.loadSoundFile('beep.wav', 'FX')
       };
+      this.loadSoundFile('rouletteSpinSound', 'roulette_spin_sound', 'Media');
+      this.loadSoundFile('winPrizeSound', 'win_prize_sound', 'Media');
+      this.loadSoundFile('clickSound', 'click_sound', 'FX');
+      this.loadSoundFile('refreshListSound', 'refresh_list_sound', 'FX');
+      this.loadSoundFile('beepSound', 'beep.wav', 'FX')
    }
 });
