@@ -33,7 +33,7 @@ Genesis::Application.routes.draw do
       match "/account/update" => 'merchants#update', :as => :update_account
       match "/billings" => 'credit_cards#index', :as => :credit_cards
       match "/billings/create" => 'credit_cards#create', :via => :post, :as => :create_credit_card
-      match "/billings/update" => 'credit_cards#update', :via => :post, :as => :update_credit_card
+      match "/billings/update" => 'credit_cards#update', :as => :update_credit_card
       match "/billings/delete" => 'credit_cards#destroy', :as => :delete_credit_card
 
       match "/merchant_terms" => 'pages#merchant_terms'
@@ -67,7 +67,7 @@ Genesis::Application.routes.draw do
       
       match "/account" => 'account#show', :as => :account
       match "/account/edit" => 'account#edit', :as => :edit_account
-      match "/account/update" => 'account#update', :via => :post, :as => :update_account
+      match "/account/update" => 'account#update', :as => :update_account
 
       constraints CanAccessResque do
         mount Resque::Server, at: '/resque'

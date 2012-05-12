@@ -16,8 +16,11 @@ en:
         email_format: "%{attribute} is not formatted properly"
         not_a_number: "%{attribute} is not a number"
         not_an_integer: "%{attribute} must be an integer"
-        carrierwave_processing_error: 'Cannot resize image.'
-        carrierwave_integrity_error: 'Not an image.'
+        carrierwave_processing_error: "Cannot resize image."
+        carrierwave_integrity_error: "Not an image."
+        carrierwave_download_error: "Couldn't download image."
+        extension_white_list_error: "You are not allowed to upload %{extension} files, allowed types: %{allowed_types}"
+        mini_magick_processing_error: "%{e}"
         challenge:
           name_min_word_length: "Individual words cannot exceed 10 characters"
           name_max_num_of_lines: "Name must fit within 2 lines with max 10 characters per line"
