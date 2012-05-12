@@ -145,7 +145,7 @@ class Venue
   
   def update_auth_code
     now = Time.now
-    self.auth_code = String.random_alphanumeric
+    self.auth_code = String.random_alphanumeric(32)
     self.update_ts = now
     save  
   end
