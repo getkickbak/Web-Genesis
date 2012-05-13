@@ -64,7 +64,7 @@ class Api::V1::ChallengesController < ApplicationController
         else
           data = params[:data].split('$')
           iv = data[0]
-          auth_data = data[1]
+          auth_data = Base64.decode64(URI.unescape(data[1]))
         end
         if is_challenge_satisfied?(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && authenticated?(data, iv, auth_data, @venue.auth_code)))
           if not challenge_limit_reached?(@challenge)

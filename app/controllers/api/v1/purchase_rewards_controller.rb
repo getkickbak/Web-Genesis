@@ -27,7 +27,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         else
           data = params[:data].split('$')
           iv = data[0]
-          auth_data = data[1]
+          auth_data = Base64.decode64(URI.unescape(data[1]))
           aes = Aes.new('256', 'CBC')
           decrypted = aes.decrypt(auth_data, @venue.auth_code, iv)
           decrypted_data = JSON.parse(decrypted)
