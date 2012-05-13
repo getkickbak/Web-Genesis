@@ -13,7 +13,7 @@ Genesis.constants =
    site : 'www.getkickbak.com',
    weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
-   debugPrivKey : 'arjUGw1aV1TpR2kY0afjbdXiAT0kpoRs',
+   debugPrivKey : 'oZXfUyCtZwnP46oucs1Ibo64OuTQI3OH',
    isNative : function()
    {
       //return Ext.isDefined(cordova);
