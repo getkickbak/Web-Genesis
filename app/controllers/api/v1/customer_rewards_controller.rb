@@ -40,8 +40,8 @@ class Api::V1::CustomerRewardsController < ApplicationController
           record.save
           @customer.points -= @reward.points
           @customer.save
-          aes = Aes.new('256', 'CBC')
-          iv = String.random_alphanumeric(32)
+          aes = Aes.new('128', 'CBC')
+          iv = String.random_alphanumeric
           data = { 
             :type => EncryptedDataType::REDEEM_REWARD,
             :reward => @reward.to_redeemed,

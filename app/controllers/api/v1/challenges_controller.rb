@@ -58,9 +58,9 @@ class Api::V1::ChallengesController < ApplicationController
     Customer.transaction do
       begin
         if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
-          data = String.random_alphanumeric(32)
-          iv = String.random_alphanumeric(32)
-          auth_data = String.random_alphanumeric(32)
+          data = String.random_alphanumeric
+          iv = String.random_alphanumeric
+          auth_data = String.random_alphanumeric
         else
           data = params[:data].split('$')
           iv = data[0]
@@ -113,7 +113,7 @@ class Api::V1::ChallengesController < ApplicationController
     if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
       return true
     else
-      aes = Aes.new('256', 'CBC')
+      aes = Aes.new('128', 'CBC')
       decrypted = aes.decrypt(auth_data, auth_code, iv)
       decrypted_data = JSON.parse(decrypted)
       if ((decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && decrypted_data[:expiry_ts] >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data => iv).nil?
