@@ -40,14 +40,14 @@ class Api::V1::CustomerRewardsController < ApplicationController
           record.save
           @customer.points -= @reward.points
           @customer.save
-          aes = Aes.new('128', 'CBC')
-          iv = String.random_alphanumeric
+          aes = Aes.new('256', 'CBC')
+          iv = String.random_alphanumeric(32)
           data = { 
             :type => EncryptedDataType::REDEEM_REWARD,
             :reward => @reward.to_redeemed,
             :expiry_ts => Time.now+3.hour 
           }.to_json
-          @encrypted_data = "#{iv}$#{Base64.encode64(URI.escape(aes.encrypt(data, @venue.auth_code, iv)))}"
+          @encrypted_data = "#{iv}$#{Base64.encode64(aes.encrypt(data, @venue.auth_code, iv))}"
           render :template => '/api/v1/customer_rewards/redeem'
         else
           respond_to do |format|

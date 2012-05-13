@@ -58,13 +58,13 @@ class Api::V1::ChallengesController < ApplicationController
     Customer.transaction do
       begin
         if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
-          data = String.random_alphanumeric
-          iv = String.random_alphanumeric
-          auth_data = String.random_alphanumeric
+          data = String.random_alphanumeric(32)
+          iv = String.random_alphanumeric(32)
+          auth_data = String.random_alphanumeric(32)
         else
           data = params[:data].split('$')
           iv = data[0]
-          auth_data = Base64.decode64(URI.unescape(data[1]))
+          auth_data = Base64.decode64(data[1])
         end
         if is_challenge_satisfied?(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && authenticated?(data, iv, auth_data, @venue.auth_code)))
           if not challenge_limit_reached?(@challenge)
@@ -113,7 +113,7 @@ class Api::V1::ChallengesController < ApplicationController
     if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
       return true
     else
-      aes = Aes.new('128', 'CBC')
+      aes = Aes.new('256', 'CBC')
       decrypted = aes.decrypt(auth_data, auth_code, iv)
       decrypted_data = JSON.parse(decrypted)
       if ((decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && decrypted_data[:expiry_ts] >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data => iv).nil?
