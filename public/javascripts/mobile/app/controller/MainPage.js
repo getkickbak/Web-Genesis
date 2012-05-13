@@ -363,7 +363,7 @@ Ext.define('Genesis.controller.MainPage',
          console.log("Resetting Session information ...")
          viewport.setFadeAnimation();
          vport.setLoggedIn(false);
-         Genesis.constants.setLocalDBAttrib('auth_code', db['authToken']);
+         Genesis.constants.removeLocalDBAttrib('auth_code');
          if(db['currFbId'] > 0)
          {
             Genesis.constants.facebook_onLogout(null, true);

@@ -105,10 +105,10 @@ Ext.define('Genesis.controller.Viewport',
          console.log('Posting to Facebook ...');
          FB.api('/me/feed', 'post',
          {
-            name : merchant.get('name'),
+            name : venue.get('name'),
             //link : href,
-            link : site,
-            caption : site,
+            link : venue.get('website') || site,
+            caption : venue.get('website') || site,
             description : venue.get('description'),
             picture : merchant.get('photo')['thumbnail_ios_medium'].url,
             message : 'Check out this place!'
@@ -292,7 +292,7 @@ Ext.define('Genesis.controller.Viewport',
             case 'Media' :
                sound_file = new Media('resources/audio/' + sound_file + ext, function()
                {
-                  //console.log("loaded " + sound_file);
+                  //console.log("loaded " + me.sound_files[tag].name);
                   me.sound_files[tag].successCallback();
                }, function(err)
                {

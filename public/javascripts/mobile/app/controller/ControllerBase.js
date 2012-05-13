@@ -378,8 +378,8 @@ Ext.define('Genesis.controller.ControllerBase',
          {
             var privkey = CryptoJS.enc.Hex.parse(keys[key]);
             var ivseed1 = Math.random().toFixed(16).toString().split('.')[1];
-            var ivseed2 = Math.random().toFixed(16).toString().split('.')[1];
-            var iv = CryptoJS.enc.Hex.parse(ivseed1 + ivseed2);
+            //var ivseed2 = Math.random().toFixed(16).toString().split('.')[1];
+            var iv = CryptoJS.enc.Hex.parse(ivseed1); //+ ivseed2);
             var expiryDate = new Date().addHours(3).format("c");
 
             encrypted = iv + '$' + CryptoJS.AES.encrypt(Ext.encode(Ext.applyIf(
