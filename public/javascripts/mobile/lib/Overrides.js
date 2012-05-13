@@ -126,7 +126,7 @@ Genesis.constants =
             // Hardcoded for now ...
             me.privKey =
             {
-               'v1' : 'MzM1gumvzemAh4iNa4ZvuD56itzBcDIs'
+               'v1' : 'arjUGw1aV1TpR2kY0afjbdXiAT0kpoRs'
             };
             for(var i in me.privKey)
             {

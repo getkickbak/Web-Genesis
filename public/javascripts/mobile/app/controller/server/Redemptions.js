@@ -56,8 +56,7 @@ Ext.define('Genesis.controller.server.Redemptions',
             {
                iv : CryptoJS.enc.Hex.parse(message[0])
             });
-            //var decrypted = Ext.decode(CryptoJS.enc.Utf8.stringify(data));
-            var decrypted = Ext.decode(CryptoJS.enc.Base64.stringify(unescape(data)));
+            var decrypted = Ext.decode(CryptoJS.enc.Base64.stringify(data));
 
             console.log("Decrypted Data!");
             if((Date.parse(decrypted["expiry_ts"]) >= Date.now()) && //
