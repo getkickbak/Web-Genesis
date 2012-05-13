@@ -39,13 +39,10 @@ Ext.define('Genesis.controller.client.Rewards',
          }
       }
    },
-   prizeCheckMsg : 'Find out if you won a PRIZE!',
+   loadCallback : null,
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
    checkinFirstMsg : 'Please Check-In before earning rewards',
-   init : function()
-   {
-      console.log("Client Rewards Init");
-   },
+   prizeCheckMsg : 'Find out if you won a PRIZE!',
    getPointsMsg : function(points)
    {
       return 'You\'ve earned ' + points + ' Points from this purchase!';
@@ -63,6 +60,10 @@ Ext.define('Genesis.controller.client.Rewards',
          message : this.getVipMsg(points),
          callback : callback
       });
+   },
+   init : function()
+   {
+      console.log("Client Rewards Init");
    },
    // --------------------------------------------------------------------------
    // Rewards Page
@@ -120,37 +121,18 @@ Ext.define('Genesis.controller.client.Rewards',
             }
          }
       });
-      me.pushView(me.getRewards());
    },
    earnPts : function(qrcode)
    {
       var me = this;
-      var pstore = Ext.StoreMgr.get('MerchantPrizeStore')
       var viewport = me.getViewPortCntlr();
-      var cvenue = viewport.getCheckinInfo().venue;
       var venue = viewport.getVenue();
       var venueId = venue.getId();
-      var merchantId = venue.getMerchant().getId();
       var reader = CustomerReward.getProxy().getReader();
-      var rec, opt;
-
-      me.deferDisplayPopup = Ext.defer(function()
-      {
-         if(me.deferDisplayPopup)
-         {
-            me.onPrizeCheck([1, rec, opt]);
-         }
-         delete me.deferDisplayPopup;
-      }, 5 * 1000);
+      var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
 
       me.getGeoLocation(function(position)
       {
-         me.startRouletteScreen();
-         me.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
-         {
-            console.debug("RouletteSound Done, checking for prizes ...");
-            me.onPrizeCheck([3]);
-         });
          //me.getBackButton().hide();
          //
          // Triggers PrizeCheck and MetaDataChange
@@ -175,32 +157,31 @@ Ext.define('Genesis.controller.client.Rewards',
             {
                reader.setRootProperty('data');
                reader.buildExtractors();
-               //if(operation.wasSuccessful())
-               if(!me.deferDisplayPopup)
+               if(operation.wasSuccessful())
                {
-                  me.onPrizeCheck([1, records, operation]);
+                  me.loadCallback = arguments;
                }
                else
                {
-                  rec = records;
-                  opt = operation;
+                  me.popView();
                }
             }
          });
       });
    },
-   onPrizeStoreMetaChange : function(pstore, metaData)
+   onPrizeCheckMetaData : function(metaData)
    {
       var me = this;
-      var viewport = me.getViewPortCntlr();
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var customerId = viewport.getCustomer().getId();
-      var message;
-
-      //
-      // Update points from the purchase or redemption
-      //
-      cstore.getById(customerId).set('points', metaData['account_points']);
+      var exit = function()
+      {
+         //
+         // Go back to Main Reward Screen
+         //
+         //var container = me.getRewardsContainer();
+         //container.setActiveItem(0);
+         //me.popView();
+         me.pushView(me.getRewards());
+      };
 
       if(Ext.isDefined(metaData['points']))
       {
@@ -217,14 +198,11 @@ Ext.define('Genesis.controller.client.Rewards',
             {
                if((metaData['vip_challenge']))
                {
-                  me.vipPopUp(metaData['vip_challenge'].points, function()
-                  {
-                     me.onPrizeCheck([2]);
-                  });
+                  me.vipPopUp(metaData['vip_challenge'].points, exit);
                }
                else
                {
-                  me.onPrizeCheck([2]);
+                  exit();
                }
             }
          });
@@ -232,12 +210,27 @@ Ext.define('Genesis.controller.client.Rewards',
       else
       if(metaData['vip_challenge'])
       {
-         me.vipPopUp(metaData['vip_challenge'].points, function()
-         {
-            me.onPrizeCheck([2]);
-         });
+         me.vipPopUp(metaData['vip_challenge'].points, exit);
       }
-      else
+   },
+   onPrizeStoreMetaChange : function(pstore, metaData)
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      var cstore = Ext.StoreMgr.get('CustomerStore');
+      var customerId = viewport.getCustomer().getId();
+      var message;
+
+      //
+      // Update points from the purchase or redemption
+      //
+      cstore.getById(customerId).set('points', metaData['account_points']);
+
+      //
+      // Added to Earn Rewards Handling
+      //
+      me.onPrizeCheckMetaData(metaData);
+
       if(metaData['data'])
       {
          var app = me.getApplication();
@@ -251,7 +244,7 @@ Ext.define('Genesis.controller.client.Rewards',
          });
       }
    },
-   onPrizeCheck : function(args)
+   onPrizeCheck : function(records, operation)
    {
       var me = this;
       var app = me.getApplication();
@@ -259,7 +252,7 @@ Ext.define('Genesis.controller.client.Rewards',
       app.dispatch(
       {
          action : 'onPrizeCheck',
-         args : args || [],
+         args : arguments,
          controller : controller,
          scope : controller
       });
@@ -292,6 +285,7 @@ Ext.define('Genesis.controller.client.Rewards',
    onToggleBtnTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
+      var viewport = me.getViewPortCntlr();
       var container = me.getRewardsContainer();
       var activeItem = container.getActiveItem();
 
@@ -300,6 +294,13 @@ Ext.define('Genesis.controller.client.Rewards',
          case 'prizeCheck' :
          {
             //container.setActiveItem(0);
+            me.startRouletteScreen();
+            me.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
+            {
+               console.debug("RouletteSound Done, checking for prizes ...");
+               me.onPrizeCheck.apply(me, me.loadCallback);
+               delete me.loadCallback;
+            });
             break;
          }
       }

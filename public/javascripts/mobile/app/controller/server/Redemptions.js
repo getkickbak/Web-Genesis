@@ -49,13 +49,19 @@ Ext.define('Genesis.controller.server.Redemptions',
          {
             var privkey = CryptoJS.enc.Hex.parse(keys[key]);
             var message = encrypted.split('$');
-            var decrypted = Ext.decode(CryptoJS.enc.Utf8.stringify((CryptoJS.AES.decrypt(message[1], privkey,
-               {
-                  iv : message[0]
-               }))));
 
+            console.log("Decrypted message iv[" + message[0] + "]");
+            console.log("Decrypted message key[" + keys[key] + "]");
+            var data = CryptoJS.AES.decrypt(message[1], privkey,
+            {
+               iv : CryptoJS.enc.Hex.parse(message[0])
+            });
+            //var decrypted = Ext.decode(CryptoJS.enc.Utf8.stringify(data));
+            var decrypted = Ext.decode(CryptoJS.enc.Base64.stringify(unescape(data)));
+
+            console.log("Decrypted Data!");
             if((Date.parse(decrypted["expiry_ts"]) >= Date.now()) && //
-            (Date.parse(decrypted["expiry_ts"]) <= Date.now().addHours(3*2)))
+            (Date.parse(decrypted["expiry_ts"]) <= Date.now().addHours(3 * 2)))
             {
                console.log("Found QRCode type[" + decrypted['type'] + "]");
                switch (decrypted['type'])
@@ -88,9 +94,14 @@ Ext.define('Genesis.controller.server.Redemptions',
 
                return;
             }
+            else
+            {
+               console.log("Cannot decrypted data using Vendor[" + key + "]");
+            }
          }
          catch(e)
          {
+            console.log("Error decrypted data [" + e + "]");
          }
       }
       Ext.device.Notification.show(
@@ -129,10 +140,6 @@ Ext.define('Genesis.controller.server.Redemptions',
                {
                   if(Ext.isDefined(encrypted))
                   {
-                     var ivseed1 = Math.random().toFixed(16).toString().split('.')[1];
-                     var ivseed2 = Math.random().toFixed(16).toString().split('.')[1];
-                     var iv = CryptoJS.enc.Hex.parse(ivseed1 + ivseed2);
-
                      encrypted = me.genQRCodeFromParams(
                      {
                         "type" : 'redeem_reward',

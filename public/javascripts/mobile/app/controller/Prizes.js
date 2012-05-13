@@ -87,36 +87,70 @@ Ext.define('Genesis.controller.Prizes',
       rouletteBall.removeCls('spinBack');
       rouletteBall.removeCls('spinFwd');
    },
+   updatingPrizeOnFacebook : function(record)
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      var venue = viewport.getVenue();
+      var merchant = venue.getMerchant();
+      var site = Genesis.constants.site;
+      
+      console.log('Posting to Facebook ...');
+      FB.api('/me/feed', 'post',
+      {
+         name : venue.get('name'),
+         //link : href,
+         link : venue.get('website') || site,
+         caption : venue.get('website') || site,
+         description : venue.get('description'),
+         //
+         // To-do : Get Prize Photo
+         //
+         //picture : Genesis.view.client.Rewards.getPhoto(records[0].getCustomerReward().get('type')),
+         message : 'I just won "' + record.getCustomerReward().get('title') + '" for purchasing at ' + venue.get('name') + '!'
+      }, function(response)
+      {
+         if(!response || response.error)
+         {
+            console.log('Post was not published to Facebook.');
+         }
+         else
+         {
+            console.log('Posted to your Facebook Newsfeed.');
+         }
+      });
+   },
    // --------------------------------------------------------------------------
    // Prizes Page
    // --------------------------------------------------------------------------
-   onPrizeCheckComplete : function()
+   onPrizeCheck : function(records, operation)
    {
       var me = this;
-      me.evtFlag = 0;
+      var viewport = me.getViewPortCntlr();
 
-      if(me.loadCallback[1].length == 0)
+      me.stopRouletteBall();
+      console.debug("onPrizeCheck Completed!");
+
+      if(records.length == 0)
       {
+         console.log("Prize LOST!");
          Ext.device.Notification.show(
          {
             title : 'Scan And Win!',
             message : me.lostPrizeMsg,
             callback : function()
             {
-               me.loadCallback = null;
                me.popView();
             }
          });
       }
       else
       {
-         var viewport = me.getViewPortCntlr();
          var flag = 0;
          var custore = Ext.StoreMgr.get('CustomerStore');
          var app = me.getApplication();
          var vport = me.getViewport();
          var db = Genesis.constants.getLocalDB();
-         var site = Genesis.constants.site;
 
          /*
          vport.setEnableAnim(false);
@@ -129,6 +163,7 @@ Ext.define('Genesis.controller.Prizes',
          //
          // Play the prize winning music!
          //
+         console.log("Prize WON!");
          me.playSoundFile(viewport.sound_files['winPrizeSound'], function()
          {
             if(flag & 0x10)
@@ -137,7 +172,7 @@ Ext.define('Genesis.controller.Prizes',
             }
             if((flag |= 0x01) == 0x11)
             {
-               me.onShowPrize(me.loadCallback[1][0]);
+               me.onShowPrize(records[0]);
             }
          });
          //
@@ -145,33 +180,13 @@ Ext.define('Genesis.controller.Prizes',
          //
          if(db['currFbId'] > 0)
          {
-            var venue = viewport.getVenue();
-            FB.api('/me/feed', 'post',
-            {
-               name : venue.get('name'),
-               //link : href,
-               link : site,
-               caption : site,
-               description : venue.get('description'),
-               picture : Genesis.view.client.Rewards.getPhoto(me.loadCallback[1][0].getCustomerReward().get('type')),
-               message : 'I just won a prize for purchasing at ' + venue.get('name') + '!'
-            }, function(response)
-            {
-               if(response && response.post_id)
-               {
-                  console.log('Posted to your Facebook Newsfeed. Post ID(' + response.post_id + ')');
-               }
-               else
-               {
-                  console.log('Post was not published to Facebook.');
-               }
-            });
+            me.updatingPrizeOnFacebook(records[0]);
          }
          Ext.device.Notification.vibrate();
          Ext.device.Notification.show(
          {
             title : 'Scan And Win!',
-            message : me.wonPrizeMsg(me.loadCallback[1].length),
+            message : me.wonPrizeMsg(records.length),
             callback : function()
             {
                if(flag & 0x01)
@@ -180,71 +195,10 @@ Ext.define('Genesis.controller.Prizes',
                }
                if((flag |= 0x10) == 0x11)
                {
-                  me.onShowPrize(me.loadCallback[1][0]);
+                  me.onShowPrize(records[0]);
                }
             }
          });
-      }
-   },
-   onPrizeCheck : function(evtFlag, records, operation)
-   {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-
-      //
-      // 0x00 = MetaData was received
-      // 0x10 = Finished Clicking on "Notification Popup"
-      // 0x100 = Finished Playing Roulette Spin Sound
-      //
-      me.evtFlag |= (1 << (evtFlag - 1));
-
-      console.debug("onPrizeCheck Event Log[" + evtFlag + "], evtFlag =" + me.evtFlag);
-      switch (evtFlag)
-      {
-         case 1 :
-         {
-            me.loadCallback = arguments;
-            if(!me.loadCallback[2].wasSuccessful())
-            {
-               console.debug("onPrizeCheck Error Detected!");
-               me.evtFlag = 0;
-               //
-               // Stop the music
-               //
-               if(!(me.evtFlag & 0x100))
-               {
-                  me.stopSoundFile(viewport.sound_files['rouletteSpinSound']);
-                  me.stopRouletteScreen();
-               }
-               me.loadCallback = null;
-               //
-               // Go back to Main Reward Screen
-               //
-               //var container = me.getRewardsContainer();
-               //container.setActiveItem(0);
-               me.popView();
-               return;
-            }
-            break;
-         }
-         case 2 :
-         {
-            break;
-         }
-         case 3 :
-         {
-            break;
-         }
-         default:
-            console.log("Invalid Event" + evtFlag + " detected!");
-            break;
-      }
-
-      if(me.evtFlag == ((1 << 3) - 1))
-      {
-         console.debug("onPrizeCheck Completed!");
-         me.stopRouletteBall();
-         Ext.defer(me.onPrizeCheckComplete, 3 * 1000, me);
       }
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -549,7 +503,6 @@ Ext.define('Genesis.controller.Prizes',
    {
       this.stopRouletteScreen();
       this.showPrize = showPrize;
-      this.loadCallback = null;
       this.setMode('showPrize');
       this.pushView(this.getMainPage());
    },
