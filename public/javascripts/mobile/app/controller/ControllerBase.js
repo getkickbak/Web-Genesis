@@ -287,6 +287,7 @@ Ext.define('Genesis.controller.ControllerBase',
          }
          else
          {
+            qrcode = r.response;
             console.debug("QR Code = " + qrcode);
          }
 
