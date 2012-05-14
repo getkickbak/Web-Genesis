@@ -239,19 +239,21 @@ Ext.define('Genesis.controller.ControllerBase',
       };
       var callback = function(r)
       {
+         var qrcode;
          Ext.Viewport.setMasked(false);
-         var qrcode = (r.response == 'undefined') ? "" : (r.response || "");
          if(Genesis.constants.isNative())
          {
             switch(window.plugins.qrCodeReader.scanType)
             {
                case 'RL' :
                {
+                  qrcode = (r.response == 'undefined') ? "" : (r.response || "");
                   console.debug("QR Code RL  = " + qrcode);
                   break;
                }
                case 'Nigma' :
                {
+                  qrcode = (r.response == 'undefined') ? "" : (r.response || "");
                   if(!qrcode)
                   {
                      console.debug("QR Code Nigma = Empty");
@@ -263,6 +265,21 @@ Ext.define('Genesis.controller.ControllerBase',
                   if(qrcode && qrcode.responseCode)
                   {
                      qrcode = qrcode.responseCode;
+                  }
+                  break;
+               }
+               case 'Default' :
+               {
+                  qrcode = r;
+                  if(qrcode.cancelled || qrcode.format != 'QR_CODE')
+                  {
+                     qrcode = null;
+                     console.debug("QR Code Default = Cancelled or Unsupported Code");
+                  }
+                  else
+                  {
+                     qrcode = qrcode.text;
+                     console.debug("QR Code Nigma = " + ((qrcode.text) ? qrcode.text : "NONE"));
                   }
                   break;
                }
@@ -303,7 +320,7 @@ Ext.define('Genesis.controller.ControllerBase',
          Ext.defer(function()
          {
             window.plugins.qrCodeReader.getCode(callback, fail);
-         }, 500);
+         }, 1);
       }
 
    },
