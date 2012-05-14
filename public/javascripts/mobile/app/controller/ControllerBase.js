@@ -63,7 +63,7 @@ Ext.define('Genesis.controller.ControllerBase',
                }, params)), CryptoJS.enc.Hex.parse(keys[key]),
                {
                   mode : CryptoJS.mode.CBC,
-                  padding : CryptoJS.pad.NoPadding,
+                  //padding : CryptoJS.pad.NoPadding,
                   formatter : Base64Formatter,
                   iv : CryptoJS.enc.Hex.parse(ivseed)
                }).toString();

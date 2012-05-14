@@ -53,7 +53,7 @@ Ext.define('Genesis.controller.server.Challenges',
       var qrcode;
 
       // Pick the first key from encrypting
-      var qrcode = ControlerBase.genQRCodeFromParams(
+      var qrcode = Genesis.controller.ControllerBase.genQRCodeFromParams(
       {
          "type" : 'earn_points'
       });

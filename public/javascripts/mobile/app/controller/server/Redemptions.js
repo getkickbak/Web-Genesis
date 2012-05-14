@@ -55,7 +55,7 @@ Ext.define('Genesis.controller.server.Redemptions',
             var data = CryptoJS.AES.decrypt(message[1], privkey,
             {
                mode : CryptoJS.mode.CBC,
-               padding : CryptoJS.pad.NoPadding,
+               //padding : CryptoJS.pad.NoPadding,
                formatter : Base64Formatter,
                iv : CryptoJS.enc.Hex.parse(message[0])
             }).toString(CryptoJS.enc.Utf8);
