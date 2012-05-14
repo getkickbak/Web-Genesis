@@ -94,7 +94,7 @@ Ext.define('Genesis.controller.Prizes',
       var venue = viewport.getVenue();
       var merchant = venue.getMerchant();
       var site = Genesis.constants.site;
-      
+
       console.log('Posting to Facebook ...');
       FB.api('/me/feed', 'post',
       {
@@ -255,17 +255,8 @@ Ext.define('Genesis.controller.Prizes',
                            continue;
                         }
                      }
-                     if(!container)
-                     {
-                        view.add(
-                        {
-                           xtype : 'carousel',
-                           scrollable : undefined
-                        });
-                        container = view.getItems().items[0];
-                     }
                   }
-                  else
+                  if(!container)
                   {
                      view.add(
                      {
@@ -274,7 +265,7 @@ Ext.define('Genesis.controller.Prizes',
                      });
                      container = view.getItems().items[0];
                   }
-                  if(container)
+                  else
                   {
                      createPrize(prizes[i]);
                   }
