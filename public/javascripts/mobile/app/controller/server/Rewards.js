@@ -159,7 +159,7 @@ Ext.define('Genesis.controller.server.Rewards',
       }
       me.getQrcode().setStyle(
       {
-         'background-image' : 'url(' + me.genQRCodeFromParams(
+         'background-image' : 'url(' + ControllerBase.genQRCodeFromParams(
          {
             "amount" : price,
             "type" : 'earn_points'
@@ -179,7 +179,7 @@ Ext.define('Genesis.controller.server.Rewards',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      me.playSoundFile(viewport.sound_files['clickSound']);
+      ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       var value = b.getText();
       var priceField = me.getPrice();
       var price = Number(priceField.getValue() || 0);

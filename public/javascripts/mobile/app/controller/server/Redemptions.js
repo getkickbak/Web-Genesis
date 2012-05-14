@@ -142,7 +142,7 @@ Ext.define('Genesis.controller.server.Redemptions',
                {
                   if(Ext.isDefined(encrypted))
                   {
-                     encrypted = me.genQRCodeFromParams(
+                     encrypted = ControllerBase.genQRCodeFromParams(
                      {
                         "type" : 'redeem_reward',
                         "reward" :

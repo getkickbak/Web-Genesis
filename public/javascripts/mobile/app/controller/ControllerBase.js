@@ -4,6 +4,141 @@ Ext.define('Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store', 'Ext.util.Geolocation'],
    statics :
    {
+      playSoundFile : function(sound_file, successCallback, failCallback)
+      {
+         if(Genesis.constants.isNative())
+         {
+            switch (sound_file['type'])
+            {
+               case 'FX' :
+               case 'Audio' :
+                  LowLatencyAudio.play(sound_file['name'], successCallback || Ext.emptyFn, failCallback || Ext.emptyFn);
+                  break;
+               case 'Media' :
+                  sound_file['successCallback'] = successCallback || Ext.emptyFn;
+                  sound_file['name'].play();
+                  break;
+            }
+         }
+         else
+         {
+            sound_file['successCallback'] = successCallback || Ext.emptyFn;
+            Ext.get(sound_file['name']).dom.play();
+         }
+      },
+      stopSoundFile : function(sound_file)
+      {
+         if(Genesis.constants.isNative())
+         {
+            LowLatencyAudio.stop(sound_file['name']);
+         }
+         else
+         {
+            var sound = Ext.get(sound_file['name']).dom;
+            sound.pause();
+            sound.currentTime = 0;
+         }
+      },
+      genQRCodeFromParams : function(params, encryptOnly)
+      {
+         var me = this;
+         var encrypted;
+         var seed = function()
+         {
+            return Math.random().toFixed(16);
+         }
+         //
+         // Show QRCode
+         //
+         var keys = Genesis.constants.getPrivKey();
+         for(key in keys)
+         {
+            try
+            {
+               var ivseed = seed().toString().split('.')[1] + seed().toString().split('.')[1];
+
+               encrypted = CryptoJS.AES.encrypt(Ext.encode(Ext.applyIf(
+               {
+                  "expiry_ts" : new Date().addHours(3).format("c")
+               }, params)), CryptoJS.enc.Hex.parse(keys[key]),
+               {
+                  mode : CryptoJS.mode.CBC,
+                  padding : CryptoJS.pad.NoPadding,
+                  formatter : Base64Formatter,
+                  iv : CryptoJS.enc.Hex.parse(ivseed)
+               }).toString();
+
+               encrypted = ivseed + '$' + encrypted;
+            }
+            catch (e)
+            {
+            }
+            break;
+         }
+         console.log('\n' + //
+         "Encrypted Code Length: " + encrypted.length + '\n' + //
+         'Encrypted Code [' + encrypted + ']');
+
+         return (encryptOnly) ? encrypted : me.genQRCode(encrypted);
+      },
+      genQRCode : function(text, dotsize, QRCodeVersion)
+      {
+         dotsize = dotsize || 2;
+         QRCodeVersion = QRCodeVersion || 9;
+
+         // size of box drawn on canvas
+         var padding = 0;
+         // (white area around your QRCode)
+         var black = "rgb(0,0,0)";
+         var white = "rgb(255,255,255)";
+         // 1-40 see http://www.denso-wave.com/qrcode/qrgene2-e.html
+
+         var canvas = document.createElement('canvas');
+         var qrCanvasContext = canvas.getContext('2d');
+         try
+         {
+            // QR Code Error Correction Capability
+            // Higher levels improves error correction capability while decreasing the amount of data QR Code size.
+            // QRErrorCorrectLevel.L (5%) QRErrorCorrectLevel.M (15%) QRErrorCorrectLevel.Q (25%) QRErrorCorrectLevel.H (30%)
+            // eg. L can survive approx 5% damage...etc.
+            var qr = new QRCode(QRCodeVersion, QRErrorCorrectLevel.L);
+            qr.addData(text);
+            qr.make();
+         }
+         catch(err)
+         {
+            console.log("Error Code : " + err);
+            Ext.device.Notification.show(
+            {
+               title : 'Code Generation Error',
+               message : err
+            });
+            return null;
+         }
+
+         var qrsize = qr.getModuleCount();
+         var height = (qrsize * dotsize) + padding;
+         canvas.setAttribute('height', height);
+         canvas.setAttribute('width', height);
+         console.log("QR Code Size = [" + height + "x" + height + "]");
+         var shiftForPadding = padding / 2;
+         if(canvas.getContext)
+         {
+            for(var r = 0; r < qrsize; r++)
+            {
+               for(var c = 0; c < qrsize; c++)
+               {
+                  if(qr.isDark(r, c))
+                     qrCanvasContext.fillStyle = black;
+                  else
+                     qrCanvasContext.fillStyle = white;
+                  qrCanvasContext.fillRect((c * dotsize) + shiftForPadding, (r * dotsize) + shiftForPadding, dotsize, dotsize);
+                  // x, y, w, h
+               }
+            }
+         }
+         return canvas.toDataURL("image/png");
+      },
    },
    loadingScannerMsg : 'Loading Scanner ...',
    loadingMsg : 'Loading ...',
@@ -324,135 +459,5 @@ Ext.define('Genesis.controller.ControllerBase',
          }, 1);
       }
 
-   },
-   genQRCode : function(text)
-   {
-      var dotsize = 2;
-      // size of box drawn on canvas
-      var padding = 0;
-      // (white area around your QRCode)
-      var black = "rgb(0,0,0)";
-      var white = "rgb(255,255,255)";
-      var QRCodeVersion = 9;
-      // 1-40 see http://www.denso-wave.com/qrcode/qrgene2-e.html
-
-      var canvas = document.createElement('canvas');
-      var qrCanvasContext = canvas.getContext('2d');
-      try
-      {
-         // QR Code Error Correction Capability
-         // Higher levels improves error correction capability while decreasing the amount of data QR Code size.
-         // QRErrorCorrectLevel.L (5%) QRErrorCorrectLevel.M (15%) QRErrorCorrectLevel.Q (25%) QRErrorCorrectLevel.H (30%)
-         // eg. L can survive approx 5% damage...etc.
-         var qr = new QRCode(QRCodeVersion, QRErrorCorrectLevel.L);
-         qr.addData(text);
-         qr.make();
-      }
-      catch(err)
-      {
-         console.log("Error Code : " + err);
-         Ext.device.Notification.show(
-         {
-            title : 'Code Generation Error',
-            message : err
-         });
-         return null;
-      }
-
-      var qrsize = qr.getModuleCount();
-      var height = (qrsize * dotsize) + padding;
-      canvas.setAttribute('height', height);
-      canvas.setAttribute('width', height);
-      console.log("QR Code Size = [" + height + "x" + height + "]");
-      var shiftForPadding = padding / 2;
-      if(canvas.getContext)
-      {
-         for(var r = 0; r < qrsize; r++)
-         {
-            for(var c = 0; c < qrsize; c++)
-            {
-               if(qr.isDark(r, c))
-                  qrCanvasContext.fillStyle = black;
-               else
-                  qrCanvasContext.fillStyle = white;
-               qrCanvasContext.fillRect((c * dotsize) + shiftForPadding, (r * dotsize) + shiftForPadding, dotsize, dotsize);
-               // x, y, w, h
-            }
-         }
-      }
-      return canvas.toDataURL("image/png");
-   },
-   genQRCodeFromParams : function(params, encryptOnly)
-   {
-      var me = this, encrypted;
-
-      //
-      // Show QRCode
-      //
-      var keys = Genesis.constants.getPrivKey();
-      for(key in keys)
-      {
-         try
-         {
-            var ivseed = Math.random().toFixed(16).toString().split('.')[1] + Math.random().toFixed(16).toString().split('.')[1];
-
-            encrypted = CryptoJS.AES.encrypt(Ext.encode(Ext.applyIf(
-            {
-               "expiry_ts" : new Date().addHours(3).format("c")
-            }, params)), CryptoJS.enc.Hex.parse(keys[key]),
-            {
-               mode : CryptoJS.mode.CBC,
-               padding : CryptoJS.pad.NoPadding,
-               formatter : Base64Formatter,
-               iv : CryptoJS.enc.Hex.parse(ivseed)
-            }).toString();
-
-            encrypted = ivseed + '$' + encrypted;
-         }
-         catch (e)
-         {
-         }
-         break;
-      }
-      console.log('\n' + //
-      "Encrypted Code Length: " + encrypted.length + '\n' + //
-      'Encrypted Code [' + encrypted + ']');
-
-      return (encryptOnly) ? encrypted : me.genQRCode(encrypted);
-   },
-   playSoundFile : function(sound_file, successCallback, failCallback)
-   {
-      if(Genesis.constants.isNative())
-      {
-         switch (sound_file['type'])
-         {
-            case 'FX' :
-            case 'Audio' :
-               LowLatencyAudio.play(sound_file['name'], successCallback || Ext.emptyFn, failCallback || Ext.emptyFn);
-               break;
-            case 'Media' :
-               sound_file['successCallback'] = successCallback || Ext.emptyFn;
-               sound_file['name'].play();
-               break;
-         }
-      }
-      else
-      {
-         sound_file['successCallback'] = successCallback || Ext.emptyFn;
-         Ext.get(sound_file['name']).dom.play();
-      }
-   },
-   stopSoundFile : function(sound_file)
-   {
-      if(Genesis.constants.isNative())
-      {
-         LowLatencyAudio.stop(sound_file['name']);
-      }
-      else
-      {
-         var sound = Ext.get(sound_file['name']).dom;
-         sound.pause();
-         sound.currentTime = 0;
-      }
    }
 });

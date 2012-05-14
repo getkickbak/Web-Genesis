@@ -133,7 +133,6 @@ Ext.define('Genesis.controller.client.Rewards',
 
       me.getGeoLocation(function(position)
       {
-         //me.getBackButton().hide();
          //
          // Triggers PrizeCheck and MetaDataChange
          // - subject CustomerReward also needs to be reset to ensure property processing of objects
