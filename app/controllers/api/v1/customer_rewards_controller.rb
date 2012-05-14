@@ -47,7 +47,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
             :reward => @reward.to_redeemed,
             :expiry_ts => Time.now+3.hour 
           }.to_json
-          @encrypted_data = "#{iv}$#{Base64.encode64(aes.encrypt(data, @venue.auth_code, iv))}"
+          @encrypted_data = "#{iv}$#{Base64.encode64s(aes.encrypt(data, @venue.auth_code, iv))}"
           render :template => '/api/v1/customer_rewards/redeem'
         else
           respond_to do |format|
