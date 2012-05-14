@@ -159,7 +159,7 @@ Ext.define('Genesis.controller.server.Rewards',
       }
       me.getQrcode().setStyle(
       {
-         'background-image' : 'url(' + ControllerBase.genQRCodeFromParams(
+         'background-image' : 'url(' + Genesis.controller.ControllerBase.genQRCodeFromParams(
          {
             "amount" : price,
             "type" : 'earn_points'

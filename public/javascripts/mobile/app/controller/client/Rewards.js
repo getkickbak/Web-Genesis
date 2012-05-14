@@ -294,7 +294,7 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             //container.setActiveItem(0);
             me.startRouletteScreen();
-            me.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
+            Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
             {
                console.debug("RouletteSound Done, checking for prizes ...");
                me.onPrizeCheck.apply(me, me.loadCallback);

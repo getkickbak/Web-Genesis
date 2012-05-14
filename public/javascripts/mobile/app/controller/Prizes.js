@@ -164,7 +164,7 @@ Ext.define('Genesis.controller.Prizes',
          // Play the prize winning music!
          //
          console.log("Prize WON!");
-         ControllerBase.playSoundFile(viewport.sound_files['winPrizeSound'], function()
+         Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['winPrizeSound'], function()
          {
             if(flag & 0x10)
             {
@@ -475,7 +475,7 @@ Ext.define('Genesis.controller.Prizes',
          "Encrypted Code :\n" + qrcode + "\n" + //
          "Encrypted Code Length: " + qrcode.length);
 
-         qrcode = ControllerBase.genQRCode(qrcode);
+         qrcode = Genesis.controller.ControllerBase.genQRCode(qrcode);
       }
 
       me.getRedeemBtn().hide();
