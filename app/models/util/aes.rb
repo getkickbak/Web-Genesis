@@ -19,6 +19,7 @@ class Aes
  
   def decrypt(data, key, iv)
     @cipher.decrypt
+    @cipher.padding = 0
     @cipher.key = key
     @cipher.iv = iv
     return @cipher.update(data) + @cipher.final
@@ -26,6 +27,7 @@ class Aes
  
   def encrypt(data, key, iv)
     @cipher.encrypt
+    @cipher.padding = 0
     @cipher.key = key
     @cipher.iv = iv
     return @cipher.update(data) + @cipher.final
