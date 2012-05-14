@@ -40,27 +40,30 @@ Ext.define('Genesis.controller.server.Redemptions',
    },
    verifyQRCode : function(encrypted)
    {
-      console.log("Encrypted Code Length: " + encrypted.length);
+      console.debug("Encrypted Code Length: " + encrypted.length);
 
       var keys = Genesis.constants.getPrivKey();
       for(var key in keys)
       {
+         var message = encrypted.split('$');
+         console.debug("Decrypted iv[" + message[0] + "], content [" + message[1] + "]");
          try
          {
             var privkey = CryptoJS.enc.Hex.parse(keys[key]);
-            var message = encrypted.split('$');
 
-            console.log("Decrypted message iv[" + message[0] + "]");
-            console.log("Decrypted message key[" + keys[key] + "]");
+            console.debug("Decrypted message key[" + keys[key] + "]");
             var data = CryptoJS.AES.decrypt(message[1], privkey,
             {
+               mode : CryptoJS.mode.CBC,
+               padding : CryptoJS.pad.NoPadding,
+               formatter : Base64Formatter,
                iv : CryptoJS.enc.Hex.parse(message[0])
-            });
-            var decrypted = Ext.decode(CryptoJS.enc.Base64.stringify(data));
-
-            console.log("Decrypted Data!");
-            if((Date.parse(decrypted["expiry_ts"]) >= Date.now()) && //
-            (Date.parse(decrypted["expiry_ts"]) <= Date.now().addHours(3 * 2)))
+            }).toString(CryptoJS.enc.Utf8);
+            console.debug("Decrypted Data[" + data + "]");
+            var decrypted = Ext.decode(data);
+            console.debug("Decoded Data!");
+            var date = Date.parse(decrypted["expiry_ts"]);
+            if((date >= Date.now()) && (date <= Date.now().addHours(3 * 2)))
             {
                console.log("Found QRCode type[" + decrypted['type'] + "]");
                switch (decrypted['type'])
@@ -95,7 +98,7 @@ Ext.define('Genesis.controller.server.Redemptions',
             }
             else
             {
-               console.log("Cannot decrypted data using Vendor[" + key + "]");
+               console.log("Decrypted data used an expired key from Vendor[" + key + "]");
             }
          }
          catch(e)

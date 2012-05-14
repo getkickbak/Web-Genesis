@@ -176,7 +176,7 @@ Ext.define('Genesis.view.server.Rewards',
                cls : 'separator done',
                tag : 'done',
                text : 'Done',
-               ui : 'large'
+               ui : 'orange-large'
             }]
          }]
       }]
