@@ -239,19 +239,21 @@ Ext.define('Genesis.controller.ControllerBase',
       };
       var callback = function(r)
       {
+         var qrcode;
          Ext.Viewport.setMasked(false);
-         var qrcode = (r.response == 'undefined') ? "" : (r.response || "");
          if(Genesis.constants.isNative())
          {
             switch(window.plugins.qrCodeReader.scanType)
             {
                case 'RL' :
                {
+                  qrcode = (r.response == 'undefined') ? "" : (r.response || "");
                   console.debug("QR Code RL  = " + qrcode);
                   break;
                }
                case 'Nigma' :
                {
+                  qrcode = (r.response == 'undefined') ? "" : (r.response || "");
                   if(!qrcode)
                   {
                      console.debug("QR Code Nigma = Empty");
@@ -263,6 +265,21 @@ Ext.define('Genesis.controller.ControllerBase',
                   if(qrcode && qrcode.responseCode)
                   {
                      qrcode = qrcode.responseCode;
+                  }
+                  break;
+               }
+               case 'Default' :
+               {
+                  qrcode = r;
+                  if(qrcode.cancelled || qrcode.format != 'QR_CODE')
+                  {
+                     qrcode = null;
+                     console.debug("QR Code Default = Cancelled or Unsupported Code");
+                  }
+                  else
+                  {
+                     qrcode = qrcode.text;
+                     console.debug("QR Code Nigma = " + ((qrcode.text) ? qrcode.text : "NONE"));
                   }
                   break;
                }
@@ -303,7 +320,7 @@ Ext.define('Genesis.controller.ControllerBase',
          Ext.defer(function()
          {
             window.plugins.qrCodeReader.getCode(callback, fail);
-         }, 500);
+         }, 1);
       }
 
    },
@@ -315,7 +332,7 @@ Ext.define('Genesis.controller.ControllerBase',
       // (white area around your QRCode)
       var black = "rgb(0,0,0)";
       var white = "rgb(255,255,255)";
-      var QRCodeVersion = 8;
+      var QRCodeVersion = 9;
       // 1-40 see http://www.denso-wave.com/qrcode/qrgene2-e.html
 
       var canvas = document.createElement('canvas');
@@ -378,13 +395,18 @@ Ext.define('Genesis.controller.ControllerBase',
          {
             var ivseed = Math.random().toFixed(16).toString().split('.')[1] + Math.random().toFixed(16).toString().split('.')[1];
 
-            encrypted = ivseed + '$' + CryptoJS.enc.Base64.stringify(CryptoJS.AES.encrypt(Ext.encode(Ext.applyIf(
+            encrypted = CryptoJS.AES.encrypt(Ext.encode(Ext.applyIf(
             {
                "expiry_ts" : new Date().addHours(3).format("c")
             }, params)), CryptoJS.enc.Hex.parse(keys[key]),
             {
+               mode : CryptoJS.mode.CBC,
+               padding : CryptoJS.pad.NoPadding,
+               formatter : Base64Formatter,
                iv : CryptoJS.enc.Hex.parse(ivseed)
-            }));
+            }).toString();
+
+            encrypted = ivseed + '$' + encrypted;
          }
          catch (e)
          {

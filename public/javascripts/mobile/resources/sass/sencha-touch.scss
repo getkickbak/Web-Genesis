@@ -381,7 +381,7 @@ body {
    }
 }
 .shadows {
-   @include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+   @include box-shadow(0 0 0.2em rgba(0,0,0,.6));
 }
 .bold {
   font-weight:bold;
@@ -417,11 +417,13 @@ body {
    margin:0em $panelGap;
 }
 .title {
+   @extend .shadows;
    font-size:$xlargeFontSize;
    font-weight:bold;
    min-height : 3.6em;
    text-align:center;
    color : #00ADEE;
+   background-color : #F3F3F4;
 }
 
 //------------------------------------------------------------------------------
@@ -1119,8 +1121,8 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
    }
    .info {
       position:relative;
-      padding:$panelTopGap $panelGap $panelTopGap*2 $panelGap;
-      min-height:6.50em;
+      padding:$panelTopGap*2 $panelGap $panelTopGap $panelGap;
+      //min-height:6.50em;
       .photo {
          position:absolute;
          right : 0.8em;
@@ -1213,7 +1215,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
          background-size: 123px*1.5 123px*1.5; // Size of generated QR Code
       }
       .done {
-         background : black;
+         //background : black;
       }
    }
 }

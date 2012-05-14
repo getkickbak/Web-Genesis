@@ -16,7 +16,8 @@
       Success : 2
    }
    //QRCodeReader.prototype.scanType = "Nigma";
-   QRCodeReader.prototype.scanType = "RL";
+   //QRCodeReader.prototype.scanType = "RL";
+   QRCodeReader.prototype.scanType = "Default";
 
    /**
     * Given an absolute file path, uploads a file on the device to a remote server
@@ -24,7 +25,7 @@
     * @param successCallback (Function}  Callback to be invoked when upload has completed
     * @param errorCallback {Function}    Callback to be invoked upon error
     */
-   QRCodeReader.prototype.getCode = function(successCallback, errorCallback)
+   QRCodeReader.prototype.getCode = function(successCallback, errorCallback, options)
    {
       // successCallback required
       if( typeof successCallback != "function")
@@ -47,6 +48,11 @@
          case 'Nigma' :
          {
             cordovaRef.exec(successCallback, errorCallback, 'QRCodeReader' + this.scanType, 'getCode', []);
+            break;
+         }
+         case 'Default' :
+         {
+            window.plugins.barcodeScanner.scan(successCallback, errorCallback, options);
             break;
          }
          default:

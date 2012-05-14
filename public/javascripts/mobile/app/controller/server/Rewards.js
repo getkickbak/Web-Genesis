@@ -53,7 +53,8 @@ Ext.define('Genesis.controller.server.Rewards',
          }
       }
    },
-   invalidPriceMsg : 'Please enter a valid price (eg. 5.00)',
+   maxValue : 1000.00,
+   invalidPriceMsg : 'Please enter a valid price (eg. 5.00), upto $1000',
    init : function()
    {
       console.log("Server Rewards Init");
@@ -89,6 +90,10 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    onDeactivate : function(c, newActiveItem, oldActiveItem, eOpts)
    {
+      var me = this;
+      var priceField = me.getPrice();
+      priceField.setValue(null);
+      me.enablePrecision = false;
    },
    onToggleBtnTap : function(b, e, eOpts, eInfo)
    {
@@ -120,6 +125,9 @@ Ext.define('Genesis.controller.server.Rewards',
       {
          case 'rewardsMainCalculator' :
          {
+            var priceField = me.getPrice();
+            priceField.setValue(null);
+            me.enablePrecision = false;
             //me.getBackButton().show();
             animation.setReverse(true);
             break;
@@ -209,16 +217,16 @@ Ext.define('Genesis.controller.server.Rewards',
             }
             break;
       }
-      priceField.setValue(price);
+      // Max value
+      if(price <= me.maxValue)
+      {
+         priceField.setValue(price);
+      }
    },
    onDoneTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      var priceField = me.getPrice();
       var container = me.getRewardsContainer();
-
-      priceField.setValue(null);
-      me.enablePrecision = false;
       container.setActiveItem(0);
    },
    // --------------------------------------------------------------------------
