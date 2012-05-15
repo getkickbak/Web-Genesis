@@ -418,7 +418,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   else
                   {
                      qrcode = qrcode.text;
-                     console.debug("QR Code Nigma = " + ((qrcode.text) ? qrcode.text : "NONE"));
+                     console.debug("QR Code Default = " + ((qrcode) ? qrcode : "NONE"));
                   }
                   break;
                }
