@@ -42,14 +42,12 @@ class Api::V1::EarnPrizesController < ApplicationController
           @earn_prize.redeemed = true
           @earn_prize.update_ts = Time.now
           @earn_prize.save
-          aes = Aes.new('256', 'CBC')
-          iv = String.random_alphanumeric(32)
           data = { 
             :type => EncryptedDataType::REDEEM_PRIZE, 
             :reward => @earn_prize.to_redeemed,
             :expiry_ts => Time.now+3.hour 
           }.to_json
-          @encrypted_data = "#{iv}$#{Base64.encode64s(aes.encrypt(data, @earn_prize.venue.auth_code, iv))}"
+          @encrypted_data = Aes.encrypt('256', 'CBC', data, @earn_prize.venue.auth_code)
           render :template => '/api/v1/earn_prizes/redeem'
         else
           if @earn_prize.expiry_date < today

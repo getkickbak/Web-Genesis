@@ -58,7 +58,7 @@ class Venue
       :website => venue_info[:website].strip,
       :latitude => venue_info[:latitude].to_f,
       :longitude => venue_info[:longitude].to_f,
-      :auth_code => String.random_alphanumeric(32)
+      :auth_code => Math.rand_hexstring(32)
     )
     venue[:created_ts] = now
     venue[:update_ts] = now
@@ -145,7 +145,7 @@ class Venue
   
   def update_auth_code
     now = Time.now
-    self.auth_code = String.random_alphanumeric(32)
+    self.auth_code = Math.rand_hexstring(32)
     self.update_ts = now
     save  
   end

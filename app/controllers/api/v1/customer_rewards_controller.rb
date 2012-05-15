@@ -26,7 +26,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
     end
     
     Time.zone = @venue.time_zone
-    Customer.transaction do
+    #Customer.transaction do
       begin
         if @customer.points - @reward.points >= 0
           record = RedeemRewardRecord.new(
@@ -40,14 +40,12 @@ class Api::V1::CustomerRewardsController < ApplicationController
           record.save
           @customer.points -= @reward.points
           @customer.save
-          aes = Aes.new('256', 'CBC')
-          iv = String.random_alphanumeric(32)
           data = { 
             :type => EncryptedDataType::REDEEM_REWARD,
             :reward => @reward.to_redeemed,
             :expiry_ts => Time.now+3.hour 
           }.to_json
-          @encrypted_data = "#{iv}$#{Base64.encode64s(aes.encrypt(data, @venue.auth_code, iv))}"
+          @encrypted_data = Aes.encrypt('256', 'CBC', data, @venue.auth_code)
           render :template => '/api/v1/customer_rewards/redeem'
         else
           respond_to do |format|
@@ -62,6 +60,6 @@ class Api::V1::CustomerRewardsController < ApplicationController
           format.json { render :json => { :success => false, :message => [t("api.customer_rewards.redeem_failure")] } }
         end
       end
-    end
+    #end
   end
 end

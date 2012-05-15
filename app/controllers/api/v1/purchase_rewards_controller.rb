@@ -27,9 +27,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         else
           data = params[:data].split('$')
           iv = data[0]
-          auth_data = Base64.decode64(data[1])
-          aes = Aes.new('256', 'CBC')
-          decrypted = aes.decrypt(auth_data, @venue.auth_code, iv)
+          auth_data = data[1]
+          decrypted = Aes.decrypt('256', 'CBC', auth_data, @venue.auth_code, iv)
           decrypted_data = JSON.parse(decrypted)
           if (decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && (decrypted_data[:expiry_ts] >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data => iv).nil?
             amount = decrypted_data[:amount]
