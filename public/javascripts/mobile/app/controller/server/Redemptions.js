@@ -43,6 +43,7 @@ Ext.define('Genesis.controller.server.Redemptions',
       console.debug("Encrypted Code Length: " + encrypted.length);
 
       var keys = Genesis.constants.getPrivKey();
+      var db = Genesis.constants.getRedeemDB(db);
       for(var key in keys)
       {
          var message = encrypted.split('$');
@@ -63,6 +64,13 @@ Ext.define('Genesis.controller.server.Redemptions',
             var decrypted = Ext.decode(data);
             console.debug("Decoded Data!");
             var date = Date.parse(decrypted["expiry_ts"]);
+
+            if(db[message[0]])
+            {
+               console.log("Decrypted data is a previous used QRCode");
+               break;
+            }
+            else
             if((date >= Date.now()) && (date <= Date.now().addHours(3 * 2)))
             {
                console.log("Found QRCode type[" + decrypted['type'] + "]");
@@ -94,6 +102,11 @@ Ext.define('Genesis.controller.server.Redemptions',
                   scope : controller
                });
 
+               //
+               // Add to Persistent Store to make sure it cannot be rescanned again
+               //
+               db[message[0]] = message[1];
+               Genesis.constants.setRedeemDB(db);
                return;
             }
             else
@@ -202,3 +215,16 @@ Ext.define('Genesis.controller.server.Redemptions',
       return true;
    }
 });
+
+//
+// Cleanup Redeem Database every 6 hours
+//
+Ext.defer(function()
+{
+   console.log("===========================");
+   console.log("Redeem Database is resetted");
+   console.log("===========================");
+   Genesis.constants.setRedeemDB(
+   {
+   });
+}, 60 * 60 * 6);

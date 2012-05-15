@@ -140,7 +140,11 @@ Ext.define('Genesis.controller.Prizes',
             message : me.lostPrizeMsg,
             callback : function()
             {
-               me.popView();
+               //
+               // In case the sound is still going ...
+               //
+               Genesis.controller.ControllerBase.stopSoundFile(viewport.sound_files['rouletteSpinSound']);
+               Ext.defer(me.popView, 3 * 1000, me);
             }
          });
       }
@@ -172,7 +176,7 @@ Ext.define('Genesis.controller.Prizes',
             }
             if((flag |= 0x01) == 0x11)
             {
-               me.onShowPrize(records[0]);
+               Ext.defer(me.onShowPrize, 3 * 1000, me, [records[0]]);
             }
          });
          //
@@ -195,7 +199,7 @@ Ext.define('Genesis.controller.Prizes',
                }
                if((flag |= 0x10) == 0x11)
                {
-                  me.onShowPrize(records[0]);
+                  Ext.defer(me.onShowPrize, 3 * 1000, me, [records[0]]);
                }
             }
          });
@@ -437,7 +441,16 @@ Ext.define('Genesis.controller.Prizes',
          }
       })
    },
-   showPrizeQrCode : function(timeout, qrcode)
+   onRefreshQRCode : function(qrcode)
+   {
+      var me = this;
+      var view = me.getPrizes();
+      var carousel = view.query('carousel')[0];
+      var item = carousel ? carousel.getActiveItem() : view.getItems().items[0];
+      var photo = item.query('component[tag=itemPhoto]')[0];
+      photo.element.setStyle('background-image', 'url(' + qrcode + ')');
+   },
+   showPrizeQRCode : function(timeout, qrcode)
    {
       var me = this;
 
@@ -472,11 +485,7 @@ Ext.define('Genesis.controller.Prizes',
       me.getRedeemBtn().hide();
       me.getDoneBtn().show();
 
-      var view = me.getPrizes();
-      var carousel = view.query('carousel')[0];
-      var item = carousel ? carousel.getActiveItem() : view.getItems().items[0];
-      var photo = item.query('component[tag=itemPhoto]')[0];
-      photo.element.setStyle('background-image', 'url(' + qrcode + ')');
+      me.onRefreshQRCode(qrcode);
       Ext.device.Notification.show(
       {
          title : 'Redemption Alert',

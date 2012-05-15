@@ -128,14 +128,12 @@ Ext.define('Genesis.controller.server.Rewards',
             var priceField = me.getPrice();
             priceField.setValue(null);
             me.enablePrecision = false;
-            //me.getBackButton().show();
             animation.setReverse(true);
             break;
          }
          case 'qrcodeContainer' :
          {
             animation.setReverse(false);
-            //me.getBackButton().hide();
             break;
          }
       }

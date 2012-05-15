@@ -75,6 +75,14 @@ Ext.define('Genesis.view.widgets.RewardItem',
                   return values.Merchant['name'];
                }
             })
+         },
+         {
+            docked : 'bottom',
+            xtype : 'button',
+            cls : 'separator',
+            tag : 'refresh',
+            text : 'Refresh',
+            ui : 'orange-large'
          }]
       },
       dataMap :
@@ -118,20 +126,23 @@ Ext.define('Genesis.view.widgets.RewardItem',
       var reward = data.CustomerReward;
       var photo = Genesis.view.Prizes.getPhoto(reward['type']) || reward['photo']['thumbnail_ios_medium'].url;
       var info = this.query("component[tag=info]")[0];
+      var refresh = this.query("button[tag=refresh]")[0];
       //
       // Hide Merchant Information if it's missing
       //
-      
+
       if(data.Merchant)
       {
          info.setData(data);
          info.show();
+         refresh.hide();
       }
       else
       {
          info.hide();
+         refresh.show();
       }
-      
+
       this.query("component[tag=title]")[0].setData(reward);
       this.query("component[tag=itemPhoto]")[0].element.setStyle('background-image', 'url(' + photo + ')');
    },

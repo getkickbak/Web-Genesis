@@ -236,7 +236,7 @@ Ext.define('Genesis.controller.client.Rewards',
          var controller = app.getController('Prizes');
          app.dispatch(
          {
-            action : 'showPrizeQrCode',
+            action : 'showPrizeQRCode',
             args : [0, metaData['data']],
             controller : controller,
             scope : controller
@@ -315,11 +315,9 @@ Ext.define('Genesis.controller.client.Rewards',
       {
          case 'prizeCheck' :
          {
-            me.getBackButton().hide();
             break;
          }
          default:
-            me.onEarnPtsTap();
             break;
       }
    },

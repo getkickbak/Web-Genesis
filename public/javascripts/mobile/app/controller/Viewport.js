@@ -258,9 +258,39 @@ Ext.define('Genesis.controller.Viewport',
    },
    init : function(app)
    {
-      this.callParent(arguments);
+      var me = this;
       console.log("Viewport Init");
       _application = app;
+
+      this.callParent(arguments);
+      //
+      // Initialize Facebook
+      //
+      if(!merchantMode)
+      {
+         Genesis.constants.initFb();
+      }
+
+      //
+      // Initialize Sound Files, make it non-blocking
+      //
+      Ext.defer(function()
+      {
+         this.sound_files =
+         {
+         };
+         var soundList = [//
+         ['rouletteSpinSound', 'roulette_spin_sound', 'Media'], //
+         ['winPrizeSound', 'win_prize_sound', 'Media'], //
+         ['clickSound', 'click_sound', 'FX'], //
+         ['refreshListSound', 'refresh_list_sound', 'FX'], //
+         ['beepSound', 'beep.wav', 'FX']];
+
+         for(var i = 0; i < soundList.length; i++)
+         {
+            this.loadSoundFile.apply(this, soundList[i]);
+         }
+      }, 1, me);
    },
    loadSoundFile : function(tag, sound_file, type)
    {
@@ -362,13 +392,5 @@ Ext.define('Genesis.controller.Viewport',
             this.onFeatureTap('MainPage', 'login');
          }
       }
-      this.sound_files =
-      {
-      };
-      this.loadSoundFile('rouletteSpinSound', 'roulette_spin_sound', 'Media');
-      this.loadSoundFile('winPrizeSound', 'win_prize_sound', 'Media');
-      this.loadSoundFile('clickSound', 'click_sound', 'FX');
-      this.loadSoundFile('refreshListSound', 'refresh_list_sound', 'FX');
-      this.loadSoundFile('beepSound', 'beep.wav', 'FX')
    }
 });

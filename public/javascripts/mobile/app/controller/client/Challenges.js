@@ -377,26 +377,29 @@ Ext.define('Genesis.controller.client.Challenges',
       var items = record.challenges().getRange();
 
       carousel.removeAll(true);
-      for(var i = 0; i < Math.ceil(items.length / 6); i++)
+      Ext.defer(function()
       {
-         carousel.add(
+         for(var i = 0; i < Math.ceil(items.length / 6); i++)
          {
-            xtype : 'dataview',
-            cls : 'challengeMenuSelections',
-            useComponents : true,
-            defaultType : 'challengemenuitem',
-            scrollable : false,
-            store :
+            carousel.add(
             {
-               model : 'Genesis.model.Challenge',
-               data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
-            }
-         });
-      }
-      if(carousel.getInnerItems().length > 0)
-      {
-         carousel.setActiveItem(0);
-      }
+               xtype : 'dataview',
+               cls : 'challengeMenuSelections',
+               useComponents : true,
+               defaultType : 'challengemenuitem',
+               scrollable : false,
+               store :
+               {
+                  model : 'Genesis.model.Challenge',
+                  data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
+               }
+            });
+         }
+         if(carousel.getInnerItems().length > 0)
+         {
+            carousel.setActiveItem(0);
+         }
+      }, 1, this);
    },
    onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {

@@ -5,7 +5,7 @@ Ext.define('Genesis.view.Viewport',
    xtype : 'viewportview',
    config :
    {
-      fadeMode : false,
+      animMode : 'default',
       enableAnim : true,
       autoDestroy : false,
       cls : 'viewport',
@@ -202,7 +202,16 @@ Ext.define('Genesis.view.Viewport',
          listeners :
          {
             scope : this,
-            animationend : 'resetFadeAnimation'
+            animationend : 'resetAnimation'
+         }
+      };
+      this.cubeAnimation =
+      {
+         type : 'cube',
+         listeners :
+         {
+            scope : this,
+            animationend : 'resetAnimation'
          }
       };
 
@@ -210,10 +219,6 @@ Ext.define('Genesis.view.Viewport',
 
       var layout = this.getLayout(), defaultAnimation = layout.getAnimation();
       defaultAnimation.on('animationend', 'resetAnimation', this);
-      if(!merchantMode)
-      {
-         Genesis.constants.initFb();
-      }
       this.getNavigationBar()['hide']();
    },
    // @private
@@ -243,12 +248,24 @@ Ext.define('Genesis.view.Viewport',
    resetAnimation : function()
    {
       var xtypes = this.getActiveItem().getXTypes();
-      //if(this.getFadeMode())
+      if(this.defaultInAnimationDir)
       {
          var defaultAnimation = this.getLayout().getAnimation(0);
          defaultAnimation.getInAnimation().setDirection(this.defaultInAnimationDir);
          defaultAnimation.getOutAnimation().setDirection(this.defaultOutAnimationDir);
-         this.setFadeMode(false);
+
+         /*
+         var barAnimation = this.getNavigationBar().getAnimation();
+         barAnimation.getInAnimation().setDirection(this.defaultInAnimationDir);
+         barAnimation.getOutAnimation().setDirection(this.defaultOutAnimationDir);
+         */
+      }
+      var layout = this.getLayout();
+      var animation = layout.getAnimation();
+      if(this.defaultAnimation && (animation != this.defaultAnimation))
+      {
+         layout.setAnimation(this.defaultAnimation);
+         this.setAnimMode('default');
       }
    },
    setAnimationDir : function(dir)
@@ -263,26 +280,41 @@ Ext.define('Genesis.view.Viewport',
             this.defaultOutAnimationDir = defaultAnimation.getOutAnimation().getDirection();
             defaultAnimation.getInAnimation().setDirection(dir);
             defaultAnimation.getOutAnimation().setDirection(dir);
-            this.setFadeMode(dir == 'up');
+            /*
+            var barAnimation = this.getNavigationBar().getAnimation();
+            barAnimation.getInAnimation().setDirection(dir);
+            barAnimation.getOutAnimation().setDirection(dir);
+            */
+
+            //this.setAnimMode(this.getAnimMode(), dir == 'up');
          }
-      }
-   },
-   resetFadeAnimation : function()
-   {
-      //if(this.getFadeMode())
-      {
-         var layout = this.getLayout();
-         layout.setAnimation(this.defaultAnimation);
-         this.setFadeMode(false);
+         if(!this.defaultAnimation)
+         {
+            this.defaultAnimation = defaultAnimation;
+         }
       }
    },
    setFadeAnimation : function()
    {
       var layout = this.getLayout();
-      this.defaultAnimation = layout.getAnimation();
+      if(!this.defaultAnimation)
+      {
+         this.defaultAnimation = layout.getAnimation();
+      }
       layout.setAnimation(this.fadeAnimation);
-      this.setFadeMode(true);
+      this.setAnimMode('fade');
    },
+   setCubeAnimation : function()
+   {
+      var layout = this.getLayout();
+      if(!this.defaultAnimation)
+      {
+         this.defaultAnimation = layout.getAnimation();
+      }
+      layout.setAnimation(this.cubeAnimation);
+      this.setAnimMode('cube');
+   },
+
    /**
     * @private
     */
@@ -333,12 +365,12 @@ Ext.define('Genesis.view.Viewport',
       var animation = me.getLayout().getAnimation();
       var bar = me.getNavigationBar();
 
-      if (view == me.stack[me.stack.length - 1])
+      if(view == me.stack[me.stack.length - 1])
       {
          console.log("Cannot push the current view into stack ...");
          return;
       }
-      
+
       // Default Title
       if((me.stack.length == 0) && (!bar.titleComponent.getTitle()))
       {

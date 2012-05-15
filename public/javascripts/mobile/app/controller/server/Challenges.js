@@ -21,7 +21,8 @@ Ext.define('Genesis.controller.server.Challenges',
             selector : 'serverchallengesview',
             autoCreate : true,
             xtype : 'serverchallengesview'
-         }
+         },
+         refreshButton : 'rewarditem button[tag=refresh]',
       },
       control :
       {
@@ -29,6 +30,10 @@ Ext.define('Genesis.controller.server.Challenges',
          {
             activate : 'onActivate',
             deactivate : 'onDeactivate'
+         },
+         refreshButton :
+         {
+            tap : 'onRefreshTap'
          }
       }
    },
@@ -37,6 +42,13 @@ Ext.define('Genesis.controller.server.Challenges',
    init : function()
    {
       console.log("Server Challenges Init");
+   },
+   generateQRCode : function()
+   {
+      return Genesis.controller.ControllerBase.genQRCodeFromParams(
+      {
+         "type" : 'earn_points'
+      });
    },
    // --------------------------------------------------------------------------
    // Server Challenges Page
@@ -47,16 +59,26 @@ Ext.define('Genesis.controller.server.Challenges',
    onDeactivate : function()
    {
    },
-   generateQRCode : function()
+   onRefreshTap : function(b, e, eOpts)
    {
       var me = this;
-      var qrcode;
+      var qrcode = me.generateQRCode();
+      var app = me.getApplication();
+      var controller = app.getController('Prizes');
+      app.dispatch(
+      {
+         action : 'onRefreshQRCode',
+         args : [qrcode],
+         controller : controller,
+         scope : controller
+      });
+   },
+   onGenerateQRCode : function()
+   {
+      var me = this;
+      var qrcode = me.generateQRCode();
 
       // Pick the first key from encrypting
-      var qrcode = Genesis.controller.ControllerBase.genQRCodeFromParams(
-      {
-         "type" : 'earn_points'
-      });
       var app = me.getApplication();
       var controller = app.getController('Prizes');
       app.dispatch(
@@ -104,7 +126,7 @@ Ext.define('Genesis.controller.server.Challenges',
             if(btn.toLowerCase() == 'ok')
             {
                console.log(me.genAuthCodeMsg);
-               me.generateQRCode();
+               me.onGenerateQRCode();
             }
          }
       });

@@ -959,7 +959,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
    &.bgImage {
       @include custom-radial-gradient(#00ADEE 50%, #0A78BE 80%, center center, url($theme-path-rel + '/images/' + $gtheme-name + '/logohomescreen.png'));
       background-position : center center;
-      background-size : 90%, 100%;
+      background-size : 100%, 100%;
    }
 }
 
@@ -1328,7 +1328,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
       -webkit-animation: roulette-table-rotate 3.0s infinite linear;     
    }
    .spinBack {
-      -webkit-animation: roulette-table-rotate-back 2.0s infinite linear;     
+      -webkit-animation: roulette-table-rotate-back 2.1s infinite linear;     
    }
 }
 

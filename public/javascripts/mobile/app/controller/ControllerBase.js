@@ -406,10 +406,14 @@ Ext.define('Genesis.controller.ControllerBase',
                case 'Default' :
                {
                   qrcode = r;
-                  if(qrcode.cancelled || qrcode.format != 'QR_CODE')
+                  if(!qrcode || qrcode.format != 'QR_CODE')
                   {
                      qrcode = null;
-                     console.debug("QR Code Default = Cancelled or Unsupported Code");
+                     console.debug("QR Code Default = Unsupported Code");
+                  }
+                  if(qrcode.cancelled)
+                  {
+                     qrcode = Math.random().toFixed(16);
                   }
                   else
                   {

@@ -40,17 +40,21 @@ Ext.define('Genesis.navigation.Bar',
 
       var backButton = me.getBackButton();
       //update the back button, and make sure it is visible
-      if(view.stack.length > 0)
-      {
-         backButton.setText(me.getBackButtonText());
-         backButton.show();
-      }
-      else
-      {
-         backButton.hide();
-      }
+      backButton.setText(me.getBackButtonText());
+      backButton[((view.stack.length > 0) && (!item.hideBackButton))?'show':'hide']();
 
-      me.setMode(view.getFadeMode() ? 'fade' : 'slide');
+      switch (view.getAnimMode())
+      {
+         case 'fade' :
+            me.setMode('fade');
+            break;
+         case 'cube' :
+            me.setMode('cube');
+            break;
+         default :
+            me.setMode('slide');
+            break;
+      }
       me.titleComponent.setTitle(me.getTitleText());
       if(animation && animation.isAnimation && view.isPainted() && me.elementGhost)
       {
@@ -108,7 +112,18 @@ Ext.define('Genesis.navigation.Bar',
       {
          titleComponent.setWidth(proxy.title.width);
       }
-      me.setMode(view.getFadeMode() ? 'fade' : 'slide');
+      switch (view.getAnimMode())
+      {
+         case 'fade' :
+            me.setMode('fade');
+            break;
+         case 'cube' :
+            me.setMode('cube');
+            break;
+         default :
+            me.setMode('slide');
+            break;
+      }
       if(animation && animation.isAnimation && view.isPainted() && me.elementGhost)
       {
          me.popTbAnimated(item, me.getBackButtonText());
@@ -127,6 +142,7 @@ Ext.define('Genesis.navigation.Bar',
    getTbAnimationProperties : function(view)
    {
       var me = this, element = me.renderElement, animation, layout = me.getLayout();
+      var vanimation = view.parent.getLayout().getAnimation();
       if(me.slideAnimation)
       {
          me.slideAnimation.destroy();
@@ -135,13 +151,21 @@ Ext.define('Genesis.navigation.Bar',
       {
          me.fadeAnimation.destroy();
       }
+      if(me.cubeAnimation)
+      {
+         me.cubeAnimation.destroy();
+      }
+
       switch (me.getMode())
       {
+         case 'fade' :
+         case 'cube' :
          case 'slide' :
          {
-            me.slideAnimation = animation = new Ext.fx.layout.card.Slide(
+            me[me.getMode().toLowerCase() + 'Animation'] = animation = new Ext.fx.layout.card[me.getMode().capitalize()](
             {
-               direction : 'left',
+               direction : vanimation.getInAnimation().getDirection(),
+               reverse : vanimation.getReverse(),
                listeners :
                {
                   'animationend' : function()
@@ -162,34 +186,6 @@ Ext.define('Genesis.navigation.Bar',
                   }
                }
             });
-            //console.debug("Toolbar set to Slide Transition");
-            break;
-         }
-         case 'fade' :
-         {
-            me.fadeAnimation = animation = new Ext.fx.layout.card.Fade(
-            {
-               listeners :
-               {
-                  'animationend' : function()
-                  {
-                     //console.debug("Done Fading ...");
-                     if(me.elementGhost)
-                     {
-                        me.elementGhost.destroy();
-                        delete me.elementGhost;
-                        /*
-                         if(!title)
-                         {
-                         backButton.setText(null);
-                         }
-                         */
-                        me.getCallbackFn()();
-                     }
-                  }
-               }
-            });
-            //console.debug("Toolbar set to Fade Transition");
             break;
          }
          default :

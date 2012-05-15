@@ -49,6 +49,7 @@ Ext.define('Genesis.view.client.Rewards',
          }]
       }]
    },
+   hideBackButton : true,
    statics :
    {
       getPhoto : function(type)

@@ -155,7 +155,7 @@
                launch : function()
                {
                   var viewport = this.getController('Viewport');
-                  viewport.appName  = 'GetKickBak';
+                  viewport.appName = 'GetKickBak';
                   console.log("Loading License Keys ...");
                   Genesis.constants.getPrivKey();
                   console.log("Launching App");
@@ -261,5 +261,10 @@
          console.log("SystemInit");
          //appInit();
       </script>
+      <!-- Cache images -->
+      <div style="display:none;">
+         <div class="rouletteBg"></div><div class="rouletteTable"></div><div class="rouletteBall"></div>
+      </div>
+      <!-- -->
    </body>
 </html>
