@@ -219,12 +219,18 @@ Ext.define('Genesis.controller.server.Redemptions',
 //
 // Cleanup Redeem Database every 6 hours
 //
-Ext.defer(function()
+var _dbCleanup = function()
 {
-   console.log("===========================");
-   console.log("Redeem Database is resetted");
-   console.log("===========================");
-   Genesis.constants.setRedeemDB(
+   Ext.defer(function()
    {
-   });
-}, 60 * 60 * 6);
+      console.log("===========================");
+      console.log("Redeem Database is resetted");
+      console.log("===========================");
+      Genesis.constants.setRedeemDB(
+      {
+      });
+      _dbCleanup();
+   }, 1000 * 60 * 60 * 6);
+};
+
+_dbCleanup();

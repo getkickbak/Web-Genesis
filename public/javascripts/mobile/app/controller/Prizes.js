@@ -143,7 +143,7 @@ Ext.define('Genesis.controller.Prizes',
                //
                // In case the sound is still going ...
                //
-               Genesis.controller.ControllerBase.stopSoundFile(viewport.sound_files['rouletteSpinSound']);
+               //Genesis.controller.ControllerBase.stopSoundFile(viewport.sound_files['rouletteSpinSound']);
                Ext.defer(me.popView, 3 * 1000, me);
             }
          });

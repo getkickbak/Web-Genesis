@@ -115,7 +115,7 @@ Ext.define('Genesis.controller.client.Rewards',
                   message : me.missingEarnPtsCodeMsg,
                   callback : function()
                   {
-                     me.popView();
+                     //me.popView();
                   }
                });
             }
@@ -162,7 +162,7 @@ Ext.define('Genesis.controller.client.Rewards',
                }
                else
                {
-                  me.popView();
+                  //me.popView();
                }
             }
          });
@@ -184,6 +184,7 @@ Ext.define('Genesis.controller.client.Rewards',
 
       if(Ext.isDefined(metaData['points']))
       {
+         me.getRewards(); // Preload page
          message = me.getPointsMsg(metaData['points']);
          if(!metaData['vip_challenge'])
          {
@@ -209,6 +210,7 @@ Ext.define('Genesis.controller.client.Rewards',
       else
       if(metaData['vip_challenge'])
       {
+         me.getRewards(); // Preload page
          me.vipPopUp(metaData['vip_challenge'].points, exit);
       }
    },
