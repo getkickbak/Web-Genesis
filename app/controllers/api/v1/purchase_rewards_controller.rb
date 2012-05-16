@@ -20,7 +20,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       begin
         @prize = nil
         authorized = false
-        if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
+        if APP_PROP["DEBUG_MODE"]
           data = String.random_alphanumeric(32)
           data_expiry_ts = Time.now
           amount = rand(100)+1

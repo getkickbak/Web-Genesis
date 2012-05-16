@@ -3,20 +3,16 @@ class Api::V1::CheckInsController < ApplicationController
   before_filter :authenticate_user!
   
   def create
-    if !APP_PROP["DEBUG_MODE"]
-      if APP_PROP["SIMULATOR_MODE"]
-        @venue = Venue.first(:offset => 0, :limit => 1)
-      else
-        checkInCode = CheckInCode.first(:auth_code => params[:auth_code])
-        if checkInCode.nil?
-          respond_to do |format|
-            #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-            format.json { render :json => { :success => false, :message => [t("api.check_ins.invalid_code")] } }  
-          end
-          return
+    if !APP_PROP["DEBUG_MODE"] && !APP_PROP["SIMULATOR_MODE"]
+      checkInCode = CheckInCode.first(:auth_code => params[:auth_code])
+      if checkInCode.nil?
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => [t("api.check_ins.invalid_code")] } }  
         end
-        @venue = checkInCode.venue
-      end  
+        return
+      end
+      @venue = checkInCode.venue
     else
       if params[:venue_id]
         @venue = Venue.get(params[:venue_id])

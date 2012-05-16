@@ -57,7 +57,7 @@ class Api::V1::ChallengesController < ApplicationController
 
     Customer.transaction do
       begin
-        if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
+        if APP_PROP["DEBUG_MODE"]
           data = String.random_alphanumeric(32)
         else
           data = params[:data]
@@ -107,7 +107,7 @@ class Api::V1::ChallengesController < ApplicationController
   private
   
   def authenticated?(data)
-    if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
+    if APP_PROP["DEBUG_MODE"]
       return true
     else
       cipher = Gibberish::AES.new(@venue.auth_code)
