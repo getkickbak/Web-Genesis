@@ -67,7 +67,7 @@ class Api::V1::TokensController < ApplicationController
         if facebook_id && User.first(:facebook_id => facebook_id)
           respond_to do |format|
             #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-            format.json { render :json => { :success => false, :metaData => { :rescode => 'login_invalid_info' }, :message => [t("api.tokens.create_invalid_facebook_info")] } }
+            format.json { render :json => { :success => false, :metaData => { :rescode => 'login_invalid_info' }, :message => [t("api.tokens.create_invalid_info")] } }
           end  
           return  
         end
