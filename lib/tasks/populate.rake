@@ -352,6 +352,7 @@ namespace :db do
           :challenge_id => challenge.id,
           :venue_id => venues[rand(2)].id,
           :data => String.random_alphanumeric(32),
+          :data_expiry_ts => now,
           :points => challenge.points,
           :created_ts => now
         )
@@ -362,6 +363,7 @@ namespace :db do
         record = EarnRewardRecord.new(
           :venue_id => venues[rand(2)].id,
           :data => String.random_alphanumeric(32),
+          :data_expiry_ts => now,
           :points => (amount / merchant.reward_model.price_per_point).to_i,
           :amount => amount,
           :created_ts => now
