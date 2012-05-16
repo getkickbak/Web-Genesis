@@ -5,15 +5,15 @@ Ext.ns('Genesis.constants');
 
 Genesis.constants =
 {
-   //host : 'http://192.168.0.52:3000',
-   host : 'http://www.getkickbak.com',
+   host : 'http://192.168.0.52:3000',
+   //host : 'http://www.getkickbak.com',
    themeName : 'v1',
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
    weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
-   debugPrivKey : 'oZXfUyCtZwnP46oucs1Ibo64OuTQI3OH',
+   debugPrivKey : 'FTzPBwpWIgAF7JrvcTb9eS0RoaoDdvWJ',
    isNative : function()
    {
       //return Ext.isDefined(cordova);
@@ -33,6 +33,18 @@ Genesis.constants =
    getLocalStorage : function()
    {
       return window.localStorage;
+   },
+   getRedeemDB : function()
+   {
+      var db = this.getLocalStorage().getItem('kickbakRedeem');
+      return ((db) ? Ext.decode(db) :
+      {
+      });
+   },
+   setRedeemDB : function(db)
+   {
+      //console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
+      this.getLocalStorage().setItem('kickbakRedeem', Ext.encode(db));
    },
    getLocalDB : function()
    {
@@ -780,6 +792,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
             case 'update_account_invalid_info' :
             case 'signup_invalid_info' :
             case 'update_account_invalid_facebook_info' :
+            case 'login_invalid_info' :
             {
                Ext.device.Notification.show(
                {
