@@ -29,12 +29,11 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           data = params[:data]
           cipher = Gibberish::AES.new(@venue.auth_code)
           decrypted = cipher.dec(data)
-          logger.debug("Decrypted data(#{decrypted})")
           decrypted_data = JSON.parse(decrypted)
-          logger.debug("Turned decrypted data in json object")
-          data_expiry_ts = decrypted_data[:expiry_ts]
+          data_expiry_ts = Time.parse(decrypted_data[:expiry_ts])
+          logger.debug("decrypted expiry_ts: #{date_expiry_ts}")
           if (decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
-            amount = decrypted_data[:amount]
+            amount = decrypted_data[:amount].to_f
             authorized = true
           end  
         end  
