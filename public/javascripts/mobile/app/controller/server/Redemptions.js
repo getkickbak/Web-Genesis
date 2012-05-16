@@ -41,25 +41,17 @@ Ext.define('Genesis.controller.server.Redemptions',
    verifyQRCode : function(encrypted)
    {
       console.debug("Encrypted Code Length: " + encrypted.length);
+      console.debug("Decrypted content [" + encrypted + "]");
 
       var keys = Genesis.constants.getPrivKey();
       var db = Genesis.constants.getRedeemDB(db);
+      GibberishAES.size(256);
       for(var key in keys)
       {
-         var message = encrypted.split('$');
-         console.debug("Decrypted iv[" + message[0] + "], content [" + message[1] + "]");
          try
          {
-            var privkey = CryptoJS.enc.Hex.parse(keys[key]);
-
-            console.debug("Decrypted message key[" + keys[key] + "]");
-            var data = CryptoJS.AES.decrypt(message[1], privkey,
-            {
-               mode : CryptoJS.mode.CBC,
-               //padding : CryptoJS.pad.NoPadding,
-               formatter : Base64Formatter,
-               iv : CryptoJS.enc.Hex.parse(message[0])
-            }).toString(CryptoJS.enc.Utf8);
+            console.debug("Decrypting message using key[" + keys[key] + "]");
+            data = GibberishAES.dec(encrypted, keys[key]);
             console.debug("Decrypted Data[" + data + "]");
             var decrypted = Ext.decode(data);
             console.debug("Decoded Data!");
