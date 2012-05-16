@@ -26,7 +26,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
     end
     
     Time.zone = @venue.time_zone
-    #Customer.transaction do
+    Customer.transaction do
       begin
         if @customer.points - @reward.points >= 0
           record = RedeemRewardRecord.new(
@@ -61,6 +61,6 @@ class Api::V1::CustomerRewardsController < ApplicationController
           format.json { render :json => { :success => false, :message => [t("api.customer_rewards.redeem_failure")] } }
         end
       end
-    #end
+    end
   end
 end
