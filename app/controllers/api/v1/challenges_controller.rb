@@ -59,19 +59,15 @@ class Api::V1::ChallengesController < ApplicationController
       begin
         if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
           data = String.random_alphanumeric(32)
-          iv = String.random_alphanumeric(32)
-          auth_data = String.random_alphanumeric(32)
         else
-          data = params[:data].split('$')
-          iv = data[0]
-          auth_data = data[1]
+          data = params[:data]
         end
-        if is_challenge_satisfied?(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && authenticated?(data, iv, auth_data, @venue.auth_code)))
+        if is_challenge_satisfied?(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && authenticated?(@venue.auth_code, data)))
           if not challenge_limit_reached?(@challenge)
             record = EarnRewardRecord.new(
               :challenge_id => @challenge.id,
               :venue_id => @venue.id,
-              :data => iv,
+              :data => data,
               :points => @challenge.points,
               :created_ts => Time.now
             )
@@ -109,13 +105,14 @@ class Api::V1::ChallengesController < ApplicationController
   
   private
   
-  def authenticated?(data, iv, auth_data, auth_code)
+  def authenticated?(auth_code, data)
     if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
       return true
     else
-      decrypted = Aes.decrypt('256', 'CBC', auth_data, auth_code, iv)
+      cipher = Gibberish::AES.new(auth_code)
+      decrypted = cipher.dec(data)
       decrypted_data = JSON.parse(decrypted)
-      if ((decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && decrypted_data[:expiry_ts] >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data => iv).nil?
+      if ((decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && decrypted_data[:expiry_ts] >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data => data).nil?
         return true
       end
       return false

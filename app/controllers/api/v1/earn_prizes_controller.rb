@@ -47,7 +47,8 @@ class Api::V1::EarnPrizesController < ApplicationController
             :reward => @earn_prize.to_redeemed,
             :expiry_ts => Time.now+3.hour 
           }.to_json
-          @encrypted_data = Aes.encrypt('256', 'CBC', data, @earn_prize.venue.auth_code)
+          cipher = Gibberish::AES.new(@earn_prize.venue.auth_code)
+          @encrypted_data = cipher.enc(data)
           render :template => '/api/v1/earn_prizes/redeem'
         else
           if @earn_prize.expiry_date < today

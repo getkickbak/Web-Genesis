@@ -45,7 +45,8 @@ class Api::V1::CustomerRewardsController < ApplicationController
             :reward => @reward.to_redeemed,
             :expiry_ts => Time.now+3.hour 
           }.to_json
-          @encrypted_data = Aes.encrypt('256', 'CBC', data, @venue.auth_code)
+          cipher = Gibberish::AES.new(@venue.auth_code)
+          @encrypted_data = cipher.enc(data)
           render :template => '/api/v1/customer_rewards/redeem'
         else
           respond_to do |format|
