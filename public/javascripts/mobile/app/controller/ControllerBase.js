@@ -50,25 +50,18 @@ Ext.define('Genesis.controller.ControllerBase',
          //
          // Show QRCode
          //
+         // GibberishAES.enc(string, password)
+         // Defaults to 256 bit encryption
+         GibberishAES.size(256);
          var keys = Genesis.constants.getPrivKey();
          for(key in keys)
          {
             try
             {
-               var ivseed = seed().toString().split('.')[1] + seed().toString().split('.')[1];
-
-               encrypted = CryptoJS.AES.encrypt(Ext.encode(Ext.applyIf(
+               encrypted = GibberishAES.enc(Ext.encode(Ext.applyIf(
                {
                   "expiry_ts" : new Date().addHours(3).format("c")
-               }, params)), CryptoJS.enc.Hex.parse(keys[key]),
-               {
-                  mode : CryptoJS.mode.CBC,
-                  //padding : CryptoJS.pad.NoPadding,
-                  formatter : Base64Formatter,
-                  iv : CryptoJS.enc.Hex.parse(ivseed)
-               }).toString();
-
-               encrypted = ivseed + '$' + encrypted;
+               }, params)), keys[key]);
             }
             catch (e)
             {

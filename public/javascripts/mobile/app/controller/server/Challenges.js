@@ -78,7 +78,6 @@ Ext.define('Genesis.controller.server.Challenges',
       var me = this;
       var qrcode = me.generateQRCode();
 
-      // Pick the first key from encrypting
       var app = me.getApplication();
       var controller = app.getController('Prizes');
       app.dispatch(
