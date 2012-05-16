@@ -22,6 +22,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         authorized = false
         if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
           data = String.random_alphanumeric(32)
+          data_expiry_ts = Time.now
           amount = rand(100)+1
           authorized = true
         else
@@ -29,7 +30,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           cipher = Gibberish::AES.new(@venue.auth_code)
           decrypted = cipher.dec(data)
           decrypted_data = JSON.parse(decrypted)
-          if (decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && (decrypted_data[:expiry_ts] >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => decrypted_data[:expiry_ts], :data => data).nil?
+          data_expiry_ts = decrypted_data[:expiry_ts]
+          if (decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
             amount = decrypted_data[:amount]
             authorized = true
           end  
@@ -46,7 +48,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               :challenge_id => challenge.id,
               :venue_id => @venue.id,
               :data => data,
-              :data_expiry_ts => decrypted_data[:expiry_ts],
+              :data_expiry_ts => data_expiry_ts,
               :points => challenge.points,
               :created_ts => now
             )
@@ -63,7 +65,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           record = EarnRewardRecord.new(
             :venue_id => @venue.id,
             :data => data,
-            :data_expiry_ts => decrypted_data[:expiry_ts],
+            :data_expiry_ts => data_expiry_ts,
             :points => @points,
             :amount => amount,
             :created_ts => now

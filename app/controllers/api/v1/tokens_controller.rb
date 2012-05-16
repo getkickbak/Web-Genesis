@@ -47,11 +47,12 @@ class Api::V1::TokensController < ApplicationController
   end
 
   def create_from_facebook
+    create_user = false
+    facebook_id = params[:facebook_id]
     auth_token = params[Devise.token_authentication_key]
     #logger.debug("auth_token: #{auth_token}")
     #logger.debug("facebook_id: #{params[:facebook_id]}")
     if auth_token.nil?
-      facebook_id = params[:facebook_id]
       if facebook_id.nil?
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -62,6 +63,15 @@ class Api::V1::TokensController < ApplicationController
       @user = User.first(:facebook_id => facebook_id)
     else
       @user = User.first(:authentication_token => auth_token)  
+      if @user.nil?
+        if facebook_id && User.first(:facebook_id => facebook_id)
+          respond_to do |format|
+            #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+            format.json { render :json => { :success => false, :metaData => { :rescode => 'login_invalid_info' }, :message => [t("api.tokens.create_invalid_facebook_info")] } }
+          end  
+          return  
+        end
+      end
     end
     
     if @user.nil?
@@ -78,6 +88,9 @@ class Api::V1::TokensController < ApplicationController
           :gender => params[:gender],
           :birthday => params[:birthday]
         }
+        if facebook_id
+          @user.update_without_password(:facebook_id => facebook_id, :facebook_email => params[:facebook_email])
+        end
         @user.profile.update(profile_info)
         @user.ensure_authentication_token!
         @user.save!
