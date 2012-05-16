@@ -62,12 +62,13 @@ class Api::V1::ChallengesController < ApplicationController
         else
           data = params[:data]
         end
-        if is_challenge_satisfied?(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && authenticated?(@venue.auth_code, data)))
+        if is_challenge_satisfied?(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && authenticated?(data)))
           if not challenge_limit_reached?(@challenge)
             record = EarnRewardRecord.new(
               :challenge_id => @challenge.id,
               :venue_id => @venue.id,
               :data => data,
+              :data_expiry_ts => @data_expiry_ts,
               :points => @challenge.points,
               :created_ts => Time.now
             )
@@ -105,14 +106,15 @@ class Api::V1::ChallengesController < ApplicationController
   
   private
   
-  def authenticated?(auth_code, data)
+  def authenticated?(data)
     if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
       return true
     else
-      cipher = Gibberish::AES.new(auth_code)
+      cipher = Gibberish::AES.new(@venue.auth_code)
       decrypted = cipher.dec(data)
       decrypted_data = JSON.parse(decrypted)
       if ((decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && decrypted_data[:expiry_ts] >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data => data).nil?
+        @data_expiry_ts = decrypted_data[:expiry_ts]
         return true
       end
       return false

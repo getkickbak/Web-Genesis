@@ -46,6 +46,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               :challenge_id => challenge.id,
               :venue_id => @venue.id,
               :data => data,
+              :data_expiry_ts => decrypted_data[:expiry_ts],
               :points => challenge.points,
               :created_ts => now
             )
@@ -62,6 +63,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           record = EarnRewardRecord.new(
             :venue_id => @venue.id,
             :data => data,
+            :data_expiry_ts => decrypted_data[:expiry_ts],
             :points => @points,
             :amount => amount,
             :created_ts => now

@@ -7,6 +7,7 @@ class EarnRewardRecord
   property :challenge_id, Integer, :default => 0
   property :venue_id, Integer, :required => true, :default => 0
   property :data, String, :required => true, :default => ""
+  property :data_expiry_ts, DateTime, :required => true, :default => ::Constant::MIN_TIME
   property :points, Integer, :required => true, :default => 0
   property :amount, Decimal, :scale => 2, :default => 0.00
   property :created_ts, DateTime, :required => true, :default => ::Constant::MIN_TIME
@@ -14,7 +15,7 @@ class EarnRewardRecord
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessible :challenge_id, :venue_id, :data, :points, :amount, :created_ts
+  attr_accessible :challenge_id, :venue_id, :data, :data_expiry_ts, :points, :amount, :created_ts
   
   belongs_to :merchant
   belongs_to :user
