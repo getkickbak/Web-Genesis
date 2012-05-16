@@ -23,6 +23,6 @@ class EarnPrize
     type = {
       :value => RedeemedReward::TYPE_PRIZE
     }
-    RedeemedReward.new(reward.id, type, reward.title)
+    RedeemedReward.new(type, reward.title)
   end
 end

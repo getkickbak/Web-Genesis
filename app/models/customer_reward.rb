@@ -58,7 +58,7 @@ class CustomerReward
     type = {
       :value => RedeemedReward::TYPE_REWARD
     }
-    RedeemedReward.new(self.id, type, self.title)
+    RedeemedReward.new(type, self.title)
   end
   
   def destroy
