@@ -269,10 +269,8 @@ Ext.define('Genesis.controller.Prizes',
                      });
                      container = view.getItems().items[0];
                   }
-                  else
-                  {
-                     createPrize(prizes[i]);
-                  }
+
+                  createPrize(prizes[i]);
                }
             }
 

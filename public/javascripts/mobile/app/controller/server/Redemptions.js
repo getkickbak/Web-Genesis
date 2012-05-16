@@ -21,7 +21,8 @@ Ext.define('Genesis.controller.server.Redemptions',
             selector : 'serverredemptionsview',
             autoCreate : true,
             xtype : 'serverredemptionsview'
-         }
+         },
+         doneButton : 'rewarditem button[tag=done]'
       },
       control :
       {
@@ -29,11 +30,14 @@ Ext.define('Genesis.controller.server.Redemptions',
          {
             activate : 'onActivate',
             deactivate : 'onDeactivate'
+         },
+         doneButton :
+         {
+            tap : 'onDoneTap'
          }
       }
    },
-   //orderTitle : 'Rewards List',
-   //checkoutTitle : 'Check Out',
+   invalidAuthCodeMsg : 'Authorization Code is Invalid',
    init : function()
    {
       console.log("Server Redemptions Init");
@@ -43,8 +47,9 @@ Ext.define('Genesis.controller.server.Redemptions',
       console.debug("Encrypted Code Length: " + encrypted.length);
       console.debug("Decrypted content [" + encrypted + "]");
 
+      var me = this;
       var keys = Genesis.constants.getPrivKey();
-      var db = Genesis.constants.getRedeemDB(db);
+      var db = Genesis.constants.getRedeemDB();
       GibberishAES.size(256);
       for(var key in keys)
       {
@@ -55,15 +60,15 @@ Ext.define('Genesis.controller.server.Redemptions',
             console.debug("Decrypted Data[" + data + "]");
             var decrypted = Ext.decode(data);
             console.debug("Decoded Data!");
-            var date = Date.parse(decrypted["expiry_ts"]);
+            var date = Date.parse(decrypted["expiry_ts"], "yyyy-MM-dd");
 
-            if(db[message[0]])
+            if(db[encrypted])
             {
                console.log("Decrypted data is a previous used QRCode");
                break;
             }
             else
-            if((date >= Date.now()) && (date <= Date.now().addHours(3 * 2)))
+            if((date >= Date.now()) && (date <= new Date().addHours(3 * 2)))
             {
                console.log("Found QRCode type[" + decrypted['type'] + "]");
                switch (decrypted['type'])
@@ -97,7 +102,7 @@ Ext.define('Genesis.controller.server.Redemptions',
                //
                // Add to Persistent Store to make sure it cannot be rescanned again
                //
-               db[message[0]] = message[1];
+               db[encrypted] = true;
                Genesis.constants.setRedeemDB(db);
                return;
             }
@@ -129,14 +134,6 @@ Ext.define('Genesis.controller.server.Redemptions',
    onRedeemVerification : function()
    {
       var me = this;
-      var invalidCode = function()
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Error!',
-            message : 'Authorization Code is Invalid'
-         });
-      }
       var verify = function()
       {
          me.scanQRCode(
@@ -145,24 +142,30 @@ Ext.define('Genesis.controller.server.Redemptions',
             {
                if(!encrypted)
                {
-                  if(Ext.isDefined(encrypted))
+                  /*
+                   if(Ext.isDefined(encrypted))
+                   {
+                   encrypted = Genesis.controller.ControllerBase.genQRCodeFromParams(
+                   {
+                   "type" : 'redeem_reward',
+                   "reward" :
+                   {
+                   type :
+                   {
+                   value : 'reward'
+                   },
+                   title : 'Test QR Code'
+                   }
+                   });
+                   }
+                   else
+                   */
                   {
-                     encrypted = Genesis.controller.ControllerBase.genQRCodeFromParams(
+                     Ext.device.Notification.show(
                      {
-                        "type" : 'redeem_reward',
-                        "reward" :
-                        {
-                           type :
-                           {
-                              value : 'reward'
-                           },
-                           title : 'Test QR Code'
-                        }
+                        title : 'Error!',
+                        message : me.invalidAuthCodeMsg
                      });
-                  }
-                  else
-                  {
-                     return invalidCode();
                   }
                }
                me.verifyQRCode(encrypted);
@@ -183,6 +186,10 @@ Ext.define('Genesis.controller.server.Redemptions',
             }
          }
       });
+   },
+   onDoneTap : function(b, e, eOpts)
+   {
+      this.popView();
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

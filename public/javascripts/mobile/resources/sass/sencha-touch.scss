@@ -1121,8 +1121,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
    }
    .info {
       position:relative;
-      padding:$panelTopGap*2 $panelGap $panelTopGap $panelGap;
-      //min-height:6.50em;
+      padding:$panelTopGap*2 $panelGap 0 $panelGap;
       .photo {
          position:absolute;
          right : 0.8em;

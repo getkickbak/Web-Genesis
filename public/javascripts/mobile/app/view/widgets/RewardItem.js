@@ -22,6 +22,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
             tag : 'title',
             cls : 'title',
             padding : '0.7 0.8',
+            margin : '0 0 0.8 0',
             defaultUnit : 'em',
             tpl : Ext.create('Ext.XTemplate', '{[this.getDescription(values)]}',
             {
@@ -34,15 +35,12 @@ Ext.define('Genesis.view.widgets.RewardItem',
          {
             xtype : 'component',
             flex : 1,
-            //width : 57 * 3,
             tag : 'itemPhoto',
             cls : 'itemPhoto'
          },
          {
             docked : 'bottom',
             xtype : 'component',
-            //padding : '0.7 0.8 1.4 0.8',
-            //defaultUnit : 'em',
             tag : 'info',
             cls : 'info',
             tpl : Ext.create('Ext.XTemplate',
@@ -82,6 +80,14 @@ Ext.define('Genesis.view.widgets.RewardItem',
             cls : 'separator',
             tag : 'refresh',
             text : 'Refresh',
+            ui : 'orange-large'
+         },
+         {
+            docked : 'bottom',
+            xtype : 'button',
+            cls : 'separator',
+            tag : 'done',
+            text : 'Verified!',
             ui : 'orange-large'
          }]
       },
@@ -127,20 +133,26 @@ Ext.define('Genesis.view.widgets.RewardItem',
       var photo = Genesis.view.Prizes.getPhoto(reward['type']) || reward['photo']['thumbnail_ios_medium'].url;
       var info = this.query("component[tag=info]")[0];
       var refresh = this.query("button[tag=refresh]")[0];
+      var done = this.query("button[tag=done]")[0];
+
       //
       // Hide Merchant Information if it's missing
       //
-
       if(data.Merchant)
       {
          info.setData(data);
          info.show();
          refresh.hide();
+         done.hide();
       }
       else
       {
          info.hide();
-         refresh.show();
+         //
+         // Verification of Prizes/Rewards Mode
+         //
+         refresh[reward['photo'] ? 'show' : 'hide']();
+         done[reward['photo'] ? 'hide' : 'show']();
       }
 
       this.query("component[tag=title]")[0].setData(reward);
