@@ -31,6 +31,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           decrypted = cipher.dec(data)
           decrypted_data = JSON.parse(decrypted)
           data_expiry_ts = Time.at(decrypted_data[:expiry_ts].to_i)
+          logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
           if (decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
             amount = decrypted_data[:amount].to_f
             authorized = true
