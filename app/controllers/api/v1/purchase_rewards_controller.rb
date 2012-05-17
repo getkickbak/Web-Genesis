@@ -29,6 +29,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           data = params[:data]
           cipher = Gibberish::AES.new(@venue.auth_code)
           decrypted = cipher.dec(data)
+          logger.debug("decrypted text: #{decrypted}")
           decrypted_data = JSON.parse(decrypted)
           data_expiry_ts = Time.at(decrypted_data[:expiry_ts].to_i)
           logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
