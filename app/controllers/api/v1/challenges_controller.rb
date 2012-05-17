@@ -18,8 +18,8 @@ class Api::V1::ChallengesController < ApplicationController
     Time.zone = @venue.time_zone
     Customer.transaction do
       begin
-        if is_startable_challenge?(@challenge)
-          start_challenge(@venue)
+        if is_startable_challenge?
+          start_challenge
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => true } }
@@ -62,7 +62,7 @@ class Api::V1::ChallengesController < ApplicationController
     end
     authorized = false
     begin
-      if is_challenge_satisfied?(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && authenticated?(data)))
+      if is_challenge_satisfied? && ((!@challenge.require_verif) || (@challenge.require_verif && authenticated?(data)))
         authorized = true
       end
     rescue
@@ -75,24 +75,36 @@ class Api::V1::ChallengesController < ApplicationController
     Customer.transaction do
       begin
         if authorized
-          if not challenge_limit_reached?(@challenge)
-            record = EarnRewardRecord.new(
-              :challenge_id => @challenge.id,
-              :venue_id => @venue.id,
-              :data => data,
-              :data_expiry_ts => @data_expiry_ts,
-              :points => @challenge.points,
-              :created_ts => Time.now
-            )
-            record.merchant = @venue.merchant
-            record.user = current_user
-            record.save
-            @customer.points += @challenge.points
-            @customer.save
-          end
-          respond_to do |format|
-            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => @challenge.points } } }
+          if points_eligible?
+            if not challenge_limit_reached?
+              record = EarnRewardRecord.new(
+                :challenge_id => @challenge.id,
+                :venue_id => @venue.id,
+                :data => data,
+                :data_expiry_ts => @data_expiry_ts,
+                :points => @challenge.points,
+                :created_ts => Time.now
+              )
+              record.merchant = @venue.merchant
+              record.user = current_user
+              record.save
+              @customer.points += @challenge.points
+              @customer.save
+              respond_to do |format|
+                #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => @challenge.points } } }
+              end
+            else
+              respond_to do |format|
+                #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => 0, :message => t("api.challenges.limit_reached").split('\n') } } }
+              end  
+            end
+          else
+            respond_to do |format|
+              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+              format.json { render :json => { :success => true, :mesage => get_success_no_points_msg } }
+            end  
           end
         else
           respond_to do |format|
@@ -133,35 +145,40 @@ class Api::V1::ChallengesController < ApplicationController
     end
   end
   
-  def is_challenge_satisfied?(challenge)
-    if challenge.type.value == "photo"
+  def is_challenge_satisfied?
+    if @challenge.type.value == "photo"
       if session[:photo_upload_token] == params[:upload_token]
         session.delete :photo_upload_token
         return true
       end
       return false
-    elsif challenge.type.value == "vip"
-      return false  
     end
     return true
   end
   
-  def challenge_limit_reached?(challenge)
-    if challenge.type.value == "photo"
-      return EarnRewardRecord.count(:challenge_id => challenge.id, :merchant => challenge.merchant, :user => current_user, :created_ts.gte => Date.today.to_time) > 0
+  def points_eligible?
+    if @challenge.type == "referral" || @challenge.type == "vip"
+      return false
+    end 
+    return true
+  end
+  
+  def challenge_limit_reached?
+    if @challenge.type.value == "photo" || @challenge.type.value == "birthday"
+      return EarnRewardRecord.count(:challenge_id => @challenge.id, :merchant => @challenge.merchant, :user => current_user, :created_ts.gte => Date.today.to_time) > 0
     end
     return false  
   end
   
-  def is_startable_challenge?(challenge)
-    if challenge.type.value == "referral"
+  def is_startable_challenge?
+    if @challenge.type.value == "referral"
       return true
     end
     return false
   end
   
-  def start_challenge(venue)
-    if challenge.type.value == "referral"
+  def start_challenge
+    if @challenge.type.value == "referral"
       # Need to filter out which emails are already customers
       emails = JSON.parse(params[:emails])
       users = User.all(:fields => [:name, :email], :email => emails)
@@ -170,11 +187,20 @@ class Api::V1::ChallengesController < ApplicationController
         emails_to_user[user.email] = user.name
       end
       emails.each do |email|
-        ReferralChallenge.create(venue.merchant, current_user, { :ref_email => email })
+        ReferralChallenge.create(@venue.merchant, current_user, { :ref_email => email })
         
         # Send email notification to new customers (registered or non-registered users)
         UserMailer.referral_email(current_user, venue, email, emails_to_user[email])
       end
+    end
+  end
+  
+  def get_success_no_points_msg
+    case @challenge.type.value
+    when "vip"
+      t("api.challenges.vip_success") % [@customer.visits % @challenge.data.visits, @challenge.points]
+    else
+      t("api.challenges.unsupported_success")  
     end
   end
 end

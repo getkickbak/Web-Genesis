@@ -126,6 +126,9 @@ en:
         qualified_visits: "Earn %s bonus %s with %s more %s!"
         start_failure: "Trouble starting the challenge.\nPlease try again."
         complete_failure: "Trouble completing the challenge.\nPlease try again."
+        limit_reached: "Thank you for completing this challenge!"
+        vip_success: "You are only %s visits away from %s bonus points!"
+        unsupported_success: "Nothing to do here."
       check_ins:
         invalid_code: "Invalid check-in code.\nPlease try again."
         create_failure: "Trouble with check-in.\nPlease try again." 
