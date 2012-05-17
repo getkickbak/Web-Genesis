@@ -29,6 +29,6 @@ production:
   AMAZON_PHOTOS_BUCKET: photos.getkickbak.com
   #REDIS_URL: "redis://username:password@127.0.0.1:6379/"
   REDIS_URL: "redis://kickbak:4581c2433f1c544dbac343b89388d88e@gar.redistogo.com:9108"
-  DEBUG_MODE: true
+  DEBUG_MODE: false
   SIMULATOR_MODE: true
   GENERATE_QRCODE: true

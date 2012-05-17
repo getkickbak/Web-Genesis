@@ -20,7 +20,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       begin
         @prize = nil
         authorized = false
-        if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
+        if APP_PROP["DEBUG_MODE"]
           data = String.random_alphanumeric(32)
           data_expiry_ts = Time.now
           amount = rand(100)+1
@@ -30,9 +30,10 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           cipher = Gibberish::AES.new(@venue.auth_code)
           decrypted = cipher.dec(data)
           decrypted_data = JSON.parse(decrypted)
-          data_expiry_ts = decrypted_data[:expiry_ts]
+          data_expiry_ts = Time.parse(decrypted_data[:expiry_ts])
+          logger.debug("decrypted expiry_ts: #{date_expiry_ts}")
           if (decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
-            amount = decrypted_data[:amount]
+            amount = decrypted_data[:amount].to_f
             authorized = true
           end  
         end  
@@ -78,7 +79,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         
           #logger.debug("Before acquiring cache mutex.")
           mutex = CacheMutex.new(@venue.merchant.cache_key, Cache.memcache)
-          mutex.acquire
+          acquired = mutex.acquire
           #logger.debug("Cache mutex acquired(#{acquired}).")
           @prick_prize_initialized = false
           reward_model = @venue.merchant.reward_model

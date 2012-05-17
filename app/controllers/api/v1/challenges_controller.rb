@@ -57,7 +57,7 @@ class Api::V1::ChallengesController < ApplicationController
 
     Customer.transaction do
       begin
-        if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
+        if APP_PROP["DEBUG_MODE"]
           data = String.random_alphanumeric(32)
         else
           data = params[:data]
@@ -107,13 +107,13 @@ class Api::V1::ChallengesController < ApplicationController
   private
   
   def authenticated?(data)
-    if APP_PROP["SIMULATOR_MODE"] || APP_PROP["DEBUG_MODE"]
+    if APP_PROP["DEBUG_MODE"]
       return true
     else
       cipher = Gibberish::AES.new(@venue.auth_code)
       decrypted = cipher.dec(data)
       decrypted_data = JSON.parse(decrypted)
-      @data_expiry_ts = decrypted_data[:expiry_ts]
+      @data_expiry_ts = Time.parse(decrypted_data[:expiry_ts])
       if ((decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && @data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => @data_expiry_ts, :data => data).nil?
         return true
       end
