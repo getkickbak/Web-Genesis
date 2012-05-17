@@ -40,7 +40,7 @@ Ext.define('Genesis.controller.Checkins',
    },
    checkinMsg : 'Checking in ...',
    metaDataMissingMsg : 'Missing Checkin MetaData information.',
-   noCheckinCodeMsg : 'No Checkin Code were found!',
+   noCheckinCodeMsg : 'No Checkin Code found!',
    getMerchantInfoMsg : 'Retrieving Merchant Info ...',
    init : function()
    {
