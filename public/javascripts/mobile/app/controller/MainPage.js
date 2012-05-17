@@ -342,6 +342,17 @@ Ext.define('Genesis.controller.MainPage',
    // --------------------------------------------------------------------------
    // Login Page
    // --------------------------------------------------------------------------
+   facebookLogin : function(params)
+   {
+      Customer['setFbLoginUrl']();
+      Ext.StoreMgr.get('CustomerStore').load(
+      {
+         jsonData :
+         {
+         },
+         params : params
+      });
+   },
    onLoginActivate : function(c, eOpts)
    {
       this.getInfoBtn().hide();
@@ -434,20 +445,14 @@ Ext.define('Genesis.controller.MainPage',
    },
    onFacebookTap : function(b, e, eOpts, eInfo)
    {
+      var me = this;
       //
       // Login to Facebook
       //
       Genesis.constants.facebook_onLogin(function(params)
       {
          console.log("Logging into Kickbak using Facebook account ...");
-         Customer['setFbLoginUrl']();
-         Ext.StoreMgr.get('CustomerStore').load(
-         {
-            jsonData :
-            {
-            },
-            params : params
-         });
+         me.facebookLogin(params);
       }, true, false);
    },
    onCreateAccountTap : function(b, e, eOpts, eInfo)

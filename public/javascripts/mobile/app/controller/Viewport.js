@@ -368,8 +368,8 @@ Ext.define('Genesis.controller.Viewport',
             {
                app.dispatch(
                {
-                  action : 'onFacebookTap',
-                  args : [],
+                  action : 'facebookLogin',
+                  args : [db['fbResponse']],
                   controller : controller,
                   scope : controller
                });

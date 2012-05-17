@@ -334,7 +334,6 @@ Genesis.constants =
             var authToken = session.authResponse['accessToken'];
             if(authToken)
             {
-               Genesis.constants.setLocalDBAttrib('authToken', authToken);
                if(me.cb)
                {
                   me.facebook_loginCallback(me.cb);
@@ -468,7 +467,6 @@ Genesis.constants =
             console.debug("Logged into Facebook!");
             if(me.cb)
             {
-               Genesis.constants.setLocalDBAttrib('authToken', response.authResponse['accessToken']);
                me.facebook_loginCallback(me.cb);
                delete me.cb;
             }
@@ -487,7 +485,6 @@ Genesis.constants =
                      message : 'Failed to login to Facebook!'
                   });
                }
-               Genesis.constants.removeLocalDBAttrib('authToken');
             }
             else
             {
@@ -609,7 +606,6 @@ Genesis.constants =
       db['currFbId'] = 0;
       delete db['fbAccountId'];
       delete db['fbResponse'];
-      delete db['authToken'];
       Genesis.constants.setLocalDB(db);
 
       Ext.Viewport.setMasked(false);
