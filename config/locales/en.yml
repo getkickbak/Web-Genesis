@@ -121,7 +121,8 @@ en:
         other: "visits"  
       facebook_account_already_exists_failure: "Facebook account already exists."
       challenges:
-        invalid_code: "Authorization code no longer valid."
+        expired_code: "Authorization code no longer valid."
+        invalid_code: "Authorization code is not valid."
         qualified_visits: "Earn %s bonus %s with %s more %s!"
         start_failure: "Trouble starting the challenge.  Please try again."
         complete_failure: "Trouble completing the challenge.  Please try again."
@@ -140,7 +141,8 @@ en:
         already_redeemed: "Prize has already been redeemed."
         redeem_failure: "Trouble redeeming the prize.  Please try again."
       purchase_rewards:
-        invalid_code: "Authorization code no longer valid."
+        expired_code: "Authorization code no longer valid."
+        invalid_code: "Authorization code is not valid."
         earn_failure: "Trouble earning points.  Please try again."
       registrations:
         create_failure: "Trouble with sign up.  Please try again."
