@@ -60,7 +60,7 @@ Ext.define('Genesis.controller.server.Redemptions',
             console.debug("Decrypted Data[" + data + "]");
             var decrypted = Ext.decode(data);
             console.debug("Decoded Data!");
-            var date = Date.parse(decrypted["expiry_ts"], "yyyy-MM-dd");
+            var date = new Date(decrypted["expiry_ts"]);
 
             if(db[encrypted])
             {
