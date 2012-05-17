@@ -68,8 +68,13 @@ class Venue
     
     merchant.venues.reload
     check_in_auth_code = "#{merchant.id}-#{merchant.venues.length}" 
+    data =  {
+      :auth_code => check_in_auth_code      
+    }.to_json
+    cipher = Gibberish::AES.new(venue.auth_code)
+    encrypted_data = cipher.enc(data)
     venue.check_in_code = CheckInCode.new
-    venue.check_in_code[:auth_code] = check_in_auth_code
+    venue.check_in_code[:auth_code] = "#{venue.id}$#{encrypted_data}"
     venue.check_in_code[:qr_code] = CheckInCode.generate_qr_code(merchant.id, check_in_auth_code)
     venue.check_in_code[:qr_code_img] = venue.check_in_code.generate_qr_code_image(merchant.id)
     venue.check_in_code[:created_ts] = now
