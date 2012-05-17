@@ -202,7 +202,7 @@ Ext.define('Genesis.controller.Prizes',
          Genesis.constants.facebook_onLogin(function(params)
          {
             me.updatingPrizeOnFacebook(records[0]);
-         }, true);
+         }, true, true);
          Ext.device.Notification.vibrate();
          Ext.device.Notification.show(
          {

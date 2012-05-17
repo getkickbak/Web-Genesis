@@ -358,7 +358,7 @@ Ext.define('Genesis.controller.client.Challenges',
          {
             me.onCameraSuccessFn('http://photos.getkickbak.com/paella9finish1.jpg');
          }
-      }, true);
+      }, true, false);
 
    },
    onLibraryBtnTap : function(b, e, eOpts, eInfo)

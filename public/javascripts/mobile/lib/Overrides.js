@@ -447,21 +447,18 @@ Genesis.constants =
       var db = me.getLocalDB();
       cb = cb || Ext.emptyFn;
 
-      if(!refreshConn)
+      if(!refreshConn && !supress)
       {
          console.debug("Logging into Facebook ...");
-         if(!supress)
+         Ext.Viewport.setMasked(
          {
-            Ext.Viewport.setMasked(
-            {
-               xtype : 'loadmask',
-               message : 'Logging into Facebook ...'
-            });
-         }
+            xtype : 'loadmask',
+            message : 'Logging into Facebook ...'
+         });
       }
       else
       {
-         console.debug("Refreshing connection to Facebook ...");
+         console.debug("Refresh Connectivity or Logging to Facebook ... refreshConn=" + refreshConn);
       }
       me.cb = cb;
       FB[(refreshConn)?'getLoginStatus' : 'login'](function(response)
@@ -478,28 +475,32 @@ Genesis.constants =
          }
          else
          {
-            console.debug("Login Failed! ...");
-            if(!refreshConn && !supress)
+            if(!refreshConn)
             {
-               Ext.Viewport.setMasked(false);
-               Ext.device.Notification.show(
+               console.debug("Login Failed! ...");
+               if(!supress)
                {
-                  title : 'Facebook Connect',
-                  message : 'Failed to login to Facebook!'
-               });
+                  Ext.Viewport.setMasked(false);
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Facebook Connect',
+                     message : 'Failed to login to Facebook!'
+                  });
+               }
+               Genesis.constants.removeLocalDBAttrib('authToken');
             }
             else
             {
-               console.debug("Failed to connect to Facebook ...");
+               console.debug("Failed to refresh connection to Facebook ...");
+               Ext.defer(me.fbLogin, 1, me, [cb, false, supress]);
             }
-            Genesis.constants.removeLocalDBAttrib('authToken');
          }
       },
       {
          scope : me.fbScope
       });
    },
-   facebook_onLogin : function(cb, supress)
+   facebook_onLogin : function(cb, supress, doNotLoginIfNoConn)
    {
       var me = this;
       var db = me.getLocalDB();
@@ -507,7 +508,12 @@ Genesis.constants =
       var refreshConn = (db['currFbId'] > 0);
 
       console.debug("facebook_onLogin - FbId = [" + db['currFbId'] + "]");
-      me.fbLogin(cb, refreshConn, supress);
+
+      // Login if connection missing
+      if(!doNotLoginIfNoConn || refreshConn)
+      {
+         me.fbLogin(cb, refreshConn, supress);
+      }
    },
    facebook_loginCallback : function(cb, count)
    {

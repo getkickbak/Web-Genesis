@@ -448,7 +448,7 @@ Ext.define('Genesis.controller.MainPage',
             },
             params : params
          });
-      }, true);
+      }, true, false);
    },
    onCreateAccountTap : function(b, e, eOpts, eInfo)
    {
