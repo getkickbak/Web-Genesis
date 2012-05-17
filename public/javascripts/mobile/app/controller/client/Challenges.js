@@ -91,59 +91,56 @@ Ext.define('Genesis.controller.client.Challenges',
       this.callParent(arguments);
       console.log("Challenge Init");
    },
-   onVerifyChallenge : function(venueId, customerId, id)
+   onVerifyChallenge : function(venueId, customerId, id, position)
    {
       var me = this;
-      me.getGeoLocation(function(position)
+      me.scanQRCode(
       {
-         me.scanQRCode(
+         callback : function(qrcode)
          {
-            callback : function(qrcode)
+            if(qrcode)
             {
-               if(qrcode)
+               Challenge['setCompleteChallengeURL'](id);
+               Challenge.load(id,
                {
-                  Challenge['setCompleteChallengeURL'](id);
-                  Challenge.load(id,
+                  jsonData :
                   {
-                     jsonData :
+                  },
+                  params :
+                  {
+                     venue_id : venueId,
+                     latitude : position.coords.getLatitude(),
+                     longitude : position.coords.getLongitude(),
+                     'data' : qrcode
+                  },
+                  callback : function(record, operation)
+                  {
+                     var metaData = Challenge.getProxy().getReader().metaData;
+                     if(operation.wasSuccessful() && metaData)
                      {
-                     },
-                     params :
-                     {
-                        venue_id : venueId,
-                        latitude : position.coords.getLatitude(),
-                        longitude : position.coords.getLongitude(),
-                        'data' : qrcode
-                     },
-                     callback : function(record, operation)
-                     {
-                        var metaData = Challenge.getProxy().getReader().metaData;
-                        if(operation.wasSuccessful() && metaData)
+                        //
+                        // Update points from the purchase or redemption
+                        //
+                        Ext.device.Notification.show(
                         {
-                           //
-                           // Update points from the purchase or redemption
-                           //
-                           Ext.device.Notification.show(
-                           {
-                              title : 'Earn Points',
-                              message : me.getPointsMsg(metaData['points'])
-                           });
-                           cstore.getById(customerId).set('points', metaData['account_points']);
-                        }
+                           title : 'Earn Points',
+                           message : me.getPointsMsg(metaData['points'])
+                        });
+                        cstore.getById(customerId).set('points', metaData['account_points']);
                      }
-                  });
-               }
-               else
-               {
-                  console.debug(me.noCodeScannedMsg);
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Error',
-                     message : me.noCodeScannedMsg
-                  });
-               }
+                  }
+               });
             }
-         });
+            else
+            {
+               console.debug(me.noCodeScannedMsg);
+               Ext.device.Notification.show(
+               {
+                  title : 'Error',
+                  message : me.noCodeScannedMsg
+               });
+            }
+         }
       });
    },
    // --------------------------------------------------------------------------
@@ -172,15 +169,11 @@ Ext.define('Genesis.controller.client.Challenges',
    onChallengeBtnTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      var cstore = Ext.StoreMgr.get('CustomerStore');
       var viewport = me.getViewPortCntlr();
       var cvenue = viewport.getCheckinInfo().venue;
       var venue = viewport.getVenue();
-      var venueId = venue.getId();
-      var customerId = viewport.getCustomer().getId();
-      var merchantId = venue.getMerchant().getId();
       var selectedItem = me.selectedItem;
-      var id = me.challengeId = selectedItem.getId();
+      me.challengeId = selectedItem.getId();
 
       // VenueId can be found after the User checks into a venue
       //return ((this.getViewPortCntlr().getVenue()) ? true : this.checkinFirstMsg);
@@ -217,7 +210,6 @@ Ext.define('Genesis.controller.client.Challenges',
                break;
          }
       }
-      me.challengeId = null;
       if(selectedItem.get('require_verif'))
       {
          Ext.device.Notification.show(
@@ -226,9 +218,20 @@ Ext.define('Genesis.controller.client.Challenges',
             message : me.showToServerMsg,
             callback : function()
             {
-               me.onVerifyChallenge(venueId, customerId, id);
+               me.getGeoLocation(function(position)
+               {
+                  var viewport = me.getViewPortCntlr();
+                  var venueId = viewport.getVenue().getId();
+                  var customerId = viewport.getCustomer().getId();
+                  me.onVerifyChallenge(venueId, customerId, me.challengeId, position);
+                  delete me.challengeId;
+               });
             }
          });
+      }
+      else
+      {
+         delete me.challengeId;
       }
    },
    onCameraSuccessFn : function(imageURI)
@@ -238,6 +241,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
       console.debug("image URI =[" + imageURI + "]");
 
+      me.imageURI = imageURI;
       me.getGeoLocation(function(position)
       {
          if(Genesis.constants.isNative())
@@ -260,7 +264,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
             var ft = new FileTransfer();
             var res, metaData;
-            ft.upload(imageURI, Genesis.constants.host + '/api/v1/venues/share_photo', function(r)
+            ft.upload(me.imageURI, Genesis.constants.host + '/api/v1/venues/share_photo', function(r)
             {
                res = decodeURIComponent(r.response) || '';
                console.debug("Response = " + res);

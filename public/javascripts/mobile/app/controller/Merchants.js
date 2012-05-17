@@ -323,12 +323,10 @@ Ext.define('Genesis.controller.Merchants',
    onCheckinTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      var app = me.getApplication();
-      var vport = me.getViewport();
-      var viewport = me.getViewPortCntlr();
-      var controller = app.getController('Checkins');
       me.getGeoLocation(function(position)
       {
+         var app = me.getApplication();
+         var controller = app.getController('Checkins');
          controller.setPosition(position);
          app.dispatch(
          {

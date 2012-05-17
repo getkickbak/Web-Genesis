@@ -54,13 +54,15 @@ Ext.define('Genesis.controller.ControllerBase',
          // Defaults to 256 bit encryption
          GibberishAES.size(256);
          var keys = Genesis.constants.getPrivKey();
+         var date;
          for(key in keys)
          {
             try
             {
+               date = new Date().addHours(3);
                encrypted = GibberishAES.enc(Ext.encode(Ext.applyIf(
                {
-                  "expiry_ts" : new Date().addHours(3).getTime()
+                  "expiry_ts" : date.getTime()
                }, params)), keys[key]);
             }
             catch (e)
@@ -70,7 +72,8 @@ Ext.define('Genesis.controller.ControllerBase',
          }
          console.log('\n' + //
          "Encrypted Code Length: " + encrypted.length + '\n' + //
-         'Encrypted Code [' + encrypted + ']');
+         'Encrypted Code [' + encrypted + ']' + '\n' + //
+         'Expiry Date: [' + date + ']');
 
          return (encryptOnly) ? encrypted : me.genQRCode(encrypted);
       },

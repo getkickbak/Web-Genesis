@@ -103,8 +103,7 @@ Ext.define('Genesis.controller.client.Rewards',
                //anim.disable();
                //container.setActiveItem(0);
                //anim.enable();
-
-               me.earnPts(qrcode);
+               me.doEarnPts(qrcode);
             }
             else
             {
@@ -122,21 +121,24 @@ Ext.define('Genesis.controller.client.Rewards',
          }
       });
    },
-   earnPts : function(qrcode)
+   doEarnPts : function(qrcode)
    {
       var me = this;
-      var viewport = me.getViewPortCntlr();
-      var venue = viewport.getVenue();
-      var venueId = venue.getId();
-      var reader = CustomerReward.getProxy().getReader();
-      var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
+      me.qrcode = qrcode;
 
       me.getGeoLocation(function(position)
       {
+         var viewport = me.getViewPortCntlr();
+         var venue = viewport.getVenue();
+         var venueId = venue.getId();
+         var reader = CustomerReward.getProxy().getReader();
+         var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
+
          //
          // Triggers PrizeCheck and MetaDataChange
          // - subject CustomerReward also needs to be reset to ensure property processing of objects
          //
+         //console.debug("qrcode =[" + me.qrcode + ']');
          EarnPrize['setEarnPrizeURL']();
          reader.setRootProperty('');
          reader.buildExtractors();
@@ -148,7 +150,7 @@ Ext.define('Genesis.controller.client.Rewards',
             params :
             {
                venue_id : venueId,
-               'data' : qrcode,
+               'data' : me.qrcode,
                latitude : position.coords.getLatitude(),
                longitude : position.coords.getLongitude()
             },
@@ -186,6 +188,7 @@ Ext.define('Genesis.controller.client.Rewards',
       // Update points from the purchase or redemption
       //
       var cstore = Ext.StoreMgr.get('CustomerStore');
+      var viewport = me.getViewPortCntlr();
       var customerId = viewport.getCustomer().getId();
       if(metaData['account_points'])
       {

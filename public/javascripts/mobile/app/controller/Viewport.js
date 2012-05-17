@@ -138,12 +138,12 @@ Ext.define('Genesis.controller.Viewport',
    onCheckinScanTap : function(b, e, eOpts, einfo)
    {
       var me = this;
-      var app = me.getApplication();
-      var controller = app.getController('Checkins');
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-
       me.getGeoLocation(function(position)
       {
+         var app = me.getApplication();
+         var controller = app.getController('Checkins');
+         var cestore = Ext.StoreMgr.get('CheckinExploreStore');
+
          Venue['setFindNearestURL']();
          cestore.load(
          {

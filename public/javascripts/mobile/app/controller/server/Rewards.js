@@ -155,6 +155,7 @@ Ext.define('Genesis.controller.server.Rewards',
          });
          return;
       }
+      console.debug("Encrypting QRCode with Price:$" + price);
       me.getQrcode().setStyle(
       {
          'background-image' : 'url(' + Genesis.controller.ControllerBase.genQRCodeFromParams(

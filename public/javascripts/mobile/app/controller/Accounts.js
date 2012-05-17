@@ -47,13 +47,13 @@ Ext.define('Genesis.controller.Accounts',
       var merchantName = rec.getMerchant().get('name');
 
       /*
-      console.debug("AFTER\n" + //
-      "Merchant Name : [" + merchantName + "]" + "\n" +
-      //
-      "Merchant ID : [" + merchantId + "]" + "\n" +
-      //
-      "Customer ID : [" + customerId + "]");
-      */
+       console.debug("AFTER\n" + //
+       "Merchant Name : [" + merchantName + "]" + "\n" +
+       //
+       "Merchant ID : [" + merchantId + "]" + "\n" +
+       //
+       "Customer ID : [" + customerId + "]");
+       */
       Venue['setGetClosestVenueURL']();
       Venue.load(merchantId,
       {
@@ -139,16 +139,16 @@ Ext.define('Genesis.controller.Accounts',
       me.rec = record;
 
       //
-      // Stack Corruption from JS interpreter, probably a JS compiler bug
+      // Bug Stack Corruption from JS interpreter, probably a JS compiler bug
       //
       /*
-      console.debug("BEFORE\n" + //
-      "Merchant Name : [" + merchantName + "]" + "\n" +
-      //
-      "Merchant ID : [" + me.merchantId + "]" + "\n" +
-      //
-      "Customer ID : [" + customerId + "]");
-      */
+       console.debug("BEFORE\n" + //
+       "Merchant Name : [" + merchantName + "]" + "\n" +
+       //
+       "Merchant ID : [" + me.merchantId + "]" + "\n" +
+       //
+       "Customer ID : [" + customerId + "]");
+       */
       me.getGeoLocation(function(position)
       {
          me.onLoadClosestVenue(me.merchantId, me.rec, position);
