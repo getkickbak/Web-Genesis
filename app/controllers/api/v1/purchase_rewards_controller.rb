@@ -170,7 +170,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         else
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.invalid_code").split(' ') } }
+            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.expired_code").split(' ') } }
           end
         end  
       rescue DataMapper::SaveFailureError => e

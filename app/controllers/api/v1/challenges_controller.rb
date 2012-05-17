@@ -97,7 +97,7 @@ class Api::V1::ChallengesController < ApplicationController
         else
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.challenges.invalid_code").split(' ') } }
+            format.json { render :json => { :success => false, :message => t("api.challenges.expired_code").split(' ') } }
           end 
         end
       rescue DataMapper::SaveFailureError => e
