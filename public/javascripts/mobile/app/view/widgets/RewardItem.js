@@ -86,7 +86,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
             docked : 'bottom',
             xtype : 'button',
             cls : 'separator',
-            tag : 'done',
+            tag : 'verify',
             text : 'Verified!',
             ui : 'orange-large'
          }]
@@ -133,7 +133,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
       var photo = Genesis.view.Prizes.getPhoto(reward['type']) || reward['photo']['thumbnail_ios_medium'].url;
       var info = this.query("component[tag=info]")[0];
       var refresh = this.query("button[tag=refresh]")[0];
-      var done = this.query("button[tag=done]")[0];
+      var verify = this.query("button[tag=verify]")[0];
 
       //
       // Hide Merchant Information if it's missing
@@ -143,7 +143,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
          info.setData(data);
          info.show();
          refresh.hide();
-         done.hide();
+         verify.hide();
       }
       else
       {
@@ -152,7 +152,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
          // Verification of Prizes/Rewards Mode
          //
          refresh[reward['photo'] ? 'show' : 'hide']();
-         done[reward['photo'] ? 'hide' : 'show']();
+         verify[reward['photo'] ? 'hide' : 'show']();
       }
 
       this.query("component[tag=title]")[0].setData(reward);

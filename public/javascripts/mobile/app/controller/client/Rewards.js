@@ -182,9 +182,24 @@ Ext.define('Genesis.controller.client.Rewards',
          me.pushView(me.getRewards());
       };
 
+      //
+      // Update points from the purchase or redemption
+      //
+      var cstore = Ext.StoreMgr.get('CustomerStore');
+      var customerId = viewport.getCustomer().getId();
+      if(metaData['account_points'])
+      {
+         cstore.getById(customerId).set('points', metaData['account_points']);
+      }
+      if(metaData['account_visits'])
+      {
+         cstore.getById(customerId).set('visits', metaData['account_visits']);
+      }
+
       if(Ext.isDefined(metaData['points']))
       {
-         me.getRewards(); // Preload page
+         me.getRewards();
+         // Preload page
          message = me.getPointsMsg(metaData['points']);
          if(!metaData['vip_challenge'])
          {
@@ -210,7 +225,8 @@ Ext.define('Genesis.controller.client.Rewards',
       else
       if(metaData['vip_challenge'])
       {
-         me.getRewards(); // Preload page
+         me.getRewards();
+         // Preload page
          me.vipPopUp(metaData['vip_challenge'].points, exit);
       }
    },
@@ -218,14 +234,6 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var customerId = viewport.getCustomer().getId();
-      var message;
-
-      //
-      // Update points from the purchase or redemption
-      //
-      cstore.getById(customerId).set('points', metaData['account_points']);
 
       //
       // Added to Earn Rewards Handling

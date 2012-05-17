@@ -22,7 +22,7 @@ Ext.define('Genesis.controller.server.Redemptions',
             autoCreate : true,
             xtype : 'serverredemptionsview'
          },
-         doneButton : 'rewarditem button[tag=done]'
+         verifyButton : 'rewarditem button[tag=verify]'
       },
       control :
       {
@@ -31,9 +31,9 @@ Ext.define('Genesis.controller.server.Redemptions',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
-         doneButton :
+         verifyButton :
          {
-            tap : 'onDoneTap'
+            tap : 'onVerifyTap'
          }
       }
    },
@@ -187,7 +187,7 @@ Ext.define('Genesis.controller.server.Redemptions',
          }
       });
    },
-   onDoneTap : function(b, e, eOpts)
+   onVerifyTap : function(b, e, eOpts)
    {
       this.popView();
    },

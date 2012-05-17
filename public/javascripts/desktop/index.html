@@ -19,7 +19,7 @@
 
       <script type="text/javascript" src="lib/jquery-ui-1.8.20.custom/js/jquery-1.7.2.min.js"></script>
       <script type="text/javascript" src="lib/jquery-ui-1.8.20.custom/js/jquery-ui-1.8.20.custom.min.js"></script>
-      <script type="text/javascript" src="css/bootstrap/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="css/twitter-bootstrap-b261f97/bootstrap/js/bootstrap.min.js"></script>
    </head>
    <body>
       <div class="navbar navbar-fixed-top">
@@ -48,10 +48,11 @@
             <div class="span12 qrcodes">
                <img class="qrcode" src="resources/themes/v1/qr.png"/>
                <img class="qrcode" src="resources/themes/v1/qr.png"/>
-               <div class="iphone4">
-                  <img class="prize prize1 hidden" src="resources/themes/v1/prize1.png"/>
-                  <img class="prize prize2 hidden" src="resources/themes/v1/prize2.png"/>
-                  <img class="prize prize3" src="resources/themes/v1/prize3.png"/>
+               <img class="qrcode" src="resources/themes/v1/qr.png"/>
+               <div id="iphone4" class="iphone4">
+                  <img id="prize1" class="prize prize1 hidden" src="resources/themes/v1/prize1.png"/>
+                  <img id="prize2" class="prize prize2 hidden" src="resources/themes/v1/prize2.png"/>
+                  <img id="prize3" class="prize prize3" src="resources/themes/v1/prize3.png"/>
                </div>
                <img class="scantowin" src="resources/themes/v1/scantowin.png"/>
             </div>
@@ -118,7 +119,7 @@
                   earn reward points, you have a
                   <br>
                   chance to win a KICKBAK prize!</h2>
-               <a href="#">
+               <a href="http://itunes.apple.com/ca/app/kickbak/id510438273?ls=1&mt=8">
                <img class="appBtn" src="resources/themes/v1/apple2.png"/>
                </a>
                <a href="#">
@@ -140,5 +141,28 @@
             </div>
          </div>
       </div>
+      <script type="text/javascript">
+         var qrcodeSeq = [1, 0, 1, 2], offset = 0, count = 3, index;
+         var movePhone = function()
+         {
+            index = count % 4;
+            // Hide the old prize
+            $('#prize' + (qrcodeSeq[index] + 1)).addClass('hidden');
+
+            // Determine New location
+            index = ++count % 4;
+            offset = 180 * qrcodeSeq[index];
+            $('#iphone4').animate(
+            {
+               left : (40 + offset) + 'px'
+            }, 3 * 1000, function()
+            {
+               // Show the new prize
+               $('#prize' + (qrcodeSeq[index] + 1)).removeClass('hidden');
+            });
+            setTimeout("movePhone()", 6 * 1000);
+         }
+         setTimeout("movePhone()", 3 * 1000);
+      </script>
    </body>
 </html>

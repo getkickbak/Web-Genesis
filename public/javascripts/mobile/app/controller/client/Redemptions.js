@@ -139,16 +139,30 @@ Ext.define('Genesis.controller.client.Redemptions',
 
       return true;
    },
+   onRedeemCheckMetaData : function(metaData)
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      //
+      // Update points from the purchase or redemption
+      //
+      var cstore = Ext.StoreMgr.get('CustomerStore');
+      var customerId = viewport.getCustomer().getId();
+      if(metaData['account_points'])
+      {
+         cstore.getById(customerId).set('points', metaData['account_points']);
+      }
+      if(metaData['account_visits'])
+      {
+         cstore.getById(customerId).set('visits', metaData['account_visits']);
+      }
+   },
    onRedeemMetaChange : function(store, metaData)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var customerId = viewport.getCustomer().getId();
-      //
-      // Update points from the purchase or redemption
-      //
-      cstore.getById(customerId).set('points', metaData['account_points']);
+
+      me.onRedeemCheckMetaData(metaData);
 
       if(metaData['data'])
       {

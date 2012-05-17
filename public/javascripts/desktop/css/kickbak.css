@@ -34,34 +34,33 @@ body:after {
 
 .qrcodes {
    margin-top : 20px;
+   padding-left:40px;
+   position:relative;
+   height:300px;
 }
 .qrcode {
    width : 120px;
-   margin-right : 72px;
+   margin-right : 60px;
 }
 .qrcodes img {
    vertical-align : top;
 }
 
-.qrcodes img:first-child {
-   margin-left : 40px;
-}
-.qrcodes img:nth-child(2) {
-   margin-right : 50px;
+.qrcodes img:nth-child(3) {
+   margin-right : 20px;
 }
 
 .iphone4 {
-   position:relative;
-   margin-top : -65px;
-   margin-right:10px;
+   position:absolute;
+   top : -65px;
+   left:400px;
    background : transparent url(../resources/themes/v1/iphone4.png) center center no-repeat;
-   background-size : 140px;
-   display:inline-block;
+   background-size : 140px 313px;
    width:140px;
    height:313px;
 }
 .scantowin {
-   width : 280px;
+   width : 290px;
 }
 
 .prize {
