@@ -89,36 +89,45 @@ Ext.define('Genesis.controller.Prizes',
    },
    updatingPrizeOnFacebook : function(record)
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-      var venue = viewport.getVenue();
-      var merchant = venue.getMerchant();
-      var site = Genesis.constants.site;
+      try
+      {
+         var me = this;
+         var viewport = me.getViewPortCntlr();
+         var venue = viewport.getVenue();
+         var merchant = venue.getMerchant();
+         var site = Genesis.constants.site;
+         var wsite = venue.get('website').split(/http[s]*:\/\//);
 
-      console.log('Posting to Facebook ...');
-      FB.api('/me/feed', 'post',
-      {
-         name : venue.get('name'),
-         //link : href,
-         link : venue.get('website') || site,
-         caption : venue.get('website') || site,
-         description : venue.get('description'),
-         //
-         // To-do : Get Prize Photo
-         //
-         //picture : Genesis.view.client.Rewards.getPhoto(records[0].getCustomerReward().get('type')),
-         message : 'I just won "' + record.getCustomerReward().get('title') + '" for purchasing at ' + venue.get('name') + '!'
-      }, function(response)
-      {
-         if(!response || response.error)
+         console.log('Posting to Facebook ...');
+         FB.api('/me/feed', 'post',
          {
-            console.log('Post was not published to Facebook.');
-         }
-         else
+            name : venue.get('name'),
+            //link : href,
+            link : wsite[wsite.length - 1] || site,
+            caption : wsite[wsite.length - 1] || site,
+            description : venue.get('description'),
+            //
+            // To-do : Get Prize Photo
+            //
+            //picture : Genesis.view.client.Rewards.getPhoto(records[0].getCustomerReward().get('type')),
+            message : 'I just won "' + record.getCustomerReward().get('title') + '" for purchasing at ' + venue.get('name') + '!'
+         }, function(response)
          {
-            console.log('Posted to your Facebook Newsfeed.');
-         }
-      });
+            if(!response || response.error)
+            {
+               console.log('Post was not published to Facebook.');
+            }
+            else
+            {
+               console.log('Posted to your Facebook Newsfeed.');
+            }
+         });
+      }
+      catch (e)
+      {
+         console.log('Exception [' + e + ']' + '\n' + //
+         'Post was not published to Facebook.');
+      }
    },
    // --------------------------------------------------------------------------
    // Prizes Page
