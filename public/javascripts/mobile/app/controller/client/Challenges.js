@@ -332,7 +332,7 @@ Ext.define('Genesis.controller.client.Challenges',
       Ext.device.Notification.show(
       {
          title : 'Error',
-         message : me.photoTakenFailMsg(msg)
+         message : me.photoTakenFailMsg(message)
       });
    },
    onPhotoBtnCommon : function(sourceType)
