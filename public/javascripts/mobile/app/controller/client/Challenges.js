@@ -123,9 +123,13 @@ Ext.define('Genesis.controller.client.Challenges',
                         Ext.device.Notification.show(
                         {
                            title : 'Earn Points',
-                           message : me.getPointsMsg(metaData['points'])
+                           message : ((metaData['points'] > 0) ? me.getPointsMsg(metaData['points']) : metaData['message'])
                         });
-                        cstore.getById(customerId).set('points', metaData['account_points']);
+
+                        if(metaData['account_points'])
+                        {
+                           cstore.getById(customerId).set('points', metaData['account_points']);
+                        }
                      }
                   }
                });
@@ -440,7 +444,7 @@ Ext.define('Genesis.controller.client.Challenges',
          callback : function(records, operation)
          {
             metaData2 = Challenge.getProxy().getReader().metaData;
-            if(operation.wasSuccessful() && metaData)
+            if(operation.wasSuccessful() && metaData2)
             {
                //
                // Update points from the purchase or redemption
@@ -450,7 +454,7 @@ Ext.define('Genesis.controller.client.Challenges',
                Ext.device.Notification.show(
                {
                   title : 'Upload Complete',
-                  message : me.photoUploadSuccessMsg(metaData2['points']),
+                  message : ((metaData2['points'] > 0) ? me.photoUploadSuccessMsg(metaData2['points']) : metaData2['message']),
                   callback : function()
                   {
                      //
