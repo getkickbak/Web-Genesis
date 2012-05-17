@@ -11,7 +11,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     if !Common.within_geo_distance?(params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.out_of_distance").split(' ') } }
+        format.json { render :json => { :success => false, :message => t("api.out_of_distance").split('\n') } }
       end
       return
     end
@@ -46,7 +46,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       rescue
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.invalid_code").split(' ') } }
+          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.invalid_code").split('\n') } }
         end  
       end
     end    
@@ -170,7 +170,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         else
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.expired_code").split(' ') } }
+            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.expired_code").split('\n') } }
           end
         end  
       rescue DataMapper::SaveFailureError => e
@@ -178,14 +178,14 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         mutex.release if (defined? mutex && mutex)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split(' ') } }
+          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
         end
       rescue StandardError => e
         logger.error("Exception: " + e.message)
         mutex.release if (defined? mutex && mutex)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split(' ') } }
+          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
         end  
       end
     end

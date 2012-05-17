@@ -13,14 +13,14 @@ class Api::V1::CheckInsController < ApplicationController
       rescue
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.check_ins.invalid_code").split(' ') } }  
+          format.json { render :json => { :success => false, :message => t("api.check_ins.invalid_code").split('\n') } }  
         end  
       end
       checkInCode = CheckInCode.first(:auth_code => decrypted_data["auth_code"])
       if checkInCode.nil?
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.check_ins.invalid_code").split(' ') } }  
+          format.json { render :json => { :success => false, :message => t("api.check_ins.invalid_code").split('\n') } }  
         end
         return
       end
@@ -44,7 +44,7 @@ class Api::V1::CheckInsController < ApplicationController
     if !Common.within_geo_distance?(params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.out_of_distance").split(' ') } }
+        format.json { render :json => { :success => false, :message => t("api.out_of_distance").split('\n') } }
       end
       return
     end
@@ -65,7 +65,7 @@ class Api::V1::CheckInsController < ApplicationController
           end
         end
         last_check_in = CheckIn.create(@venue, current_user, @customer)
-        @winners_count = EarnPrize.count(EarnPrize.venue.id => @venue.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+        @winners_count = EarnPrize.count(EarnPrize.merchant.id => @venue.merchant.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
         @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])
         @eligible_rewards = []
         challenge_type_id = ChallengeType.value_to_id["vip"]
@@ -95,7 +95,7 @@ class Api::V1::CheckInsController < ApplicationController
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.check_ins.create_failure").split(' ') } }
+          format.json { render :json => { :success => false, :message => t("api.check_ins.create_failure").split('\n') } }
         end
       end
     end

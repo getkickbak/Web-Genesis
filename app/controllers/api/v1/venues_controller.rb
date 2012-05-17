@@ -16,7 +16,7 @@ class Api::V1::VenuesController < ApplicationController
       @customer.merchant = @venue.merchant
       is_customer = false
     end
-    @winners_count = EarnPrize.count(EarnPrize.venue.id => @venue.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+    @winners_count = EarnPrize.count(EarnPrize.merchant.id => @venue.merchant.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])
     if is_customer
       @eligible_rewards = []
@@ -54,7 +54,7 @@ class Api::V1::VenuesController < ApplicationController
     longitude = params[:longitude].to_f
     @venue = Venue.find_nearest(@merchant.id, latitude, longitude, 1).first
     @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id)
-    @winners_count = EarnPrize.count(EarnPrize.venue.id => @venue.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+    @winners_count = EarnPrize.count(EarnPrize.merchant.id => @merchant.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])
     @eligible_rewards = []
     challenge_type_id = ChallengeType.value_to_id["vip"]
@@ -102,7 +102,7 @@ class Api::V1::VenuesController < ApplicationController
     if params[:image].blank?
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.photo_blank").split(' ') } }
+        format.json { render :json => { :success => false, :message => t("api.photo_blank").split('\n') } }
       end
     else
       filename = "#{String.random_alphanumeric(32)}.jpg"
