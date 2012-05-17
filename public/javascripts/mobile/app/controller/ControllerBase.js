@@ -60,7 +60,7 @@ Ext.define('Genesis.controller.ControllerBase',
             {
                encrypted = GibberishAES.enc(Ext.encode(Ext.applyIf(
                {
-                  "expiry_ts" : new Date().addHours(3).format("c").getTime()
+                  "expiry_ts" : new Date().addHours(3).getTime()
                }, params)), keys[key]);
             }
             catch (e)
