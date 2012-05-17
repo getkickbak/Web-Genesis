@@ -12,6 +12,7 @@ Genesis.constants =
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
    weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+   fbScope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions,offline_access',
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
    debugPrivKey : 'FTzPBwpWIgAF7JrvcTb9eS0RoaoDdvWJ',
    isNative : function()
@@ -333,9 +334,9 @@ Genesis.constants =
             var authToken = session.authResponse['accessToken'];
             if(authToken)
             {
+               Genesis.constants.setLocalDBAttrib('authToken', authToken);
                if(me.cb)
                {
-                  Genesis.constants.setLocalDBAttrib('authToken', authToken);
                   me.facebook_loginCallback(me.cb);
                   delete me.cb;
                }
@@ -406,7 +407,7 @@ Genesis.constants =
                   {
                      me.facebook_onLogout(function()
                      {
-                        me.fbLogin(cb);
+                        me.fbLogin(cb, false, false);
                      }, true);
                   }
                   else
@@ -440,20 +441,27 @@ Genesis.constants =
    //
    // Log into Facebook
    //
-   fbLogin : function(cb)
+   fbLogin : function(cb, refreshConn, supress)
    {
       var me = this;
       var db = me.getLocalDB();
       cb = cb || Ext.emptyFn;
 
-      console.debug("Logging into Facebook ...");
-      Ext.Viewport.setMasked(
+      if(!refreshConn && !supress)
       {
-         xtype : 'loadmask',
-         message : 'Logging into Facebook ...'
-      });
+         console.debug("Logging into Facebook ...");
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : 'Logging into Facebook ...'
+         });
+      }
+      else
+      {
+         console.debug("Refresh Connectivity or Logging to Facebook ... refreshConn=" + refreshConn);
+      }
       me.cb = cb;
-      FB.login(function(response)
+      FB[(refreshConn)?'getLoginStatus' : 'login'](function(response)
       {
          if((response.status == 'connected') && response.authResponse)
          {
@@ -467,46 +475,44 @@ Genesis.constants =
          }
          else
          {
-            Ext.Viewport.setMasked(false);
-            console.debug("Login Failed! ...");
-            Ext.device.Notification.show(
+            if(!refreshConn)
             {
-               title : 'Facebook Connect',
-               message : 'Failed to login to Facebook!'
-            });
+               console.debug("Login Failed! ...");
+               if(!supress)
+               {
+                  Ext.Viewport.setMasked(false);
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Facebook Connect',
+                     message : 'Failed to login to Facebook!'
+                  });
+               }
+               Genesis.constants.removeLocalDBAttrib('authToken');
+            }
+            else
+            {
+               console.debug("Failed to refresh connection to Facebook ...");
+               Ext.defer(me.fbLogin, 1, me, [cb, false, supress]);
+            }
          }
       },
       {
-         scope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions'
+         scope : me.fbScope
       });
    },
-   facebook_onLogin : function(cb, supress)
+   facebook_onLogin : function(cb, supress, doNotLoginIfNoConn)
    {
       var me = this;
       var db = me.getLocalDB();
       cb = cb || Ext.emptyFn
+      var refreshConn = (db['currFbId'] > 0);
 
-      console.debug("facebook_onLogin - \n" +
-      //
-      "FbId = [" + db['currFbId'] + "]");
-      if(db['currFbId'] > 0)
+      console.debug("facebook_onLogin - FbId = [" + db['currFbId'] + "]");
+
+      // Login if connection missing
+      if(!doNotLoginIfNoConn || refreshConn)
       {
-         console.debug(//
-         "AccountId = [" + db['fbAccountId'] + "]" + "\n" + //
-         "facebook_onLogin - Response JSON = [" + Ext.encode(db['fbResponse']) + "]");
-         if(!supress)
-         {
-            Ext.device.Notification.show(
-            {
-               title : 'Facebook Connect',
-               message : 'Account ID: ' + db['fbAccountId'] + Genesis.constants.addCRLF() + 'is used for your current Facebook session.'
-            });
-         }
-         cb(db['fbResponse']);
-      }
-      else
-      {
-         me.fbLogin(cb);
+         me.fbLogin(cb, refreshConn, supress);
       }
    },
    facebook_loginCallback : function(cb, count)
@@ -1353,6 +1359,10 @@ Ext.merge(String.prototype,
 
       return this.trim('left').trim('right');
    },
+   trunc : function(length)
+   {
+      return (this.length > (length - 4)) ? this.substring(0, length - 4) + ' ...' : this;
+   },
    /**
     * Convert certain characters (&, <, >, and ') to their HTML character equivalents for literal display in web pages.
     * @param {String} value The string to encode
@@ -1419,51 +1429,3 @@ Ext.merge(String.prototype,
       }
    })()
 });
-
-//---------------------------------------------------------------------------------
-// JsonFormatter for Encryption Purposes
-//---------------------------------------------------------------------------------
-var Base64Formatter =
-{
-   stringify : function(cipherParams)
-   {
-      /*
-       var jsonObj =
-       {
-       ct : cipherParams.ciphertext.toString(CryptoJS.enc.Base64)
-       };
-       if(cipherParams.iv)
-       {
-       jsonObj.iv = cipherParams.iv.toString();
-       }
-       if(cipherParams.salt)
-       {
-       jsonObj.s = cipherParams.salt.toString();
-       }
-       return Ext.encode(jsonObj);
-       */
-      return cipherParams.ciphertext.toString(CryptoJS.enc.Base64);
-   },
-
-   parse : function(jsonStr)
-   {
-      /*
-       var jsonObj = Ext.decode(jsonStr);
-
-       var cipherParams = CryptoJS.lib.CipherParams.create(
-       {
-       ciphertext : CryptoJS.enc.Base64.parse(jsonObj.ct)
-       });
-       if(jsonObj.iv)
-       {
-       cipherParams.iv = CryptoJS.enc.Hex.parse(jsonObj.iv)
-       }
-       if(jsonObj.s)
-       {
-       cipherParams.salt = CryptoJS.enc.Hex.parse(jsonObj.s)
-       }
-       return cipherParams;
-       */
-      return CryptoJS.enc.Base64.parse(jsonStr);
-   }
-};

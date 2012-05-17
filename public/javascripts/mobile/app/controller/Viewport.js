@@ -128,7 +128,7 @@ Ext.define('Genesis.controller.Viewport',
                });
             }
          });
-      }, true);
+      }, true, false);
    },
    onInfoTap : function(b, e, eOpts, eInfo)
    {

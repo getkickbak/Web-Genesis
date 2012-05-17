@@ -55,6 +55,7 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    maxValue : 1000.00,
    invalidPriceMsg : 'Please enter a valid price (eg. 5.00), upto $1000',
+   genQRCodeMsg : 'Generating QRCode ...',
    init : function()
    {
       console.log("Server Rewards Init");
@@ -137,6 +138,7 @@ Ext.define('Genesis.controller.server.Rewards',
             break;
          }
       }
+      Ext.Viewport.setMasked(false);
    },
    onShowQrCodeTap : function(b, e, eOpts, eInfo)
    {
@@ -155,23 +157,30 @@ Ext.define('Genesis.controller.server.Rewards',
          });
          return;
       }
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.genQRCodeMsg
+      });
       console.debug("Encrypting QRCode with Price:$" + price);
-      me.getQrcode().setStyle(
+      Ext.defer(function()
       {
-         'background-image' : 'url(' + Genesis.controller.ControllerBase.genQRCodeFromParams(
+         me.getQrcode().setStyle(
          {
-            "amount" : price,
-            "type" : 'earn_points'
-         }) + ')'
-      });
-      me.getTitle().setData(
-      {
-         price : '$' + price
-      });
-      //anim.disable();
-      container.setActiveItem(1);
-      //anim.enable();
-
+            'background-image' : 'url(' + Genesis.controller.ControllerBase.genQRCodeFromParams(
+            {
+               "amount" : price,
+               "type" : 'earn_points'
+            }) + ')'
+         });
+         me.getTitle().setData(
+         {
+            price : '$' + price
+         });
+         //anim.disable();
+         container.setActiveItem(1);
+         //anim.enable();
+      }, 1, me);
    },
    onCalcBtnTap : function(b, e, eOpts, eInfo)
    {

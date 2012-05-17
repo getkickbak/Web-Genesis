@@ -89,28 +89,36 @@ Ext.define('Genesis.controller.Prizes',
    },
    updatingPrizeOnFacebook : function(record)
    {
+      var me = this;
       try
       {
-         var me = this;
          var viewport = me.getViewPortCntlr();
          var venue = viewport.getVenue();
-         var merchant = venue.getMerchant();
          var site = Genesis.constants.site;
-         var wsite = venue.get('website').split(/http[s]*:\/\//);
+         var wsite = venue.get('website') ? venue.get('website').split(/http[s]*:\/\//) : [null];
+         var name = venue.get('name');
+         var link = wsite[wsite.length - 1] || site;
+         var desc = venue.get('description').trunc(256);
+         var message = 'I just won ' + record.getCustomerReward().get('title') + ' for purchasing at ' + venue.get('name') + '!';
 
-         console.log('Posting to Facebook ...');
+         console.log('Posting to Facebook ...' + '\n' + //
+         'Name: ' + name + '\n' + //
+         'Caption: ' + link + '\n' + //
+         'Description: ' + desc + '\n' + //
+         'Message : ' + message + '\n' //
+         );
          FB.api('/me/feed', 'post',
          {
-            name : venue.get('name'),
+            name : name,
             //link : href,
-            link : wsite[wsite.length - 1] || site,
-            caption : wsite[wsite.length - 1] || site,
-            description : venue.get('description'),
+            link : venue.get('website') || site,
+            caption : link,
+            description : desc,
             //
             // To-do : Get Prize Photo
             //
             //picture : Genesis.view.client.Rewards.getPhoto(records[0].getCustomerReward().get('type')),
-            message : 'I just won "' + record.getCustomerReward().get('title') + '" for purchasing at ' + venue.get('name') + '!'
+            message : message
          }, function(response)
          {
             if(!response || response.error)
@@ -191,10 +199,10 @@ Ext.define('Genesis.controller.Prizes',
          //
          // Update Facebook
          //
-         if(db['currFbId'] > 0)
+         Genesis.constants.facebook_onLogin(function(params)
          {
             me.updatingPrizeOnFacebook(records[0]);
-         }
+         }, true, true);
          Ext.device.Notification.vibrate();
          Ext.device.Notification.show(
          {
