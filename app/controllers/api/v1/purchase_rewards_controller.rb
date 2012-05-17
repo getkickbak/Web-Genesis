@@ -18,7 +18,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     
     @prize = nil
     authorized = false
-    if APP_PROP["DEBUG_MODE"] && false
+    if APP_PROP["DEBUG_MODE"]
       data = String.random_alphanumeric(32)
       data_expiry_ts = Time.now
       amount = rand(100)+1
@@ -35,6 +35,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         #logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
         if (decrypted_data["type"] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
           amount = decrypted_data["amount"].to_f
+          logger.debug("Set authorized to true")
           authorized = true
         end  
       rescue
@@ -48,7 +49,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     Customer.transaction do
       begin
         if authorized
-          #logger.debug("Authorized to earn points.")
+          logger.debug("Authorized to earn points.")
           now = Time.now
           challenge_type_id = ChallengeType.value_to_id["vip"]
           challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
