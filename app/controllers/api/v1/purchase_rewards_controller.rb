@@ -37,8 +37,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         logger.debug("decrypted data: #{data}")
         logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::EARN_POINTS}")
         logger.debug("Time comparison: #{data_expiry_ts >= Time.now}")
-        logger.debug("EarnRewardRecord comparison: #{EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts.eq => data_expiry_ts, :data => data).nil?}")
-        if (decrypted_data["type"] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts.eq => data_expiry_ts, :data => data).nil?
+        logger.debug("EarnRewardRecord comparison: #{EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts.eql => data_expiry_ts, :data => data).nil?}")
+        if (decrypted_data["type"] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts.eql => data_expiry_ts, :data => data).nil?
           amount = decrypted_data["amount"].to_f
           logger.debug("Set authorized to true")
           authorized = true
