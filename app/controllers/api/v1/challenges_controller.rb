@@ -113,7 +113,7 @@ class Api::V1::ChallengesController < ApplicationController
       cipher = Gibberish::AES.new(@venue.auth_code)
       decrypted = cipher.dec(data)
       decrypted_data = JSON.parse(decrypted)
-      @data_expiry_ts = Time.parse(decrypted_data[:expiry_ts])
+      @data_expiry_ts = Time.at(decrypted_data[:expiry_ts].to_i)
       if ((decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && @data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => @data_expiry_ts, :data => data).nil?
         return true
       end
