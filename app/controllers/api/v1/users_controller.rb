@@ -46,7 +46,7 @@ class Api::V1::UsersController < ApplicationController
         else
           respond_to do |format|
             #format.xml  { head :ok }
-            format.json { render :json => { :success => false, :message => [t("api.facebook_account_already_exists_failure")] } }
+            format.json { render :json => { :success => false, :message => t("api.facebook_account_already_exists_failure").split(' ') } }
           end  
         end
       rescue DataMapper::SaveFailureError => e

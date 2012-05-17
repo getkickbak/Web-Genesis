@@ -20,7 +20,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
       respond_to do |format|
         #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => [t("api.customer_rewards.not_available")] } }
+        format.json { render :json => { :success => false, :message => t("api.customer_rewards.not_available").split(' ') } }
       end
       return
     end
@@ -51,14 +51,14 @@ class Api::V1::CustomerRewardsController < ApplicationController
         else
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => [t("api.customer_rewards.insufficient_points")] } }
+            format.json { render :json => { :success => false, :message => t("api.customer_rewards.insufficient_points").split(' ') } }
           end  
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => [t("api.customer_rewards.redeem_failure")] } }
+          format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split(' ') } }
         end
       end
     end

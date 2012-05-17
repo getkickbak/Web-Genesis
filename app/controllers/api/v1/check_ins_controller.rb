@@ -4,11 +4,23 @@ class Api::V1::CheckInsController < ApplicationController
   
   def create
     if !APP_PROP["DEBUG_MODE"] && !APP_PROP["SIMULATOR_MODE"]
-      checkInCode = CheckInCode.first(:auth_code => params[:auth_code])
+      begin
+        encrypted_data = params[:auth_code].split('$')
+        venue = Venue.get(encrypted_data[0])
+        cipher = Gibberish::AES.new(venue.auth_code)
+        decrypted = cipher.dec(encrypted_data[1])
+        decrypted_data = JSON.parse(decrypted)
+      rescue
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => t("api.check_ins.invalid_code").split(' ') } }  
+        end  
+      end
+      checkInCode = CheckInCode.first(:auth_code => decrypted_data["auth_code"])
       if checkInCode.nil?
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => [t("api.check_ins.invalid_code")] } }  
+          format.json { render :json => { :success => false, :message => t("api.check_ins.invalid_code").split(' ') } }  
         end
         return
       end
@@ -32,7 +44,7 @@ class Api::V1::CheckInsController < ApplicationController
     if !Common.within_geo_distance?(params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => [t("api.out_of_distance")] } }
+        format.json { render :json => { :success => false, :message => t("api.out_of_distance").split(' ') } }
       end
       return
     end
@@ -83,7 +95,7 @@ class Api::V1::CheckInsController < ApplicationController
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => [t("api.check_ins.create_failure")] } }
+          format.json { render :json => { :success => false, :message => t("api.check_ins.create_failure").split(' ') } }
         end
       end
     end

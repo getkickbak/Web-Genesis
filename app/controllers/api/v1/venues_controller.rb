@@ -102,7 +102,7 @@ class Api::V1::VenuesController < ApplicationController
     if params[:image].blank?
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => [t("api.photo_blank")] } }
+        format.json { render :json => { :success => false, :message => t("api.photo_blank").split(' ') } }
       end
     else
       filename = "#{String.random_alphanumeric(32)}.jpg"

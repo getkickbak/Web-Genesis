@@ -11,14 +11,14 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     if !Common.within_geo_distance?(params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => [t("api.out_of_distance")] } }
+        format.json { render :json => { :success => false, :message => t("api.out_of_distance").split(' ') } }
       end
       return
     end
     
     @prize = nil
     authorized = false
-    if APP_PROP["DEBUG_MODE"] && false
+    if APP_PROP["DEBUG_MODE"]
       data = String.random_alphanumeric(32)
       data_expiry_ts = Time.now
       amount = rand(100)+1
@@ -32,15 +32,21 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         decrypted_data = JSON.parse(decrypted)
         now_secs = decrypted_data["expiry_ts"]/1000
         data_expiry_ts = Time.at(now_secs)
+        #logger.debug("decrypted type: #{decrypted_data["type"]}")
         #logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
+        #logger.debug("decrypted data: #{data}")
+        #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::EARN_POINTS}")
+        #logger.debug("Time comparison: #{data_expiry_ts >= Time.now}")
+        #logger.debug("EarnRewardRecord comparison: #{EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?}")
         if (decrypted_data["type"] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
           amount = decrypted_data["amount"].to_f
+          #logger.debug("Set authorized to true")
           authorized = true
         end  
       rescue
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => false, :message => [t("api.purchase_rewards.invalid_code")] } }
+          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.invalid_code").split(' ') } }
         end  
       end
     end    
@@ -164,7 +170,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         else
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => [t("api.purchase_rewards.invalid_code")] } }
+            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.invalid_code").split(' ') } }
           end
         end  
       rescue DataMapper::SaveFailureError => e
@@ -172,14 +178,14 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         mutex.release if (defined? mutex && mutex)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => [t("api.purchase_rewards.earn_failure")] } }
+          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split(' ') } }
         end
       rescue StandardError => e
         logger.error("Exception: " + e.message)
         mutex.release if (defined? mutex && mutex)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => [t("api.purchase_rewards.earn_failure")] } }
+          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split(' ') } }
         end  
       end
     end

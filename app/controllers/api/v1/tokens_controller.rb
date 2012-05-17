@@ -11,7 +11,7 @@ class Api::V1::TokensController < ApplicationController
       if email.nil? or password.nil?
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => [t("api.tokens.create_missing_info")] } }
+          format.json { render :json => { :success => false, :message => t("api.tokens.create_missing_info").split(' ') } }
         end  
         return  
       else
@@ -24,7 +24,7 @@ class Api::V1::TokensController < ApplicationController
     if @user.nil?
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => [t("api.tokens.create_invalid_info")] } }
+        format.json { render :json => { :success => false, :message => t("api.tokens.create_invalid_info").split(' ') } }
       end  
       return
     end
@@ -35,7 +35,7 @@ class Api::V1::TokensController < ApplicationController
     if auth_token.nil? && (not @user.valid_password?(password))
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => [t("api.tokens.create_invalid_info")] } }
+        format.json { render :json => { :success => false, :message => t("api.tokens.create_invalid_info").split(' ') } }
       end  
     else
       start = params[:start].to_i
@@ -56,7 +56,7 @@ class Api::V1::TokensController < ApplicationController
       if facebook_id.nil?
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => [t("api.tokens.create_missing_facebook_info")] } }
+          format.json { render :json => { :success => false, :message => t("api.tokens.create_missing_facebook_info").split(' ') } }
         end  
         return
       end
@@ -67,7 +67,7 @@ class Api::V1::TokensController < ApplicationController
         if facebook_id && User.first(:facebook_id => facebook_id)
           respond_to do |format|
             #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-            format.json { render :json => { :success => false, :metaData => { :rescode => 'login_invalid_info' }, :message => [t("api.tokens.create_invalid_info")] } }
+            format.json { render :json => { :success => false, :metaData => { :rescode => 'login_invalid_info' }, :message => t("api.tokens.create_invalid_info").split(' ') } }
           end  
           return  
         end
@@ -77,7 +77,7 @@ class Api::V1::TokensController < ApplicationController
     if @user.nil?
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :metaData => { :rescode => 'login_invalid_facebook_info' }, :message => [t("api.tokens.create_invalid_facebook_info")] } }
+        format.json { render :json => { :success => false, :metaData => { :rescode => 'login_invalid_facebook_info' }, :message => t("api.tokens.create_invalid_facebook_info").split(' ') } }
       end  
       return
     end
@@ -103,12 +103,12 @@ class Api::V1::TokensController < ApplicationController
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => [t("api.tokens.create_from_facebook_failure")] } }
+          format.json { render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => t("api.tokens.create_from_facebook_failure").split(' ') } }
         end
       rescue
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => [t("api.tokens.create_from_facebook_failure")] } }
+          format.json { render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => t("api.tokens.create_from_facebook_failure").split(' ') } }
         end
       end
     end
@@ -119,7 +119,7 @@ class Api::V1::TokensController < ApplicationController
     if @user.nil?
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => [t("api.tokens.destroy_failure")] } }
+        format.json { render :json => { :success => false, :message => t("api.tokens.destroy_failure").split(' ') } }
       end  
     else
       @user.reset_authentication_token!
