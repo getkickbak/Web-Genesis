@@ -55,14 +55,26 @@ class Api::V1::ChallengesController < ApplicationController
       return
     end
 
+    if APP_PROP["DEBUG_MODE"]
+      data = String.random_alphanumeric(32)
+    else
+      data = params[:data]
+    end
+    authorized = false
+    begin
+      if is_challenge_satisfied?(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && authenticated?(data)))
+        authorized = true
+      end
+    rescue
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => [t("api.challenges.invalid_code")] } }
+      end  
+    end
+    
     Customer.transaction do
       begin
-        if APP_PROP["DEBUG_MODE"]
-          data = String.random_alphanumeric(32)
-        else
-          data = params[:data]
-        end
-        if is_challenge_satisfied?(@challenge) && ((!@challenge.require_verif) || (@challenge.require_verif && authenticated?(data)))
+        if authorized
           if not challenge_limit_reached?(@challenge)
             record = EarnRewardRecord.new(
               :challenge_id => @challenge.id,
@@ -85,7 +97,7 @@ class Api::V1::ChallengesController < ApplicationController
         else
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => [t("api.challenges.complete_failure")] } }
+            format.json { render :json => { :success => false, :message => [t("api.challenges.invalid_code")] } }
           end 
         end
       rescue DataMapper::SaveFailureError => e
@@ -113,8 +125,8 @@ class Api::V1::ChallengesController < ApplicationController
       cipher = Gibberish::AES.new(@venue.auth_code)
       decrypted = cipher.dec(data)
       decrypted_data = JSON.parse(decrypted)
-      @data_expiry_ts = Time.at(decrypted_data[:expiry_ts].to_i)
-      if ((decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && @data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => @data_expiry_ts, :data => data).nil?
+      @data_expiry_ts = Time.at(decrypted_data["expiry_ts"])
+      if ((decrypted_data["type"] == EncryptedDataType::EARN_POINTS) && @data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => @data_expiry_ts, :data => data).nil?
         return true
       end
       return false

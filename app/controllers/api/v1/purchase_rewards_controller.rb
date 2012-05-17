@@ -16,28 +16,37 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       return
     end
     
-    #Customer.transaction do
+    @prize = nil
+    authorized = false
+    if APP_PROP["DEBUG_MODE"] && false
+      data = String.random_alphanumeric(32)
+      data_expiry_ts = Time.now
+      amount = rand(100)+1
+      authorized = true
+    else
       begin
-        @prize = nil
-        authorized = false
-        if APP_PROP["DEBUG_MODE"]
-          data = String.random_alphanumeric(32)
-          data_expiry_ts = Time.now
-          amount = rand(100)+1
+        data = params[:data]
+        cipher = Gibberish::AES.new(@venue.auth_code)
+        decrypted = cipher.dec(data)
+        #logger.debug("decrypted text: #{decrypted}")
+        decrypted_data = JSON.parse(decrypted)
+        now_secs = decrypted_data["expiry_ts"]/1000
+        data_expiry_ts = Time.at(now_secs)
+        #logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
+        if (decrypted_data["type"] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
+          amount = decrypted_data["amount"].to_f
           authorized = true
-        else
-          data = params[:data]
-          cipher = Gibberish::AES.new(@venue.auth_code)
-          decrypted = cipher.dec(data)
-          logger.debug("decrypted text: #{decrypted}")
-          decrypted_data = JSON.parse(decrypted)
-          data_expiry_ts = Time.at(decrypted_data[:expiry_ts].to_i)
-          logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
-          if (decrypted_data[:type] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
-            amount = decrypted_data[:amount].to_f
-            authorized = true
-          end  
         end  
+      rescue
+        respond_to do |format|
+          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+          format.json { render :json => { :success => false, :message => [t("api.purchase_rewards.invalid_code")] } }
+        end  
+      end
+    end    
+      
+    Customer.transaction do
+      begin
         if authorized
           #logger.debug("Authorized to earn points.")
           now = Time.now
@@ -155,7 +164,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         else
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => [t("api.purchase_rewards.earn_failure")] } }
+            format.json { render :json => { :success => false, :message => [t("api.purchase_rewards.invalid_code")] } }
           end
         end  
       rescue DataMapper::SaveFailureError => e
@@ -173,7 +182,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           format.json { render :json => { :success => false, :message => [t("api.purchase_rewards.earn_failure")] } }
         end  
       end
-    #end
+    end
   end
   
   private
