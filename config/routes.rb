@@ -128,12 +128,12 @@ Genesis::Application.routes.draw do
     constraints :user_agent => /Android/ do
       match "/download" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.kickbak.android" }
     end
-    match "/how_it_works" => 'pages#how_it_works'
+    #match "/how_it_works" => 'pages#how_it_works'
     #match "/privacy" => 'pages#privacy'
-    match "/terms" => 'pages#terms'
+    #match "/terms" => 'pages#terms'
     match "/contact_us" => 'pages#contact_us'
     match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
-    match "/faq" => 'pages#faq'
+    #match "/faq" => 'pages#faq'
 
     match "/add_business" => 'pages#add_business'
     match "/add_business/create" => 'pages#add_business_create', :via => :post, :as => :create_merchant_contact
