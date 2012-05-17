@@ -29,7 +29,7 @@ class Api::V1::EarnPrizesController < ApplicationController
       respond_to do |format|
         #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.earn_prizes.not_available").split(' ') } }
+        format.json { render :json => { :success => false, :message => t("api.earn_prizes.not_available").split('\n') } }
       end
       return
     end
@@ -52,9 +52,9 @@ class Api::V1::EarnPrizesController < ApplicationController
           render :template => '/api/v1/earn_prizes/redeem'
         else
           if @earn_prize.expiry_date < today
-            msg = t("api.earn_prizes.expired").split(' ')
+            msg = t("api.earn_prizes.expired").split('\n')
           else
-            msg = t("api.earn_prizes.already_redeemed").split(' ')
+            msg = t("api.earn_prizes.already_redeemed").split('\n')
           end  
           respond_to do |format|
             #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
@@ -66,7 +66,7 @@ class Api::V1::EarnPrizesController < ApplicationController
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.earn_prizes.redeem_failure").split(' ') } }
+          format.json { render :json => { :success => false, :message => t("api.earn_prizes.redeem_failure").split('\n') } }
         end
       end
     end

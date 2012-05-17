@@ -111,7 +111,7 @@ en:
   prize:
       terms: "No cash value.  Non-transferable."    
   api:
-      out_of_distance: "Outside of distance.  Please try again."
+      out_of_distance: "Outside of distance.\nPlease try again."
       photo_blank: "Uploaded photo is blank."
       point:
         one: "point"
@@ -124,35 +124,35 @@ en:
         expired_code: "Authorization code no longer valid."
         invalid_code: "Authorization code is not valid."
         qualified_visits: "Earn %s bonus %s with %s more %s!"
-        start_failure: "Trouble starting the challenge.  Please try again."
-        complete_failure: "Trouble completing the challenge.  Please try again."
+        start_failure: "Trouble starting the challenge.\nPlease try again."
+        complete_failure: "Trouble completing the challenge.\nPlease try again."
       check_ins:
-        invalid_code: "Invalid check-in code.  Please try again."
-        create_failure: "Trouble with check-in.  Please try again." 
+        invalid_code: "Invalid check-in code.\nPlease try again."
+        create_failure: "Trouble with check-in.\nPlease try again." 
       customer_rewards:
         not_available: "Sorry, but the reward is not available at this venue!"
         insufficient_points: "Not enough points to redeem reward."
-        redeem_failure: "Trouble redeeming the reward.  Please try again."
+        redeem_failure: "Trouble redeeming the reward.\nPlease try again."
         qualified_rewards: "Go ahead and redeem it now."
         potential_rewards: "Earn %s more %s and it's yours!"
       earn_prizes:
         not_available: "Sorry, but the prize is not available at this venue!"
         expired: "Prize has expired."
         already_redeemed: "Prize has already been redeemed."
-        redeem_failure: "Trouble redeeming the prize.  Please try again."
+        redeem_failure: "Trouble redeeming the prize.\nPlease try again."
       purchase_rewards:
         expired_code: "Authorization code no longer valid."
         invalid_code: "Authorization code is not valid."
-        earn_failure: "Trouble earning points.  Please try again."
+        earn_failure: "Trouble earning points.\nPlease try again."
       registrations:
-        create_failure: "Trouble with sign up.  Please try again."
+        create_failure: "Trouble with sign up.\nPlease try again."
       tokens:
         create_missing_info: "Missing email or password."
         create_missing_facebook_info: "Missing facebook info."
-        create_invalid_info: "The email/password you entered is incorrect.  Please try again."
+        create_invalid_info: "The email/password you entered is incorrect.\nPlease try again."
         create_invalid_facebook_info: "Invalid facebook sign in."
-        create_from_facebook_failure: "Trouble with facebook sign in.  Please try again."
-        destroy_failure: "Trouble with logout.  Please try again."  
+        create_from_facebook_failure: "Trouble with facebook sign in.\nPlease try again."
+        destroy_failure: "Trouble with logout.\nPlease try again."  
   admin:
       merchants:
         create_success: "Merchant was successfully created."
