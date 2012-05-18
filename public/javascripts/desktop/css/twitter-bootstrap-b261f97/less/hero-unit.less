@@ -29,3 +29,33 @@
     color: @heroUnitLeadColor;
   }
 }
+
+.contactus {
+  position:relative;
+  .hero-unit {
+    padding: 48px 0 0 0;
+    margin-bottom: 0px;
+    h1 {
+      color: #137BFF;
+      text-align:left;
+      text-shadow: none;
+      margin-bottom: 40px;
+    }
+    p {
+      font-size: 12px;
+      color: @grayDark;
+      font-family: "Helvetica", "Arial", sans-serif;
+    }
+  }
+  &:after {
+    position:absolute;
+    content : " ";
+    top:0;
+    right:0;
+    margin-top:@navbarHeight + 10px;
+    background : transparent url(../../../../resources/themes/v1/contactus/business.png) right 0 no-repeat;
+    background-size:450px;
+    width:450px;
+    height:500px;
+  }
+}

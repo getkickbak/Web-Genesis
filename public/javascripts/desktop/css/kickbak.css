@@ -1,4 +1,8 @@
-body:before {
+/* *****************************************************************
+ * HomePage
+ * *****************************************************************/
+
+body.homepage:before {
    position : absolute;
    z-index : -2;
    width : 100%;
@@ -6,15 +10,27 @@ body:before {
    content : " ";
    background : transparent url(../resources/themes/v1/headerimage4.png) 0px -400px no-repeat;
 }
-body:after {
+body.homepage:after, body.contactuspage:after  {
    position : absolute;
    z-index : -1;
    width : 100%;
    height : 100%;
    content : " ";
    top : 500px;
-   background : transparent url(../resources/themes/v1/contentbg.png) center -100px repeat-x;
+   background : transparent url(../resources/themes/v1/contentbg.png) center 0 repeat-x;
+   background-size:1030px;
 }
+body.contactuspage {
+   background-color:transparent;
+}
+body.contactuspage:after  {
+   top:400px;
+   background-size:750px;
+}
+
+/* *****************************************************************
+ * NavigationBar
+ * *****************************************************************/
 
 .navbar .brand {
    width : 100px;
@@ -32,11 +48,15 @@ body:after {
    background-size : 100% 100%;
 }
 
+/* *****************************************************************
+ * QRCodes Rendering
+ * *****************************************************************/
+
 .qrcodes {
    margin-top : 20px;
-   padding-left:40px;
-   position:relative;
-   height:300px;
+   padding-left : 40px;
+   position : relative;
+   height : 260px;
 }
 .qrcode {
    width : 120px;
@@ -50,23 +70,33 @@ body:after {
    margin-right : 20px;
 }
 
+/* *****************************************************************
+ * iPhone Rendering
+ * *****************************************************************/
 .iphone4 {
-   position:absolute;
+   position : absolute;
    top : -65px;
-   left:400px;
+   left : 400px;
    background : transparent url(../resources/themes/v1/iphone4.png) center center no-repeat;
    background-size : 140px 313px;
-   width:140px;
-   height:313px;
+   width : 140px;
+   height : 313px;
 }
+
+/* *****************************************************************
+ * ScanToWin Slogin
+ * *****************************************************************/
 .scantowin {
    width : 290px;
 }
 
+/* *****************************************************************
+ * Prize Animation
+ * *****************************************************************/
 .prize {
-   position:absolute;
-   top:60px;
-   left:12px;
+   position : absolute;
+   top : 60px;
+   left : 12px;
    width : 115px;
 }
 .prize1 {
@@ -79,6 +109,9 @@ body:after {
    background : transparent url(../resources/themes/v1/prize3.png) center center no-repeat;
 }
 
+/* *****************************************************************
+ * Site Features Icon
+ * *****************************************************************/
 .features img {
    width : 100px;
 }
@@ -103,6 +136,9 @@ body:after {
    margin : 40px 15px 0 15px;
 }
 
+/* *****************************************************************
+ * Site Talking Points
+ * *****************************************************************/
 .footer {
    margin : 80px auto;
 }
@@ -116,6 +152,23 @@ body:after {
    margin-right : 20px;
 }
 
+/* *****************************************************************
+ * Misc CSS Functions
+ * *****************************************************************/
 .hidden {
-   display:none;
+   display : none;
+}
+
+/* *****************************************************************
+ * ContactUs Slogan
+ * *****************************************************************/
+.createSlogan {
+   margin-top : 80px;
+   width : 250px;
+   margin-left : 0px;
+}
+.sendButton {
+   margin-top:50px;
+   margin-bottom:100px;
+   text-align:right;
 }
