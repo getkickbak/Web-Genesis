@@ -94,25 +94,26 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           @customer.save
         
           #logger.debug("Before acquiring cache mutex.")
-          mutex = CacheMutex.new(@venue.merchant.cache_key, Cache.memcache)
+          mutex = CacheMutex.new(@venue.cache_key, Cache.memcache)
           acquired = mutex.acquire
           #logger.debug("Cache mutex acquired(#{acquired}).")
           @prick_prize_initialized = false
           reward_model = @venue.merchant.reward_model
-          prize = CustomerReward.get(reward_model.prize_reward_id)
+          prize_info = @venue.prize_info
+          prize = CustomerReward.get(prize_info.prize_reward_id)
           if prize.nil?
             prize = pick_prize()
-            reward_model.prize_reward_id = prize.id
+            prize_info.prize_reward_id = prize.id
             prize_interval = (prize.price / reward_model.price_per_point / reward_model.prize_rebate_rate * 100).to_i
-            reward_model.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
+            prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
           else
             prize_interval = (prize.price / reward_model.price_per_point / reward_model.prize_rebate_rate * 100).to_i  
           end
-          current_point_offset = reward_model.prize_point_offset + @points
+          current_point_offset = prize_info.prize_point_offset + @points
           #logger.debug("Check if Prize has been won yet.")
           won_prize_before = EarnPrize.count(EarnPrize.user.id => current_user.id, EarnPrize.merchant.id => @venue.merchant.id) > 0
-          if (reward_model.prize_point_offset < reward_model.prize_win_offset)
-            if (current_point_offset >= reward_model.prize_win_offset) || ((@customer.visits > 1) && !won_prize_before)
+          if (prize_info.prize_point_offset < prize_info.prize_win_offset)
+            if (current_point_offset >= prize_info.prize_win_offset) || ((@customer.visits > 1) && !won_prize_before)
               earn_prize = EarnPrize.new(
                 :points => prize.points,
                 :expiry_date => 6.month.from_now,
@@ -125,18 +126,18 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               earn_prize.save
               @prize = earn_prize 
             end             
-            if (current_point_offset < reward_model.prize_win_offset) && ((@customer.visits > 1) && !won_prize_before)
-              reward_model.prize_win_offset = current_point_offset
+            if (current_point_offset < prize_info.prize_win_offset) && ((@customer.visits > 1) && !won_prize_before)
+              prize_info.prize_win_offset = current_point_offset
             end
           end
           if current_point_offset >= prize_interval
             #logger.debug("Current Point Offset >= Prize Interval.")
             current_point_offset -= prize_interval
             prize = pick_prize()
-            reward_model.prize_reward_id = prize.id
+            prize_info.prize_reward_id = prize.id
             prize_interval = (prize.price / reward_model.price_per_point / reward_model.prize_rebate_rate * 100).to_i  
-            reward_model.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
-            if @prize.nil? && ((current_point_offset >= reward_model.prize_win_offset) || ((@customer.visits > 1) && !won_prize_before))
+            prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
+            if @prize.nil? && ((current_point_offset >= prize_info.prize_win_offset) || ((@customer.visits > 1) && !won_prize_before))
               earn_prize = EarnPrize.new(
                 :points => prize.points,
                 :expiry_date => 6.month.from_now,
@@ -148,22 +149,22 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               earn_prize.user = current_user
               earn_prize.save
               @prize = earn_prize
-              if current_point_offset >= reward_model.prize_win_offset
+              if current_point_offset >= prize_info.prize_win_offset
                 prize = pick_prize()
-                reward_model.prize_reward_id = prize.id
+                prize_info.prize_reward_id = prize.id
                 prize_interval = (prize.price / reward_model.price_per_point / reward_model.prize_rebate_rate * 100).to_i  
-                reward_model.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
+                prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
                 current_point_offset = current_point_offset % prize_interval
               else
-                reward_model.prize_win_offset = current_point_offset  
+                prize_info.prize_win_offset = current_point_offset  
               end
-            elsif current_point_offset >= reward_model.prize_win_offset
-              current_point_offset = pick_prize_win_offset(reward_model.prize_win_offset - 1) + 1  
+            elsif current_point_offset >= prize_info.prize_win_offset
+              current_point_offset = pick_prize_win_offset(prize_info.prize_win_offset - 1) + 1  
             end
           end
           #logger.debug("Set Prize Point Offset = Current Point Offset.")
-          reward_model.prize_point_offset = current_point_offset
-          reward_model.save
+          prize_info.prize_point_offset = current_point_offset
+          prize_info.save
           mutex.release
           #logger.debug("Cache mutex released.")
           render :template => '/api/v1/purchase_rewards/earn'
@@ -175,14 +176,14 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         end  
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
-        mutex.release if (defined? mutex && mutex)
+        mutex.release if (defined? mutex && !mutex.nil?)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
         end
       rescue StandardError => e
         logger.error("Exception: " + e.message)
-        mutex.release if (defined? mutex && mutex)
+        mutex.release if (defined? mutex && !mutex.nil?)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }

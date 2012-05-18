@@ -7,15 +7,12 @@ class RewardModel
   property :rebate_rate, Integer, :required => true, :min => 1
   property :prize_rebate_rate, Integer, :required => true, :min => 1
   property :price_per_point, Decimal, :scale => 2, :min => 1.00, :default => 1.00
-  property :prize_reward_id, Integer, :default => 0
-  property :prize_point_offset, Integer, :default => 0
-  property :prize_win_offset, Integer, :default => 0
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false  
   
-  attr_accessible :rebate_rate, :prize_rebate_rate, :price_per_point, :prize_reward_id, :prize_point_offset, :prize_win_offset
+  attr_accessible :rebate_rate, :prize_rebate_rate, :price_per_point
   
   belongs_to :merchant
   

@@ -32,6 +32,7 @@ class Venue
   has 1, :venue_to_type, :constraint => :destroy
   has 1, :type, 'VenueType', :through => :venue_to_type, :via => :venue_type
   has 1, :check_in_code, :constraint => :destroy
+  has 1, :prize_info, :constraint => :destroy
   has n, :challenge_venues, :constraint => :destroy
   has n, :purchase_reward_venues, :constraint => :destroy
   has n, :customer_reward_venues, :constraint => :destroy
@@ -79,6 +80,7 @@ class Venue
     venue.check_in_code[:qr_code_img] = venue.check_in_code.generate_qr_code_image(merchant.id)
     venue.check_in_code[:created_ts] = now
     venue.check_in_code[:update_ts] = now
+    venue.prize_info = PrizeInfo.new
     venue.save
     return venue
   end
@@ -122,6 +124,10 @@ class Venue
       end  
     end
     return venues
+  end
+  
+  def cache_key
+    "Venue-#{self.id}"    
   end
   
   def display_name
