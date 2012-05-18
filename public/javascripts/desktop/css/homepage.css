@@ -2,50 +2,23 @@
  * HomePage
  * *****************************************************************/
 
-body.homepage:before {
+body:before {
    position : absolute;
    z-index : -2;
    width : 100%;
    height : 100%;
    content : " ";
-   background : transparent url(../resources/themes/v1/headerimage4.png) 0px -400px no-repeat;
+   background : transparent url(http://files.getkickbak.com/v1/headerimage4.png) 0px -400px no-repeat;
 }
-body.homepage:after, body.contactuspage:after  {
+body:after {
    position : absolute;
    z-index : -1;
    width : 100%;
    height : 100%;
    content : " ";
    top : 500px;
-   background : transparent url(../resources/themes/v1/contentbg.png) center 0 repeat-x;
+   background : transparent url(http://files.getkickbak.com/v1/contentbg.png) center 0 repeat-x;
    background-size:1030px;
-}
-body.contactuspage {
-   background-color:transparent;
-}
-body.contactuspage:after  {
-   top:400px;
-   background-size:750px;
-}
-
-/* *****************************************************************
- * NavigationBar
- * *****************************************************************/
-
-.navbar .brand {
-   width : 100px;
-   background : url(../resources/themes/v1/logo.png) center center no-repeat;
-   background-size : 100px;
-}
-.navbar-fixed-top .navbar-inner {
-   background : url(../resources/themes/v1/header.png) 0 -50px repeat-x;
-}
-.navbar-fixed-bottom {
-   position : static;
-}
-.navbar-fixed-bottom .navbar-inner {
-   background : url(../resources/themes/v1/footer.png) repeat-x;
-   background-size : 100% 100%;
 }
 
 /* *****************************************************************
@@ -77,7 +50,7 @@ body.contactuspage:after  {
    position : absolute;
    top : -65px;
    left : 400px;
-   background : transparent url(../resources/themes/v1/iphone4.png) center center no-repeat;
+   background : transparent url(http://files.getkickbak.com/v1/iphone4.png) center center no-repeat;
    background-size : 140px 313px;
    width : 140px;
    height : 313px;
@@ -100,13 +73,13 @@ body.contactuspage:after  {
    width : 115px;
 }
 .prize1 {
-   background : transparent url(../resources/themes/v1/prize1.png) center center no-repeat;
+   background : transparent url(http://files.getkickbak.com/v1/prize1.png) center center no-repeat;
 }
 .prize2 {
-   background : transparent url(../resources/themes/v1/prize2.png) center center no-repeat;
+   background : transparent url(http://files.getkickbak.com/v1/prize2.png) center center no-repeat;
 }
 .prize3 {
-   background : transparent url(../resources/themes/v1/prize3.png) center center no-repeat;
+   background : transparent url(http://files.getkickbak.com/v1/prize3.png) center center no-repeat;
 }
 
 /* *****************************************************************
@@ -150,25 +123,4 @@ body.contactuspage:after  {
    margin-top : 25px;
    width : 180px;
    margin-right : 20px;
-}
-
-/* *****************************************************************
- * Misc CSS Functions
- * *****************************************************************/
-.hidden {
-   display : none;
-}
-
-/* *****************************************************************
- * ContactUs Slogan
- * *****************************************************************/
-.createSlogan {
-   margin-top : 80px;
-   width : 250px;
-   margin-left : 0px;
-}
-.sendButton {
-   margin-top:50px;
-   margin-bottom:100px;
-   text-align:right;
 }
