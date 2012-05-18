@@ -437,8 +437,8 @@ Ext.define('Genesis.controller.client.Challenges',
          params :
          {
             venue_id : venueId,
-            latitude : metaData['position'].coords.latitude,
-            longitude : metaData['position'].coords.longitude,
+            latitude : metaData['position'].coords.getLatitude(),
+            longitude : metaData['position'].coords.getLongitude(),
             'upload_token' : metaData['upload_token']
          },
          callback : function(records, operation)

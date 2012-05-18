@@ -407,6 +407,7 @@ Ext.define('Genesis.controller.ControllerBase',
                      qrcode = null;
                      console.debug("QR Code Default = Unsupported Code");
                   }
+                  else
                   if(qrcode.cancelled)
                   {
                      qrcode = Math.random().toFixed(16);
@@ -453,10 +454,8 @@ Ext.define('Genesis.controller.ControllerBase',
             xtype : 'loadmask',
             message : me.loadingScannerMsg
          });
-         Ext.defer(function()
-         {
-            window.plugins.qrCodeReader.getCode(callback, fail);
-         }, 1);
+
+         window.plugins.qrCodeReader.getCode(callback, fail);
       }
 
    }

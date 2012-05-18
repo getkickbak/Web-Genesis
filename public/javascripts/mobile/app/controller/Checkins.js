@@ -325,7 +325,13 @@ Ext.define('Genesis.controller.Checkins',
    {
       var me = this;
       var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-      if((cestore.getCount() == 0) || (forceReload))
+      var checkinContainer = me.getCheckInNowBar();
+
+      //
+      // Do not reload page unless this is the first time!
+      // Saves bandwidth
+      //
+      if((cestore.getCount() == 0) || forceReload)
       {
          me.getGeoLocation(function(position)
          {
@@ -334,15 +340,15 @@ Ext.define('Genesis.controller.Checkins',
             {
                params :
                {
-                  latitude : position.coords.latitude,
-                  longitude : position.coords.longitude
+                  latitude : position.coords.getLatitude(),
+                  longitude : position.coords.getLongitude()
                },
                callback : function(records, operation)
                {
                   if(operation.wasSuccessful())
                   {
                      me.setPosition(position);
-                     me.getCheckInNowBar().setDisabled(false);
+                     checkinContainer.setDisabled(false);
                   }
                   else
                   {
@@ -362,16 +368,17 @@ Ext.define('Genesis.controller.Checkins',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
+      var checkinContainer = me.getCheckInNowBar();
 
       me.onExploreLoad();
       switch (me.mode)
       {
          case 'checkin':
-            me.getCheckInNowBar().show();
-            me.getCheckInNowBar().setDisabled(true);
+            checkinContainer.setDisabled(true);
+            checkinContainer.show();
             break;
          case 'explore' :
-            me.getCheckInNowBar().hide();
+            checkinContainer.hide();
             break;
       }
    },
