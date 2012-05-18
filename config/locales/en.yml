@@ -167,6 +167,17 @@ en:
         create_success: "Account was successfully created."
         update_success: "Account was successfully updated."   
   business:
+      api:
+        customer_rewards:
+          expired_code: "Verification code no longer valid."
+          invalid_code: "Verification code is not valid."
+        earn_prizes:
+          expired_code: "Verification code no longer valid."
+          invalid_code: "Verification code is not valid."
+        tokens:
+          create_missing_info: "Missing email or password."
+          create_invalid_info: "The email/password you entered is incorrect.\nPlease try again."
+          destroy_failure: "Trouble with logout.\nPlease try again."  
       challenges:
         create_success: "Challenge was successfully created."
         update_success: "Challenge was successfully updated."

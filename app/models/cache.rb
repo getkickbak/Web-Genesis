@@ -1,8 +1,8 @@
 class Cache
   @@memcache = nil
   
-  def self.set(key, value)
-    @@memcache.set(key, HashWithIndifferentAccess[value.attributes])
+  def self.set(key, value, exptime = 0)
+    @@memcache.set(key, HashWithIndifferentAccess[value.attributes], exptime)
   end
   
   def self.get(obj_class, key)
