@@ -8,6 +8,15 @@ Genesis::Application.routes.draw do
         :passwords => "business/merchant_devise/passwords"
       }
 
+      namespace :api do
+        namespace :v1  do
+          resources :tokens, :only => [:create, :destroy] 
+          
+          match "earn_prizes/verify" => 'earn_prizes#verify', :via => :post
+          match "customer_rewards/verify" => 'customer_rewards#verify', :via => :post  
+        end
+      end
+      
       resources :challenges
       resources :customer_rewards
       resources :venues do
