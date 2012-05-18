@@ -181,7 +181,7 @@ Genesis::Application.routes.draw do
 
     match '*a', :to => 'errors#routing'
 
-    root :to => 'home#index'
+    root :to => 'pages#index'
 
   #match '/referrals' => 'referrals#index'
   #root :to => 'referrals#index', :via => :get

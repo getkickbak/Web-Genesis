@@ -1,6 +1,9 @@
 class PagesController < ApplicationController
   skip_authorization_check
 
+  def index
+  end
+  
   def how_it_works
     @show_reward = true
   end
