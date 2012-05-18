@@ -10,7 +10,6 @@ Ext.define('Genesis.profile.Desktop',
    }
 });
 
-
 //---------------------------------------------------------------------------------------------------------------------------------
 // Ext.device.notification.Simulator
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -19,6 +18,8 @@ Ext.define('Genesis.device.notification.Simulator',
    override : 'Ext.device.notification.Simulator',
    beep : function(times)
    {
+      var viewport = _application.getController('Viewport');
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['beepSound']);
       console.log("Beep " + times + " times.")
    }
 });
@@ -31,6 +32,8 @@ Ext.define('Genesis.device.notification.Desktop',
    override : 'Ext.device.notification.Desktop',
    beep : function(times)
    {
+      var viewport = _application.getController('Viewport');
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['beepSound']);
       console.log("Beep " + times + " times.")
    }
 });

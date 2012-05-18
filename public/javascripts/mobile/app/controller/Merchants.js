@@ -377,13 +377,13 @@ Ext.define('Genesis.controller.Merchants',
          me.updateRewards(cmetaData);
       }
       vport.reset();
+      vport.setCubeAnimation();
 
       //
       // Force Page to refresh
       //
       if(me.getMainPage() == vport.getActiveItem())
       {
-         vport.setFadeAnimation();
          vport.doSetActiveItem(me.getMainPage(), null);
       }
 

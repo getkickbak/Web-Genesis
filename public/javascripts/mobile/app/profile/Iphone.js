@@ -19,7 +19,7 @@ Ext.define('Genesis.device.notification.PhoneGap',
    beep : function(times)
    {
       var viewport = _application.getController('Viewport');
-      viewport.playSoundFile(viewport.sound_files['beepSound']);
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['beepSound']);
       //navigator.notification.beep(times);
    },
    vibrate : function(duration)

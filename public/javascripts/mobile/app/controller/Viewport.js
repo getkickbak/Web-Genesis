@@ -233,7 +233,9 @@ Ext.define('Genesis.controller.Viewport',
    },
    onHomeButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.getViewport().reset();
+      var vport = this.getViewport();
+      vport.reset();
+      vport.setCubeAnimation();
       this.onFeatureTap('MainPage');
       console.log("Going back to HomePage ...");
    },
@@ -283,7 +285,7 @@ Ext.define('Genesis.controller.Viewport',
          ['rouletteSpinSound', 'roulette_spin_sound', 'Media'], //
          ['winPrizeSound', 'win_prize_sound', 'Media'], //
          ['clickSound', 'click_sound', 'FX'], //
-         ['refreshListSound', 'refresh_list_sound', 'FX'], //
+         //['refreshListSound', 'refresh_list_sound', 'FX'], //
          ['beepSound', 'beep.wav', 'FX']];
 
          for(var i = 0; i < soundList.length; i++)

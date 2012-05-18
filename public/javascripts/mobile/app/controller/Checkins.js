@@ -301,7 +301,9 @@ Ext.define('Genesis.controller.Checkins',
       //
       // Cleans up Back Buttons on Check-in
       //
+      this.popView();
       vport.reset();
+      vport.setCubeAnimation();
       Ext.Viewport.setMasked(false);
 
       app.dispatch(

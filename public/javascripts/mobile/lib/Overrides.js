@@ -1321,7 +1321,6 @@ Ext.define('Genesis.plugin.PullRefresh',
    override : 'Ext.plugin.PullRefresh',
    resetRefreshState : function()
    {
-      //Ext.get('refreshListSound').dom.play();
       Ext.device.Notification.beep(1);
       this.callParent(arguments);
    }
