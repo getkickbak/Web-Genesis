@@ -15,6 +15,7 @@ Genesis.constants =
    fbScope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions,offline_access',
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
    debugPrivKey : 'FTzPBwpWIgAF7JrvcTb9eS0RoaoDdvWJ',
+   redeemDBSize : 10000,
    isNative : function()
    {
       //return Ext.isDefined(cordova);
@@ -35,17 +36,88 @@ Genesis.constants =
    {
       return window.localStorage;
    },
-   getRedeemDB : function()
+   getRedeemIndexDB : function(index)
    {
-      var db = this.getLocalStorage().getItem('kickbakRedeem');
-      return ((db) ? Ext.decode(db) :
+      var db = this.getLocalStorage().getItem('kickbakRedeemIndex');
+      return ((db) ? ( index ? Ext.decode(db)[index] : Ext.decode(db)) :
       {
       });
    },
-   setRedeemDB : function(db)
+   addRedeemIndexDB : function(index)
    {
       //console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
-      this.getLocalStorage().setItem('kickbakRedeem', Ext.encode(db));
+      this.getLocalStorage().setItem('kickbakRedeemIndex', Ext.encode(db));
+   },
+   setRedeemIndexDB : function(db)
+   {
+      //console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
+      this.getLocalStorage().setItem('kickbakRedeemIndex', Ext.encode(db));
+   },
+   addRedeemSortedDB : function(key)
+   {
+      var dbS = this.getRedeemSortedDB();
+
+      dbS.push(key);
+      if(!Ext.isDefined(dbS['lastCount']))
+      {
+         dbS['lastCount'] = 0;
+      }
+      dbS['currCount'] = (Ext.isDefined(dbS['currCount'])) ? ((dbS['currCount'] + 1) % this.redeemDBSize) : 0;
+      this.setRedeemSortedDB(dbS);
+   },
+   getRedeemSortedDB : function(index)
+   {
+      var db = this.getLocalStorage().getItem('kickbakRedeemSorted');
+      return ((db) ? ( index ? Ext.decode(db)[index] : Ext.decode(db)) :
+      {
+      });
+   },
+   setRedeemSortedDB : function(db)
+   {
+      //console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
+      this.getLocalStorage().setItem('kickbakRedeemSorted', Ext.encode(db));
+   },
+   redeemDBCleanup : function()
+   {
+      console.log("================================");
+      console.log("Redeem Database has been Started");
+      console.log("================================");
+
+      var now = Date.now();
+      dbI = this.getRedeemIndexDB();
+      dbS = this.getRedeemSortedDB();
+      var total = 0;
+      var index = dbS['lastCount'] || -1;
+      var currCount = dbS['currCount'] || -1;
+      console.debug('\n' + //
+      'lastCount = ' + index + '\n' + //
+      'currCount = ' + currCount);
+
+      // Go thru the entire queue
+      while(index != currCount)
+      {
+         if(!dbS[index] || (dbI[dbS[index]] > now))
+         {
+            break;
+         }
+         delete dbI[dbS[index]];
+         delete dbS[index];
+         index = (index + 1) % this.redeemDBSize;
+         total++;
+      }
+
+      if(total > 0)
+      {
+         dbS['lastCount'] = (dbS['lastCount'] + total) % this.redeemDBSize;
+      }
+
+      Genesis.constants.setRedeemIndexDB(dbI);
+      Genesis.constants.setRedeemSortedDB(dbS);
+
+      console.debug('lastCount = ' + dbS['lastCount'] + ' total = ' + total)
+      console.log("=================================");
+      console.log("Redeem Database has been resetted");
+      console.log("=================================");
    },
    getLocalDB : function()
    {

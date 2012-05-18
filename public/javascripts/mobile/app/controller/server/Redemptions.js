@@ -49,8 +49,8 @@ Ext.define('Genesis.controller.server.Redemptions',
 
       var me = this;
       var keys = Genesis.constants.getPrivKey();
-      var db = Genesis.constants.getRedeemDB();
       GibberishAES.size(256);
+      var dbI = Genesis.constants.getRedeemIndexDB();
       for(var key in keys)
       {
          try
@@ -62,7 +62,7 @@ Ext.define('Genesis.controller.server.Redemptions',
             console.debug("Decoded Data!");
             var date = new Date(decrypted["expiry_ts"]);
 
-            if(db[encrypted])
+            if(dbI[encrypted])
             {
                console.log("Decrypted data is a previous used QRCode");
                break;
@@ -102,8 +102,9 @@ Ext.define('Genesis.controller.server.Redemptions',
                //
                // Add to Persistent Store to make sure it cannot be rescanned again
                //
-               db[encrypted] = true;
-               Genesis.constants.setRedeemDB(db);
+               Genesis.constants.addRedeemSortedDB(encrypted);
+               dbI[encrypted] = decrypted["expiry_ts"];
+               Genesis.constants.setRedeemIndexDB(dbI);
                return;
             }
             else
@@ -196,7 +197,7 @@ Ext.define('Genesis.controller.server.Redemptions',
    // --------------------------------------------------------------------------
    getMainPage : function()
    {
-      return this.getRedemptios();
+      return this.getRedemptions();
    },
    openPage : function(subFeature)
    {
@@ -222,12 +223,7 @@ var _dbCleanup = function()
 {
    Ext.defer(function()
    {
-      console.log("===========================");
-      console.log("Redeem Database is resetted");
-      console.log("===========================");
-      Genesis.constants.setRedeemDB(
-      {
-      });
+      Genesis.constants.redeemDBCleanup();
       _dbCleanup();
    }, 1000 * 60 * 60 * 6);
 };
