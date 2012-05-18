@@ -103,7 +103,7 @@ class Api::V1::ChallengesController < ApplicationController
           else
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-              format.json { render :json => { :success => true, :mesage => get_success_no_points_msg } }
+              format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => 0, :mesage => get_success_no_points_msg.split('\n') } } }
             end  
           end
         else
