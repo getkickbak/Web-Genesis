@@ -138,7 +138,7 @@ class Api::V1::ChallengesController < ApplicationController
       decrypted = cipher.dec(data)
       decrypted_data = JSON.parse(decrypted)
       @data_expiry_ts = Time.at(decrypted_data["expiry_ts"])
-      if ((decrypted_data["type"] == EncryptedDataType::EARN_POINTS) && @data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => @data_expiry_ts, :data => data).nil?
+      if (decrypted_data["type"] == EncryptedDataType::EARN_POINTS) && (@data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => @data_expiry_ts, :data => data).nil?
         return true
       end
       return false
