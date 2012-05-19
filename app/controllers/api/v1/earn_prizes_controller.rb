@@ -24,8 +24,10 @@ class Api::V1::EarnPrizesController < ApplicationController
     @earn_prize = EarnPrize.get(params[:id]) || not_found
     authorize! :update, @earn_prize
  
+    logger.debug("Redeem Prize(#{@earn_prize.id}), Type(#{@earn_prize.reward.type.value}), Venue(#{@earn_prize.venue.id}), User(#{current_user.id})")
     reward_venue = CustomerRewardVenue.first(:customer_reward_id => @earn_prize.reward.id, :venue_id => @earn_prize.venue.id)
     if reward_venue.nil?
+      logger.debug("User(#{current_user.id}) failed to redeem Prize(#{@earn_prize.id}), not available at Venue(#{@earn_prize.venue.id})")
       respond_to do |format|
         #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -49,6 +51,7 @@ class Api::V1::EarnPrizesController < ApplicationController
           }.to_json
           cipher = Gibberish::AES.new(@earn_prize.venue.auth_code)
           @encrypted_data = cipher.enc(data)
+          logger.debug("User(#{current_user.id}) successfully redeemed Prize(#{@earn_prize.id})")
           render :template => '/api/v1/earn_prizes/redeem'
         else
           if @earn_prize.expiry_date < today
@@ -56,6 +59,7 @@ class Api::V1::EarnPrizesController < ApplicationController
           else
             msg = t("api.earn_prizes.already_redeemed").split('\n')
           end  
+          logger.debug("User(#{current_user.id}) failed to redeem Prize(#{@earn_prize.id}), #{msg}")
           respond_to do |format|
             #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }

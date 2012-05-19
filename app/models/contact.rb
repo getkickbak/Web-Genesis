@@ -5,15 +5,13 @@ class Contact
   
   @@topic_list = [
       ['Login issues', 'Login issues'],
-      ['Order issues', 'Order issues'],
-      ['Payment issues','Payment issues'],
+      ['Reward issues','Reward issues'],
       ['General inquiry', 'General inquiry'],
       ['Suggest a business', 'Suggest a business']
     ]
   
   @@merchant_topic_list = [
       ['Login issues', 'Login issues'],
-      ['Voucher issues', 'Voucher issues'],
       ['Reward issues','Reward issues'],
       ['Payment issues','Payment issues'],
       ['General inquiry', 'General inquiry']

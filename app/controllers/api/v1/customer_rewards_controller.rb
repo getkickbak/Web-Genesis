@@ -15,8 +15,10 @@ class Api::V1::CustomerRewardsController < ApplicationController
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
+    logger.debug("Redeem Reward(#{@reward.id}), Type(#{@reward.type.value}), Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
     reward_venue = CustomerRewardVenue.first(:customer_reward_id => @reward.id, :venue_id => @venue.id)
     if reward_venue.nil?
+      logger.debug("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), not available at Venue(#{@venue.id})")
       respond_to do |format|
         #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -47,8 +49,10 @@ class Api::V1::CustomerRewardsController < ApplicationController
           }.to_json
           cipher = Gibberish::AES.new(@venue.auth_code)
           @encrypted_data = cipher.enc(data)
+          logger.debug("User(#{current_user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")
           render :template => '/api/v1/customer_rewards/redeem'
         else
+          logger.debug("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), insufficient points")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.customer_rewards.insufficient_points").split('\n') } }
