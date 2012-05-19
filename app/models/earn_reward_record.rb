@@ -6,8 +6,8 @@ class EarnRewardRecord
   property :id, Serial
   property :challenge_id, Integer, :default => 0
   property :venue_id, Integer, :required => true, :default => 0
-  property :data, String, :required => true, :default => ""
-  property :data_expiry_ts, DateTime, :required => true, :default => ::Constant::MIN_TIME
+  property :data, String, :default => ""
+  property :data_expiry_ts, DateTime, :default => ::Constant::MIN_TIME
   property :points, Integer, :required => true, :default => 0
   property :amount, Decimal, :scale => 2, :default => 0.00
   property :created_ts, DateTime, :required => true, :default => ::Constant::MIN_TIME
