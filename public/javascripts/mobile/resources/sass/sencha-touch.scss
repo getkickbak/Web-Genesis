@@ -250,7 +250,7 @@ body {
 
 }
 
-.pointsphoto {
+.pointsphotobase {
    line-height:$icon-size;
    font-size:$xlargeFontSize*1.25;
    text-align:center;
@@ -261,7 +261,7 @@ body {
       z-index:1;
       top:0;
       left:0;
-      content:" ";
+      content : ' ';
       width : $icon-size;
       height : $icon-size;
       max-height: $icon-size;
@@ -272,10 +272,30 @@ body {
       background-image: theme_image($theme-path + "/images/" + $gtheme-name,  "miscicons/" + "points" + ".png");
    }
 }
+.pointsphoto {
+   @extend .pointsphotobase;
+   height:$icon-size+10px;
+   max-height:$icon-size+10px;
+   &:after {
+      font-size:$smallFontSize;
+      font-weight:bold;
+      position:absolute;
+      z-index:1;
+      top:$icon-size/2+3px;
+      left:0;
+      content : 'Points';
+      width : $icon-size;
+      height : 1em;
+      max-height: 1em;
+   }
+}
 .visitsphoto {
    @extend .pointsphoto;
    &:before {
       background-image: theme_image($theme-path + "/images/" + $gtheme-name,  "miscicons/" + "number_visits" + ".png");
+   }
+   &:after {
+      content : 'Visits';
    }
 }
 
@@ -1000,7 +1020,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
       margin: 0 $panelGap $panelTopGap $panelGap;
       min-height : $icon-size;
       .x-innerhtml {
-         @extend .pointsphoto;
+         @extend .pointsphotobase;
          @if $include-border-radius { @include border-radius($panelBorderRadius); }
          background-color: #F3F3F4;
          margin :0 !important;
@@ -1015,7 +1035,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
          }
       }
       .prizeswonphoto {
-         @extend .pointsphoto;
+         @extend .pointsphotobase;
          text-align:left;
          background-color: transparent;
          font-size:1em;
@@ -1351,7 +1371,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
         margin:0 !important;
         height:$icon-size;
       }
-      .pointsphoto {
+      .pointsphotobase {
          font-size:$xlargeFontSize*1.25;
          color : #E86025;
          text-align:center;

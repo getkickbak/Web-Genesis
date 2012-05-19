@@ -7,7 +7,7 @@ Ext.define('Genesis.controller.ControllerBase',
       listeners :
       {
          'scannedqrcode' : 'onScannedQRcode',
-         'locationupdate':'onLocationUpdate'
+         'locationupdate' : 'onLocationUpdate'
       }
    },
    statics :
@@ -263,14 +263,14 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return "Cannot Open Folder";
    },
-   getGeoLocation : function(callback, i)
+   getGeoLocation : function(i)
    {
       var me = this;
       i = i || 0;
       console.debug('Getting GeoLocation ...');
       if(!Genesis.constants.isNative())
       {
-         callback(
+         me.fireEvent('locationupdate',
          {
             coords :
             {
