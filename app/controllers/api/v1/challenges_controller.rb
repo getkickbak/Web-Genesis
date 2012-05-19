@@ -92,7 +92,7 @@ class Api::V1::ChallengesController < ApplicationController
               record.save
               @customer.points += @challenge.points
               @customer.save
-              logger.debug("Successfully completed Challenge#({@challenge.id}), #{@challenge.points} awarded")
+              logger.debug("Successfully completed Challenge(#{@challenge.id}), #{@challenge.points} awarded")
               respond_to do |format|
                 #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                 format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => @challenge.points } } }
