@@ -102,7 +102,7 @@ class Api::V1::ChallengesController < ApplicationController
               logger.debug("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because limit reached")
               respond_to do |format|
                 #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-                format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => 0, :message => get_success_not_points_limit_reached_msg.split('\n') } } }
+                format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => 0, :message => get_success_no_points_limit_reached_msg.split('\n') } } }
               end  
             end
           else
@@ -204,7 +204,7 @@ class Api::V1::ChallengesController < ApplicationController
     end
   end
   
-  def get_success_no_points_limits_reached_msg
+  def get_success_no_points_limit_reached_msg
     case @challenge.type.value
     when "photo"
       t("api.challenges.limit_reached_ok")
