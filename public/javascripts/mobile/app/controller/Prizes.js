@@ -52,6 +52,7 @@ Ext.define('Genesis.controller.Prizes',
    loadCallback : null,
    initSound : false,
    authRewardVerifiedMsg : 'Verified',
+   updatePrizeOnFbMsg : 'Tell your friends on Facebook about the prize you just won!',
    wonPrizeMsg : function(numPrizes)
    {
       return 'You haved won ' + ((numPrizes > 1) ? 'some PRIZES' : 'a PRIZE') + '!'
@@ -202,7 +203,7 @@ Ext.define('Genesis.controller.Prizes',
          Genesis.constants.facebook_onLogin(function(params)
          {
             me.updatingPrizeOnFacebook(records[0]);
-         }, true, true);
+         }, true, true, me.updatePrizeOnFbMsg);
          Ext.device.Notification.vibrate();
          Ext.device.Notification.show(
          {

@@ -39,9 +39,30 @@ Ext.define('Genesis.controller.Accounts',
       this.callParent(arguments);
       console.log("Accounts Init");
    },
-   onLoadClosestVenue : function(merchantId, rec, position)
+   // --------------------------------------------------------------------------
+   // Accounts Page
+   // --------------------------------------------------------------------------
+   onActivate : function()
+   {
+      //
+      // Scroll to the Top of the Screen
+      //
+      this.getAccountsList().getScrollable().getScroller().scrollTo(0, 0);
+   },
+   onDeactivate : function()
+   {
+   },
+   onSelect : function(list, model, eOpts)
+   {
+      list.deselect([model]);
+      this.onDisclose(list, model);
+      return false;
+   },
+   onLocationUpdate : function(position)
    {
       var me = this;
+      var merchantId = me.merchantId;
+      var rec = me.rec;
       var mId = rec.getMerchant().getId();
       var customerId = rec.getId();
       var merchantName = rec.getMerchant().get('name');
@@ -110,25 +131,6 @@ Ext.define('Genesis.controller.Accounts',
          },
       });
    },
-   // --------------------------------------------------------------------------
-   // Accounts Page
-   // --------------------------------------------------------------------------
-   onActivate : function()
-   {
-      //
-      // Scroll to the Top of the Screen
-      //
-      this.getAccountsList().getScrollable().getScroller().scrollTo(0, 0);
-   },
-   onDeactivate : function()
-   {
-   },
-   onSelect : function(list, model, eOpts)
-   {
-      list.deselect([model]);
-      this.onDisclose(list, model);
-      return false;
-   },
    onDisclose : function(list, record, target, index, e, eOpts)
    {
       var me = this;
@@ -149,10 +151,7 @@ Ext.define('Genesis.controller.Accounts',
        //
        "Customer ID : [" + customerId + "]");
        */
-      me.getGeoLocation(function(position)
-      {
-         me.onLoadClosestVenue(me.merchantId, me.rec, position);
-      });
+      me.getGeoLocation();
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

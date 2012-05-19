@@ -15,8 +15,7 @@
       Failed : 1,
       Success : 2
    }
-   //QRCodeReader.prototype.scanType = "Nigma";
-   //QRCodeReader.prototype.scanType = "RL";
+   //Values are "Nigma", "RL", "Default";
    QRCodeReader.prototype.scanType = "Default";
 
    /**
