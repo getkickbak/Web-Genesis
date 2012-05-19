@@ -67,7 +67,7 @@ class Api::V1::ChallengesController < ApplicationController
         authorized = true
       end
     rescue
-      logger.debug("Failed to complete Challenge(#{@challenge.id}), invalid authentication code")
+      logger.debug("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), invalid authentication code")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.challenges.invalid_code").split('\n') } }
@@ -92,27 +92,27 @@ class Api::V1::ChallengesController < ApplicationController
               record.save
               @customer.points += @challenge.points
               @customer.save
-              logger.debug("Successfully completed Challenge(#{@challenge.id}), #{@challenge.points} awarded")
+              logger.debug("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), #{@challenge.points} awarded")
               respond_to do |format|
                 #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                 format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => @challenge.points } } }
               end
             else
-              logger.debug("Successfully completed Challenge(#{@challenge.id}), no points awarded because limit reached")
+              logger.debug("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because limit reached")
               respond_to do |format|
                 #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                 format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => 0, :message => t("api.challenges.limit_reached").split('\n') } } }
               end  
             end
           else
-            logger.debug("Successfully completed Challenge(#{@challenge.id}), no points awarded because it is not eligible")
+            logger.debug("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because it is not eligible")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
               format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => 0, :mesage => get_success_no_points_msg.split('\n') } } }
             end  
           end
         else
-          logger.debug("Failed to complete Challenge(#{@challenge.id}), authentication code expired")
+          logger.debug("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), authentication code expired")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.challenges.expired_code").split('\n') } }

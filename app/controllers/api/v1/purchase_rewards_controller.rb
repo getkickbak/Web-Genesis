@@ -7,6 +7,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
+    logger.debug("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
     Time.zone = @venue.time_zone
     if !Common.within_geo_distance?(params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       respond_to do |format|
@@ -44,6 +45,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           authorized = true
         end  
       rescue
+        logger.debug("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), invalid authentication code")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
           format.json { render :json => { :success => false, :message => t("api.purchase_rewards.invalid_code").split('\n') } }
@@ -167,8 +169,10 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           prize_info.save
           mutex.release
           #logger.debug("Cache mutex released.")
+          logger.debug("User(#{current_user.id}) successfully earned #{@points} at Venue(#{@venue.id})")
           render :template => '/api/v1/purchase_rewards/earn'
         else
+          logger.debug("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), authentication code expired")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.purchase_rewards.expired_code").split('\n') } }
