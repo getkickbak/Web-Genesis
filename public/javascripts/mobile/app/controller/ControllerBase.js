@@ -153,7 +153,7 @@ Ext.define('Genesis.controller.ControllerBase',
    geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
    missingVenueInfoMsg : 'Error loading Venue information.',
    showToServerMsg : 'Show this to your server before proceeding.',
-   cameraAccessMsg : 'Access your Camera Phone ...',
+   cameraAccessMsg : 'Accessing your Camera Phone ...',
    showScreenTimeoutExpireMsg : function(duration)
    {
       return duration + ' are up! Press OK to confirm.';
