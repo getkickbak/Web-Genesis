@@ -2,6 +2,14 @@ Ext.define('Genesis.controller.ControllerBase',
 {
    extend : 'Ext.app.Controller',
    requires : ['Ext.data.Store', 'Ext.util.Geolocation'],
+   config :
+   {
+      listeners :
+      {
+         'scannedqrcode' : 'onScannedQRcode',
+         'locationupdate':'onLocationUpdate'
+      }
+   },
    statics :
    {
       playSoundFile : function(sound_file, successCallback, failCallback)
@@ -136,6 +144,7 @@ Ext.define('Genesis.controller.ControllerBase',
          return canvas.toDataURL("image/png");
       },
    },
+   checkinMsg : 'Checking in ...',
    loadingScannerMsg : 'Loading Scanner ...',
    loadingMsg : 'Loading ...',
    noCodeScannedMsg : 'No QR Code Scanned!',
@@ -309,11 +318,12 @@ Ext.define('Genesis.controller.ControllerBase',
                      //
                      'Speed: ' + geo.getSpeed() + '\n' + 'Timestamp: ' + new Date(geo.getTimestamp()) + '\n');
 
-                     callback(position);
+                     me.fireEvent('locationupdate', position);
                   },
                   locationerror : function(geo, bTimeout, bPermissionDenied, bLocationUnavailable, message)
                   {
                      console.debug('GeoLocation Error[' + message + ']');
+                     Ext.Viewport.setMasked(false);
 
                      if(bPermissionDenied)
                      {
@@ -359,7 +369,7 @@ Ext.define('Genesis.controller.ControllerBase',
          me.geoLocation.updateLocation();
       }
    },
-   scanQRCode : function(config)
+   scanQRCode : function()
    {
       var me = this;
       var fail = function(message)
@@ -427,7 +437,7 @@ Ext.define('Genesis.controller.ControllerBase',
             console.debug("QR Code = " + qrcode);
          }
 
-         config.callback(qrcode);
+         me.fireEvent('scannedqrcode', qrcode);
       };
 
       console.debug("Scanning QR Code ...")

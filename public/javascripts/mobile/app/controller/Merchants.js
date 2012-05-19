@@ -320,22 +320,23 @@ Ext.define('Genesis.controller.Merchants',
       this.onMainDisclose(d, model);
       return false;
    },
+   onLocationUpdate : function(position)
+   {
+      var app = me.getApplication();
+      var controller = app.getController('Checkins');
+      controller.setPosition(position);
+      app.dispatch(
+      {
+         action : 'onCheckinTap',
+         args : [],
+         controller : controller,
+         scope : controller
+      });
+   },
    onCheckinTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      me.getGeoLocation(function(position)
-      {
-         var app = me.getApplication();
-         var controller = app.getController('Checkins');
-         controller.setPosition(position);
-         app.dispatch(
-         {
-            action : 'onCheckinTap',
-            args : arguments,
-            controller : controller,
-            scope : controller
-         });
-      });
+      me.getGeoLocation();
    },
    onBrowseTap : function(b, e, eOpts, eInfo)
    {

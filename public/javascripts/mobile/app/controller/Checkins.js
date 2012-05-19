@@ -38,7 +38,6 @@ Ext.define('Genesis.controller.Checkins',
       models : ['Venue', 'Merchant', 'EarnPrize'],
       position : null,
    },
-   checkinMsg : 'Checking in ...',
    metaDataMissingMsg : 'Missing Checkin MetaData information.',
    noCheckinCodeMsg : 'No Checkin Code found!',
    getMerchantInfoMsg : 'Retrieving Merchant Info ...',
@@ -90,9 +89,13 @@ Ext.define('Genesis.controller.Checkins',
    // --------------------------------------------------------------------------
    // Common Functions
    // --------------------------------------------------------------------------
-   onCheckinCommonTap : function(b, e, eOpts, mode, url, qrcode, position, callback)
+   onCheckinCommonTap : function(qrcode)
    {
       var me = this;
+      var mode = me.callback['mode'];
+      var url = me.callback['url'];
+      var position = me.callback['position'];
+      var callback = me.callback['callback'];
       var viewport = me.getViewPortCntlr();
       var cstore = Ext.StoreMgr.get('CheckinStore');
       var venueId = (viewport.getVenue() ? viewport.getVenue().getId() : null);
@@ -137,6 +140,32 @@ Ext.define('Genesis.controller.Checkins',
          }
       });
    },
+   onScannedQRcode : function(qrcode)
+   {
+      var me = this;
+      if(qrcode)
+      {
+         console.log(me.checkinMsg);
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.checkinMsg
+         });
+
+         // Retrieve GPS Coordinates
+         me.onCheckinCommonTap(qrcode);
+      }
+      else
+      {
+         console.debug(me.noCheckinCodeMsg);
+         Ext.Viewport.setMasked(false);
+         Ext.device.Notification.show(
+         {
+            title : 'Error',
+            message : me.noCheckinCodeMsg
+         });
+      }
+   },
    onCheckInScanNow : function(b, e, eOpts, eInfo, mode, url, type, callback)
    {
       var me = this;
@@ -144,41 +173,29 @@ Ext.define('Genesis.controller.Checkins',
       switch(type)
       {
          case 'scan' :
-            me.scanQRCode(
+            me.callback =
             {
-               callback : function(qrcode)
-               {
-                  if(qrcode)
-                  {
-                     console.log(me.checkinMsg);
-                     Ext.Viewport.setMasked(
-                     {
-                        xtype : 'loadmask',
-                        message : me.checkinMsg
-                     });
-
-                     // Retrieve GPS Coordinates
-                     me.onCheckinCommonTap(b, e, eOpts, mode, url, qrcode, me.getPosition(), callback);
-                  }
-                  else
-                  {
-                     console.debug(me.noCheckinCodeMsg);
-                     Ext.device.Notification.show(
-                     {
-                        title : 'Error',
-                        message : me.noCheckinCodeMsg
-                     });
-                  }
-               }
-            });
+               mode : mode,
+               url : url,
+               type : type,
+               callback : callback
+            };
+            me.scanQRCode();
             break;
          default:
+            me.callback =
+            {
+               mode : mode,
+               url : url,
+               type : '',
+               callback : callback
+            };
             Ext.Viewport.setMasked(
             {
                xtype : 'loadmask',
                message : me.getMerchantInfoMsg
             });
-            this.onCheckinCommonTap(b, e, eOpts, mode, url, "", null, callback);
+            me.onCheckinCommonTap(null);
             break;
       }
    },
@@ -323,47 +340,50 @@ Ext.define('Genesis.controller.Checkins',
    // --------------------------------------------------------------------------
    // CheckinExplore Page
    // --------------------------------------------------------------------------
-   onExploreLoad : function(forceReload)
+   onLocationUpdate : function(position)
    {
       var me = this;
       var cestore = Ext.StoreMgr.get('CheckinExploreStore');
       var checkinContainer = me.getCheckInNowBar();
 
+      Venue['setFindNearestURL']();
+      cestore.load(
+      {
+         params :
+         {
+            latitude : position.coords.getLatitude(),
+            longitude : position.coords.getLongitude()
+         },
+         callback : function(records, operation)
+         {
+            if(operation.wasSuccessful())
+            {
+               me.setPosition(position);
+               checkinContainer.setDisabled(false);
+            }
+            else
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Warning',
+                  message : me.missingVenueInfoMsg
+               });
+            }
+         },
+         scope : me
+      });
+   },
+   onExploreLoad : function(forceReload)
+   {
+      var me = this;
+      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
       //
       // Do not reload page unless this is the first time!
       // Saves bandwidth
       //
       if((cestore.getCount() == 0) || forceReload)
       {
-         me.getGeoLocation(function(position)
-         {
-            Venue['setFindNearestURL']();
-            cestore.load(
-            {
-               params :
-               {
-                  latitude : position.coords.getLatitude(),
-                  longitude : position.coords.getLongitude()
-               },
-               callback : function(records, operation)
-               {
-                  if(operation.wasSuccessful())
-                  {
-                     me.setPosition(position);
-                     checkinContainer.setDisabled(false);
-                  }
-                  else
-                  {
-                     Ext.device.Notification.show(
-                     {
-                        title : 'Warning',
-                        message : me.missingVenueInfoMsg
-                     });
-                  }
-               },
-               scope : me
-            });
-         });
+         me.getGeoLocation();
       }
    },
    onExploreActivate : function()

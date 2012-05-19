@@ -78,11 +78,21 @@ Ext.define('Genesis.controller.Viewport',
          }
       }
    },
-   appName : null,
+   gatherCheckinInfoMsg : 'Gathering Checkin information ...',
    retrieveChallengesMsg : 'Retrieving Challenges ...',
    fbShareSuccessMsg : 'Posted on your Timeline!',
    onFeatureTap : function(feature, subFeature)
    {
+      if((appName == 'GetKickBak') && !Ext.device.Connection.isOnline() && (subFeature != 'login'))
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Network Error',
+            message : 'You have lost internet connectivity'
+         });
+         return;
+      }
+
       var app = this.getApplication();
       var controller = app.getController(feature);
       app.dispatch(
@@ -135,48 +145,57 @@ Ext.define('Genesis.controller.Viewport',
       // Open Info ActiveSheet
       //this.getApplication().getView('Viewport').pushView(vp.getInfo());
    },
+   onLocationUpdate : function(position)
+   {
+      var me = this;
+      var app = me.getApplication();
+      var controller = app.getController('Checkins');
+      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
+
+      Venue['setFindNearestURL']();
+      cestore.load(
+      {
+         params :
+         {
+            latitude : position.coords.getLatitude(),
+            longitude : position.coords.getLongitude()
+         },
+         callback : function(records, operation)
+         {
+            if(operation.wasSuccessful())
+            {
+               controller.setPosition(position);
+               app.dispatch(
+               {
+                  action : 'onCheckinScanTap',
+                  controller : controller,
+                  args : [],
+                  scope : controller
+               });
+            }
+            else
+            {
+               Ext.Viewport.setMasked(false);
+               Ext.device.Notification.show(
+               {
+                  title : 'Error',
+                  message : me.missingVenueInfoMsg
+               });
+            }
+         },
+         scope : me
+      });
+   },
    onCheckinScanTap : function(b, e, eOpts, einfo)
    {
       var me = this;
-      me.getGeoLocation(function(position)
-      {
-         var app = me.getApplication();
-         var controller = app.getController('Checkins');
-         var cestore = Ext.StoreMgr.get('CheckinExploreStore');
 
-         Venue['setFindNearestURL']();
-         cestore.load(
-         {
-            params :
-            {
-               latitude : position.coords.getLatitude(),
-               longitude : position.coords.getLongitude()
-            },
-            callback : function(records, operation)
-            {
-               if(operation.wasSuccessful())
-               {
-                  controller.setPosition(position);
-                  app.dispatch(
-                  {
-                     action : 'onCheckinScanTap',
-                     controller : controller,
-                     args : [b, e, eOpts, einfo],
-                     scope : controller
-                  });
-               }
-               else
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Error',
-                     message : me.missingVenueInfoMsg
-                  });
-               }
-            },
-            scope : me
-         });
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.gatherCheckinInfoMsg
       });
+      me.getGeoLocation();
    },
    onAccountsButtonTap : function(b, e, eOpts, eInfo)
    {
@@ -265,6 +284,12 @@ Ext.define('Genesis.controller.Viewport',
       _application = app;
 
       this.callParent(arguments);
+
+      console.log("Loading License Keys ...");
+      Genesis.constants.getPrivKey();
+      QRCodeReader.prototype.scanType = "RL";
+      console.debug("QRCode Scanner Mode[" + QRCodeReader.prototype.scanType + "]")
+
       //
       // Initialize Facebook
       //

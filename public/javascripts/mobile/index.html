@@ -53,6 +53,7 @@
          var phoneGapAvailable = true;
          var debugMode = false;
          var merchantMode = false;
+         var appName = 'GetKickBak';
 
          var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.0-commercial/src';
          var _appId = "197968780267830";
@@ -103,24 +104,26 @@
          {
             console.debug = console.debug || console.log;
             console.log("appInit - start");
-            if( typeof cordova == 'undefined')
-               Ext.device.Notification.show(
-               {
-                  title : 'Alert',
-                  message : 'PhoneGap variable does not exist. Check that you have included phonegap.js correctly'
-               });
-            if( typeof CDV == 'undefined')
-               Ext.device.Notification.show(
-               {
-                  title : 'Alert',
-                  message : 'PG variable does not exist. Check that you have included pg-plugin-fb-connect.js correctly'
-               });
-            if( typeof FB == 'undefined')
-               Ext.device.Notification.show(
-               {
-                  title : 'Alert',
-                  message : 'FB variable does not exist. Check that you have included the Facebook JS SDK file.'
-               });
+            /*
+             if( typeof cordova == 'undefined')
+             Ext.device.Notification.show(
+             {
+             title : 'Alert',
+             message : 'PhoneGap variable does not exist. Check that you have included phonegap.js correctly'
+             });
+             if( typeof CDV == 'undefined')
+             Ext.device.Notification.show(
+             {
+             title : 'Alert',
+             message : 'PG variable does not exist. Check that you have included pg-plugin-fb-connect.js correctly'
+             });
+             if( typeof FB == 'undefined')
+             Ext.device.Notification.show(
+             {
+             title : 'Alert',
+             message : 'FB variable does not exist. Check that you have included the Facebook JS SDK file.'
+             });
+             */
             FB.init(
             {
                appId : _appId,
@@ -156,8 +159,6 @@
                {
                   var viewport = this.getController('Viewport');
                   viewport.appName = 'GetKickBak';
-                  console.log("Loading License Keys ...");
-                  Genesis.constants.getPrivKey();
                   console.log("Launching App");
                   Ext.create('Genesis.view.Viewport');
                   viewport.openMainPage();
@@ -175,48 +176,44 @@
             Ext.triggerReady();
             document.addEventListener("online", function()
             {
-               console.log("Phone is Online");
                if(Ext.device)
                {
+                  console.log("Phone is Online");
                   if(Ext.device.Connection.isOnline())
                   {
-                     Ext.device.Notification.show(
-                     {
-                        title : 'Network Connection Established',
-                        message : 'You are currently connected via ' + Ext.device.Connection.getType()
-                     });
+                     /*
+                      Ext.device.Notification.show(
+                      {
+                      title : 'Network Connection Established',
+                      message : 'You are currently connected via ' + Ext.device.Connection.getType()
+                      });
+                      */
                   }
                   else
                   {
-                     Ext.device.Notification.show(
-                     {
-                        title : 'Network Error',
-                        message : 'You are not currently connected'
-                     });
+                     _onGotoMain();
                   }
                }
             }, false);
 
             document.addEventListener("offline", function()
             {
-               console.log("Phone is Offline");
                if(Ext.device)
                {
+                  console.log("Phone is Offline");
                   if(Ext.device.Connection.isOnline())
                   {
-                     Ext.device.Notification.show(
-                     {
-                        title : 'Network Connection Established',
-                        message : 'You are currently connected via ' + Ext.device.Connection.getType()
-                     });
+                     /*
+                      Ext.device.Notification.show(
+                      {
+                      title : 'Network Connection Established',
+                      message : 'You are currently connected via ' + Ext.device.Connection.getType()
+                      });
+                      */
                   }
                   else
                   {
-                     Ext.device.Notification.show(
-                     {
-                        title : 'Network Error',
-                        messsage : 'You are not currently connected'
-                     });
+                     _onGotoMain();
                   }
                }
             }, false);
@@ -232,16 +229,25 @@
                {
                   if(!Ext.device.Connection.isOnline())
                   {
-                     Ext.device.Notification.show(
-                     {
-                        title : 'Network Error',
-                        messsage : 'You are not currently connected'
-                     });
+                     _onGotoMain();
                   }
                }
             }, false);
             console.log("onDeviceReady");
             appInit();
+         }
+
+         function _onGotoMain()
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Network Error',
+               message : 'You have lost internet connectivity',
+               callback : function()
+               {
+                  _application.getController('Viewport').onFeatureTap('MainPage', 'login');
+               }
+            });
          }
       </script>
       <script type="text/javascript" src="core.js"></script>

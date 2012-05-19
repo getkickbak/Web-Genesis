@@ -132,47 +132,42 @@ Ext.define('Genesis.controller.server.Redemptions',
    onDeactivate : function()
    {
    },
+   onScannedQRcode : function(encrypted)
+   {
+      var me = this;
+      if(!encrypted)
+      {
+         /*
+          if(Ext.isDefined(encrypted))
+          {
+          encrypted = Genesis.controller.ControllerBase.genQRCodeFromParams(
+          {
+          "type" : 'redeem_reward',
+          "reward" :
+          {
+          type :
+          {
+          value : 'reward'
+          },
+          title : 'Test QR Code'
+          }
+          });
+          }
+          else
+          */
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Error!',
+               message : me.invalidAuthCodeMsg
+            });
+         }
+      }
+      me.verifyQRCode(encrypted);
+   },
    onRedeemVerification : function()
    {
       var me = this;
-      var verify = function()
-      {
-         me.scanQRCode(
-         {
-            callback : function(encrypted)
-            {
-               if(!encrypted)
-               {
-                  /*
-                   if(Ext.isDefined(encrypted))
-                   {
-                   encrypted = Genesis.controller.ControllerBase.genQRCodeFromParams(
-                   {
-                   "type" : 'redeem_reward',
-                   "reward" :
-                   {
-                   type :
-                   {
-                   value : 'reward'
-                   },
-                   title : 'Test QR Code'
-                   }
-                   });
-                   }
-                   else
-                   */
-                  {
-                     Ext.device.Notification.show(
-                     {
-                        title : 'Error!',
-                        message : me.invalidAuthCodeMsg
-                     });
-                  }
-               }
-               me.verifyQRCode(encrypted);
-            }
-         });
-      }
       Ext.device.Notification.show(
       {
          title : 'Redemption Verification',
@@ -183,7 +178,7 @@ Ext.define('Genesis.controller.server.Redemptions',
             if(btn.toLowerCase() == 'ok')
             {
                console.log("Verifying Authorization Code ...");
-               verify();
+               me.scanQRCode();
             }
          }
       });

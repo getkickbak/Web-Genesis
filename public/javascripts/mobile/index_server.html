@@ -49,6 +49,7 @@
          var phoneGapAvailable = true;
          var debugMode = false;
          var merchantMode = true;
+         var appName = 'MerchantKickBak';
 
          var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.0-commercial/src';
 
@@ -112,9 +113,6 @@
                launch : function()
                {
                   var viewport = this.getController('Viewport');
-                  viewport.appName = 'MerchantKickBak';
-                  console.log("Loading License Keys ...");
-                  Genesis.constants.getPrivKey();
                   console.log("Launching App");
                   Ext.create('Genesis.view.Viewport');
                   viewport.openMainPage();
@@ -203,6 +201,28 @@
                    */
                }
             }, false);
+            window.addEventListener("batterylow", function(info)
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Battery Level Low',
+                  messsage : 'Battery is at ' + info.level + '%'
+               });
+               Ext.device.Notification.vibrate();
+            }, false);
+
+            window.addEventListener("batterycritical", function(info)
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Battery Level Critical',
+                  messsage : 'Battery is at ' + info.level + '%' + '\n' + //
+                  'Recharge Soon!'
+               });
+               Ext.device.Notification.vibrate();
+               Ext.device.Notification.beep();
+            }, false);
+
             console.log("onDeviceReady");
             appInit();
          }

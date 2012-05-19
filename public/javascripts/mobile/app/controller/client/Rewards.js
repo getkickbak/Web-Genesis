@@ -76,6 +76,30 @@ Ext.define('Genesis.controller.client.Rewards',
       var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
       rouletteBall.addCls('spinBack');
    },
+   onScannedQRcode : function(qrcode)
+   {
+      var me = this;
+      if(qrcode)
+      {
+         //anim.disable();
+         //container.setActiveItem(0);
+         //anim.enable();
+         me.doEarnPts(qrcode);
+      }
+      else
+      {
+         console.debug(me.missingEarnPtsCodeMsg);
+         Ext.device.Notification.show(
+         {
+            title : 'Error',
+            message : me.missingEarnPtsCodeMsg,
+            callback : function()
+            {
+               //me.popView();
+            }
+         });
+      }
+   },
    onEarnPtsTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
@@ -94,29 +118,47 @@ Ext.define('Genesis.controller.client.Rewards',
          return;
       }
 
-      me.scanQRCode(
+      me.scanQRCode();
+   },
+   onLocationUpdate : function(position)
+   {
+      var viewport = me.getViewPortCntlr();
+      var venue = viewport.getVenue();
+      var venueId = venue.getId();
+      var reader = CustomerReward.getProxy().getReader();
+      var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
+
+      //
+      // Triggers PrizeCheck and MetaDataChange
+      // - subject CustomerReward also needs to be reset to ensure property processing of objects
+      //
+      //console.debug("qrcode =[" + me.qrcode + ']');
+      EarnPrize['setEarnPrizeURL']();
+      reader.setRootProperty('');
+      reader.buildExtractors();
+      pstore.loadPage(1,
       {
-         callback : function(qrcode)
+         jsonData :
          {
-            if(qrcode)
+         },
+         params :
+         {
+            venue_id : venueId,
+            'data' : me.qrcode,
+            latitude : position.coords.getLatitude(),
+            longitude : position.coords.getLongitude()
+         },
+         callback : function(records, operation)
+         {
+            reader.setRootProperty('data');
+            reader.buildExtractors();
+            if(operation.wasSuccessful())
             {
-               //anim.disable();
-               //container.setActiveItem(0);
-               //anim.enable();
-               me.doEarnPts(qrcode);
+               me.loadCallback = arguments;
             }
             else
             {
-               console.debug(me.missingEarnPtsCodeMsg);
-               Ext.device.Notification.show(
-               {
-                  title : 'Error',
-                  message : me.missingEarnPtsCodeMsg,
-                  callback : function()
-                  {
-                     //me.popView();
-                  }
-               });
+               //me.popView();
             }
          }
       });
@@ -126,49 +168,7 @@ Ext.define('Genesis.controller.client.Rewards',
       var me = this;
       me.qrcode = qrcode;
 
-      me.getGeoLocation(function(position)
-      {
-         var viewport = me.getViewPortCntlr();
-         var venue = viewport.getVenue();
-         var venueId = venue.getId();
-         var reader = CustomerReward.getProxy().getReader();
-         var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
-
-         //
-         // Triggers PrizeCheck and MetaDataChange
-         // - subject CustomerReward also needs to be reset to ensure property processing of objects
-         //
-         //console.debug("qrcode =[" + me.qrcode + ']');
-         EarnPrize['setEarnPrizeURL']();
-         reader.setRootProperty('');
-         reader.buildExtractors();
-         pstore.loadPage(1,
-         {
-            jsonData :
-            {
-            },
-            params :
-            {
-               venue_id : venueId,
-               'data' : me.qrcode,
-               latitude : position.coords.getLatitude(),
-               longitude : position.coords.getLongitude()
-            },
-            callback : function(records, operation)
-            {
-               reader.setRootProperty('data');
-               reader.buildExtractors();
-               if(operation.wasSuccessful())
-               {
-                  me.loadCallback = arguments;
-               }
-               else
-               {
-                  //me.popView();
-               }
-            }
-         });
-      });
+      me.getGeoLocation();
    },
    onPrizeCheckMetaData : function(metaData)
    {

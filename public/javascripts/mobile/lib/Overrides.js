@@ -14,7 +14,8 @@ Genesis.constants =
    weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
    fbScope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions,offline_access',
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
-   debugPrivKey : 'FTzPBwpWIgAF7JrvcTb9eS0RoaoDdvWJ',
+   fbConnectReqestMsg : 'Connection to Facebook is required to complete this action',
+   debugPrivKey : 'Po2CFD4Sndq0jRs1t5sRpOCIpUvCCnFx',
    redeemDBSize : 10000,
    isNative : function()
    {
@@ -156,7 +157,6 @@ Genesis.constants =
       {
          if(me.isNative())
          {
-            var appName = _application.getController('Viewport').appName;
             var failHandler = function(error)
             {
                var errorCode =
@@ -187,6 +187,7 @@ Genesis.constants =
             window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
             {
                var licenseKeyFile = fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/resources/keys.txt';
+               console.debug("License File - [" + licenseKeyFile + "]");
                fileSystem.root.getFile(licenseKeyFile, null, function(fileEntry)
                {
                   fileEntry.file(function(file)
@@ -569,7 +570,7 @@ Genesis.constants =
          scope : me.fbScope
       });
    },
-   facebook_onLogin : function(cb, supress, doNotLoginIfNoConn)
+   facebook_onLogin : function(cb, supress, doNotLoginIfNoConn, message)
    {
       var me = this;
       var db = me.getLocalDB();
@@ -581,7 +582,26 @@ Genesis.constants =
       // Login if connection missing
       if(!doNotLoginIfNoConn || refreshConn)
       {
-         me.fbLogin(cb, refreshConn, supress);
+         if(refreshConn || message)
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Facebook Connect',
+               message : message || me.fbConnectReqestMsg,
+               buttons : ['Proceed', 'Cancel'],
+               callback : function()
+               {
+                  if(btn.toLowerCase() == 'proceed')
+                  {
+                     me.fbLogin(cb, refreshConn, supress);
+                  }
+               }
+            });
+         }
+         else
+         {
+            me.fbLogin(cb, refreshConn, supress);
+         }
       }
    },
    facebook_loginCallback : function(cb, count)
@@ -1129,6 +1149,20 @@ Ext.define('Genesis.tab.Bar',
    }
 });
 
+//---------------------------------------------------------------------------------------------------------------------------------
+// Ext.device.connection.PhoneGap
+//---------------------------------------------------------------------------------------------------------------------------------
+Ext.define('Genesis.device.connection.PhoneGap',
+{
+   override : 'Ext.device.connection.PhoneGap',
+
+   syncOnline : function()
+   {
+      var type = navigator.network.connection.type;
+      this._type = type;
+      this._online = (type != Connection.NONE) && (type != Connection.UNKNOWN);
+   }
+});
 /*
 //
 //  FixedButton.js
