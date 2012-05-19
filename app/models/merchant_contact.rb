@@ -16,16 +16,15 @@ class MerchantContact
       ['Nova Scotia', 'Nova Scotia']
     ]
     
-  attr_accessor :name, :email, :merchant_name, :address, :city, :state, :phone, :message
+  attr_accessor :name, :email, :business_name, :address, :city, :province, :phone, :message
   
   validates :name, :presence => true
   validates :email, :presence => true, :email_format => true
-  validates :merchant_name, :presence => true
+  validates :business_name, :presence => true
   validates :address, :presence => true
   validates :city, :presence => true
-  validates :state, :presence => true
+  validates :province, :presence => true
   validates :phone, :presence => true
-  validates :message, :presence => true
   
   def self.states
     @@states

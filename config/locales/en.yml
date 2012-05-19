@@ -8,7 +8,7 @@ en:
           name: "Full name"
           email: "Email address"
           topic: "Reason"
-          description: "How can we help you?"
+          message: "How can we help you?"    
   errors:
       blank: "%{attribute} is required"
       messages:
