@@ -1,12 +1,13 @@
 <% content_for :link do %>
-      <link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
-<% end %>
-<% if @notice %>
-<div class="alert alert-success">
-<p><%= @notice %></p>
-</div>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
 <% end %>
 <div class="container">
+	<% if @notice %>
+	<div class="alert alert-success">
+		<a class="close" data-dismiss="alert" href="#">×</a>
+		<%= @notice %>
+	</div>
+	<% end %>
 	<!--/Hero Unit-->
 	<div class="row contactus">
 		<div class="span12">
@@ -40,7 +41,7 @@
 			<%= f.input :state, :collection => MerchantContact.states, :input_html => { :style => 'width:270px;' }, :wrapper_html => { :class => 'span_field' } %>
 			<%= f.input :message, :as => :text, :input_html => { :rows => 5, :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
 			<div class="pull-right">
-			<%= f.button :submit, 'Send', :type => :image, :src => 'http://files.getkickbak.com/v1/send2.png' %>
+				<%= f.button :submit, 'Send', :type => :image, :src => 'http://files.getkickbak.com/v1/send2.png' %>
 			</div>
 			<% end %>
 		</div>

@@ -1,11 +1,10 @@
-<% if @notice %>
-<div class="alert alert-success">
-	<p>
-		<%= @notice %>
-	</p>
-</div>
-<% end %>
 <div class="container">
+	<% if @notice %>
+	<div class="alert alert-success">
+		<a class="close" data-dismiss="alert" href="#">×</a>
+		<%= @notice %>
+	</div>
+	<% end %>
 	<div class="row">
 		<div class="span4">
 			<h2>Email KICKBAK</h2>
@@ -19,7 +18,7 @@
 			<%= f.input :topic, :collection => Contact.topic_list, :input_html => { :style => 'width:270px;' } %>
 			<%= f.input :description, :as => :text, :input_html => { :style => 'width:260px;', :rows => 5 } %>
 			<div class="pull-right">
-			<%= f.button :submit, 'Send', :type => :image, :src => 'http://files.getkickbak.com/v1/send2.png' %>
+				<%= f.button :submit, 'Send', :type => :image, :src => 'http://files.getkickbak.com/v1/send2.png' %>
 			</div>
 			<% end %>
 		</div>
