@@ -397,6 +397,13 @@ Genesis.constants =
    {
       var me = this;
       var db = me.getLocalDB();
+
+      //
+      // Reset FB Connection. The system reset it automatically on every system reboot
+      //      
+      delete db['fbExpiresIn'];
+      me.setLocalDB(db);
+
       //Detect when Facebook tells us that the user's session has been returned
       FB.Event.monitor('auth.authResponseChange', function(session)
       {
