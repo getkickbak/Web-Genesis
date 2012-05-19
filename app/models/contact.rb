@@ -17,12 +17,12 @@ class Contact
       ['General inquiry', 'General inquiry']
     ] 
     
-  attr_accessor :name, :email, :topic, :description
+  attr_accessor :name, :email, :topic, :message
   
   validates :name, :presence => true
   validates :email, :presence => true, :email_format => true
   validates :topic, :presence => true
-  validates :description, :presence => true
+  validates :message, :presence => true
   
   def self.topic_list
     @@topic_list

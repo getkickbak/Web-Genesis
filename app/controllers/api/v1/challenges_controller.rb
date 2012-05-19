@@ -61,6 +61,7 @@ class Api::V1::ChallengesController < ApplicationController
     else
       data = params[:data]
     end
+    @data_expiry_ts = nil
     authorized = false
     begin
       if is_challenge_satisfied? && ((!@challenge.require_verif) || (@challenge.require_verif && authenticated?(data)))
@@ -82,8 +83,8 @@ class Api::V1::ChallengesController < ApplicationController
               record = EarnRewardRecord.new(
                 :challenge_id => @challenge.id,
                 :venue_id => @venue.id,
-                :data => data,
-                :data_expiry_ts => @data_expiry_ts,
+                :data => data || "",
+                :data_expiry_ts => @data_expiry_ts || ::Constant::MIN_TIME,
                 :points => @challenge.points,
                 :created_ts => Time.now
               )
@@ -101,7 +102,7 @@ class Api::V1::ChallengesController < ApplicationController
               logger.debug("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because limit reached")
               respond_to do |format|
                 #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-                format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => 0, :message => t("api.challenges.limit_reached").split('\n') } } }
+                format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => 0, :message => get_success_no_points_limit_reached_msg.split('\n') } } }
               end  
             end
           else
@@ -170,8 +171,10 @@ class Api::V1::ChallengesController < ApplicationController
   end
   
   def challenge_limit_reached?
-    if @challenge.type.value == "photo" || @challenge.type.value == "birthday"
+    if @challenge.type.value == "photo"
       return EarnRewardRecord.count(:challenge_id => @challenge.id, :merchant => @challenge.merchant, :user => current_user, :created_ts.gte => Date.today.to_time) > 0
+    elsif @challenge.type.value == "birthday"
+      return EarnRewardRecord.count(:challenge_id => @challenge.id, :merchant => @challenge.merchant, :user => current_user, :created_ts.gte => 11.month.ago.to_time) > 0  
     end
     return false  
   end
@@ -201,10 +204,22 @@ class Api::V1::ChallengesController < ApplicationController
     end
   end
   
+  def get_success_no_points_limit_reached_msg
+    case @challenge.type.value
+    when "photo"
+      t("api.challenges.limit_reached_ok")
+    when "birthday"
+      t("api.challenges.limit_reached_invalid") % [1, I18n.t('api.time', :count => 1), I18n.t('api.year', :count => 1)]  
+    else  
+      t("api.challenges.limit_reached_ok")
+    end
+  end
+  
   def get_success_no_points_msg
     case @challenge.type.value
     when "vip"
-      t("api.challenges.vip_success") % [@customer.visits % @challenge.data.visits, @challenge.points]
+      visits = @customer.visits % @challenge.data.visits
+      t("api.challenges.vip_success") % [visits, I18n.t('api.visit', :count => visits), @challenge.points]
     else
       t("api.challenges.unsupported_success")  
     end
