@@ -366,13 +366,13 @@ Ext.define('Genesis.controller.client.Challenges',
    {
 
       var me = this;
+      var photoAction = me.getChallengePage().photoAction;
+      photoAction.hide();
+      
       console.log("Checking for Facebook Plugin ...");
       Genesis.constants.facebook_onLogin(function(params)
       {
          console.log("Accessing Camera Plugin ...");
-
-         var photoAction = me.getChallengePage().photoAction;
-         photoAction.hide();
          if(Genesis.constants.isNative())
          {
             var cameraOptions =
