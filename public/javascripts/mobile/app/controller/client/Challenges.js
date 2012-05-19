@@ -348,6 +348,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
       console.debug("image URI =[" + imageURI + "]");
 
+      Ext.Viewport.setMasked(false);
       me.imageURI = imageURI;
       me.getGeoLocation();
    },
@@ -356,6 +357,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       console.debug("onCameraErrorFn - message[" + message + "]");
 
+      Ext.Viewport.setMasked(false);
       Ext.device.Notification.show(
       {
          title : 'Error',
@@ -368,13 +370,19 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       var photoAction = me.getChallengePage().photoAction;
       photoAction.hide();
-      
+
       console.log("Checking for Facebook Plugin ...");
       Genesis.constants.facebook_onLogin(function(params)
       {
          console.log("Accessing Camera Plugin ...");
          if(Genesis.constants.isNative())
          {
+            Ext.Viewport.setMasked(
+            {
+               xtype : 'loadmask',
+               message : me.cameraAccessMsg
+            });
+
             var cameraOptions =
             {
                quality : 75,
