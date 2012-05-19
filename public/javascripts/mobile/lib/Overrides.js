@@ -608,7 +608,7 @@ Genesis.constants =
                title : 'Facebook Connect',
                message : message || me.fbConnectReqestMsg,
                buttons : ['Proceed', 'Cancel'],
-               callback : function()
+               callback : function(btn)
                {
                   if(btn.toLowerCase() == 'proceed')
                   {
