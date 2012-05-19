@@ -407,6 +407,8 @@ Genesis.constants =
             var authToken = session.authResponse['accessToken'];
             if(authToken)
             {
+               db['fbExpiresIn'] = session.authResponse['expiresIn'];
+               me.setLocalDB(db);
                if(me.cb)
                {
                   me.facebook_loginCallback(me.cb);
@@ -415,6 +417,8 @@ Genesis.constants =
             }
             else
             {
+               delete db['fbExpiresIn'];
+               me.setLocalDB(db);
                me.facebook_onLogout(null, false);
             }
          }
@@ -538,6 +542,8 @@ Genesis.constants =
          if((response.status == 'connected') && response.authResponse)
          {
             console.debug("Logged into Facebook!");
+            db['fbExpiresIn'] = response.authResponse['expiresIn'];
+            me.setLocalDB(db);
             if(me.cb)
             {
                me.facebook_loginCallback(me.cb);
@@ -546,6 +552,8 @@ Genesis.constants =
          }
          else
          {
+            delete db['fbExpiresIn'];
+            me.setLocalDB(db);
             if(!refreshConn)
             {
                console.debug("Login Failed! ...");
@@ -582,7 +590,11 @@ Genesis.constants =
       // Login if connection missing
       if(!doNotLoginIfNoConn || refreshConn)
       {
-         if(refreshConn || message)
+         var expireTime = (!db['fbExpiresIn']) ? 0 : new Date(db['fbExpiresIn']).getTime();
+         //
+         // To-do : Implement Facebook Expiry TimeStamp check
+         //
+         if((refreshConn || message) && (expireTime < Date.now()))
          {
             Ext.device.Notification.show(
             {

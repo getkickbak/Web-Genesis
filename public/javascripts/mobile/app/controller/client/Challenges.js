@@ -78,7 +78,7 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    photoTakenFailMsg : function(msg)
    {
-      return msg + 'No Photos were taken.'
+      return msg + Genesis.constants.addCRLF() + 'No Photos were taken.'
    },
    photoUploadIncompletesMsg : 'Trouble updating to server.',
    photoUploadFailValidationMsg : 'Please enter a comment with at least 16 characters in length',
