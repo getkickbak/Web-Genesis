@@ -17,6 +17,19 @@ body:after  {
    width : 250px;
    margin-left : 0px;
 }
+
+.createForm {
+   margin-top : 80px;
+}
+
+.span_field {
+  width : 270px;
+}
+
+.btn {
+  background-image : none;
+}
+
 .sendButton {
    margin-top:50px;
    margin-bottom:100px;
