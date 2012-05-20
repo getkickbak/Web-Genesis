@@ -79,6 +79,13 @@ Ext.define('Genesis.controller.server.Redemptions',
                      break;
                }
 
+               //
+               // Add to Persistent Store to make sure it cannot be rescanned again
+               //
+               Genesis.constants.addRedeemSortedDB(encrypted);
+               dbI[encrypted] = decrypted["expiry_ts"];
+               Genesis.constants.setRedeemIndexDB(dbI);
+               
                var app = me.getApplication();
                var controller = app.getController('Prizes');
                app.dispatch(
@@ -98,13 +105,6 @@ Ext.define('Genesis.controller.server.Redemptions',
                   controller : controller,
                   scope : controller
                });
-
-               //
-               // Add to Persistent Store to make sure it cannot be rescanned again
-               //
-               Genesis.constants.addRedeemSortedDB(encrypted);
-               dbI[encrypted] = decrypted["expiry_ts"];
-               Genesis.constants.setRedeemIndexDB(dbI);
                return;
             }
             else
@@ -120,7 +120,7 @@ Ext.define('Genesis.controller.server.Redemptions',
       Ext.device.Notification.show(
       {
          title : 'Error!',
-         message : 'Authorization Code is Invalid'
+         message : me.invalidAuthCodeMsg
       });
    },
    // --------------------------------------------------------------------------

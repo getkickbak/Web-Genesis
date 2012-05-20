@@ -69,9 +69,7 @@ Genesis.constants =
    getRedeemSortedDB : function(index)
    {
       var db = this.getLocalStorage().getItem('kickbakRedeemSorted');
-      return ((db) ? ( index ? Ext.decode(db)[index] : Ext.decode(db)) :
-      {
-      });
+      return ((db) ? ( index ? Ext.decode(db)[index] : Ext.decode(db)) : []);
    },
    setRedeemSortedDB : function(db)
    {
