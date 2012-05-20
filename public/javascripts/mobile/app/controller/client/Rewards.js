@@ -42,6 +42,7 @@ Ext.define('Genesis.controller.client.Rewards',
    loadCallback : null,
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
    checkinFirstMsg : 'Please Check-In before earning rewards',
+   authCodeReqMsg : 'Proceed to scan an Authorization Code from your server to earn Reward Points!',
    prizeCheckMsg : 'Find out if you won a PRIZE!',
    getPointsMsg : function(points)
    {
@@ -66,16 +67,8 @@ Ext.define('Genesis.controller.client.Rewards',
       console.log("Client Rewards Init");
    },
    // --------------------------------------------------------------------------
-   // Rewards Page
+   // Event Handlers
    // --------------------------------------------------------------------------
-   startRouletteScreen : function()
-   {
-      var scn = this.getPrizeCheckScreen();
-      var rouletteTable = Ext.get(Ext.DomQuery.select('div.rouletteTable',scn.element.dom)[0]);
-      rouletteTable.addCls('spinFwd');
-      var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
-      rouletteBall.addCls('spinBack');
-   },
    onScannedQRcode : function(qrcode)
    {
       var me = this;
@@ -84,7 +77,8 @@ Ext.define('Genesis.controller.client.Rewards',
          //anim.disable();
          //container.setActiveItem(0);
          //anim.enable();
-         me.doEarnPts(qrcode);
+         me.qrcode = qrcode;
+         me.getGeoLocation();
       }
       else
       {
@@ -100,28 +94,9 @@ Ext.define('Genesis.controller.client.Rewards',
          });
       }
    },
-   onEarnPtsTap : function(b, e, eOpts, eInfo)
-   {
-      var me = this;
-      //var container = me.getRewardsContainer();
-      //var anim = container.getLayout().getAnimation();
-
-      var allowedMsg = me.isOpenAllowed();
-
-      if(allowedMsg !== true)
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Error',
-            message : allowedMsg
-         });
-         return;
-      }
-
-      me.scanQRCode();
-   },
    onLocationUpdate : function(position)
    {
+      var me = this;
       var viewport = me.getViewPortCntlr();
       var venue = viewport.getVenue();
       var venueId = venue.getId();
@@ -162,15 +137,54 @@ Ext.define('Genesis.controller.client.Rewards',
             }
          }
       });
+      delete me.qrcode;
    },
-   doEarnPts : function(qrcode)
+   // --------------------------------------------------------------------------
+   // Rewards Page
+   // --------------------------------------------------------------------------
+   startRouletteScreen : function()
+   {
+      var scn = this.getPrizeCheckScreen();
+      var rouletteTable = Ext.get(Ext.DomQuery.select('div.rouletteTable',scn.element.dom)[0]);
+      rouletteTable.addCls('spinFwd');
+      var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
+      rouletteBall.addCls('spinBack');
+   },
+   onEarnPtsTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      me.qrcode = qrcode;
+      //var container = me.getRewardsContainer();
+      //var anim = container.getLayout().getAnimation();
 
-      me.getGeoLocation();
+      var allowedMsg = me.isOpenAllowed();
+
+      if(allowedMsg !== true)
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Error',
+            message : allowedMsg
+         });
+         return;
+      }
+      else
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Earning Reward Points',
+            message : me.authCodeReqMsg,
+            buttons : ['OK', 'Cancel'],
+            callback : function(btn)
+            {
+               if(btn.toLowerCase() == 'ok')
+               {
+                  me.scanQRCode();
+               }
+            }
+         });
+      }
    },
-   onPrizeCheckMetaData : function(metaData)
+   metaDataHandler : function(metaData)
    {
       var me = this;
       var exit = function()
@@ -228,8 +242,8 @@ Ext.define('Genesis.controller.client.Rewards',
       else
       if(metaData['vip_challenge'])
       {
-         me.getRewards();
          // Preload page
+         me.getRewards();
          me.vipPopUp(metaData['vip_challenge'].points, exit);
       }
    },
@@ -241,7 +255,7 @@ Ext.define('Genesis.controller.client.Rewards',
       //
       // Added to Earn Rewards Handling
       //
-      me.onPrizeCheckMetaData(metaData);
+      me.metaDataHandler(metaData);
 
       if(metaData['data'])
       {
@@ -256,22 +270,10 @@ Ext.define('Genesis.controller.client.Rewards',
          });
       }
    },
-   onPrizeCheck : function(records, operation)
-   {
-      var me = this;
-      var app = me.getApplication();
-      var controller = app.getController('Prizes');
-      app.dispatch(
-      {
-         action : 'onPrizeCheck',
-         args : arguments,
-         controller : controller,
-         scope : controller
-      });
-   },
    onActivate : function(c, newActiveItem, oldActiveItem, eOpts)
    {
-      var container = this.getRewardsContainer();
+      var me = this;
+      var container = me.getRewardsContainer();
       if(container)
       {
          var activeItem = container.getActiveItem();
@@ -281,7 +283,24 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             case 'prizeCheck' :
             {
-               this.onToggleBtnTap(null, null, null, null);
+               var viewport = me.getViewPortCntlr();
+
+               //container.setActiveItem(0);
+               me.startRouletteScreen();
+               Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
+               {
+                  console.debug("RouletteSound Done, checking for prizes ...");
+                  var app = me.getApplication();
+                  var controller = app.getController('Prizes');
+                  app.dispatch(
+                  {
+                     action : 'onPrizeCheck',
+                     args : me.loadCallback,
+                     controller : controller,
+                     scope : controller
+                  });
+                  delete me.loadCallback;
+               });
                break;
             }
             default :
@@ -294,45 +313,8 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       this.getBackButton().enable();
    },
-   onToggleBtnTap : function(b, e, eOpts, eInfo)
-   {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-      var container = me.getRewardsContainer();
-      var activeItem = container.getActiveItem();
-
-      switch (activeItem.config.tag)
-      {
-         case 'prizeCheck' :
-         {
-            //container.setActiveItem(0);
-            me.startRouletteScreen();
-            Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
-            {
-               console.debug("RouletteSound Done, checking for prizes ...");
-               me.onPrizeCheck.apply(me, me.loadCallback);
-               delete me.loadCallback;
-            });
-            break;
-         }
-      }
-      return true;
-   },
    onContainerActivate : function(c, value, oldValue, eOpts)
    {
-      var me = this;
-      var container = me.getRewardsContainer();
-      var animation = container.getLayout().getAnimation();
-
-      switch (value.config.tag)
-      {
-         case 'prizeCheck' :
-         {
-            break;
-         }
-         default:
-            break;
-      }
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
@@ -346,17 +328,13 @@ Ext.define('Genesis.controller.client.Rewards',
       var page;
       var me = this;
       var viewport = me.getViewPortCntlr();
-      var successCallback = function()
-      {
-         //me.pushView(page);
-         me.onEarnPtsTap();
-      }
       switch (subFeature)
       {
          case 'rewards':
          {
             page = me.getRewards();
-            successCallback();
+            //me.pushView(page);
+            me.onEarnPtsTap();
             break;
          }
       }

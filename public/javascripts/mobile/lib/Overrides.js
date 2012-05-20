@@ -400,7 +400,7 @@ Genesis.constants =
 
       //
       // Reset FB Connection. The system reset it automatically on every system reboot
-      //      
+      //
       delete db['fbExpiresIn'];
       me.setLocalDB(db);
 
@@ -414,7 +414,7 @@ Genesis.constants =
             var authToken = session.authResponse['accessToken'];
             if(authToken)
             {
-               db['fbExpiresIn'] = session.authResponse['expiresIn'];
+               db['fbExpiresIn'] = Date.now() + (1000 * session.authResponse['expiresIn']);
                me.setLocalDB(db);
                if(me.cb)
                {
@@ -549,7 +549,7 @@ Genesis.constants =
          if((response.status == 'connected') && response.authResponse)
          {
             console.debug("Logged into Facebook!");
-            db['fbExpiresIn'] = response.authResponse['expiresIn'];
+            db['fbExpiresIn'] = Date.now() + (1000 * response.authResponse['expiresIn']);
             me.setLocalDB(db);
             if(me.cb)
             {
@@ -601,6 +601,7 @@ Genesis.constants =
          //
          // To-do : Implement Facebook Expiry TimeStamp check
          //
+         console.debug('FB ExpiryDate TimeStamp = ' + Date(expireTime));
          if((refreshConn || message) && (expireTime < Date.now()))
          {
             Ext.device.Notification.show(

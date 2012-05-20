@@ -245,7 +245,7 @@ body {
       }
    }
    .x-title {
-      font-size:$largeFontSize;
+      font-size:$xlargeFontSize;
    }
 
 }
@@ -1450,12 +1450,17 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
 //------------------------------------------------------------------------------
 .photoUploadPage {
    .background {
+      background-color:black;
+      background-position: center center;
+      background-repeat : no-repeat;
+      background-size: contain;
    }
    .desc {
      background: rgba(0,0,0,0.3) center center no-repeat;
+     padding: $panelTopGap/2 $panelGap/2;
      textarea {
         color: white;
-        font-size:$normalFontSize;
+        font-size:$largeFontSize;
      }
    }
 }

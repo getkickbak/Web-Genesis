@@ -178,6 +178,22 @@ Ext.define('Genesis.controller.Merchants',
       this.onActivateCommon(map, gmap);
    },
    // --------------------------------------------------------------------------
+   // Event Handlers
+   // --------------------------------------------------------------------------
+   onLocationUpdate : function(position)
+   {
+      var app = me.getApplication();
+      var controller = app.getController('Checkins');
+      controller.setPosition(position);
+      app.dispatch(
+      {
+         action : 'onCheckinTap',
+         args : [],
+         controller : controller,
+         scope : controller
+      });
+   },
+   // --------------------------------------------------------------------------
    // Merchant Account Page
    // --------------------------------------------------------------------------
    onUpdateWinnersCount : function(metaData)
@@ -319,19 +335,6 @@ Ext.define('Genesis.controller.Merchants',
       d.deselect([model]);
       this.onMainDisclose(d, model);
       return false;
-   },
-   onLocationUpdate : function(position)
-   {
-      var app = me.getApplication();
-      var controller = app.getController('Checkins');
-      controller.setPosition(position);
-      app.dispatch(
-      {
-         action : 'onCheckinTap',
-         args : [],
-         controller : controller,
-         scope : controller
-      });
    },
    onCheckinTap : function(b, e, eOpts, eInfo)
    {

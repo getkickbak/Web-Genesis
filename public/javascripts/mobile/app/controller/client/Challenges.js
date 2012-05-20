@@ -88,13 +88,17 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    getConsolationMsg : function(message)
    {
-      return message + Genesis.constants.addCRLF() + 'Try our other challenges as well!';
+      //return message + Genesis.constants.addCRLF() + 'Try our other challenges as well!';
+      return message;
    },
    init : function(app)
    {
       this.callParent(arguments);
       console.log("Challenge Init");
    },
+   // --------------------------------------------------------------------------
+   // Event Handlers
+   // --------------------------------------------------------------------------
    onLocationUpdate : function(position)
    {
       var me = this;
@@ -216,6 +220,9 @@ Ext.define('Genesis.controller.client.Challenges',
       }
       me.metaData = null;
    },
+   // --------------------------------------------------------------------------
+   // Challenge Page
+   // --------------------------------------------------------------------------
    onCompleteChallenge : function(qrcode, venueId, customerId, position)
    {
       var me = this;
@@ -260,9 +267,6 @@ Ext.define('Genesis.controller.client.Challenges',
          }
       });
    },
-   // --------------------------------------------------------------------------
-   // Challenge Page
-   // --------------------------------------------------------------------------
    onItemSelect : function(d, model, eOpts)
    {
       d.deselect([model], false);
@@ -334,7 +338,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   Ext.device.Notification.show(
                   {
                      title : 'VIP Challenge',
-                     message : 'Test Data'
+                     message : 'Visit this place more often, you get Bonus Reward Points!'
                   });
                }
                break;
@@ -475,12 +479,11 @@ Ext.define('Genesis.controller.client.Challenges',
             venue_id : venueId,
             latitude : metaData['position'].coords.getLatitude(),
             longitude : metaData['position'].coords.getLongitude(),
-            'upload_token' : metaData['upload_token'],
-            'data' : ''
+            'upload_token' : metaData['upload_token']
          },
          callback : function(records, operation)
          {
-            metaData2 = Challenge.getProxy().getReader().metaData;
+            var metaData2 = Challenge.getProxy().getReader().metaData;
             if(operation.wasSuccessful() && metaData2)
             {
                //
@@ -494,11 +497,8 @@ Ext.define('Genesis.controller.client.Challenges',
                   message : ((metaData2['points'] > 0) ? me.photoUploadSuccessMsg(metaData2['points']) : me.getConsolationMsg(metaData2['message'])),
                   callback : function()
                   {
-                     //
-                     // Go back to Checked-in Merchant Account
-                     //
                      me.metaData = null;
-                     viewport.onFeatureTap('MainPage', 'main');
+                     me.popView();
                   }
                });
             }
@@ -513,7 +513,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   {
                      if(btn.toLowerCase() == 'try again')
                      {
-                        Ext.defer(me.completeUploadPhotosChallenge, 100, me);
+                        Ext.defer(me.completeUploadPhotosChallenge, 1 * 1000, me);
                      }
                      else
                      {
@@ -537,11 +537,7 @@ Ext.define('Genesis.controller.client.Challenges',
       me.getPostBtn().show();
       bg.setStyle(
       {
-         'background-color' : 'black',
-         'background-image' : 'url(' + me.metaData['photo_url'] + ')',
-         'background-position' : 'center center',
-         'background-repeat' : 'no-repeat',
-         'background-size' : 'contain'
+         'background-image' : 'url(' + me.metaData['photo_url'] + ')'
       });
    },
    onUploadPhotosDeactivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -563,7 +559,7 @@ Ext.define('Genesis.controller.client.Challenges',
             message : me.photoUploadFailValidationMsg,
             callback : function()
             {
-               textareafield.select();
+               textareafield.focus();
             }
          });
          return;

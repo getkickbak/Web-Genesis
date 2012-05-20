@@ -26,6 +26,8 @@ Ext.define('Genesis.view.UploadPhotosPage',
          tag : 'desc',
          cls : 'desc',
          autoComplete : true,
+         defaultUnit : 'em',
+         minHeight : '2',
          autoCorrect : true,
          autoCapitalize : true,
          maxLength : 256,
@@ -34,16 +36,17 @@ Ext.define('Genesis.view.UploadPhotosPage',
          clearIcon : false
       }]
    },
-   beforeActivate : function()
+   beforeActivate : function(activeItem, oldActiveItem)
+   {
+      activeItem.query('textareafield')[0].reset();
+   },
+   beforeDeactivate : function(activeItem, oldActiveItem)
    {
    },
-   beforeDeactivate : function()
+   afterActivate : function(activeItem, oldActiveItem)
    {
    },
-   afterActivate : function()
-   {
-   },
-   afterDeactivate : function()
+   afterDeactivate : function(activeItem, oldActiveItem)
    {
    }
 });
