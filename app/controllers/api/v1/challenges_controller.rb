@@ -109,7 +109,7 @@ class Api::V1::ChallengesController < ApplicationController
             logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because it is not eligible")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-              format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => 0, :mesage => get_success_no_points_msg.split('\n') } } }
+              format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => 0, :message => get_success_no_points_msg.split('\n') } } }
             end  
           end
         else
