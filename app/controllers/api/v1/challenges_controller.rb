@@ -93,7 +93,7 @@ class Api::V1::ChallengesController < ApplicationController
               record.save
               @customer.points += @challenge.points
               @customer.save
-              logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), #{@challenge.points} awarded")
+              logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), #{@challenge.points} points awarded")
               respond_to do |format|
                 #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                 format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => @challenge.points } } }
@@ -170,7 +170,7 @@ class Api::V1::ChallengesController < ApplicationController
   end
   
   def points_eligible?
-    if @challenge.type == "referral" || @challenge.type == "vip"
+    if @challenge.type.value == "referral" || @challenge.type.value == "vip"
       return false
     end 
     return true
