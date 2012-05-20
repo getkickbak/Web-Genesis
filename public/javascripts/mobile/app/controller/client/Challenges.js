@@ -63,7 +63,12 @@ Ext.define('Genesis.controller.client.Challenges',
          {
             tap : 'onUploadPhotosTap'
          }
-
+      },
+      listeners :
+      {
+         'scannedqrcode' : 'onScannedQRcode',
+         'locationupdate' : 'onLocationUpdate',
+         'fbphotouploadcomplete' : 'onFbPhotoUploadComplete'
       }
    },
    metaData : null,
@@ -88,8 +93,8 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    getConsolationMsg : function(message)
    {
-      //return message + Genesis.constants.addCRLF() + 'Try our other challenges as well!';
-      return message;
+      return message + Genesis.constants.addCRLF() + 'Try our other challenges as well!';
+      //return message;
    },
    init : function(app)
    {
@@ -219,6 +224,79 @@ Ext.define('Genesis.controller.client.Challenges',
          });
       }
       me.metaData = null;
+   },
+   onFbPhotoUploadComplete : function()
+   {
+      var me = this;
+      var cstore = Ext.StoreMgr.get('CustomerStore');
+      var viewport = me.getViewPortCntlr();
+      var venue = viewport.getVenue();
+      var venueId = venue.getId();
+      var metaData = me.metaData;
+      var customerId = viewport.getCustomer().getId();
+      var points = me.selectedItem.get('points');
+      var id = me.selectedItem.getId();
+
+      Challenge['setCompleteChallengeURL'](id);
+      Challenge.load(id,
+      {
+         jsonData :
+         {
+         },
+         params :
+         {
+            venue_id : venueId,
+            latitude : metaData['position'].coords.getLatitude(),
+            longitude : metaData['position'].coords.getLongitude(),
+            'upload_token' : metaData['upload_token']
+         },
+         callback : function(records, operation)
+         {
+            var metaData2 = Challenge.getProxy().getReader().metaData;
+            if(operation.wasSuccessful() && metaData2)
+            {
+               //
+               // Update points from the purchase or redemption
+               //
+               cstore.getById(customerId).set('points', metaData2['account_points']);
+               console.debug("Points Earned = " + metaData2['points'] + ' Pts');
+               Ext.device.Notification.show(
+               {
+                  title : 'Upload Complete',
+                  message : ((metaData2['points'] > 0) ? me.photoUploadSuccessMsg(metaData2['points']) : me.getConsolationMsg(metaData2['message'])),
+                  callback : function()
+                  {
+                     me.metaData = null;
+                     me.popView();
+                  }
+               });
+            }
+            else
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Upload Failed!',
+                  message : me.photoUploadIncompletesMsg,
+                  buttons : ['Try Again', 'Cancel'],
+                  callback : function(btn)
+                  {
+                     if(btn.toLowerCase() == 'try again')
+                     {
+                        Ext.defer(me.completeUploadPhotosChallenge, 1 * 1000, me);
+                     }
+                     else
+                     {
+                        //
+                        // Go back to Checked-in Merchant Account
+                        //
+                        me.metaData = null;
+                        viewport.onFeatureTap('MainPage', 'main');
+                     }
+                  }
+               });
+            }
+         }
+      });
    },
    // --------------------------------------------------------------------------
    // Challenge Page
@@ -456,79 +534,6 @@ Ext.define('Genesis.controller.client.Challenges',
    // --------------------------------------------------------------------------
    // Photos Upload Page
    // --------------------------------------------------------------------------
-   completeUploadPhotosChallenge : function()
-   {
-      var me = this;
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var viewport = me.getViewPortCntlr();
-      var venue = viewport.getVenue();
-      var venueId = venue.getId();
-      var metaData = me.metaData;
-      var customerId = viewport.getCustomer().getId();
-      var points = me.selectedItem.get('points');
-      var id = me.selectedItem.getId();
-
-      Challenge['setCompleteChallengeURL'](id);
-      Challenge.load(id,
-      {
-         jsonData :
-         {
-         },
-         params :
-         {
-            venue_id : venueId,
-            latitude : metaData['position'].coords.getLatitude(),
-            longitude : metaData['position'].coords.getLongitude(),
-            'upload_token' : metaData['upload_token']
-         },
-         callback : function(records, operation)
-         {
-            var metaData2 = Challenge.getProxy().getReader().metaData;
-            if(operation.wasSuccessful() && metaData2)
-            {
-               //
-               // Update points from the purchase or redemption
-               //
-               cstore.getById(customerId).set('points', metaData2['account_points']);
-               console.debug("Points Earned = " + points + ' Pts');
-               Ext.device.Notification.show(
-               {
-                  title : 'Upload Complete',
-                  message : ((metaData2['points'] > 0) ? me.photoUploadSuccessMsg(metaData2['points']) : me.getConsolationMsg(metaData2['message'])),
-                  callback : function()
-                  {
-                     me.metaData = null;
-                     me.popView();
-                  }
-               });
-            }
-            else
-            {
-               Ext.device.Notification.show(
-               {
-                  title : 'Upload Failed!',
-                  message : me.photoUploadIncompletesMsg,
-                  buttons : ['Try Again', 'Cancel'],
-                  callback : function(btn)
-                  {
-                     if(btn.toLowerCase() == 'try again')
-                     {
-                        Ext.defer(me.completeUploadPhotosChallenge, 1 * 1000, me);
-                     }
-                     else
-                     {
-                        //
-                        // Go back to Checked-in Merchant Account
-                        //
-                        me.metaData = null;
-                        viewport.onFeatureTap('MainPage', 'main');
-                     }
-                  }
-               });
-            }
-         }
-      });
-   },
    onUploadPhotosActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
@@ -619,7 +624,7 @@ Ext.define('Genesis.controller.client.Challenges',
          else
          {
             console.debug('Facebook Post ID - ' + response.id);
-            me.completeUploadPhotosChallenge();
+            me.fireEvent('fbphotouploadcomplete');
          }
       });
    },
