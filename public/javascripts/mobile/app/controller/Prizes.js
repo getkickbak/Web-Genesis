@@ -53,6 +53,7 @@ Ext.define('Genesis.controller.Prizes',
    initSound : false,
    authRewardVerifiedMsg : 'Verified',
    updatePrizeOnFbMsg : 'Tell your friends on Facebook about the prize you just won!',
+   retrievingQRCodeMsg : 'Retrieving QRCode ...',
    wonPrizeMsg : function(numPrizes)
    {
       return 'You haved won ' + ((numPrizes > 1) ? 'some PRIZES' : 'a PRIZE') + '!'
@@ -436,6 +437,11 @@ Ext.define('Genesis.controller.Prizes',
             break;
          }
       }
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.retrievingQRCodeMsg
+      });
       store.load(
       {
          addRecords : true, //Append data
@@ -452,6 +458,7 @@ Ext.define('Genesis.controller.Prizes',
          {
             if(!operation.wasSuccessful())
             {
+               Ext.Viewport.setMasked(false);
                btn.show();
             }
          }
@@ -473,23 +480,25 @@ Ext.define('Genesis.controller.Prizes',
       //
       // For Debugging purposes
       //
-      if(!qrcode)
-      {
-         console.log("Generaintg QR Code ... we lack one");
-         qrcode = ControllerBase.genQRCodeFromParams(
-         {
-            type : 'redeem_prize',
-            reward :
-            {
-               type :
-               {
-                  value : 'prize'
-               },
-               title : 'Test QR Code'
-            }
-         });
-      }
-      else
+      /*
+       if(!qrcode)
+       {
+       console.log("Generaintg QR Code ... we lack one");
+       qrcode = ControllerBase.genQRCodeFromParams(
+       {
+       type : 'redeem_prize',
+       reward :
+       {
+       type :
+       {
+       value : 'prize'
+       },
+       title : 'Test QR Code'
+       }
+       });
+       }
+       else
+       */
       {
          console.log("\n" + //
          "Encrypted Code :\n" + qrcode + "\n" + //
@@ -502,6 +511,8 @@ Ext.define('Genesis.controller.Prizes',
       me.getDoneBtn().show();
 
       me.onRefreshQRCode(qrcode);
+      
+      Ext.Viewport.setMasked(false);
       Ext.device.Notification.show(
       {
          title : 'Redemption Alert',
