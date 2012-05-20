@@ -15,6 +15,15 @@ Ext.define('Genesis.navigation.Bar',
       }
    },
    /**
+    * Returns the text needed for the current title at anytime.
+    * @private
+    */
+   getTitleText : function()
+   {
+      var title = this.backButtonStack[this.backButtonStack.length - 1];
+      return ((title) ? title.trunc(18) : '');
+   },
+   /**
     * @private
     */
    onViewAdd : function(view, item, index)

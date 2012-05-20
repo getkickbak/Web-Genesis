@@ -5,7 +5,7 @@ Ext.define('Genesis.view.Accounts',
    alias : 'widget.accountsview',
    config :
    {
-      title : 'Loyalty Accounts',
+      title : 'Accounts',
       //scrollable : false,
       changeTitle : false,
       cls : 'accountsMain',

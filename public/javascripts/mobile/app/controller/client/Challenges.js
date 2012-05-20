@@ -110,97 +110,120 @@ Ext.define('Genesis.controller.client.Challenges',
       //
       // Either we are in PhotoUpload mode, or we are in Challenge Authorization Mode
       //
-      if(me.imageURI)
+      switch (me.selectedItem.get('type').value)
       {
-         if(Genesis.constants.isNative())
+         case 'photo' :
          {
-            var db = Genesis.constants.getLocalDB();
-            var options = new FileUploadOptions();
-            options.fileKey = "image";
-            // Token filename NOT be used
-            options.fileName = "DummyPhoto.jpg";
-            options.mimeType = "image/jpg";
-            options.params =
+            if(me.imageURI)
             {
-               "auth_token" : db['auth_code']
+               if(Genesis.constants.isNative())
+               {
+                  var db = Genesis.constants.getLocalDB();
+                  var options = new FileUploadOptions();
+                  options.fileKey = "image";
+                  // Token filename NOT be used
+                  options.fileName = "DummyPhoto.jpg";
+                  options.mimeType = "image/jpg";
+                  options.params =
+                  {
+                     "auth_token" : db['auth_code']
+                  };
+                  options.chunkedMode = true;
+
+                  Ext.Viewport.setMasked(
+                  {
+                     xtype : 'loadmask',
+                     message : me.uploadServerMsg
+                  });
+
+                  var ft = new FileTransfer();
+                  var res, metaData;
+                  ft.upload(me.imageURI, Genesis.constants.host + '/api/v1/venues/share_photo', function(r)
+                  {
+                     try
+                     {
+                        res = decodeURIComponent(r.response) || '';
+                        console.debug('\n' + //
+                        "Response = [" + res + ']\n' + //
+                        "Code = " + r.responseCode + '\n' + "Sent = " + r.bytesSent);
+                        res = Ext.decode(res);
+                        if(res)
+                        {
+                           //
+                           // Set MetaData from PhotoUpload here
+                           //
+                           metaData = me.metaData = res.metaData || null;
+                           metaData['position'] = position;
+                        }
+                        else
+                        {
+                           console.log('No Data returned by the server.');
+                        }
+                     }
+                     catch (ex)
+                     {
+                        console.log('Unable to parse the JSON returned by the server: ' + ex.toString());
+                     }
+
+                     Ext.Viewport.setMasked(false);
+                     if(metaData && metaData['photo_url'] && metaData['upload_token'])
+                     {
+                        console.log("Uploading to Facebook using upload_token[" + metaData['upload_token'] + "]...");
+
+                        //
+                        // Goto PhotoUpload Page
+                        //
+                        me.pushView(me.getUploadPhotosPage());
+                     }
+                     delete me.imageURI;
+                  }, function(error)
+                  {
+                     Ext.Viewport.setMasked(false);
+                     console.log(me.noPhotoUploadedMsg);
+                     console.log("An error has occurred: Code = " + error.code);
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Error',
+                        message : me.noPhotoUploadedMsg(error.message + Genesis.constants.addCRLF())
+                     });
+                     delete me.imageURI;
+                  }, options);
+               }
+               else
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Error',
+                     message : "Cannot upload photo in Non-Native Mode"
+                  });
+               }
+            }
+            break;
+         }
+         case 'vip' :
+         {
+            var viewport = me.getViewPortCntlr();
+            var venueId = viewport.getVenue().getId();
+            var customerId = viewport.getCustomer().getId();
+            me.metaData =
+            {
+               'position' : position
             };
-            options.chunkedMode = true;
-
-            Ext.Viewport.setMasked(
-            {
-               xtype : 'loadmask',
-               message : me.uploadServerMsg
-            });
-
-            var ft = new FileTransfer();
-            var res, metaData;
-            ft.upload(me.imageURI, Genesis.constants.host + '/api/v1/venues/share_photo', function(r)
-            {
-               try
-               {
-                  res = decodeURIComponent(r.response) || '';
-                  console.debug('\n' + //
-                  "Response = [" + res + ']\n' + //
-                  "Code = " + r.responseCode + '\n' + "Sent = " + r.bytesSent);
-                  res = Ext.decode(res);
-                  if(res)
-                  {
-                     //
-                     // Set MetaData from PhotoUpload here
-                     //
-                     metaData = me.metaData = res.metaData || null;
-                     metaData['position'] = position;
-                  }
-                  else
-                  {
-                     console.log('No Data returned by the server.');
-                  }
-               }
-               catch (ex)
-               {
-                  console.log('Unable to parse the JSON returned by the server: ' + ex.toString());
-               }
-
-               Ext.Viewport.setMasked(false);
-               if(metaData && metaData['photo_url'] && metaData['upload_token'])
-               {
-                  console.log("Uploading to Facebook using upload_token[" + metaData['upload_token'] + "]...");
-
-                  //
-                  // Goto PhotoUpload Page
-                  //
-                  me.pushView(me.getUploadPhotosPage());
-               }
-               delete me.imageURI;
-            }, function(error)
-            {
-               Ext.Viewport.setMasked(false);
-               console.log(me.noPhotoUploadedMsg);
-               console.log("An error has occurred: Code = " + error.code);
-               Ext.device.Notification.show(
-               {
-                  title : 'Error',
-                  message : me.noPhotoUploadedMsg(error.message + Genesis.constants.addCRLF())
-               });
-               delete me.imageURI;
-            }, options);
+            me.onCompleteChallenge(null, venueId, customerId, me.metaData['position']);
+            break;
          }
-         else
+         case 'menu' :
+         case 'birthday' :
+         case 'referral' :
+         case 'custom' :
          {
-            Ext.device.Notification.show(
+            me.metaData =
             {
-               title : 'Error',
-               message : "Cannot upload photo in Non-Native Mode"
-            });
+               'position' : position
+            };
+            me.scanQRCode();
+            break;
          }
-      }
-      else
-      {
-         me.metaData =
-         {
-            'position' : position
-         };
-         me.scanQRCode();
       }
    },
    onScannedQRcode : function(qrcode)
@@ -324,23 +347,38 @@ Ext.define('Genesis.controller.client.Challenges',
             console.log('Challenge Completed(' + operation.wasSuccessful() + ')');
             if(operation.wasSuccessful() && metaData)
             {
-               console.log('Total Points - ' + metaData['account_points']);
-               if(metaData['account_points'])
+               switch (me.selectedItem.get('type').value)
                {
-                  var cstore = Ext.StoreMgr.get('CustomerStore');
-                  cstore.getById(customerId).set('points', metaData['account_points']);
+                  case 'vip' :
+                  {
+                     Ext.device.Notification.show(
+                     {
+                        title : 'VIP Challenge',
+                        message : me.getConsolationMsg(metaData['message'])
+                     });
+                     break;
+                  }
+                  default:
+                     console.log('Total Points - ' + metaData['account_points']);
+                     if(metaData['account_points'])
+                     {
+                        var cstore = Ext.StoreMgr.get('CustomerStore');
+                        cstore.getById(customerId).set('points', metaData['account_points']);
+                     }
+                     //
+                     // Update points from the purchase or redemption
+                     // Bugfix - Copy string from server to prevent PhoneGap crash
+
+                     console.log('Points Earned - ' + metaData['points']);
+
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Earn Points',
+                        message : ((metaData['points'] > 0) ? me.getPointsMsg(metaData['points']) : me.getConsolationMsg(metaData['message']))
+                     });
+                     break;
                }
-               //
-               // Update points from the purchase or redemption
-               // Bugfix - Copy string from server to prevent PhoneGap crash
 
-               console.log('Points Earned - ' + metaData['points']);
-
-               Ext.device.Notification.show(
-               {
-                  title : 'Earn Points',
-                  message : ((metaData['points'] > 0) ? me.getPointsMsg(metaData['points']) : me.getConsolationMsg(metaData['message']))
-               });
             }
          }
       });
@@ -396,7 +434,7 @@ Ext.define('Genesis.controller.client.Challenges',
             case 'menu' :
             case 'birthday' :
             case 'referral' :
-            case 'checkin' :
+            case 'vip' :
             case 'custom' :
             {
                if(selectedItem.get('require_verif'))
@@ -413,11 +451,7 @@ Ext.define('Genesis.controller.client.Challenges',
                }
                else
                {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'VIP Challenge',
-                     message : 'Visit this place more often, you get Bonus Reward Points!'
-                  });
+                  me.getGeoLocation();
                }
                break;
             }

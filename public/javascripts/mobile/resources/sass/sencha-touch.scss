@@ -937,6 +937,12 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
 
 .challengeMenuSelections {
    @extend .mainMenuSelections;
+   .x-hasbadge .x-badge {
+      font-size:$largeFontSize;
+      @include opacity(.9);
+      background-color : #E86025;
+      border-color : darken(#E86025,5%);
+   }
    .x-dataview-item, .x-data-item {
       width:33%;
       .mainPageItemWrapper {

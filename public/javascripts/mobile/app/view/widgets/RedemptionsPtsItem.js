@@ -14,8 +14,8 @@ Ext.define('Genesis.view.widgets.RedemptionsPtsItem',
       points :
       {
          flex : 1,
-         tpl : '{points} Points',
-         cls : 'pointsphoto'
+         tpl : '{points} Pts',
+         cls : 'pointsphotobase'
       },
       dataMap :
       {

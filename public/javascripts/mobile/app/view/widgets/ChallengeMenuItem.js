@@ -17,7 +17,8 @@ Ext.define('Genesis.view.widgets.ChallengeMenuItem',
          cls : 'photo',
          tpl : Ext.create('Ext.XTemplate',
          // @formatter:off
-         '<div class="mainPageItemWrapper">',
+         '<div class="mainPageItemWrapper x-hasbadge">',
+            '<span style="" class="x-badge round" id="ext-element-82">{[this.getPoints(values)]}</span>',
             '<div class="photo">'+
                '<img src="{[this.getPhoto(values)]}" />'+
             '</div>',
@@ -25,6 +26,10 @@ Ext.define('Genesis.view.widgets.ChallengeMenuItem',
          '</div>',
          // @formatter:on
          {
+            getPoints : function(values)
+            {
+               return values['points'] + ' Points';
+            },
             getPhoto : function(values)
             {
                return Ext.isEmpty(values.photo) ? Genesis.view.widgets.ChallengeMenuItem.getPhoto(values['type']) : values.photo.url;
