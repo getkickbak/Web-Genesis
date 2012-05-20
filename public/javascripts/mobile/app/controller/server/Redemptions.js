@@ -38,6 +38,7 @@ Ext.define('Genesis.controller.server.Redemptions',
       }
    },
    invalidAuthCodeMsg : 'Authorization Code is Invalid',
+   authCodeNoLongValidMsg : 'Authorization Code is no longer valid',
    init : function()
    {
       console.log("Server Redemptions Init");
@@ -64,8 +65,13 @@ Ext.define('Genesis.controller.server.Redemptions',
 
             if(dbI[encrypted])
             {
-               console.log("Decrypted data is a previous used QRCode");
-               break;
+               console.log(me.authCodeNoLongValidMsg);
+               Ext.device.Notification.show(
+               {
+                  title : 'Error!',
+                  message : me.authCodeNoLongValidMsg
+               });
+               return;
             }
             else
             if((date >= Date.now()) && (date <= new Date().addHours(3 * 2)))
@@ -85,7 +91,7 @@ Ext.define('Genesis.controller.server.Redemptions',
                Genesis.constants.addRedeemSortedDB(encrypted);
                dbI[encrypted] = decrypted["expiry_ts"];
                Genesis.constants.setRedeemIndexDB(dbI);
-               
+
                var app = me.getApplication();
                var controller = app.getController('Prizes');
                app.dispatch(
