@@ -60,11 +60,8 @@ Ext.define('Genesis.controller.Checkins',
          {
             'metachange' : function(store, proxy, eOpts)
             {
-               // Load Prizes into DataStore
-               var metaData = proxy.getReader().metaData;
-
                // Let Other event handlers udpate the metaData first ...
-               Ext.defer(me.updateRewards, 1, me, [metaData]);
+               me.getViewPortCntlr().updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [proxy.getReader().metaData]);
             }
          }
 
@@ -117,7 +114,7 @@ Ext.define('Genesis.controller.Checkins',
       }
 
       console.debug("CheckIn - auth_code:'" + qrcode + "' venue_id:'" + venueId + "'");
-      
+
       cstore.load(
       {
          jsonData :

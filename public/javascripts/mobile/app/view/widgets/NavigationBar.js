@@ -21,7 +21,7 @@ Ext.define('Genesis.navigation.Bar',
    getTitleText : function()
    {
       var title = this.backButtonStack[this.backButtonStack.length - 1];
-      return ((title) ? title.trunc(18) : '');
+      return ((title) ? title.trunc(19) : '');
    },
    /**
     * @private

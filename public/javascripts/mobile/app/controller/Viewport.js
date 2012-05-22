@@ -3,6 +3,7 @@ var _application;
 Ext.define('Genesis.controller.Viewport',
 {
    extend : 'Genesis.controller.ControllerBase',
+   requires : ['Ext.util.DelayedTask'],
    statics :
    {
    },
@@ -283,11 +284,11 @@ Ext.define('Genesis.controller.Viewport',
       console.log("Viewport Init");
       _application = app;
 
-      this.callParent(arguments);
+      me.callParent(arguments);
 
       console.log("Loading License Keys ...");
       Genesis.constants.getPrivKey();
-      QRCodeReader.prototype.scanType = "RL";
+      QRCodeReader.prototype.scanType = "Default";
       console.debug("QRCode Scanner Mode[" + QRCodeReader.prototype.scanType + "]")
 
       //
@@ -296,6 +297,7 @@ Ext.define('Genesis.controller.Viewport',
       if(!merchantMode)
       {
          Genesis.constants.initFb();
+         me.updateRewardsTask = Ext.create('Ext.util.DelayedTask');
       }
 
       //

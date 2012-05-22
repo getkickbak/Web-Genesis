@@ -378,7 +378,7 @@ Ext.define('Genesis.controller.Merchants',
 
       if(!dontRefreshPage && (venue.getId() != cvenue.getId()))
       {
-         me.updateRewards(cmetaData);
+         viewport.updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [cmetaData]);
       }
       vport.reset();
       vport.setCubeAnimation();

@@ -65,49 +65,57 @@ Ext.define('Genesis.controller.server.Challenges',
       var qrcode = me.generateQRCode();
       var app = me.getApplication();
       var controller = app.getController('Prizes');
-      app.dispatch(
+      if(qrcode[0])
       {
-         action : 'onRefreshQRCode',
-         args : [qrcode],
-         controller : controller,
-         scope : controller
-      });
+         app.dispatch(
+         {
+            action : 'onRefreshQRCode',
+            args : [qrcode],
+            controller : controller,
+            scope : controller
+         });
+      }
    },
    onGenerateQRCode : function()
    {
       var me = this;
       var qrcode = me.generateQRCode();
 
-      var app = me.getApplication();
-      var controller = app.getController('Prizes');
-      app.dispatch(
+      if(qrcode[0])
       {
-         action : 'onAuthReward',
-         args : [Ext.create('Genesis.model.EarnPrize',
+         var app = me.getApplication();
+         var controller = app.getController('Prizes');
+         app.dispatch(
          {
-            'id' : 1,
-            'expiry_date' : null,
-            'reward' : Ext.create('Genesis.model.CustomerReward',
+            action : 'onAuthReward',
+            args : [Ext.create('Genesis.model.EarnPrize',
             {
-               id : 0,
-               title : 'Authorization Code',
-               type :
+               'id' : 1,
+               'expiry_date' : null,
+               'reward' : Ext.create('Genesis.model.CustomerReward',
                {
-                  value : 'earn_points'
-               },
-               photo :
-               {
-                  'thumbnail_ios_medium' :
+                  id : 0,
+                  title : 'Authorization Code',
+                  type :
                   {
-                     url : qrcode
+                     value : 'earn_points'
+                  },
+                  photo :
+                  {
+                     'thumbnail_ios_medium' :
+                     {
+                        url : qrcode[0],
+                        height : qrcode[1],
+                        width : qrcode[2],
+                     }
                   }
-               }
-            }),
-            'merchant' : null
-         })],
-         controller : controller,
-         scope : controller
-      });
+               }),
+               'merchant' : null
+            })],
+            controller : controller,
+            scope : controller
+         });
+      }
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

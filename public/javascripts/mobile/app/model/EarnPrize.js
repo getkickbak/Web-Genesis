@@ -12,7 +12,7 @@ Ext.define('Genesis.model.EarnPrize',
          convert : function(value, format)
          {
             var value = Date.parse(value, "yyyy-MM-dd");
-            return (!value) ? "N/A" : Genesis.constants.convertDateNoTimeNoWeek.apply(this, arguments);
+            return (!value) ? "N/A" : Genesis.fn.convertDateNoTimeNoWeek.apply(this, arguments);
          }
       }],
       idProperty : 'id',

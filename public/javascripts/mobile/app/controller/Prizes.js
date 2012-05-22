@@ -464,14 +464,18 @@ Ext.define('Genesis.controller.Prizes',
          }
       })
    },
-   onRefreshQRCode : function(qrcode)
+   onRefreshQRCode : function(qrcodeMeta)
    {
       var me = this;
       var view = me.getPrizes();
       var carousel = view.query('carousel')[0];
       var item = carousel ? carousel.getActiveItem() : view.getItems().items[0];
       var photo = item.query('component[tag=itemPhoto]')[0];
-      photo.element.setStyle('background-image', 'url(' + qrcode + ')');
+      photo.element.setStyle(
+      {
+         'background-image' : 'url(' + qrcodeMeta[0] + ')',
+         'background-size' : Genesis.fn.addUnit(qrcodeMeta[1]) + ' ' + Genesis.fn.addUnit(qrcodeMeta[2])
+      });
    },
    showPrizeQRCode : function(timeout, qrcode)
    {
@@ -484,7 +488,7 @@ Ext.define('Genesis.controller.Prizes',
        if(!qrcode)
        {
        console.log("Generaintg QR Code ... we lack one");
-       qrcode = ControllerBase.genQRCodeFromParams(
+       qrcode = Genesis.controller.ControllerBase.genQRCodeFromParams(
        {
        type : 'redeem_prize',
        reward :
@@ -506,19 +510,21 @@ Ext.define('Genesis.controller.Prizes',
 
          qrcode = Genesis.controller.ControllerBase.genQRCode(qrcode);
       }
-
-      me.getRedeemBtn().hide();
-      me.getDoneBtn().show();
-
-      me.onRefreshQRCode(qrcode);
-      
-      Ext.Viewport.setMasked(false);
-      Ext.device.Notification.show(
+      if(qrcode[0])
       {
-         title : 'Redemption Alert',
-         message : me.showQrCodeMsg
-      });
-      Ext.device.Notification.vibrate();
+         me.getRedeemBtn().hide();
+         me.getDoneBtn().show();
+
+         me.onRefreshQRCode(qrcode);
+
+         Ext.Viewport.setMasked(false);
+         Ext.device.Notification.show(
+         {
+            title : 'Redemption Alert',
+            message : me.showQrCodeMsg
+         });
+         Ext.device.Notification.vibrate();
+      }
    },
    onRedeemRewards : function(showPrize)
    {

@@ -5,8 +5,7 @@ Ext.define('Genesis.view.Accounts',
    alias : 'widget.accountsview',
    config :
    {
-      title : 'Accounts',
-      //scrollable : false,
+      title : ' ',
       changeTitle : false,
       cls : 'accountsMain',
       layout : 'fit',
@@ -61,14 +60,45 @@ Ext.define('Genesis.view.Accounts',
    },
    beforeActivate : function(activeItem, oldActiveItem)
    {
+      var mode = _application.getController('Accounts').getMode();
+      switch(mode)
+      {
+         case 'profile' :
+         {
+            activeItem.getInitialConfig().title = 'Accounts';
+            break;
+         }
+         case 'transfer' :
+         {
+            activeItem.getInitialConfig().title = ' ';
+            break;
+         }
+      }
    },
-   beforeDeactivate : function()
+   beforeDeactivate : function(activeItem, oldActiveItem)
    {
+      var viewport = Ext.ComponentQuery.query('viewportview')[0];
+      viewport.getNavigationBar().removeCls('kbTitle');
    },
-   afterActivate : function()
+   afterActivate : function(activeItem, oldActiveItem)
    {
+      var mode = _application.getController('Accounts').getMode();
+      switch(mode)
+      {
+         case 'profile' :
+         {
+            break;
+         }
+         case 'transfer' :
+         {
+            activeItem.getInitialConfig().title = ' ';
+            var viewport = Ext.ComponentQuery.query('viewportview')[0];
+            viewport.getNavigationBar().addCls('kbTitle');
+            break;
+         }
+      }
    },
-   afterDeactivate : function()
+   afterDeactivate : function(activeItem, oldActiveItem)
    {
    }
 });

@@ -293,6 +293,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      me.popView();
                   }
                });
+               viewport.updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [metaData2]);
             }
             else
             {
@@ -378,7 +379,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      });
                      break;
                }
-
+               me.getViewPortCntlr().updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [metaData]);
             }
          }
       });

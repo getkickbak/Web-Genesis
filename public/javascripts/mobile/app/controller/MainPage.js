@@ -219,7 +219,7 @@ Ext.define('Genesis.controller.MainPage',
                   }
                }
 
-               me.updateRewards(metaData);
+               me.getViewPortCntlr().updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [metaData]);
             }
          },
          grouper :

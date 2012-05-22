@@ -865,6 +865,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                         Genesis.constants.removeLocalDBAttrib('auth_code');
                         vport.setLoggedIn(false);
                         vport.onFeatureTap('MainPage', 'login');
+                        return;
                      }
                      else
                      {
@@ -875,6 +876,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   }
                });
                break;
+               ;
             }
             //
             // Sign in failed due to invalid Facebook info, Create Account.
@@ -899,7 +901,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                      });
                   }
                });
-               break;
+               return;
             }
             case 'update_account_invalid_info' :
             case 'signup_invalid_info' :
@@ -917,7 +919,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                      vport.onFeatureTap('MainPage', 'login');
                   }
                });
-               break;
+               return;
             }
             default:
                Ext.device.Notification.show(
@@ -927,10 +929,10 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                });
                break;
          }
+         me.fireEvent('exception', me, response, operation);
       }
       if((success === true) || (Genesis.constants.isNative() === true))
       {
-
          try
          {
             resultSet = reader.process(response);
@@ -944,14 +946,12 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                statusText : e.message
             });
 
-            me.fireEvent('exception', this, response, operation);
             errorHandler();
             return;
          }
 
          if(operation.process(action, resultSet, request, response) === false)
          {
-            this.fireEvent('exception', this, response, operation);
             errorHandler();
          }
       }
@@ -966,7 +966,6 @@ Ext.define('Genesis.data.proxy.OfflineServer',
           * @param {Object} response The response from the AJAX request
           * @param {Ext.data.Operation} operation The operation that triggered request
           */
-         me.fireEvent('exception', this, response, operation);
          errorHandler();
       }
 

@@ -124,6 +124,22 @@ Ext.define('Genesis.model.Customer',
             read : 'GET'
          });
          this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/venues/' + venueId + '/explore' : Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
+      },
+      setSendPtsXferUrl : function(customerId)
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customer/' + customerId + '/ptsXfer');
+      },
+      setRecvPtsXferUrl : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customer/ptsRecv');
       }
    }
 });

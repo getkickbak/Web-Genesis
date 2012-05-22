@@ -332,6 +332,68 @@ body {
       color : #555658;
    }
 }
+
+.calculator {
+   background : black;
+   .x-field.x-field-text {
+      .x-component-outer {
+         margin: $panelGap $panelGap*2;
+         outline: darken(#F3F3F4, 10%) inset $panelGap;
+         input.x-input-el {
+            &::-webkit-input-placeholder {
+               direction:rtl;
+           }
+            background : #F3F3F4;
+            padding: $panelTopGap/4;
+            font-size:$xlargeFontSize*1.75;
+            min-height: 1.0em + $panelGap/2;
+            text-align:right;
+         }
+      }
+   }
+   .dialpad {
+      .x-container .x-inner {
+          margin-top:$panelTopGap;
+      }
+      .x-button {
+          margin-left:$panelGap;
+          .x-button-label {
+             font-size:$xlargeFontSize*1.25;
+          }
+      }
+      .x-button:last-child {
+          margin-right:$panelGap;        
+      }
+   }
+   .x-button.separator {
+      margin-top :$panelTopGap;
+   }
+}
+
+.qrcodeContainer  {
+   background : white;
+   .x-inner {
+      margin: $panelTopGap*2 $panelGap*2;
+   }
+   .title {
+     @extend .title;
+     min-height:$xlargeFontSize*2;
+     max-height:$xlargeFontSize*2;
+     font-size:$xlargeFontSize*2;
+     line-height:$xlargeFontSize*2;
+   }
+   .qrcode {
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size : $icon-size*3 $icon-size*3; //Maximum size of QR Code as well
+      width:100%;
+      height:100%%;
+   }
+   .done {
+      //background : black;
+   }
+}
+
 //------------------------------------------------------------------------------
 // CSS Overrides for default graphics
 //------------------------------------------------------------------------------
@@ -1182,66 +1244,11 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
 }
 
 .rewardsServerMain {
-   .rewardsMainCalculator, .x-field {
+   .x-field {
       background : black;
    }
    .rewardsMainCalculator {
-      .x-field.x-field-text {
-         .x-component-outer {
-            margin: $panelGap $panelGap*2;
-            outline: darken(#F3F3F4, 10%) inset $panelGap;
-            input.x-input-el {
-               &::-webkit-input-placeholder {
-                  direction:rtl;
-               }
-               background : #F3F3F4;
-               padding: $panelTopGap/4;
-               font-size:$xlargeFontSize*1.75;
-               min-height: 1.0em + $panelGap/2;
-               text-align:right;
-            }
-         }
-      }
-      .dialpad {
-         .x-container .x-inner {
-             margin-top:$panelTopGap;
-         }
-         .x-button {
-             margin-left:$panelGap;
-             .x-button-label {
-                font-size:$xlargeFontSize*1.25;
-             }
-         }
-         .x-button:last-child {
-             margin-right:$panelGap;        
-         }
-      }
-      .x-button.separator {
-         margin-top :$panelTopGap;
-      }
-   }
-   .qrcodeContainer  {
-      background : white;
-      .x-inner {
-         margin: $panelTopGap*2 $panelGap*2;
-      }
-      .title {
-        @extend .title;
-        min-height:$xlargeFontSize*2;
-        max-height:$xlargeFontSize*2;
-        font-size:$xlargeFontSize*2;
-        line-height:$xlargeFontSize*2;
-      }
-      .qrcode {
-         background-position: center center;
-         background-repeat: no-repeat;
-         background-size : $icon-size*3 $icon-size*3; //Maximum size of QR Code as well
-         width:100%;
-         height:100%%;
-      }
-      .done {
-         //background : black;
-      }
+     @extend .calculator
    }
 }
 
@@ -1434,6 +1441,38 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
          &:before {
             content:"You have no accounts opened";
          }
+      }
+   }
+}
+
+.accountsTransferMain {
+   .transferPanel {
+      @extend .listNoScrollWrapper;
+      //@extend .viewport;
+      .listItemDetailsWrapper {
+         padding-left:0 !important;
+         line-height:$icon-size*1.5;
+         .itemTitle {
+            font-weight:bold;
+            text-align:center;
+            font-size:$xlargeFontSize*1.25 !important;
+            &.emailsender:before {
+               content : " ";
+               width :$xlargeFontSize*1.25;
+               height :$xlargeFontSize*1.25;
+               position:absolute;
+               -webkit-mask-image: theme_image($theme-path + "/images/" + $gtheme-name,  "toolbar/" + "mail" + ".png");
+               -webkit-mask-size: $xlargeFontSize*1.25 $xlargeFontSize*1.25;
+               background-color:#0A78BE;
+               top : 1.25em;
+            }
+         }
+      }
+   }
+   .accountsMainCalculator {
+      @extend .calculator;
+      .x-field {
+         background : black;
       }
    }
 }

@@ -4,13 +4,8 @@
          "name": "Accounts",
          "photo_url": "resources/themes/images/v1/mainicons/accounts.png",
          "desc": "Accounts",
-         "pageCntlr": "Accounts"
-      }, {
-         "name": "Settings",
-         "photo_url": "resources/themes/images/v1/mainicons/settings.png",
-         "desc": "Settings",
-         "pageCntlr": "Settings",
-         "subFeature": "client",
+         "pageCntlr": "Accounts",
+         "subFeature": "profile"
       }, {
          "name": "Check-ins",
          "photo_url": "resources/themes/images/v1/mainicons/checkin.png",
@@ -28,13 +23,25 @@
          "photo_url": "resources/themes/images/v1/mainicons/prizes.png",
          "desc": "Prizes Won by you",
          "pageCntlr": "Prizes"
-      },{
+      }, {
          "name": "Main Menu",
          "photo_url": "resources/themes/images/v1/mainicons/tocheckedinmerch.png",
          "desc": "Main Menu for your Checked-in Venue",
          "pageCntlr": "MainPage",
          "subFeature": "merchant",
-         "hide" : "true"
+         "hide": "true"
+      }, {
+         "name": "Points Transfer",
+         "photo_url": "resources/themes/images/v1/mainicons/referral.png",
+         "desc": "Transfer Points to other KickBak users",
+         "pageCntlr": "Accounts",
+         "subFeature": "transfer"
+      }, {
+         "name": "Settings",
+         "photo_url": "resources/themes/images/v1/mainicons/settings.png",
+         "desc": "Settings",
+         "pageCntlr": "Settings",
+         "subFeature": "client"
       }
    ]
 }

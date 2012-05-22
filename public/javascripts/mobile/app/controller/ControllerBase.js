@@ -151,6 +151,7 @@ Ext.define('Genesis.controller.ControllerBase',
    checkinMsg : 'Checking in ...',
    loadingScannerMsg : 'Loading Scanner ...',
    loadingMsg : 'Loading ...',
+   genQRCodeMsg : 'Generating QRCode ...',
    noCodeScannedMsg : 'No QR Code Scanned!',
    geoLocationErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
@@ -227,6 +228,24 @@ Ext.define('Genesis.controller.ControllerBase',
             scope : controller
          });
       }
+      
+      //
+      // QR Code from Transfer Points
+      var qrcode = metaData['data'];
+      if (qrcode)
+      {
+         console.debug("QRCode received for Points Transfer");
+         var app = me.getApplication();
+         var controller = app.getController('Accounts');
+         app.dispatch(
+         {
+            action : 'onAuthCodeRecv',
+            args : [metaData],
+            controller : controller,
+            scope : controller
+         });
+      }
+      //
    },
    pushView : function(view)
    {

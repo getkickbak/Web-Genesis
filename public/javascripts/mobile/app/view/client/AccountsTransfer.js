@@ -1,8 +1,8 @@
-Ext.define('Genesis.view.server.Rewards',
+Ext.define('Genesis.view.client.AccountsTransfer',
 {
    extend : 'Genesis.view.ViewBase',
    requires : ['Ext.Toolbar', 'Ext.field.Text'],
-   alias : 'widget.serverrewardsview',
+   alias : 'widget.accountstransferview',
    config :
    {
       title : ' ',
@@ -11,8 +11,8 @@ Ext.define('Genesis.view.server.Rewards',
       items : [
       {
          xtype : 'container',
-         tag : 'rewards',
-         cls : 'rewardsServerMain',
+         tag : 'accountsTransferMain',
+         cls : 'accountsTransferMain',
          flex : 1,
          layout :
          {
@@ -32,12 +32,13 @@ Ext.define('Genesis.view.server.Rewards',
          },
          items : [
          // -------------------------------------------------------------------
-         // Reward Calculator
+         // Accounts Transfer Mode (0)
          // -------------------------------------------------------------------
          {
             xtype : 'container',
-            tag : 'rewardsMainCalculator',
-            cls : 'rewardsMainCalculator',
+            tag : 'accountsTransferMode',
+            cls : 'accountsTransferMode',
+            layout : 'vbox',
             items : [
             {
                docked : 'top',
@@ -50,7 +51,73 @@ Ext.define('Genesis.view.server.Rewards',
                items : [
                {
                   xtype : 'title',
-                  title : 'Amount Spent'
+                  title : 'Select Options :'
+               },
+               {
+                  xtype : 'spacer',
+                  align : 'right'
+               }]
+            },
+            {
+               xtype : 'list',
+               scrollable : false,
+               //ui : 'bottom-round',
+               cls : 'transferPanel',
+               data : [
+               {
+                  text : 'Transfer Now',
+                  cls : 'sender',
+                  tag : 'sender'
+               },
+               {
+                  text : 'Email Transfer',
+                  cls : 'emailsender',
+                  tag : 'emailsender'
+               },
+               {
+                  text : 'Receive',
+                  cls : 'recipient',
+                  tag : 'recipient'
+               }],
+               itemTpl : Ext.create('Ext.XTemplate',
+               // @formatter:off
+               '<div class="listItemDetailsWrapper" style="padding-right:0;">',
+                  '<div class="itemTitle {[this.getCls(values)]}">{[this.getTitle(values)]}</div>',
+               '</div>',
+               // @formatter:on
+               {
+                  getCls : function(values)
+                  {
+                     return values['cls'];
+                  },
+                  getTitle : function(values)
+                  {
+                     return values['text'];
+                  }
+               })
+               //,onItemDisclosure : Ext.emptyFn
+            }]
+         },
+         // -------------------------------------------------------------------
+         // Accounts Calculator (1)
+         // -------------------------------------------------------------------
+         {
+            xtype : 'container',
+            tag : 'accountsMainCalculator',
+            cls : 'accountsMainCalculator',
+            items : [
+            {
+               docked : 'top',
+               xtype : 'toolbar',
+               centered : false,
+               defaults :
+               {
+                  iconMask : true
+               },
+               items : [
+               {
+                  xtype : 'title',
+                  title : 'Points to Send'
                },
                {
                   xtype : 'spacer',
@@ -65,7 +132,7 @@ Ext.define('Genesis.view.server.Rewards',
                placeHolder : '0',
                readOnly : true,
                required : true,
-               cls : 'rewardsCalculator'
+               cls : 'accountsCalculator'
             },
             {
                xtype : 'container',
@@ -126,10 +193,8 @@ Ext.define('Genesis.view.server.Rewards',
                      text : 'AC'
                   },
                   {
+                     flex : 2,
                      text : '0'
-                  },
-                  {
-                     text : '.'
                   }]
                }]
             },
@@ -138,12 +203,12 @@ Ext.define('Genesis.view.server.Rewards',
                xtype : 'button',
                cls : 'separator',
                tag : 'showQrCode',
-               text : 'Show QRCode',
+               text : 'Transfer Points!',
                ui : 'orange-large'
             }]
          },
          // -------------------------------------------------------------------
-         // Show for QRCode Screen
+         // Show for QRCode Screen (2)
          // -------------------------------------------------------------------
          {
             xtype : 'container',
@@ -157,11 +222,11 @@ Ext.define('Genesis.view.server.Rewards',
                width : '100%',
                cls : 'title',
                defaultUnit : 'em',
-               tpl : Ext.create('Ext.XTemplate', '{[this.getPrice(values)]}',
+               tpl : Ext.create('Ext.XTemplate', '{[this.getPoints(values)]}',
                {
                   getPrice : function(values)
                   {
-                     return values['price'];
+                     return values['points'];
                   }
                })
             },
@@ -175,39 +240,25 @@ Ext.define('Genesis.view.server.Rewards',
                xtype : 'button',
                cls : 'separator done',
                tag : 'done',
-               text : 'Done',
+               text : 'Transfer Complete!',
                ui : 'orange-large'
             }]
          }]
       }]
    },
-   beforeActivate : function(activeItem, oldActiveItem)
-   {
-      var viewport = Ext.ComponentQuery.query('viewportview')[0];
-      viewport.getNavigationBar().addCls('kbTitle');
-      this.callParent(arguments);
-   },
    beforeDeactivate : function(activeItem, oldActiveItem)
    {
+      this.callParent(arguments);
       var viewport = Ext.ComponentQuery.query('viewportview')[0];
       viewport.getNavigationBar().removeCls('kbTitle');
+   },
+   afterActivate : function(activeItem, oldActiveItem)
+   {
       this.callParent(arguments);
+      var viewport = Ext.ComponentQuery.query('viewportview')[0];
+      viewport.getNavigationBar().addCls('kbTitle');
    },
    statics :
    {
-      getPhoto : function(type)
-      {
-         var photo_url = null;
-         switch (type.value)
-         {
-            case 'vip' :
-               photo_url = Genesis.constants.getIconPath('miscicons', type.value);
-               break;
-            default :
-               photo_url = Genesis.constants.getIconPath('fooditems', type.value);
-               break;
-         }
-         return photo_url;
-      }
    }
 });
