@@ -11,7 +11,6 @@ Genesis.constants =
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
-   weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
    fbScope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions,offline_access',
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
    fbConnectReqestMsg : 'Connection to Facebook is required to complete this action',
@@ -220,168 +219,6 @@ Genesis.constants =
          }
       }
       return (id) ? me.privKey['v' + id] : me.privKey;
-   },
-   // **************************************************************************
-   // Date Time
-   // **************************************************************************
-   convertDateCommon : function(v, dateFormat, noConvert)
-   {
-      var date;
-      var format = dateFormat || this.dateFormat;
-
-      if(!( v instanceof Date))
-      {
-         if( typeof (JSON) != 'undefined')
-         {
-            //v = (jQuery.browser.msie) ? v.split(/Z$/)[0] : v.split('.')[0];
-            //v = (Ext.os.deviceType.toLowerCase() != 'desktop') ? v : v.split('.')[0];
-            //v = (Genesis.constants.isNative()) ? v : v.split('.')[0];
-         }
-
-         if(Ext.isEmpty(v))
-         {
-            date = new Date();
-         }
-         else
-         {
-            if(format)
-            {
-               date = Date.parse(v, format);
-               if(Ext.isEmpty(date))
-               {
-                  date = new Date(v).format(format);
-               }
-               return [date, date];
-            }
-            date = new Date(v);
-            if(date.toString() == 'Invalid Date')
-            {
-               date = Date.parse(v, format);
-            }
-         }
-      }
-      else
-      {
-         date = v;
-      }
-      if(!noConvert)
-      {
-         var currentDate = new Date().getTime();
-         // Adjust for time drift between Client computer and Application Server
-         var offsetTime = Genesis.constants.currentDateTime(currentDate);
-
-         var timeExpiredSec = (offsetTime - date.getTime()) / 1000;
-
-         if(timeExpiredSec > -10)
-         {
-            if((timeExpiredSec) < 2)
-               return [timeExpiredSec, 'a second ago'];
-            if((timeExpiredSec) < 60)
-               return [timeExpiredSec, parseInt(timeExpiredSec) + ' secs ago'];
-            timeExpiredSec = timeExpiredSec / 60;
-            if((timeExpiredSec) < 2)
-               return [timeExpiredSec, 'a minute ago'];
-            if((timeExpiredSec) < 60)
-               return [timeExpiredSec, parseInt(timeExpiredSec) + ' minutes ago'];
-            timeExpiredSec = timeExpiredSec / 60;
-            if((timeExpiredSec) < 2)
-               return [date, 'an hour ago'];
-            if((timeExpiredSec) < 24)
-               return [date, parseInt(timeExpiredSec) + ' hours ago'];
-            timeExpiredSec = timeExpiredSec / 24;
-            if(((timeExpiredSec) < 2) && ((new Date().getDay() - date.getDay()) == 1))
-               return [date, 'Yesterday at ' + date.format('g:i A')];
-            if((timeExpiredSec) < 7)
-               return [date, Genesis.constants.weekday[date.getDay()] + ' at ' + date.format('g:i A')];
-            timeExpiredSec = timeExpiredSec / 7;
-            if(((timeExpiredSec) < 2) && (timeExpiredSec % 7 == 0))
-               return [date, 'a week ago'];
-            if(((timeExpiredSec) < 5) && (timeExpiredSec % 7 == 0))
-               return [date, parseInt(timeExpiredSec) + ' weeks ago'];
-
-            if(timeExpiredSec < 5)
-               return [date, parseInt(timeExpiredSec * 7) + ' days ago']
-            return [date, null];
-         }
-         // Back to the Future! Client might have changed it's local clock
-         else
-         {
-         }
-      }
-
-      return [date, -1];
-   },
-   convertDateFullTime : function(v)
-   {
-      return v.format('D, M d, Y \\a\\t g:i A');
-   },
-   convertDateReminder : function(v)
-   {
-      var today = new Date();
-      var todayDate = today.getDate();
-      var todayMonth = today.getMonth();
-      var todayYear = today.getFullYear();
-      var date = v.getDate();
-      var month = v.getMonth();
-      var year = v.getFullYear();
-      if(todayDate == date && todayMonth == month && todayYear == year)
-      {
-         return 'Today ' + v.format('g:i A');
-      }
-      return v.format('D g:i A');
-   },
-   convertDate : function(v, dateFormat)
-   {
-      var rc = Genesis.constants.convertDateCommon.call(this, v, dateFormat);
-      if(rc[1] != -1)
-      {
-         return (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
-      }
-      else
-      {
-         return rc[0].format('D, M d, Y \\a\\t g:i A');
-      }
-   },
-   convertDateNoTime : function(v)
-   {
-      var rc = Genesis.constants.convertDateCommon.call(this, v, null, true);
-      if(rc[1] != -1)
-      {
-         return (rc[1] == null) ? rc[0].format('D, M d, Y') : rc[1];
-      }
-      else
-      {
-         return rc[0].format('D, M d, Y')
-      }
-   },
-   convertDateNoTimeNoWeek : function(v)
-   {
-      var rc = Genesis.constants.convertDateCommon.call(this, v, null, true);
-      if(rc[1] != -1)
-      {
-         rc = (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
-      }
-      else
-      {
-         rc = rc[0].format('M d, Y');
-      }
-      return rc;
-   },
-   convertDateInMins : function(v)
-   {
-      var rc = Genesis.constants.convertDateCommon.call(this, v, null, true);
-      if(rc[1] != -1)
-      {
-         return (rc[1] == null) ? rc[0].format('h:ia T') : rc[1];
-      }
-      else
-      {
-         return rc[0].format('h:ia T');
-      }
-   },
-   currentDateTime : function(currentDate)
-   {
-      return systemTime + (currentDate - clientTime);
    },
    // **************************************************************************
    // Facebook API
@@ -744,6 +581,169 @@ Genesis.constants._fb_disconnect = Genesis.constants._fb_connect;
 
 Genesis.fn =
 {
+   weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+   // **************************************************************************
+   // Date Time
+   // **************************************************************************
+   convertDateCommon : function(v, dateFormat, noConvert)
+   {
+      var date;
+      var format = dateFormat || this.dateFormat;
+
+      if(!( v instanceof Date))
+      {
+         if( typeof (JSON) != 'undefined')
+         {
+            //v = (jQuery.browser.msie) ? v.split(/Z$/)[0] : v.split('.')[0];
+            //v = (Ext.os.deviceType.toLowerCase() != 'desktop') ? v : v.split('.')[0];
+            //v = (Genesis.constants.isNative()) ? v : v.split('.')[0];
+         }
+
+         if(Ext.isEmpty(v))
+         {
+            date = new Date();
+         }
+         else
+         {
+            if(format)
+            {
+               date = Date.parse(v, format);
+               if(Ext.isEmpty(date))
+               {
+                  date = new Date(v).format(format);
+               }
+               return [date, date];
+            }
+            date = new Date(v);
+            if(date.toString() == 'Invalid Date')
+            {
+               date = Date.parse(v, format);
+            }
+         }
+      }
+      else
+      {
+         date = v;
+      }
+      if(!noConvert)
+      {
+         var currentDate = new Date().getTime();
+         // Adjust for time drift between Client computer and Application Server
+         var offsetTime = Genesis.constants.currentDateTime(currentDate);
+
+         var timeExpiredSec = (offsetTime - date.getTime()) / 1000;
+
+         if(timeExpiredSec > -10)
+         {
+            if((timeExpiredSec) < 2)
+               return [timeExpiredSec, 'a second ago'];
+            if((timeExpiredSec) < 60)
+               return [timeExpiredSec, parseInt(timeExpiredSec) + ' secs ago'];
+            timeExpiredSec = timeExpiredSec / 60;
+            if((timeExpiredSec) < 2)
+               return [timeExpiredSec, 'a minute ago'];
+            if((timeExpiredSec) < 60)
+               return [timeExpiredSec, parseInt(timeExpiredSec) + ' minutes ago'];
+            timeExpiredSec = timeExpiredSec / 60;
+            if((timeExpiredSec) < 2)
+               return [date, 'an hour ago'];
+            if((timeExpiredSec) < 24)
+               return [date, parseInt(timeExpiredSec) + ' hours ago'];
+            timeExpiredSec = timeExpiredSec / 24;
+            if(((timeExpiredSec) < 2) && ((new Date().getDay() - date.getDay()) == 1))
+               return [date, 'Yesterday at ' + date.format('g:i A')];
+            if((timeExpiredSec) < 7)
+               return [date, Genesis.fn.weekday[date.getDay()] + ' at ' + date.format('g:i A')];
+            timeExpiredSec = timeExpiredSec / 7;
+            if(((timeExpiredSec) < 2) && (timeExpiredSec % 7 == 0))
+               return [date, 'a week ago'];
+            if(((timeExpiredSec) < 5) && (timeExpiredSec % 7 == 0))
+               return [date, parseInt(timeExpiredSec) + ' weeks ago'];
+
+            if(timeExpiredSec < 5)
+               return [date, parseInt(timeExpiredSec * 7) + ' days ago']
+            return [date, null];
+         }
+         // Back to the Future! Client might have changed it's local clock
+         else
+         {
+         }
+      }
+
+      return [date, -1];
+   },
+   convertDateFullTime : function(v)
+   {
+      return v.format('D, M d, Y \\a\\t g:i A');
+   },
+   convertDateReminder : function(v)
+   {
+      var today = new Date();
+      var todayDate = today.getDate();
+      var todayMonth = today.getMonth();
+      var todayYear = today.getFullYear();
+      var date = v.getDate();
+      var month = v.getMonth();
+      var year = v.getFullYear();
+      if(todayDate == date && todayMonth == month && todayYear == year)
+      {
+         return 'Today ' + v.format('g:i A');
+      }
+      return v.format('D g:i A');
+   },
+   convertDate : function(v, dateFormat)
+   {
+      var rc = Genesis.fn.convertDateCommon.call(this, v, dateFormat);
+      if(rc[1] != -1)
+      {
+         return (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
+      }
+      else
+      {
+         return rc[0].format('D, M d, Y \\a\\t g:i A');
+      }
+   },
+   convertDateNoTime : function(v)
+   {
+      var rc = Genesis.fn.convertDateCommon.call(this, v, null, true);
+      if(rc[1] != -1)
+      {
+         return (rc[1] == null) ? rc[0].format('D, M d, Y') : rc[1];
+      }
+      else
+      {
+         return rc[0].format('D, M d, Y')
+      }
+   },
+   convertDateNoTimeNoWeek : function(v)
+   {
+      var rc = Genesis.fn.convertDateCommon.call(this, v, null, true);
+      if(rc[1] != -1)
+      {
+         rc = (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
+      }
+      else
+      {
+         rc = rc[0].format('M d, Y');
+      }
+      return rc;
+   },
+   convertDateInMins : function(v)
+   {
+      var rc = Genesis.fn.convertDateCommon.call(this, v, null, true);
+      if(rc[1] != -1)
+      {
+         return (rc[1] == null) ? rc[0].format('h:ia T') : rc[1];
+      }
+      else
+      {
+         return rc[0].format('h:ia T');
+      }
+   },
+   currentDateTime : function(currentDate)
+   {
+      return systemTime + (currentDate - clientTime);
+   },
    addUnit : function(unit)
    {
       return unit + 'px';

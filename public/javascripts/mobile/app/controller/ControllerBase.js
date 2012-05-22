@@ -83,24 +83,26 @@ Ext.define('Genesis.controller.ControllerBase',
          'Encrypted Code [' + encrypted + ']' + '\n' + //
          'Expiry Date: [' + date + ']');
 
-         return (encryptOnly) ? encrypted : me.genQRCode(encrypted);
+         return (encryptOnly) ? [encrypted, 0, 0] : me.genQRCode(encrypted);
       },
       genQRCode : function(text, dotsize, QRCodeVersion)
       {
-         dotsize = dotsize || 2;
-         QRCodeVersion = QRCodeVersion || 9;
+         dotsize = dotsize || 4;
+         QRCodeVersion = QRCodeVersion || 8;
 
          // size of box drawn on canvas
          var padding = 0;
          // (white area around your QRCode)
          var black = "rgb(0,0,0)";
          var white = "rgb(255,255,255)";
+         var height;
          // 1-40 see http://www.denso-wave.com/qrcode/qrgene2-e.html
 
-         var canvas = document.createElement('canvas');
-         var qrCanvasContext = canvas.getContext('2d');
          try
          {
+            var canvas = document.createElement('canvas');
+            var qrCanvasContext = canvas.getContext('2d');
+
             // QR Code Error Correction Capability
             // Higher levels improves error correction capability while decreasing the amount of data QR Code size.
             // QRErrorCorrectLevel.L (5%) QRErrorCorrectLevel.M (15%) QRErrorCorrectLevel.Q (25%) QRErrorCorrectLevel.H (30%)
@@ -108,8 +110,31 @@ Ext.define('Genesis.controller.ControllerBase',
             var qr = new QRCode(QRCodeVersion, QRErrorCorrectLevel.L);
             qr.addData(text);
             qr.make();
+
+            var qrsize = qr.getModuleCount();
+            height = (qrsize * dotsize) + padding;
+            canvas.setAttribute('height', height);
+            canvas.setAttribute('width', height);
+
+            console.log("QR Code Minimum Size = [" + height + "x" + height + "]");
+            var shiftForPadding = padding / 2;
+            if(canvas.getContext)
+            {
+               for(var r = 0; r < qrsize; r++)
+               {
+                  for(var c = 0; c < qrsize; c++)
+                  {
+                     if(qr.isDark(r, c))
+                        qrCanvasContext.fillStyle = black;
+                     else
+                        qrCanvasContext.fillStyle = white;
+                     // x, y, w, h
+                     qrCanvasContext.fillRect((c * dotsize) + shiftForPadding, (r * dotsize) + shiftForPadding, dotsize, dotsize);
+                  }
+               }
+            }
          }
-         catch(err)
+         catch (e)
          {
             console.log("Error Code : " + err);
             Ext.device.Notification.show(
@@ -117,31 +142,10 @@ Ext.define('Genesis.controller.ControllerBase',
                title : 'Code Generation Error',
                message : err
             });
-            return null;
+            return [null, 0, 0];
          }
 
-         var qrsize = qr.getModuleCount();
-         var height = (qrsize * dotsize) + padding;
-         canvas.setAttribute('height', height);
-         canvas.setAttribute('width', height);
-         console.log("QR Code Size = [" + height + "x" + height + "]");
-         var shiftForPadding = padding / 2;
-         if(canvas.getContext)
-         {
-            for(var r = 0; r < qrsize; r++)
-            {
-               for(var c = 0; c < qrsize; c++)
-               {
-                  if(qr.isDark(r, c))
-                     qrCanvasContext.fillStyle = black;
-                  else
-                     qrCanvasContext.fillStyle = white;
-                  qrCanvasContext.fillRect((c * dotsize) + shiftForPadding, (r * dotsize) + shiftForPadding, dotsize, dotsize);
-                  // x, y, w, h
-               }
-            }
-         }
-         return canvas.toDataURL("image/png");
+         return [canvas.toDataURL("image/png"), height, height];
       },
    },
    checkinMsg : 'Checking in ...',

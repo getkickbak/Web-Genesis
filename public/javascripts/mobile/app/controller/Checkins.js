@@ -100,8 +100,6 @@ Ext.define('Genesis.controller.Checkins',
       var cstore = Ext.StoreMgr.get('CheckinStore');
       var venueId = (viewport.getVenue() ? viewport.getVenue().getId() : null);
 
-      console.debug("CheckIn - auth_code:'" + qrcode + "' venue_id:'" + venueId + "'");
-
       // Load Info into database
       Customer[url](venueId);
       var params =
@@ -118,6 +116,8 @@ Ext.define('Genesis.controller.Checkins',
          });
       }
 
+      console.debug("CheckIn - auth_code:'" + qrcode + "' venue_id:'" + venueId + "'");
+      
       cstore.load(
       {
          jsonData :

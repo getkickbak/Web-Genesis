@@ -77,6 +77,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
          {
             docked : 'bottom',
             xtype : 'button',
+            hidden:true,
             cls : 'separator',
             tag : 'refresh',
             text : 'Refresh',
@@ -85,6 +86,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
          {
             docked : 'bottom',
             xtype : 'button',
+            hidden:true,
             cls : 'separator',
             tag : 'verify',
             text : 'Verified!',
@@ -130,7 +132,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
    setDataBackground : function(data)
    {
       var reward = data.CustomerReward;
-      var photo = Genesis.view.Prizes.getPhoto(reward['type']) || reward['photo']['thumbnail_ios_medium'].url;
+      var photo = Genesis.view.Prizes.getPhoto(reward['type']) || reward['photo']['thumbnail_ios_medium'];
       var info = this.query("component[tag=info]")[0];
       var refresh = this.query("button[tag=refresh]")[0];
       var verify = this.query("button[tag=verify]")[0];
@@ -156,7 +158,15 @@ Ext.define('Genesis.view.widgets.RewardItem',
       }
 
       this.query("component[tag=title]")[0].setData(reward);
-      this.query("component[tag=itemPhoto]")[0].element.setStyle('background-image', 'url(' + photo + ')');
+      this.query("component[tag=itemPhoto]")[0].element.setStyle((Ext.isString(photo)) ?
+      {
+         'background-image' : 'url(' + photo + ')',
+         'background-size' : ''
+      } :
+      {
+         'background-image' : 'url(' + photo.url + ')',
+         'background-size' : (photo.width) ? Genesis.fn.addUnit(photo.width) + ' ' + Genesis.fn.addUnit(photo.height) : ''
+      });
    },
    /**
     * Updates this container's child items, passing through the dataMap.
