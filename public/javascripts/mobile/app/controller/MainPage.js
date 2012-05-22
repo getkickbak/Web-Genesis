@@ -620,6 +620,7 @@ Ext.define('Genesis.controller.MainPage',
          }
          case 'login' :
          {
+            Ext.Viewport.setMasked(false);
             this.pushView(this.getLogin());
             break;
          }
