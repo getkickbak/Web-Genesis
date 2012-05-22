@@ -32,7 +32,7 @@
          "hide": "true"
       }, {
          "name": "Points Transfer",
-         "photo_url": "resources/themes/images/v1/mainicons/referral.png",
+         "photo_url": "resources/themes/images/v1/miscicons/points.png",
          "desc": "Transfer Points to other KickBak users",
          "pageCntlr": "Accounts",
          "subFeature": "transfer"
