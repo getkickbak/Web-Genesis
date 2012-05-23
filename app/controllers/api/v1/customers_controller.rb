@@ -34,11 +34,15 @@ class Api::V1::CustomersController < ApplicationController
           cipher = Gibberish::AES.new(@customer.merchant.auth_code)
           @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
           if type == "email"
+            logger.debug("Transfer points via email")
             @subject = t.("api.customers.email_subject_points_transfer")
+            logger.debug("Finished preparing subject")
             @body = TransferPoints.new(current_user, record).render_html
+            logger.debug("Finished preparing body")
             logger.info("User(#{current_user.id}) successfully created email transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
             render :template => '/api/v1/customers/transfer_points_email'   
           else
+            logger.debug("Transfer points via direct")
             logger.info("User(#{current_user.id}) successfully created direct transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
             render :template => '/api/v1/customers/transfer_points_direct'
           end
@@ -46,7 +50,7 @@ class Api::V1::CustomersController < ApplicationController
           logger.info("User(#{current_user.id}) failed to create transfer qr code worth #{points} points for Customer Account(#{@customer.id}), insufficient points")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => (t("api.customers.insufficient_transfer_points") % [points, I18n.t('api.point', :count => points)]).split('\n') } }
+            format.json { render :json => { :success => false, :message => (t("api.customers.insufficient_transfer_points") % [points, t('api.point', :count => points)]).split('\n') } }
           end
         end
       rescue DataMapper::SaveFailureError => e
