@@ -30,6 +30,9 @@ class Api::V1::CustomerRewardsController < ApplicationController
     Time.zone = @venue.time_zone
     Customer.transaction do
       begin
+        mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
+        acquired = mutex.acquire
+        @customer.reload
         if @customer.points - @reward.points >= 0
           record = RedeemRewardRecord.new(
             :reward_id => @reward.id,
@@ -45,10 +48,34 @@ class Api::V1::CustomerRewardsController < ApplicationController
           data = { 
             :type => EncryptedDataType::REDEEM_REWARD,
             :reward => @reward.to_redeemed,
-            :expiry_ts => (Time.now+6.hour).to_i*1000
+            :expiry_ts => (6.hour.from_now).to_i*1000
           }.to_json
           cipher = Gibberish::AES.new(@venue.auth_code)
           @encrypted_data = cipher.enc(data)
+          @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])
+          @eligible_rewards = []
+          challenge_type_id = ChallengeType.value_to_id["vip"]
+          challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
+          if challenge
+            visits_to_go = @customer.visits % challenge.data.visits
+            (visits_to_go = challenge.data.visits) unless visits_to_go > 0
+            item = EligibleReward.new(
+              challenge.id,
+              challenge.type.value,
+              challenge.name,
+              ::Common.get_eligible_challenge_vip_text(challenge.points, visits_to_go)
+            )
+            @eligible_rewards << item
+          end
+          @rewards.each do |reward|
+            item = EligibleReward.new(
+              reward.id,
+              reward.type.value,
+              reward.title,
+              ::Common.get_eligible_reward_text(@customer.points - reward.points)
+            )
+            @eligible_rewards << item  
+          end
           logger.info("User(#{current_user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")
           render :template => '/api/v1/customer_rewards/redeem'
         else
@@ -58,12 +85,21 @@ class Api::V1::CustomerRewardsController < ApplicationController
             format.json { render :json => { :success => false, :message => t("api.customer_rewards.insufficient_points").split('\n') } }
           end  
         end
+        mutex.release
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
+        mutex.release if ((defined? mutex) && !mutex.nil?)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
         end
+      rescue StandardError => e
+        logger.error("Exception: " + e.message)
+        mutex.release if ((defined? mutex) && !mutex.nil?)
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
+        end 
       end
     end
   end
