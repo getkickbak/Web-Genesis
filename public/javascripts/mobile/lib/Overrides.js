@@ -14,7 +14,7 @@ Genesis.constants =
    fbScope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions,offline_access',
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
    fbConnectReqestMsg : 'Connection to Facebook is required to complete this action',
-   debugPrivKey : 'Po2CFD4Sndq0jRs1t5sRpOCIpUvCCnFx',
+   debugPrivKey : 'MiQj6tNWvjdPGh2Qlr7gdBIsJAadvAUk',
    redeemDBSize : 10000,
    isNative : function()
    {

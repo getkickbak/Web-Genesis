@@ -447,8 +447,12 @@ Ext.define('Genesis.controller.MainPage',
    {
       var me = this;
       //
-      // Login to Facebook
+      // Forced to Login to Facebook
       //
+      var db = Genesis.constants.getLocalDB();
+      db['currFbId'] = 0;
+      Genesis.constants.setLocalDB(db);
+      
       Genesis.constants.facebook_onLogin(function(params)
       {
          console.log("Logging into Kickbak using Facebook account ...");

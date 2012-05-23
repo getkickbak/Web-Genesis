@@ -144,7 +144,6 @@ Ext.define('Genesis.controller.server.Rewards',
    {
       var me = this;
       var container = me.getRewardsContainer();
-      //var anim = container.getLayout().getAnimation();
 
       var price = me.getPrice().getValue();
       var precision = this.getPricePrecision(price);
@@ -162,24 +161,29 @@ Ext.define('Genesis.controller.server.Rewards',
          xtype : 'loadmask',
          message : me.genQRCodeMsg
       });
-      console.debug("Encrypting QRCode with Price:$" + price);
-      var qrcodeMetaData = Genesis.controller.ControllerBase.genQRCodeFromParams(
+      // Needed delay to show the LoadingMask
+      Ext.defer(function()
       {
-         "amount" : price,
-         "type" : 'earn_points'
-      });
-      me.getQrcode().setStyle(
-      {
-         'background-image' : 'url(' + qrcodeMetaData[0] + ')',
-         'background-size' : Genesis.fn.addUnit(qrcodeMetaData[1]) + ' ' + Genesis.fn.addUnit(qrcodeMetaData[2])
-      });
-      me.getTitle().setData(
-      {
-         price : '$' + price
-      });
-      //anim.disable();
-      container.setActiveItem(1);
-      //anim.enable();
+         //var anim = container.getLayout().getAnimation();
+         console.debug("Encrypting QRCode with Price:$" + price);
+         var qrcodeMetaData = Genesis.controller.ControllerBase.genQRCodeFromParams(
+         {
+            "amount" : price,
+            "type" : 'earn_points'
+         });
+         me.getQrcode().setStyle(
+         {
+            'background-image' : 'url(' + qrcodeMetaData[0] + ')',
+            'background-size' : Genesis.fn.addUnit(qrcodeMetaData[1]) + ' ' + Genesis.fn.addUnit(qrcodeMetaData[2])
+         });
+         me.getTitle().setData(
+         {
+            price : '$' + price
+         });
+         //anim.disable();
+         container.setActiveItem(1);
+         //anim.enable();
+      }, 1, me);
    },
    onCalcBtnTap : function(b, e, eOpts, eInfo)
    {
