@@ -426,7 +426,8 @@ Ext.define('Genesis.controller.Accounts',
             'Subject - ' + subject + '\n' //
             );
 
-            emailTpl = emailTpl.replace(me.qrcodeRegExp, '<img src="' + Genesis.controller.ControllerBase.genQRCode(qrcode)[0] + '"/>');
+            //emailTpl = emailTpl.replace(me.qrcodeRegExp, '<img src="' + Genesis.controller.ControllerBase.genQRCode(qrcode)[0] +
+            // '"/>');
             /*
              console.debug('\n' + //
              'Encoded Body - ' + emailTpl);
@@ -434,51 +435,49 @@ Ext.define('Genesis.controller.Accounts',
 
             window.plugins.emailComposer.showEmailComposerWithCB(function(res)
             {
-               switch (res)
+               // Delay is needed to not block email sending ...
+               Ext.defer(function()
                {
-                  case EmailComposer.ComposeResultType.Failed:
-                  case EmailComposer.ComposeResultType.NotSent:
-                  case EmailComposer.ComposeResultType.Cancelled:
+                  switch (res)
                   {
-                     Ext.device.Notification.show(
+                     case EmailComposer.ComposeResultType.Failed:
+                     case EmailComposer.ComposeResultType.NotSent:
+                     case EmailComposer.ComposeResultType.Cancelled:
                      {
-                        title : 'Transfer Failed',
-                        message : me.transferFailedMsg,
-                        callback : function()
+                        Ext.device.Notification.show(
                         {
-                           //me.onTransferCompleteTap();
-                        }
-                     });
-                     break;
-                  }
-                  case EmailComposer.ComposeResultType.Saved:
-                  {
-                     Ext.device.Notification.show(
+                           title : 'Transfer Failed',
+                           message : me.transferFailedMsg,
+                           callback : function()
+                           {
+                              //me.onTransferCompleteTap();
+                           }
+                        });
+                        break;
+                     }
+                     case EmailComposer.ComposeResultType.Saved:
                      {
-                        title : 'Trasfer Deferred',
-                        message : me.transferSavedMsg,
-                        callback : function()
+                        me.onTransferCompleteTap();
+                        Ext.device.Notification.show(
                         {
-                           me.onTransferCompleteTap();
-                        }
-                     });
-                     break;
-                  }
-                  case EmailComposer.ComposeResultType.Sent:
-                  {
-                     Ext.device.Notification.show(
+                           title : 'Trasfer Deferred',
+                           message : me.transferSavedMsg
+                        });
+                        break;
+                     }
+                     case EmailComposer.ComposeResultType.Sent:
                      {
-                        title : 'Transfer Success!',
-                        message : me.transferSuccessMsg,
-                        callback : function()
+                        me.onTransferCompleteTap();
+                        Ext.device.Notification.show(
                         {
-                           me.onTransferCompleteTap();
-                        }
-                     });
-                     break;
+                           title : 'Transfer Success!',
+                           message : me.transferSuccessMsg
+                        });
+                        break;
+                     }
                   }
-               }
-            }, subject, emailTpl, null, null, null, true);
+               }, 1, me);
+            }, subject, emailTpl, null, null, null, true, [Genesis.controller.ControllerBase.genQRCode(qrcode)[0].replace("data:image/png;base64,","")]);
             break;
          }
       }
