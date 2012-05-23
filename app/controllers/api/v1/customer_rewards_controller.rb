@@ -30,6 +30,9 @@ class Api::V1::CustomerRewardsController < ApplicationController
     Time.zone = @venue.time_zone
     Customer.transaction do
       begin
+        mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
+        acquired = mutex.acquire
+        @customer.reload
         if @customer.points - @reward.points >= 0
           record = RedeemRewardRecord.new(
             :reward_id => @reward.id,
@@ -82,12 +85,21 @@ class Api::V1::CustomerRewardsController < ApplicationController
             format.json { render :json => { :success => false, :message => t("api.customer_rewards.insufficient_points").split('\n') } }
           end  
         end
+        mutex.release
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
+        mutex.release if ((defined? mutex) && !mutex.nil?)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
         end
+      rescue StandardError => e
+        logger.error("Exception: " + e.message)
+        mutex.release if ((defined? mutex) && !mutex.nil?)
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
+        end 
       end
     end
   end
