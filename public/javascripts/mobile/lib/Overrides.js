@@ -58,12 +58,22 @@ Genesis.constants =
    {
       var dbS = this.getRedeemSortedDB();
 
-      dbS.push(key);
-      if(!Ext.isDefined(dbS['lastCount']))
+      if(dbS.length >= this.redeemDBSize)
       {
-         dbS['lastCount'] = 0;
+         // Remove the oldest Entry
+         console.debug("Database Entry is full, discarded oldest Entry with timestamp (" + Date(dbS[0][1]) + ")");
+         dbS = dbS.splice(0, 1);
       }
-      dbS['currCount'] = (Ext.isDefined(dbS['currCount'])) ? ((dbS['currCount'] + 1) % this.redeemDBSize) : 0;
+      else
+      {
+         dbS['currCount'] = (Ext.isDefined(dbS['currCount'])) ? (dbS['currCount'] + 1) : 0;
+      }
+      dbS.push(key);
+      dbS = Ext.Array.sort(dbS, function(a, b)
+      {
+         // Compare TimeStamps
+         return (a[1] - b[1]);
+      });
       this.setRedeemSortedDB(dbS);
    },
    getRedeemSortedDB : function(index)
@@ -86,34 +96,32 @@ Genesis.constants =
       dbI = this.getRedeemIndexDB();
       dbS = this.getRedeemSortedDB();
       var total = 0;
-      var index = dbS['lastCount'] || -1;
       var currCount = dbS['currCount'] || -1;
-      console.debug('\n' + //
-      'lastCount = ' + index + '\n' + //
-      'currCount = ' + currCount);
+      console.debug('currCount = ' + currCount);
 
-      // Go thru the entire queue
-      while(index != currCount)
+      while((currCount >= 0) && (dbS.length > 0))
       {
-         if(!dbS[index] || (dbI[dbS[index]] > now))
+         if(dbS[0][1] > now)
          {
+            total++;
+            currCount--;
+
+            // Sorted array size is reduced by 1
+            delete dbI[dbS[0]];
+            dbS = dbS.splice(0, 1);
+
+            dbS['currCount'] = currCount;
+         }
+         else
+         {
+            // Cleanup done!
             break;
          }
-         delete dbI[dbS[index]];
-         delete dbS[index];
-         index = (index + 1) % this.redeemDBSize;
-         total++;
       }
-
-      if(total > 0)
-      {
-         dbS['lastCount'] = (dbS['lastCount'] + total) % this.redeemDBSize;
-      }
-
       Genesis.constants.setRedeemIndexDB(dbI);
       Genesis.constants.setRedeemSortedDB(dbS);
 
-      console.debug('lastCount = ' + dbS['lastCount'] + ' total = ' + total)
+      console.debug('currCount = ' + dbS['currCount'] + ', total = ' + total)
       console.log("=================================");
       console.log("Redeem Database has been resetted");
       console.log("=================================");
