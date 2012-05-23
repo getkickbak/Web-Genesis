@@ -131,6 +131,7 @@
             document.addEventListener("online", function()
             {
                console.log("Phone is Online");
+               Genesis.constants.redeemDBCleanup();
                /*
                 if(Ext.device)
                 {
