@@ -167,8 +167,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           #logger.debug("Set Prize Point Offset = Current Point Offset.")
           prize_info.prize_point_offset = current_point_offset
           prize_info.save
-          mutex.release
-          #logger.debug("Cache mutex released.")
+          
           @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])
           @eligible_rewards = []
           challenge_type_id = ChallengeType.value_to_id["vip"]
@@ -195,6 +194,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           end
           logger.info("User(#{current_user.id}) successfully earned #{@points} at Venue(#{@venue.id})")
           render :template => '/api/v1/purchase_rewards/earn'
+          mutex.release
+          #logger.debug("Cache mutex released.")
         else
           logger.info("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), authentication code expired")
           respond_to do |format|
@@ -204,14 +205,14 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         end  
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
-        mutex.release if (defined? mutex && !mutex.nil?)
+        mutex.release if ((defined? mutex) && !mutex.nil?)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
         end
       rescue StandardError => e
         logger.error("Exception: " + e.message)
-        mutex.release if (defined? mutex && !mutex.nil?)
+        mutex.release if ((defined? mutex) && !mutex.nil?)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }

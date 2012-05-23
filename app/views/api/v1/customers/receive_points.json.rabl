@@ -7,6 +7,6 @@ node :data do
 end
 node :metaData do
 	{
-		:points => @points
+		:points => @record.points
 	}
 end
