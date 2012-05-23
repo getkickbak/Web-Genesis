@@ -418,8 +418,20 @@ Ext.define('Genesis.controller.Accounts',
          {
             var qrcode = metaData['data']['qrcode'];
             var emailTpl = metaData['data']['body'];
+            var subject = metaData['data']['subject'];
 
-            emailTpl = emailTpl.replace(me.qrcodeRegExp, me.genQRCode(qrcode)[0]);
+            console.debug('\n' + //
+            'QRCode - ' + qrcode + '\n' + //
+            //'Body - ' + emailTpl + '\n' + //
+            'Subject - ' + subject + '\n' //
+            );
+
+            emailTpl = emailTpl.replace(me.qrcodeRegExp, '<img src="' + Genesis.controller.ControllerBase.genQRCode(qrcode)[0] + '"/>');
+            /*
+             console.debug('\n' + //
+             'Encoded Body - ' + emailTpl);
+             */
+
             window.plugins.emailComposer.showEmailComposerWithCB(function(res)
             {
                switch (res)
@@ -466,7 +478,7 @@ Ext.define('Genesis.controller.Accounts',
                      break;
                   }
                }
-            }, metaData['data']['subject'], emailTpl, null, null, null, true);
+            }, subject, emailTpl, null, null, null, true);
             break;
          }
       }
@@ -522,7 +534,8 @@ Ext.define('Genesis.controller.Accounts',
             callback : function(records, operation)
             {
                Ext.Viewport.setMasked(false);
-               if(operation.wasSuccessful() && (records.length == 0))
+               var metaData = cstore.getProxy().getReader().metaData;
+               if(operation.wasSuccessful() && (!metaData['data']))
                {
                   Ext.device.Notification.show(
                   {

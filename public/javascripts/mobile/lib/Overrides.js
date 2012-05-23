@@ -943,6 +943,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                });
                break;
          }
+         console.debug("Ajax Call Error Handler called. Operation(" + operation.wasSuccessful() + ")");
          me.fireEvent('exception', me, response, operation);
       }
       if((success === true) || (Genesis.constants.isNative() === true))
