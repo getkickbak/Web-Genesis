@@ -96,6 +96,7 @@ Ext.define('Genesis.controller.Settings',
    {
       Genesis.constants.facebook_onLogin(function(params)
       {
+         Ext.Viewport.setMasked(false);
          Customer['setUpdateFbLoginUrl']();
          Customer.load(1,
          {

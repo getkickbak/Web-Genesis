@@ -132,16 +132,16 @@ Ext.define('Genesis.controller.Accounts',
                {
                   var metaData = Customer.getProxy().getReader().metaData();
                   /*
-                  var customer = cstore.getById(record.getId());
-                  if(cutomer)
-                  {
-                     customer.set('points', record.get('points'));
-                  }
-                  else
-                  {
-                     cstore.add(record);
-                  }
-                  */
+                   var customer = cstore.getById(record.getId());
+                   if(cutomer)
+                   {
+                   customer.set('points', record.get('points'));
+                   }
+                   else
+                   {
+                   cstore.add(record);
+                   }
+                   */
                   Ext.device.Notification.show(
                   {
                      title : 'Transfer Received',
@@ -505,6 +505,7 @@ Ext.define('Genesis.controller.Accounts',
          Customer['setSendPtsXferUrl']();
          cstore.load(
          {
+            addRecords : true,
             jsonData :
             {
             },

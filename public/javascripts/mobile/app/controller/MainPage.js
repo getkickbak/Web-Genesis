@@ -456,6 +456,7 @@ Ext.define('Genesis.controller.MainPage',
       Genesis.constants.facebook_onLogin(function(params)
       {
          console.log("Logging into Kickbak using Facebook account ...");
+         Ext.Viewport.setMasked(false);
          me.facebookLogin(params);
       }, true, false);
    },

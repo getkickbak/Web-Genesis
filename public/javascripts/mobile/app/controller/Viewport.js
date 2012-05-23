@@ -125,6 +125,7 @@ Ext.define('Genesis.controller.Viewport',
             message : 'Check out this place!'
          }, function(response)
          {
+            Ext.Viewport.setMasked(false);
             if(!response || response.error)
             {
                console.log('Post was not published to Facebook.');

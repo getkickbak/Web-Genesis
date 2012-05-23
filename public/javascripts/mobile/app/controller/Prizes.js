@@ -130,6 +130,7 @@ Ext.define('Genesis.controller.Prizes',
             message : message
          }, function(response)
          {
+            Ext.Viewport.setMasked(false);
             if(!response || response.error)
             {
                console.log('Post was not published to Facebook.');
@@ -142,6 +143,7 @@ Ext.define('Genesis.controller.Prizes',
       }
       catch (e)
       {
+         Ext.Viewport.setMasked(false);
          console.log('Exception [' + e + ']' + '\n' + //
          'Post was not published to Facebook.');
       }
@@ -208,10 +210,6 @@ Ext.define('Genesis.controller.Prizes',
          //
          // Update Facebook
          //
-         Genesis.constants.facebook_onLogin(function(params)
-         {
-            me.updatingPrizeOnFacebook(records[0]);
-         }, true, true, me.updatePrizeOnFbMsg);
          Ext.device.Notification.vibrate();
          Ext.device.Notification.show(
          {
@@ -562,6 +560,12 @@ Ext.define('Genesis.controller.Prizes',
       this.showPrize = showPrize;
       this.setMode('showPrize');
       this.pushView(this.getMainPage());
+      
+      //Update on Facebook
+      Genesis.constants.facebook_onLogin(function(params)
+      {
+         me.updatingPrizeOnFacebook(records[0]);
+      }, true, true, me.updatePrizeOnFbMsg);
    },
    onAuthReward : function(showPrize)
    {

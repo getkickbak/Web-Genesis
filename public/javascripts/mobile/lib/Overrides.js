@@ -14,6 +14,7 @@ Genesis.constants =
    fbScope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions,offline_access',
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
    fbConnectReqestMsg : 'Connection to Facebook is required to complete this action',
+   connectingToFBMsg : 'Connecting to Facebook ...',
    debugPrivKey : 'MiQj6tNWvjdPGh2Qlr7gdBIsJAadvAUk',
    redeemDBSize : 10000,
    isNative : function()
@@ -455,6 +456,11 @@ Genesis.constants =
          }
          else
          {
+            Ext.Viewport.setMasked(
+            {
+               xtype : 'loadmask',
+               message : me.connectingToFBMsg
+            });
             me.fbLogin(cb, refreshConn, supress);
          }
       }

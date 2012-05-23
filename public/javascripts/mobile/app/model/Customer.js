@@ -131,7 +131,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customer/transfer_points');
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customers/transfer_points');
       },
       setRecvPtsXferUrl : function()
       {
@@ -139,7 +139,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customer/receive_points');
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customers/receive_points');
       }
    }
 });
