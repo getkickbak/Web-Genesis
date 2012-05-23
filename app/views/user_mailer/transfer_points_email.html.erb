@@ -16,7 +16,7 @@
 						<b>Hi,</b>
 						<br>
 						<br>
-						<%= @sender.name %> has sent you a transfer of <%= @record.points t("api.points", :count => @record.points) %>
+						<%= @sender.name %> has sent you a transfer of <%= "#{@record.points} #{t("api.points", :count => @record.points)}" %>
 						<br>
 						<br>
 						To deposit this transfer, scan the QR code below with your KICKBAK app:
