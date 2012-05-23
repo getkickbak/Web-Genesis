@@ -137,6 +137,7 @@ Ext.define('Genesis.controller.server.Rewards',
             break;
          }
       }
+      console.debug("Rewards ContainerActivate Called.");
       Ext.Viewport.setMasked(false);
    },
    onShowQrCodeTap : function(b, e, eOpts, eInfo)

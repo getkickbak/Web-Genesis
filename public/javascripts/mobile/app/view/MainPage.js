@@ -23,9 +23,8 @@ Ext.define('Genesis.view.MainPage',
          items : [
          {
             xtype : 'button',
-            ui : 'checkInNow',
             tag : 'checkInNow',
-            text : 'Check In Now!'
+            text : 'CheckIn Now!'
          }]
       }] : null
    },

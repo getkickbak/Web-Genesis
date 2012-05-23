@@ -1,6 +1,7 @@
 Ext.define('Genesis.controller.client.Challenges',
 {
    extend : 'Genesis.controller.ControllerBase',
+   requires : ['Ext.Anim'],
    statics :
    {
       challenges_path : '/clientChallenges'
@@ -10,13 +11,14 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       refs :
       {
-         challengeBtn : 'clientchallengepageview tabbar button[tag=doit]',
+         challengeBtn : 'clientchallengepageview button[tag=doit]',
          challengePage :
          {
             selector : 'clientchallengepageview',
             autoCreate : true,
             xtype : 'clientchallengepageview'
          },
+         challengeDescContainer : 'clientchallengepageview container[tag=challengePageItemDescWrapper]',
          uploadPhotosPage :
          {
             selector : 'uploadphotospageview',
@@ -77,6 +79,7 @@ Ext.define('Genesis.controller.client.Challenges',
    fbUploadFailedMsg : 'Failed to upload the photo onto your Facebook account',
    checkinFirstMsg : 'Please Check-In before performing challenges',
    photoUploadFbReqMsg : 'Connectivity to Facebook is required to upload photos to your account',
+   defaultChallengeMsg : 'Please Select a challenge to perform',
    photoUploadSuccessMsg : function(points)
    {
       return 'You have earned ' + points + ' Pts for uploading it to Facebook!';
@@ -387,22 +390,24 @@ Ext.define('Genesis.controller.client.Challenges',
    onItemSelect : function(d, model, eOpts)
    {
       d.deselect([model], false);
-      var desc = this.getChallengePage().query("container[docked=bottom][xtype=container]")[0];
-      for(var i = 0; i < desc.getItems().length; i++)
+      var desc = this.getChallengeDescContainer();
+      Ext.Anim.run(desc.element, 'fade',
       {
-         desc.getItems().getAt(i).updateData(model.getData());
-      }
-      this.selectedItem = model;
+         direction : 'right',
+         duration : 600,
+         out : false,
+         autoClear : true,
+         scope : this,
+         before : function()
+         {
+            for(var i = 0; i < desc.getItems().length; i++)
+            {
+               desc.getItems().getAt(i).updateData(model.getData());
+            }
+            this.selectedItem = model;
+         }
+      });
       return true;
-   },
-   onItemTouchStart : function(d, index, target, e, eOpts)
-   {
-      Ext.fly(Ext.query('#'+target.id+' div.photo')[0]).mask();
-
-   },
-   onItemTouchEnd : function(d, index, target, e, eOpts)
-   {
-      Ext.fly(Ext.query('#'+target.id+' div.photo')[0]).unmask();
    },
    onChallengeBtnTap : function(b, e, eOpts, eInfo)
    {
@@ -533,35 +538,55 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
+      var me = this;
       var record = this.getViewPortCntlr().getVenue();
       var venueId = record.getId();
       var carousel = this.getChallengePage().query('carousel')[0];
       var items = record.challenges().getRange();
-
-      carousel.removeAll(true);
-      Ext.defer(function()
+      if((carousel.getInnerItems().length > 0) && //
+      (carousel.getInnerItems()[0].getStore().getRange()[0].getId() == items[0].getId()))
       {
-         for(var i = 0; i < Math.ceil(items.length / 6); i++)
+         // No need to update the Challenge Menu. Nothing changed.
+      }
+      else
+      {
+         carousel.removeAll(true);
+         // Defer to update Remove Changes before re-adding them back in
+         Ext.defer(function()
          {
-            carousel.add(
+            for(var i = 0; i < Math.ceil(items.length / 6); i++)
             {
-               xtype : 'dataview',
-               cls : 'challengeMenuSelections',
-               useComponents : true,
-               defaultType : 'challengemenuitem',
-               scrollable : false,
-               store :
+               carousel.add(
                {
-                  model : 'Genesis.model.Challenge',
-                  data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
-               }
-            });
-         }
-         if(carousel.getInnerItems().length > 0)
+                  xtype : 'dataview',
+                  cls : 'challengeMenuSelections',
+                  useComponents : true,
+                  defaultType : 'challengemenuitem',
+                  scrollable : undefined,
+                  store :
+                  {
+                     model : 'Genesis.model.Challenge',
+                     data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
+                  }
+               });
+            }
+            if(carousel.getInnerItems().length > 0)
+            {
+               carousel.setActiveItem(0);
+            }
+         }, 1, me);
+      }
+      
+      var desc = me.getChallengeDescContainer();
+      for(var i = 0; i < desc.getItems().length; i++)
+      {
+         desc.getItems().getAt(i).updateData(
          {
-            carousel.setActiveItem(0);
-         }
-      }, 1, this);
+            description : me.defaultChallengeMsg,
+            name : ''
+         });
+      }
+      delete me.selectedItem;
    },
    onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {

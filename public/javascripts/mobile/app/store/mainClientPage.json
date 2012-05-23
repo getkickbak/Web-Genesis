@@ -24,7 +24,7 @@
          "desc": "Prizes Won by you",
          "pageCntlr": "Prizes"
       }, {
-         "name": "Main Menu",
+         "name": "KickBak",
          "photo_url": "resources/themes/images/v1/mainicons/tocheckedinmerch.png",
          "desc": "Main Menu for your Checked-in Venue",
          "pageCntlr": "MainPage",

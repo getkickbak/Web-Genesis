@@ -182,6 +182,7 @@ Ext.define('Genesis.controller.Merchants',
    // --------------------------------------------------------------------------
    onLocationUpdate : function(position)
    {
+      var me = this;
       var app = me.getApplication();
       var controller = app.getController('Checkins');
       controller.setPosition(position);
@@ -381,7 +382,7 @@ Ext.define('Genesis.controller.Merchants',
          viewport.updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [cmetaData]);
       }
       vport.reset();
-      vport.setCubeAnimation();
+      vport.setFlipAnimation();
 
       //
       // Force Page to refresh

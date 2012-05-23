@@ -205,9 +205,9 @@ Ext.define('Genesis.view.Viewport',
             animationend : 'resetAnimation'
          }
       };
-      this.cubeAnimation =
+      this.flipAnimation =
       {
-         type : 'cube',
+         type : 'flip',
          listeners :
          {
             scope : this,
@@ -304,15 +304,15 @@ Ext.define('Genesis.view.Viewport',
       layout.setAnimation(this.fadeAnimation);
       this.setAnimMode('fade');
    },
-   setCubeAnimation : function()
+   setFlipAnimation : function()
    {
       var layout = this.getLayout();
       if(!this.defaultAnimation)
       {
          this.defaultAnimation = layout.getAnimation();
       }
-      layout.setAnimation(this.cubeAnimation);
-      this.setAnimMode('cube');
+      layout.setAnimation(this.flipAnimation);
+      this.setAnimMode('flip');
    },
 
    /**

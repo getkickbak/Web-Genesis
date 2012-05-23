@@ -57,8 +57,8 @@ Ext.define('Genesis.navigation.Bar',
          case 'fade' :
             me.setMode('fade');
             break;
-         case 'cube' :
-            me.setMode('cube');
+         case 'flip' :
+            me.setMode('flip');
             break;
          default :
             me.setMode('slide');
@@ -126,8 +126,8 @@ Ext.define('Genesis.navigation.Bar',
          case 'fade' :
             me.setMode('fade');
             break;
-         case 'cube' :
-            me.setMode('cube');
+         case 'flip' :
+            me.setMode('flip');
             break;
          default :
             me.setMode('slide');
@@ -160,15 +160,15 @@ Ext.define('Genesis.navigation.Bar',
       {
          me.fadeAnimation.destroy();
       }
-      if(me.cubeAnimation)
+      if(me.flipAnimation)
       {
-         me.cubeAnimation.destroy();
+         me.flipAnimation.destroy();
       }
 
       switch (me.getMode())
       {
          case 'fade' :
-         case 'cube' :
+         case 'flip' :
          case 'slide' :
          {
             me[me.getMode().toLowerCase() + 'Animation'] = animation = new Ext.fx.layout.card[me.getMode().capitalize()](

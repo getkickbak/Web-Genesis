@@ -21,7 +21,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
             xtype : 'component',
             tag : 'title',
             cls : 'title',
-            padding : '0.7 0.8',
+            //padding : '0.7 0.8',
             margin : '0 0 0.8 0',
             defaultUnit : 'em',
             tpl : Ext.create('Ext.XTemplate', '{[this.getDescription(values)]}',
@@ -36,7 +36,14 @@ Ext.define('Genesis.view.widgets.RewardItem',
             xtype : 'component',
             flex : 1,
             tag : 'itemPhoto',
-            cls : 'itemPhoto'
+            cls : 'itemPhoto',
+            tpl : Ext.create('Ext.XTemplate', '<div class="itemPoints">{[this.getPoints(values)]}</div>',
+            {
+               getPoints : function(values)
+               {
+                  return ((values['points'] > 0) ? values['points'] + '  Pts' : '');
+               }
+            })
          },
          {
             docked : 'bottom',
@@ -77,7 +84,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
          {
             docked : 'bottom',
             xtype : 'button',
-            hidden:true,
+            hidden : true,
             cls : 'separator',
             tag : 'refresh',
             text : 'Refresh',
@@ -86,7 +93,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
          {
             docked : 'bottom',
             xtype : 'button',
-            hidden:true,
+            hidden : true,
             cls : 'separator',
             tag : 'verify',
             text : 'Verified!',
@@ -136,6 +143,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
       var info = this.query("component[tag=info]")[0];
       var refresh = this.query("button[tag=refresh]")[0];
       var verify = this.query("button[tag=verify]")[0];
+      var itemPhoto = this.query("component[tag=itemPhoto]")[0];
 
       //
       // Hide Merchant Information if it's missing
@@ -158,7 +166,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
       }
 
       this.query("component[tag=title]")[0].setData(reward);
-      this.query("component[tag=itemPhoto]")[0].element.setStyle((Ext.isString(photo)) ?
+      itemPhoto.element.setStyle((Ext.isString(photo)) ?
       {
          'background-image' : 'url(' + photo + ')',
          'background-size' : ''
@@ -166,6 +174,10 @@ Ext.define('Genesis.view.widgets.RewardItem',
       {
          'background-image' : 'url(' + photo.url + ')',
          'background-size' : (photo.width) ? Genesis.fn.addUnit(photo.width) + ' ' + Genesis.fn.addUnit(photo.height) : ''
+      });
+      itemPhoto.setData((!data['expiry_date'] || (data['expiry_date'] == 'N/A')) ? reward :
+      {
+         points : null
       });
    },
    /**

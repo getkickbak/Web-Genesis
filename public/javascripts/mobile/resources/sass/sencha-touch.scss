@@ -376,11 +376,10 @@ body {
       margin: $panelTopGap*2 $panelGap*2;
    }
    .title {
-     @extend .title;
      min-height:$xlargeFontSize*2;
      max-height:$xlargeFontSize*2;
      font-size:$xlargeFontSize*2;
-     line-height:$xlargeFontSize*2;
+     padding: $panelTopGap $panelGap;
    }
    .qrcode {
       background-position: center center;
@@ -974,7 +973,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
    .x-dataview-item, .x-data-item {
       width:50%;
       float:left;
-      font-size:$largeFontSize;
+      font-size:$normalFontSize*1.25;
       color:#555658;
       position:relative; // Used for add Icon Mask to the selection
       .mainPageItemWrapper {
@@ -1019,13 +1018,18 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
    }
 }
 
+.challengePageItem {
+   .x-carousel-item {
+      @include box-shadow(inset 0em -0.1em 0.1em rgba(0,0,0,0.6));
+   }
+}
 .challengePageItemDescWrapper {
-   min-height : 5em;
-   max-height : 5em;
+   min-height : 4em;
+   max-height : 4em;
    padding:$panelTopGap/2 $panelGap;
-   background: rgba(0, 0, 0, .25);
+   background: rgba(252, 252, 253, .5);
    .itemDesc {
-      font-size:$normalFontSize;
+      font-size:$normalFontSize*1.25;
       padding-bottom:$panelTopGap/2;  
    }
    .itemDescName {
@@ -1193,19 +1197,23 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
       }
    }
 }
-
 //------------------------------------------------------------------------------
 // Rewards Page
 //------------------------------------------------------------------------------
 .rewardItem {
    .title {
-     @extend .title;
-     line-height:$xlargeFontSize + 2*$panelTopGap;
+     line-height:$xlargeFontSize*2 + 2*$panelTopGap;
    }
    .itemPhoto {
       background-size : $icon-size*3 $icon-size*3; //Maximum size of QR Code as well
       background-position : center center;
       background-repeat : no-repeat;
+   }
+   .itemPoints {
+      position:absolute;
+      bottom:$panelTopGap;
+      right:$panelGap;
+      font-size:$xlargeFontSize;
    }
    .info {
       position:relative;

@@ -12,6 +12,12 @@ Ext.define('Genesis.controller.Prizes',
       timeoutPeriod : 10,
       mode : 'prizes',
       models : ['Venue', 'Merchant', 'EarnPrize', 'CustomerReward'],
+      listeners :
+      {
+         'scannedqrcode' : 'onScannedQRcode',
+         'locationupdate' : 'onLocationUpdate',
+         'redeemprize' : 'onRedeemPrize'
+      },
       refs :
       {
          closeBackButton : 'viewportview button[text=Close]',
@@ -61,6 +67,7 @@ Ext.define('Genesis.controller.Prizes',
    lostPrizeMsg : 'Oops, Play Again!',
    showQrCodeMsg : 'Show this Authorization Code to your server to redeem!',
    checkinFirstMsg : 'Please Check-in before claiming any prize(s)',
+   redeemPrizeConfirmMsg : 'Please confim to redeem this item',
    init : function()
    {
       this.callParent(arguments);
@@ -394,24 +401,9 @@ Ext.define('Genesis.controller.Prizes',
 
       //this.getRedeemBtn()[((merchantId == cmerchantId) && (merchantId > 0)) ? 'enable' : 'disable']();
    },
-   onRedeemPrizeTap : function(b, e, eOpts, eInfo)
+   onRedeemPrize : function(venue, view)
    {
       var me = this;
-      var view = me.getPrizes();
-      var viewport = me.getViewPortCntlr();
-      var venue = viewport.getVenue();
-      var cvenue = viewport.getCheckinInfo().venue;
-
-      if(!cvenue || !venue || (venue.getId() != cvenue.getId()))
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Prizes',
-            message : me.checkinFirstMsg
-         });
-         return;
-      }
-
       var venueId = venue.getId();
       var merchantId = venue.getMerchant().getId();
 
@@ -462,7 +454,39 @@ Ext.define('Genesis.controller.Prizes',
                btn.show();
             }
          }
-      })
+      });
+   },
+   onRedeemPrizeTap : function(b, e, eOpts, eInfo)
+   {
+      var me = this;
+      var view = me.getPrizes();
+      var viewport = me.getViewPortCntlr();
+      var venue = viewport.getVenue();
+      var cvenue = viewport.getCheckinInfo().venue;
+
+      if(!cvenue || !venue || (venue.getId() != cvenue.getId()))
+      {
+         Ext.device.Notification.show(
+         {
+            title : view.getInitialConfig().title,
+            message : me.checkinFirstMsg
+         });
+         return;
+      }
+
+      Ext.device.Notification.show(
+      {
+         title : view.getInitialConfig().title,
+         message : me.redeemPrizeConfirmMsg,
+         buttons : ['Confirm', 'Cancel'],
+         callback : function(btn)
+         {
+            if(btn.toLowerCase() == 'confirm')
+            {
+               me.fireEvent('redeemprize', venue, view);
+            }
+         }
+      });
    },
    onRefreshQRCode : function(qrcodeMeta)
    {

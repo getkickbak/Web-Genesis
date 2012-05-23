@@ -12,53 +12,32 @@ Ext.define('Genesis.view.client.ChallengePage',
       items : [
       {
          xtype : 'carousel',
+         cls : 'challengePageItem shadows',
          direction : 'horizontal'
       },
       {
          docked : 'bottom',
-         ui : 'light',
-         cls : 'navigationBarBottom',
-         xtype : 'tabbar',
+         cls : 'checkInNow',
+         tag : 'checkInNow',
+         xtype : 'container',
          layout :
          {
-            pack : 'justify',
-            align : 'center'
-         },
-         scrollable :
-         {
-            direction : 'horizontal',
-            indicators : false
-         },
-         defaults :
-         {
-            iconMask : true,
-            iconAlign : 'top'
+            type : 'vbox',
+            pack : 'center'
          },
          items : [
-         //
-         // Left side Buttons
-         //
          {
-            xtype : 'spacer'
-         },
-         //
-         // Middle Button
-         //
-         {
-            tag : 'doit',
+            xtype : 'button',
             iconCls : 'dochallenges',
-            title : 'Do it!'
-         },
-         //
-         // Right side Buttons
-         //
-         {
-            xtype : 'spacer'
+            iconMask : true,
+            tag : 'doit',
+            text : 'Lets do it!'
          }]
       },
       {
          docked : 'bottom',
          xtype : 'container',
+         tag : 'challengePageItemDescWrapper',
          cls : 'challengePageItemDescWrapper',
          layout :
          {
@@ -75,11 +54,13 @@ Ext.define('Genesis.view.client.ChallengePage',
             flex : 1,
             cls : 'itemDesc',
             tpl : '{description}'
-         },
+         }
+         /*,
          {
             cls : 'itemDescName',
             tpl : '{name}'
-         }]
+         }
+         */]
       }]
    },
    takePhoto : function()

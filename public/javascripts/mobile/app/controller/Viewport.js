@@ -25,7 +25,7 @@ Ext.define('Genesis.controller.Viewport',
          view : 'viewportview',
          shareBtn : 'viewportview button[tag=shareBtn]',
          fbShareBtn : 'actionsheet button[tag=fbShareBtn]',
-         checkInNowBtn : 'button[tag=checkInNow]'
+         checkInNowBtn : 'button[tag=checkInNow]' //All CheckInNow Buttons
       },
       control :
       {
@@ -255,7 +255,7 @@ Ext.define('Genesis.controller.Viewport',
    {
       var vport = this.getViewport();
       vport.reset();
-      vport.setCubeAnimation();
+      vport.setFlipAnimation();
       this.onFeatureTap('MainPage');
       console.log("Going back to HomePage ...");
    },

@@ -185,16 +185,6 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var me = this;
       //
-      // Update Eligible Rewards
-      //
-      var erewards = metaData['eligible_rewards'];
-      if(erewards)
-      {
-         console.debug("Total Eligible Rewards - " + erewards.length);
-         var estore = Ext.StoreMgr.get('EligibleRewardsStore');
-         estore.setData(erewards);
-      }
-      //
       // Update Customer Rewards (Redemptions)
       //
       var rewards = metaData['rewards'];
@@ -210,7 +200,17 @@ Ext.define('Genesis.controller.ControllerBase',
          }
          rstore.setData(rewards);
       }
-
+      //
+      // Update Eligible Rewards
+      // (Make sure we are after Redemption because we may depend on it for rendering purposes)
+      //
+      var erewards = metaData['eligible_rewards'];
+      if(erewards)
+      {
+         console.debug("Total Eligible Rewards - " + erewards.length);
+         var estore = Ext.StoreMgr.get('EligibleRewardsStore');
+         estore.setData(erewards);
+      }
       //
       // Winners' Circle'
       //
