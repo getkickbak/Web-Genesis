@@ -381,18 +381,17 @@ Ext.define('Genesis.controller.Merchants',
       {
          viewport.updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [cmetaData]);
       }
-      vport.reset();
-      vport.setFlipAnimation();
-
       //
       // Force Page to refresh
       //
+      vport.setFlipAnimation();
+      vport.reset();
       if(me.getMainPage() == vport.getActiveItem())
       {
          vport.doSetActiveItem(me.getMainPage(), null);
       }
-
       me.pushView(me.getMainPage());
+      vport.setAnimMode('default');
    },
    onMapBtnTap : function(b, e, eOpts, eInfo)
    {
