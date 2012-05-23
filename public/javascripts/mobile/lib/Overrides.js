@@ -58,8 +58,16 @@ Genesis.constants =
    {
       var dbS = this.getRedeemSortedDB();
 
+      if(dbS.length >= this.redeemDBSize)
+      {
+         // Remove the oldest Entry
+         dbS = dbS.splice(0, 1);
+      }
+      else
+      {
+         dbS['currCount'] = (Ext.isDefined(dbS['currCount'])) ? (dbS['currCount'] + 1) : 0;
+      }
       dbS.push(key);
-      dbS['currCount'] = (Ext.isDefined(dbS['currCount'])) ? ((dbS['currCount'] + 1) % this.redeemDBSize) : 0;
       dbS = Ext.Array.sort(dbS, function(a, b)
       {
          // Compare TimeStamps
