@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+	</head>
+	<body>
+		<div>
+			<center>
+				<div style="text-align:left;width:643px;border:#000000 1px solid;background:#ffffff;font-family:Arial, Helvetica, sans-serif;font-size:13px;">
+					<div style="background-color:#FFFFFF;">
+						<a rel="nofollow" target="_blank" href="http://www.getkickbak.com"> <img src="http://files.getkickbak.com/v1/logo.png" border="0" alt="getkickbak.com"> </a>
+					</div>
+					<div style="padding: 0 15px 0 15px;">
+						<br>
+						<br>
+						<b>Hi,</b>
+						<br>
+						<br>
+						<%= @sender.name %> has sent you a transfer of <%= @record.points t.("api.points", :count => @record.points) %>
+						<br>
+						<br>
+						To deposit this transfer, scan the QR code below with your KICKBAK app:
+						<br>
+						<br>
+						%qrcode_image%
+						<br>
+						<br>
+						Expiry Date: <%= @record.expiry_date.strftime("%b %d, %Y") %>
+						<br>
+						<br>
+						<center>
+							To download KICKBAK, visit us online at <a rel="nofollow" target="_blank" href="<%= root_url %>">getkickbak.com</a>
+						</center> 
+						<br>
+						<br>
+					</div>
+				</div>
+			</center>
+		</div>
+	</body>
+</html>

@@ -139,6 +139,13 @@ en:
       check_ins:
         invalid_code: "Invalid check-in code.\nPlease try again."
         create_failure: "Trouble with check-in.\nPlease try again." 
+      customers:
+        insufficient_transfer_points: "Not enough points to transfer %s %s."
+        transfer_points_failure: "Trouble transfering points.\nPlease try again."
+        invalid_transfer_code: "Transfer code is not valid."
+        expired_transfer_code: "Transfer code is no longer valid."
+        receive_points_failure: "Trouble receiving points.\nPlease try again." 
+        email_subject_points_transfer: "Points Transfer" 
       customer_rewards:
         not_available: "Sorry, but the reward is not available at this venue!"
         insufficient_points: "Not enough points to redeem reward."

@@ -93,25 +93,43 @@ class Api::V1::ChallengesController < ApplicationController
               record.save
               @customer.points += @challenge.points
               @customer.save
-              logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), #{@challenge.points} points awarded")
-              respond_to do |format|
-                #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-                format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => @challenge.points } } }
+              @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])
+              @eligible_rewards = []
+              challenge_type_id = ChallengeType.value_to_id["vip"]
+              challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
+              if challenge
+                visits_to_go = @customer.visits % challenge.data.visits
+                (visits_to_go = challenge.data.visits) unless visits_to_go > 0
+                item = EligibleReward.new(
+                  challenge.id,
+                  challenge.type.value,
+                  challenge.name,
+                  ::Common.get_eligible_challenge_vip_text(challenge.points, visits_to_go)
+                )
+                @eligible_rewards << item
               end
+              @rewards.each do |reward|
+                item = EligibleReward.new(
+                  reward.id,
+                  reward.type.value,
+                  reward.title,
+                  ::Common.get_eligible_reward_text(@customer.points - reward.points)
+                )
+                @eligible_rewards << item  
+              end
+              logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), #{@challenge.points} points awarded")
+              @points = @challenge.points
             else
               logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because limit reached")
-              respond_to do |format|
-                #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-                format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => 0, :message => get_success_no_points_limit_reached_msg.split('\n') } } }
-              end  
+              @points = 0
+              @msg = get_success_no_points_limit_reached_msg.split('\n')  
             end
           else
             logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because it is not eligible")
-            respond_to do |format|
-              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-              format.json { render :json => { :success => true, :metaData => { :account_points => @customer.points, :points => 0, :message => get_success_no_points_msg.split('\n') } } }
-            end  
+            @points = 0
+            @msg = get_success_no_points_msg.split('\n')  
           end
+          render :template => '/api/v1/challenges/complete'
         else
           logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), authentication code expired")
           respond_to do |format|

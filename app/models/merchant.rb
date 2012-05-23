@@ -24,6 +24,7 @@ class Merchant
   property :payment_account_id, String, :default => ""
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :pending
   property :prize_terms, String, :required => true, :default => ""
+  property :auth_code, String, :required => true, :default => ""
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -32,7 +33,7 @@ class Merchant
   attr_accessor :type_id, :current_password
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :photo, :alt_photo, :status, :prize_terms, :current_password, :password, :password_confirmation
+  attr_accessible :type_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :photo, :alt_photo, :status, :prize_terms, :auth_code, :current_password, :password, :password_confirmation
   
   has 1, :merchant_to_type, :constraint => :destroy
   has 1, :type, 'MerchantType', :through => :merchant_to_type, :via => :merchant_type
@@ -68,7 +69,8 @@ class Merchant
       :account_last_name => merchant_info[:account_last_name].strip,
       :phone => merchant_info[:phone].strip,
       :status => merchant_info[:status],
-      :prize_terms => merchant_info[:prize_terms]
+      :prize_terms => merchant_info[:prize_terms],
+      :auth_code => String.random_alphanumeric(32)
     )
     merchant[:created_ts] = now
     merchant[:update_ts] = now
