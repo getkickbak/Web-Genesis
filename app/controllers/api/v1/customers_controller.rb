@@ -12,7 +12,7 @@ class Api::V1::CustomersController < ApplicationController
   end
   
   def transfer_points
-    @customer = Customer.first(Customer.user.id => curren_user.id, Customer.merchant.id => params[:merchant_id]) || not_found
+    @customer = Customer.first(Customer.user.id => current_user.id, Customer.merchant.id => params[:merchant_id]) || not_found
     authorize! :read, @customer
     
     logger.info("Transfer points Customer(#{@customer.id}), User(#{current_user.id})")
