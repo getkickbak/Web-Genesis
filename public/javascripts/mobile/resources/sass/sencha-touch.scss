@@ -970,13 +970,18 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
 //------------------------------------------------------------------------------
 .mainMenuSelections {
    padding:$panelGap;
+   .x-item-selected .photoName {
+      background-color:#C3C3C4;
+   }
    .x-dataview-item, .x-data-item {
+      height:($panelTopGap*2)+($normalFontSize*1.25*1)+(1.25*4.5em);
       width:50%;
       float:left;
       font-size:$normalFontSize*1.25;
       color:#555658;
       position:relative; // Used for add Icon Mask to the selection
       .mainPageItemWrapper {
+        padding:$panelTopGap/2 $panelGap/2;
          text-align:center;
          .photo {
             height : $icon-size*1.25;
@@ -987,7 +992,8 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
          }
          .photoName {
             font-weight:bold;
-            padding-bottom:$panelTopGap*2
+            padding:$panelTopGap/2 $panelGap/2;
+            @if $include-border-radius { @include border-radius($panelBorderRadius); }
          }
       }
    }
@@ -1006,12 +1012,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
    }
    .x-dataview-item, .x-data-item {
       width:33%;
-      .mainPageItemWrapper {
-         .photoName {
-            padding-top:$panelTopGap;
-            height:($panelTopGap*3)+($normalFontSize*2)+1em;
-         }
-      }
+      height:($panelTopGap*2)+($normalFontSize*1.25*2)+(1.25*5em);
    }
    .x-dataview-item:nth-child(3n+1) {
       clear:both;

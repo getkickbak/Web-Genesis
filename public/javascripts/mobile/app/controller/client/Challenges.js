@@ -389,7 +389,7 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    onItemSelect : function(d, model, eOpts)
    {
-      d.deselect([model], false);
+      //d.deselect([model], false);
       var desc = this.getChallengeDescContainer();
       Ext.Anim.run(desc.element, 'fade',
       {
