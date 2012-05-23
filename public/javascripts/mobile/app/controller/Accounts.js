@@ -116,8 +116,9 @@ Ext.define('Genesis.controller.Accounts',
          // Send QRCode to server for processing
          //
          Customer['setRecvPtsXferUrl']();
-         Customer.load(1,
+         cstore.load(
          {
+            addRecords : true, //Append data
             jsonData :
             {
             },
@@ -130,6 +131,7 @@ Ext.define('Genesis.controller.Accounts',
                if(operation.wasSuccessful())
                {
                   var metaData = Customer.getProxy().getReader().metaData();
+                  /*
                   var customer = cstore.getById(record.getId());
                   if(cutomer)
                   {
@@ -139,6 +141,7 @@ Ext.define('Genesis.controller.Accounts',
                   {
                      cstore.add(record);
                   }
+                  */
                   Ext.device.Notification.show(
                   {
                      title : 'Transfer Received',
@@ -150,7 +153,6 @@ Ext.define('Genesis.controller.Accounts',
                      }
                   });
                }
-               cstore.getById();
             }
          });
       }
@@ -194,11 +196,6 @@ Ext.define('Genesis.controller.Accounts',
                   var controller = app.getController('Checkins');
                   var cstore = Ext.StoreMgr.get('CustomerStore');
                   var viewport = me.getViewPortCntlr();
-
-                  //
-                  // Automatically trigger "metachagne" event
-                  // updateRewards(metaData);
-                  //
 
                   //
                   // Setup minimum customer information require for explore
@@ -505,7 +502,7 @@ Ext.define('Genesis.controller.Accounts',
 
          // Send QRCode to server for processing
          //
-         Customer['setSendPtsXferUrl'](me.rec.getId());
+         Customer['setSendPtsXferUrl']();
          cstore.load(
          {
             jsonData :
