@@ -61,6 +61,7 @@ Genesis.constants =
       if(dbS.length >= this.redeemDBSize)
       {
          // Remove the oldest Entry
+         console.debug("Database Entry is full, discarded oldest Entry with timestamp (" + Date(dbS[0][1]) + ")");
          dbS = dbS.splice(0, 1);
       }
       else
