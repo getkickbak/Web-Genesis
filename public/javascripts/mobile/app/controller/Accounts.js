@@ -305,6 +305,7 @@ Ext.define('Genesis.controller.Accounts',
             }
             else
             {
+               me.getPoints().setValue(null);
                container.setActiveItem(1);
             }
             break;
