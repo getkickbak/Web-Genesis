@@ -1013,6 +1013,15 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
    .x-dataview-item, .x-data-item {
       width:33%;
       height:($panelTopGap*2)+($normalFontSize*1.25*2)+(1.25*5em);
+      .mainPageItemWrapper {
+         .photo {
+            height : $icon-size;
+            img {
+               width : $icon-size;
+               max-height : $icon-size;
+            }
+         }
+      }
    }
    .x-dataview-item:nth-child(3n+1) {
       clear:both;
