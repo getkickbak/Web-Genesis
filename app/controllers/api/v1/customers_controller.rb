@@ -34,15 +34,11 @@ class Api::V1::CustomersController < ApplicationController
           cipher = Gibberish::AES.new(@customer.merchant.auth_code)
           @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
           if type == "email"
-            logger.debug("Transfer points via email")
-            @subject = t.("api.customers.email_subject_points_transfer")
-            logger.debug("Finished preparing subject")
+            @subject = t("api.customers.email_subject_points_transfer")
             @body = TransferPoints.new(current_user, record).render_html
-            logger.debug("Finished preparing body")
             logger.info("User(#{current_user.id}) successfully created email transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
             render :template => '/api/v1/customers/transfer_points_email'   
           else
-            logger.debug("Transfer points via direct")
             logger.info("User(#{current_user.id}) successfully created direct transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
             render :template => '/api/v1/customers/transfer_points_direct'
           end
