@@ -391,7 +391,8 @@ Ext.define('Genesis.controller.Merchants',
          vport.doSetActiveItem(me.getMainPage(), null);
       }
       me.pushView(me.getMainPage());
-      vport.setAnimMode('default');
+      // Manually reset Animation
+      vport.resetAnimation();
    },
    onMapBtnTap : function(b, e, eOpts, eInfo)
    {
