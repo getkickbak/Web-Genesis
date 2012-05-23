@@ -89,6 +89,7 @@ Ext.define('Genesis.view.Accounts',
          {
             break;
          }
+         case 'emailtransfer' :
          case 'transfer' :
          {
             activeItem.getInitialConfig().title = ' ';
