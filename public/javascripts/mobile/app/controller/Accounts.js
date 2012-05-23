@@ -92,6 +92,10 @@ Ext.define('Genesis.controller.Accounts',
    {
       return 'Please enter a value between ' + min + ' and ' + max;
    },
+   noPtsXferMsg : function()
+   {
+      return 'No Points were transferred.' + Genesis.constants.addCRLF() + 'Try again.';
+   },
    recvTransferMsg : function(points, merchantName)
    {
       return 'You have received ' + points + ' points at ' + Genesis.constants.addCRLF() + merchantName;
@@ -515,9 +519,17 @@ Ext.define('Genesis.controller.Accounts',
                'points' : points,
                'type' : type
             },
-            callback : function(record, operation)
+            callback : function(records, operation)
             {
                Ext.Viewport.setMasked(false);
+               if(operation.wasSuccessful() && (records.length == 0))
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Error',
+                     message : me.noPtsXferMsg()
+                  });
+               }
             }
          });
       }

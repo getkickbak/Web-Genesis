@@ -171,9 +171,12 @@ Ext.define('Genesis.controller.MainPage',
             scope : me,
             "load" : function(store, records, successful, operation, eOpts)
             {
-               db = Genesis.constants.getLocalDB();
-               if(successful && db['auth_code'])
+               // Load Prizes into DataStore
+               var metaData = store.getProxy().getReader().metaData;
+               
+               if(successful && metaData && metaData['auth_token'])
                {
+                  db = Genesis.constants.getLocalDB();
                   console.debug(//
                   "auth_code [" + db['auth_code'] + "]" + "\n" + //
                   "currFbId [" + db['currFbId'] + "]");
@@ -452,7 +455,7 @@ Ext.define('Genesis.controller.MainPage',
       var db = Genesis.constants.getLocalDB();
       db['currFbId'] = 0;
       Genesis.constants.setLocalDB(db);
-      
+
       Genesis.constants.facebook_onLogin(function(params)
       {
          console.log("Logging into Kickbak using Facebook account ...");
