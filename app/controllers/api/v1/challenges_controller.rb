@@ -78,6 +78,7 @@ class Api::V1::ChallengesController < ApplicationController
     Customer.transaction do
       begin
         if authorized
+          @points = 0
           if points_eligible?
             if not challenge_limit_reached?
               record = EarnRewardRecord.new(
@@ -121,12 +122,10 @@ class Api::V1::ChallengesController < ApplicationController
               @points = @challenge.points
             else
               logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because limit reached")
-              @points = 0
               @msg = get_success_no_points_limit_reached_msg.split('\n')  
             end
           else
             logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because it is not eligible")
-            @points = 0
             @msg = get_success_no_points_msg.split('\n')  
           end
           render :template => '/api/v1/challenges/complete'
