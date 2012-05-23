@@ -476,7 +476,7 @@ Ext.define('Genesis.controller.Accounts',
       var cstore = Ext.StoreMgr.get('CustomerStore');
       var points = me.getPoints().getValue();
       var type;
-      if((Number(points) > 0) && (me.rec.get('points') <= points))
+      if((Number(points) > 0) && (Number(points) <= me.rec.get('points') ))
       {
          switch (me.getMode())
          {
