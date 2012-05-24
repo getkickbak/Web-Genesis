@@ -32,6 +32,7 @@ class UserMailer < ActionMailer::Base
     @recipient = recipient
     @merchant = merchant
     @record = record
-    mail(:to => sender.email, :subject => I18n.t("api.customers.email_subject_confirm_points_transfer"))
+    logger.debug("Sending transfer points confirmation email: #{sender.email}")
+    #mail(:to => sender.email, :subject => I18n.t("api.customers.email_subject_confirm_points_transfer"))
   end
 end
