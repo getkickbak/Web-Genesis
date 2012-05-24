@@ -970,6 +970,11 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
 //------------------------------------------------------------------------------
 .mainMenuSelections {
    padding:$panelGap;
+   .x-hasbadge .x-badge {
+      font-size:$largeFontSize;
+      @include opacity(.9);
+      right:5.2em;
+   }
    .x-item-selected .photoName {
       background-color:#C3C3C4;
    }
@@ -1005,8 +1010,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
 .challengeMenuSelections {
    @extend .mainMenuSelections;
    .x-hasbadge .x-badge {
-      font-size:$largeFontSize;
-      @include opacity(.9);
+      right:0em;
       background-color : #E86025;
       border-color : darken(#E86025,5%);
    }
