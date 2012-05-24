@@ -112,6 +112,7 @@ class Api::V1::CustomersController < ApplicationController
             @record.status = :completed
             @record.update_ts = Time.now
             @record.save
+            UserMailer.transfer_points_confirm_email(sender.user, current_user, merchant, @record)
             logger.info("Customer(#{@record.sender_id}) successfully received #{@record.points} points from Customer(#{@record.recipient_id})") 
             render :template => '/api/v1/customers/receive_points'
           else

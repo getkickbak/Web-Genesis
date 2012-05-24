@@ -27,11 +27,11 @@ class UserMailer < ActionMailer::Base
     mail(:to => user.email, :subject => "Reminder - Use your vouchers before they expire!")
   end
   
-  def transfer_points_email(sender, recipient_email, record, code)
+  def transfer_points_confirm_email(sender, recipient, merchant, record)
     @sender = sender
-    @recipient_email = recipient_email
+    @recipient = recipient
+    @merchant = merchant
     @record = record
-    @qr = RQRCode::QRCode.new(code)
-    mail(:to => recipient_email, :subject => "Points Transfer")
+    mail(:to => sender.email, :subject => I18n.t("api.customers.email_subject_confirm_points_transfer"))
   end
 end
