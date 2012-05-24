@@ -35,7 +35,7 @@ class Api::V1::CustomersController < ApplicationController
           @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
           if type == "email"
             @subject = t("api.customers.email_subject_points_transfer")
-            @body = TransferPoints.new(current_user, record).render_html
+            @body = TransferPoints.new(current_user, @customer.merchant, record).render_html
             logger.info("User(#{current_user.id}) successfully created email transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
             render :template => '/api/v1/customers/transfer_points_email'   
           else
