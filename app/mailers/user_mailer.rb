@@ -17,7 +17,7 @@ class UserMailer < ActionMailer::Base
     @user = user
     @venue = venue
     @ref_email = ref_email
-    @ref_name = ref__name 
+    @ref_name = ref_name 
     mail(:to => ref_email, :subject => '#{user.name} thinks you should give {venue.name} a try...')  
   end
   

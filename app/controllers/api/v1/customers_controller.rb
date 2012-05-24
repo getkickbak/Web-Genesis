@@ -61,10 +61,9 @@ class Api::V1::CustomersController < ApplicationController
 
   def receive_points
     data = params[:data].split('$')
-    merchant_id = data[0]
-    @customer = Customer.first(Customer.user.id => current_user.id, Customer.merchant.id => merchant_id)
+    merchant = Merchant.get(data[0]) || not_found
+    @customer = Customer.first(Customer.user.id => current_user.id, Customer.merchant.id => merchant.id)
     if @customer.nil?
-      merchant = Merchant.get(merchant_id) || not_found
       @customer = Customer.create(merchant, current_user)
     end
     authorize! :read, @customer
@@ -73,9 +72,8 @@ class Api::V1::CustomersController < ApplicationController
     authorized = false
     
     begin
-      real_data = data[1]
       cipher = Gibberish::AES.new(@customer.merchant.auth_code)
-      decrypted = cipher.dec(real_data)
+      decrypted = cipher.dec(data[1])
       #logger.debug("decrypted text: #{decrypted}")
       decrypted_data = JSON.parse(decrypted)
       transfer_id = decrypted_data["id"]
