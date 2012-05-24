@@ -84,7 +84,7 @@ class Api::V1::CustomersController < ApplicationController
       #logger.debug("decrypted data: #{data}")
       #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::TRANSFER_POINTS}")
       #logger.debug("TranferPointsRecord comparison: #{TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_ts.gte => Time.now)}")
-      if (decrypted_data["type"] == EncryptedDataType::TRANSFER_POINTS) && (@record = TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_date.gte => Date.today))
+      if (decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER) && (@record = TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_date.gte => Date.today))
         #logger.debug("Set authorized to true")
         authorized = true
       end  
