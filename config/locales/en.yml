@@ -145,7 +145,7 @@ en:
         invalid_transfer_code: "Transfer code is not valid."
         expired_transfer_code: "Transfer code is no longer valid."
         receive_points_failure: "Trouble receiving points.\nPlease try again." 
-        email_subject_points_transfer: "Points Transfer" 
+        email_subject_points_transfer: "KICKBAK Points" 
       customer_rewards:
         not_available: "Sorry, but the reward is not available at this venue!"
         insufficient_points: "Not enough points to redeem reward."

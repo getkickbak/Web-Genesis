@@ -7,8 +7,9 @@ class TransferPoints
   
   @@template = ERB.new File.read(File.expand_path "app/views/user_mailer/transfer_points_email.html.erb")
   
-  def initialize(sender, record)
+  def initialize(sender, merchant, record)
     @sender = sender
+    @merchant = merchant
     @record = record
   end
   

@@ -35,7 +35,7 @@ class Api::V1::CustomersController < ApplicationController
           @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
           if type == "email"
             @subject = t("api.customers.email_subject_points_transfer")
-            @body = TransferPoints.new(current_user, record).render_html
+            @body = TransferPoints.new(current_user, @customer.merchant, record).render_html
             logger.info("User(#{current_user.id}) successfully created email transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
             render :template => '/api/v1/customers/transfer_points_email'   
           else
@@ -84,7 +84,7 @@ class Api::V1::CustomersController < ApplicationController
       #logger.debug("decrypted data: #{data}")
       #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::TRANSFER_POINTS}")
       #logger.debug("TranferPointsRecord comparison: #{TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_ts.gte => Time.now)}")
-      if (decrypted_data["type"] == EncryptedDataType::TRANSFER_POINTS) && (@record = TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_date.gte => Date.today))
+      if (decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER) && (@record = TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_date.gte => Date.today))
         #logger.debug("Set authorized to true")
         authorized = true
       end  
@@ -101,7 +101,7 @@ class Api::V1::CustomersController < ApplicationController
         if authorized
           @record.recipient_id = @customer.id
           @record.status = :completed
-          @record.updated_ts = Time.now
+          @record.update_ts = Time.now
           @record.save
           sender = Customer.get(@record.sender_id)
           mutex = CacheMutex.new(sender.cache_key, Cache.memcache)
