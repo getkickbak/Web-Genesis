@@ -99,19 +99,21 @@ class Api::V1::CustomersController < ApplicationController
     Customer.transaction do
       begin
         if authorized
-          @record.recipient_id = @customer.id
-          @record.status = :completed
-          @record.update_ts = Time.now
-          @record.save
           sender = Customer.get(@record.sender_id)
           mutex = CacheMutex.new(sender.cache_key, Cache.memcache)
           acquired = mutex.acquire
+          logger.debug("After mutex acquired")
           sender.reload
+          logger.debug("After reload")
           if sender.points >= @record.points
             sender.points -= @record.points
             sender.save
             @customer.points += @record.points
             @customer.save
+            @record.recipient_id = @customer.id
+            @record.status = :completed
+            @record.update_ts = Time.now
+            @record.save
             logger.info("Customer(#{@record.sender_id}) successfully received #{@record.points} points from Customer(#{@record.recipient_id})") 
             render :template => '/api/v1/customers/receive_points'
           else
