@@ -100,7 +100,9 @@ class Api::V1::CustomersController < ApplicationController
       begin
         if authorized
           sender = Customer.get(@record.sender_id)
+          logger.debug("Retrieving sender")
           mutex = CacheMutex.new(sender.cache_key, Cache.memcache)
+          logger.debug("Retrieving mutex")
           acquired = mutex.acquire
           logger.debug("After mutex acquired")
           sender.reload
