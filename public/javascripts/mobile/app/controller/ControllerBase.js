@@ -237,8 +237,10 @@ Ext.define('Genesis.controller.ControllerBase',
          var qrcode = metaData['data'];
          if(qrcode)
          {
-            console.debug("QRCode received for Points Transfer" + '\n' + //
-            qrcode);
+            /*
+             console.debug("QRCode received for Points Transfer" + '\n' + //
+             qrcode);
+             */
             me.fireEvent('authcoderecv', metaData);
          }
       }

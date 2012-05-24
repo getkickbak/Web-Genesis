@@ -432,6 +432,7 @@ Ext.define('Genesis.controller.Accounts',
                });
                container.setActiveItem(2);
             }
+            Ext.Viewport.setMasked(false);
             break;
          }
          case 'emailtransfer' :
@@ -456,6 +457,7 @@ Ext.define('Genesis.controller.Accounts',
             window.plugins.emailComposer.showEmailComposerWithCB(function(res)
             {
                // Delay is needed to not block email sending ...
+               Ext.Viewport.setMasked(false);
                Ext.defer(function()
                {
                   switch (res)
@@ -552,10 +554,10 @@ Ext.define('Genesis.controller.Accounts',
             },
             callback : function(records, operation)
             {
-               Ext.Viewport.setMasked(false);
                var metaData = cstore.getProxy().getReader().metaData;
                if(operation.wasSuccessful() && (!metaData['data']))
                {
+                  Ext.Viewport.setMasked(false);
                   Ext.device.Notification.show(
                   {
                      title : 'Error',
