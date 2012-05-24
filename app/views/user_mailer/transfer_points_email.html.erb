@@ -7,7 +7,7 @@
 		<div>
 			<center>
 				<div style="text-align:left;width:643px;border:#000000 1px solid;background:#ffffff;font-family:Arial, Helvetica, sans-serif;font-size:13px;">
-					<div style="background-color:#000000;">
+					<div style="background-color:#000000;padding: 10px 20px;">
 						<a rel="nofollow" target="_blank" href="http://www.getkickbak.com"> <img src="http://files.getkickbak.com/v1/logo.png" border="0" alt="getkickbak.com"> </a>
 					</div>
 					<div style="padding: 0 15px 0 15px;">
@@ -22,18 +22,13 @@
 						<%= @sender.name %> has sent you a transfer of <%= "#{@record.points} #{t("api.points", :count => @record.points)}" %> that can be redeemed at <%= @merchant.name %>.
 						<br>
 						<br>
-						To deposit this transfer, scan the QR code below with your KICKBAK app:
-						<br>
-						<br>
-						%qrcode_image%
+						To deposit this transfer, scan the QR code in the attachment with your KICKBAK app:
 						<br>
 						<br>
 						Expiry Date: <%= @record.expiry_date.strftime("%b %d, %Y") %>
 						<br>
 						<br>
-						<center>
-							Haven't downloaded KICKBAK yet? Visit us online at <a rel="nofollow" target="_blank" href="http://getkickbak.com">getkickbak.com</a>
-						</center> 
+						Haven't downloaded KICKBAK yet? Visit us online at <a rel="nofollow" target="_blank" href="http://getkickbak.com">getkickbak.com</a>
 						<br>
 					</div>
 				</div>
