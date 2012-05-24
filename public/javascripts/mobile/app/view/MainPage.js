@@ -67,12 +67,24 @@ Ext.define('Genesis.view.MainPage',
             },
             itemTpl : Ext.create('Ext.XTemplate',
             // @formatter:off
-            '<div class="mainPageItemWrapper">',
+            '<div class="mainPageItemWrapper x-hasbadge">',
+               '{[this.getPrizeCount(values)]}',
                '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
                '<div class="photoName">{name}</div>',
             '</div>',
             // @formatter:on
             {
+               getPrizeCount : function(values)
+               {
+                  var count = 0;
+                  var type = values['pageCntlr'];
+                  var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
+                  if(pstore)
+                  {
+                     count = pstore.getCount();
+                  }
+                  return (((count > 0) && (type == 'Prizes')) ? '<span class="x-badge round">' + count + '</span>' : '');
+               },
                getPhoto : function(photoURL)
                {
                   return Ext.isEmpty(photoURL) ? Ext.BLANK_IMAGE_URL : photoURL;

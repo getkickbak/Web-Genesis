@@ -136,11 +136,11 @@ Ext.define('Genesis.controller.ControllerBase',
          }
          catch (e)
          {
-            console.log("Error Code : " + err);
+            console.log("Error Code : " + e);
             Ext.device.Notification.show(
             {
                title : 'Code Generation Error',
-               message : err
+               message : Genesis.controller.ControllerBase.prototype.errProcQRCodeMsg
             });
             return [null, 0, 0];
          }
@@ -158,6 +158,7 @@ Ext.define('Genesis.controller.ControllerBase',
    geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
    missingVenueInfoMsg : 'Error loading Venue information.',
    showToServerMsg : 'Show this to your server before proceeding.',
+   errProcQRCodeMsg : 'Error Processing Authentication Code',
    cameraAccessMsg : 'Accessing your Camera Phone ...',
    showScreenTimeoutExpireMsg : function(duration)
    {
@@ -184,66 +185,68 @@ Ext.define('Genesis.controller.ControllerBase',
    updateRewards : function(metaData)
    {
       var me = this;
-      //
-      // Update Customer Rewards (Redemptions)
-      //
-      var rewards = metaData['rewards'];
-      if(rewards)
+      try
       {
-         var viewport = this.getViewPortCntlr();
-         var venueId = metaData['venue_id'] || viewport.getVenue().getId();
-         console.debug("Total Redemption Rewards - " + rewards.length);
-         var rstore = Ext.StoreMgr.get('RedemptionsStore');
-         for(var i = 0; i < rewards.length; i++)
+         //
+         // Update Customer Rewards (Redemptions)
+         //
+         var rewards = metaData['rewards'];
+         if(rewards)
          {
-            rewards[i]['venue_id'] = venueId;
+            var viewport = me.getViewPortCntlr();
+            var venueId = metaData['venue_id'] || viewport.getVenue().getId();
+            console.debug("Total Redemption Rewards - " + rewards.length);
+            var rstore = Ext.StoreMgr.get('RedemptionsStore');
+            for(var i = 0; i < rewards.length; i++)
+            {
+               rewards[i]['venue_id'] = venueId;
+            }
+            rstore.setData(rewards);
          }
-         rstore.setData(rewards);
-      }
-      //
-      // Update Eligible Rewards
-      // (Make sure we are after Redemption because we may depend on it for rendering purposes)
-      //
-      var erewards = metaData['eligible_rewards'];
-      if(erewards)
-      {
-         console.debug("Total Eligible Rewards - " + erewards.length);
-         var estore = Ext.StoreMgr.get('EligibleRewardsStore');
-         estore.setData(erewards);
-      }
-      //
-      // Winners' Circle'
-      //
-      var prizesCount = metaData['winners_count'];
-      if(prizesCount >= 0)
-      {
-         console.debug("Prizes won by customers at this merchant this month - [" + prizesCount + "]");
-         var app = me.getApplication();
-         var controller = app.getController('Merchants');
-         app.dispatch(
+         //
+         // Update Eligible Rewards
+         // (Make sure we are after Redemption because we may depend on it for rendering purposes)
+         //
+         var erewards = metaData['eligible_rewards'];
+         if(erewards)
          {
-            action : 'onUpdateWinnersCount',
-            args : [metaData],
-            controller : controller,
-            scope : controller
-         });
-      }
-      
-      //
-      // QR Code from Transfer Points
-      var qrcode = metaData['data'];
-      if (qrcode)
-      {
-         console.debug("QRCode received for Points Transfer");
-         var app = me.getApplication();
-         var controller = app.getController('Accounts');
-         app.dispatch(
+            console.debug("Total Eligible Rewards - " + erewards.length);
+            var estore = Ext.StoreMgr.get('EligibleRewardsStore');
+            estore.setData(erewards);
+         }
+         //
+         // Winners' Circle'
+         //
+         var prizesCount = metaData['winners_count'];
+         if(prizesCount >= 0)
          {
-            action : 'onAuthCodeRecv',
-            args : [metaData],
-            controller : controller,
-            scope : controller
-         });
+            console.debug("Prizes won by customers at this merchant this month - [" + prizesCount + "]");
+            var app = me.getApplication();
+            var controller = app.getController('Merchants');
+            app.dispatch(
+            {
+               action : 'onUpdateWinnersCount',
+               args : [metaData],
+               controller : controller,
+               scope : controller
+            });
+         }
+
+         //
+         // QR Code from Transfer Points
+         var qrcode = metaData['data'];
+         if(qrcode)
+         {
+            /*
+             console.debug("QRCode received for Points Transfer" + '\n' + //
+             qrcode);
+             */
+            me.fireEvent('authcoderecv', metaData);
+         }
+      }
+      catch(e)
+      {
+         console.debug("updateRewards Exception - " + e);
       }
       //
    },

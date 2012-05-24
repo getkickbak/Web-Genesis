@@ -13,6 +13,12 @@ Ext.define('Genesis.controller.MainPage',
    config :
    {
       models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'EligibleReward', 'Customer', 'User', 'Merchant', 'EarnPrize', 'CustomerReward'],
+      listeners :
+      {
+         'scannedqrcode' : 'onScannedQRcode',
+         'locationupdate' : 'onLocationUpdate',
+         'authcoderecv' : 'onAuthCodeRecv'
+      },
       refs :
       {
          // Login Page
@@ -173,7 +179,7 @@ Ext.define('Genesis.controller.MainPage',
             {
                // Load Prizes into DataStore
                var metaData = store.getProxy().getReader().metaData;
-               
+
                if(successful && metaData && metaData['auth_token'])
                {
                   db = Genesis.constants.getLocalDB();
@@ -292,6 +298,22 @@ Ext.define('Genesis.controller.MainPage',
                });
             }
          }
+      });
+   },
+   // --------------------------------------------------------------------------
+   // EVent Handlers
+   // --------------------------------------------------------------------------
+   onAuthCodeRecv : function(metaData)
+   {
+      var me = this;
+      var app = me.getApplication();
+      var controller = app.getController('Accounts');
+      app.dispatch(
+      {
+         action : 'onAuthCodeRecv',
+         args : [metaData],
+         controller : controller,
+         scope : controller
       });
    },
    // --------------------------------------------------------------------------
