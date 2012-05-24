@@ -6,7 +6,7 @@
 	<body>
 		<div>
 			<center>
-				<div style="text-align:left;width:643px;solid;background:#ffffff;font-family:Arial, Helvetica, sans-serif;font-size:13px;">
+				<div style="text-align:left;width:645px;solid;background:#ffffff;font-family:Arial, Helvetica, sans-serif;font-size:13px;">
 					<div style="background-color:#000000;padding: 10px 20px;">
 						<a rel="nofollow" target="_blank" href="http://www.getkickbak.com"> <img src="http://files.getkickbak.com/v1/logo.png" border="0" alt="getkickbak.com"> </a>
 					</div>
@@ -15,8 +15,8 @@
 						<br>
 						&lt;Input your message here&gt;
 						<br>
-						<br>	
-						=============================================================================
+						<br>
+						============================================================
 						<br>
 						<br>
 						<%= @sender.name %> has sent you a transfer of <%= "#{@record.points} #{t("api.points", :count => @record.points)}" %> that can be redeemed at <%= @merchant.name %>.
@@ -28,9 +28,11 @@
 						Expiry Date: <%= @record.expiry_date.strftime("%b %d, %Y") %>
 						<br>
 					</div>
-					<center>
-						Haven't downloaded KICKBAK yet? Visit us online at <a rel="nofollow" target="_blank" href="http://getkickbak.com">getkickbak.com</a>
-					</center>
+					<div>
+						<center>
+							Haven't downloaded KICKBAK yet? Visit us online at <a rel="nofollow" target="_blank" href="http://getkickbak.com">getkickbak.com</a>
+						</center>
+					</div>
 				</div>
 			</center>
 		</div>

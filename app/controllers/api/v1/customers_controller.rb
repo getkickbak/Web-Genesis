@@ -118,7 +118,7 @@ class Api::V1::CustomersController < ApplicationController
             logger.info("Customer(#{@customer.id}) failed to receive points, insufficient points")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-              format.json { render :json => { :success => false, :message => (t("api.customers.insufficient_transfer_points") % [points, I18n.t('api.point', :count => points)]).split('\n') } }
+              format.json { render :json => { :success => false, :message => (t("api.customers.insufficient_transfer_points") % [@record.points, t('api.point', :count => @record.points)]).split('\n') } }
             end  
           end
           mutex.relase
