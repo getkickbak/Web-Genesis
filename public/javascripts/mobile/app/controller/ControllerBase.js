@@ -92,61 +92,34 @@ Ext.define('Genesis.controller.ControllerBase',
 
          // size of box drawn on canvas
          var padding = 0;
-         // (white area around your QRCode)
-         var black = "rgb(0,0,0)";
-         var white = "rgb(255,255,255)";
-         var height;
          // 1-40 see http://www.denso-wave.com/qrcode/qrgene2-e.html
 
-         try
-         {
-            var canvas = document.createElement('canvas');
-            var qrCanvasContext = canvas.getContext('2d');
+         // QR Code Error Correction Capability
+         // Higher levels improves error correction capability while decreasing the amount of data QR Code size.
+         // QRErrorCorrectLevel.L (5%) QRErrorCorrectLevel.M (15%) QRErrorCorrectLevel.Q (25%) QRErrorCorrectLevel.H (30%)
+         // eg. L can survive approx 5% damage...etc.
+         var qr = QRCode(QRCodeVersion, 'L');
+         qr.addData(text);
+         qr.make();
+         var base64 = qr.createBase64(dotsize, padding);
+         console.log("QR Code Minimum Size = [" + base64[1] + "x" + base64[1] + "]");
 
-            // QR Code Error Correction Capability
-            // Higher levels improves error correction capability while decreasing the amount of data QR Code size.
-            // QRErrorCorrectLevel.L (5%) QRErrorCorrectLevel.M (15%) QRErrorCorrectLevel.Q (25%) QRErrorCorrectLevel.H (30%)
-            // eg. L can survive approx 5% damage...etc.
-            var qr = new QRCode(QRCodeVersion, QRErrorCorrectLevel.L);
-            qr.addData(text);
-            qr.make();
-
-            var qrsize = qr.getModuleCount();
-            height = (qrsize * dotsize) + padding;
-            canvas.setAttribute('height', height);
-            canvas.setAttribute('width', height);
-
-            console.log("QR Code Minimum Size = [" + height + "x" + height + "]");
-            var shiftForPadding = padding / 2;
-            if(canvas.getContext)
-            {
-               for(var r = 0; r < qrsize; r++)
-               {
-                  for(var c = 0; c < qrsize; c++)
-                  {
-                     if(qr.isDark(r, c))
-                        qrCanvasContext.fillStyle = black;
-                     else
-                        qrCanvasContext.fillStyle = white;
-                     // x, y, w, h
-                     qrCanvasContext.fillRect((c * dotsize) + shiftForPadding, (r * dotsize) + shiftForPadding, dotsize, dotsize);
-                  }
-               }
-            }
-         }
-         catch (e)
-         {
-            console.log("Error Code : " + e);
-            Ext.device.Notification.show(
-            {
-               title : 'Code Generation Error',
-               message : Genesis.controller.ControllerBase.prototype.errProcQRCodeMsg
-            });
-            return [null, 0, 0];
-         }
-
-         return [canvas.toDataURL("image/png"), height, height];
+         return [base64[0], base64[1], base64[1]];
       },
+      genQRCodeInlineImg : function(text, dotsize, QRCodeVersion)
+      {
+         dotsize = dotsize || 4;
+         QRCodeVersion = QRCodeVersion || 8;
+         var padding = 0;
+         var qr = QRCode(QRCodeVersion, 'L');
+         
+         qr.addData(text);
+         qr.make();
+         
+         var html = qr.createTableTag(dotsize, padding);
+
+         return html;
+      }
    },
    checkinMsg : 'Checking in ...',
    loadingScannerMsg : 'Loading Scanner ...',
