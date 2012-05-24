@@ -76,8 +76,13 @@ Ext.define('Genesis.view.MainPage',
             {
                getPrizeCount : function(values)
                {
-                  var count = Ext.StoreMgr.get('MerchantPrizeStore').getCount();
+                  var count = 0;
                   var type = values['pageCntlr'];
+                  var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
+                  if(pstore)
+                  {
+                     count = pstore.getCount();
+                  }
                   return (((count > 0) && (type == 'Prizes')) ? '<span class="x-badge round">' + count + '</span>' : '');
                },
                getPhoto : function(photoURL)
