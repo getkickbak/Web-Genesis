@@ -101,7 +101,7 @@ class Api::V1::CustomersController < ApplicationController
         if authorized
           @record.recipient_id = @customer.id
           @record.status = :completed
-          @record.updated_ts = Time.now
+          @record.update_ts = Time.now
           @record.save
           sender = Customer.get(@record.sender_id)
           mutex = CacheMutex.new(sender.cache_key, Cache.memcache)
