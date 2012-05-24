@@ -74,7 +74,7 @@ Ext.define('Genesis.controller.Accounts',
          {
             tap : 'onShowQrCodeTap'
          },
-         'accountstransferview container[tag=done] button' :
+         'accountstransferview container button[tag=done]' :
          {
             tap : 'onTransferCompleteTap'
          }
