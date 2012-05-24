@@ -121,7 +121,7 @@ class Api::V1::CustomersController < ApplicationController
               format.json { render :json => { :success => false, :message => (t("api.customers.insufficient_transfer_points") % [@record.points, t('api.point', :count => @record.points)]).split('\n') } }
             end  
           end
-          mutex.relase
+          mutex.release
         else
           logger.info("Customer(#{@customer.id}) failed to receive points, transfer code expired")
           respond_to do |format|
