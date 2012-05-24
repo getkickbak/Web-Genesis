@@ -96,11 +96,13 @@ class Api::V1::CustomersController < ApplicationController
       end  
     end
     
+    logger.debug("Before transaction")
     Customer.transaction do
       begin
         if authorized
-          sender = Customer.get(@record.sender_id)
           logger.debug("Retrieving sender")
+          sender = Customer.get(@record.sender_id)
+          logger.debug("Sender retrieved")
           mutex = CacheMutex.new(sender.cache_key, Cache.memcache)
           logger.debug("Retrieving mutex")
           acquired = mutex.acquire
