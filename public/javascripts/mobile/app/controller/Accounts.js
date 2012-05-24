@@ -447,12 +447,10 @@ Ext.define('Genesis.controller.Accounts',
             'Subject - ' + subject + '\n' //
             );
 
-            //emailTpl = emailTpl.replace(me.qrcodeRegExp, '<img src="' + Genesis.controller.ControllerBase.genQRCode(qrcode)[0] +
-            // '"/>');
-            /*
-             console.debug('\n' + //
-             'Encoded Body - ' + emailTpl);
-             */
+            //emailTpl = emailTpl.replace(me.qrcodeRegExp, Genesis.controller.ControllerBase.genQRCodeInlineImg(qrcode));
+            //console.debug('\n' + //
+            //'Encoded Body - ' + emailTpl);
+            qrcode = Genesis.controller.ControllerBase.genQRCode(qrcode)[0].replace('data:image/gif;base64,', "");
 
             window.plugins.emailComposer.showEmailComposerWithCB(function(res)
             {
@@ -499,7 +497,7 @@ Ext.define('Genesis.controller.Accounts',
                      }
                   }
                }, 1, me);
-            }, subject, emailTpl, null, null, null, true, [Genesis.controller.ControllerBase.genQRCode(qrcode)[0].replace("data:image/png;base64,", "")]);
+            }, subject, emailTpl, null, null, null, true, [qrcode]);
             break;
          }
       }
