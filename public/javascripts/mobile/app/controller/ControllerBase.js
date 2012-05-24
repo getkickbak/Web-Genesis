@@ -136,11 +136,11 @@ Ext.define('Genesis.controller.ControllerBase',
          }
          catch (e)
          {
-            console.log("Error Code : " + err);
+            console.log("Error Code : " + e);
             Ext.device.Notification.show(
             {
                title : 'Code Generation Error',
-               message : err
+               message : Genesis.controller.ControllerBase.prototype.errProcQRCodeMsg
             });
             return [null, 0, 0];
          }
@@ -158,6 +158,7 @@ Ext.define('Genesis.controller.ControllerBase',
    geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
    missingVenueInfoMsg : 'Error loading Venue information.',
    showToServerMsg : 'Show this to your server before proceeding.',
+   errProcQRCodeMsg : 'Error Processing Authentication Code',
    cameraAccessMsg : 'Accessing your Camera Phone ...',
    showScreenTimeoutExpireMsg : function(duration)
    {
@@ -183,16 +184,16 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    updateRewards : function(metaData)
    {
+      var me = this;
       try
       {
-         var me = this;
          //
          // Update Customer Rewards (Redemptions)
          //
          var rewards = metaData['rewards'];
          if(rewards)
          {
-            var viewport = this.getViewPortCntlr();
+            var viewport = me.getViewPortCntlr();
             var venueId = metaData['venue_id'] || viewport.getVenue().getId();
             console.debug("Total Redemption Rewards - " + rewards.length);
             var rstore = Ext.StoreMgr.get('RedemptionsStore');
@@ -236,16 +237,9 @@ Ext.define('Genesis.controller.ControllerBase',
          var qrcode = metaData['data'];
          if(qrcode)
          {
-            console.debug("QRCode received for Points Transfer");
-            var app = me.getApplication();
-            var controller = app.getController('Accounts');
-            app.dispatch(
-            {
-               action : 'onAuthCodeRecv',
-               args : [metaData],
-               controller : controller,
-               scope : controller
-            });
+            console.debug("QRCode received for Points Transfer" + '\n' + //
+            qrcode);
+            me.fireEvent('authcoderecv', metaData);
          }
       }
       catch(e)

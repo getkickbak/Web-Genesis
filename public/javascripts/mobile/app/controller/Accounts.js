@@ -157,12 +157,17 @@ Ext.define('Genesis.controller.Accounts',
                      }
                   });
                }
+               else
+               {
+                  Ext.Viewport.setMasked(false);
+               }
             }
          });
       }
       else
       {
          console.debug(me.noCodeScannedMsg);
+         Ext.Viewport.setMasked(false);
          Ext.device.Notification.show(
          {
             title : 'Error',
@@ -356,6 +361,11 @@ Ext.define('Genesis.controller.Accounts',
                {
                   if(btn.toLowerCase() == 'proceed')
                   {
+                     Ext.Viewport.setMasked(
+                     {
+                        xtype : 'loadmask',
+                        message : me.retrieveAuthModeMsg
+                     });
                      me.scanQRCode();
                   }
                }
@@ -399,19 +409,29 @@ Ext.define('Genesis.controller.Accounts',
          case 'transfer' :
          {
             var container = me.getTransferContainer();
+            var qrcode = Genesis.controller.ControllerBase.genQRCode(metaData['data']);
+            var points = metaData['points'] || me.getPoints().getValue();
+
+            console.debug('\n' + //
+            'QRCode - ' + qrcode[0] + '\n' + //
+            //'Body - ' + emailTpl + '\n' + //
+            'Points - ' + points);
             //
             // Query server to get generate qrcode
             //
-            me.getQrcode().setStyle(
+            if(qrcode[0])
             {
-               'background-image' : 'url(' + metaData['data'] + ')',
-               'background-size' : ''
-            });
-            me.getTitle().setData(
-            {
-               points : points + ' Pts'
-            });
-            container.setActiveItem(2);
+               me.getQrcode().setStyle(
+               {
+                  'background-image' : 'url(' + qrcode[0] + ')',
+                  'background-size' : Genesis.fn.addUnit(qrcode[1]) + ' ' + Genesis.fn.addUnit(qrcode[2])
+               });
+               me.getTitle().setData(
+               {
+                  points : points + ' Pts'
+               });
+               container.setActiveItem(2);
+            }
             break;
          }
          case 'emailtransfer' :
@@ -477,7 +497,7 @@ Ext.define('Genesis.controller.Accounts',
                      }
                   }
                }, 1, me);
-            }, subject, emailTpl, null, null, null, true, [Genesis.controller.ControllerBase.genQRCode(qrcode)[0].replace("data:image/png;base64,","")]);
+            }, subject, emailTpl, null, null, null, true, [Genesis.controller.ControllerBase.genQRCode(qrcode)[0].replace("data:image/png;base64,", "")]);
             break;
          }
       }

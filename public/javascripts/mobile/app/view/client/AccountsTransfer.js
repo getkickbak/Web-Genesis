@@ -221,10 +221,9 @@ Ext.define('Genesis.view.client.AccountsTransfer',
                tag : 'title',
                width : '100%',
                cls : 'title',
-               defaultUnit : 'em',
                tpl : Ext.create('Ext.XTemplate', '{[this.getPoints(values)]}',
                {
-                  getPrice : function(values)
+                  getPoints : function(values)
                   {
                      return values['points'];
                   }
