@@ -11,8 +11,8 @@ class ReferralChallenge
   
   attr_accessible :ref_email
   
-  belongs_to :user, :key => true
-  belongs_to :merchant, :key => true
+  belongs_to :user
+  belongs_to :merchant
   
   def self.create(merchant, user, referral_info)
     now = Time.now
