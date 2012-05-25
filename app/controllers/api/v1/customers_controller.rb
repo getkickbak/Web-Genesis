@@ -27,18 +27,24 @@ class Api::V1::CustomersController < ApplicationController
             :created_ts => Time.now,
             :expiry_date => 1.month.from_now
           )
-          data = { 
-            :type => EncryptedDataType::POINTS_TRANSFER,
-            :id => record.id
-          }.to_json
-          cipher = Gibberish::AES.new(@customer.merchant.auth_code)
-          @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
           if type == "email"
+            data = { 
+              :type => EncryptedDataType::POINTS_TRANSFER_EMAIL,
+              :id => record.id
+            }.to_json
+            cipher = Gibberish::AES.new(@customer.merchant.auth_code)
+            @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
             @subject = t("api.customers.email_subject_points_transfer")
             @body = TransferPoints.new(current_user, @customer.merchant, record).render_html
             logger.info("User(#{current_user.id}) successfully created email transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
             render :template => '/api/v1/customers/transfer_points_email'   
           else
+            data = { 
+              :type => EncryptedDataType::POINTS_TRANSFER_DIRECT,
+              :id => record.id
+            }.to_json
+            cipher = Gibberish::AES.new(@customer.merchant.auth_code)
+            @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
             logger.info("User(#{current_user.id}) successfully created direct transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
             render :template => '/api/v1/customers/transfer_points_direct'
           end
@@ -61,10 +67,9 @@ class Api::V1::CustomersController < ApplicationController
 
   def receive_points
     data = params[:data].split('$')
-    merchant_id = data[0]
-    @customer = Customer.first(Customer.user.id => current_user.id, Customer.merchant.id => merchant_id)
+    merchant = Merchant.get(data[0]) || not_found
+    @customer = Customer.first(Customer.user.id => current_user.id, Customer.merchant.id => merchant.id)
     if @customer.nil?
-      merchant = Merchant.get(merchant_id) || not_found
       @customer = Customer.create(merchant, current_user)
     end
     authorize! :read, @customer
@@ -73,9 +78,8 @@ class Api::V1::CustomersController < ApplicationController
     authorized = false
     
     begin
-      real_data = data[1]
       cipher = Gibberish::AES.new(@customer.merchant.auth_code)
-      decrypted = cipher.dec(real_data)
+      decrypted = cipher.dec(data[1])
       #logger.debug("decrypted text: #{decrypted}")
       decrypted_data = JSON.parse(decrypted)
       transfer_id = decrypted_data["id"]
@@ -84,7 +88,8 @@ class Api::V1::CustomersController < ApplicationController
       #logger.debug("decrypted data: #{data}")
       #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::TRANSFER_POINTS}")
       #logger.debug("TranferPointsRecord comparison: #{TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_ts.gte => Time.now)}")
-      if (decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER) && (@record = TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_date.gte => Date.today))
+      if (decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL || decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_DIRECT) && 
+          (@record = TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_date.gte => Date.today))
         #logger.debug("Set authorized to true")
         authorized = true
       end  
@@ -99,10 +104,6 @@ class Api::V1::CustomersController < ApplicationController
     Customer.transaction do
       begin
         if authorized
-          @record.recipient_id = @customer.id
-          @record.status = :completed
-          @record.update_ts = Time.now
-          @record.save
           sender = Customer.get(@record.sender_id)
           mutex = CacheMutex.new(sender.cache_key, Cache.memcache)
           acquired = mutex.acquire
@@ -112,16 +113,23 @@ class Api::V1::CustomersController < ApplicationController
             sender.save
             @customer.points += @record.points
             @customer.save
+            @record.recipient_id = @customer.id
+            @record.status = :completed
+            @record.update_ts = Time.now
+            @record.save
+            if decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL
+              UserMailer.transfer_points_confirm_email(sender.user, current_user, merchant, @record)
+            end  
             logger.info("Customer(#{@record.sender_id}) successfully received #{@record.points} points from Customer(#{@record.recipient_id})") 
             render :template => '/api/v1/customers/receive_points'
           else
             logger.info("Customer(#{@customer.id}) failed to receive points, insufficient points")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-              format.json { render :json => { :success => false, :message => (t("api.customers.insufficient_transfer_points") % [points, I18n.t('api.point', :count => points)]).split('\n') } }
+              format.json { render :json => { :success => false, :message => (t("api.customers.insufficient_transfer_points") % [@record.points, t('api.point', :count => @record.points)]).split('\n') } }
             end  
           end
-          mutex.relase
+          mutex.release
         else
           logger.info("Customer(#{@customer.id}) failed to receive points, transfer code expired")
           respond_to do |format|

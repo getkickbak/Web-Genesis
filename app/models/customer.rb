@@ -13,8 +13,8 @@ class Customer
   #property :deleted, ParanoidBoolean, :default => false
     
   has 1, :last_check_in, 'CheckIn', :constraint => :destroy
-  belongs_to :merchant, :key => true
-  belongs_to :user, :key => true
+  belongs_to :merchant
+  belongs_to :user
   
   def self.create(merchant, user)
     now = Time.now
