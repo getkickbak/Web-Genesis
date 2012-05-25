@@ -108,7 +108,7 @@ Ext.define('Genesis.controller.Settings',
                user : Ext.encode(params)
             }
          });
-      }, false, false);
+      }, true);
    },
    onTermsTap : function(b, e)
    {

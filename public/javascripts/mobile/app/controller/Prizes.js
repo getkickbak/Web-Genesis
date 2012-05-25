@@ -24,7 +24,7 @@ Ext.define('Genesis.controller.Prizes',
          backButton : 'viewportview button[ui=back]',
          doneBtn : 'viewportview button[tag=done]',
          redeemBtn : 'viewportview button[tag=redeem]',
-         prizeCheckScreen : 'clientrewardsview component[tag=prizeCheck]',
+         prizeCheckScreen : 'clientrewardsview',
          prizes :
          {
             selector : 'prizesview',
@@ -96,7 +96,7 @@ Ext.define('Genesis.controller.Prizes',
       rouletteBall.removeCls('spinBack');
       rouletteBall.removeCls('spinFwd');
    },
-   updatingPrizeOnFacebook : function(record)
+   updatingPrizeOnFacebook : function(earnprize)
    {
       var me = this;
       try
@@ -108,7 +108,7 @@ Ext.define('Genesis.controller.Prizes',
          var name = venue.get('name');
          var link = wsite[wsite.length - 1] || site;
          var desc = venue.get('description').trunc(256);
-         var message = 'I just won ' + record.getCustomerReward().get('title') + ' for purchasing at ' + venue.get('name') + '!';
+         var message = 'I just won ' + earnprize.getCustomerReward().get('title') + ' for purchasing at ' + venue.get('name') + '!';
 
          console.log('Posting to Facebook ...' + '\n' + //
          'Name: ' + name + '\n' + //
@@ -123,10 +123,7 @@ Ext.define('Genesis.controller.Prizes',
             link : venue.get('website') || site,
             caption : link,
             description : desc,
-            //
-            // To-do : Get Prize Photo
-            //
-            //picture : Genesis.view.client.Rewards.getPhoto(records[0].getCustomerReward().get('type')),
+            picture : venue.getMerchant().get('photo')['thumbnail_ios_medium'].url,
             message : message
          }, function(response)
          {
@@ -182,7 +179,6 @@ Ext.define('Genesis.controller.Prizes',
          var custore = Ext.StoreMgr.get('CustomerStore');
          var app = me.getApplication();
          var vport = me.getViewport();
-         var db = Genesis.constants.getLocalDB();
 
          /*
          vport.setEnableAnim(false);
@@ -556,16 +552,17 @@ Ext.define('Genesis.controller.Prizes',
    },
    onShowPrize : function(showPrize)
    {
-      this.stopRouletteScreen();
-      this.showPrize = showPrize;
-      this.setMode('showPrize');
-      this.pushView(this.getMainPage());
-      
+      var me = this;
+      me.stopRouletteScreen();
+      me.showPrize = showPrize;
+      me.setMode('showPrize');
+      me.pushView(me.getMainPage());
+
       //Update on Facebook
       Genesis.constants.facebook_onLogin(function(params)
       {
-         me.updatingPrizeOnFacebook(records[0]);
-      }, true, true, me.updatePrizeOnFbMsg);
+         me.updatingPrizeOnFacebook(showPrize);
+      }, false, me.updatePrizeOnFbMsg);
    },
    onAuthReward : function(showPrize)
    {

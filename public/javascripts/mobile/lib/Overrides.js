@@ -13,7 +13,7 @@ Genesis.constants =
    site : 'www.getkickbak.com',
    fbScope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions,offline_access',
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
-   fbConnectReqestMsg : 'Connection to Facebook is required to complete this action',
+   fbConnectReqestMsg : 'Would you like to update friends on Facebook?',
    connectingToFBMsg : 'Connecting to Facebook ...',
    debugPrivKey : 'MiQj6tNWvjdPGh2Qlr7gdBIsJAadvAUk',
    redeemDBSize : 10000,
@@ -39,20 +39,46 @@ Genesis.constants =
    },
    getRedeemIndexDB : function(index)
    {
-      var db = this.getLocalStorage().getItem('kickbakRedeemIndex');
-      return ((db) ? ( index ? Ext.decode(db)[index] : Ext.decode(db)) :
+      try
+      {
+         if(!this.kickbakRedeemIndex)
+         {
+            this.kickbakRedeemIndex = Ext.decode(this.getLocalStorage().getItem('kickbakRedeemIndex'));
+         }
+      }
+      catch(e)
+      {
+      }
+      return ((this.kickbakRedeemIndex) ? ( index ? this.kickbakRedeemIndex[index] : this.kickbakRedeemIndex) :
       {
       });
    },
-   addRedeemIndexDB : function(index)
+   addRedeemIndexDB : function(index, value)
    {
+      var db = this.getRedeemIndexDB();
+      db[index] = value;
       //console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
-      this.getLocalStorage().setItem('kickbakRedeemIndex', Ext.encode(db));
+      //this.getLocalStorage().setItem('kickbakRedeemIndex', Ext.encode(db));
    },
    setRedeemIndexDB : function(db)
    {
       //console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
-      this.getLocalStorage().setItem('kickbakRedeemIndex', Ext.encode(db));
+      //this.getLocalStorage().setItem('kickbakRedeemIndex', Ext.encode(db));
+   },
+   getRedeemSortedDB : function(index)
+   {
+      try
+      {
+         if(!this.kickbakRedeemSorted)
+         {
+            this.kickbakRedeemSorted = Ext.decode(this.getLocalStorage().getItem('kickbakRedeemSorted'));
+         }
+      }
+      catch(e)
+      {
+
+      }
+      return ((this.kickbakRedeemSorted) ? ( index ? this.kickbakRedeemSorted[index] : this.kickbakRedeemSorted) : []);
    },
    addRedeemSortedDB : function(key)
    {
@@ -76,15 +102,16 @@ Genesis.constants =
       });
       this.setRedeemSortedDB(dbS);
    },
-   getRedeemSortedDB : function(index)
-   {
-      var db = this.getLocalStorage().getItem('kickbakRedeemSorted');
-      return ((db) ? ( index ? Ext.decode(db)[index] : Ext.decode(db)) : []);
-   },
    setRedeemSortedDB : function(db)
    {
       //console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
-      this.getLocalStorage().setItem('kickbakRedeemSorted', Ext.encode(db));
+      //this.getLocalStorage().setItem('kickbakRedeemSorted', Ext.encode(db));
+   },
+   redeemDBSync : function()
+   {
+      var local = this.getLocalStorage();
+      local.setItem('kickbakRedeemSorted', Ext.encode(this.kickbakRedeemSorted));
+      local.setItem('kickbakRedeemIndex', Ext.encode(this.kickbakRedeemIndex));
    },
    redeemDBCleanup : function()
    {
@@ -118,8 +145,7 @@ Genesis.constants =
             break;
          }
       }
-      Genesis.constants.setRedeemIndexDB(dbI);
-      Genesis.constants.setRedeemSortedDB(dbS);
+      Genesis.constants.redeemDBSync();
 
       console.debug('currCount = ' + dbS['currCount'] + ', total = ' + total)
       console.log("=================================");
@@ -154,7 +180,7 @@ Genesis.constants =
    resetStorage : function()
    {
       this.facebook_onLogout(null, false);
-      Genesis.constants.removeLocalDBAttrib('auth_code');
+      this.removeLocalDBAttrib('auth_code');
    },
    getPrivKey : function(id)
    {
@@ -268,8 +294,6 @@ Genesis.constants =
             }
             else
             {
-               delete db['fbExpiresIn'];
-               me.setLocalDB(db);
                me.facebook_onLogout(null, false);
             }
          }
@@ -334,7 +358,7 @@ Genesis.constants =
                   {
                      me.facebook_onLogout(function()
                      {
-                        me.fbLogin(cb, false, false);
+                        me.fbLogin(cb, false);
                      }, true);
                   }
                   else
@@ -368,33 +392,17 @@ Genesis.constants =
    //
    // Log into Facebook
    //
-   fbLogin : function(cb, refreshConn, supress)
+   fbLogin : function(cb, supress)
    {
       var me = this;
-      var db = me.getLocalDB();
-      cb = cb || Ext.emptyFn;
 
-      if(!refreshConn && !supress)
-      {
-         console.debug("Logging into Facebook ...");
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : 'Logging into Facebook ...'
-         });
-      }
-      else
-      {
-         console.debug("Refresh Connectivity or Logging to Facebook ... refreshConn=" + refreshConn);
-      }
-      me.cb = cb;
-      FB[(refreshConn)?'getLoginStatus' : 'login'](function(response)
+      me.cb = cb || Ext.emptyFn;
+      FB.login(function(response)
       {
          if((response.status == 'connected') && response.authResponse)
          {
             console.debug("Logged into Facebook!");
-            db['fbExpiresIn'] = Date.now() + (1000 * response.authResponse['expiresIn']);
-            me.setLocalDB(db);
+            me.setLocalDBAttrib('fbExpiresIn', Date.now() + (1000 * response.authResponse['expiresIn']));
             if(me.cb)
             {
                me.facebook_loginCallback(me.cb);
@@ -403,25 +411,29 @@ Genesis.constants =
          }
          else
          {
-            delete db['fbExpiresIn'];
-            me.setLocalDB(db);
-            if(!refreshConn)
+            me.removeLocalDBAttrib('fbExpiresIn');
+            console.debug("Login Failed! ...");
+            if(!supress)
             {
-               console.debug("Login Failed! ...");
-               if(!supress)
+               Ext.Viewport.setMasked(false);
+               Ext.device.Notification.show(
                {
-                  Ext.Viewport.setMasked(false);
-                  Ext.device.Notification.show(
+                  title : 'Facebook Connect',
+                  message : me.fbConnectErrorMsg,
+                  buttons : ['Try Again', 'Continue'],
+                  callback : function(btn)
                   {
-                     title : 'Facebook Connect',
-                     message : 'Failed to login to Facebook!'
-                  });
-               }
-            }
-            else
-            {
-               console.debug("Failed to refresh connection to Facebook ...");
-               Ext.defer(me.fbLogin, 1, me, [cb, false, supress]);
+                     if(btn.toLowerCase() == 'try again')
+                     {
+                        Ext.defer(fbLogin, 3 * 1000, me, [cb, supress]);
+                     }
+                     else
+                     {
+                        Ext.Viewport.setMasked(false);
+                        delete me.cb;
+                     }
+                  }
+               });
             }
          }
       },
@@ -429,54 +441,79 @@ Genesis.constants =
          scope : me.fbScope
       });
    },
-   facebook_onLogin : function(cb, supress, doNotLoginIfNoConn, message)
+   facebook_onLogin : function(cb, supress, message)
    {
       var me = this;
       var db = me.getLocalDB();
       cb = cb || Ext.emptyFn
       var refreshConn = (db['currFbId'] > 0);
-
-      console.debug("facebook_onLogin - FbId = [" + db['currFbId'] + "]");
-
-      // Login if connection missing
-      if(!doNotLoginIfNoConn || refreshConn)
+      var _fbLogin = function()
       {
-         var expireTime = (!db['fbExpiresIn']) ? 0 : new Date(db['fbExpiresIn']).getTime();
-         //
-         // To-do : Implement Facebook Expiry TimeStamp check
-         //
-         console.debug('FB ExpiryDate TimeStamp = ' + Date(expireTime));
-         if((refreshConn || message) && (expireTime < Date.now()))
+         if(!supress)
          {
             Ext.device.Notification.show(
             {
                title : 'Facebook Connect',
                message : message || me.fbConnectReqestMsg,
-               buttons : ['Proceed', 'Cancel'],
+               buttons : ['OK', 'Cancel'],
                callback : function(btn)
                {
-                  if(btn.toLowerCase() == 'proceed')
+                  if(btn.toLowerCase() == 'ok')
                   {
-                     me.fbLogin(cb, refreshConn, supress);
+                     Ext.Viewport.setMasked(
+                     {
+                        xtype : 'loadmask',
+                        message : me.connectingToFBMsg
+                     });
+                     me.fbLogin(cb, supress);
                   }
                }
             });
          }
          else
          {
-            Ext.Viewport.setMasked(
-            {
-               xtype : 'loadmask',
-               message : me.connectingToFBMsg
-            });
-            me.fbLogin(cb, refreshConn, supress);
+            me.fbLogin(cb, supress);
          }
+      }
+      // Logged into FB currently or before!
+
+      console.debug("facebook_onLogin - FbId = [" + db['currFbId'] + "]");
+
+      // Login if connection missing
+
+      if(refreshConn)
+      {
+         FB.getLoginStatus(function(response)
+         {
+            if((response.status == 'connected') && response.authResponse)
+            {
+               var expireTime = (!db['fbExpiresIn']) ? 0 : new Date(db['fbExpiresIn']).getTime();
+               //
+               // To-do : Implement Facebook Expiry TimeStamp check
+               //
+               console.debug('FB ExpiryDate TimeStamp = ' + Date(expireTime));
+
+               console.debug("Already Logged into Facebook, bypass permission request.");
+               db['fbExpiresIn'] = Date.now() + (1000 * response.authResponse['expiresIn']);
+               me.setLocalDB(db);
+               
+               // Use Previous Login information!
+               cb(db['fbResponse']);
+            }
+            else
+            {
+               _fbLogin();
+            }
+         });
+      }
+      else
+      {
+         _fbLogin();
       }
    },
    facebook_loginCallback : function(cb, count)
    {
       var me = this;
-      var db = me.getLocalDB();
 
       console.debug("Retrieving Facebook profile information ...");
       count = count || 0;
@@ -486,33 +523,10 @@ Genesis.constants =
       {
          if(!response.error)
          {
-            if(count >= 5)
-            {
-               Ext.Viewport.setMasked(false);
-               Ext.device.Notification.show(
-               {
-                  title : 'Facebook Connect',
-                  message : me.fbConnectErrorMsg
-               });
-               // Clean up session information
-               me.facebook_onLogout(null, true);
-               return;
-            }
-
+            var db = me.getLocalDB();
             var facebook_id = response.id;
-            if(!facebook_id || (facebook_id == 0))
-            {
-               console.debug("Missing Facebook Session information, Retrying ...");
-               // Session Expired? Login again
-               ++count;
-               Ext.defer(function(count)
-               {
-                  me.facebook_loginCallback(cb, count);
-               }, count * 1000, me, [count]);
-               return;
-            }
-            Ext.Viewport.setMasked(false);
 
+            Ext.Viewport.setMasked(false);
             if(db['currFbId'] == facebook_id)
             {
                console.debug("Session information same as previous session[" + facebook_id + "]");
@@ -524,8 +538,7 @@ Genesis.constants =
 
             db['currFbId'] = facebook_id;
             db['fbAccountId'] = response.email;
-            var params = me.createFbResponse(response);
-            db['fbResponse'] = params;
+            var params = db['fbResponse'] = me.createFbResponse(response);
             Genesis.constants.setLocalDB(db);
 
             console.debug('You\`ve logged into Facebook! ' + '\n' + //
@@ -536,7 +549,7 @@ Genesis.constants =
 
             if(cb)
             {
-               cb(params);
+               Ext.defer(cb, 1, me, [params]);
             }
          }
          else
@@ -567,6 +580,7 @@ Genesis.constants =
       db['currFbId'] = 0;
       delete db['fbAccountId'];
       delete db['fbResponse'];
+      delete db['fbExpiresIn'];
       Genesis.constants.setLocalDB(db);
 
       Ext.Viewport.setMasked(false);

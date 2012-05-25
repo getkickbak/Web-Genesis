@@ -99,12 +99,6 @@
          {
             console.debug = console.debug || console.log;
             console.log("appInit - start");
-            if( typeof cordova == 'undefined')
-               Ext.device.Notification.show(
-               {
-                  title : 'Alert',
-                  message : 'PhoneGap variable does not exist. Check that you have included phonegap.js correctly'
-               });
             Ext.application(
             {
                profiles : ['Iphone', 'Android', 'Desktop'],
@@ -183,6 +177,7 @@
             document.addEventListener("pause", function()
             {
                console.log("App is Paused");
+               Genesis.constants.redeemDBSync();
             }, false);
 
             document.addEventListener("resume", function()
@@ -211,6 +206,7 @@
                   messsage : 'Battery is at ' + info.level + '%'
                });
                Ext.device.Notification.vibrate();
+               Genesis.constants.redeemDBSync();
             }, false);
 
             window.addEventListener("batterycritical", function(info)
@@ -223,6 +219,7 @@
                });
                Ext.device.Notification.vibrate();
                Ext.device.Notification.beep();
+               Genesis.constants.redeemDBSync();
             }, false);
 
             console.log("onDeviceReady");

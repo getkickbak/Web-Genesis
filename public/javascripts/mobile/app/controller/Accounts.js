@@ -119,6 +119,11 @@ Ext.define('Genesis.controller.Accounts',
          //
          // Send QRCode to server for processing
          //
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.updatingServerMsg
+         });
          Customer['setRecvPtsXferUrl']();
          cstore.load(
          {
@@ -130,11 +135,12 @@ Ext.define('Genesis.controller.Accounts',
             {
                'data' : qrcode
             },
-            callback : function(record, operation)
+            callback : function(records, operation)
             {
+               Ext.Viewport.setMasked(false);
                if(operation.wasSuccessful())
                {
-                  var metaData = Customer.getProxy().getReader().metaData();
+                  var metaData = Customer.getProxy().getReader().metaData;
                   /*
                    var customer = cstore.getById(record.getId());
                    if(cutomer)
@@ -149,17 +155,17 @@ Ext.define('Genesis.controller.Accounts',
                   Ext.device.Notification.show(
                   {
                      title : 'Transfer Received',
-                     message : me.recvTransferMsg(metaData['points'], rec.getMerchant().get('name')),
+                     message : me.recvTransferMsg(metaData['points'], records[0].getMerchant().get('name')),
                      callback : function(btn)
                      {
                         vport.silentPop(1);
-                        me.pushView(me.getAccounts());
+                        Ext.defer(function()
+                        {
+                           me.onDisclose(cstore, records[0]);
+                           //me.pushView(me.getAccounts());
+                        }, 1, me);
                      }
                   });
-               }
-               else
-               {
-                  Ext.Viewport.setMasked(false);
                }
             }
          });
@@ -261,16 +267,6 @@ Ext.define('Genesis.controller.Accounts',
       var merchantName = record.getMerchant().get('name');
       var vport = me.getViewport();
 
-      if(record.get('points') < 1)
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Points Required',
-            message : me.pointsReqMsg,
-         });
-         return;
-      }
-
       me.merchantId = record.getMerchant().getId();
       me.rec = record;
 
@@ -282,6 +278,16 @@ Ext.define('Genesis.controller.Accounts',
          case 'emailtransfer' :
          case 'transfer' :
          {
+            if(record.get('points') < 1)
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Points Required',
+                  message : me.pointsReqMsg,
+               });
+               return;
+            }
+
             // Drop the previous page history
             vport.silentPop(2);
             me.pushView(me.getTransferPage());
@@ -361,11 +367,6 @@ Ext.define('Genesis.controller.Accounts',
                {
                   if(btn.toLowerCase() == 'proceed')
                   {
-                     Ext.Viewport.setMasked(
-                     {
-                        xtype : 'loadmask',
-                        message : me.retrieveAuthModeMsg
-                     });
                      me.scanQRCode();
                   }
                }
@@ -455,9 +456,9 @@ Ext.define('Genesis.controller.Accounts',
             window.plugins.emailComposer.showEmailComposerWithCB(function(res)
             {
                // Delay is needed to not block email sending ...
-               Ext.Viewport.setMasked(false);
                Ext.defer(function()
                {
+                  Ext.Viewport.setMasked(false);
                   switch (res)
                   {
                      case EmailComposer.ComposeResultType.Failed:

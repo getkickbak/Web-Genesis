@@ -389,7 +389,6 @@ Ext.define('Genesis.controller.MainPage',
    {
       var viewport = this.getViewport();
       var vport = this.getViewPortCntlr();
-      var db = Genesis.constants.getLocalDB();
       var flag = 0;
       //
       // Logout of Facebook
@@ -411,7 +410,7 @@ Ext.define('Genesis.controller.MainPage',
          if(db['auth_code'])
          {
             console.log("Logging out ...")
-            Customer['setLogoutUrl'](db['auth_code']);
+            Customer['setLogoutUrl'](Genesis.constants.getLocalDB()['auth_code']);
             Ext.StoreMgr.get('CustomerStore').load(
             {
                jsonData :
@@ -474,16 +473,13 @@ Ext.define('Genesis.controller.MainPage',
       //
       // Forced to Login to Facebook
       //
-      var db = Genesis.constants.getLocalDB();
-      db['currFbId'] = 0;
-      Genesis.constants.setLocalDB(db);
-
+      Genesis.constants.removeLocalDBAttrib('currFbId');
       Genesis.constants.facebook_onLogin(function(params)
       {
          console.log("Logging into Kickbak using Facebook account ...");
          Ext.Viewport.setMasked(false);
          me.facebookLogin(params);
-      }, true, false);
+      }, true);
    },
    onCreateAccountTap : function(b, e, eOpts, eInfo)
    {
@@ -502,8 +498,7 @@ Ext.define('Genesis.controller.MainPage',
       var values = account.getValues();
       var user = Ext.create('Genesis.model.frontend.Account', values);
       var validateErrors = user.validate();
-      var db = Genesis.constants.getLocalDB();
-      var response = db['fbResponse'] || null;
+      var response = Genesis.constants.getLocalDB()['fbResponse'] || null;
 
       if(!validateErrors.isValid())
       {
@@ -547,9 +542,8 @@ Ext.define('Genesis.controller.MainPage',
    },
    onSignIn : function(username, password)
    {
-      var db = Genesis.constants.getLocalDB();
       //Cleanup any outstanding registrations
-      Genesis.constants.facebook_onLogout(null, db['currFbId'] > 0);
+      Genesis.constants.facebook_onLogout(null, Genesis.constants.getLocalDB()['currFbId'] > 0);
 
       var me = this;
       var params =
@@ -608,8 +602,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    onCreateActivate : function(c, eOpts)
    {
-      var db = Genesis.constants.getLocalDB();
-      var response = db['fbResponse'] || null;
+      var response = Genesis.constants.getLocalDB()['fbResponse'] || null;
       if(response)
       {
          var form = this.getCreateAccount();

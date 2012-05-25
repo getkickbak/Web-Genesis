@@ -7,47 +7,21 @@ Ext.define('Genesis.view.client.Rewards',
    {
       title : 'Earn Rewards',
       changeTitle : false,
-      layout : 'vbox',
-      items : [
+      layout : 'fit',
+      tag : 'prizeCheck',
+      cls : 'prizeCheck',
+      // -------------------------------------------------------------------
+      // Checking for Prizes Screen
+      // -------------------------------------------------------------------
+      data :
       {
-         xtype : 'container',
-         tag : 'rewards',
-         flex : 1,
-         layout :
-         {
-            type : 'card',
-            animation :
-            {
-               duration : 600,
-               easing : 'ease-in-out',
-               type : 'slide',
-               direction : 'down'
-            }
-         },
-         activeItem : 0,
-         defaults :
-         {
-            layout : 'fit'
-         },
-         items : [
-         // -------------------------------------------------------------------
-         // Checking for Prizes Screen
-         // -------------------------------------------------------------------
-         {
-            xtype : 'component',
-            tag : 'prizeCheck',
-            cls : 'prizeCheck',
-            data :
-            {
-            },
-            tpl :
-            // @formatter:off
-            '<div class="rouletteBg"></div>'+
-            '<div class="rouletteTable"></div>'+
-            '<div class="rouletteBall"></div>'
-            // @formatter:off
-         }]
-      }]
+      },
+      tpl :
+      // @formatter:off
+      '<div class="rouletteBg"></div>'+
+      '<div class="rouletteTable"></div>'+
+      '<div class="rouletteBall"></div>'
+      // @formatter:off
    },
    hideBackButton : true,
    statics :

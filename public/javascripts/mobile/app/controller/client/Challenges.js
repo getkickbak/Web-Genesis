@@ -121,7 +121,6 @@ Ext.define('Genesis.controller.client.Challenges',
             {
                if(Genesis.constants.isNative())
                {
-                  var db = Genesis.constants.getLocalDB();
                   var options = new FileUploadOptions();
                   options.fileKey = "image";
                   // Token filename NOT be used
@@ -129,7 +128,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   options.mimeType = "image/jpg";
                   options.params =
                   {
-                     "auth_token" : db['auth_code']
+                     "auth_token" : Genesis.constants.getLocalDB()['auth_code']
                   };
                   options.chunkedMode = true;
 
@@ -521,7 +520,7 @@ Ext.define('Genesis.controller.client.Challenges',
          {
             me.onCameraSuccessFn(me.samplePhotoURL);
          }
-      }, true, false, me.photoUploadFbReqMsg);
+      }, true, me.photoUploadFbReqMsg);
 
    },
    onLibraryBtnTap : function(b, e, eOpts, eInfo)

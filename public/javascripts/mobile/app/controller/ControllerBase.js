@@ -133,6 +133,7 @@ Ext.define('Genesis.controller.ControllerBase',
    showToServerMsg : 'Show this to your server before proceeding.',
    errProcQRCodeMsg : 'Error Processing Authentication Code',
    cameraAccessMsg : 'Accessing your Camera Phone ...',
+   updatingServerMsg : 'Updating Server ...',
    showScreenTimeoutExpireMsg : function(duration)
    {
       return duration + ' are up! Press OK to confirm.';

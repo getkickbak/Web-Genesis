@@ -63,7 +63,14 @@ Ext.define('Genesis.model.Customer',
             attrib = cOld.fields.items[i].getName();
             cOld.set(attrib, cNew.get(attrib));
          }
-         cOld.setLastCheckin(cNew.getLastCheckin());
+         try
+         {
+            cOld.setLastCheckin(cNew.getLastCheckin());
+         }
+         catch (e)
+         {
+            cOld.setLastCheckin(Ext.create('Genesis.model.Checkin'));
+         }
       },
       setFbLoginUrl : function()
       {

@@ -1063,7 +1063,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
    background-color:transparent;
    background-repeat : no-repeat;
    &.bgImage {
-      @include custom-radial-gradient(#00ADEE 50%, #0A78BE 80%, center center, url($theme-path-rel + '/images/' + $gtheme-name + '/logohomescreen2.png'));
+      @include custom-radial-gradient(#00ADEE 50%, #0A78BE 80%, center center, url($theme-path-rel + '/images/' + $gtheme-name + '/logohomescreen3.png'));
       background-position : center center;
       background-size : 100%, 100%;
    }
@@ -1231,7 +1231,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
    }
    .info {
       position:relative;
-      padding:$panelTopGap $panelGap;
+      padding:$panelTopGap $panelGap $panelTopGap*2 $panelGap;
       .photo {
          position:absolute;
          right : 0.8em;

@@ -22,9 +22,7 @@ Ext.define('Genesis.controller.client.Rewards',
             autoCreate : true,
             xtype : 'clientrewardsview'
          },
-         rewardsContainer : 'clientrewardsview container[tag=rewards]',
-         price : 'clientrewardsview textfield',
-         prizeCheckScreen : 'clientrewardsview component[tag=prizeCheck]'
+         price : 'clientrewardsview textfield'
       },
       control :
       {
@@ -32,10 +30,6 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             activate : 'onActivate',
             deactivate : 'onDeactivate'
-         },
-         rewardsContainer :
-         {
-            activeitemchange : 'onContainerActivate'
          }
       }
    },
@@ -144,7 +138,7 @@ Ext.define('Genesis.controller.client.Rewards',
    // --------------------------------------------------------------------------
    startRouletteScreen : function()
    {
-      var scn = this.getPrizeCheckScreen();
+      var scn = this.getRewards();
       var rouletteTable = Ext.get(Ext.DomQuery.select('div.rouletteTable',scn.element.dom)[0]);
       rouletteTable.addCls('spinFwd');
       var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
@@ -153,9 +147,6 @@ Ext.define('Genesis.controller.client.Rewards',
    onEarnPtsTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      //var container = me.getRewardsContainer();
-      //var anim = container.getLayout().getAnimation();
-
       var allowedMsg = me.isOpenAllowed();
 
       if(allowedMsg !== true)
@@ -192,8 +183,6 @@ Ext.define('Genesis.controller.client.Rewards',
          //
          // Go back to Main Reward Screen
          //
-         //var container = me.getRewardsContainer();
-         //container.setActiveItem(0);
          //me.popView();
          me.pushView(me.getRewards());
       };
@@ -273,41 +262,24 @@ Ext.define('Genesis.controller.client.Rewards',
    onActivate : function(c, newActiveItem, oldActiveItem, eOpts)
    {
       var me = this;
-      var container = me.getRewardsContainer();
-      if(container)
-      {
-         var activeItem = container.getActiveItem();
-         var animation = container.getLayout().getAnimation();
-         animation.disable();
-         switch (activeItem.config.tag)
-         {
-            case 'prizeCheck' :
-            {
-               var viewport = me.getViewPortCntlr();
+      var container = me.getRewards();
+      var viewport = me.getViewPortCntlr();
 
-               //container.setActiveItem(0);
-               me.startRouletteScreen();
-               Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
-               {
-                  console.debug("RouletteSound Done, checking for prizes ...");
-                  var app = me.getApplication();
-                  var controller = app.getController('Prizes');
-                  app.dispatch(
-                  {
-                     action : 'onPrizeCheck',
-                     args : me.loadCallback,
-                     controller : controller,
-                     scope : controller
-                  });
-                  delete me.loadCallback;
-               });
-               break;
-            }
-            default :
-               break;
-         }
-         animation.enable();
-      }
+      me.startRouletteScreen();
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
+      {
+         console.debug("RouletteSound Done, checking for prizes ...");
+         var app = me.getApplication();
+         var controller = app.getController('Prizes');
+         app.dispatch(
+         {
+            action : 'onPrizeCheck',
+            args : me.loadCallback,
+            controller : controller,
+            scope : controller
+         });
+         delete me.loadCallback;
+      });
    },
    onDeactivate : function(c, newActiveItem, oldActiveItem, eOpts)
    {

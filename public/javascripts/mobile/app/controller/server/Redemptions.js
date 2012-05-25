@@ -88,9 +88,8 @@ Ext.define('Genesis.controller.server.Redemptions',
                //
                // Add to Persistent Store to make sure it cannot be rescanned again
                //
-               dbI[encrypted] = decrypted["expiry_ts"];
                Genesis.constants.addRedeemSortedDB([encrypted, dbI[encrypted]]);
-               Genesis.constants.setRedeemIndexDB(dbI);
+               Genesis.constants.addRedeemIndexDB(encrypted, decrypted["expiry_ts"]);
 
                var app = me.getApplication();
                var controller = app.getController('Prizes');
