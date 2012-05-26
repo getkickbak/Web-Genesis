@@ -623,11 +623,11 @@ Ext.define('Genesis.controller.client.Challenges',
                            //Do it to improve responsiveness
                            Ext.defer(function()
                            {
-                              var id = metaData['customer']['id'];
+                              var id = metaData['id'];
                               var customer = cstore.getById(id);
                               if(!customer)
                               {
-                                 customer = cstore.add(metaData['customer'])[0];
+                                 customer = cstore.add(metaData)[0];
                               }
                               me.setMode('profile');
 
