@@ -1034,9 +1034,13 @@ Ext.define('Genesis.controller.client.Challenges',
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
-   openPage : function(subFeature)
+   openPage : function(subFeature, cb)
    {
       var me = this;
+      if(cb)
+      {
+         me.referralCbFn = cb;
+      }
       switch (subFeature)
       {
          case 'referrals' :

@@ -159,7 +159,7 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return this.getViewPortCntlr().getView();
    },
-   onOpenPage : function(feature, subFeature)
+   onOpenPage : function(feature, subFeature, cb)
    {
       if((appName == 'GetKickBak') && !Ext.device.Connection.isOnline() && (subFeature != 'login'))
       {
@@ -176,7 +176,7 @@ Ext.define('Genesis.controller.ControllerBase',
       app.dispatch(
       {
          action : (!subFeature) ? 'openMainPage' : 'openPage',
-         args : (!subFeature) ? [] : [subFeature],
+         args : (!subFeature) ? [] : [subFeature, cb],
          controller : controller,
          scope : controller
       });
@@ -267,7 +267,7 @@ Ext.define('Genesis.controller.ControllerBase',
             {
                if(btn.toLowerCase() == 'yes')
                {
-                  me.fireEvent('openpage', 'client.Challenges', 'referrals');
+                  me.fireEvent('openpage', 'client.Challenges', 'referrals', cb);
                }
                else
                {
