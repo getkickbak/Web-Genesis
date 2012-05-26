@@ -227,7 +227,7 @@ Ext.define('Genesis.controller.client.Rewards',
          me.getRewards();
          // Preload page
          message = me.getPointsMsg(metaData['points']);
-         if(!metaData['vip_challenge'] && !metaData['vip_challenge'])
+         if(!metaData['vip_challenge'] && !metaData['referral_challenge'])
          {
             message += Genesis.constants.addCRLF() + me.prizeCheckMsg;
          }
@@ -242,9 +242,9 @@ Ext.define('Genesis.controller.client.Rewards',
                   me.vipPopUp(metaData['vip_challenge'].points, exit);
                }
                else
-               if((metaData['referral_points']))
+               if((metaData['referral_challenge']))
                {
-                  me.referralPopUp(metaData['referral_points'].points, exit);
+                  me.referralPopUp(metaData['referral_challenge'].points, exit);
                }
                else
                {
@@ -261,11 +261,11 @@ Ext.define('Genesis.controller.client.Rewards',
          me.vipPopUp(metaData['vip_challenge'].points, exit);
       }
       else
-      if(metaData['referral_points'])
+      if(metaData['referral_challenge'])
       {
          // Preload page
          me.getRewards();
-         me.referralPopUp(metaData['referral_points'].points, exit);
+         me.referralPopUp(metaData['referral_challenge'].points, exit);
       }
    },
    onPrizeStoreMetaChange : function(pstore, metaData)
