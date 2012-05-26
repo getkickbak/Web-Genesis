@@ -2,7 +2,7 @@ Ext.define('Genesis.view.client.AccountsTransfer',
 {
    extend : 'Genesis.view.ViewBase',
    requires : ['Ext.Toolbar', 'Ext.field.Text'],
-   alias : 'widget.accountstransferview',
+   alias : 'widget.clientaccountstransferview',
    config :
    {
       title : ' ',

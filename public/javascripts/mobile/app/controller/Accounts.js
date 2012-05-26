@@ -27,14 +27,14 @@ Ext.define('Genesis.controller.Accounts',
          //
          transferPage :
          {
-            selector : 'accountstransferview',
+            selector : 'clientaccountstransferview',
             autoCreate : true,
-            xtype : 'accountstransferview'
+            xtype : 'clientaccountstransferview'
          },
-         points : 'accountstransferview textfield',
-         qrcode : 'accountstransferview component[tag=qrcode]',
-         title : 'accountstransferview component[tag=title]',
-         transferContainer : 'accountstransferview container[tag=accountsTransferMain]'
+         points : 'clientaccountstransferview textfield',
+         qrcode : 'clientaccountstransferview component[tag=qrcode]',
+         title : 'clientaccountstransferview component[tag=title]',
+         transferContainer : 'clientaccountstransferview container[tag=accountsTransferMain]'
       },
       control :
       {
@@ -51,7 +51,7 @@ Ext.define('Genesis.controller.Accounts',
             select : 'onSelect',
             disclose : 'onDisclose'
          },
-         'accountstransferview button[tag=transfer]' :
+         'clientaccountstransferview button[tag=transfer]' :
          {
             select : 'onTransferTap'
          },
@@ -62,19 +62,19 @@ Ext.define('Genesis.controller.Accounts',
          {
             activate : 'onTransferActivate'
          },
-         'accountstransferview container[tag=accountsTransferMain] list' :
+         'clientaccountstransferview container[tag=accountsTransferMain] list' :
          {
             select : 'onTransferSelect'
          },
-         'accountstransferview container[tag=dialpad] button' :
+         'clientaccountstransferview container[tag=dialpad] button' :
          {
             tap : 'onCalcBtnTap'
          },
-         'accountstransferview button[tag=showQrCode]' :
+         'clientaccountstransferview button[tag=showQrCode]' :
          {
             tap : 'onShowQrCodeTap'
          },
-         'accountstransferview container button[tag=done]' :
+         'clientaccountstransferview container button[tag=done]' :
          {
             tap : 'onTransferCompleteTap'
          }
@@ -83,7 +83,6 @@ Ext.define('Genesis.controller.Accounts',
    qrcodeRegExp : /%qrcode_image%/,
    noTransferCodeMsg : 'No Transfer Authorization Code was scanned',
    pointsReqMsg : 'Points are required for transfer',
-   retrieveAuthModeMsg : 'Retrieving Authorization Code from Server ...',
    startTransferMsg : 'Prepare to scan the Sender\'s Authorization Code',
    transferFailedMsg : 'Transfer operation did not complete',
    transferSavedMsg : 'Transfer messasge was saved.',
@@ -290,6 +289,9 @@ Ext.define('Genesis.controller.Accounts',
 
             // Drop the previous page history
             vport.silentPop(2);
+            //
+            // Select the Amounts of points to Transfer!
+            //
             me.pushView(me.getTransferPage());
             break;
          }
@@ -338,7 +340,7 @@ Ext.define('Genesis.controller.Accounts',
       switch (model.get('tag'))
       {
          //
-         // Generate QRCode for the recipient to scan
+         // Select the Merchant to generate the QRCode
          //
          case 'sender' :
          {
@@ -502,7 +504,6 @@ Ext.define('Genesis.controller.Accounts',
             break;
          }
       }
-
    },
    onShowQrCodeTap : function(b, e, eOpts, eInfo)
    {

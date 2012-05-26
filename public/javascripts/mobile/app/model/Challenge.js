@@ -48,5 +48,13 @@ Ext.define('Genesis.model.Challenge',
          });
          this.getProxy().setUrl(Genesis.constants.host + '/api/v1/challenges/' + id + '/complete');
       },
+      setSendReferralsUrl : function(merchantId)
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/merchant/' + merchantId + '/referrals');
+      }
    }
 });

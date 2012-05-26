@@ -10,6 +10,30 @@ Ext.define('Genesis.controller.ControllerBase',
          'locationupdate' : 'onLocationUpdate'
       }
    },
+   checkinMsg : 'Checking in ...',
+   loadingScannerMsg : 'Loading Scanner ...',
+   loadingMsg : 'Loading ...',
+   genQRCodeMsg : 'Generating QRCode ...',
+   retrieveAuthModeMsg : 'Retrieving Authorization Code from Server ...',
+   noCodeScannedMsg : 'No QR Code Scanned!',
+   geoLocationErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
+   geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
+   geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
+   missingVenueInfoMsg : 'Error loading Venue information.',
+   showToServerMsg : 'Show this to your server before proceeding.',
+   errProcQRCodeMsg : 'Error Processing Authentication Code',
+   cameraAccessMsg : 'Accessing your Camera Phone ...',
+   updatingServerMsg : 'Updating Server ...',
+   showScreenTimeoutExpireMsg : function(duration)
+   {
+      return duration + ' are up! Press OK to confirm.';
+   },
+   showScreenTimeoutMsg : function(duration)
+   {
+      return 'You have ' + duration + ' to show this screen to a employee before it disappears!';
+   },
+   uploadFbMsg : 'Uploading to Facebook ...',
+   uploadServerMsg : 'Uploading to server ...',
    statics :
    {
       playSoundFile : function(sound_file, successCallback, failCallback)
@@ -112,38 +136,15 @@ Ext.define('Genesis.controller.ControllerBase',
          QRCodeVersion = QRCodeVersion || 8;
          var padding = 0;
          var qr = QRCode(QRCodeVersion, 'L');
-         
+
          qr.addData(text);
          qr.make();
-         
+
          var html = qr.createTableTag(dotsize, padding);
 
          return html;
       }
    },
-   checkinMsg : 'Checking in ...',
-   loadingScannerMsg : 'Loading Scanner ...',
-   loadingMsg : 'Loading ...',
-   genQRCodeMsg : 'Generating QRCode ...',
-   noCodeScannedMsg : 'No QR Code Scanned!',
-   geoLocationErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
-   geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
-   geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
-   missingVenueInfoMsg : 'Error loading Venue information.',
-   showToServerMsg : 'Show this to your server before proceeding.',
-   errProcQRCodeMsg : 'Error Processing Authentication Code',
-   cameraAccessMsg : 'Accessing your Camera Phone ...',
-   updatingServerMsg : 'Updating Server ...',
-   showScreenTimeoutExpireMsg : function(duration)
-   {
-      return duration + ' are up! Press OK to confirm.';
-   },
-   showScreenTimeoutMsg : function(duration)
-   {
-      return 'You have ' + duration + ' to show this screen to a employee before it disappears!';
-   },
-   uploadFbMsg : 'Uploading to Facebook ...',
-   uploadServerMsg : 'Uploading to server ...',
    init : function()
    {
       this.callParent(arguments);
@@ -251,13 +252,12 @@ Ext.define('Genesis.controller.ControllerBase',
    openPage : Ext.emptyFn,
    goToMain : function()
    {
-      console.log("LoggedIn, Going to Main Page ...");
-
       var me = this;
-      var vport = me.getViewPortCntlr();
-      vport.setLoggedIn(true);
+      var viewport = me.getViewPortCntlr();
+      viewport.setLoggedIn(true);
       me.getViewport().reset();
-      vport.onFeatureTap('MainPage', 'main');
+      viewport.onFeatureTap('MainPage', 'main');
+      console.log("LoggedIn, Going back to Main Page ...");
    },
    isOpenAllowed : function()
    {
@@ -450,8 +450,8 @@ Ext.define('Genesis.controller.ControllerBase',
          var venueId = 0;
          if(!merchantMode)
          {
-            var venue = Ext.StoreMgr.get('CheckinExploreStore').first();
-            venueId = venue ? venue.getId() : me.getViewPortCntlr().getVenue().getId()
+            var venue = Ext.StoreMgr.get('CheckinExploreStore').first() || me.getViewPortCntlr().getVenue() || null;
+            venueId = venue ? venue.getId() : 0;
          }
          callback(
          {

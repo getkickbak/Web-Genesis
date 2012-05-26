@@ -7,12 +7,6 @@
          "pageCntlr": "Accounts",
          "subFeature": "profile"
       }, {
-         "name": "Check-ins",
-         "photo_url": "resources/themes/images/v1/mainicons/checkin.png",
-         "desc": "Check-ins Menu for Merchants Nearby",
-         "pageCntlr": "Checkins",
-         "subFeature": "checkin"
-      }, {
          "name": "Explore",
          "photo_url": "resources/themes/images/v1/mainicons/explore.png",
          "desc": "Explore Merchants Nearby",
@@ -36,6 +30,18 @@
          "desc": "Transfer Points to other KickBak users",
          "pageCntlr": "Accounts",
          "subFeature": "transfer"
+      }, {
+         "name": "Receive Referrals",
+         "photo_url": "resources/themes/images/v1/mainicons/referral.png",
+         "desc": "Receive Referrals from other KickBak users",
+         "pageCntlr": "client.Challenges",
+         "subFeature": "referrals"
+      }, {
+         "name": "Check-ins",
+         "photo_url": "resources/themes/images/v1/mainicons/checkin.png",
+         "desc": "Check-ins Menu for Merchants Nearby",
+         "pageCntlr": "Checkins",
+         "subFeature": "checkin"
       }, {
          "name": "Settings",
          "photo_url": "resources/themes/images/v1/mainicons/settings.png",

@@ -960,7 +960,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          console.debug("Ajax Call Error Handler called. Operation(" + operation.wasSuccessful() + ")");
          me.fireEvent('exception', me, response, operation);
       }
-      if((success === true) || (Genesis.constants.isNative() === true))
+      if((success === true) || (!request.aborted && (Genesis.constants.isNative() === true)))
       {
          try
          {
