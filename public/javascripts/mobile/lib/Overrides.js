@@ -30,158 +30,6 @@ Genesis.constants =
    {
       return 'resources/themes/images/' + this.themeName + '/' + type + '/' + name + '.png';
    },
-   // **************************************************************************
-   // Persistent DB API
-   // **************************************************************************
-   getLocalStorage : function()
-   {
-      return window.localStorage;
-   },
-   getRedeemIndexDB : function(index)
-   {
-      try
-      {
-         if(!this.kickbakRedeemIndex)
-         {
-            this.kickbakRedeemIndex = Ext.decode(this.getLocalStorage().getItem('kickbakRedeemIndex'));
-         }
-      }
-      catch(e)
-      {
-      }
-      return ((this.kickbakRedeemIndex) ? ( index ? this.kickbakRedeemIndex[index] : this.kickbakRedeemIndex) :
-      {
-      });
-   },
-   addRedeemIndexDB : function(index, value)
-   {
-      var db = this.getRedeemIndexDB();
-      db[index] = value;
-      //console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
-      //this.getLocalStorage().setItem('kickbakRedeemIndex', Ext.encode(db));
-   },
-   setRedeemIndexDB : function(db)
-   {
-      //console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
-      //this.getLocalStorage().setItem('kickbakRedeemIndex', Ext.encode(db));
-   },
-   getRedeemSortedDB : function(index)
-   {
-      try
-      {
-         if(!this.kickbakRedeemSorted)
-         {
-            this.kickbakRedeemSorted = Ext.decode(this.getLocalStorage().getItem('kickbakRedeemSorted'));
-         }
-      }
-      catch(e)
-      {
-
-      }
-      return ((this.kickbakRedeemSorted) ? ( index ? this.kickbakRedeemSorted[index] : this.kickbakRedeemSorted) : []);
-   },
-   addRedeemSortedDB : function(key)
-   {
-      var dbS = this.getRedeemSortedDB();
-
-      if(dbS.length >= this.redeemDBSize)
-      {
-         // Remove the oldest Entry
-         console.debug("Database Entry is full, discarded oldest Entry with timestamp (" + Date(dbS[0][1]) + ")");
-         dbS = dbS.splice(0, 1);
-      }
-      else
-      {
-         dbS['currCount'] = (Ext.isDefined(dbS['currCount'])) ? (dbS['currCount'] + 1) : 0;
-      }
-      dbS.push(key);
-      dbS = Ext.Array.sort(dbS, function(a, b)
-      {
-         // Compare TimeStamps
-         return (a[1] - b[1]);
-      });
-      this.setRedeemSortedDB(dbS);
-   },
-   setRedeemSortedDB : function(db)
-   {
-      //console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
-      //this.getLocalStorage().setItem('kickbakRedeemSorted', Ext.encode(db));
-   },
-   redeemDBSync : function()
-   {
-      var local = this.getLocalStorage();
-      local.setItem('kickbakRedeemSorted', Ext.encode(this.kickbakRedeemSorted));
-      local.setItem('kickbakRedeemIndex', Ext.encode(this.kickbakRedeemIndex));
-   },
-   redeemDBCleanup : function()
-   {
-      console.log("================================");
-      console.log("Redeem Database has been Started");
-      console.log("================================");
-
-      var now = Date.now();
-      dbI = this.getRedeemIndexDB();
-      dbS = this.getRedeemSortedDB();
-      var total = 0;
-      var currCount = dbS['currCount'] || -1;
-      console.debug('currCount = ' + currCount);
-
-      while((currCount >= 0) && (dbS.length > 0))
-      {
-         if(dbS[0][1] > now)
-         {
-            total++;
-            currCount--;
-
-            // Sorted array size is reduced by 1
-            delete dbI[dbS[0]];
-            dbS = dbS.splice(0, 1);
-
-            dbS['currCount'] = currCount;
-         }
-         else
-         {
-            // Cleanup done!
-            break;
-         }
-      }
-      Genesis.constants.redeemDBSync();
-
-      console.debug('currCount = ' + dbS['currCount'] + ', total = ' + total)
-      console.log("=================================");
-      console.log("Redeem Database has been resetted");
-      console.log("=================================");
-   },
-   getLocalDB : function()
-   {
-      var db = this.getLocalStorage().getItem('kickbak');
-      return ((db) ? Ext.decode(db) :
-      {
-      });
-   },
-   setLocalDB : function(db)
-   {
-      console.debug("Setting KickBak DB[" + Ext.encode(db) + "]");
-      this.getLocalStorage().setItem('kickbak', Ext.encode(db));
-   },
-   setLocalDBAttrib : function(attrib, value)
-   {
-      console.debug("Setting KickBak Attrib[" + attrib + "] to [" + value + "]");
-      var db = this.getLocalDB();
-      db[attrib] = value;
-      this.setLocalDB(db);
-   },
-   removeLocalDBAttrib : function(attrib)
-   {
-      var db = this.getLocalDB();
-      delete db[attrib];
-      this.setLocalDB(db);
-   },
-   resetStorage : function()
-   {
-      this.facebook_onLogout(null, false);
-      this.removeLocalDBAttrib('auth_code');
-   },
    getPrivKey : function(id)
    {
       var me = this;
@@ -266,13 +114,13 @@ Genesis.constants =
    initFb : function()
    {
       var me = this;
-      var db = me.getLocalDB();
+      var db = Genesis.db.getLocalDB();
 
       //
       // Reset FB Connection. The system reset it automatically on every system reboot
       //
       delete db['fbExpiresIn'];
-      me.setLocalDB(db);
+      Genesis.db.setLocalDB(db);
 
       //Detect when Facebook tells us that the user's session has been returned
       FB.Event.monitor('auth.authResponseChange', function(session)
@@ -285,7 +133,7 @@ Genesis.constants =
             if(authToken)
             {
                db['fbExpiresIn'] = Date.now() + (1000 * session.authResponse['expiresIn']);
-               me.setLocalDB(db);
+               Genesis.db.setLocalDB(db);
                if(me.cb)
                {
                   me.facebook_loginCallback(me.cb);
@@ -313,7 +161,7 @@ Genesis.constants =
       var uidField = "id";
       var nameField = "name";
       var me = this;
-      var db = me.getLocalDB();
+      var db = Genesis.db.getLocalDB();
       var message = function(num)
       {
          return 'We found ' + num + ' Friends from your social network!';
@@ -402,7 +250,7 @@ Genesis.constants =
          if((response.status == 'connected') && response.authResponse)
          {
             console.debug("Logged into Facebook!");
-            me.setLocalDBAttrib('fbExpiresIn', Date.now() + (1000 * response.authResponse['expiresIn']));
+            Genesis.db.setLocalDBAttrib('fbExpiresIn', Date.now() + (1000 * response.authResponse['expiresIn']));
             if(me.cb)
             {
                me.facebook_loginCallback(me.cb);
@@ -411,7 +259,7 @@ Genesis.constants =
          }
          else
          {
-            me.removeLocalDBAttrib('fbExpiresIn');
+            Genesis.db.removeLocalDBAttrib('fbExpiresIn');
             console.debug("Login Failed! ...");
             if(!supress)
             {
@@ -444,7 +292,7 @@ Genesis.constants =
    facebook_onLogin : function(cb, supress, message)
    {
       var me = this;
-      var db = me.getLocalDB();
+      var db = Genesis.db.getLocalDB();
       cb = cb || Ext.emptyFn
       var refreshConn = (db['currFbId'] > 0);
       var _fbLogin = function()
@@ -495,8 +343,8 @@ Genesis.constants =
 
                console.debug("Already Logged into Facebook, bypass permission request.");
                db['fbExpiresIn'] = Date.now() + (1000 * response.authResponse['expiresIn']);
-               me.setLocalDB(db);
-               
+               Genesis.db.setLocalDB(db);
+
                // Use Previous Login information!
                cb(db['fbResponse']);
             }
@@ -523,7 +371,7 @@ Genesis.constants =
       {
          if(!response.error)
          {
-            var db = me.getLocalDB();
+            var db = Genesis.db.getLocalDB();
             var facebook_id = response.id;
 
             Ext.Viewport.setMasked(false);
@@ -539,7 +387,7 @@ Genesis.constants =
             db['currFbId'] = facebook_id;
             db['fbAccountId'] = response.email;
             var params = db['fbResponse'] = me.createFbResponse(response);
-            Genesis.constants.setLocalDB(db);
+            Genesis.db.setLocalDB(db);
 
             console.debug('You\`ve logged into Facebook! ' + '\n' + //
             'Email(' + db['fbAccountId'] + ')' + '\n' + //
@@ -573,7 +421,7 @@ Genesis.constants =
    facebook_onLogout : function(cb, contactFB)
    {
       var me = this;
-      var db = me.getLocalDB();
+      var db = Genesis.db.getLocalDB();
 
       cb = cb || Ext.emptyFn;
       me._fb_disconnect();
@@ -581,7 +429,7 @@ Genesis.constants =
       delete db['fbAccountId'];
       delete db['fbResponse'];
       delete db['fbExpiresIn'];
-      Genesis.constants.setLocalDB(db);
+      Genesis.db.setLocalDB(db);
 
       Ext.Viewport.setMasked(false);
       try
@@ -783,6 +631,209 @@ Genesis.fn =
    }
 }
 
+// **************************************************************************
+// Persistent DB API
+// **************************************************************************
+Genesis.db =
+{
+   getLocalStorage : function()
+   {
+      return window.localStorage;
+   },
+   //
+   // Redeem Index DB
+   //
+   getRedeemIndexDB : function(index)
+   {
+      try
+      {
+         if(!this.kickbakRedeemIndex)
+         {
+            this.kickbakRedeemIndex = Ext.decode(this.getLocalStorage().getItem('kickbakRedeemIndex'));
+         }
+      }
+      catch(e)
+      {
+      }
+      return ((this.kickbakRedeemIndex) ? ( index ? this.kickbakRedeemIndex[index] : this.kickbakRedeemIndex) :
+      {
+      });
+   },
+   addRedeemIndexDB : function(index, value)
+   {
+      var db = this.getRedeemIndexDB();
+      db[index] = value;
+      //console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
+      //this.getLocalStorage().setItem('kickbakRedeemIndex', Ext.encode(db));
+   },
+   setRedeemIndexDB : function(db)
+   {
+      //console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
+      //this.getLocalStorage().setItem('kickbakRedeemIndex', Ext.encode(db));
+   },
+   //
+   // Redeem Sorted DB
+   //
+   getRedeemSortedDB : function(index)
+   {
+      try
+      {
+         if(!this.kickbakRedeemSorted)
+         {
+            this.kickbakRedeemSorted = Ext.decode(this.getLocalStorage().getItem('kickbakRedeemSorted'));
+         }
+      }
+      catch(e)
+      {
+
+      }
+      return ((this.kickbakRedeemSorted) ? ( index ? this.kickbakRedeemSorted[index] : this.kickbakRedeemSorted) : []);
+   },
+   addRedeemSortedDB : function(key)
+   {
+      var dbS = this.getRedeemSortedDB();
+
+      if(dbS.length >= this.redeemDBSize)
+      {
+         // Remove the oldest Entry
+         console.debug("Database Entry is full, discarded oldest Entry with timestamp (" + Date(dbS[0][1]) + ")");
+         dbS = dbS.splice(0, 1);
+      }
+      else
+      {
+         dbS['currCount'] = (Ext.isDefined(dbS['currCount'])) ? (dbS['currCount'] + 1) : 0;
+      }
+      dbS.push(key);
+      dbS = Ext.Array.sort(dbS, function(a, b)
+      {
+         // Compare TimeStamps
+         return (a[1] - b[1]);
+      });
+      this.setRedeemSortedDB(dbS);
+   },
+   setRedeemSortedDB : function(db)
+   {
+      //console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
+      //this.getLocalStorage().setItem('kickbakRedeemSorted', Ext.encode(db));
+   },
+   redeemDBSync : function()
+   {
+      var local = this.getLocalStorage();
+      local.setItem('kickbakRedeemSorted', Ext.encode(this.kickbakRedeemSorted));
+      local.setItem('kickbakRedeemIndex', Ext.encode(this.kickbakRedeemIndex));
+   },
+   redeemDBCleanup : function()
+   {
+      console.log("================================");
+      console.log("Redeem Database has been Started");
+      console.log("================================");
+
+      var now = Date.now();
+      dbI = this.getRedeemIndexDB();
+      dbS = this.getRedeemSortedDB();
+      var total = 0;
+      var currCount = dbS['currCount'] || -1;
+      console.debug('currCount = ' + currCount);
+
+      while((currCount >= 0) && (dbS.length > 0))
+      {
+         if(dbS[0][1] > now)
+         {
+            total++;
+            currCount--;
+
+            // Sorted array size is reduced by 1
+            delete dbI[dbS[0]];
+            dbS = dbS.splice(0, 1);
+
+            dbS['currCount'] = currCount;
+         }
+         else
+         {
+            // Cleanup done!
+            break;
+         }
+      }
+      Genesis.constants.redeemDBSync();
+
+      console.debug('currCount = ' + dbS['currCount'] + ', total = ' + total)
+      console.log("=================================");
+      console.log("Redeem Database has been resetted");
+      console.log("=================================");
+   },
+   //
+   // LocalDB
+   //
+   getLocalDB : function()
+   {
+      var db = this.getLocalStorage().getItem('kickbak');
+      return ((db) ? Ext.decode(db) :
+      {
+      });
+   },
+   setLocalDB : function(db)
+   {
+      console.debug("Setting KickBak DB[" + Ext.encode(db) + "]");
+      this.getLocalStorage().setItem('kickbak', Ext.encode(db));
+   },
+   setLocalDBAttrib : function(attrib, value)
+   {
+      console.debug("Setting KickBak Attrib[" + attrib + "] to [" + value + "]");
+      var db = this.getLocalDB();
+      db[attrib] = value;
+      this.setLocalDB(db);
+   },
+   removeLocalDBAttrib : function(attrib)
+   {
+      var db = this.getLocalDB();
+      delete db[attrib];
+      this.setLocalDB(db);
+   },
+   //
+   // Referral DB
+   //
+   getReferralDBAttrib : function(index)
+   {
+      var db = this.getReferralDB();
+      return db[index];
+   },
+   addReferralDBAttrib : function(index, value)
+   {
+      var db = this.getReferralDB();
+      db[index] = value;
+      this.setReferralDB(db);
+   },
+   removeReferralDBAttrib : function(index)
+   {
+      var db = this.getReferralDB();
+      db[index] = value;
+      this.setReferralDB(db);
+   },
+   getReferralDB : function()
+   {
+      var db = this.getLocalStorage().getItem('kickbakreferral');
+      return ((db) ? Ext.decode(db) :
+      {
+      });
+   },
+   setReferralDB : function(db)
+   {
+      console.debug("Setting KickBak DB[" + Ext.encode(db) + "]");
+      this.getLocalStorage().setItem('kickbakreferral', Ext.encode(db));
+   },
+   //
+   // Reset Local DB
+   //
+   resetStorage : function()
+   {
+      this.facebook_onLogout(null, false);
+      this.removeLocalDBAttrib('auth_code');
+   }
+}
+
+// **************************************************************************
+// Ext.dom.Element
+// **************************************************************************
 Ext.define('Genesis.dom.Element',
 {
    override : 'Ext.dom.Element',
@@ -812,6 +863,10 @@ Ext.define('Genesis.dom.Element',
       this.dom.style.padding = padding;
    },
 });
+
+// **************************************************************************
+// Ext.Component
+// **************************************************************************
 Ext.define('Genesis.Component',
 {
    override : 'Ext.Component',
@@ -890,7 +945,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   {
                      if(metaData['session_timeout'])
                      {
-                        Genesis.constants.removeLocalDBAttrib('auth_code');
+                        Genesis.db.removeLocalDBAttrib('auth_code');
                         vport.setLoggedIn(false);
                         vport.onFeatureTap('MainPage', 'login');
                         return;
@@ -918,7 +973,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   callback : function(button)
                   {
                      vport.setLoggedIn(false);
-                     Genesis.constants.removeLocalDBAttrib('auth_code');
+                     Genesis.db.removeLocalDBAttrib('auth_code');
                      var controller = app.getController('MainPage');
                      app.dispatch(
                      {
@@ -1014,7 +1069,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
     */
    buildRequest : function(operation)
    {
-      var db = Genesis.constants.getLocalDB();
+      var db = Genesis.db.getLocalDB();
       if(db['auth_code'])
       {
          this.setExtraParam("auth_token", db['auth_code']);

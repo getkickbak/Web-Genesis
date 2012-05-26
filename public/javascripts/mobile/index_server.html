@@ -125,7 +125,7 @@
             document.addEventListener("online", function()
             {
                console.log("Phone is Online");
-               Genesis.constants.redeemDBCleanup();
+               Genesis.db.redeemDBCleanup();
                /*
                 if(Ext.device)
                 {
@@ -177,7 +177,7 @@
             document.addEventListener("pause", function()
             {
                console.log("App is Paused");
-               Genesis.constants.redeemDBSync();
+               Genesis.db.redeemDBSync();
             }, false);
 
             document.addEventListener("resume", function()
@@ -195,7 +195,7 @@
                    });
                    }
                    */
-                  Genesis.constants.redeemDBCleanup();
+                  Genesis.db.redeemDBCleanup();
                }
             }, false);
             window.addEventListener("batterylow", function(info)
@@ -206,7 +206,7 @@
                   messsage : 'Battery is at ' + info.level + '%'
                });
                Ext.device.Notification.vibrate();
-               Genesis.constants.redeemDBSync();
+               Genesis.db.redeemDBSync();
             }, false);
 
             window.addEventListener("batterycritical", function(info)
@@ -219,7 +219,7 @@
                });
                Ext.device.Notification.vibrate();
                Ext.device.Notification.beep();
-               Genesis.constants.redeemDBSync();
+               Genesis.db.redeemDBSync();
             }, false);
 
             console.log("onDeviceReady");

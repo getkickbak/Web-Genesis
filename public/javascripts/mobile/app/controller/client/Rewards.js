@@ -160,30 +160,37 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         Ext.device.Notification.show(
+         me.referredByFriendsMsg(null, function()
          {
-            title : 'Earning Reward Points',
-            message : me.authCodeReqMsg,
-            buttons : ['OK', 'Cancel'],
-            callback : function(btn)
+            Ext.device.Notification.show(
             {
-               if(btn.toLowerCase() == 'ok')
+               title : 'Earning Reward Points',
+               message : me.authCodeReqMsg,
+               buttons : ['OK', 'Cancel'],
+               callback : function(btn)
                {
-                  me.scanQRCode();
+                  if(btn.toLowerCase() == 'ok')
+                  {
+                     me.scanQRCode();
+                  }
                }
-            }
+            });
          });
       }
    },
    metaDataHandler : function(metaData)
    {
       var me = this;
+      var viewport = me.getViewPortCntlr();
       var exit = function()
       {
          //
+         // Clear Referral DB
+         //
+         Genesis.db.removeReferralDBAttrib("m" + viewport.getVenue().getMerchant().getId());
+         //
          // Go back to Main Reward Screen
          //
-         //me.popView();
          me.pushView(me.getRewards());
       };
 
@@ -191,7 +198,6 @@ Ext.define('Genesis.controller.client.Rewards',
       // Update points from the purchase or redemption
       //
       var cstore = Ext.StoreMgr.get('CustomerStore');
-      var viewport = me.getViewPortCntlr();
       var customerId = viewport.getCustomer().getId();
       if(metaData['account_points'])
       {

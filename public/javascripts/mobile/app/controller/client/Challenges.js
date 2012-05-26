@@ -107,6 +107,7 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    metaData : null,
    reservedReferralId : 0,
+   referralCbFn : null,
    samplePhotoURL : 'http://photos.getkickbak.com/paella9finish1.jpg',
    noPhotoUploadedMsg : 'Failed to upload photo to server.',
    fbUploadFailedMsg : 'Failed to upload the photo onto your Facebook account',
@@ -165,7 +166,7 @@ Ext.define('Genesis.controller.client.Challenges',
             options.mimeType = "image/jpg";
             options.params =
             {
-               "auth_token" : Genesis.constants.getLocalDB()['auth_code']
+               "auth_token" : Genesis.db.getLocalDB()['auth_code']
             };
             options.chunkedMode = true;
 
@@ -628,15 +629,29 @@ Ext.define('Genesis.controller.client.Challenges',
                                  customer = cstore.add(metaData['customer'])[0];
                               }
                               me.setMode('profile');
-                              var app = me.getApplication();
-                              var controller = app.getController('Accounts');
-                              app.dispatch(
+                              
+                              //
+                              // Add to Referral DB
+                              //
+                              Genesis.db.addReferralDBAttrib("m" + customer.getMerchant().getId());
+                              
+                              if(me.referralCbFn)
                               {
-                                 action : 'onDisclose',
-                                 args : [cstore, customer],
-                                 controller : controller,
-                                 scope : controller
-                              });
+                                 me.referralCbFn();
+                                 me.referralCbFn = null;
+                              }
+                              else
+                              {
+                                 var app = me.getApplication();
+                                 var controller = app.getController('Accounts');
+                                 app.dispatch(
+                                 {
+                                    action : 'onDisclose',
+                                    args : [cstore, customer],
+                                    controller : controller,
+                                    scope : controller
+                                 });
+                              }
                            }, 1, me);
                         }
                      });

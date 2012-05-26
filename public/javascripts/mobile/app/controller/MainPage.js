@@ -182,7 +182,7 @@ Ext.define('Genesis.controller.MainPage',
 
                if(successful && metaData && metaData['auth_token'])
                {
-                  db = Genesis.constants.getLocalDB();
+                  db = Genesis.db.getLocalDB();
                   console.debug(//
                   "auth_code [" + db['auth_code'] + "]" + "\n" + //
                   "currFbId [" + db['currFbId'] + "]");
@@ -221,10 +221,10 @@ Ext.define('Genesis.controller.MainPage',
                if(authCode)
                {
                   console.debug("Login Auth Code - " + authCode)
-                  db = Genesis.constants.getLocalDB();
+                  db = Genesis.db.getLocalDB();
                   if(authCode != db['auth_code'])
                   {
-                     Genesis.constants.setLocalDBAttrib('auth_code', authCode);
+                     Genesis.db.setLocalDBAttrib('auth_code', authCode);
                   }
                }
 
@@ -398,7 +398,7 @@ Ext.define('Genesis.controller.MainPage',
          console.log("Resetting Session information ...")
          viewport.setFadeAnimation();
          vport.setLoggedIn(false);
-         Genesis.constants.removeLocalDBAttrib('auth_code');
+         Genesis.db.removeLocalDBAttrib('auth_code');
          if(db['currFbId'] > 0)
          {
             Genesis.constants.facebook_onLogout(null, true);
@@ -410,7 +410,7 @@ Ext.define('Genesis.controller.MainPage',
          if(db['auth_code'])
          {
             console.log("Logging out ...")
-            Customer['setLogoutUrl'](Genesis.constants.getLocalDB()['auth_code']);
+            Customer['setLogoutUrl'](Genesis.db.getLocalDB()['auth_code']);
             Ext.StoreMgr.get('CustomerStore').load(
             {
                jsonData :
@@ -473,7 +473,7 @@ Ext.define('Genesis.controller.MainPage',
       //
       // Forced to Login to Facebook
       //
-      Genesis.constants.removeLocalDBAttrib('currFbId');
+      Genesis.db.removeLocalDBAttrib('currFbId');
       Genesis.constants.facebook_onLogin(function(params)
       {
          console.log("Logging into Kickbak using Facebook account ...");
@@ -498,7 +498,7 @@ Ext.define('Genesis.controller.MainPage',
       var values = account.getValues();
       var user = Ext.create('Genesis.model.frontend.Account', values);
       var validateErrors = user.validate();
-      var response = Genesis.constants.getLocalDB()['fbResponse'] || null;
+      var response = Genesis.db.getLocalDB()['fbResponse'] || null;
 
       if(!validateErrors.isValid())
       {
@@ -543,7 +543,7 @@ Ext.define('Genesis.controller.MainPage',
    onSignIn : function(username, password)
    {
       //Cleanup any outstanding registrations
-      Genesis.constants.facebook_onLogout(null, Genesis.constants.getLocalDB()['currFbId'] > 0);
+      Genesis.constants.facebook_onLogout(null, Genesis.db.getLocalDB()['currFbId'] > 0);
 
       var me = this;
       var params =
@@ -602,7 +602,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    onCreateActivate : function(c, eOpts)
    {
-      var response = Genesis.constants.getLocalDB()['fbResponse'] || null;
+      var response = Genesis.db.getLocalDB()['fbResponse'] || null;
       if(response)
       {
          var form = this.getCreateAccount();

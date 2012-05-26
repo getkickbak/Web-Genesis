@@ -24,6 +24,7 @@ Ext.define('Genesis.controller.ControllerBase',
    errProcQRCodeMsg : 'Error Processing Authentication Code',
    cameraAccessMsg : 'Accessing your Camera Phone ...',
    updatingServerMsg : 'Updating Server ...',
+   referredByFriendsMsg : 'Have you been referred to by a friend to this merchant?',
    showScreenTimeoutExpireMsg : function(duration)
    {
       return duration + ' are up! Press OK to confirm.';
@@ -224,6 +225,38 @@ Ext.define('Genesis.controller.ControllerBase',
          console.debug("updateRewards Exception - " + e);
       }
       //
+   },
+   checkReferralPrompt : function(merchantId, cb)
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+
+      cb = cb || Ext.emptyFn;
+      merchantId = merchantId || viewport.getVenue().getMerchant().getId();
+      if((viewport.getCheckinInfo().customer.get('visits') == 0) && (Genesis.db.getReferralDBAttrib("m" + merchantId)))
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Friends Referral',
+            message : me.referredByFriendsMsg,
+            buttons : ['Yes', 'No'],
+            callback : function(btn)
+            {
+               if(btn.toLowerCase() == 'yes')
+               {
+                  viewport.onFeatureTap('client.Challenges', 'referrals');
+               }
+               else
+               {
+                  cb();
+               }
+            }
+         });
+      }
+      else
+      {
+         cb();
+      }
    },
    pushView : function(view)
    {

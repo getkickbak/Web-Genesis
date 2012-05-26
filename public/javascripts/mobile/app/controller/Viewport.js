@@ -383,7 +383,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    openMainPage : function()
    {
-      var db = Genesis.constants.getLocalDB();
+      var db = Genesis.db.getLocalDB();
       var loggedIn = (db['auth_code']) ? true : false;
       if(!merchantMode)
       {
