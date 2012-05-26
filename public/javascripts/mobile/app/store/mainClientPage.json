@@ -37,17 +37,17 @@
          "pageCntlr": "client.Challenges",
          "subFeature": "referrals"
       }, {
-         "name": "Check-ins",
-         "photo_url": "resources/themes/images/v1/mainicons/checkin.png",
-         "desc": "Check-ins Menu for Merchants Nearby",
-         "pageCntlr": "Checkins",
-         "subFeature": "checkin"
-      }, {
          "name": "Settings",
          "photo_url": "resources/themes/images/v1/mainicons/settings.png",
          "desc": "Settings",
          "pageCntlr": "Settings",
          "subFeature": "client"
+      }, {
+         "name": "Check-ins",
+         "photo_url": "resources/themes/images/v1/mainicons/checkin.png",
+         "desc": "Check-ins Menu for Merchants Nearby",
+         "pageCntlr": "Checkins",
+         "subFeature": "checkin"
       }
    ]
 }
