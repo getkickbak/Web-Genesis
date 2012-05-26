@@ -42,6 +42,10 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       return 'You\'ve earned ' + points + ' Points from this purchase!';
    },
+   getReferralMsg : function(points)
+   {
+      return 'You\'ve earned an additional ' + points + ' Points!' + Genesis.constants.addCRLF() + this.prizeCheckMsg;
+   },
    getVipMsg : function(points)
    {
       return 'You\'ve earned an additional ' + points + ' Points!' + Genesis.constants.addCRLF() + this.prizeCheckMsg;
@@ -53,6 +57,16 @@ Ext.define('Genesis.controller.client.Rewards',
       {
          title : 'VIP Challenge Update',
          message : this.getVipMsg(points),
+         callback : callback
+      });
+   },
+   referralPopUp : function(points, callback)
+   {
+      callback = callback || Ext.emptyFn;
+      Ext.device.Notification.show(
+      {
+         title : 'Referral Challenge Update',
+         message : this.getReferralMsg(points),
          callback : callback
       });
    },
@@ -213,7 +227,7 @@ Ext.define('Genesis.controller.client.Rewards',
          me.getRewards();
          // Preload page
          message = me.getPointsMsg(metaData['points']);
-         if(!metaData['vip_challenge'])
+         if(!metaData['vip_challenge'] && !metaData['vip_challenge'])
          {
             message += Genesis.constants.addCRLF() + me.prizeCheckMsg;
          }
@@ -228,6 +242,11 @@ Ext.define('Genesis.controller.client.Rewards',
                   me.vipPopUp(metaData['vip_challenge'].points, exit);
                }
                else
+               if((metaData['referral_points']))
+               {
+                  me.referralPopUp(metaData['referral_points'].points, exit);
+               }
+               else
                {
                   exit();
                }
@@ -240,6 +259,13 @@ Ext.define('Genesis.controller.client.Rewards',
          // Preload page
          me.getRewards();
          me.vipPopUp(metaData['vip_challenge'].points, exit);
+      }
+      else
+      if(metaData['referral_points'])
+      {
+         // Preload page
+         me.getRewards();
+         me.referralPopUp(metaData['referral_points'].points, exit);
       }
    },
    onPrizeStoreMetaChange : function(pstore, metaData)
