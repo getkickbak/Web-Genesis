@@ -7,7 +7,8 @@ Ext.define('Genesis.controller.ControllerBase',
       listeners :
       {
          'scannedqrcode' : 'onScannedQRcode',
-         'locationupdate' : 'onLocationUpdate'
+         'locationupdate' : 'onLocationUpdate',
+         'openpage' : 'onOpenPage'
       }
    },
    checkinMsg : 'Checking in ...',
@@ -158,6 +159,28 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return this.getViewPortCntlr().getView();
    },
+   onOpenPage : function(feature, subFeature)
+   {
+      if((appName == 'GetKickBak') && !Ext.device.Connection.isOnline() && (subFeature != 'login'))
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Network Error',
+            message : 'You have lost internet connectivity'
+         });
+         return;
+      }
+
+      var app = this.getApplication();
+      var controller = app.getController(feature);
+      app.dispatch(
+      {
+         action : (!subFeature) ? 'openMainPage' : 'openPage',
+         args : (!subFeature) ? [] : [subFeature],
+         controller : controller,
+         scope : controller
+      });
+   },
    updateRewards : function(metaData)
    {
       var me = this;
@@ -244,7 +267,7 @@ Ext.define('Genesis.controller.ControllerBase',
             {
                if(btn.toLowerCase() == 'yes')
                {
-                  viewport.onFeatureTap('client.Challenges', 'referrals');
+                  me.fireEvent('openpage', 'client.Challenges', 'referrals');
                }
                else
                {
@@ -289,7 +312,7 @@ Ext.define('Genesis.controller.ControllerBase',
       var viewport = me.getViewPortCntlr();
       viewport.setLoggedIn(true);
       me.getViewport().reset();
-      viewport.onFeatureTap('MainPage', 'main');
+      me.fireEvent('openpage', 'MainPage', 'main');
       console.log("LoggedIn, Going back to Main Page ...");
    },
    isOpenAllowed : function()

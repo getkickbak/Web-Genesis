@@ -17,7 +17,8 @@ Ext.define('Genesis.controller.MainPage',
       {
          'scannedqrcode' : 'onScannedQRcode',
          'locationupdate' : 'onLocationUpdate',
-         'authcoderecv' : 'onAuthCodeRecv'
+         'authcoderecv' : 'onAuthCodeRecv',
+         'openpage' : 'onOpenPage'
       },
       refs :
       {
@@ -387,8 +388,9 @@ Ext.define('Genesis.controller.MainPage',
    },
    onLogoutTap : function(b, e, eOpts, eInfo)
    {
-      var viewport = this.getViewport();
-      var vport = this.getViewPortCntlr();
+      var me = this;
+      var viewport = me.getViewport();
+      var vport = me.getViewPortCntlr();
       var flag = 0;
       //
       // Logout of Facebook
@@ -403,7 +405,7 @@ Ext.define('Genesis.controller.MainPage',
          {
             Genesis.constants.facebook_onLogout(null, true);
          }
-         vport.onFeatureTap('MainPage', 'login');
+         me.fireEvent('openpage', 'MainPage', 'login');
       }
       var _logout = function()
       {
@@ -573,7 +575,7 @@ Ext.define('Genesis.controller.MainPage',
             if(!operation.wasSuccessful())
             {
                Genesis.constants.resetStorage();
-               me.getViewPortCntlr().onFeatureTap('MainPage', 'login');
+               me.fireEvent('openpage', 'MainPage', 'login');
             }
          }
       });

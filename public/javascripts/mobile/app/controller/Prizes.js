@@ -16,7 +16,8 @@ Ext.define('Genesis.controller.Prizes',
       {
          'scannedqrcode' : 'onScannedQRcode',
          'locationupdate' : 'onLocationUpdate',
-         'redeemprize' : 'onRedeemPrize'
+         'redeemprize' : 'onRedeemPrize',
+         'openpage' : 'onOpenPage'
       },
       refs :
       {

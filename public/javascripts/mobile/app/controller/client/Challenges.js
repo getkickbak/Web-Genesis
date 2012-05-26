@@ -102,7 +102,8 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          'scannedqrcode' : 'onScannedQRcode',
          'locationupdate' : 'onLocationUpdate',
-         'fbphotouploadcomplete' : 'onFbPhotoUploadComplete'
+         'fbphotouploadcomplete' : 'onFbPhotoUploadComplete',
+         'openpage' : 'onOpenPage'
       }
    },
    metaData : null,
@@ -555,7 +556,7 @@ Ext.define('Genesis.controller.client.Challenges',
                         // Go back to Checked-in Merchant Account
                         //
                         me.metaData = null;
-                        viewport.onFeatureTap('MainPage', 'main');
+                        me.fireEvent('openpage', 'MainPage', 'main');
                      }
                   }
                });
@@ -629,12 +630,12 @@ Ext.define('Genesis.controller.client.Challenges',
                                  customer = cstore.add(metaData['customer'])[0];
                               }
                               me.setMode('profile');
-                              
+
                               //
                               // Add to Referral DB
                               //
                               Genesis.db.addReferralDBAttrib("m" + customer.getMerchant().getId());
-                              
+
                               if(me.referralCbFn)
                               {
                                  me.referralCbFn();

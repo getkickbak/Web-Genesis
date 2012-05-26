@@ -82,28 +82,6 @@ Ext.define('Genesis.controller.Viewport',
    gatherCheckinInfoMsg : 'Gathering Checkin information ...',
    retrieveChallengesMsg : 'Retrieving Challenges ...',
    fbShareSuccessMsg : 'Posted on your Timeline!',
-   onFeatureTap : function(feature, subFeature)
-   {
-      if((appName == 'GetKickBak') && !Ext.device.Connection.isOnline() && (subFeature != 'login'))
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Network Error',
-            message : 'You have lost internet connectivity'
-         });
-         return;
-      }
-
-      var app = this.getApplication();
-      var controller = app.getController(feature);
-      app.dispatch(
-      {
-         action : (!subFeature) ? 'openMainPage' : 'openPage',
-         args : (!subFeature) ? [] : [subFeature],
-         controller : controller,
-         scope : controller
-      });
-   },
    onShareMerchantTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
@@ -201,7 +179,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    onAccountsButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.onFeatureTap('Accounts');
+      this.fireEvent('openpage', 'Accounts');
       console.log("Going to Accounts Page ...");
    },
    onChallengesButtonTap : function(b, e, eOpts, eInfo)
@@ -231,7 +209,7 @@ Ext.define('Genesis.controller.Viewport',
                //
                venue.challenges().add(operation.getRecords());
 
-               me.onFeatureTap('client.Challenges');
+               me.fireEvent('openpage', 'client.Challenges');
                console.log("Going to Challenges Page ...");
             }
          }
@@ -239,17 +217,17 @@ Ext.define('Genesis.controller.Viewport',
    },
    onRewardsButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.onFeatureTap('client.Rewards', 'rewards');
+      this.fireEvent('openpage', 'client.Rewards', 'rewards');
       console.log("Going to Client Rewards Page ...");
    },
    onRedemptionsButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.onFeatureTap('client.Redemptions', 'redemptions');
+      this.fireEvent('openpage', 'client.Redemptions', 'redemptions');
       console.log("Going to Client Redemptions Page ...");
    },
    onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.onFeatureTap('Prizes');
+      this.fireEvent('openpage', 'Prizes');
       console.log("Going to Prizes Page ...");
    },
    onHomeButtonTap : function(b, e, eOpts, eInfo)
@@ -257,7 +235,7 @@ Ext.define('Genesis.controller.Viewport',
       var vport = this.getViewport();
       vport.reset();
       vport.setFlipAnimation();
-      this.onFeatureTap('MainPage');
+      this.fireEvent('openpage', 'MainPage');
       console.log("Going back to HomePage ...");
    },
    onTabBarTabChange : function(bar, newTab, oldTab, eOpts)
@@ -419,7 +397,7 @@ Ext.define('Genesis.controller.Viewport',
          else
          {
             console.debug("Going to Login Page ...");
-            this.onFeatureTap('MainPage', 'login');
+            this.fireEvent('openpage', 'MainPage', 'login');
          }
       }
    }
