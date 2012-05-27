@@ -179,7 +179,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    onAccountsButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.fireEvent('openpage', 'Accounts');
+      this.fireEvent('openpage', 'Accounts', null);
       console.log("Going to Accounts Page ...");
    },
    onChallengesButtonTap : function(b, e, eOpts, eInfo)
@@ -209,7 +209,7 @@ Ext.define('Genesis.controller.Viewport',
                //
                venue.challenges().add(operation.getRecords());
 
-               me.fireEvent('openpage', 'client.Challenges');
+               me.fireEvent('openpage', 'client.Challenges', null);
                console.log("Going to Challenges Page ...");
             }
          }
@@ -227,7 +227,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.fireEvent('openpage', 'Prizes');
+      this.fireEvent('openpage', 'Prizes', null);
       console.log("Going to Prizes Page ...");
    },
    onHomeButtonTap : function(b, e, eOpts, eInfo)
@@ -235,7 +235,7 @@ Ext.define('Genesis.controller.Viewport',
       var vport = this.getViewport();
       vport.reset();
       vport.setFlipAnimation();
-      this.fireEvent('openpage', 'MainPage');
+      this.fireEvent('openpage', 'MainPage', null);
       console.log("Going back to HomePage ...");
    },
    onTabBarTabChange : function(bar, newTab, oldTab, eOpts)
