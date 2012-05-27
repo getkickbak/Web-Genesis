@@ -191,8 +191,7 @@ class Api::V1::ChallengesController < ApplicationController
       logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT}")
       logger.debug("Challenge doesn't exists: #{Challenge.get(challenge_id).nil?}")
       logger.debug("ReferralChallengeRecord doesn't exists", ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id).nil?)
-      if (decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT) && 
-        (@challenge = Challenge.get(challenge_id)) 
+      if (decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT) && (@challenge = Challenge.get(challenge_id)) 
         if ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id).nil?
           logger.debug("Set authorized to true")
           authorized = true
@@ -206,6 +205,7 @@ class Api::V1::ChallengesController < ApplicationController
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.challenges.invalid_referral_code").split('\n') } }
       end  
+      return
     end
     
     logger.debug("Starting transaction")

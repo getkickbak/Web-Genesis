@@ -55,6 +55,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
           format.json { render :json => { :success => false, :message => t("api.purchase_rewards.invalid_code").split('\n') } }
         end  
+        return
       end
     end    
       

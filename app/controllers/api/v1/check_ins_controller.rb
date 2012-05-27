@@ -15,6 +15,7 @@ class Api::V1::CheckInsController < ApplicationController
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.check_ins.invalid_code").split('\n') } }  
         end  
+        return
       end
       checkInCode = CheckInCode.first(:auth_code => decrypted_data["auth_code"])
       if checkInCode.nil?

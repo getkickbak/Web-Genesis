@@ -62,6 +62,7 @@ class Api::V1::CustomersController < ApplicationController
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
         end
+        return
       end
     end
   end
@@ -104,6 +105,7 @@ class Api::V1::CustomersController < ApplicationController
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.customers.invalid_transfer_code").split('\n') } }
       end  
+      return
     end
     
     Customer.transaction do
