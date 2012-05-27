@@ -51,7 +51,7 @@ Ext.define('Genesis.controller.server.Redemptions',
       var me = this;
       var keys = Genesis.constants.getPrivKey();
       GibberishAES.size(256);
-      var dbI = Genesis.constants.getRedeemIndexDB();
+      var dbI = Genesis.db.getRedeemIndexDB();
       for(var key in keys)
       {
          try
@@ -88,8 +88,8 @@ Ext.define('Genesis.controller.server.Redemptions',
                //
                // Add to Persistent Store to make sure it cannot be rescanned again
                //
-               Genesis.constants.addRedeemSortedDB([encrypted, dbI[encrypted]]);
-               Genesis.constants.addRedeemIndexDB(encrypted, decrypted["expiry_ts"]);
+               Genesis.db.addRedeemSortedDB([encrypted, dbI[encrypted]]);
+               Genesis.db.addRedeemIndexDB(encrypted, decrypted["expiry_ts"]);
 
                var app = me.getApplication();
                var controller = app.getController('Prizes');
@@ -223,9 +223,9 @@ var _dbCleanup = function()
 {
    Ext.defer(function()
    {
-      Genesis.constants.redeemDBCleanup();
+      Genesis.db.redeemDBCleanup();
       _dbCleanup();
-   }, 1000 * 60 * 60 * 6);
+   }, 1000 * 60 * 60 * 3);
 };
 
 _dbCleanup();

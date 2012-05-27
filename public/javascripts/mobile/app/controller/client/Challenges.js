@@ -274,9 +274,9 @@ Ext.define('Genesis.controller.client.Challenges',
          }
       }
 
-      // Send QRCode to server for processing
+      // Request QRCode to server for processing
       //
-      Challenge['setSendReferralsUrl'](merchant.getId());
+      Challenge['setSendReferralsUrl'](me.selectedItem.getId());
       Challenge.load(me.selectedItem.getId(),
       {
          jsonData :
@@ -462,13 +462,13 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       var type = (me.metaData) ? me.selectedItem.get('type').value : 'referral';
 
-      if(qrcode)
+      if(qrcode != null)
       {
          switch (type)
          {
             case 'referral' :
             {
-               me.onCompleteChallenge(qrcode, null, null, null);
+               me.onCompleteReferralChallenge(qrcode);
                break;
             }
             default:
@@ -579,6 +579,7 @@ Ext.define('Genesis.controller.client.Challenges',
          params =
          {
          }
+         Challenge['setCompleteReferralChallengeURL'](id);
       }
       else
       {
@@ -590,10 +591,10 @@ Ext.define('Genesis.controller.client.Challenges',
             latitude : position.coords.getLatitude(),
             longitude : position.coords.getLongitude(),
          }
+         Challenge['setCompleteChallengeURL'](id);
       }
 
       console.log("Completing Challenge ID(" + id + ")");
-      Challenge['setCompleteChallengeURL'](id);
       Challenge.load(id,
       {
          jsonData :

@@ -159,7 +159,7 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return this.getViewPortCntlr().getView();
    },
-   onOpenPage : function(feature, subFeature, cb)
+   onOpenPage : function(feature, subFeature, eOpts, eInfo, cb)
    {
       if((appName == 'GetKickBak') && !Ext.device.Connection.isOnline() && (subFeature != 'login'))
       {

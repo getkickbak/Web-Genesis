@@ -729,8 +729,8 @@ Genesis.db =
       console.log("================================");
 
       var now = Date.now();
-      dbI = this.getRedeemIndexDB();
-      dbS = this.getRedeemSortedDB();
+      var dbI = this.getRedeemIndexDB();
+      var dbS = this.getRedeemSortedDB();
       var total = 0;
       var currCount = dbS['currCount'] || -1;
       console.debug('currCount = ' + currCount);
@@ -754,7 +754,7 @@ Genesis.db =
             break;
          }
       }
-      Genesis.constants.redeemDBSync();
+      Genesis.db.redeemDBSync();
 
       console.debug('currCount = ' + dbS['currCount'] + ', total = ' + total)
       console.log("=================================");
@@ -826,7 +826,7 @@ Genesis.db =
    //
    resetStorage : function()
    {
-      this.facebook_onLogout(null, false);
+      Genesis.constants.facebook_onLogout(null, false);
       this.removeLocalDBAttrib('auth_code');
    }
 }

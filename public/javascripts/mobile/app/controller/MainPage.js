@@ -409,10 +409,11 @@ Ext.define('Genesis.controller.MainPage',
       }
       var _logout = function()
       {
-         if(db['auth_code'])
+         var authCode = Genesis.db.getLocalDB()['auth_code'];
+         if(authCode)
          {
             console.log("Logging out ...")
-            Customer['setLogoutUrl'](Genesis.db.getLocalDB()['auth_code']);
+            Customer['setLogoutUrl'](authCode);
             Ext.StoreMgr.get('CustomerStore').load(
             {
                jsonData :
@@ -574,7 +575,7 @@ Ext.define('Genesis.controller.MainPage',
             //
             if(!operation.wasSuccessful())
             {
-               Genesis.constants.resetStorage();
+               Genesis.db.resetStorage();
                me.fireEvent('openpage', 'MainPage', 'login');
             }
          }
