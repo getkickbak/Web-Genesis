@@ -88,7 +88,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             @customer.points += challenge.data.referral_points
             referral_record.status = :complete
             referral_record.update_ts = now
-            referra_record.save
+            referral_record.save
             @referral_challenge = true
             @referral_points = challenge.data.referral_points
           end
