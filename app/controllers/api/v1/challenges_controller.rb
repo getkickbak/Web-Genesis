@@ -205,7 +205,7 @@ class Api::V1::ChallengesController < ApplicationController
         if authorized
           now = Time.now
           record = ReferralChallengeRecord.create(
-            :referrer_id => decrpted_data["refr_id"],
+            :referrer_id => decrypted_data["refr_id"],
             :referral_id => @customer.id,
             :points => @challenge.points,
             :referral_points => @challenge.data.referral_points,
