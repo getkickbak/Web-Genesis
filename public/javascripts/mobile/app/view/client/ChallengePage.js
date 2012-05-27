@@ -18,7 +18,8 @@ Ext.define('Genesis.view.client.ChallengePage',
       {
          docked : 'bottom',
          cls : 'checkInNow',
-         tag : 'checkInNow',
+         tag : 'challengeContainer',
+         hidden : true,
          xtype : 'container',
          layout :
          {
@@ -56,11 +57,11 @@ Ext.define('Genesis.view.client.ChallengePage',
             tpl : '{description}'
          }
          /*,
-         {
-            cls : 'itemDescName',
-            tpl : '{name}'
-         }
-         */]
+          {
+          cls : 'itemDescName',
+          tpl : '{name}'
+          }
+          */]
       }]
    },
    takePhoto : function()
