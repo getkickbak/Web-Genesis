@@ -12,7 +12,7 @@ node :metaData do
 		:account_points => @customer.points,
 		:account_visits => @customer.visits,
 		:points => @points,
-		:referral_challenge = (
+		:referral_challenge => (
 				{
 					:points => @referral_points
 				} if @referral_challenge	
