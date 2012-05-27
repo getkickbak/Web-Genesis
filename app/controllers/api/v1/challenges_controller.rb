@@ -207,6 +207,7 @@ class Api::V1::ChallengesController < ApplicationController
       end  
     end
     
+    logger.debug("Starting transaction")
     Customer.transaction do
       begin
         if authorized
