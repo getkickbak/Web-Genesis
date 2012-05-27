@@ -180,13 +180,13 @@ class Api::V1::ChallengesController < ApplicationController
     begin
       cipher = Gibberish::AES.new(@customer.merchant.auth_code)
       decrypted = cipher.dec(data[1])
-      #logger.debug("decrypted text: #{decrypted}")
+      logger.debug("decrypted text: #{decrypted}")
       decrypted_data = JSON.parse(decrypted)
       referrer_id = decrypted_data["refr_id"]
       challenge_id = decrypted_data["chg_id"]
       logger.debug("decrypted type: #{decrypted_data["type"]}")
       logger.debug("decrypted challenge_id: #{challenge_id}")
-      logger.debug("decrypted data: #{data}")
+      logger.debug("decrypted data: #{data[1]}")
       logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT}")
       logger.debug("Challenge doesn't exists: #{Challenge.get(challenge_id).nil?}")
       logger.debug("ReferralChallengeRecord doesn't exists", ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id, :challenge_id => challenge_id).nil?)
