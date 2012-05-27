@@ -19,6 +19,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     
     @prize = nil
     authorized = false
+    invalid_code = false
     if APP_PROP["DEBUG_MODE"]
       data = String.random_alphanumeric(32)
       data_expiry_ts = Time.now
@@ -38,11 +39,15 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         #logger.debug("decrypted data: #{data}")
         #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::EARN_POINTS}")
         #logger.debug("Time comparison: #{data_expiry_ts >= Time.now}")
-        #logger.debug("EarnRewardRecord comparison: #{EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?}")
-        if (decrypted_data["type"] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
-          amount = decrypted_data["amount"].to_f
-          #logger.debug("Set authorized to true")
-          authorized = true
+        #logger.debug("EarnRewardRecord doesn't exists: #{EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?}")
+        if (decrypted_data["type"] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now) 
+          if EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
+            amount = decrypted_data["amount"].to_f
+            #logger.debug("Set authorized to true")
+            authorized = true
+          end
+        else
+          invalid_code = true    
         end  
       rescue
         logger.info("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), invalid authentication code")
@@ -58,6 +63,33 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         if authorized
           #logger.debug("Authorized to earn points.")
           now = Time.now
+          challenge_type_id = ChallengeType.value_to_id["referral"]
+          challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
+          @referral_challenge = false
+          @referral_points = 0
+          if challenge && (@customer.visits == 0) && (referral_record = ReferralChallengeRecord.first(:referral_id => @customer.id, :status => :pending))
+            referrer = Customer.get(referral_record.referrer_id)
+            record = EarnRewardRecord.new(
+              :challenge_id => challenge.id,
+              :venue_id => @venue.id,
+              :data => "",
+              :data_expiry_ts => ::Constant::MIN_TIME,
+              :points => challenge.points,
+              :created_ts => now,
+              :update_ts => now
+            )
+            record.merchant = @venue.merchant
+            record.user = referrer
+            record.save
+            referrer.points += challenge.points
+            referrer.save
+            @customer.points += challenge.data.referral_points
+            referral_record.status = :complete
+            referral_record.update_ts = now
+            referra_record.save
+            @referral_challenge = true
+            @referral_points = challenge.data.referral_points
+          end
           challenge_type_id = ChallengeType.value_to_id["vip"]
           challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
           @vip_challenge = false
@@ -66,10 +98,11 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             record = EarnRewardRecord.new(
               :challenge_id => challenge.id,
               :venue_id => @venue.id,
-              :data => data,
-              :data_expiry_ts => data_expiry_ts,
+              :data => "",
+              :data_expiry_ts => ::Constant::MIN_TIME,
               :points => challenge.points,
-              :created_ts => now
+              :created_ts => now,
+              :update_ts => now
             )
             record.merchant = @venue.merchant
             record.user = current_user
@@ -87,7 +120,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             :data_expiry_ts => data_expiry_ts,
             :points => @points,
             :amount => amount,
-            :created_ts => now
+            :created_ts => now,
+            :update_ts => now
           )
           record.merchant = @venue.merchant
           record.user = current_user
@@ -192,15 +226,24 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             )
             @eligible_rewards << item  
           end
+          if @referral_challenge
+            UserMailer.referral_challenge_confirm_email(referrer.user, @customer.user, @venue.merchant, referral_record)
+          end
           logger.info("User(#{current_user.id}) successfully earned #{@points} at Venue(#{@venue.id})")
           render :template => '/api/v1/purchase_rewards/earn'
           mutex.release
           #logger.debug("Cache mutex released.")
         else
-          logger.info("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), authentication code expired")
+          if invalid_code
+            msg = t("api.purchase_rewards.invalid_code").split('\n')
+            logger.info("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), invalid authentication code")
+          else
+            msg = t("api.purchase_rewards.expired_code").split('\n')
+            logger.info("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), authentication code expired")
+          end
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.expired_code").split('\n') } }
+            format.json { render :json => { :success => false, :message => msg } }
           end
         end  
       rescue DataMapper::SaveFailureError => e

@@ -32,11 +32,9 @@ class Api::V1::CheckInsController < ApplicationController
         @venue = Venue.first(:offset => 0, :limit => 1)
       end
     end  
-    new_customer = false
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
     if @customer.nil?
       @customer = Customer.create(@venue.merchant, current_user)
-      new_customer = true
     end
     authorize! :update, @customer
     
@@ -52,18 +50,6 @@ class Api::V1::CheckInsController < ApplicationController
     CheckIn.transaction do
       begin
         now = Time.now
-        if new_customer
-          challenge_type_id = ChallengeType.value_to_id["referral"]
-          challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
-          if challenge
-            referral_challenge = ReferralChallenge.first(ReferralChallenge.merchant.id => @venue.merchant.id, :ref_email => current_user.email)
-            if referral_challenge
-              referral_customer = Customer.first(Customer.merchant.id => @venue.merchant.id, :user_id => referral_challenge.user.id)
-              referral_customer.points += challenge.points
-              referral_customer.save
-            end
-          end
-        end
         last_check_in = CheckIn.create(@venue, current_user, @customer)
         @winners_count = EarnPrize.count(EarnPrize.merchant.id => @venue.merchant.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
         @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])

@@ -12,11 +12,16 @@ node :metaData do
 		:account_points => @customer.points,
 		:account_visits => @customer.visits,
 		:points => @points,
+		:referral_challenge = (
+				{
+					:points => @referral_points
+				} if @referral_challenge	
+			),
 		:vip_challenge => (
 				{
 					:points => @vip_points
 				} if @vip_challenge
-			),
+			),	
 		:rewards => (
 			@rewards.map do |r|
 		 		partial('api/v1/customer_rewards/base', :object => r)

@@ -18,16 +18,18 @@ class Api::V1::CustomersController < ApplicationController
     logger.info("Transfer points Customer(#{@customer.id}), User(#{current_user.id})")
     Customer.transaction do
       begin
-        type = params[:type]
+        now = Time.now
+        @type = params[:type]
         points = params[:points].to_i
         if @customer.points >= points
           record = TransferPointsRecord.create(
             :sender_id => @customer.id,
             :points => points,
-            :created_ts => Time.now,
-            :expiry_date => 1.month.from_now
+            :expiry_date => 1.month.from_now,
+            :created_ts => now,
+            :update_ts => now
           )
-          if type == "email"
+          if @type == "email"
             data = { 
               :type => EncryptedDataType::POINTS_TRANSFER_EMAIL,
               :id => record.id
@@ -37,7 +39,6 @@ class Api::V1::CustomersController < ApplicationController
             @subject = t("api.customers.email_subject_points_transfer")
             @body = TransferPoints.new(current_user, @customer.merchant, record).render_html
             logger.info("User(#{current_user.id}) successfully created email transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
-            render :template => '/api/v1/customers/transfer_points_email'   
           else
             data = { 
               :type => EncryptedDataType::POINTS_TRANSFER_DIRECT,
@@ -46,8 +47,8 @@ class Api::V1::CustomersController < ApplicationController
             cipher = Gibberish::AES.new(@customer.merchant.auth_code)
             @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
             logger.info("User(#{current_user.id}) successfully created direct transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
-            render :template => '/api/v1/customers/transfer_points_direct'
           end
+          render :template => '/api/v1/customers/transfer_points'
         else
           logger.info("User(#{current_user.id}) failed to create transfer qr code worth #{points} points for Customer Account(#{@customer.id}), insufficient points")
           respond_to do |format|
@@ -76,6 +77,7 @@ class Api::V1::CustomersController < ApplicationController
     
     logger.info("Receive points Customer(#{@customer.id}), User(#{current_user.id})")
     authorized = false
+    invalid_code = false
     
     begin
       cipher = Gibberish::AES.new(@customer.merchant.auth_code)
@@ -86,12 +88,15 @@ class Api::V1::CustomersController < ApplicationController
       #logger.debug("decrypted type: #{decrypted_data["type"]}")
       #logger.debug("decrypted id: #{transfer_id}")
       #logger.debug("decrypted data: #{data}")
-      #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::TRANSFER_POINTS}")
-      #logger.debug("TranferPointsRecord comparison: #{TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_ts.gte => Time.now)}")
-      if (decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL || decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_DIRECT) && 
-          (@record = TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_date.gte => Date.today))
-        #logger.debug("Set authorized to true")
-        authorized = true
+      #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL && decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_DIRECT}")
+      #logger.debug("TranferPointsRecord doesn't exists: #{TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_ts.gte => Time.now).nil?}")
+      if (decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL || decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_DIRECT)
+        if (@record = TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_date.gte => Date.today))
+          #logger.debug("Set authorized to true")
+          authorized = true
+        end
+      else
+        invalid_code = true 
       end  
     rescue
       logger.info("Customer(#{@customer.id}) failed to receive points, invalid transfer code")
@@ -114,7 +119,7 @@ class Api::V1::CustomersController < ApplicationController
             @customer.points += @record.points
             @customer.save
             @record.recipient_id = @customer.id
-            @record.status = :completed
+            @record.status = :complete
             @record.update_ts = Time.now
             @record.save
             if decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL
@@ -131,10 +136,16 @@ class Api::V1::CustomersController < ApplicationController
           end
           mutex.release
         else
-          logger.info("Customer(#{@customer.id}) failed to receive points, transfer code expired")
+          if invalid_code
+            msg = t("api.customers.invalid_transfer_code").split('\n')
+            logger.info("Customer(#{@customer.id}) failed to receive points, invalid transfer code")
+          else
+            msg = t("api.customers.expired_transfer_code").split('\n')
+            logger.info("Customer(#{@customer.id}) failed to receive points, transfer code expired")  
+          end
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.customers.expired_transfer_code").split('\n') } }
+            format.json { render :json => { :success => false, :message => msg } }
           end
         end
       rescue DataMapper::SaveFailureError => e

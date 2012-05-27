@@ -118,6 +118,8 @@ class Challenge
       if self.data.is_a? ActiveSupport::HashWithIndifferentAccess
         if self.type.value == 'vip'
           self.data = CheckInData.new(self.data)  
+        elsif self.type.value == 'referral'
+          self.data = ReferralData.new(self.data)  
         end
       end
       if !self.data.valid?

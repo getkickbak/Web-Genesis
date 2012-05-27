@@ -129,13 +129,18 @@ en:
       challenges:
         expired_code: "Authorization code no longer valid."
         invalid_code: "Authorization code is not valid."
+        invalid_referral_code: "Referral code is not valid."
+        missing_requirements: "Something went wrong."
         qualified_visits: "Earn %s bonus %s with %s more %s!"
         start_failure: "Trouble starting the challenge.\nPlease try again."
         complete_failure: "Trouble completing the challenge.\nPlease try again."
+        complete_referral_failure: "Trouble completing referral.\nPlease try again."
         limit_reached_ok: "Thank you for completing this challenge!"
         limit_reached_invalid: "You can't do this more than %s %s a %s!"
         vip_success: "You are only %s %s away from %s bonus points!"
         unsupported_success: "Nothing to do here."
+        email_subject_referral_challenge: "KICKBAK Referral"
+        email_subject_confirm_referral_challenge: "KICKBAK Referral - Confirmation"
       check_ins:
         invalid_code: "Invalid check-in code.\nPlease try again."
         create_failure: "Trouble with check-in.\nPlease try again." 
@@ -145,8 +150,8 @@ en:
         invalid_transfer_code: "Transfer code is not valid."
         expired_transfer_code: "Transfer code is no longer valid."
         receive_points_failure: "Trouble receiving points.\nPlease try again." 
-        email_subject_points_transfer: "KICKBAK Points Transfer" 
-        email_subject_confirm_points_transfer: "KICKBAK Points Transfer - Confirmation"
+        email_subject_points_transfer: "KICKBAK Reward Points Transfer" 
+        email_subject_confirm_points_transfer: "KICKBAK Reward Points Transfer - Confirmation"
       customer_rewards:
         not_available: "Sorry, but the reward is not available at this venue!"
         insufficient_points: "Not enough points to redeem reward."
@@ -172,6 +177,9 @@ en:
         create_from_facebook_failure: "Trouble with facebook sign in.\nPlease try again."
         destroy_failure: "Trouble with logout.\nPlease try again."  
   admin:
+      marketing:
+        update_poster_image_success: "Poster successfully updated."
+        update_checkin_image_success: "Table topper successfully updated."
       merchants:
         create_success: "Merchant was successfully created."
         update_success: "Merchant was successfully updated."

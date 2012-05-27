@@ -319,6 +319,7 @@ namespace :db do
       {
         :name => (I18n.t "challenge.type.referral.name"),
         :description => (I18n.t "challenge.type.referral.description"),
+        :data => ActiveSupport::HashWithIndifferentAccess.new(:referral_points => rand(10) + 10),
         :require_verif => false,
         :points => rand(10) + 10
       },

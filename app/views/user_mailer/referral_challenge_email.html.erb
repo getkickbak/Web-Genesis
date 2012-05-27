@@ -19,13 +19,16 @@
 						============================================================
 						<br>
 						<br>
-						<%= @sender.name %> has sent you a transfer of <%= "#{@record.points} reward #{t('api.points', :count => @record.points)}" %> that can be used to redeem fabulous rewards at <%= @merchant.name %>.
+						<%= @sender.name %> really likes <%= @merchant.name %> and wants you to give it a try!
 						<br>
 						<br>
-						To deposit this transfer, scan the QR code in the attachment with your KICKBAK app.
+						To thank you for being their customer, you will receive <%= "#{@challenge.data.referral_points reward t('api.point', :count => @challenge.data.referral_points)}" %> on your first visit!
 						<br>
 						<br>
-						Expiry Date: <%= @record.expiry_date.strftime("%b %d, %Y") %>
+						These points can be used to redeem fabulous rewards at <%= @merchant.name %>.
+						<br
+						<br>
+						To complete the referral, all you need to do is scan the QR code in the attachment with your KICKBAK app. 
 						<br>
 						<br>
 					</div>
