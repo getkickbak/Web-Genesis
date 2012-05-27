@@ -193,7 +193,7 @@ class Api::V1::ChallengesController < ApplicationController
       if (decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT) && 
         (@challenge = Challenge.get(challenge_id)) 
         if ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id, :challenge_id => challenge_id).nil?
-          #logger.debug("Set authorized to true")
+          logger.debug("Set authorized to true")
           authorized = true
         else
           already_referred = true  
