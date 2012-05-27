@@ -104,7 +104,8 @@ Ext.define('Genesis.controller.client.Challenges',
          'scannedqrcode' : 'onScannedQRcode',
          'locationupdate' : 'onLocationUpdate',
          'fbphotouploadcomplete' : 'onFbPhotoUploadComplete',
-         'openpage' : 'onOpenPage'
+         'openpage' : 'onOpenPage',
+         'challengecomplete' : 'onCompleteChallenge'
       }
    },
    metaData : null,
@@ -140,7 +141,7 @@ Ext.define('Genesis.controller.client.Challenges',
    referralSavedMsg : 'Email saved.',
    sendReferralSuccessMsg : function()
    {
-      return 'Email was sent successfully!' + Genesis.constants.addCRLF() + 'Every successful referral will get your extra points!!1';
+      return 'Email was sent successfully!' + Genesis.constants.addCRLF() + 'Every successful referral will get you extra points!';
    },
    recvReferralSuccessMsg : function()
    {
@@ -421,7 +422,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var venueId = viewport.getVenue().getId();
       var customerId = viewport.getCustomer().getId();
 
-      me.onCompleteChallenge(null, venueId, customerId, position);
+      me.fireEvent('challengecomplete', null, venueId, customerId, position);
    },
    onLocationUpdate : function(position)
    {
@@ -469,14 +470,15 @@ Ext.define('Genesis.controller.client.Challenges',
          {
             case 'referral' :
             {
-               me.onCompleteReferralChallenge(qrcode);
+               me.fireEvent('challengecomplete', qrcode, null, null, null);
                break;
             }
             default:
                var viewport = me.getViewPortCntlr();
                var venueId = viewport.getVenue().getId();
                var customerId = viewport.getCustomer().getId();
-               me.onCompleteChallenge(qrcode, venueId, customerId, me.metaData['position']);
+
+               me.fireEvent('challengecomplete', qrcode, venueId, customerId, me.metaData['position']);
                break;
          }
       }
@@ -568,7 +570,7 @@ Ext.define('Genesis.controller.client.Challenges',
    // --------------------------------------------------------------------------
    // Challenge Page
    // --------------------------------------------------------------------------
-   onCompleteChallenge : function(qrcode, venueId, customerId, position)
+   onCompleteChallenge : function(qrcode, venueId, customerId, position, eOpts, eInfo)
    {
       var me = this;
       var id, type, params;
@@ -580,7 +582,7 @@ Ext.define('Genesis.controller.client.Challenges',
          params =
          {
          }
-         Challenge['setCompleteReferralChallengeURL'](id);
+         Challenge['setCompleteReferralChallengeURL']();
       }
       else
       {

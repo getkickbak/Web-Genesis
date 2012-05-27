@@ -48,13 +48,13 @@ Ext.define('Genesis.model.Challenge',
          });
          this.getProxy().setUrl(Genesis.constants.host + '/api/v1/challenges/' + id + '/complete');
       },
-      setCompleteReferralChallengeURL : function(id)
+      setCompleteReferralChallengeURL : function()
       {
          this.getProxy().setActionMethods(
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/challenges/' + id + '/complete_referral');
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/challenges/complete_referral');
       },
       setSendReferralsUrl : function(id)
       {
