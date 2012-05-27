@@ -105,7 +105,7 @@ Ext.define('Genesis.controller.client.Challenges',
          'locationupdate' : 'onLocationUpdate',
          'fbphotouploadcomplete' : 'onFbPhotoUploadComplete',
          'openpage' : 'onOpenPage',
-         'challengecomplete' : 'onCompleteChallenge'
+         'challengecomplete' : 'onChallengeComplete'
       }
    },
    metaData : null,
@@ -143,9 +143,9 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       return 'Email was sent successfully!' + Genesis.constants.addCRLF() + 'Every successful referral will get you extra points!';
    },
-   recvReferralSuccessMsg : function()
+   recvReferralSuccessMsg : function(name)
    {
-      return 'You have been successfully referred.' + Genesis.constants.addCRLF() + 'Claim your Reward Points by visiting the Merchant now!';
+      return 'Claim your reward points by visitng ' + Genesis.constants.addCRLF() + name + ' now!';
    },
    init : function(app)
    {
@@ -417,12 +417,7 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    vipEventHandler : function(position)
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-      var venueId = viewport.getVenue().getId();
-      var customerId = viewport.getCustomer().getId();
-
-      me.fireEvent('challengecomplete', null, venueId, customerId, position);
+      this.completeChallenge(null, position);
    },
    onLocationUpdate : function(position)
    {
@@ -462,25 +457,10 @@ Ext.define('Genesis.controller.client.Challenges',
    onScannedQRcode : function(qrcode)
    {
       var me = this;
-      var type = (me.metaData) ? me.selectedItem.get('type').value : 'referral';
 
       if(qrcode != null)
       {
-         switch (type)
-         {
-            case 'referral' :
-            {
-               me.fireEvent('challengecomplete', qrcode, null, null, null);
-               break;
-            }
-            default:
-               var viewport = me.getViewPortCntlr();
-               var venueId = viewport.getVenue().getId();
-               var customerId = viewport.getCustomer().getId();
-
-               me.fireEvent('challengecomplete', qrcode, venueId, customerId, me.metaData['position']);
-               break;
-         }
+         me.completeChallenge(qrcode, (me.metaData) ? me.metaData['position'] : null);
       }
       else
       {
@@ -492,6 +472,88 @@ Ext.define('Genesis.controller.client.Challenges',
          });
       }
       me.metaData = null;
+   },
+   onChallengeComplete : function(type, qrcode, venueId, customerId, position, eOpts, eInfo)
+   {
+      var me = this;
+      var metaData = Challenge.getProxy().getReader().metaData;
+      var cstore = Ext.StoreMgr.get('CustomerStore');
+      switch (type)
+      {
+         case 'referral' :
+         {
+            var id = metaData['id'];
+            var customer = cstore.getById(id);
+            if(!customer)
+            {
+               customer = cstore.add(metaData)[0];
+            }
+            Ext.device.Notification.show(
+            {
+               title : 'Referral Received!',
+               message : me.recvReferralSuccessMsg(customer.getMerchant().get('name')),
+               callback : function()
+               {
+                  //
+                  // Add to Referral DB
+                  //
+                  console.debug("Adding Referral Code to Referral DB ...");
+                  Genesis.db.addReferralDBAttrib("m" + customer.getMerchant().getId(), qrcode);
+
+                  if(me.referralCbFn)
+                  {
+                     console.debug("Calling Referral CallbackFn ...");
+                     me.referralCbFn();
+                     me.referralCbFn = null;
+                  }
+                  else
+                  {
+                     console.debug("Opening Merchant Account ...");
+                     var app = me.getApplication();
+                     var controller = app.getController('Accounts');
+                     controller.setMode('profile');
+                     app.dispatch(
+                     {
+                        action : 'onDisclose',
+                        args : [cstore, customer],
+                        controller : controller,
+                        scope : controller
+                     });
+                  }
+               }
+            });
+            break;
+         }
+         case 'vip' :
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'VIP Challenge',
+               message : me.getConsolationMsg(metaData['message'])
+            });
+            me.getViewPortCntlr().updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [metaData]);
+            break;
+         }
+         default:
+            console.log('Total Points - ' + metaData['account_points']);
+            if(metaData['account_points'])
+            {
+               cstore.getById(customerId).set('points', metaData['account_points']);
+            }
+            //
+            // Update points from the purchase or redemption
+            // Bugfix - Copy string from server to prevent PhoneGap crash
+
+            console.log('Points Earned - ' + metaData['points']);
+
+            Ext.device.Notification.show(
+            {
+               title : 'Earn Points',
+               message : ((metaData['points'] > 0) ? me.getPointsMsg(metaData['points']) : me.getConsolationMsg(metaData['message']))
+            });
+            me.getViewPortCntlr().updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [metaData]);
+            break;
+      }
    },
    onFbPhotoUploadComplete : function()
    {
@@ -559,7 +621,7 @@ Ext.define('Genesis.controller.client.Challenges',
                         // Go back to Checked-in Merchant Account
                         //
                         me.metaData = null;
-                        me.fireEvent('openpage', 'MainPage', 'main');
+                        me.fireEvent('openpage', 'MainPage', 'main', null);
                      }
                   }
                });
@@ -570,133 +632,6 @@ Ext.define('Genesis.controller.client.Challenges',
    // --------------------------------------------------------------------------
    // Challenge Page
    // --------------------------------------------------------------------------
-   onCompleteChallenge : function(qrcode, venueId, customerId, position, eOpts, eInfo)
-   {
-      var me = this;
-      var id, type, params;
-      if(!venueId)
-      {
-         type = 'referral';
-         id = me.reservedReferralId;
-         // Used for Receiving Referrals
-         params =
-         {
-         }
-         Challenge['setCompleteReferralChallengeURL']();
-      }
-      else
-      {
-         id = me.selectedItem.getId();
-         type = me.selectedItem.get('type').value;
-         params =
-         {
-            venue_id : venueId,
-            latitude : position.coords.getLatitude(),
-            longitude : position.coords.getLongitude(),
-         }
-         Challenge['setCompleteChallengeURL'](id);
-      }
-
-      console.log("Completing Challenge ID(" + id + ")");
-      Challenge.load(id,
-      {
-         jsonData :
-         {
-         },
-         params : Ext.apply(params,
-         {
-            'data' : qrcode
-         }),
-         callback : function(record, operation)
-         {
-            var metaData = Challenge.getProxy().getReader().metaData;
-            var cstore = Ext.StoreMgr.get('CustomerStore');
-            console.log('Challenge Completed(' + operation.wasSuccessful() + ')');
-            if(operation.wasSuccessful() && metaData)
-            {
-               switch (type)
-               {
-                  case 'referral' :
-                  {
-                     Ext.device.Notification.show(
-                     {
-                        title : 'Receive Referral',
-                        message : me.recvReferralSuccessMsg,
-                        callback : function()
-                        {
-                           //Do it to improve responsiveness
-                           Ext.defer(function()
-                           {
-                              var id = metaData['id'];
-                              var customer = cstore.getById(id);
-                              if(!customer)
-                              {
-                                 customer = cstore.add(metaData)[0];
-                              }
-                              me.setMode('profile');
-
-                              //
-                              // Add to Referral DB
-                              //
-                              Genesis.db.addReferralDBAttrib("m" + customer.getMerchant().getId());
-
-                              if(me.referralCbFn)
-                              {
-                                 me.referralCbFn();
-                                 me.referralCbFn = null;
-                              }
-                              else
-                              {
-                                 var app = me.getApplication();
-                                 var controller = app.getController('Accounts');
-                                 app.dispatch(
-                                 {
-                                    action : 'onDisclose',
-                                    args : [cstore, customer],
-                                    controller : controller,
-                                    scope : controller
-                                 });
-                              }
-                           }, 1, me);
-                        }
-                     });
-                     break;
-                  }
-                  case 'vip' :
-                  {
-                     Ext.device.Notification.show(
-                     {
-                        title : 'VIP Challenge',
-                        message : me.getConsolationMsg(metaData['message'])
-                     });
-                     me.getViewPortCntlr().updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [metaData]);
-                     break;
-                  }
-                  default:
-                     console.log('Total Points - ' + metaData['account_points']);
-                     if(metaData['account_points'])
-                     {
-                        var cstore = Ext.StoreMgr.get('CustomerStore');
-                        cstore.getById(customerId).set('points', metaData['account_points']);
-                     }
-                     //
-                     // Update points from the purchase or redemption
-                     // Bugfix - Copy string from server to prevent PhoneGap crash
-
-                     console.log('Points Earned - ' + metaData['points']);
-
-                     Ext.device.Notification.show(
-                     {
-                        title : 'Earn Points',
-                        message : ((metaData['points'] > 0) ? me.getPointsMsg(metaData['points']) : me.getConsolationMsg(metaData['message']))
-                     });
-                     me.getViewPortCntlr().updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [metaData]);
-                     break;
-               }
-            }
-         }
-      });
-   },
    onItemSelect : function(d, model, eOpts)
    {
       var carousel = this.getChallengePage().query('carousel')[0];
@@ -853,6 +788,57 @@ Ext.define('Genesis.controller.client.Challenges',
    onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {
    },
+   completeChallenge : function(qrcode, position, eOpts, eInfo)
+   {
+      var me = this;
+      var id, type, params;
+      if(!position)
+      {
+         type = 'referral';
+         id = me.reservedReferralId;
+         // Used for Receiving Referrals
+         params =
+         {
+         }
+         Challenge['setCompleteReferralChallengeURL']();
+      }
+      else
+      {
+         var viewport = me.getViewPortCntlr();
+         var venueId = viewport.getVenue().getId();
+         var customerId = viewport.getCustomer().getId();
+         id = me.selectedItem.getId();
+         type = me.selectedItem.get('type').value;
+         params =
+         {
+            venue_id : venueId,
+            latitude : position.coords.getLatitude(),
+            longitude : position.coords.getLongitude(),
+         }
+         Challenge['setCompleteChallengeURL'](id);
+      }
+
+      console.log("Completing Challenge ID(" + id + ")");
+      Challenge.load(id,
+      {
+         jsonData :
+         {
+         },
+         params : Ext.apply(params,
+         {
+            'data' : qrcode
+         }),
+         callback : function(record, operation)
+         {
+            var metaData = Challenge.getProxy().getReader().metaData;
+            console.log('Challenge Completed(' + operation.wasSuccessful() + ')');
+            if(operation.wasSuccessful() && metaData)
+            {
+               me.fireEvent('challengecomplete', type, qrcode, venueId, customerId, position);
+            }
+         }
+      });
+   },
    // --------------------------------------------------------------------------
    // Referrals Challenge Page
    // --------------------------------------------------------------------------
@@ -862,7 +848,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var container = me.getReferralsContainer();
       container.setActiveItem(0);
    },
-   onCompleteReferralsChallenge : function(b, e, eOpts)
+   onReferralsChallengeComplete : function(b, e, eOpts)
    {
       // Nothing to do but go back to Main Challenge Page
       this.popView();

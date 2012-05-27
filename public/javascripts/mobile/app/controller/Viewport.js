@@ -179,7 +179,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    onAccountsButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.fireEvent('openpage', 'Accounts', null);
+      this.fireEvent('openpage', 'Accounts', null, null);
       console.log("Going to Accounts Page ...");
    },
    onChallengesButtonTap : function(b, e, eOpts, eInfo)
@@ -209,7 +209,7 @@ Ext.define('Genesis.controller.Viewport',
                //
                venue.challenges().add(operation.getRecords());
 
-               me.fireEvent('openpage', 'client.Challenges', null);
+               me.fireEvent('openpage', 'client.Challenges', null, null);
                console.log("Going to Challenges Page ...");
             }
          }
@@ -217,17 +217,17 @@ Ext.define('Genesis.controller.Viewport',
    },
    onRewardsButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.fireEvent('openpage', 'client.Rewards', 'rewards');
+      this.fireEvent('openpage', 'client.Rewards', 'rewards', null);
       console.log("Going to Client Rewards Page ...");
    },
    onRedemptionsButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.fireEvent('openpage', 'client.Redemptions', 'redemptions');
+      this.fireEvent('openpage', 'client.Redemptions', 'redemptions', null);
       console.log("Going to Client Redemptions Page ...");
    },
    onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.fireEvent('openpage', 'Prizes', null);
+      this.fireEvent('openpage', 'Prizes', null, null);
       console.log("Going to Prizes Page ...");
    },
    onHomeButtonTap : function(b, e, eOpts, eInfo)
@@ -235,7 +235,7 @@ Ext.define('Genesis.controller.Viewport',
       var vport = this.getViewport();
       vport.reset();
       vport.setFlipAnimation();
-      this.fireEvent('openpage', 'MainPage', null);
+      this.fireEvent('openpage', 'MainPage', null, null);
       console.log("Going back to HomePage ...");
    },
    onTabBarTabChange : function(bar, newTab, oldTab, eOpts)
@@ -397,7 +397,7 @@ Ext.define('Genesis.controller.Viewport',
          else
          {
             console.debug("Going to Login Page ...");
-            this.fireEvent('openpage', 'MainPage', 'login');
+            this.fireEvent('openpage', 'MainPage', 'login', null);
          }
       }
    }

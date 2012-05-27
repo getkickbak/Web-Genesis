@@ -162,7 +162,23 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       var me = this;
       var allowedMsg = me.isOpenAllowed();
-
+      var _startEarnPts = function()
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Earning Reward Points',
+            message : me.authCodeReqMsg,
+            buttons : ['OK', 'Cancel'],
+            callback : function(btn)
+            {
+               if(btn.toLowerCase() == 'ok')
+               {
+                  me.scanQRCode();
+               }
+            }
+         });
+      }
+      
       if(allowedMsg !== true)
       {
          Ext.device.Notification.show(
@@ -174,22 +190,11 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         me.referredByFriendsMsg(null, function()
+         me.checkReferralPrompt(null, function()
          {
-            Ext.device.Notification.show(
-            {
-               title : 'Earning Reward Points',
-               message : me.authCodeReqMsg,
-               buttons : ['OK', 'Cancel'],
-               callback : function(btn)
-               {
-                  if(btn.toLowerCase() == 'ok')
-                  {
-                     me.scanQRCode();
-                  }
-               }
-            });
-         });
+            me.popView();
+            _startEarnPts();
+         }, _startEarnPts);
       }
    },
    metaDataHandler : function(metaData)
