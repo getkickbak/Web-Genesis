@@ -405,7 +405,7 @@ Ext.define('Genesis.controller.MainPage',
          {
             Genesis.constants.facebook_onLogout(null, true);
          }
-         me.fireEvent('openpage', 'MainPage', 'login');
+         me.fireEvent('openpage', 'MainPage', 'login', null);
       }
       var _logout = function()
       {
@@ -576,7 +576,7 @@ Ext.define('Genesis.controller.MainPage',
             if(!operation.wasSuccessful())
             {
                Genesis.db.resetStorage();
-               me.fireEvent('openpage', 'MainPage', 'login');
+               me.fireEvent('openpage', 'MainPage', 'login', null);
             }
          }
       });

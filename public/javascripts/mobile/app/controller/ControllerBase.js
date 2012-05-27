@@ -159,7 +159,7 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return this.getViewPortCntlr().getView();
    },
-   onOpenPage : function(feature, subFeature, eOpts, eInfo, cb)
+   onOpenPage : function(feature, subFeature, cb, eOpts, eInfo)
    {
       if((appName == 'GetKickBak') && !Ext.device.Connection.isOnline() && (subFeature != 'login'))
       {
@@ -249,14 +249,15 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       //
    },
-   checkReferralPrompt : function(merchantId, cb)
+   checkReferralPrompt : function(merchantId, cbOnSuccess, cbOnFailure)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      cb = cb || Ext.emptyFn;
+      cbOnSuccess = cbOnSuccess || Ext.emptyFn;
+      cbOnFailure = cbOnFailure || Ext.emptyFn;
       merchantId = merchantId || viewport.getVenue().getMerchant().getId();
-      if((viewport.getCheckinInfo().customer.get('visits') == 0) && (Genesis.db.getReferralDBAttrib("m" + merchantId)))
+      if((viewport.getCheckinInfo().customer.get('visits') == 0) && (!Genesis.db.getReferralDBAttrib("m" + merchantId)))
       {
          Ext.device.Notification.show(
          {
@@ -267,18 +268,18 @@ Ext.define('Genesis.controller.ControllerBase',
             {
                if(btn.toLowerCase() == 'yes')
                {
-                  me.fireEvent('openpage', 'client.Challenges', 'referrals', cb);
+                  me.fireEvent('openpage', 'client.Challenges', 'referrals', cbOnSuccess);
                }
                else
                {
-                  cb();
+                  cbOnFailure();
                }
             }
          });
       }
       else
       {
-         cb();
+         cbOnFailure();
       }
    },
    pushView : function(view)
@@ -312,7 +313,7 @@ Ext.define('Genesis.controller.ControllerBase',
       var viewport = me.getViewPortCntlr();
       viewport.setLoggedIn(true);
       me.getViewport().reset();
-      me.fireEvent('openpage', 'MainPage', 'main');
+      me.fireEvent('openpage', 'MainPage', 'main', null);
       console.log("LoggedIn, Going back to Main Page ...");
    },
    isOpenAllowed : function()
