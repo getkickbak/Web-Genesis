@@ -184,11 +184,12 @@ class Api::V1::ChallengesController < ApplicationController
       decrypted_data = JSON.parse(decrypted)
       referrer_id = decrypted_data["refr_id"]
       challenge_id = decrypted_data["chg_id"]
-      #logger.debug("decrypted type: #{decrypted_data["type"]}")
-      #logger.debug("decrypted challenge_id: #{challenge_id}")
-      #logger.debug("decrypted data: #{data}")
-      #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT}")
-      #logger.debug("Challenge doesn't exists: #{Challenge.get(challenge_id).nil?}")
+      logger.debug("decrypted type: #{decrypted_data["type"]}")
+      logger.debug("decrypted challenge_id: #{challenge_id}")
+      logger.debug("decrypted data: #{data}")
+      logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT}")
+      logger.debug("Challenge doesn't exists: #{Challenge.get(challenge_id).nil?}")
+      logger.debug("ReferralChallengeRecord doesn't exists", ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id, :challenge_id => challenge_id).nil?)
       if (decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT) && 
         (@challenge = Challenge.get(challenge_id)) 
         if ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id, :challenge_id => challenge_id).nil?
