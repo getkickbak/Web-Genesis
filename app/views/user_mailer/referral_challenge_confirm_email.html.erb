@@ -13,19 +13,13 @@
 					<div style="border:1px solid #000000; padding: 0 15px 0 15px;">
 						<br>
 						<br>
-						&lt;Input your message here&gt;
+						<b>Hi <%= @referrer.name %>,</b>
 						<br>
 						<br>
-						============================================================
+						Your friend <%= @referral.name %> just become a customer at <%= @merchant.name %>!
 						<br>
 						<br>
-						<%= @sender.name %> has sent you a transfer of <%= "#{@record.points} reward #{t('api.points', :count => @record.points)}" %> that can be used to redeem fabulous rewards at <%= @merchant.name %>.
-						<br>
-						<br>
-						To deposit this transfer, scan the QR code in the attachment with your KICKBAK app.
-						<br>
-						<br>
-						Expiry Date: <%= @record.expiry_date.strftime("%b %d, %Y") %>
+						To thank you for your referral, <%= @merchant.name %> has awarded you <%= "#{@record.points} reward #{t('api.points', :count => @record.points)}" %>!
 						<br>
 						<br>
 					</div>
@@ -33,7 +27,11 @@
 						<br>
 						<br>
 						<center>
-							Haven't downloaded KICKBAK yet? Visit us online at <a rel="nofollow" target="_blank" href="http://getkickbak.com">getkickbak.com</a>
+							Questions or comments? Email us at <a rel="nofollow" ymailto="mailto:help@getkickbak.com" target="_blank" href="mailto:help@getkickbak.com">help@getkickbak.com</a>
+						</center>
+						<br>
+						<center>
+							Thanks from the <a rel="nofollow" target="_blank" href="<%= root_url %>">KICKBAK</a> team.
 						</center>
 						<br>
 						<br>

@@ -74,6 +74,9 @@ Genesis::Application.routes.draw do
         #resources :deals
       end
       
+      match "/marketing" => 'marketing#index', :as => :marketing
+      match "/marketing/update_poster" => 'marekting#update_poster_image', :as => :update_poster_image
+      match "/marketing/update_table_topper" => 'marketing#update_checkin_image', :as => :update_checkin_image
       match "/account" => 'account#show', :as => :account
       match "/account/edit" => 'account#edit', :as => :edit_account
       match "/account/update" => 'account#update', :as => :update_account

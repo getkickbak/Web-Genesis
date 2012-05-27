@@ -67,6 +67,8 @@ module Business
         begin
           if type.value == 'vip'
             params[:challenge][:data] = params[:challenge][:check_in_data]
+          elsif type.value == 'referral'
+            params[:challenge][:data] = params[:challenge][:referral_data]  
           end
           params[:challenge][:venue_ids].delete("")
           if params[:challenge][:venue_ids].length > 0
@@ -114,7 +116,7 @@ module Business
         if type == 'menu'
           @challenge.description = @challenge.description % [@challenge.name]
         elsif type == 'vip'
-          @challenge.description = @challenge.description % [@challenge.data.visits]
+          @challenge.description = @challenge.description % [@challenge.data.visits]  
         end
       else
         @challenge.type_id = @challenge.type.id
@@ -150,6 +152,8 @@ module Business
         begin
           if type.value == 'vip'
             params[:challenge][:data] = params[:challenge][:check_in_data]
+          elsif type.value == 'referral'
+            params[:challenge][:data] = params[:challenge][:referral_data]  
           end
           params[:challenge][:venue_ids].delete("")
           if params[:challenge][:venue_ids].length > 0
@@ -240,6 +244,7 @@ module Business
         {
           :name => (t "challenge.type.referral.name"),
           :description => (t "challenge.type.referral.description"),
+          :data => ReferralData.new,
           :require_verif => false
         },
         "vip" =>

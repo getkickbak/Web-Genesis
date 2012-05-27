@@ -3,7 +3,5 @@ node :success do
 	true
 end
 node :metaData do
-	{
-		:data => @encrypted_data
-	}
+	partial('api/v1/customers/base', :object => @customer)
 end

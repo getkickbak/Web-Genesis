@@ -51,6 +51,9 @@
 		<div class="challenge_desc">
 			<span>they will get</span><input id="challenge_points" name="challenge[points]" type="text" class="numfield" placeholder=""/><span>points</span>
 		</div>
+		<div class="challenge_desc">
+			<span>and their friend will get</span><input id="challenge_referral_data_visits" name="challenge[referral_data][referral_points]" type="text" class="numfield" placeholder=""/><span>points</span>
+		</div>
 	<% elsif @challenge.type && @challenge.type.value == 'custom' %>	
 		<%= f.input :name %>
 		<%= f.input :description, :as => :text, :input_html => { :rows => 10  } %>

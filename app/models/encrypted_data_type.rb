@@ -5,4 +5,6 @@ class EncryptedDataType
   REDEEM_PRIZE = "redeem_prize"
   POINTS_TRANSFER_EMAIL = "points_transfer_email"
   POINTS_TRANSFER_DIRECT = "points_transfer_direct"
+  REFERRAL_CHALLENGE_EMAIL = "referral_challenge_email"
+  REFERRAL_CHALLENGE_DIRECT = "referral_challenge_direct"
 end

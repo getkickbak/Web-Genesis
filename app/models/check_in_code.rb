@@ -33,20 +33,15 @@ class CheckInCode
   end
   
   def generate_qr_code_image(merchant_id)
-    filename = "#{String.random_alphanumeric(32)}"
+    filename = "#{String.random_alphanumeric(32)}.pdf"
     if APP_PROP[:GENERATE_QRCODE]
       html = @@template.result(binding)
-
-      # I am nil'ing these options out because my version of wkhtmltoimage does
-      # not support the scale options and I do not want to crop the image at all.
-      snap = WebSnap::Snapper.new(html, :format => 'png',
-        :'crop-h' => nil, :'crop-w' => nil, :quality => 30, :'crop-x' => nil, :'crop-y' => nil)
- 
+      kit = PDFKit.new(html, :page_size => 'Tabloid')
       AWS::S3::S3Object.store(
         ::Common.generate_merchant_qr_code_image_file_path(merchant_id,filename), 
-        snap.to_bytes,
+        kit.to_pdf,
         APP_PROP["AMAZON_FILES_BUCKET"], 
-        :content_type => 'image/png', 
+        :content_type => 'application/pdf', 
         :access => :public_read
       )
     end

@@ -54,6 +54,9 @@
 					<ul class="nav secondary-nav">
 						<% if signed_in? %>
 						<li class="">
+							<a href="/marketing">Marketing</a>
+						</li>
+						<li class="">
 							<a href="/merchants">Merchants</a>
 						</li>
 						<% if current_staff.role == 'admin' || current_staff.role == 'super_admin' %>

@@ -15,7 +15,7 @@ class EarnRewardRecord
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessible :challenge_id, :venue_id, :data, :data_expiry_ts, :points, :amount, :created_ts
+  attr_accessible :challenge_id, :venue_id, :data, :data_expiry_ts, :points, :amount, :created_ts, :update_ts
   
   belongs_to :merchant
   belongs_to :user
