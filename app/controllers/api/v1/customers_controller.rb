@@ -99,7 +99,8 @@ class Api::V1::CustomersController < ApplicationController
       else
         invalid_code = true 
       end  
-    rescue
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
       logger.info("Customer(#{@customer.id}) failed to receive points, invalid transfer code")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
