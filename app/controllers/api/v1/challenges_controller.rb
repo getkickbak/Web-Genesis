@@ -185,25 +185,28 @@ class Api::V1::ChallengesController < ApplicationController
       referrer_id = decrypted_data["refr_id"]
       challenge_id = decrypted_data["chg_id"]
       #logger.debug("decrypted type: #{decrypted_data["type"]}")
+      #logger.debug("decrypted referrer_id: #{referrer_id}")
       #logger.debug("decrypted challenge_id: #{challenge_id}")
-      #logger.debug("decrypted data: #{data}")
+      #logger.debug("decrypted data: #{data[1]}")
       #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT}")
       #logger.debug("Challenge doesn't exists: #{Challenge.get(challenge_id).nil?}")
-      if (decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT) && 
-        (@challenge = Challenge.get(challenge_id)) 
-        if ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id, :challenge_id => challenge_id).nil?
+      #logger.debug("ReferralChallengeRecord doesn't exists: #{ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id).nil?}")
+      if (decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT) && (@challenge = Challenge.get(challenge_id)) 
+        if ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id).nil?
           #logger.debug("Set authorized to true")
           authorized = true
         else
           already_referred = true  
         end
       end  
-    rescue
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
       logger.info("Customer(#{@customer.id}) failed to complete Referral Challenge, invalid referral code")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.challenges.invalid_referral_code").split('\n') } }
       end  
+      return
     end
     
     Customer.transaction do
@@ -223,11 +226,11 @@ class Api::V1::ChallengesController < ApplicationController
         else
           if already_referred
             referrer = Customer.get(referrer_id)
-            msg = (t("api.challenges.already_referred") % [referrer.name]).split('\n')
-            logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{@challenge.id}), already referred")
+            msg = (t("api.challenges.already_referred") % [referrer.user.name]).split('\n')
+            logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge_id}), already referred")
           else
             msg = t("api.challenges.invalid_referral_code").split('\n')  
-            logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{@challenge.id}), invalid referral code")
+            logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge.id}), invalid referral code")
           end
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }

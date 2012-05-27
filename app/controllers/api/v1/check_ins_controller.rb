@@ -10,11 +10,13 @@ class Api::V1::CheckInsController < ApplicationController
         cipher = Gibberish::AES.new(venue.auth_code)
         decrypted = cipher.dec(encrypted_data[1])
         decrypted_data = JSON.parse(decrypted)
-      rescue
+      rescue StandardError => e
+        logger.error("Exception: " + e.message)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.check_ins.invalid_code").split('\n') } }  
         end  
+        return
       end
       checkInCode = CheckInCode.first(:auth_code => decrypted_data["auth_code"])
       if checkInCode.nil?

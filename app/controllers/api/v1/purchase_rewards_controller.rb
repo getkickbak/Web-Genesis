@@ -49,12 +49,14 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         else
           invalid_code = true    
         end  
-      rescue
+      rescue StandardError => e
+        logger.error("Exception: " + e.message)
         logger.info("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), invalid authentication code")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
           format.json { render :json => { :success => false, :message => t("api.purchase_rewards.invalid_code").split('\n') } }
         end  
+        return
       end
     end    
       
@@ -86,7 +88,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             @customer.points += challenge.data.referral_points
             referral_record.status = :complete
             referral_record.update_ts = now
-            referra_record.save
+            referral_record.save
             @referral_challenge = true
             @referral_points = challenge.data.referral_points
           end

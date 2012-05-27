@@ -62,6 +62,7 @@ class Api::V1::CustomersController < ApplicationController
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
         end
+        return
       end
     end
   end
@@ -98,12 +99,14 @@ class Api::V1::CustomersController < ApplicationController
       else
         invalid_code = true 
       end  
-    rescue
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
       logger.info("Customer(#{@customer.id}) failed to receive points, invalid transfer code")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.customers.invalid_transfer_code").split('\n') } }
       end  
+      return
     end
     
     Customer.transaction do
