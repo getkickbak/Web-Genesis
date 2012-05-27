@@ -30,11 +30,12 @@
   }
 }
 
-.contactus {
+.addbusiness, .contactus {
   position:relative;
   .hero-unit {
     padding: 48px 0 0 0;
     margin-bottom: 0px;
+    background-color:transparent;
     h1 {
       color: #137BFF;
       text-align:left;
@@ -49,6 +50,7 @@
   }
   &:after {
     position:absolute;
+    z-index:-1;
     content : " ";
     top:0;
     right:0;

@@ -2,48 +2,48 @@
 <link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
 <% end %>
 <div class="container">
-	<% if @notice %>
-	<div class="alert alert-success">
-		<a class="close" data-dismiss="alert" href="#">×</a>
-		<%= @notice %>
-	</div>
-	<% end %>
-	<!--/Hero Unit-->
-	<div class="row contactus">
-		<div class="span12">
-			<div class="hero-unit">
-				<h1>KICKBAK is a game
-				<br>
-				designed for restaurants
-				<br>
-				and bars to reward
-				<br>
-				customer loyalty</h1>
-				<p>
-					If you are a business owner, please fill out the following to get KICKBAK for your business:
-				</p>
-			</div>
-		</div>
-	</div>
-	<!--/Cotnact Form-->
-	<div class="row">
-		<div class="span4">
-			<img class="createSlogan" src="http://files.getkickbak.com/v1/create.png"/>
-		</div>
-		<div class="span8 createForm">
-			<%= simple_form_for @merchant_contact, :url => create_merchant_contact_path do |f| %>
-			<%= f.input :name, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
-			<%= f.input :email, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
-			<%= f.input :business_name, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
-			<%= f.input :phone, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
-			<%= f.input :address, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
-			<%= f.input :city, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
-			<%= f.input :province, :collection => MerchantContact.states, :input_html => { :style => 'width:270px;' }, :wrapper_html => { :class => 'span_field' } %>
-			<%= f.input :message, :as => :text, :required => false, :input_html => { :rows => 5, :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
-			<div class="pull-right">
-				<%= f.button :submit, 'Send', :type => :image, :src => 'http://files.getkickbak.com/v1/send2.png' %>
-			</div>
-			<% end %>
-		</div>
-	</div>
+   <% if @notice %>
+   <div class="alert alert-success">
+      <a class="close" data-dismiss="alert" href="#">×</a>
+      <%= @notice %>
+   </div>
+   <% end %>
+   <!--/Hero Unit-->
+   <div class="row addbusiness">
+      <div class="span12">
+         <div class="hero-unit">
+            <h1>KICKBAK is a game
+               <br>
+               designed for restaurants
+               <br>
+               and bars to reward
+               <br>
+               customer loyalty</h1>
+         </div>
+      </div>
+   </div>
+   <!--/Cotnact Form-->
+   <div class="row">
+      <div class="span12" style="margin-top:80px;margin-bottom:40px;">
+         <p> If you are a business owner, please fill out the following to get KICKBAK for your business: </p>
+      </div>
+      <div class="span4">
+         <img class="createSlogan" src="http://files.getkickbak.com/v1/create.png"/>
+      </div>
+      <div class="span8 createForm">
+         <%= simple_form_for @merchant_contact, :url => create_merchant_contact_path do |f| %>
+         <%= f.input :name, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
+         <%= f.input :email, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
+         <%= f.input :business_name, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
+         <%= f.input :phone, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
+         <%= f.input :address, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
+         <%= f.input :city, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
+         <%= f.input :province, :collection => MerchantContact.states, :input_html => { :style => 'width:270px;' }, :wrapper_html => { :class => 'span_field' } %>
+         <%= f.input :message, :as => :text, :required => false, :input_html => { :rows => 5, :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
+         <div class="pull-right">
+            <%= f.button :submit, 'Send', :type => :image, :src => 'http://files.getkickbak.com/v1/send2.png' %>
+         </div>
+         <% end %>
+      </div>
+   </div>
 </div>
