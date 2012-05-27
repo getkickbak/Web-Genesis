@@ -21,6 +21,7 @@ Ext.define('Genesis.controller.client.Challenges',
             autoCreate : true,
             xtype : 'clientchallengepageview'
          },
+         challengeContainer : 'clientchallengepageview container[tag=challengeContainer]',
          challengeDescContainer : 'clientchallengepageview container[tag=challengePageItemDescWrapper]',
          //
          // Photo Challenge
@@ -289,8 +290,8 @@ Ext.define('Genesis.controller.client.Challenges',
          },
          callback : function(records, operation)
          {
+            var metaData = Challenge.getProxy().getReader().metaData;
             /*
-             var metaData = Merchant.getProxy().getReader().metaData;
              if(operation.wasSuccessful() && (!metaData['data']))
              {
              Ext.Viewport.setMasked(false);
@@ -696,6 +697,17 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    onItemSelect : function(d, model, eOpts)
    {
+      var carousel = this.getChallengePage().query('carousel')[0];
+      // No need to update the Challenge Menu. Nothing changed.
+      for(var i = 0; i < carousel.getInnerItems().length; i++)
+      {
+         var list = carousel.getInnerItems()[i];
+         if(list != d)
+         {
+            list.deselectAll();
+         }
+      }
+
       //d.deselect([model], false);
       var desc = this.getChallengeDescContainer();
       Ext.Anim.run(desc.element, 'fade',
@@ -714,6 +726,7 @@ Ext.define('Genesis.controller.client.Challenges',
             this.selectedItem = model;
          }
       });
+      this.getChallengeContainer().show();
       return true;
    },
    onChallengeBtnTap : function(b, e, eOpts, eInfo)
@@ -789,6 +802,10 @@ Ext.define('Genesis.controller.client.Challenges',
       (carousel.getInnerItems()[0].getStore().getRange()[0].getId() == items[0].getId()))
       {
          // No need to update the Challenge Menu. Nothing changed.
+         for(var i = 0; i < carousel.getInnerItems().length; i++)
+         {
+            carousel.getInnerItems()[i].deselectAll();
+         }
       }
       else
       {
@@ -828,6 +845,7 @@ Ext.define('Genesis.controller.client.Challenges',
             name : ''
          });
       }
+      me.getChallengeContainer().hide();
       delete me.selectedItem;
    },
    onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
