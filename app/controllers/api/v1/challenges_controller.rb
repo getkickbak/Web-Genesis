@@ -175,12 +175,14 @@ class Api::V1::ChallengesController < ApplicationController
     
     logger.info("Complete Referral Challenge, Customer(#{@customer.id}), User(#{current_user.id})")
     authorized = false
+    already_referred = false
     
     begin
       cipher = Gibberish::AES.new(@customer.merchant.auth_code)
       decrypted = cipher.dec(data[1])
       #logger.debug("decrypted text: #{decrypted}")
       decrypted_data = JSON.parse(decrypted)
+      referrer_id = decrypted_data["refr_id"]
       challenge_id = decrypted_data["chg_id"]
       #logger.debug("decrypted type: #{decrypted_data["type"]}")
       #logger.debug("decrypted challenge_id: #{challenge_id}")
@@ -189,8 +191,12 @@ class Api::V1::ChallengesController < ApplicationController
       #logger.debug("Challenge doesn't exists: #{Challenge.get(challenge_id).nil?}")
       if (decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT) && 
         (@challenge = Challenge.get(challenge_id)) 
-        #logger.debug("Set authorized to true")
-        authorized = true
+        if ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id, :challenge_id => challenge_id).nil?
+          #logger.debug("Set authorized to true")
+          authorized = true
+        else
+          already_referred = true  
+        end
       end  
     rescue
       logger.info("Customer(#{@customer.id}) failed to complete Referral Challenge, invalid referral code")
@@ -205,18 +211,27 @@ class Api::V1::ChallengesController < ApplicationController
         if authorized
           now = Time.now
           record = ReferralChallengeRecord.create(
-            :referrer_id => decrypted_data["refr_id"],
+            :referrer_id => referrer_id,
             :referral_id => @customer.id,
             :points => @challenge.points,
             :referral_points => @challenge.data.referral_points,
             :created_ts => now,
             :update_ts => now
           )
+          logger.info("User(#{current_user.id}) successfully completed Referral Challenge(#{@challenge.id})")
           render :template => '/api/v1/challenges/complete_referral'
         else
+          if already_referred
+            referrer = Customer.get(referrer_id)
+            msg = (t("api.challenges.already_referred") % [referrer.name]).split('\n')
+            logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{@challenge.id}), already referred")
+          else
+            msg = t("api.challenges.invalid_referral_code").split('\n')  
+            logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{@challenge.id}), invalid referral code")
+          end
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.challenges.invalid_referral_code").split('\n') } }
+            format.json { render :json => { :success => false, :message => msg } }
           end      
         end      
       rescue DataMapper::SaveFailureError => e
