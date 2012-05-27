@@ -199,7 +199,8 @@ class Api::V1::ChallengesController < ApplicationController
           already_referred = true  
         end
       end  
-    rescue
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
       logger.info("Customer(#{@customer.id}) failed to complete Referral Challenge, invalid referral code")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
