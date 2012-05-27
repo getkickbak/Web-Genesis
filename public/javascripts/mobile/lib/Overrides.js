@@ -15,7 +15,7 @@ Genesis.constants =
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
    fbConnectReqestMsg : 'Would you like to update friends on Facebook?',
    connectingToFBMsg : 'Connecting to Facebook ...',
-   debugPrivKey : 'MiQj6tNWvjdPGh2Qlr7gdBIsJAadvAUk',
+   debugPrivKey : 'pgsRrREbvRnPVpltbKHBJdPkl7IHCauW',
    redeemDBSize : 10000,
    isNative : function()
    {
