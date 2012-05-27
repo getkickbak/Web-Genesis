@@ -225,10 +225,10 @@ class Api::V1::ChallengesController < ApplicationController
           if already_referred
             referrer = Customer.get(referrer_id)
             msg = (t("api.challenges.already_referred") % [referrer.name]).split('\n')
-            logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{@challenge.id}), already referred")
+            logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge_id}), already referred")
           else
             msg = t("api.challenges.invalid_referral_code").split('\n')  
-            logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{@challenge.id}), invalid referral code")
+            logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge.id}), invalid referral code")
           end
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
