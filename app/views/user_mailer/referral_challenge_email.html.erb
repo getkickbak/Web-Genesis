@@ -22,7 +22,7 @@
 						<%= @sender.name %> really likes <%= @merchant.name %> and wants you to give it a try!
 						<br>
 						<br>
-						To thank you for being their customer, you will receive <%= "#{@challenge.data.referral_points reward t('api.point', :count => @challenge.data.referral_points)}" %> on your first visit!
+						To thank you for being their customer, you will receive <%= "#{@challenge.data.referral_points} reward #{t('api.point', :count => @challenge.data.referral_points)}" %> on your first visit!
 						<br>
 						<br>
 						These points can be used to redeem fabulous rewards at <%= @merchant.name %>.
