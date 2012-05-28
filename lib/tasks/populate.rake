@@ -188,6 +188,7 @@ namespace :db do
         :account_first_name => Faker::Name.name,
         :account_last_name => Faker::Name.name,
         :phone => merchant_info[n][:phone],
+        :website => merchant_info[n][:website],
         :status => :active,
         :prize_terms => I18n.t('prize.terms')
       })

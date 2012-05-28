@@ -19,7 +19,7 @@
 						============================================================
 						<br>
 						<br>
-						<%= @sender.name %> has sent you a transfer of <%= "#{@record.points} reward #{t('api.points', :count => @record.points)}" %> that can be used to redeem fabulous rewards at <%= @merchant.name %>.
+						<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.points', :count => @record.points) %> that can be used to redeem fabulous rewards at <a href="<%= @merchant.website %>"><%= @merchant.name %></a>.
 						<br>
 						<br>
 						To deposit this transfer, scan the QR code in the attachment with your KICKBAK app.
