@@ -5,10 +5,10 @@ Syntax error: File to import not found or unreadable: sencha-touch/default/all.
                 /Users/eric/.rvm/gems/ruby-1.9.2-p290/gems/compass-0.11.7/frameworks/blueprint/stylesheets
                 /Users/eric/.rvm/gems/ruby-1.9.2-p290/gems/compass-0.11.7/frameworks/compass/stylesheets
                 Compass::SpriteImporter
-        on line 13 of /Users/eric/Documents/Aptana Studio 3 Workspace/GetKickBak/public/javascripts/mobile/resources/sass/sencha-touch.scss
+        on line 57 of /Users/eric/Documents/Aptana Studio 3 Workspace/GetKickBak/public/javascripts/mobile/resources/sass/sencha-touch.scss
 
 Backtrace:
-/Users/eric/Documents/Aptana Studio 3 Workspace/GetKickBak/public/javascripts/mobile/resources/sass/sencha-touch.scss:13
+/Users/eric/Documents/Aptana Studio 3 Workspace/GetKickBak/public/javascripts/mobile/resources/sass/sencha-touch.scss:57
 /Users/eric/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.12/lib/sass/tree/import_node.rb:64:in `rescue in import'
 /Users/eric/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.12/lib/sass/tree/import_node.rb:42:in `import'
 /Users/eric/.rvm/gems/ruby-1.9.2-p290/gems/sass-3.1.12/lib/sass/tree/import_node.rb:25:in `imported_file'
@@ -55,4 +55,4 @@ Backtrace:
 body:before {
   white-space: pre;
   font-family: monospace;
-  content: "Syntax error: File to import not found or unreadable: sencha-touch/default/all.\A               Load paths:\A                 /Users/eric/Documents/Aptana Studio 3 Workspace/GetKickBak/public/javascripts/mobile/resources/sass\A                 /Users/eric/.rvm/gems/ruby-1.9.2-p290/gems/compass-0.11.7/frameworks/blueprint/stylesheets\A                 /Users/eric/.rvm/gems/ruby-1.9.2-p290/gems/compass-0.11.7/frameworks/compass/stylesheets\A                 Compass::SpriteImporter\A         on line 13 of /Users/eric/Documents/Aptana Studio 3 Workspace/GetKickBak/public/javascripts/mobile/resources/sass/sencha-touch.scss"; }
+  content: "Syntax error: File to import not found or unreadable: sencha-touch/default/all.\A               Load paths:\A                 /Users/eric/Documents/Aptana Studio 3 Workspace/GetKickBak/public/javascripts/mobile/resources/sass\A                 /Users/eric/.rvm/gems/ruby-1.9.2-p290/gems/compass-0.11.7/frameworks/blueprint/stylesheets\A                 /Users/eric/.rvm/gems/ruby-1.9.2-p290/gems/compass-0.11.7/frameworks/compass/stylesheets\A                 Compass::SpriteImporter\A         on line 57 of /Users/eric/Documents/Aptana Studio 3 Workspace/GetKickBak/public/javascripts/mobile/resources/sass/sencha-touch.scss"; }

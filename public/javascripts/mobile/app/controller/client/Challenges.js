@@ -326,10 +326,6 @@ Ext.define('Genesis.controller.client.Challenges',
                            'background-image' : 'url(' + qrcode[0] + ')',
                            'background-size' : Genesis.fn.addUnit(qrcode[1]) + ' ' + Genesis.fn.addUnit(qrcode[2])
                         });
-                        me.getTitle().setData(
-                        {
-                           points : points + ' Pts'
-                        });
                         container.setActiveItem(1);
                      }
                      Ext.Viewport.setMasked(false);

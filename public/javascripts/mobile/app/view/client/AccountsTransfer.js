@@ -65,17 +65,20 @@ Ext.define('Genesis.view.client.AccountsTransfer',
                cls : 'transferPanel',
                data : [
                {
-                  text : 'Transfer Now',
+                  text : 'Transfer Out',
+                  desc : '(Send your points directly over to your friend\'s mobile phone)',
                   cls : 'sender',
                   tag : 'sender'
                },
                {
                   text : 'Email Transfer',
+                  desc : '(Send your points over to your friend\'s email account)',
                   cls : 'emailsender',
                   tag : 'emailsender'
                },
                {
                   text : 'Receive',
+                  desc : '(Scan your friend\'s Transfer Code)',
                   cls : 'recipient',
                   tag : 'recipient'
                }],
@@ -83,12 +86,17 @@ Ext.define('Genesis.view.client.AccountsTransfer',
                // @formatter:off
                '<div class="listItemDetailsWrapper" style="padding-right:0;">',
                   '<div class="itemTitle {[this.getCls(values)]}">{[this.getTitle(values)]}</div>',
+                  '<div class="itemDesc {[this.getCls(values)]}">{[this.getDesc(values)]}</div>',
                '</div>',
                // @formatter:on
                {
                   getCls : function(values)
                   {
                      return values['cls'];
+                  },
+                  getDesc : function(values)
+                  {
+                     return values['desc'];
                   },
                   getTitle : function(values)
                   {
@@ -239,7 +247,7 @@ Ext.define('Genesis.view.client.AccountsTransfer',
                xtype : 'button',
                cls : 'separator done',
                tag : 'done',
-               text : 'Transfer Complete!',
+               text : 'Done!',
                ui : 'orange-large'
             }]
          }]

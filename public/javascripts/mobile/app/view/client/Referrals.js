@@ -66,11 +66,13 @@ Ext.define('Genesis.view.client.Referrals',
                data : [
                {
                   text : 'Refer Now!',
+                  desc : '(Refer your friends by sending directly over to their phone)',
                   cls : 'sender',
                   tag : 'sender'
                },
                {
-                  text : 'Refer over Email',
+                  text : 'Refer over E-Mail',
+                  desc : '(Refer your friends by sending them a E-Mail)',
                   cls : 'emailsender',
                   tag : 'emailsender'
                }],
@@ -78,12 +80,17 @@ Ext.define('Genesis.view.client.Referrals',
                // @formatter:off
                '<div class="listItemDetailsWrapper" style="padding-right:0;">',
                   '<div class="itemTitle {[this.getCls(values)]}">{[this.getTitle(values)]}</div>',
+                  '<div class="itemDesc {[this.getCls(values)]}">{[this.getDesc(values)]}</div>',
                '</div>',
                // @formatter:on
                {
                   getCls : function(values)
                   {
                      return values['cls'];
+                  },
+                  getDesc : function(values)
+                  {
+                     return values['desc'];
                   },
                   getTitle : function(values)
                   {
@@ -107,13 +114,11 @@ Ext.define('Genesis.view.client.Referrals',
                tag : 'title',
                width : '100%',
                cls : 'title',
-               tpl : Ext.create('Ext.XTemplate', '{[this.getPoints(values)]}',
+               data :
                {
-                  getPoints : function(values)
-                  {
-                     return values['points'];
-                  }
-               })
+                  title : 'Referral Code'
+               },
+               tpl : '{title}'
             },
             {
                xtype : 'component',
@@ -125,7 +130,7 @@ Ext.define('Genesis.view.client.Referrals',
                xtype : 'button',
                cls : 'separator done',
                tag : 'done',
-               text : 'Transfer Complete!',
+               text : 'Done!',
                ui : 'orange-large'
             }]
          }]

@@ -1058,8 +1058,9 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
       //@extend .viewport;
       .listItemDetailsWrapper {
          padding-left:0 !important;
-         line-height:$icon-size*1.5;
+         height:$icon-size*1.5;
          .itemTitle {
+            margin-top:$panelTopGap;
             font-weight:bold;
             text-align:center;
             font-size:$xlargeFontSize*1.25 !important;
@@ -1071,8 +1072,11 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
                -webkit-mask-image: theme_image($theme-path + "/images/" + $gtheme-name,  "toolbar/" + "mail" + ".png");
                -webkit-mask-size: $xlargeFontSize*1.25 $xlargeFontSize*1.25;
                background-color:#0A78BE;
-               top : 1.25em;
+               top : $panelTopGap*1.5;
             }
+         }
+         .itemDesc {
+            text-align:center;
          }
       }
    }
@@ -1499,8 +1503,9 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
       //@extend .viewport;
       .listItemDetailsWrapper {
          padding-left:0 !important;
-         line-height:$icon-size*1.5;
+         height:$icon-size*1.5;
          .itemTitle {
+            margin-top:$panelTopGap;
             font-weight:bold;
             text-align:center;
             font-size:$xlargeFontSize*1.25 !important;
@@ -1512,8 +1517,11 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
                -webkit-mask-image: theme_image($theme-path + "/images/" + $gtheme-name,  "toolbar/" + "mail" + ".png");
                -webkit-mask-size: $xlargeFontSize*1.25 $xlargeFontSize*1.25;
                background-color:#0A78BE;
-               top : 1.25em;
+               top : $panelTopGap*1.5;
             }
+         }
+         .itemDesc {
+            text-align:center;
          }
       }
    }
