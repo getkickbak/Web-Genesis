@@ -27,6 +27,10 @@ Ext.define('Genesis.controller.Settings',
       {
       }
    },
+   fbLoggedInIdentityMsg : function(email)
+   {
+      return 'You\'re logged into Facebook as ' + Genesis.constants.addCRLF() + email;
+   },
    init : function()
    {
       this.callParent(arguments);
@@ -94,6 +98,7 @@ Ext.define('Genesis.controller.Settings',
    },
    onFacebookTap : function(b, e)
    {
+      var me = this;
       Genesis.constants.facebook_onLogin(function(params)
       {
          Ext.Viewport.setMasked(false);
@@ -106,6 +111,17 @@ Ext.define('Genesis.controller.Settings',
             params :
             {
                user : Ext.encode(params)
+            },
+            callback : function(record, operation)
+            {
+               if(operation.wasSuccessful())
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Facebook Connect',
+                     message : me.fbLoggedInIdentityMsg(params['email'])
+                  });
+               }
             }
          });
       }, true);

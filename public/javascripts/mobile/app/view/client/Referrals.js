@@ -71,8 +71,8 @@ Ext.define('Genesis.view.client.Referrals',
                   tag : 'sender'
                },
                {
-                  text : 'Refer over E-Mail',
-                  desc : '(Refer your friends by sending them a E-Mail)',
+                  text : 'Refer by E-Mail',
+                  desc : '(Refer your friends by sending them an E-Mail)',
                   cls : 'emailsender',
                   tag : 'emailsender'
                }],

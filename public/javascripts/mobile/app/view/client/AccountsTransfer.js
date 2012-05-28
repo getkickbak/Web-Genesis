@@ -66,13 +66,13 @@ Ext.define('Genesis.view.client.AccountsTransfer',
                data : [
                {
                   text : 'Transfer Out',
-                  desc : '(Send your points directly over to your friend\'s mobile phone)',
+                  desc : '(Send it directly over to your friend\'s mobile phone)',
                   cls : 'sender',
                   tag : 'sender'
                },
                {
                   text : 'Email Transfer',
-                  desc : '(Send your points over to your friend\'s email account)',
+                  desc : '(Send it over to your friend\'s email account)',
                   cls : 'emailsender',
                   tag : 'emailsender'
                },

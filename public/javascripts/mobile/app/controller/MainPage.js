@@ -447,7 +447,7 @@ Ext.define('Genesis.controller.MainPage',
          single : true
       });
       b.parent.hide();
-      if(db['currFbId'] > 0)
+      if(Genesis.db.getLocalDB()['currFbId'] > 0)
       {
          console.log("Logging out of Facebook ...")
          Genesis.constants.facebook_onLogout(function()
