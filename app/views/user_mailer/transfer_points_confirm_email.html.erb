@@ -6,7 +6,7 @@
 	<body>
 		<div>
 			<center>
-				<div style="text-align:left;width:645px;background:#ffffff;font-family:Arial, Helvetica, sans-serif;font-size:13px;">
+				<div style="text-align:left;width:480px;background:#ffffff;font-family:Arial, Helvetica, sans-serif;font-size:13px;">
 					<div style="background-color:#000000;padding: 10px 20px;">
 						<a rel="nofollow" target="_blank" href="http://www.getkickbak.com"> <img src="http://files.getkickbak.com/v1/logo.png" border="0" alt="getkickbak.com"> </a>
 					</div>
@@ -16,7 +16,7 @@
 						<b>Hi <%= @sender.name %>,</b>
 						<br>
 						<br>
-						You have successfully transferred <%= "#{@record.points} reward #{t('api.points', :count => @record.points)}" %> at <%= @merchant.name %> to <%= @recipient.name %>.
+						You have successfully transferred <%= @record.points %> reward <%= t('api.points', :count => @record.points) %> at <%= @merchant.name %> to <%= @recipient.name %>.
 						<br>
 						<br>
 					</div>
