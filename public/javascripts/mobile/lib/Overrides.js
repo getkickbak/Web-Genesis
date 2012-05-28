@@ -806,7 +806,7 @@ Genesis.db =
    removeReferralDBAttrib : function(index)
    {
       var db = this.getReferralDB();
-      db[index] = value;
+      delete db[index];
       this.setReferralDB(db);
    },
    getReferralDB : function()

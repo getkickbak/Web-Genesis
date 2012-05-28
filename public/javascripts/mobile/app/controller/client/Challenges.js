@@ -848,7 +848,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var container = me.getReferralsContainer();
       container.setActiveItem(0);
    },
-   onReferralsChallengeComplete : function(b, e, eOpts)
+   onCompleteReferralsChallenge : function(b, e, eOpts)
    {
       // Nothing to do but go back to Main Challenge Page
       this.popView();
