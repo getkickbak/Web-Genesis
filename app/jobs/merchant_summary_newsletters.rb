@@ -16,22 +16,27 @@ module MerchantSummaryNewsletters
     merchants.each do |merchant|
       total_customer_count = Customer.count(Customer.merchant.id => merchant.id)
       new_customer_count = Customer.count(Customer.merchant.id => merchant.id, :created_ts => (beginning_of_last_week..end_of_last_week))
-      reward_count = []
-      challenge_count = []
-      total_reward_count = EarnRewardRecord.count(:merchant => merchant, :challenge_id => 0, :created_ts => (beginning_of_last_week..end_of_last_week))
-      total_challenge_count = EarnRewardRecord.count(:merchant => merchant, :challenge_id.gt => 0, :created_ts => (beginning_of_last_week..end_of_last_week))
+      total_reward_points = EarnRewardRecord.sum(:points, :merchant => merchant) - RedeemRewardRecord.sum(:points, :merchant => merchant)
+      new_reward_points_earned = EarnRewardRecord.sum(:points, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week))
+      new_reward_points_redeemed = RedeemRewardRecord.sum(:points, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week))
+      new_purchases_count = EarnRewardRecord.count(:merchant => merchant, :challenge_id => 0, :created_ts => (beginning_of_last_week..end_of_last_week))
+      new_challenges_count = EarnRewardRecord.count(:merchant => merchant, :challenge_id.gt => 0, :created_ts => (beginning_of_last_week..end_of_last_week))
+      new_challenges_indv_count = []
       challenges = Challenge.all(Challenge.merchant.id => merchant.id)
       challenges.each do |challenge|
         count = EarnRewardRecord.count(:challenge_id => challenge.id, :created_ts => (beginning_of_last_week..end_of_last_week))
-        percentage = total_challenge_count > 0 ? (count / Float(total_challenge_count) * 100) : 0
-        challenge_count << {:name => challenge.name, :count => count, :percentage => percentage}
+        percentage = new_challenges_count > 0 ? (count / Float(new_challenges_count) * 100) : 0
+        new_challenges_indv_count << {:name => challenge.name, :count => count, :percentage => percentage}
       end
       stats = {
         :total_customer_count => total_customer_count,
         :new_customer_count => new_customer_count,
-        :total_reward_count => total_reward_count,
-        :total_challenge_count => total_challenge_count,
-        :challenge_count => challenge_count
+        :total_reward_points => total_reward_points,
+        :new_reward_points_earned => new_reward_points_earned,
+        :new_reward_points_redeemed => new_reward_points_redeemed,
+        :new_purchases_count => new_purchases_count,
+        :new_challenges_count => new_challenges_count,
+        :new_challenges_indv_count => new_challenges_indv_count
       }
       Business::MerchantMailer.summary_newsletter_email(merchant,stats).deliver
     end
