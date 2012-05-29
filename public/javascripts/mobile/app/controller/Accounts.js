@@ -273,6 +273,7 @@ Ext.define('Genesis.controller.Accounts',
       var merchantName = record.getMerchant().get('name');
       var vport = me.getViewport();
 
+      Genesis.controller.ControllerBase.playSoundFile(me.getViewPortCntlr().sound_files['clickSound']);
       me.merchantId = record.getMerchant().getId();
       me.rec = record;
 

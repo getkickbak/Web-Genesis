@@ -412,8 +412,11 @@ Ext.define('Genesis.controller.Checkins',
    },
    onExploreDisclose : function(list, record, target, index, e, eOpts, eInfo)
    {
-      this.getViewPortCntlr().setVenue(record);
-
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      viewport.setVenue(record);
       switch (this.mode)
       {
          case 'checkin':

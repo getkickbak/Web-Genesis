@@ -302,6 +302,7 @@ Ext.define('Genesis.controller.Merchants',
       var cvenue = viewport.getCheckinInfo().venue;
       var venue = viewport.getVenue();
 
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       if(!cvenue || !venue || (venue.getId() != cvenue.getId()))
       {
          Ext.device.Notification.show(
