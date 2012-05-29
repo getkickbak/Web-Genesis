@@ -71,7 +71,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           @referral_points = 0
           if challenge && (@customer.visits == 0) && (referral_record = ReferralChallengeRecord.first(:referral_id => @customer.id, :status => :pending))
             referrer = Customer.get(referral_record.referrer_id)
-            record = EarnRewardRecord.new(
+            referrer_reward_record = EarnRewardRecord.new(
               :challenge_id => challenge.id,
               :venue_id => @venue.id,
               :data => "",
@@ -80,9 +80,21 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               :created_ts => now,
               :update_ts => now
             )
-            record.merchant = @venue.merchant
-            record.user = referrer
-            record.save
+            referrer_reward_record.merchant = @venue.merchant
+            referrer_reward_record.user = referrer.user
+            referrer_reward_record.save
+            referral_reward_record = EarnRewardRecord.new(
+              :challenge_id => challenge.id,
+              :venue_id => @venue.id,
+              :data => "",
+              :data_expiry_ts => ::Constant::MIN_TIME,
+              :points => challenge.data.referral_points,
+              :created_ts => now,
+              :update_ts => now
+            )
+            referral_reward_record.merchant = @venue.merchant
+            referral_reward_record.user = current_user
+            referral_reward_record.save
             referrer.points += challenge.points
             referrer.save
             @customer.points += challenge.data.referral_points
