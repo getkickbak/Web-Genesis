@@ -4948,8 +4948,7 @@ a.badge:hover {
 
 .addbusiness .hero-unit,
 .contactus .hero-unit {
-  padding: 48px 0 0 0;
-  margin-bottom: 0;
+  margin: 0;
   background-color: transparent;
 }
 
@@ -4976,7 +4975,6 @@ a.badge:hover {
   z-index: -1;
   width: 450px;
   height: 500px;
-  margin-top: 10px;
   background: transparent url(../../../../resources/themes/v1/contactus/business.png) right 0 no-repeat;
   background-size: 450px;
   content: " ";
