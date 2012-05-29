@@ -167,15 +167,17 @@ class Api::V1::ChallengesController < ApplicationController
   def complete_referral
     data = params[:data].split('$')
     merchant = Merchant.get(data[0]) || not_found
+    already_customer = false
     @customer = Customer.first(Customer.user.id => current_user.id, Customer.merchant.id => merchant.id)
     if @customer.nil?
       @customer = Customer.create(merchant, current_user)
+    else
+      already_customer = true
     end
     authorize! :read, @customer
     
     logger.info("Complete Referral Challenge, Customer(#{@customer.id}), User(#{current_user.id})")
     authorized = false
-    already_referred = false
     
     begin
       cipher = Gibberish::AES.new(@customer.merchant.auth_code)
@@ -192,12 +194,8 @@ class Api::V1::ChallengesController < ApplicationController
       #logger.debug("Challenge doesn't exists: #{Challenge.get(challenge_id).nil?}")
       #logger.debug("ReferralChallengeRecord doesn't exists: #{ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id).nil?}")
       if (decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT) && (@challenge = Challenge.get(challenge_id)) 
-        if ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id).nil?
-          #logger.debug("Set authorized to true")
-          authorized = true
-        else
-          already_referred = true  
-        end
+        #logger.debug("Set authorized to true")
+        authorized = true  
       end  
     rescue StandardError => e
       logger.error("Exception: " + e.message)
@@ -205,6 +203,21 @@ class Api::V1::ChallengesController < ApplicationController
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.challenges.invalid_referral_code").split('\n') } }
+      end  
+      return
+    end
+    
+    if already_customer
+      if ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id).nil?
+        msg = t("api.challenges.already_customer").split('\n')
+        logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge_id}), already a customer")
+      else
+        msg = t("api.challenges.already_referred").split('\n')
+        logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge_id}), already referred")
+      end  
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => msg } }
       end  
       return
     end
@@ -223,18 +236,11 @@ class Api::V1::ChallengesController < ApplicationController
           )
           logger.info("User(#{current_user.id}) successfully completed Referral Challenge(#{@challenge.id})")
           render :template => '/api/v1/challenges/complete_referral'
-        else
-          if already_referred
-            referrer = Customer.get(referrer_id)
-            msg = (t("api.challenges.already_referred") % [referrer.user.name]).split('\n')
-            logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge_id}), already referred")
-          else
-            msg = t("api.challenges.invalid_referral_code").split('\n')  
-            logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge.id}), invalid referral code")
-          end
+        else  
+          logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge.id}), invalid referral code")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => msg } }
+            format.json { render :json => { :success => false, :message => t("api.challenges.invalid_referral_code").split('\n') } }
           end      
         end      
       rescue DataMapper::SaveFailureError => e

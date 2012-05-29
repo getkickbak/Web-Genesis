@@ -130,6 +130,7 @@ en:
         expired_code: "Authorization code no longer valid."
         invalid_code: "Authorization code is not valid."
         invalid_referral_code: "Referral code is not valid."
+        already_customer: "You are already a customer!"
         already_referred: "You have already been referred by %s!"
         missing_requirements: "Something went wrong."
         qualified_visits: "Earn %s bonus %s with %s more %s!"
