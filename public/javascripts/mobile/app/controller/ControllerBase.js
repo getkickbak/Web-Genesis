@@ -25,7 +25,12 @@ Ext.define('Genesis.controller.ControllerBase',
    errProcQRCodeMsg : 'Error Processing Authentication Code',
    cameraAccessMsg : 'Accessing your Camera Phone ...',
    updatingServerMsg : 'Updating Server ...',
-   referredByFriendsMsg : 'Have you been referred to by a friend to this merchant?',
+   referredByFriendsMsg : function(merchatName)
+   {
+      return 'Have you been referred ' + Genesis.constants.addCRLF() + //
+      'by a friend to visit' + Genesis.constants.addCRLF() + //
+      merchatName + '?';
+   },
    showScreenTimeoutExpireMsg : function(duration)
    {
       return duration + ' are up! Press OK to confirm.';
@@ -261,8 +266,8 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          Ext.device.Notification.show(
          {
-            title : 'Friends Referral',
-            message : me.referredByFriendsMsg,
+            title : 'Referral Challenge',
+            message : me.referredByFriendsMsg(viewport.getVenue().getMerchant().get('name')),
             buttons : ['Yes', 'No'],
             callback : function(btn)
             {

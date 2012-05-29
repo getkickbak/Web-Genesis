@@ -1,6 +1,6 @@
-//---------------------------------------------------------------------------------------------------------------------------------
+// **************************************************************************
 // System Functions
-//---------------------------------------------------------------------------------------------------------------------------------
+// **************************************************************************
 Ext.ns('Genesis.constants');
 
 Genesis.constants =
@@ -15,7 +15,7 @@ Genesis.constants =
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
    fbConnectReqestMsg : 'Would you like to update friends on Facebook?',
    connectingToFBMsg : 'Connecting to Facebook ...',
-   debugPrivKey : 'pgsRrREbvRnPVpltbKHBJdPkl7IHCauW',
+   debugPrivKey : 'nPAbRmIZ3I9SJrDhWyHJ4heQOizi7N8I',
    redeemDBSize : 10000,
    isNative : function()
    {
@@ -102,15 +102,19 @@ Genesis.constants =
          }
       }
       return (id) ? me.privKey['v' + id] : me.privKey;
-   },
-   // **************************************************************************
-   // Facebook API
+   }
+}
+
+// **************************************************************************
+// Facebook API
+// **************************************************************************
+Genesis.fb =
+{
    /*
    * Clean up any Facebook cookies, otherwise, we have page loading problems
    * One set for production domain, another for developement domain
    */
    // **************************************************************************
-   //
    initFb : function()
    {
       var me = this;
@@ -133,6 +137,7 @@ Genesis.constants =
             if(authToken)
             {
                db['fbExpiresIn'] = Date.now() + (1000 * session.authResponse['expiresIn']);
+               db['fbAutoCode'] = authToken;
                Genesis.db.setLocalDB(db);
                if(me.cb)
                {
@@ -161,7 +166,6 @@ Genesis.constants =
       var uidField = "id";
       var nameField = "name";
       var me = this;
-      var db = Genesis.db.getLocalDB();
       var message = function(num)
       {
          return 'We found ' + num + ' Friends from your social network!';
@@ -176,7 +180,7 @@ Genesis.constants =
             var data = response.data;
             for(var i = 0; i < data.length; i++)
             {
-               if(data[i][uidField] != db['currFbId'])
+               if(data[i][uidField] != Genesis.db.getLocalDB()['currFbId'])
                {
                   me.friendsList.push(
                   {
@@ -247,10 +251,11 @@ Genesis.constants =
       me.cb = cb || Ext.emptyFn;
       FB.login(function(response)
       {
-         if((response.status == 'connected') && response.authResponse)
+         if(response && (response.status == 'connected') && response.authResponse)
          {
             console.debug("Logged into Facebook!");
             Genesis.db.setLocalDBAttrib('fbExpiresIn', Date.now() + (1000 * response.authResponse['expiresIn']));
+            //Genesis.db.setLocalDBAttrib('fbAuthCode', response.authResponse['authToken']);
             if(me.cb)
             {
                me.facebook_loginCallback(me.cb);
@@ -259,8 +264,9 @@ Genesis.constants =
          }
          else
          {
-            Genesis.db.removeLocalDBAttrib('fbExpiresIn');
             console.debug("Login Failed! ...");
+            Genesis.db.removeLocalDBAttrib('fbExpiresIn');
+            //Genesis.db.removeLocalDBAttrib('fbAuthCode');
             if(!supress)
             {
                Ext.Viewport.setMasked(false);
@@ -273,7 +279,7 @@ Genesis.constants =
                   {
                      if(btn.toLowerCase() == 'try again')
                      {
-                        Ext.defer(fbLogin, 3 * 1000, me, [cb, supress]);
+                        Ext.defer(me.fbLogin, 3 * 1000, me, [cb, supress]);
                      }
                      else
                      {
@@ -286,7 +292,7 @@ Genesis.constants =
          }
       },
       {
-         scope : me.fbScope
+         scope : Genesis.constants.fbScope
       });
    },
    facebook_onLogin : function(cb, supress, message)
@@ -325,7 +331,7 @@ Genesis.constants =
       }
       // Logged into FB currently or before!
 
-      console.debug("facebook_onLogin - FbId = [" + db['currFbId'] + "]");
+      console.debug("facebook_onLogin - FbId = [" + db['currFbId'] + "], refreshConn = " + refreshConn);
 
       // Login if connection missing
 
@@ -336,6 +342,8 @@ Genesis.constants =
             if((response.status == 'connected') && response.authResponse)
             {
                var expireTime = (!db['fbExpiresIn']) ? 0 : new Date(db['fbExpiresIn']).getTime();
+               db['fbAutoCode'] = response.authResponse['authToken'];
+
                //
                // To-do : Implement Facebook Expiry TimeStamp check
                //
@@ -374,7 +382,7 @@ Genesis.constants =
             var db = Genesis.db.getLocalDB();
             var facebook_id = response.id;
 
-            Ext.Viewport.setMasked(false);
+            //Ext.Viewport.setMasked(false);
             if(db['currFbId'] == facebook_id)
             {
                console.debug("Session information same as previous session[" + facebook_id + "]");
@@ -418,6 +426,10 @@ Genesis.constants =
        $.cookie("fbsr_" + Genesis.fbAppId, null);
        */
    },
+   _fb_disconnect : function()
+   {
+      this._fb_connect();
+   },
    facebook_onLogout : function(cb, contactFB)
    {
       var me = this;
@@ -428,6 +440,7 @@ Genesis.constants =
       db['currFbId'] = 0;
       delete db['fbAccountId'];
       delete db['fbResponse'];
+      delete db['fbAutoCode'];
       delete db['fbExpiresIn'];
       Genesis.db.setLocalDB(db);
 
@@ -453,8 +466,10 @@ Genesis.constants =
       }
    }
 };
-Genesis.constants._fb_disconnect = Genesis.constants._fb_connect;
 
+// **************************************************************************
+// Utility Functions
+// **************************************************************************
 Genesis.fn =
 {
    weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
@@ -505,7 +520,7 @@ Genesis.fn =
       {
          var currentDate = new Date().getTime();
          // Adjust for time drift between Client computer and Application Server
-         var offsetTime = Genesis.constants.currentDateTime(currentDate);
+         var offsetTime = Genesis.fn.currentDateTime(currentDate);
 
          var timeExpiredSec = (offsetTime - date.getTime()) / 1000;
 
@@ -826,7 +841,7 @@ Genesis.db =
    //
    resetStorage : function()
    {
-      Genesis.constants.facebook_onLogout(null, false);
+      Genesis.fb.facebook_onLogout(null, false);
       this.removeLocalDBAttrib('auth_code');
    }
 }
@@ -921,7 +936,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
    {
       var me = this, action = operation.getAction(), reader = me.getReader(), resultSet;
       var app = _application;
-      var vport = app.getController('Viewport');
+      var viewport = app.getController('Viewport');
       var errorHandler = function()
       {
          var messages = ((resultSet && Ext.isDefined(resultSet.getMessage)) ? (Ext.isArray(resultSet.getMessage()) ? resultSet.getMessage().join(Genesis.constants.addCRLF()) : resultSet.getMessage()) : 'Error Connecting to Server');
@@ -946,8 +961,8 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                      if(metaData['session_timeout'])
                      {
                         Genesis.db.removeLocalDBAttrib('auth_code');
-                        vport.setLoggedIn(false);
-                        vport.fireEvent('openpage', 'MainPage', 'login');
+                        viewport.setLoggedIn(false);
+                        viewport.fireEvent('openpage', 'MainPage', 'login', null);
                         return;
                      }
                      else
@@ -959,7 +974,6 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   }
                });
                break;
-               ;
             }
             //
             // Sign in failed due to invalid Facebook info, Create Account.
@@ -972,7 +986,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   message : 'Create user account using Facebook Profile information',
                   callback : function(button)
                   {
-                     vport.setLoggedIn(false);
+                     viewport.setLoggedIn(false);
                      Genesis.db.removeLocalDBAttrib('auth_code');
                      var controller = app.getController('MainPage');
                      app.dispatch(
@@ -993,18 +1007,19 @@ Ext.define('Genesis.data.proxy.OfflineServer',
             {
                Ext.device.Notification.show(
                {
-                  title : 'Error',
+                  title : 'Login Error',
                   message : messages,
                   callback : function()
                   {
-                     vport.setLoggedIn(false);
-                     Genesis.constants.resetStorage();
-                     vport.onFeatureTap('MainPage', 'login');
+                     viewport.setLoggedIn(false);
+                     Genesis.db.resetStorage();
+                     viewport.fireEvent('openpage', 'MainPage', 'login', null);
                   }
                });
                return;
             }
             default:
+               console.log("Error - " + metaData['rescode']);
                Ext.device.Notification.show(
                {
                   title : 'Error',
@@ -1012,7 +1027,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                });
                break;
          }
-         console.debug("Ajax Call Error Handler called. Operation(" + operation.wasSuccessful() + ")");
+         console.debug("Ajax ErrorHandler called. Operation(" + operation.wasSuccessful() + ")");
          me.fireEvent('exception', me, response, operation);
       }
       if((success === true) || (!request.aborted && (Genesis.constants.isNative() === true)))
@@ -1023,7 +1038,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          }
          catch(e)
          {
-            console.debug('Ajax call is failed message=[' + e.message + '] url=[' + request.getUrl() + ']');
+            console.debug('Ajax call failed with message=[' + e.message + '] url=[' + request.getUrl() + ']');
             operation.setException(operation,
             {
                status : null,
@@ -1041,7 +1056,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
       }
       else
       {
-         console.debug('Ajax call is failed status=[' + response.status + '] url=[' + request.getUrl() + ']');
+         console.debug('Ajax call failed with status=[' + response.status + '] url=[' + request.getUrl() + ']');
          me.setException(operation, response);
          /**
           * @event exception

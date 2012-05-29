@@ -119,7 +119,8 @@ Ext.define('Genesis.controller.client.Challenges',
    defaultChallengeMsg : 'Please Select a challenge to perform',
    photoUploadSuccessMsg : function(points)
    {
-      return 'You have earned ' + points + ' Pts for uploading it to Facebook!';
+      return 'We\'ve added earned ' + points + ' points' + Genesis.constants.addCRLF() + //
+      'towards your account for uploading photos to Facebook!';
    },
    photoTakenFailMsg : function(msg)
    {
@@ -169,7 +170,7 @@ Ext.define('Genesis.controller.client.Challenges',
             options.mimeType = "image/jpg";
             options.params =
             {
-               "auth_token" : Genesis.db.getLocalDB()['auth_code']
+               "auth_token" : Genesis.db.getLocalDB()['fbAutoCode']
             };
             options.chunkedMode = true;
 
@@ -898,7 +899,7 @@ Ext.define('Genesis.controller.client.Challenges',
       photoAction.hide();
 
       console.log("Checking for Facebook Plugin ...");
-      Genesis.constants.facebook_onLogin(function(params)
+      Genesis.fb.facebook_onLogin(function(params)
       {
          console.log("Accessing Camera Plugin ...");
          if(Genesis.constants.isNative())
@@ -1050,7 +1051,7 @@ Ext.define('Genesis.controller.client.Challenges',
          {
             Ext.device.Notification.show(
             {
-               title : 'Receive Referrals',
+               title : 'Referrals Challenge',
                message : me.confirmRecvReferralsMsg,
                buttons : ['Proceed', 'Cancel'],
                callback : function(btn)

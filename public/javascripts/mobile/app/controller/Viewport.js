@@ -86,8 +86,8 @@ Ext.define('Genesis.controller.Viewport',
    {
       var me = this;
       var site = Genesis.constants.site;
-      //var db = Genesis.constants.getLocaDB();
-      Genesis.constants.facebook_onLogin(function(params)
+      //var db = Genesis.db.getLocaDB();
+      Genesis.fb.facebook_onLogin(function(params)
       {
          var venue = me.getVenue();
          var merchant = venue.getMerchant();
@@ -275,7 +275,7 @@ Ext.define('Genesis.controller.Viewport',
       //
       if(!merchantMode)
       {
-         Genesis.constants.initFb();
+         Genesis.fb.initFb();
          me.updateRewardsTask = Ext.create('Ext.util.DelayedTask');
       }
 

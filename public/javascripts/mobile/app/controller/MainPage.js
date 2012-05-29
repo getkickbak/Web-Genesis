@@ -105,6 +105,10 @@ Ext.define('Genesis.controller.MainPage',
    {
       return msg + Genesis.constants.addCRLF() + 'Please Try Again';
    },
+   loginWithFbMsg : function(msg)
+   {
+      return 'Logging in using' + Genesis.constants.addCRLF() + 'Facebook Connect ...';
+   },
    init : function(app)
    {
       this.callParent(arguments);
@@ -376,7 +380,11 @@ Ext.define('Genesis.controller.MainPage',
          jsonData :
          {
          },
-         params : params
+         params : params,
+         callback : function()
+         {
+            Ext.Viewport.setMasked(false);
+         }
       });
    },
    onLoginActivate : function(c, eOpts)
@@ -403,7 +411,7 @@ Ext.define('Genesis.controller.MainPage',
          Genesis.db.removeLocalDBAttrib('auth_code');
          if(Genesis.db.getLocalDB()['currFbId'] > 0)
          {
-            Genesis.constants.facebook_onLogout(null, true);
+            Genesis.fb.facebook_onLogout(null, true);
          }
          me.fireEvent('openpage', 'MainPage', 'login', null);
       }
@@ -421,6 +429,7 @@ Ext.define('Genesis.controller.MainPage',
                },
                callback : function(records, operation)
                {
+                  Ext.Viewport.setMasked(false);
                   if(operation.wasSuccessful())
                   {
                      console.log("Logout Successful!")
@@ -450,7 +459,7 @@ Ext.define('Genesis.controller.MainPage',
       if(Genesis.db.getLocalDB()['currFbId'] > 0)
       {
          console.log("Logging out of Facebook ...")
-         Genesis.constants.facebook_onLogout(function()
+         Genesis.fb.facebook_onLogout(function()
          {
             //
             // Login as someone else?
@@ -476,11 +485,15 @@ Ext.define('Genesis.controller.MainPage',
       //
       // Forced to Login to Facebook
       //
-      Genesis.db.removeLocalDBAttrib('currFbId');
-      Genesis.constants.facebook_onLogin(function(params)
+      Ext.Viewport.setMasked(
       {
-         console.log("Logging into Kickbak using Facebook account ...");
-         Ext.Viewport.setMasked(false);
+         xtype : 'loadmask',
+         message : me.loginWithFbMsg()
+      });
+      Genesis.db.removeLocalDBAttrib('currFbId');
+      Genesis.fb.facebook_onLogin(function(params)
+      {
+         console.log(me.loginWithFbMsg());
          me.facebookLogin(params);
       }, true);
    },
@@ -539,6 +552,10 @@ Ext.define('Genesis.controller.MainPage',
             params :
             {
                user : Ext.encode(params)
+            },
+            callback : function()
+            {
+               Ext.Viewport.setMasked(false);
             }
          });
       }
@@ -546,7 +563,7 @@ Ext.define('Genesis.controller.MainPage',
    onSignIn : function(username, password)
    {
       //Cleanup any outstanding registrations
-      Genesis.constants.facebook_onLogout(null, Genesis.db.getLocalDB()['currFbId'] > 0);
+      Genesis.fb.facebook_onLogout(null, Genesis.db.getLocalDB()['currFbId'] > 0);
 
       var me = this;
       var params =
@@ -573,6 +590,7 @@ Ext.define('Genesis.controller.MainPage',
             //
             // Login Error, redo login
             //
+            Ext.Viewport.setMasked(false);
             if(!operation.wasSuccessful())
             {
                Genesis.db.resetStorage();

@@ -166,10 +166,6 @@ Ext.define('Genesis.controller.Prizes',
             message : me.lostPrizeMsg,
             callback : function()
             {
-               //
-               // In case the sound is still going ...
-               //
-               //Genesis.controller.ControllerBase.stopSoundFile(viewport.sound_files['rouletteSpinSound']);
                Ext.defer(me.popView, 3 * 1000, me);
             }
          });
@@ -560,7 +556,7 @@ Ext.define('Genesis.controller.Prizes',
       me.pushView(me.getMainPage());
 
       //Update on Facebook
-      Genesis.constants.facebook_onLogin(function(params)
+      Genesis.fb.facebook_onLogin(function(params)
       {
          me.updatingPrizeOnFacebook(showPrize);
       }, false, me.updatePrizeOnFbMsg);

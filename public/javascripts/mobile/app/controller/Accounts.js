@@ -81,23 +81,30 @@ Ext.define('Genesis.controller.Accounts',
       }
    },
    qrcodeRegExp : /%qrcode_image%/,
-   noTransferCodeMsg : 'No Transfer Authorization Code was scanned',
+   noTransferCodeMsg : 'No Transfer Code was scanned',
    pointsReqMsg : 'Points are required for transfer',
-   startTransferMsg : 'Prepare to scan the Sender\'s Authorization Code',
+   startTransferMsg : 'Prepare to scan the Sender\'s Transfer Code',
    transferFailedMsg : 'Transfer operation did not complete',
-   transferSavedMsg : 'Transfer messasge was saved.',
-   transferSuccessMsg : 'Transfer operation was successfully completed',
+   transferSavedMsg : 'Transfer messasge was saved, but not sent.',
+   transferSuccessMsg : function()
+   {
+      return 'Transfer operation was successfully completed.' + Genesis.constants.addCRLF() + //
+      'Your account information won\'t be updated until your next check-in.';
+   },
    xferWithinRangeMsg : function(min, max)
    {
       return 'Please enter a value between ' + min + ' and ' + max;
    },
    noPtsXferMsg : function()
    {
-      return 'No Points were transferred.' + Genesis.constants.addCRLF() + 'Try again.';
+      return 'No Points were transferred.' + Genesis.constants.addCRLF() + //
+      'Please Try Again.';
    },
    recvTransferMsg : function(points, merchantName)
    {
-      return 'You have received ' + points + ' points at ' + Genesis.constants.addCRLF() + merchantName;
+      return 'We have added ' + points + ' points ' + Genesis.constants.addCRLF() + //
+      'towards your account at ' + //
+      Genesis.constants.addCRLF() + merchantName + '!';
    },
    init : function()
    {
@@ -494,7 +501,7 @@ Ext.define('Genesis.controller.Accounts',
                         Ext.device.Notification.show(
                         {
                            title : 'Transfer Success!',
-                           message : me.transferSuccessMsg
+                           message : me.transferSuccessMsg()
                         });
                         break;
                      }
