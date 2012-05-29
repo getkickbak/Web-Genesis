@@ -21,7 +21,7 @@ class Merchant
   property :account_first_name, String, :required => true, :default => ""
   property :account_last_name, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
-  property :website, String, :required => true, :default => "", :format => :url 
+  property :website, String, :default => "", :format => :url 
   property :payment_account_id, String, :default => ""
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :pending
   property :prize_terms, String, :required => true, :default => ""

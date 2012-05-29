@@ -13,7 +13,7 @@ class Venue
   property :country, String, :required => true, :default => ""
   property :time_zone, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
-  property :website, String, :required => true, :default => "", :format => :url 
+  property :website, String, :default => "", :format => :url 
   # Disable auto-validation http://j.mp/gMORhy 
   property :photo, String, :auto_validation => false
   property :latitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0

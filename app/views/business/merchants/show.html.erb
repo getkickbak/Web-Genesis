@@ -30,10 +30,12 @@
   <%= @merchant.phone %>
 </p>
 
+<% if not @merchant.webiste.empty? %>
 <p>
   <b>Website</b>
   <%= @merchant.website %>
 </p>
+<% end %>
 </div>
 <%= link_to 'Edit', edit_account_path %> |
 <%= link_to 'Back', account_path %>

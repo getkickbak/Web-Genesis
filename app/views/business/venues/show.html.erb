@@ -35,10 +35,12 @@
 			<b>Phone:</b>
 			<%= @venue.phone %>
 		</p>
+		<% if not @venue.website.empty? %>
 		<p>
 			<b>Website:</b>
 			<%= @venue.website %>
 		</p>
+		<% end %>
 		<p>
 			<b>Longitude:</b>
 			<%= @venue.longitude %>

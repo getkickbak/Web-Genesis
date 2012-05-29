@@ -27,6 +27,7 @@ module Business
       @venue = Venue.new
       @venue[:name] = current_merchant.name
       @venue[:description] = current_merchant.description
+      @venue[:website] = current_merchant.website
       
       respond_to do |format|
         format.html # index.html.erb
