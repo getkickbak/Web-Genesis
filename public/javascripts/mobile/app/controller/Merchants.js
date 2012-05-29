@@ -235,7 +235,7 @@ Ext.define('Genesis.controller.Merchants',
          me.getFeedContainer().show();
          //me.getAddress().hide();
          //me.getStats().show();
-         console.debug("Checkin Mode");
+         console.debug("Merchant Checkin Mode");
 
          // Let the screen complete the rendering process
          Ext.defer(me.checkReferralPrompt, 0.1 * 1000, me, [merchantId,
@@ -253,7 +253,7 @@ Ext.define('Genesis.controller.Merchants',
          //me.getAddress().setData(vrecord.getData(true));
          //me.getAddress().show();
          //me.getStats().hide();
-         console.debug("Explore Mode");
+         console.debug("Merchant Explore Mode");
       }
       me.getDescPanel().setData(vrecord);
       me.getDescContainer().show();
@@ -302,6 +302,7 @@ Ext.define('Genesis.controller.Merchants',
       var cvenue = viewport.getCheckinInfo().venue;
       var venue = viewport.getVenue();
 
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       if(!cvenue || !venue || (venue.getId() != cvenue.getId()))
       {
          Ext.device.Notification.show(

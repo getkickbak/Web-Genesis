@@ -44,11 +44,13 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    getReferralMsg : function(points)
    {
-      return 'You\'ve earned an additional ' + points + ' Points!' + Genesis.constants.addCRLF() + this.prizeCheckMsg;
+      return this.VipMsg(points);
    },
    getVipMsg : function(points)
    {
-      return 'You\'ve earned an additional ' + points + ' Points!' + Genesis.constants.addCRLF() + this.prizeCheckMsg;
+      return 'You\'ve earned an ' + Genesis.constants.addCRLF() + //
+      'additional ' + points + ' Points!' + Genesis.constants.addCRLF() + //
+      this.prizeCheckMsg;
    },
    vipPopUp : function(points, callback)
    {
@@ -178,7 +180,6 @@ Ext.define('Genesis.controller.client.Rewards',
             }
          });
       }
-      
       if(allowedMsg !== true)
       {
          Ext.device.Notification.show(

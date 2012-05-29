@@ -5,7 +5,7 @@ Ext.define('Genesis.view.client.Referrals',
    alias : 'widget.clientreferralsview',
    config :
    {
-      title : 'Referrals',
+      title : 'Refer A Friend',
       changeTitle : false,
       layout : 'vbox',
       items : [
@@ -113,7 +113,7 @@ Ext.define('Genesis.view.client.Referrals',
                xtype : 'component',
                tag : 'title',
                width : '100%',
-               cls : 'title',
+               cls : 'subtitle',
                data :
                {
                   title : 'Referral Code'

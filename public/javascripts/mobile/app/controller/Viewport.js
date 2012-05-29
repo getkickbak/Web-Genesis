@@ -29,10 +29,6 @@ Ext.define('Genesis.controller.Viewport',
       },
       control :
       {
-         view :
-         {
-            push : 'onPush'
-         },
          fbShareBtn :
          {
             tap : 'onShareMerchantTap'
@@ -76,18 +72,26 @@ Ext.define('Genesis.controller.Viewport',
          'tabbar' :
          {
             tabchange : 'onTabBarTabChange'
+         },
+         'viewportview button' :
+         {
+            tap : 'onButtonTap'
          }
       }
    },
    gatherCheckinInfoMsg : 'Gathering Checkin information ...',
    retrieveChallengesMsg : 'Retrieving Challenges ...',
    fbShareSuccessMsg : 'Posted on your Timeline!',
+   onButtonTap : function(b, e, eOpts)
+   {
+      Genesis.controller.ControllerBase.playSoundFile(this.sound_files['clickSound']);
+   },
    onShareMerchantTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
       var site = Genesis.constants.site;
-      //var db = Genesis.constants.getLocaDB();
-      Genesis.constants.facebook_onLogin(function(params)
+      //var db = Genesis.db.getLocaDB();
+      Genesis.fb.facebook_onLogin(function(params)
       {
          var venue = me.getVenue();
          var merchant = venue.getMerchant();
@@ -254,9 +258,6 @@ Ext.define('Genesis.controller.Viewport',
       }, 500);
       return true;
    },
-   onPush : function(v, activeItem)
-   {
-   },
    init : function(app)
    {
       var me = this;
@@ -275,7 +276,7 @@ Ext.define('Genesis.controller.Viewport',
       //
       if(!merchantMode)
       {
-         Genesis.constants.initFb();
+         Genesis.fb.initFb();
          me.updateRewardsTask = Ext.create('Ext.util.DelayedTask');
       }
 

@@ -99,7 +99,7 @@ Ext.define('Genesis.controller.Settings',
    onFacebookTap : function(b, e)
    {
       var me = this;
-      Genesis.constants.facebook_onLogin(function(params)
+      Genesis.fb.facebook_onLogin(function(params)
       {
          Ext.Viewport.setMasked(false);
          Customer['setUpdateFbLoginUrl']();
