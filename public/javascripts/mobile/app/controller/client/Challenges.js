@@ -631,6 +631,8 @@ Ext.define('Genesis.controller.client.Challenges',
    // --------------------------------------------------------------------------
    onItemSelect : function(d, model, eOpts)
    {
+      Genesis.controller.ControllerBase.playSoundFile(this.getViewPortCntlr().sound_files['clickSound']);
+      
       var carousel = this.getChallengePage().query('carousel')[0];
       // No need to update the Challenge Menu. Nothing changed.
       for(var i = 0; i < carousel.getInnerItems().length; i++)

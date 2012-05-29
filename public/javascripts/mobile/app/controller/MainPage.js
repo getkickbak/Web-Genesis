@@ -326,9 +326,11 @@ Ext.define('Genesis.controller.MainPage',
    // --------------------------------------------------------------------------
    onItemSelect : function(d, model, eOpts)
    {
+      Genesis.controller.ControllerBase.playSoundFile(this.getViewPortCntlr().sound_files['clickSound']);
+      
       d.deselect([model], false);
       console.log("Controller=[" + model.data.pageCntlr + "]");
-
+      
       var cntlr = this.getApplication().getController(model.get('pageCntlr'));
       var msg = cntlr.isOpenAllowed();
       if(msg === true)

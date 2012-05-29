@@ -29,10 +29,6 @@ Ext.define('Genesis.controller.Viewport',
       },
       control :
       {
-         view :
-         {
-            push : 'onPush'
-         },
          fbShareBtn :
          {
             tap : 'onShareMerchantTap'
@@ -76,12 +72,20 @@ Ext.define('Genesis.controller.Viewport',
          'tabbar' :
          {
             tabchange : 'onTabBarTabChange'
+         },
+         'viewportview button' :
+         {
+            tap : 'onButtonTap'
          }
       }
    },
    gatherCheckinInfoMsg : 'Gathering Checkin information ...',
    retrieveChallengesMsg : 'Retrieving Challenges ...',
    fbShareSuccessMsg : 'Posted on your Timeline!',
+   onButtonTap : function(b, e, eOpts)
+   {
+      Genesis.controller.ControllerBase.playSoundFile(this.sound_files['clickSound']);
+   },
    onShareMerchantTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
@@ -253,9 +257,6 @@ Ext.define('Genesis.controller.Viewport',
          }
       }, 500);
       return true;
-   },
-   onPush : function(v, activeItem)
-   {
    },
    init : function(app)
    {
