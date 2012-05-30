@@ -8,7 +8,7 @@
 			<center>
 				<div style="text-align:left;width:480px;background:#ffffff;font-family:Arial, Helvetica, sans-serif;font-size:13px;">
 					<div style="background-color:#000000;padding: 10px 20px;">
-						<a rel="nofollow" target="_blank" href="http://www.getkickbak.com"> <img src="http://files.getkickbak.com/v1/logo.png" border="0" alt="getkickbak.com"> </a>
+						<a rel="nofollow" target="_blank" href="http://www.getkickbak.com"> <img style="width:100px;" src="http://files.getkickbak.com/v1/logo.png" border="0" alt="getkickbak.com"> </a>
 					</div>
 					<div style="border:1px solid #000000; padding: 0 15px 0 15px;">
 						<br>
@@ -42,6 +42,7 @@
 							</div>
 							<div style="clear:both;">
 								<% google_map_src = "http://maps.googleapis.com/maps/api/staticmap?zoom=15&scale=1&maptype=roadmap&sensor=false&size=392x287&markers=color%3Ared%7Clabel%3A%7C#{@venue.latitude}%2C#{@venue.longitude}&center=#{@venue.latitude}%2C#{@venue.longitude}&title=#{@venue.name}%200" %>
+								<%= google_map_src %>
 								<img src="<%= google_map_src %>">
 							</div>
 						</div>
