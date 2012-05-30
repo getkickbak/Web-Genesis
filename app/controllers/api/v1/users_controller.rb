@@ -6,8 +6,8 @@ class Api::V1::UsersController < ApplicationController
     @user = current_user
     authorize! :update, @user
 
-    User.transaction do
-      begin
+    begin
+      User.transaction do
         user_info = JSON.parse(params[:user], { :symbolize_names => true })
         user_info[:role] = @user.role
         user_info[:status] = @user.status
@@ -17,22 +17,22 @@ class Api::V1::UsersController < ApplicationController
           #format.xml  { head :ok }
           format.json { render :json => { :success => true } }
         end
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        respond_to do |format|
-          #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :metaData => { :rescode => 'update_account_invalid_info' }, :message => e.resource.errors } }
-        end
       end
-    end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :metaData => { :rescode => 'update_account_invalid_info' }, :message => e.resource.errors } }
+      end
+    end    
   end
   
   def update_facebook_info
     @user = current_user
     authorize! :update, @user
 
-    User.transaction do
-      begin
+    begin
+      User.transaction do
         user_info = JSON.parse(params[:user], { :symbolize_names => true })
         facebook_id = user_info[:facebook_id]
         facebook_email = user_info[:facebook_email]
@@ -49,13 +49,13 @@ class Api::V1::UsersController < ApplicationController
             format.json { render :json => { :success => false, :message => t("api.facebook_account_already_exists_failure").split('\n') } }
           end  
         end
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        respond_to do |format|
-          #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :metaData => { :rescode => 'update_account_invalid_facebook_info' }, :message => e.resource.errors } }
-        end
       end
-    end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :metaData => { :rescode => 'update_account_invalid_facebook_info' }, :message => e.resource.errors } }
+      end
+    end    
   end    
 end

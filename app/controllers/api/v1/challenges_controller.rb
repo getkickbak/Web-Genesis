@@ -15,8 +15,8 @@ class Api::V1::ChallengesController < ApplicationController
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
-    Customer.transaction do
-      begin
+    begin
+      Customer.transaction do
         if is_startable_challenge?
           start_challenge
           render :template => '/api/v1/challenges/start'
@@ -26,13 +26,19 @@ class Api::V1::ChallengesController < ApplicationController
             format.json { render :json => { :success => false, :message => t("api.challenges.start_failure").split('\n') } }
           end  
         end
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.challenges.start_failure").split('\n') } }
-        end
+      end    
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.challenges.start_failure").split('\n') } }
       end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.challenges.start_failure").split('\n') } }
+      end  
     end  
   end
   
@@ -68,16 +74,18 @@ class Api::V1::ChallengesController < ApplicationController
           authorized = true
         end    
       end
-    rescue
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
       logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), invalid authentication code")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.challenges.invalid_code").split('\n') } }
-      end  
+      end 
+      return 
     end
-        
-    Customer.transaction do
-      begin
+      
+    begin     
+      Customer.transaction do
         if authorized
           @points = 0
           if points_eligible?
@@ -148,20 +156,20 @@ class Api::V1::ChallengesController < ApplicationController
             format.json { render :json => { :success => false, :message => msg } }
           end 
         end
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.challenges.complete_failure").split('\n') } }
-        end
-      rescue StandardError => e
-        logger.error("Exception: " + e.message)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.challenges.complete_failure").split('\n') } }
-        end  
       end
-    end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.challenges.complete_failure").split('\n') } }
+      end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.challenges.complete_failure").split('\n') } }
+      end  
+    end    
   end
   
   def complete_referral
@@ -222,8 +230,8 @@ class Api::V1::ChallengesController < ApplicationController
       return
     end
     
-    Customer.transaction do
-      begin
+    begin
+      Customer.transaction do
         if authorized
           now = Time.now
           record = ReferralChallengeRecord.create(
@@ -243,20 +251,20 @@ class Api::V1::ChallengesController < ApplicationController
             format.json { render :json => { :success => false, :message => t("api.challenges.invalid_referral_code").split('\n') } }
           end      
         end      
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.challenges.complete_referral_failure").split('\n') } }
-        end
-      rescue StandardError => e
-        logger.error("Exception: " + e.message)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.challenges.complete_referral_failure").split('\n') } }
-        end  
       end
-    end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.challenges.complete_referral_failure").split('\n') } }
+      end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.challenges.complete_referral_failure").split('\n') } }
+      end  
+    end      
   end
   
   private

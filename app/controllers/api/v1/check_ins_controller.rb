@@ -49,8 +49,8 @@ class Api::V1::CheckInsController < ApplicationController
       return
     end
     
-    CheckIn.transaction do
-      begin
+    begin
+      CheckIn.transaction do
         now = Time.now
         last_check_in = CheckIn.create(@venue, current_user, @customer)
         @winners_count = EarnPrize.count(EarnPrize.merchant.id => @venue.merchant.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
@@ -79,13 +79,19 @@ class Api::V1::CheckInsController < ApplicationController
           @eligible_rewards << item  
         end
         render :template => '/api/v1/check_ins/create'
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.check_ins.create_failure").split('\n') } }
-        end
       end
-    end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.check_ins.create_failure").split('\n') } }
+      end
+   rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.check_ins.create_failure").split('\n') } }
+      end  
+    end    
   end
 end

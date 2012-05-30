@@ -28,8 +28,8 @@ class Api::V1::CustomerRewardsController < ApplicationController
     end
     
     Time.zone = @venue.time_zone
-    Customer.transaction do
-      begin
+    begin
+      Customer.transaction do
         mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
         acquired = mutex.acquire
         @customer.reload
@@ -86,21 +86,21 @@ class Api::V1::CustomerRewardsController < ApplicationController
           end  
         end
         mutex.release
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        mutex.release if ((defined? mutex) && !mutex.nil?)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
-        end
-      rescue StandardError => e
-        logger.error("Exception: " + e.message)
-        mutex.release if ((defined? mutex) && !mutex.nil?)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
-        end 
       end
-    end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      mutex.release if ((defined? mutex) && !mutex.nil?)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
+      end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      mutex.release if ((defined? mutex) && !mutex.nil?)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
+      end 
+    end    
   end
 end

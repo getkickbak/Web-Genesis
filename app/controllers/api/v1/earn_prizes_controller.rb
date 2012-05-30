@@ -37,8 +37,8 @@ class Api::V1::EarnPrizesController < ApplicationController
     end
     
     Time.zone = @earn_prize.venue.time_zone   
-    EarnPrize.transaction do
-      begin
+    begin 
+      EarnPrize.transaction do
         today = Date.today
         if (@earn_prize.expiry_date >= today) && (not @earn_prize.redeemed)
           @earn_prize.redeemed = true
@@ -66,13 +66,19 @@ class Api::V1::EarnPrizesController < ApplicationController
             format.json { render :json => { :success => false, :message => msg } }
           end
         end  
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.earn_prizes.redeem_failure").split('\n') } }
-        end
       end
-    end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.earn_prizes.redeem_failure").split('\n') } }
+      end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.earn_prizes.redeem_failure").split('\n') } }
+      end  
+    end    
   end
 end
