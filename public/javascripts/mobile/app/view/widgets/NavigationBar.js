@@ -12,7 +12,7 @@ Ext.define('Genesis.navigation.Bar',
       listeners :
       {
          'activeitemchange' : 'onActiveItemChange'
-      }
+      },
    },
    /**
     * Returns the text needed for the current title at anytime.
@@ -474,8 +474,9 @@ Ext.define('Genesis.navigation.Bar',
    },
    onActiveItemChange : function(view, newItem, oldItem, options, controller)
    {
-      var me = this, animation, layout = me.getLayout();
-      var inAnimation = layout.getAnimation().getInAnimation(), outAnimation = layout.getAnimation().getOutAnimation(), inElement, outElement;
+      var me = this, layout = me.getLayout(), animation = layout.getAnimation();
+      var inAnimation = animation.getInAnimation(), outAnimation = animation.getOutAnimation();
+      var inElement, outElement;
 
       if(newItem && oldItem && oldItem.isPainted())
       {
@@ -500,9 +501,14 @@ Ext.define('Genesis.navigation.Bar',
                controller.firingArguments[2] = null;
             }
          });
+         inAnimation.setOnEnd(function()
+         {
+            _application.getController('Viewport').fireEvent('baranimend');
+         });
          outAnimation.setOnEnd(function()
          {
             controller.resume();
+            _application.getController('Viewport').fireEvent('baranimend');
          });
          inElement.dom.style.setProperty('visibility', 'hidden', '!important');
          if(Ext.isEmpty(view.getHideNavBar) || !view.getHideNavBar())

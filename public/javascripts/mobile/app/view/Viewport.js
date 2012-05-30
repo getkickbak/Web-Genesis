@@ -280,6 +280,7 @@ Ext.define('Genesis.view.Viewport',
          layout.setAnimation(this.defaultAnimation);
          this.setAnimMode('default');
       }
+      _application.getController('Viewport').fireEvent('viewanimend');
    },
    setAnimationDir : function(dir)
    {
@@ -346,10 +347,19 @@ Ext.define('Genesis.view.Viewport',
 
          var bar = me.getNavigationBar();
          bar.elementGhost = bar.createProxy(me, bar, view);
+         //
+         // Disables Toolbar until animation completes
+         //
+         bar.setMasked(
+         {
+            xtype : 'mask',
+            transparent : true
+         });
       }
 
       me.setActiveItem(view);
       me.getNavigationBar().onViewRemove(me, view, null);
+
       /*
        if(animation && animation.isAnimation)
        {
@@ -394,6 +404,14 @@ Ext.define('Genesis.view.Viewport',
       {
          animation.setReverse(false);
          bar.elementGhost = bar.createProxy(me, bar, view);
+         //
+         // Disable to Toolbar until animation is complete
+         //
+         bar.setMasked(
+         {
+            xtype : 'mask',
+            transparent : true
+         });
       }
 
       if(me.getInnerItems().indexOf(view) < 0)

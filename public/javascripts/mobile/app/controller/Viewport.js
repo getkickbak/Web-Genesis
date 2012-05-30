@@ -82,8 +82,18 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'onButtonTap'
          }
+      },
+      listeners :
+      {
+         'viewanimend' : 'onViewAnimEnd',
+         'baranimend' :
+         {
+            buffer : 1*1000,
+            fn : 'onBarAnimEnd'
+         }
       }
    },
+   animationFlag : 0,
    gatherCheckinInfoMsg : 'Gathering Checkin information ...',
    retrieveChallengesMsg : 'Retrieving Challenges ...',
    fbShareSuccessMsg : 'Posted on your Timeline!',
@@ -92,6 +102,77 @@ Ext.define('Genesis.controller.Viewport',
       return 'Would you like to do our' + Genesis.constants.addCRLF() + //
       'Refer-A-Friend Challenge?';
    },
+   // --------------------------------------------------------------------------
+   // Event Handlers
+   // --------------------------------------------------------------------------
+   onLocationUpdate : function(position)
+   {
+      var me = this;
+      var app = me.getApplication();
+      var controller = app.getController('Checkins');
+      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
+
+      Venue['setFindNearestURL']();
+      cestore.load(
+      {
+         params :
+         {
+            latitude : position.coords.getLatitude(),
+            longitude : position.coords.getLongitude()
+         },
+         callback : function(records, operation)
+         {
+            if(operation.wasSuccessful())
+            {
+               controller.setPosition(position);
+               app.dispatch(
+               {
+                  action : 'onCheckinScanTap',
+                  controller : controller,
+                  args : [],
+                  scope : controller
+               });
+            }
+            else
+            {
+               Ext.Viewport.setMasked(false);
+               Ext.device.Notification.show(
+               {
+                  title : 'Error',
+                  message : me.missingVenueInfoMsg
+               });
+            }
+         },
+         scope : me
+      });
+   },
+   onViewAnimEnd : function()
+   {
+      var me = this;
+      me.animationFlag |= 0x01;
+      if(me.animationFlag == 0x011)
+      {
+         me.animationFlag = 0;
+         me.getViewport().getNavigationBar().setMasked(false);
+         //console.debug("masked Off");
+      }
+      console.debug("viewAnimEnd - " + me.animationFlag);
+   },
+   onBarAnimEnd : function()
+   {
+      var me = this;
+      me.animationFlag |= 0x10;
+      if(me.animationFlag == 0x011)
+      {
+         me.animationFlag = 0;
+         me.getViewport().getNavigationBar().setMasked(false);
+         //console.debug("masked Off");
+      }
+      console.debug("barAnimEnd - " + me.animationFlag);
+   },
+   // --------------------------------------------------------------------------
+   // Button Handlers
+   // --------------------------------------------------------------------------
    onButtonTap : function(b, e, eOpts)
    {
       Genesis.controller.ControllerBase.playSoundFile(this.sound_files['clickSound']);
@@ -179,47 +260,6 @@ Ext.define('Genesis.controller.Viewport',
    {
       // Open Info ActiveSheet
       //this.getApplication().getView('Viewport').pushView(vp.getInfo());
-   },
-   onLocationUpdate : function(position)
-   {
-      var me = this;
-      var app = me.getApplication();
-      var controller = app.getController('Checkins');
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-
-      Venue['setFindNearestURL']();
-      cestore.load(
-      {
-         params :
-         {
-            latitude : position.coords.getLatitude(),
-            longitude : position.coords.getLongitude()
-         },
-         callback : function(records, operation)
-         {
-            if(operation.wasSuccessful())
-            {
-               controller.setPosition(position);
-               app.dispatch(
-               {
-                  action : 'onCheckinScanTap',
-                  controller : controller,
-                  args : [],
-                  scope : controller
-               });
-            }
-            else
-            {
-               Ext.Viewport.setMasked(false);
-               Ext.device.Notification.show(
-               {
-                  title : 'Error',
-                  message : me.missingVenueInfoMsg
-               });
-            }
-         },
-         scope : me
-      });
    },
    onCheckinScanTap : function(b, e, eOpts, einfo)
    {
@@ -316,6 +356,9 @@ Ext.define('Genesis.controller.Viewport',
       }, 500);
       return true;
    },
+   // --------------------------------------------------------------------------
+   // Functions
+   // --------------------------------------------------------------------------
    init : function(app)
    {
       var me = this;
