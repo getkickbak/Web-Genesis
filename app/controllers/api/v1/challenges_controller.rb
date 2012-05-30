@@ -10,7 +10,7 @@ class Api::V1::ChallengesController < ApplicationController
   end
 
   def start
-    @venue = Merchant.get(params[:venue_id]) || not_found
+    @venue = Venue.get(params[:venue_id]) || not_found
     @challenge = Challenge.first(:id => params[:id], Challenge.merchant.id => @venue.merchant.id) || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
