@@ -16,8 +16,8 @@ class Api::V1::CustomersController < ApplicationController
     authorize! :read, @customer
     
     logger.info("Transfer points Customer(#{@customer.id}), User(#{current_user.id})")
-    Customer.transaction do
-      begin
+    begin
+      Customer.transaction do
         now = Time.now
         @type = params[:type]
         points = params[:points].to_i
@@ -56,15 +56,20 @@ class Api::V1::CustomersController < ApplicationController
             format.json { render :json => { :success => false, :message => (t("api.customers.insufficient_transfer_points") % [points, t('api.point', :count => points)]).split('\n') } }
           end
         end
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
-        end
-        return
       end
-    end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
+      end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
+      end  
+    end    
   end
 
   def receive_points
@@ -109,8 +114,8 @@ class Api::V1::CustomersController < ApplicationController
       return
     end
     
-    Customer.transaction do
-      begin
+    begin
+      Customer.transaction do
         if authorized
           sender = Customer.get(@record.sender_id)
           mutex = CacheMutex.new(sender.cache_key, Cache.memcache)
@@ -151,21 +156,21 @@ class Api::V1::CustomersController < ApplicationController
             format.json { render :json => { :success => false, :message => msg } }
           end
         end
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        mutex.release if ((defined? mutex) && !mutex.nil?)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.customers.receive_points_failure").split('\n') } }
-        end
-      rescue StandardError => e
-        logger.error("Exception: " + e.message)
-        mutex.release if ((defined? mutex) && !mutex.nil?)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.customers.receive_points_failure").split('\n') } }
-        end 
       end
-    end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      mutex.release if ((defined? mutex) && !mutex.nil?)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.customers.receive_points_failure").split('\n') } }
+      end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      mutex.release if ((defined? mutex) && !mutex.nil?)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.customers.receive_points_failure").split('\n') } }
+      end 
+    end    
   end
 end

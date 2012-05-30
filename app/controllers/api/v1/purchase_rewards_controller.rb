@@ -60,8 +60,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       end
     end    
       
-    Customer.transaction do
-      begin
+    begin  
+      Customer.transaction do
         if authorized
           #logger.debug("Authorized to earn points.")
           now = Time.now
@@ -260,22 +260,22 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             format.json { render :json => { :success => false, :message => msg } }
           end
         end  
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        mutex.release if ((defined? mutex) && !mutex.nil?)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
-        end
-      rescue StandardError => e
-        logger.error("Exception: " + e.message)
-        mutex.release if ((defined? mutex) && !mutex.nil?)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
-        end  
       end
-    end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      mutex.release if ((defined? mutex) && !mutex.nil?)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
+      end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      mutex.release if ((defined? mutex) && !mutex.nil?)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
+      end  
+    end    
   end
   
   private

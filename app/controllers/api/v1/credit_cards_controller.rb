@@ -26,8 +26,8 @@ class Api::V1::CreditCardsController < ApplicationController
   def create
     authorize! :create, CreditCard
     
-    CreditCard.transaction do
-      begin
+    begin
+      CreditCard.transaction do
         am_credit_card = ActiveMerchant::Billing::CreditCard.new(
           :first_name => params[:card_info][:first_name],
           :last_name => params[:card_info][:last_name],
@@ -61,20 +61,20 @@ class Api::V1::CreditCardsController < ApplicationController
         else  
           
         end
-      rescue DataMapper::SaveFailureError => e
-        respond_to do |format|
-          format.json { render :json => { :success => false } }
-        end
       end
-    end
+    rescue DataMapper::SaveFailureError => e
+      respond_to do |format|
+        format.json { render :json => { :success => false } }
+      end  
+    end    
   end
 
   def update
     @credit_card = current_user.credit_cards.get(params[:card_id]) || not_found
     authorize! :update, @credit_card
     
-    CreditCard.transaction do
-      begin
+    begin
+      CreditCard.transaction do
         @credit_card.update()
         am_credit_card = ActiveMerchant::Billing::CreditCard.new(
           :first_name => params[:card_info][:first_name],
@@ -104,30 +104,30 @@ class Api::V1::CreditCardsController < ApplicationController
           end
         else
         end  
-      rescue DataMapper::SaveFailureError => e
-        respond_to do |format|
-          format.json { render :json => { :success => false } }
-        end
       end
-    end
+    rescue DataMapper::SaveFailureError => e
+      respond_to do |format|
+        format.json { render :json => { :success => false } }
+      end
+    end    
   end
 
   def destroy
     @credit_card = current_user.credit_cards.get(params[:card_id]) || not_found
     authorize! :destroy, @credit_card
    
-    CreditCard.transaction do
-      begin
+    begin
+      CreditCard.transaction do
         current_user.remove_credit_card(@credit_card)
         Braintree::CreditCard.delete(@credit_card.card_token)
         respond_to do |format|
           #format.xml  { head :ok }
         end
-      rescue
-        respond_to do |format|
-          #format.xml  { head :ok }
-        end 
       end
-    end
+    rescue
+      respond_to do |format|
+        #format.xml  { head :ok }
+      end 
+    end    
   end
 end

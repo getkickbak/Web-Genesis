@@ -4,8 +4,8 @@ class Api::V1::RegistrationsController < ApplicationController
   respond_to :json
   
   def create
-    User.transaction do
-      begin
+    begin
+      User.transaction do
         user_info = JSON.parse(params[:user], { :symbolize_names => true })
         user_info[:role] = "user"
         user_info[:status] = :active
@@ -25,18 +25,19 @@ class Api::V1::RegistrationsController < ApplicationController
         @results = Customer.find(@user.id, start, max)
         @earn_prizes = []
         render :template => '/api/v1/tokens/create'     
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :metaData => { :rescode => 'signup_invalid_info' }, :message => e.resource.errors } }
-        end  
-      rescue
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.registrations.create_failure").split('\n') } }
-        end  
       end
-    end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :metaData => { :rescode => 'signup_invalid_info' }, :message => e.resource.errors } }
+      end  
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.registrations.create_failure").split('\n') } }
+      end  
+    end        
   end
 end 

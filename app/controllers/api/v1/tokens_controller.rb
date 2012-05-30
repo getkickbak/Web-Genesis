@@ -82,8 +82,8 @@ class Api::V1::TokensController < ApplicationController
       return
     end
     
-    User.transaction do
-      begin
+    begin
+      User.transaction do
         profile_info = {
           :gender => params[:gender],
           :birthday => params[:birthday]
@@ -99,19 +99,20 @@ class Api::V1::TokensController < ApplicationController
         @results = Customer.find(@user.id, start, max)
         @earn_prizes = EarnPrize.all(EarnPrize.user.id => @user.id, :expiry_date.gte => Date.today, :redeemed => false, :order => [:expiry_date.asc])
         render :template => '/api/v1/tokens/create'
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => t("api.tokens.create_from_facebook_failure").split('\n') } }
-        end
-      rescue
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => t("api.tokens.create_from_facebook_failure").split('\n') } }
-        end
       end
-    end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => t("api.tokens.create_from_facebook_failure").split('\n') } }
+      end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => t("api.tokens.create_from_facebook_failure").split('\n') } }
+      end
+    end      
   end
 
   def destroy
