@@ -24,6 +24,7 @@ Ext.define('Genesis.controller.Viewport',
       {
          view : 'viewportview',
          shareBtn : 'viewportview button[tag=shareBtn]',
+         emailShareBtn : 'actionsheet button[tag=emailShareBtn]',
          fbShareBtn : 'actionsheet button[tag=fbShareBtn]',
          checkInNowBtn : 'button[tag=checkInNow]' //All CheckInNow Buttons
       },
@@ -32,6 +33,10 @@ Ext.define('Genesis.controller.Viewport',
          fbShareBtn :
          {
             tap : 'onShareMerchantTap'
+         },
+         emailShareBtn :
+         {
+            tap : 'onShareEmailTap'
          },
          'viewportview button[tag=close]' :
          {
@@ -82,9 +87,55 @@ Ext.define('Genesis.controller.Viewport',
    gatherCheckinInfoMsg : 'Gathering Checkin information ...',
    retrieveChallengesMsg : 'Retrieving Challenges ...',
    fbShareSuccessMsg : 'Posted on your Timeline!',
+   shareReqMsg : function()
+   {
+      return 'Would you like to do our' + Genesis.constants.addCRLF() + //
+      'Refer-A-Friend Challenge?';
+   },
    onButtonTap : function(b, e, eOpts)
    {
       Genesis.controller.ControllerBase.playSoundFile(this.sound_files['clickSound']);
+   },
+   onShareEmailTap : function(b, e, eOpts, eInfo)
+   {
+      var me = this;
+      Ext.device.Notification.show(
+      {
+         title : 'Referral Challenge',
+         message : me.shareReqMsg(),
+         buttons : ['Yes', 'No'],
+         callback : function(btn)
+         {
+            if(btn.toLowerCase() == 'yes')
+            {
+               var app = me.getApplication();
+               me.onChallengesButtonTap(null, null, null, null, function()
+               {
+                  var venue = me.getViewPortCntlr().getVenue();
+                  var venueId = venue.getId();
+                  var items = venue.challenges().getRange();
+                  var controller = app.getController('client.Challenges');
+                  var list = controller.getReferralsPage().query('list')[0];
+
+                  for(var i = 0; i < items.length; i++)
+                  {
+                     if(items[i].get('type').value == 'referral')
+                     {
+                        controller.selectedItem = items[i];
+                        break;
+                     }
+                  }
+                  app.dispatch(
+                  {
+                     action : 'onReferralsSelect',
+                     args : [list, list.getStore().getRange()[1]],
+                     controller : controller,
+                     scope : controller
+                  });
+               });
+            }
+         }
+      });
    },
    onShareMerchantTap : function(b, e, eOpts, eInfo)
    {
@@ -186,7 +237,7 @@ Ext.define('Genesis.controller.Viewport',
       this.fireEvent('openpage', 'Accounts', null, null);
       console.log("Going to Accounts Page ...");
    },
-   onChallengesButtonTap : function(b, e, eOpts, eInfo)
+   onChallengesButtonTap : function(b, e, eOpts, eInfo, callback)
    {
       var me = this;
       var venue = me.getVenue();
@@ -213,8 +264,15 @@ Ext.define('Genesis.controller.Viewport',
                //
                venue.challenges().add(operation.getRecords());
 
-               me.fireEvent('openpage', 'client.Challenges', null, null);
-               console.log("Going to Challenges Page ...");
+               if(callback)
+               {
+                  callback();
+               }
+               else
+               {
+                  me.fireEvent('openpage', 'client.Challenges', null, null);
+                  console.log("Going to Challenges Page ...");
+               }
             }
          }
       });

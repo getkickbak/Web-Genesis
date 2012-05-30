@@ -41,6 +41,7 @@ Ext.define('Genesis.controller.Checkins',
    metaDataMissingMsg : 'Missing Checkin MetaData information.',
    noCheckinCodeMsg : 'No Checkin Code found!',
    getMerchantInfoMsg : 'Retrieving Merchant Info ...',
+   loadingPlaces : 'Loading ...',
    init : function()
    {
       var me = this;
@@ -247,12 +248,13 @@ Ext.define('Genesis.controller.Checkins',
    },
    onCheckinHandler : function(mode, metaData, cstore, venueId, records, operation, callback)
    {
-      var app = this.getApplication();
+      var me = this;
+      var app = me.getApplication();
       var custore = Ext.StoreMgr.get('CustomerStore');
       var cestore = Ext.StoreMgr.get('CheckinExploreStore');
       var mcntlr = app.getController('Merchants');
-      var viewport = this.getViewPortCntlr();
-      var vport = this.getViewport();
+      var viewport = me.getViewPortCntlr();
+      var vport = me.getViewport();
       var showFeed = false;
 
       var record, customerId, customer, venue, points;
@@ -299,7 +301,7 @@ Ext.define('Genesis.controller.Checkins',
             }
             console.debug("CheckIn - points:'" + points + "'");
 
-            this.setupCheckinInfo(mode, venue, customer || record, metaData);
+            me.setupCheckinInfo(mode, venue, customer || record, metaData);
             break;
          }
       }
@@ -332,6 +334,13 @@ Ext.define('Genesis.controller.Checkins',
       {
          callback();
       }
+
+      // Let the screen complete the rendering process
+      Ext.defer(me.checkReferralPrompt, 0.1 * 1000, me, [venue.getMerchant().getId(),
+      function()
+      {
+         me.popView();
+      }]);
       console.debug("CheckIn - Done");
    },
    // --------------------------------------------------------------------------
@@ -353,6 +362,7 @@ Ext.define('Genesis.controller.Checkins',
          },
          callback : function(records, operation)
          {
+            //Ext.Viewport.setMasked(false);
             if(operation.wasSuccessful())
             {
                me.setPosition(position);
@@ -380,6 +390,13 @@ Ext.define('Genesis.controller.Checkins',
       //
       if((cestore.getCount() == 0) || forceReload)
       {
+         /*
+          Ext.Viewport.setMasked(
+          {
+          xtype : 'loadmask',
+          message : me.loadingPlaces
+          });
+          */
          me.getGeoLocation();
       }
    },
@@ -414,7 +431,7 @@ Ext.define('Genesis.controller.Checkins',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      
+
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       viewport.setVenue(record);
       switch (this.mode)
