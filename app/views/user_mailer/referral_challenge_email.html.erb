@@ -26,7 +26,11 @@
 						<% end %>
 						<br>
 						<br>
-						To thank you for being a customer, you will receive <%= @challenge.data.referral_points %> reward <%= t('api.point', :count => @challenge.data.referral_points) %> on your first visit.
+						<% if @venue.website.empty? %>
+						To thank you for being a <%= @venue.name %> customer, you will receive <%= @challenge.data.referral_points %> reward <%= t('api.point', :count => @challenge.data.referral_points) %> on your first visit.
+						<% else %>
+						To thank you for being a <a href="<%= @venue.website %>"><%= @venue.name %></a> customer, you will receive <%= @challenge.data.referral_points %> reward <%= t('api.point', :count => @challenge.data.referral_points) %> on your first visit.
+						<% end %>
 						<br>
 						<br>
 						<% if @venue.website.empty? %>
