@@ -19,30 +19,18 @@
 						===============================
 						<br>
 						<br>
-						<% if @venue.website.empty? %>
 						<%= @sender.name %> really likes <%= @venue.name %> and wants you to give it a try!
-						<% else %>
-						<%= @sender.name %> really likes <a href="<%= @venue.website %>"><%= @venue.name %></a> and wants you to give it a try!
-						<% end %>
 						<br>
 						<br>
-						<% if @venue.website.empty? %>
 						To thank you for being a <%= @venue.name %> customer, you will receive <%= @challenge.data.referral_points %> reward <%= t('api.point', :count => @challenge.data.referral_points) %> on your first visit.
-						<% else %>
-						To thank you for being a <a href="<%= @venue.website %>"><%= @venue.name %></a> customer, you will receive <%= @challenge.data.referral_points %> reward <%= t('api.point', :count => @challenge.data.referral_points) %> on your first visit.
-						<% end %>
 						<br>
 						<br>
-						<% if @venue.website.empty? %>
 						These points can be used to redeem fabulous rewards at <%= @venue.name %>!
-						<% else %>
-						These points can be used to redeem fabulous rewards at <a href="<%= @venue.website %>"><%= @venue.name %></a>!
-						<% end %>
 						<br>
 						<br>
 						<div>
 							<div>
-								<div style="height:124px; margin-right:0.8em;"><img src="<%= @venue.merchant.photo.thumbnail_ios_medium.url %>"></div>
+								<div style="float:left;height:124px;"><img style="max-height:114px;width:114px;margin-right:0.8em;" src="<%= @venue.merchant.photo.thumbnail_ios_medium.url %>"></div>
 								<div>
 									<b><%= @venue.name %></b>
 									<br>
@@ -52,8 +40,9 @@
 									<%= @venue.city %>, <%= @venue.state %> <%= @venue.zipcode %>
 								</div>
 							</div>
-							<div>
-								<img src="<%= "http://maps.googleapis.com/maps/api/staticmap?zoom=15&scale=1&maptype=roadmap&sensor=false&size=392x287&markers=color%3Ared%7Clabel%3A%7C#{@venue.latitude}%2C#{@venue.longitude}&center=#{@venue.latitude}%2C#{@venue.longitude}&title=#{@venue.name}%200" %>">
+							<div style="clear:both;">
+								<%= google_map_src = "http://maps.googleapis.com/maps/api/staticmap?zoom=15&scale=1&maptype=roadmap&sensor=false&size=392x287&markers=color%3Ared%7Clabel%3A%7C#{@venue.latitude}%2C#{@venue.longitude}&center=#{@venue.latitude}%2C#{@venue.longitude}&title=#{@venue.name}%200" %>
+								<img src="<%= google_map_src %>">
 							</div>
 						</div>
 						<br>
