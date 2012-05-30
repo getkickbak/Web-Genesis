@@ -17,7 +17,9 @@ Ext.define('Genesis.controller.Prizes',
          'scannedqrcode' : 'onScannedQRcode',
          'locationupdate' : 'onLocationUpdate',
          'redeemprize' : 'onRedeemPrize',
-         'openpage' : 'onOpenPage'
+         'openpage' : 'onOpenPage',
+         'prizecheck' : 'onPrizeCheck',
+         'showprize' : 'onShowPrize'
       },
       refs :
       {
@@ -147,19 +149,75 @@ Ext.define('Genesis.controller.Prizes',
       }
    },
    // --------------------------------------------------------------------------
-   // Prizes Page
+   // Event Handler
    // --------------------------------------------------------------------------
+   onRedeemPrize : function(venue, view)
+   {
+      var me = this;
+      var venueId = venue.getId();
+      var merchantId = venue.getMerchant().getId();
+
+      var btn = me.getCloseBackButton() || me.getBackButton();
+      btn.hide();
+
+      var store;
+      var carousel = view.query('carousel')[0];
+      var item = carousel ? carousel.getActiveItem() : view.getItems().items[0];
+      switch (me.getMode())
+      {
+         case 'showPrize' :
+         case 'prizes' :
+         {
+            store = Ext.StoreMgr.get('MerchantPrizeStore');
+            EarnPrize['setRedeemPrizeURL'](item.getStore().first().getId());
+            break;
+         }
+         case 'reward' :
+         {
+            store = Ext.StoreMgr.get('RedemptionsStore');
+            CustomerReward['setRedeemPointsURL'](item.getStore().first().getCustomerReward().getId());
+            break;
+         }
+      }
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.retrievingQRCodeMsg
+      });
+      store.load(
+      {
+         addRecords : true, //Append data
+         scope : me,
+         jsonData :
+         {
+         },
+         params :
+         {
+            venue_id : venueId
+            //merchant_id : merchantId
+         },
+         callback : function(records, operation)
+         {
+            if(!operation.wasSuccessful())
+            {
+               Ext.Viewport.setMasked(false);
+               btn.show();
+            }
+         }
+      });
+   },
    onPrizeCheck : function(records, operation)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
 
       me.stopRouletteBall();
-      console.debug("onPrizeCheck Completed!");
+      //console.debug("onPrizeCheck Completed!");
 
       if(records.length == 0)
       {
          console.log("Prize LOST!");
+
          Ext.device.Notification.show(
          {
             title : 'Scan And Win!',
@@ -172,6 +230,8 @@ Ext.define('Genesis.controller.Prizes',
       }
       else
       {
+         console.log("Prize WON!");
+
          var flag = 0;
          var custore = Ext.StoreMgr.get('CustomerStore');
          var app = me.getApplication();
@@ -188,7 +248,6 @@ Ext.define('Genesis.controller.Prizes',
          //
          // Play the prize winning music!
          //
-         console.log("Prize WON!");
          Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['winPrizeSound'], function()
          {
             if(flag & 0x10)
@@ -197,7 +256,7 @@ Ext.define('Genesis.controller.Prizes',
             }
             if((flag |= 0x01) == 0x11)
             {
-               Ext.defer(me.onShowPrize, 3 * 1000, me, [records[0]]);
+               me.fireEvent('showprize', records[0]);
             }
          });
          //
@@ -216,12 +275,32 @@ Ext.define('Genesis.controller.Prizes',
                }
                if((flag |= 0x10) == 0x11)
                {
-                  Ext.defer(me.onShowPrize, 3 * 1000, me, [records[0]]);
+                  me.fireEvent('showprize', records[0]);
                }
             }
          });
       }
    },
+   onShowPrize : function(showPrize)
+   {
+      var me = this;
+      Ext.defer(function()
+      {
+         me.stopRouletteScreen();
+         me.showPrize = showPrize;
+         me.setMode('showPrize');
+         me.pushView(me.getMainPage());
+
+         //Update on Facebook
+         Genesis.fb.facebook_onLogin(function(params)
+         {
+            me.updatingPrizeOnFacebook(showPrize);
+         }, false, me.updatePrizeOnFbMsg);
+      }, 3 * 1000, me);
+   },
+   // --------------------------------------------------------------------------
+   // Prizes Page
+   // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
@@ -392,61 +471,6 @@ Ext.define('Genesis.controller.Prizes',
 
       //this.getRedeemBtn()[((merchantId == cmerchantId) && (merchantId > 0)) ? 'enable' : 'disable']();
    },
-   onRedeemPrize : function(venue, view)
-   {
-      var me = this;
-      var venueId = venue.getId();
-      var merchantId = venue.getMerchant().getId();
-
-      var btn = me.getCloseBackButton() || me.getBackButton();
-      btn.hide();
-
-      var store;
-      var carousel = view.query('carousel')[0];
-      var item = carousel ? carousel.getActiveItem() : view.getItems().items[0];
-      switch (me.getMode())
-      {
-         case 'showPrize' :
-         case 'prizes' :
-         {
-            store = Ext.StoreMgr.get('MerchantPrizeStore');
-            EarnPrize['setRedeemPrizeURL'](item.getStore().first().getId());
-            break;
-         }
-         case 'reward' :
-         {
-            store = Ext.StoreMgr.get('RedemptionsStore');
-            CustomerReward['setRedeemPointsURL'](item.getStore().first().getCustomerReward().getId());
-            break;
-         }
-      }
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : me.retrievingQRCodeMsg
-      });
-      store.load(
-      {
-         addRecords : true, //Append data
-         scope : me,
-         jsonData :
-         {
-         },
-         params :
-         {
-            venue_id : venueId
-            //merchant_id : merchantId
-         },
-         callback : function(records, operation)
-         {
-            if(!operation.wasSuccessful())
-            {
-               Ext.Viewport.setMasked(false);
-               btn.show();
-            }
-         }
-      });
-   },
    onRedeemPrizeTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
@@ -482,6 +506,7 @@ Ext.define('Genesis.controller.Prizes',
    onRefreshQRCode : function(qrcodeMeta)
    {
       var me = this;
+
       var view = me.getPrizes();
       var carousel = view.query('carousel')[0];
       var item = carousel ? carousel.getActiveItem() : view.getItems().items[0];
@@ -546,20 +571,6 @@ Ext.define('Genesis.controller.Prizes',
       this.showPrize = showPrize;
       this.setMode('reward');
       this.pushView(this.getMainPage());
-   },
-   onShowPrize : function(showPrize)
-   {
-      var me = this;
-      me.stopRouletteScreen();
-      me.showPrize = showPrize;
-      me.setMode('showPrize');
-      me.pushView(me.getMainPage());
-
-      //Update on Facebook
-      Genesis.fb.facebook_onLogin(function(params)
-      {
-         me.updatingPrizeOnFacebook(showPrize);
-      }, false, me.updatePrizeOnFbMsg);
    },
    onAuthReward : function(showPrize)
    {

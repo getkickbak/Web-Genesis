@@ -308,14 +308,7 @@ Ext.define('Genesis.controller.client.Rewards',
       {
          console.debug("RouletteSound Done, checking for prizes ...");
          var app = me.getApplication();
-         var controller = app.getController('Prizes');
-         app.dispatch(
-         {
-            action : 'onPrizeCheck',
-            args : me.loadCallback,
-            controller : controller,
-            scope : controller
-         });
+         app.getController('Prizes').fireEvent('prizecheck', me.loadCallback[0], me.loadCallback[1]);
          delete me.loadCallback;
       });
    },
