@@ -36,9 +36,9 @@
 									<br>
 									<%= @venue.address %>
 									<br>
-									<%= @venue.city %>
+									<%= @venue.city %>, <% @venue.state %>
 									<br>
-									<%= @venue.state %> <%= @venue.zipcode %>
+									<%= @venue.zipcode %>
 									<br>
 									<% if !@venue.website.empty? %>
 									<%= @venue.website %>
