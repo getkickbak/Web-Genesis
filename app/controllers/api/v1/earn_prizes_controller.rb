@@ -51,8 +51,8 @@ class Api::V1::EarnPrizesController < ApplicationController
           }.to_json
           cipher = Gibberish::AES.new(@earn_prize.venue.auth_code)
           @encrypted_data = cipher.enc(data)
-          logger.info("User(#{current_user.id}) successfully redeemed Prize(#{@earn_prize.id})")
           render :template => '/api/v1/earn_prizes/redeem'
+          logger.info("User(#{current_user.id}) successfully redeemed Prize(#{@earn_prize.id})")
         else
           if @earn_prize.expiry_date < today
             msg = t("api.earn_prizes.expired").split('\n')

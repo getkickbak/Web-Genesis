@@ -76,8 +76,8 @@ class Api::V1::CustomerRewardsController < ApplicationController
             )
             @eligible_rewards << item  
           end
-          logger.info("User(#{current_user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")
           render :template => '/api/v1/customer_rewards/redeem'
+          logger.info("User(#{current_user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")
         else
           logger.info("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), insufficient points")
           respond_to do |format|

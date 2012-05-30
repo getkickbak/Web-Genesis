@@ -128,17 +128,19 @@ class Api::V1::ChallengesController < ApplicationController
                 )
                 @eligible_rewards << item  
               end
-              logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), #{@challenge.points} points awarded")
               @points = @challenge.points
+              render :template => '/api/v1/challenges/complete'
+              logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), #{@challenge.points} points awarded")
             else
-              logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because limit reached")
               @msg = get_success_no_points_limit_reached_msg.split('\n')  
+              render :template => '/api/v1/challenges/complete'
+              logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because limit reached")
             end
           else
-            logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because it is not eligible")
             @msg = get_success_no_points_msg.split('\n')  
+            render :template => '/api/v1/challenges/complete'
+            logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because it is not eligible")
           end
-          render :template => '/api/v1/challenges/complete'
         else
           if satisfied && (not @invalid_code)
             msg = t("api.challenges.expired_code").split('\n')
@@ -242,8 +244,8 @@ class Api::V1::ChallengesController < ApplicationController
             :created_ts => now,
             :update_ts => now
           )
-          logger.info("User(#{current_user.id}) successfully completed Referral Challenge(#{@challenge.id})")
           render :template => '/api/v1/challenges/complete_referral'
+          logger.info("User(#{current_user.id}) successfully completed Referral Challenge(#{@challenge.id})")
         else  
           logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge.id}), invalid referral code")
           respond_to do |format|
@@ -344,7 +346,8 @@ class Api::V1::ChallengesController < ApplicationController
           @encrypted_data = "#{@venue.merchant.id}$#{cipher.enc(data)}"
           @subject = t("api.challenges.email_subject_referral_challenge")
           @body = ReferralChallenge.new(current_user, @venue, @challenge).render_html
-          logger.info("User(#{current_user.id}) successfully created email referral for Customer Account(#{@customer.id})")
+          render :template => '/api/v1/challenges/start'
+          logger.info("User(#{current_user.id}) successfully created email referral in Customer Account(#{@customer.id})")
         else
           data = { 
             :type => EncryptedDataType::REFERRAL_CHALLENGE_DIRECT,
@@ -353,10 +356,11 @@ class Api::V1::ChallengesController < ApplicationController
           }.to_json
           cipher = Gibberish::AES.new(@venue.merchant.auth_code)
           @encrypted_data = "#{@venue.merchant.id}$#{cipher.enc(data)}"
-          logger.info("User(#{current_user.id}) successfully created direct referral for Customer Account(#{@customer.id})")
+          render :template => '/api/v1/challenges/start'
+          logger.info("User(#{current_user.id}) successfully created direct referral in Customer Account(#{@customer.id})")
         end
-        render :template => '/api/v1/challenges/start'
       else
+        logger.info("User(#{current_user.id}) failed to create referral in Customer Account(#{@customer.id}), not a customer")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
           format.json { render :json => { :success => false, :message => t("api.challenges.must_be_customer_to_refer").split('\n') } }

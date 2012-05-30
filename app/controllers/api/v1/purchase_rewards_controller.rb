@@ -240,13 +240,13 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             )
             @eligible_rewards << item  
           end
+          render :template => '/api/v1/purchase_rewards/earn'
           if @referral_challenge
             UserMailer.referral_challenge_confirm_email(referrer.user, @customer.user, @venue, referral_record)
           end
-          logger.info("User(#{current_user.id}) successfully earned #{@points} at Venue(#{@venue.id})")
-          render :template => '/api/v1/purchase_rewards/earn'
           mutex.release
           #logger.debug("Cache mutex released.")
+          logger.info("User(#{current_user.id}) successfully earned #{@points} at Venue(#{@venue.id})")
         else
           if invalid_code
             msg = t("api.purchase_rewards.invalid_code").split('\n')

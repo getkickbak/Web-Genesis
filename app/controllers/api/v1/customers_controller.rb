@@ -38,6 +38,7 @@ class Api::V1::CustomersController < ApplicationController
             @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
             @subject = t("api.customers.email_subject_points_transfer")
             @body = TransferPoints.new(current_user, @customer.merchant, record).render_html
+            render :template => '/api/v1/customers/transfer_points'
             logger.info("User(#{current_user.id}) successfully created email transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
           else
             data = { 
@@ -46,9 +47,9 @@ class Api::V1::CustomersController < ApplicationController
             }.to_json
             cipher = Gibberish::AES.new(@customer.merchant.auth_code)
             @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
+            render :template => '/api/v1/customers/transfer_points'
             logger.info("User(#{current_user.id}) successfully created direct transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
           end
-          render :template => '/api/v1/customers/transfer_points'
         else
           logger.info("User(#{current_user.id}) failed to create transfer qr code worth #{points} points for Customer Account(#{@customer.id}), insufficient points")
           respond_to do |format|
@@ -129,12 +130,12 @@ class Api::V1::CustomersController < ApplicationController
             @record.recipient_id = @customer.id
             @record.status = :complete
             @record.update_ts = Time.now
-            @record.save
+            @record.save 
+            render :template => '/api/v1/customers/receive_points'
             if decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL
               UserMailer.transfer_points_confirm_email(sender.user, current_user, merchant, @record)
-            end  
+            end
             logger.info("Customer(#{@record.sender_id}) successfully received #{@record.points} points from Customer(#{@record.recipient_id})") 
-            render :template => '/api/v1/customers/receive_points'
           else
             logger.info("Customer(#{@customer.id}) failed to receive points, insufficient points")
             respond_to do |format|
