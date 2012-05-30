@@ -330,7 +330,7 @@ class Api::V1::ChallengesController < ApplicationController
     return false
   end
   
-  def start_challenge?
+  def start_challenge
     if @challenge.type.value == "referral"
       if @customer.visits > 0     
         @type = params[:type]
