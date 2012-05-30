@@ -236,13 +236,6 @@ Ext.define('Genesis.controller.Merchants',
          //me.getAddress().hide();
          //me.getStats().show();
          console.debug("Merchant Checkin Mode");
-
-         // Let the screen complete the rendering process
-         Ext.defer(me.checkReferralPrompt, 0.1 * 1000, me, [merchantId,
-         function()
-         {
-            me.popView();
-         }]);
       }
       //
       // Explore Mode

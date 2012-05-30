@@ -765,8 +765,8 @@ body {
 @include sencha-button-ui('red', darken(saturate(red, 55%), 10%));
 @include sencha-button-ui('blue', darken(saturate(blue, 55%), 10%));
 @include sencha-button-ui('black', darken(saturate(black, 55%), 10%));
-@include sencha-button-ui('fbBlue', desaturate(darken(blue, 10%), 5%));
 */
+@include sencha-button-ui('fbBlue', desaturate(darken(#3B5998, 10%), 5%));
 @include sencha-button-ui('action', $active-color);
 @include sencha-button-ui('cancel', $BlackStart);
 

@@ -61,25 +61,38 @@ Ext.define('Genesis.view.Viewport',
                      },
                      items : [
                      {
-                        text : 'Email',
+                        text : 'Refer-A-Friend',
                         ui : 'action',
                         //iconCls : 'mail',
-                        tag : 'mail',
-                        handler : Ext.emptyFn
+                        tag : 'emailShareBtn',
+                        scope : this,
+                        handler : function()
+                        {
+                           this.actions.hide();
+                        }
                      },
+                     /*
+                      {
+                      text : 'SMS Message',
+                      tag : 'sms',
+                      ui : 'action',
+                      //iconCls : 'compose',
+                      handler : function()
+                      {
+                      this.actions.hide();
+                      }
+                      },
+                      */
                      {
-                        text : 'SMS Message',
-                        tag : 'sms',
-                        ui : 'action',
-                        //iconCls : 'compose',
-                        handler : Ext.emptyFn
-                     },
-                     {
-                        text : 'Facebook',
+                        text : 'Post on Facebook',
                         tag : 'fbShareBtn',
-                        ui : 'blue',
+                        ui : 'fbBlue',
                         //iconCls : 'facebook',
-                        handler : Ext.emptyFn
+                        scope : this,
+                        handler : function()
+                        {
+                           this.actions.hide();
+                        }
                      },
                      {
                         margin : '0.5 0 0 0',
@@ -255,10 +268,10 @@ Ext.define('Genesis.view.Viewport',
          defaultAnimation.getOutAnimation().setDirection(this.defaultOutAnimationDir);
 
          /*
-         var barAnimation = this.getNavigationBar().getAnimation();
-         barAnimation.getInAnimation().setDirection(this.defaultInAnimationDir);
-         barAnimation.getOutAnimation().setDirection(this.defaultOutAnimationDir);
-         */
+          var barAnimation = this.getNavigationBar().getAnimation();
+          barAnimation.getInAnimation().setDirection(this.defaultInAnimationDir);
+          barAnimation.getOutAnimation().setDirection(this.defaultOutAnimationDir);
+          */
       }
       var layout = this.getLayout();
       var animation = layout.getAnimation();

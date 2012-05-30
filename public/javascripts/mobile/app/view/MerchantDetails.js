@@ -49,7 +49,7 @@ Ext.define('Genesis.view.MerchantDetails',
          xtype : 'component',
          tag : 'map',
          flex : 1,
-         cls : 'separator gmap',
+         cls : 'separator_pad gmap',
          defaultUnit : 'em',
          listeners :
          {
@@ -57,20 +57,20 @@ Ext.define('Genesis.view.MerchantDetails',
             {
                cntlr = _application.getController('Merchants');
                var size = map.innerElement.getSize();
-               map.setSize(size.width, size.height);
+               map.setSize(size.width-(1*15), size.height-(1*12));
                var queryString = Ext.Object.toQueryString(Ext.apply(
                {
                   zoom : 15,
                   scale : window.devicePixelRatio,
                   maptype : 'roadmap',
                   sensor : false,
-                  size : size.width + 'x' + size.height
+                  size : (size.width-(1*15)) + 'x' + (size.height-(1*12))
                }, cntlr.markerOptions));
                var string = Ext.String.urlAppend(cntlr.self.googleMapStaticUrl, queryString);
                map.setData(
                {
-                  width : size.width,
-                  height : size.height,
+                  width : size.width-(1*15),
+                  height : size.height-(1*12),
                   photo : string
                });
             }

@@ -37,7 +37,11 @@ Ext.define('Genesis.view.MainPage',
       var items = Ext.StoreMgr.get('MainPageStore').getRange();
       var list = Ext.Array.clone(items);
 
-      carousel.removeAll(true);
+      if(!carousel._listitems)
+      {
+         carousel._listitems = [];
+      }
+
       if(!show)
       {
          Ext.Array.forEach(list, function(item, index, all)
@@ -52,47 +56,57 @@ Ext.define('Genesis.view.MainPage',
             }
          });
       }
-      for(var i = 0; i < Math.ceil(items.length / 6); i++)
+      //
+      // Only update if changes were made
+      //
+      if((Ext.Array.difference(items, carousel._listitems).length > 0) || //
+      (items.length != carousel._listitems.length))
       {
-         carousel.add(
+         carousel._listitems = items;
+         carousel.removeAll(true);
+         for(var i = 0; i < Math.ceil(items.length / 6); i++)
          {
-            xtype : 'dataview',
-            cls : 'mainMenuSelections',
-            scrollable : false,
-            deferInitialRefresh : false,
-            store :
+            carousel.add(
             {
-               model : 'Genesis.model.frontend.MainPage',
-               data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
-            },
-            itemTpl : Ext.create('Ext.XTemplate',
-            // @formatter:off
+               xtype : 'dataview',
+               cls : 'mainMenuSelections',
+               scrollable : false,
+               deferInitialRefresh : false,
+               store :
+               {
+                  model : 'Genesis.model.frontend.MainPage',
+                  data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
+               },
+               itemTpl : Ext.create('Ext.XTemplate',
+               // @formatter:off
             '<div class="mainPageItemWrapper x-hasbadge">',
                '{[this.getPrizeCount(values)]}',
                '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
                '<div class="photoName">{name}</div>',
             '</div>',
             // @formatter:on
-            {
-               getPrizeCount : function(values)
                {
-                  var count = 0;
-                  var type = values['pageCntlr'];
-                  var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
-                  if(pstore)
+                  getPrizeCount : function(values)
                   {
-                     count = pstore.getCount();
+                     var count = 0;
+                     var type = values['pageCntlr'];
+                     var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
+                     if(pstore)
+                     {
+                        count = pstore.getCount();
+                     }
+                     return (((count > 0) && (type == 'Prizes')) ? '<span class="x-badge round">' + count + '</span>' : '');
+                  },
+                  getPhoto : function(photoURL)
+                  {
+                     return Ext.isEmpty(photoURL) ? Ext.BLANK_IMAGE_URL : photoURL;
                   }
-                  return (((count > 0) && (type == 'Prizes')) ? '<span class="x-badge round">' + count + '</span>' : '');
-               },
-               getPhoto : function(photoURL)
-               {
-                  return Ext.isEmpty(photoURL) ? Ext.BLANK_IMAGE_URL : photoURL;
-               }
-            }),
-            autoScroll : true
-         });
+               }),
+               autoScroll : true
+            });
+         }
       }
+
       if(carousel.getInnerItems().length > 0)
       {
          carousel.setActiveItem(0);

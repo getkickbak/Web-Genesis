@@ -148,6 +148,7 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       return 'Claim your reward points by visitng ' + Genesis.constants.addCRLF() + name + ' now!';
    },
+   visitFirstMsg : 'You must visit this establishment first before you are eligible to do this Challenge',
    init : function(app)
    {
       this.callParent(arguments);
@@ -170,7 +171,7 @@ Ext.define('Genesis.controller.client.Challenges',
             options.mimeType = "image/jpg";
             options.params =
             {
-               "auth_token" : Genesis.db.getLocalDB()['fbAutoCode']
+               "auth_token" : Genesis.db.getLocalDB()['auth_code']
             };
             options.chunkedMode = true;
 
@@ -223,8 +224,8 @@ Ext.define('Genesis.controller.client.Challenges',
             }, function(error)
             {
                Ext.Viewport.setMasked(false);
-               console.log(me.noPhotoUploadedMsg);
-               console.log("An error has occurred: Code = " + error.code);
+               console.log(me.noPhotoUploadedMsg(error.message + Genesis.constants.addCRLF()));
+               //console.log("An error has occurred: Code = " + error.code);
                Ext.device.Notification.show(
                {
                   title : 'Error',
@@ -246,7 +247,7 @@ Ext.define('Genesis.controller.client.Challenges',
    referralEventHandler : function(referralsSelected)
    {
       var me = this, type;
-      var merchant = me.getViewPortCntlr().getVenue().getMerchant();
+      var venue = me.getViewPortCntlr().getVenue();
       var container = me.getReferralsContainer();
       var tag = referralsSelected.get('tag');
 
@@ -277,7 +278,7 @@ Ext.define('Genesis.controller.client.Challenges',
          }
       }
 
-      // Request QRCode to server for processing
+      // Request QRCode from server for processing
       //
       Challenge['setSendReferralsUrl'](me.selectedItem.getId());
       Challenge.load(me.selectedItem.getId(),
@@ -287,7 +288,7 @@ Ext.define('Genesis.controller.client.Challenges',
          },
          params :
          {
-            'merchant_id' : merchant.getId(),
+            'venue_id' : venue.getId(),
             'type' : type
          },
          callback : function(records, operation)
@@ -632,7 +633,7 @@ Ext.define('Genesis.controller.client.Challenges',
    onItemSelect : function(d, model, eOpts)
    {
       Genesis.controller.ControllerBase.playSoundFile(this.getViewPortCntlr().sound_files['clickSound']);
-      
+
       var carousel = this.getChallengePage().query('carousel')[0];
       // No need to update the Challenge Menu. Nothing changed.
       for(var i = 0; i < carousel.getInnerItems().length; i++)
@@ -734,6 +735,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var venueId = record.getId();
       var carousel = this.getChallengePage().query('carousel')[0];
       var items = record.challenges().getRange();
+
       if((carousel.getInnerItems().length > 0) && //
       (carousel.getInnerItems()[0].getStore().getRange()[0].getId() == items[0].getId()))
       {
@@ -856,15 +858,26 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       var me = this;
 
-      list.deselect([model]);
-      switch (model.get('tag'))
+      if(me.getViewPortCntlr().getCustomer().get('visits') > 0)
       {
-         case 'emailsender' :
-         case 'sender' :
+         list.deselect([model]);
+         switch (model.get('tag'))
          {
-            me.referralEventHandler(model);
-            break;
+            case 'emailsender' :
+            case 'sender' :
+            {
+               me.referralEventHandler(model);
+               break;
+            }
          }
+      }
+      else
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Referral Challenge',
+            message : me.visitFirstMsg
+         });
       }
       return false;
    },
