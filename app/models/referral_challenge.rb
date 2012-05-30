@@ -7,9 +7,9 @@ class ReferralChallenge
   
   @@template = ERB.new File.read(File.expand_path "app/views/user_mailer/referral_challenge_email.html.erb")
   
-  def initialize(sender, merchant, challenge)
+  def initialize(sender, venue, challenge)
     @sender = sender
-    @merchant = merchant
+    @venue = venue
     @challenge = challenge
   end
   

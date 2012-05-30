@@ -19,10 +19,10 @@ class UserMailer < ActionMailer::Base
     mail(:to => user.email, :subject => "Reminder - Use your vouchers before they expire!")
   end
   
-  def referral_challenge_confirm_email(referrer, referral, merchant, record)
+  def referral_challenge_confirm_email(referrer, referral, venue, record)
     @referrer = referrer
     @referral = referral
-    @merchant = merchant
+    @venue = venue
     @record = record
     mail(:to => referrer.email, :subject => I18n.t("api.challenges.email_subject_confirm_referral_challenge"))
   end

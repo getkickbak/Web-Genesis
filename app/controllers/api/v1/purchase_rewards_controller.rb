@@ -241,7 +241,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             @eligible_rewards << item  
           end
           if @referral_challenge
-            UserMailer.referral_challenge_confirm_email(referrer.user, @customer.user, @venue.merchant, referral_record)
+            UserMailer.referral_challenge_confirm_email(referrer.user, @customer.user, @venue, referral_record)
           end
           logger.info("User(#{current_user.id}) successfully earned #{@points} at Venue(#{@venue.id})")
           render :template => '/api/v1/purchase_rewards/earn'

@@ -19,21 +19,39 @@
 						===============================
 						<br>
 						<br>
-						<% if @merchant.website.empty? %>
-						<%= @sender.name %> really likes <%= @merchant.name %> and wants you to give it a try!
+						<% if @venue.website.empty? %>
+						<%= @sender.name %> really likes <%= @venue.name %> and wants you to give it a try!
 						<% else %>
-						<%= @sender.name %> really likes <a href="<%= @merchant.website %>"><%= @merchant.name %></a> and wants you to give it a try!
+						<%= @sender.name %> really likes <a href="<%= @venue.website %>"><%= @venue.name %></a> and wants you to give it a try!
 						<% end %>
 						<br>
 						<br>
 						To thank you for being their customer, you will receive <%= @challenge.data.referral_points %> reward <%= t('api.point', :count => @challenge.data.referral_points) %> on your first visit.
 						<br>
 						<br>
-						<% if @merchant.website.empty? %>
-						These points can be used to redeem fabulous rewards at <%= @merchant.name %>!
+						<% if @venue.website.empty? %>
+						These points can be used to redeem fabulous rewards at <%= @venue.name %>!
 						<% else %>
-						These points can be used to redeem fabulous rewards at <a href="<%= @merchant.website %>"><%= @merchant.name %></a>!
+						These points can be used to redeem fabulous rewards at <a href="<%= @venue.website %>"><%= @venue.name %></a>!
 						<% end %>
+						<br>
+						<br>
+						<div>
+							<div>
+								<div style="height:124px; margin-right:0.8em;"><img src="<%= @venue.photo.thumbnail_ios_medium.url %>"></div>
+								<div>
+									<b><%= @venue.name %></b>
+									<br>
+									<br>
+									<%= @venue.address %>
+									<br>
+									<%= @venue.city %>, <%= @venue.state %> <%= @venue.zipcode %>
+								</div>
+							</div>
+							<div>
+								<img src="<%= "http://maps.googleapis.com/maps/api/staticmap?zoom=15&scale=1&maptype=roadmap&sensor=false&size=392x287&markers=color%3Ared%7Clabel%3A%7C#{@venue.latitude}%2C#{@venue.longitude}&center=#{@venue.latitude}%2C#{@venue.longitude}&title=#{@venue.name}%200" %>">
+							</div>
+						</div>
 						<br>
 						<br>	
 						To complete the referral, all you need to do is scan the QR code in the attachment with your KICKBAK app. 

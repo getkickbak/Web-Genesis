@@ -10,9 +10,9 @@ class Api::V1::ChallengesController < ApplicationController
   end
 
   def start
-    @merchant = Merchant.get(params[:merchant_id]) || not_found
-    @challenge = Challenge.first(:id => params[:id], Challenge.merchant.id => @merchant.id) || not_found
-    @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id) || not_found
+    @venue = Merchant.get(params[:venue_id]) || not_found
+    @challenge = Challenge.first(:id => params[:id], Challenge.merchant.id => @venue.merchant.id) || not_found
+    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
     Customer.transaction do
@@ -331,10 +331,10 @@ class Api::V1::ChallengesController < ApplicationController
           :refr_id => @customer.id,
           :chg_id => @challenge.id
         }.to_json
-        cipher = Gibberish::AES.new(@merchant.auth_code)
+        cipher = Gibberish::AES.new(@venue.merchant.auth_code)
         @encrypted_data = "#{@merchant.id}$#{cipher.enc(data)}"
         @subject = t("api.challenges.email_subject_referral_challenge")
-        @body = ReferralChallenge.new(current_user, @merchant, @challenge).render_html
+        @body = ReferralChallenge.new(current_user, @venue, @challenge).render_html
         logger.info("User(#{current_user.id}) successfully created email referral for Customer Account(#{@customer.id})")
       else
         data = { 
@@ -342,7 +342,7 @@ class Api::V1::ChallengesController < ApplicationController
           :refr_id => @customer.id,
           :chg_id => @challenge.id
         }.to_json
-        cipher = Gibberish::AES.new(@merchant.auth_code)
+        cipher = Gibberish::AES.new(@venue.merchant.auth_code)
         @encrypted_data = "#{@merchant.id}$#{cipher.enc(data)}"
         logger.info("User(#{current_user.id}) successfully created direct referral for Customer Account(#{@customer.id})")
       end
