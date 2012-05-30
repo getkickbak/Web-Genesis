@@ -156,7 +156,7 @@ Ext.define('Genesis.controller.Viewport',
          me.getViewport().getNavigationBar().setMasked(false);
          //console.debug("masked Off");
       }
-      console.debug("viewAnimEnd - " + me.animationFlag);
+      //console.debug("viewAnimEnd - " + me.animationFlag);
    },
    onBarAnimEnd : function()
    {
@@ -168,7 +168,7 @@ Ext.define('Genesis.controller.Viewport',
          me.getViewport().getNavigationBar().setMasked(false);
          //console.debug("masked Off");
       }
-      console.debug("barAnimEnd - " + me.animationFlag);
+      //console.debug("barAnimEnd - " + me.animationFlag);
    },
    // --------------------------------------------------------------------------
    // Button Handlers
