@@ -246,7 +246,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           end
           mutex.release
           #logger.debug("Cache mutex released.")
-          logger.info("User(#{current_user.id}) successfully earned #{@points} at Venue(#{@venue.id})")
+          logger.info("User(#{current_user.id}) successfully earned #{@points} points at Venue(#{@venue.id})")
         else
           if invalid_code
             msg = t("api.purchase_rewards.invalid_code").split('\n')
