@@ -32,12 +32,19 @@
 							<div>
 								<div style="float:left;height:124px;"><img style="max-height:114px;width:114px;margin-right:0.8em;" src="<%= @venue.merchant.photo.thumbnail_ios_medium.url %>"></div>
 								<div>
-									<b><%= @venue.name %></b>
+									<div stye="font-size:18px;font-weight:bold;"><%= @venue.name %></div>
 									<br>
 									<br>
 									<%= @venue.address %>
 									<br>
-									<%= @venue.city %>, <%= @venue.state %> <%= @venue.zipcode %>
+									<%= @venue.city %>
+									<br>
+									<%= @venue.state %> <%= @venue.zipcode %>
+									<br>
+									<% if !@venue.website.empty? %>
+									<%= @venue.website %>
+									<br>
+									<% end %>
 								</div>
 							</div>
 							<div style="clear:both;">
