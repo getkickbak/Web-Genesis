@@ -11,12 +11,9 @@ Genesis.constants =
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
-   fbScope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions,offline_access',
-   fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
-   fbConnectReqestMsg : 'Would you like to update friends on Facebook?',
-   connectingToFBMsg : 'Connecting to Facebook ...',
    debugPrivKey : 'nPAbRmIZ3I9SJrDhWyHJ4heQOizi7N8I',
    redeemDBSize : 10000,
+   createAccountMsg : 'Create user account using Facebook Profile information',
    isNative : function()
    {
       //return Ext.isDefined(cordova);
@@ -110,6 +107,11 @@ Genesis.constants =
 // **************************************************************************
 Genesis.fb =
 {
+   fbScope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions,offline_access',
+   fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
+   fbConnectReqestMsg : 'Would you like to update friends on Facebook?',
+   connectingToFBMsg : 'Connecting to Facebook ...',
+   friendsRetrieveErrorMsg : 'You cannot retrieve your Friends List from Facebook. Login and Try Again.',
    /*
    * Clean up any Facebook cookies, otherwise, we have page loading problems
    * One set for production domain, another for developement domain
@@ -202,7 +204,7 @@ Genesis.fb =
             Ext.device.Notification.show(
             {
                title : 'Facebook Connect',
-               message : 'You cannot retrieve your Friends List from Facebook. Login and Try Again.',
+               message : me.friendsRetrieveErrorMsg,
                buttons : ['Relogin', 'Cancel'],
                callback : function(button)
                {
@@ -292,7 +294,7 @@ Genesis.fb =
          }
       },
       {
-         scope : Genesis.constants.fbScope
+         scope : me.fbScope
       });
    },
    facebook_onLogin : function(cb, supress, message)
@@ -983,7 +985,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                Ext.device.Notification.show(
                {
                   title : 'Create Account',
-                  message : 'Create user account using Facebook Profile information',
+                  message : Genesis.constants.createAccountMsg,
                   callback : function(button)
                   {
                      viewport.setLoggedIn(false);
