@@ -21,7 +21,8 @@ class Business::Api::V1::EarnPrizesController < ApplicationController
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("business.api.earn_prizes.invalid_code").split('\n') } }
-      end  
+      end 
+      return 
     end
     
     if authorized

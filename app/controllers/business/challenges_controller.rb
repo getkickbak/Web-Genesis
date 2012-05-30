@@ -63,8 +63,8 @@ module Business
         raise Exceptions::AppException.new("Challenge Type(#{type.value}) already exists for Merchant(#{current_merchant.name})")
       end
 
-      Challenge.transaction do
-        begin
+      begin
+        Challenge.transaction do
           if type.value == 'vip'
             params[:challenge][:data] = params[:challenge][:check_in_data]
           elsif type.value == 'referral'
@@ -87,18 +87,18 @@ module Business
           #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
           #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
           end
-        rescue DataMapper::SaveFailureError => e
-          logger.error("Exception: " + e.resource.errors.inspect)
-          @challenge = e.resource
-          @available_challenge_types = get_available_challenge_types(@challenge.type.value)
-          @data = @challenge.data
-          respond_to do |format|
-            format.html { render :action => "new" }
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @challenge = e.resource
+        @available_challenge_types = get_available_challenge_types(@challenge.type.value)
+        @data = @challenge.data
+        respond_to do |format|
+          format.html { render :action => "new" }
           #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
           #format.json { render :json => { :success => false } }
-          end
         end
-      end
+      end    
     end
 
     def edit
@@ -148,8 +148,8 @@ module Business
         raise Exceptions::AppException.new("Challenge Type(#{type.value}) already exists for Merchant(#{current_merchant.name})")
       end
 
-      Challenge.transaction do
-        begin
+      begin
+        Challenge.transaction do
           if type.value == 'vip'
             params[:challenge][:data] = params[:challenge][:check_in_data]
           elsif type.value == 'referral'
@@ -171,18 +171,18 @@ module Business
             format.html { redirect_to(:action => "show", :id => @challenge.id, :notice => t("business.challenges.update_success")) }
             format.xml  { head :ok }
           end
-        rescue DataMapper::SaveFailureError => e
-          logger.error("Exception: " + e.resource.errors.inspect)
-          @challenge = e.resource
-          @available_challenge_types = get_available_challenge_types(@challenge.type.value)
-          @data = @challenge.data
-          respond_to do |format|
-            format.html { render :action => "edit" }
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @challenge = e.resource
+        @available_challenge_types = get_available_challenge_types(@challenge.type.value)
+        @data = @challenge.data
+        respond_to do |format|
+          format.html { render :action => "edit" }
           #format.xml  { render :xml => @deal.errors, :status => :unprocessable_entity }
           #format.json { render :json => { :success => false } }
-          end
         end
-      end
+      end    
     end
 
     def destroy

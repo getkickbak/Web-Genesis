@@ -66,8 +66,8 @@ module Business
         return
       end
       
-      #CreditCard.transaction do
-        begin
+      begin
+        CreditCard.transaction do
           month = @credit_card.expiry_date.month
           year = @credit_card.expiry_date.year
           names = @credit_card.name.split
@@ -136,13 +136,13 @@ module Business
               format.html { render :action => "index" }
             end
           end
-        rescue DataMapper::SaveFailureError => e
-          logger.error("Exception: " + e.resource.errors.inspect)
-          respond_to do |format|
-            format.html { render :action => "index" }
-          end
         end
-      #end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        respond_to do |format|
+          format.html { render :action => "index" }
+        end
+      end
     end
 
     def update
@@ -153,8 +153,8 @@ module Business
       credit_card = CreditCardForm.new(params[:credit_card_form])
       @credit_cards << credit_card
            
-      #CreditCard.transaction do
-        begin
+      begin     
+        CreditCard.transaction do
           if not credit_card.number.nil?
             if not credit_card.valid?
               respond_to do |format|
@@ -220,12 +220,12 @@ module Business
               format.html { render :action => "index" }
             end
           end
-        rescue DataMapper::SaveFailureError => e
-          respond_to do |format|
-            format.html { render :action => "index" }
-          end
         end
-      #end
+      rescue DataMapper::SaveFailureError => e
+        respond_to do |format|
+          format.html { render :action => "index" }
+        end
+      end    
     end
     
 =begin    
