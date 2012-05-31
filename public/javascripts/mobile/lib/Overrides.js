@@ -300,9 +300,7 @@ Genesis.fb =
    facebook_onLogin : function(cb, supress, message)
    {
       var me = this;
-      var db = Genesis.db.getLocalDB();
       cb = cb || Ext.emptyFn
-      var refreshConn = (db['currFbId'] > 0);
       var _fbLogin = function()
       {
          if(!supress)
@@ -331,12 +329,11 @@ Genesis.fb =
             me.fbLogin(cb, supress);
          }
       }
-      // Logged into FB currently or before!
-
-      console.debug("facebook_onLogin - FbId = [" + db['currFbId'] + "], refreshConn = " + refreshConn);
-
       // Login if connection missing
-
+      var db = Genesis.db.getLocalDB();
+      var refreshConn = (db['currFbId'] > 0);      
+      // Logged into FB currently or before!
+      console.debug("facebook_onLogin - FbId = [" + db['currFbId'] + "], refreshConn = " + refreshConn);
       if(refreshConn)
       {
          FB.getLoginStatus(function(response)

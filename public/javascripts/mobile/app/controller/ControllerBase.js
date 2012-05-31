@@ -31,6 +31,10 @@ Ext.define('Genesis.controller.ControllerBase',
       'by a friend to visit' + Genesis.constants.addCRLF() + //
       merchatName + '?';
    },
+   recvReferralb4VisitMsg : function(name)
+   {
+      return 'Claim your reward points by becoming a customer at ' + Genesis.constants.addCRLF() + name + '!';
+   },
    showScreenTimeoutExpireMsg : function(duration)
    {
       return duration + ' are up! Press OK to confirm.';
@@ -254,14 +258,14 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       //
    },
-   checkReferralPrompt : function(merchantId, cbOnSuccess, cbOnFailure)
+   checkReferralPrompt : function(cbOnSuccess, cbOnFail)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
 
       cbOnSuccess = cbOnSuccess || Ext.emptyFn;
-      cbOnFailure = cbOnFailure || Ext.emptyFn;
-      merchantId = merchantId || viewport.getVenue().getMerchant().getId();
+      cbOnFail = cbOnFail || Ext.emptyFn;
+      var merchantId = viewport.getVenue().getMerchant().getId();
       if((viewport.getCheckinInfo().customer.get('visits') == 0) && (!Genesis.db.getReferralDBAttrib("m" + merchantId)))
       {
          Ext.device.Notification.show(
@@ -277,14 +281,14 @@ Ext.define('Genesis.controller.ControllerBase',
                }
                else
                {
-                  cbOnFailure();
+                  cbOnFail();
                }
             }
          });
       }
       else
       {
-         cbOnFailure();
+         cbOnFail();
       }
    },
    pushView : function(view)

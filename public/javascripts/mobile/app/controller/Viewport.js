@@ -81,14 +81,18 @@ Ext.define('Genesis.controller.Viewport',
          'viewportview button' :
          {
             tap : 'onButtonTap'
-         }
+         },
+         'actionsheet button' :
+         {
+            tap : 'onButtonTap'
+         },
       },
       listeners :
       {
          'viewanimend' : 'onViewAnimEnd',
          'baranimend' :
          {
-            buffer : 1*1000,
+            buffer : 0.5 * 1000,
             fn : 'onBarAnimEnd'
          }
       }
@@ -100,7 +104,7 @@ Ext.define('Genesis.controller.Viewport',
    shareReqMsg : function()
    {
       return 'Would you like to do our' + Genesis.constants.addCRLF() + //
-      'Refer-A-Friend Challenge?';
+      'Referral Challenge?';
    },
    // --------------------------------------------------------------------------
    // Event Handlers
@@ -329,8 +333,8 @@ Ext.define('Genesis.controller.Viewport',
    },
    onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.fireEvent('openpage', 'Prizes', null, null);
-      console.log("Going to Prizes Page ...");
+      this.fireEvent('openpage', 'Prizes', 'merchantPrizes', null);
+      console.log("Going to  Merchant Prizes Page ...");
    },
    onHomeButtonTap : function(b, e, eOpts, eInfo)
    {
@@ -436,6 +440,7 @@ Ext.define('Genesis.controller.Viewport',
                   me.sound_files[tag].successCallback();
                }, function(err)
                {
+                  me.sound_files[tag].successCallback();
                   console.log("Audio Error: " + err);
                });
                break;

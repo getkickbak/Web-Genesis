@@ -16,7 +16,8 @@
          "name": "Prizes",
          "photo_url": "resources/themes/images/v1/mainicons/prizes.png",
          "desc": "Prizes Won by you",
-         "pageCntlr": "Prizes"
+         "pageCntlr": "Prizes",
+         "subFeature": "userPrizes"
       }, {
          "name": "KickBak",
          "photo_url": "resources/themes/images/v1/mainicons/tocheckedinmerch.png",

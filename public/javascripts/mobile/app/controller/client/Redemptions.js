@@ -97,6 +97,7 @@ Ext.define('Genesis.controller.client.Redemptions',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       if(!me.exploreMode)
       {
          var totalPts = viewport.getCustomer().get('points');

@@ -17,7 +17,8 @@ Ext.define('Genesis.view.Prizes',
       switch (prizeMode)
       {
          case 'showPrize':
-         case 'prizes' :
+         case 'merchantPrizes' :
+         case 'userPrizes' :
             activeItem.getInitialConfig().title = 'Prizes';
             break;
          case 'reward' :
@@ -37,7 +38,8 @@ Ext.define('Genesis.view.Prizes',
       switch (prizeMode)
       {
          case 'showPrize':
-         case 'prizes' :
+         case 'merchantPrizes' :
+         case 'userPrizes' :
          case 'reward' :
             break;
          case 'authReward':
