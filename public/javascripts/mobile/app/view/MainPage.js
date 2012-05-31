@@ -86,6 +86,10 @@ Ext.define('Genesis.view.MainPage',
             '</div>',
             // @formatter:on
                {
+                  getType : function()
+                  {
+                     return values['pageCntlr'];
+                  },
                   getPrizeCount : function(values)
                   {
                      var count = 0;
@@ -95,7 +99,9 @@ Ext.define('Genesis.view.MainPage',
                      {
                         count = pstore.getCount();
                      }
-                     return (((count > 0) && (type == 'Prizes')) ? '<span class="x-badge round">' + count + '</span>' : '');
+                     return ((type == 'Prizes') ? //
+                     '<span class="x-badge round" data="' + type + '" ' + //
+                     'class="' + ((count > 0) ? '' : 'x-item-hidden') + '">' + count + '</span>' : '');
                   },
                   getPhoto : function(photoURL)
                   {
@@ -105,6 +111,32 @@ Ext.define('Genesis.view.MainPage',
                autoScroll : true
             });
          }
+         console.log("MainPage Icons Refreshed.");
+      }
+      else
+      {
+         //
+         // Refresh All Badge Counts
+         //
+         var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
+         if(pstore)
+         {
+            var count = pstore.getCount();
+            var dom = Ext.DomQuery.select('span[data=Prizes]',carousel.query('dataview')[0].element.dom)[0];
+            if(count > 0)
+            {
+               dom.innerHTML = count;
+               Ext.fly(dom).removeCls("x-item-hidden");
+            }
+            else
+            {
+               if(!dom.className.match(/x-item-hidden/))
+               {
+                  Ext.fly(dom).addCls("x-item-hidden");
+               }
+            }
+         }
+         console.log("MainPage Icons Not changed.");
       }
 
       if(carousel.getInnerItems().length > 0)

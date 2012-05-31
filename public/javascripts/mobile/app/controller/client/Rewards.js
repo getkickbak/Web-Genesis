@@ -44,7 +44,7 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    getReferralMsg : function(points)
    {
-      return this.VipMsg(points);
+      return this.getVipMsg(points);
    },
    getVipMsg : function(points)
    {
@@ -57,7 +57,7 @@ Ext.define('Genesis.controller.client.Rewards',
       callback = callback || Ext.emptyFn;
       Ext.device.Notification.show(
       {
-         title : 'VIP Challenge Update',
+         title : 'VIP Challenge',
          message : this.getVipMsg(points),
          callback : callback
       });
@@ -67,7 +67,7 @@ Ext.define('Genesis.controller.client.Rewards',
       callback = callback || Ext.emptyFn;
       Ext.device.Notification.show(
       {
-         title : 'Referral Challenge Update',
+         title : 'Referral Challenge',
          message : this.getReferralMsg(points),
          callback : callback
       });
@@ -164,22 +164,6 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       var me = this;
       var allowedMsg = me.isOpenAllowed();
-      var _startEarnPts = function()
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Earning Reward Points',
-            message : me.authCodeReqMsg,
-            buttons : ['OK', 'Cancel'],
-            callback : function(btn)
-            {
-               if(btn.toLowerCase() == 'ok')
-               {
-                  me.scanQRCode();
-               }
-            }
-         });
-      }
       if(allowedMsg !== true)
       {
          Ext.device.Notification.show(
@@ -191,11 +175,24 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         me.checkReferralPrompt(null, function()
+         var _onSuccess = function()
          {
-            me.popView();
-            _startEarnPts();
-         }, _startEarnPts);
+            //me.popView();
+            Ext.device.Notification.show(
+            {
+               title : 'Earning Reward Points',
+               message : me.authCodeReqMsg,
+               buttons : ['OK', 'Cancel'],
+               callback : function(btn)
+               {
+                  if(btn.toLowerCase() == 'ok')
+                  {
+                     me.scanQRCode();
+                  }
+               }
+            });
+         };
+         me.checkReferralPrompt(_onSuccess, _onSuccess);
       }
    },
    metaDataHandler : function(metaData)

@@ -256,6 +256,7 @@ Ext.define('Genesis.controller.Checkins',
       var viewport = me.getViewPortCntlr();
       var vport = me.getViewport();
       var showFeed = false;
+      var customer;
 
       var record, customerId, customer, venue, points;
       for(var i = 0; i < records.length; i++)
@@ -278,7 +279,7 @@ Ext.define('Genesis.controller.Checkins',
             //
             if(Customer.isValidCustomer(customerId))
             {
-               var customer = custore.getById(customerId);
+               customer = custore.getById(customerId);
                if(customer != null)
                {
                   Customer.updateCustomer(customer, record);
@@ -336,11 +337,20 @@ Ext.define('Genesis.controller.Checkins',
       }
 
       // Let the screen complete the rendering process
-      Ext.defer(me.checkReferralPrompt, 0.1 * 1000, me, [venue.getMerchant().getId(),
+      Ext.defer(me.checkReferralPrompt, 0.1 * 1000, me, [
       function()
       {
-         me.popView();
-      }]);
+         //
+         // We are in Merchant Account screen,
+         // there's nothing to do after Successful Referral Challenge
+         //
+         //me.popView();
+         Ext.device.Notification.show(
+         {
+            title : 'Successful Referral!',
+            message : me.recvReferralb4VisitMsg(customer.getMerchant().get('name'))
+         });
+      }, null]);
       console.debug("CheckIn - Done");
    },
    // --------------------------------------------------------------------------

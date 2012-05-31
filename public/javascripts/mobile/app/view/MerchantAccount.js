@@ -219,7 +219,7 @@ Ext.define('Genesis.view.MerchantAccount',
          {
             iconCls : 'rewards',
             tag : 'rewards',
-            title : 'Rewards'
+            title : 'Earn Pts'
          },
          //
          // Middle Button

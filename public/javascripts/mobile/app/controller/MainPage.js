@@ -376,16 +376,26 @@ Ext.define('Genesis.controller.MainPage',
    // --------------------------------------------------------------------------
    facebookLogin : function(params)
    {
+      var me = this;
       Customer['setFbLoginUrl']();
+      console.log("setFbLoginUrl - Logging in ...");
       Ext.StoreMgr.get('CustomerStore').load(
       {
          jsonData :
          {
          },
          params : params,
-         callback : function()
+         callback : function(records, operation)
          {
+            //
+            // Login Error, redo login
+            //
             Ext.Viewport.setMasked(false);
+            if(!operation.wasSuccessful())
+            {
+               Genesis.db.resetStorage();
+               me.fireEvent('openpage', 'MainPage', 'login', null);
+            }
          }
       });
    },
@@ -581,6 +591,7 @@ Ext.define('Genesis.controller.MainPage',
          };
       }
       Customer['setLoginUrl']();
+      console.log("setLoginUrl - Logging in ...");
       Ext.StoreMgr.get('CustomerStore').load(
       {
          params : params,

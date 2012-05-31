@@ -144,10 +144,6 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       return 'Email was sent successfully!' + Genesis.constants.addCRLF() + 'Every successful referral will get you extra points!';
    },
-   recvReferralSuccessMsg : function(name)
-   {
-      return 'Claim your reward points by visitng ' + Genesis.constants.addCRLF() + name + ' now!';
-   },
    visitFirstMsg : 'You must visit this establishment first before you are eligible to do this Challenge',
    init : function(app)
    {
@@ -486,25 +482,25 @@ Ext.define('Genesis.controller.client.Challenges',
             {
                customer = cstore.add(metaData)[0];
             }
-            Ext.device.Notification.show(
-            {
-               title : 'Referral Received!',
-               message : me.recvReferralSuccessMsg(customer.getMerchant().get('name')),
-               callback : function()
-               {
-                  //
-                  // Add to Referral DB
-                  //
-                  console.debug("Adding Referral Code to Referral DB ...");
-                  Genesis.db.addReferralDBAttrib("m" + customer.getMerchant().getId(), qrcode);
+            //
+            // Add to Referral DB
+            //
+            console.debug("Adding Referral Code to Referral DB ...");
+            Genesis.db.addReferralDBAttrib("m" + customer.getMerchant().getId(), qrcode);
 
-                  if(me.referralCbFn)
-                  {
-                     console.debug("Calling Referral CallbackFn ...");
-                     me.referralCbFn();
-                     me.referralCbFn = null;
-                  }
-                  else
+            if(me.referralCbFn)
+            {
+               console.debug("Calling Referral CallbackFn ...");
+               me.referralCbFn();
+               me.referralCbFn = null;
+            }
+            else
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Successful Referral!',
+                  message : me.recvReferralb4VisitMsg(customer.getMerchant().get('name')),
+                  callback : function()
                   {
                      console.debug("Opening Merchant Account ...");
                      var app = me.getApplication();
@@ -518,8 +514,8 @@ Ext.define('Genesis.controller.client.Challenges',
                         scope : controller
                      });
                   }
-               }
-            });
+               });
+            }
             break;
          }
          case 'vip' :
@@ -772,6 +768,7 @@ Ext.define('Genesis.controller.client.Challenges',
                carousel.setActiveItem(0);
             }
          }, 1, me);
+         console.log("ChallengePage Icons Refreshed.");
       }
 
       var desc = me.getChallengeDescContainer();
@@ -1066,7 +1063,7 @@ Ext.define('Genesis.controller.client.Challenges',
          {
             Ext.device.Notification.show(
             {
-               title : 'Referrals Challenge',
+               title : 'Referral Challenge',
                message : me.confirmRecvReferralsMsg,
                buttons : ['Proceed', 'Cancel'],
                callback : function(btn)
