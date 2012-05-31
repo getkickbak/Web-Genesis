@@ -134,7 +134,6 @@ class Api::V1::ChallengesController < ApplicationController
               @points = @challenge.points
               render :template => '/api/v1/challenges/complete'
               logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), #{@challenge.points} points awarded")
-              mutex.release
             else
               @msg = get_success_no_points_limit_reached_msg.split('\n')  
               render :template => '/api/v1/challenges/complete'
@@ -163,19 +162,19 @@ class Api::V1::ChallengesController < ApplicationController
         end
       end
     rescue DataMapper::SaveFailureError => e
-      mutex.release if ((defined? mutex) && !mutex.nil?)
       logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.challenges.complete_failure").split('\n') } }
       end
     rescue StandardError => e
-      mutex.release if ((defined? mutex) && !mutex.nil?)
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.challenges.complete_failure").split('\n') } }
-      end  
+      end
+    ensure
+      mutex.release if ((defined? mutex) && !mutex.nil?)    
     end    
   end
   

@@ -85,22 +85,21 @@ class Api::V1::CustomerRewardsController < ApplicationController
             format.json { render :json => { :success => false, :message => t("api.customer_rewards.insufficient_points").split('\n') } }
           end  
         end
-        mutex.release
       end
     rescue DataMapper::SaveFailureError => e
-      mutex.release if ((defined? mutex) && !mutex.nil?)
       logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
       end
     rescue StandardError => e
-      mutex.release if ((defined? mutex) && !mutex.nil?)
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
       end 
+    ensure
+      mutex.release if ((defined? mutex) && !mutex.nil?)  
     end    
   end
 end

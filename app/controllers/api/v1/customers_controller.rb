@@ -146,8 +146,6 @@ class Api::V1::CustomersController < ApplicationController
               format.json { render :json => { :success => false, :message => (t("api.customers.insufficient_transfer_points") % [@record.points, t('api.point', :count => @record.points)]).split('\n') } }
             end  
           end
-          recipient_mutex.release
-          sender_mutex.release
         else
           if invalid_code
             msg = t("api.customers.invalid_transfer_code").split('\n')
@@ -163,21 +161,20 @@ class Api::V1::CustomersController < ApplicationController
         end
       end
     rescue DataMapper::SaveFailureError => e
-      recipient_mutex.release if ((defined? recipient_mutex) && !recipient_mutex.nil?)
-      sender_mutex.release if ((defined? sender_mutex) && !sender_mutex.nil?)
       logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.customers.receive_points_failure").split('\n') } }
       end
     rescue StandardError => e
-      recipient_mutex.release if ((defined? recipient_mutex) && !recipient_mutex.nil?)
-      sender_mutex.release if ((defined? sender_mutex) && !sender_mutex.nil?)
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.customers.receive_points_failure").split('\n') } }
       end 
+    ensure
+      recipient_mutex.release if ((defined? recipient_mutex) && !recipient_mutex.nil?)
+      sender_mutex.release if ((defined? sender_mutex) && !sender_mutex.nil?)  
     end    
   end
 end

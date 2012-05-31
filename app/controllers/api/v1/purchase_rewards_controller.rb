@@ -250,10 +250,6 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           if @referral_challenge
             UserMailer.referral_challenge_confirm_email(referrer.user, @customer.user, @venue, referral_record)
           end
-          venue_mutex.release
-          referrer_mutex.release if ((defined? referrer_mutex) && !referrer_mutex.nil?)
-          customer_mutex.release
-          #logger.debug("Cache mutex released.")
           logger.info("User(#{current_user.id}) successfully earned #{@points} points at Venue(#{@venue.id})")
         else
           if invalid_code
@@ -270,23 +266,21 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         end  
       end
     rescue DataMapper::SaveFailureError => e
-      venue_mutex.release if ((defined? venue_mutex) && !venue_mutex.nil?)
-      referrer_mutex.release if ((defined? referrer_mutex) && !referrer_mutex.nil?)
-      customer_mutex.release if ((defined? customer_mutex) && !customer_mutex.nil?)
       logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
       end
     rescue StandardError => e
-      venue_mutex.release if ((defined? venue_mutex) && !venue_mutex.nil?)
-      referrer_mutex.release if ((defined? referrer_mutex) && !referrer_mutex.nil?)
-      customer_mutex.release if ((defined? customer_mutex) && !customer_mutex.nil?)
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
       end  
+    ensure
+      venue_mutex.release if ((defined? venue_mutex) && !venue_mutex.nil?)
+      referrer_mutex.release if ((defined? referrer_mutex) && !referrer_mutex.nil?)
+      customer_mutex.release if ((defined? customer_mutex) && !customer_mutex.nil?)  
     end    
   end
   
