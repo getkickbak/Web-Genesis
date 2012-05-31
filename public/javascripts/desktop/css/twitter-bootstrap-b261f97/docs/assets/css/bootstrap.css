@@ -4975,7 +4975,7 @@ a.badge:hover {
   z-index: -1;
   width: 450px;
   height: 500px;
-  background: transparent url(../../../../resources/themes/v1/contactus/business.png) right 0 no-repeat;
+  background: transparent url(../../../../resources/themes/v1/contactus/business.gif) right 0 no-repeat;
   background-size: 450px;
   content: " ";
 }
