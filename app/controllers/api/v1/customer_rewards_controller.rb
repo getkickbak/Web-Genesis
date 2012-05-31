@@ -88,15 +88,15 @@ class Api::V1::CustomerRewardsController < ApplicationController
         mutex.release
       end
     rescue DataMapper::SaveFailureError => e
-      logger.error("Exception: " + e.resource.errors.inspect)
       mutex.release if ((defined? mutex) && !mutex.nil?)
+      logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
       end
     rescue StandardError => e
-      logger.error("Exception: " + e.message)
       mutex.release if ((defined? mutex) && !mutex.nil?)
+      logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }

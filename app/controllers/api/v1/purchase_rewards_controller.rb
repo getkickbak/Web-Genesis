@@ -63,6 +63,9 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     begin  
       Customer.transaction do
         if authorized
+          customer_mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
+          acquired = customer_mutex.acquire
+          @customer.reload
           #logger.debug("Authorized to earn points.")
           now = Time.now
           challenge_type_id = ChallengeType.value_to_id["referral"]
@@ -71,6 +74,9 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           @referral_points = 0
           if challenge && (@customer.visits == 0) && (referral_record = ReferralChallengeRecord.first(:referral_id => @customer.id, :status => :pending))
             referrer = Customer.get(referral_record.referrer_id)
+            referrer_mutex = CacheMutex.new(referrer.cache_key, Cache.memcache)
+            acquired = referrer_mutex.acquire
+            referrer.reload
             referrer_reward_record = EarnRewardRecord.new(
               :challenge_id => challenge.id,
               :venue_id => @venue.id,
@@ -144,8 +150,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           @customer.save
         
           #logger.debug("Before acquiring cache mutex.")
-          mutex = CacheMutex.new(@venue.cache_key, Cache.memcache)
-          acquired = mutex.acquire
+          venue_mutex = CacheMutex.new(@venue.cache_key, Cache.memcache)
+          acquired = venue_mutex.acquire
           #logger.debug("Cache mutex acquired(#{acquired}).")
           @prick_prize_initialized = false
           reward_model = @venue.merchant.reward_model
@@ -244,7 +250,9 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           if @referral_challenge
             UserMailer.referral_challenge_confirm_email(referrer.user, @customer.user, @venue, referral_record)
           end
-          mutex.release
+          venue_mutex.release
+          referrer_mutex.release if ((defined? referrer_mutex) && !referrer_mutex.nil?)
+          customer_mutex.release
           #logger.debug("Cache mutex released.")
           logger.info("User(#{current_user.id}) successfully earned #{@points} points at Venue(#{@venue.id})")
         else
@@ -262,15 +270,19 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         end  
       end
     rescue DataMapper::SaveFailureError => e
+      venue_mutex.release if ((defined? venue_mutex) && !venue_mutex.nil?)
+      referrer_mutex.release if ((defined? referrer_mutex) && !referrer_mutex.nil?)
+      customer_mutex.release if ((defined? customer_mutex) && !customer_mutex.nil?)
       logger.error("Exception: " + e.resource.errors.inspect)
-      mutex.release if ((defined? mutex) && !mutex.nil?)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
       end
     rescue StandardError => e
+      venue_mutex.release if ((defined? venue_mutex) && !venue_mutex.nil?)
+      referrer_mutex.release if ((defined? referrer_mutex) && !referrer_mutex.nil?)
+      customer_mutex.release if ((defined? customer_mutex) && !customer_mutex.nil?)
       logger.error("Exception: " + e.message)
-      mutex.release if ((defined? mutex) && !mutex.nil?)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
