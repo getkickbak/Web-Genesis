@@ -47,7 +47,7 @@
 								</div>
 							</div>
 							<div style="clear:both;">
-								<% google_map_src = URI.escape "http://maps.googleapis.com/maps/api/staticmap?zoom=15&scale=1&maptype=roadmap&sensor=false&size=392x287&markers=color:red|label:#{@venue.latitude},#{@venue.longitude}&center=#{@venue.latitude},#{@venue.longitude}&title=#{@venue.name}" %>
+								<% google_map_src = URI.escape "http://maps.googleapis.com/maps/api/staticmap?zoom=15&scale=1&maptype=roadmap&sensor=false&size=392x287&markers=color:red|label:|#{@venue.latitude},#{@venue.longitude}&center=#{@venue.latitude},#{@venue.longitude}&title=#{@venue.name}" %>
 								<img src="<%= google_map_src %>">
 							</div>
 						</div>
