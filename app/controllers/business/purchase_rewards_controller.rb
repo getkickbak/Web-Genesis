@@ -36,8 +36,8 @@ module Business
     def create
       authorize! :create, PurchaseReward
       
-      PurchaseReward.transaction do
-        begin
+      begin
+        PurchaseReward.transaction do
           type = PurchaseRewardType.get(params[:purchase_reward][:type_id])
           params[:purchase_reward][:venue_ids].delete("")
           if params[:purchase_reward][:venue_ids].length > 0
@@ -51,17 +51,17 @@ module Business
             #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
             #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
           end
-        rescue DataMapper::SaveFailureError => e
-          logger.error("Exception: " + e.resource.errors.inspect)
-          @purchase_reward = e.resource
-          @purchase_reward.type_id = params[:purchase_reward][:type_id]
-          respond_to do |format|
-            format.html { render :action => "new" }
-            #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
-            #format.json { render :json => { :success => false } }
-          end
         end
-      end    
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @purchase_reward = e.resource
+        @purchase_reward.type_id = params[:purchase_reward][:type_id]
+        respond_to do |format|
+          format.html { render :action => "new" }
+          #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
+          #format.json { render :json => { :success => false } }
+        end
+      end        
     end
     
     def edit
@@ -79,32 +79,32 @@ module Business
       @purchase_reward = PurchaseReward.get(params[:id]) || not_found
       authorize! :update, @purchase_reward
 
-      PurchaseReward.transaction do
-         begin
-            type = PurchaseRewardType.get(params[:purchase_reward][:type_id])
-            params[:purchase_reward][:venue_ids].delete("")
-            if params[:purchase_reward][:venue_ids].length > 0
-              venues = Venue.all(:conditions => ["id IN ?", params[:purchase_reward][:venue_ids]])
-            else
-              venues = []
-            end
-            @purchase_reward.update(type, params[:purchase_reward], venues)
-            respond_to do |format|
-               format.html { redirect_to(:action => "show", :id => @purchase_reward.id, :notice => t("business.purchase_rewards.update_success")) }
-               #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
+      begin
+        PurchaseReward.transaction do
+          type = PurchaseRewardType.get(params[:purchase_reward][:type_id])
+          params[:purchase_reward][:venue_ids].delete("")
+          if params[:purchase_reward][:venue_ids].length > 0
+            venues = Venue.all(:conditions => ["id IN ?", params[:purchase_reward][:venue_ids]])
+          else
+            venues = []
+          end
+          @purchase_reward.update(type, params[:purchase_reward], venues)
+          respond_to do |format|
+            format.html { redirect_to(:action => "show", :id => @purchase_reward.id, :notice => t("business.purchase_rewards.update_success")) }
+            #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
             #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
-            end
-         rescue DataMapper::SaveFailureError => e
-            logger.error("Exception: " + e.resource.errors.inspect)
-            @purchase_reward = e.resource
-            @purchase_reward.type_id = params[:purchase_reward][:type_id]
-            respond_to do |format|
-               format.html { render :action => "edit" }
-            #format.xml  { render :xml => @deal.errors, :status => :unprocessable_entity }
-            #format.json { render :json => { :success => false } }
-            end
-         end
-      end
+          end
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @purchase_reward = e.resource
+        @purchase_reward.type_id = params[:purchase_reward][:type_id]
+        respond_to do |format|
+          format.html { render :action => "edit" }
+          #format.xml  { render :xml => @deal.errors, :status => :unprocessable_entity }
+          #format.json { render :json => { :success => false } }
+        end
+      end    
     end
     
     def destroy

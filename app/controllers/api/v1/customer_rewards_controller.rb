@@ -30,8 +30,8 @@ class Api::V1::CustomerRewardsController < ApplicationController
     Time.zone = @venue.time_zone
     begin
       Customer.transaction do
-        mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
-        acquired = mutex.acquire
+        @mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
+        acquired = @mutex.acquire
         @customer.reload
         if @customer.points - @reward.points >= 0
           record = RedeemRewardRecord.new(
@@ -76,8 +76,8 @@ class Api::V1::CustomerRewardsController < ApplicationController
             )
             @eligible_rewards << item  
           end
-          logger.info("User(#{current_user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")
           render :template => '/api/v1/customer_rewards/redeem'
+          logger.info("User(#{current_user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")
         else
           logger.info("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), insufficient points")
           respond_to do |format|
@@ -85,22 +85,21 @@ class Api::V1::CustomerRewardsController < ApplicationController
             format.json { render :json => { :success => false, :message => t("api.customer_rewards.insufficient_points").split('\n') } }
           end  
         end
-        mutex.release
       end
     rescue DataMapper::SaveFailureError => e
       logger.error("Exception: " + e.resource.errors.inspect)
-      mutex.release if ((defined? mutex) && !mutex.nil?)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
       end
     rescue StandardError => e
       logger.error("Exception: " + e.message)
-      mutex.release if ((defined? mutex) && !mutex.nil?)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
       end 
+    ensure
+      @mutex.release if ((defined? @mutex) && !@mutex.nil?)  
     end    
   end
 end

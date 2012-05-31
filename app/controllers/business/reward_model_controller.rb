@@ -13,8 +13,8 @@ module Business
     
     def update
       @reward_model = current_merchant.reward_model
-      RewardModel.transaction do
-        begin
+      begin
+        RewardModel.transaction do
           if @reward_model.nil?
             RewardModel.create(current_merchant, params[:reward_model])
             msg = t("business.reward_model.setup_success")
@@ -25,16 +25,16 @@ module Business
           respond_to do |format|
             format.html { redirect_to reward_model_path(:notice => msg) }
           end
-        rescue DataMapper::SaveFailureError => e
-          logger.error("Exception: " + e.resource.errors.inspect)
-          @reward_model = e.resource
-          respond_to do |format|
-             format.html { render :action => "index" }
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @reward_model = e.resource
+        respond_to do |format|
+          format.html { render :action => "index" }
           #format.xml  { render :xml => @deal.errors, :status => :unprocessable_entity }
           #format.json { render :json => { :success => false } }
-          end
-        end  
-      end
+        end
+      end      
     end
   end
 end

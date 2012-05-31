@@ -22,8 +22,8 @@ module Admin
       @staff = current_staff
       authorize! :update, @staff
 
-      Staff.transaction do
-        begin
+      begin
+        Staff.transaction do
           params[:staff][:role] = @staff.role
           params[:staff][:status] = @staff.status
           @staff.update_all(params[:staff])
@@ -33,16 +33,16 @@ module Admin
           #format.xml  { head :ok }
           #format.json { render :json => { :success => true, :data => @staff, :total => 1 } }
           end
-        rescue DataMapper::SaveFailureError => e
-          logger.error("Exception: " + e.resource.errors.inspect)
-          @staff = e.resource
-          respond_to do |format|
-            format.html { render :action => "edit" }
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @staff = e.resource
+        respond_to do |format|
+          format.html { render :action => "edit" }
           #format.xml  { render :xml => @staff.errors, :status => :unprocessable_entity }
           #format.json { render :json => { :success => false } }
-          end
         end
-      end
+      end    
     end
   end
 end

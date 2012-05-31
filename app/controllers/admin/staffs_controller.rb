@@ -41,33 +41,33 @@ module Admin
 
     def create
       authorize! :create, Staff
-
-      Staff.transaction do
-        begin
+        
+      begin
+        Staff.transaction do
           @staff = Staff.create(params[:staff])
           respond_to do |format|
             format.html { redirect_to(staff_path(@staff), :notice => t("admin.staffs.create_success")) }
           #format.xml  { render :xml => @staff, :status => :created, :location => @staff }
           #format.json { render :json => { :success => true, :data => @staff, :total => 1 } }
           end
-        rescue DataMapper::SaveFailureError => e
-          logger.error("Exception: " + e.resource.errors.inspect)
-          @staff = e.resource
-          respond_to do |format|
-            format.html { render :action => "new" }
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @staff = e.resource
+        respond_to do |format|
+          format.html { render :action => "new" }
           #format.xml  { render :xml => @staff.errors, :status => :unprocessable_entity }
           #format.json { render :json => { :success => false } }
-          end
         end
-      end
+      end    
     end
 
     def update
       @staff = Staff.get(params[:id]) || current_staff
       authorize! :update, @staff
 
-      Staff.transaction do
-        begin
+      begin
+        Staff.transaction do
           params[:staff][:role] = @staff.role
           params[:staff][:status] = @staff.status
           @staff.update_all(params[:staff])
@@ -77,16 +77,16 @@ module Admin
           #format.xml  { head :ok }
           #format.json { render :json => { :success => true, :data => @staff, :total => 1 } }
           end
-        rescue DataMapper::SaveFailureError => e
-          logger.error("Exception: " + e.resource.errors.inspect)
-          @staff = e.resource
-          respond_to do |format|
-            format.html { render :action => "edit" }
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @staff = e.resource
+        respond_to do |format|
+          format.html { render :action => "edit" }
           #format.xml  { render :xml => @staff.errors, :status => :unprocessable_entity }
           #format.json { render :json => { :success => false } }
-          end
         end
-      end
+      end    
     end
 
     def destroy

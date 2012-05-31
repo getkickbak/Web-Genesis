@@ -19,23 +19,23 @@ module Business
     
     def activate
       if current_merchant.status == :pending && has_venues? && set_reward_model? && has_purchase_rewards? && has_customer_rewards? && has_challenges?
-        Merchant.transaction do
-          begin
+        begin
+          Merchant.transaction do
             current_merchant.update_without_password(:type_id => current_merchant.type.id, :status => :active)
             respond_to do |format|
               format.html { redirect_to dashboard_path }
             end
-          rescue DataMapper::SaveFailureError => e
-            logger.error("Exception: " + e.resource.errors.inspect)
-            current_merchant.status = :pending
-            build_checklist
-            respond_to do |format|
-              format.html { render :action => "index" }
+          end
+        rescue DataMapper::SaveFailureError => e
+          logger.error("Exception: " + e.resource.errors.inspect)
+          current_merchant.status = :pending
+          build_checklist
+          respond_to do |format|
+            format.html { render :action => "index" }
             #format.xml  { render :xml => @deal.errors, :status => :unprocessable_entity }
             #format.json { render :json => { :success => false } }
-            end
           end
-        end   
+        end       
       else
         respond_to do |format|
           format.html { render :action => "index" }

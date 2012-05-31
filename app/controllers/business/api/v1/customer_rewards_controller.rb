@@ -22,6 +22,7 @@ class Business::Api::V1::CustomerRewardsController < ApplicationController
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("business.api.customer_rewards.invalid_code").split('\n') } }
       end  
+      return
     end
     
     if authorized

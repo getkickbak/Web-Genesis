@@ -2,8 +2,8 @@ class UserDevise::SessionsController < Devise::SessionsController
   # POST /resource/sign_in
   
   def create_from_facebook
-    User.transaction do
-      begin
+    begin
+      User.transaction do
         user = User.first(:facebook_id => params[:facebook_id])
         if user.nil?
           raise Exception.new
@@ -23,16 +23,16 @@ class UserDevise::SessionsController < Devise::SessionsController
         respond_to do |format|
           format.html { redirect_to after_sign_in_path_for(resource) }
         end
-      rescue DataMapper::SaveFailureError => e
-        respond_to do |format|
-          format.html { redirect_to after_sign_in_path_for(resource) }
-        end  
-      rescue
-        respond_to do |format|
-          format.html { redirect_to after_sign_in_path_for(resource) }
-        end
       end
-    end
+    rescue DataMapper::SaveFailureError => e
+      respond_to do |format|
+        format.html { redirect_to after_sign_in_path_for(resource) }
+      end  
+    rescue
+      respond_to do |format|
+        format.html { redirect_to after_sign_in_path_for(resource) }
+      end
+    end    
   end
   
   # DELETE /resource/sign_out

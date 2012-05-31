@@ -45,69 +45,69 @@ module Business
     def create
       authorize! :create, Venue
 
-      Venue.transaction do
-        begin
+      begin
+        Venue.transaction do
           type = VenueType.get(params[:venue][:type_id])
           @venue = Venue.create(current_merchant, type, params[:venue])
           respond_to do |format|
             format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.create_success")) }
           #format.xml  { head :ok }
           end
-        rescue DataMapper::SaveFailureError => e
-          logger.error("Exception: " + e.resource.errors.inspect)
-          @venue = e.resource
-          @venue.type_id = params[:venue][:type_id]
-          respond_to do |format|
-            format.html { render :action => "new" }
-          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
-          end
         end
-      end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @venue = e.resource
+        @venue.type_id = params[:venue][:type_id]
+        respond_to do |format|
+          format.html { render :action => "new" }
+          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+        end
+      end    
     end
 
     def update
       @venue = Venue.get(params[:id]) || not_found
       authorize! :update, @venue
 
-      Venue.transaction do
-        begin
+      begin
+        Venue.transaction do
           type = VenueType.get(params[:venue][:type_id])
           @venue.update(type, params[:venue])
           respond_to do |format|
             format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.update_success")) }
           #format.xml  { head :ok }
           end
-        rescue DataMapper::SaveFailureError => e
-          logger.error("Exception: " + e.resource.errors.inspect)
-          @venue = e.resource
-          @venue.type_id = params[:venue][:type_id]
-          respond_to do |format|
-            format.html { render :action => "edit" }
-          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
-          end
         end
-      end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @venue = e.resource
+        @venue.type_id = params[:venue][:type_id]
+        respond_to do |format|
+          format.html { render :action => "edit" }
+          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+        end
+      end    
     end
 
     def update_auth_code
       @venue = Venue.get(params[:id]) || not_found
       authorize! :update, @venue
 
-      Venue.transaction do
-        begin
+      begin
+        Venue.transaction do
           @venue.update_auth_code()
           respond_to do |format|
             format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.update_authcode_success")) }
           #format.xml  { head :ok }
           end
-        rescue DataMapper::SaveFailureError => e
-          logger.error("Exception: " + e.resource.errors.inspect)
-          respond_to do |format|
-            format.html { redirect_to(:action => "show", :id => @venue.id, :error => t("business.venues.update_authcode_failure")) }
-          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
-          end
         end
-      end  
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        respond_to do |format|
+          format.html { redirect_to(:action => "show", :id => @venue.id, :error => t("business.venues.update_authcode_failure")) }
+          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+        end
+      end        
     end
     
     def check_in_template
