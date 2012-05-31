@@ -89,8 +89,8 @@ class Api::V1::ChallengesController < ApplicationController
           @points = 0
           if points_eligible?
             if not challenge_limit_reached?
-              mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
-              acquired = mutex.acquire
+              @mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
+              acquired = @mutex.acquire
               @customer.reload
               now = Time.now
               record = EarnRewardRecord.new(
@@ -174,7 +174,7 @@ class Api::V1::ChallengesController < ApplicationController
         format.json { render :json => { :success => false, :message => t("api.challenges.complete_failure").split('\n') } }
       end
     ensure
-      mutex.release if ((defined? mutex) && !mutex.nil?)    
+      @mutex.release if ((defined? @mutex) && !@mutex.nil?)    
     end    
   end
   

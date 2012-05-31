@@ -63,8 +63,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     begin  
       Customer.transaction do
         if authorized
-          customer_mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
-          acquired = customer_mutex.acquire
+          @customer_mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
+          acquired = @customer_mutex.acquire
           @customer.reload
           #logger.debug("Authorized to earn points.")
           now = Time.now
@@ -74,8 +74,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           @referral_points = 0
           if challenge && (@customer.visits == 0) && (referral_record = ReferralChallengeRecord.first(:referral_id => @customer.id, :status => :pending))
             referrer = Customer.get(referral_record.referrer_id)
-            referrer_mutex = CacheMutex.new(referrer.cache_key, Cache.memcache)
-            acquired = referrer_mutex.acquire
+            @referrer_mutex = CacheMutex.new(referrer.cache_key, Cache.memcache)
+            acquired = @referrer_mutex.acquire
             referrer.reload
             referrer_reward_record = EarnRewardRecord.new(
               :challenge_id => challenge.id,
@@ -150,8 +150,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           @customer.save
         
           #logger.debug("Before acquiring cache mutex.")
-          venue_mutex = CacheMutex.new(@venue.cache_key, Cache.memcache)
-          acquired = venue_mutex.acquire
+          @venue_mutex = CacheMutex.new(@venue.cache_key, Cache.memcache)
+          acquired = @venue_mutex.acquire
           #logger.debug("Cache mutex acquired(#{acquired}).")
           @prick_prize_initialized = false
           reward_model = @venue.merchant.reward_model
@@ -278,9 +278,9 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
       end  
     ensure
-      venue_mutex.release if ((defined? venue_mutex) && !venue_mutex.nil?)
-      referrer_mutex.release if ((defined? referrer_mutex) && !referrer_mutex.nil?)
-      customer_mutex.release if ((defined? customer_mutex) && !customer_mutex.nil?)  
+      @venue_mutex.release if ((defined? @venue_mutex) && !@venue_mutex.nil?)
+      @referrer_mutex.release if ((defined? @referrer_mutex) && !@referrer_mutex.nil?)
+      @customer_mutex.release if ((defined? @customer_mutex) && !@customer_mutex.nil?)  
     end    
   end
   

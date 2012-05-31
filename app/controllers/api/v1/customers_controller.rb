@@ -119,11 +119,11 @@ class Api::V1::CustomersController < ApplicationController
       Customer.transaction do
         if authorized
           sender = Customer.get(@record.sender_id)
-          sender_mutex = CacheMutex.new(sender.cache_key, Cache.memcache)
-          acquired = sender_mutex.acquire
+          @sender_mutex = CacheMutex.new(sender.cache_key, Cache.memcache)
+          acquired = @sender_mutex.acquire
           sender.reload
-          recipient_mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
-          acquired = recipient_mutex.acquire
+          @recipient_mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
+          acquired = @recipient_mutex.acquire
           @customer.reload
           if sender.points >= @record.points
             sender.points -= @record.points
@@ -173,8 +173,8 @@ class Api::V1::CustomersController < ApplicationController
         format.json { render :json => { :success => false, :message => t("api.customers.receive_points_failure").split('\n') } }
       end 
     ensure
-      recipient_mutex.release if ((defined? recipient_mutex) && !recipient_mutex.nil?)
-      sender_mutex.release if ((defined? sender_mutex) && !sender_mutex.nil?)  
+      @recipient_mutex.release if ((defined? @recipient_mutex) && !@recipient_mutex.nil?)
+      @sender_mutex.release if ((defined? @sender_mutex) && !@sender_mutex.nil?)  
     end    
   end
 end

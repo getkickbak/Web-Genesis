@@ -30,8 +30,8 @@ class Api::V1::CustomerRewardsController < ApplicationController
     Time.zone = @venue.time_zone
     begin
       Customer.transaction do
-        mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
-        acquired = mutex.acquire
+        @mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
+        acquired = @mutex.acquire
         @customer.reload
         if @customer.points - @reward.points >= 0
           record = RedeemRewardRecord.new(
@@ -99,7 +99,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
         format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
       end 
     ensure
-      mutex.release if ((defined? mutex) && !mutex.nil?)  
+      @mutex.release if ((defined? @mutex) && !@mutex.nil?)  
     end    
   end
 end
