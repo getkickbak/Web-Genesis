@@ -10,7 +10,7 @@ body:before {
    width : 100%;
    height : 828px;
    content : " ";
-   background : transparent url(http://files.getkickbak.com/v1/headerimage4.png) center -400px no-repeat;
+   background : transparent url(http://files.getkickbak.com/v1/headerimage4.gif) center -400px no-repeat;
    background-size:1600px 1440px;
 }
 body:after {
