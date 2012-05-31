@@ -285,41 +285,56 @@ Ext.define('Genesis.controller.Viewport',
    {
       var me = this;
       var venue = me.getVenue();
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : me.retrieveChallengesMsg
-      });
-      Challenge['setGetChallengesURL']();
-      Challenge.load(venue.getId(),
-      {
-         params :
-         {
-            merchant_id : venue.getMerchant().getId(),
-            venue_id : venue.getId()
-         },
-         callback : function(record, operation)
-         {
-            Ext.Viewport.setMasked(false);
-            if(operation.wasSuccessful())
-            {
-               //
-               // Load record into Venue Object
-               //
-               venue.challenges().add(operation.getRecords());
 
-               if(callback)
+      var _onDone = function()
+      {
+         if(callback)
+         {
+            callback();
+         }
+         else
+         {
+            me.fireEvent('openpage', 'client.Challenges', null, null);
+            console.log("Going to Challenges Page ...");
+         }
+      }
+      //
+      // Retrieve Challenges from server
+      //
+      if(venue.challenges().getData().length == 0)
+      {
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.retrieveChallengesMsg
+         });
+         Challenge['setGetChallengesURL']();
+         Challenge.load(venue.getId(),
+         {
+            params :
+            {
+               merchant_id : venue.getMerchant().getId(),
+               venue_id : venue.getId()
+            },
+            callback : function(record, operation)
+            {
+               Ext.Viewport.setMasked(false);
+               if(operation.wasSuccessful())
                {
-                  callback();
-               }
-               else
-               {
-                  me.fireEvent('openpage', 'client.Challenges', null, null);
-                  console.log("Going to Challenges Page ...");
+                  //
+                  // Load record into Venue Object
+                  //
+                  venue.challenges().add(operation.getRecords());
+
+                  _onDone();
                }
             }
-         }
-      });
+         });
+      }
+      else
+      {
+         _onDone();
+      }
    },
    onRewardsButtonTap : function(b, e, eOpts, eInfo)
    {
