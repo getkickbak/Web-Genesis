@@ -147,12 +147,13 @@ Genesis::Application.routes.draw do
     #match "/how_it_works" => 'pages#how_it_works'
     #match "/privacy" => 'pages#privacy'
     #match "/terms" => 'pages#terms'
-    #match "/contact_us" => 'pages#contact_us'
-    #match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
+    match "/contact_us" => 'pages#contact_us'
+    match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
     #match "/faq" => 'pages#faq'
 
-    #match "/add_business" => 'pages#add_business'
-    #match "/add_business/create" => 'pages#add_business_create', :via => :post, :as => :create_merchant_contact
+    match "/add_business" => 'pages#add_business'
+    match "/add_business/create" => 'pages#add_business_create', :via => :post, :as => :create_merchant_contact
+    match "/temporary" => 'pages#index'
     
     #match '/users/:id/account' => 'users#edit'
     #match '/users/:user_id/coupons' => 'orders#index', :via => :get , :as => :user_coupons
