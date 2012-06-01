@@ -27,9 +27,9 @@
 						<br>
 						<br>
 						<% if @merchant.website.empty? %>
-						<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.points', :count => @record.points) %> that can be used to redeem fabulous rewards at <%= @merchant.name %>!
+						<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.point', :count => @record.points) %> that can be used to redeem fabulous rewards at <%= @merchant.name %>!
 						<% else %>
-						<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.points', :count => @record.points) %> that can be used to redeem fabulous rewards at <a href="<%= @merchant.website %>"><%= @merchant.name %></a>!
+						<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.point', :count => @record.points) %> that can be used to redeem fabulous rewards at <a href="<%= @merchant.website %>"><%= @merchant.name %></a>!
 						<% end %>
 						<br>
 						<br>
