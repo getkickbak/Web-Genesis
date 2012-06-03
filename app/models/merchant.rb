@@ -31,7 +31,7 @@ class Merchant
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
 
-  attr_accessor :type_id, :current_password
+  attr_accessor :type_id, :current_password, :eager_load_type
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
   attr_accessible :type_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :photo, :alt_photo, :status, :prize_terms, :auth_code, :current_password, :password, :password_confirmation
