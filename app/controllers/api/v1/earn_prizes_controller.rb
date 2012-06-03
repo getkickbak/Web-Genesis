@@ -11,16 +11,24 @@ class Api::V1::EarnPrizesController < ApplicationController
       @earn_prizes = EarnPrize.all(EarnPrize.user.id => current_user.id, :expiry_date.gte => Date.today, :redeemed => false)
     end
     merchant_ids = []
+    reward_ids = []
     @earn_prizes.each do |prize|
       merchant_ids << prize.merchant.id
+      reward_ids << prize.reward.id
     end
     merchant_id_to_type_id = {}
     merchant_to_types = MerchantToType.all(:fields => [:merchant_id, :merchant_type_id], :merchant_id => merchant_ids)
     merchant_to_types.each do |merchant_to_type|
       merchant_id_to_type_id[merchant_to_type.merchant_id] = merchant_to_type.merchant_type_id
     end
+    reward_id_to_type_id = {}
+    reward_to_types = CustomerRewardToType.all(:fields => [:customer_reward_id, :customer_reward_type_id], :customer_reward_id => reward_ids)
+    reward_to_types.each do |reward_to_type|
+      reward_id_to_type_id[reward_to_type.customer_reward_id] = reward_to_type.customer_reward_type_id
+    end
     @earn_prizes.each do |prize|
       prize.merchant.eager_load_type = MerchantType.id_to_type[merchant_id_to_type_id[prize.merchant.id]]
+      prize.reward.eager_load_type = CustomerRewardType.id_to_type[reward_id_to_type_id[prize.reward.id]]
     end
     render :template => '/api/v1/earn_prizes/index'
   end
