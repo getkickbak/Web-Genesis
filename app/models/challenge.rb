@@ -16,6 +16,7 @@ class Challenge
   
   attr_accessor :type_id
   attr_accessor :venue_ids
+  attr_accessor :eager_load_type
   
   attr_accessible :type_id, :name, :description, :require_verif, :data, :points
   

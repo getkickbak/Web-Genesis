@@ -67,10 +67,16 @@ class Api::V1::CustomerRewardsController < ApplicationController
             )
             @eligible_rewards << item
           end
+          reward_id_to_type_id = {}
+          reward_to_types = CustomerRewardToType.all(:fields => [:customer_reward_id, :customer_reward_type_id], :customer_reward => @rewards)
+          reward_to_types.each do |reward_to_type|
+            reward_id_to_type_id[reward_to_type.customer_reward_id] = reward_to_type.customer_reward_type_id
+          end
           @rewards.each do |reward|
+            reward.eager_load_type = CustomerRewardType.id_to_type[reward_id_to_type_id[reward.id]]
             item = EligibleReward.new(
               reward.id,
-              reward.type.value,
+              reward.eager_load_type.value,
               reward.title,
               ::Common.get_eligible_reward_text(@customer.points - reward.points)
             )

@@ -24,7 +24,7 @@ class Venue
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessor :type_id, :distance
+  attr_accessor :type_id, :distance, :eager_load_type
   
   attr_accessible :type_id, :name, :description, :address, :city, :state, :zipcode, :country, :time_zone, :phone, :website, :latitude, :longitude, :auth_code
   
@@ -109,8 +109,14 @@ class Venue
         venue_id_to_distance_map[venue[:id]] = venue[:distance]
       end
       venues = Venue.all(:id => venue_ids)
+      venue_id_to_type_id = {}
+      venue_to_types = VenueToType.all(:fields => [:venue_id, :venue_type_id], :venue => venues)
+      venue_to_types.each do |venue_to_type|
+        venue_id_to_type_id[venue_to_type.venue_id] = venue_to_type.venue_type_id
+      end
       venues.each do |venue|
         venue.distance = venue_id_to_distance_map[venue.id]
+        venue.eager_load_type = VenueType.id_to_type[venue_id_to_type_id[venue.id]]
       end
     else
       if merchant_id.nil?
@@ -119,8 +125,14 @@ class Venue
         venues = Venue.all(Venue.merchant.id => merchant_id, :offset => 0, :limit => max)
       end
       
+      venue_id_to_type_id = {}
+      venue_to_types = VenueToType.all(:fields => [:venue_id, :venue_type_id], :venue => venues)
+      venue_to_types.each do |venue_to_type|
+        venue_id_to_type_id[venue_to_type.venue_id] = venue_to_type.venue_type_id
+      end
       venues.each do |venue|
         venue.distance = (rand * 10).round(1)
+        venue.eager_load_type = VenueType.id_to_type[venue_id_to_type_id[venue.id]]
       end  
     end
     return venues
