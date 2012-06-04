@@ -69,12 +69,12 @@ Ext.define('Genesis.controller.server.Challenges',
          xtype : 'loadmask',
          message : me.refreshAuthCodeMsg
       });
-      var qrcode = me.generateQRCode();
       var app = me.getApplication();
       var controller = app.getController('Prizes');
-      if(qrcode[0])
+      Ext.defer(function()
       {
-         Ext.defer(function()
+         var qrcode = me.generateQRCode();
+         if(qrcode[0])
          {
             app.dispatch(
             {
@@ -83,13 +83,9 @@ Ext.define('Genesis.controller.server.Challenges',
                controller : controller,
                scope : controller
             });
-            Ext.Viewport.setMasked(false);
-         }, 1 * 1000, me);
-      }
-      else
-      {
+         }
          Ext.Viewport.setMasked(false);
-      }
+      }, 1, me);
    },
    onGenerateQRCode : function()
    {
