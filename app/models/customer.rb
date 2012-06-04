@@ -32,6 +32,18 @@ class Customer
   def self.find(user_id, start, max)
     count = Customer.count(Customer.user.id => user_id) || 0
     customers = Customer.all(Customer.user.id => user_id, :order => [ :created_ts.desc ], :offset => start, :limit => max)
+    merchant_ids = []
+    customers.each do |customer|
+      merchant_ids << customer.merchant.id
+    end
+    merchant_id_to_type_id = {}
+    merchant_to_types = MerchantToType.all(:fields => [:merchant_id, :merchant_type_id], :merchant_id => merchant_ids)
+    merchant_to_types.each do |merchant_to_type|
+      merchant_id_to_type_id[merchant_to_type.merchant_id] = merchant_to_type.merchant_type_id
+    end
+    customers.each do |customer|
+      customer.merchant.eager_load_type = MerchantType.id_to_type[merchant_id_to_type_id[customer.merchant.id]]
+    end
     result = {}
     result[:total] = count
     result[:items] = customers

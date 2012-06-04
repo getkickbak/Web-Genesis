@@ -141,18 +141,23 @@ Genesis::Application.routes.draw do
     constraints :user_agent => /iPhone/ do
       match "/download" => redirect {|params, req| "http:/itunes.com/apps/kickbak" }
     end
+    #constraints :user_agent => /Android/ do
+    #  match "/download" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.kickbak.android" }
+    #end
     constraints :user_agent => /Android/ do
-      match "/download" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.kickbak.android" }
+      match "/download" => redirect {|params, req| "http://www.getkickbak.com/coming_soon" }
     end
+    
     #match "/how_it_works" => 'pages#how_it_works'
     #match "/privacy" => 'pages#privacy'
     #match "/terms" => 'pages#terms'
     match "/contact_us" => 'pages#contact_us'
     match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
     #match "/faq" => 'pages#faq'
-
     match "/add_business" => 'pages#add_business'
     match "/add_business/create" => 'pages#add_business_create', :via => :post, :as => :create_merchant_contact
+    match "/coming_soon" => 'pages#coming_soon'
+    match "/temporary" => 'pages#index'
     
     #match '/users/:id/account' => 'users#edit'
     #match '/users/:user_id/coupons' => 'orders#index', :via => :get , :as => :user_coupons
@@ -188,7 +193,7 @@ Genesis::Application.routes.draw do
 
     match '*a', :to => 'errors#routing'
 
-    root :to => 'pages#index'
+    #root :to => 'pages#index'
 
   #match '/referrals' => 'referrals#index'
   #root :to => 'referrals#index', :via => :get

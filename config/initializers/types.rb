@@ -8,7 +8,9 @@ if exists
   merchant_type_id_to_value = {}
   merchant_type_values = {}
   merchant_type_value_to_name = {}
+  merchant_type_id_to_type = {}
   merchant_types.each do |type|
+    merchant_type_id_to_type[type.id] = type
     merchant_type_id_to_value[type.id] = type.value
     I18n.available_locales.each do |locale|
       name = I18n.t "merchant.type.#{type.value}", :locale => locale
@@ -25,7 +27,9 @@ if exists
   venue_types = VenueType.all
   venue_type_values = {}
   venue_type_value_to_name = {}
+  venue_type_id_to_type = {}
   venue_types.each do |type|
+    venue_type_id_to_type[type.id] = type
     merchant_type_value = merchant_type_id_to_value[type.merchant_type_id]
     if !venue_type_values.include? merchant_type_value
       venue_type_values[merchant_type_value] = {}
@@ -65,7 +69,9 @@ if exists
   customer_reward_types = CustomerRewardType.all
   customer_reward_type_values = {}
   customer_reward_type_value_to_name = {}
+  customer_reward_type_id_to_type = {}
   customer_reward_types.each do |type|
+    customer_reward_type_id_to_type[type.id] = type
     merchant_type_value = merchant_type_id_to_value[type.merchant_type_id]
     if !customer_reward_type_values.include? merchant_type_value
       customer_reward_type_values[merchant_type_value] = {}
@@ -114,14 +120,18 @@ if exists
   end
   MerchantType.values = merchant_type_values
   MerchantType.value_to_name = merchant_type_value_to_name
+  MerchantType.id_to_type = merchant_type_id_to_type
   VenueType.values = venue_type_values
   VenueType.value_to_name = venue_type_value_to_name
+  VenueType.id_to_type = venue_type_id_to_type
   PurchaseRewardType.values = purchase_reward_type_values
   PurchaseRewardType.value_to_name = purchase_reward_type_value_to_name
   CustomerRewardType.values = customer_reward_type_values
   CustomerRewardType.value_to_name = customer_reward_type_value_to_name
+  CustomerRewardType.id_to_type = customer_reward_type_id_to_type
   ChallengeType.values = challenge_type_values
   ChallengeType.id_to_value = challenge_type_id_to_value
   ChallengeType.value_to_id = challenge_type_value_to_id
   ChallengeType.value_to_name = challenge_type_value_to_name
+  ChallengeType.id_to_type = challenge_type_id_to_type
 end

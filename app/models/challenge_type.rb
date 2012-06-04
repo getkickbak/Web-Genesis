@@ -5,6 +5,7 @@ class ChallengeType
   @@value_to_id = {}
   @@value_to_name = {}
   @@id_to_value = {}
+  @@id_to_type = {}
 
   property :id, Serial
   property :value, String, :required => true, :default => ""
@@ -39,5 +40,13 @@ class ChallengeType
   
   def self.id_to_value=(id_to_value)
     @@id_to_value = id_to_value
+  end
+  
+  def self.id_to_type
+    @@id_to_type
+  end
+  
+  def self.id_to_type=(id_to_type)
+    @@id_to_type = id_to_type
   end
 end

@@ -136,7 +136,7 @@ class Api::V1::CustomersController < ApplicationController
             @record.save 
             render :template => '/api/v1/customers/receive_points'
             if decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL
-              UserMailer.transfer_points_confirm_email(sender.user, current_user, merchant, @record)
+              UserMailer.transfer_points_confirm_email(sender.user, current_user, merchant, @record).deliver
             end
             logger.info("Customer(#{@record.sender_id}) successfully received #{@record.points} points from Customer(#{@record.recipient_id})") 
           else

@@ -5,12 +5,19 @@
 	</head>
 	<body>
 		<div>
-			<center>
-				<div style="text-align:left;width:480px;background:#ffffff;font-family:Arial, Helvetica, sans-serif;font-size:13px;">
-					<div style="background:#0A78BE;padding: 10px 20px;border-radius: 0.6em;">
-						<a rel="nofollow" target="_blank" href="http://www.getkickbak.com"> <img style="width:100px;" src="http://files.getkickbak.com/v1/logo.png" border="0" alt="getkickbak.com"> </a>
-					</div>
-					<div style="border:1px solid #CCCCCC;margin-top: 10px;padding: 0 15px 0 15px;">
+			<table cellspacing="0" cellpadding="0" width="480" border="0" align="center" bgcolor="#ffffff" style="font-size:12px;color:#444;font-family:arial,sans-serif">
+				<tbody>
+					<tr>
+						<td align="left">
+							<div style="background:#0A78BE;padding: 20px 15px;border-radius:0.6em;">
+								<a href="http://www.getkickbak.com" target="_blank"> <img src="http://files.getkickbak.com/v1/logo.png" width="100" border="0" alt="KICKBAK"> </a>
+							</div>
+						</td>
+						<td></td>
+					</tr>
+					<tr><td height="10"></td><td></td></tr>
+					<tr>
+						<td style="border:1px solid #ccc;padding:10px 15px">
 						<br>
 						<br>
 						&lt;Input your message here&gt;
@@ -20,9 +27,9 @@
 						<br>
 						<br>
 						<% if @merchant.website.empty? %>
-						<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.points', :count => @record.points) %> that can be used to redeem fabulous rewards at <%= @merchant.name %>!
+						<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.point', :count => @record.points) %> that can be used to redeem fabulous rewards at <%= @merchant.name %>!
 						<% else %>
-						<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.points', :count => @record.points) %> that can be used to redeem fabulous rewards at <a href="<%= @merchant.website %>"><%= @merchant.name %></a>!
+						<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.point', :count => @record.points) %> that can be used to redeem fabulous rewards at <a href="<%= @merchant.website %>"><%= @merchant.name %></a>!
 						<% end %>
 						<br>
 						<br>
@@ -32,22 +39,19 @@
 						Expiry Date: <%= @record.expiry_date.strftime("%b %d, %Y") %>
 						<br>
 						<br>
-					</div>
-					<div>
-						<br>
-						<br>
-						<center>
+					</tr>
+					<tr>
+						<td align="center" style="padding:10px">
+						<p>
 							Haven't downloaded KICKBAK yet? Get it for your <a href="http:/itunes.com/apps/kickbak">iPhone</a>
-						</center>
-						<br>
-						<center>
+						</p>
+						<p>
 							Also visit us online at <a rel="nofollow" target="_blank" href="http://getkickbak.com">getkickbak.com</a>
-						</center>
-						<br>
-						<br>
-					</div>
-				</div>
-			</center>
+						</p></td>
+						<td></td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</body>
 </html>

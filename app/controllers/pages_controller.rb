@@ -46,6 +46,10 @@ class PagesController < ApplicationController
     end
   end
 
+  def coming_soon
+      
+  end
+  
   def terms
   end
 
