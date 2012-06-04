@@ -68,5 +68,6 @@ Ext.define('Genesis.view.client.SettingsPage',
             value : 'About Us'
          }]
       }]
-   }
+   },
+   showView : Ext.emptyFn
 });

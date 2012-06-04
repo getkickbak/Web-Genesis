@@ -1,21 +1,19 @@
-Ext.define('Genesis.view.UploadPhotosPage',
+Ext.define('Genesis.view.client.UploadPhotosPage',
 {
-   extend : 'Ext.Container',
+   extend : 'Genesis.view.ViewBase',
    requires : ['Ext.dataview.DataView', 'Ext.XTemplate', 'Ext.form.Panel', 'Ext.field.TextArea'],
-   alias : 'widget.uploadphotospageview',
+   alias : 'widget.clientuploadphotospageview',
    scrollable : 'vertical',
    config :
    {
       cls : 'photoUploadPage',
-      changeTitle : false,
-      title : 'Photo Upload',
       layout : 'fit',
       items : [
       {
          xtype : 'titlebar',
          docked : 'top',
          cls : 'navigationBarTop',
-         title : 'Navigation',
+         title : 'Photo Upload',
          defaults :
          {
             iconMask : true
@@ -26,7 +24,11 @@ Ext.define('Genesis.view.UploadPhotosPage',
             tag : 'post',
             text : 'Post'
          }]
-      },
+      }]
+   },
+   showView : function()
+   {
+      this.add(
       {
          xtype : 'component',
          tag : 'background',
@@ -50,6 +52,6 @@ Ext.define('Genesis.view.UploadPhotosPage',
          maxRows : 4,
          placeHolder : 'Please enter your photo description',
          clearIcon : false
-      }]
+      });
    }
 });

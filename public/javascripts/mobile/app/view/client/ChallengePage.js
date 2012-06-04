@@ -5,8 +5,6 @@ Ext.define('Genesis.view.client.ChallengePage',
    alias : 'widget.clientchallengepageview',
    config :
    {
-      title : 'Challenges',
-      changeTitle : false,
       layout : 'fit',
       scrollable : undefined,
       items : [
@@ -23,14 +21,9 @@ Ext.define('Genesis.view.client.ChallengePage',
          {
             align : 'left',
             ui : 'normal',
-            tag:'close',
+            tag : 'close',
             text : 'Close'
          }]
-      },
-      {
-         xtype : 'carousel',
-         cls : 'challengePageItem shadows',
-         direction : 'horizontal'
       },
       {
          docked : 'bottom',
@@ -71,7 +64,17 @@ Ext.define('Genesis.view.client.ChallengePage',
          {
             flex : 1,
             cls : 'itemDesc',
-            tpl : '{description}'
+            data :
+            {
+               description : 'Please Select a challenge to perform'
+            },
+            tpl : Ext.create('Ext.XTemplate', '{[this.getDesc(values)]}',
+            {
+               getDesc : function(values)
+               {
+                  return values['description']
+               }
+            })
          }
          /*,
           {
@@ -122,5 +125,54 @@ Ext.define('Genesis.view.client.ChallengePage',
          Ext.Viewport.add(this.photoAction);
       }
       this.photoAction.show();
+   },
+   showView : function()
+   {
+      this.add(
+      {
+         xtype : 'carousel',
+         cls : 'challengePageItem shadows',
+         direction : 'horizontal'
+      });
+
+      var record = _application.getController('Viewport').getVenue();
+      var venueId = record.getId();
+      var carousel = this.query('carousel')[0];
+      var items = record.challenges().getRange();
+
+      if((carousel.getInnerItems().length > 0) && //
+      (carousel.getInnerItems()[0].getStore().getRange()[0].getId() == items[0].getId()))
+      {
+         // No need to update the Challenge Menu. Nothing changed.
+         for(var i = 0; i < carousel.getInnerItems().length; i++)
+         {
+            carousel.getInnerItems()[i].deselectAll();
+         }
+      }
+      else
+      {
+         carousel.removeAll(true);
+         for(var i = 0; i < Math.ceil(items.length / 6); i++)
+         {
+            carousel.add(
+            {
+               xtype : 'dataview',
+               cls : 'challengeMenuSelections',
+               useComponents : true,
+               defaultType : 'challengemenuitem',
+               scrollable : undefined,
+               store :
+               {
+                  model : 'Genesis.model.Challenge',
+                  data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
+               }
+            });
+         }
+         if(carousel.getInnerItems().length > 0)
+         {
+            carousel.setActiveItem(0);
+         }
+         console.log("ChallengePage Icons Refreshed.");
+      }
    }
 });

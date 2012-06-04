@@ -1161,7 +1161,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
       @include box-shadow(0.2em 0.2em 0em rgba(80,81,82,0.6));
       //border:1px solid $GreyNoEntry;
       position:relative;
-      margin: 0 $panelGap $panelTopGap $panelGap;
+      margin: $panelTopGap $panelGap 0 $panelGap;
       min-height : $icon-size;
       .x-innerhtml {
          @extend .pointsphotobase;
@@ -1205,7 +1205,6 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
    .descPanelHdr {
       @extend .panelHdr;
    }
-
    .descPanel {
       padding: $panelTopGap $panelGap;
       background:$Grey;
@@ -1214,7 +1213,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
       .x-inner {
          padding:0 !important;
          margin:0 !important;
-         .x-innerhtml {
+         .x-dataview-item { 
             font-size : $normalFontSize;
             text-align:justify;
             line-height : $normalFontSize + 1.0em;
@@ -1450,7 +1449,7 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
 .redemptionsMain {
    .ptsEarnPanelHdr {
       @extend .panelHdr;
-      &:first-child {
+      &:nth-child(3) {
          margin-top:$panelTopGap;
       }
    }

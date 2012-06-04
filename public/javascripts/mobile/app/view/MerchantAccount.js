@@ -1,6 +1,6 @@
 Ext.define('Genesis.view.MerchantAccount',
 {
-   extend : 'Ext.Container',
+   extend : 'Genesis.view.ViewBase',
    requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Ext.tab.Bar', 'Genesis.view.widgets.MerchantAccountPtsItem'],
    alias : 'widget.merchantaccountview',
    config :
@@ -36,83 +36,63 @@ Ext.define('Genesis.view.MerchantAccount',
             tag : 'checkin',
             iconCls : 'checkin'
          }]
-      },
+      }]
+   },
+   showView : function()
+   {
+      // -----------------------------------------------------------------------
+      // Merchant Photos and Customer Points
+      // -----------------------------------------------------------------------
+      this.add(
       {
          tag : 'tbPanel',
          xtype : 'dataview',
-         store :
-         {
-            model : 'Genesis.model.Venue',
-            autoLoad : false
-         },
+         store : 'MerchantRenderStore',
          useComponents : true,
          scrollable : false,
          defaultType : 'merchantaccountptsitem',
          defaultUnit : 'em',
          margin : '0 0 0.8 0'
-      },
-      // -----------------------------------------------------------------------
-      // Prizes won by customers!
-      // -----------------------------------------------------------------------
-      {
-         tag : 'prizesWonPanel',
-         xtype : 'component',
-         cls : 'prizesWonPanel',
-         tpl : Ext.create('Ext.XTemplate',
-         // @formatter:off
-         '<div class="prizeswonphoto">',
-            '<div class="itemTitle">{[this.getTitle(values)]}</div>',
-            '<div class="itemDesc">{[this.getDesc(values)]}</div>',
-         '</div>',
-         // @formatter:on
-         {
-            // Updated Automatically when the Customer\'s metadata is updated
-            getTitle : function(values)
-            {
-               return 'Prizes won this month';
-            },
-            // Updated Automatically when the Customer\'s metadata is updated
-            getDesc : function(values)
-            {
-               return values['winners_count'] + ' Winners!';
-            }
-         }),
-      },
+      });
+
       // -----------------------------------------------------------------------
       // What can I get ?
       // -----------------------------------------------------------------------
+      if(this.renderFeed)
       {
-         xtype : 'container',
-         tag : 'feedContainer',
-         layout :
+         this.add(
          {
-            type : 'vbox',
-            align : 'stretch',
-            pack : 'start'
-         },
-         items : [
-         {
-            xtype : 'toolbar',
-            ui : 'dark',
-            cls : 'feedPanelHdr',
-            centered : false,
+            xtype : 'container',
+            tag : 'feedContainer',
+            layout :
+            {
+               type : 'vbox',
+               align : 'stretch',
+               pack : 'start'
+            },
             items : [
             {
-               xtype : 'title',
-               title : 'What can I get?'
+               xtype : 'toolbar',
+               ui : 'dark',
+               cls : 'feedPanelHdr',
+               centered : false,
+               items : [
+               {
+                  xtype : 'title',
+                  title : 'What can I get?'
+               },
+               {
+                  xtype : 'spacer'
+               }]
             },
             {
-               xtype : 'spacer'
-            }]
-         },
-         {
-            xtype : 'list',
-            scrollable : false,
-            ui : 'bottom-round',
-            store : 'EligibleRewardsStore',
-            emptyText : ' ',
-            cls : 'feedPanel separator',
-            // @formatter:off
+               xtype : 'list',
+               scrollable : false,
+               ui : 'bottom-round',
+               store : 'EligibleRewardsStore',
+               emptyText : ' ',
+               cls : 'feedPanel separator',
+               // @formatter:off
             itemTpl : Ext.create('Ext.XTemplate',
             '<div class="photo">'+
                '<img src="{[this.getPhoto(values)]}"/>'+
@@ -122,45 +102,48 @@ Ext.define('Genesis.view.MerchantAccount',
                '<div class="itemDesc">{[this.getDesc(values)]}</div>',
             '</div>',
             // @formatter:on
-            {
-               getDisclose : function(values)
                {
-                  switch (values['reward_type'])
+                  getDisclose : function(values)
                   {
-                     case 'vip' :
+                     switch (values['reward_type'])
                      {
-                        values['disclosure'] = false;
-                        break;
+                        case 'vip' :
+                        {
+                           values['disclosure'] = false;
+                           break;
+                        }
                      }
-                  }
-                  return ((values['disclosure'] === false) ? 'padding-right:0;' : '');
-               },
-               getPhoto : function(values)
-               {
-                  if(!values.photo)
+                     return ((values['disclosure'] === false) ? 'padding-right:0;' : '');
+                  },
+                  getPhoto : function(values)
                   {
-                     return Genesis.view.client.Rewards.getPhoto(
+                     if(!values.photo)
                      {
-                        value : values['reward_type']
-                     });
+                        return Genesis.view.client.Rewards.getPhoto(
+                        {
+                           value : values['reward_type']
+                        });
+                     }
+                     return values.photo.url;
+                  },
+                  getTitle : function(values)
+                  {
+                     return values['reward_title'];
+                  },
+                  getDesc : function(values)
+                  {
+                     return values['reward_text'];
                   }
-                  return values.photo.url;
-               },
-               getTitle : function(values)
-               {
-                  return values['reward_title'];
-               },
-               getDesc : function(values)
-               {
-                  return values['reward_text'];
-               }
-            }),
-            onItemDisclosure : Ext.emptyFn
-         }]
-      },
+               }),
+               onItemDisclosure : Ext.emptyFn
+            }]
+         });
+      }
+
       // -----------------------------------------------------------------------
       // Merchant Description Panel
       // -----------------------------------------------------------------------
+      this.add([
       {
          xtype : 'container',
          tag : 'descContainer',
@@ -186,19 +169,20 @@ Ext.define('Genesis.view.MerchantAccount',
             }]
          },
          {
-            xtype : 'container',
+            xtype : 'dataview',
+            store : 'MerchantRenderStore',
+            scrollable : undefined,
             cls : 'descPanel separator',
             tag : 'descPanel',
-            tpl : Ext.create('Ext.XTemplate', '{[this.getDesc(values)]}',
+            itemTpl : Ext.create('Ext.XTemplate', '{[this.getDesc(values)]}',
             {
                getDesc : function(values)
                {
-                  return values.get('description');
+                  return values['description'];
                }
             })
          }]
-      },
-      // -----------------------------------------------------------------------
+      }, // -----------------------------------------------------------------------
       // Toolbar
       // -----------------------------------------------------------------------
       {
@@ -234,6 +218,7 @@ Ext.define('Genesis.view.MerchantAccount',
             iconCls : 'prizes',
             tag : 'prizes',
             badgeCls : 'x-badge round',
+            badgeText : this.prizesCount,
             title : 'Prizes'
          },
          {
@@ -266,6 +251,7 @@ Ext.define('Genesis.view.MerchantAccount',
          {
             iconCls : 'tocheckedinmerch',
             tag : 'main',
+            hidden : this.showCheckinBtn,
             title : 'Main Menu'
          },
          {
@@ -273,7 +259,7 @@ Ext.define('Genesis.view.MerchantAccount',
             tag : 'browse',
             title : 'Explore'
          }]
-      }]
+      }]);
    },
    statics :
    {

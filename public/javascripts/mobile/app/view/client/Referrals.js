@@ -22,7 +22,11 @@ Ext.define('Genesis.view.client.Referrals',
             ui : 'back',
             text : 'Back'
          }]
-      },
+      }]
+   },
+   showView : function()
+   {
+      this.add(
       {
          xtype : 'container',
          tag : 'referralsMain',
@@ -148,19 +152,7 @@ Ext.define('Genesis.view.client.Referrals',
                ui : 'orange-large'
             }]
          }]
-      }]
-   },
-   beforeDeactivate : function(activeItem, oldActiveItem)
-   {
-      this.callParent(arguments);
-      //var viewport = Ext.ComponentQuery.query('viewportview')[0];
-      //viewport.getNavigationBar().removeCls('kbTitle');
-   },
-   afterActivate : function(activeItem, oldActiveItem)
-   {
-      this.callParent(arguments);
-      //var viewport = Ext.ComponentQuery.query('viewportview')[0];
-      //viewport.getNavigationBar().addCls('kbTitle');
+      });
    },
    statics :
    {

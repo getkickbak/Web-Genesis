@@ -9,9 +9,6 @@ Ext.define('Genesis.view.client.Redemptions',
       cls : 'redemptionsMain',
       layout : 'vbox',
       items : [
-      // ------------------------------------------------------------------------
-      // Redemptions Points Earned Panel
-      // ------------------------------------------------------------------------
       {
          xtype : 'titlebar',
          docked : 'top',
@@ -28,7 +25,14 @@ Ext.define('Genesis.view.client.Redemptions',
             ui : 'normal',
             text : 'Close'
          }]
-      },
+      }]
+   },
+   showView : function()
+   {
+      // ------------------------------------------------------------------------
+      // Redemptions Points Earned Panel
+      // ------------------------------------------------------------------------
+      this.add([
       {
          xtype : 'toolbar',
          ui : 'light',
@@ -50,11 +54,7 @@ Ext.define('Genesis.view.client.Redemptions',
          useComponents : true,
          scrollable : undefined,
          defaultType : 'redemptionsptsitem',
-         store :
-         {
-            model : 'Genesis.model.Customer',
-            autoLoad : false
-         }
+         store : 'RedemptionRenderCStore'
       },
       // ------------------------------------------------------------------------
       // Redemptions Available Panel
@@ -79,25 +79,8 @@ Ext.define('Genesis.view.client.Redemptions',
       {
          xtype : 'list',
          scrollable : undefined,
-         //scrollable : 'vertical',
          ui : 'bottom-round',
-         store :
-         {
-            model : 'Genesis.model.CustomerReward',
-            autoLoad : false,
-            grouper :
-            {
-               groupFn : function(record)
-               {
-                  return record.get('points') + ' Points';
-               }
-            },
-            sorters : [
-            {
-               property : 'points',
-               direction : 'ASC'
-            }]
-         },
+         store : 'RedemptionsStore',
          cls : 'redemptionsList separator_pad',
          tag : 'redemptionsList',
          /*
@@ -113,7 +96,13 @@ Ext.define('Genesis.view.client.Redemptions',
          //pinHeaders : true,
          grouped : true,
          // @formatter:off
-         itemTpl : Ext.create('Ext.XTemplate', '<div class="photo"><img src="{[this.getPhoto(values)]}"/></div>', '<div class="listItemDetailsWrapper">', '<div class="itemTitle">{[this.getTitle(values)]}</div>', '</div>',
+         itemTpl : Ext.create('Ext.XTemplate',
+         '<div class="photo">'+
+            '<img src="{[this.getPhoto(values)]}"/>'+
+         '</div>',
+         '<div class="listItemDetailsWrapper">',
+            '<div class="itemTitle">{[this.getTitle(values)]}</div>',
+         '</div>',
          // @formatter:on
          {
             getPhoto : function(values)
@@ -130,7 +119,7 @@ Ext.define('Genesis.view.client.Redemptions',
             }
          }),
          onItemDisclosure : Ext.emptyFn
-      }]
+      }]);
    },
    statics :
    {

@@ -57,16 +57,5 @@ Ext.define('Genesis.view.server.SettingsPage',
          }]
       }]
    },
-   beforeActivate : function()
-   {
-   },
-   beforeDeactivate : function()
-   {
-   },
-   afterActivate : function()
-   {
-   },
-   afterDeactivate : function()
-   {
-   }
+   showView : Ext.emptyFn
 });

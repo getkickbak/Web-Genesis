@@ -76,12 +76,22 @@ Ext.define('Genesis.view.Viewport',
                //
                if(oldActiveItem)
                {
-                  oldActiveItem.destroy();
-                  console.debug('Destroyed View [' + oldActiveItem._itemId + ']');
+                  Ext.defer(function()
+                  {
+                     oldActiveItem.destroy();
+                     console.debug('Destroyed View [' + oldActiveItem._itemId + ']');
+                  }, 0.1 * 1000, this);
                }
+               //console.debug("Animation Complete");
+               activeItem.showView();
             }, this);
          }
       }
-      return this.setActiveItem(activeItem);
+      var rc = this.setActiveItem(activeItem);
+      if(!layout.isCard)
+      {
+         activeItem.showView();
+      }
+      return rc;
    },
 });

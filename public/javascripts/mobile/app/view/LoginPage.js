@@ -1,6 +1,6 @@
 Ext.define('Genesis.view.LoginPage',
 {
-   extend : 'Ext.Container',
+   extend : 'Genesis.view.ViewBase',
    requires : ['Ext.ActionSheet'],
    alias : 'widget.loginpageview',
    config :
@@ -106,7 +106,8 @@ Ext.define('Genesis.view.SignInPage',
          tag : 'login',
          text : 'Sign In'
       }]
-   }
+   },
+   showView : Ext.emptyFn
 });
 
 Ext.define('Genesis.view.CreateAccountPage',
@@ -173,5 +174,6 @@ Ext.define('Genesis.view.CreateAccountPage',
          tag : 'createAccount',
          text : 'Create Account'
       }]
-   }
+   },
+   showView : Ext.emptyFn
 });

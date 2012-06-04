@@ -50,6 +50,11 @@ Ext.define('Genesis.controller.client.Redemptions',
    init : function()
    {
       var me = this;
+      Ext.regStore('RedemptionRenderCStore',
+      {
+         model : 'Genesis.model.Customer',
+         autoLoad : false
+      });
       Ext.regStore('RedemptionsStore',
       {
          model : 'Genesis.model.CustomerReward',
@@ -87,43 +92,17 @@ Ext.define('Genesis.controller.client.Redemptions',
       var me = this;
       var page = me.getRedemptions();
 
-      var store, rstore, list, scroll;
-
       var viewport = me.getViewPortCntlr();
       var cvenue = viewport.getCheckinInfo().venue;
       var venue = viewport.getVenue();
       var venueId = venue.getId();
       var merchantId = venue.getMerchant().getId();
 
-      list = me.getRedemptionsList();
-      store = Ext.StoreMgr.get('RedemptionsStore');
-      rstore = list.getStore();
-      scroll = page.getScrollable();
-      //CustomerReward['setGetRedemptionsURL']();
-      store.clearFilter();
-      //
-      // Scroll to the Top of the Screen
-      //
-      scroll.getScroller().scrollTo(0, 0);
-
       me.exploreMode = !cvenue || (cvenue && (cvenue.getId() != venue.getId()));
+
       //
       // Update Customer info
-      //
-      me.getRedemptionsPtsEarnPanel().getStore().setData(viewport.getCustomer());
-
-      //
-      // Show Redemptions for this venue only
-      //
-      store.filter([
-      {
-         filterFn : function(item)
-         {
-            return item.get("venue_id") == venueId;
-         }
-      }]);
-
-      rstore.setData(store.getRange());
+      Ext.StoreMgr.get('RedemptionRenderCStore').setData(viewport.getCustomer());      
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {

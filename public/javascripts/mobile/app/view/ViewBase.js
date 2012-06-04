@@ -4,5 +4,6 @@ Ext.define('Genesis.view.ViewBase',
    xtype : 'viewbase',
    config :
    {
-   }
+   },
+   showView : Ext.emptyFn
 });

@@ -1,6 +1,6 @@
 Ext.define('Genesis.view.Accounts',
 {
-   extend : 'Ext.Container',
+   extend : 'Genesis.view.ViewBase',
    requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar'],
    alias : 'widget.accountsview',
    config :
@@ -20,11 +20,15 @@ Ext.define('Genesis.view.Accounts',
          items : [
          {
             align : 'left',
-            tag:'back',
+            tag : 'back',
             ui : 'back',
             text : 'Back'
          }]
-      },
+      }]
+   },
+   showView : function()
+   {
+      this.add(
       {
          xtype : 'list',
          store : 'CustomerStore',
@@ -71,6 +75,6 @@ Ext.define('Genesis.view.Accounts',
             }
          }),
          onItemDisclosure : Ext.emptyFn
-      }]
+      });
    }
 });

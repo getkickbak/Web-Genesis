@@ -28,11 +28,11 @@ Ext.define('Genesis.controller.client.Challenges',
          //
          uploadPhotosPage :
          {
-            selector : 'uploadphotospageview',
+            selector : 'clientuploadphotospageview',
             autoCreate : true,
-            xtype : 'uploadphotospageview'
+            xtype : 'clientuploadphotospageview'
          },
-         uploadPhotosBackground : 'uploadphotospageview component[tag=background]',
+         uploadPhotosBackground : 'clientuploadphotospageview component[tag=background]',
          postBtn : 'viewportview button[tag=post]',
          //
          // Referral Challenge
@@ -114,7 +114,6 @@ Ext.define('Genesis.controller.client.Challenges',
    fbUploadFailedMsg : 'Failed to upload the photo onto your Facebook account',
    checkinFirstMsg : 'Please Check-In before performing challenges',
    photoUploadFbReqMsg : 'Connectivity to Facebook is required to upload photos to your account',
-   defaultChallengeMsg : 'Please Select a challenge to perform',
    photoUploadSuccessMsg : function(points)
    {
       return 'We\'ve added earned ' + points + ' points' + Genesis.constants.addCRLF() + //
@@ -726,59 +725,7 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-
       var me = this;
-
-      var record = me.getViewPortCntlr().getVenue();
-      var venueId = record.getId();
-      var carousel = me.getChallengePage().query('carousel')[0];
-      var items = record.challenges().getRange();
-
-      if((carousel.getInnerItems().length > 0) && //
-      (carousel.getInnerItems()[0].getStore().getRange()[0].getId() == items[0].getId()))
-      {
-         // No need to update the Challenge Menu. Nothing changed.
-         for(var i = 0; i < carousel.getInnerItems().length; i++)
-         {
-            carousel.getInnerItems()[i].deselectAll();
-         }
-      }
-      else
-      {
-         carousel.removeAll(true);
-         for(var i = 0; i < Math.ceil(items.length / 6); i++)
-         {
-            carousel.add(
-            {
-               xtype : 'dataview',
-               cls : 'challengeMenuSelections',
-               useComponents : true,
-               defaultType : 'challengemenuitem',
-               scrollable : undefined,
-               store :
-               {
-                  model : 'Genesis.model.Challenge',
-                  data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
-               }
-            });
-         }
-         if(carousel.getInnerItems().length > 0)
-         {
-            carousel.setActiveItem(0);
-         }
-         console.log("ChallengePage Icons Refreshed.");
-      }
-
-      var desc = me.getChallengeDescContainer();
-      for(var i = 0; i < desc.getItems().length; i++)
-      {
-         desc.getItems().getAt(i).updateData(
-         {
-            description : me.defaultChallengeMsg,
-            name : ''
-         });
-      }
-      me.getChallengeContainer().hide();
       delete me.selectedItem;
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)

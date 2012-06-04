@@ -116,6 +116,16 @@ Ext.define('Genesis.controller.Merchants',
       {
          console.debug("Google Maps API cannot be instantiated");
       }
+
+      //
+      // Store used for rendering purposes
+      //
+      Ext.regStore('MerchantRenderStore',
+      {
+         model : 'Genesis.model.Venue',
+         autoLoad : false
+      });
+
       me.callParent(arguments);
 
       console.log("Merchants Init");
@@ -199,18 +209,20 @@ Ext.define('Genesis.controller.Merchants',
    // --------------------------------------------------------------------------
    // Merchant Account Page
    // --------------------------------------------------------------------------
-   onUpdateWinnersCount : function(metaData)
-   {
-      var panel = this.getPrizesWonPanel();
-      // Initial Main Page Object
-      if(!panel)
-      {
-         this.getMain();
-         panel = this.getPrizesWonPanel();
-      }
-      panel.setData(metaData);
-      this.winnersCount = metaData;
-   },
+   /*
+    onUpdateWinnersCount : function(metaData)
+    {
+    var panel = this.getPrizesWonPanel();
+    // Initial Main Page Object
+    if(!panel)
+    {
+    this.getMain();
+    panel = this.getPrizesWonPanel();
+    }
+    panel.setData(metaData);
+    this.winnersCount = metaData;
+    },
+    */
    onMainActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
@@ -229,16 +241,13 @@ Ext.define('Genesis.controller.Merchants',
       // Update TitleBar
       activeItem.query('titlebar')[0].setTitle(vrecord.get('name'));
 
-      // Refresh Merchant Panel Info
-      me.getTbPanel().getStore().setData(vrecord);
-
       //
       // Either we are checked-in or
       // customer exploring a venue they checked-in in the past ...
       //
       if(checkedInMatch)
       {
-         me.getFeedContainer().show();
+         page.renderFeed = true;
          //me.getAddress().hide();
          //me.getStats().show();
          console.debug("Merchant Checkin Mode");
@@ -248,14 +257,28 @@ Ext.define('Genesis.controller.Merchants',
       //
       else
       {
-         me.getFeedContainer()[me.showFeed ? 'show' : 'hide']();
+         page.renderFeed = me.showFeed;
          //me.getAddress().setData(vrecord.getData(true));
          //me.getAddress().show();
          //me.getStats().hide();
          console.debug("Merchant Explore Mode");
       }
-      me.getDescPanel().setData(vrecord);
-      me.getDescContainer().show();
+      //me.getDescPanel().setData(vrecord);
+      //me.getDescContainer().show();
+
+      //
+      // Update Winners Count
+      //
+      if(me.winnersCount)
+      {
+         vrecord.set('winners_count', me.winnersCount['winners_count']);
+         //me.onUpdateWinnerssCount(me.winnersCount);
+      }
+      
+      
+      // Refresh Merchant Panel Info
+      //me.getTbPanel().getStore().setData(vrecord);
+      Ext.StoreMgr.get('MerchantRenderStore').setData(vrecord);
 
       //
       // Show Map Buttons
@@ -266,10 +289,11 @@ Ext.define('Genesis.controller.Merchants',
       // CheckIn button
       //
       me.getCheckinBtn()[(!checkedIn || !checkedInMatch) ? 'show' : 'hide']();
+      
       //
       // Main Menu button
       //
-      me.getMainBtn()[(checkedIn && !checkedInMatch) ? 'show' : 'hide']();
+      page.showCheckinBtn = (checkedIn && !checkedInMatch);
 
       //
       // Update Badges
@@ -282,15 +306,8 @@ Ext.define('Genesis.controller.Merchants',
             prizesCount++;
          }
       }
-      me.getPrizesBtn().setBadgeText((prizesCount > 0) ? prizesCount : null);
+      page.prizesCount = (prizesCount > 0) ? prizesCount : null;
 
-      //
-      // Update Winners Count
-      //
-      if(me.winnersCount)
-      {
-         me.onUpdateWinnersCount(me.winnersCount);
-      }
       //
       // Scroll to the Top of the Screen
       //

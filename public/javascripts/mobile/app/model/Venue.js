@@ -8,7 +8,9 @@ Ext.define('Genesis.model.Venue',
    {
       fields : ['id', 'name', 'address', 'description', 'distance', 'city', 'state', 'country', 'zipcode', 'phone', 'website', 'latitude', 'longitude', 'created_ts', 'update_ts', 'type', 'merchant_id',
       // Used for Frontend sorting purposes
-      'sort_id'],
+      'sort_id',
+      // Winners Count for front end purposes
+      'winners_count'],
       belongsTo : [
       {
          model : 'Genesis.model.Merchant',

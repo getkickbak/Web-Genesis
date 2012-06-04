@@ -1,6 +1,6 @@
 Ext.define('Genesis.view.MerchantDetails',
 {
-   extend : 'Ext.Container',
+   extend : 'Genesis.view.ViewBase',
    requires : ['Ext.dataview.DataView', 'Ext.XTemplate', 'Ext.Map', 'Genesis.view.widgets.MerchantDetailsItem'],
    alias : 'widget.merchantdetailsview',
    config :
@@ -29,7 +29,7 @@ Ext.define('Genesis.view.MerchantDetails',
          items : [
          {
             align : 'left',
-            tag:'back',
+            tag : 'back',
             ui : 'back',
             text : 'Back'
          },
@@ -90,7 +90,11 @@ Ext.define('Genesis.view.MerchantDetails',
                this.actions.show();
             }
          }]
-      },
+      }]
+   },
+   showView : function()
+   {
+      this.add(
       {
          xtype : 'dataview',
          cls : 'separator',
@@ -148,6 +152,6 @@ Ext.define('Genesis.view.MerchantDetails',
             }
          },
          tpl : Ext.create('Ext.XTemplate', '<img height="{height}" width="{width}" src="{photo}"/>')
-      }]
+      });
    }
 });

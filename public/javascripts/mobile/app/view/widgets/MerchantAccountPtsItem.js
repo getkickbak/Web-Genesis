@@ -6,12 +6,13 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
    alias : 'widget.merchantaccountptsitem',
    config :
    {
-      layout : 'fit',
+      layout : 'vbox',
       background :
       {
          // Backgrond Image
          cls : 'tbPanel',
          tag : 'background',
+         flex : 1,
          items : [
          // Display Points
          {
@@ -42,11 +43,43 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             }],
          }]
       },
+      winnersCount :
+      {
+         // -----------------------------------------------------------------------
+         // Prizes won by customers!
+         // -----------------------------------------------------------------------
+         tag : 'prizesWonPanel',
+         xtype : 'component',
+         cls : 'prizesWonPanel',
+         tpl : Ext.create('Ext.XTemplate',
+         // @formatter:off
+         '<div class="prizeswonphoto">',
+            '<div class="itemTitle">{[this.getTitle(values)]}</div>',
+            '<div class="itemDesc">{[this.getDesc(values)]}</div>',
+         '</div>',
+         // @formatter:on
+         {
+            // Updated Automatically when the Customer\'s metadata is updated
+            getTitle : function(values)
+            {
+               return 'Prizes won this month';
+            },
+            // Updated Automatically when the Customer\'s metadata is updated
+            getDesc : function(values)
+            {
+               return (values['winners_count'] > 0) ? values['winners_count'] + ' Winners!' : 'Be our first winner!';
+            }
+         })
+      },
       dataMap :
       {
          getBackground :
          {
             setData : 'background'
+         },
+         getWinnersCount :
+         {
+            setData : 'winnersCount'
          }
       }
    },
@@ -103,6 +136,29 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          bg.getItems().items[0].hide();
       }
    },
+   applyWinnersCount : function(config)
+   {
+      return Ext.factory(Ext.apply(config,
+      {
+      }), Ext.Container, this.getWinnersCount());
+   },
+   updateWinnersCount : function(newWinnersCount, oldWinnersCount)
+   {
+      if(newWinnersCount)
+      {
+         this.add(newWinnersCount);
+      }
+
+      if(oldWinnersCount)
+      {
+         this.remove(oldWinnersCount);
+      }
+   },
+   setDataWinnersCount : function(data)
+   {
+      var prizePanel = this.query('component[tag=prizesWonPanel]')[0];
+      prizePanel.setData(data);
+   },
    /**
     * Updates this container's child items, passing through the dataMap.
     * @param newRecord
@@ -133,9 +189,12 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                {
                   switch (setterMap[setterName])
                   {
+                     //component[setterName](data);
                      case 'background':
-                        //component[setterName](data);
                         me.setDataBackground(data);
+                        break;
+                     case 'winnersCount':
+                        me.setDataWinnersCount(data);
                         break;
                      default :
                         component[setterName](data[setterMap[setterName]]);

@@ -21,16 +21,37 @@ Ext.define('Genesis.view.CheckinExplore',
          {
             align : 'left',
             ui : 'back',
-            tag:'back',
+            tag : 'back',
             text : 'Back'
          },
          {
             align : 'left',
             ui : 'normal',
-            tag:'close',
+            tag : 'close',
             text : 'Close'
          }]
       },
+      {
+         docked : 'bottom',
+         cls : 'checkInNow',
+         tag : 'checkInNow',
+         xtype : 'container',
+         layout :
+         {
+            type : 'vbox',
+            pack : 'center'
+         },
+         items : [
+         {
+            xtype : 'button',
+            tag : 'checkInNow',
+            text : 'CheckIn Now!'
+         }]
+      }]
+   },
+   showView : function()
+   {
+      this.add(
       {
          xtype : 'list',
          store : 'CheckinExploreStore',
@@ -79,23 +100,9 @@ Ext.define('Genesis.view.CheckinExplore',
                });
             }
          }]
-      },
-      {
-         docked : 'bottom',
-         cls : 'checkInNow',
-         tag : 'checkInNow',
-         xtype : 'container',
-         layout :
-         {
-            type : 'vbox',
-            pack : 'center'
-         },
-         items : [
-         {
-            xtype : 'button',
-            tag : 'checkInNow',
-            text : 'CheckIn Now!'
-         }]
-      }]
+      });
+      // Hack to fix bug in Sencha Touch API
+      var plugin = this.query('list')[0].getPlugins()[0];
+      plugin.refreshFn = plugin.getRefreshFn();
    }
 });

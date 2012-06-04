@@ -458,10 +458,6 @@ Ext.define('Genesis.controller.Checkins',
    {
       var me = this;
       var page = me.getMainPage();
-      // Hack to fix bug in Sencha Touch API
-      var plugin = page.query('list')[0].getPlugins()[0];
-      plugin.refreshFn = plugin.getRefreshFn();
-
       me.mode = page.mode = subFeature;
       me.animMode = mode || 'slide';
       me.setAnimationMode(me.self.superclass.self.animationMode[me.animMode]);

@@ -268,10 +268,6 @@ Ext.define('Genesis.controller.ControllerBase',
             var venueId = metaData['venue_id'] || viewport.getVenue().getId();
             console.debug("Total Redemption Rewards - " + rewards.length);
             var rstore = Ext.StoreMgr.get('RedemptionsStore');
-            for(var i = 0; i < rewards.length; i++)
-            {
-               rewards[i]['venue_id'] = venueId;
-            }
             rstore.setData(rewards);
          }
          //
@@ -292,15 +288,18 @@ Ext.define('Genesis.controller.ControllerBase',
          if(prizesCount >= 0)
          {
             console.debug("Prizes won by customers at this merchant this month - [" + prizesCount + "]");
-            var app = me.getApplication();
-            var controller = app.getController('Merchants');
-            app.dispatch(
-            {
-               action : 'onUpdateWinnersCount',
-               args : [metaData],
-               controller : controller,
-               scope : controller
-            });
+            viewport.getVenue().set('winners_count', prizesCount);
+            /*
+             var app = me.getApplication();
+             var controller = app.getController('Merchants');
+             app.dispatch(
+             {
+             action : 'onUpdateWinnersCount',
+             args : [metaData],
+             controller : controller,
+             scope : controller
+             });
+             */
          }
 
          //
