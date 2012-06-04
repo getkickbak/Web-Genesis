@@ -5,49 +5,39 @@ Ext.define('Genesis.view.Prizes',
    alias : 'widget.prizesview',
    config :
    {
-      title : 'Prizes Header',
-      changeTitle : true,
-      scrollable : false,
-      layout : 'fit',
-      cls : 'prizesMain'
-   },
-   beforeActivate : function(activeItem, oldActiveItem)
-   {
-      var prizeMode = _application.getController('Prizes').getMode();
-      switch (prizeMode)
+      scrollable : undefined,
+      fullscreen : true,
+      cls : 'prizesMain',
+      layout : 'card',
+      items : [
       {
-         case 'showPrize':
-         case 'merchantPrizes' :
-         case 'userPrizes' :
-            activeItem.getInitialConfig().title = 'Prizes';
-            break;
-         case 'reward' :
-            activeItem.getInitialConfig().title = 'Rewards';
-            break;
-         case 'authReward':
-            activeItem.getInitialConfig().title = ' ';
-            var viewport = Ext.ComponentQuery.query('viewportview')[0];
-            viewport.getNavigationBar().addCls('kbTitle');
-            break;
-      }
-      this.callParent(arguments);
-   },
-   beforeDeactivate : function(activeItem, oldActiveItem)
-   {
-      var prizeMode = _application.getController('Prizes').getMode();
-      switch (prizeMode)
-      {
-         case 'showPrize':
-         case 'merchantPrizes' :
-         case 'userPrizes' :
-         case 'reward' :
-            break;
-         case 'authReward':
-            var viewport = Ext.ComponentQuery.query('viewportview')[0];
-            viewport.getNavigationBar().removeCls('kbTitle');
-            break;
-      }
-      this.callParent(arguments);
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : 'Prizes',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'left',
+            tag : 'close',
+            ui : 'normal',
+            text : 'Close'
+         },
+         {
+            align : 'left',
+            tag : 'back',
+            ui : 'back',
+            text : 'Back'
+         },
+         {
+            align : 'right',
+            tag : 'redeem',
+            text : 'Redeem'
+         }]
+      }]
    },
    statics :
    {
@@ -64,5 +54,81 @@ Ext.define('Genesis.view.Prizes',
          }
          return photo_url;
       }
+   }
+});
+
+Ext.define('Genesis.view.ShowPrize',
+{
+   extend : 'Genesis.view.ViewBase',
+   requires : ['Ext.XTemplate', 'Ext.Carousel', 'Genesis.view.widgets.RewardItem'],
+   alias : 'widget.showprizeview',
+   config :
+   {
+      scrollable : false,
+      fullscreen : true,
+      cls : 'prizesMain',
+      layout : 'fit',
+      items : [
+      {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : 'Prizes',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'left',
+            tag : 'close',
+            ui : 'normal',
+            text : 'Close'
+         },
+         {
+            align : 'left',
+            tag : 'back',
+            ui : 'back',
+            text : 'Back'
+         },
+         {
+            align : 'right',
+            tag : 'redeem',
+            text : 'Redeem'
+         }]
+      },
+      {
+         tag : 'rewardPanel',
+         xtype : 'dataview',
+         store :
+         {
+            model : 'Genesis.model.EarnPrize',
+            autoLoad : false
+         },
+         useComponents : true,
+         scrollable : false,
+         defaultType : 'rewarditem',
+         defaultUnit : 'em',
+         margin : '0 0 0.8 0'
+      },
+      {
+         docked : 'bottom',
+         xtype : 'button',
+         margin : '0.8 0.7',
+         defaultUnit : 'em',
+         tag : 'refresh',
+         text : 'Refresh',
+         ui : 'orange-large'
+      },
+      {
+         docked : 'bottom',
+         margin : '0.8 0.7',
+         defaultUnit : 'em',
+         xtype : 'button',
+         cls : 'separator',
+         tag : 'verify',
+         text : 'Verified!',
+         ui : 'orange-large'
+      }]
    }
 });

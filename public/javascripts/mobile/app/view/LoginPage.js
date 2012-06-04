@@ -5,11 +5,8 @@ Ext.define('Genesis.view.LoginPage',
    alias : 'widget.loginpageview',
    config :
    {
-      title : '',
       cls : 'bgImage',
-      hideNavBar : true,
-      changeTitle : false,
-      scrollable : false
+      scrollable : undefined
    },
    initialize : function()
    {
@@ -35,10 +32,12 @@ Ext.define('Genesis.view.LoginPage',
          items : [
          {
             tag : 'facebook',
+            ui : 'fbBlue',
             text : 'Facebook'
          },
          {
             tag : 'createAccount',
+            ui : 'action',
             text : 'Create Account'
          },
          {
@@ -48,18 +47,6 @@ Ext.define('Genesis.view.LoginPage',
       });
       this.add(actions);
       this.callParent(arguments);
-   },
-   beforeActivate : function(activeItem, oldActiveItem)
-   {
-   },
-   beforeDeactivate : function()
-   {
-   },
-   afterActivate : function()
-   {
-   },
-   afterDeactivate : function()
-   {
    }
 });
 
@@ -70,10 +57,26 @@ Ext.define('Genesis.view.SignInPage',
    requires : ['Ext.field.Email', 'Ext.field.Password'],
    config :
    {
-      title : 'Sign In',
       changeTitle : false,
       scrollable : 'vertical',
       items : [
+      {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : 'Sign In',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'left',
+            ui : 'back',
+            tag : 'back',
+            text : 'Back'
+         }]
+      },
       {
          xtype : 'fieldset',
          title : 'Login Credentials:',
@@ -103,19 +106,6 @@ Ext.define('Genesis.view.SignInPage',
          tag : 'login',
          text : 'Sign In'
       }]
-   },
-   beforeActivate : function(activeItem, oldActiveItem)
-   {
-      activeItem.reset();
-   },
-   beforeDeactivate : function(activeItem, oldActiveItem)
-   {
-   },
-   afterActivate : function(activeItem, oldActiveItem)
-   {
-   },
-   afterDeactivate : function(activeItem, oldActiveItem)
-   {
    }
 });
 
@@ -126,10 +116,26 @@ Ext.define('Genesis.view.CreateAccountPage',
    requires : ['Ext.field.Text', 'Ext.field.Email', 'Ext.field.Password'],
    config :
    {
-      title : 'Create Account',
       changeTitle : false,
       scrollable : 'vertical',
       items : [
+      {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : 'Create Account',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'left',
+            ui : 'back',
+            tag : 'back',
+            text : 'Back'
+         }]
+      },
       {
          xtype : 'fieldset',
          title : 'Account Credentials:',
@@ -167,18 +173,5 @@ Ext.define('Genesis.view.CreateAccountPage',
          tag : 'createAccount',
          text : 'Create Account'
       }]
-   },
-   beforeActivate : function(activeItem, oldActiveItem)
-   {
-      activeItem.reset();
-   },
-   beforeDeactivate : function()
-   {
-   },
-   afterActivate : function()
-   {
-   },
-   afterDeactivate : function()
-   {
    }
 });

@@ -23,7 +23,9 @@ Ext.define('Genesis.controller.Viewport',
       refs :
       {
          view : 'viewportview',
-         shareBtn : 'viewportview button[tag=shareBtn]',
+         backButton : 'button[tag=back]',
+         closeButton : 'button[tag=close]',
+         shareBtn : 'button[tag=shareBtn]',
          emailShareBtn : 'actionsheet button[tag=emailShareBtn]',
          fbShareBtn : 'actionsheet button[tag=fbShareBtn]',
          checkInNowBtn : 'button[tag=checkInNow]' //All CheckInNow Buttons
@@ -38,9 +40,13 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'onShareEmailTap'
          },
-         'viewportview button[tag=close]' :
+         backButton :
          {
-            tap : 'popView'
+            tap : 'onBackButtonTap'
+         },
+         closeButton :
+         {
+            tap : 'onBackButtonTap'
          },
          checkInNowBtn :
          {
@@ -85,7 +91,7 @@ Ext.define('Genesis.controller.Viewport',
          'actionsheet button' :
          {
             tap : 'onButtonTap'
-         },
+         }
       },
       listeners :
       {
@@ -94,9 +100,14 @@ Ext.define('Genesis.controller.Viewport',
          {
             buffer : 0.5 * 1000,
             fn : 'onBarAnimEnd'
-         }
+         },
+         'pushview' : 'pushView',
+         'silentpopview' : 'silentPopView',
+         'popview' : 'popView',
+         'resetview' : 'resetView'
       }
    },
+   viewStack : [],
    animationFlag : 0,
    gatherCheckinInfoMsg : 'Gathering Checkin information ...',
    retrieveChallengesMsg : 'Retrieving Challenges ...',
@@ -150,36 +161,16 @@ Ext.define('Genesis.controller.Viewport',
          scope : me
       });
    },
-   onViewAnimEnd : function()
-   {
-      var me = this;
-      me.animationFlag |= 0x01;
-      if(me.animationFlag == 0x011)
-      {
-         me.animationFlag = 0;
-         me.getViewport().getNavigationBar().setMasked(false);
-         //console.debug("masked Off");
-      }
-      //console.debug("viewAnimEnd - " + me.animationFlag);
-   },
-   onBarAnimEnd : function()
-   {
-      var me = this;
-      me.animationFlag |= 0x10;
-      if(me.animationFlag == 0x011)
-      {
-         me.animationFlag = 0;
-         me.getViewport().getNavigationBar().setMasked(false);
-         //console.debug("masked Off");
-      }
-      //console.debug("barAnimEnd - " + me.animationFlag);
-   },
    // --------------------------------------------------------------------------
    // Button Handlers
    // --------------------------------------------------------------------------
    onButtonTap : function(b, e, eOpts)
    {
       Genesis.controller.ControllerBase.playSoundFile(this.sound_files['clickSound']);
+   },
+   onBackButtonTap : function(b, e, eOpts)
+   {
+      this.popView();
    },
    onShareEmailTap : function(b, e, eOpts, eInfo)
    {
@@ -263,7 +254,7 @@ Ext.define('Genesis.controller.Viewport',
    onInfoTap : function(b, e, eOpts, eInfo)
    {
       // Open Info ActiveSheet
-      //this.getApplication().getView('Viewport').pushView(vp.getInfo());
+      //this.getApplication().getController('Viewport').pushView(vp.getInfo());
    },
    onCheckinScanTap : function(b, e, eOpts, einfo)
    {
@@ -349,31 +340,125 @@ Ext.define('Genesis.controller.Viewport',
    onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
       this.fireEvent('openpage', 'Prizes', 'merchantPrizes', null);
-      console.log("Going to  Merchant Prizes Page ...");
+      console.log("Going to Merchant Prizes Page ...");
    },
    onHomeButtonTap : function(b, e, eOpts, eInfo)
    {
       var vport = this.getViewport();
-      vport.reset();
-      vport.setFlipAnimation();
+      this.resetView();
       this.fireEvent('openpage', 'MainPage', null, null);
       console.log("Going back to HomePage ...");
    },
    onTabBarTabChange : function(bar, newTab, oldTab, eOpts)
    {
-      Ext.defer(function()
-      {
-         if(newTab)
-         {
-            newTab.setActive(false);
-         }
+      /*
+       //Ext.defer(function()
+       {
+       if(newTab)
+       {
+       newTab.setActive(false);
+       }
 
-         if(oldTab)
-         {
-            oldTab.setActive(false);
-         }
-      }, 500);
+       if(oldTab)
+       {
+       oldTab.setActive(false);
+       }
+       }
+       //}, 500);
+       */
       return true;
+   },
+   // --------------------------------------------------------------------------
+   // Page Navigation Handlers
+   // --------------------------------------------------------------------------
+   resetView : function()
+   {
+      var me = this;
+      //
+      // Remove All Views
+      //
+      me.viewStack = [];
+
+   },
+   pushView : function(view, animation)
+   {
+      var me = this;
+      animation = Ext.apply(animation,
+      {
+         reverse : false
+      });
+      var lastView = (me.viewStack.length > 1) ? me.viewStack[me.viewStack.length - 2] : null;
+
+      //
+      // Refresh view
+      //
+      if((me.viewStack.length > 0) && (view == me.viewStack[me.viewStack.length - 1]['view']))
+      {
+      }
+      //
+      // Pop view
+      //
+      else
+      if(lastView && (lastView['view'] == view))
+      {
+         me.popView();
+      }
+      //
+      // Push view
+      //
+      else
+      {
+         //
+         // Remember what animation we used to render this view
+         //
+         me.viewStack.push(
+         {
+            view : view,
+            animation : animation
+         });
+         me.getViewport().animateActiveItem(view, animation);
+      }
+   },
+   silentPopView : function(num)
+   {
+      var me = this;
+      num = Math.min(me.viewStack.length, num);
+
+      if((me.viewStack.length > 0) && (num > 0))
+      {
+         while(num-- > 0)
+         {
+            var lastView = me.viewStack.pop();
+            //
+            // Viewport will automatically detect not to delete current view
+            // until is no longer the activeItem
+            //
+            me.getViewport().remove(lastView);
+         }
+      }
+   },
+   popView : function()
+   {
+      var me = this;
+
+      if(me.viewStack.length > 0)
+      {
+         var lastView = me.viewStack.pop();
+         var currView = me.viewStack[me.viewStack.length - 1];
+
+         //
+         // Recreate View if the view was destroyed for DOM memory optimization
+         //
+         if(currView['view'].isDestroyed)
+         {
+            currView['view'] = Ext.create(currView['view'].alias[0]);
+            console.debug("Recreated View [" + currView['view']._itemId + "]")
+         }
+         me.getViewport().animateActiveItem(currView['view'], Ext.apply(lastView['animation'],
+         {
+            reverse : true
+         }));
+      }
    },
    // --------------------------------------------------------------------------
    // Functions
@@ -398,6 +483,11 @@ Ext.define('Genesis.controller.Viewport',
       {
          Genesis.fb.initFb();
          me.updateRewardsTask = Ext.create('Ext.util.DelayedTask');
+      }
+
+      if(Ext.isDefined(window.device))
+      {
+         console.debug("device.platform - " + device.platform);
       }
 
       //

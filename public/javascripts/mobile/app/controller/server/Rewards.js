@@ -12,7 +12,6 @@ Ext.define('Genesis.controller.server.Rewards',
    {
       refs :
       {
-         backButton : 'viewportview button[text=Close]',
          //
          // Rewards
          //
@@ -57,6 +56,7 @@ Ext.define('Genesis.controller.server.Rewards',
    invalidPriceMsg : 'Please enter a valid price (eg. 5.00), upto $1000',
    init : function()
    {
+      this.callParent(arguments);
       console.log("Server Rewards Init");
    },
    getPricePrecision : function(num)
@@ -88,7 +88,7 @@ Ext.define('Genesis.controller.server.Rewards',
          animation.enable();
       }
    },
-   onDeactivate : function(c, newActiveItem, oldActiveItem, eOpts)
+   onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
       var priceField = me.getPrice();
@@ -252,16 +252,13 @@ Ext.define('Genesis.controller.server.Rewards',
       var page;
       var me = this;
       var viewport = me.getViewPortCntlr();
-      var successCallback = function()
-      {
-         me.pushView(page);
-      }
       switch (subFeature)
       {
          case 'rewards':
          {
             page = me.getRewards();
-            successCallback();
+            me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
+            me.pushView(page);
             break;
          }
       }

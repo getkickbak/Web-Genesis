@@ -12,7 +12,6 @@ Ext.define('Genesis.controller.client.Redemptions',
    {
       refs :
       {
-         backButton : 'viewportview button[text=Close]',
          //
          // Redemptions
          //
@@ -50,6 +49,7 @@ Ext.define('Genesis.controller.client.Redemptions',
    //checkoutTitle : 'Check Out',
    init : function()
    {
+      var me = this;
       Ext.regStore('RedemptionsStore',
       {
          model : 'Genesis.model.CustomerReward',
@@ -68,23 +68,66 @@ Ext.define('Genesis.controller.client.Redemptions',
          }],
          listeners :
          {
-            scope : this,
+            scope : me,
             'metachange' : function(store, proxy, eOpts)
             {
                this.onRedeemMetaChange(store, proxy.getReader().metaData);
             }
          }
       });
+
+      this.callParent(arguments);
       console.log("Client Redemptions Init");
    },
    // --------------------------------------------------------------------------
    // Redemptions Page
    // --------------------------------------------------------------------------
-   onActivate : function()
+   onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
+      var me = this;
+      var page = me.getRedemptions();
+
+      var store, rstore, list, scroll;
+
+      var viewport = me.getViewPortCntlr();
+      var cvenue = viewport.getCheckinInfo().venue;
+      var venue = viewport.getVenue();
+      var venueId = venue.getId();
+      var merchantId = venue.getMerchant().getId();
+
+      list = me.getRedemptionsList();
+      store = Ext.StoreMgr.get('RedemptionsStore');
+      rstore = list.getStore();
+      scroll = page.getScrollable();
+      //CustomerReward['setGetRedemptionsURL']();
+      store.clearFilter();
+      //
+      // Scroll to the Top of the Screen
+      //
+      scroll.getScroller().scrollTo(0, 0);
+
+      me.exploreMode = !cvenue || (cvenue && (cvenue.getId() != venue.getId()));
+      //
+      // Update Customer info
+      //
+      me.getRedemptionsPtsEarnPanel().getStore().setData(viewport.getCustomer());
+
+      //
+      // Show Redemptions for this venue only
+      //
+      store.filter([
+      {
+         filterFn : function(item)
+         {
+            return item.get("venue_id") == venueId;
+         }
+      }]);
+
+      rstore.setData(store.getRange());
    },
-   onDeactivate : function()
+   onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var me = this;
    },
    onItemListSelect : function(d, model, eOpts)
    {
@@ -183,65 +226,19 @@ Ext.define('Genesis.controller.client.Redemptions',
    // --------------------------------------------------------------------------
    getMainPage : function()
    {
-      return this.getRewards();
+      return this.getRedemptions();
    },
    openPage : function(subFeature)
    {
-      var page, store, rstore, list, scroll;
-
       var me = this;
-      var viewport = me.getViewPortCntlr();
-      var cvenue = viewport.getCheckinInfo().venue;
-      var venue = viewport.getVenue();
-      var venueId = venue.getId();
-      var merchantId = venue.getMerchant().getId();
-      var successCallback = function(records, operation)
-      {
-         //
-         // Scroll to the Top of the Screen
-         //
-         scroll.getScroller().scrollTo(0, 0);
 
-         me.exploreMode = !cvenue || (cvenue && (cvenue.getId() != venue.getId()));
-         switch (subFeature)
-         {
-            case 'redemptions':
-            {
-               //
-               // Update Customer info
-               //
-               me.getRedemptionsPtsEarnPanel().getStore().setData(viewport.getCustomer());
-               break
-            }
-         }
-
-         //
-         // Show Redemptions for this venue only
-         //
-         store.filter([
-         {
-            filterFn : function(item)
-            {
-               return item.get("venue_id") == venueId;
-            }
-         }]);
-
-         rstore.setData(store.getRange());
-
-         me.pushView(page);
-      }
       switch (subFeature)
       {
          case 'redemptions':
          {
-            page = me.getRedemptions();
-            list = me.getRedemptionsList();
-            store = Ext.StoreMgr.get('RedemptionsStore');
-            rstore = list.getStore();
-            scroll = page.getScrollable();
-            //CustomerReward['setGetRedemptionsURL']();
-            store.clearFilter();
-            successCallback();
+            var page = me.getRedemptions();
+            me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
+            me.pushView(page);
             break;
          }
       }

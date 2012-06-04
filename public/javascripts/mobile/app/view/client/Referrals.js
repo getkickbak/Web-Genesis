@@ -5,10 +5,24 @@ Ext.define('Genesis.view.client.Referrals',
    alias : 'widget.clientreferralsview',
    config :
    {
-      title : 'Refer A Friend',
-      changeTitle : false,
       layout : 'vbox',
       items : [
+      {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : 'Refer A Friend',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'left',
+            ui : 'back',
+            text : 'Back'
+         }]
+      },
       {
          xtype : 'container',
          tag : 'referralsMain',

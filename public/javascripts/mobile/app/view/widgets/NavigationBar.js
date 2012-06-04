@@ -14,6 +14,36 @@ Ext.define('Genesis.navigation.Bar',
          'activeitemchange' : 'onActiveItemChange'
       },
    },
+   animationCompleteHandler : function()
+   {
+      //console.debug("Done Sliding ...");
+      if(this.elementGhost)
+      {
+         this.elementGhost.destroy();
+         delete this.elementGhost;
+         /*
+          if(!title)
+          {
+          backButton.setText(null);
+          }
+          */
+         this.getCallbackFn()();
+         console.debug("Deleted NavigationBar Proxy");
+      }
+      _application.getController('Viewport').fireEvent('baranimend');
+   },
+   initialize : function()
+   {
+      var anims = [['fadeAnimation', 'Fade'], ['flipAnimation', 'Flip'], ['slideAnimation', 'Slide']];
+
+      for(var i = 0; i < anims.length; i++)
+      {
+         this[anims[i][0]] = new Ext.fx.layout.card[anims[i][1]];
+         this[anims[i][0]].on('animationend', this.animationCompleteHandler, this);
+      }
+
+      this.callParent(arguments);
+   },
    /**
     * Returns the text needed for the current title at anytime.
     * @private
@@ -31,6 +61,15 @@ Ext.define('Genesis.navigation.Bar',
       var me = this;
       var animation = view.getLayout().getAnimation();
       var titleComponent = me.titleComponent;
+
+      //
+      // Bug-fix : Add the same button back, ignore
+      // This is necessary for view Regeneration logic
+      //
+      if(item.pageRegenerationInProgress)
+      {
+         return;
+      }
 
       me.endAnimation();
 
@@ -150,59 +189,20 @@ Ext.define('Genesis.navigation.Bar',
     */
    getTbAnimationProperties : function(view)
    {
-      var me = this, element = me.renderElement, animation, layout = me.getLayout();
+      var me = this, element = me.renderElement, layout = me.getLayout();
       var vanimation = view.parent.getLayout().getAnimation();
-      if(me.slideAnimation)
-      {
-         me.slideAnimation.destroy();
-      }
-      if(me.fadeAnimation)
-      {
-         me.fadeAnimation.destroy();
-      }
-      if(me.flipAnimation)
-      {
-         me.flipAnimation.destroy();
-      }
+      var animation = me[me.getMode().toLowerCase() + 'Animation'];
 
-      switch (me.getMode())
-      {
-         case 'fade' :
-         case 'flip' :
-         case 'slide' :
-         {
-            me[me.getMode().toLowerCase() + 'Animation'] = animation = new Ext.fx.layout.card[me.getMode().capitalize()](
-            {
-               direction : vanimation.getInAnimation().getDirection(),
-               reverse : vanimation.getReverse(),
-               listeners :
-               {
-                  'animationend' : function()
-                  {
-                     //console.debug("Done Sliding ...");
-                     if(me.elementGhost)
-                     {
-                        me.elementGhost.destroy();
-                        delete me.elementGhost;
-                        /*
-                         if(!title)
-                         {
-                         backButton.setText(null);
-                         }
-                         */
-                        me.getCallbackFn()();
-                     }
-                  }
-               }
-            });
-            break;
-         }
-         default :
-            console.debug('Unkown Special Effect - [' + me.getMode() + ']');
-            animation = me.getLayout().getAnimation();
-            break;
-      }
-      animation.setReverse(false);
+      /*
+       animation.setReverse(vanimation.getReverse());
+       animation.getInAnimation().setReverse(vanimation.getInAnimation().getReverse());
+       animation.getOutAnimation().setReverse(vanimation.getOutAnimation().getReverse());
+       */
+
+      animation.setDirection(vanimation.getDirection());
+      animation.getInAnimation().setDirection(vanimation.getInAnimation().getDirection());
+      animation.getOutAnimation().setDirection(vanimation.getOutAnimation().getDirection());
+
       animation.setLayout(layout);
       layout.setAnimation(animation);
       return animation;
@@ -214,9 +214,29 @@ Ext.define('Genesis.navigation.Bar',
     */
    getTbAnimationReverseProperties : function(view)
    {
-      var rc = this.getTbAnimationProperties(view);
-      rc.setReverse(true);
-      return rc;
+      /*
+       var rc = this.getTbAnimationProperties(view);
+       rc.setReverse(true);
+       return rc;
+       */
+      var me = this, element = me.renderElement, layout = me.getLayout();
+      var vanimation = view.parent.getLayout().getAnimation();
+      var animation = me[me.getMode().toLowerCase() + 'Animation'];
+
+      var dirReverse =
+      {
+         'up' : 'down',
+         'down' : 'up',
+         'left' : 'right',
+         'right' : 'left'
+      };
+      animation.setDirection(dirReverse[vanimation.getDirection()]);
+      animation.getInAnimation().setDirection(dirReverse[vanimation.getInAnimation().getDirection()]);
+      animation.getOutAnimation().setDirection(dirReverse[vanimation.getOutAnimation().getDirection()]);
+
+      animation.setLayout(layout);
+      layout.setAnimation(animation);
+      return animation;
    },
    /**
     * Pushes a back button into the bar with no animations
@@ -478,7 +498,7 @@ Ext.define('Genesis.navigation.Bar',
       var inAnimation = animation.getInAnimation(), outAnimation = animation.getOutAnimation();
       var inElement, outElement;
 
-      if(newItem && oldItem && oldItem.isPainted())
+      if(newItem && oldItem && oldItem.isPainted() && !newItem.pageRegenerationInProgress)
       {
          inElement = newItem.renderElement;
          outElement = oldItem.renderElement;
@@ -503,12 +523,10 @@ Ext.define('Genesis.navigation.Bar',
          });
          inAnimation.setOnEnd(function()
          {
-            _application.getController('Viewport').fireEvent('baranimend');
          });
          outAnimation.setOnEnd(function()
          {
             controller.resume();
-            _application.getController('Viewport').fireEvent('baranimend');
          });
          inElement.dom.style.setProperty('visibility', 'hidden', '!important');
          if(Ext.isEmpty(view.getHideNavBar) || !view.getHideNavBar())

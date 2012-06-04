@@ -12,7 +12,6 @@ Ext.define('Genesis.controller.server.Redemptions',
    {
       refs :
       {
-         backButton : 'viewportview button[text=Close]',
          //
          // Redemptions
          //
@@ -22,7 +21,7 @@ Ext.define('Genesis.controller.server.Redemptions',
             autoCreate : true,
             xtype : 'serverredemptionsview'
          },
-         verifyButton : 'rewarditem button[tag=verify]'
+         verifyBtn : 'showprizeview[tag=showPrize] button[tag=verify]',
       },
       control :
       {
@@ -31,7 +30,7 @@ Ext.define('Genesis.controller.server.Redemptions',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
-         verifyButton :
+         verifyBtn :
          {
             tap : 'onVerifyTap'
          }
@@ -41,6 +40,7 @@ Ext.define('Genesis.controller.server.Redemptions',
    authCodeNoLongValidMsg : 'Authorization Code is no longer valid',
    init : function()
    {
+      this.callParent(arguments);
       console.log("Server Redemptions Init");
    },
    verifyQRCode : function(encrypted)
@@ -131,11 +131,12 @@ Ext.define('Genesis.controller.server.Redemptions',
    // --------------------------------------------------------------------------
    // Redemptions Page
    // --------------------------------------------------------------------------
-   onActivate : function()
+   onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
    },
-   onDeactivate : function()
+   onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var me = this;
    },
    onScannedQRcode : function(encrypted)
    {

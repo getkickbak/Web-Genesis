@@ -5,11 +5,32 @@ Ext.define('Genesis.view.CheckinExplore',
    alias : 'widget.checkinexploreview',
    config :
    {
-      title : 'Nearby Places',
-      changeTitle : false,
       layout : 'fit',
       merchant : null,
       items : [
+      {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : 'Nearby Places',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'left',
+            ui : 'back',
+            tag:'back',
+            text : 'Back'
+         },
+         {
+            align : 'left',
+            ui : 'normal',
+            tag:'close',
+            text : 'Close'
+         }]
+      },
       {
          xtype : 'list',
          store : 'CheckinExploreStore',
@@ -76,33 +97,5 @@ Ext.define('Genesis.view.CheckinExplore',
             text : 'CheckIn Now!'
          }]
       }]
-   },
-   beforeActivate : function(activeItem, oldActiveItem)
-   {
-      switch (this.mode)
-      {
-         case 'checkin':
-            this.getInitialConfig().title = 'Nearby Places';
-            break;
-         case 'explore' :
-            this.getInitialConfig().title = 'Explore Places';
-            break;
-      }
-      if(oldActiveItem)
-      {
-         var xtypes = oldActiveItem.getXTypes();
-         if(xtypes.match('merchantaccountview|checkinmerchantview'))
-         {
-            this.callParent(arguments);
-         }
-      }
-   },
-   beforeDeactivate : function(activeItem, oldActiveItem)
-   {
-      var xtypes = activeItem.getXTypes();
-      if(xtypes.match('merchantaccountview|checkinmerchantview'))
-      {
-         this.callParent(arguments);
-      }
    }
 });

@@ -5,8 +5,6 @@ Ext.define('Genesis.view.client.Redemptions',
    alias : 'widget.clientredemptionsview',
    config :
    {
-      title : 'Redemptions',
-      changeTitle : false,
       scrollable : 'vertical',
       cls : 'redemptionsMain',
       layout : 'vbox',
@@ -14,6 +12,23 @@ Ext.define('Genesis.view.client.Redemptions',
       // ------------------------------------------------------------------------
       // Redemptions Points Earned Panel
       // ------------------------------------------------------------------------
+      {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : 'Redemptions',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'left',
+            tag : 'close',
+            ui : 'normal',
+            text : 'Close'
+         }]
+      },
       {
          xtype : 'toolbar',
          ui : 'light',

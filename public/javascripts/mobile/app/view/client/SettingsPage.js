@@ -5,8 +5,6 @@ Ext.define('Genesis.view.client.SettingsPage',
    alias : 'widget.clientsettingspageview',
    config :
    {
-      title : 'Settings',
-      changeTitle : false,
       scrollable : 'vertical',
       layout :
       {
@@ -15,6 +13,23 @@ Ext.define('Genesis.view.client.SettingsPage',
          pack : 'start'
       },
       items : [
+      {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : 'Settings',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'left',
+            tag : 'back',
+            ui : 'back',
+            text : 'Back'
+         }]
+      },
       {
          xtype : 'fieldset',
          title : 'Login Profile',
@@ -53,17 +68,5 @@ Ext.define('Genesis.view.client.SettingsPage',
             value : 'About Us'
          }]
       }]
-   },
-   beforeActivate : function()
-   {
-   },
-   beforeDeactivate : function()
-   {
-   },
-   afterActivate : function()
-   {
-   },
-   afterDeactivate : function()
-   {
    }
 });

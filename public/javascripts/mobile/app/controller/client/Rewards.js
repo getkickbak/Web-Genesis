@@ -12,7 +12,7 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       refs :
       {
-         backButton : 'viewportview button[text=Close]',
+         backButton : 'clientrewardsview button[tag=close]',
          //
          // Rewards
          //
@@ -74,6 +74,7 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    init : function()
    {
+      this.callParent(arguments);
       console.log("Client Rewards Init");
    },
    // --------------------------------------------------------------------------
@@ -208,6 +209,7 @@ Ext.define('Genesis.controller.client.Rewards',
          //
          // Go back to Main Reward Screen
          //
+         me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
          me.pushView(me.getRewards());
       };
 
@@ -309,9 +311,10 @@ Ext.define('Genesis.controller.client.Rewards',
          delete me.loadCallback;
       });
    },
-   onDeactivate : function(c, newActiveItem, oldActiveItem, eOpts)
+   onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      this.getBackButton().enable();
+      var me = this;
+      //this.getBackButton().enable();
    },
    onContainerActivate : function(c, value, oldValue, eOpts)
    {

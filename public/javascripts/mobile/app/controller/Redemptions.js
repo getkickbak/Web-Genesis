@@ -12,7 +12,6 @@ Ext.define('Genesis.controller.Redemptions',
    {
       refs :
       {
-         backButton : 'viewportview button[text=Close]',
          //
          // Redemptions
          //
@@ -37,7 +36,6 @@ Ext.define('Genesis.controller.Redemptions',
          {
             select : 'onItemListSelect',
             disclose : 'onItemListDisclose'
-
          }
       }
    },
@@ -80,11 +78,12 @@ Ext.define('Genesis.controller.Redemptions',
    // --------------------------------------------------------------------------
    // Redemptions Page
    // --------------------------------------------------------------------------
-   onActivate : function()
+   onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
    },
-   onDeactivate : function()
+   onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var me = this;
    },
    onItemListSelect : function(d, model, eOpts)
    {
@@ -206,6 +205,7 @@ Ext.define('Genesis.controller.Redemptions',
       {
          case 'redemptions':
          {
+            me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
             page = me.getRedemptions();
             list = me.getRedemptionsList();
             store = Ext.StoreMgr.get('RedemptionsStore');

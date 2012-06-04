@@ -5,8 +5,6 @@ Ext.define('Genesis.view.server.SettingsPage',
    alias : 'widget.serversettingspageview',
    config :
    {
-      title : 'Settings',
-      changeTitle : false,
       scrollable : 'vertical',
       layout :
       {
@@ -15,6 +13,23 @@ Ext.define('Genesis.view.server.SettingsPage',
          pack : 'start'
       },
       items : [
+      {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : 'Settings',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'left',
+            tag : 'back',
+            ui : 'back',
+            text : 'Back'
+         }]
+      },
       {
          xtype : 'fieldset',
          title : 'About Kickbak',

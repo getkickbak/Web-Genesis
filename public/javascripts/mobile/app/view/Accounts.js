@@ -5,11 +5,26 @@ Ext.define('Genesis.view.Accounts',
    alias : 'widget.accountsview',
    config :
    {
-      title : ' ',
-      changeTitle : false,
       cls : 'accountsMain',
       layout : 'fit',
       items : [
+      {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : ' ',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'left',
+            tag:'back',
+            ui : 'back',
+            text : 'Back'
+         }]
+      },
       {
          xtype : 'list',
          store : 'CustomerStore',
@@ -57,49 +72,5 @@ Ext.define('Genesis.view.Accounts',
          }),
          onItemDisclosure : Ext.emptyFn
       }]
-   },
-   beforeActivate : function(activeItem, oldActiveItem)
-   {
-      var mode = _application.getController('Accounts').getMode();
-      switch(mode)
-      {
-         case 'profile' :
-         {
-            activeItem.getInitialConfig().title = 'Accounts';
-            break;
-         }
-         case 'transfer' :
-         {
-            activeItem.getInitialConfig().title = ' ';
-            break;
-         }
-      }
-   },
-   beforeDeactivate : function(activeItem, oldActiveItem)
-   {
-      var viewport = Ext.ComponentQuery.query('viewportview')[0];
-      viewport.getNavigationBar().removeCls('kbTitle');
-   },
-   afterActivate : function(activeItem, oldActiveItem)
-   {
-      var mode = _application.getController('Accounts').getMode();
-      switch(mode)
-      {
-         case 'profile' :
-         {
-            break;
-         }
-         case 'emailtransfer' :
-         case 'transfer' :
-         {
-            activeItem.getInitialConfig().title = ' ';
-            var viewport = Ext.ComponentQuery.query('viewportview')[0];
-            viewport.getNavigationBar().addCls('kbTitle');
-            break;
-         }
-      }
-   },
-   afterDeactivate : function(activeItem, oldActiveItem)
-   {
    }
 });

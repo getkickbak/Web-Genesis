@@ -88,7 +88,8 @@ Ext.define('Genesis.controller.client.Challenges',
          //
          referralsPage :
          {
-            activate : 'onReferralsActivate'
+            activate : 'onReferralsActivate',
+            deactivate : 'onReferralsDeactivate'
          },
          'clientreferralsview container[tag=referralsMain] list' :
          {
@@ -101,10 +102,7 @@ Ext.define('Genesis.controller.client.Challenges',
       },
       listeners :
       {
-         'scannedqrcode' : 'onScannedQRcode',
-         'locationupdate' : 'onLocationUpdate',
          'fbphotouploadcomplete' : 'onFbPhotoUploadComplete',
-         'openpage' : 'onOpenPage',
          'challengecomplete' : 'onChallengeComplete'
       }
    },
@@ -214,6 +212,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   //
                   // Goto PhotoUpload Page
                   //
+                  me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
                   me.pushView(me.getUploadPhotosPage());
                }
                delete me.imageURI;
@@ -695,6 +694,7 @@ Ext.define('Genesis.controller.client.Challenges',
                //
                // Show Referrals Page
                //
+               me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
                me.pushView(me.getReferralsPage());
                break;
             }
@@ -726,10 +726,12 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
+
       var me = this;
-      var record = this.getViewPortCntlr().getVenue();
+
+      var record = me.getViewPortCntlr().getVenue();
       var venueId = record.getId();
-      var carousel = this.getChallengePage().query('carousel')[0];
+      var carousel = me.getChallengePage().query('carousel')[0];
       var items = record.challenges().getRange();
 
       if((carousel.getInnerItems().length > 0) && //
@@ -744,30 +746,26 @@ Ext.define('Genesis.controller.client.Challenges',
       else
       {
          carousel.removeAll(true);
-         // Defer to update Remove Changes before re-adding them back in
-         Ext.defer(function()
+         for(var i = 0; i < Math.ceil(items.length / 6); i++)
          {
-            for(var i = 0; i < Math.ceil(items.length / 6); i++)
+            carousel.add(
             {
-               carousel.add(
+               xtype : 'dataview',
+               cls : 'challengeMenuSelections',
+               useComponents : true,
+               defaultType : 'challengemenuitem',
+               scrollable : undefined,
+               store :
                {
-                  xtype : 'dataview',
-                  cls : 'challengeMenuSelections',
-                  useComponents : true,
-                  defaultType : 'challengemenuitem',
-                  scrollable : undefined,
-                  store :
-                  {
-                     model : 'Genesis.model.Challenge',
-                     data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
-                  }
-               });
-            }
-            if(carousel.getInnerItems().length > 0)
-            {
-               carousel.setActiveItem(0);
-            }
-         }, 1, me);
+                  model : 'Genesis.model.Challenge',
+                  data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
+               }
+            });
+         }
+         if(carousel.getInnerItems().length > 0)
+         {
+            carousel.setActiveItem(0);
+         }
          console.log("ChallengePage Icons Refreshed.");
       }
 
@@ -783,8 +781,9 @@ Ext.define('Genesis.controller.client.Challenges',
       me.getChallengeContainer().hide();
       delete me.selectedItem;
    },
-   onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
+   onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var me = this;
    },
    completeChallenge : function(qrcode, position, eOpts, eInfo)
    {
@@ -845,6 +844,10 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       var container = me.getReferralsContainer();
       container.setActiveItem(0);
+   },
+   onReferralsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
+   {
+      var me = this;
    },
    onCompleteReferralsChallenge : function(b, e, eOpts)
    {
@@ -958,14 +961,16 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       var bg = me.getUploadPhotosBackground();
 
+      activeItem.query('textareafield')[0].reset();
       me.getPostBtn().show();
       bg.setStyle(
       {
          'background-image' : 'url(' + me.metaData['photo_url'] + ')'
       });
    },
-   onUploadPhotosDeactivate : function(activeItem, c, oldActiveItem, eOpts)
+   onUploadPhotosDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var me = this;
       this.getPostBtn().hide();
    },
    onUploadPhotosTap : function(b, e, eOpts, eInfo)
@@ -1088,6 +1093,7 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    openMainPage : function()
    {
+      this.setAnimationMode(this.self.superclass.self.animationMode['slideUp']);
       this.pushView(this.getMainPage());
       console.log("Client ChallengePage Opened");
    },

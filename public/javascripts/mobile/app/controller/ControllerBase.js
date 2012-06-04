@@ -4,12 +4,7 @@ Ext.define('Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store', 'Ext.util.Geolocation'],
    config :
    {
-      listeners :
-      {
-         'scannedqrcode' : 'onScannedQRcode',
-         'locationupdate' : 'onLocationUpdate',
-         'openpage' : 'onOpenPage'
-      }
+      animationMode : null
    },
    checkinMsg : 'Checking in ...',
    loadingScannerMsg : 'Loading Scanner ...',
@@ -47,6 +42,27 @@ Ext.define('Genesis.controller.ControllerBase',
    uploadServerMsg : 'Uploading to server ...',
    statics :
    {
+      animationMode :
+      {
+         'slide' :
+         {
+            type : 'slide',
+            direction : 'left'
+         },
+         'slideUp' :
+         {
+            type : 'slide',
+            direction : 'up'
+         },
+         'flip' :
+         {
+            type : 'flip'
+         },
+         'fade' :
+         {
+            type : 'fade'
+         }
+      },
       playSoundFile : function(sound_file, successCallback, failCallback)
       {
          if(Genesis.constants.isNative())
@@ -159,6 +175,29 @@ Ext.define('Genesis.controller.ControllerBase',
    init : function()
    {
       this.callParent(arguments);
+
+      this.on(
+      {
+         scope : this,
+         'scannedqrcode' : this.onScannedQRcode,
+         'locationupdate' : this.onLocationUpdate,
+         'openpage' : this.onOpenPage
+      });
+
+      //
+      // Forward all locally generated page navigation events to viewport
+      //
+      this.setAnimationMode(this.self.superclass.self.animationMode['slide']);
+
+      //
+      // Prevent Recursion
+      //
+      var viewport = this.getViewPortCntlr();
+      if(viewport != this)
+      {
+         viewport.relayEvents(this, ['pushview', 'popview']);
+         viewport.on('animationCompleted', this.onAnimationCompleted, this);
+      }
    },
    getViewPortCntlr : function()
    {
@@ -168,6 +207,27 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return this.getViewPortCntlr().getView();
    },
+   getMainPage : Ext.emptyFn,
+   openMainPage : Ext.emptyFn,
+   openPage : Ext.emptyFn,
+   goToMain : function()
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      viewport.setLoggedIn(true);
+      me.resetView();
+      me.fireEvent('openpage', 'MainPage', 'main', null);
+      console.log("LoggedIn, Going back to Main Page ...");
+   },
+   isOpenAllowed : function()
+   {
+      return "Cannot Open Folder";
+   },
+   // --------------------------------------------------------------------------
+   // Event Handlers
+   // --------------------------------------------------------------------------
+   onScannedQRcode : Ext.emptyFn,
+   onLocationUpdate : Ext.emptyFn,
    onOpenPage : function(feature, subFeature, cb, eOpts, eInfo)
    {
       if((appName == 'GetKickBak') && !Ext.device.Connection.isOnline() && (subFeature != 'login'))
@@ -190,6 +250,9 @@ Ext.define('Genesis.controller.ControllerBase',
          scope : controller
       });
    },
+   // --------------------------------------------------------------------------
+   // Utility Functions
+   // --------------------------------------------------------------------------
    updateRewards : function(metaData)
    {
       var me = this;
@@ -256,7 +319,6 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          console.debug("updateRewards Exception - " + e);
       }
-      //
    },
    checkReferralPrompt : function(cbOnSuccess, cbOnFail)
    {
@@ -291,44 +353,28 @@ Ext.define('Genesis.controller.ControllerBase',
          cbOnFail();
       }
    },
+   // --------------------------------------------------------------------------
+   // Page Navigation Handlers
+   // --------------------------------------------------------------------------
+   resetView : function(view)
+   {
+      this.fireEvent('resetview');
+   },
    pushView : function(view)
    {
-      var viewport = this.getViewport();
-      var app = this.getApplication();
-      var stack = viewport.stack;
-      var lastView = (stack.length > 1) ? stack[stack.length - 2] : null;
-      if(lastView && lastView == view)
-      {
-         this.popView();
-      }
-      else
-      {
-         viewport.push(view);
-      }
+      this.fireEvent('pushview', view, this.getAnimationMode());
    },
-   popView : function(b, e, eOpts, eInfo)
+   silentPopView : function(num)
    {
-      var viewport = this.getViewport();
-      var app = this.getApplication();
-
-      viewport.pop();
+      this.fireEvent('silentpopview', num);
    },
-   getMainPage : Ext.emptyFn,
-   openMainPage : Ext.emptyFn,
-   openPage : Ext.emptyFn,
-   goToMain : function()
+   popView : function()
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-      viewport.setLoggedIn(true);
-      me.getViewport().reset();
-      me.fireEvent('openpage', 'MainPage', 'main', null);
-      console.log("LoggedIn, Going back to Main Page ...");
+      this.fireEvent('popview');
    },
-   isOpenAllowed : function()
-   {
-      return "Cannot Open Folder";
-   },
+   // --------------------------------------------------------------------------
+   // Event Handlers
+   // --------------------------------------------------------------------------
    getGeoLocation : function(i)
    {
       var me = this;
@@ -483,6 +529,13 @@ Ext.define('Genesis.controller.ControllerBase',
                   {
                      qrcode = null;
                      console.debug("QR Code Default = Unsupported Code");
+                     //
+                     // Simulator, we must pump in random values
+                     //
+                     if(device.platform.match(/simulator/i))
+                     {
+                        qrcode = Math.random().toFixed(16);
+                     }
                   }
                   else
                   if(qrcode.cancelled)
@@ -492,8 +545,8 @@ Ext.define('Genesis.controller.ControllerBase',
                   else
                   {
                      qrcode = qrcode.text;
-                     console.debug("QR Code Default = " + ((qrcode) ? qrcode : "NONE"));
                   }
+                  console.debug("QR Code Default = " + ((qrcode) ? qrcode : "NONE"));
                   break;
                }
             }
@@ -534,6 +587,5 @@ Ext.define('Genesis.controller.ControllerBase',
 
          window.plugins.qrCodeReader.getCode(callback, fail);
       }
-
    }
 });

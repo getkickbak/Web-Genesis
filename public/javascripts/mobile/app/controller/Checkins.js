@@ -10,6 +10,8 @@ Ext.define('Genesis.controller.Checkins',
    {
       refs :
       {
+         backBtn : 'checkinexploreview button[tag=back]',
+         closeBtn : 'checkinexploreview button[tag=close]',
          explore :
          {
             selector : 'checkinexploreview',
@@ -24,7 +26,7 @@ Ext.define('Genesis.controller.Checkins',
          //
          // Checkin Explore
          //
-         'checkinexploreview' :
+         explore :
          {
             activate : 'onExploreActivate',
             deactivate : 'onExploreDeactivate'
@@ -46,7 +48,7 @@ Ext.define('Genesis.controller.Checkins',
    {
       var me = this;
       //
-      // Store storing the Venue checked-in / Explore
+      // Store storing the Venue object for Checked-In / Explore views
       //
       Ext.regStore('CheckinExploreStore',
       {
@@ -67,21 +69,7 @@ Ext.define('Genesis.controller.Checkins',
          }
 
       });
-      //
-      // Store used for storing the current Customer Info, temporary basis
-      //
-      Ext.regStore('CheckinStore',
-      {
-         model : 'Genesis.model.Customer',
-         autoLoad : false,
-         listeners :
-         {
-            'metachange' : function(store, proxy, eOpts)
-            {
-            }
-         }
-      });
-
+      this.callParent(arguments);
       console.log("Checkins Init");
    },
    // --------------------------------------------------------------------------
@@ -95,7 +83,6 @@ Ext.define('Genesis.controller.Checkins',
       var position = me.callback['position'];
       var callback = me.callback['callback'];
       var viewport = me.getViewPortCntlr();
-      var cstore = Ext.StoreMgr.get('CheckinStore');
       var venueId = (viewport.getVenue() ? viewport.getVenue().getId() : null);
 
       // Load Info into database
@@ -116,19 +103,19 @@ Ext.define('Genesis.controller.Checkins',
 
       console.debug("CheckIn - auth_code:'" + qrcode + "' venue_id:'" + venueId + "'");
 
-      cstore.load(
+      Customer.load(venueId,
       {
          jsonData :
          {
          },
          params : params,
          scope : me,
-         callback : function(records, operation)
+         callback : function(record, operation)
          {
-            var metaData = cstore.getProxy().getReader().metaData;
+            var metaData = Customer.getProxy().getReader().metaData;
             if(operation.wasSuccessful() && metaData)
             {
-               me.onCheckinHandler(mode, metaData, cstore, venueId, records, operation, callback);
+               me.onCheckinHandler(mode, metaData, venueId, record, operation, callback);
             }
             else
             if(!operation.wasSuccessful() && !metaData)
@@ -246,7 +233,7 @@ Ext.define('Genesis.controller.Checkins',
       // No scanning required
       this.onCheckInScanNow(b, e, eOpts, einfo, 'explore', 'setVenueExploreUrl', 'noscan', callback);
    },
-   onCheckinHandler : function(mode, metaData, cstore, venueId, records, operation, callback)
+   onCheckinHandler : function(mode, metaData, venueId, record, operation, callback)
    {
       var me = this;
       var app = me.getApplication();
@@ -255,62 +242,51 @@ Ext.define('Genesis.controller.Checkins',
       var mcntlr = app.getController('Merchants');
       var viewport = me.getViewPortCntlr();
       var vport = me.getViewport();
-      var showFeed = false;
-      var customer;
+      var showFeed = false, checkinMode = false;
 
-      var record, customerId, customer, venue, points;
-      for(var i = 0; i < records.length; i++)
+      var customerId, customer, venue, points;
+      customerId = record.getId();
+      points = record.get('points');
+
+      // Find venueId from metaData or from DataStore
+      var new_venueId = metaData['venue_id'] || cestore.first().getId();
+      // Find venue from DataStore or current venue info
+      venue = cestore.getById(new_venueId) || viewport.getVenue();
+
+      // Find Matching Venue or pick the first one returned if no venueId is set
+      console.debug("CheckIn - new_venueId:'" + new_venueId + "' venue_id:'" + venueId + "'");
+      if((new_venueId == venueId) || (venueId == null))
       {
-         record = records[i];
-         customerId = record.getId();
-         points = record.get('points');
-
-         // Find venueId from metaData or from DataStore
-         var new_venueId = metaData['venue_id'] || cestore.first().getId();
-         // Find venue from DataStore or current venue info
-         venue = cestore.getById(new_venueId) || viewport.getVenue();
-
-         // Find Matching Venue or pick the first one returned if no venueId is set
-         console.debug("CheckIn - new_venueId:'" + new_venueId + "' venue_id:'" + venueId + "'");
-         if((new_venueId == venueId) || (venueId == null))
+         checkinMode = (mode == 'checkin');
+         //
+         // Update our Database with the latest value from Server
+         //
+         if(Customer.isValidCustomer(customerId))
          {
-            //
-            // Update our Database with the latest value from Server
-            //
-            if(Customer.isValidCustomer(customerId))
+            customer = custore.getById(customerId);
+            if(customer != null)
             {
-               customer = custore.getById(customerId);
-               if(customer != null)
-               {
-                  Customer.updateCustomer(customer, record);
-                  //customer = custore.add(record)[0];
-                  console.debug("Customer ID=[" + customer.getId() + "] is in CustAcct Database");
-                  showFeed = true;
-               }
-               //
-               // First time Customer ... add it to CustomerStore
-               //
-               else
-               {
-                  customer = custore.add(record)[0];
-                  console.debug("Customer ID=[" + customer.getId() + "] is ADDED to CustAcct Database");
-               }
+               Customer.updateCustomer(customer, record);
+               //customer = custore.add(record)[0];
+               console.debug("Customer ID=[" + customer.getId() + "] is in CustAcct Database");
+               showFeed = true;
             }
+            //
+            // First time Customer ... add it to CustomerStore
+            //
             else
             {
-               console.debug("Exploring Venue ...");
+               customer = custore.add(record)[0];
+               console.debug("Customer ID=[" + customer.getId() + "] is ADDED to CustAcct Database");
             }
-            console.debug("CheckIn - points:'" + points + "'");
-
-            me.setupCheckinInfo(mode, venue, customer || record, metaData);
-            break;
          }
-      }
-      // Cannot find match?
-      if(i > records.length)
-      {
-         console.debug("CheckIn - No Merchants Found!");
-         return;
+         else
+         {
+            console.debug("Exploring Venue ...");
+         }
+         console.debug("CheckIn - points:'" + points + "'");
+
+         me.setupCheckinInfo(mode, venue, customer || record, metaData);
       }
 
       console.debug("CheckIn - Opening Merchant Account Page ...");
@@ -318,9 +294,7 @@ Ext.define('Genesis.controller.Checkins',
       //
       // Cleans up Back Buttons on Check-in
       //
-      vport.silentPop(1);
-      vport.reset();
-      vport.setFlipAnimation();
+      me.resetView();
       Ext.Viewport.setMasked(false);
 
       app.dispatch(
@@ -336,21 +310,24 @@ Ext.define('Genesis.controller.Checkins',
          callback();
       }
 
-      // Let the screen complete the rendering process
-      Ext.defer(me.checkReferralPrompt, 0.1 * 1000, me, [
-      function()
+      if(checkinMode)
       {
-         //
-         // We are in Merchant Account screen,
-         // there's nothing to do after Successful Referral Challenge
-         //
-         //me.popView();
-         Ext.device.Notification.show(
+         // Let the screen complete the rendering process
+         Ext.defer(me.checkReferralPrompt, 0.1 * 1000, me, [
+         function()
          {
-            title : 'Successful Referral!',
-            message : me.recvReferralb4VisitMsg(customer.getMerchant().get('name'))
-         });
-      }, null]);
+            //
+            // We are in Merchant Account screen,
+            // there's nothing to do after Successful Referral Challenge
+            //
+            //me.popView();
+            Ext.device.Notification.show(
+            {
+               title : 'Successful Referral!',
+               message : me.recvReferralb4VisitMsg(customer.getMerchant().get('name'))
+            });
+         }, null]);
+      }
       console.debug("CheckIn - Done");
    },
    // --------------------------------------------------------------------------
@@ -410,26 +387,42 @@ Ext.define('Genesis.controller.Checkins',
          me.getGeoLocation();
       }
    },
-   onExploreActivate : function()
+   onExploreActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
+
       var viewport = me.getViewPortCntlr();
       var checkinContainer = me.getCheckInNowBar();
+      var tbbar = activeItem.query('titlebar')[0];
 
-      me.onExploreLoad();
+      switch (me.animMode)
+      {
+         case 'slide' :
+            me.getBackBtn().show();
+            me.getCloseBtn().hide();
+            break;
+         case 'slideUp' :
+            me.getBackBtn().hide();
+            me.getCloseBtn().show();
+            break;
+      }
       switch (me.mode)
       {
          case 'checkin':
+            tbbar.setTitle('Nearby Places');
             checkinContainer.setDisabled(true);
             checkinContainer.show();
             break;
          case 'explore' :
+            tbbar.setTitle('Explore Places');
             checkinContainer.hide();
             break;
       }
+      me.onExploreLoad();
    },
-   onExploreDeactivate : function()
+   onExploreDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var me = this;
    },
    onExploreSelect : function(d, model, eOpts)
    {
@@ -461,15 +454,18 @@ Ext.define('Genesis.controller.Checkins',
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
-   openPage : function(subFeature)
+   openPage : function(subFeature, mode)
    {
-      var page = this.getMainPage();
+      var me = this;
+      var page = me.getMainPage();
       // Hack to fix bug in Sencha Touch API
       var plugin = page.query('list')[0].getPlugins()[0];
       plugin.refreshFn = plugin.getRefreshFn();
 
-      this.mode = page.mode = subFeature;
-      this.pushView(page);
+      me.mode = page.mode = subFeature;
+      me.animMode = mode || 'slide';
+      me.setAnimationMode(me.self.superclass.self.animationMode[me.animMode]);
+      me.pushView(page);
    },
    getMainPage : function()
    {

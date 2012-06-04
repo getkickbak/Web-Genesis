@@ -12,7 +12,6 @@ Ext.define('Genesis.controller.server.Challenges',
    {
       refs :
       {
-         backButton : 'viewportview button[text=Close]',
          //
          // Challenges
          //
@@ -22,7 +21,7 @@ Ext.define('Genesis.controller.server.Challenges',
             autoCreate : true,
             xtype : 'serverchallengesview'
          },
-         refreshButton : 'rewarditem button[tag=refresh]',
+         refreshBtn : 'showprizeview[tag=showPrize] button[tag=refresh]',
       },
       control :
       {
@@ -31,7 +30,7 @@ Ext.define('Genesis.controller.server.Challenges',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
-         refreshButton :
+         refreshBtn :
          {
             tap : 'onRefreshTap'
          }
@@ -39,8 +38,10 @@ Ext.define('Genesis.controller.server.Challenges',
    },
    invalidAuthCodeMsg : 'Authorization Code is Invalid',
    genAuthCodeMsg : 'Proceed to generate Authorization Code',
+   refreshAuthCodeMsg : 'Refresing Authorization Code ...',
    init : function()
    {
+      this.callParent(arguments);
       console.log("Server Challenges Init");
    },
    generateQRCode : function()
@@ -53,27 +54,41 @@ Ext.define('Genesis.controller.server.Challenges',
    // --------------------------------------------------------------------------
    // Server Challenges Page
    // --------------------------------------------------------------------------
-   onActivate : function()
+   onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
    },
-   onDeactivate : function()
+   onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var me = this;
    },
    onRefreshTap : function(b, e, eOpts)
    {
       var me = this;
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.refreshAuthCodeMsg
+      });
       var qrcode = me.generateQRCode();
       var app = me.getApplication();
       var controller = app.getController('Prizes');
       if(qrcode[0])
       {
-         app.dispatch(
+         Ext.defer(function()
          {
-            action : 'onRefreshQRCode',
-            args : [qrcode],
-            controller : controller,
-            scope : controller
-         });
+            app.dispatch(
+            {
+               action : 'onRefreshQRCode',
+               args : [qrcode],
+               controller : controller,
+               scope : controller
+            });
+            Ext.Viewport.setMasked(false);
+         }, 1 * 1000, me);
+      }
+      else
+      {
+         Ext.Viewport.setMasked(false);
       }
    },
    onGenerateQRCode : function()

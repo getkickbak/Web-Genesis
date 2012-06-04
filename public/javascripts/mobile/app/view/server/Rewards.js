@@ -5,15 +5,29 @@ Ext.define('Genesis.view.server.Rewards',
    alias : 'widget.serverrewardsview',
    config :
    {
-      title : ' ',
-      changeTitle : false,
-      layout : 'vbox',
+      layout : 'fit',
       items : [
+      {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop kbTitle',
+         title : ' ',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'left',
+            tag : 'back',
+            ui : 'back',
+            text : 'Back'
+         }]
+      },
       {
          xtype : 'container',
          tag : 'rewards',
          cls : 'rewardsServerMain',
-         flex : 1,
          layout :
          {
             type : 'card',
@@ -26,10 +40,6 @@ Ext.define('Genesis.view.server.Rewards',
             }
          },
          activeItem : 0,
-         defaults :
-         {
-            layout : 'fit'
-         },
          items : [
          // -------------------------------------------------------------------
          // Reward Calculator
@@ -38,6 +48,7 @@ Ext.define('Genesis.view.server.Rewards',
             xtype : 'container',
             tag : 'rewardsMainCalculator',
             cls : 'rewardsMainCalculator',
+            layout : 'fit',
             items : [
             {
                docked : 'top',
@@ -149,6 +160,7 @@ Ext.define('Genesis.view.server.Rewards',
             xtype : 'container',
             tag : 'qrcodeContainer',
             cls : 'qrcodeContainer',
+            layout : 'fit',
             items : [
             {
                docked : 'top',
@@ -180,18 +192,6 @@ Ext.define('Genesis.view.server.Rewards',
             }]
          }]
       }]
-   },
-   beforeActivate : function(activeItem, oldActiveItem)
-   {
-      var viewport = Ext.ComponentQuery.query('viewportview')[0];
-      viewport.getNavigationBar().addCls('kbTitle');
-      this.callParent(arguments);
-   },
-   beforeDeactivate : function(activeItem, oldActiveItem)
-   {
-      var viewport = Ext.ComponentQuery.query('viewportview')[0];
-      viewport.getNavigationBar().removeCls('kbTitle');
-      this.callParent(arguments);
    },
    statics :
    {

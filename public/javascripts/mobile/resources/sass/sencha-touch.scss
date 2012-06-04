@@ -840,6 +840,11 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
 .x-transparent {
    background : transparent !important;
 }
+
+.x-layout-card-item {
+   background : transparent;
+}
+
 //------------------------------------------------------------------------------
 // Form CSS
 //------------------------------------------------------------------------------
@@ -1115,14 +1120,11 @@ $tip-width: $mask-width - $mask-offset + $shadow-width;
    background-repeat : repeat;
    background-size : contain;
 }
-.x-navigationview .x-navigationview-inner > .x-layout-card-item {
-   background-color:transparent;
+.bgImage {
+   @include custom-radial-gradient($BlueStart 50%, $BlueEnd 80%, center center, url($theme-path-rel + '/images/' + $gtheme-name + '/logohomescreen3.png'));
+   background-position : center center;
+   background-size : 100%, 100%;
    background-repeat : no-repeat;
-   &.bgImage {
-      @include custom-radial-gradient($BlueStart 50%, $BlueEnd 80%, center center, url($theme-path-rel + '/images/' + $gtheme-name + '/logohomescreen3.png'));
-      background-position : center center;
-      background-size : 100%, 100%;
-   }
 }
 
 //------------------------------------------------------------------------------

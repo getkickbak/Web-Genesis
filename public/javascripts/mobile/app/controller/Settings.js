@@ -78,16 +78,18 @@ Ext.define('Genesis.controller.Settings',
          }
       });
    },
-   getMainPage : function()
-   {
-      return this.getSettingsPage();
-   },
-   openMainPage : function()
-   {
-      var page = this.getMainPage();
-      this.pushView(page);
-      console.log("SettingsPage Opened");
-   },
+   /*
+    getMainPage : function()
+    {
+    return this.getSettingsPage();
+    },
+    openMainPage : function()
+    {
+    var page = this.getMainPage();
+    this.pushView(page);
+    console.log("SettingsPage Opened");
+    },
+    */
    onTermsTap : function(b, e)
    {
       Ext.device.Notification.show(
@@ -155,7 +157,7 @@ Ext.define('Genesis.controller.Settings',
    // --------------------------------------------------------------------------
    openPage : function(subFeature)
    {
-      var page;
+      var me = this, page;
       switch(subFeature)
       {
          case 'client' :
@@ -169,7 +171,8 @@ Ext.define('Genesis.controller.Settings',
             break;
          }
       }
-      this.pushView(page);
+      me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
+      me.pushView(page);
    },
    isOpenAllowed : function()
    {

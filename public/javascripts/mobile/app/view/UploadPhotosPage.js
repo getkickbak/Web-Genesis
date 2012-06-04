@@ -12,6 +12,22 @@ Ext.define('Genesis.view.UploadPhotosPage',
       layout : 'fit',
       items : [
       {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : 'Navigation',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'right',
+            tag : 'post',
+            text : 'Post'
+         }]
+      },
+      {
          xtype : 'component',
          tag : 'background',
          cls : 'background'
@@ -35,18 +51,5 @@ Ext.define('Genesis.view.UploadPhotosPage',
          placeHolder : 'Please enter your photo description',
          clearIcon : false
       }]
-   },
-   beforeActivate : function(activeItem, oldActiveItem)
-   {
-      activeItem.query('textareafield')[0].reset();
-   },
-   beforeDeactivate : function(activeItem, oldActiveItem)
-   {
-   },
-   afterActivate : function(activeItem, oldActiveItem)
-   {
-   },
-   afterDeactivate : function(activeItem, oldActiveItem)
-   {
    }
 });

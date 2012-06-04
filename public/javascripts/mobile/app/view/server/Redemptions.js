@@ -6,7 +6,6 @@ Ext.define('Genesis.view.server.Redemptions',
    config :
    {
       title : 'Redemptions',
-      changeTitle : false,
       scrollable : 'vertical',
       cls : 'redemptionsMain',
       layout : 'vbox',

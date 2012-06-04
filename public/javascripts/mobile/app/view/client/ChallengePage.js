@@ -8,8 +8,25 @@ Ext.define('Genesis.view.client.ChallengePage',
       title : 'Challenges',
       changeTitle : false,
       layout : 'fit',
-      scrollable : false,
+      scrollable : undefined,
       items : [
+      {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : 'Challenges',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'left',
+            ui : 'normal',
+            tag:'close',
+            text : 'Close'
+         }]
+      },
       {
          xtype : 'carousel',
          cls : 'challengePageItem shadows',

@@ -5,8 +5,6 @@ Ext.define('Genesis.view.MerchantDetails',
    alias : 'widget.merchantdetailsview',
    config :
    {
-      title : 'Venue Name',
-      changeTitle : true,
       cls : 'merchantDetails',
       layout :
       {
@@ -19,6 +17,80 @@ Ext.define('Genesis.view.MerchantDetails',
          cls : 'separator'
       },
       items : [
+      {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : 'Venue Name',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'left',
+            tag:'back',
+            ui : 'back',
+            text : 'Back'
+         },
+         {
+            align : 'right',
+            iconCls : 'share',
+            tag : 'shareBtn',
+            handler : function()
+            {
+               if(!this.actions)
+               {
+                  this.actions = Ext.create('Ext.ActionSheet',
+                  {
+                     hideOnMaskTap : false,
+                     defaults :
+                     {
+                        defaultUnit : 'em',
+                        margin : '0 0 0.5 0',
+                        xtype : 'button'
+                     },
+                     items : [
+                     {
+                        text : 'Refer-A-Friend',
+                        ui : 'action',
+                        //iconCls : 'mail',
+                        tag : 'emailShareBtn',
+                        scope : this,
+                        handler : function()
+                        {
+                           this.actions.hide();
+                        }
+                     },
+                     {
+                        text : 'Post on Facebook',
+                        tag : 'fbShareBtn',
+                        ui : 'fbBlue',
+                        //iconCls : 'facebook',
+                        scope : this,
+                        handler : function()
+                        {
+                           this.actions.hide();
+                        }
+                     },
+                     {
+                        margin : '0.5 0 0 0',
+                        text : 'Cancel',
+                        iconMaskCls : 'dummymask',
+                        ui : 'cancel',
+                        scope : this,
+                        handler : function()
+                        {
+                           this.actions.hide();
+                        }
+                     }]
+                  });
+                  Ext.Viewport.add(this.actions);
+               }
+               this.actions.show();
+            }
+         }]
+      },
       {
          xtype : 'dataview',
          cls : 'separator',
@@ -57,37 +129,25 @@ Ext.define('Genesis.view.MerchantDetails',
             {
                cntlr = _application.getController('Merchants');
                var size = map.innerElement.getSize();
-               map.setSize(size.width-(1*15), size.height-(1*12));
+               map.setSize(size.width - (1 * 15), size.height - (1 * 12));
                var queryString = Ext.Object.toQueryString(Ext.apply(
                {
                   zoom : 15,
                   scale : window.devicePixelRatio,
                   maptype : 'roadmap',
                   sensor : false,
-                  size : (size.width-(1*15)) + 'x' + (size.height-(1*12))
+                  size : (size.width - (1 * 15)) + 'x' + (size.height - (1 * 12))
                }, cntlr.markerOptions));
                var string = Ext.String.urlAppend(cntlr.self.googleMapStaticUrl, queryString);
                map.setData(
                {
-                  width : size.width-(1*15),
-                  height : size.height-(1*12),
+                  width : size.width - (1 * 15),
+                  height : size.height - (1 * 12),
                   photo : string
                });
             }
          },
          tpl : Ext.create('Ext.XTemplate', '<img height="{height}" width="{width}" src="{photo}"/>')
       }]
-   },
-   beforeActivate : function()
-   {
-   },
-   beforeDeactivate : function()
-   {
-   },
-   afterActivate : function()
-   {
-   },
-   afterDeactivate : function()
-   {
    }
 });

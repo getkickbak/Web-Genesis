@@ -12,7 +12,7 @@ Ext.define('Genesis.controller.Rewards',
    {
       refs :
       {
-         backButton : 'viewportview button[text=Close]',
+         backButton : 'button[tag=close]',
          //
          // Rewards
          //
@@ -307,8 +307,9 @@ Ext.define('Genesis.controller.Rewards',
 
       this.showNavBar();
    },
-   onDeactivate : function(c, newActiveItem, oldActiveItem, eOpts)
+   onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var me = this;
    },
    onToggleBtnTap : function(b, e, eOpts, eInfo)
    {
@@ -581,6 +582,7 @@ Ext.define('Genesis.controller.Rewards',
       {
          case 'rewards':
          {
+            me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
             page = me.getRewards();
             list = me.getRewardsList();
             store = Ext.StoreMgr.get('RewardsStore');

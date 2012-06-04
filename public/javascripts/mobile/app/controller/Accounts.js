@@ -15,6 +15,7 @@ Ext.define('Genesis.controller.Accounts',
          //
          // Account Profiles
          //
+         aBB : 'accountsview button[tag=back]',
          accounts :
          {
             selector : 'accountsview',
@@ -25,6 +26,9 @@ Ext.define('Genesis.controller.Accounts',
          //
          // Account Transfers
          //
+         atrCloseBB : 'clientaccountstransferview button[tag=close]',
+         atrCalcCloseBB : 'clientaccountstransferview button[tag=calcClose]',
+         atrBB : 'clientaccountstransferview button[tag=back]',
          transferPage :
          {
             selector : 'clientaccountstransferview',
@@ -60,7 +64,8 @@ Ext.define('Genesis.controller.Accounts',
          //
          transferPage :
          {
-            activate : 'onTransferActivate'
+            activate : 'onTransferActivate',
+            deactivate : 'onTransferDeactivate'
          },
          'clientaccountstransferview container[tag=accountsTransferMain] list' :
          {
@@ -75,6 +80,10 @@ Ext.define('Genesis.controller.Accounts',
             tap : 'onShowQrCodeTap'
          },
          'clientaccountstransferview container button[tag=done]' :
+         {
+            tap : 'onTransferCompleteTap'
+         },
+         atrCalcCloseBB :
          {
             tap : 'onTransferCompleteTap'
          }
@@ -164,7 +173,7 @@ Ext.define('Genesis.controller.Accounts',
                      message : me.recvTransferMsg(metaData['points'], records[0].getMerchant().get('name')),
                      callback : function(btn)
                      {
-                        vport.silentPop(1);
+                        me.silentPopView(1);
                         Ext.defer(function()
                         {
                            me.onDisclose(cstore, records[0]);
@@ -226,7 +235,7 @@ Ext.define('Genesis.controller.Accounts',
                   app.dispatch(
                   {
                      action : 'onCheckinHandler',
-                     args : ['explore', metaData, cstore, null, [rec], operation],
+                     args : ['explore', metaData, cstore, rec, operation],
                      controller : controller,
                      scope : controller
                   });
@@ -252,13 +261,32 @@ Ext.define('Genesis.controller.Accounts',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
+      var mode = this.getMode();
+      var tbbar = activeItem.query('titlebar')[0];
+      switch(mode)
+      {
+         case 'profile' :
+         {
+            tbbar.setTitle('Accounts');
+            tbbar.removeCls('kbTitle')
+            break;
+         }
+         case 'emailtransfer' :
+         case 'transfer' :
+         {
+            tbbar.setTitle(' ');
+            tbbar.addCls('kbTitle')
+            break;
+         }
+      }
       //
       // Scroll to the Top of the Screen
       //
       this.getAccountsList().getScrollable().getScroller().scrollTo(0, 0);
    },
-   onDeactivate : function()
+   onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var me = this;
    },
    onSelect : function(list, model, eOpts)
    {
@@ -296,10 +324,11 @@ Ext.define('Genesis.controller.Accounts',
             }
 
             // Drop the previous page history
-            vport.silentPop(2);
+            me.silentPopView(2);
             //
             // Select the Amounts of points to Transfer!
             //
+            me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
             me.pushView(me.getTransferPage());
             break;
          }
@@ -315,11 +344,19 @@ Ext.define('Genesis.controller.Accounts',
       switch(me.getMode())
       {
          case 'profile' :
+         {
+            me.getAtrCloseBB().hide();
+            me.getAtrCalcCloseBB().hide();
+            me.getAtrBB().show();
             container.setActiveItem(0);
             break;
+         }
          case 'emailtransfer' :
          case 'transfer' :
          {
+            me.getAtrCloseBB().hide();
+            me.getAtrCalcCloseBB().show();
+            me.getAtrBB().hide();
             if(oldActiveItem && (oldActiveItem == me.getAccounts() && !me.rec))
             {
                me.setMode('profile');
@@ -333,6 +370,10 @@ Ext.define('Genesis.controller.Accounts',
             break;
          }
       }
+   },
+   onTransferDeactivate : function(oldActiveItem, c, activeItem, eOpts)
+   {
+      var me = this;
    },
    onTransferTap : function(b, e, eOpts)
    {
@@ -586,31 +627,38 @@ Ext.define('Genesis.controller.Accounts',
    },
    onTransferCompleteTap : function(b, e, eOpts, eInfo)
    {
+      var me = this;
+      me.setMode('profile');
       //
       // Go back to Accounts Page
       //
-      this.popView();
+      me.popView();
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
    openPage : function(subFeature)
    {
-      var page;
+      var me = this, page;
 
-      this.setMode('profile');
+      me.setMode('profile');
+      me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
       switch (subFeature)
       {
          case 'profile' :
-            page = this.getMainPage();
+         {
+            page = me.getMainPage();
             break;
+         }
          case 'emailtransfer' :
          case 'transfer' :
-            page = this.getTransferPage();
+         {
+            page = me.getTransferPage();
             break;
+         }
       }
 
-      this.pushView(page);
+      me.pushView(page);
    },
    getMainPage : function()
    {

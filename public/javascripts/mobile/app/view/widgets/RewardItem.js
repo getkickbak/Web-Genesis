@@ -13,7 +13,9 @@ Ext.define('Genesis.view.widgets.RewardItem',
          tag : 'rewardItem',
          layout :
          {
-            type : 'vbox'
+            type : 'vbox',
+            pack : 'center',
+            align : 'stretch'
          },
          items : [
          {
@@ -34,6 +36,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
          },
          {
             xtype : 'component',
+            height : 210,
             flex : 1,
             tag : 'itemPhoto',
             cls : 'itemPhoto',
@@ -80,24 +83,6 @@ Ext.define('Genesis.view.widgets.RewardItem',
                   return values.Merchant['name'];
                }
             })
-         },
-         {
-            docked : 'bottom',
-            xtype : 'button',
-            hidden : true,
-            cls : 'separator',
-            tag : 'refresh',
-            text : 'Refresh',
-            ui : 'orange-large'
-         },
-         {
-            docked : 'bottom',
-            xtype : 'button',
-            hidden : true,
-            cls : 'separator',
-            tag : 'verify',
-            text : 'Verified!',
-            ui : 'orange-large'
          }]
       },
       dataMap :
@@ -112,9 +97,9 @@ Ext.define('Genesis.view.widgets.RewardItem',
          'painted' : function(c, eOpts)
          {
             var height = Ext.ComponentQuery.query('viewportview')[0].getActiveItem().renderElement.getHeight();
-            c.config.dataview.setHeight(height);
-            c.query('container[tag=rewardItem]')[0].setHeight(height);
-            c.setHeight(height);
+            //c.config.dataview.setHeight(height);
+            //c.query('container[tag=rewardItem]')[0].setHeight(height);
+            //c.setHeight(height);
          }
       }
    },
@@ -141,8 +126,9 @@ Ext.define('Genesis.view.widgets.RewardItem',
       var reward = data.CustomerReward;
       var photo = Genesis.view.Prizes.getPhoto(reward['type']) || reward['photo']['thumbnail_ios_medium'];
       var info = this.query("component[tag=info]")[0];
-      var refresh = this.query("button[tag=refresh]")[0];
-      var verify = this.query("button[tag=verify]")[0];
+
+      //var refresh = this.query("button[tag=refresh]")[0];
+      //var verify = this.query("button[tag=verify]")[0];
       var itemPhoto = this.query("component[tag=itemPhoto]")[0];
 
       //
@@ -150,10 +136,10 @@ Ext.define('Genesis.view.widgets.RewardItem',
       //
       if(data.Merchant)
       {
+         //refresh.hide();
+         //verify.hide();
          info.setData(data);
          info.show();
-         refresh.hide();
-         verify.hide();
       }
       else
       {
@@ -161,8 +147,8 @@ Ext.define('Genesis.view.widgets.RewardItem',
          //
          // Verification of Prizes/Rewards Mode
          //
-         refresh[reward['photo'] ? 'show' : 'hide']();
-         verify[reward['photo'] ? 'hide' : 'show']();
+         //refresh[reward['photo'] ? 'show' : 'hide']();
+         //verify[reward['photo'] ? 'hide' : 'show']();
       }
 
       this.query("component[tag=title]")[0].setData(reward);

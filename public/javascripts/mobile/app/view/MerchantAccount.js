@@ -7,8 +7,6 @@ Ext.define('Genesis.view.MerchantAccount',
    {
       tag : 'merchantMain',
       cls : 'merchantMain',
-      title : 'Venue Name',
-      changeTitle : false,
       scrollable : 'vertical',
       layout :
       {
@@ -17,6 +15,28 @@ Ext.define('Genesis.view.MerchantAccount',
          pack : 'start'
       },
       items : [
+      {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : 'Venue Name',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'left',
+            iconCls : 'maps',
+            tag : 'mapBtn'
+         },
+         {
+            align : 'right',
+            hidden : true,
+            tag : 'checkin',
+            iconCls : 'checkin'
+         }]
+      },
       {
          tag : 'tbPanel',
          xtype : 'dataview',
@@ -256,23 +276,6 @@ Ext.define('Genesis.view.MerchantAccount',
       }]
    },
    statics :
-   {
-   },
-   beforeActivate : function(activeItem, oldActiveItem)
-   {
-      var vrecord = _application.getController('Viewport').getVenue();
-      if(vrecord)
-      {
-         activeItem.getInitialConfig().title = vrecord.get('name');
-      }
-   },
-   beforeDeactivate : function(activeItem, oldActiveItem)
-   {
-   },
-   afterActivate : function(activeItem, oldActiveItem)
-   {
-   },
-   afterDeactivate : function(activeItem, oldActiveItem)
    {
    }
 });

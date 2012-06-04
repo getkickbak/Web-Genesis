@@ -5,23 +5,31 @@ Ext.define('Genesis.view.client.Rewards',
    alias : 'widget.clientrewardsview',
    config :
    {
-      title : 'Earn Rewards',
-      changeTitle : false,
       layout : 'fit',
-      tag : 'prizeCheck',
-      cls : 'prizeCheck',
-      // -------------------------------------------------------------------
-      // Checking for Prizes Screen
-      // -------------------------------------------------------------------
-      data :
+      items : [
       {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : 'Earn Rewards'
       },
-      tpl :
-      // @formatter:off
+      {
+         xtype : 'component',
+         tag : 'prizeCheck',
+         cls : 'prizeCheck',
+         // -------------------------------------------------------------------
+         // Checking for Prizes Screen
+         // -------------------------------------------------------------------
+         data :
+         {
+         },
+         tpl :
+         // @formatter:off
       '<div class="rouletteBg"></div>'+
       '<div class="rouletteTable"></div>'+
-      '<div class="rouletteBall"></div>'
-      // @formatter:off
+      '<div class="rouletteBall"></div>',
+      // @formatter:on
+      }]
    },
    hideBackButton : true,
    statics :

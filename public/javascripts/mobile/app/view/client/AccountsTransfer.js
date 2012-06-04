@@ -5,10 +5,38 @@ Ext.define('Genesis.view.client.AccountsTransfer',
    alias : 'widget.clientaccountstransferview',
    config :
    {
-      title : ' ',
-      changeTitle : false,
       layout : 'vbox',
       items : [
+      {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop kbTitle',
+         title : ' ',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'left',
+            tag : 'back',
+            ui : 'back',
+            text : 'Back'
+         },
+         {
+            align : 'left',
+            tag : 'close',
+            ui : 'normal',
+            text : 'Close'
+         },
+         {
+            align : 'left',
+            tag : 'calcClose',
+            hidden : true,
+            ui : 'normal',
+            text : 'Close'
+         }]
+      },
       {
          xtype : 'container',
          tag : 'accountsTransferMain',
@@ -22,7 +50,7 @@ Ext.define('Genesis.view.client.AccountsTransfer',
                duration : 600,
                easing : 'ease-in-out',
                type : 'slide',
-               direction : 'down'
+               direction : 'up'
             }
          },
          activeItem : 0,
@@ -252,18 +280,6 @@ Ext.define('Genesis.view.client.AccountsTransfer',
             }]
          }]
       }]
-   },
-   beforeDeactivate : function(activeItem, oldActiveItem)
-   {
-      this.callParent(arguments);
-      var viewport = Ext.ComponentQuery.query('viewportview')[0];
-      viewport.getNavigationBar().removeCls('kbTitle');
-   },
-   afterActivate : function(activeItem, oldActiveItem)
-   {
-      this.callParent(arguments);
-      var viewport = Ext.ComponentQuery.query('viewportview')[0];
-      viewport.getNavigationBar().addCls('kbTitle');
    },
    statics :
    {
