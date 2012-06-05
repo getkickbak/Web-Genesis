@@ -811,7 +811,10 @@ Ext.define('Genesis.controller.client.Challenges',
 
       if(me.getViewPortCntlr().getCustomer().get('visits') > 0)
       {
-         list.deselect([model]);
+         if(list)
+         {
+            list.deselect([model]);
+         }
          switch (model.get('tag'))
          {
             case 'emailsender' :

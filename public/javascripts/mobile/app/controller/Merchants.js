@@ -182,8 +182,8 @@ Ext.define('Genesis.controller.Merchants',
    },
    onDetailsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
-      var me = this;
-      this.getShareBtn().hide();
+      //var me = this;
+      //this.getShareBtn().hide();
    },
    onMapRender : function(map, gmap, eOpts)
    {
@@ -312,9 +312,9 @@ Ext.define('Genesis.controller.Merchants',
    },
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
-      var me = this;
-      this.getMapBtn().hide();
-      this.getCheckinBtn().hide();
+      //var me = this;
+      //this.getMapBtn().hide();
+      //this.getCheckinBtn().hide();
    },
    onMainDisclose : function(list, record, target, index, e, eOpts)
    {

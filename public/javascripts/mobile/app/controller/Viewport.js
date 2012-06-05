@@ -187,7 +187,7 @@ Ext.define('Genesis.controller.Viewport',
                   var venueId = venue.getId();
                   var items = venue.challenges().getRange();
                   var controller = app.getController('client.Challenges');
-                  var list = controller.getReferralsPage().query('list')[0];
+                  //var list = controller.getReferralsPage().query('list')[0];
 
                   for(var i = 0; i < items.length; i++)
                   {
@@ -199,8 +199,8 @@ Ext.define('Genesis.controller.Viewport',
                   }
                   app.dispatch(
                   {
-                     action : 'onReferralsSelect',
-                     args : [list, list.getStore().getRange()[1]],
+                     action : 'onChallengeBtnTap',
+                     args : [],
                      controller : controller,
                      scope : controller
                   });
