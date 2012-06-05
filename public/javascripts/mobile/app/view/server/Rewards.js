@@ -20,7 +20,8 @@ Ext.define('Genesis.view.server.Rewards',
          {
             align : 'left',
             tag : 'back',
-            ui : 'back',
+            //ui : 'back',
+            ui : 'normal',
             text : 'Back'
          }]
       }]

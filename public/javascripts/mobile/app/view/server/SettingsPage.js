@@ -26,7 +26,8 @@ Ext.define('Genesis.view.server.SettingsPage',
          {
             align : 'left',
             tag : 'back',
-            ui : 'back',
+            //ui : 'back',
+            ui : 'normal',
             text : 'Back'
          }]
       },

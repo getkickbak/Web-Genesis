@@ -104,13 +104,13 @@ Ext.define('Genesis.controller.Merchants',
       // Clears all Markers on Google Map
       //
       me.markersArray = [];
-      if(window.google && window.google.maps && window.google.maps.Map)
+      if (window.google && window.google.maps && window.google.maps.Map)
       {
          google.maps.Map.prototype.clearOverlays = function()
          {
-            if(me.markersArray)
+            if (me.markersArray)
             {
-               for(var i = 0; i < me.markersArray.length; i++)
+               for (var i = 0; i < me.markersArray.length; i++)
                {
                   me.markersArray[i].setMap(null);
                }
@@ -141,7 +141,7 @@ Ext.define('Genesis.controller.Merchants',
    onActivateCommon : function(map, gmap)
    {
       var gm = (window.google && window.google.maps && window.google.maps.Marker) ? window.google.maps : null;
-      if(gmap && gm)
+      if (gmap && gm)
       {
          map.getMap().clearOverlays();
          this.marker = new gm.Marker(Ext.apply(this.markerOptions,
@@ -245,7 +245,7 @@ Ext.define('Genesis.controller.Merchants',
       // Either we are checked-in or
       // customer exploring a venue they checked-in in the past ...
       //
-      if(checkedInMatch)
+      if (checkedInMatch)
       {
          page.renderFeed = true;
          //me.getAddress().hide();
@@ -269,7 +269,7 @@ Ext.define('Genesis.controller.Merchants',
       //
       // Update Winners Count
       //
-      if(me.winnersCount)
+      if (me.winnersCount)
       {
          vrecord.set('winners_count', me.winnersCount['winners_count']);
          //me.onUpdateWinnerssCount(me.winnersCount);
@@ -297,9 +297,9 @@ Ext.define('Genesis.controller.Merchants',
       // Update Badges
       //
       var prizesCount = 0, prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
-      for(var i = 0; i < prizes.length; i++)
+      for (var i = 0; i < prizes.length; i++)
       {
-         if(prizes[i].getMerchant().getId() == merchantId)
+         if (prizes[i].getMerchant().getId() == merchantId)
          {
             prizesCount++;
          }
@@ -309,6 +309,11 @@ Ext.define('Genesis.controller.Merchants',
       // Precreate the DOMs
       //Ext.defer(page.createView, 1, page);
       page.createView();
+
+      if (this.getMainBtn())
+      {
+         this.getMainBtn().hide();
+      }
    },
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
@@ -324,7 +329,7 @@ Ext.define('Genesis.controller.Merchants',
       var venue = viewport.getVenue();
 
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-      if(!cvenue || !venue || (venue.getId() != cvenue.getId()))
+      if (!cvenue || !venue || (venue.getId() != cvenue.getId()))
       {
          Ext.device.Notification.show(
          {
@@ -392,20 +397,20 @@ Ext.define('Genesis.controller.Merchants',
 
       console.log("Going to Merchant Home Account Page ...");
 
-      if(venue.getId() != cvenue.getId())
+      if (venue.getId() != cvenue.getId())
       {
          // Restore Merchant Info
          ccntlr.setupCheckinInfo('checkin', cvenue, ccustomer, cmetaData);
       }
 
-      if(!dontRefreshPage && (venue.getId() != cvenue.getId()))
+      if (!dontRefreshPage && (venue.getId() != cvenue.getId()))
       {
          viewport.updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [cmetaData]);
       }
       //
       // Force Page to refresh
       //
-      if(me.getMainPage() == vport.getActiveItem())
+      if (me.getMainPage() == vport.getActiveItem())
       {
          var controller = vport.getEventDispatcher().controller;
          var anim = new Ext.fx.layout.Card(me.self.superclass.self.animationMode['fade']);
@@ -465,20 +470,25 @@ Ext.define('Genesis.controller.Merchants',
    },
    onTabBarTabChange : function(bar, newTab, oldTab, eOpts)
    {
-      if(newTab.config.tag == 'rewards')
+      switch(newTab.config.tag)
       {
-         Ext.defer(function()
+         case 'rewards' :
+         case 'main' :
          {
-            if(newTab)
+            Ext.defer(function()
             {
-               newTab.setActive(false);
-            }
+               if (newTab)
+               {
+                  newTab.setActive(false);
+               }
 
-            if(oldTab)
-            {
-               oldTab.setActive(false);
-            }
-         }, 200);
+               if (oldTab)
+               {
+                  oldTab.setActive(false);
+               }
+            }, 200);
+            break;
+         }
       }
 
       return true;
@@ -501,7 +511,7 @@ Ext.define('Genesis.controller.Merchants',
 
       // Check if this is the first time logging into the venue
       me.showFeed = showFeed;
-      if(!samePage)
+      if (!samePage)
       {
          me.setAnimationMode(me.self.superclass.self.animationMode['flip']);
          me.pushView(me.getMainPage());

@@ -20,7 +20,8 @@ Ext.define('Genesis.view.CheckinExplore',
          items : [
          {
             align : 'left',
-            ui : 'back',
+            //ui : 'back',
+            ui : 'normal',
             tag : 'back',
             text : 'Back'
          },

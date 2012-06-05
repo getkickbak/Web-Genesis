@@ -258,7 +258,7 @@ Ext.define('Genesis.view.MerchantAccount',
          {
             iconCls : 'tocheckedinmerch',
             tag : 'main',
-            hidden : this.showCheckinBtn,
+            hidden : !this.showCheckinBtn,
             title : 'Main Menu'
          },
          {

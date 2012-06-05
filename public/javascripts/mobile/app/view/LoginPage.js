@@ -74,7 +74,8 @@ Ext.define('Genesis.view.SignInPage',
          items : [
          {
             align : 'left',
-            ui : 'back',
+            //ui : 'back',
+            ui : 'normal',
             tag : 'back',
             text : 'Back'
          }]
@@ -135,7 +136,8 @@ Ext.define('Genesis.view.CreateAccountPage',
          items : [
          {
             align : 'left',
-            ui : 'back',
+            //ui : 'back',
+            ui : 'normal',
             tag : 'back',
             text : 'Back'
          }]

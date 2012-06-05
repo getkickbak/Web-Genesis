@@ -21,7 +21,8 @@ Ext.define('Genesis.view.Accounts',
          {
             align : 'left',
             tag : 'back',
-            ui : 'back',
+            //ui : 'back',
+            ui : 'normal',
             text : 'Back'
          }]
       }]

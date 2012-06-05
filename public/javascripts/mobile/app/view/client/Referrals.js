@@ -20,7 +20,8 @@ Ext.define('Genesis.view.client.Referrals',
          {
             align : 'left',
             tag :'back',
-            ui : 'back',
+            ui : 'normal',
+            //ui : 'back',
             text : 'Back'
          }]
       }]

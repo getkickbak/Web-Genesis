@@ -29,7 +29,8 @@ Ext.define('Genesis.view.Prizes',
          {
             align : 'left',
             tag : 'back',
-            ui : 'back',
+            //ui : 'back',
+            ui : 'normal',
             text : 'Back'
          },
          {
@@ -282,7 +283,8 @@ Ext.define('Genesis.view.ShowPrize',
          {
             align : 'left',
             tag : 'back',
-            ui : 'back',
+            //ui : 'back',
+            ui : 'normal',
             text : 'Back'
          },
          {
