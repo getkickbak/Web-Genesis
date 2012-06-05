@@ -399,7 +399,7 @@ Ext.define('Genesis.controller.MainPage',
          }
       });
    },
-   onLoginActivate : function(c, eOpts)
+   onLoginActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       //this.getInfoBtn().hide();
       activeItem.createView();
@@ -420,7 +420,6 @@ Ext.define('Genesis.controller.MainPage',
       var _onLogout = function()
       {
          console.log("Resetting Session information ...")
-         viewport.setFadeAnimation();
          vport.setLoggedIn(false);
          Genesis.db.removeLocalDBAttrib('auth_code');
          if(Genesis.db.getLocalDB()['currFbId'] > 0)
