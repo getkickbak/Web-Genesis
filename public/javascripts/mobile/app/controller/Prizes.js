@@ -199,7 +199,7 @@ Ext.define('Genesis.controller.Prizes',
          }, function(response)
          {
             Ext.Viewport.setMasked(false);
-            if(!response || response.error)
+            if (!response || response.error)
             {
                console.log('Post was not published to Facebook.');
             }
@@ -219,26 +219,26 @@ Ext.define('Genesis.controller.Prizes',
    // --------------------------------------------------------------------------
    // Event Handler
    // --------------------------------------------------------------------------
-   onRedeemPrize : function(venue, view)
+   onRedeemPrize : function(btn, venue, view)
    {
       var me = this;
       var venueId = venue.getId();
       var merchantId = venue.getMerchant().getId();
 
-      var store, btn;
+      var store;
       switch (me.getMode())
       {
          case 'merchantPrizes' :
-            me.getMCloseBB().hide();
-            me.getMBB().hide();
+         //me.getMCloseBB().hide();
+         //me.getMBB().hide();
          case 'userPrizes' :
          {
             var carousel = me.getMainCarousel();
             var item = carousel.getActiveItem();
             store = Ext.StoreMgr.get('MerchantPrizeStore');
             EarnPrize['setRedeemPrizeURL'](item.getStore().first().getId());
-            me.getUCloseBB().hide();
-            me.getUBB().hide();
+            //me.getUCloseBB().hide();
+            //me.getUBB().hide();
             break;
          }
          case 'showPrize' :
@@ -246,8 +246,8 @@ Ext.define('Genesis.controller.Prizes',
             var item = view.getInnerItems()[0];
             store = Ext.StoreMgr.get('MerchantPrizeStore');
             EarnPrize['setRedeemPrizeURL'](item.getStore().first().getId());
-            me.getSCloseBB().hide();
-            me.getSBB().hide();
+            //me.getSCloseBB().hide();
+            //me.getSBB().hide();
             break;
          }
          case 'reward' :
@@ -255,12 +255,13 @@ Ext.define('Genesis.controller.Prizes',
             var item = view.getInnerItems()[0];
             store = Ext.StoreMgr.get('RedemptionsStore');
             CustomerReward['setRedeemPointsURL'](item.getStore().first().getCustomerReward().getId());
-            me.getSCloseBB().hide();
-            me.getSBB().hide();
+            //me.getSCloseBB().hide();
+            //me.getSBB().hide();
             break;
          }
       }
 
+      btn.hide();
       Ext.Viewport.setMasked(
       {
          xtype : 'loadmask',
@@ -276,11 +277,10 @@ Ext.define('Genesis.controller.Prizes',
          params :
          {
             venue_id : venueId
-            //merchant_id : merchantId
          },
          callback : function(records, operation)
          {
-            if(!operation.wasSuccessful())
+            if (!operation.wasSuccessful())
             {
                Ext.Viewport.setMasked(false);
                btn.show();
@@ -296,7 +296,7 @@ Ext.define('Genesis.controller.Prizes',
       me.stopRouletteBall();
       //console.debug("onPrizeCheck Completed!");
 
-      if(records.length == 0)
+      if (records.length == 0)
       {
          console.log("Prize LOST!");
 
@@ -332,11 +332,11 @@ Ext.define('Genesis.controller.Prizes',
          //
          Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['winPrizeSound'], function()
          {
-            if(flag & 0x10)
+            if (flag & 0x10)
             {
                me.silentPopView(1);
             }
-            if((flag |= 0x01) == 0x11)
+            if ((flag |= 0x01) == 0x11)
             {
                me.fireEvent('showprize', records[0]);
             }
@@ -351,11 +351,11 @@ Ext.define('Genesis.controller.Prizes',
             message : me.wonPrizeMsg(records.length),
             callback : function()
             {
-               if(flag & 0x01)
+               if (flag & 0x01)
                {
                   me.silentPopView(1);
                }
-               if((flag |= 0x10) == 0x11)
+               if ((flag |= 0x10) == 0x11)
                {
                   me.fireEvent('showprize', records[0]);
                }
@@ -367,13 +367,13 @@ Ext.define('Genesis.controller.Prizes',
    {
       var me = this;
       var store = Ext.StoreMgr.get('MerchantPrizeStore');
-      
+
       //
       // Show prize on ShowPrize Container
       //
       me.showPrize = showPrize;
-      store.insert(0,showPrize);
-      
+      store.insert(0, showPrize);
+
       me.setMode('showPrize');
       Ext.defer(function()
       {
@@ -405,14 +405,14 @@ Ext.define('Genesis.controller.Prizes',
       // List all the prizes won by the Customer
       //
       var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
-      if(prizes.length > 0)
+      if (prizes.length > 0)
       {
-         for(var i = 0; i < prizes.length; i++)
+         for (var i = 0; i < prizes.length; i++)
          {
             //
             // Only show prizes that matches the currently loaded Merchant Data
             //
-            if(prizes[i].getMerchant().getId() != merchantId)
+            if (prizes[i].getMerchant().getId() != merchantId)
             {
                continue;
             }
@@ -421,7 +421,7 @@ Ext.define('Genesis.controller.Prizes',
          }
       }
 
-      if(prizesList.length == 0)
+      if (prizesList.length == 0)
       {
          me.getMRedeemBtn().hide();
       }
@@ -441,13 +441,13 @@ Ext.define('Genesis.controller.Prizes',
       me.getUBB().show();
 
       var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
-      for(var i = 0; i < prizes.length; i++)
+      for (var i = 0; i < prizes.length; i++)
       {
 
          prizesList.push(prizes[i]);
       }
 
-      if(prizesList.length == 0)
+      if (prizesList.length == 0)
       {
          me.getURedeemBtn().hide();
       }
@@ -509,12 +509,12 @@ Ext.define('Genesis.controller.Prizes',
       var prizes = me.getMainPage();
       var mode = overrideMode || me.getMode();
 
-      if(prizes.isPainted() && !prizes.isHidden())
+      if (prizes.isPainted() && !prizes.isHidden())
       {
          //
          // Remove Prize
          //
-         if(mode != 'reward')
+         if (mode != 'reward')
          {
             var store = Ext.StoreMgr.get('MerchantPrizeStore');
             var carousel = prizes.query('carousel')[0];
@@ -557,7 +557,7 @@ Ext.define('Genesis.controller.Prizes',
       var venue = viewport.getVenue();
       var cvenue = viewport.getCheckinInfo().venue;
 
-      if(!cvenue || !venue || (venue.getId() != cvenue.getId()))
+      if (!cvenue || !venue || (venue.getId() != cvenue.getId()))
       {
          Ext.device.Notification.show(
          {
@@ -574,9 +574,9 @@ Ext.define('Genesis.controller.Prizes',
          buttons : ['Confirm', 'Cancel'],
          callback : function(btn)
          {
-            if(btn.toLowerCase() == 'confirm')
+            if (btn.toLowerCase() == 'confirm')
             {
-               me.fireEvent('redeemprize', venue, view);
+               me.fireEvent('redeemprize', b, venue, view);
             }
          }
       });
@@ -628,14 +628,30 @@ Ext.define('Genesis.controller.Prizes',
 
          qrcode = Genesis.controller.ControllerBase.genQRCode(qrcode);
       }
-      if(qrcode[0])
+      if (qrcode[0])
       {
-         me.getURedeemBtn().hide();
-         me.getUDoneBtn().show();
-         me.getMRedeemBtn().hide();
-         me.getMDoneBtn().show();
-         me.getSRedeemBtn().hide();
-         me.getSDoneBtn().show();
+         switch (me.getMode())
+         {
+            case 'merchantPrizes' :
+            {
+               me.getMRedeemBtn().hide();
+               me.getMDoneBtn().show();
+               break;
+            }
+            case 'userPrizes' :
+            {
+               me.getURedeemBtn().hide();
+               me.getUDoneBtn().show();
+               break;
+            }
+            case 'reward' :
+            case 'showPrize' :
+            {
+               me.getSRedeemBtn().hide();
+               me.getSDoneBtn().show();
+               break;
+            }
+         }
 
          me.onRefreshQRCode(qrcode);
 
@@ -689,7 +705,7 @@ Ext.define('Genesis.controller.Prizes',
          case 'userPrizes' :
          {
             carousel = this.getUserPrizesCarousel();
-            if(!carousel)
+            if (!carousel)
             {
                var container = this.getMainPage();
                container.removeAll();
@@ -705,7 +721,7 @@ Ext.define('Genesis.controller.Prizes',
          case 'merchantPrizes' :
          {
             carousel = this.getMerchantPrizesCarousel();
-            if(!carousel)
+            if (!carousel)
             {
                var container = this.getMainPage();
                container.removeAll();

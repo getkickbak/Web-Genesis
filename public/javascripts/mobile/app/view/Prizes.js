@@ -37,6 +37,12 @@ Ext.define('Genesis.view.Prizes',
             align : 'right',
             tag : 'redeem',
             text : 'Redeem'
+         },
+         {
+            align : 'right',
+            hidden : true,
+            tag : 'done',
+            text : 'Done'
          }]
       }]
    },
@@ -61,7 +67,7 @@ Ext.define('Genesis.view.Prizes',
       var view = this;
       var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
 
-      if(prizes.length == 0)
+      if (prizes.length == 0)
       {
          view.removeAll();
          view.add(
@@ -79,7 +85,7 @@ Ext.define('Genesis.view.Prizes',
       {
          // Either a carousel or a empty view
          var container = view.getInnerItems()[0];
-         if(container && container.isXType('carousel', true))
+         if (container && container.isXType('carousel', true))
          {
             //
             // User Prizes have been loaded previously, no need to refresh!
@@ -92,7 +98,7 @@ Ext.define('Genesis.view.Prizes',
 
             var items = [];
             container = view.getInnerItems()[0];
-            if(!container)
+            if (!container)
             {
                this.add(
                {
@@ -106,7 +112,7 @@ Ext.define('Genesis.view.Prizes',
                });
                container = view.getInnerItems()[0];
             }
-            for(var i = 0; i < prizes.length; i++)
+            for (var i = 0; i < prizes.length; i++)
             {
                items.push(
                {
@@ -144,14 +150,14 @@ Ext.define('Genesis.view.Prizes',
       // List all the prizes won by the Customer
       //
       var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
-      if(prizes.length > 0)
+      if (prizes.length > 0)
       {
-         for(var i = 0; i < prizes.length; i++)
+         for (var i = 0; i < prizes.length; i++)
          {
             //
             // Only show prizes that matches the currently loaded Merchant Data
             //
-            if(prizes[i].getMerchant().getId() != merchantId)
+            if (prizes[i].getMerchant().getId() != merchantId)
             {
                continue;
             }
@@ -160,7 +166,7 @@ Ext.define('Genesis.view.Prizes',
          }
       }
 
-      if(prizesList.length == 0)
+      if (prizesList.length == 0)
       {
          view.removeAll();
          view.add(
@@ -178,7 +184,7 @@ Ext.define('Genesis.view.Prizes',
       {
          // Either a carousel or a empty view
          var container = view.getInnerItems()[0];
-         if(!container)
+         if (!container)
          {
             this.add(
             {
@@ -192,7 +198,7 @@ Ext.define('Genesis.view.Prizes',
             });
             container = view.getInnerItems()[0];
          }
-         if((container && container.isXType('carousel', true) && container.query('dataview')[0] &&
+         if ((container && container.isXType('carousel', true) && container.query('dataview')[0] &&
          // First item in the carousel
          container.query('dataview')[0].getStore().first().getMerchant().getId() == merchantId))
          {
@@ -208,7 +214,7 @@ Ext.define('Genesis.view.Prizes',
             //
             container = view.getInnerItems()[0];
             var items = [];
-            for(var i = 0; i < prizesList.length; i++)
+            for (var i = 0; i < prizesList.length; i++)
             {
                items.push(
                {
@@ -291,6 +297,12 @@ Ext.define('Genesis.view.ShowPrize',
             align : 'right',
             tag : 'redeem',
             text : 'Redeem'
+         },
+         {
+            align : 'right',
+            hidden : true,
+            tag : 'done',
+            text : 'Done'
          }]
       },
       {
@@ -331,7 +343,6 @@ Ext.define('Genesis.view.ShowPrize',
          defaultUnit : 'em',
          margin : '0 0 0.8 0'
       }));
-      
       delete this.showPrize;
    }
 });
