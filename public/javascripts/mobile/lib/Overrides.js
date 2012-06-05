@@ -30,9 +30,9 @@ Genesis.constants =
    getPrivKey : function(id)
    {
       var me = this;
-      if(!me.privKey)
+      if (!me.privKey)
       {
-         if(me.isNative())
+         if (me.isNative())
          {
             var failHandler = function(error)
             {
@@ -73,7 +73,7 @@ Genesis.constants =
                      reader.onloadend = function(evt)
                      {
                         me.privKey = Ext.decode(evt.target.result);
-                        for(var i in me.privKey)
+                        for (var i in me.privKey)
                         {
                            console.debug("Encryption Key[" + i + "] = [" + me.privKey[i] + "]");
                         }
@@ -92,7 +92,7 @@ Genesis.constants =
             {
                'v1' : me.debugPrivKey
             };
-            for(var i in me.privKey)
+            for (var i in me.privKey)
             {
                console.debug("Encryption Key[" + i + "] = [" + me.privKey[i] + "]");
             }
@@ -131,17 +131,17 @@ Genesis.fb =
       //Detect when Facebook tells us that the user's session has been returned
       FB.Event.monitor('auth.authResponseChange', function(session)
       {
-         if(session && (session.status != 'not_authorized') && (session.status != 'notConnected'))
+         if (session && (session.status != 'not_authorized') && (session.status != 'notConnected'))
          {
             console.log('Got FB user\'s session: ' + session.status);
 
             var authToken = session.authResponse['accessToken'];
-            if(authToken)
+            if (authToken)
             {
                db['fbExpiresIn'] = Date.now() + (1000 * session.authResponse['expiresIn']);
                db['fbAutoCode'] = authToken;
                Genesis.db.setLocalDB(db);
-               if(me.cb)
+               if (me.cb)
                {
                   me.facebook_loginCallback(me.cb);
                   delete me.cb;
@@ -153,10 +153,10 @@ Genesis.fb =
             }
          }
          else
-         if((session === undefined) || (session && session.status == 'not_authorized'))
+         if ((session === undefined) || (session && session.status == 'not_authorized'))
          {
             //console.debug('FB Account Session[' + session + '] was terminated or not authorized');
-            if(session)
+            if (session)
             {
                me.facebook_onLogout(null, (session) ? true : false);
             }
@@ -177,12 +177,12 @@ Genesis.fb =
       {
          var friendsList = '';
          me.friendsList = [];
-         if(response && response.data && (response.data.length > 0))
+         if (response && response.data && (response.data.length > 0))
          {
             var data = response.data;
-            for(var i = 0; i < data.length; i++)
+            for (var i = 0; i < data.length; i++)
             {
-               if(data[i][uidField] != Genesis.db.getLocalDB()['currFbId'])
+               if (data[i][uidField] != Genesis.db.getLocalDB()['currFbId'])
                {
                   me.friendsList.push(
                   {
@@ -208,7 +208,7 @@ Genesis.fb =
                buttons : ['Relogin', 'Cancel'],
                callback : function(button)
                {
-                  if(button == "Relogin")
+                  if (button == "Relogin")
                   {
                      me.facebook_onLogout(function()
                      {
@@ -253,12 +253,12 @@ Genesis.fb =
       me.cb = cb || Ext.emptyFn;
       FB.login(function(response)
       {
-         if(response && (response.status == 'connected') && response.authResponse)
+         if (response && (response.status == 'connected') && response.authResponse)
          {
             console.debug("Logged into Facebook!");
             Genesis.db.setLocalDBAttrib('fbExpiresIn', Date.now() + (1000 * response.authResponse['expiresIn']));
             //Genesis.db.setLocalDBAttrib('fbAuthCode', response.authResponse['authToken']);
-            if(me.cb)
+            if (me.cb)
             {
                me.facebook_loginCallback(me.cb);
                delete me.cb;
@@ -269,7 +269,7 @@ Genesis.fb =
             console.debug("Login Failed! ...");
             Genesis.db.removeLocalDBAttrib('fbExpiresIn');
             //Genesis.db.removeLocalDBAttrib('fbAuthCode');
-            if(!supress)
+            if (!supress)
             {
                Ext.Viewport.setMasked(false);
                Ext.device.Notification.show(
@@ -279,7 +279,7 @@ Genesis.fb =
                   buttons : ['Try Again', 'Continue'],
                   callback : function(btn)
                   {
-                     if(btn.toLowerCase() == 'try again')
+                     if (btn.toLowerCase() == 'try again')
                      {
                         Ext.defer(me.fbLogin, 3 * 1000, me, [cb, supress]);
                      }
@@ -303,7 +303,7 @@ Genesis.fb =
       cb = cb || Ext.emptyFn
       var _fbLogin = function()
       {
-         if(!supress)
+         if (!supress)
          {
             Ext.device.Notification.show(
             {
@@ -312,7 +312,7 @@ Genesis.fb =
                buttons : ['OK', 'Cancel'],
                callback : function(btn)
                {
-                  if(btn.toLowerCase() == 'ok')
+                  if (btn.toLowerCase() == 'ok')
                   {
                      Ext.Viewport.setMasked(
                      {
@@ -331,14 +331,14 @@ Genesis.fb =
       }
       // Login if connection missing
       var db = Genesis.db.getLocalDB();
-      var refreshConn = (db['currFbId'] > 0);      
+      var refreshConn = (db['currFbId'] > 0);
       // Logged into FB currently or before!
       console.debug("facebook_onLogin - FbId = [" + db['currFbId'] + "], refreshConn = " + refreshConn);
-      if(refreshConn)
+      if (refreshConn)
       {
          FB.getLoginStatus(function(response)
          {
-            if((response.status == 'connected') && response.authResponse)
+            if ((response.status == 'connected') && response.authResponse)
             {
                var expireTime = (!db['fbExpiresIn']) ? 0 : new Date(db['fbExpiresIn']).getTime();
                db['fbAutoCode'] = response.authResponse['authToken'];
@@ -376,13 +376,13 @@ Genesis.fb =
 
       FB.api('/me', function(response)
       {
-         if(!response.error)
+         if (!response.error)
          {
             var db = Genesis.db.getLocalDB();
             var facebook_id = response.id;
 
             //Ext.Viewport.setMasked(false);
-            if(db['currFbId'] == facebook_id)
+            if (db['currFbId'] == facebook_id)
             {
                console.debug("Session information same as previous session[" + facebook_id + "]");
             }
@@ -402,7 +402,7 @@ Genesis.fb =
             me._fb_connect();
             //me.getFriendsList();
 
-            if(cb)
+            if (cb)
             {
                Ext.defer(cb, 1, me, [params]);
             }
@@ -446,7 +446,7 @@ Genesis.fb =
       Ext.Viewport.setMasked(false);
       try
       {
-         if(contactFB)
+         if (contactFB)
          {
             FB.logout(function(response)
             {
@@ -480,32 +480,32 @@ Genesis.fn =
       var date;
       var format = dateFormat || this.dateFormat;
 
-      if(!( v instanceof Date))
+      if (!( v instanceof Date))
       {
-         if( typeof (JSON) != 'undefined')
+         if ( typeof (JSON) != 'undefined')
          {
             //v = (jQuery.browser.msie) ? v.split(/Z$/)[0] : v.split('.')[0];
             //v = (Ext.os.deviceType.toLowerCase() != 'desktop') ? v : v.split('.')[0];
             //v = (Genesis.constants.isNative()) ? v : v.split('.')[0];
          }
 
-         if(Ext.isEmpty(v))
+         if (Ext.isEmpty(v))
          {
             date = new Date();
          }
          else
          {
-            if(format)
+            if (format)
             {
                date = Date.parse(v, format);
-               if(Ext.isEmpty(date))
+               if (Ext.isEmpty(date))
                {
                   date = new Date(v).format(format);
                }
                return [date, date];
             }
             date = new Date(v);
-            if(date.toString() == 'Invalid Date')
+            if (date.toString() == 'Invalid Date')
             {
                date = Date.parse(v, format);
             }
@@ -515,7 +515,7 @@ Genesis.fn =
       {
          date = v;
       }
-      if(!noConvert)
+      if (!noConvert)
       {
          var currentDate = new Date().getTime();
          // Adjust for time drift between Client computer and Application Server
@@ -523,34 +523,34 @@ Genesis.fn =
 
          var timeExpiredSec = (offsetTime - date.getTime()) / 1000;
 
-         if(timeExpiredSec > -10)
+         if (timeExpiredSec > -10)
          {
-            if((timeExpiredSec) < 2)
+            if ((timeExpiredSec) < 2)
                return [timeExpiredSec, 'a second ago'];
-            if((timeExpiredSec) < 60)
+            if ((timeExpiredSec) < 60)
                return [timeExpiredSec, parseInt(timeExpiredSec) + ' secs ago'];
             timeExpiredSec = timeExpiredSec / 60;
-            if((timeExpiredSec) < 2)
+            if ((timeExpiredSec) < 2)
                return [timeExpiredSec, 'a minute ago'];
-            if((timeExpiredSec) < 60)
+            if ((timeExpiredSec) < 60)
                return [timeExpiredSec, parseInt(timeExpiredSec) + ' minutes ago'];
             timeExpiredSec = timeExpiredSec / 60;
-            if((timeExpiredSec) < 2)
+            if ((timeExpiredSec) < 2)
                return [date, 'an hour ago'];
-            if((timeExpiredSec) < 24)
+            if ((timeExpiredSec) < 24)
                return [date, parseInt(timeExpiredSec) + ' hours ago'];
             timeExpiredSec = timeExpiredSec / 24;
-            if(((timeExpiredSec) < 2) && ((new Date().getDay() - date.getDay()) == 1))
+            if (((timeExpiredSec) < 2) && ((new Date().getDay() - date.getDay()) == 1))
                return [date, 'Yesterday at ' + date.format('g:i A')];
-            if((timeExpiredSec) < 7)
+            if ((timeExpiredSec) < 7)
                return [date, Genesis.fn.weekday[date.getDay()] + ' at ' + date.format('g:i A')];
             timeExpiredSec = timeExpiredSec / 7;
-            if(((timeExpiredSec) < 2) && (timeExpiredSec % 7 == 0))
+            if (((timeExpiredSec) < 2) && (timeExpiredSec % 7 == 0))
                return [date, 'a week ago'];
-            if(((timeExpiredSec) < 5) && (timeExpiredSec % 7 == 0))
+            if (((timeExpiredSec) < 5) && (timeExpiredSec % 7 == 0))
                return [date, parseInt(timeExpiredSec) + ' weeks ago'];
 
-            if(timeExpiredSec < 5)
+            if (timeExpiredSec < 5)
                return [date, parseInt(timeExpiredSec * 7) + ' days ago']
             return [date, null];
          }
@@ -575,7 +575,7 @@ Genesis.fn =
       var date = v.getDate();
       var month = v.getMonth();
       var year = v.getFullYear();
-      if(todayDate == date && todayMonth == month && todayYear == year)
+      if (todayDate == date && todayMonth == month && todayYear == year)
       {
          return 'Today ' + v.format('g:i A');
       }
@@ -584,7 +584,7 @@ Genesis.fn =
    convertDate : function(v, dateFormat)
    {
       var rc = Genesis.fn.convertDateCommon.call(this, v, dateFormat);
-      if(rc[1] != -1)
+      if (rc[1] != -1)
       {
          return (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
       }
@@ -596,7 +596,7 @@ Genesis.fn =
    convertDateNoTime : function(v)
    {
       var rc = Genesis.fn.convertDateCommon.call(this, v, null, true);
-      if(rc[1] != -1)
+      if (rc[1] != -1)
       {
          return (rc[1] == null) ? rc[0].format('D, M d, Y') : rc[1];
       }
@@ -608,7 +608,7 @@ Genesis.fn =
    convertDateNoTimeNoWeek : function(v)
    {
       var rc = Genesis.fn.convertDateCommon.call(this, v, null, true);
-      if(rc[1] != -1)
+      if (rc[1] != -1)
       {
          rc = (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
       }
@@ -621,7 +621,7 @@ Genesis.fn =
    convertDateInMins : function(v)
    {
       var rc = Genesis.fn.convertDateCommon.call(this, v, null, true);
-      if(rc[1] != -1)
+      if (rc[1] != -1)
       {
          return (rc[1] == null) ? rc[0].format('h:ia T') : rc[1];
       }
@@ -661,7 +661,7 @@ Genesis.db =
    {
       try
       {
-         if(!this.kickbakRedeemIndex)
+         if (!this.kickbakRedeemIndex)
          {
             this.kickbakRedeemIndex = Ext.decode(this.getLocalStorage().getItem('kickbakRedeemIndex'));
          }
@@ -669,15 +669,20 @@ Genesis.db =
       catch(e)
       {
       }
-      return ((this.kickbakRedeemIndex) ? ( index ? this.kickbakRedeemIndex[index] : this.kickbakRedeemIndex) :
+
+      if (!this.kickbakRedeemIndex)
       {
-      });
+         this.kickbakRedeemIndex =
+         {
+         };
+      }
+      return ( index ? this.kickbakRedeemIndex[index] : this.kickbakRedeemIndex);
    },
    addRedeemIndexDB : function(index, value)
    {
       var db = this.getRedeemIndexDB();
       db[index] = value;
-      //console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
+      console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
       //this.getLocalStorage().setItem('kickbakRedeemIndex', Ext.encode(db));
    },
    setRedeemIndexDB : function(db)
@@ -692,7 +697,7 @@ Genesis.db =
    {
       try
       {
-         if(!this.kickbakRedeemSorted)
+         if (!this.kickbakRedeemSorted)
          {
             this.kickbakRedeemSorted = Ext.decode(this.getLocalStorage().getItem('kickbakRedeemSorted'));
          }
@@ -701,13 +706,17 @@ Genesis.db =
       {
 
       }
-      return ((this.kickbakRedeemSorted) ? ( index ? this.kickbakRedeemSorted[index] : this.kickbakRedeemSorted) : []);
+      if (!this.kickbakRedeemSorted)
+      {
+         this.kickbakRedeemSorted = [];
+      }
+      return ( index ? this.kickbakRedeemSorted[index] : this.kickbakRedeemSorted);
    },
    addRedeemSortedDB : function(key)
    {
       var dbS = this.getRedeemSortedDB();
 
-      if(dbS.length >= this.redeemDBSize)
+      if (dbS.length >= this.redeemDBSize)
       {
          // Remove the oldest Entry
          console.debug("Database Entry is full, discarded oldest Entry with timestamp (" + Date(dbS[0][1]) + ")");
@@ -749,9 +758,9 @@ Genesis.db =
       var currCount = dbS['currCount'] || -1;
       console.debug('currCount = ' + currCount);
 
-      while((currCount >= 0) && (dbS.length > 0))
+      while ((currCount >= 0) && (dbS.length > 0))
       {
-         if(dbS[0][1] > now)
+         if (dbS[0][1] > now)
          {
             total++;
             currCount--;
@@ -854,7 +863,7 @@ Ext.define('Genesis.dom.Element',
    // Bug fix for adding units
    setMargin : function(margin, unit)
    {
-      if(margin || margin === 0)
+      if (margin || margin === 0)
       {
          margin = this.self.unitizeBox((margin === true) ? 5 : margin, unit);
       }
@@ -866,7 +875,7 @@ Ext.define('Genesis.dom.Element',
    },
    setPadding : function(padding, unit)
    {
-      if(padding || padding === 0)
+      if (padding || padding === 0)
       {
          padding = this.self.unitizeBox((padding === true) ? 5 : padding, unit);
       }
@@ -917,7 +926,7 @@ Ext.define('Genesis.data.reader.Json',
    getResponseData : function(response)
    {
       var data = this.callParent(arguments);
-      if(!data.metaData)
+      if (!data.metaData)
       {
          delete this.metaData;
       }
@@ -957,7 +966,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   message : messages,
                   callback : function()
                   {
-                     if(metaData['session_timeout'])
+                     if (metaData['session_timeout'])
                      {
                         Genesis.db.removeLocalDBAttrib('auth_code');
                         viewport.setLoggedIn(false);
@@ -1029,7 +1038,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          console.debug("Ajax ErrorHandler called. Operation(" + operation.wasSuccessful() + ")");
          me.fireEvent('exception', me, response, operation);
       }
-      if((success === true) || (!request.aborted && (Genesis.constants.isNative() === true)))
+      if ((success === true) || (!request.aborted && (Genesis.constants.isNative() === true)))
       {
          try
          {
@@ -1048,7 +1057,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
             return;
          }
 
-         if(operation.process(action, resultSet, request, response) === false)
+         if (operation.process(action, resultSet, request, response) === false)
          {
             errorHandler();
          }
@@ -1068,7 +1077,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
       }
 
       //this callback is the one that was passed to the 'read' or 'write' function above
-      if( typeof callback == 'function')
+      if ( typeof callback == 'function')
       {
          callback.call(scope || me, operation);
       }
@@ -1084,7 +1093,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
    buildRequest : function(operation)
    {
       var db = Genesis.db.getLocalDB();
-      if(db['auth_code'])
+      if (db['auth_code'])
       {
          this.setExtraParam("auth_token", db['auth_code']);
       }
@@ -1095,7 +1104,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
 
       var request = this.callParent(arguments);
 
-      if(operation.initialConfig.jsonData)
+      if (operation.initialConfig.jsonData)
       {
          request.setJsonData(operation.initialConfig.jsonData);
       }
@@ -1124,11 +1133,11 @@ Ext.define('Genesis.data.Connection',
 
       var success = (status >= 200 && status < 300) || status == 304, isException = false;
 
-      if(Genesis.constants.isNative() && (status === 0))
+      if (Genesis.constants.isNative() && (status === 0))
       {
          //success = true;
       }
-      if(!success)
+      if (!success)
       {
          switch (status)
          {
@@ -1171,7 +1180,7 @@ Ext.define('Genesis.field.Select',
    // @private
    getListPanel : function()
    {
-      if(!this.listPanel)
+      if (!this.listPanel)
       {
          this.listPanel = Ext.create('Ext.Panel',
          {
@@ -1217,13 +1226,13 @@ Ext.define('Genesis.dataview.element.List',
 
       innerItem.innerHTML = dataview.getItemTpl().apply(data);
 
-      if(disclosure && dataview.getOnItemDisclosure())
+      if (disclosure && dataview.getOnItemDisclosure())
       {
          disclosureEl = extItem.down(me.disclosureClsCache);
          //
          // Fix bug in Sencha Touch where "x-clsClass" is missing spaces
          //
-         if(!disclosureEl)
+         if (!disclosureEl)
          {
             disclosureEl = extItem.down(me.disclosureClsCache + me.hiddenDisplayCache);
             disclosureEl[disclosure ? 'removeCls' : 'addCls'](me.disclosureClsCache + me.hiddenDisplayCache);
@@ -1235,7 +1244,7 @@ Ext.define('Genesis.dataview.element.List',
          }
       }
 
-      if(dataview.getIcon())
+      if (dataview.getIcon())
       {
          iconEl = extItem.down(me.iconClsCache, true);
          iconEl.style.backgroundImage = iconSrc ? 'url("' + iconSrc + '")' : '';
@@ -1483,16 +1492,16 @@ Ext.merge(Array.prototype,
    binarySearch : function(find, comparator)
    {
       var low = 0, high = this.length - 1, i, comparison;
-      while(low <= high)
+      while (low <= high)
       {
          i = Math.floor((low + high) / 2);
          comparison = comparator(this[i], find);
-         if(comparison < 0)
+         if (comparison < 0)
          {
             low = i + 1;
             continue;
          };
-         if(comparison > 0)
+         if (comparison > 0)
          {
             high = i - 1;
             continue;
@@ -1514,7 +1523,7 @@ Ext.merge(String.prototype,
       str = str.replace(/[^{]+\{/, "");
       str = str.substring(0, str.length - 1);
       str = str.replace(/\n/gi, "");
-      if(!str.match(/\(.*\)/gi))
+      if (!str.match(/\(.*\)/gi))
          str += ")";
       return str;
    },
@@ -1540,7 +1549,7 @@ Ext.merge(String.prototype,
    times : function(n)
    {
       var s = '';
-      for(var i = 0; i < n; i++)
+      for (var i = 0; i < n; i++)
       {
          s += this;
       }
@@ -1566,11 +1575,11 @@ Ext.merge(String.prototype,
    },
    trim : function(x)
    {
-      if(x == 'left')
+      if (x == 'left')
          return this.replace(/^\s*/, '');
-      if(x == 'right')
+      if (x == 'right')
          return this.replace(/\s*$/, '');
-      if(x == 'normalize')
+      if (x == 'normalize')
          return this.replace(/\s{2,}/g, ' ').trim();
 
       return this.trim('left').trim('right');
@@ -1594,7 +1603,7 @@ Ext.merge(String.prototype,
          '"' : '&quot;'
       }, keys = [], p, regex;
 
-      for(p in entities)
+      for (p in entities)
       {
          keys.push(p);
       }
@@ -1623,7 +1632,7 @@ Ext.merge(String.prototype,
          '&quot;' : '"'
       }, keys = [], p, regex;
 
-      for(p in entities)
+      for (p in entities)
       {
          keys.push(p);
       }
@@ -1633,7 +1642,7 @@ Ext.merge(String.prototype,
       {
          return (!value) ? value : String(value).replace(regex, function(match, capture)
          {
-            if( capture in entities)
+            if ( capture in entities)
             {
                return entities[capture];
             }
