@@ -362,6 +362,8 @@ Ext.define('Genesis.controller.MainPage',
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
+      //Ext.defer(activeItem.createView, 1, activeItem);
+      activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -400,6 +402,7 @@ Ext.define('Genesis.controller.MainPage',
    onLoginActivate : function(c, eOpts)
    {
       //this.getInfoBtn().hide();
+      activeItem.createView();
    },
    onLoginDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -647,6 +650,7 @@ Ext.define('Genesis.controller.MainPage',
             username : response.email
          });
       }
+      activeItem.createView();
    },
    onCreateDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -691,7 +695,8 @@ Ext.define('Genesis.controller.MainPage',
    },
    getMainPage : function()
    {
-      return this.getMain();
+      var page = this.getMain();
+      return page;
    },
    openMainPage : function()
    {

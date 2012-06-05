@@ -38,12 +38,16 @@ Ext.define('Genesis.view.MerchantAccount',
          }]
       }]
    },
-   showView : function()
+   createView : function()
    {
+      if(!this.callParent(arguments))
+      {
+         return;
+      }
       // -----------------------------------------------------------------------
       // Merchant Photos and Customer Points
       // -----------------------------------------------------------------------
-      this.add(
+      this.getPreRender().push(Ext.create('Ext.dataview.DataView',
       {
          tag : 'tbPanel',
          xtype : 'dataview',
@@ -53,14 +57,14 @@ Ext.define('Genesis.view.MerchantAccount',
          defaultType : 'merchantaccountptsitem',
          defaultUnit : 'em',
          margin : '0 0 0.8 0'
-      });
+      }));
 
       // -----------------------------------------------------------------------
       // What can I get ?
       // -----------------------------------------------------------------------
       if(this.renderFeed)
       {
-         this.add(
+         this.getPreRender().push(Ext.create('Ext.Container',
          {
             xtype : 'container',
             tag : 'feedContainer',
@@ -137,13 +141,14 @@ Ext.define('Genesis.view.MerchantAccount',
                }),
                onItemDisclosure : Ext.emptyFn
             }]
-         });
-      }
+         }));
+      };
 
+      this.setPreRender(this.getPreRender().concat([
       // -----------------------------------------------------------------------
       // Merchant Description Panel
       // -----------------------------------------------------------------------
-      this.add([
+      Ext.create('Ext.Container',
       {
          xtype : 'container',
          tag : 'descContainer',
@@ -182,9 +187,11 @@ Ext.define('Genesis.view.MerchantAccount',
                }
             })
          }]
-      }, // -----------------------------------------------------------------------
+      }),
+      // -----------------------------------------------------------------------
       // Toolbar
       // -----------------------------------------------------------------------
+      Ext.create('Ext.TabBar',
       {
          docked : 'bottom',
          cls : 'navigationBarBottom',
@@ -259,7 +266,7 @@ Ext.define('Genesis.view.MerchantAccount',
             tag : 'browse',
             title : 'Explore'
          }]
-      }]);
+      })]));
    },
    statics :
    {

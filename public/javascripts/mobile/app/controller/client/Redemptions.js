@@ -103,6 +103,8 @@ Ext.define('Genesis.controller.client.Redemptions',
       //
       // Update Customer info
       Ext.StoreMgr.get('RedemptionRenderCStore').setData(viewport.getCustomer());      
+      //Ext.defer(activeItem.createView, 1, activeItem);
+      activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -205,7 +207,8 @@ Ext.define('Genesis.controller.client.Redemptions',
    // --------------------------------------------------------------------------
    getMainPage : function()
    {
-      return this.getRedemptions();
+      var page = this.getRedemptions();
+      return page;
    },
    openPage : function(subFeature)
    {

@@ -235,7 +235,7 @@ Ext.define('Genesis.controller.Accounts',
                   app.dispatch(
                   {
                      action : 'onCheckinHandler',
-                     args : ['explore', metaData, cstore, rec, operation],
+                     args : ['explore', metaData, record.getId(), rec, operation],
                      controller : controller,
                      scope : controller
                   });
@@ -279,10 +279,9 @@ Ext.define('Genesis.controller.Accounts',
             break;
          }
       }
-      //
-      // Scroll to the Top of the Screen
-      //
-      this.getAccountsList().getScrollable().getScroller().scrollTo(0, 0);
+      // Precreate the DOMs
+      //Ext.defer(activeItem.createView, 1, activeItem);
+      activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -298,7 +297,7 @@ Ext.define('Genesis.controller.Accounts',
    {
       var me = this;
       var customerId = record.getId();
-      var merchantName = record.getMerchant().get('name');
+      //var merchantName = record.getMerchant().get('name');
       var vport = me.getViewport();
 
       Genesis.controller.ControllerBase.playSoundFile(me.getViewPortCntlr().sound_files['clickSound']);
@@ -340,6 +339,7 @@ Ext.define('Genesis.controller.Accounts',
    onTransferActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
+      var screenShow = 0;
       var container = me.getTransferContainer();
       switch(me.getMode())
       {
@@ -348,7 +348,7 @@ Ext.define('Genesis.controller.Accounts',
             me.getAtrCloseBB().hide();
             me.getAtrCalcCloseBB().hide();
             me.getAtrBB().show();
-            container.setActiveItem(0);
+            //container.setActiveItem(0);
             break;
          }
          case 'emailtransfer' :
@@ -360,16 +360,18 @@ Ext.define('Genesis.controller.Accounts',
             if(oldActiveItem && (oldActiveItem == me.getAccounts() && !me.rec))
             {
                me.setMode('profile');
-               container.setActiveItem(0);
+               //container.setActiveItem(0);
             }
             else
             {
-               me.getPoints().setValue(null);
-               container.setActiveItem(1);
+               //me.getPoints().setValue(null);
+               //container.setActiveItem(1);
+               screenShow = 1;
             }
             break;
          }
       }
+      activeItem.createView(screenShow);
    },
    onTransferDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
@@ -662,7 +664,8 @@ Ext.define('Genesis.controller.Accounts',
    },
    getMainPage : function()
    {
-      return this.getAccounts();
+      var page = this.getAccounts();
+      return page;
    },
    openMainPage : function()
    {

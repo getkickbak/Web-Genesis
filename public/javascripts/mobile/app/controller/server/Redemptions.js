@@ -133,6 +133,7 @@ Ext.define('Genesis.controller.server.Redemptions',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
+      activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -198,7 +199,8 @@ Ext.define('Genesis.controller.server.Redemptions',
    // --------------------------------------------------------------------------
    getMainPage : function()
    {
-      return this.getRedemptions();
+      var page = this.getRedemptions();
+      return page;
    },
    openPage : function(subFeature)
    {

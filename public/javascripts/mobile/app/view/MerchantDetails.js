@@ -92,22 +92,24 @@ Ext.define('Genesis.view.MerchantDetails',
          }]
       }]
    },
-   showView : function()
+   createView : function()
    {
-      this.add(
+      if(!this.callParent(arguments))
+      {
+         return;
+      }
+
+      this.setPreRender(this.getPreRender().concat([Ext.create('Ext.dataview.DataView',
       {
          xtype : 'dataview',
          cls : 'separator',
          useComponents : true,
          defaultType : 'merchantdetailsitem',
          scrollable : undefined,
-         store :
-         {
-            model : 'Genesis.model.Venue',
-            autoLoad : false
-         }
-      },
+         store : 'MerchantRenderStore'
+      }),
       /*
+       Ext.create('Ext.Map,',
        {
        xtype : 'map',
        tag : 'map',
@@ -119,8 +121,9 @@ Ext.define('Genesis.view.MerchantDetails',
        useCurrentLocation : false,
        //store : 'VenueStore',
        flex : 1
-       }
+       }),
        */
+      Ext.create('Ext.Component',
       {
          xtype : 'component',
          tag : 'map',
@@ -152,6 +155,6 @@ Ext.define('Genesis.view.MerchantDetails',
             }
          },
          tpl : Ext.create('Ext.XTemplate', '<img height="{height}" width="{width}" src="{photo}"/>')
-      });
+      })]));
    }
 });

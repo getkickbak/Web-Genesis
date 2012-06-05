@@ -47,7 +47,9 @@ Ext.define('Genesis.view.LoginPage',
       });
       this.add(actions);
       this.callParent(arguments);
-   }
+   },
+   showView : Ext.emptyFn,
+   createView : Ext.emptyFn
 });
 
 Ext.define('Genesis.view.SignInPage',
@@ -107,7 +109,8 @@ Ext.define('Genesis.view.SignInPage',
          text : 'Sign In'
       }]
    },
-   showView : Ext.emptyFn
+   showView : Ext.emptyFn,
+   createView : Ext.emptyFn
 });
 
 Ext.define('Genesis.view.CreateAccountPage',
@@ -175,5 +178,6 @@ Ext.define('Genesis.view.CreateAccountPage',
          text : 'Create Account'
       }]
    },
-   showView : Ext.emptyFn
+   showView : Ext.emptyFn,
+   createView : Ext.emptyFn
 });

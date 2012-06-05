@@ -126,18 +126,23 @@ Ext.define('Genesis.view.client.ChallengePage',
       }
       this.photoAction.show();
    },
-   showView : function()
+   createView : function()
    {
-      this.add(
+      if (!this.callParent(arguments))
+      {
+         return;
+      }
+      
+      var carousel;
+      this.getPreRender().push( carousel = Ext.create('Ext.Carousel',
       {
          xtype : 'carousel',
          cls : 'challengePageItem shadows',
          direction : 'horizontal'
-      });
+      }));
 
       var record = _application.getController('Viewport').getVenue();
       var venueId = record.getId();
-      var carousel = this.query('carousel')[0];
       var items = record.challenges().getRange();
 
       if((carousel.getInnerItems().length > 0) && //
@@ -154,7 +159,7 @@ Ext.define('Genesis.view.client.ChallengePage',
          carousel.removeAll(true);
          for(var i = 0; i < Math.ceil(items.length / 6); i++)
          {
-            carousel.add(
+            carousel.add(Ext.create('Ext.dataview.DataView',
             {
                xtype : 'dataview',
                cls : 'challengeMenuSelections',
@@ -166,7 +171,7 @@ Ext.define('Genesis.view.client.ChallengePage',
                   model : 'Genesis.model.Challenge',
                   data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
                }
-            });
+            }));
          }
          if(carousel.getInnerItems().length > 0)
          {

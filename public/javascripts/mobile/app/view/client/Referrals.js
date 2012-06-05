@@ -24,9 +24,14 @@ Ext.define('Genesis.view.client.Referrals',
          }]
       }]
    },
-   showView : function()
+   createView : function()
    {
-      this.add(
+      if(!this.callParent(arguments))
+      {
+         return;
+      }
+      
+      this.getPreRender().push(Ext.create('Ext.Container',
       {
          xtype : 'container',
          tag : 'referralsMain',
@@ -152,7 +157,7 @@ Ext.define('Genesis.view.client.Referrals',
                ui : 'orange-large'
             }]
          }]
-      });
+      }));
    },
    statics :
    {

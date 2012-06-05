@@ -90,7 +90,11 @@ Ext.define('Genesis.view.Viewport',
       var rc = this.setActiveItem(activeItem);
       if(!layout.isCard)
       {
-         activeItem.showView();
+         //
+         // Defer timeout is required to ensure that
+         // if createView called is delayed, we will be scheduled behind it
+         //
+         Ext.defer(activeItem.showView, 1, activeItem);
       }
       return rc;
    },

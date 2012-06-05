@@ -4,6 +4,19 @@ Ext.define('Genesis.view.ViewBase',
    xtype : 'viewbase',
    config :
    {
+      preRender : null
    },
-   showView : Ext.emptyFn
+   initialize : function()
+   {
+      this.callParent(arguments);
+      this.setPreRender([]);
+   },
+   createView : function()
+   {
+      return (this.getPreRender().length == 0);
+   },
+   showView : function()
+   {
+      this.add(this.getPreRender());
+   }
 });

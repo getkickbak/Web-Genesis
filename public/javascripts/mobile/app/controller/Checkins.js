@@ -391,6 +391,8 @@ Ext.define('Genesis.controller.Checkins',
    {
       var me = this;
 
+      activeItem.createView();
+      
       var viewport = me.getViewPortCntlr();
       var checkinContainer = me.getCheckInNowBar();
       var tbbar = activeItem.query('titlebar')[0];
@@ -465,7 +467,8 @@ Ext.define('Genesis.controller.Checkins',
    },
    getMainPage : function()
    {
-      return this.getExplore();
+      var page = this.getExplore();
+      return page;
    },
    openMainPage : function()
 

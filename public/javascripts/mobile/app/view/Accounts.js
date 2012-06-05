@@ -26,9 +26,14 @@ Ext.define('Genesis.view.Accounts',
          }]
       }]
    },
-   showView : function()
+   createView : function()
    {
-      this.add(
+      if(!this.callParent(arguments))
+      {
+         return;
+      }
+      
+      this.getPreRender().push(Ext.create('Ext.List',
       {
          xtype : 'list',
          store : 'CustomerStore',
@@ -75,6 +80,6 @@ Ext.define('Genesis.view.Accounts',
             }
          }),
          onItemDisclosure : Ext.emptyFn
-      });
+      }));
    }
 });

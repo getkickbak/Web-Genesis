@@ -5,6 +5,7 @@ Ext.define('Genesis.view.MainPage',
    alias : 'widget.mainpageview',
    config :
    {
+      preRender : null,
       direction : 'horizontal',
       items : ( function()
          {
@@ -89,9 +90,18 @@ Ext.define('Genesis.view.MainPage',
             return items;
          }())
    },
-   showView : function()
+   initialize : function()
    {
-      var me = this;
+      this.setPreRender([]);
+      this.callParent(arguments);
+   },
+   createView : function()
+   {
+      if(!Genesis.view.ViewBase.prototype.createView.apply(this, arguments))
+      {
+         return;
+      }
+
       var carousel = this;
       var app = _application;
       var viewport = app.getController('Viewport');
@@ -129,7 +139,7 @@ Ext.define('Genesis.view.MainPage',
          carousel.removeAll(true);
          for(var i = 0; i < Math.ceil(items.length / 6); i++)
          {
-            carousel.add(
+            this.getPreRender().push(Ext.create('Ext.dataview.DataView',
             {
                xtype : 'dataview',
                cls : 'mainMenuSelections',
@@ -172,7 +182,7 @@ Ext.define('Genesis.view.MainPage',
                   }
                }),
                autoScroll : true
-            });
+            }));
          }
          console.log("MainPage Icons Refreshed.");
       }
@@ -199,12 +209,16 @@ Ext.define('Genesis.view.MainPage',
                }
             }
          }
+         if(carousel.getInnerItems().length > 0)
+         {
+            carousel.setActiveItem(0);
+         }
          console.log("MainPage Icons Not changed.");
       }
-
-      if(carousel.getInnerItems().length > 0)
-      {
-         carousel.setActiveItem(0);
-      }
+      delete carousel._listitems;
+   },
+   showView : function()
+   {
+      this.add(this.getPreRender());
    }
 });

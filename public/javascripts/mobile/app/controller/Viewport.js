@@ -80,10 +80,6 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'onRedemptionsButtonTap'
          },
-         'tabbar' :
-         {
-            tabchange : 'onTabBarTabChange'
-         },
          'viewportview button' :
          {
             tap : 'onButtonTap'
@@ -348,25 +344,6 @@ Ext.define('Genesis.controller.Viewport',
       this.resetView();
       this.fireEvent('openpage', 'MainPage', null, null);
       console.log("Going back to HomePage ...");
-   },
-   onTabBarTabChange : function(bar, newTab, oldTab, eOpts)
-   {
-      /*
-       //Ext.defer(function()
-       {
-       if(newTab)
-       {
-       newTab.setActive(false);
-       }
-
-       if(oldTab)
-       {
-       oldTab.setActive(false);
-       }
-       }
-       //}, 500);
-       */
-      return true;
    },
    // --------------------------------------------------------------------------
    // Page Navigation Handlers

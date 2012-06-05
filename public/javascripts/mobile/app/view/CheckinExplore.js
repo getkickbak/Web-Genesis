@@ -49,9 +49,13 @@ Ext.define('Genesis.view.CheckinExplore',
          }]
       }]
    },
-   showView : function()
+   createView : function()
    {
-      this.add(
+      if(!this.callParent(arguments))
+      {
+         return;
+      }
+      this.getPreRender().push(Ext.create('Ext.List',
       {
          xtype : 'list',
          store : 'CheckinExploreStore',
@@ -100,7 +104,12 @@ Ext.define('Genesis.view.CheckinExplore',
                });
             }
          }]
-      });
+      }));
+   },
+   showView : function()
+   {
+      this.callParent(arguments);
+      
       // Hack to fix bug in Sencha Touch API
       var plugin = this.query('list')[0].getPlugins()[0];
       plugin.refreshFn = plugin.getRefreshFn();

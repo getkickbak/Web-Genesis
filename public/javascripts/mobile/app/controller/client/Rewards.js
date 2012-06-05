@@ -296,12 +296,14 @@ Ext.define('Genesis.controller.client.Rewards',
          });
       }
    },
-   onActivate : function(c, newActiveItem, oldActiveItem, eOpts)
+   onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
       var container = me.getRewards();
       var viewport = me.getViewPortCntlr();
 
+      activeItem.createView();
+      
       me.startRouletteScreen();
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
       {
@@ -309,7 +311,7 @@ Ext.define('Genesis.controller.client.Rewards',
          var app = me.getApplication();
          app.getController('Prizes').fireEvent('prizecheck', me.loadCallback[0], me.loadCallback[1]);
          delete me.loadCallback;
-      });
+      });      
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -324,7 +326,8 @@ Ext.define('Genesis.controller.client.Rewards',
    // --------------------------------------------------------------------------
    getMainPage : function()
    {
-      return this.getRewards();
+      var page = this.getRewards();
+      return page;
    },
    openPage : function(subFeature)
    {

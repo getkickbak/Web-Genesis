@@ -23,7 +23,16 @@ Ext.define('Genesis.view.server.Rewards',
             ui : 'back',
             text : 'Back'
          }]
-      },
+      }]
+   },
+   createView : function()
+   {
+      if(!this.callParent(arguments))
+      {
+         return;
+      }
+      
+      this.getPreRender().push(Ext.create('Ext.Container',
       {
          xtype : 'container',
          tag : 'rewards',
@@ -191,7 +200,7 @@ Ext.define('Genesis.view.server.Rewards',
                ui : 'orange-large'
             }]
          }]
-      }]
+      }));
    },
    statics :
    {

@@ -36,7 +36,16 @@ Ext.define('Genesis.view.client.AccountsTransfer',
             ui : 'normal',
             text : 'Close'
          }]
-      },
+      }]
+   },
+   createView : function(num)
+   {
+      if (!this.callParent(arguments))
+      {
+         return;
+      }
+      
+      this.setPreRender(this.getPreRender().concat([Ext.create('Ext.Container',
       {
          xtype : 'container',
          tag : 'accountsTransferMain',
@@ -53,7 +62,7 @@ Ext.define('Genesis.view.client.AccountsTransfer',
                direction : 'up'
             }
          },
-         activeItem : 0,
+         activeItem : num,
          defaults :
          {
             layout : 'fit'
@@ -279,7 +288,7 @@ Ext.define('Genesis.view.client.AccountsTransfer',
                ui : 'orange-large'
             }]
          }]
-      }]
+      })]));
    },
    statics :
    {

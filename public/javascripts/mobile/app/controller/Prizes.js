@@ -366,67 +366,14 @@ Ext.define('Genesis.controller.Prizes',
    onShowPrize : function(showPrize)
    {
       var me = this;
-      var carousel;
+      var store = Ext.StoreMgr.get('MerchantPrizeStore');
+      
       //
       // Show prize on ShowPrize Container
       //
       me.showPrize = showPrize;
-
-      var _insertPrize = function()
-      {
-         carousel = me.getMainCarousel();
-         carousel.insert(0,
-         {
-            tag : 'rewardPanel',
-            xtype : 'dataview',
-            store :
-            {
-               model : 'Genesis.model.EarnPrize',
-               autoLoad : false,
-               data : me.showPrize
-            },
-            useComponents : true,
-            scrollable : false,
-            defaultType : 'rewarditem',
-            defaultUnit : 'em',
-            margin : '0 0 0.8 0'
-         });
-         carousel.setActiveItem(0);
-      }
-      //
-      // Add Entry to both views
-      //
-      me.setMode('userPrizes');
-      var prizes = me.getMainPage();
-      if(prizes.isPainted() && !prizes.isHidden())
-      {
-         // Either a carousel or a empty view
-         var container = view.getInnerItems()[0];
-         if(container && container.isXType('carousel', true))
-         {
-            _insertPrize();
-            console.log("onShowPrize View - Updated UserPrize View.");
-         }
-      }
-
-      me.setMode('merchantPrizes');
-      prizes = me.getMainPage();
-      if(prizes.isPainted() && !prizes.isHidden())
-      {
-         var container = me.getMainCarousel();
-         var item = prizes.getItems().item[0];
-
-         //
-         // Insert into Carousel only if it's necessary
-         //
-         if((container && item && item.isXType('carousel', true) && //
-         container.query('dataview')[0].getStore().first().getMerchant().getId() == merchantId))
-         {
-            _insertPrize();
-            console.log("onShowPrize View - Updated MerchantPrize View.");
-         }
-      }
-
+      store.insert(0,showPrize);
+      
       me.setMode('showPrize');
       Ext.defer(function()
       {
@@ -447,13 +394,10 @@ Ext.define('Genesis.controller.Prizes',
    onMerchantPrizesActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      var view = me.getMainPage();
       var viewport = me.getViewPortCntlr();
       var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
-      var container;
       var prizesList = [];
 
-      var tbbar = activeItem.query('titlebar')[0];
       me.getMCloseBB().show();
       me.getMBB().hide();
 
@@ -479,76 +423,20 @@ Ext.define('Genesis.controller.Prizes',
 
       if(prizesList.length == 0)
       {
-         view.removeAll();
-         view.add(
-         {
-            tag : 'rewardPanel',
-            cls : 'noprizes',
-            xtype : 'component',
-            scrollable : false,
-            defaultUnit : 'em',
-            margin : '0 0 0.8 0'
-         });
          me.getMRedeemBtn().hide();
-         console.log("MerchantPrize View - No Prizes found.");
       }
       else
       {
-         // Either a carousel or a empty view
-         var container = view.getInnerItems()[0];
-         if((container && container.isXType('carousel', true) &&
-         // First item in the carousel
-         container.query('dataview')[0].getStore().first().getMerchant().getId() == merchantId))
-         {
-            //
-            // Do Not need to change anything if there are already loaded from before
-            //
-            console.log("MerchantPrize View - do not need to be updated.");
-         }
-         else
-         {
-            //
-            // Create Prizes Screen from scratch
-            //
-            view.removeAll();
-            container = me.getMainCarousel();
-            var items = [];
-            for(var i = 0; i < prizesList.length; i++)
-            {
-               items.push(
-               {
-                  tag : 'rewardPanel',
-                  xtype : 'dataview',
-                  store :
-                  {
-                     model : 'Genesis.model.EarnPrize',
-                     autoLoad : false,
-                     data : prizesList[i]
-                  },
-                  useComponents : true,
-                  scrollable : false,
-                  defaultType : 'rewarditem',
-                  defaultUnit : 'em',
-                  margin : '0 0 0.8 0'
-               });
-            }
-            container.add(items);
-
-            console.log("MerchantPrize View - Found " + prizesList.length + " Prizes needed to update.");
-         }
          me.getMRedeemBtn().show();
       }
+      activeItem.createView();
    },
    onUserPrizesActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      var view = me.getMainPage();
-      var viewport = me.getViewPortCntlr();
-      var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
-      var items = [], container;
-      var prizesList = [];
+      var items = [], prizesList = [];
+      var views;
 
-      var tbbar = activeItem.query('titlebar')[0];
       me.getUCloseBB().hide();
       me.getUBB().show();
 
@@ -561,69 +449,19 @@ Ext.define('Genesis.controller.Prizes',
 
       if(prizesList.length == 0)
       {
-         view.removeAll();
-         view.add(
-         {
-            tag : 'rewardPanel',
-            cls : 'noprizes',
-            xtype : 'component',
-            scrollable : false,
-            defaultUnit : 'em',
-            margin : '0 0 0.8 0'
-         });
          me.getURedeemBtn().hide();
-
-         console.log("UserPrize View - No Prizes found.");
       }
       else
       {
-         // Either a carousel or a empty view
-         var container = view.getInnerItems()[0];
-         if(container && container.isXType('carousel', true))
-         {
-            //
-            // User Prizes have been loaded previously, no need to refresh!
-            //
-            console.log("UserPrize View - do not need to be updated.");
-         }
-         else
-         {
-            view.removeAll();
-            container = me.getMainCarousel();
-            for(var i = 0; i < prizesList.length; i++)
-            {
-               items.push(
-               {
-                  tag : 'rewardPanel',
-                  xtype : 'dataview',
-                  store :
-                  {
-                     model : 'Genesis.model.EarnPrize',
-                     autoLoad : false,
-                     data : prizesList[i]
-                  },
-                  useComponents : true,
-                  scrollable : false,
-                  defaultType : 'rewarditem',
-                  defaultUnit : 'em',
-                  margin : '0 0 0.8 0'
-               });
-            }
-            container.add(items);
-
-            console.log("UserPrize View - Found " + prizesList.length + " Prizes needed to update.");
-         }
-
          me.getURedeemBtn().show();
       }
+      activeItem.createView();
    },
    onShowPrizeActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
       var view = me.getMainPage();
       var viewport = me.getViewPortCntlr();
-      var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
-      var container = view;
 
       var tbbar = activeItem.query('titlebar')[0];
       var photo = me.showPrize.getCustomerReward().get('photo');
@@ -657,9 +495,10 @@ Ext.define('Genesis.controller.Prizes',
             me.getVerifyBtn()['hide']();
             break;
       }
-      container.query('dataview[tag=rewardPanel]')[0].getStore().setData(me.showPrize);
-      delete me.showPrize;
+      view.showPrize = me.showPrize;
       console.log("ShowPrize View - Updated ShowPrize View.");
+      view.createView();
+      delete me.showPrize;
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -672,55 +511,42 @@ Ext.define('Genesis.controller.Prizes',
 
       if(prizes.isPainted() && !prizes.isHidden())
       {
-         var store = Ext.StoreMgr.get('MerchantPrizeStore');
+         //
+         // Remove Prize
+         //
+         if(mode != 'reward')
+         {
+            var store = Ext.StoreMgr.get('MerchantPrizeStore');
+            var carousel = prizes.query('carousel')[0];
+            var container = carousel || prizes;
+            var item = carousel ? carousel.getActiveItem() : container.getInnerItems()[0];
+
+            store.remove(item.getStore().getData().items[0]);
+         }
+
          switch (mode)
          {
             case 'merchantPrizes' :
             {
                me.getMDoneBtn().hide();
                me.getMRedeemBtn().hide();
+               break;
             }
             case 'userPrizes' :
             {
-               me.setMode('userPrizes');
-               me.onDoneTap(null, null, null, null, 'showPrize');
-               me.setMode('merchantPrizes');
-               me.onDoneTap(null, null, null, null, 'showPrize');
-
                me.getUDoneBtn().hide();
                me.getURedeemBtn().hide();
-               me.popView();
-               break;
-            }
-            case 'showPrize' :
-            {
-               var carousel = prizes.query('carousel')[0];
-               var container = carousel || prizes;
-               var item = carousel ? container.getActiveItem() : container.getItems().items[0];
-               //
-               // Remove Prize
-               //
-               container.remove(item, true);
-               store.remove(item.getStore().getData().items[0])
-               if(!overrideMode)
-               {
-                  me.getSDoneBtn().hide();
-                  me.getSRedeemBtn().hide();
-                  me.popView();
-               }
                break;
             }
             case 'reward' :
+            case 'showPrize' :
             {
-               if(!overrideMode)
-               {
-                  me.getSDoneBtn().hide();
-                  me.getSRedeemBtn().hide();
-                  me.popView();
-               }
+               me.getSDoneBtn().hide();
+               me.getSRedeemBtn().hide();
                break;
             }
          }
+         me.popView();
       }
    },
    onRedeemPrizeTap : function(b, e, eOpts, eInfo)
@@ -929,6 +755,7 @@ Ext.define('Genesis.controller.Prizes',
             break;
          }
       }
+
       return page;
    },
    openMainPage : function()

@@ -113,7 +113,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       var bg = this.query('container[tag=background]')[0];
 
       // Update Background Photo
-      this.setHeight(Ext.Viewport.getSize().width);
+      bg.setHeight(Ext.Viewport.getSize().width);
       bg.setStyle(
       {
          'background-image' : 'url(' + data.Merchant['alt_photo']['url'] + ')'

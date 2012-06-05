@@ -56,6 +56,7 @@ Ext.define('Genesis.controller.server.Challenges',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
+      activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {

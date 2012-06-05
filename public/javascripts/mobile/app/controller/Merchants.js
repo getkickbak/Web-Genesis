@@ -38,7 +38,8 @@ Ext.define('Genesis.controller.Merchants',
          shareBtn : 'viewportview button[tag=shareBtn]',
          checkinBtn : 'viewportview button[tag=checkin]',
          mainBtn : 'merchantaccountview tabbar[cls=navigationBarBottom] button[tag=main]',
-         prizesBtn : 'merchantaccountview tabbar[cls=navigationBarBottom] button[tag=prizes]'
+         prizesBtn : 'merchantaccountview tabbar[cls=navigationBarBottom] button[tag=prizes]',
+         merchantTabBar : 'merchantaccountview tabbar'
       },
       control :
       {
@@ -71,6 +72,10 @@ Ext.define('Genesis.controller.Merchants',
          'merchantaccountview tabbar[cls=navigationBarBottom] button[tag=browse]' :
          {
             tap : 'onBrowseTap'
+         },
+         merchantTabBar :
+         {
+            tabchange : 'onTabBarTabChange'
          },
          //
          //  Merchant Details Page
@@ -156,17 +161,14 @@ Ext.define('Genesis.controller.Merchants',
    {
       var page = this.getMerchantDetails();
       var venue = this.getViewPortCntlr().getVenue();
-      var map = page.query('component[tag=map]')[0];
-      var store = page.query('dataview')[0].getStore();
-      //if((store.getData().length == 0) || (store.first().getId() != venue.getId()))
-      {
-         console.debug("Refreshing Merchant Account Details ...");
-         store.setData(venue);
-      }
+
+      // Refresh Merchant Details Info
+      //Ext.StoreMgr.get('MerchantRenderStore').setData(vrecord);
 
       // Update TitleBar
       activeItem.query('titlebar')[0].setTitle(venue.get('name'));
 
+      //var map = page.query('component[tag=map]')[0];
       //var map = page.query('map')[0];
 
       // Show Share Icon
@@ -174,11 +176,9 @@ Ext.define('Genesis.controller.Merchants',
       //this.getMainBtn().hide();
 
       //this.onActivateCommon(map, map.getMap());
-      this.onActivateCommon(map, null);
-      //
-      // Scroll to the Top of the Screen
-      //
-      //page.getScrollable().getScroller().scrollTo(0, 0);
+      //this.onActivateCommon(map, null);
+
+      activeItem.createView();
    },
    onDetailsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
@@ -187,7 +187,7 @@ Ext.define('Genesis.controller.Merchants',
    },
    onMapRender : function(map, gmap, eOpts)
    {
-      this.onActivateCommon(map, gmap);
+      //this.onActivateCommon(map, gmap);
    },
    // --------------------------------------------------------------------------
    // Event Handlers
@@ -274,10 +274,8 @@ Ext.define('Genesis.controller.Merchants',
          vrecord.set('winners_count', me.winnersCount['winners_count']);
          //me.onUpdateWinnerssCount(me.winnersCount);
       }
-      
-      
+
       // Refresh Merchant Panel Info
-      //me.getTbPanel().getStore().setData(vrecord);
       Ext.StoreMgr.get('MerchantRenderStore').setData(vrecord);
 
       //
@@ -289,7 +287,7 @@ Ext.define('Genesis.controller.Merchants',
       // CheckIn button
       //
       me.getCheckinBtn()[(!checkedIn || !checkedInMatch) ? 'show' : 'hide']();
-      
+
       //
       // Main Menu button
       //
@@ -308,10 +306,9 @@ Ext.define('Genesis.controller.Merchants',
       }
       page.prizesCount = (prizesCount > 0) ? prizesCount : null;
 
-      //
-      // Scroll to the Top of the Screen
-      //
-      me.getMain().getScrollable().getScroller().scrollTo(0, 0);
+      // Precreate the DOMs
+      //Ext.defer(page.createView, 1, page);
+      page.createView();
    },
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
@@ -465,6 +462,26 @@ Ext.define('Genesis.controller.Merchants',
 
       me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
       me.pushView(me.getMerchantDetails());
+   },
+   onTabBarTabChange : function(bar, newTab, oldTab, eOpts)
+   {
+      if(newTab.config.tag == 'rewards')
+      {
+         Ext.defer(function()
+         {
+            if(newTab)
+            {
+               newTab.setActive(false);
+            }
+
+            if(oldTab)
+            {
+               oldTab.setActive(false);
+            }
+         }, 200);
+      }
+
+      return true;
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

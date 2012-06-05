@@ -70,6 +70,7 @@ Ext.define('Genesis.controller.server.Rewards',
    onActivate : function(c, newActiveItem, oldActiveItem, eOpts)
    {
       var container = this.getRewardsContainer();
+      /*
       if(container)
       {
          var activeItem = container.getActiveItem();
@@ -87,14 +88,17 @@ Ext.define('Genesis.controller.server.Rewards',
          }
          animation.enable();
       }
+      */
+      activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
-      var priceField = me.getPrice();
-      priceField.setValue(null);
+      //var priceField = me.getPrice();
+      //priceField.setValue(null);
       me.enablePrecision = false;
    },
+   /*
    onToggleBtnTap : function(b, e, eOpts, eInfo)
    {
       var container = this.getRewardsContainer();
@@ -104,17 +108,18 @@ Ext.define('Genesis.controller.server.Rewards',
       {
          case 'rewardsMainCalculator' :
          {
-            container.setActiveItem(1);
+            //container.setActiveItem(1);
             break;
          }
          case 'qrcodeContainer' :
          {
-            container.setActiveItem(0);
+            //container.setActiveItem(0);
             break;
          }
       }
-      return true;
+      return num;
    },
+   */
    onContainerActivate : function(c, value, oldValue, eOpts)
    {
       var me = this;
@@ -245,7 +250,8 @@ Ext.define('Genesis.controller.server.Rewards',
    // --------------------------------------------------------------------------
    getMainPage : function()
    {
-      return this.getRewards();
+      var page = this.getRewards();
+      return page;
    },
    openPage : function(subFeature)
    {

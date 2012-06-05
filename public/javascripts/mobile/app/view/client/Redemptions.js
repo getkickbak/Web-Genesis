@@ -27,12 +27,16 @@ Ext.define('Genesis.view.client.Redemptions',
          }]
       }]
    },
-   showView : function()
+   createView : function()
    {
+      if (!this.callParent(arguments))
+      {
+         return;
+      }
       // ------------------------------------------------------------------------
       // Redemptions Points Earned Panel
       // ------------------------------------------------------------------------
-      this.add([
+      this.setPreRender(this.getPreRender().concat([Ext.create('Ext.Toolbar',
       {
          xtype : 'toolbar',
          ui : 'light',
@@ -46,7 +50,7 @@ Ext.define('Genesis.view.client.Redemptions',
          {
             xtype : 'spacer'
          }]
-      },
+      }), Ext.create('Ext.dataview.DataView',
       {
          cls : 'ptsEarnPanel separator',
          tag : 'ptsEarnPanel',
@@ -55,10 +59,11 @@ Ext.define('Genesis.view.client.Redemptions',
          scrollable : undefined,
          defaultType : 'redemptionsptsitem',
          store : 'RedemptionRenderCStore'
-      },
+      }),
       // ------------------------------------------------------------------------
       // Redemptions Available Panel
       // ------------------------------------------------------------------------
+      Ext.create('Ext.Toolbar',
       {
          xtype : 'toolbar',
          cls : 'ptsEarnPanelHdr',
@@ -72,10 +77,11 @@ Ext.define('Genesis.view.client.Redemptions',
          {
             xtype : 'spacer'
          }]
-      },
+      }),
       // ------------------------------------------------------------------------
       // Redemptions
       // ------------------------------------------------------------------------
+      Ext.create('Ext.List',
       {
          xtype : 'list',
          scrollable : undefined,
@@ -119,7 +125,7 @@ Ext.define('Genesis.view.client.Redemptions',
             }
          }),
          onItemDisclosure : Ext.emptyFn
-      }]);
+      })]));
    },
    statics :
    {

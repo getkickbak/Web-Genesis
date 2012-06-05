@@ -26,15 +26,18 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
          }]
       }]
    },
-   showView : function()
+   createView : function()
    {
-      this.add(
+      this.getPreRender() = this.getPreRender().concat([
+      // Uploaded Image
+      Ext.create('Ext.Component',
       {
          xtype : 'component',
          tag : 'background',
          cls : 'background'
-      },
+      }),
       // Display Comment
+      Ext.create('Ext.field.TextArea',
       {
          xtype : 'textareafield',
          bottom : 0,
@@ -43,6 +46,7 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
          name : 'desc',
          tag : 'desc',
          cls : 'desc',
+         style : 'background-image:url(' + this.metaData['photo_url'] + ')',
          autoComplete : true,
          defaultUnit : 'em',
          minHeight : '2',
@@ -52,6 +56,7 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
          maxRows : 4,
          placeHolder : 'Please enter your photo description',
          clearIcon : false
-      });
+      })]);
+      delete this.metaData;
    }
 });

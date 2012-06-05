@@ -726,6 +726,8 @@ Ext.define('Genesis.controller.client.Challenges',
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
+      //Ext.defer(activeItem.createView, 1, activeItem);
+      activeItem.createView();
       delete me.selectedItem;
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -791,6 +793,8 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       var container = me.getReferralsContainer();
       container.setActiveItem(0);
+      activeItem.createView();
+      //Ext.defer(activeItem.createView, 1, activeItem);
    },
    onReferralsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
@@ -906,19 +910,16 @@ Ext.define('Genesis.controller.client.Challenges',
    onUploadPhotosActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      var bg = me.getUploadPhotosBackground();
 
-      activeItem.query('textareafield')[0].reset();
-      me.getPostBtn().show();
-      bg.setStyle(
-      {
-         'background-image' : 'url(' + me.metaData['photo_url'] + ')'
-      });
+      //me.getPostBtn().show();
+      activetItem.metaData = me.metaData;
+      //Ext.defer(activeItem.createView, 1, activeItem);
+      activeItem.createView();
    },
    onUploadPhotosDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
-      this.getPostBtn().hide();
+      //this.getPostBtn().hide();
    },
    onUploadPhotosTap : function(b, e, eOpts, eInfo)
    {
@@ -1036,7 +1037,8 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    getMainPage : function()
    {
-      return this.getChallengePage();
+      var page = this.getChallengePage();
+      return page;
    },
    openMainPage : function()
    {
