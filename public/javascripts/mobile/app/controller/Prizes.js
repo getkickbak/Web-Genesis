@@ -630,16 +630,19 @@ Ext.define('Genesis.controller.Prizes',
       }
       if (qrcode[0])
       {
+         var dom;
          switch (me.getMode())
          {
             case 'merchantPrizes' :
             {
+               dom = Ext.DomQuery.select('div.itemPoints',me.getMerchantPrizesCarousel().getActiveItem().element.dom)[0];
                me.getMRedeemBtn().hide();
                me.getMDoneBtn().show();
                break;
             }
             case 'userPrizes' :
             {
+               dom = Ext.DomQuery.select('div.itemPoints',me.getUserPrizesCarousel().getActiveItem().element.dom)[0];
                me.getURedeemBtn().hide();
                me.getUDoneBtn().show();
                break;
@@ -647,10 +650,15 @@ Ext.define('Genesis.controller.Prizes',
             case 'reward' :
             case 'showPrize' :
             {
+               dom = Ext.DomQuery.select('div.itemPoints',me.getShowPrize().element.dom)[0];
                me.getSRedeemBtn().hide();
                me.getSDoneBtn().show();
                break;
             }
+         }
+         if (dom)
+         {
+            Ext.fly(dom).addCls('x-item-hidden');
          }
 
          me.onRefreshQRCode(qrcode);

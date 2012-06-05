@@ -103,12 +103,7 @@ Ext.define('Genesis.view.Prizes',
                this.add(
                {
                   xtype : 'carousel',
-                  scrollable : undefined,
-                  masked :
-                  {
-                     xtype : 'loadmask',
-                     message : 'Loading ...'
-                  }
+                  scrollable : undefined
                });
                container = view.getInnerItems()[0];
             }
@@ -132,7 +127,6 @@ Ext.define('Genesis.view.Prizes',
                });
             }
             container.add(items);
-            container.setMasked(false);
 
             console.log("UserPrize View - Found " + prizes.length + " Prizes needed to update.");
          }
@@ -189,12 +183,7 @@ Ext.define('Genesis.view.Prizes',
             this.add(
             {
                xtype : 'carousel',
-               scrollable : undefined,
-               masked :
-               {
-                  xtype : 'loadmask',
-                  message : 'Loading ...'
-               }
+               scrollable : undefined
             });
             container = view.getInnerItems()[0];
          }
@@ -234,7 +223,6 @@ Ext.define('Genesis.view.Prizes',
                });
             }
             container.add(items);
-            container.setMasked(false);
 
             console.log("MerchantPrize View - Found " + prizesList.length + " Prizes needed to update.");
          }
