@@ -114,6 +114,7 @@ Ext.define('Genesis.controller.client.Challenges',
    fbUploadFailedMsg : 'Failed to upload the photo onto your Facebook account',
    checkinFirstMsg : 'Please Check-In before performing challenges',
    photoUploadFbReqMsg : 'Connectivity to Facebook is required to upload photos to your account',
+   referralInstructionMsg : 'Get your friend to scan this code using their KickBak App on their mobile phone!',
    photoUploadSuccessMsg : function(points)
    {
       return 'We\'ve added earned ' + points + ' points' + Genesis.constants.addCRLF() + //
@@ -325,6 +326,11 @@ Ext.define('Genesis.controller.client.Challenges',
                         container.setActiveItem(1);
                      }
                      Ext.Viewport.setMasked(false);
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Refer A Friend',
+                        message : me.referralInstructionMsg
+                     });
                      break;
                   }
                   case 'emailsender' :

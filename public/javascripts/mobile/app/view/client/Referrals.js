@@ -19,6 +19,7 @@ Ext.define('Genesis.view.client.Referrals',
          items : [
          {
             align : 'left',
+            tag :'back',
             ui : 'back',
             text : 'Back'
          }]
