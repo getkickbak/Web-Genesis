@@ -410,7 +410,7 @@ Ext.define('Genesis.controller.Viewport',
             // Viewport will automatically detect not to delete current view
             // until is no longer the activeItem
             //
-            me.getViewport().remove(lastView['view']);
+            //me.getViewport().remove(lastView['view']);
          }
       }
    },

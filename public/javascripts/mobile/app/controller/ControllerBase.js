@@ -195,7 +195,7 @@ Ext.define('Genesis.controller.ControllerBase',
       var viewport = this.getViewPortCntlr();
       if(viewport != this)
       {
-         viewport.relayEvents(this, ['pushview', 'popview']);
+         viewport.relayEvents(this, ['pushview', 'popview', 'silentpopview']);
          viewport.on('animationCompleted', this.onAnimationCompleted, this);
       }
    },
