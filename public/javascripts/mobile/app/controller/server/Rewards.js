@@ -67,28 +67,28 @@ Ext.define('Genesis.controller.server.Rewards',
    // --------------------------------------------------------------------------
    // Rewards Page
    // --------------------------------------------------------------------------
-   onActivate : function(c, newActiveItem, oldActiveItem, eOpts)
+   onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var container = this.getRewardsContainer();
       /*
-      if(container)
-      {
-         var activeItem = container.getActiveItem();
-         var animation = container.getLayout().getAnimation();
-         animation.disable();
-         switch (activeItem.config.tag)
-         {
-            case 'qrcodeContainer' :
-            {
-               this.onToggleBtnTap(null, null, null, null);
-               break;
-            }
-            default :
-               break;
-         }
-         animation.enable();
-      }
-      */
+       var container = this.getRewardsContainer();s
+       if(container)
+       {
+       var activeItem = container.getActiveItem();
+       var animation = container.getLayout().getAnimation();
+       animation.disable();
+       switch (activeItem.config.tag)
+       {
+       case 'qrcodeContainer' :
+       {
+       this.onToggleBtnTap(null, null, null, null);
+       break;
+       }
+       default :
+       break;
+       }
+       animation.enable();
+       }
+       */
       activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -99,27 +99,27 @@ Ext.define('Genesis.controller.server.Rewards',
       me.enablePrecision = false;
    },
    /*
-   onToggleBtnTap : function(b, e, eOpts, eInfo)
-   {
-      var container = this.getRewardsContainer();
-      var activeItem = container.getActiveItem();
+    onToggleBtnTap : function(b, e, eOpts, eInfo)
+    {
+    var container = this.getRewardsContainer();
+    var activeItem = container.getActiveItem();
 
-      switch (activeItem.config.tag)
-      {
-         case 'rewardsMainCalculator' :
-         {
-            //container.setActiveItem(1);
-            break;
-         }
-         case 'qrcodeContainer' :
-         {
-            //container.setActiveItem(0);
-            break;
-         }
-      }
-      return num;
-   },
-   */
+    switch (activeItem.config.tag)
+    {
+    case 'rewardsMainCalculator' :
+    {
+    //container.setActiveItem(1);
+    break;
+    }
+    case 'qrcodeContainer' :
+    {
+    //container.setActiveItem(0);
+    break;
+    }
+    }
+    return num;
+    },
+    */
    onContainerActivate : function(c, value, oldValue, eOpts)
    {
       var me = this;
