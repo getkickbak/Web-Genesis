@@ -791,8 +791,8 @@ Ext.define('Genesis.controller.client.Challenges',
    onReferralsActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      var container = me.getReferralsContainer();
-      container.setActiveItem(0);
+      //var container = me.getReferralsContainer();
+      //container.setActiveItem(0);
       activeItem.createView();
       //Ext.defer(activeItem.createView, 1, activeItem);
    },
