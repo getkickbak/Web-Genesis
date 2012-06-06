@@ -7,7 +7,7 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
    config :
    {
       cls : 'photoUploadPage',
-      layout : 'fit',
+      layout : 'vbox',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
          title : 'Photo Upload',
@@ -19,13 +19,22 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
          }]
       })]
    },
+   showView : function()
+   {
+      this.callParent(arguments);
+
+      console.debug("Rendering [" + this.metaData['photo_url'] + "]");
+      this.query('container[tag=background]')[0].element.dom.style.cssText += 'background-image:url(' + this.metaData['photo_url'] + ');'
+      delete this.metaData;
+   },
    createView : function()
    {
-      this.getPreRender() = this.getPreRender().concat([
+      this.setPreRender(this.getPreRender().concat([
       // Uploaded Image
-      Ext.create('Ext.Component',
+      photo = Ext.create('Ext.Container',
       {
-         xtype : 'component',
+         flex : 1,
+         xtype : 'container',
          tag : 'background',
          cls : 'background'
       }),
@@ -39,7 +48,6 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
          name : 'desc',
          tag : 'desc',
          cls : 'desc',
-         style : 'background-image:url(' + this.metaData['photo_url'] + ')',
          autoComplete : true,
          defaultUnit : 'em',
          minHeight : '2',
@@ -49,7 +57,6 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
          maxRows : 4,
          placeHolder : 'Please enter your photo description',
          clearIcon : false
-      })]);
-      delete this.metaData;
+      })]));
    }
 });

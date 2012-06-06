@@ -32,7 +32,7 @@ Ext.define('Genesis.controller.client.Challenges',
             autoCreate : true,
             xtype : 'clientuploadphotospageview'
          },
-         uploadPhotosBackground : 'clientuploadphotospageview component[tag=background]',
+         uploadPhotosBackground : 'clientuploadphotospageview container[tag=background]',
          postBtn : 'viewportview button[tag=post]',
          //
          // Referral Challenge
@@ -114,6 +114,7 @@ Ext.define('Genesis.controller.client.Challenges',
    fbUploadFailedMsg : 'Failed to upload the photo onto your Facebook account',
    checkinFirstMsg : 'Please Check-In before performing challenges',
    photoUploadFbReqMsg : 'Connectivity to Facebook is required to upload photos to your account',
+   completingChallengeMsg : 'Completing your challenge ...',
    referralInstructionMsg : 'Get your friend to scan this code using their KickBak App on their mobile phone!',
    photoUploadSuccessMsg : function(points)
    {
@@ -154,9 +155,9 @@ Ext.define('Genesis.controller.client.Challenges',
    photoEventHandler : function(position)
    {
       var me = this;
-      if(me.imageURI)
+      if (me.imageURI)
       {
-         if(Genesis.constants.isNative())
+         if (Genesis.constants.isNative())
          {
             var options = new FileUploadOptions();
             options.fileKey = "image";
@@ -186,7 +187,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   "Response = [" + res + ']\n' + //
                   "Code = " + r.responseCode + '\n' + "Sent = " + r.bytesSent);
                   res = Ext.decode(res);
-                  if(res)
+                  if (res)
                   {
                      //
                      // Set MetaData from PhotoUpload here
@@ -205,7 +206,7 @@ Ext.define('Genesis.controller.client.Challenges',
                }
 
                Ext.Viewport.setMasked(false);
-               if(metaData && metaData['photo_url'] && metaData['upload_token'])
+               if (metaData && metaData['photo_url'] && metaData['upload_token'])
                {
                   console.log("Uploading to Facebook using upload_token[" + metaData['upload_token'] + "]...");
 
@@ -231,11 +232,19 @@ Ext.define('Genesis.controller.client.Challenges',
          }
          else
          {
-            Ext.device.Notification.show(
+            me.metaData =
             {
-               title : 'Error',
-               message : "Cannot upload photo in Non-Native Mode"
-            });
+               'photo_url' : me.imageURI
+            };
+            me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
+            me.pushView(me.getUploadPhotosPage());
+            /*
+             Ext.device.Notification.show(
+             {
+             title : 'Error',
+             message : "Cannot upload photo in Non-Native Mode"
+             });
+             */
          }
       }
    },
@@ -300,7 +309,7 @@ Ext.define('Genesis.controller.client.Challenges',
              });
              }
              */
-            if(operation.wasSuccessful())
+            if (operation.wasSuccessful())
             {
                var qrcode;
                switch (tag)
@@ -316,7 +325,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      //
                      // Query server to get generate qrcode
                      //
-                     if(qrcode[0])
+                     if (qrcode[0])
                      {
                         me.getQrcode().setStyle(
                         {
@@ -456,7 +465,7 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       var me = this;
 
-      if(qrcode != null)
+      if (qrcode != null)
       {
          me.completeChallenge(qrcode, (me.metaData) ? me.metaData['position'] : null);
       }
@@ -482,7 +491,7 @@ Ext.define('Genesis.controller.client.Challenges',
          {
             var id = metaData['id'];
             var customer = cstore.getById(id);
-            if(!customer)
+            if (!customer)
             {
                customer = cstore.add(metaData)[0];
             }
@@ -492,7 +501,7 @@ Ext.define('Genesis.controller.client.Challenges',
             console.debug("Adding Referral Code to Referral DB ...");
             Genesis.db.addReferralDBAttrib("m" + customer.getMerchant().getId(), qrcode);
 
-            if(me.referralCbFn)
+            if (me.referralCbFn)
             {
                console.debug("Calling Referral CallbackFn ...");
                me.referralCbFn();
@@ -534,7 +543,7 @@ Ext.define('Genesis.controller.client.Challenges',
          }
          default:
             console.log('Total Points - ' + metaData['account_points']);
-            if(metaData['account_points'])
+            if (metaData['account_points'])
             {
                cstore.getById(customerId).set('points', metaData['account_points']);
             }
@@ -581,7 +590,7 @@ Ext.define('Genesis.controller.client.Challenges',
          callback : function(records, operation)
          {
             var metaData2 = Challenge.getProxy().getReader().metaData;
-            if(operation.wasSuccessful() && metaData2)
+            if (operation.wasSuccessful() && metaData2)
             {
                //
                // Update points from the purchase or redemption
@@ -609,7 +618,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   buttons : ['Try Again', 'Cancel'],
                   callback : function(btn)
                   {
-                     if(btn.toLowerCase() == 'try again')
+                     if (btn.toLowerCase() == 'try again')
                      {
                         Ext.defer(me.completeUploadPhotosChallenge, 1 * 1000, me);
                      }
@@ -636,10 +645,10 @@ Ext.define('Genesis.controller.client.Challenges',
 
       var carousel = this.getChallengePage().query('carousel')[0];
       // No need to update the Challenge Menu. Nothing changed.
-      for(var i = 0; i < carousel.getInnerItems().length; i++)
+      for (var i = 0; i < carousel.getInnerItems().length; i++)
       {
          var list = carousel.getInnerItems()[i];
-         if(list != d)
+         if (list != d)
          {
             list.deselectAll();
          }
@@ -656,7 +665,7 @@ Ext.define('Genesis.controller.client.Challenges',
          scope : this,
          before : function()
          {
-            for(var i = 0; i < desc.getItems().length; i++)
+            for (var i = 0; i < desc.getItems().length; i++)
             {
                desc.getItems().getAt(i).updateData(model.getData());
             }
@@ -675,7 +684,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var selectedItem = me.selectedItem;
 
       // VenueId can be found after the User checks into a venue
-      if(!(cvenue && venue && (cvenue.getId() == venue.getId())))
+      if (!(cvenue && venue && (cvenue.getId() == venue.getId())))
       {
          Ext.device.Notification.show(
          {
@@ -685,7 +694,7 @@ Ext.define('Genesis.controller.client.Challenges',
          return;
       }
 
-      if(selectedItem)
+      if (selectedItem)
       {
          switch (selectedItem.get('type').value)
          {
@@ -708,7 +717,7 @@ Ext.define('Genesis.controller.client.Challenges',
             case 'vip' :
             case 'custom' :
             {
-               if(selectedItem.get('require_verif'))
+               if (selectedItem.get('require_verif'))
                {
                   Ext.device.Notification.show(
                   {
@@ -744,7 +753,7 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       var me = this;
       var id, type, params;
-      if(!position)
+      if (!position)
       {
          type = 'referral';
          id = me.reservedReferralId;
@@ -784,7 +793,7 @@ Ext.define('Genesis.controller.client.Challenges',
          {
             var metaData = Challenge.getProxy().getReader().metaData;
             console.log('Challenge Completed(' + operation.wasSuccessful() + ')');
-            if(operation.wasSuccessful() && metaData)
+            if (operation.wasSuccessful() && metaData)
             {
                me.fireEvent('challengecomplete', type, qrcode, venueId, customerId, position);
             }
@@ -815,9 +824,9 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       var me = this;
 
-      if(me.getViewPortCntlr().getCustomer().get('visits') > 0)
+      if (me.getViewPortCntlr().getCustomer().get('visits') > 0)
       {
-         if(list)
+         if (list)
          {
             list.deselect([model]);
          }
@@ -874,11 +883,11 @@ Ext.define('Genesis.controller.client.Challenges',
       photoAction.hide();
 
       console.log("Checking for Facebook Plugin ...");
-      Genesis.fb.facebook_onLogin(function(params)
+      if (Genesis.constants.isNative())
       {
-         console.log("Accessing Camera Plugin ...");
-         if(Genesis.constants.isNative())
+         Genesis.fb.facebook_onLogin(function(params)
          {
+            console.log("Accessing Camera Plugin ...");
             Ext.Viewport.setMasked(
             {
                xtype : 'loadmask',
@@ -896,12 +905,12 @@ Ext.define('Genesis.controller.client.Challenges',
                //targetHeight : 480
             };
             navigator.camera.getPicture(Ext.bind(me.onCameraSuccessFn, me), Ext.bind(me.onCameraErrorFn, me), cameraOptions);
-         }
-         else
-         {
-            me.onCameraSuccessFn(me.samplePhotoURL);
-         }
-      }, true, me.photoUploadFbReqMsg);
+         }, true, me.photoUploadFbReqMsg);
+      }
+      else
+      {
+         me.onCameraSuccessFn(me.samplePhotoURL);
+      }
 
    },
    onLibraryBtnTap : function(b, e, eOpts, eInfo)
@@ -921,7 +930,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
 
       //me.getPostBtn().show();
-      activetItem.metaData = me.metaData;
+      activeItem.metaData = me.metaData;
       //Ext.defer(activeItem.createView, 1, activeItem);
       activeItem.createView();
    },
@@ -937,7 +946,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var textareafield = page.query('textareafield')[0];
       var desc = textareafield.getValue();
 
-      if((desc.length > textareafield.getMaxLength()) || (desc.length < 16))
+      if ((desc.length > textareafield.getMaxLength()) || (desc.length < 16))
       {
          Ext.device.Notification.show(
          {
@@ -951,6 +960,11 @@ Ext.define('Genesis.controller.client.Challenges',
          return;
       }
 
+      me.getUploadPhotosBackground().setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.completingChallengeMsg
+      });
       var viewport = me.getViewPortCntlr();
       var venue = viewport.getVenue();
 
@@ -976,7 +990,8 @@ Ext.define('Genesis.controller.client.Challenges',
           */
       }, function(response)
       {
-         if(!response || response.error)
+         me.getUploadPhotosBackground().setMasked(false);
+         if (!response || response.error)
          {
             var message = (response && response.error) ? response.error.message : me.fbUploadFailedMsg;
             Ext.Viewport.setMasked(false);
@@ -987,7 +1002,7 @@ Ext.define('Genesis.controller.client.Challenges',
                buttons : ['Try Again', 'Cancel'],
                callback : function(btn)
                {
-                  if(btn.toLowerCase() == 'try again')
+                  if (btn.toLowerCase() == 'try again')
                   {
                      Ext.defer(me.onUploadPhotosTap, 100, me);
                   }
@@ -1015,7 +1030,7 @@ Ext.define('Genesis.controller.client.Challenges',
    openPage : function(subFeature, cb)
    {
       var me = this;
-      if(cb)
+      if (cb)
       {
          me.referralCbFn = cb;
       }
@@ -1030,7 +1045,7 @@ Ext.define('Genesis.controller.client.Challenges',
                buttons : ['Proceed', 'Cancel'],
                callback : function(btn)
                {
-                  if(btn.toLowerCase() == 'proceed')
+                  if (btn.toLowerCase() == 'proceed')
                   {
                      delete me.selectedItem;
                      me.metaData = null;
