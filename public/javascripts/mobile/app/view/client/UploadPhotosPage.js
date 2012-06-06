@@ -34,6 +34,7 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
       photo = Ext.create('Ext.Container',
       {
          flex : 1,
+         width:'100%',
          xtype : 'container',
          tag : 'background',
          cls : 'background'

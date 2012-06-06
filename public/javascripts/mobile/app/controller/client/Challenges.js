@@ -114,7 +114,7 @@ Ext.define('Genesis.controller.client.Challenges',
    fbUploadFailedMsg : 'Failed to upload the photo onto your Facebook account',
    checkinFirstMsg : 'Please Check-In before performing challenges',
    photoUploadFbReqMsg : 'Connectivity to Facebook is required to upload photos to your account',
-   completingChallengeMsg : 'Completing your challenge ...',
+   completingChallengeMsg : 'Completing Challenge ...',
    referralInstructionMsg : 'Get your friend to scan this code using their KickBak App on their mobile phone!',
    photoUploadSuccessMsg : function(points)
    {
