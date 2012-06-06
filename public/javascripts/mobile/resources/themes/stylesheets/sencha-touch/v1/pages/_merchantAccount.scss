@@ -1,0 +1,93 @@
+//------------------------------------------------------------------------------
+// Merchant Account Page and Merchant Prize Page
+//------------------------------------------------------------------------------
+.merchantMain {
+   .tbPanel {
+      background-position: center;
+      background-size: cover;
+      .container {
+        background: rgba(0,0,0,0.3) center center no-repeat;
+        color: white;
+        padding : $panelTopGap $panelGap;
+      }
+   }
+   .prizesWonPanel {
+      @if $include-border-radius { @include border-radius($panelBorderRadius); }
+      @include box-shadow(0.2em 0.2em 0em rgba(80,81,82,0.6));
+      //border:1px solid $GreyNoEntry;
+      position:relative;
+      margin: $panelTopGap $panelGap 0 $panelGap;
+      min-height : $icon-size;
+      .x-innerhtml {
+         @extend .pointsphotobase;
+         @if $include-border-radius { @include border-radius($panelBorderRadius); }
+         background-color: $Grey;
+         margin :0 !important;
+         padding:$panelTopGap $panelGap;
+         font-size:1em;
+         &:before {
+            @if $include-border-radius { @include border-left-radius($panelBorderRadius); }
+            @include custom-linear-gradient($BlueStart 10%, $BlueEnd 85%, top);
+            width:57px + 1.5*12px;
+            height:57px + 2*12px;
+            max-height:57px + 2*12px;
+         }
+      }
+      .prizeswonphoto {
+         @extend .pointsphotobase;
+         text-align:left;
+         background-color: transparent;
+         font-size:1em;
+         &:before {
+           @include custom-linear-gradient($BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/miscicons/" + "prizeswon" + ".png"));
+         }
+         .itemTitle {
+            font-weight:bold;
+            line-height:1em;
+            font-size:$largeFontSize !important;
+         }
+         .itemDesc {
+            line-height:2.25em;
+            font-style:italic;
+            //font-size:$largeFontSize !important;
+         }
+      }
+   }
+   .feedPanelHdr {
+      @extend .panelHdr;
+      @include custom-linear-gradient($GreyHdrStart 10%, #77787B 85%, top);
+   }
+   .descPanelHdr {
+      @extend .panelHdr;
+   }
+   .descPanel {
+      padding: $panelTopGap $panelGap;
+      background:$Grey;
+      @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
+      //@include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+      .x-inner {
+         padding:0 !important;
+         margin:0 !important;
+         .x-dataview-item { 
+            font-size : $normalFontSize;
+            text-align:justify;
+            line-height : $normalFontSize + 1.0em;
+            &:first-letter, p:first-letter {
+               font-size:400%;
+               font-weight:bold;
+               line-height : 0.8em;
+            }
+         }
+      }
+   }
+   .feedPanel {
+      @extend .listNoScrollWrapper;
+      //@extend .viewport;
+      .listItemDetailsWrapper {
+         .itemTitle {
+            font-weight:bold;
+            font-size:$largeFontSize !important;
+         }
+      }
+   }
+}

@@ -133,7 +133,7 @@ Ext.define('Genesis.controller.Viewport',
          },
          callback : function(records, operation)
          {
-            if(operation.wasSuccessful())
+            if (operation.wasSuccessful())
             {
                controller.setPosition(position);
                app.dispatch(
@@ -178,7 +178,7 @@ Ext.define('Genesis.controller.Viewport',
          buttons : ['Yes', 'No'],
          callback : function(btn)
          {
-            if(btn.toLowerCase() == 'yes')
+            if (btn.toLowerCase() == 'yes')
             {
                var app = me.getApplication();
                me.onChallengesButtonTap(null, null, null, null, function()
@@ -189,9 +189,9 @@ Ext.define('Genesis.controller.Viewport',
                   var controller = app.getController('client.Challenges');
                   //var list = controller.getReferralsPage().query('list')[0];
 
-                  for(var i = 0; i < items.length; i++)
+                  for (var i = 0; i < items.length; i++)
                   {
-                     if(items[i].get('type').value == 'referral')
+                     if (items[i].get('type').value == 'referral')
                      {
                         controller.selectedItem = items[i];
                         break;
@@ -231,7 +231,7 @@ Ext.define('Genesis.controller.Viewport',
          }, function(response)
          {
             Ext.Viewport.setMasked(false);
-            if(!response || response.error)
+            if (!response || response.error)
             {
                console.log('Post was not published to Facebook.');
             }
@@ -275,7 +275,7 @@ Ext.define('Genesis.controller.Viewport',
 
       var _onDone = function()
       {
-         if(callback)
+         if (callback)
          {
             callback();
          }
@@ -288,7 +288,7 @@ Ext.define('Genesis.controller.Viewport',
       //
       // Retrieve Challenges from server
       //
-      if(venue.challenges().getData().length == 0)
+      if (venue.challenges().getData().length == 0)
       {
          Ext.Viewport.setMasked(
          {
@@ -306,7 +306,7 @@ Ext.define('Genesis.controller.Viewport',
             callback : function(record, operation)
             {
                Ext.Viewport.setMasked(false);
-               if(operation.wasSuccessful())
+               if (operation.wasSuccessful())
                {
                   //
                   // Load record into Venue Object
@@ -369,14 +369,14 @@ Ext.define('Genesis.controller.Viewport',
       //
       // Refresh view
       //
-      if((me.viewStack.length > 0) && (view == me.viewStack[me.viewStack.length - 1]['view']))
+      if ((me.viewStack.length > 0) && (view == me.viewStack[me.viewStack.length - 1]['view']))
       {
       }
       //
       // Pop view
       //
       else
-      if(lastView && (lastView['view'] == view))
+      if (lastView && (lastView['view'] == view))
       {
          me.popView();
       }
@@ -401,9 +401,9 @@ Ext.define('Genesis.controller.Viewport',
       var me = this;
       num = Math.min(me.viewStack.length, num);
 
-      if((me.viewStack.length > 0) && (num > 0))
+      if ((me.viewStack.length > 0) && (num > 0))
       {
-         while(num-- > 0)
+         while (num-- > 0)
          {
             var lastView = me.viewStack.pop();
             //
@@ -418,7 +418,7 @@ Ext.define('Genesis.controller.Viewport',
    {
       var me = this;
 
-      if(me.viewStack.length > 0)
+      if (me.viewStack.length > 0)
       {
          var lastView = me.viewStack.pop();
          var currView = me.viewStack[me.viewStack.length - 1];
@@ -426,7 +426,7 @@ Ext.define('Genesis.controller.Viewport',
          //
          // Recreate View if the view was destroyed for DOM memory optimization
          //
-         if(currView['view'].isDestroyed)
+         if (currView['view'].isDestroyed)
          {
             currView['view'] = Ext.create(currView['view'].alias[0]);
             console.debug("Recreated View [" + currView['view']._itemId + "]")
@@ -448,21 +448,25 @@ Ext.define('Genesis.controller.Viewport',
 
       me.callParent(arguments);
 
-      console.log("Loading License Keys ...");
-      Genesis.constants.getPrivKey();
+      if (merchantMode)
+      {
+         console.log("Loading License Keys ...");
+         Genesis.constants.getPrivKey();
+      }
+      
       QRCodeReader.prototype.scanType = "Default";
       console.debug("QRCode Scanner Mode[" + QRCodeReader.prototype.scanType + "]")
 
       //
       // Initialize Facebook
       //
-      if(!merchantMode)
+      if (!merchantMode)
       {
          Genesis.fb.initFb();
          me.updateRewardsTask = Ext.create('Ext.util.DelayedTask');
       }
 
-      if(Ext.isDefined(window.device))
+      if (Ext.isDefined(window.device))
       {
          console.debug("device.platform - " + device.platform);
       }
@@ -482,7 +486,7 @@ Ext.define('Genesis.controller.Viewport',
          //['refreshListSound', 'refresh_list_sound', 'FX'], //
          ['beepSound', 'beep.wav', 'FX']];
 
-         for(var i = 0; i < soundList.length; i++)
+         for (var i = 0; i < soundList.length; i++)
          {
             this.loadSoundFile.apply(this, soundList[i]);
          }
@@ -493,7 +497,7 @@ Ext.define('Genesis.controller.Viewport',
       var me = this;
       var ext = '.' + (sound_file.split('.')[1] || 'mp3');
       sound_file = sound_file.split('.')[0];
-      if(Genesis.constants.isNative())
+      if (Genesis.constants.isNative())
       {
          switch (type)
          {
@@ -531,7 +535,7 @@ Ext.define('Genesis.controller.Viewport',
       else
       {
          var elem = Ext.get(sound_file);
-         if(elem)
+         if (elem)
          {
             elem.dom.addEventListener('ended', function()
             {
@@ -552,16 +556,16 @@ Ext.define('Genesis.controller.Viewport',
    {
       var db = Genesis.db.getLocalDB();
       var loggedIn = (db['auth_code']) ? true : false;
-      if(!merchantMode)
+      if (!merchantMode)
       {
-         if(loggedIn)
+         if (loggedIn)
          {
             var app = this.getApplication();
             var controller = app.getController('MainPage');
 
             this.setLoggedIn(loggedIn);
             console.debug("Going to Main Page ...");
-            if(db['currFbId'] > 0)
+            if (db['currFbId'] > 0)
             {
                app.dispatch(
                {

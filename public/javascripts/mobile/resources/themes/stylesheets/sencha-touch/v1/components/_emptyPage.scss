@@ -1,0 +1,17 @@
+
+.emptyPage {
+   background-size:contain;
+   font-size:$largeFontSize;
+   font-weight:bold;
+   &:before {
+      position:absolute;
+      top:3em;
+      left:0;
+      width:100%;
+      height:100%;
+      text-align:center;
+      padding:$panelTopGap $panelGap;
+      background:transparent;
+      color : $BlackStart;
+   }
+}

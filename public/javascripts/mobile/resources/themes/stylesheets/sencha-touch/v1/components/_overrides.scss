@@ -1,0 +1,32 @@
+//------------------------------------------------------------------------------
+// CSS Overrides for default graphics
+//------------------------------------------------------------------------------
+.x-emptytext {
+  
+}
+
+.x-item-hidden {
+   display:none;
+}
+
+//------------------------------------------------------------------------------
+// Mask
+//------------------------------------------------------------------------------
+.x-mask {
+   background:rgba($BlueMask, 0.4) center center no-repeat;
+}
+
+
+.x-badge {
+   &.round {
+      @if $include-border-radius { @include border-radius(0.5em); }
+   }
+}
+
+.x-transparent {
+   background : transparent !important;
+}
+
+.x-layout-card-item {
+   background : transparent;
+}

@@ -1,0 +1,26 @@
+.qrcodeContainer  {
+   background : white;
+   .x-inner {
+      margin: $panelTopGap*2 $panelGap*2;
+   }
+   .title {
+     min-height:$xlargeFontSize*2;
+     max-height:$xlargeFontSize*2;
+     font-size:$xlargeFontSize*2;
+     padding: $panelTopGap $panelGap;
+   }
+   .subtitle {
+     font-size:$xlargeFontSize;
+     padding: $panelTopGap*2 $panelGap*2;
+   }
+   .qrcode {
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size : $icon-size*3 $icon-size*3; //Maximum size of QR Code as well
+      width:100%;
+      height:100%%;
+   }
+   .done {
+      //background : black;
+   }
+}

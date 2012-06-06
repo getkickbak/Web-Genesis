@@ -1,0 +1,96 @@
+//------------------------------------------------------------------------------
+// List CSS
+//------------------------------------------------------------------------------
+.listScrollWrapper, .listScrollIndexWrapper {
+   .x-list-item:first-child {
+      //margin-top: 1em;
+   }
+   .photo {
+      top:$panelTopGap;
+      left:$panelGap;
+   }
+}
+.listNoScrollWrapper.separator, .listScrollWrapper.separator, .listScrollIndexWrapper.separator {
+   margin:0 !important;
+}
+.listNoScrollWrapper.separator_pad, .listScrollWrapper.separator_pad, .listScrollIndexWrapper.separator_pad {
+   padding:0 !important;
+}
+.listNoScrollWrapper.separator {
+   .x-list-item:first-child {
+   }
+   /*
+   .x-list-item {
+      border-left: 1px solid darken($list-bg-color, 15%);
+      border-right: 1px solid darken($list-bg-color, 15%);
+   }
+   */
+   .photo {
+      top:$panelTopGap;
+      left:$panelGap;
+   }
+   &.noBorder .x-list-item {
+      border : none
+   }
+}
+.listScrollWrapper, .listNoScrollWrapper, .listScrollIndexWrapper {
+   &.x-list {
+      .x-list-disclosure {
+         top:1.50em;
+         bottom: 0em;
+      }
+      .x-list-item {
+         &.x-list-header-item .x-list-disclosure {
+            top:1.50em + 1.7em;
+         }
+         .x-list-item-label {
+            //@if $include-border-radius { @include border-radius(0); }
+            position:relative;
+            padding:$panelTopGap $panelGap;
+            min-height:3.25em;
+            border-width: 1px 0 0 0;
+            border-top: 1px solid darken($list-bg-color, 15%);
+            .photo {
+               position:absolute;
+               height:$icon-size;
+               img {
+                  width : $icon-size;
+                  max-height : $icon-size;
+               }
+            }
+            .listItemDetailsWrapper {
+               padding-left:$icon-size + 10px;
+               padding-right:$list-disclosure-size*1.5;
+               min-height:$icon-size;
+               .itemDistance {
+                 position:absolute;
+                 top:$panelTopGap;
+                 right:$panelGap;
+                 font-weight:bold;
+                 font-size:$normalFontSize;
+               }
+               .itemTitle {
+                  font-size:$normalFontSize;
+               }
+               .itemDesc {
+                  font-size:$normalFontSize;
+                  word-break:break-word;
+               }
+            }
+         }
+         &:first-child .x-list-item-label {
+            border: none;
+            @if $include-border-radius { @include border-radius(0); }
+         }
+      }
+   }
+   .x-inner, .x-list-inner {
+      .x-list-container {
+         //@include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+         //border: 1px solid darken($list-bg-color, 15%);
+      }
+   }
+   .x-list-container {
+      padding : 0;
+   }
+}
