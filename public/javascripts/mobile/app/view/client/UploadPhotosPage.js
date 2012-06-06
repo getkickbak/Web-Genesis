@@ -8,23 +8,16 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
    {
       cls : 'photoUploadPage',
       layout : 'fit',
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         cls : 'navigationBarTop',
          title : 'Photo Upload',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'right',
             tag : 'post',
             text : 'Post'
          }]
-      }]
+      })]
    },
    createView : function()
    {

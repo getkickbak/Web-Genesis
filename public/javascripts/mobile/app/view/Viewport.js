@@ -55,31 +55,33 @@ Ext.define('Genesis.view.Viewport',
       var layout = this.getLayout(), defaultAnimation;
       var oldActiveItem = this.getActiveItem();
 
-      if(this.activeItemAnimation)
+      if (this.activeItemAnimation)
       {
          this.activeItemAnimation.destroy();
+         console.debug("Destroying AnimateActiveItem ...");
       }
       this.activeItemAnimation = animation = new Ext.fx.layout.Card(animation);
-      if(animation && layout.isCard)
+      if (animation && layout.isCard)
       {
          animation.setLayout(layout);
          defaultAnimation = layout.getAnimation();
-         if(defaultAnimation)
+         if (defaultAnimation)
          {
             defaultAnimation.disable();
             animation.on('animationend', function()
             {
                defaultAnimation.enable();
                animation.destroy();
+               delete this.activeItemAnimation;
                //
                // Delete oldActiveItem to save DOM memory
                //
-               if(oldActiveItem)
+               if (oldActiveItem)
                {
                   Ext.defer(function()
                   {
                      oldActiveItem.destroy();
-                     console.debug('Destroyed View [' + oldActiveItem._itemId + ']');
+                     //console.debug('Destroyed View [' + oldActiveItem._itemId + ']');
                   }, 0.1 * 1000, this);
                }
                //console.debug("Animation Complete");
@@ -88,7 +90,7 @@ Ext.define('Genesis.view.Viewport',
          }
       }
       var rc = this.setActiveItem(activeItem);
-      if(!layout.isCard)
+      if (!layout.isCard)
       {
          //
          // Defer timeout is required to ensure that

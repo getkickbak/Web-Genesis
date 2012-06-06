@@ -220,5 +220,6 @@ Ext.define('Genesis.view.MainPage',
    showView : function()
    {
       this.add(this.getPreRender());
+      this.query('titlebar')[0].setMasked(false);
    }
 });

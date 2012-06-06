@@ -2,6 +2,27 @@ Ext.define('Genesis.view.ViewBase',
 {
    extend : 'Ext.Container',
    xtype : 'viewbase',
+   statics :
+   {
+      generateTitleBarConfig : function()
+      {
+         return (
+            {
+               xtype : 'titlebar',
+               docked : 'top',
+               cls : 'navigationBarTop',
+               masked :
+               {
+                  xtype : 'mask',
+                  transparent : true
+               },
+               defaults :
+               {
+                  iconMask : true
+               }
+            });
+      }
+   },
    config :
    {
       preRender : null
@@ -17,6 +38,8 @@ Ext.define('Genesis.view.ViewBase',
    },
    showView : function()
    {
+      var titlebar = this.query('titlebar')[0];
       this.add(this.getPreRender());
+      Ext.defer(titlebar.setMasked, 0.3 * 1000, titlebar, [false]);
    }
 });

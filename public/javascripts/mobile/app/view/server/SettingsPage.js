@@ -12,16 +12,9 @@ Ext.define('Genesis.view.server.SettingsPage',
          align : 'stretch',
          pack : 'start'
       },
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         cls : 'navigationBarTop',
          title : 'Settings',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'left',
@@ -30,7 +23,7 @@ Ext.define('Genesis.view.server.SettingsPage',
             ui : 'normal',
             text : 'Back'
          }]
-      },
+      }),
       {
          xtype : 'fieldset',
          title : 'About Kickbak',

@@ -6,16 +6,10 @@ Ext.define('Genesis.view.server.Rewards',
    config :
    {
       layout : 'fit',
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
          cls : 'navigationBarTop kbTitle',
          title : ' ',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'left',
@@ -24,15 +18,15 @@ Ext.define('Genesis.view.server.Rewards',
             ui : 'normal',
             text : 'Back'
          }]
-      }]
+      })]
    },
    createView : function()
    {
-      if(!this.callParent(arguments))
+      if (!this.callParent(arguments))
       {
          return;
       }
-      
+
       this.getPreRender().push(Ext.create('Ext.Container',
       {
          xtype : 'container',

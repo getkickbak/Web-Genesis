@@ -14,16 +14,9 @@ Ext.define('Genesis.view.MerchantAccount',
          align : 'stretch',
          pack : 'start'
       },
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         cls : 'navigationBarTop',
          title : 'Venue Name',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'left',
@@ -36,11 +29,11 @@ Ext.define('Genesis.view.MerchantAccount',
             tag : 'checkin',
             iconCls : 'checkin'
          }]
-      }]
+      })]
    },
    createView : function()
    {
-      if(!this.callParent(arguments))
+      if (!this.callParent(arguments))
       {
          return;
       }
@@ -62,7 +55,7 @@ Ext.define('Genesis.view.MerchantAccount',
       // -----------------------------------------------------------------------
       // What can I get ?
       // -----------------------------------------------------------------------
-      if(this.renderFeed)
+      if (this.renderFeed)
       {
          this.getPreRender().push(Ext.create('Ext.Container',
          {
@@ -121,7 +114,7 @@ Ext.define('Genesis.view.MerchantAccount',
                   },
                   getPhoto : function(values)
                   {
-                     if(!values.photo)
+                     if (!values.photo)
                      {
                         return Genesis.view.client.Rewards.getPhoto(
                         {

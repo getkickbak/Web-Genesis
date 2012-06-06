@@ -6,16 +6,9 @@ Ext.define('Genesis.view.client.AccountsTransfer',
    config :
    {
       layout : 'vbox',
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         cls : 'navigationBarTop kbTitle',
          title : ' ',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'left',
@@ -37,7 +30,7 @@ Ext.define('Genesis.view.client.AccountsTransfer',
             ui : 'normal',
             text : 'Close'
          }]
-      }]
+      })]
    },
    createView : function(num)
    {
@@ -45,7 +38,7 @@ Ext.define('Genesis.view.client.AccountsTransfer',
       {
          return;
       }
-      
+
       this.setPreRender(this.getPreRender().concat([Ext.create('Ext.Container',
       {
          xtype : 'container',
@@ -290,6 +283,7 @@ Ext.define('Genesis.view.client.AccountsTransfer',
             }]
          }]
       })]));
+      this.query('titlebar')[0].setMasked(false);
    },
    statics :
    {

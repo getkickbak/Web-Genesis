@@ -6,13 +6,10 @@ Ext.define('Genesis.view.client.Rewards',
    config :
    {
       layout : 'fit',
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         cls : 'navigationBarTop',
          title : 'Earn Rewards'
-      },
+      }),
       {
          xtype : 'component',
          tag : 'prizeCheck',

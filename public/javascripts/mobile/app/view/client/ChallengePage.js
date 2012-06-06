@@ -7,16 +7,9 @@ Ext.define('Genesis.view.client.ChallengePage',
    {
       layout : 'fit',
       scrollable : undefined,
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         cls : 'navigationBarTop',
          title : 'Challenges',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'left',
@@ -24,7 +17,7 @@ Ext.define('Genesis.view.client.ChallengePage',
             tag : 'close',
             text : 'Close'
          }]
-      },
+      }),
       {
          docked : 'bottom',
          cls : 'checkInNow',
@@ -86,7 +79,7 @@ Ext.define('Genesis.view.client.ChallengePage',
    },
    takePhoto : function()
    {
-      if(!this.photoAction)
+      if (!this.photoAction)
       {
          this.photoAction = Ext.create('Ext.ActionSheet',
          {
@@ -132,7 +125,7 @@ Ext.define('Genesis.view.client.ChallengePage',
       {
          return;
       }
-      
+
       var carousel;
       this.getPreRender().push( carousel = Ext.create('Ext.Carousel',
       {
@@ -145,11 +138,11 @@ Ext.define('Genesis.view.client.ChallengePage',
       var venueId = record.getId();
       var items = record.challenges().getRange();
 
-      if((carousel.getInnerItems().length > 0) && //
+      if ((carousel.getInnerItems().length > 0) && //
       (carousel.getInnerItems()[0].getStore().getRange()[0].getId() == items[0].getId()))
       {
          // No need to update the Challenge Menu. Nothing changed.
-         for(var i = 0; i < carousel.getInnerItems().length; i++)
+         for (var i = 0; i < carousel.getInnerItems().length; i++)
          {
             carousel.getInnerItems()[i].deselectAll();
          }
@@ -157,7 +150,7 @@ Ext.define('Genesis.view.client.ChallengePage',
       else
       {
          carousel.removeAll(true);
-         for(var i = 0; i < Math.ceil(items.length / 6); i++)
+         for (var i = 0; i < Math.ceil(items.length / 6); i++)
          {
             carousel.add(Ext.create('Ext.dataview.DataView',
             {
@@ -173,7 +166,7 @@ Ext.define('Genesis.view.client.ChallengePage',
                }
             }));
          }
-         if(carousel.getInnerItems().length > 0)
+         if (carousel.getInnerItems().length > 0)
          {
             carousel.setActiveItem(0);
          }

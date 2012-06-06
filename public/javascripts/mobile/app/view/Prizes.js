@@ -9,16 +9,9 @@ Ext.define('Genesis.view.Prizes',
       fullscreen : true,
       cls : 'prizesMain',
       layout : 'card',
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         cls : 'navigationBarTop',
          title : 'Prizes',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'left',
@@ -44,33 +37,34 @@ Ext.define('Genesis.view.Prizes',
             tag : 'done',
             text : 'Done'
          }]
-      }]
+      })]
    },
-   showView : function()
+   createView : function()
    {
       switch (this.config.tag)
       {
          case 'userPrizes' :
          {
-            this.onUserShowView();
+            this.onUserCreateView();
             break;
          }
          case 'merchantPrizes' :
          {
-            this.onMerchantShowView();
+            this.onMerchantCreateView();
             break;
          }
       }
+      this.query('titlebar')[0].setMasked(false);
    },
-   onUserShowView : function()
+   onUserCreateView : function()
    {
       var view = this;
       var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
 
       if (prizes.length == 0)
       {
-         view.removeAll();
-         view.add(
+         //view.removeAll();
+         this._view.push(Ext.create('Ext.Component',
          {
             tag : 'rewardPanel',
             cls : 'noprizes',
@@ -78,7 +72,7 @@ Ext.define('Genesis.view.Prizes',
             scrollable : false,
             defaultUnit : 'em',
             margin : '0 0 0.8 0'
-         });
+         }));
          console.log("UserPrize View - No Prizes found.");
       }
       else
@@ -94,22 +88,19 @@ Ext.define('Genesis.view.Prizes',
          }
          else
          {
-            view.removeAll();
-
             var items = [];
             container = view.getInnerItems()[0];
             if (!container)
             {
-               this.add(
+               this._view.push( container = Ext.create('Ext.Carousel',
                {
                   xtype : 'carousel',
                   scrollable : undefined
-               });
-               container = view.getInnerItems()[0];
+               }));
             }
             for (var i = 0; i < prizes.length; i++)
             {
-               items.push(
+               items.push(Ext.create('Ext.dataview.DataView',
                {
                   tag : 'rewardPanel',
                   xtype : 'dataview',
@@ -124,7 +115,7 @@ Ext.define('Genesis.view.Prizes',
                   defaultType : 'rewarditem',
                   defaultUnit : 'em',
                   margin : '0 0 0.8 0'
-               });
+               }));
             }
             container.add(items);
 
@@ -132,7 +123,7 @@ Ext.define('Genesis.view.Prizes',
          }
       }
    },
-   onMerchantShowView : function()
+   onMerchantCreateView : function()
    {
       var view = this;
       var viewport = _application.getController('Viewport');
@@ -162,8 +153,8 @@ Ext.define('Genesis.view.Prizes',
 
       if (prizesList.length == 0)
       {
-         view.removeAll();
-         view.add(
+         //view.removeAll();
+         this._view.push(Ext.create('Ext.Component',
          {
             tag : 'rewardPanel',
             cls : 'noprizes',
@@ -171,7 +162,7 @@ Ext.define('Genesis.view.Prizes',
             scrollable : false,
             defaultUnit : 'em',
             margin : '0 0 0.8 0'
-         });
+         }));
          console.log("MerchantPrize View - No Prizes found.");
       }
       else
@@ -180,12 +171,11 @@ Ext.define('Genesis.view.Prizes',
          var container = view.getInnerItems()[0];
          if (!container)
          {
-            this.add(
+            this._view.push( container = Ext.create('Ext.Carousel',
             {
                xtype : 'carousel',
                scrollable : undefined
-            });
-            container = view.getInnerItems()[0];
+            }));
          }
          if ((container && container.isXType('carousel', true) && container.query('dataview')[0] &&
          // First item in the carousel
@@ -201,11 +191,11 @@ Ext.define('Genesis.view.Prizes',
             //
             // Create Prizes Screen from scratch
             //
-            container = view.getInnerItems()[0];
+            //container = view.getInnerItems()[0];
             var items = [];
             for (var i = 0; i < prizesList.length; i++)
             {
-               items.push(
+               items.push(Ext.create('Ext.dataview.DataView',
                {
                   tag : 'rewardPanel',
                   xtype : 'dataview',
@@ -220,7 +210,7 @@ Ext.define('Genesis.view.Prizes',
                   defaultType : 'rewarditem',
                   defaultUnit : 'em',
                   margin : '0 0 0.8 0'
-               });
+               }));
             }
             container.add(items);
 

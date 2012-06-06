@@ -6,33 +6,26 @@ Ext.define('Genesis.view.client.Referrals',
    config :
    {
       layout : 'vbox',
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         cls : 'navigationBarTop',
          title : 'Refer A Friend',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'left',
-            tag :'back',
+            tag : 'back',
             ui : 'normal',
             //ui : 'back',
             text : 'Back'
          }]
-      }]
+      })]
    },
    createView : function()
    {
-      if(!this.callParent(arguments))
+      if (!this.callParent(arguments))
       {
          return;
       }
-      
+
       this.getPreRender().push(Ext.create('Ext.Container',
       {
          xtype : 'container',

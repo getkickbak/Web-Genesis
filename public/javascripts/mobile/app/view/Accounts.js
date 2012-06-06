@@ -7,16 +7,9 @@ Ext.define('Genesis.view.Accounts',
    {
       cls : 'accountsMain',
       layout : 'fit',
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         cls : 'navigationBarTop',
          title : ' ',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'left',
@@ -25,15 +18,15 @@ Ext.define('Genesis.view.Accounts',
             ui : 'normal',
             text : 'Back'
          }]
-      }]
+      })]
    },
    createView : function()
    {
-      if(!this.callParent(arguments))
+      if (!this.callParent(arguments))
       {
          return;
       }
-      
+
       this.getPreRender().push(Ext.create('Ext.List',
       {
          xtype : 'list',

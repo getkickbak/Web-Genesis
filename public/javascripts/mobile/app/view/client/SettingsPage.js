@@ -12,16 +12,9 @@ Ext.define('Genesis.view.client.SettingsPage',
          align : 'stretch',
          pack : 'start'
       },
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         cls : 'navigationBarTop',
          title : 'Settings',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'left',
@@ -30,7 +23,7 @@ Ext.define('Genesis.view.client.SettingsPage',
             ui : 'normal',
             text : 'Back'
          }]
-      },
+      }),
       {
          xtype : 'fieldset',
          title : 'Login Profile',

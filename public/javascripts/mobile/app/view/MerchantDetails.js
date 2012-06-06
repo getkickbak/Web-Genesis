@@ -16,16 +16,9 @@ Ext.define('Genesis.view.MerchantDetails',
       {
          cls : 'separator'
       },
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         cls : 'navigationBarTop',
          title : 'Venue Name',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'left',
@@ -40,7 +33,7 @@ Ext.define('Genesis.view.MerchantDetails',
             tag : 'shareBtn',
             handler : function()
             {
-               if(!this.actions)
+               if (!this.actions)
                {
                   this.actions = Ext.create('Ext.ActionSheet',
                   {
@@ -91,11 +84,11 @@ Ext.define('Genesis.view.MerchantDetails',
                this.actions.show();
             }
          }]
-      }]
+      })]
    },
    createView : function()
    {
-      if(!this.callParent(arguments))
+      if (!this.callParent(arguments))
       {
          return;
       }

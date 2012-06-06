@@ -8,16 +8,9 @@ Ext.define('Genesis.view.client.Redemptions',
       scrollable : 'vertical',
       cls : 'redemptionsMain',
       layout : 'vbox',
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         cls : 'navigationBarTop',
          title : 'Redemptions',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'left',
@@ -25,7 +18,7 @@ Ext.define('Genesis.view.client.Redemptions',
             ui : 'normal',
             text : 'Close'
          }]
-      }]
+      })]
    },
    createView : function()
    {
@@ -113,7 +106,7 @@ Ext.define('Genesis.view.client.Redemptions',
          {
             getPhoto : function(values)
             {
-               if(!values.photo)
+               if (!values.photo)
                {
                   return Genesis.view.client.Redemptions.getPhoto(values['type']);
                }

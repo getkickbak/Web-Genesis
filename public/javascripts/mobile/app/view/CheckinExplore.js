@@ -7,16 +7,9 @@ Ext.define('Genesis.view.CheckinExplore',
    {
       layout : 'fit',
       merchant : null,
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         cls : 'navigationBarTop',
          title : 'Nearby Places',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'left',
@@ -31,7 +24,7 @@ Ext.define('Genesis.view.CheckinExplore',
             tag : 'close',
             text : 'Close'
          }]
-      },
+      }),
       {
          docked : 'bottom',
          cls : 'checkInNow',
@@ -52,7 +45,7 @@ Ext.define('Genesis.view.CheckinExplore',
    },
    createView : function()
    {
-      if(!this.callParent(arguments))
+      if (!this.callParent(arguments))
       {
          return;
       }
@@ -110,7 +103,8 @@ Ext.define('Genesis.view.CheckinExplore',
    showView : function()
    {
       this.callParent(arguments);
-      
+      this.query('titlebar')[0].setMasked(false);
+
       // Hack to fix bug in Sencha Touch API
       var plugin = this.query('list')[0].getPlugins()[0];
       plugin.refreshFn = plugin.getRefreshFn();
