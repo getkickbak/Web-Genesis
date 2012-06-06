@@ -960,7 +960,7 @@ Ext.define('Genesis.controller.client.Challenges',
          return;
       }
 
-      me.getUploadPhotosBackground().setMasked(
+      Ext.Viewport.setMasked(
       {
          xtype : 'loadmask',
          message : me.completingChallengeMsg
@@ -990,7 +990,6 @@ Ext.define('Genesis.controller.client.Challenges',
           */
       }, function(response)
       {
-         me.getUploadPhotosBackground().setMasked(false);
          if (!response || response.error)
          {
             var message = (response && response.error) ? response.error.message : me.fbUploadFailedMsg;
