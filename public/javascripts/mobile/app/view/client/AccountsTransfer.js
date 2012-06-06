@@ -8,6 +8,7 @@ Ext.define('Genesis.view.client.AccountsTransfer',
       layout : 'vbox',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
+         cls : 'navigationBarTop kbTitle',
          title : ' ',
          items : [
          {

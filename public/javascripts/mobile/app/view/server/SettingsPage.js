@@ -51,5 +51,10 @@ Ext.define('Genesis.view.server.SettingsPage',
          }]
       }]
    },
-   showView : Ext.emptyFn
+   createView : Ext.emptyFn,
+   showView : function()
+   {
+      var titlebar = this.query('titlebar')[0];
+      Ext.defer(titlebar.setMasked, 0.3 * 1000, titlebar, [false]);
+   }
 });

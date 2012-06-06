@@ -48,8 +48,7 @@ Ext.define('Genesis.view.LoginPage',
       this.add(actions);
       this.callParent(arguments);
    },
-   showView : Ext.emptyFn,
-   createView : Ext.emptyFn
+   showView : Ext.emptyFn
 });
 
 Ext.define('Genesis.view.SignInPage',
@@ -61,16 +60,9 @@ Ext.define('Genesis.view.SignInPage',
    {
       changeTitle : false,
       scrollable : 'vertical',
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         cls : 'navigationBarTop',
          title : 'Sign In',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'left',
@@ -79,7 +71,7 @@ Ext.define('Genesis.view.SignInPage',
             tag : 'back',
             text : 'Back'
          }]
-      },
+      }),
       {
          xtype : 'fieldset',
          title : 'Login Credentials:',
@@ -110,8 +102,12 @@ Ext.define('Genesis.view.SignInPage',
          text : 'Sign In'
       }]
    },
-   showView : Ext.emptyFn,
-   createView : Ext.emptyFn
+   createView : Ext.emptyFn,
+   showView : function()
+   {
+      var titlebar = this.query('titlebar')[0];
+      Ext.defer(titlebar.setMasked, 0.3 * 1000, titlebar, [false]);
+   }
 });
 
 Ext.define('Genesis.view.CreateAccountPage',
@@ -123,16 +119,9 @@ Ext.define('Genesis.view.CreateAccountPage',
    {
       changeTitle : false,
       scrollable : 'vertical',
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         cls : 'navigationBarTop',
          title : 'Create Account',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'left',
@@ -141,7 +130,7 @@ Ext.define('Genesis.view.CreateAccountPage',
             tag : 'back',
             text : 'Back'
          }]
-      },
+      }),
       {
          xtype : 'fieldset',
          title : 'Account Credentials:',
@@ -180,6 +169,10 @@ Ext.define('Genesis.view.CreateAccountPage',
          text : 'Create Account'
       }]
    },
-   showView : Ext.emptyFn,
-   createView : Ext.emptyFn
+   createView : Ext.emptyFn,
+   showView : function()
+   {
+      var titlebar = this.query('titlebar')[0];
+      Ext.defer(titlebar.setMasked, 0.3 * 1000, titlebar, [false]);
+   }
 });

@@ -54,7 +54,6 @@ Ext.define('Genesis.view.Prizes',
             break;
          }
       }
-      this.query('titlebar')[0].setMasked(false);
    },
    onUserCreateView : function()
    {
@@ -64,7 +63,7 @@ Ext.define('Genesis.view.Prizes',
       if (prizes.length == 0)
       {
          //view.removeAll();
-         this._view.push(Ext.create('Ext.Component',
+         this.getPreRender().push(Ext.create('Ext.Component',
          {
             tag : 'rewardPanel',
             cls : 'noprizes',
@@ -92,7 +91,7 @@ Ext.define('Genesis.view.Prizes',
             container = view.getInnerItems()[0];
             if (!container)
             {
-               this._view.push( container = Ext.create('Ext.Carousel',
+               this.getPreRender().push( container = Ext.create('Ext.Carousel',
                {
                   xtype : 'carousel',
                   scrollable : undefined
@@ -154,7 +153,7 @@ Ext.define('Genesis.view.Prizes',
       if (prizesList.length == 0)
       {
          //view.removeAll();
-         this._view.push(Ext.create('Ext.Component',
+         this.getPreRender().push(Ext.create('Ext.Component',
          {
             tag : 'rewardPanel',
             cls : 'noprizes',
@@ -171,7 +170,7 @@ Ext.define('Genesis.view.Prizes',
          var container = view.getInnerItems()[0];
          if (!container)
          {
-            this._view.push( container = Ext.create('Ext.Carousel',
+            this.getPreRender().push( container = Ext.create('Ext.Carousel',
             {
                xtype : 'carousel',
                scrollable : undefined
