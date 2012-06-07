@@ -384,7 +384,7 @@ Ext.define('Genesis.controller.Prizes',
          //Update on Facebook
          Genesis.fb.facebook_onLogin(function(params)
          {
-            me.updatingPrizeOnFacebook(me.showPrize);
+            me.updatingPrizeOnFacebook(showPrize);
          }, false, me.updatePrizeOnFbMsg);
       }, 3 * 1000, me);
    },
