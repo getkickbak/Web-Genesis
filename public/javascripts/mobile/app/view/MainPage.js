@@ -31,7 +31,7 @@ Ext.define('Genesis.view.MainPage',
                   },
                   handler : function()
                   {
-                     if(!this.actions)
+                     if (!this.actions)
                      {
                         this.actions = Ext.create('Ext.ActionSheet',
                         {
@@ -66,7 +66,7 @@ Ext.define('Genesis.view.MainPage',
                   }
                }]
             }];
-            if(!merchantMode)
+            if (!merchantMode)
             {
                items.push(
                {
@@ -97,7 +97,7 @@ Ext.define('Genesis.view.MainPage',
    },
    createView : function()
    {
-      if(!Genesis.view.ViewBase.prototype.createView.apply(this, arguments))
+      if (!Genesis.view.ViewBase.prototype.createView.apply(this, arguments))
       {
          return;
       }
@@ -110,12 +110,12 @@ Ext.define('Genesis.view.MainPage',
       var items = Ext.StoreMgr.get('MainPageStore').getRange();
       var list = Ext.Array.clone(items);
 
-      if(!carousel._listitems)
+      if (!carousel._listitems)
       {
          carousel._listitems = [];
       }
 
-      if(!show)
+      if (!show)
       {
          Ext.Array.forEach(list, function(item, index, all)
          {
@@ -132,12 +132,12 @@ Ext.define('Genesis.view.MainPage',
       //
       // Only update if changes were made
       //
-      if((Ext.Array.difference(items, carousel._listitems).length > 0) || //
+      if ((Ext.Array.difference(items, carousel._listitems).length > 0) || //
       (items.length != carousel._listitems.length))
       {
          carousel._listitems = items;
          carousel.removeAll(true);
-         for(var i = 0; i < Math.ceil(items.length / 6); i++)
+         for (var i = 0; i < Math.ceil(items.length / 6); i++)
          {
             this.getPreRender().push(Ext.create('Ext.dataview.DataView',
             {
@@ -168,13 +168,14 @@ Ext.define('Genesis.view.MainPage',
                      var count = 0;
                      var type = values['pageCntlr'];
                      var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
-                     if(pstore)
+                     if (pstore)
                      {
                         count = pstore.getCount();
                      }
                      return ((type == 'Prizes') ? //
-                     '<span class="x-badge round" data="' + type + '" ' + //
-                     'class="' + ((count > 0) ? '' : 'x-item-hidden') + '">' + count + '</span>' : '');
+                     '<span data="' + type + '" ' + //
+                     'class="x-badge round ' + ((count > 0) ? '' : 'x-item-hidden') + '">' + //
+                     count + '</span>' : '');
                   },
                   getPhoto : function(photoURL)
                   {
@@ -192,24 +193,24 @@ Ext.define('Genesis.view.MainPage',
          // Refresh All Badge Counts
          //
          var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
-         if(pstore)
+         if (pstore)
          {
             var count = pstore.getCount();
             var dom = Ext.DomQuery.select('span[data=Prizes]',carousel.query('dataview')[0].element.dom)[0];
-            if(count > 0)
+            if (count > 0)
             {
                dom.innerHTML = count;
                Ext.fly(dom).removeCls("x-item-hidden");
             }
             else
             {
-               if(!dom.className.match(/x-item-hidden/))
+               if (!dom.className.match(/x-item-hidden/))
                {
                   Ext.fly(dom).addCls("x-item-hidden");
                }
             }
          }
-         if(carousel.getInnerItems().length > 0)
+         if (carousel.getInnerItems().length > 0)
          {
             carousel.setActiveItem(0);
          }

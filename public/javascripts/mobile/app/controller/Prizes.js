@@ -25,6 +25,7 @@ Ext.define('Genesis.controller.Prizes',
          uBB : 'prizesview[tag=userPrizes] button[tag=back]',
          uDoneBtn : 'prizesview[tag=userPrizes] button[tag=done]',
          uRedeemBtn : 'prizesview[tag=userPrizes] button[tag=redeem]',
+         //uMerchantBtn : 'prizesview[tag=userPrizes] rewarditem component[tag=info]',
          // MerchantPrizes
          mCloseBB : 'prizesview[tag=merchantPrizes] button[tag=close]',
          mBB : 'prizesview[tag=merchantPrizes] button[tag=back]',
@@ -439,6 +440,7 @@ Ext.define('Genesis.controller.Prizes',
 
       me.getUCloseBB().hide();
       me.getUBB().show();
+      me.getURedeemBtn().hide();
 
       var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
       for (var i = 0; i < prizes.length; i++)
@@ -446,15 +448,16 @@ Ext.define('Genesis.controller.Prizes',
 
          prizesList.push(prizes[i]);
       }
-
-      if (prizesList.length == 0)
-      {
-         me.getURedeemBtn().hide();
-      }
-      else
-      {
-         me.getURedeemBtn().show();
-      }
+      /*
+       if (prizesList.length == 0)
+       {
+       me.getURedeemBtn().hide();
+       }
+       else
+       {
+       me.getURedeemBtn().show();
+       }
+       */
       activeItem.createView();
    },
    onShowPrizeActivate : function(activeItem, c, oldActiveItem, eOpts)

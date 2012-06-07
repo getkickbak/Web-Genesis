@@ -123,7 +123,7 @@ Ext.define('Genesis.controller.MainPage',
             scope : me,
             "load" : function(store, records, successful, operation, eOpts)
             {
-               if(merchantMode)
+               if (merchantMode)
                {
                   me.goToMain();
                }
@@ -131,7 +131,7 @@ Ext.define('Genesis.controller.MainPage',
          }
       });
 
-      if(!merchantMode)
+      if (!merchantMode)
       {
          //
          // Load all the info into Stores
@@ -182,7 +182,7 @@ Ext.define('Genesis.controller.MainPage',
                // Load Prizes into DataStore
                var metaData = store.getProxy().getReader().metaData;
 
-               if(successful && metaData && metaData['auth_token'])
+               if (successful && metaData && metaData['auth_token'])
                {
                   db = Genesis.db.getLocalDB();
                   console.debug(//
@@ -200,10 +200,10 @@ Ext.define('Genesis.controller.MainPage',
                // Update MerchantPrizeStore
                //
                var prizes = metaData['prizes'];
-               if(prizes)
+               if (prizes)
                {
                   console.debug("Total Prizes - " + prizes.length);
-                  for(var i = 0; i < prizes.length; i++)
+                  for (var i = 0; i < prizes.length; i++)
                   {
                      //
                      // CustomerReward's Model rootProperty is "data"
@@ -220,11 +220,11 @@ Ext.define('Genesis.controller.MainPage',
                // Update Authentication Token
                //
                var authCode = metaData['auth_token'];
-               if(authCode)
+               if (authCode)
                {
                   console.debug("Login Auth Code - " + authCode)
                   db = Genesis.db.getLocalDB();
-                  if(authCode != db['auth_code'])
+                  if (authCode != db['auth_code'])
                   {
                      Genesis.db.setLocalDBAttrib('auth_code', authCode);
                   }
@@ -245,9 +245,9 @@ Ext.define('Genesis.controller.MainPage',
             sorterFn : function(o1, o2)
             {
                var name1 = o1.getMerchant().get('name'), name2 = o2.getMerchant().get('name');
-               if(name1 < name2)//sort string ascending
+               if (name1 < name2)//sort string ascending
                   return -1
-               if(name1 > name2)
+               if (name1 > name2)
                   return 1
                return 0 //default return value (no sorting)
             }
@@ -330,9 +330,9 @@ Ext.define('Genesis.controller.MainPage',
 
       var cntlr = this.getApplication().getController(model.get('pageCntlr'));
       var msg = cntlr.isOpenAllowed();
-      if(msg === true)
+      if (msg === true)
       {
-         if(model.get('subFeature'))
+         if (model.get('subFeature'))
          {
             cntlr.openPage(model.get('subFeature'));
          }
@@ -391,9 +391,11 @@ Ext.define('Genesis.controller.MainPage',
             // Login Error, redo login
             //
             Ext.Viewport.setMasked(false);
-            if(!operation.wasSuccessful())
+            if (!operation.wasSuccessful())
             {
-               Genesis.db.resetStorage();
+               //Genesis.db.resetStorage();
+               vport.setLoggedIn(false);
+               Genesis.db.removeLocalDBAttrib('auth_code');
                me.fireEvent('openpage', 'MainPage', 'login', null);
             }
          }
@@ -411,8 +413,8 @@ Ext.define('Genesis.controller.MainPage',
    onLogoutTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      var viewport = me.getViewport();
-      var vport = me.getViewPortCntlr();
+      var vport = me.getViewport();
+      var viewport = me.getViewPortCntlr();
       var flag = 0;
       //
       // Logout of Facebook
@@ -420,9 +422,9 @@ Ext.define('Genesis.controller.MainPage',
       var _onLogout = function()
       {
          console.log("Resetting Session information ...")
-         vport.setLoggedIn(false);
+         viewport.setLoggedIn(false);
          Genesis.db.removeLocalDBAttrib('auth_code');
-         if(Genesis.db.getLocalDB()['currFbId'] > 0)
+         if (Genesis.db.getLocalDB()['currFbId'] > 0)
          {
             Genesis.fb.facebook_onLogout(null, true);
          }
@@ -431,7 +433,7 @@ Ext.define('Genesis.controller.MainPage',
       var _logout = function()
       {
          var authCode = Genesis.db.getLocalDB()['auth_code'];
-         if(authCode)
+         if (authCode)
          {
             console.log("Logging out ...")
             Customer['setLogoutUrl'](authCode);
@@ -443,7 +445,7 @@ Ext.define('Genesis.controller.MainPage',
                callback : function(records, operation)
                {
                   Ext.Viewport.setMasked(false);
-                  if(operation.wasSuccessful())
+                  if (operation.wasSuccessful())
                   {
                      console.log("Logout Successful!")
                   }
@@ -461,7 +463,7 @@ Ext.define('Genesis.controller.MainPage',
       {
          hiddenchange : function()
          {
-            if((flag |= 0x01) == 0x11)
+            if ((flag |= 0x01) == 0x11)
             {
                _logout();
             }
@@ -469,7 +471,7 @@ Ext.define('Genesis.controller.MainPage',
          single : true
       });
       b.parent.hide();
-      if(Genesis.db.getLocalDB()['currFbId'] > 0)
+      if (Genesis.db.getLocalDB()['currFbId'] > 0)
       {
          console.log("Logging out of Facebook ...")
          Genesis.fb.facebook_onLogout(function()
@@ -477,7 +479,7 @@ Ext.define('Genesis.controller.MainPage',
             //
             // Login as someone else?
             //
-            if((flag |= 0x10) == 0x11)
+            if ((flag |= 0x10) == 0x11)
             {
                _logout();
             }
@@ -486,7 +488,7 @@ Ext.define('Genesis.controller.MainPage',
       else
       {
          console.log("No Login info found from Facebook ...")
-         if((flag |= 0x10) == 0x11)
+         if ((flag |= 0x10) == 0x11)
          {
             _logout();
          }
@@ -531,7 +533,7 @@ Ext.define('Genesis.controller.MainPage',
       var validateErrors = user.validate();
       var response = Genesis.db.getLocalDB()['fbResponse'] || null;
 
-      if(!validateErrors.isValid())
+      if (!validateErrors.isValid())
       {
          var field = validateErrors.first();
          var label = Ext.ComponentQuery.query('field[name='+field.getField()+']')[0].getLabel();
@@ -553,7 +555,7 @@ Ext.define('Genesis.controller.MainPage',
             password : values.password
          };
 
-         if(response)
+         if (response)
          {
             params = Ext.apply(params, response);
          }
@@ -585,7 +587,7 @@ Ext.define('Genesis.controller.MainPage',
       {
       };
 
-      if(username)
+      if (username)
       {
          params =
          {
@@ -607,7 +609,7 @@ Ext.define('Genesis.controller.MainPage',
             // Login Error, redo login
             //
             Ext.Viewport.setMasked(false);
-            if(!operation.wasSuccessful())
+            if (!operation.wasSuccessful())
             {
                Genesis.db.resetStorage();
                me.fireEvent('openpage', 'MainPage', 'login', null);
@@ -622,7 +624,7 @@ Ext.define('Genesis.controller.MainPage',
       var user = Ext.create('Genesis.model.frontend.Signin', values);
       var validateErrors = user.validate();
 
-      if(!validateErrors.isValid())
+      if (!validateErrors.isValid())
       {
          var field = validateErrors.first();
          var label = Ext.ComponentQuery.query('field[name='+field.getField()+']')[0].getLabel();
@@ -637,10 +639,10 @@ Ext.define('Genesis.controller.MainPage',
          this.onSignIn(values.username, values.password);
       }
    },
-   onCreateActivate : function(c, eOpts)
+   onCreateActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var response = Genesis.db.getLocalDB()['fbResponse'] || null;
-      if(response)
+      if (response)
       {
          var form = this.getCreateAccount();
          form.setValues(

@@ -117,7 +117,7 @@ Ext.define('Genesis.controller.Redemptions',
                action : 'onRedeemRewards',
                args : [Ext.create('Genesis.model.EarnPrize',
                {
-                  'id' : 1,
+                  //'id' : 1,
                   'expiry_date' : null,
                   'reward' : record,
                   'merchant' : viewport.getCheckinInfo().venue.getMerchant()

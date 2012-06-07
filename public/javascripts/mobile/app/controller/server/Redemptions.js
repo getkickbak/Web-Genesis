@@ -98,7 +98,7 @@ Ext.define('Genesis.controller.server.Redemptions',
                   action : 'onAuthReward',
                   args : [Ext.create('Genesis.model.EarnPrize',
                   {
-                     'id' : 1,
+                     //'id' : 1,
                      'expiry_date' : null,
                      'reward' : Ext.create('Genesis.model.CustomerReward',
                      {
