@@ -157,7 +157,6 @@ Genesis::Application.routes.draw do
     match "/add_business" => 'pages#add_business'
     match "/add_business/create" => 'pages#add_business_create', :via => :post, :as => :create_merchant_contact
     match "/coming_soon" => 'pages#coming_soon'
-    match "/temporary" => 'pages#index'
     
     #match '/users/:id/account' => 'users#edit'
     #match '/users/:user_id/coupons' => 'orders#index', :via => :get , :as => :user_coupons
@@ -193,7 +192,7 @@ Genesis::Application.routes.draw do
 
     match '*a', :to => 'errors#routing'
 
-    #root :to => 'pages#index'
+    root :to => 'pages#index'
 
   #match '/referrals' => 'referrals#index'
   #root :to => 'referrals#index', :via => :get
