@@ -589,6 +589,8 @@ Ext.define('Genesis.controller.client.Challenges',
          },
          callback : function(records, operation)
          {
+            Ext.Viewport.setMasked(false);
+
             var metaData2 = Challenge.getProxy().getReader().metaData;
             if (operation.wasSuccessful() && metaData2)
             {
@@ -793,6 +795,7 @@ Ext.define('Genesis.controller.client.Challenges',
          {
             var metaData = Challenge.getProxy().getReader().metaData;
             console.log('Challenge Completed(' + operation.wasSuccessful() + ')');
+            Ext.Viewport.setMasked(false);
             if (operation.wasSuccessful() && metaData)
             {
                me.fireEvent('challengecomplete', type, qrcode, venueId, customerId, position);
@@ -896,7 +899,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
             var cameraOptions =
             {
-               quality : 75,
+               quality : 49,
                destinationType : Camera.DestinationType.FILE_URI,
                sourceType : sourceType,
                allowEdit : true,

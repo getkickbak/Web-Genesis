@@ -27,9 +27,11 @@
       <link rel="apple-touch-icon-precomposed" href="resouces/img/icon_57.png">
       <link rel="apple-touch-icon-precomposed" sizes="72x72" href="resources/img/icon_72.png"/>
       <link rel="apple-touch-icon-precomposed" sizes="114x114" href="resources/img/icon_114.png"/>
+      <link rel="apple-touch-startup-image" media="screen and (resolution: 326dpi)" href="resources/themes/images/v1/startup_640.png"
+      />
+      <link rel="apple-touch-startup-image" media="screen and (resolution: 163dpi)" href="resources/themes/images/v1/startup_640.png"
+      />
       -->
-      <link rel="apple-touch-startup-image" media="screen and (resolution: 326dpi)" href="resources/themes/images/v1/startup_640.png" />
-      <link rel="apple-touch-startup-image" media="screen and (resolution: 163dpi)" href="resources/themes/images/v1/startup_640.png" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -38,24 +40,22 @@
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
       <script type="text/javascript" src="http://192.168.0.52:8080/target/target-script-min.js"></script>
       directory and include it here -->
-      <script type="text/javascript" src="lib/date.js"></script>
-      <script type="text/javascript" src="lib/extras.js"></script>
       <!-- Debug Javascript on mobile browser -->
-      <script type="text/javascript" src="lib/sencha-touch-2.0.0-commercial/sencha-touch-all.js"></script>
+      <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
       <!--
       <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
       -->
       <!--
       Phone Gap Libs
       -->
-      <script type="text/javascript" src="lib/cordova-1.7.0.js"></script>
+      <script type="text/javascript" src="lib/cordova-1.8.0.js"></script>
       <script type="text/javascript">
          var phoneGapAvailable = true;
          var debugMode = false;
          var merchantMode = false;
          var appName = 'GetKickBak';
 
-         var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.0-commercial/src';
+         var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.1.1/src';
          var _appId = "197968780267830";
 
          var _browser = Ext.browser;
@@ -117,13 +117,7 @@
              title : 'Alert',
              message : 'PG variable does not exist. Check that you have included pg-plugin-fb-connect.js correctly'
              });
-             if( typeof FB == 'undefined')
-             Ext.device.Notification.show(
-             {
-             title : 'Alert',
-             message : 'FB variable does not exist. Check that you have included the Facebook JS SDK file.'
-             });
-             */
+rm -             */
             FB.init(
             {
                appId : _appId,
@@ -135,26 +129,14 @@
                xfbml : true,
                oauth : true
             });
-            //Ext.require(['Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Connection', 'Ext.device.Notification',
-            // 'Ext.device.Orientation']);
             Ext.application(
             {
                profiles : ['Iphone', 'Android', 'Desktop'],
-               //models : ['Checkin', 'Customer', 'Deal', 'EarnRewardRecord', 'Merchant', 'Reward', 'CustomerReward',
-               // 'PurchaseReward',
-               //'SubDeal', 'User', 'UserProfile',
-               //'Venue'],
-               views : ['client.UploadPhotosPage', 'client.ChallengePage',
-               // 'MenuChallenge', 'NewsfeedPage'
-               'CheckinExplore',
-               // Main Page when the user has never checked-in before
-               //,'CheckinMerchantMainPage'
-               // Main Page when the user has checked-in before
-               'LoginPage', 'SignInPage', 'MainPage',
-               //'MerchantAccountBrowse','MerchantAcountPage',
-               'MerchantAccount', 'MerchantDetails', 'client.Rewards', 'client.Redemptions', 'Accounts', 'client.AccountsTransfer', 'Prizes', 'client.SettingsPage', 'Viewport'],
-               controllers : ['Viewport', 'MainPage', 'client.Challenges', 'Merchants', 'client.Rewards', 'client.Redemptions', 'Accounts', 'Settings', 'Checkins', 'Prizes'],
-               stores : [],
+               views : ['client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', //
+               'client.Redemptions', 'client.SettingsPage', 'client.AccountsTransfer', //
+               'CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'MerchantAccount', 'MerchantDetails', 'Accounts', 'Prizes', 'Viewport'],
+               controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
+               'Viewport', 'MainPage', 'Merchants', 'Accounts', 'Settings', 'Checkins', 'Prizes'],
                launch : function()
                {
                   var viewport = this.getController('Viewport');
@@ -176,10 +158,10 @@
             Ext.triggerReady();
             document.addEventListener("online", function()
             {
-               if(Ext.device)
+               if (Ext.device)
                {
                   console.log("Phone is Online");
-                  if(Ext.device.Connection.isOnline())
+                  if (Ext.device.Connection.isOnline())
                   {
                      /*
                       Ext.device.Notification.show(
@@ -198,10 +180,10 @@
 
             document.addEventListener("offline", function()
             {
-               if(Ext.device)
+               if (Ext.device)
                {
                   console.log("Phone is Offline");
-                  if(Ext.device.Connection.isOnline())
+                  if (Ext.device.Connection.isOnline())
                   {
                      /*
                       Ext.device.Notification.show(
@@ -225,9 +207,9 @@
             document.addEventListener("resume", function()
             {
                console.log("App is Resumed");
-               if(Ext.device)
+               if (Ext.device)
                {
-                  if(!Ext.device.Connection.isOnline())
+                  if (!Ext.device.Connection.isOnline())
                   {
                      _onGotoMain();
                   }
@@ -245,7 +227,18 @@
                message : 'You have lost internet connectivity',
                callback : function()
                {
-                  _application.getController('Viewport').onFeatureTap('MainPage', 'login');
+                  var viewport = _application.getController('Viewport');
+                  if (viewport)
+                  {
+                     if (viewport.getLoggedIn())
+                     {
+                        viewport.fireEvent('openpage', 'MainPage', 'main', null);
+                     }
+                     else
+                     {
+                        viewport.fireEvent('openpage', 'MainPage', 'login', null);
+                     }
+                  }
                }
             });
          }
@@ -255,8 +248,8 @@
    </head>
    <body>
       <div id="fb-root"></div>
-      <script type="text/javascript" src="pg-plugin-fb-connect.js"></script>
-      <script type="text/javascript" src="facebook_js_sdk.js"></script>
+      <script type="text/javascript" src="lib/core/pg-plugin-fb-connect.js"></script>
+      <script type="text/javascript" src="lib/core/facebook_js_sdk.js"></script>
       <script type="text/javascript">
          window.onerror = function(e, url, linenum)
          {
@@ -268,9 +261,6 @@
          //appInit();
       </script>
       <!-- Cache images -->
-      <div style="display:none;">
-         <div class="rouletteBg"></div><div class="rouletteTable"></div><div class="rouletteBall"></div>
-      </div>
       <!-- -->
    </body>
 </html>

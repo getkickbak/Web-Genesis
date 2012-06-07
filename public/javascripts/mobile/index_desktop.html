@@ -27,9 +27,9 @@
       <link rel="apple-touch-icon-precomposed" href="resouces/img/icon_57.png">
       <link rel="apple-touch-icon-precomposed" sizes="72x72" href="resources/img/icon_72.png"/>
       <link rel="apple-touch-icon-precomposed" sizes="114x114" href="resources/img/icon_114.png"/>
-      -->
       <link rel="apple-touch-startup-image" media="screen and (resolution: 326dpi)" href="resources/themes/images/v1/startup_640.png" />
       <link rel="apple-touch-startup-image" media="screen and (resolution: 163dpi)" href="resources/themes/images/v1/startup_640.png" />
+      -->
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -37,26 +37,26 @@
       <link rel="stylesheet" href="resources/css/sencha-touch.css" type="text/css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
       directory and include it here -->
-      <script type="text/javascript" src="lib/qrcode.js"></script>
-      <script type="text/javascript" src="lib/date.js"></script>
-      <script type="text/javascript" src="lib/extras.js"></script>
+      <script type="text/javascript" src="lib/core/qrcode.js"></script>
+      <script type="text/javascript" src="lib/core/date.js"></script>
+      <script type="text/javascript" src="lib/core/extras.js"></script>
       <!-- Debug Javascript on mobile browser -->
-      <script type="text/javascript" src="lib/sencha-touch-2.0.0-commercial/sencha-touch-all-debug.js"></script>
+      <script type="text/javascript" src="lib/sencha-touch-2.0.1.1/sencha-touch-all-debug.js"></script>
       <!--
       Phone Gap Libs
       -->
-      <script type="text/javascript" src="lib/cordova-1.7.0.js"></script>
+      <script type="text/javascript" src="lib/cordova-1.8.0.js"></script>
       <script type="text/javascript">
          var phoneGapAvailable = false;
          var debugMode = false;
          var merchantMode = false;
          var appName = 'GetKickBak';
 
-         var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.0-commercial/src';
+         var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.1.1/src';
          var _appId = "197968780267830";
 
          var _browser = Ext.browser;
-         if(!!window.isNK)
+         if (!!window.isNK)
          {
             _browser.setFlag('WebView');
             _browser.setFlag('Sencha');
@@ -91,16 +91,16 @@
             });
          }
       </script>
-      <script type="text/javascript" src="lib/barcodescanner.js"></script>
-      <script type="text/javascript" src="lib/EmailComposer.js"></script>
-      <script type="text/javascript" src="lib/QRCodeReader.js"></script>
+      <script type="text/javascript" src="lib/core/barcodescanner.js"></script>
+      <script type="text/javascript" src="lib/core/EmailComposer.js"></script>
+      <script type="text/javascript" src="lib/core/QRCodeReader.js"></script>
       <!--
       <script type="text/javascript" src="lib/FileTransfer.js"></script>
       -->
       <!--
       SenchaTouch Libs
       -->
-      <script type="text/javascript" src="lib/Overrides.js"></script>
+      <script type="text/javascript" src="lib/core/Overrides.js"></script>
       <!-- View Widgets -->
       <script type="text/javascript" src="app/profile/Iphone.js"></script>
       <script type="text/javascript" src="app/profile/Android.js"></script>
@@ -206,20 +206,11 @@
             Ext.application(
             {
                profiles : ['Iphone', 'Android', 'Desktop'],
-               //models : ['Checkin', 'Customer', 'Deal', 'EarnRewardRecord', 'Merchant', 'Reward', 'CustomerReward',
-               // 'PurchaseReward',
-               //'SubDeal', 'User', 'UserProfile',
-               //'Venue'],
-               views : ['client.UploadPhotosPage', 'client.ChallengePage',
-               // 'MenuChallenge', 'NewsfeedPage'
-               'CheckinExplore',
-               // Main Page when the user has never checked-in before
-               //,'CheckinMerchantMainPage'
-               // Main Page when the user has checked-in before
-               'LoginPage', 'SignInPage', 'MainPage',
-               //'MerchantAccountBrowse','MerchantAcountPage',
-               'MerchantAccount', 'MerchantDetails', 'client.Rewards', 'client.Redemptions', 'Accounts', 'client.AccountsTransfer', 'Prizes', 'client.SettingsPage', 'Viewport'],
-               controllers : ['Viewport', 'MainPage', 'client.Challenges', 'Merchants', 'client.Rewards', 'client.Redemptions', 'Accounts', 'Settings', 'Checkins', 'Prizes'],
+               views : ['client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
+               'client.AccountsTransfer', 'client.SettingsPage', //
+               'CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'MerchantAccount', 'MerchantDetails', 'Accounts', 'Prizes', 'Viewport'],
+               controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
+               'Viewport', 'MainPage', 'Merchants', 'Accounts', 'Settings', 'Checkins', 'Prizes'],
                stores : [],
                launch : function()
                {
