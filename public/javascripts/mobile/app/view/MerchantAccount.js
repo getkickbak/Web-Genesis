@@ -89,16 +89,16 @@ Ext.define('Genesis.view.MerchantAccount',
                store : 'EligibleRewardsStore',
                emptyText : ' ',
                cls : 'feedPanel separator',
+               itemTpl : Ext.create('Ext.XTemplate',
                // @formatter:off
-            itemTpl : Ext.create('Ext.XTemplate',
-            '<div class="photo">'+
-               '<img src="{[this.getPhoto(values)]}"/>'+
-            '</div>',
-            '<div class="listItemDetailsWrapper" style="{[this.getDisclose(values)]}">',
-               '<div class="itemTitle">{[this.getTitle(values)]}</div>',
-               '<div class="itemDesc">{[this.getDesc(values)]}</div>',
-            '</div>',
-            // @formatter:on
+               '<div class="photo">'+
+                  '<img src="{[this.getPhoto(values)]}"/>'+
+               '</div>',
+               '<div class="listItemDetailsWrapper" style="{[this.getDisclose(values)]}">',
+                  '<div class="itemTitle">{[this.getTitle(values)]}</div>',
+                  '<div class="itemDesc">{[this.getDesc(values)]}</div>',
+               '</div>',
+                // @formatter:on
                {
                   getDisclose : function(values)
                   {
@@ -106,11 +106,11 @@ Ext.define('Genesis.view.MerchantAccount',
                      {
                         case 'vip' :
                         {
-                           values['disclosure'] = false;
+                           values['disclosure'] = true;
                            break;
                         }
                      }
-                     return ((values['disclosure'] === false) ? 'padding-right:0;' : '');
+                     return ((values['disclosure'] === true) ? 'padding-right:0;' : '');
                   },
                   getPhoto : function(values)
                   {

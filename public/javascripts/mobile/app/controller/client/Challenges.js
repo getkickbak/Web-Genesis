@@ -896,7 +896,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
             var cameraOptions =
             {
-               quality : 75,
+               quality :49,
                destinationType : Camera.DestinationType.FILE_URI,
                sourceType : sourceType,
                allowEdit : true,

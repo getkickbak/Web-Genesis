@@ -25,9 +25,9 @@
       <link rel="apple-touch-icon-precomposed" href="resouces/img/icon_57.png">
       <link rel="apple-touch-icon-precomposed" sizes="72x72" href="resources/img/icon_72.png"/>
       <link rel="apple-touch-icon-precomposed" sizes="114x114" href="resources/img/icon_114.png"/>
-      -->
       <link rel="apple-touch-startup-image" media="screen and (resolution: 326dpi)" href="resources/themes/images/v1/startup_640.png" />
       <link rel="apple-touch-startup-image" media="screen and (resolution: 163dpi)" href="resources/themes/images/v1/startup_640.png" />
+      -->
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -37,21 +37,19 @@
       <script type="text/javascript" src="http://192.168.0.52:8080/target/target-script-min.js"></script>
       directory and include it here -->
       <script type="text/javascript" src="lib/gibberish-aes.min.js"></script>
-      <script type="text/javascript" src="lib/date.js"></script>
-      <script type="text/javascript" src="lib/extras.js"></script>
       <!-- Debug Javascript on mobile browser -->
-      <script type="text/javascript" src="lib/sencha-touch-2.0.0-commercial/sencha-touch-all.js"></script>
+      <script type="text/javascript" src="lib/sencha-touch-2.0.1.1/sencha-touch-all.js"></script>
       <!--
       Phone Gap Libs
       -->
-      <script type="text/javascript" src="lib/cordova-1.7.0.js"></script>
+      <script type="text/javascript" src="lib/cordova-1.8.0.js"></script>
       <script type="text/javascript">
          var phoneGapAvailable = true;
          var debugMode = false;
          var merchantMode = true;
          var appName = 'MerchantKickBak';
 
-         var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.0-commercial/src';
+         var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.1.1/src';
 
          var _browser = Ext.browser;
          _browser.setFlag('WebView');
@@ -241,9 +239,6 @@
          //appInit();
       </script>
       <!-- Cache images -->
-      <div style="display:none;">
-         <div class="rouletteBg"></div><div class="rouletteTable"></div><div class="rouletteBall"></div>
-      </div>
       <!-- -->
    </body>
 </html>
