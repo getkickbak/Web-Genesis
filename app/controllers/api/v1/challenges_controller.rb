@@ -111,8 +111,21 @@ class Api::V1::ChallengesController < ApplicationController
                 :update_ts => now
               )
               record.merchant = @venue.merchant
+              record.customer = @customer
               record.user = current_user
               record.save
+              trans_record = TransactionRecord.new(
+                :type => :earn,
+                :ref_id => record.id,
+                :description => @challenge.name,
+                :points => @challenge.points,
+                :created_ts => now,
+                :update_ts => now
+              )
+              trans_record.merchant = @venue.merchant
+              trans_record.customer = @customer
+              trans_record.user = current_user
+              trans_record.save
               @customer.points += @challenge.points
               @customer.save
               @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])

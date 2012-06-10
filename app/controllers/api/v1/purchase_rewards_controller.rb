@@ -87,8 +87,21 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               :update_ts => now
             )
             referrer_reward_record.merchant = @venue.merchant
+            referrer_reward_record.customer = referrer
             referrer_reward_record.user = referrer.user
             referrer_reward_record.save
+            referrer_trans_record = TransactionRecord.new(
+              :type => :earn,
+              :ref_id => referrer_reward_record.id,
+              :description => challenge.name,
+              :points => challenge.points,
+              :created_ts => now,
+              :update_ts => now
+            )
+            referrer_trans_record.merchant = @venue.merchant
+            referrer_trans_record.customer = referrer
+            referrer_trans_record.user = referrer.user
+            referrer_trans_record.save
             referral_reward_record = EarnRewardRecord.new(
               :challenge_id => challenge.id,
               :venue_id => @venue.id,
@@ -99,8 +112,21 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               :update_ts => now
             )
             referral_reward_record.merchant = @venue.merchant
+            referral_reward_record.customer = @customer
             referral_reward_record.user = current_user
             referral_reward_record.save
+            referral_trans_record = TransactionRecord.new(
+              :type => :earn,
+              :ref_id => referral_reward_record.id,
+              :description => challenge.name,
+              :points => challenge.points,
+              :created_ts => now,
+              :update_ts => now
+            )
+            referral_trans_record.merchant = @venue.merchant
+            referral_trans_record.customer = @customer
+            referral_trans_record.user = current_user
+            referral_trans_record.save
             referrer.points += challenge.points
             referrer.save
             @customer.points += challenge.data.referral_points
@@ -125,8 +151,21 @@ class Api::V1::PurchaseRewardsController < ApplicationController
               :update_ts => now
             )
             record.merchant = @venue.merchant
+            record.customer = @customer
             record.user = current_user
             record.save
+            trans_record = TransactionRecord.new(
+              :type => :earn,
+              :ref_id => record.id,
+              :description => challenge.name,
+              :points => challenge.points,
+              :created_ts => now,
+              :update_ts => now
+            )
+            trans_record.merchant = @venue.merchant
+            trans_record.customer = @customer
+            trans_record.user = current_user
+            trans_record.save
             @customer.points += challenge.points
             @vip_challenge = true
             @vip_points = challenge.points
@@ -144,8 +183,21 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             :update_ts => now
           )
           record.merchant = @venue.merchant
+          record.customer = @customer
           record.user = current_user
           record.save
+          trans_record = TransactionRecord.new(
+            :type => :earn,
+            :ref_id => record.id,
+            :description => I18n.t("transaction.earn"),
+            :points => @points,
+            :created_ts => now,
+            :update_ts => now
+          )
+          trans_record.merchant = @venue.merchant
+          trans_record.customer = @customer
+          trans_record.user = current_user
+          trans_record.save
           @customer.points += @points
           @customer.save
         

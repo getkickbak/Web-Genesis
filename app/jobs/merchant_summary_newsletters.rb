@@ -7,7 +7,7 @@ module MerchantSummaryNewsletters
 
   def self.perform()
     now = Time.now
-    logger.info("MerchantSummaryNewsletters started at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+    logger.info("Merchant Summary Newsletters started at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
     beginning_of_last_week = 1.week.ago.beginning_of_week
     end_of_last_week = 1.week.ago.end_of_week
     #beginning_of_last_week = Date.today.beginning_of_week
@@ -40,6 +40,7 @@ module MerchantSummaryNewsletters
       }
       Business::MerchantMailer.summary_newsletter_email(merchant,stats).deliver
     end
-    logger.info("MerchantSummaryNewsletters completed successfully at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+    now = Time.now
+    logger.info("Merchant Summary Newsletters completed successfully at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
   end
 end

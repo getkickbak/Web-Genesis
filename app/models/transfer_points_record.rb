@@ -5,7 +5,10 @@ class TransferPointsRecord
 
   property :id, Serial
   property :sender_id, Integer, :required => true, :default => 0
+  property :sender_user_id, Integer, :required => true, :default => 0
   property :recipient_id, Integer, :default => 0
+  property :recipient_user_id, Integer, :default => 0
+  property :merchant_id, Integer, :required => true, :default => 0
   property :points, Integer, :required => true, :default => 0
   property :status, Enum[:pending, :complete], :default => :pending
   property :expiry_date, Date, :required => true, :default => ::Constant::MIN_TIME
@@ -14,5 +17,5 @@ class TransferPointsRecord
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessible :sender_id, :points, :expiry_date, :created_ts, :update_ts
+  attr_accessible :sender_id, :sender_user_id, :merchant_id, :points, :expiry_date, :created_ts, :update_ts
 end

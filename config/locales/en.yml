@@ -110,6 +110,11 @@ en:
         custom: "Custom"
   prize:
       terms: "No cash value.  Non-transferable."    
+  transaction:
+      earn: "Earn Points"
+      transfer: "Transfer Points"
+      expire: "Expire Points"
+      adjust: "Adjustment"      
   api:
       out_of_distance: "Outside of distance.\nPlease try again."
       photo_blank: "Uploaded photo is blank."
@@ -142,8 +147,6 @@ en:
         limit_reached_invalid: "You can't do this more than %s %s a %s!"
         vip_success: "You are only %s %s away from %s bonus points!"
         unsupported_success: "Nothing to do here."
-        email_subject_referral_challenge: "KICKBAK Referral"
-        email_subject_confirm_referral_challenge: "KICKBAK Referral - Confirmation"
       check_ins:
         invalid_code: "Invalid check-in code.\nPlease try again."
         create_failure: "Trouble with check-in.\nPlease try again." 
@@ -153,8 +156,6 @@ en:
         invalid_transfer_code: "Transfer code is not valid."
         expired_transfer_code: "Transfer code is no longer valid."
         receive_points_failure: "Trouble receiving points.\nPlease try again." 
-        email_subject_points_transfer: "KICKBAK Reward Points Transfer" 
-        email_subject_confirm_points_transfer: "KICKBAK Reward Points Transfer - Confirmation"
       customer_rewards:
         not_available: "Sorry, but the reward is not available at this venue!"
         insufficient_points: "Not enough points to redeem reward."
@@ -228,3 +229,13 @@ en:
         update_authcode_success: "Authentication Code was successfully updated."
         update_authcode_failure: "Failed to update Authentication Code."
         destroy_failure: "Failed to delete venue.  Please check to make sure no challenges or rewards are associated with this venue."
+      mailer:
+        email_subject_summary_newsletter: "Weekly Summary Newsletter - %s"
+        email_subject_invoice: "Monthly KICKBAK Invoice #%s"  
+  mailer:
+      email_subject_referral_challenge: "KICKBAK Referral"
+      email_subject_confirm_referral_challenge: "KICKBAK Referral - Confirmation"
+      email_subject_points_transfer: "KICKBAK Reward Points Transfer" 
+      email_subject_confirm_points_transfer: "KICKBAK Reward Points Transfer - Confirmation"
+      email_subject_points_expiration_reminder: "Reminder - Use your points before they expire!"
+      email_subject_prize_expiration_reminder: "Reminder - Use your prizes before they expire!"

@@ -349,6 +349,7 @@ namespace :db do
       challenges << challenge
       10.times do |i|
         user = users[rand(users.length)]
+        customer = Customer.first(Customer.merchant.id => merchant.id, Customer.user.id => user.id)
         challenge = challenges[rand(6)]
         record = EarnRewardRecord.new(
           :challenge_id => challenge.id,
@@ -359,8 +360,21 @@ namespace :db do
           :created_ts => now
         )
         record.merchant = merchant
+        record.customer = customer
         record.user = user
         record.save
+        trans_record = TransactionRecord.new(
+          :type => :earn,
+          :ref_id => record.id,
+          :description => challenge.name,
+          :points => challenge.points,
+          :created_ts => now,
+          :update_ts => now
+        )
+        trans_record.merchant = merchant
+        trans_record.customer = customer
+        trans_record.user = user
+        trans_record.save
         amount = rand(30) + 1
         record = EarnRewardRecord.new(
           :venue_id => venues[rand(2)].id,
@@ -371,8 +385,21 @@ namespace :db do
           :created_ts => now
         )
         record.merchant = merchant
+        record.customer = customer
         record.user = user
         record.save
+        trans_record = TransactionRecord.new(
+          :type => :earn,
+          :ref_id => record.id,
+          :description => (I18n.t "transaction.earn"),
+          :points => record.points,
+          :created_ts => now,
+          :update_ts => now
+        )
+        trans_record.merchant = merchant
+        trans_record.customer = customer
+        trans_record.user = user
+        trans_record.save
         customer = Customer.first(Customer.merchant.id => merchant.id, Customer.user.id => user.id)
         customer.points += (record.points + challenge.points)
         customer.visits += 1

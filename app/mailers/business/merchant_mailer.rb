@@ -11,12 +11,12 @@ module Business
     def summary_newsletter_email(merchant, stats)
       @merchant = merchant
       @stats = stats
-      mail(:from => "", :to => 'wayofdragon@gmail.com', :subject => "Weekly Summary Newsletter - #{@merchant.name}")
+      mail(:from => "", :to => 'wayofdragon@gmail.com', :subject => (I18n.t("business.mailer.email_subject_summary_newsletter") % [@merchant.name]))
     end
     
     def invoice_email(invoice)
       @invoice = invoice
-      mail(:from => "", :to => 'wayofdragon@gmail.com', :subject => "Monthly KICKBAK Invoice ##{invoice.invoice_id}")
+      mail(:from => "", :to => 'wayofdragon@gmail.com', :subject => (I18n.t("business.mailer.email_subject_invoice") % [@invoice.invoice_id]))
     end
   end
-end
+end 

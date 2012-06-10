@@ -24,6 +24,8 @@ class Api::V1::CustomersController < ApplicationController
         if @customer.points >= points
           record = TransferPointsRecord.create(
             :sender_id => @customer.id,
+            :sender_user_id => current_user.id,
+            :merchant_id => @customer.merchant.id,
             :points => points,
             :expiry_date => 1.month.from_now,
             :created_ts => now,
@@ -126,13 +128,39 @@ class Api::V1::CustomersController < ApplicationController
           acquired = @recipient_mutex.acquire
           @customer.reload
           if sender.points >= @record.points
+            now = Time.now
             sender.points -= @record.points
             sender.save
+            sender_trans_record = TransactionRecord.new(
+              :type => :transfer,
+              :ref_id => @record.id,
+              :description => I18n.t("transaction.transfer"),
+              :points => -points,
+              :created_ts => now,
+              :update_ts => now
+            )
+            sender.trans_record.merchant = merchant
+            sender.trans_record.customer = sender
+            sender.trans_record.user = sender.user
+            sender.trans_record.save
             @customer.points += @record.points
             @customer.save
+            trans_record = TransactionRecord.new(
+              :type => :transfer,
+              :ref_id => @record.id,
+              :description => I18n.t("transaction.transfer"),
+              :points => points,
+              :created_ts => now,
+              :update_ts => now
+            )
+            trans_record.merchant = merchant
+            trans_record.customer = @customer
+            trans_record.user = current_user
+            trans_record.save
             @record.recipient_id = @customer.id
+            @record.recipient_user_id = current_user.id
             @record.status = :complete
-            @record.update_ts = Time.now
+            @record.update_ts = now
             @record.save 
             render :template => '/api/v1/customers/receive_points'
             if decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL

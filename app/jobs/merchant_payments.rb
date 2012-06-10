@@ -32,6 +32,7 @@ module MerchantPayments
         logger.info("Failed to bill Merchant(#{merchant.name}, Amount(#{amount}) at #{now.strftime("%a %m/%d/%y %H:%M %Z")})")
       end  
     end
+    now = Time.now
     logger.info("Merchant Payments completed successfully at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
   end
 end

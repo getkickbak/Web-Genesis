@@ -34,15 +34,30 @@ class Api::V1::CustomerRewardsController < ApplicationController
         acquired = @mutex.acquire
         @customer.reload
         if @customer.points - @reward.points >= 0
+          now = Time.now
           record = RedeemRewardRecord.new(
             :reward_id => @reward.id,
             :venue_id => @venue.id,
             :points => @reward.points,
-            :created_ts => Time.now
+            :created_ts => now,
+            :update_ts => now
           )
           record.merchant = @venue.merchant
+          record.customer = @customer
           record.user = current_user
           record.save
+          trans_record = TransactionRecord.new(
+            :type => :redeem,
+            :ref_id => record.id,
+            :description => @reward.title,
+            :points => -@reward.points,
+            :created_ts => now,
+            :update_ts => now
+          )
+          trans_record.merchant = @venue.merchant
+          trans_record.customer = @customer
+          trans_record.user = current_user
+          trans_record.save
           @customer.points -= @reward.points
           @customer.save
           data = { 
