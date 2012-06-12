@@ -10,6 +10,12 @@ Ext.define('Genesis.controller.Accounts',
    config :
    {
       mode : 'profile',
+      routes :
+      {
+         'accounts' : 'mainPage',
+         'etransfer' : 'emailTransferPage',
+         'transfer' : 'transferPage'
+      },
       refs :
       {
          //
@@ -87,6 +93,11 @@ Ext.define('Genesis.controller.Accounts',
          {
             tap : 'onTransferCompleteTap'
          }
+      },
+      listeners :
+      {
+         'selectMerchant' : 'onDisclose',
+         'authCodeRecv' : 'onAuthCodeRecv'
       }
    },
    qrcodeRegExp : /%qrcode_image%/,
@@ -129,7 +140,7 @@ Ext.define('Genesis.controller.Accounts',
       var vport = me.getViewport();
       var cstore = Ext.StoreMgr.get('CustomerStore');
 
-      if(qrcode)
+      if (qrcode)
       {
          //
          // Send QRCode to server for processing
@@ -153,7 +164,7 @@ Ext.define('Genesis.controller.Accounts',
             callback : function(records, operation)
             {
                Ext.Viewport.setMasked(false);
-               if(operation.wasSuccessful())
+               if (operation.wasSuccessful())
                {
                   var metaData = Customer.getProxy().getReader().metaData;
                   /*
@@ -176,7 +187,7 @@ Ext.define('Genesis.controller.Accounts',
                         me.silentPopView(1);
                         Ext.defer(function()
                         {
-                           me.onDisclose(cstore, records[0]);
+                           me.fireEvent('selectMerchant', cstore, records[0]);
                            //me.pushView(me.getAccounts());
                         }, 1, me);
                      }
@@ -217,10 +228,10 @@ Ext.define('Genesis.controller.Accounts',
          },
          callback : function(record, operation)
          {
-            if(operation.wasSuccessful())
+            if (operation.wasSuccessful())
             {
                var metaData = Venue.getProxy().getReader().metaData;
-               if(metaData)
+               if (metaData)
                {
                   var app = me.getApplication();
                   var controller = app.getController('Checkins');
@@ -232,13 +243,7 @@ Ext.define('Genesis.controller.Accounts',
                   //
                   metaData['venue_id'] = record.getId();
                   viewport.setVenue(record);
-                  app.dispatch(
-                  {
-                     action : 'onCheckinHandler',
-                     args : ['explore', metaData, record.getId(), rec, operation],
-                     controller : controller,
-                     scope : controller
-                  });
+                  controller.fireEvent('checkinMerchant', 'explore', metaData, record.getId(), rec, operation);
                }
                else
                {
@@ -312,7 +317,7 @@ Ext.define('Genesis.controller.Accounts',
          case 'emailtransfer' :
          case 'transfer' :
          {
-            if(record.get('points') < 1)
+            if (record.get('points') < 1)
             {
                Ext.device.Notification.show(
                {
@@ -357,7 +362,7 @@ Ext.define('Genesis.controller.Accounts',
             me.getAtrCloseBB().hide();
             me.getAtrCalcCloseBB().show();
             me.getAtrBB().hide();
-            if(oldActiveItem && (oldActiveItem == me.getAccounts() && !me.rec))
+            if (oldActiveItem && (oldActiveItem == me.getAccounts() && !me.rec))
             {
                me.setMode('profile');
                //container.setActiveItem(0);
@@ -418,7 +423,7 @@ Ext.define('Genesis.controller.Accounts',
                buttons : ['Proceed', 'Cancel'],
                callback : function(btn)
                {
-                  if(btn.toLowerCase() == 'proceed')
+                  if (btn.toLowerCase() == 'proceed')
                   {
                      me.scanQRCode();
                   }
@@ -439,7 +444,7 @@ Ext.define('Genesis.controller.Accounts',
       var value = b.getText();
       var pointsField = me.getPoints();
       var points = pointsField.getValue() || "0";
-      if(points.length < 8)
+      if (points.length < 8)
       {
          switch (value)
          {
@@ -473,7 +478,7 @@ Ext.define('Genesis.controller.Accounts',
             //
             // Query server to get generate qrcode
             //
-            if(qrcode[0])
+            if (qrcode[0])
             {
                me.getQrcode().setStyle(
                {
@@ -562,7 +567,7 @@ Ext.define('Genesis.controller.Accounts',
       var cstore = Ext.StoreMgr.get('CustomerStore');
       var points = me.getPoints().getValue();
       var type;
-      if((Number(points) > 0) && (Number(points) <= me.rec.get('points') ))
+      if ((Number(points) > 0) && (Number(points) <= me.rec.get('points') ))
       {
          switch (me.getMode())
          {
@@ -606,7 +611,7 @@ Ext.define('Genesis.controller.Accounts',
             callback : function(records, operation)
             {
                var metaData = cstore.getProxy().getReader().metaData;
-               if(operation.wasSuccessful() && (!metaData['data']))
+               if (operation.wasSuccessful() && (!metaData['data']))
                {
                   Ext.Viewport.setMasked(false);
                   Ext.device.Notification.show(
@@ -635,6 +640,21 @@ Ext.define('Genesis.controller.Accounts',
       // Go back to Accounts Page
       //
       me.popView();
+   },
+   // --------------------------------------------------------------------------
+   // Page Navigation
+   // --------------------------------------------------------------------------
+   mainPage : function()
+   {
+      this.openPage('profile');
+   },
+   emailTransferPage : function()
+   {
+      this.openPage('emailtransfer');
+   },
+   transferPage : function()
+   {
+      this.openPage('transfer');
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

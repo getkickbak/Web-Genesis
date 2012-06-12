@@ -9,6 +9,12 @@ Ext.define('Genesis.controller.client.Challenges',
    xtype : 'clientChallengesCntlr',
    config :
    {
+      routes :
+      {
+         'referrals' : 'referralsPage',
+         'challenges' : 'challengesPage',
+         'photoUpload' : 'photoUploadPage'
+      },
       refs :
       {
          //
@@ -103,7 +109,8 @@ Ext.define('Genesis.controller.client.Challenges',
       listeners :
       {
          'fbphotouploadcomplete' : 'onFbPhotoUploadComplete',
-         'challengecomplete' : 'onChallengeComplete'
+         'challengecomplete' : 'onChallengeComplete',
+         'doChallenge' : 'onChallengeBtnTap'
       }
    },
    metaData : null,
@@ -210,11 +217,7 @@ Ext.define('Genesis.controller.client.Challenges',
                {
                   console.log("Uploading to Facebook using upload_token[" + metaData['upload_token'] + "]...");
 
-                  //
-                  // Goto PhotoUpload Page
-                  //
-                  me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
-                  me.pushView(me.getUploadPhotosPage());
+                  me.redirectTo('uploadPhotos');
                }
                delete me.imageURI;
             }, function(error)
@@ -236,8 +239,7 @@ Ext.define('Genesis.controller.client.Challenges',
             {
                'photo_url' : me.imageURI
             };
-            me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
-            me.pushView(me.getUploadPhotosPage());
+            me.redirectTo('photoUpload');
             /*
              Ext.device.Notification.show(
              {
@@ -519,13 +521,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      var app = me.getApplication();
                      var controller = app.getController('Accounts');
                      controller.setMode('profile');
-                     app.dispatch(
-                     {
-                        action : 'onDisclose',
-                        args : [cstore, customer],
-                        controller : controller,
-                        scope : controller
-                     });
+                     controller.fireEvent('selectMerchant', cstore, customer);
                   }
                });
             }
@@ -630,7 +626,8 @@ Ext.define('Genesis.controller.client.Challenges',
                         // Go back to Checked-in Merchant Account
                         //
                         me.metaData = null;
-                        me.fireEvent('openpage', 'MainPage', 'main', null);
+                        me.redirectTo('main');
+                        //me.fireEvent('openpage', 'MainPage', 'main', null);
                      }
                   }
                });
@@ -707,11 +704,7 @@ Ext.define('Genesis.controller.client.Challenges',
             }
             case 'referral' :
             {
-               //
-               // Show Referrals Page
-               //
-               me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
-               me.pushView(me.getReferralsPage());
+               me.redirectTo('referrals');
                break;
             }
             case 'menu' :
@@ -1027,6 +1020,32 @@ Ext.define('Genesis.controller.client.Challenges',
       });
    },
    // --------------------------------------------------------------------------
+   // Page Navigation
+   // --------------------------------------------------------------------------
+   referralsPage : function()
+   {
+      var me = this;
+      //
+      // Show Referrals Page
+      //
+      me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
+      me.pushView(me.getReferralsPage());
+   },
+   challengesPage : function()
+   {
+      this.setAnimationMode(this.self.superclass.self.animationMode['slideUp']);
+      this.pushView(this.getMainPage());
+   },
+   photoUploadPage : function()
+   {
+      var me = this;
+      //
+      // Goto PhotoUpload Page
+      //
+      me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
+      me.pushView(me.getUploadPhotosPage());
+   },
+   // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
    openPage : function(subFeature, cb)
@@ -1068,8 +1087,7 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    openMainPage : function()
    {
-      this.setAnimationMode(this.self.superclass.self.animationMode['slideUp']);
-      this.pushView(this.getMainPage());
+      this.redirectTo('challenges');
       console.log("Client ChallengePage Opened");
    },
    isOpenAllowed : function()

@@ -34,6 +34,7 @@ Ext.define('Genesis.view.Accounts',
          tag : 'accountsList',
          scrollable : 'vertical',
          cls : 'accountsList',
+         deferEmptyText : false,
          emptyText : ' ',
          /*
           indexBar :
@@ -66,7 +67,7 @@ Ext.define('Genesis.view.Accounts',
             },
             getPhoto : function(values)
             {
-               return values.Merchant['photo']['thumbnail_ios_small'].url;
+               return values.merchant['photo']['thumbnail_ios_small'].url;
             },
             getPoints : function(values)
             {

@@ -106,11 +106,11 @@ Ext.define('Genesis.view.MerchantAccount',
                      {
                         case 'vip' :
                         {
-                           values['disclosure'] = true;
+                           values['disclosure'] = false;
                            break;
                         }
                      }
-                     return ((values['disclosure'] === true) ? 'padding-right:0;' : '');
+                     return ((values['disclosure'] === false) ? 'padding-right:0;' : '');
                   },
                   getPhoto : function(values)
                   {

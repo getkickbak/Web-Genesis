@@ -75,15 +75,9 @@ Ext.define('Genesis.controller.server.Challenges',
       Ext.defer(function()
       {
          var qrcode = me.generateQRCode();
-         if(qrcode[0])
+         if (qrcode[0])
          {
-            app.dispatch(
-            {
-               action : 'onRefreshQRCode',
-               args : [qrcode],
-               controller : controller,
-               scope : controller
-            });
+            controller.fireEvent('refreshQRCode',qrcode);
          }
          Ext.Viewport.setMasked(false);
       }, 1, me);
@@ -93,40 +87,33 @@ Ext.define('Genesis.controller.server.Challenges',
       var me = this;
       var qrcode = me.generateQRCode();
 
-      if(qrcode[0])
+      if (qrcode[0])
       {
-         var app = me.getApplication();
-         var controller = app.getController('Prizes');
-         app.dispatch(
+         var controller = me.getApplication().getController('Prizes');
+         controller.fireEvent('authreward', Ext.create('Genesis.model.EarnPrize',
          {
-            action : 'onAuthReward',
-            args : [Ext.create('Genesis.model.EarnPrize',
+            //'id' : 1,
+            'expiry_date' : null,
+            'reward' : Ext.create('Genesis.model.CustomerReward',
             {
-               //'id' : 1,
-               'expiry_date' : null,
-               'reward' : Ext.create('Genesis.model.CustomerReward',
+               id : 0,
+               title : 'Authorization Code',
+               type :
                {
-                  id : 0,
-                  title : 'Authorization Code',
-                  type :
+                  value : 'earn_points'
+               },
+               photo :
+               {
+                  'thumbnail_ios_medium' :
                   {
-                     value : 'earn_points'
-                  },
-                  photo :
-                  {
-                     'thumbnail_ios_medium' :
-                     {
-                        url : qrcode[0],
-                        height : qrcode[1],
-                        width : qrcode[2],
-                     }
+                     url : qrcode[0],
+                     height : qrcode[1],
+                     width : qrcode[2],
                   }
-               }),
-               'merchant' : null
-            })],
-            controller : controller,
-            scope : controller
-         });
+               }
+            }),
+            'merchant' : null
+         }));
       }
    },
    // --------------------------------------------------------------------------
@@ -142,7 +129,7 @@ Ext.define('Genesis.controller.server.Challenges',
          buttons : ['OK', 'Cancel'],
          callback : function(btn)
          {
-            if(btn.toLowerCase() == 'ok')
+            if (btn.toLowerCase() == 'ok')
             {
                console.log(me.genAuthCodeMsg);
                me.onGenerateQRCode();

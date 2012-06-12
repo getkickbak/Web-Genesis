@@ -4,14 +4,19 @@ Ext.define('Genesis.controller.MainPage',
    requires : ['Ext.data.Store', 'Genesis.model.EarnPrize'],
    statics :
    {
-      mainPage_path : '/mainPage',
-      loginPage_path : '/loginPage',
-      sign_in_path : '/sign_in',
-      sign_out_path : '/sign_out',
    },
    xtype : 'mainPageCntlr',
    config :
    {
+      routes :
+      {
+         '' : 'openPage', //Default do nothing
+         'main' : 'mainPage',
+         'login' : 'loginPage',
+         'merchant' : 'merchantPage',
+         'signin' : 'signInPage',
+         'createAccount' : 'createAccountPage',
+      },
       models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'EligibleReward', 'Customer', 'User', 'Merchant', 'EarnPrize', 'CustomerReward'],
       listeners :
       {
@@ -126,6 +131,21 @@ Ext.define('Genesis.controller.MainPage',
                if (merchantMode)
                {
                   me.goToMain();
+               }
+               else
+               {
+                  var db = Genesis.db.getLocalDB();
+                  if (db['auth_code'])
+                  {
+                     me.persistLoadCustomerStore(function()
+                     {
+                        me.redirectTo('main');
+                     });
+                  }
+                  else
+                  {
+                     me.redirectTo('login');
+                  }
                }
             }
          }
@@ -291,13 +311,7 @@ Ext.define('Genesis.controller.MainPage',
             'metachange' : function(store, proxy, eOpts)
             {
                var controller = app.getController('client.Rewards');
-               app.dispatch(
-               {
-                  action : 'onPrizeStoreMetaChange',
-                  args : [store, proxy.getReader().metaData],
-                  controller : controller,
-                  scope : controller
-               });
+               controller.fireEvent('metadataChange',store, proxy.getReader().metaData);
             }
          }
       });
@@ -310,13 +324,7 @@ Ext.define('Genesis.controller.MainPage',
       var me = this;
       var app = me.getApplication();
       var controller = app.getController('Accounts');
-      app.dispatch(
-      {
-         action : 'onAuthCodeRecv',
-         args : [metaData],
-         controller : controller,
-         scope : controller
-      });
+      controller.fireEvent('authCodeRecv',metaData);
    },
    // --------------------------------------------------------------------------
    // MainPage
@@ -332,6 +340,11 @@ Ext.define('Genesis.controller.MainPage',
       var msg = cntlr.isOpenAllowed();
       if (msg === true)
       {
+         if (model.get('route'))
+         {
+            this.redirectTo(model.get('route'));
+         }
+         else
          if (model.get('subFeature'))
          {
             cntlr.openPage(model.get('subFeature'));
@@ -396,7 +409,12 @@ Ext.define('Genesis.controller.MainPage',
                //Genesis.db.resetStorage();
                vport.setLoggedIn(false);
                Genesis.db.removeLocalDBAttrib('auth_code');
-               me.fireEvent('openpage', 'MainPage', 'login', null);
+               me.redirectTo('login');
+               //me.fireEvent('openpage', 'MainPage', 'login', null);
+            }
+            else
+            {
+               me.persistSyncCustomerStore();
             }
          }
       });
@@ -428,7 +446,8 @@ Ext.define('Genesis.controller.MainPage',
          {
             Genesis.fb.facebook_onLogout(null, true);
          }
-         me.fireEvent('openpage', 'MainPage', 'login', null);
+         me.redirectTo('login');
+         //me.fireEvent('openpage', 'MainPage', 'login', null);
       }
       var _logout = function()
       {
@@ -447,6 +466,7 @@ Ext.define('Genesis.controller.MainPage',
                   Ext.Viewport.setMasked(false);
                   if (operation.wasSuccessful())
                   {
+                     me.persistSyncCustomerStore(true);
                      console.log("Logout Successful!")
                   }
                   else
@@ -527,7 +547,8 @@ Ext.define('Genesis.controller.MainPage',
    // --------------------------------------------------------------------------
    onCreateAccountSubmit : function(b, e, eOpts, eInfo)
    {
-      var account = this.getCreateAccount();
+      var me = this;
+      var account = me.getCreateAccount();
       var values = account.getValues();
       var user = Ext.create('Genesis.model.frontend.Account', values);
       var validateErrors = user.validate();
@@ -570,9 +591,19 @@ Ext.define('Genesis.controller.MainPage',
             {
                user : Ext.encode(params)
             },
-            callback : function()
+            callback : function(records, operation)
             {
+               //
+               // Login Error, redo login
+               //
                Ext.Viewport.setMasked(false);
+               if (!operation.wasSuccessful())
+               {
+               }
+               else
+               {
+                  me.persistSyncCustomerStore();
+               }
             }
          });
       }
@@ -612,7 +643,12 @@ Ext.define('Genesis.controller.MainPage',
             if (!operation.wasSuccessful())
             {
                Genesis.db.resetStorage();
-               me.fireEvent('openpage', 'MainPage', 'login', null);
+               me.redirectTo('login');
+               //me.fireEvent('openpage', 'MainPage', 'login', null);
+            }
+            else
+            {
+               me.persistSyncCustomerStore();
             }
          }
       });
@@ -658,6 +694,37 @@ Ext.define('Genesis.controller.MainPage',
       var me = this;
    },
    // --------------------------------------------------------------------------
+   // Page Navigation
+   // --------------------------------------------------------------------------
+   mainPage : function()
+   {
+      this.openPage('main');
+   },
+   loginPage : function()
+   {
+      this.openPage('login');
+   },
+   merchantPage : function()
+   {
+      this.openPage('merchant');
+   },
+   signInPage : function()
+   {
+      var db = Genesis.db.getLocalDB();
+      if (db['currFbId'] > 0)
+      {
+         this.facebookLogin(db['fbResponse']);
+      }
+      else
+      {
+         this.onSignInTap();
+      }
+   },
+   createAccountPage : function()
+   {
+      this.onCreateAccountTap();
+   },
+   // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
    openPage : function(subFeature)
@@ -673,16 +740,8 @@ Ext.define('Genesis.controller.MainPage',
          }
          case 'merchant' :
          {
-            this.setAnimationMode(this.self.superclass.self.animationMode['flip']);
-            var app = this.getApplication();
-            var controller = app.getController('Merchants');
-            app.dispatch(
-            {
-               action : 'onGotoCheckedInAccountTap',
-               args : [],
-               controller : controller,
-               scope : controller
-            });
+            var info = this.getViewPortCntlr().getCheckinInfo();
+            this.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId())
             break;
          }
          case 'login' :

@@ -8,6 +8,12 @@ Ext.define('Genesis.controller.Checkins',
    xtype : 'checkinsCntlr',
    config :
    {
+      routes :
+      {
+         'exploreS' : 'explorePageUp',
+         'explore' : 'explorePage',
+         'checkin' : 'checkinPage'
+      },
       refs :
       {
          backBtn : 'checkinexploreview button[tag=back]',
@@ -37,7 +43,13 @@ Ext.define('Genesis.controller.Checkins',
             disclose : 'onExploreDisclose'
          }
       },
-      models : ['Venue', 'Merchant', 'EarnPrize'],
+      listeners :
+      {
+         'exploreLoad' : 'onExploreLoad',
+         'checkin' : 'onCheckinTap',
+         'checkinScan' : 'onCheckinScanTap',
+         'checkinMerchant' : 'onCheckinHandler'
+      },
       position : null,
    },
    metaDataMissingMsg : 'Missing Checkin MetaData information.',
@@ -93,7 +105,7 @@ Ext.define('Genesis.controller.Checkins',
          longitude : (position) ? position.coords.getLongitude() : 0,
          auth_code : qrcode || 0
       }
-      if(venueId)
+      if (venueId)
       {
          params = Ext.apply(params,
          {
@@ -113,12 +125,12 @@ Ext.define('Genesis.controller.Checkins',
          callback : function(record, operation)
          {
             var metaData = Customer.getProxy().getReader().metaData;
-            if(operation.wasSuccessful() && metaData)
+            if (operation.wasSuccessful() && metaData)
             {
-               me.onCheckinHandler(mode, metaData, venueId, record, operation, callback);
+               me.fireEvent('checkinMerchant', mode, metaData, venueId, record, operation, callback);
             }
             else
-            if(!operation.wasSuccessful() && !metaData)
+            if (!operation.wasSuccessful() && !metaData)
             {
                console.log(me.metaDataMissingMsg);
             }
@@ -128,7 +140,7 @@ Ext.define('Genesis.controller.Checkins',
    onScannedQRcode : function(qrcode)
    {
       var me = this;
-      if(qrcode)
+      if (qrcode)
       {
          console.log(me.checkinMsg);
          Ext.Viewport.setMasked(
@@ -242,7 +254,7 @@ Ext.define('Genesis.controller.Checkins',
       var mcntlr = app.getController('Merchants');
       var viewport = me.getViewPortCntlr();
       var vport = me.getViewport();
-      var showFeed = false, checkinMode = false;
+      var checkinMode = false;
 
       var customerId, customer, venue, points;
       customerId = record.getId();
@@ -255,21 +267,20 @@ Ext.define('Genesis.controller.Checkins',
 
       // Find Matching Venue or pick the first one returned if no venueId is set
       console.debug("CheckIn - new_venueId:'" + new_venueId + "' venue_id:'" + venueId + "'");
-      if((new_venueId == venueId) || (venueId == null))
+      if ((new_venueId == venueId) || (venueId == null))
       {
          checkinMode = (mode == 'checkin');
          //
          // Update our Database with the latest value from Server
          //
-         if(Customer.isValidCustomer(customerId))
+         if (Customer.isValidCustomer(customerId))
          {
             customer = custore.getById(customerId);
-            if(customer != null)
+            if (customer != null)
             {
                Customer.updateCustomer(customer, record);
                //customer = custore.add(record)[0];
                console.debug("Customer ID=[" + customer.getId() + "] is in CustAcct Database");
-               showFeed = true;
             }
             //
             // First time Customer ... add it to CustomerStore
@@ -278,6 +289,7 @@ Ext.define('Genesis.controller.Checkins',
             {
                customer = custore.add(record)[0];
                console.debug("Customer ID=[" + customer.getId() + "] is ADDED to CustAcct Database");
+               me.persistSyncCustomerStore();
             }
          }
          else
@@ -296,21 +308,14 @@ Ext.define('Genesis.controller.Checkins',
       //
       me.resetView();
       Ext.Viewport.setMasked(false);
+      me.redirectTo('venue/' + venue.getId() + '/' + customerId);
 
-      app.dispatch(
-      {
-         action : 'openMainPage',
-         args : [showFeed],
-         controller : mcntlr,
-         scope : mcntlr
-      });
-
-      if(callback)
+      if (callback)
       {
          callback();
       }
 
-      if(checkinMode)
+      if (checkinMode)
       {
          // Let the screen complete the rendering process
          Ext.defer(me.checkReferralPrompt, 0.1 * 1000, me, [
@@ -350,7 +355,7 @@ Ext.define('Genesis.controller.Checkins',
          callback : function(records, operation)
          {
             //Ext.Viewport.setMasked(false);
-            if(operation.wasSuccessful())
+            if (operation.wasSuccessful())
             {
                me.setPosition(position);
                checkinContainer.setDisabled(false);
@@ -375,7 +380,7 @@ Ext.define('Genesis.controller.Checkins',
       // Do not reload page unless this is the first time!
       // Saves bandwidth
       //
-      if((cestore.getCount() == 0) || forceReload)
+      if ((cestore.getCount() == 0) || forceReload)
       {
          /*
           Ext.Viewport.setMasked(
@@ -392,7 +397,7 @@ Ext.define('Genesis.controller.Checkins',
       var me = this;
 
       activeItem.createView();
-      
+
       var viewport = me.getViewPortCntlr();
       var checkinContainer = me.getCheckInNowBar();
       var tbbar = activeItem.query('titlebar')[0];
@@ -454,14 +459,29 @@ Ext.define('Genesis.controller.Checkins',
       }
    },
    // --------------------------------------------------------------------------
+   // Page Navigation
+   // --------------------------------------------------------------------------
+   explorePageUp : function()
+   {
+      this.openPage('explore', 'slideUp');
+   },
+   explorePage : function()
+   {
+      this.openPage('explore');
+   },
+   checkinPage : function()
+   {
+      this.openPage('checkin');
+   },
+   // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
-   openPage : function(subFeature, mode)
+   openPage : function(subFeature, animMode)
    {
       var me = this;
       var page = me.getMainPage();
       me.mode = page.mode = subFeature;
-      me.animMode = mode || 'slide';
+      me.animMode = animMode || 'slide';
       me.setAnimationMode(me.self.superclass.self.animationMode[me.animMode]);
       me.pushView(page);
    },

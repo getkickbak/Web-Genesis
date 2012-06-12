@@ -65,7 +65,7 @@ Ext.define('Genesis.controller.ControllerBase',
       },
       playSoundFile : function(sound_file, successCallback, failCallback)
       {
-         if(Genesis.constants.isNative())
+         if (Genesis.constants.isNative())
          {
             switch (sound_file['type'])
             {
@@ -87,7 +87,7 @@ Ext.define('Genesis.controller.ControllerBase',
       },
       stopSoundFile : function(sound_file)
       {
-         if(Genesis.constants.isNative())
+         if (Genesis.constants.isNative())
          {
             LowLatencyAudio.stop(sound_file['name']);
          }
@@ -114,7 +114,7 @@ Ext.define('Genesis.controller.ControllerBase',
          GibberishAES.size(256);
          var keys = Genesis.constants.getPrivKey();
          var date;
-         for(key in keys)
+         for (key in keys)
          {
             try
             {
@@ -193,7 +193,7 @@ Ext.define('Genesis.controller.ControllerBase',
       // Prevent Recursion
       //
       var viewport = this.getViewPortCntlr();
-      if(viewport != this)
+      if (viewport != this)
       {
          viewport.relayEvents(this, ['pushview', 'popview', 'silentpopview']);
          viewport.on('animationCompleted', this.onAnimationCompleted, this);
@@ -216,7 +216,8 @@ Ext.define('Genesis.controller.ControllerBase',
       var viewport = me.getViewPortCntlr();
       viewport.setLoggedIn(true);
       me.resetView();
-      me.fireEvent('openpage', 'MainPage', 'main', null);
+      me.redirectTo('main');
+      //me.fireEvent('openpage', 'MainPage', 'main', null);
       console.log("LoggedIn, Going back to Main Page ...");
    },
    isOpenAllowed : function()
@@ -230,7 +231,7 @@ Ext.define('Genesis.controller.ControllerBase',
    onLocationUpdate : Ext.emptyFn,
    onOpenPage : function(feature, subFeature, cb, eOpts, eInfo)
    {
-      if((appName == 'GetKickBak') && !Ext.device.Connection.isOnline() && (subFeature != 'login'))
+      if ((appName == 'GetKickBak') && !Ext.device.Connection.isOnline() && (subFeature != 'login'))
       {
          Ext.device.Notification.show(
          {
@@ -242,13 +243,14 @@ Ext.define('Genesis.controller.ControllerBase',
 
       var app = this.getApplication();
       var controller = app.getController(feature);
-      app.dispatch(
+      if (!subFeature)
       {
-         action : (!subFeature) ? 'openMainPage' : 'openPage',
-         args : (!subFeature) ? [] : [subFeature, cb],
-         controller : controller,
-         scope : controller
-      });
+         controller.openMainPage();
+      }
+      else
+      {
+         controller.openPage(subFeature, cb);
+      }
    },
    // --------------------------------------------------------------------------
    // Utility Functions
@@ -262,7 +264,7 @@ Ext.define('Genesis.controller.ControllerBase',
          // Update Customer Rewards (Redemptions)
          //
          var rewards = metaData['rewards'];
-         if(rewards)
+         if (rewards)
          {
             var viewport = me.getViewPortCntlr();
             var venueId = metaData['venue_id'] || viewport.getVenue().getId();
@@ -275,7 +277,7 @@ Ext.define('Genesis.controller.ControllerBase',
          // (Make sure we are after Redemption because we may depend on it for rendering purposes)
          //
          var erewards = metaData['eligible_rewards'];
-         if(erewards)
+         if (erewards)
          {
             console.debug("Total Eligible Rewards - " + erewards.length);
             var estore = Ext.StoreMgr.get('EligibleRewardsStore');
@@ -285,33 +287,22 @@ Ext.define('Genesis.controller.ControllerBase',
          // Winners' Circle'
          //
          var prizesCount = metaData['winners_count'];
-         if(prizesCount >= 0)
+         if (prizesCount >= 0)
          {
             console.debug("Prizes won by customers at this merchant this month - [" + prizesCount + "]");
             viewport.getVenue().set('winners_count', prizesCount);
-            /*
-             var app = me.getApplication();
-             var controller = app.getController('Merchants');
-             app.dispatch(
-             {
-             action : 'onUpdateWinnersCount',
-             args : [metaData],
-             controller : controller,
-             scope : controller
-             });
-             */
          }
 
          //
          // QR Code from Transfer Points
          var qrcode = metaData['data'];
-         if(qrcode)
+         if (qrcode)
          {
             /*
              console.debug("QRCode received for Points Transfer" + '\n' + //
              qrcode);
              */
-            me.fireEvent('authcoderecv', metaData);
+            me.fireEvent('authCodeRecv', metaData);
          }
       }
       catch(e)
@@ -327,7 +318,7 @@ Ext.define('Genesis.controller.ControllerBase',
       cbOnSuccess = cbOnSuccess || Ext.emptyFn;
       cbOnFail = cbOnFail || Ext.emptyFn;
       var merchantId = viewport.getVenue().getMerchant().getId();
-      if((viewport.getCheckinInfo().customer.get('visits') == 0) && (!Genesis.db.getReferralDBAttrib("m" + merchantId)))
+      if ((viewport.getCheckinInfo().customer.get('visits') == 0) && (!Genesis.db.getReferralDBAttrib("m" + merchantId)))
       {
          Ext.device.Notification.show(
          {
@@ -336,7 +327,7 @@ Ext.define('Genesis.controller.ControllerBase',
             buttons : ['Yes', 'No'],
             callback : function(btn)
             {
-               if(btn.toLowerCase() == 'yes')
+               if (btn.toLowerCase() == 'yes')
                {
                   me.fireEvent('openpage', 'client.Challenges', 'referrals', cbOnSuccess);
                }
@@ -351,6 +342,70 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          cbOnFail();
       }
+   },
+   // --------------------------------------------------------------------------
+   // Persistent Stores
+   // --------------------------------------------------------------------------
+   persistCustomerStore : function()
+   {
+      var store = Ext.StoreMgr.get('PersistantCustomerStore');
+      if (!store)
+      {
+         Ext.regStore('PersistantCustomerStore',
+         {
+            model : 'Genesis.model.CustomerJSON',
+            autoLoad : false
+         });
+         store = Ext.StoreMgr.get('PersistantCustomerStore');
+      }
+
+      return store;
+   },
+   persistLoadCustomerStore : function(callback)
+   {
+      var store = this.persistCustomerStore();
+
+      callback = callback || Ext.emptyFn;
+      store.load(
+      {
+         callback : function(results, operation)
+         {
+            if (operation.wasSuccessful())
+            {
+               var cstore = Ext.StoreMgr.get('CustomerStore');
+               cstore.removeAll();
+               for (var i = 0; i < results.length; i++)
+               {
+                  cstore.add(results[i].get('json'));
+               }
+               console.debug("Restored " + results.length + " records to CustomerStore ...");
+            }
+            else
+            {
+               console.debug("Error Restoring CustomerStore ...");
+            }
+            callback();
+         }
+      })
+   },
+   persistSyncCustomerStore : function(cleanOnly)
+   {
+      var store = this.persistCustomerStore();
+      store.removeAll();
+      if (!cleanOnly)
+      {
+         var customers = Ext.StoreMgr.get('CustomerStore').getRange();
+         for (var i = 0; i < customers.length; i++)
+         {
+            var json = customers[i].getData(true);
+            store.add(
+            {
+               json : json
+            });
+         }
+      }
+      store.sync();
+      console.debug("Synced PersistantCustomerStore ... ");
    },
    // --------------------------------------------------------------------------
    // Page Navigation Handlers
@@ -379,7 +434,7 @@ Ext.define('Genesis.controller.ControllerBase',
       var me = this;
       i = i || 0;
       console.debug('Getting GeoLocation ...');
-      if(!Genesis.constants.isNative())
+      if (!Genesis.constants.isNative())
       {
          me.fireEvent('locationupdate',
          {
@@ -400,7 +455,7 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          console.debug('Connection type: [' + Ext.device.Connection.getType() + ']');
          //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
-         if(!me.geoLocation)
+         if (!me.geoLocation)
          {
             me.geoLocation = Ext.create('Ext.util.Geolocation',
             {
@@ -413,7 +468,7 @@ Ext.define('Genesis.controller.ControllerBase',
                {
                   locationupdate : function(geo, eOpts)
                   {
-                     if(!geo)
+                     if (!geo)
                      {
                         console.log("No GeoLocation found!");
                         return;
@@ -437,7 +492,7 @@ Ext.define('Genesis.controller.ControllerBase',
                      console.debug('GeoLocation Error[' + message + ']');
                      Ext.Viewport.setMasked(false);
 
-                     if(bPermissionDenied)
+                     if (bPermissionDenied)
                      {
                         console.debug("PERMISSION_DENIED");
                         Ext.device.Notification.show(
@@ -447,10 +502,10 @@ Ext.define('Genesis.controller.ControllerBase',
                         });
                      }
                      else
-                     if(bLocationUnavailable)
+                     if (bLocationUnavailable)
                      {
                         console.debug("POSITION_UNAVAILABLE");
-                        if(++i <= 5)
+                        if (++i <= 5)
                         {
                            Ext.Function.defer(me.getGeoLocation, 1 * 1000, me, [callback, i]);
                            console.debug("Retry getting current location(" + i + ") ...");
@@ -465,7 +520,7 @@ Ext.define('Genesis.controller.ControllerBase',
                         }
                      }
                      else
-                     if(bTimeout)
+                     if (bTimeout)
                      {
                         console.debug("TIMEOUT");
                         Ext.device.Notification.show(
@@ -494,7 +549,7 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          var qrcode;
          Ext.Viewport.setMasked(false);
-         if(Genesis.constants.isNative())
+         if (Genesis.constants.isNative())
          {
             switch(window.plugins.qrCodeReader.scanType)
             {
@@ -507,7 +562,7 @@ Ext.define('Genesis.controller.ControllerBase',
                case 'Nigma' :
                {
                   qrcode = (r.response == 'undefined') ? "" : (r.response || "");
-                  if(!qrcode)
+                  if (!qrcode)
                   {
                      console.debug("QR Code Nigma = Empty");
                   }
@@ -515,7 +570,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   {
                      console.debug("QR Code Nigma = " + ((qrcode.responseCode) ? qrcode.responseCode : "NONE") + " Sent = " + qrcode.bytesSent + " bytes");
                   }
-                  if(qrcode && qrcode.responseCode)
+                  if (qrcode && qrcode.responseCode)
                   {
                      qrcode = qrcode.responseCode;
                   }
@@ -524,20 +579,20 @@ Ext.define('Genesis.controller.ControllerBase',
                case 'Default' :
                {
                   qrcode = r;
-                  if(!qrcode || qrcode.format != 'QR_CODE')
+                  if (!qrcode || qrcode.format != 'QR_CODE')
                   {
                      qrcode = null;
                      console.debug("QR Code Default = Unsupported Code");
                      //
                      // Simulator, we must pump in random values
                      //
-                     if(device.platform.match(/simulator/i))
+                     if (device.platform.match(/simulator/i))
                      {
                         qrcode = Math.random().toFixed(16);
                      }
                   }
                   else
-                  if(qrcode.cancelled)
+                  if (qrcode.cancelled)
                   {
                      qrcode = Math.random().toFixed(16);
                   }
@@ -560,13 +615,13 @@ Ext.define('Genesis.controller.ControllerBase',
       };
 
       console.debug("Scanning QR Code ...")
-      if(!Genesis.constants.isNative())
+      if (!Genesis.constants.isNative())
       {
          //
          // pick the first one on the Neaby Venue in the store
          //
          var venueId = 0;
-         if(!merchantMode)
+         if (!merchantMode)
          {
             var venue = Ext.StoreMgr.get('CheckinExploreStore').first() || me.getViewPortCntlr().getVenue() || null;
             venueId = venue ? venue.getId() : 0;

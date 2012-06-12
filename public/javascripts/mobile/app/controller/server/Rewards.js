@@ -10,6 +10,10 @@ Ext.define('Genesis.controller.server.Rewards',
    models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
+      routes :
+      {
+         'earnPts' : 'earnPtsPage'
+      },
       refs :
       {
          //
@@ -152,7 +156,7 @@ Ext.define('Genesis.controller.server.Rewards',
 
       var price = me.getPrice().getValue();
       var precision = this.getPricePrecision(price);
-      if(precision < 2)
+      if (precision < 2)
       {
          Ext.device.Notification.show(
          {
@@ -205,7 +209,7 @@ Ext.define('Genesis.controller.server.Rewards',
          case '.' :
          {
             me.enablePrecision = true;
-            if(precision == 0)
+            if (precision == 0)
             {
                var num = price.toString().split('.');
                price = num[0] + '.';
@@ -219,9 +223,9 @@ Ext.define('Genesis.controller.server.Rewards',
             break;
          }
          default :
-            if(me.enablePrecision)
+            if (me.enablePrecision)
             {
-               if(precision < 2)
+               if (precision < 2)
                {
                   price += (Number(value) / Math.pow(10, precision + 1));
                   price = price.toFixed(precision + 1);
@@ -234,7 +238,7 @@ Ext.define('Genesis.controller.server.Rewards',
             break;
       }
       // Max value
-      if(price <= me.maxValue)
+      if (price <= me.maxValue)
       {
          priceField.setValue(price);
       }
@@ -246,6 +250,16 @@ Ext.define('Genesis.controller.server.Rewards',
       container.setActiveItem(0);
    },
    // --------------------------------------------------------------------------
+   // Page Navigation
+   // --------------------------------------------------------------------------
+   earnPtsPage : function()
+   {
+      var me = this;
+      var page = me.getRewards();
+      me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
+      me.pushView(page);
+   },
+   // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
    getMainPage : function()
@@ -255,16 +269,12 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    openPage : function(subFeature)
    {
-      var page;
       var me = this;
-      var viewport = me.getViewPortCntlr();
       switch (subFeature)
       {
          case 'rewards':
          {
-            page = me.getRewards();
-            me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
-            me.pushView(page);
+            me.redirectTo('earnPts');
             break;
          }
       }

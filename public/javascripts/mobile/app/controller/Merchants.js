@@ -4,14 +4,15 @@ Ext.define('Genesis.controller.Merchants',
    requires : ['Ext.data.Store'],
    statics :
    {
-      merchantMain_path : '/merchantMain',
-      merchant_path : '/merchant',
-      merchantDetails_path : '/merchantDetails',
       googleMapStaticUrl : 'http://maps.googleapis.com/maps/api/staticmap'
    },
    xtype : 'merchantsCntlr',
    config :
    {
+      routes :
+      {
+         'venue/:id/:id' : 'mainPage'
+      },
       refs :
       {
          main :
@@ -48,10 +49,6 @@ Ext.define('Genesis.controller.Merchants',
             activate : 'onMainActivate',
             deactivate : 'onMainDeactivate'
          },
-         mainBtn :
-         {
-            tap : 'onGotoCheckedInAccountTap'
-         },
          mapBtn :
          {
             tap : 'onMapBtnTap'
@@ -68,10 +65,6 @@ Ext.define('Genesis.controller.Merchants',
          checkinBtn :
          {
             tap : 'onCheckinTap'
-         },
-         'merchantaccountview tabbar[cls=navigationBarBottom] button[tag=browse]' :
-         {
-            tap : 'onBrowseTap'
          },
          merchantTabBar :
          {
@@ -198,13 +191,7 @@ Ext.define('Genesis.controller.Merchants',
       var app = me.getApplication();
       var controller = app.getController('Checkins');
       controller.setPosition(position);
-      app.dispatch(
-      {
-         action : 'onCheckinTap',
-         args : [],
-         controller : controller,
-         scope : controller
-      });
+      controller.fireEvent('checkin');
    },
    // --------------------------------------------------------------------------
    // Merchant Account Page
@@ -349,19 +336,13 @@ Ext.define('Genesis.controller.Merchants',
             var controller = app.getController('Prizes');
             var rstore = Ext.StoreMgr.get('RedemptionsStore');
             record = rstore.getById(record.get('reward_id'));
-            app.dispatch(
+            me.fireEvent('redeemRewards', Ext.create('Genesis.model.EarnPrize',
             {
-               action : 'onRedeemRewards',
-               args : [Ext.create('Genesis.model.EarnPrize',
-               {
-                  //'id' : 1,
-                  'expiry_date' : null,
-                  'reward' : record,
-                  'merchant' : viewport.getCheckinInfo().venue.getMerchant()
-               })],
-               controller : controller,
-               scope : controller
-            });
+               //'id' : 1,
+               'expiry_date' : null,
+               'reward' : record,
+               'merchant' : viewport.getCheckinInfo().venue.getMerchant()
+            }));
             break;
       }
    },
@@ -376,11 +357,7 @@ Ext.define('Genesis.controller.Merchants',
       var me = this;
       me.getGeoLocation();
    },
-   onBrowseTap : function(b, e, eOpts, eInfo)
-   {
-      this.fireEvent('openpage', 'Checkins', 'explore', 'slideUp');
-   },
-   onGotoCheckedInAccountTap : function(b, e, eOpts, eInfo, dontRefreshPage)
+   onCheckedInAccountTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
@@ -395,16 +372,12 @@ Ext.define('Genesis.controller.Merchants',
       var cmetaData = cinfo.metaData;
       var venue = viewport.getVenue();
 
-      console.log("Going to Merchant Home Account Page ...");
-
       if (venue.getId() != cvenue.getId())
       {
+         console.log("Reloading to Checked-In Merchant Home Account Page ...");
+
          // Restore Merchant Info
          ccntlr.setupCheckinInfo('checkin', cvenue, ccustomer, cmetaData);
-      }
-
-      if (!dontRefreshPage && (venue.getId() != cvenue.getId()))
-      {
          viewport.updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [cmetaData]);
       }
       //
@@ -412,8 +385,13 @@ Ext.define('Genesis.controller.Merchants',
       //
       if (me.getMainPage() == vport.getActiveItem())
       {
-         var controller = vport.getEventDispatcher().controller;
          var anim = new Ext.fx.layout.Card(me.self.superclass.self.animationMode['fade']);
+         var controller = vport.getEventDispatcher().controller;
+         
+         // Delete current page and refresh
+         me.getMainPage().destroy();
+
+         me.getViewport().animateActiveItem(me.getMainPage(), anim);
          anim.onActiveItemChange(vport.getLayout(), me.getMainPage(), me.getMainPage(), null, controller);
          anim.on('animationend', function()
          {
@@ -494,6 +472,22 @@ Ext.define('Genesis.controller.Merchants',
       return true;
    },
    // --------------------------------------------------------------------------
+   // Page Navigation
+   // --------------------------------------------------------------------------
+   mainPage : function(venueId, customerId)
+   {
+      var viewport = this.getViewPortCntlr();
+      var cvenue = viewport.getCheckinInfo().venue;
+      if ((cvenue && (cvenue.getId() == venueId)) || (customerId > 0))
+      {
+         this.openMainPage(true);
+      }
+      else
+      {
+         this.openMainPage(false);
+      }
+   },
+   // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
    getMainPage : function()
@@ -518,7 +512,8 @@ Ext.define('Genesis.controller.Merchants',
       }
       else
       {
-         me.onGotoCheckedInAccountTap();
+         //me.setAnimationMode(me.self.superclass.self.animationMode['fade']);
+         me.onCheckedInAccountTap();
       }
       console.log("Merchant Account Opened");
    }

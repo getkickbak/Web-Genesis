@@ -89,13 +89,7 @@ Ext.define('Genesis.view.CheckinExplore',
             refreshFn : function(plugin)
             {
                var controller = _application.getController('Checkins');
-               _application.dispatch(
-               {
-                  action : 'onExploreLoad',
-                  args : [true],
-                  controller : controller,
-                  scope : controller
-               });
+               controller.fireEvent('exploreLoad',true);
             }
          }]
       }));

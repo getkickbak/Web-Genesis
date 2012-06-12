@@ -11,7 +11,7 @@ Genesis.constants =
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
-   debugPrivKey : 'nPAbRmIZ3I9SJrDhWyHJ4heQOizi7N8I',
+   debugPrivKey : '5B2PuTj1C5kiJBFpR2kd8l7iGFLyb34z',
    redeemDBSize : 10000,
    createAccountMsg : 'Create user account using Facebook Profile information',
    isNative : function()
@@ -1230,7 +1230,7 @@ Ext.define('Genesis.dataview.element.List',
       if (hasDisclosureProperty)
       {
          disclosureEl = extItem.down(me.disclosureClsCache);
-         disclosureEl[data[disclosureProperty] === false ? 'removeCls' : 'addCls'](me.hiddenDisplayCache);
+         disclosureEl[data[disclosureProperty] === false ? 'addCls' : 'removeCls'](me.hiddenDisplayCache);
       }
 
       if (dataview.getIcon())
