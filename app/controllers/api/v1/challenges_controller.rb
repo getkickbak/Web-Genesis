@@ -376,7 +376,7 @@ class Api::V1::ChallengesController < ApplicationController
           }.to_json
           cipher = Gibberish::AES.new(@venue.merchant.auth_code)
           @encrypted_data = "#{@venue.merchant.id}$#{cipher.enc(data)}"
-          @subject = t("api.challenges.email_subject_referral_challenge")
+          @subject = t("mailer.email_subject_referral_challenge")
           @body = ReferralChallenge.new(current_user, @venue, @challenge).render_html
           render :template => '/api/v1/challenges/start'
           logger.info("User(#{current_user.id}) successfully created email referral in Customer Account(#{@customer.id})")
