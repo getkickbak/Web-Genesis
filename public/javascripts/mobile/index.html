@@ -143,7 +143,7 @@ rm -             */
                   viewport.appName = 'GetKickBak';
                   console.log("Launching App");
                   Ext.create('Genesis.view.Viewport');
-                  viewport.openMainPage();
+                  //viewport.openMainPage();
                   console.log("Launched App");
                },
                appFolder : _appPath,
@@ -160,6 +160,7 @@ rm -             */
             {
                if (Ext.device)
                {
+                  //_application.getController('Viewport').persistSyncCustomerStore();
                   console.log("Phone is Online");
                   if (Ext.device.Connection.isOnline())
                   {
@@ -182,6 +183,7 @@ rm -             */
             {
                if (Ext.device)
                {
+                  //_application.getController('Viewport').persistSyncCustomerStore();
                   console.log("Phone is Offline");
                   if (Ext.device.Connection.isOnline())
                   {
@@ -201,11 +203,13 @@ rm -             */
             }, false);
             document.addEventListener("pause", function()
             {
+               _application.getController('Viewport').persistSyncCustomerStore();
                console.log("App is Paused");
             }, false);
 
             document.addEventListener("resume", function()
             {
+               //_application.getController('Viewport').persistSyncCustomerStore();
                console.log("App is Resumed");
                if (Ext.device)
                {

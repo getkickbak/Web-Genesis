@@ -80,6 +80,15 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'onRedemptionsButtonTap'
          },
+         'tabbar[cls=navigationBarBottom] button[tag=main]' :
+         {
+            tap : 'onCheckedInAccountTap'
+         },
+         'tabbar[cls=navigationBarBottom] button[tag=browse]' :
+         {
+            tap : 'onBrowseTap'
+         },
+         //
          'viewportview button' :
          {
             tap : 'onButtonTap'
@@ -136,13 +145,7 @@ Ext.define('Genesis.controller.Viewport',
             if (operation.wasSuccessful())
             {
                controller.setPosition(position);
-               app.dispatch(
-               {
-                  action : 'onCheckinScanTap',
-                  controller : controller,
-                  args : [],
-                  scope : controller
-               });
+               controller.fireEvent('checkinScan');
             }
             else
             {
@@ -197,13 +200,7 @@ Ext.define('Genesis.controller.Viewport',
                         break;
                      }
                   }
-                  app.dispatch(
-                  {
-                     action : 'onChallengeBtnTap',
-                     args : [],
-                     controller : controller,
-                     scope : controller
-                  });
+                  controller.fireEvent('dochallenge');
                });
             }
          }
@@ -265,7 +262,8 @@ Ext.define('Genesis.controller.Viewport',
    },
    onAccountsButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.fireEvent('openpage', 'Accounts', null, null);
+      //this.fireEvent('openpage', 'Accounts', null, null);
+      this.redirect('accounts');
       console.log("Going to Accounts Page ...");
    },
    onChallengesButtonTap : function(b, e, eOpts, eInfo, callback)
@@ -330,20 +328,33 @@ Ext.define('Genesis.controller.Viewport',
    },
    onRedemptionsButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.fireEvent('openpage', 'client.Redemptions', 'redemptions', null);
+      //this.fireEvent('openpage', 'client.Redemptions', 'redemptions', null);
+      this.redirectTo('redemptions');
       console.log("Going to Client Redemptions Page ...");
    },
    onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.fireEvent('openpage', 'Prizes', 'merchantPrizes', null);
+      this.redirectTo('merchantPrizes');
+      //this.fireEvent('openpage', 'Prizes', 'merchantPrizes', null);
       console.log("Going to Merchant Prizes Page ...");
    },
    onHomeButtonTap : function(b, e, eOpts, eInfo)
    {
       var vport = this.getViewport();
       this.resetView();
-      this.fireEvent('openpage', 'MainPage', null, null);
+      this.redirectTo('main');
+      //this.fireEvent('openpage', 'MainPage', null, null);
       console.log("Going back to HomePage ...");
+   },
+   onCheckedInAccountTap : function(b, e, eOpts, eInfo)
+   {
+      var info = this.getViewPortCntlr().getCheckinInfo();
+      this.redirectTo('venue' + '/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
+   },
+   onBrowseTap : function(b, e, eOpts, eInfo)
+   {
+      this.redirectTo('exploreS');
+      //this.fireEvent('openpage', 'Checkins', 'explore', 'slideUp');
    },
    // --------------------------------------------------------------------------
    // Page Navigation Handlers
@@ -355,6 +366,7 @@ Ext.define('Genesis.controller.Viewport',
       // Remove All Views
       //
       me.viewStack = [];
+      me.getApplication().getHistory().setActions([]);
 
    },
    pushView : function(view, animation)
@@ -388,10 +400,12 @@ Ext.define('Genesis.controller.Viewport',
          //
          // Remember what animation we used to render this view
          //
+         var actions = me.getApplication().getHistory().getActions();
          me.viewStack.push(
          {
             view : view,
-            animation : animation
+            animation : animation,
+            url : actions[actions.length - 1].getUrl()
          });
          me.getViewport().animateActiveItem(view, animation);
       }
@@ -400,6 +414,7 @@ Ext.define('Genesis.controller.Viewport',
    {
       var me = this;
       num = Math.min(me.viewStack.length, num);
+      var actions = me.getApplication().getHistory().getActions();
 
       if ((me.viewStack.length > 0) && (num > 0))
       {
@@ -431,6 +446,13 @@ Ext.define('Genesis.controller.Viewport',
             currView['view'] = Ext.create(currView['view'].alias[0]);
             console.debug("Recreated View [" + currView['view']._itemId + "]")
          }
+
+         //
+         // Update URL
+         //
+         me.getApplication().getHistory().setToken(currView['url']);
+         window.location.hash = currView['url'];
+
          me.getViewport().animateActiveItem(currView['view'], Ext.apply(lastView['animation'],
          {
             reverse : true
@@ -453,7 +475,7 @@ Ext.define('Genesis.controller.Viewport',
          console.log("Loading License Keys ...");
          Genesis.constants.getPrivKey();
       }
-      
+
       QRCodeReader.prototype.scanType = "Default";
       console.debug("QRCode Scanner Mode[" + QRCodeReader.prototype.scanType + "]")
 
@@ -560,37 +582,18 @@ Ext.define('Genesis.controller.Viewport',
       {
          if (loggedIn)
          {
-            var app = this.getApplication();
-            var controller = app.getController('MainPage');
+            //var app = this.getApplication();
+            //var controller = app.getController('MainPage');
 
             this.setLoggedIn(loggedIn);
-            console.debug("Going to Main Page ...");
-            if (db['currFbId'] > 0)
-            {
-               app.dispatch(
-               {
-                  action : 'facebookLogin',
-                  args : [db['fbResponse']],
-                  controller : controller,
-                  scope : controller
-               });
-            }
-            else
-            {
-               // No need to pass login info, the auth_code will take care of that!
-               app.dispatch(
-               {
-                  action : 'onSignIn',
-                  args : [],
-                  controller : controller,
-                  scope : controller
-               });
-            }
+            console.debug("Going to SignIn Page ...");
+            this.redirectTo('signIn');
          }
          else
          {
             console.debug("Going to Login Page ...");
-            this.fireEvent('openpage', 'MainPage', 'login', null);
+            this.redirectTo('main');
+            //this.fireEvent('openpage', 'MainPage', 'login', null);
          }
       }
    }

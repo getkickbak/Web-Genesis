@@ -10,6 +10,10 @@ Ext.define('Genesis.controller.client.Rewards',
    models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
+      routes :
+      {
+         'scanAndWin' : 'scanAndWinPage'
+      },
       refs :
       {
          backButton : 'clientrewardsview button[tag=close]',
@@ -31,6 +35,10 @@ Ext.define('Genesis.controller.client.Rewards',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          }
+      },
+      listeners :
+      {
+         'metadataChange' : 'onPrizeStoreMetaChange'
       }
    },
    loadCallback : null,
@@ -83,7 +91,7 @@ Ext.define('Genesis.controller.client.Rewards',
    onScannedQRcode : function(qrcode)
    {
       var me = this;
-      if(qrcode)
+      if (qrcode)
       {
          //anim.disable();
          //container.setActiveItem(0);
@@ -138,7 +146,7 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             reader.setRootProperty('data');
             reader.buildExtractors();
-            if(operation.wasSuccessful())
+            if (operation.wasSuccessful())
             {
                me.loadCallback = arguments;
             }
@@ -165,7 +173,7 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       var me = this;
       var allowedMsg = me.isOpenAllowed();
-      if(allowedMsg !== true)
+      if (allowedMsg !== true)
       {
          Ext.device.Notification.show(
          {
@@ -186,7 +194,7 @@ Ext.define('Genesis.controller.client.Rewards',
                buttons : ['OK', 'Cancel'],
                callback : function(btn)
                {
-                  if(btn.toLowerCase() == 'ok')
+                  if (btn.toLowerCase() == 'ok')
                   {
                      me.scanQRCode();
                   }
@@ -206,11 +214,7 @@ Ext.define('Genesis.controller.client.Rewards',
          // Clear Referral DB
          //
          Genesis.db.removeReferralDBAttrib("m" + viewport.getVenue().getMerchant().getId());
-         //
-         // Go back to Main Reward Screen
-         //
-         me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
-         me.pushView(me.getRewards());
+         me.redirectTo('scanAndWin');
       };
 
       //
@@ -218,21 +222,21 @@ Ext.define('Genesis.controller.client.Rewards',
       //
       var cstore = Ext.StoreMgr.get('CustomerStore');
       var customerId = viewport.getCustomer().getId();
-      if(metaData['account_points'])
+      if (metaData['account_points'])
       {
          cstore.getById(customerId).set('points', metaData['account_points']);
       }
-      if(metaData['account_visits'])
+      if (metaData['account_visits'])
       {
          cstore.getById(customerId).set('visits', metaData['account_visits']);
       }
 
-      if(Ext.isDefined(metaData['points']))
+      if (Ext.isDefined(metaData['points']))
       {
          me.getRewards();
          // Preload page
          message = me.getPointsMsg(metaData['points']);
-         if(!metaData['vip_challenge'] && !metaData['referral_challenge'])
+         if (!metaData['vip_challenge'] && !metaData['referral_challenge'])
          {
             message += Genesis.constants.addCRLF() + me.prizeCheckMsg;
          }
@@ -242,12 +246,12 @@ Ext.define('Genesis.controller.client.Rewards',
             message : message,
             callback : function()
             {
-               if((metaData['vip_challenge']))
+               if ((metaData['vip_challenge']))
                {
                   me.vipPopUp(metaData['vip_challenge'].points, exit);
                }
                else
-               if((metaData['referral_challenge']))
+               if ((metaData['referral_challenge']))
                {
                   me.referralPopUp(metaData['referral_challenge'].points, exit);
                }
@@ -259,14 +263,14 @@ Ext.define('Genesis.controller.client.Rewards',
          });
       }
       else
-      if(metaData['vip_challenge'])
+      if (metaData['vip_challenge'])
       {
          // Preload page
          me.getRewards();
          me.vipPopUp(metaData['vip_challenge'].points, exit);
       }
       else
-      if(metaData['referral_challenge'])
+      if (metaData['referral_challenge'])
       {
          // Preload page
          me.getRewards();
@@ -283,17 +287,10 @@ Ext.define('Genesis.controller.client.Rewards',
       //
       me.metaDataHandler(metaData);
 
-      if(metaData['data'])
+      if (metaData['data'])
       {
-         var app = me.getApplication();
-         var controller = app.getController('Prizes');
-         app.dispatch(
-         {
-            action : 'showPrizeQRCode',
-            args : [0, metaData['data']],
-            controller : controller,
-            scope : controller
-         });
+         var controller = me.getApplication().getController('Prizes');
+         controller.fireEvent('showQRCode', 0, metaData['data']);
       }
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -303,7 +300,7 @@ Ext.define('Genesis.controller.client.Rewards',
       var viewport = me.getViewPortCntlr();
 
       activeItem.createView();
-      
+
       me.startRouletteScreen();
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
       {
@@ -311,7 +308,7 @@ Ext.define('Genesis.controller.client.Rewards',
          var app = me.getApplication();
          app.getController('Prizes').fireEvent('prizecheck', me.loadCallback[0], me.loadCallback[1]);
          delete me.loadCallback;
-      });      
+      });
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -320,6 +317,14 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    onContainerActivate : function(c, value, oldValue, eOpts)
    {
+   },
+   // --------------------------------------------------------------------------
+   // Page Navigation
+   // --------------------------------------------------------------------------
+   scanAndWinPage : function()
+   {
+      var me = this;
+      this.openPage('scanAndWin');
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
@@ -331,15 +336,20 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    openPage : function(subFeature)
    {
-      var page;
       var me = this;
-      var viewport = me.getViewPortCntlr();
       switch (subFeature)
       {
+         case 'scanAndWin' :
+         {
+            //
+            // Go back to Main Reward Screen
+            //
+            me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
+            me.pushView(me.getRewards());
+            break;
+         }
          case 'rewards':
          {
-            page = me.getRewards();
-            //me.pushView(page);
             me.onEarnPtsTap();
             break;
          }

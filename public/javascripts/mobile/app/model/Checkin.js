@@ -5,6 +5,7 @@ Ext.define('Genesis.model.Checkin',
    id : 'Checkin',
    config :
    {
+      identifier : 'uuid',
       belongsTo : [
       {
          model : 'Genesis.model.User',

@@ -4,18 +4,21 @@
          "name": "Accounts",
          "photo_url": "resources/themes/images/v1/mainicons/accounts.png",
          "desc": "Accounts",
+         "route" : "accounts",
          "pageCntlr": "Accounts",
          "subFeature": "profile"
       }, {
          "name": "Explore",
          "photo_url": "resources/themes/images/v1/mainicons/explore.png",
          "desc": "Explore Merchants Nearby",
+         "route" : "explore",
          "pageCntlr": "Checkins",
          "subFeature": "explore"
       }, {
          "name": "Prizes",
          "photo_url": "resources/themes/images/v1/mainicons/prizes.png",
          "desc": "Prizes Won by you",
+         "route" : "userPrizes",
          "pageCntlr": "Prizes",
          "subFeature": "userPrizes"
       }, {
@@ -29,6 +32,7 @@
          "name": "Points Transfer",
          "photo_url": "resources/themes/images/v1/miscicons/points.png",
          "desc": "Transfer Points to other KickBak users",
+         "route" : "transfer",
          "pageCntlr": "Accounts",
          "subFeature": "transfer"
       }, {
@@ -41,12 +45,14 @@
          "name": "Settings",
          "photo_url": "resources/themes/images/v1/mainicons/settings.png",
          "desc": "Settings",
+         "route" : "clientSettings",
          "pageCntlr": "Settings",
          "subFeature": "client"
       }, {
          "name": "Check-ins",
          "photo_url": "resources/themes/images/v1/mainicons/checkin.png",
          "desc": "Check-ins Menu for Merchants Nearby",
+         "route" : "checkin",
          "pageCntlr": "Checkins",
          "subFeature": "checkin"
       }

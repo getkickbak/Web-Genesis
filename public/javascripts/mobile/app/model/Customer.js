@@ -1,3 +1,28 @@
+Ext.define('Genesis.model.CustomerJSON',
+{
+   extend : 'Ext.data.Model',
+   alternateClassName : 'CustomerJSON',
+   id : 'CustomerJSON',
+   config :
+   {
+      proxy :
+      {
+         type : 'localstorage',
+         writer :
+         {
+            type : 'json'
+         },
+         reader :
+         {
+            type : 'json',
+         }
+      },
+      identifier : 'uuid',
+      fields : ['json', 'id'],
+      idProperty : 'id'
+   }
+});
+
 Ext.define('Genesis.model.Customer',
 {
    extend : 'Ext.data.Model',
@@ -10,12 +35,14 @@ Ext.define('Genesis.model.Customer',
       {
          model : 'Genesis.model.Merchant',
          associationKey : 'merchant',
-         getterName : 'getMerchant',
+         name : 'merchant',
+         associationKey : 'merchant',
          setterName : 'setMerchant'
       },
       {
          model : 'Genesis.model.User',
          associationKey : 'user',
+         name : 'user',
          getterName : 'getUser',
          setterName : 'setUser'
       }],
@@ -23,6 +50,7 @@ Ext.define('Genesis.model.Customer',
       {
          model : 'Genesis.model.Checkin',
          associationKey : 'last_check_in',
+         name : 'last_check_in',
          // User to make sure no underscore
          getterName : 'getLastCheckin',
          setterName : 'setLastCheckin'
@@ -58,7 +86,7 @@ Ext.define('Genesis.model.Customer',
       updateCustomer : function(cOld, cNew)
       {
          var attrib;
-         for(var i = 0; i < cOld.fields.length; i++)
+         for (var i = 0; i < cOld.fields.length; i++)
          {
             attrib = cOld.fields.items[i].getName();
             cOld.set(attrib, cNew.get(attrib));

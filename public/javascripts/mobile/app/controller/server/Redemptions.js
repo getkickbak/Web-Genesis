@@ -37,7 +37,10 @@ Ext.define('Genesis.controller.server.Redemptions',
       }
    },
    invalidAuthCodeMsg : 'Authorization Code is Invalid',
-   authCodeNoLongValidMsg : 'Authorization Code is no longer valid',
+   authCodeNoLongValidMsg : function()
+   {
+      return 'Authorization Code' + Genesis.constants.addCRLF() + 'is no longer valid'
+   },
    init : function()
    {
       this.callParent(arguments);
@@ -52,7 +55,7 @@ Ext.define('Genesis.controller.server.Redemptions',
       var keys = Genesis.constants.getPrivKey();
       GibberishAES.size(256);
       var dbI = Genesis.db.getRedeemIndexDB();
-      for(var key in keys)
+      for (var key in keys)
       {
          try
          {
@@ -63,18 +66,18 @@ Ext.define('Genesis.controller.server.Redemptions',
             console.debug("Decoded Data!");
             var date = new Date(decrypted["expiry_ts"]);
 
-            if(dbI[encrypted])
+            if (dbI[encrypted])
             {
-               console.log(me.authCodeNoLongValidMsg);
+               console.log(me.authCodeNoLongValidMsg());
                Ext.device.Notification.show(
                {
                   title : 'Error!',
-                  message : me.authCodeNoLongValidMsg
+                  message : me.authCodeNoLongValidMsg()
                });
                return;
             }
             else
-            if((date >= Date.now()) && (date <= new Date().addHours(3 * 2)))
+            if ((date >= Date.now()) && (date <= new Date().addHours(3 * 2)))
             {
                console.log("Found QRCode type[" + decrypted['type'] + "]");
                switch (decrypted['type'])
@@ -91,25 +94,18 @@ Ext.define('Genesis.controller.server.Redemptions',
                Genesis.db.addRedeemSortedDB([encrypted, dbI[encrypted]]);
                Genesis.db.addRedeemIndexDB(encrypted, decrypted["expiry_ts"]);
 
-               var app = me.getApplication();
-               var controller = app.getController('Prizes');
-               app.dispatch(
+               var controller = me.getApplication().getController('Prizes');
+               controller.fireEvent('authreward', Ext.create('Genesis.model.EarnPrize',
                {
-                  action : 'onAuthReward',
-                  args : [Ext.create('Genesis.model.EarnPrize',
+                  //'id' : 1,
+                  'expiry_date' : null,
+                  'reward' : Ext.create('Genesis.model.CustomerReward',
                   {
-                     //'id' : 1,
-                     'expiry_date' : null,
-                     'reward' : Ext.create('Genesis.model.CustomerReward',
-                     {
-                        type : decrypted['reward'].type,
-                        title : decrypted['reward'].title
-                     }),
-                     'merchant' : null
-                  })],
-                  controller : controller,
-                  scope : controller
-               });
+                     type : decrypted['reward'].type,
+                     title : decrypted['reward'].title
+                  }),
+                  'merchant' : null
+               }));
                return;
             }
             else
@@ -142,7 +138,7 @@ Ext.define('Genesis.controller.server.Redemptions',
    onScannedQRcode : function(encrypted)
    {
       var me = this;
-      if(!encrypted)
+      if (!encrypted)
       {
          /*
           if(Ext.isDefined(encrypted))
@@ -182,7 +178,7 @@ Ext.define('Genesis.controller.server.Redemptions',
          buttons : ['OK', 'Cancel'],
          callback : function(btn)
          {
-            if(btn.toLowerCase() == 'ok')
+            if (btn.toLowerCase() == 'ok')
             {
                console.log("Verifying Authorization Code ...");
                me.scanQRCode();

@@ -3,11 +3,15 @@ Ext.define('Genesis.controller.Settings',
    extend : 'Genesis.controller.ControllerBase',
    statics :
    {
-      settings_path : '/settings',
    },
    xtype : 'settingsCntlr',
    config :
    {
+      routes :
+      {
+         'clientSettings' : 'clientSettingsPage',
+         'serverSettings' : 'serverSettingsPage'
+      },
       refs :
       {
          clientSettingsPage :
@@ -116,7 +120,7 @@ Ext.define('Genesis.controller.Settings',
             },
             callback : function(record, operation)
             {
-               if(operation.wasSuccessful())
+               if (operation.wasSuccessful())
                {
                   Ext.device.Notification.show(
                   {
@@ -151,6 +155,17 @@ Ext.define('Genesis.controller.Settings',
          title : 'About Us Tapped',
          message : 'Disclose List Item'
       });
+   },
+   // --------------------------------------------------------------------------
+   // Page Navigation
+   // --------------------------------------------------------------------------
+   clientSettingsPage : function()
+   {
+      this.openPage('client');
+   },
+   serverSettingsPage : function()
+   {
+      this.openPage('server');
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

@@ -21,6 +21,7 @@
          "name": "Settings",
          "photo_url": "resources/themes/images/v1/mainicons/settings.png",
          "desc": "Settings",
+         "route" : "serverSettings",
          "pageCntlr": "Settings",
          "subFeature": "server"
       }

@@ -10,6 +10,10 @@ Ext.define('Genesis.controller.client.Redemptions',
    models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
+      routes :
+      {
+         'redemptions' : 'redemptionsPage'
+      },
       refs :
       {
          //
@@ -102,7 +106,7 @@ Ext.define('Genesis.controller.client.Redemptions',
 
       //
       // Update Customer info
-      Ext.StoreMgr.get('RedemptionRenderCStore').setData(viewport.getCustomer());      
+      Ext.StoreMgr.get('RedemptionRenderCStore').setData(viewport.getCustomer());
       //Ext.defer(activeItem.createView, 1, activeItem);
       activeItem.createView();
    },
@@ -122,11 +126,11 @@ Ext.define('Genesis.controller.client.Redemptions',
       var viewport = me.getViewPortCntlr();
 
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-      if(!me.exploreMode)
+      if (!me.exploreMode)
       {
          var totalPts = viewport.getCustomer().get('points');
          var points = record.get('points');
-         if(points > totalPts)
+         if (points > totalPts)
          {
             Ext.device.Notification.show(
             {
@@ -136,21 +140,14 @@ Ext.define('Genesis.controller.client.Redemptions',
          }
          else
          {
-            var app = me.getApplication();
-            var controller = app.getController('Prizes');
-            app.dispatch(
+            var controller = me.getApplication().getController('Prizes');
+            controller.fireEvent('redeemrewards', Ext.create('Genesis.model.EarnPrize',
             {
-               action : 'onRedeemRewards',
-               args : [Ext.create('Genesis.model.EarnPrize',
-               {
-                  //'id' : 1,
-                  'expiry_date' : null,
-                  'reward' : record,
-                  'merchant' : viewport.getCheckinInfo().venue.getMerchant()
-               })],
-               controller : controller,
-               scope : controller
-            });
+               //'id' : 1,
+               'expiry_date' : null,
+               'reward' : record,
+               'merchant' : viewport.getCheckinInfo().venue.getMerchant()
+            }));
          }
       }
       else
@@ -173,11 +170,11 @@ Ext.define('Genesis.controller.client.Redemptions',
       //
       var cstore = Ext.StoreMgr.get('CustomerStore');
       var customerId = viewport.getCustomer().getId();
-      if(metaData['account_points'])
+      if (metaData['account_points'])
       {
          cstore.getById(customerId).set('points', metaData['account_points']);
       }
-      if(metaData['account_visits'])
+      if (metaData['account_visits'])
       {
          cstore.getById(customerId).set('visits', metaData['account_visits']);
       }
@@ -189,18 +186,19 @@ Ext.define('Genesis.controller.client.Redemptions',
 
       me.onRedeemCheckMetaData(metaData);
 
-      if(metaData['data'])
+      if (metaData['data'])
       {
          var app = me.getApplication();
          var controller = app.getController('Prizes');
-         app.dispatch(
-         {
-            action : 'showPrizeQRCode',
-            args : [0, metaData['data']],
-            controller : controller,
-            scope : controller
-         });
+         controller.fireEvent('showQRCode', 0, metaData['data']);
       }
+   },
+   // --------------------------------------------------------------------------
+   // Page Navigation
+   // --------------------------------------------------------------------------
+   redemptionsPage : function()
+   {
+      this.openPage('redemptions');
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

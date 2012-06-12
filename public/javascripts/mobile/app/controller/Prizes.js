@@ -11,12 +11,23 @@ Ext.define('Genesis.controller.Prizes',
    {
       timeoutPeriod : 10,
       mode : 'userPrizes',
-      models : ['Venue', 'Merchant', 'EarnPrize', 'CustomerReward'],
+      routes :
+      {
+         'userPrizes' : 'userPrizesPage',
+         'merchantPrizes' : 'merchantPrizesPage',
+         'prize' : 'prizePage',
+         'authReward' : 'authRewardPage',
+         'redeemRewards' : 'redeemRewardsPage'
+      },
       listeners :
       {
          'redeemprize' : 'onRedeemPrize',
          'prizecheck' : 'onPrizeCheck',
-         'showprize' : 'onShowPrize'
+         'showprize' : 'onShowPrize',
+         'authreward' : 'onAuthReward',
+         'redeemrewards' : 'onRedeemRewards',
+         'showQRCode' : 'onShowPrizeQRCode',
+         'refreshQRCode' : 'onRefreshQRCode'
       },
       refs :
       {
@@ -333,10 +344,6 @@ Ext.define('Genesis.controller.Prizes',
          //
          Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['winPrizeSound'], function()
          {
-            if (flag & 0x10)
-            {
-               me.silentPopView(1);
-            }
             if ((flag |= 0x01) == 0x11)
             {
                me.fireEvent('showprize', records[0]);
@@ -352,10 +359,6 @@ Ext.define('Genesis.controller.Prizes',
             message : me.wonPrizeMsg(records.length),
             callback : function()
             {
-               if (flag & 0x01)
-               {
-                  me.silentPopView(1);
-               }
                if ((flag |= 0x10) == 0x11)
                {
                   me.fireEvent('showprize', records[0]);
@@ -375,19 +378,7 @@ Ext.define('Genesis.controller.Prizes',
       me.showPrize = showPrize;
       store.insert(0, showPrize);
 
-      me.setMode('showPrize');
-      Ext.defer(function()
-      {
-         me.stopRouletteScreen();
-
-         me.pushView(me.getMainPage());
-
-         //Update on Facebook
-         Genesis.fb.facebook_onLogin(function(params)
-         {
-            me.updatingPrizeOnFacebook(showPrize);
-         }, false, me.updatePrizeOnFbMsg);
-      }, 3 * 1000, me);
+      me.redirectTo('prize');
    },
    // --------------------------------------------------------------------------
    // Prizes Page
@@ -598,7 +589,7 @@ Ext.define('Genesis.controller.Prizes',
          'background-size' : Genesis.fn.addUnit(qrcodeMeta[1]) + ' ' + Genesis.fn.addUnit(qrcodeMeta[2])
       });
    },
-   showPrizeQRCode : function(timeout, qrcode)
+   onShowPrizeQRCode : function(timeout, qrcode)
    {
       var me = this;
 
@@ -636,18 +627,19 @@ Ext.define('Genesis.controller.Prizes',
          var dom;
          switch (me.getMode())
          {
-            case 'merchantPrizes' :
-            {
-               dom = Ext.DomQuery.select('div.itemPoints',me.getMerchantPrizesCarousel().getActiveItem().element.dom)[0];
-               me.getMRedeemBtn().hide();
-               me.getMDoneBtn().show();
-               break;
-            }
             case 'userPrizes' :
             {
                dom = Ext.DomQuery.select('div.itemPoints',me.getUserPrizesCarousel().getActiveItem().element.dom)[0];
                me.getURedeemBtn().hide();
                me.getUDoneBtn().show();
+               break;
+            }
+            case 'merchantPrizes' :
+            {
+               dom = Ext.DomQuery.select('div.itemPoints',me.getMerchantPrizesCarousel().getActiveItem().element.dom)[0];
+               me.getMRedeemBtn().hide();
+               me.getMDoneBtn().show();
+               me.getMCloseBB().hide();
                break;
             }
             case 'reward' :
@@ -656,6 +648,7 @@ Ext.define('Genesis.controller.Prizes',
                dom = Ext.DomQuery.select('div.itemPoints',me.getShowPrize().element.dom)[0];
                me.getSRedeemBtn().hide();
                me.getSDoneBtn().show();
+               me.getSCloseBB().hide();
                break;
             }
          }
@@ -664,7 +657,7 @@ Ext.define('Genesis.controller.Prizes',
             Ext.fly(dom).addCls('x-item-hidden');
          }
 
-         me.onRefreshQRCode(qrcode);
+         me.fireEvent('refreshQRCode', qrcode);
 
          Ext.Viewport.setMasked(false);
          Ext.device.Notification.show(
@@ -678,35 +671,60 @@ Ext.define('Genesis.controller.Prizes',
    onRedeemRewards : function(showPrize)
    {
       this.showPrize = showPrize;
-      this.setMode('reward');
-      this.pushView(this.getMainPage());
+      this.redirectTo('redeemRewards');
    },
    onAuthReward : function(showPrize)
    {
       this.showPrize = showPrize;
-      this.setMode('authReward');
-      this.pushView(this.getMainPage());
+      this.redirectTo('authReward');
+   },
+   // --------------------------------------------------------------------------
+   // Page Navigation
+   // --------------------------------------------------------------------------
+   userPrizesPage : function()
+   {
+      this.openPage('userPrizes');
+   },
+   merchantPrizesPage : function()
+   {
+      this.openPage('merchantPrizes');
+   },
+   prizePage : function()
+   {
+      var me = this;
+      var showPrize = me.showPrize;
+
+      me.silentPopView(1);
+      me.setMode('showPrize');
+      Ext.defer(function()
+      {
+         me.stopRouletteScreen();
+
+         me.pushView(me.getMainPage());
+         //me.showPrize get deleted
+
+         //Update on Facebook
+         Genesis.fb.facebook_onLogin(function(params)
+         {
+            me.updatingPrizeOnFacebook(showPrize);
+         }, false, me.updatePrizeOnFbMsg);
+      }, 3 * 1000, me);
+   },
+   redeemRewardsPage : function()
+   {
+      this.openPage('reward');
+   },
+   authRewardPage : function()
+   {
+      this.openPage('authReward');
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
    openPage : function(subFeature)
    {
-      switch (subFeature)
-      {
-         case 'merchantPrizes' :
-         {
-            this.setMode('merchantPrizes');
-            this.pushView(this.getMainPage());
-            break;
-         }
-         case 'userPrizes' :
-         {
-            this.setMode('userPrizes');
-            this.pushView(this.getMainPage());
-            break;
-         }
-      }
+      this.setMode(subFeature);
+      this.pushView(this.getMainPage());
    },
    getMainCarousel : function()
    {
@@ -774,11 +792,10 @@ Ext.define('Genesis.controller.Prizes',
          }
          case 'showPrize' :
          case 'reward' :
-            page = me.getShowPrize();
          case 'authReward' :
          {
-            page = me.getShowPrize();
             me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
+            page = me.getShowPrize();
             break;
          }
       }
