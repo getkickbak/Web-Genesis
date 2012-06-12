@@ -243,7 +243,7 @@ Ext.define('Genesis.controller.Accounts',
                   //
                   metaData['venue_id'] = record.getId();
                   viewport.setVenue(record);
-                  controller.fireEvent('checkinMerchant', 'explore', metaData, record.getId(), rec, operation);
+                  controller.fireEvent('checkinMerchant', 'explore', metaData, record.getId(), rec, operation, Ext.emptyFn);
                }
                else
                {

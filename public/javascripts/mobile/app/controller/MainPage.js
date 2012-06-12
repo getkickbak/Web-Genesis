@@ -311,7 +311,7 @@ Ext.define('Genesis.controller.MainPage',
             'metachange' : function(store, proxy, eOpts)
             {
                var controller = app.getController('client.Rewards');
-               controller.fireEvent('metadataChange',store, proxy.getReader().metaData);
+               controller.fireEvent('metadataChange', store, proxy.getReader().metaData);
             }
          }
       });
@@ -324,7 +324,7 @@ Ext.define('Genesis.controller.MainPage',
       var me = this;
       var app = me.getApplication();
       var controller = app.getController('Accounts');
-      controller.fireEvent('authCodeRecv',metaData);
+      controller.fireEvent('authCodeRecv', metaData);
    },
    // --------------------------------------------------------------------------
    // MainPage
@@ -741,7 +741,7 @@ Ext.define('Genesis.controller.MainPage',
          case 'merchant' :
          {
             var info = this.getViewPortCntlr().getCheckinInfo();
-            this.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId())
+            this.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
             break;
          }
          case 'login' :

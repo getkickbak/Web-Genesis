@@ -11,7 +11,8 @@ Ext.define('Genesis.controller.Merchants',
    {
       routes :
       {
-         'venue/:id/:id' : 'mainPage'
+         'venue/:id/:id' : 'mainPage',
+         'venue/:id/:id/:id' : 'backToMainPage'
       },
       refs :
       {
@@ -387,7 +388,7 @@ Ext.define('Genesis.controller.Merchants',
       {
          var anim = new Ext.fx.layout.Card(me.self.superclass.self.animationMode['fade']);
          var controller = vport.getEventDispatcher().controller;
-         
+
          // Delete current page and refresh
          me.getMainPage().destroy();
 
@@ -476,16 +477,14 @@ Ext.define('Genesis.controller.Merchants',
    // --------------------------------------------------------------------------
    mainPage : function(venueId, customerId)
    {
+      this.backToMainPage(venueId, customerId, 0);
+   },
+   backToMainPage : function(venueId, customerId, backToMain)
+   {
       var viewport = this.getViewPortCntlr();
       var cvenue = viewport.getCheckinInfo().venue;
-      if ((cvenue && (cvenue.getId() == venueId)) || (customerId > 0))
-      {
-         this.openMainPage(true);
-      }
-      else
-      {
-         this.openMainPage(false);
-      }
+      var showFeed = (customerId > 0) || (cvenue && (cvenue.getId() == venueId));
+      this.openMainPage(showFeed, backToMain > 0);
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
@@ -497,22 +496,19 @@ Ext.define('Genesis.controller.Merchants',
       //return this[view ? 'getMain' : 'getPage']();
       return this.getMain();
    },
-   openMainPage : function(showFeed)
+   openMainPage : function(showFeed, backToMain)
    {
       var me = this;
-      var vport = me.getViewport();
-      var samePage = (me.getMainPage() == vport.getActiveItem());
 
       // Check if this is the first time logging into the venue
       me.showFeed = showFeed;
-      if (!samePage)
+      if (!backToMain)
       {
          me.setAnimationMode(me.self.superclass.self.animationMode['flip']);
          me.pushView(me.getMainPage());
       }
       else
       {
-         //me.setAnimationMode(me.self.superclass.self.animationMode['fade']);
          me.onCheckedInAccountTap();
       }
       console.log("Merchant Account Opened");

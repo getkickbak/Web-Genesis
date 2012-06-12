@@ -349,7 +349,7 @@ Ext.define('Genesis.controller.Viewport',
    onCheckedInAccountTap : function(b, e, eOpts, eInfo)
    {
       var info = this.getViewPortCntlr().getCheckinInfo();
-      this.redirectTo('venue' + '/' + info.venue.getId() + '/' + info.customer.getId())
+      this.redirectTo('venue' + '/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
    },
    onBrowseTap : function(b, e, eOpts, eInfo)
    {

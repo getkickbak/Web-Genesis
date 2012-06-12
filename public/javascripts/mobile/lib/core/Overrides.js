@@ -120,48 +120,51 @@ Genesis.fb =
    initFb : function()
    {
       var me = this;
-      var db = Genesis.db.getLocalDB();
 
       //
       // Reset FB Connection. The system reset it automatically on every system reboot
       //
-      delete db['fbExpiresIn'];
-      Genesis.db.setLocalDB(db);
+      Genesis.db.removeLocalDBAttrib('fbExpiresIn');
 
-      //Detect when Facebook tells us that the user's session has been returned
-      FB.Event.monitor('auth.authResponseChange', function(session)
+      var db = Genesis.db.getLocalDB();
+
+      if ( typeof (FB) != 'undefined')
       {
-         if (session && (session.status != 'not_authorized') && (session.status != 'notConnected'))
+         //Detect when Facebook tells us that the user's session has been returned
+         FB.Event.monitor('auth.authResponseChange', function(session)
          {
-            console.log('Got FB user\'s session: ' + session.status);
-
-            var authToken = session.authResponse['accessToken'];
-            if (authToken)
+            if (session && (session.status != 'not_authorized') && (session.status != 'notConnected'))
             {
-               db['fbExpiresIn'] = Date.now() + (1000 * session.authResponse['expiresIn']);
-               db['fbAutoCode'] = authToken;
-               Genesis.db.setLocalDB(db);
-               if (me.cb)
+               console.log('Got FB user\'s session: ' + session.status);
+
+               var authToken = session.authResponse['accessToken'];
+               if (authToken)
                {
-                  me.facebook_loginCallback(me.cb);
-                  delete me.cb;
+                  db['fbExpiresIn'] = Date.now() + (1000 * session.authResponse['expiresIn']);
+                  db['fbAutoCode'] = authToken;
+                  Genesis.db.setLocalDB(db);
+                  if (me.cb)
+                  {
+                     me.facebook_loginCallback(me.cb);
+                     delete me.cb;
+                  }
+               }
+               else
+               {
+                  me.facebook_onLogout(null, false);
                }
             }
             else
+            if ((session === undefined) || (session && session.status == 'not_authorized'))
             {
-               me.facebook_onLogout(null, false);
+               //console.debug('FB Account Session[' + session + '] was terminated or not authorized');
+               if (session)
+               {
+                  me.facebook_onLogout(null, (session) ? true : false);
+               }
             }
-         }
-         else
-         if ((session === undefined) || (session && session.status == 'not_authorized'))
-         {
-            //console.debug('FB Account Session[' + session + '] was terminated or not authorized');
-            if (session)
-            {
-               me.facebook_onLogout(null, (session) ? true : false);
-            }
-         }
-      });
+         });
+      }
    },
    getFriendsList : function(callback)
    {
