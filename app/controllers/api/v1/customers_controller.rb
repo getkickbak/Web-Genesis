@@ -38,7 +38,7 @@ class Api::V1::CustomersController < ApplicationController
             }.to_json
             cipher = Gibberish::AES.new(@customer.merchant.auth_code)
             @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
-            @subject = t("api.customers.email_subject_points_transfer")
+            @subject = t("mailer.email_subject_points_transfer")
             @body = TransferPoints.new(current_user, @customer.merchant, record).render_html
             render :template => '/api/v1/customers/transfer_points'
             logger.info("User(#{current_user.id}) successfully created email transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
