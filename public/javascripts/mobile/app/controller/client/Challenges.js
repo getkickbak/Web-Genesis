@@ -217,7 +217,7 @@ Ext.define('Genesis.controller.client.Challenges',
                {
                   console.log("Uploading to Facebook using upload_token[" + metaData['upload_token'] + "]...");
 
-                  me.redirectTo('uploadPhotos');
+                  me.redirectTo('photoUpload');
                }
                delete me.imageURI;
             }, function(error)

@@ -113,9 +113,9 @@ Ext.define('Genesis.controller.MainPage',
    },
    init : function(app)
    {
-      this.callParent(arguments);
-
       var me = this;
+      me.callParent(arguments);
+
       //
       // Loads Front Page Metadata
       //
@@ -137,7 +137,7 @@ Ext.define('Genesis.controller.MainPage',
                   var db = Genesis.db.getLocalDB();
                   if (db['auth_code'])
                   {
-                     me.persistLoadCustomerStore(function()
+                     me.persistLoadStores(function()
                      {
                         me.redirectTo('main');
                      });
@@ -414,7 +414,7 @@ Ext.define('Genesis.controller.MainPage',
             }
             else
             {
-               me.persistSyncCustomerStore();
+               me.persistSyncStores();
             }
          }
       });
@@ -466,7 +466,7 @@ Ext.define('Genesis.controller.MainPage',
                   Ext.Viewport.setMasked(false);
                   if (operation.wasSuccessful())
                   {
-                     me.persistSyncCustomerStore(true);
+                     me.persistSyncStores(null, true);
                      console.log("Logout Successful!")
                   }
                   else
@@ -602,7 +602,7 @@ Ext.define('Genesis.controller.MainPage',
                }
                else
                {
-                  me.persistSyncCustomerStore();
+                  me.persistSyncStores();
                }
             }
          });
@@ -648,7 +648,7 @@ Ext.define('Genesis.controller.MainPage',
             }
             else
             {
-               me.persistSyncCustomerStore();
+               me.persistSyncStores();
             }
          }
       });

@@ -1,3 +1,29 @@
+Ext.define('Genesis.model.EarnPrizeJSON',
+{
+   extend : 'Ext.data.Model',
+   alternateClassName : 'EarnPrizeJSON',
+   id : 'EarnPrizeJSON',
+   config :
+   {
+      proxy :
+      {
+         type : 'localstorage',
+         id : 'EarnPrizeJSON',
+         writer :
+         {
+            type : 'json'
+         },
+         reader :
+         {
+            type : 'json'
+         }
+      },
+      identifier : 'uuid',
+      fields : ['json', 'id'],
+      idProperty : 'id'
+   }
+});
+
 Ext.define('Genesis.model.EarnPrize',
 {
    extend : 'Ext.data.Model',
@@ -20,18 +46,21 @@ Ext.define('Genesis.model.EarnPrize',
       {
          model : 'Genesis.model.CustomerReward',
          associationKey : 'reward',
+         name : 'reward',
          getterName : 'getCustomerReward',
          setterName : 'setCustomerReward'
       },
       {
          model : 'Genesis.model.Merchant',
          associationKey : 'merchant',
+         name : 'merchant',
          getterName : 'getMerchant',
          setterName : 'setMerchant'
       },
       {
          model : 'Genesis.model.User',
          associationKey : 'user',
+         name : 'user',
          getterName : 'getUser',
          setterName : 'setUser'
       }],

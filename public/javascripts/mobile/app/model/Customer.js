@@ -8,13 +8,14 @@ Ext.define('Genesis.model.CustomerJSON',
       proxy :
       {
          type : 'localstorage',
+         id : 'CustomerJSON',
          writer :
          {
             type : 'json'
          },
          reader :
          {
-            type : 'json',
+            type : 'json'
          }
       },
       identifier : 'uuid',
@@ -36,8 +37,8 @@ Ext.define('Genesis.model.Customer',
          model : 'Genesis.model.Merchant',
          associationKey : 'merchant',
          name : 'merchant',
-         associationKey : 'merchant',
-         setterName : 'setMerchant'
+         setterName : 'setMerchant',
+         getterName : 'getMerchant',
       },
       {
          model : 'Genesis.model.User',

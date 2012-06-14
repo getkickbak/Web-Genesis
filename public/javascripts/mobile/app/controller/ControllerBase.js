@@ -346,66 +346,90 @@ Ext.define('Genesis.controller.ControllerBase',
    // --------------------------------------------------------------------------
    // Persistent Stores
    // --------------------------------------------------------------------------
-   persistCustomerStore : function()
+   persistStore : function(storeName)
    {
-      var store = Ext.StoreMgr.get('PersistantCustomerStore');
-      if (!store)
+      var stores =
       {
-         Ext.regStore('PersistantCustomerStore',
-         {
-            model : 'Genesis.model.CustomerJSON',
-            autoLoad : false
-         });
-         store = Ext.StoreMgr.get('PersistantCustomerStore');
-      }
-
-      return store;
-   },
-   persistLoadCustomerStore : function(callback)
-   {
-      var store = this.persistCustomerStore();
-
-      callback = callback || Ext.emptyFn;
-      store.load(
+         'CustomerStore' : [Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'CustomerJSON'],
+         'MerchantPrizeStore' : [Ext.StoreMgr.get('Persistent' + 'MerchantPrizeStore'), 'MerchantPrizeStore', 'EarnPrizeJSON']
+      };
+      for (var i in stores)
       {
-         callback : function(results, operation)
+         if (!stores[i][0])
          {
-            if (operation.wasSuccessful())
+            Ext.regStore('Persistent' + stores[i][1],
             {
-               var cstore = Ext.StoreMgr.get('CustomerStore');
-               cstore.removeAll();
-               for (var i = 0; i < results.length; i++)
-               {
-                  cstore.add(results[i].get('json'));
-               }
-               console.debug("Restored " + results.length + " records to CustomerStore ...");
-            }
-            else
-            {
-               console.debug("Error Restoring CustomerStore ...");
-            }
-            callback();
-         }
-      })
-   },
-   persistSyncCustomerStore : function(cleanOnly)
-   {
-      var store = this.persistCustomerStore();
-      store.removeAll();
-      if (!cleanOnly)
-      {
-         var customers = Ext.StoreMgr.get('CustomerStore').getRange();
-         for (var i = 0; i < customers.length; i++)
-         {
-            var json = customers[i].getData(true);
-            store.add(
-            {
-               json : json
+               model : 'Genesis.model.' + stores[i][2],
+               autoLoad : false
             });
          }
+
+         stores[i][0] = Ext.StoreMgr.get('Persistent' + stores[i][1]);
       }
-      store.sync();
-      console.debug("Synced PersistantCustomerStore ... ");
+
+      return stores[storeName][0];
+   },
+   persistLoadStores : function(callback)
+   {
+      var stores = [[this.persistStore('CustomerStore'), 'CustomerStore', 0x01], [this.persistStore('MerchantPrizeStore'), 'MerchantPrizeStore', 0x10]];
+      var flag = 0x0;
+
+      callback = callback || Ext.emptyFn;
+      for (var i = 0; i < stores.length; i++)
+      {
+         stores[i][0].load(
+         {
+            callback : function(results, operation)
+            {
+               var items = [];
+               if (operation.wasSuccessful())
+               {
+                  var cstore = Ext.StoreMgr.get(stores[i][1]);
+                  cstore.removeAll();
+                  for (var x = 0; x < results.length; x++)
+                  {
+                     items.push(results[x].get('json'));
+                  }
+                  cstore.setData(items);
+                  console.debug("Restored " + results.length + " records to " + stores[i][1] + " ...");
+               }
+               else
+               {
+                  console.debug("Error Restoring " + stores[i][1] + " ...");
+               }
+
+               if ((flag |= stores[i][2]) == 0x11)
+               {
+                  callback();
+               }
+            }
+         });
+      }
+   },
+   persistSyncStores : function(storeName, cleanOnly)
+   {
+      var stores = [[this.persistStore('CustomerStore'), 'CustomerStore', 0x01], [this.persistStore('MerchantPrizeStore'), 'MerchantPrizeStore', 0x10]];
+      for (var i = 0; i < stores.length; i++)
+      {
+         if (!storeName || (stores[i][1] == storeName))
+         {
+            stores[i][0].removeAll();
+            if (!cleanOnly)
+            {
+               var items = Ext.StoreMgr.get(stores[i][1]).getRange();
+               for (var x = 0; x < items.length; x++)
+               {
+                  var json = items[x].getData(true);
+                  stores[i][0].add(
+                  {
+                     json : json
+                  });
+               }
+            }
+            stores[i][0].sync();
+            console.debug("Synced " + stores[i][1] + " ... ");
+         }
+      }
    },
    // --------------------------------------------------------------------------
    // Page Navigation Handlers

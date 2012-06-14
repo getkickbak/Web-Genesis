@@ -5,8 +5,8 @@ Ext.ns('Genesis.constants');
 
 Genesis.constants =
 {
-   //host : 'http://192.168.0.52:3000',
-   host : 'http://www.getkickbak.com',
+   host : 'http://192.168.0.52:3000',
+   //host : 'http://www.getkickbak.com',
    themeName : 'v1',
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
@@ -685,7 +685,7 @@ Genesis.db =
    {
       var db = this.getRedeemIndexDB();
       db[index] = value;
-      console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
+      console.debug("Add to KickBak Redeem DB[" + index + "]");
       //this.getLocalStorage().setItem('kickbakRedeemIndex', Ext.encode(db));
    },
    setRedeemIndexDB : function(db)
@@ -844,7 +844,7 @@ Genesis.db =
    },
    setReferralDB : function(db)
    {
-      console.debug("Setting KickBak DB[" + Ext.encode(db) + "]");
+      console.debug("Setting Referral DB[" + Ext.encode(db) + "]");
       this.getLocalStorage().setItem('kickbakreferral', Ext.encode(db));
    },
    //

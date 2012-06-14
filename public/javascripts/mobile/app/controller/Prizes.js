@@ -376,7 +376,8 @@ Ext.define('Genesis.controller.Prizes',
       // Show prize on ShowPrize Container
       //
       me.showPrize = showPrize;
-      store.insert(0, showPrize);
+      store.add(showPrize);
+      me.persistSyncStores('MerchantPrizeStore');
 
       me.redirectTo('prize');
    },
@@ -516,6 +517,7 @@ Ext.define('Genesis.controller.Prizes',
             var item = carousel ? carousel.getActiveItem() : container.getInnerItems()[0];
 
             store.remove(item.getStore().getData().items[0]);
+            me.persistSyncStores('MerchantPrizeStore');
          }
 
          switch (mode)
@@ -696,7 +698,7 @@ Ext.define('Genesis.controller.Prizes',
 
       me.silentPopView(1);
       me.setMode('showPrize');
-      Ext.defer(function()
+      //Ext.defer(function()
       {
          me.stopRouletteScreen();
 
@@ -708,7 +710,8 @@ Ext.define('Genesis.controller.Prizes',
          {
             me.updatingPrizeOnFacebook(showPrize);
          }, false, me.updatePrizeOnFbMsg);
-      }, 3 * 1000, me);
+      } //
+      //,3 * 1000, me);
    },
    redeemRewardsPage : function()
    {

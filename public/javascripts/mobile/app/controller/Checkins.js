@@ -289,7 +289,7 @@ Ext.define('Genesis.controller.Checkins',
             {
                customer = custore.add(record)[0];
                console.debug("Customer ID=[" + customer.getId() + "] is ADDED to CustAcct Database");
-               me.persistSyncCustomerStore();
+               me.persistSyncStores('CustomerStore');
             }
          }
          else
