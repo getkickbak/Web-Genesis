@@ -4,10 +4,12 @@
 
 .navbar .brand {
    width : 100px;
-   background : url(http://files.getkickbak.com/v1/logo.png) center center no-repeat;
+   height : 20px;
    background-size : 100px;
+   background : url(http://files.getkickbak.com/v1/logo.png) center center no-repeat;
 }
 .navbar-fixed-top .navbar-inner {
+   filter : none;
    background : url(http://files.getkickbak.com/v1/header.png) 0 -50px repeat-x;
 }
 .navbar-fixed-top, .navbar-fixed-bottom {
@@ -26,5 +28,5 @@
 }
 
 .alert {
-   margin-top: 10px;
+   margin-top : 10px;
 }

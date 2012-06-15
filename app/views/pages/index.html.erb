@@ -1,131 +1,130 @@
 <% content_for :link do %>
-      <link rel="stylesheet" href="/javascripts/desktop/css/homepage.css"/>
+<link rel="stylesheet" href="/javascripts/desktop/css/homepage.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/homepage-ie8.css"/>
+<![endif]-->
 <% end %>
 
 <% content_for :script do %> <script type="text/javascript">
-	$(document).ready($(function()
-    {
-		var qrcodeSeq = [1, 0, 1, 2], offset = 0, count = 3, index;
-    	var movePhone = function()
-    	{
-    		index = count % 4;
-        	// Hide the old prize
-        	$('#prize' + (qrcodeSeq[index] + 1)).addClass('hidden');
+   $(document).ready($(function()
+   {
+      var qrcodeSeq = [1, 0, 1, 2], offset = 0, count = 3, index;
+      var movePhone = function()
+      {
+         index = count % 4;
+         // Hide the old prize
+         $('#prize' + (qrcodeSeq[index] + 1)).addClass('hidden');
 
-        	// Determine New location
-        	index = ++count % 4;
-        	offset = 180 * qrcodeSeq[index];
-        	$('#iphone4').animate(
-        	{
-            	left : (40 + offset) + 'px'
-         	}, 3 * 1000, function()
-         	{
-            	// Show the new prize
-            	$('#prize' + (qrcodeSeq[index] + 1)).removeClass('hidden');
-         	});
-         	setTimeout(movePhone, 6 * 1000);
-    	}
-    	setTimeout(movePhone, 3 * 1000);
-    }));  
+         // Determine New location
+         index = ++count % 4;
+         offset = 180 * qrcodeSeq[index];
+         $('#iphone4').animate(
+         {
+            left : (40 + offset) + 'px'
+         }, 3 * 1000, function()
+         {
+            // Show the new prize
+            $('#prize' + (qrcodeSeq[index] + 1)).removeClass('hidden');
+         });
+         setTimeout(movePhone, 6 * 1000);
+      }
+      setTimeout(movePhone, 3 * 1000);
+   })); 
 </script>
 <% end %>
 <div class="container">
-	<!--/Hero Unit-->
-	<div class="row">
-		<div class="span12">
-			<div class="hero-unit">
-				<h1>KICKBAK rewards you for eating
-				<br>
-				out at the restaurants you love</h1>
-			</div>
-		</div>
-	</div>
-	<!--/QRCodes-->
-	<div class="row">
-		<div class="span12 qrcodes">
-			<img class="qrcode" src="http://files.getkickbak.com/v1/qr.png"/>
-			<img class="qrcode" src="http://files.getkickbak.com/v1/qr.png"/>
-			<img class="qrcode" src="http://files.getkickbak.com/v1/qr.png"/>
-			<div id="iphone4" class="iphone4">
-				<img id="prize1" class="prize prize1 hidden" src="http://files.getkickbak.com/v1/prize1.png"/>
-				<img id="prize2" class="prize prize2 hidden" src="http://files.getkickbak.com/v1/prize2.png"/>
-				<img id="prize3" class="prize prize3" src="http://files.getkickbak.com/v1/prize3.png"/>
-			</div>
-			<img class="scantowin" src="http://files.getkickbak.com/v1/scantowin.png"/>
-		</div>
-	</div>
-	<!--/Talking points-->
-	<div class="row features">
-		<div class="span3">
-			<img class="" src="http://files.getkickbak.com/v1/signup.png"/>
-			<br/>
-		</div>
-		<div class="span3">
-			<img class="" src="http://files.getkickbak.com/v1/coins.png"/>
-			<br/>
-		</div>
-		<div class="span3">
-			<img class="" src="http://files.getkickbak.com/v1/challenges.png"/>
-			<br/>
-		</div>
-		<div class="span3">
-			<img class="" src="http://files.getkickbak.com/v1/rewards.png"/>
-			<br/>
-		</div>
-	</div>
-	<div class="row featurestext">
-		<div class="span3">
-			<img class="signuptext" src="http://files.getkickbak.com/v1/signuptext.png"/>
-		</div>
-		<div class="span3">
-			<img class="coinstext" src="http://files.getkickbak.com/v1/coinstext.png"/>
-		</div>
-		<div class="span3">
-			<img class="challengestext" src="http://files.getkickbak.com/v1/challengestext.png"/>
-		</div>
-		<div class="span3">
-			<img class="rewardstext" src="http://files.getkickbak.com/v1/rewardstext.png"/>
-		</div>
-	</div>
-	<div class="row featuresdesc">
-		<div class="span3">
-			<p>
-				Download our app at the App Store or Android Market and sign up for free.
-			</p>
-		</div>
-		<div class="span3">
-			<p>
-				Scan QR Codes to earn points every time you pay for a meal.
-			</p>
-		</div>
-		<div class="span3">
-			<p>
-				Try fun challenges at your local venue and get rewarded at the same time.
-			</p>
-		</div>
-		<div class="span3">
-			<p>
-				Unlock real rewards with the points you earned.
-				<br>
-				You deserve it!
-			</p>
-		</div>
-	</div>
+   <!--/Hero Unit-->
+   <div class="row">
+      <div class="span12">
+         <div class="hero-unit">
+            <h1>KICKBAK rewards you for eating
+               <br>
+               out at the restaurants you love</h1>
+         </div>
+      </div>
+   </div>
+   <!--/QRCodes-->
+   <div class="row">
+      <div class="span12 qrcodes">
+         <img class="qrcode" src="http://files.getkickbak.com/v1/qr.png"/>
+         <img class="qrcode" src="http://files.getkickbak.com/v1/qr.png"/>
+         <img class="qrcode" src="http://files.getkickbak.com/v1/qr.png"/>
+         <div id="iphone4" class="iphone4">
+            <img id="prize1" class="prize prize1 hidden" src="http://files.getkickbak.com/v1/prize1.png"/>
+            <img id="prize2" class="prize prize2 hidden" src="http://files.getkickbak.com/v1/prize2.png"/>
+            <img id="prize3" class="prize prize3" src="http://files.getkickbak.com/v1/prize3.png"/>
+         </div>
+         <img class="scantowin" src="http://files.getkickbak.com/v1/scantowin.png"/>
+      </div>
+   </div>
+   <!--/Talking points-->
+   <div class="row features">
+      <div class="span3">
+         <img class="" src="http://files.getkickbak.com/v1/signup.png"/>
+         <br/>
+      </div>
+      <div class="span3">
+         <img class="" src="http://files.getkickbak.com/v1/coins.png"/>
+         <br/>
+      </div>
+      <div class="span3">
+         <img class="" src="http://files.getkickbak.com/v1/challenges.png"/>
+         <br/>
+      </div>
+      <div class="span3">
+         <img class="" src="http://files.getkickbak.com/v1/rewards.png"/>
+         <br/>
+      </div>
+   </div>
+   <div class="row featurestext">
+      <div class="span3">
+         <img class="signuptext" src="http://files.getkickbak.com/v1/signuptext.png"/>
+      </div>
+      <div class="span3">
+         <img class="coinstext" src="http://files.getkickbak.com/v1/coinstext.png"/>
+      </div>
+      <div class="span3">
+         <img class="challengestext" src="http://files.getkickbak.com/v1/challengestext.png"/>
+      </div>
+      <div class="span3">
+         <img class="rewardstext" src="http://files.getkickbak.com/v1/rewardstext.png"/>
+      </div>
+   </div>
+   <div class="row featuresdesc">
+      <div class="span3">
+         <p> Download our app at the App Store or Android Market and sign up for free. </p>
+      </div>
+      <div class="span3">
+         <p> Scan QR Codes to earn points every time you pay for a meal. </p>
+      </div>
+      <div class="span3">
+         <p> Try fun challenges at your local venue and get rewarded at the same time. </p>
+      </div>
+      <div class="span3">
+         <p> Unlock real rewards with the points you earned.
+            <br>
+            You deserve it! </p>
+      </div>
+   </div>
 </div>
 <div class="container footer">
-	<!--/Hero Unit-->
-	<div class="row">
-		<div class="span6">
-			<img class="earnpoints" src="http://files.getkickbak.com/v1/earnpointsWHITE.png"/>
-		</div>
-		<div class="span6">
-			<h2>Each time you scan a QR code to
-			<br>
-			earn reward points, you have a
-			<br>
-			chance to win a KICKBAK prize!</h2>
-			<a href="#"> <img class="appBtn" src="http://files.getkickbak.com/v1/apple2.png"/> </a>
-			<a href="#"> <img class="appBtn" src="http://files.getkickbak.com/v1/android2.png"/> </a>
-		</div>
-	</div>
+   <!--/Hero Unit-->
+   <div class="row">
+      <div class="span6">
+         <img class="earnpoints" src="http://files.getkickbak.com/v1/earnpointsWHITE.png"/>
+      </div>
+      <div class="span6">
+         <h2>Each time you scan a QR code to
+            <br>
+            earn reward points, you have a
+            <br>
+            chance to win a KICKBAK prize!</h2>
+         <a href="#">
+         <img class="appBtn" src="http://files.getkickbak.com/v1/apple2.png"/>
+         </a>
+         <a href="#">
+         <img class="appBtn" src="http://files.getkickbak.com/v1/android2.png"/>
+         </a>
+      </div>
+   </div>
 </div>

@@ -20,7 +20,7 @@ body:after {
    height :828px;
    content : " ";
    top : 440px;
-   background : transparent url(http://files.getkickbak.com/v1/contentbg.png) center 0 no-repeat;
+   background : transparent url(http://files.getkickbak.com/v1/contentbg.png) center 48px no-repeat;
    background-size:1600px 828px;
 }
 
@@ -53,10 +53,10 @@ body:after {
    position : absolute;
    top : -65px;
    left : 400px;
-   background : transparent url(http://files.getkickbak.com/v1/iphone4.png) center center no-repeat;
-   background-size : 140px 313px;
    width : 140px;
    height : 313px;
+   background-size : 140px 313px;
+   background : transparent url(http://files.getkickbak.com/v1/iphone4.png) center center no-repeat;
 }
 
 /* *****************************************************************

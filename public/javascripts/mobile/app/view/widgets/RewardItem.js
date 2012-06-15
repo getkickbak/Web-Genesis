@@ -72,15 +72,15 @@ Ext.define('Genesis.view.widgets.RewardItem',
                },
                getDisclaimer : function(values)
                {
-                  return values.Merchant['prize_terms'] || 'Not valid with any other offer. No cash value. One coupon per customer per visit. Void where prohibited. Good at participating stores only.';
+                  return values['merchant']['prize_terms'] || 'Not valid with any other offer. No cash value. One coupon per customer per visit. Void where prohibited. Good at participating stores only.';
                },
                getPhoto : function(values)
                {
-                  return values.Merchant['photo']['thumbnail_ios_small'].url;
+                  return values['merchant']['photo']['thumbnail_ios_small'].url;
                },
                getName : function(values)
                {
-                  return values.Merchant['name'];
+                  return values['merchant']['name'];
                }
             })
          }]
@@ -123,7 +123,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
    },
    setDataBackground : function(data)
    {
-      var reward = data.CustomerReward;
+      var reward = data['reward'];
       var photo = Genesis.view.Prizes.getPhoto(reward['type']) || reward['photo']['thumbnail_ios_medium'];
       var info = this.query("component[tag=info]")[0];
 
@@ -134,7 +134,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
       //
       // Hide Merchant Information if it's missing
       //
-      if(data.Merchant)
+      if(data['merchant'])
       {
          //refresh.hide();
          //verify.hide();

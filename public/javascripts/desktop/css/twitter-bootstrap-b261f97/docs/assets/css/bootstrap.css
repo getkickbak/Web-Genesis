@@ -4946,6 +4946,14 @@ a.badge:hover {
   position: relative;
 }
 
+.addbusiness img,
+.contactus img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 450px;
+}
+
 .addbusiness .hero-unit,
 .contactus .hero-unit {
   margin: 0;
@@ -4965,19 +4973,6 @@ a.badge:hover {
   font-family: "Helvetica", "Arial", sans-serif;
   font-size: 12px;
   color: #333333;
-}
-
-.addbusiness:after,
-.contactus:after {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: -1;
-  width: 450px;
-  height: 500px;
-  background: transparent url(../../../../resources/themes/v1/contactus/business.gif) right 0 no-repeat;
-  background-size: 450px;
-  content: " ";
 }
 
 .pull-right {

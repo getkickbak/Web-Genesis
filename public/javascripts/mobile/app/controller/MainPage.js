@@ -223,17 +223,8 @@ Ext.define('Genesis.controller.MainPage',
                if (prizes)
                {
                   console.debug("Total Prizes - " + prizes.length);
-                  for (var i = 0; i < prizes.length; i++)
-                  {
-                     //
-                     // CustomerReward's Model rootProperty is "data"
-                     //
-                     prizes[i].reward =
-                     {
-                        data : prizes[i].reward
-                     }
-                  }
                   Ext.StoreMgr.get('MerchantPrizeStore').setData(prizes);
+                  me.persistSyncStores('MerchantPrizeStore');
                }
 
                //
@@ -648,7 +639,7 @@ Ext.define('Genesis.controller.MainPage',
             }
             else
             {
-               me.persistSyncStores();
+               me.persistSyncStores('CustomerStore');
             }
          }
       });

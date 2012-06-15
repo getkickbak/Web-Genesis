@@ -1163,18 +1163,6 @@ Ext.define('Genesis.data.Connection',
 });
 
 //---------------------------------------------------------------------------------------------------------------------------------
-// Ext.data.association.BelongsTo
-//---------------------------------------------------------------------------------------------------------------------------------
-Ext.define('Genesis.data.association.BelongsTo',
-{
-   override : 'Ext.data.association.BelongsTo',
-   read : function(record, reader, associationData)
-   {
-      record[this.getInstanceName()] = reader.read(associationData).getRecords()[0];
-   }
-});
-
-//---------------------------------------------------------------------------------------------------------------------------------
 // Ext.field.Select
 //---------------------------------------------------------------------------------------------------------------------------------
 Ext.define('Genesis.field.Select',

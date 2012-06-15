@@ -1,0 +1,17 @@
+/* *****************************************************************
+ * NavigationBar
+ * *****************************************************************/
+
+.navbar .brand {
+   margin-top:12px;
+   margin-bottom:16px;
+   padding:0px;
+   height:25px;
+   background:none;
+   -ms-filter : "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://files.getkickbak.com/v1/logo.png',sizingMethod='scale');"
+   /*
+    background-size : 100px;
+    background : url(http://files.getkickbak.com/v1/logo.png) center center no-repeat;
+    behavior: url(/javascripts/desktop/lib/PIE-2.0.0b/PIE_uncompressed.htc);
+    */
+}

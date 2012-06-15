@@ -5,7 +5,7 @@ body:after  {
    height : 1096px;
    content : " ";
    top:0px;
-   background : transparent url(http://files.getkickbak.com/v1/contentbg.png) center 0 no-repeat;
+   background : transparent url(http://files.getkickbak.com/v1/contentbg.png) center 48px no-repeat;
    background-size:1600px 1096px;
 }
 

@@ -1,5 +1,8 @@
 <% content_for :link do %>
 <link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
 <% end %>
 <div class="container">
    <% if @notice %>
@@ -8,10 +11,13 @@
       <%= @notice %>
    </div>
    <% else %>
-   <div class="alert alert-success" style="visibility: hidden;">&#160;</div>
+   <div class="alert alert-success" style="visibility: hidden;">
+      &#160;
+   </div>
    <% end %>
    <!--/Hero Unit-->
    <div class="row addbusiness">
+      <img src="http://files.getkickbak.com/v1/business.gif" />
       <div class="span12">
          <div class="hero-unit">
             <h1>KICKBAK is a game

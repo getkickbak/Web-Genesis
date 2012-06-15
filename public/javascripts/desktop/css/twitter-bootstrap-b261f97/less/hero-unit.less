@@ -32,6 +32,12 @@
 
 .addbusiness, .contactus {
   position:relative;
+  img {
+     top:0;
+     right:0;
+     position:absolute;
+     width:450px;
+  }
   .hero-unit {
     //padding: 48px 0 0 0;
     margin: 0px;
@@ -47,16 +53,5 @@
       color: @grayDark;
       font-family: "Helvetica", "Arial", sans-serif;
     }
-  }
-  &:after {
-    position:absolute;
-    z-index:-1;
-    content : " ";
-    top:0;
-    right:0;
-    background : transparent url(../../../../resources/themes/v1/contactus/business.gif) right 0 no-repeat;
-    background-size:450px;
-    width:450px;
-    height:500px;
   }
 }
