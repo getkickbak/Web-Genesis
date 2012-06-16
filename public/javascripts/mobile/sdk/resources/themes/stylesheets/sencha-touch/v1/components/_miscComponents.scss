@@ -1,0 +1,48 @@
+.pointsphotobase {
+   line-height:$icon-size;
+   font-size:$xlargeFontSize*1.25;
+   text-align:center;
+   padding-left:$icon-size + 10px;
+   position:relative;
+   &:before {
+      position:absolute;
+      z-index:1;
+      top:0;
+      left:0;
+      content : ' ';
+      width : $icon-size;
+      height : $icon-size;
+      max-height: $icon-size;
+      background-position: top;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-color: transparent;
+      background-image: theme_image($theme-path + "/miscicons",  "points" + ".png");
+   }
+}
+.pointsphoto {
+   @extend .pointsphotobase;
+   height:$icon-size+10px;
+   max-height:$icon-size+10px;
+   &:after {
+      font-size:$smallFontSize;
+      font-weight:bold;
+      position:absolute;
+      z-index:1;
+      top:$icon-size/2+3px;
+      left:0;
+      content : 'Points';
+      width : $icon-size;
+      height : 1em;
+      max-height: 1em;
+   }
+}
+.visitsphoto {
+   @extend .pointsphoto;
+   &:before {
+      background-image: theme_image($theme-path + "/miscicons", "number_visits" + ".png");
+   }
+   &:after {
+      content : 'Visits';
+   }
+}

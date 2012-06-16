@@ -592,8 +592,7 @@ Ext.define('Genesis.controller.Viewport',
          else
          {
             console.debug("Going to Login Page ...");
-            this.redirectTo('main');
-            //this.fireEvent('openpage', 'MainPage', 'login', null);
+            this.redirectTo('login');
          }
       }
    }

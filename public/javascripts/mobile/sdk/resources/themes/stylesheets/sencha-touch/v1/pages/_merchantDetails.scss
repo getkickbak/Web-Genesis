@@ -1,0 +1,34 @@
+//------------------------------------------------------------------------------
+// Merchant Details Page
+//------------------------------------------------------------------------------
+.merchantDetails {
+   .x-body {
+   }
+   .gmap .x-innerhtml {
+      overflow:hidden;
+   }
+   .x-dataview {
+      .x-inner {
+         margin:0!important;
+         padding:0!important;
+      }
+      .photo {
+         height:$icon-size*2+10;
+         img {
+            width : $icon-size*2;
+            max-height:$icon-size*2;
+            @include box-shadow(0.2em 0.2em 0.2em rgba(0,0,0,.6));
+            margin-right:$panelGap;
+         }
+      }
+      //margin-left:$icon-size*1.5 + 10px;
+      padding-right:0;
+      //width:8.5em !important;
+      .itemTitle {
+         font-size:$largeFontSize !important;
+      }
+      .itemDesc {
+         font-size:$normalFontSize;
+      }
+   }
+}

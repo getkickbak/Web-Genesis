@@ -397,11 +397,7 @@ Ext.define('Genesis.controller.MainPage',
             Ext.Viewport.setMasked(false);
             if (!operation.wasSuccessful())
             {
-               //Genesis.db.resetStorage();
-               vport.setLoggedIn(false);
-               Genesis.db.removeLocalDBAttrib('auth_code');
                me.redirectTo('login');
-               //me.fireEvent('openpage', 'MainPage', 'login', null);
             }
             else
             {
@@ -412,6 +408,12 @@ Ext.define('Genesis.controller.MainPage',
    },
    onLoginActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
+      var vport = this.getViewport();
+      
+      Genesis.db.resetStorage();
+      vport.setLoggedIn(false);
+      Genesis.db.removeLocalDBAttrib('auth_code');
+      
       //this.getInfoBtn().hide();
       activeItem.createView();
    },
@@ -431,14 +433,11 @@ Ext.define('Genesis.controller.MainPage',
       var _onLogout = function()
       {
          console.log("Resetting Session information ...")
-         viewport.setLoggedIn(false);
-         Genesis.db.removeLocalDBAttrib('auth_code');
          if (Genesis.db.getLocalDB()['currFbId'] > 0)
          {
             Genesis.fb.facebook_onLogout(null, true);
          }
          me.redirectTo('login');
-         //me.fireEvent('openpage', 'MainPage', 'login', null);
       }
       var _logout = function()
       {
@@ -633,9 +632,7 @@ Ext.define('Genesis.controller.MainPage',
             Ext.Viewport.setMasked(false);
             if (!operation.wasSuccessful())
             {
-               Genesis.db.resetStorage();
                me.redirectTo('login');
-               //me.fireEvent('openpage', 'MainPage', 'login', null);
             }
             else
             {

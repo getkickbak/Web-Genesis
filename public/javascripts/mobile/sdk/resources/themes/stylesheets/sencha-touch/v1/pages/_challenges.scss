@@ -1,0 +1,46 @@
+//------------------------------------------------------------------------------
+// Icon Select CSS (MainPage and Challenge Page)
+//------------------------------------------------------------------------------
+.challengeMenuSelections {
+   @extend .mainMenuSelections;
+   .x-hasbadge .x-badge {
+      right:0em;
+      background-color : $OrangeStart;
+      border-color : darken($OrangeStart,5%);
+   }
+   .x-dataview-item, .x-data-item {
+      width:33%;
+      height:($panelTopGap*2)+($normalFontSize*1.25*2)+(1.25*5em);
+      .mainPageItemWrapper {
+         .photo {
+            height : $icon-size;
+            img {
+               width : $icon-size;
+               max-height : $icon-size;
+            }
+         }
+      }
+   }
+   .x-dataview-item:nth-child(3n+1) {
+      clear:both;
+   }
+}
+
+.challengePageItem {
+   .x-carousel-item {
+      @include box-shadow(inset 0em -0.1em 0.1em rgba(0,0,0,0.6));
+   }
+}
+.challengePageItemDescWrapper {
+   min-height : 4em;
+   max-height : 4em;
+   padding:$panelTopGap/2 $panelGap;
+   background: rgba(252, 252, 253, .5);
+   .itemDesc {
+      font-size:$normalFontSize*1.25;
+      padding-bottom:$panelTopGap/2;  
+   }
+   .itemDescName {
+      text-align:center;
+   }
+}
