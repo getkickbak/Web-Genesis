@@ -1,8 +1,8 @@
 <%= simple_form_for [@user] do |f| %>
 <%= f.input :name %>
 <%= f.input :email %>
-<%= f.input :role %>
-<%= f.input :status %>
+<%= f.input :role, :collection => User::Roles %>
+<%= f.input :status, :collection => User::Statuses %>
 <%= f.input :current_password %>
 <%= f.input :password %>
 <%= f.input :password_confirmation %>

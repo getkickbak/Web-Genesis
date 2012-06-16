@@ -6,7 +6,7 @@ module PrizeExpirationReminders
   end
   
   def self.perform()
-    if RAILS_ENV == 'production'
+    if Rails.env == 'production'
       sql = "SELECT id FROM earn_prize WHERE user_id = ? AND redeemed = false
               AND expiry_date > ? AND (DATEDIFF(expiry_date - ?) % 30 = 0 OR DATEDIFF(expiry_date - ?) = 5) AND deleted_ts IS NULL"
     else

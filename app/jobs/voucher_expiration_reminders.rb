@@ -7,7 +7,7 @@ module VoucherExpirationReminders
   
   def self.perform()
 =begin    
-    if RAILS_ENV == 'production'
+    if Rails.env == 'production'
       sql = "SELECT coupon_id FROM coupons WHERE user_id = ? 
               AND expiry_date > ? AND (DATEDIFF(expiry_date - ?) % 30 = 0 OR DATEDIFF(expiry_date - ?) = 5) AND deleted_ts IS NULL"
     else

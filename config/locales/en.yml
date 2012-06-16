@@ -131,6 +131,7 @@ en:
         one: "year"
         other: "years"    
       facebook_account_already_exists_failure: "Facebook account already exists."
+      not_available: "Not yet available to the general public!"
       challenges:
         expired_code: "Authorization code no longer valid."
         invalid_code: "Authorization code is not valid."

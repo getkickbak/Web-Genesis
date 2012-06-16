@@ -6,7 +6,7 @@ module PointsExpirationReminders
   end
   
   def self.perform()
-    if RAILS_ENV == 'production'
+    if Rails.env == 'production'
       earned_points_sql = "SELECT merchant_id, customer_id, SUM(points) AS earned_points, DATE(created_ts) AS created_date
               FROM earn_reward_record 
               WHERE user_id = ? AND (PERIODDIFF(date_format(?, '%Y%m') - date_format(created_ts, '%Y%m')) = 9 AND deleted_ts IS NULL

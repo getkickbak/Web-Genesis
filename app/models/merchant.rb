@@ -3,7 +3,9 @@ require 'util/constant'
 class Merchant
   include DataMapper::Resource
   
-  ROLES = %w[test merchant]
+  Roles = %w[test merchant]
+  Statuses = [:active, :pending, :suspended, :deleted]
+  
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
 
@@ -149,6 +151,7 @@ class Merchant
     self.account_last_name = merchant_info[:account_last_name].strip
     self.phone = merchant_info[:phone].strip
     self.website = merchant_info[:website].strip
+    self.role = merchant_info[:role]
     self.status = merchant_info[:status]
     self.update_ts = now
     self.type = type

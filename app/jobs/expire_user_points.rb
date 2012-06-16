@@ -8,7 +8,7 @@ module ExpireUserPoints
   def self.perform(auto)
     now = Time.now
     logger.info("Expire User Points started at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
-    if RAILS_ENV == 'production'
+    if Rails.env == 'production'
       earned_points_sql = "SELECT customer_id, SUM(points) AS earned_points
               FROM earn_reward_record 
               WHERE user_id = ? AND PERIODDIFF(date_format(?, '%Y%m') - date_format(created_ts, '%Y%m')) = 12 AND deleted_ts IS NULL

@@ -4,6 +4,15 @@ class Api::V1::RegistrationsController < ApplicationController
   respond_to :json
   
   def create
+    #Note: Temporary to stop people to signing up
+    if Rails.env == 'production'
+      respond_to do |format|
+        #format.xml  { head :ok }
+        format.json { render :json => { :success => false, :message => t("api.not_available").split('\n') } }
+      end
+      return      
+    end
+    
     begin
       User.transaction do
         user_info = JSON.parse(params[:user], { :symbolize_names => true })

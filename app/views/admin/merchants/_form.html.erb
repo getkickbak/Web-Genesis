@@ -7,7 +7,8 @@
 	<%= f.input :account_last_name %>
 	<%= f.input :phone %>
 	<%= f.input :website %>
-	<%= f.input :status %>
+	<%= f.input :role, :collection => Merchant::Roles %>
+	<%= f.input :status, :collection => Merchant::Statuses %>
 	<%= f.input :current_password %>
 	<%= f.input :password %>
 	<%= f.input :password_confirmation %>

@@ -3,7 +3,8 @@ require 'util/constant'
 class User
   include DataMapper::Resource
 
-  ROLES = %w[test anonymous user]
+  Roles = %w[test anonymous user]
+  Statuses = [:active, :pending, :suspended, :deleted]
   
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
@@ -53,7 +54,7 @@ class User
         :current_password => password,
         :password => password,
         :password_confirmation => password,
-        :role => user_info[:role].strip,
+        :role => user_info[:role],
         :status => user_info[:status]
       }.delete_if { |k,v| v.nil? }
     ) 
@@ -106,7 +107,7 @@ class User
     else
       self.current_password = nil
     end
-    self.role = user_info[:role].strip
+    self.role = user_info[:role]
     self.status = user_info[:status]
     self.update_ts = now
     save

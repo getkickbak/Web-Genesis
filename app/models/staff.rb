@@ -3,7 +3,8 @@ require 'util/constant'
 class Staff
   include DataMapper::Resource
 
-  ROLES = %w[sales admin super_admin]
+  Roles = %w[sales admin super_admin]
+  Statuses = [:active, :pending, :suspended, :deleted]
   
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
@@ -36,7 +37,7 @@ class Staff
       :current_password => password,
       :password => password,
       :password_confirmation => password_confirmation,
-      :role => staff_info[:role].strip,
+      :role => staff_info[:role],
       :status => staff_info[:status]
     ) 
     staff[:created_ts] = now
@@ -87,7 +88,7 @@ class Staff
     else
       self.current_password = nil
     end  
-    self.role = staff_info[:role].strip
+    self.role = staff_info[:role]
     self.status = staff_info[:status]
     self.update_ts = now
     save

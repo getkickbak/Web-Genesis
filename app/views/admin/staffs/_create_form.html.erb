@@ -3,7 +3,6 @@
 <%= f.input :email %>
 <%= f.input :password %>
 <%= f.input :password_confirmation %>
-<%= f.input :role %>
-<%= f.input :status %>
+<%= f.input :role, :collection => Staff::Roles %>
 <%= f.button :submit %>
 <% end %> 

@@ -7,7 +7,7 @@
 	<%= f.input :account_last_name %>
 	<%= f.input :password %>
 	<%= f.input :password_confirmation %>
-	<%= f.input :role %>
+	<%= f.input :role, :collection => Merchant::Roles %>
 	<%= f.input :phone %>
 	<%= f.input :website, :required => false %>
 	<%= f.button :submit %>
