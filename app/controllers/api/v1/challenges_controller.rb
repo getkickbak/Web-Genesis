@@ -57,7 +57,7 @@ class Api::V1::ChallengesController < ApplicationController
     
     logger.info("Complete Challenge(#{@challenge.id}), Type(#{@challenge.type.value}), Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
     Time.zone = @venue.time_zone
-    if !Common.within_geo_distance?(params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
+    if !Common.within_geo_distance?(current_user, params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.out_of_distance").split('\n') } }
@@ -65,7 +65,7 @@ class Api::V1::ChallengesController < ApplicationController
       return
     end
 
-    if APP_PROP["DEBUG_MODE"]
+    if APP_PROP["SIMULATOR_MODE"]
       data = String.random_alphanumeric(32)
     else
       data = params[:data]
@@ -304,7 +304,7 @@ class Api::V1::ChallengesController < ApplicationController
   private
   
   def authenticated?(data)
-    if APP_PROP["DEBUG_MODE"]
+    if APP_PROP["SIMULATOR_MODE"]
       return true
     else
       cipher = Gibberish::AES.new(@venue.auth_code)

@@ -3,6 +3,7 @@ require 'util/constant'
 class Merchant
   include DataMapper::Resource
   
+  ROLES = %w[test merchant]
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
 
@@ -23,6 +24,7 @@ class Merchant
   property :phone, String, :required => true, :default => ""
   property :website, String, :default => "", :format => :url 
   property :payment_account_id, String, :default => ""
+  property :role, String, :required => true, :default => "merchant"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :pending
   property :prize_terms, String, :required => true, :default => ""
   property :auth_code, String, :required => true, :default => ""
@@ -34,7 +36,7 @@ class Merchant
   attr_accessor :type_id, :current_password, :eager_load_type
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :photo, :alt_photo, :status, :prize_terms, :auth_code, :current_password, :password, :password_confirmation
+  attr_accessible :type_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :photo, :alt_photo, :role, :status, :prize_terms, :auth_code, :current_password, :password, :password_confirmation
   
   has 1, :merchant_to_type, :constraint => :destroy
   has 1, :type, 'MerchantType', :through => :merchant_to_type, :via => :merchant_type
@@ -70,6 +72,7 @@ class Merchant
       :account_last_name => merchant_info[:account_last_name].strip,
       :phone => merchant_info[:phone].strip,
       :website => merchant_info[:website].strip,
+      :role => merchant_info[:role],
       :status => merchant_info[:status],
       :prize_terms => merchant_info[:prize_terms],
       :auth_code => String.random_alphanumeric(32)

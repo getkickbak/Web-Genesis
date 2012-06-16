@@ -9,7 +9,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     
     logger.info("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
     Time.zone = @venue.time_zone
-    if !Common.within_geo_distance?(params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
+    if !Common.within_geo_distance?(current_user, params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.out_of_distance").split('\n') } }
@@ -20,7 +20,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     @prize = nil
     authorized = false
     invalid_code = false
-    if APP_PROP["DEBUG_MODE"]
+    if APP_PROP["SIMULATOR_MODE"]
       data = String.random_alphanumeric(32)
       data_expiry_ts = Time.now
       amount = rand(100)+1
@@ -191,6 +191,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             :ref_id => record.id,
             :description => I18n.t("transaction.earn"),
             :points => @points,
+            #:fee => amount * APP_PROP["TRANS_FEE"],
             :created_ts => now,
             :update_ts => now
           )

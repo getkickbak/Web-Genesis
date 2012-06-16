@@ -3,7 +3,7 @@ class Api::V1::CheckInsController < ApplicationController
   before_filter :authenticate_user!
   
   def create
-    if !APP_PROP["DEBUG_MODE"] && !APP_PROP["SIMULATOR_MODE"]
+    if !APP_PROP["SIMULATOR_MODE"] && current_user.role != "test"
       begin
         encrypted_data = params[:auth_code].split('$')
         venue = Venue.get(encrypted_data[0])
@@ -41,7 +41,7 @@ class Api::V1::CheckInsController < ApplicationController
     authorize! :update, @customer
     
     Time.zone = @venue.time_zone
-    if !Common.within_geo_distance?(params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
+    if !Common.within_geo_distance?(current_user, params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.out_of_distance").split('\n') } }

@@ -3,7 +3,7 @@ require 'util/constant'
 class User
   include DataMapper::Resource
 
-  ROLES = %w[anonymous user]
+  ROLES = %w[test anonymous user]
   
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable

@@ -7,24 +7,41 @@ namespace :db do
     now = Time.now
     puts "Creating Users..."
     users = []
-    10.times do |n|
-      user = User.create(
-      :name => Faker::Name.name,
-      :email => Faker::Internet.email,
+    user1 = User.create(
+      :name => "John Smith",
+      :email => "test.user1@getkickbak.com",
       :password => "getkickbak",
       :password_confirmation => "getkickbak",
-      :role => "user",
+      :role => "test",
       :status => :active
-      )
-      users << user
-    end
+    )
+    users << user1
+    user2 = User.create(
+      :name => "David Best",
+      :email => "test.user2@getkickbak.com",
+      :password => "getkickbak",
+      :password_confirmation => "getkickbak",
+      :role => "test",
+      :status => :active
+    )
+    users << user2
     puts "Complete User creation"
   
     puts "Creating Staffs..."
+    staff_info = [
+      {
+        :name => "Paul Chan",
+        :email => "paul.chan@getkickbak.com"
+      },
+      {
+        :name => "Eric Chan",
+        :email => "eric.chan@getkickbak.com"
+      }
+    ]
     2.times do |n|
       staff = Staff.create(
-      :name => Faker::Name.name,
-      :email => Faker::Internet.email,
+      :name => staff_info[n][:name],
+      :email => staff_info[n][:email],
       :password => "getkickbak",
       :password_confirmation => "getkickbak",
       :role => "admin",
@@ -189,6 +206,7 @@ namespace :db do
         :account_last_name => Faker::Name.name,
         :phone => merchant_info[n][:phone],
         :website => merchant_info[n][:website],
+        :role => :test,
         :status => :active,
         :prize_terms => I18n.t('prize.terms')
       })

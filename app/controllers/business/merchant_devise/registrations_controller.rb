@@ -4,6 +4,8 @@ module Business
       begin
         Merchant.transaction do
           build_resource
+          resource[:role] = "merchant"
+          resource[:status] = :pending
           merchant = Merchant.create(resource)
           resource = merchant
           if resource.active_for_authentication?

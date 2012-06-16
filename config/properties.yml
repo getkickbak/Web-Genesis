@@ -1,34 +1,31 @@
 development:
   MONTHLY_FEE: 19
-  COST_PER_TRANS: 0.1
+  TRANS_FEE: 0.01
   FILE_HOST: devfiles.getkickbak.com
   PHOTO_HOST : devphotos.getkickbak.com
   AMAZON_FILES_BUCKET: devfiles.getkickbak.com
   AMAZON_PHOTOS_BUCKET: devphotos.getkickbak.com
   REDIS_URL: "redis://kickbak:028ab069d968aa7768089e0f7f02c8ac@drum.redistogo.com:9431/"  
-  DEBUG_MODE: true
   SIMULATOR_MODE: true
   GENERATE_QRCODE: true
 test:  
   MONTHLY_FEE: 19
-  COST_PER_TRANS: 0.1
+  TRANS_FEE: 0.01
   FILE_HOST: devfiles.getkickbak.com
   PHOTO_HOST : devphotos.getkickbak.com
   AMAZON_FILES_BUCKET: devfiles.getkickbak.com
   AMAZON_PHOTOS_BUCKET: devphotos.getkickbak.com
   REDIS_URL: "redis://kickbak:028ab069d968aa7768089e0f7f02c8ac@drum.redistogo.com:9431/"  
-  DEBUG_MODE: true
   SIMULATOR_MODE: true
   GENERATE_QRCODE: true
 production:
   MONTHLY_FEE: 19
-  COST_PER_TRANS: 0.1
+  TRANS_FEE: 0.01
   FILE_HOST: files.getkickbak.com
   PHOTO_HOST : photos.getkickbak.com
   AMAZON_FILES_BUCKET: files.getkickbak.com
   AMAZON_PHOTOS_BUCKET: photos.getkickbak.com
   #REDIS_URL: "redis://username:password@127.0.0.1:6379/"
   REDIS_URL: "redis://kickbak:4581c2433f1c544dbac343b89388d88e@gar.redistogo.com:9108"
-  DEBUG_MODE: false
-  SIMULATOR_MODE: true
+  SIMULATOR_MODE: false
   GENERATE_QRCODE: true

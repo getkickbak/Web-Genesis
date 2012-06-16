@@ -85,15 +85,29 @@ class Venue
     return venue
   end
   
-  def self.find_nearest(merchant_id, latitude, longitude, max)
+  def self.find_nearest(user, merchant_id, latitude, longitude, max)
     if Rails.env == 'production'
       if merchant_id.nil?
-        venues_info = DataMapper.repository(:default).adapter.select(
-          "SELECT id, round( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
-          FROM venues WHERE deleted_ts IS NULL
-          ORDER BY distance
-          ASC LIMIT 0,?", latitude, longitude, latitude, max 
-        )
+        if user.role != "test"
+          venues_info = DataMapper.repository(:default).adapter.select(
+            "SELECT id, round( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
+            FROM venues WHERE deleted_ts IS NULL
+            ORDER BY distance
+            ASC LIMIT 0,?", latitude, longitude, latitude, max 
+          )
+        else
+          merchants = Merchant.all(:fields => [:id], :role => :test)
+          merchant_ids = []
+          merchants.each do |merchant|
+            merchant_ids << merchant.id
+          end
+          venues_info = DataMapper.repository(:default).adapter.select(
+            "SELECT id, round( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
+            FROM venues WHERE merchant_id IN (?) AND deleted_ts IS NULL
+            ORDER BY distance
+            ASC LIMIT 0,?", latitude, longitude, latitude, merchant_ids.join(','), max 
+          )
+        end
       else
         venues_info = DataMapper.repository(:default).adapter.select(
           "SELECT id, round( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance

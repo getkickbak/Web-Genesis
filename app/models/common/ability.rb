@@ -28,4 +28,8 @@ class Ability
     can :read, EarnPrize
     can :update, EarnPrize, :user => { :id => @user.id }
   end
+  
+  def test
+    user
+  end
 end

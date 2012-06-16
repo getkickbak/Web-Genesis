@@ -6,9 +6,10 @@ class Invoice
   property :id, Serial
   property :invoice_id, String, :required => true, :default => ""
   property :amount, Decimal, :required => true, :default => 0.00
+  property :trans_amount, Decimal, :required => true, :default => 0.00
   property :transactions, Integer, :required => true, :default => 0
   property :monthly_fee, Decimal, :required => true, :default => 0.00
-  property :cost_per_trans, Decimal, :required => true, :default => 0.00
+  property :trans_fee, Decimal, :required => true, :default => 0.00
   property :start_date, Date, :required => true, :default => ::Constant::MIN_DATE
   property :end_date, Date, :required => true, :default => ::Constant::MIN_DATE
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -16,16 +17,17 @@ class Invoice
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessible :invoice_id, :amount, :transactions, :monthly_fee, :cost_per_trans, :start_date, :end_date
+  attr_accessible :invoice_id, :amount, :trans_amount, :transactions, :monthly_fee, :trans_fee, :start_date, :end_date
   
   def self.create(merchant, invoice_info)
     now = Time.now
     invoice = Invoice.new(
       :invoice_id => "#{merchant.id}-#{now.to_i}",
       :amount => invoice_info[:amount],
+      :trans_amount => invoice_info[:trans_amount],
       :transactions => invoice_info[:transactions],
       :monthly_fee => invoice_info[:monthly_fee],
-      :cost_per_trans => invoice_info[:cost_per_trans],
+      :trans_fee => invoice_info[:trans_fee],
       :start_date => invoice_info[:start_date],
       :end_date => invoice_info[:end_date]
     )
