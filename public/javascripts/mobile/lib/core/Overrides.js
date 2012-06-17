@@ -5,8 +5,8 @@ Ext.ns('Genesis.constants');
 
 Genesis.constants =
 {
-   host : 'http://192.168.0.52:3000',
-   //host : 'http://www.getkickbak.com',
+   //host : 'http://192.168.0.52:3000',
+   host : 'http://www.getkickbak.com',
    themeName : 'v1',
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
@@ -854,6 +854,21 @@ Genesis.db =
    {
       Genesis.fb.facebook_onLogout(null, false);
       this.removeLocalDBAttrib('auth_code');
+
+      var db = this.getLocalStorage();
+      for (var i in db)
+      {
+         if (i != 'kickbak')
+         {
+            try
+            {
+               db.removeItem(i);
+            }
+            catch(e)
+            {
+            }
+         }
+      }
    }
 }
 

@@ -47,3 +47,16 @@
       border:none;
    }
 }
+
+.clientPhotoCache {
+   background-image : theme_image($theme-path, "green_roulette_bg" + ".png"), theme_image($theme-path, "roulette2" + ".png"), theme_image($theme-path, "ball" + ".png");
+   width:1px;
+   height:1px;
+   display:none;
+}
+
+.serverPhotoCache {
+   width:1px;
+   height:1px;
+   display:none;
+}

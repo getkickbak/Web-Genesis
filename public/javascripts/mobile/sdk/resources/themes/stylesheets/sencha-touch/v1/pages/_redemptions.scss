@@ -1,0 +1,49 @@
+//------------------------------------------------------------------------------
+// Redemptions Page
+//------------------------------------------------------------------------------
+.redemptionsMain {
+   .ptsEarnPanelHdr {
+      @extend .panelHdr;
+      &:nth-child(3) {
+         margin-top:$panelTopGap;
+      }
+   }
+   .ptsEarnPanel {
+      padding:$panelGap*0.5;
+      border: 1px solid $GreyEnd;
+      background : $Grey;
+      @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
+      //@include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+      .x-inner {
+        margin:0 !important;
+        height:$icon-size;
+      }
+      .pointsphotobase {
+         font-size:$xlargeFontSize*1.25;
+         color : $OrangeStart;
+         text-align:center;
+         .x-innerhtml {
+            font-size:$xlargeFontSize;
+            font-weight:bold;
+            line-height:$icon-size;
+         }
+      }
+   }
+
+   .x-scroll-scroller {
+      position:static;
+   }
+   .redemptionsList {
+      @extend .listScrollIndexWrapper;
+      .x-list-item {
+         .listItemDetailsWrapper {
+            .itemTitle {
+               font-weight:bold;
+               font-size:$largeFontSize !important;
+               white-space: nowrap;
+               line-height : $icon-size;
+            }
+         }
+      }
+   }
+}

@@ -1,0 +1,21 @@
+.navigationBarTop, .navigationBarBottom {
+   .x-button {
+      &.x-iconalign-top, &.x-iconalign-bottom {
+         padding-top:.2em;
+         padding-bottom:.1em;
+         .x-button-label {
+            //@extend .x-tabbar.x-docked-bottom .x-tab .x-button-label;
+            margin: 0;
+            padding: .1em 0 .2em 0;
+            font-size: 9px;
+            line-height: 12px;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+         }
+      }
+   }
+   .x-title {
+      font-size:$xlargeFontSize;
+   }
+
+}

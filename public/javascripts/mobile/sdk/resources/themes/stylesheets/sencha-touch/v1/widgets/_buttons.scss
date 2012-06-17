@@ -1,0 +1,59 @@
+//------------------------------------------------------------------------------
+// Button
+//------------------------------------------------------------------------------
+
+@include sencha-button-ui('orange', $OrangeStart);
+/*
+@include sencha-button-ui('green', darken(saturate(green, 55%), 10%));
+@include sencha-button-ui('red', darken(saturate(red, 55%), 10%));
+@include sencha-button-ui('blue', darken(saturate(blue, 55%), 10%));
+@include sencha-button-ui('black', darken(saturate(black, 55%), 10%));
+*/
+@include sencha-button-ui('fbBlue', desaturate(darken(#3B5998, 10%), 5%));
+@include sencha-button-ui('action', $active-color);
+@include sencha-button-ui('cancel', $BlackStart);
+
+// Back/Forward buttons
+$shadow-width: .065em; // Space between tip and its shadow
+$overlap-width: .2em; // how far the mask is clipped
+
+// $mask-height: $button-height + $button-stroke-weight * 2; // Ugh, this is non-specific... borders?
+$mask-height: $button-height;
+$mask-width: $mask-height/2;
+
+$mask-offset: $button-radius - $overlap-width - $button-stroke-weight + $shadow-width - 0.2em;
+
+$tip-width: $mask-width - $mask-offset + $shadow-width;
+
+
+.x-button {
+   @include toolbar-button($Grey, $button-gradient);
+}
+.x-button-forward, .x-button-back {
+   &:before, &:after {
+      @include insertion($mask-width, $mask-height, -$button-stroke-weight, auto);
+      -webkit-mask: $mask-offset 0 theme_image($theme-path + "/toolbar", "tip" + ".png") no-repeat;
+      -webkit-mask-size: $mask-width $mask-height;
+   }
+}
+.x-button-forward,
+.x-toolbar .x-button-forward {
+   &:before, &:after {
+      -webkit-mask: $mask-offset 0 theme_image($theme-path + "/toolbar", "tip" + ".png") no-repeat;
+   }
+}
+
+.x-button-large, .x-toolbar .x-button-large {
+   @if $include-border-radius { @include border-radius($panelBorderRadius); }
+   padding: .6em 1.2em;
+   min-height: $button-height*1.5 !important;
+
+   .x-button-label {
+      font-size: $xlargeFontSize;
+   }
+
+   .x-button-icon {
+      width: 1.5em;
+      height: 1.5em;
+   }
+}

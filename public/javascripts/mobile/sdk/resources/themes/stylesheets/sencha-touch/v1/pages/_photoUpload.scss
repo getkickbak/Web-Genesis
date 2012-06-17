@@ -1,0 +1,19 @@
+//------------------------------------------------------------------------------
+// Photo Upload Page
+//------------------------------------------------------------------------------
+.photoUploadPage {
+   .background {
+      background-color:black;
+      background-position: center center;
+      background-repeat : no-repeat;
+      background-size: contain;
+   }
+   .desc {
+     background: rgba(0,0,0,0.3) center center no-repeat;
+     padding: $panelTopGap/2 $panelGap/2;
+     textarea {
+        color: white;
+        font-size:$largeFontSize;
+     }
+   }
+}

@@ -1,0 +1,15 @@
+//------------------------------------------------------------------------------
+// Checkin Pages
+//------------------------------------------------------------------------------
+.checkInExploreList {
+   @extend .listScrollWrapper;
+   .listItemDetailsWrapper {
+      //width:12em !important;
+   }
+}
+
+.checkInNow {
+   @include custom-linear-gradient($BlueStart 0%, $BlueEnd 75%, top);
+   color : $Grey;
+   padding: $panelTopGap 2*$panelGap;
+}
