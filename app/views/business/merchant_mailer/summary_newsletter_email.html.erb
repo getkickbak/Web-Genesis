@@ -37,19 +37,22 @@
 									New customers: <%= @stats[:new_customer_count] %>
 									<br>
 									<br>
-									Total reward points outstanding: <%= stats[:total_reward_points] %>
+									New loyalty spent total: <%= @stats[:new_total_spent] %>
 									<br>
 									<br>
-									Reward points earned: <%= stats[:new_reward_points_earned] %>
+									Outstanding reward points total: <%= stats[:total_reward_points] %>
 									<br>
 									<br>
-									Reward points redeemed: <%= stats[:new_reward_points_redeemed] %>
+									New reward points earned: <%= stats[:new_reward_points_earned] %>
 									<br>
 									<br>
-									Purchases: <%= @stats[:new_purchases_count] %>
+									New reward points redeemed: <%= stats[:new_reward_points_redeemed] %>
 									<br>
 									<br>
-									Challenges: (Total <%= @stats[:new_challenges_count] %>)
+									New purchases: <%= @stats[:new_purchases_count] %>
+									<br>
+									<br>
+									New challenges met: (Total <%= @stats[:new_challenges_count] %>)
 									<br>
 									<table style="margin-bottom:0px;margin-top:10px;border:1px solid #DDD;background-color:white;width:100%;margin-bottom:18px;border-collapse:collapse;font-size:12px;">
 										<thead>

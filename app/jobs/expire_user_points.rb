@@ -6,6 +6,7 @@ module ExpireUserPoints
   end
 
   def self.perform(auto)
+=begin
     now = Time.now
     logger.info("Expire User Points started at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
     if Rails.env == 'production'
@@ -107,5 +108,6 @@ module ExpireUserPoints
     logger.info("Expire User Points completed successfully at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
     now = Time.now
     logger.info("Expire User Points completed successfully at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+=end    
   end
 end

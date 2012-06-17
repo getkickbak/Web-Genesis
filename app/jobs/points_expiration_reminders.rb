@@ -6,6 +6,7 @@ module PointsExpirationReminders
   end
   
   def self.perform()
+=begin    
     if Rails.env == 'production'
       earned_points_sql = "SELECT merchant_id, customer_id, SUM(points) AS earned_points, DATE(created_ts) AS created_date
               FROM earn_reward_record 
@@ -97,5 +98,6 @@ module PointsExpirationReminders
     end
     now = Time.now
     logger.info("Points Expiration Reminders completed successfully at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+=end    
   end
 end
