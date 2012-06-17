@@ -81,6 +81,9 @@ class Api::V1::TokensController < ApplicationController
         return
       end
       @user = User.first(:facebook_id => facebook_id)
+      if @user.nil?
+        @user = User.first(:email => params[:email])
+      end
     else
       @user = User.first(:authentication_token => auth_token)  
       if @user.nil?
