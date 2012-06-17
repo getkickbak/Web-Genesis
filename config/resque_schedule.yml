@@ -20,8 +20,8 @@ prize_expiration_reminders:
   description: Prize Expiration Reminders
 voucher_expiration_reminders:
   cron: 0 1 * * *
-  class: VoucherReminders
-  description: Voucher Reminders
+  class: VoucherExpirationReminders
+  description: Voucher Expiration Reminders
 voucher_payments:
   cron: 0 0 * * Mon
   class: VoucherPayments

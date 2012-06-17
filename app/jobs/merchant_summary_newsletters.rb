@@ -16,6 +16,7 @@ module MerchantSummaryNewsletters
     merchants.each do |merchant|
       total_customer_count = Customer.count(Customer.merchant.id => merchant.id)
       new_customer_count = Customer.count(Customer.merchant.id => merchant.id, :created_ts => (beginning_of_last_week..end_of_last_week))
+      new_total_spent = EarnRewardReord.sum(:amount, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week))
       total_reward_points = EarnRewardRecord.sum(:points, :merchant => merchant) - RedeemRewardRecord.sum(:points, :merchant => merchant)
       new_reward_points_earned = EarnRewardRecord.sum(:points, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week))
       new_reward_points_redeemed = RedeemRewardRecord.sum(:points, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week))
@@ -31,6 +32,7 @@ module MerchantSummaryNewsletters
       stats = {
         :total_customer_count => total_customer_count,
         :new_customer_count => new_customer_count,
+        :new_total_spent => new_total_spent,
         :total_reward_points => total_reward_points,
         :new_reward_points_earned => new_reward_points_earned,
         :new_reward_points_redeemed => new_reward_points_redeemed,

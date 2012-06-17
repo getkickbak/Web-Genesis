@@ -6,6 +6,7 @@ module PrizeExpirationReminders
   end
   
   def self.perform()
+=begin    
     if Rails.env == 'production'
       sql = "SELECT id FROM earn_prize WHERE user_id = ? AND redeemed = false
               AND expiry_date > ? AND (DATEDIFF(expiry_date - ?) % 30 = 0 OR DATEDIFF(expiry_date - ?) = 5) AND deleted_ts IS NULL"
@@ -28,5 +29,6 @@ module PrizeExpirationReminders
     end
     now = Time.now
     logger.info("Prize Expiration Reminders completed successfully at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+=end    
   end
 end
