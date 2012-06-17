@@ -40,19 +40,19 @@
 									New loyalty spent total: <%= @stats[:new_total_spent] %>
 									<br>
 									<br>
-									Outstanding reward points total: <%= stats[:total_reward_points] %>
+									Outstanding reward points total: <%= @stats[:total_reward_points] %>
 									<br>
 									<br>
-									New reward points earned: <%= stats[:new_reward_points_earned] %>
+									New reward points earned: <%= @stats[:new_reward_points_earned] %>
 									<br>
 									<br>
-									New reward points redeemed: <%= stats[:new_reward_points_redeemed] %>
+									New reward points redeemed: <%= @stats[:new_reward_points_redeemed] %>
 									<br>
 									<br>
 									New purchases: <%= @stats[:new_purchases_count] %>
 									<br>
 									<br>
-									New challenges met: (Total <%= @stats[:new_challenges_count] %>)
+									New challenges met: <%= @stats[:new_challenges_count] %>
 									<br>
 									<table style="margin-bottom:0px;margin-top:10px;border:1px solid #DDD;background-color:white;width:100%;margin-bottom:18px;border-collapse:collapse;font-size:12px;">
 										<thead>
@@ -64,9 +64,9 @@
 										</thead>
 										<% @stats[:new_challenges_indv_count].each do |challenge| %>
 										<tr>
-											<td style="padding:10px 10px 9px;border:0 !important;"><%= challenge[:name] %></td>
-											<td style="padding:10px 10px 9px;border:0 !important;"><%= challenge[:count] %></td>
-											<td style="padding:10px 10px 9px;border:0 !important;"><%= "#{challenge[:percentage]}%" %></td>
+											<td align="left" style="padding:10px 10px 9px;border:0 !important;"><%= challenge[:name] %></td>
+											<td align="center" style="padding:10px 10px 9px;border:0 !important;"><%= challenge[:count] %></td>
+											<td align="center" style="padding:10px 10px 9px;border:0 !important;"><%= "#{challenge[:percentage]}%" %></td>
 										</tr>
 										<% end %>
 									</table>
