@@ -147,10 +147,6 @@ Ext.define('Genesis.controller.Prizes',
       var me = this;
       this.callParent(arguments);
 
-      // Preload Pages
-      Ext.defer(me.getMerchantPrizes, 1, me);
-      Ext.defer(me.getUserPrizes, 1, me);
-      Ext.defer(me.getShowPrize, 1, me);
       console.log("Prizes Init");
    },
    // --------------------------------------------------------------------------
