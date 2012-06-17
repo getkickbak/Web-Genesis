@@ -2963,12 +2963,12 @@ Ext.define('Genesis.view.MainPage',
                },
                itemTpl : Ext.create('Ext.XTemplate',
                // @formatter:off
-            '<div class="mainPageItemWrapper x-hasbadge">',
-               '{[this.getPrizeCount(values)]}',
-               '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
-               '<div class="photoName">{name}</div>',
-            '</div>',
-            // @formatter:on
+               '<div class="mainPageItemWrapper x-hasbadge">',
+                  '{[this.getPrizeCount(values)]}',
+                  '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
+                  '<div class="photoName">{name}</div>',
+               '</div>',
+               // @formatter:on
                {
                   getType : function()
                   {
@@ -3266,7 +3266,8 @@ Ext.define('Genesis.view.Accounts',
          itemTpl : Ext.create('Ext.XTemplate',
          // @formatter:off
          '<tpl if="this.isValidCustomer(values)">',
-            '<div class="photo">',
+            '<div class="photo x-hasbadge">',
+               '{[this.getPrizeCount(values)]}',
                '<img src="{[this.getPhoto(values)]}"/>',
             '</div>',
             '<div class="listItemDetailsWrapper">',
@@ -3279,6 +3280,22 @@ Ext.define('Genesis.view.Accounts',
             {
                //return Customer.isValidCustomer(values['id']);
                return true;
+            },
+            getPrizeCount : function(values)
+            {
+               var count = 0;
+               var type = values['pageCntlr'];
+               var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
+               if (pstore)
+               {
+                  var collection = pstore.queryBy(function(record, id)
+                  {
+                     return (record.getMerchant().getId() == values.merchant['id'])
+                  });
+                  count = collection.getCount();
+               }
+               return ('<span class="x-badge round ' + //
+               ((count > 0) ? '' : 'x-item-hidden') + '">' + count + '</span>');
             },
             getPhoto : function(values)
             {
@@ -6687,10 +6704,10 @@ Ext.define('Genesis.controller.MainPage',
    },
    onLoginActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var vport = this.getViewport();
+      var viewport = this.getViewPortCntlr();
       
       Genesis.db.resetStorage();
-      vport.setLoggedIn(false);
+      viewport.setLoggedIn(false);
       Genesis.db.removeLocalDBAttrib('auth_code');
       
       //this.getInfoBtn().hide();

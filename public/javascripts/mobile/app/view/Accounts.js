@@ -51,7 +51,8 @@ Ext.define('Genesis.view.Accounts',
          itemTpl : Ext.create('Ext.XTemplate',
          // @formatter:off
          '<tpl if="this.isValidCustomer(values)">',
-            '<div class="photo">',
+            '<div class="photo x-hasbadge">',
+               '{[this.getPrizeCount(values)]}',
                '<img src="{[this.getPhoto(values)]}"/>',
             '</div>',
             '<div class="listItemDetailsWrapper">',
@@ -64,6 +65,22 @@ Ext.define('Genesis.view.Accounts',
             {
                //return Customer.isValidCustomer(values['id']);
                return true;
+            },
+            getPrizeCount : function(values)
+            {
+               var count = 0;
+               var type = values['pageCntlr'];
+               var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
+               if (pstore)
+               {
+                  var collection = pstore.queryBy(function(record, id)
+                  {
+                     return (record.getMerchant().getId() == values.merchant['id'])
+                  });
+                  count = collection.getCount();
+               }
+               return ('<span class="x-badge round ' + //
+               ((count > 0) ? '' : 'x-item-hidden') + '">' + count + '</span>');
             },
             getPhoto : function(values)
             {

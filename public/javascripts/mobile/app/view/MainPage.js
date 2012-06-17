@@ -152,12 +152,12 @@ Ext.define('Genesis.view.MainPage',
                },
                itemTpl : Ext.create('Ext.XTemplate',
                // @formatter:off
-            '<div class="mainPageItemWrapper x-hasbadge">',
-               '{[this.getPrizeCount(values)]}',
-               '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
-               '<div class="photoName">{name}</div>',
-            '</div>',
-            // @formatter:on
+               '<div class="mainPageItemWrapper x-hasbadge">',
+                  '{[this.getPrizeCount(values)]}',
+                  '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
+                  '<div class="photoName">{name}</div>',
+               '</div>',
+               // @formatter:on
                {
                   getType : function()
                   {

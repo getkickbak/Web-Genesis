@@ -408,10 +408,10 @@ Ext.define('Genesis.controller.MainPage',
    },
    onLoginActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var vport = this.getViewport();
+      var viewport = this.getViewPortCntlr();
       
       Genesis.db.resetStorage();
-      vport.setLoggedIn(false);
+      viewport.setLoggedIn(false);
       Genesis.db.removeLocalDBAttrib('auth_code');
       
       //this.getInfoBtn().hide();

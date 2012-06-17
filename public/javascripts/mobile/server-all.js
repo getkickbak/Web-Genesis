@@ -1688,12 +1688,12 @@ Ext.define('Genesis.view.MainPage',
                },
                itemTpl : Ext.create('Ext.XTemplate',
                // @formatter:off
-            '<div class="mainPageItemWrapper x-hasbadge">',
-               '{[this.getPrizeCount(values)]}',
-               '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
-               '<div class="photoName">{name}</div>',
-            '</div>',
-            // @formatter:on
+               '<div class="mainPageItemWrapper x-hasbadge">',
+                  '{[this.getPrizeCount(values)]}',
+                  '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
+                  '<div class="photoName">{name}</div>',
+               '</div>',
+               // @formatter:on
                {
                   getType : function()
                   {
@@ -4263,10 +4263,10 @@ Ext.define('Genesis.controller.MainPage',
    },
    onLoginActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var vport = this.getViewport();
+      var viewport = this.getViewPortCntlr();
       
       Genesis.db.resetStorage();
-      vport.setLoggedIn(false);
+      viewport.setLoggedIn(false);
       Genesis.db.removeLocalDBAttrib('auth_code');
       
       //this.getInfoBtn().hide();

@@ -17,7 +17,9 @@
 }
 
 
-.x-badge {
+.x-hasbadge .x-badge {
+   top : -0.5em;
+   right : -0.5em;
    &.round {
       @if $include-border-radius { @include border-radius(0.5em); }
    }
