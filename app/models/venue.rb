@@ -103,9 +103,9 @@ class Venue
           end
           venues_info = DataMapper.repository(:default).adapter.select(
             "SELECT id, round( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
-            FROM venues WHERE merchant_id IN (?) AND deleted_ts IS NULL
+            FROM venues WHERE merchant_id IN (#{merchant_ids.join(',')}) AND deleted_ts IS NULL
             ORDER BY distance
-            ASC LIMIT 0,?", latitude, longitude, latitude, merchant_ids.join(','), max 
+            ASC LIMIT 0,?", latitude, longitude, latitude, max 
           )
         end
       else

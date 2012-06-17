@@ -30,7 +30,7 @@ class Customer
   end
   
   def self.find(user_id, start, max)
-    count = Customer.count(Customer.user.id => user_id) || 0
+    count = Customer.count(Customer.user.id => user_id)
     customers = Customer.all(Customer.user.id => user_id, :order => [ :created_ts.desc ], :offset => start, :limit => max)
     merchant_ids = []
     customers.each do |customer|
