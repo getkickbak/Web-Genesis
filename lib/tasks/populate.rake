@@ -278,6 +278,7 @@ namespace :db do
       reward_names_count = {:entrees => 0, :appetizers => 0, :drinks => 0, :desserts => 0, :soup => 0,
                       :bread => 0, :salad => 0, :noodles => 0, :side_dishes => 0, :sandwiches => 0,
                       :pasta => 0, :pastry => 0, :custom => 0}
+      picked_prize = rand(reward_names.length)+1                 
       reward_names.length.times do |i|
         idx = rand(reward_names.length)+1
         reward_type = CustomerRewardType.get(idx)
@@ -290,16 +291,18 @@ namespace :db do
           :points => points
         },
         venues)
-        earn_prize = EarnPrize.new(
-          :points => reward.points,
-          :expiry_date => 6.month.from_now,
-          :created_ts => now
-        )
-        earn_prize.reward = reward
-        earn_prize.merchant = merchant
-        earn_prize.venue = venues[rand(venues.length)]
-        earn_prize.user = users[rand(users.length)]
-        earn_prize.save
+        if i == picked_prize
+          earn_prize = EarnPrize.new(
+            :points => reward.points,
+            :expiry_date => 6.month.from_now,
+            :created_ts => now
+          )
+          earn_prize.reward = reward
+          earn_prize.merchant = merchant
+          earn_prize.venue = venues[rand(venues.length)]
+          earn_prize.user = users[rand(users.length)]
+          earn_prize.save
+        end  
         reward_names_count[reward_type.value.to_sym] += 1
       end
       challenges = []
