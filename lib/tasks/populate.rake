@@ -278,7 +278,7 @@ namespace :db do
       reward_names_count = {:entrees => 0, :appetizers => 0, :drinks => 0, :desserts => 0, :soup => 0,
                       :bread => 0, :salad => 0, :noodles => 0, :side_dishes => 0, :sandwiches => 0,
                       :pasta => 0, :pastry => 0, :custom => 0}
-      picked_prize = rand(reward_names.length)+1                 
+      picked_prize = rand(reward_names.length)              
       reward_names.length.times do |i|
         idx = rand(reward_names.length)+1
         reward_type = CustomerRewardType.get(idx)
