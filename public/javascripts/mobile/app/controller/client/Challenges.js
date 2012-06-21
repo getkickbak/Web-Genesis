@@ -740,8 +740,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       Ext.defer(function()
       {
-         activeItem.createView();
-         delete me.selectedItem;
+         //activeItem.createView();
          
          var desc = me.getChallengeDescContainer();
          for (var i = 0; i < desc.getItems().length; i++)
@@ -753,7 +752,8 @@ Ext.define('Genesis.controller.client.Challenges',
          }
       }, 1, activeItem);
       //activeItem.createView();
-      //delete me.selectedItem;
+      
+      delete me.selectedItem;
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -822,7 +822,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       //var container = me.getReferralsContainer();
       //container.setActiveItem(0);
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onReferralsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
@@ -946,7 +946,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
       //me.getPostBtn().show();
       activeItem.metaData = me.metaData;
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onUploadPhotosDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)

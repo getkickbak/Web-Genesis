@@ -1537,6 +1537,7 @@ Ext.define('Genesis.view.Viewport',
                delete this.activeItemAnimation;
 
                //console.debug("Animation Complete");
+               activeItem.createView();
                activeItem.showView();
 
                //Ext.Viewport.setMasked(false);
@@ -1559,6 +1560,9 @@ Ext.define('Genesis.view.Viewport',
             //Ext.Viewport.setMasked(false);
          }
       }
+      
+      console.debug("animateActiveItem");
+      
       var rc = this.setActiveItem(activeItem);
       if (!layout.isCard)
       {
@@ -1566,6 +1570,7 @@ Ext.define('Genesis.view.Viewport',
          // Defer timeout is required to ensure that
          // if createView called is delayed, we will be scheduled behind it
          //
+         activeItem.createView();
          Ext.defer(activeItem.showView, 1, activeItem);
          //Ext.Viewport.setMasked(false);
       }
@@ -3479,7 +3484,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
-      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['merchantPrizes']);
+      Ext.defer(this.redirectTo, 1, this, ['merchantPrizes']);
       //this.redirectTo('merchantPrizes');
       //this.fireEvent('openpage', 'Prizes', 'merchantPrizes', null);
       console.log("Going to Merchant Prizes Page ...");
@@ -4312,7 +4317,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
    },
@@ -4362,7 +4367,7 @@ Ext.define('Genesis.controller.MainPage',
       Genesis.db.removeLocalDBAttrib('auth_code');
       
       //this.getInfoBtn().hide();
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onLoginDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -4624,7 +4629,7 @@ Ext.define('Genesis.controller.MainPage',
             username : response.email
          });
       }
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onCreateDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -4950,7 +4955,7 @@ Ext.define('Genesis.controller.server.Rewards',
        animation.enable();
        }
        */
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -5274,7 +5279,7 @@ Ext.define('Genesis.controller.server.Redemptions',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -5799,8 +5804,7 @@ Ext.define('Genesis.controller.Prizes',
       {
          me.getMRedeemBtn().show();
       }
-
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 0.1 * 1000, activeItem);
       //activeItem.createView();
    },
    onUserPrizesActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -5828,7 +5832,7 @@ Ext.define('Genesis.controller.Prizes',
        me.getURedeemBtn().show();
        }
        */
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onShowPrizeActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -5873,7 +5877,7 @@ Ext.define('Genesis.controller.Prizes',
       console.log("ShowPrize View - Updated ShowPrize View.");
       Ext.defer(function()
       {
-         activeItem.createView();
+         //activeItem.createView();
          delete me.showPrize;
       }, 1, activeItem);
       //view.createView();

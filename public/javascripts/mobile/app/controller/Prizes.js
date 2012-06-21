@@ -422,8 +422,7 @@ Ext.define('Genesis.controller.Prizes',
       {
          me.getMRedeemBtn().show();
       }
-
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 0.1 * 1000, activeItem);
       //activeItem.createView();
    },
    onUserPrizesActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -451,7 +450,7 @@ Ext.define('Genesis.controller.Prizes',
        me.getURedeemBtn().show();
        }
        */
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onShowPrizeActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -496,7 +495,7 @@ Ext.define('Genesis.controller.Prizes',
       console.log("ShowPrize View - Updated ShowPrize View.");
       Ext.defer(function()
       {
-         activeItem.createView();
+         //activeItem.createView();
          delete me.showPrize;
       }, 1, activeItem);
       //view.createView();

@@ -366,7 +366,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
    },
@@ -416,7 +416,7 @@ Ext.define('Genesis.controller.MainPage',
       Genesis.db.removeLocalDBAttrib('auth_code');
       
       //this.getInfoBtn().hide();
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onLoginDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -678,7 +678,7 @@ Ext.define('Genesis.controller.MainPage',
             username : response.email
          });
       }
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onCreateDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)

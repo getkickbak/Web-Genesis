@@ -176,7 +176,7 @@ Ext.define('Genesis.controller.Merchants',
       //this.onActivateCommon(map, map.getMap());
       //this.onActivateCommon(map, null);
 
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onDetailsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
@@ -258,18 +258,6 @@ Ext.define('Genesis.controller.Merchants',
       //me.getDescContainer().show();
 
       //
-      // Update Winners Count
-      //
-      if (me.winnersCount)
-      {
-         vrecord.set('winners_count', me.winnersCount['winners_count']);
-         //me.onUpdateWinnerssCount(me.winnersCount);
-      }
-
-      // Refresh Merchant Panel Info
-      Ext.StoreMgr.get('MerchantRenderStore').setData(vrecord);
-
-      //
       // Show Map Buttons
       //
       me.getMapBtn().show();
@@ -301,18 +289,34 @@ Ext.define('Genesis.controller.Merchants',
       {
          this.getMainBtn().hide();
       }
-      if (activeItem.isXType('mainpageview', true) || activeItem.isXType('checkinexploreview', true))
+
+      if (oldActiveItem.isXType('mainpageview', true) || oldActiveItem.isXType('checkinexploreview', true))
       {
+         //
+         // Update Winners Count
+         //
+         if (me.winnersCount)
+         {
+            vrecord.set('winners_count', me.winnersCount['winners_count']);
+            //me.onUpdateWinnerssCount(me.winnersCount);
+         }
+
+         // Refresh Merchant Panel Info
+         Ext.StoreMgr.get('MerchantRenderStore').setData(vrecord);
+
          this.getMerchantTabBar().hide();
       }
 
       Ext.defer(function()
       {
-         page.createView();
+         //page.createView();
          // Update TitleBar
          activeItem.query('titlebar')[0].setTitle(vrecord.get('name'));
       }, 1, page);
       //page.createView();
+
+      var scroll = page.getScrollable();
+      scroll.getScroller().scrollTo(0, 0);
    },
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
@@ -320,6 +324,27 @@ Ext.define('Genesis.controller.Merchants',
       if (activeItem.isXType('mainpageview', true) || activeItem.isXType('checkinexploreview', true))
       {
          oldActiveItem.removeAll(true);
+      }
+      else
+      {
+         var list = me.getFeedContainer().query('list')[0];
+         /*
+          list.setMasked(
+          {
+          xtype : 'loadmask',
+          message : '',
+          height : '5em'
+          });
+
+          var dom = Ext.DomQuery.select('div.x-mask-inner')[0];
+          dom.style.background = 'transparent';
+          dom = Ext.DomQuery.select('div.x-loading-spinner-outer')[0];
+          dom.style.height = '5em';
+          */
+
+         list.setStore(Ext.create('Ext.data.Store',
+         {
+         }));
       }
       //this.getMapBtn().hide();
       //this.getCheckinBtn().hide();

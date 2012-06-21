@@ -284,7 +284,7 @@ Ext.define('Genesis.controller.Accounts',
             break;
          }
       }
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -376,7 +376,7 @@ Ext.define('Genesis.controller.Accounts',
             break;
          }
       }
-      Ext.defer(activeItem.createView, 1, activeItem, [screenShow]);
+      //Ext.defer(activeItem.createView, 1, activeItem, [screenShow]);
       //activeItem.createView(screenShow);
    },
    onTransferDeactivate : function(oldActiveItem, c, activeItem, eOpts)

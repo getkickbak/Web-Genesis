@@ -339,7 +339,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
-      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['merchantPrizes']);
+      Ext.defer(this.redirectTo, 1, this, ['merchantPrizes']);
       //this.redirectTo('merchantPrizes');
       //this.fireEvent('openpage', 'Prizes', 'merchantPrizes', null);
       console.log("Going to Merchant Prizes Page ...");

@@ -87,6 +87,7 @@ Ext.define('Genesis.view.Viewport',
                delete this.activeItemAnimation;
 
                //console.debug("Animation Complete");
+               activeItem.createView();
                activeItem.showView();
 
                //Ext.Viewport.setMasked(false);
@@ -109,6 +110,9 @@ Ext.define('Genesis.view.Viewport',
             //Ext.Viewport.setMasked(false);
          }
       }
+      
+      console.debug("animateActiveItem");
+      
       var rc = this.setActiveItem(activeItem);
       if (!layout.isCard)
       {
@@ -116,6 +120,7 @@ Ext.define('Genesis.view.Viewport',
          // Defer timeout is required to ensure that
          // if createView called is delayed, we will be scheduled behind it
          //
+         activeItem.createView();
          Ext.defer(activeItem.showView, 1, activeItem);
          //Ext.Viewport.setMasked(false);
       }

@@ -93,7 +93,7 @@ Ext.define('Genesis.controller.server.Rewards',
        animation.enable();
        }
        */
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)

@@ -108,10 +108,14 @@ Ext.define('Genesis.view.MerchantAccount',
          }]
       }]
    },
+   loadingText : 'Loading ...',
    showView : function()
    {
       this.query('tabbar')[0].show();
       this.callParent(arguments);
+      var list = this.query('container[tag=feedContainer] list')[0];
+      list.setStore('EligibleRewardsStore');
+      list.setMasked(false);
    },
    createView : function()
    {
@@ -172,8 +176,7 @@ Ext.define('Genesis.view.MerchantAccount',
                xtype : 'list',
                scrollable : false,
                ui : 'bottom-round',
-               store : 'EligibleRewardsStore',
-               emptyText : ' ',
+               //store : 'EligibleRewardsStore',
                cls : 'feedPanel separator',
                itemTpl : Ext.create('Ext.XTemplate',
                // @formatter:off

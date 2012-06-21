@@ -39,6 +39,7 @@
       position:static;
    }
    .redemptionsList {
+      min-height:5em;
       @extend .listScrollIndexWrapper;
       .x-list-item {
          .listItemDetailsWrapper {

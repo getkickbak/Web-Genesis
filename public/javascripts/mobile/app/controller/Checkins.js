@@ -425,7 +425,7 @@ Ext.define('Genesis.controller.Checkins',
       }
       Ext.defer(function()
       {
-         activeItem.createView();
+         //activeItem.createView();
          me.onExploreLoad();
       }, 1, activeItem);
       //activeItem.createView();

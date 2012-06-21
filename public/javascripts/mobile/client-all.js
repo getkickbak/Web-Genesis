@@ -2636,6 +2636,7 @@ Ext.define('Genesis.view.Viewport',
                delete this.activeItemAnimation;
 
                //console.debug("Animation Complete");
+               activeItem.createView();
                activeItem.showView();
 
                //Ext.Viewport.setMasked(false);
@@ -2658,6 +2659,9 @@ Ext.define('Genesis.view.Viewport',
             //Ext.Viewport.setMasked(false);
          }
       }
+      
+      console.debug("animateActiveItem");
+      
       var rc = this.setActiveItem(activeItem);
       if (!layout.isCard)
       {
@@ -2665,6 +2669,7 @@ Ext.define('Genesis.view.Viewport',
          // Defer timeout is required to ensure that
          // if createView called is delayed, we will be scheduled behind it
          //
+         activeItem.createView();
          Ext.defer(activeItem.showView, 1, activeItem);
          //Ext.Viewport.setMasked(false);
       }
@@ -3503,10 +3508,14 @@ Ext.define('Genesis.view.MerchantAccount',
          }]
       }]
    },
+   loadingText : 'Loading ...',
    showView : function()
    {
       this.query('tabbar')[0].show();
       this.callParent(arguments);
+      var list = this.query('container[tag=feedContainer] list')[0];
+      list.setStore('EligibleRewardsStore');
+      list.setMasked(false);
    },
    createView : function()
    {
@@ -3567,8 +3576,7 @@ Ext.define('Genesis.view.MerchantAccount',
                xtype : 'list',
                scrollable : false,
                ui : 'bottom-round',
-               store : 'EligibleRewardsStore',
-               emptyText : ' ',
+               //store : 'EligibleRewardsStore',
                cls : 'feedPanel separator',
                itemTpl : Ext.create('Ext.XTemplate',
                // @formatter:off
@@ -4496,6 +4504,14 @@ Ext.define('Genesis.view.client.Redemptions',
          }]
       })]
    },
+   showView : function()
+   {
+      this.callParent(arguments);
+      
+      var list = this.query('list[tag=redemptionsList]')[0];
+      list.setStore('RedemptionsStore');
+      list.setMasked(false);
+   },
    createView : function()
    {
       if (!this.callParent(arguments))
@@ -4555,7 +4571,7 @@ Ext.define('Genesis.view.client.Redemptions',
          xtype : 'list',
          scrollable : undefined,
          ui : 'bottom-round',
-         store : 'RedemptionsStore',
+         //store : 'RedemptionsStore',
          cls : 'redemptionsList separator_pad',
          tag : 'redemptionsList',
          /*
@@ -5957,7 +5973,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
-      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['merchantPrizes']);
+      Ext.defer(this.redirectTo, 1, this, ['merchantPrizes']);
       //this.redirectTo('merchantPrizes');
       //this.fireEvent('openpage', 'Prizes', 'merchantPrizes', null);
       console.log("Going to Merchant Prizes Page ...");
@@ -6790,7 +6806,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
    },
@@ -6840,7 +6856,7 @@ Ext.define('Genesis.controller.MainPage',
       Genesis.db.removeLocalDBAttrib('auth_code');
       
       //this.getInfoBtn().hide();
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onLoginDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -7102,7 +7118,7 @@ Ext.define('Genesis.controller.MainPage',
             username : response.email
          });
       }
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onCreateDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -7614,7 +7630,7 @@ Ext.define('Genesis.controller.Checkins',
       }
       Ext.defer(function()
       {
-         activeItem.createView();
+         //activeItem.createView();
          me.onExploreLoad();
       }, 1, activeItem);
       //activeItem.createView();
@@ -8442,8 +8458,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       Ext.defer(function()
       {
-         activeItem.createView();
-         delete me.selectedItem;
+         //activeItem.createView();
          
          var desc = me.getChallengeDescContainer();
          for (var i = 0; i < desc.getItems().length; i++)
@@ -8455,7 +8470,8 @@ Ext.define('Genesis.controller.client.Challenges',
          }
       }, 1, activeItem);
       //activeItem.createView();
-      //delete me.selectedItem;
+      
+      delete me.selectedItem;
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -8524,7 +8540,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       //var container = me.getReferralsContainer();
       //container.setActiveItem(0);
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onReferralsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
@@ -8648,7 +8664,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
       //me.getPostBtn().show();
       activeItem.metaData = me.metaData;
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onUploadPhotosDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -9008,7 +9024,7 @@ Ext.define('Genesis.controller.Merchants',
       //this.onActivateCommon(map, map.getMap());
       //this.onActivateCommon(map, null);
 
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onDetailsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
@@ -9090,18 +9106,6 @@ Ext.define('Genesis.controller.Merchants',
       //me.getDescContainer().show();
 
       //
-      // Update Winners Count
-      //
-      if (me.winnersCount)
-      {
-         vrecord.set('winners_count', me.winnersCount['winners_count']);
-         //me.onUpdateWinnerssCount(me.winnersCount);
-      }
-
-      // Refresh Merchant Panel Info
-      Ext.StoreMgr.get('MerchantRenderStore').setData(vrecord);
-
-      //
       // Show Map Buttons
       //
       me.getMapBtn().show();
@@ -9133,18 +9137,34 @@ Ext.define('Genesis.controller.Merchants',
       {
          this.getMainBtn().hide();
       }
-      if (activeItem.isXType('mainpageview', true) || activeItem.isXType('checkinexploreview', true))
+
+      if (oldActiveItem.isXType('mainpageview', true) || oldActiveItem.isXType('checkinexploreview', true))
       {
+         //
+         // Update Winners Count
+         //
+         if (me.winnersCount)
+         {
+            vrecord.set('winners_count', me.winnersCount['winners_count']);
+            //me.onUpdateWinnerssCount(me.winnersCount);
+         }
+
+         // Refresh Merchant Panel Info
+         Ext.StoreMgr.get('MerchantRenderStore').setData(vrecord);
+
          this.getMerchantTabBar().hide();
       }
 
       Ext.defer(function()
       {
-         page.createView();
+         //page.createView();
          // Update TitleBar
          activeItem.query('titlebar')[0].setTitle(vrecord.get('name'));
       }, 1, page);
       //page.createView();
+
+      var scroll = page.getScrollable();
+      scroll.getScroller().scrollTo(0, 0);
    },
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
@@ -9152,6 +9172,27 @@ Ext.define('Genesis.controller.Merchants',
       if (activeItem.isXType('mainpageview', true) || activeItem.isXType('checkinexploreview', true))
       {
          oldActiveItem.removeAll(true);
+      }
+      else
+      {
+         var list = me.getFeedContainer().query('list')[0];
+         /*
+          list.setMasked(
+          {
+          xtype : 'loadmask',
+          message : '',
+          height : '5em'
+          });
+
+          var dom = Ext.DomQuery.select('div.x-mask-inner')[0];
+          dom.style.background = 'transparent';
+          dom = Ext.DomQuery.select('div.x-loading-spinner-outer')[0];
+          dom.style.height = '5em';
+          */
+
+         list.setStore(Ext.create('Ext.data.Store',
+         {
+         }));
       }
       //this.getMapBtn().hide();
       //this.getCheckinBtn().hide();
@@ -9860,7 +9901,7 @@ Ext.define('Genesis.controller.client.Redemptions',
          // Update Customer info
          Ext.StoreMgr.get('RedemptionRenderCStore').setData(viewport.getCustomer());
 
-         activeItem.createView();
+         //activeItem.createView();
       }, 1, activeItem);
       //activeItem.createView();
    },
@@ -10270,7 +10311,7 @@ Ext.define('Genesis.controller.Accounts',
             break;
          }
       }
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -10362,7 +10403,7 @@ Ext.define('Genesis.controller.Accounts',
             break;
          }
       }
-      Ext.defer(activeItem.createView, 1, activeItem, [screenShow]);
+      //Ext.defer(activeItem.createView, 1, activeItem, [screenShow]);
       //activeItem.createView(screenShow);
    },
    onTransferDeactivate : function(oldActiveItem, c, activeItem, eOpts)
@@ -11110,8 +11151,7 @@ Ext.define('Genesis.controller.Prizes',
       {
          me.getMRedeemBtn().show();
       }
-
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 0.1 * 1000, activeItem);
       //activeItem.createView();
    },
    onUserPrizesActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -11139,7 +11179,7 @@ Ext.define('Genesis.controller.Prizes',
        me.getURedeemBtn().show();
        }
        */
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onShowPrizeActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -11184,7 +11224,7 @@ Ext.define('Genesis.controller.Prizes',
       console.log("ShowPrize View - Updated ShowPrize View.");
       Ext.defer(function()
       {
-         activeItem.createView();
+         //activeItem.createView();
          delete me.showPrize;
       }, 1, activeItem);
       //view.createView();

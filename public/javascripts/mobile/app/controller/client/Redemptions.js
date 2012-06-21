@@ -110,7 +110,7 @@ Ext.define('Genesis.controller.client.Redemptions',
          // Update Customer info
          Ext.StoreMgr.get('RedemptionRenderCStore').setData(viewport.getCustomer());
 
-         activeItem.createView();
+         //activeItem.createView();
       }, 1, activeItem);
       //activeItem.createView();
    },
