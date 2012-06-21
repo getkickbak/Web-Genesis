@@ -1561,7 +1561,7 @@ Ext.define('Genesis.view.Viewport',
          }
       }
       
-      console.debug("animateActiveItem");
+      //console.debug("animateActiveItem");
       
       var rc = this.setActiveItem(activeItem);
       if (!layout.isCard)

@@ -321,31 +321,19 @@ Ext.define('Genesis.controller.Merchants',
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
       var me = this;
-      if (activeItem.isXType('mainpageview', true) || activeItem.isXType('checkinexploreview', true))
+      //if (activeItem.isXType('mainpageview', true) || activeItem.isXType('checkinexploreview', true))
       {
          oldActiveItem.removeAll(true);
       }
+      /*
       else
       {
-         var list = me.getFeedContainer().query('list')[0];
-         /*
-          list.setMasked(
-          {
-          xtype : 'loadmask',
-          message : '',
-          height : '5em'
-          });
-
-          var dom = Ext.DomQuery.select('div.x-mask-inner')[0];
-          dom.style.background = 'transparent';
-          dom = Ext.DomQuery.select('div.x-loading-spinner-outer')[0];
-          dom.style.height = '5em';
-          */
-
-         list.setStore(Ext.create('Ext.data.Store',
-         {
-         }));
+      var list = me.getFeedContainer().query('list')[0];
+      list.setStore(Ext.create('Ext.data.Store',
+      {
+      }));
       }
+      */
       //this.getMapBtn().hide();
       //this.getCheckinBtn().hide();
    },

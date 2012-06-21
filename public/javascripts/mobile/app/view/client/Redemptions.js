@@ -23,7 +23,7 @@ Ext.define('Genesis.view.client.Redemptions',
    showView : function()
    {
       this.callParent(arguments);
-      
+
       var list = this.query('list[tag=redemptionsList]')[0];
       list.setStore('RedemptionsStore');
       list.setMasked(false);
