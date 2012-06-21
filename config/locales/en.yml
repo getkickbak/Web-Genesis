@@ -40,8 +40,9 @@ en:
           incorrect_password: "Incorrect password"
           reuse_password: "New password must be different from current password"  
         exception:
-          400: "Something went wrong.  Please try again."
-          500: "Something went wrong.  Server error." 
+          http_401: "Something went wrong.  Unauthorized access."
+          http_404: "Something went wrong.  Please try again."
+          http_500: "Something went wrong.  Server error." 
   datamapper:
       errors:
         messages:
