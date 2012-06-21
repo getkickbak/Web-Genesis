@@ -1,7 +1,7 @@
 require 'util/common'
 
 class UserMailer < ActionMailer::Base
-  default :from => "KICKBAK <notification@getkickbak.com>"
+  default :from => "KICKBAK <mail@getkickbak.com>"
   
   def contact_email(contact)
     @contact = contact

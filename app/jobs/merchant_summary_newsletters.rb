@@ -16,10 +16,10 @@ module MerchantSummaryNewsletters
     merchants.each do |merchant|
       total_customer_count = Customer.count(Customer.merchant.id => merchant.id)
       new_customer_count = Customer.count(Customer.merchant.id => merchant.id, :created_ts => (beginning_of_last_week..end_of_last_week))
-      new_total_spent = EarnRewardReord.sum(:amount, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week))
-      total_reward_points = EarnRewardRecord.sum(:points, :merchant => merchant) - RedeemRewardRecord.sum(:points, :merchant => merchant)
-      new_reward_points_earned = EarnRewardRecord.sum(:points, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week))
-      new_reward_points_redeemed = RedeemRewardRecord.sum(:points, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week))
+      new_total_spent = EarnRewardRecord.sum(:amount, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
+      total_reward_points = (EarnRewardRecord.sum(:points, :merchant => merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => merchant) || 0)
+      new_reward_points_earned = EarnRewardRecord.sum(:points, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
+      new_reward_points_redeemed = RedeemRewardRecord.sum(:points, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
       new_purchases_count = EarnRewardRecord.count(:merchant => merchant, :challenge_id => 0, :created_ts => (beginning_of_last_week..end_of_last_week))
       new_challenges_count = EarnRewardRecord.count(:merchant => merchant, :challenge_id.gt => 0, :created_ts => (beginning_of_last_week..end_of_last_week))
       new_challenges_indv_count = []
