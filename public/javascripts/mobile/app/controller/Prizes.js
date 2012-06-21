@@ -138,6 +138,10 @@ Ext.define('Genesis.controller.Prizes',
    {
       return 'You haved won ' + ((numPrizes > 1) ? 'some PRIZES' : 'a PRIZE') + '!'
    },
+   wonPrizeEmailMsg : function(prizeName, venueName)
+   {
+      return ('I just won ' + prizeName + ' for eating out at ' + venueName + '!');
+   },
    lostPrizeMsg : 'Oops, Play Again!',
    showQrCodeMsg : 'Show this Authorization Code to your server to redeem!',
    checkinFirstMsg : 'Please Check-in before claiming any prize(s)',
@@ -187,7 +191,7 @@ Ext.define('Genesis.controller.Prizes',
          var name = venue.get('name');
          var link = wsite[wsite.length - 1] || site;
          var desc = venue.get('description').trunc(256);
-         var message = 'I just won ' + earnprize.getCustomerReward().get('title') + ' for purchasing at ' + venue.get('name') + '!';
+         var message = me.wonPrizeEmailMsg(earnprize.getCustomerReward().get('title'), venue.get('name'));
 
          console.log('Posting to Facebook ...' + '\n' + //
          'Name: ' + name + '\n' + //
@@ -383,9 +387,6 @@ Ext.define('Genesis.controller.Prizes',
    onMerchantPrizesActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      var viewport = me.getViewPortCntlr();
-      var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
-      var prizesList = [];
 
       me.getMCloseBB().show();
       me.getMBB().hide();
@@ -393,6 +394,9 @@ Ext.define('Genesis.controller.Prizes',
       //
       // List all the prizes won by the Customer
       //
+      var viewport = me.getViewPortCntlr();
+      var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
+      var prizesList = [];
       var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
       if (prizes.length > 0)
       {
@@ -418,25 +422,26 @@ Ext.define('Genesis.controller.Prizes',
       {
          me.getMRedeemBtn().show();
       }
-      activeItem.createView();
+
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onUserPrizesActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      var items = [], prizesList = [];
-      var views;
+      var prizesList = [];
 
       me.getUCloseBB().hide();
       me.getUBB().show();
       me.getURedeemBtn().hide();
 
-      var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
-      for (var i = 0; i < prizes.length; i++)
-      {
-
-         prizesList.push(prizes[i]);
-      }
       /*
+       var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
+       for (var i = 0; i < prizes.length; i++)
+       {
+
+       prizesList.push(prizes[i]);
+       }
        if (prizesList.length == 0)
        {
        me.getURedeemBtn().hide();
@@ -446,7 +451,8 @@ Ext.define('Genesis.controller.Prizes',
        me.getURedeemBtn().show();
        }
        */
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onShowPrizeActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
@@ -488,11 +494,18 @@ Ext.define('Genesis.controller.Prizes',
       }
       view.showPrize = me.showPrize;
       console.log("ShowPrize View - Updated ShowPrize View.");
-      view.createView();
-      delete me.showPrize;
+      Ext.defer(function()
+      {
+         activeItem.createView();
+         delete me.showPrize;
+      }, 1, activeItem);
+      //view.createView();
+      //delete me.showPrize;
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var me = this;
+      oldActiveItem.removeAll(true);
    },
    onDoneTap : function(b, e, eOpts, eInfo, overrideMode)
    {
@@ -723,7 +736,10 @@ Ext.define('Genesis.controller.Prizes',
    openPage : function(subFeature)
    {
       this.setMode(subFeature);
-      this.pushView(this.getMainPage());
+      Ext.defer(function()
+      {
+         this.pushView(this.getMainPage())
+      }, 1, this);
    },
    getMainCarousel : function()
    {

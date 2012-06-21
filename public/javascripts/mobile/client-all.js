@@ -2413,14 +2413,31 @@ Ext.define('Genesis.view.ViewBase',
       this.callParent(arguments);
       this.setPreRender([]);
    },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   removeAll : function(destroy, everything)
+   {
+      var rc = this.callParent(arguments);
+      this.setPreRender([]);
+
+      return rc;
+   },
    createView : function()
    {
       return (this.getPreRender().length == 0);
    },
    showView : function()
    {
+      // Do not add to view, if there's existing items, only re-render on empty views
+      if (this.getInnerItems().length == 0)
+      {
+         this.add(this.getPreRender());
+      }
       var titlebar = this.query('titlebar')[0];
-      this.add(this.getPreRender());
       Ext.defer(titlebar.setMasked, 0.3 * 1000, titlebar, [false]);
    }
 });
@@ -2551,6 +2568,7 @@ Ext.define('Genesis.view.Viewport',
       },
       fullscreen : true
    },
+   loadingMsg : 'Loading ...',
    // @private
    initialize : function()
    {
@@ -2584,13 +2602,21 @@ Ext.define('Genesis.view.Viewport',
     */
    animateActiveItem : function(activeItem, animation)
    {
+      /*
+       Ext.Viewport.setMasked(
+       {
+       xtype : 'loadmask',
+       message : this.loadingMsg
+       });
+       */
+
       var layout = this.getLayout(), defaultAnimation;
       var oldActiveItem = this.getActiveItem();
 
       if (this.activeItemAnimation)
       {
          this.activeItemAnimation.destroy();
-         console.debug("Destroying AnimateActiveItem ...");
+         //console.debug("Destroying AnimateActiveItem ...");
       }
       this.activeItemAnimation = animation = new Ext.fx.layout.Card(animation);
       if (animation && layout.isCard)
@@ -2599,12 +2625,20 @@ Ext.define('Genesis.view.Viewport',
          defaultAnimation = layout.getAnimation();
          if (defaultAnimation)
          {
+            var controller = _application.getController('Viewport').getEventDispatcher().controller;
+
             defaultAnimation.disable();
+            controller.pause();
             animation.on('animationend', function()
             {
                defaultAnimation.enable();
                animation.destroy();
                delete this.activeItemAnimation;
+
+               //console.debug("Animation Complete");
+               activeItem.showView();
+
+               //Ext.Viewport.setMasked(false);
                //
                // Delete oldActiveItem to save DOM memory
                //
@@ -2612,13 +2646,16 @@ Ext.define('Genesis.view.Viewport',
                {
                   Ext.defer(function()
                   {
-                     oldActiveItem.destroy();
+                     //oldActiveItem.destroy();
+                     controller.resume();
                      //console.debug('Destroyed View [' + oldActiveItem._itemId + ']');
                   }, 0.1 * 1000, this);
                }
-               //console.debug("Animation Complete");
-               activeItem.showView();
             }, this);
+         }
+         else
+         {
+            //Ext.Viewport.setMasked(false);
          }
       }
       var rc = this.setActiveItem(activeItem);
@@ -2629,6 +2666,7 @@ Ext.define('Genesis.view.Viewport',
          // if createView called is delayed, we will be scheduled behind it
          //
          Ext.defer(activeItem.showView, 1, activeItem);
+         //Ext.Viewport.setMasked(false);
       }
       return rc;
    },
@@ -2694,7 +2732,7 @@ Ext.define('Genesis.view.client.ChallengePage',
             cls : 'itemDesc',
             data :
             {
-               description : 'Please Select a challenge to perform'
+               description : ''
             },
             tpl : Ext.create('Ext.XTemplate', '{[this.getDesc(values)]}',
             {
@@ -2906,6 +2944,19 @@ Ext.define('Genesis.view.MainPage',
       this.setPreRender([]);
       this.callParent(arguments);
    },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   removeAll : function(destroy, everything)
+   {
+      var rc = this.callParent(arguments);
+      this.setPreRender([]);
+
+      return rc;
+   },
    createView : function()
    {
       if (!Genesis.view.ViewBase.prototype.createView.apply(this, arguments))
@@ -3021,17 +3072,23 @@ Ext.define('Genesis.view.MainPage',
                }
             }
          }
-         if (carousel.getInnerItems().length > 0)
-         {
-            carousel.setActiveItem(0);
-         }
          console.log("MainPage Icons Not changed.");
       }
       delete carousel._listitems;
    },
    showView : function()
    {
-      this.add(this.getPreRender());
+      // Do not add to view, if there's existing items, only re-render on empty views
+      if (this.getInnerItems().length == 0)
+      {
+         this.add(this.getPreRender());
+      }
+
+      var carousel = this;
+      if (carousel.getInnerItems().length > 0)
+      {
+         carousel.setActiveItem(0);
+      }
       this.query('titlebar')[0].setMasked(false);
    }
 });
@@ -3139,6 +3196,19 @@ Ext.define('Genesis.view.SignInPage',
          text : 'Sign In'
       }]
    },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   removeAll : function(destroy, everything)
+   {
+      var rc = this.callParent(arguments);
+      this.setPreRender([]);
+
+      return rc;
+   },
    createView : Ext.emptyFn,
    showView : function()
    {
@@ -3205,6 +3275,19 @@ Ext.define('Genesis.view.CreateAccountPage',
          tag : 'createAccount',
          text : 'Create Account'
       }]
+   },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   removeAll : function(destroy, everything)
+   {
+      var rc = this.callParent(arguments);
+      this.setPreRender([]);
+
+      return rc;
    },
    createView : Ext.emptyFn,
    showView : function()
@@ -3341,14 +3424,100 @@ Ext.define('Genesis.view.MerchantAccount',
             tag : 'checkin',
             iconCls : 'checkin'
          }]
-      })]
+      }),
+      // -----------------------------------------------------------------------
+      // Toolbar
+      // -----------------------------------------------------------------------
+
+      {
+         docked : 'bottom',
+         cls : 'navigationBarBottom',
+         xtype : 'tabbar',
+         ui : 'light',
+         layout :
+         {
+            pack : 'justify',
+            align : 'center'
+         },
+         scrollable :
+         {
+            direction : 'horizontal',
+            indicators : false
+         },
+         defaults :
+         {
+            iconMask : true,
+            iconAlign : 'top'
+         },
+         items : [
+         //
+         // Left side Buttons
+         //
+         {
+            iconCls : 'home',
+            tag : 'home',
+            title : 'Home'
+         },
+         {
+            iconCls : 'prizes',
+            tag : 'prizes',
+            badgeCls : 'x-badge round',
+            title : 'Prizes'
+         },
+         {
+            iconCls : 'rewards',
+            tag : 'rewards',
+            title : 'Earn Pts'
+         },
+         //
+         // Middle Button
+         //
+         {
+            xtype : 'spacer'
+         },
+         {
+            iconCls : 'challenges',
+            tag : 'challenges',
+            title : 'Challenges'
+         },
+         //
+         // Right side Buttons
+         //
+         {
+            xtype : 'spacer'
+         },
+         {
+            iconCls : 'redeem',
+            tag : 'redemption',
+            title : 'Redeem'
+         },
+         {
+            iconCls : 'tocheckedinmerch',
+            tag : 'main',
+            title : 'Main Menu'
+         },
+         {
+            iconCls : 'explore',
+            tag : 'browse',
+            title : 'Explore'
+         }]
+      }]
+   },
+   showView : function()
+   {
+      this.query('tabbar')[0].show();
+      this.callParent(arguments);
    },
    createView : function()
    {
+      Ext.ComponentQuery.query('button[tag=main]')[0][(!this.showCheckinBtn) ? 'hide':'show']();
+      Ext.ComponentQuery.query('button[tag=prizes]')[0].setBadgeText((this.prizesCount > 0) ? this.prizesCount : null);
+
       if (!this.callParent(arguments))
       {
          return;
       }
+
       // -----------------------------------------------------------------------
       // Merchant Photos and Customer Points
       // -----------------------------------------------------------------------
@@ -3491,85 +3660,6 @@ Ext.define('Genesis.view.MerchantAccount',
                   return values['description'];
                }
             })
-         }]
-      }),
-      // -----------------------------------------------------------------------
-      // Toolbar
-      // -----------------------------------------------------------------------
-      Ext.create('Ext.TabBar',
-      {
-         docked : 'bottom',
-         cls : 'navigationBarBottom',
-         xtype : 'tabbar',
-         ui : 'light',
-         layout :
-         {
-            pack : 'justify',
-            align : 'center'
-         },
-         scrollable :
-         {
-            direction : 'horizontal',
-            indicators : false
-         },
-         defaults :
-         {
-            iconMask : true,
-            iconAlign : 'top'
-         },
-         items : [
-         //
-         // Left side Buttons
-         //
-         {
-            iconCls : 'home',
-            tag : 'home',
-            title : 'Home'
-         },
-         {
-            iconCls : 'prizes',
-            tag : 'prizes',
-            badgeCls : 'x-badge round',
-            badgeText : this.prizesCount,
-            title : 'Prizes'
-         },
-         {
-            iconCls : 'rewards',
-            tag : 'rewards',
-            title : 'Earn Pts'
-         },
-         //
-         // Middle Button
-         //
-         {
-            xtype : 'spacer'
-         },
-         {
-            iconCls : 'challenges',
-            tag : 'challenges',
-            title : 'Challenges'
-         },
-         //
-         // Right side Buttons
-         //
-         {
-            xtype : 'spacer'
-         },
-         {
-            iconCls : 'redeem',
-            tag : 'redemption',
-            title : 'Redeem'
-         },
-         {
-            iconCls : 'tocheckedinmerch',
-            tag : 'main',
-            hidden : !this.showCheckinBtn,
-            title : 'Main Menu'
-         },
-         {
-            iconCls : 'explore',
-            tag : 'browse',
-            title : 'Explore'
          }]
       })]));
    },
@@ -3795,6 +3885,19 @@ Ext.define('Genesis.view.client.SettingsPage',
             value : 'About Us'
          }]
       }]
+   },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   removeAll : function(destroy, everything)
+   {
+      var rc = this.callParent(arguments);
+      this.setPreRender([]);
+
+      return rc;
    },
    createView : Ext.emptyFn,
    showView : function()
@@ -4274,30 +4377,8 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
             tag : 'post',
             text : 'Post'
          }]
-      })]
-   },
-   showView : function()
-   {
-      this.callParent(arguments);
-
-      console.debug("Rendering [" + this.metaData['photo_url'] + "]");
-      this.query('container[tag=background]')[0].element.dom.style.cssText += 'background-image:url(' + this.metaData['photo_url'] + ');'
-      delete this.metaData;
-   },
-   createView : function()
-   {
-      this.setPreRender(this.getPreRender().concat([
-      // Uploaded Image
-      photo = Ext.create('Ext.Container',
-      {
-         flex : 1,
-         width:'100%',
-         xtype : 'container',
-         tag : 'background',
-         cls : 'background'
       }),
       // Display Comment
-      Ext.create('Ext.field.TextArea',
       {
          xtype : 'textareafield',
          bottom : 0,
@@ -4315,6 +4396,32 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
          maxRows : 4,
          placeHolder : 'Please enter your photo description',
          clearIcon : false
+      }]
+   },
+   showView : function()
+   {
+      this.callParent(arguments);
+
+      console.debug("Rendering [" + this.metaData['photo_url'] + "]");
+      this.query('container[tag=background]')[0].element.dom.style.cssText += 'background-image:url(' + this.metaData['photo_url'] + ');'
+      delete this.metaData;
+   },
+   createView : function()
+   {
+      if (!this.callParent(arguments))
+      {
+         return;
+      }
+
+      this.setPreRender(this.getPreRender().concat([
+      // Uploaded Image
+      photo = Ext.create('Ext.Container',
+      {
+         flex : 1,
+         width : '100%',
+         xtype : 'container',
+         tag : 'background',
+         cls : 'background'
       })]));
    }
 });
@@ -4719,10 +4826,20 @@ Ext.define('Genesis.view.Prizes',
                }));
             }
             container.add(items);
+            container.setActiveItem(0);
+            container.show();
 
             console.log("MerchantPrize View - Found " + prizesList.length + " Prizes needed to update.");
          }
       }
+   },
+   showView : function()
+   {
+      this.callParent(arguments);
+
+      var carousel = this.query('carousel')[0];
+      carousel.setActiveItem(0);
+      carousel.show();
    },
    statics :
    {
@@ -5763,8 +5880,9 @@ Ext.define('Genesis.controller.Viewport',
    },
    onAccountsButtonTap : function(b, e, eOpts, eInfo)
    {
+      Ext.defer(this.redirectTo, 1, this, ['accounts']);
+      //this.redirect('accounts');
       //this.fireEvent('openpage', 'Accounts', null, null);
-      this.redirect('accounts');
       console.log("Going to Accounts Page ...");
    },
    onChallengesButtonTap : function(b, e, eOpts, eInfo, callback)
@@ -5780,7 +5898,10 @@ Ext.define('Genesis.controller.Viewport',
          }
          else
          {
-            me.fireEvent('openpage', 'client.Challenges', null, null);
+            Ext.defer(function()
+            {
+               me.fireEvent('openpage', 'client.Challenges', null, null);
+            }, 0.2 * 1000, me);
             console.log("Going to Challenges Page ...");
          }
       }
@@ -5829,32 +5950,36 @@ Ext.define('Genesis.controller.Viewport',
    },
    onRedemptionsButtonTap : function(b, e, eOpts, eInfo)
    {
+      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['redemptions']);
+      //this.redirectTo('redemptions');
       //this.fireEvent('openpage', 'client.Redemptions', 'redemptions', null);
-      this.redirectTo('redemptions');
       console.log("Going to Client Redemptions Page ...");
    },
    onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.redirectTo('merchantPrizes');
+      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['merchantPrizes']);
+      //this.redirectTo('merchantPrizes');
       //this.fireEvent('openpage', 'Prizes', 'merchantPrizes', null);
       console.log("Going to Merchant Prizes Page ...");
    },
    onHomeButtonTap : function(b, e, eOpts, eInfo)
    {
       var vport = this.getViewport();
-      this.resetView();
-      this.redirectTo('main');
+      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['main']);
+      //this.redirectTo('main');
       //this.fireEvent('openpage', 'MainPage', null, null);
       console.log("Going back to HomePage ...");
    },
    onCheckedInAccountTap : function(b, e, eOpts, eInfo)
    {
       var info = this.getViewPortCntlr().getCheckinInfo();
-      this.redirectTo('venue' + '/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
+      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['venue' + '/' + info.venue.getId() + '/' + info.customer.getId() + '/1']);
+      //this.redirectTo('venue' + '/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
    },
    onBrowseTap : function(b, e, eOpts, eInfo)
    {
-      this.redirectTo('exploreS');
+      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['exploreS']);
+      //this.redirectTo('exploreS');
       //this.fireEvent('openpage', 'Checkins', 'explore', 'slideUp');
    },
    // --------------------------------------------------------------------------
@@ -5939,25 +6064,28 @@ Ext.define('Genesis.controller.Viewport',
          var lastView = me.viewStack.pop();
          var currView = me.viewStack[me.viewStack.length - 1];
 
-         //
-         // Recreate View if the view was destroyed for DOM memory optimization
-         //
-         if (currView['view'].isDestroyed)
+         Ext.defer(function()
          {
-            currView['view'] = Ext.create(currView['view'].alias[0]);
-            console.debug("Recreated View [" + currView['view']._itemId + "]")
-         }
+            //
+            // Recreate View if the view was destroyed for DOM memory optimization
+            //
+            if (currView['view'].isDestroyed)
+            {
+               currView['view'] = Ext.create(currView['view'].alias[0]);
+               //console.debug("Recreated View [" + currView['view']._itemId + "]")
+            }
 
-         //
-         // Update URL
-         //
-         me.getApplication().getHistory().setToken(currView['url']);
-         window.location.hash = currView['url'];
+            //
+            // Update URL
+            //
+            me.getApplication().getHistory().setToken(currView['url']);
+            window.location.hash = currView['url'];
 
-         me.getViewport().animateActiveItem(currView['view'], Ext.apply(lastView['animation'],
-         {
-            reverse : true
-         }));
+            me.getViewport().animateActiveItem(currView['view'], Ext.apply(lastView['animation'],
+            {
+               reverse : true
+            }));
+         }, 1, me);
       }
    },
    // --------------------------------------------------------------------------
@@ -6662,13 +6790,14 @@ Ext.define('Genesis.controller.MainPage',
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      //Ext.defer(activeItem.createView, 1, activeItem);
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
       //this.getInfoBtn().hide();
    },
    // --------------------------------------------------------------------------
@@ -6711,11 +6840,13 @@ Ext.define('Genesis.controller.MainPage',
       Genesis.db.removeLocalDBAttrib('auth_code');
       
       //this.getInfoBtn().hide();
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onLoginDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      //oldActiveItem.removeAll(true);
    },
    onLogoutTap : function(b, e, eOpts, eInfo)
    {
@@ -6971,11 +7102,13 @@ Ext.define('Genesis.controller.MainPage',
             username : response.email
          });
       }
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onCreateDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      //oldActiveItem.removeAll(true);
    },
    // --------------------------------------------------------------------------
    // Page Navigation
@@ -7452,8 +7585,6 @@ Ext.define('Genesis.controller.Checkins',
    {
       var me = this;
 
-      activeItem.createView();
-
       var viewport = me.getViewPortCntlr();
       var checkinContainer = me.getCheckInNowBar();
       var tbbar = activeItem.query('titlebar')[0];
@@ -7481,11 +7612,18 @@ Ext.define('Genesis.controller.Checkins',
             checkinContainer.hide();
             break;
       }
-      me.onExploreLoad();
+      Ext.defer(function()
+      {
+         activeItem.createView();
+         me.onExploreLoad();
+      }, 1, activeItem);
+      //activeItem.createView();
+      //me.onExploreLoad();
    },
    onExploreDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      //oldActiveItem.removeAll(true);
    },
    onExploreSelect : function(d, model, eOpts)
    {
@@ -7604,6 +7742,7 @@ Ext.define('Genesis.controller.client.Challenges',
          },
          uploadPhotosBackground : 'clientuploadphotospageview container[tag=background]',
          postBtn : 'viewportview button[tag=post]',
+         photoTextarea : 'clientuploadphotospageview textareafield',
          //
          // Referral Challenge
          //
@@ -7680,6 +7819,7 @@ Ext.define('Genesis.controller.client.Challenges',
    metaData : null,
    reservedReferralId : 0,
    referralCbFn : null,
+   defaultDescText : 'Please Select a challenge to perform',
    samplePhotoURL : 'http://photos.getkickbak.com/paella9finish1.jpg',
    noPhotoUploadedMsg : 'Failed to upload photo to server.',
    fbUploadFailedMsg : 'Failed to upload the photo onto your Facebook account',
@@ -8300,13 +8440,29 @@ Ext.define('Genesis.controller.client.Challenges',
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      //Ext.defer(activeItem.createView, 1, activeItem);
-      activeItem.createView();
-      delete me.selectedItem;
+      Ext.defer(function()
+      {
+         activeItem.createView();
+         delete me.selectedItem;
+         
+         var desc = me.getChallengeDescContainer();
+         for (var i = 0; i < desc.getItems().length; i++)
+         {
+            desc.getItems().getAt(i).updateData(
+            {
+               description : me.defaultDescText
+            });
+         }
+      }, 1, activeItem);
+      //activeItem.createView();
+      //delete me.selectedItem;
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      
+      me.getChallengeContainer().hide();      
+      oldActiveItem.removeAll(true);
    },
    completeChallenge : function(qrcode, position, eOpts, eInfo)
    {
@@ -8368,12 +8524,13 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       //var container = me.getReferralsContainer();
       //container.setActiveItem(0);
-      activeItem.createView();
-      //Ext.defer(activeItem.createView, 1, activeItem);
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onReferralsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
    },
    onCompleteReferralsChallenge : function(b, e, eOpts)
    {
@@ -8491,19 +8648,21 @@ Ext.define('Genesis.controller.client.Challenges',
 
       //me.getPostBtn().show();
       activeItem.metaData = me.metaData;
-      //Ext.defer(activeItem.createView, 1, activeItem);
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onUploadPhotosDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
+      this.getPhotoTextarea().setValue(null);
       //this.getPostBtn().hide();
    },
    onUploadPhotosTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
       var page = me.getUploadPhotosPage();
-      var textareafield = page.query('textareafield')[0];
+      var textareafield = me.getPhotoTextarea();
       var desc = textareafield.getValue();
 
       if ((desc.length > textareafield.getMaxLength()) || (desc.length < 16))
@@ -8520,68 +8679,80 @@ Ext.define('Genesis.controller.client.Challenges',
          return;
       }
 
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : me.completingChallengeMsg
-      });
       var viewport = me.getViewPortCntlr();
       var venue = viewport.getVenue();
 
-      FB.api('/me/photos', 'post',
+      if ( typeof (FB) != 'undefined')
       {
-         'message' : desc,
-         'url' : me.metaData['photo_url'],
-         'access_token' : FB.getAccessToken()
-         /*
-          ,"place" :
-          {
-          "name" : venue.get('name'),
-          "location" :
-          {
-          "street" : venue.get('address'),
-          "city" : venue.get('city'),
-          "state" : venue.get('state'),
-          "country" : venue.get('country'),
-          "latitude" : venue.get('latitude'),
-          "longitude" : venue.get('longitude')
-          }
-          }
-          */
-      }, function(response)
-      {
-         if (!response || response.error)
+         Ext.Viewport.setMasked(
          {
-            var message = (response && response.error) ? response.error.message : me.fbUploadFailedMsg;
-            Ext.Viewport.setMasked(false);
-            Ext.device.Notification.show(
+            xtype : 'loadmask',
+            message : me.completingChallengeMsg
+         });
+         FB.api('/me/photos', 'post',
+         {
+            'message' : desc,
+            'url' : me.metaData['photo_url'],
+            'access_token' : FB.getAccessToken()
+            /*
+             ,"place" :
+             {
+             "name" : venue.get('name'),
+             "location" :
+             {
+             "street" : venue.get('address'),
+             "city" : venue.get('city'),
+             "state" : venue.get('state'),
+             "country" : venue.get('country'),
+             "latitude" : venue.get('latitude'),
+             "longitude" : venue.get('longitude')
+             }
+             }
+             */
+         }, function(response)
+         {
+            if (!response || response.error)
             {
-               title : 'Upload Failed!',
-               message : message,
-               buttons : ['Try Again', 'Cancel'],
-               callback : function(btn)
+               var message = (response && response.error) ? response.error.message : me.fbUploadFailedMsg;
+               Ext.Viewport.setMasked(false);
+               Ext.device.Notification.show(
                {
-                  if (btn.toLowerCase() == 'try again')
+                  title : 'Upload Failed!',
+                  message : message,
+                  buttons : ['Try Again', 'Cancel'],
+                  callback : function(btn)
                   {
-                     Ext.defer(me.onUploadPhotosTap, 100, me);
+                     if (btn.toLowerCase() == 'try again')
+                     {
+                        Ext.defer(me.onUploadPhotosTap, 100, me);
+                     }
+                     else
+                     {
+                        //
+                        // Go back to Checked-in Merchant Account
+                        //
+                        me.metaData = null;
+                        me.popView();
+                     }
                   }
-                  else
-                  {
-                     //
-                     // Go back to Checked-in Merchant Account
-                     //
-                     me.metaData = null;
-                     me.popView();
-                  }
-               }
-            });
-         }
-         else
-         {
-            console.debug('Facebook Post ID - ' + response.id);
-            me.fireEvent('fbphotouploadcomplete');
-         }
-      });
+               });
+            }
+            else
+            {
+               console.debug('Facebook Post ID - ' + response.id);
+               me.fireEvent('fbphotouploadcomplete');
+            }
+         });
+      }
+      else
+      {
+         //
+         // Go back to Checked-in Merchant Account
+         //
+         me.metaData = null;
+         me.popView();
+         //me.fireEvent('fbphotouploadcomplete');
+      }
    },
    // --------------------------------------------------------------------------
    // Page Navigation
@@ -8749,6 +8920,10 @@ Ext.define('Genesis.controller.Merchants',
             // Goto CheckinMerchant.js for "painted" support
             //painted : 'onMapPainted'
          }
+      },
+      listeners :
+      {
+         'backToMain' : 'onCheckedInAccountTap'
       }
    },
    checkinFirstMsg : 'Please Check-in before redeeming rewards',
@@ -8833,11 +9008,13 @@ Ext.define('Genesis.controller.Merchants',
       //this.onActivateCommon(map, map.getMap());
       //this.onActivateCommon(map, null);
 
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onDetailsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
-      //var me = this;
+      var me = this;
+      oldActiveItem.removeAll(true);
       //this.getShareBtn().hide();
    },
    onMapRender : function(map, gmap, eOpts)
@@ -8886,9 +9063,6 @@ Ext.define('Genesis.controller.Merchants',
       var cvenue = viewport.getCheckinInfo().venue;
       var checkedIn = (cvenue != null);
       var checkedInMatch = (checkedIn && (cvenue.getId() == venueId));
-
-      // Update TitleBar
-      activeItem.query('titlebar')[0].setTitle(vrecord.get('name'));
 
       //
       // Either we are checked-in or
@@ -8955,18 +9129,30 @@ Ext.define('Genesis.controller.Merchants',
       }
       page.prizesCount = (prizesCount > 0) ? prizesCount : null;
 
-      // Precreate the DOMs
-      //Ext.defer(page.createView, 1, page);
-      page.createView();
-
       if (this.getMainBtn())
       {
          this.getMainBtn().hide();
       }
+      if (activeItem.isXType('mainpageview', true) || activeItem.isXType('checkinexploreview', true))
+      {
+         this.getMerchantTabBar().hide();
+      }
+
+      Ext.defer(function()
+      {
+         page.createView();
+         // Update TitleBar
+         activeItem.query('titlebar')[0].setTitle(vrecord.get('name'));
+      }, 1, page);
+      //page.createView();
    },
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
-      //var me = this;
+      var me = this;
+      if (activeItem.isXType('mainpageview', true) || activeItem.isXType('checkinexploreview', true))
+      {
+         oldActiveItem.removeAll(true);
+      }
       //this.getMapBtn().hide();
       //this.getCheckinBtn().hide();
    },
@@ -8998,7 +9184,7 @@ Ext.define('Genesis.controller.Merchants',
             var controller = app.getController('Prizes');
             var rstore = Ext.StoreMgr.get('RedemptionsStore');
             record = rstore.getById(record.get('reward_id'));
-            me.fireEvent('redeemRewards', Ext.create('Genesis.model.EarnPrize',
+            controller.fireEvent('redeemrewards', Ext.create('Genesis.model.EarnPrize',
             {
                //'id' : 1,
                'expiry_date' : null,
@@ -9036,7 +9222,7 @@ Ext.define('Genesis.controller.Merchants',
 
       if (venue.getId() != cvenue.getId())
       {
-         console.log("Reloading to Checked-In Merchant Home Account Page ...");
+         console.log("Update current Venue to be Checked-In Merchant Account ...");
 
          // Restore Merchant Info
          ccntlr.setupCheckinInfo('checkin', cvenue, ccustomer, cmetaData);
@@ -9047,22 +9233,27 @@ Ext.define('Genesis.controller.Merchants',
       //
       if (me.getMainPage() == vport.getActiveItem())
       {
-         var anim = new Ext.fx.layout.Card(me.self.superclass.self.animationMode['fade']);
          var controller = vport.getEventDispatcher().controller;
-
-         // Delete current page and refresh
-         me.getMainPage().destroy();
-
-         me.getViewport().animateActiveItem(me.getMainPage(), anim);
-         anim.onActiveItemChange(vport.getLayout(), me.getMainPage(), me.getMainPage(), null, controller);
-         anim.on('animationend', function()
+         var anim = new Ext.fx.layout.Card(me.self.superclass.self.animationMode['fade']);
+         if (!controller.isPausing)
          {
-            anim.destroy();
-         }, this);
-         vport.doSetActiveItem(me.getMainPage(), null);
+            console.log("Reloading current Merchant Home Account Page ...");
+
+            // Delete current page and refresh
+            me.getMainPage().destroy();
+
+            me.getViewport().animateActiveItem(me.getMainPage(), anim);
+            anim.onActiveItemChange(vport.getLayout(), me.getMainPage(), me.getMainPage(), null, controller);
+            anim.on('animationend', function()
+            {
+               anim.destroy();
+            }, this);
+            vport.doSetActiveItem(me.getMainPage(), null);
+         }
       }
       else
       {
+         console.log("Going back to Checked-In Merchant Home Account Page ...");
          me.resetView();
          me.setAnimationMode(me.self.superclass.self.animationMode['flip']);
          me.pushView(me.getMainPage());
@@ -9112,6 +9303,7 @@ Ext.define('Genesis.controller.Merchants',
    {
       switch(newTab.config.tag)
       {
+         default :
          case 'rewards' :
          case 'main' :
          {
@@ -9126,7 +9318,8 @@ Ext.define('Genesis.controller.Merchants',
                {
                   oldTab.setActive(false);
                }
-            }, 200);
+               bar._activeTab = null;
+            }, 2 * 1000);
             break;
          }
       }
@@ -9170,7 +9363,7 @@ Ext.define('Genesis.controller.Merchants',
       }
       else
       {
-         me.onCheckedInAccountTap();
+         me.fireEvent('backToMain');
       }
       console.log("Merchant Account Opened");
    }
@@ -9223,6 +9416,7 @@ Ext.define('Genesis.controller.client.Rewards',
    checkinFirstMsg : 'Please Check-In before earning rewards',
    authCodeReqMsg : 'Proceed to scan an Authorization Code from your server to earn Reward Points!',
    prizeCheckMsg : 'Find out if you won a PRIZE!',
+   earnPtsMsg : 'Updating Points Earned ...',
    getPointsMsg : function(points)
    {
       return 'You\'ve earned ' + points + ' Points from this purchase!';
@@ -9307,6 +9501,11 @@ Ext.define('Genesis.controller.client.Rewards',
       EarnPrize['setEarnPrizeURL']();
       reader.setRootProperty('');
       reader.buildExtractors();
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.earnPtsMsg
+      });
       pstore.loadPage(1,
       {
          jsonData :
@@ -9323,6 +9522,7 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             reader.setRootProperty('data');
             reader.buildExtractors();
+            Ext.Viewport.setMasked(false);
             if (operation.wasSuccessful())
             {
                me.loadCallback = arguments;
@@ -9476,20 +9676,25 @@ Ext.define('Genesis.controller.client.Rewards',
       var container = me.getRewards();
       var viewport = me.getViewPortCntlr();
 
-      activeItem.createView();
-
-      me.startRouletteScreen();
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
+      Ext.defer(function()
       {
-         console.debug("RouletteSound Done, checking for prizes ...");
-         var app = me.getApplication();
-         app.getController('Prizes').fireEvent('prizecheck', me.loadCallback[0], me.loadCallback[1]);
-         delete me.loadCallback;
-      });
+         activeItem.createView();
+         me.startRouletteScreen();
+         Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
+         {
+            console.debug("RouletteSound Done, checking for prizes ...");
+            var app = me.getApplication();
+            app.getController('Prizes').fireEvent('prizecheck', me.loadCallback[0], me.loadCallback[1]);
+            delete me.loadCallback;
+         });
+      }, 1, activeItem);
+      //activeItem.createView();
+
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      //oldActiveItem.removeAll(true);
       //this.getBackButton().enable();
    },
    onContainerActivate : function(c, value, oldValue, eOpts)
@@ -9649,15 +9854,20 @@ Ext.define('Genesis.controller.client.Redemptions',
 
       me.exploreMode = !cvenue || (cvenue && (cvenue.getId() != venue.getId()));
 
-      //
-      // Update Customer info
-      Ext.StoreMgr.get('RedemptionRenderCStore').setData(viewport.getCustomer());
-      //Ext.defer(activeItem.createView, 1, activeItem);
-      activeItem.createView();
+      Ext.defer(function()
+      {
+         //
+         // Update Customer info
+         Ext.StoreMgr.get('RedemptionRenderCStore').setData(viewport.getCustomer());
+
+         activeItem.createView();
+      }, 1, activeItem);
+      //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
    },
    onItemListSelect : function(d, model, eOpts)
    {
@@ -10060,13 +10270,13 @@ Ext.define('Genesis.controller.Accounts',
             break;
          }
       }
-      // Precreate the DOMs
-      //Ext.defer(activeItem.createView, 1, activeItem);
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
    },
    onSelect : function(list, model, eOpts)
    {
@@ -10152,11 +10362,13 @@ Ext.define('Genesis.controller.Accounts',
             break;
          }
       }
-      activeItem.createView(screenShow);
+      Ext.defer(activeItem.createView, 1, activeItem, [screenShow]);
+      //activeItem.createView(screenShow);
    },
    onTransferDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
    },
    onTransferTap : function(b, e, eOpts)
    {
@@ -10614,6 +10826,10 @@ Ext.define('Genesis.controller.Prizes',
    {
       return 'You haved won ' + ((numPrizes > 1) ? 'some PRIZES' : 'a PRIZE') + '!'
    },
+   wonPrizeEmailMsg : function(prizeName, venueName)
+   {
+      return ('I just won ' + prizeName + ' for eating out at ' + venueName + '!');
+   },
    lostPrizeMsg : 'Oops, Play Again!',
    showQrCodeMsg : 'Show this Authorization Code to your server to redeem!',
    checkinFirstMsg : 'Please Check-in before claiming any prize(s)',
@@ -10663,7 +10879,7 @@ Ext.define('Genesis.controller.Prizes',
          var name = venue.get('name');
          var link = wsite[wsite.length - 1] || site;
          var desc = venue.get('description').trunc(256);
-         var message = 'I just won ' + earnprize.getCustomerReward().get('title') + ' for purchasing at ' + venue.get('name') + '!';
+         var message = me.wonPrizeEmailMsg(earnprize.getCustomerReward().get('title'), venue.get('name'));
 
          console.log('Posting to Facebook ...' + '\n' + //
          'Name: ' + name + '\n' + //
@@ -10859,9 +11075,6 @@ Ext.define('Genesis.controller.Prizes',
    onMerchantPrizesActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      var viewport = me.getViewPortCntlr();
-      var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
-      var prizesList = [];
 
       me.getMCloseBB().show();
       me.getMBB().hide();
@@ -10869,6 +11082,9 @@ Ext.define('Genesis.controller.Prizes',
       //
       // List all the prizes won by the Customer
       //
+      var viewport = me.getViewPortCntlr();
+      var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
+      var prizesList = [];
       var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
       if (prizes.length > 0)
       {
@@ -10894,25 +11110,26 @@ Ext.define('Genesis.controller.Prizes',
       {
          me.getMRedeemBtn().show();
       }
-      activeItem.createView();
+
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onUserPrizesActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      var items = [], prizesList = [];
-      var views;
+      var prizesList = [];
 
       me.getUCloseBB().hide();
       me.getUBB().show();
       me.getURedeemBtn().hide();
 
-      var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
-      for (var i = 0; i < prizes.length; i++)
-      {
-
-         prizesList.push(prizes[i]);
-      }
       /*
+       var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
+       for (var i = 0; i < prizes.length; i++)
+       {
+
+       prizesList.push(prizes[i]);
+       }
        if (prizesList.length == 0)
        {
        me.getURedeemBtn().hide();
@@ -10922,7 +11139,8 @@ Ext.define('Genesis.controller.Prizes',
        me.getURedeemBtn().show();
        }
        */
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onShowPrizeActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
@@ -10964,11 +11182,18 @@ Ext.define('Genesis.controller.Prizes',
       }
       view.showPrize = me.showPrize;
       console.log("ShowPrize View - Updated ShowPrize View.");
-      view.createView();
-      delete me.showPrize;
+      Ext.defer(function()
+      {
+         activeItem.createView();
+         delete me.showPrize;
+      }, 1, activeItem);
+      //view.createView();
+      //delete me.showPrize;
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var me = this;
+      oldActiveItem.removeAll(true);
    },
    onDoneTap : function(b, e, eOpts, eInfo, overrideMode)
    {
@@ -11199,7 +11424,10 @@ Ext.define('Genesis.controller.Prizes',
    openPage : function(subFeature)
    {
       this.setMode(subFeature);
-      this.pushView(this.getMainPage());
+      Ext.defer(function()
+      {
+         this.pushView(this.getMainPage())
+      }, 1, this);
    },
    getMainCarousel : function()
    {

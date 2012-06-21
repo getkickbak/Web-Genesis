@@ -29,14 +29,100 @@ Ext.define('Genesis.view.MerchantAccount',
             tag : 'checkin',
             iconCls : 'checkin'
          }]
-      })]
+      }),
+      // -----------------------------------------------------------------------
+      // Toolbar
+      // -----------------------------------------------------------------------
+
+      {
+         docked : 'bottom',
+         cls : 'navigationBarBottom',
+         xtype : 'tabbar',
+         ui : 'light',
+         layout :
+         {
+            pack : 'justify',
+            align : 'center'
+         },
+         scrollable :
+         {
+            direction : 'horizontal',
+            indicators : false
+         },
+         defaults :
+         {
+            iconMask : true,
+            iconAlign : 'top'
+         },
+         items : [
+         //
+         // Left side Buttons
+         //
+         {
+            iconCls : 'home',
+            tag : 'home',
+            title : 'Home'
+         },
+         {
+            iconCls : 'prizes',
+            tag : 'prizes',
+            badgeCls : 'x-badge round',
+            title : 'Prizes'
+         },
+         {
+            iconCls : 'rewards',
+            tag : 'rewards',
+            title : 'Earn Pts'
+         },
+         //
+         // Middle Button
+         //
+         {
+            xtype : 'spacer'
+         },
+         {
+            iconCls : 'challenges',
+            tag : 'challenges',
+            title : 'Challenges'
+         },
+         //
+         // Right side Buttons
+         //
+         {
+            xtype : 'spacer'
+         },
+         {
+            iconCls : 'redeem',
+            tag : 'redemption',
+            title : 'Redeem'
+         },
+         {
+            iconCls : 'tocheckedinmerch',
+            tag : 'main',
+            title : 'Main Menu'
+         },
+         {
+            iconCls : 'explore',
+            tag : 'browse',
+            title : 'Explore'
+         }]
+      }]
+   },
+   showView : function()
+   {
+      this.query('tabbar')[0].show();
+      this.callParent(arguments);
    },
    createView : function()
    {
+      Ext.ComponentQuery.query('button[tag=main]')[0][(!this.showCheckinBtn) ? 'hide':'show']();
+      Ext.ComponentQuery.query('button[tag=prizes]')[0].setBadgeText((this.prizesCount > 0) ? this.prizesCount : null);
+
       if (!this.callParent(arguments))
       {
          return;
       }
+
       // -----------------------------------------------------------------------
       // Merchant Photos and Customer Points
       // -----------------------------------------------------------------------
@@ -179,85 +265,6 @@ Ext.define('Genesis.view.MerchantAccount',
                   return values['description'];
                }
             })
-         }]
-      }),
-      // -----------------------------------------------------------------------
-      // Toolbar
-      // -----------------------------------------------------------------------
-      Ext.create('Ext.TabBar',
-      {
-         docked : 'bottom',
-         cls : 'navigationBarBottom',
-         xtype : 'tabbar',
-         ui : 'light',
-         layout :
-         {
-            pack : 'justify',
-            align : 'center'
-         },
-         scrollable :
-         {
-            direction : 'horizontal',
-            indicators : false
-         },
-         defaults :
-         {
-            iconMask : true,
-            iconAlign : 'top'
-         },
-         items : [
-         //
-         // Left side Buttons
-         //
-         {
-            iconCls : 'home',
-            tag : 'home',
-            title : 'Home'
-         },
-         {
-            iconCls : 'prizes',
-            tag : 'prizes',
-            badgeCls : 'x-badge round',
-            badgeText : this.prizesCount,
-            title : 'Prizes'
-         },
-         {
-            iconCls : 'rewards',
-            tag : 'rewards',
-            title : 'Earn Pts'
-         },
-         //
-         // Middle Button
-         //
-         {
-            xtype : 'spacer'
-         },
-         {
-            iconCls : 'challenges',
-            tag : 'challenges',
-            title : 'Challenges'
-         },
-         //
-         // Right side Buttons
-         //
-         {
-            xtype : 'spacer'
-         },
-         {
-            iconCls : 'redeem',
-            tag : 'redemption',
-            title : 'Redeem'
-         },
-         {
-            iconCls : 'tocheckedinmerch',
-            tag : 'main',
-            hidden : !this.showCheckinBtn,
-            title : 'Main Menu'
-         },
-         {
-            iconCls : 'explore',
-            tag : 'browse',
-            title : 'Explore'
          }]
       })]));
    },

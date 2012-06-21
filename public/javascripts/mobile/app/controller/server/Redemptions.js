@@ -129,11 +129,13 @@ Ext.define('Genesis.controller.server.Redemptions',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
    },
    onScannedQRcode : function(encrypted)
    {

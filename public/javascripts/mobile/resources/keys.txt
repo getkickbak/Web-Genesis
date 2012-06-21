@@ -1,22 +1,3 @@
 {
-   "v1" : "0wjZ5sC872eu3kIlj70VA1QpdhyqvO8W",
-   "v2" : "2cK6kEObEgS6RFmdiDCsXQpgBrbGkF05",
-   "v3" : "vHO5LEhK8EZlDW30XvXcYJuFq9IUzDbr",
-   "v4" : "tPWimLrRj1P0DlOXU0FzNP8QTX1tK0WZ",
-   "v5" : "2GXX7Tvha0BCaiAhldwr6si9GiVqEOVL",
-   "v6" : "8r3QXQcsvQdx4JYYNnzj4jL20etsXNfB",
-   "v7" : "wpyBJkZecW95cGoj0isItnTwSZeBeps4",
-   "v8" : "AC0y06glGss0qXdNK27pxJlggbDs4HEt",
-   "v9" : "lCqGSmTixhb0AVJ09t8LcT6IqNZT6Vd1",
-   "v10" : "zfYqwXgu2plJwOJW5uv4Pg3MqWQ95lhl",
-   "v11" : "kx8E5eIjb4ehUwDYc5ywPPFSr2kFMnHx",
-   "v12" : "2QRHMcSnc0d0Yfhpiz5QuEQQq5TGDlYC",
-   "v13" : "4s9O7PKLO1K6c8axU5tOscJ9VwgVjWvb",
-   "v14" : "rFKUFSRQ8FBV01xxpLlGdE29AhoFDrZv",
-   "v15" : "aufapUl6v2uJodqAyC4iwkAulxzbD4o8",
-   "v16" : "rkzz7BCVgbx1N17tLeDvimCtsy7EnGry",
-   "v17" : "Byhv4Vfo7iKdttvaDLaltlRs5uZM94IS",
-   "v18" : "iO5lBHg5Q8BdnYFfVUDQawIY7SgqsJfd",
-   "v19" : "3uYnh43MPUutLcOOFvjRNeDW5Orab9Bh",
-   "v20" : "8GU94DFDpCw72ewvPorpoJsU1ZzjhIsa"
+   "v1" : "wgQlPHnpW88PvrY18nQpAMo6PiPOyfbg"
 }

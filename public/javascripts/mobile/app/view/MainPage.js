@@ -95,6 +95,19 @@ Ext.define('Genesis.view.MainPage',
       this.setPreRender([]);
       this.callParent(arguments);
    },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   removeAll : function(destroy, everything)
+   {
+      var rc = this.callParent(arguments);
+      this.setPreRender([]);
+
+      return rc;
+   },
    createView : function()
    {
       if (!Genesis.view.ViewBase.prototype.createView.apply(this, arguments))
@@ -210,17 +223,23 @@ Ext.define('Genesis.view.MainPage',
                }
             }
          }
-         if (carousel.getInnerItems().length > 0)
-         {
-            carousel.setActiveItem(0);
-         }
          console.log("MainPage Icons Not changed.");
       }
       delete carousel._listitems;
    },
    showView : function()
    {
-      this.add(this.getPreRender());
+      // Do not add to view, if there's existing items, only re-render on empty views
+      if (this.getInnerItems().length == 0)
+      {
+         this.add(this.getPreRender());
+      }
+
+      var carousel = this;
+      if (carousel.getInnerItems().length > 0)
+      {
+         carousel.setActiveItem(0);
+      }
       this.query('titlebar')[0].setMasked(false);
    }
 });

@@ -1,4 +1,5 @@
 
-.x-panel {
+.x-panel, .x-container {
+    // http://css-infos.net/property/-webkit-backface-visibility
     -webkit-backface-visibility: hidden;
 }

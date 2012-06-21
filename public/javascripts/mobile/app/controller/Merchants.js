@@ -88,6 +88,10 @@ Ext.define('Genesis.controller.Merchants',
             // Goto CheckinMerchant.js for "painted" support
             //painted : 'onMapPainted'
          }
+      },
+      listeners :
+      {
+         'backToMain' : 'onCheckedInAccountTap'
       }
    },
    checkinFirstMsg : 'Please Check-in before redeeming rewards',
@@ -172,11 +176,13 @@ Ext.define('Genesis.controller.Merchants',
       //this.onActivateCommon(map, map.getMap());
       //this.onActivateCommon(map, null);
 
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onDetailsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
-      //var me = this;
+      var me = this;
+      oldActiveItem.removeAll(true);
       //this.getShareBtn().hide();
    },
    onMapRender : function(map, gmap, eOpts)
@@ -225,9 +231,6 @@ Ext.define('Genesis.controller.Merchants',
       var cvenue = viewport.getCheckinInfo().venue;
       var checkedIn = (cvenue != null);
       var checkedInMatch = (checkedIn && (cvenue.getId() == venueId));
-
-      // Update TitleBar
-      activeItem.query('titlebar')[0].setTitle(vrecord.get('name'));
 
       //
       // Either we are checked-in or
@@ -294,18 +297,30 @@ Ext.define('Genesis.controller.Merchants',
       }
       page.prizesCount = (prizesCount > 0) ? prizesCount : null;
 
-      // Precreate the DOMs
-      //Ext.defer(page.createView, 1, page);
-      page.createView();
-
       if (this.getMainBtn())
       {
          this.getMainBtn().hide();
       }
+      if (activeItem.isXType('mainpageview', true) || activeItem.isXType('checkinexploreview', true))
+      {
+         this.getMerchantTabBar().hide();
+      }
+
+      Ext.defer(function()
+      {
+         page.createView();
+         // Update TitleBar
+         activeItem.query('titlebar')[0].setTitle(vrecord.get('name'));
+      }, 1, page);
+      //page.createView();
    },
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
-      //var me = this;
+      var me = this;
+      if (activeItem.isXType('mainpageview', true) || activeItem.isXType('checkinexploreview', true))
+      {
+         oldActiveItem.removeAll(true);
+      }
       //this.getMapBtn().hide();
       //this.getCheckinBtn().hide();
    },
@@ -337,7 +352,7 @@ Ext.define('Genesis.controller.Merchants',
             var controller = app.getController('Prizes');
             var rstore = Ext.StoreMgr.get('RedemptionsStore');
             record = rstore.getById(record.get('reward_id'));
-            me.fireEvent('redeemRewards', Ext.create('Genesis.model.EarnPrize',
+            controller.fireEvent('redeemrewards', Ext.create('Genesis.model.EarnPrize',
             {
                //'id' : 1,
                'expiry_date' : null,
@@ -375,7 +390,7 @@ Ext.define('Genesis.controller.Merchants',
 
       if (venue.getId() != cvenue.getId())
       {
-         console.log("Reloading to Checked-In Merchant Home Account Page ...");
+         console.log("Update current Venue to be Checked-In Merchant Account ...");
 
          // Restore Merchant Info
          ccntlr.setupCheckinInfo('checkin', cvenue, ccustomer, cmetaData);
@@ -386,22 +401,27 @@ Ext.define('Genesis.controller.Merchants',
       //
       if (me.getMainPage() == vport.getActiveItem())
       {
-         var anim = new Ext.fx.layout.Card(me.self.superclass.self.animationMode['fade']);
          var controller = vport.getEventDispatcher().controller;
-
-         // Delete current page and refresh
-         me.getMainPage().destroy();
-
-         me.getViewport().animateActiveItem(me.getMainPage(), anim);
-         anim.onActiveItemChange(vport.getLayout(), me.getMainPage(), me.getMainPage(), null, controller);
-         anim.on('animationend', function()
+         var anim = new Ext.fx.layout.Card(me.self.superclass.self.animationMode['fade']);
+         if (!controller.isPausing)
          {
-            anim.destroy();
-         }, this);
-         vport.doSetActiveItem(me.getMainPage(), null);
+            console.log("Reloading current Merchant Home Account Page ...");
+
+            // Delete current page and refresh
+            me.getMainPage().destroy();
+
+            me.getViewport().animateActiveItem(me.getMainPage(), anim);
+            anim.onActiveItemChange(vport.getLayout(), me.getMainPage(), me.getMainPage(), null, controller);
+            anim.on('animationend', function()
+            {
+               anim.destroy();
+            }, this);
+            vport.doSetActiveItem(me.getMainPage(), null);
+         }
       }
       else
       {
+         console.log("Going back to Checked-In Merchant Home Account Page ...");
          me.resetView();
          me.setAnimationMode(me.self.superclass.self.animationMode['flip']);
          me.pushView(me.getMainPage());
@@ -451,6 +471,7 @@ Ext.define('Genesis.controller.Merchants',
    {
       switch(newTab.config.tag)
       {
+         default :
          case 'rewards' :
          case 'main' :
          {
@@ -465,7 +486,8 @@ Ext.define('Genesis.controller.Merchants',
                {
                   oldTab.setActive(false);
                }
-            }, 200);
+               bar._activeTab = null;
+            }, 2 * 1000);
             break;
          }
       }
@@ -509,7 +531,7 @@ Ext.define('Genesis.controller.Merchants',
       }
       else
       {
-         me.onCheckedInAccountTap();
+         me.fireEvent('backToMain');
       }
       console.log("Merchant Account Opened");
    }

@@ -212,10 +212,20 @@ Ext.define('Genesis.view.Prizes',
                }));
             }
             container.add(items);
+            container.setActiveItem(0);
+            container.show();
 
             console.log("MerchantPrize View - Found " + prizesList.length + " Prizes needed to update.");
          }
       }
+   },
+   showView : function()
+   {
+      this.callParent(arguments);
+
+      var carousel = this.query('carousel')[0];
+      carousel.setActiveItem(0);
+      carousel.show();
    },
    statics :
    {

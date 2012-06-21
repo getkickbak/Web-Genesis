@@ -28,7 +28,9 @@
 
 .challengePageItem {
    .x-carousel-item {
-      @include box-shadow(inset 0em -0.1em 0.1em rgba(0,0,0,0.6));
+      @if $include-highlights {
+         @include box-shadow(inset 0em -0.1em 0.1em rgba(0,0,0,0.6));
+      }
    }
 }
 .challengePageItemDescWrapper {

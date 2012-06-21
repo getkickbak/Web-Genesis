@@ -396,8 +396,6 @@ Ext.define('Genesis.controller.Checkins',
    {
       var me = this;
 
-      activeItem.createView();
-
       var viewport = me.getViewPortCntlr();
       var checkinContainer = me.getCheckInNowBar();
       var tbbar = activeItem.query('titlebar')[0];
@@ -425,11 +423,18 @@ Ext.define('Genesis.controller.Checkins',
             checkinContainer.hide();
             break;
       }
-      me.onExploreLoad();
+      Ext.defer(function()
+      {
+         activeItem.createView();
+         me.onExploreLoad();
+      }, 1, activeItem);
+      //activeItem.createView();
+      //me.onExploreLoad();
    },
    onExploreDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      //oldActiveItem.removeAll(true);
    },
    onExploreSelect : function(d, model, eOpts)
    {

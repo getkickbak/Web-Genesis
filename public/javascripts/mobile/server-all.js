@@ -1420,14 +1420,31 @@ Ext.define('Genesis.view.ViewBase',
       this.callParent(arguments);
       this.setPreRender([]);
    },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   removeAll : function(destroy, everything)
+   {
+      var rc = this.callParent(arguments);
+      this.setPreRender([]);
+
+      return rc;
+   },
    createView : function()
    {
       return (this.getPreRender().length == 0);
    },
    showView : function()
    {
+      // Do not add to view, if there's existing items, only re-render on empty views
+      if (this.getInnerItems().length == 0)
+      {
+         this.add(this.getPreRender());
+      }
       var titlebar = this.query('titlebar')[0];
-      this.add(this.getPreRender());
       Ext.defer(titlebar.setMasked, 0.3 * 1000, titlebar, [false]);
    }
 });
@@ -1452,6 +1469,7 @@ Ext.define('Genesis.view.Viewport',
       },
       fullscreen : true
    },
+   loadingMsg : 'Loading ...',
    // @private
    initialize : function()
    {
@@ -1485,13 +1503,21 @@ Ext.define('Genesis.view.Viewport',
     */
    animateActiveItem : function(activeItem, animation)
    {
+      /*
+       Ext.Viewport.setMasked(
+       {
+       xtype : 'loadmask',
+       message : this.loadingMsg
+       });
+       */
+
       var layout = this.getLayout(), defaultAnimation;
       var oldActiveItem = this.getActiveItem();
 
       if (this.activeItemAnimation)
       {
          this.activeItemAnimation.destroy();
-         console.debug("Destroying AnimateActiveItem ...");
+         //console.debug("Destroying AnimateActiveItem ...");
       }
       this.activeItemAnimation = animation = new Ext.fx.layout.Card(animation);
       if (animation && layout.isCard)
@@ -1500,12 +1526,20 @@ Ext.define('Genesis.view.Viewport',
          defaultAnimation = layout.getAnimation();
          if (defaultAnimation)
          {
+            var controller = _application.getController('Viewport').getEventDispatcher().controller;
+
             defaultAnimation.disable();
+            controller.pause();
             animation.on('animationend', function()
             {
                defaultAnimation.enable();
                animation.destroy();
                delete this.activeItemAnimation;
+
+               //console.debug("Animation Complete");
+               activeItem.showView();
+
+               //Ext.Viewport.setMasked(false);
                //
                // Delete oldActiveItem to save DOM memory
                //
@@ -1513,13 +1547,16 @@ Ext.define('Genesis.view.Viewport',
                {
                   Ext.defer(function()
                   {
-                     oldActiveItem.destroy();
+                     //oldActiveItem.destroy();
+                     controller.resume();
                      //console.debug('Destroyed View [' + oldActiveItem._itemId + ']');
                   }, 0.1 * 1000, this);
                }
-               //console.debug("Animation Complete");
-               activeItem.showView();
             }, this);
+         }
+         else
+         {
+            //Ext.Viewport.setMasked(false);
          }
       }
       var rc = this.setActiveItem(activeItem);
@@ -1530,6 +1567,7 @@ Ext.define('Genesis.view.Viewport',
          // if createView called is delayed, we will be scheduled behind it
          //
          Ext.defer(activeItem.showView, 1, activeItem);
+         //Ext.Viewport.setMasked(false);
       }
       return rc;
    },
@@ -1630,6 +1668,19 @@ Ext.define('Genesis.view.MainPage',
    {
       this.setPreRender([]);
       this.callParent(arguments);
+   },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   removeAll : function(destroy, everything)
+   {
+      var rc = this.callParent(arguments);
+      this.setPreRender([]);
+
+      return rc;
    },
    createView : function()
    {
@@ -1746,17 +1797,23 @@ Ext.define('Genesis.view.MainPage',
                }
             }
          }
-         if (carousel.getInnerItems().length > 0)
-         {
-            carousel.setActiveItem(0);
-         }
          console.log("MainPage Icons Not changed.");
       }
       delete carousel._listitems;
    },
    showView : function()
    {
-      this.add(this.getPreRender());
+      // Do not add to view, if there's existing items, only re-render on empty views
+      if (this.getInnerItems().length == 0)
+      {
+         this.add(this.getPreRender());
+      }
+
+      var carousel = this;
+      if (carousel.getInnerItems().length > 0)
+      {
+         carousel.setActiveItem(0);
+      }
       this.query('titlebar')[0].setMasked(false);
    }
 });
@@ -1812,6 +1869,19 @@ Ext.define('Genesis.view.server.SettingsPage',
             value : 'About Us'
          }]
       }]
+   },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   removeAll : function(destroy, everything)
+   {
+      var rc = this.callParent(arguments);
+      this.setPreRender([]);
+
+      return rc;
    },
    createView : Ext.emptyFn,
    showView : function()
@@ -2278,10 +2348,20 @@ Ext.define('Genesis.view.Prizes',
                }));
             }
             container.add(items);
+            container.setActiveItem(0);
+            container.show();
 
             console.log("MerchantPrize View - Found " + prizesList.length + " Prizes needed to update.");
          }
       }
+   },
+   showView : function()
+   {
+      this.callParent(arguments);
+
+      var carousel = this.query('carousel')[0];
+      carousel.setActiveItem(0);
+      carousel.show();
    },
    statics :
    {
@@ -3322,8 +3402,9 @@ Ext.define('Genesis.controller.Viewport',
    },
    onAccountsButtonTap : function(b, e, eOpts, eInfo)
    {
+      Ext.defer(this.redirectTo, 1, this, ['accounts']);
+      //this.redirect('accounts');
       //this.fireEvent('openpage', 'Accounts', null, null);
-      this.redirect('accounts');
       console.log("Going to Accounts Page ...");
    },
    onChallengesButtonTap : function(b, e, eOpts, eInfo, callback)
@@ -3339,7 +3420,10 @@ Ext.define('Genesis.controller.Viewport',
          }
          else
          {
-            me.fireEvent('openpage', 'client.Challenges', null, null);
+            Ext.defer(function()
+            {
+               me.fireEvent('openpage', 'client.Challenges', null, null);
+            }, 0.2 * 1000, me);
             console.log("Going to Challenges Page ...");
          }
       }
@@ -3388,32 +3472,36 @@ Ext.define('Genesis.controller.Viewport',
    },
    onRedemptionsButtonTap : function(b, e, eOpts, eInfo)
    {
+      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['redemptions']);
+      //this.redirectTo('redemptions');
       //this.fireEvent('openpage', 'client.Redemptions', 'redemptions', null);
-      this.redirectTo('redemptions');
       console.log("Going to Client Redemptions Page ...");
    },
    onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.redirectTo('merchantPrizes');
+      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['merchantPrizes']);
+      //this.redirectTo('merchantPrizes');
       //this.fireEvent('openpage', 'Prizes', 'merchantPrizes', null);
       console.log("Going to Merchant Prizes Page ...");
    },
    onHomeButtonTap : function(b, e, eOpts, eInfo)
    {
       var vport = this.getViewport();
-      this.resetView();
-      this.redirectTo('main');
+      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['main']);
+      //this.redirectTo('main');
       //this.fireEvent('openpage', 'MainPage', null, null);
       console.log("Going back to HomePage ...");
    },
    onCheckedInAccountTap : function(b, e, eOpts, eInfo)
    {
       var info = this.getViewPortCntlr().getCheckinInfo();
-      this.redirectTo('venue' + '/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
+      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['venue' + '/' + info.venue.getId() + '/' + info.customer.getId() + '/1']);
+      //this.redirectTo('venue' + '/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
    },
    onBrowseTap : function(b, e, eOpts, eInfo)
    {
-      this.redirectTo('exploreS');
+      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['exploreS']);
+      //this.redirectTo('exploreS');
       //this.fireEvent('openpage', 'Checkins', 'explore', 'slideUp');
    },
    // --------------------------------------------------------------------------
@@ -3498,25 +3586,28 @@ Ext.define('Genesis.controller.Viewport',
          var lastView = me.viewStack.pop();
          var currView = me.viewStack[me.viewStack.length - 1];
 
-         //
-         // Recreate View if the view was destroyed for DOM memory optimization
-         //
-         if (currView['view'].isDestroyed)
+         Ext.defer(function()
          {
-            currView['view'] = Ext.create(currView['view'].alias[0]);
-            console.debug("Recreated View [" + currView['view']._itemId + "]")
-         }
+            //
+            // Recreate View if the view was destroyed for DOM memory optimization
+            //
+            if (currView['view'].isDestroyed)
+            {
+               currView['view'] = Ext.create(currView['view'].alias[0]);
+               //console.debug("Recreated View [" + currView['view']._itemId + "]")
+            }
 
-         //
-         // Update URL
-         //
-         me.getApplication().getHistory().setToken(currView['url']);
-         window.location.hash = currView['url'];
+            //
+            // Update URL
+            //
+            me.getApplication().getHistory().setToken(currView['url']);
+            window.location.hash = currView['url'];
 
-         me.getViewport().animateActiveItem(currView['view'], Ext.apply(lastView['animation'],
-         {
-            reverse : true
-         }));
+            me.getViewport().animateActiveItem(currView['view'], Ext.apply(lastView['animation'],
+            {
+               reverse : true
+            }));
+         }, 1, me);
       }
    },
    // --------------------------------------------------------------------------
@@ -4221,13 +4312,14 @@ Ext.define('Genesis.controller.MainPage',
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      //Ext.defer(activeItem.createView, 1, activeItem);
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
       //this.getInfoBtn().hide();
    },
    // --------------------------------------------------------------------------
@@ -4270,11 +4362,13 @@ Ext.define('Genesis.controller.MainPage',
       Genesis.db.removeLocalDBAttrib('auth_code');
       
       //this.getInfoBtn().hide();
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onLoginDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      //oldActiveItem.removeAll(true);
    },
    onLogoutTap : function(b, e, eOpts, eInfo)
    {
@@ -4530,11 +4624,13 @@ Ext.define('Genesis.controller.MainPage',
             username : response.email
          });
       }
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onCreateDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      //oldActiveItem.removeAll(true);
    },
    // --------------------------------------------------------------------------
    // Page Navigation
@@ -4671,11 +4767,13 @@ Ext.define('Genesis.controller.server.Challenges',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
    },
    onRefreshTap : function(b, e, eOpts)
    {
@@ -4852,13 +4950,15 @@ Ext.define('Genesis.controller.server.Rewards',
        animation.enable();
        }
        */
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
-      //var priceField = me.getPrice();
-      //priceField.setValue(null);
+      //oldActiveItem.removeAll(true);
+      var priceField = me.getPrice();
+      priceField.setValue(null);
       me.enablePrecision = false;
    },
    /*
@@ -5174,11 +5274,13 @@ Ext.define('Genesis.controller.server.Redemptions',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
    },
    onScannedQRcode : function(encrypted)
    {
@@ -5413,6 +5515,10 @@ Ext.define('Genesis.controller.Prizes',
    {
       return 'You haved won ' + ((numPrizes > 1) ? 'some PRIZES' : 'a PRIZE') + '!'
    },
+   wonPrizeEmailMsg : function(prizeName, venueName)
+   {
+      return ('I just won ' + prizeName + ' for eating out at ' + venueName + '!');
+   },
    lostPrizeMsg : 'Oops, Play Again!',
    showQrCodeMsg : 'Show this Authorization Code to your server to redeem!',
    checkinFirstMsg : 'Please Check-in before claiming any prize(s)',
@@ -5462,7 +5568,7 @@ Ext.define('Genesis.controller.Prizes',
          var name = venue.get('name');
          var link = wsite[wsite.length - 1] || site;
          var desc = venue.get('description').trunc(256);
-         var message = 'I just won ' + earnprize.getCustomerReward().get('title') + ' for purchasing at ' + venue.get('name') + '!';
+         var message = me.wonPrizeEmailMsg(earnprize.getCustomerReward().get('title'), venue.get('name'));
 
          console.log('Posting to Facebook ...' + '\n' + //
          'Name: ' + name + '\n' + //
@@ -5658,9 +5764,6 @@ Ext.define('Genesis.controller.Prizes',
    onMerchantPrizesActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      var viewport = me.getViewPortCntlr();
-      var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
-      var prizesList = [];
 
       me.getMCloseBB().show();
       me.getMBB().hide();
@@ -5668,6 +5771,9 @@ Ext.define('Genesis.controller.Prizes',
       //
       // List all the prizes won by the Customer
       //
+      var viewport = me.getViewPortCntlr();
+      var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
+      var prizesList = [];
       var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
       if (prizes.length > 0)
       {
@@ -5693,25 +5799,26 @@ Ext.define('Genesis.controller.Prizes',
       {
          me.getMRedeemBtn().show();
       }
-      activeItem.createView();
+
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onUserPrizesActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      var items = [], prizesList = [];
-      var views;
+      var prizesList = [];
 
       me.getUCloseBB().hide();
       me.getUBB().show();
       me.getURedeemBtn().hide();
 
-      var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
-      for (var i = 0; i < prizes.length; i++)
-      {
-
-         prizesList.push(prizes[i]);
-      }
       /*
+       var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
+       for (var i = 0; i < prizes.length; i++)
+       {
+
+       prizesList.push(prizes[i]);
+       }
        if (prizesList.length == 0)
        {
        me.getURedeemBtn().hide();
@@ -5721,7 +5828,8 @@ Ext.define('Genesis.controller.Prizes',
        me.getURedeemBtn().show();
        }
        */
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onShowPrizeActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
@@ -5763,11 +5871,18 @@ Ext.define('Genesis.controller.Prizes',
       }
       view.showPrize = me.showPrize;
       console.log("ShowPrize View - Updated ShowPrize View.");
-      view.createView();
-      delete me.showPrize;
+      Ext.defer(function()
+      {
+         activeItem.createView();
+         delete me.showPrize;
+      }, 1, activeItem);
+      //view.createView();
+      //delete me.showPrize;
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var me = this;
+      oldActiveItem.removeAll(true);
    },
    onDoneTap : function(b, e, eOpts, eInfo, overrideMode)
    {
@@ -5998,7 +6113,10 @@ Ext.define('Genesis.controller.Prizes',
    openPage : function(subFeature)
    {
       this.setMode(subFeature);
-      this.pushView(this.getMainPage());
+      Ext.defer(function()
+      {
+         this.pushView(this.getMainPage())
+      }, 1, this);
    },
    getMainCarousel : function()
    {

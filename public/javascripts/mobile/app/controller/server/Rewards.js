@@ -93,13 +93,15 @@ Ext.define('Genesis.controller.server.Rewards',
        animation.enable();
        }
        */
-      activeItem.createView();
+      Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
-      //var priceField = me.getPrice();
-      //priceField.setValue(null);
+      //oldActiveItem.removeAll(true);
+      var priceField = me.getPrice();
+      priceField.setValue(null);
       me.enablePrecision = false;
    },
    /*
