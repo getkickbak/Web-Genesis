@@ -7,13 +7,18 @@
       &:nth-child(3) {
          margin-top:$panelTopGap;
       }
+      @if $include-highlights {
+         //@include box-shadow(0.2em 0em 0em rgba(80,81,82,0.6));
+      }
    }
    .ptsEarnPanel {
       padding:$panelGap*0.5;
       border: 1px solid $GreyEnd;
       background : $Grey;
       @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
-      //@include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
+      @if $include-highlights {
+         //@include box-shadow(0.2em 0.2em 0em rgba(80,81,82,0.6));
+      }
       .x-inner {
         margin:0 !important;
         height:$icon-size;
@@ -34,6 +39,7 @@
       position:static;
    }
    .redemptionsList {
+      min-height:5em;
       @extend .listScrollIndexWrapper;
       .x-list-item {
          .listItemDetailsWrapper {

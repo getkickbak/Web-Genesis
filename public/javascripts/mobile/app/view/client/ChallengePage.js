@@ -59,7 +59,7 @@ Ext.define('Genesis.view.client.ChallengePage',
             cls : 'itemDesc',
             data :
             {
-               description : 'Please Select a challenge to perform'
+               description : ''
             },
             tpl : Ext.create('Ext.XTemplate', '{[this.getDesc(values)]}',
             {

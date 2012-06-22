@@ -46,6 +46,7 @@ Ext.define('Genesis.controller.client.Rewards',
    checkinFirstMsg : 'Please Check-In before earning rewards',
    authCodeReqMsg : 'Proceed to scan an Authorization Code from your server to earn Reward Points!',
    prizeCheckMsg : 'Find out if you won a PRIZE!',
+   earnPtsMsg : 'Updating Points Earned ...',
    getPointsMsg : function(points)
    {
       return 'You\'ve earned ' + points + ' Points from this purchase!';
@@ -130,6 +131,11 @@ Ext.define('Genesis.controller.client.Rewards',
       EarnPrize['setEarnPrizeURL']();
       reader.setRootProperty('');
       reader.buildExtractors();
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.earnPtsMsg
+      });
       pstore.loadPage(1,
       {
          jsonData :
@@ -146,6 +152,7 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             reader.setRootProperty('data');
             reader.buildExtractors();
+            Ext.Viewport.setMasked(false);
             if (operation.wasSuccessful())
             {
                me.loadCallback = arguments;
@@ -299,20 +306,25 @@ Ext.define('Genesis.controller.client.Rewards',
       var container = me.getRewards();
       var viewport = me.getViewPortCntlr();
 
-      activeItem.createView();
-
-      me.startRouletteScreen();
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
+      Ext.defer(function()
       {
-         console.debug("RouletteSound Done, checking for prizes ...");
-         var app = me.getApplication();
-         app.getController('Prizes').fireEvent('prizecheck', me.loadCallback[0], me.loadCallback[1]);
-         delete me.loadCallback;
-      });
+         activeItem.createView();
+         me.startRouletteScreen();
+         Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
+         {
+            console.debug("RouletteSound Done, checking for prizes ...");
+            var app = me.getApplication();
+            app.getController('Prizes').fireEvent('prizecheck', me.loadCallback[0], me.loadCallback[1]);
+            delete me.loadCallback;
+         });
+      }, 1, activeItem);
+      //activeItem.createView();
+
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      //oldActiveItem.removeAll(true);
       //this.getBackButton().enable();
    },
    onContainerActivate : function(c, value, oldValue, eOpts)

@@ -19,6 +19,7 @@ Ext.define('Genesis.view.Viewport',
       },
       fullscreen : true
    },
+   loadingMsg : 'Loading ...',
    // @private
    initialize : function()
    {
@@ -52,13 +53,21 @@ Ext.define('Genesis.view.Viewport',
     */
    animateActiveItem : function(activeItem, animation)
    {
+      /*
+       Ext.Viewport.setMasked(
+       {
+       xtype : 'loadmask',
+       message : this.loadingMsg
+       });
+       */
+
       var layout = this.getLayout(), defaultAnimation;
       var oldActiveItem = this.getActiveItem();
 
       if (this.activeItemAnimation)
       {
          this.activeItemAnimation.destroy();
-         console.debug("Destroying AnimateActiveItem ...");
+         //console.debug("Destroying AnimateActiveItem ...");
       }
       this.activeItemAnimation = animation = new Ext.fx.layout.Card(animation);
       if (animation && layout.isCard)
@@ -67,12 +76,21 @@ Ext.define('Genesis.view.Viewport',
          defaultAnimation = layout.getAnimation();
          if (defaultAnimation)
          {
+            var controller = _application.getController('Viewport').getEventDispatcher().controller;
+
             defaultAnimation.disable();
+            controller.pause();
             animation.on('animationend', function()
             {
                defaultAnimation.enable();
                animation.destroy();
                delete this.activeItemAnimation;
+
+               //console.debug("Animation Complete");
+               activeItem.createView();
+               activeItem.showView();
+
+               //Ext.Viewport.setMasked(false);
                //
                // Delete oldActiveItem to save DOM memory
                //
@@ -80,15 +98,21 @@ Ext.define('Genesis.view.Viewport',
                {
                   Ext.defer(function()
                   {
-                     oldActiveItem.destroy();
+                     //oldActiveItem.destroy();
+                     controller.resume();
                      //console.debug('Destroyed View [' + oldActiveItem._itemId + ']');
                   }, 0.1 * 1000, this);
                }
-               //console.debug("Animation Complete");
-               activeItem.showView();
             }, this);
          }
+         else
+         {
+            //Ext.Viewport.setMasked(false);
+         }
       }
+      
+      //console.debug("animateActiveItem");
+      
       var rc = this.setActiveItem(activeItem);
       if (!layout.isCard)
       {
@@ -96,7 +120,9 @@ Ext.define('Genesis.view.Viewport',
          // Defer timeout is required to ensure that
          // if createView called is delayed, we will be scheduled behind it
          //
+         activeItem.createView();
          Ext.defer(activeItem.showView, 1, activeItem);
+         //Ext.Viewport.setMasked(false);
       }
       return rc;
    },

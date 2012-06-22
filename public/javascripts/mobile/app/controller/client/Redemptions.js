@@ -104,15 +104,20 @@ Ext.define('Genesis.controller.client.Redemptions',
 
       me.exploreMode = !cvenue || (cvenue && (cvenue.getId() != venue.getId()));
 
-      //
-      // Update Customer info
-      Ext.StoreMgr.get('RedemptionRenderCStore').setData(viewport.getCustomer());
-      //Ext.defer(activeItem.createView, 1, activeItem);
-      activeItem.createView();
+      Ext.defer(function()
+      {
+         //
+         // Update Customer info
+         Ext.StoreMgr.get('RedemptionRenderCStore').setData(viewport.getCustomer());
+
+         //activeItem.createView();
+      }, 1, activeItem);
+      //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
    },
    onItemListSelect : function(d, model, eOpts)
    {

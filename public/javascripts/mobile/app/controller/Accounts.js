@@ -284,13 +284,13 @@ Ext.define('Genesis.controller.Accounts',
             break;
          }
       }
-      // Precreate the DOMs
       //Ext.defer(activeItem.createView, 1, activeItem);
-      activeItem.createView();
+      //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
    },
    onSelect : function(list, model, eOpts)
    {
@@ -376,11 +376,13 @@ Ext.define('Genesis.controller.Accounts',
             break;
          }
       }
-      activeItem.createView(screenShow);
+      //Ext.defer(activeItem.createView, 1, activeItem, [screenShow]);
+      //activeItem.createView(screenShow);
    },
    onTransferDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
    },
    onTransferTap : function(b, e, eOpts)
    {

@@ -17,30 +17,8 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
             tag : 'post',
             text : 'Post'
          }]
-      })]
-   },
-   showView : function()
-   {
-      this.callParent(arguments);
-
-      console.debug("Rendering [" + this.metaData['photo_url'] + "]");
-      this.query('container[tag=background]')[0].element.dom.style.cssText += 'background-image:url(' + this.metaData['photo_url'] + ');'
-      delete this.metaData;
-   },
-   createView : function()
-   {
-      this.setPreRender(this.getPreRender().concat([
-      // Uploaded Image
-      photo = Ext.create('Ext.Container',
-      {
-         flex : 1,
-         width:'100%',
-         xtype : 'container',
-         tag : 'background',
-         cls : 'background'
       }),
       // Display Comment
-      Ext.create('Ext.field.TextArea',
       {
          xtype : 'textareafield',
          bottom : 0,
@@ -58,6 +36,32 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
          maxRows : 4,
          placeHolder : 'Please enter your photo description',
          clearIcon : false
+      }]
+   },
+   showView : function()
+   {
+      this.callParent(arguments);
+
+      console.debug("Rendering [" + this.metaData['photo_url'] + "]");
+      this.query('container[tag=background]')[0].element.dom.style.cssText += 'background-image:url(' + this.metaData['photo_url'] + ');'
+      delete this.metaData;
+   },
+   createView : function()
+   {
+      if (!this.callParent(arguments))
+      {
+         return;
+      }
+
+      this.setPreRender(this.getPreRender().concat([
+      // Uploaded Image
+      photo = Ext.create('Ext.Container',
+      {
+         flex : 1,
+         width : '100%',
+         xtype : 'container',
+         tag : 'background',
+         cls : 'background'
       })]));
    }
 });

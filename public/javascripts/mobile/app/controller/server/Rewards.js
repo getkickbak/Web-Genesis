@@ -74,33 +74,36 @@ Ext.define('Genesis.controller.server.Rewards',
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       /*
-       var container = this.getRewardsContainer();s
-       if(container)
-       {
-       var activeItem = container.getActiveItem();
-       var animation = container.getLayout().getAnimation();
-       animation.disable();
-       switch (activeItem.config.tag)
-       {
-       case 'qrcodeContainer' :
-       {
-       this.onToggleBtnTap(null, null, null, null);
-       break;
-       }
-       default :
-       break;
-       }
-       animation.enable();
-       }
-       */
-      activeItem.createView();
+      var container = this.getRewardsContainer();s
+      if(container)
+      {
+      var activeItem = container.getActiveItem();
+      var animation = container.getLayout().getAnimation();
+      animation.disable();
+      switch (activeItem.config.tag)
+      {
+      case 'qrcodeContainer' :
+      {
+      this.onToggleBtnTap(null, null, null, null);
+      break;
+      }
+      default :
+      break;
+      }
+      animation.enable();
+      }
+      */
+      //Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
-      //var priceField = me.getPrice();
-      //priceField.setValue(null);
+      //oldActiveItem.removeAll(true);
+      var priceField = me.getPrice();
+      priceField.setValue(null);
       me.enablePrecision = false;
+      me.onDoneTap();
    },
    /*
     onToggleBtnTap : function(b, e, eOpts, eInfo)

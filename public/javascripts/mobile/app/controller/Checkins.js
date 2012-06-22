@@ -95,7 +95,18 @@ Ext.define('Genesis.controller.Checkins',
       var position = me.callback['position'];
       var callback = me.callback['callback'];
       var viewport = me.getViewPortCntlr();
-      var venueId = (viewport.getVenue() ? viewport.getVenue().getId() : null);
+      var venueId = null;
+
+      switch (me.callback['url'])
+      {
+         case 'setVenueScanCheckinUrl' :
+         {
+            break;
+         }
+         default:
+            venueId = (viewport.getVenue() ? viewport.getVenue().getId() : null);
+            break;
+      }
 
       // Load Info into database
       Customer[url](venueId);
@@ -170,6 +181,7 @@ Ext.define('Genesis.controller.Checkins',
       switch(type)
       {
          case 'scan' :
+         {
             me.callback =
             {
                mode : mode,
@@ -179,6 +191,7 @@ Ext.define('Genesis.controller.Checkins',
             };
             me.scanQRCode();
             break;
+         }
          default:
             me.callback =
             {
@@ -221,11 +234,6 @@ Ext.define('Genesis.controller.Checkins',
    },
    onCheckinScanTap : function(b, e, eOpts, einfo)
    {
-      //
-      // Clear Venue info, let server determine from QR Code
-      //
-      this.getViewPortCntlr().setVenue(null);
-
       // Scan QR Code to confirm Checkin
       this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueScanCheckinUrl', 'scan', function()
       {
@@ -396,8 +404,6 @@ Ext.define('Genesis.controller.Checkins',
    {
       var me = this;
 
-      activeItem.createView();
-
       var viewport = me.getViewPortCntlr();
       var checkinContainer = me.getCheckInNowBar();
       var tbbar = activeItem.query('titlebar')[0];
@@ -425,11 +431,18 @@ Ext.define('Genesis.controller.Checkins',
             checkinContainer.hide();
             break;
       }
-      me.onExploreLoad();
+      Ext.defer(function()
+      {
+         //activeItem.createView();
+         me.onExploreLoad();
+      }, 1, activeItem);
+      //activeItem.createView();
+      //me.onExploreLoad();
    },
    onExploreDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      //oldActiveItem.removeAll(true);
    },
    onExploreSelect : function(d, model, eOpts)
    {

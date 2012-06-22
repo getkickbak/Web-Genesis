@@ -20,6 +20,14 @@ Ext.define('Genesis.view.client.Redemptions',
          }]
       })]
    },
+   showView : function()
+   {
+      this.callParent(arguments);
+
+      var list = this.query('list[tag=redemptionsList]')[0];
+      list.setStore('RedemptionsStore');
+      list.setMasked(false);
+   },
    createView : function()
    {
       if (!this.callParent(arguments))
@@ -79,7 +87,7 @@ Ext.define('Genesis.view.client.Redemptions',
          xtype : 'list',
          scrollable : undefined,
          ui : 'bottom-round',
-         store : 'RedemptionsStore',
+         //store : 'RedemptionsStore',
          cls : 'redemptionsList separator_pad',
          tag : 'redemptionsList',
          /*

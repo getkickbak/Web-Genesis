@@ -367,12 +367,13 @@ Ext.define('Genesis.controller.MainPage',
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       //Ext.defer(activeItem.createView, 1, activeItem);
-      activeItem.createView();
+      //activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
       //this.getInfoBtn().hide();
    },
    // --------------------------------------------------------------------------
@@ -408,18 +409,20 @@ Ext.define('Genesis.controller.MainPage',
    },
    onLoginActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var vport = this.getViewport();
+      var viewport = this.getViewPortCntlr();
       
       Genesis.db.resetStorage();
-      vport.setLoggedIn(false);
+      viewport.setLoggedIn(false);
       Genesis.db.removeLocalDBAttrib('auth_code');
       
       //this.getInfoBtn().hide();
-      activeItem.createView();
+      //Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onLoginDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      //oldActiveItem.removeAll(true);
    },
    onLogoutTap : function(b, e, eOpts, eInfo)
    {
@@ -675,11 +678,13 @@ Ext.define('Genesis.controller.MainPage',
             username : response.email
          });
       }
-      activeItem.createView();
+      //Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onCreateDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      //oldActiveItem.removeAll(true);
    },
    // --------------------------------------------------------------------------
    // Page Navigation

@@ -15,21 +15,24 @@ $GreyHdrStart : #A7A9AC; $GreyHdrEnd : #777878;
 //------------------------------------------------------------------------------
 // Global Vars Default Theme Override
 //------------------------------------------------------------------------------
-$base-color: $BlueStart !default;
+$base-color: $BlueStart;
 $base-gradient: 'smooth';
-$active-color: darken(saturate($OrangeEnd, 55%), 10%) !default;
+$active-color: darken(saturate($OrangeEnd, 55%), 10%);
+
+// Highlights
+$include-highlights: true; // Can disable all theme-generated gradients, text-shadows, and box-shadows.
 
 //Buttons
 $include-buttons-uis : false;
 $include-default-icons : false;
 
 // Forms
-//$form-dark: #FFF !default;
-$form-light: $BlueEnd !default;
-$form-field-bg-color : $Grey !default;
+//$form-dark: #FFF;
+$form-light: $BlueEnd ;
+$form-field-bg-color : $Grey;
 
 // Lists
-$list-bg-color: $Grey !default;
+$list-bg-color: $Grey;
 $list-active-gradient: 'bevel';
 //$list-header-bg-color: transparentize(saturate($base-color, 10%), .25);
 $list-header-bg-color: $OrangeStart;
@@ -61,8 +64,8 @@ $theme-path : 'v1';
 $theme-path-rel : '../themes/images/v1';
 
 // Badges Theme
-$badgePoints-bg-color: darken($GreenEnd, 10%) !default;
-$badgePoints-bg-gradient: $base-gradient !default;
+$badgePoints-bg-color: darken($GreenEnd, 10%);
+$badgePoints-bg-gradient: $base-gradient;
 
 //------------------------------------------------------------------------------
 // Default Theme Includes

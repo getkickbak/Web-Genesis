@@ -40,6 +40,7 @@ Ext.define('Genesis.controller.client.Challenges',
          },
          uploadPhotosBackground : 'clientuploadphotospageview container[tag=background]',
          postBtn : 'viewportview button[tag=post]',
+         photoTextarea : 'clientuploadphotospageview textareafield',
          //
          // Referral Challenge
          //
@@ -116,6 +117,7 @@ Ext.define('Genesis.controller.client.Challenges',
    metaData : null,
    reservedReferralId : 0,
    referralCbFn : null,
+   defaultDescText : 'Please Select a challenge to perform',
    samplePhotoURL : 'http://photos.getkickbak.com/paella9finish1.jpg',
    noPhotoUploadedMsg : 'Failed to upload photo to server.',
    fbUploadFailedMsg : 'Failed to upload the photo onto your Facebook account',
@@ -736,13 +738,29 @@ Ext.define('Genesis.controller.client.Challenges',
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      //Ext.defer(activeItem.createView, 1, activeItem);
-      activeItem.createView();
+      Ext.defer(function()
+      {
+         //activeItem.createView();
+         
+         var desc = me.getChallengeDescContainer();
+         for (var i = 0; i < desc.getItems().length; i++)
+         {
+            desc.getItems().getAt(i).updateData(
+            {
+               description : me.defaultDescText
+            });
+         }
+      }, 1, activeItem);
+      //activeItem.createView();
+      
       delete me.selectedItem;
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      
+      me.getChallengeContainer().hide();      
+      oldActiveItem.removeAll(true);
    },
    completeChallenge : function(qrcode, position, eOpts, eInfo)
    {
@@ -804,12 +822,13 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       //var container = me.getReferralsContainer();
       //container.setActiveItem(0);
-      activeItem.createView();
       //Ext.defer(activeItem.createView, 1, activeItem);
+      //activeItem.createView();
    },
    onReferralsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
    },
    onCompleteReferralsChallenge : function(b, e, eOpts)
    {
@@ -928,18 +947,20 @@ Ext.define('Genesis.controller.client.Challenges',
       //me.getPostBtn().show();
       activeItem.metaData = me.metaData;
       //Ext.defer(activeItem.createView, 1, activeItem);
-      activeItem.createView();
+      //activeItem.createView();
    },
    onUploadPhotosDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
+      oldActiveItem.removeAll(true);
+      this.getPhotoTextarea().setValue(null);
       //this.getPostBtn().hide();
    },
    onUploadPhotosTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
       var page = me.getUploadPhotosPage();
-      var textareafield = page.query('textareafield')[0];
+      var textareafield = me.getPhotoTextarea();
       var desc = textareafield.getValue();
 
       if ((desc.length > textareafield.getMaxLength()) || (desc.length < 16))
@@ -956,68 +977,80 @@ Ext.define('Genesis.controller.client.Challenges',
          return;
       }
 
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : me.completingChallengeMsg
-      });
       var viewport = me.getViewPortCntlr();
       var venue = viewport.getVenue();
 
-      FB.api('/me/photos', 'post',
+      if ( typeof (FB) != 'undefined')
       {
-         'message' : desc,
-         'url' : me.metaData['photo_url'],
-         'access_token' : FB.getAccessToken()
-         /*
-          ,"place" :
-          {
-          "name" : venue.get('name'),
-          "location" :
-          {
-          "street" : venue.get('address'),
-          "city" : venue.get('city'),
-          "state" : venue.get('state'),
-          "country" : venue.get('country'),
-          "latitude" : venue.get('latitude'),
-          "longitude" : venue.get('longitude')
-          }
-          }
-          */
-      }, function(response)
-      {
-         if (!response || response.error)
+         Ext.Viewport.setMasked(
          {
-            var message = (response && response.error) ? response.error.message : me.fbUploadFailedMsg;
-            Ext.Viewport.setMasked(false);
-            Ext.device.Notification.show(
+            xtype : 'loadmask',
+            message : me.completingChallengeMsg
+         });
+         FB.api('/me/photos', 'post',
+         {
+            'message' : desc,
+            'url' : me.metaData['photo_url'],
+            'access_token' : FB.getAccessToken()
+            /*
+             ,"place" :
+             {
+             "name" : venue.get('name'),
+             "location" :
+             {
+             "street" : venue.get('address'),
+             "city" : venue.get('city'),
+             "state" : venue.get('state'),
+             "country" : venue.get('country'),
+             "latitude" : venue.get('latitude'),
+             "longitude" : venue.get('longitude')
+             }
+             }
+             */
+         }, function(response)
+         {
+            if (!response || response.error)
             {
-               title : 'Upload Failed!',
-               message : message,
-               buttons : ['Try Again', 'Cancel'],
-               callback : function(btn)
+               var message = (response && response.error) ? response.error.message : me.fbUploadFailedMsg;
+               Ext.Viewport.setMasked(false);
+               Ext.device.Notification.show(
                {
-                  if (btn.toLowerCase() == 'try again')
+                  title : 'Upload Failed!',
+                  message : message,
+                  buttons : ['Try Again', 'Cancel'],
+                  callback : function(btn)
                   {
-                     Ext.defer(me.onUploadPhotosTap, 100, me);
+                     if (btn.toLowerCase() == 'try again')
+                     {
+                        Ext.defer(me.onUploadPhotosTap, 100, me);
+                     }
+                     else
+                     {
+                        //
+                        // Go back to Checked-in Merchant Account
+                        //
+                        me.metaData = null;
+                        me.popView();
+                     }
                   }
-                  else
-                  {
-                     //
-                     // Go back to Checked-in Merchant Account
-                     //
-                     me.metaData = null;
-                     me.popView();
-                  }
-               }
-            });
-         }
-         else
-         {
-            console.debug('Facebook Post ID - ' + response.id);
-            me.fireEvent('fbphotouploadcomplete');
-         }
-      });
+               });
+            }
+            else
+            {
+               console.debug('Facebook Post ID - ' + response.id);
+               me.fireEvent('fbphotouploadcomplete');
+            }
+         });
+      }
+      else
+      {
+         //
+         // Go back to Checked-in Merchant Account
+         //
+         me.metaData = null;
+         me.popView();
+         //me.fireEvent('fbphotouploadcomplete');
+      }
    },
    // --------------------------------------------------------------------------
    // Page Navigation

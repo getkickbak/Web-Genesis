@@ -262,8 +262,9 @@ Ext.define('Genesis.controller.Viewport',
    },
    onAccountsButtonTap : function(b, e, eOpts, eInfo)
    {
+      Ext.defer(this.redirectTo, 1, this, ['accounts']);
+      //this.redirect('accounts');
       //this.fireEvent('openpage', 'Accounts', null, null);
-      this.redirect('accounts');
       console.log("Going to Accounts Page ...");
    },
    onChallengesButtonTap : function(b, e, eOpts, eInfo, callback)
@@ -279,7 +280,10 @@ Ext.define('Genesis.controller.Viewport',
          }
          else
          {
-            me.fireEvent('openpage', 'client.Challenges', null, null);
+            Ext.defer(function()
+            {
+               me.fireEvent('openpage', 'client.Challenges', null, null);
+            }, 0.2 * 1000, me);
             console.log("Going to Challenges Page ...");
          }
       }
@@ -328,32 +332,36 @@ Ext.define('Genesis.controller.Viewport',
    },
    onRedemptionsButtonTap : function(b, e, eOpts, eInfo)
    {
+      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['redemptions']);
+      //this.redirectTo('redemptions');
       //this.fireEvent('openpage', 'client.Redemptions', 'redemptions', null);
-      this.redirectTo('redemptions');
       console.log("Going to Client Redemptions Page ...");
    },
    onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.redirectTo('merchantPrizes');
+      Ext.defer(this.redirectTo, 1, this, ['merchantPrizes']);
+      //this.redirectTo('merchantPrizes');
       //this.fireEvent('openpage', 'Prizes', 'merchantPrizes', null);
       console.log("Going to Merchant Prizes Page ...");
    },
    onHomeButtonTap : function(b, e, eOpts, eInfo)
    {
       var vport = this.getViewport();
-      this.resetView();
-      this.redirectTo('main');
+      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['main']);
+      //this.redirectTo('main');
       //this.fireEvent('openpage', 'MainPage', null, null);
       console.log("Going back to HomePage ...");
    },
    onCheckedInAccountTap : function(b, e, eOpts, eInfo)
    {
       var info = this.getViewPortCntlr().getCheckinInfo();
-      this.redirectTo('venue' + '/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
+      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['venue' + '/' + info.venue.getId() + '/' + info.customer.getId() + '/1']);
+      //this.redirectTo('venue' + '/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
    },
    onBrowseTap : function(b, e, eOpts, eInfo)
    {
-      this.redirectTo('exploreS');
+      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['exploreS']);
+      //this.redirectTo('exploreS');
       //this.fireEvent('openpage', 'Checkins', 'explore', 'slideUp');
    },
    // --------------------------------------------------------------------------
@@ -438,25 +446,28 @@ Ext.define('Genesis.controller.Viewport',
          var lastView = me.viewStack.pop();
          var currView = me.viewStack[me.viewStack.length - 1];
 
-         //
-         // Recreate View if the view was destroyed for DOM memory optimization
-         //
-         if (currView['view'].isDestroyed)
+         Ext.defer(function()
          {
-            currView['view'] = Ext.create(currView['view'].alias[0]);
-            console.debug("Recreated View [" + currView['view']._itemId + "]")
-         }
+            //
+            // Recreate View if the view was destroyed for DOM memory optimization
+            //
+            if (currView['view'].isDestroyed)
+            {
+               currView['view'] = Ext.create(currView['view'].alias[0]);
+               //console.debug("Recreated View [" + currView['view']._itemId + "]")
+            }
 
-         //
-         // Update URL
-         //
-         me.getApplication().getHistory().setToken(currView['url']);
-         window.location.hash = currView['url'];
+            //
+            // Update URL
+            //
+            me.getApplication().getHistory().setToken(currView['url']);
+            window.location.hash = currView['url'];
 
-         me.getViewport().animateActiveItem(currView['view'], Ext.apply(lastView['animation'],
-         {
-            reverse : true
-         }));
+            me.getViewport().animateActiveItem(currView['view'], Ext.apply(lastView['animation'],
+            {
+               reverse : true
+            }));
+         }, 1, me);
       }
    },
    // --------------------------------------------------------------------------

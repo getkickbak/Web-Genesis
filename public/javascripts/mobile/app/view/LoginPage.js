@@ -102,6 +102,19 @@ Ext.define('Genesis.view.SignInPage',
          text : 'Sign In'
       }]
    },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   removeAll : function(destroy, everything)
+   {
+      var rc = this.callParent(arguments);
+      this.setPreRender([]);
+
+      return rc;
+   },
    createView : Ext.emptyFn,
    showView : function()
    {
@@ -168,6 +181,19 @@ Ext.define('Genesis.view.CreateAccountPage',
          tag : 'createAccount',
          text : 'Create Account'
       }]
+   },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   removeAll : function(destroy, everything)
+   {
+      var rc = this.callParent(arguments);
+      this.setPreRender([]);
+
+      return rc;
    },
    createView : Ext.emptyFn,
    showView : function()
