@@ -7300,7 +7300,18 @@ Ext.define('Genesis.controller.Checkins',
       var position = me.callback['position'];
       var callback = me.callback['callback'];
       var viewport = me.getViewPortCntlr();
-      var venueId = (viewport.getVenue() ? viewport.getVenue().getId() : null);
+      var venueId = null;
+
+      switch (me.callback['url'])
+      {
+         case 'setVenueScanCheckinUrl' :
+         {
+            break;
+         }
+         default:
+            venueId = (viewport.getVenue() ? viewport.getVenue().getId() : null);
+            break;
+      }
 
       // Load Info into database
       Customer[url](venueId);
@@ -7375,6 +7386,7 @@ Ext.define('Genesis.controller.Checkins',
       switch(type)
       {
          case 'scan' :
+         {
             me.callback =
             {
                mode : mode,
@@ -7384,6 +7396,7 @@ Ext.define('Genesis.controller.Checkins',
             };
             me.scanQRCode();
             break;
+         }
          default:
             me.callback =
             {
@@ -7426,11 +7439,6 @@ Ext.define('Genesis.controller.Checkins',
    },
    onCheckinScanTap : function(b, e, eOpts, einfo)
    {
-      //
-      // Clear Venue info, let server determine from QR Code
-      //
-      this.getViewPortCntlr().setVenue(null);
-
       // Scan QR Code to confirm Checkin
       this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueScanCheckinUrl', 'scan', function()
       {
@@ -11152,21 +11160,21 @@ Ext.define('Genesis.controller.Prizes',
       me.getURedeemBtn().hide();
 
       /*
-       var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
-       for (var i = 0; i < prizes.length; i++)
-       {
+      var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
+      for (var i = 0; i < prizes.length; i++)
+      {
 
-       prizesList.push(prizes[i]);
-       }
-       if (prizesList.length == 0)
-       {
-       me.getURedeemBtn().hide();
-       }
-       else
-       {
-       me.getURedeemBtn().show();
-       }
-       */
+      prizesList.push(prizes[i]);
+      }
+      if (prizesList.length == 0)
+      {
+      me.getURedeemBtn().hide();
+      }
+      else
+      {
+      me.getURedeemBtn().show();
+      }
+      */
       //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
@@ -11184,11 +11192,11 @@ Ext.define('Genesis.controller.Prizes',
       {
          case 'authReward' :
          {
-            me.getSRedeemBtn().hide();
             tbbar.addCls('kbTitle');
             tbbar.setTitle(' ');
             me.getRefreshBtn()[photo ?  'show' :'hide']();
             me.getVerifyBtn()[photo ?  'hide' :'show']();
+            me.getSRedeemBtn().hide();
             break;
          }
          case 'reward' :
@@ -11197,15 +11205,16 @@ Ext.define('Genesis.controller.Prizes',
             tbbar.setTitle('Rewards');
             me.getRefreshBtn()['hide']();
             me.getVerifyBtn()['hide']();
+            me.getSRedeemBtn().show();
             break;
          }
          case 'showPrize' :
          default:
             tbbar.removeCls('kbTitle');
-            me.getSRedeemBtn().show();
             tbbar.setTitle('Prizes');
             me.getRefreshBtn()['hide']();
             me.getVerifyBtn()['hide']();
+            me.getSRedeemBtn().show();
             break;
       }
       view.showPrize = me.showPrize;

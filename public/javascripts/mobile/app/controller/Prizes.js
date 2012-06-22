@@ -435,21 +435,21 @@ Ext.define('Genesis.controller.Prizes',
       me.getURedeemBtn().hide();
 
       /*
-       var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
-       for (var i = 0; i < prizes.length; i++)
-       {
+      var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
+      for (var i = 0; i < prizes.length; i++)
+      {
 
-       prizesList.push(prizes[i]);
-       }
-       if (prizesList.length == 0)
-       {
-       me.getURedeemBtn().hide();
-       }
-       else
-       {
-       me.getURedeemBtn().show();
-       }
-       */
+      prizesList.push(prizes[i]);
+      }
+      if (prizesList.length == 0)
+      {
+      me.getURedeemBtn().hide();
+      }
+      else
+      {
+      me.getURedeemBtn().show();
+      }
+      */
       //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
@@ -467,11 +467,11 @@ Ext.define('Genesis.controller.Prizes',
       {
          case 'authReward' :
          {
-            me.getSRedeemBtn().hide();
             tbbar.addCls('kbTitle');
             tbbar.setTitle(' ');
             me.getRefreshBtn()[photo ?  'show' :'hide']();
             me.getVerifyBtn()[photo ?  'hide' :'show']();
+            me.getSRedeemBtn().hide();
             break;
          }
          case 'reward' :
@@ -480,15 +480,16 @@ Ext.define('Genesis.controller.Prizes',
             tbbar.setTitle('Rewards');
             me.getRefreshBtn()['hide']();
             me.getVerifyBtn()['hide']();
+            me.getSRedeemBtn().show();
             break;
          }
          case 'showPrize' :
          default:
             tbbar.removeCls('kbTitle');
-            me.getSRedeemBtn().show();
             tbbar.setTitle('Prizes');
             me.getRefreshBtn()['hide']();
             me.getVerifyBtn()['hide']();
+            me.getSRedeemBtn().show();
             break;
       }
       view.showPrize = me.showPrize;

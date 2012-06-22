@@ -4772,7 +4772,7 @@ Ext.define('Genesis.controller.server.Challenges',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      Ext.defer(activeItem.createView, 1, activeItem);
+      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -4936,25 +4936,25 @@ Ext.define('Genesis.controller.server.Rewards',
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       /*
-       var container = this.getRewardsContainer();s
-       if(container)
-       {
-       var activeItem = container.getActiveItem();
-       var animation = container.getLayout().getAnimation();
-       animation.disable();
-       switch (activeItem.config.tag)
-       {
-       case 'qrcodeContainer' :
-       {
-       this.onToggleBtnTap(null, null, null, null);
-       break;
-       }
-       default :
-       break;
-       }
-       animation.enable();
-       }
-       */
+      var container = this.getRewardsContainer();s
+      if(container)
+      {
+      var activeItem = container.getActiveItem();
+      var animation = container.getLayout().getAnimation();
+      animation.disable();
+      switch (activeItem.config.tag)
+      {
+      case 'qrcodeContainer' :
+      {
+      this.onToggleBtnTap(null, null, null, null);
+      break;
+      }
+      default :
+      break;
+      }
+      animation.enable();
+      }
+      */
       //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
@@ -4965,6 +4965,7 @@ Ext.define('Genesis.controller.server.Rewards',
       var priceField = me.getPrice();
       priceField.setValue(null);
       me.enablePrecision = false;
+      me.onDoneTap();
    },
    /*
     onToggleBtnTap : function(b, e, eOpts, eInfo)
@@ -5817,21 +5818,21 @@ Ext.define('Genesis.controller.Prizes',
       me.getURedeemBtn().hide();
 
       /*
-       var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
-       for (var i = 0; i < prizes.length; i++)
-       {
+      var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
+      for (var i = 0; i < prizes.length; i++)
+      {
 
-       prizesList.push(prizes[i]);
-       }
-       if (prizesList.length == 0)
-       {
-       me.getURedeemBtn().hide();
-       }
-       else
-       {
-       me.getURedeemBtn().show();
-       }
-       */
+      prizesList.push(prizes[i]);
+      }
+      if (prizesList.length == 0)
+      {
+      me.getURedeemBtn().hide();
+      }
+      else
+      {
+      me.getURedeemBtn().show();
+      }
+      */
       //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
@@ -5849,11 +5850,11 @@ Ext.define('Genesis.controller.Prizes',
       {
          case 'authReward' :
          {
-            me.getSRedeemBtn().hide();
             tbbar.addCls('kbTitle');
             tbbar.setTitle(' ');
             me.getRefreshBtn()[photo ?  'show' :'hide']();
             me.getVerifyBtn()[photo ?  'hide' :'show']();
+            me.getSRedeemBtn().hide();
             break;
          }
          case 'reward' :
@@ -5862,15 +5863,16 @@ Ext.define('Genesis.controller.Prizes',
             tbbar.setTitle('Rewards');
             me.getRefreshBtn()['hide']();
             me.getVerifyBtn()['hide']();
+            me.getSRedeemBtn().show();
             break;
          }
          case 'showPrize' :
          default:
             tbbar.removeCls('kbTitle');
-            me.getSRedeemBtn().show();
             tbbar.setTitle('Prizes');
             me.getRefreshBtn()['hide']();
             me.getVerifyBtn()['hide']();
+            me.getSRedeemBtn().show();
             break;
       }
       view.showPrize = me.showPrize;
