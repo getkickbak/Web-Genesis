@@ -52,6 +52,7 @@ Ext.define('Genesis.view.CheckinExplore',
       this.getPreRender().push(Ext.create('Ext.List',
       {
          xtype : 'list',
+         deferEmptyText : false,
          store : 'CheckinExploreStore',
          scrollable : 'vertical',
          emptyText : ' ',
@@ -89,7 +90,7 @@ Ext.define('Genesis.view.CheckinExplore',
             refreshFn : function(plugin)
             {
                var controller = _application.getController('Checkins');
-               controller.fireEvent('exploreLoad',true);
+               controller.fireEvent('exploreLoad', true);
             }
          }]
       }));
@@ -97,7 +98,11 @@ Ext.define('Genesis.view.CheckinExplore',
    showView : function()
    {
       this.callParent(arguments);
-      this.query('titlebar')[0].setMasked(false);
+      var list = this.query('list')[0];
+      if (list)
+      {
+         list.setVisibility(true);
+      }
 
       // Hack to fix bug in Sencha Touch API
       var plugin = this.query('list')[0].getPlugins()[0];

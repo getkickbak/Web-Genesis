@@ -20,6 +20,15 @@ Ext.define('Genesis.view.Accounts',
          }]
       })]
    },
+   showView : function()
+   {
+      this.callParent(arguments);
+      var list = this.query('list')[0];
+      if (list)
+      {
+         list.setVisibility(true);
+      }
+   },
    createView : function()
    {
       if (!this.callParent(arguments))
@@ -31,6 +40,7 @@ Ext.define('Genesis.view.Accounts',
       {
          xtype : 'list',
          store : 'CustomerStore',
+         deferEmptyText : false,
          tag : 'accountsList',
          scrollable : 'vertical',
          cls : 'accountsList',

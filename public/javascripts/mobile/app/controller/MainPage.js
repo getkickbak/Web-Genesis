@@ -185,6 +185,10 @@ Ext.define('Genesis.controller.MainPage',
       }
 
       console.log("MainPage Init");
+      //
+      // Preloading Pages to memory
+      //
+      me.getMain();
    },
    initCustomerStore : function()
    {
@@ -372,8 +376,6 @@ Ext.define('Genesis.controller.MainPage',
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      var me = this;
-      oldActiveItem.removeAll(true);
       //this.getInfoBtn().hide();
    },
    // --------------------------------------------------------------------------

@@ -87,6 +87,10 @@ Ext.define('Genesis.controller.client.Redemptions',
 
       this.callParent(arguments);
       console.log("Client Redemptions Init");
+      //
+      // Prelod Page
+      //
+      this.getRedemptions();
    },
    // --------------------------------------------------------------------------
    // Redemptions Page
@@ -104,20 +108,12 @@ Ext.define('Genesis.controller.client.Redemptions',
 
       me.exploreMode = !cvenue || (cvenue && (cvenue.getId() != venue.getId()));
 
-      Ext.defer(function()
-      {
-         //
-         // Update Customer info
-         Ext.StoreMgr.get('RedemptionRenderCStore').setData(viewport.getCustomer());
-
-         //activeItem.createView();
-      }, 1, activeItem);
       //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
-      oldActiveItem.removeAll(true);
+      me.getRedemptionsList().setVisibility(false);
    },
    onItemListSelect : function(d, model, eOpts)
    {

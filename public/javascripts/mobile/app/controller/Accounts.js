@@ -290,7 +290,7 @@ Ext.define('Genesis.controller.Accounts',
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
-      oldActiveItem.removeAll(true);
+      me.getAccountsList().setVisibility(false);
    },
    onSelect : function(list, model, eOpts)
    {
@@ -381,8 +381,6 @@ Ext.define('Genesis.controller.Accounts',
    },
    onTransferDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
-      var me = this;
-      oldActiveItem.removeAll(true);
    },
    onTransferTap : function(b, e, eOpts)
    {

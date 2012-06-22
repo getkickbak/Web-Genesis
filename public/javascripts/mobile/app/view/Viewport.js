@@ -82,26 +82,41 @@ Ext.define('Genesis.view.Viewport',
             controller.pause();
             animation.on('animationend', function()
             {
+               var titlebar;
+
+               console.debug("Animation Complete");
+
                defaultAnimation.enable();
                animation.destroy();
                delete this.activeItemAnimation;
 
-               //console.debug("Animation Complete");
+               if (oldActiveItem)
+               {
+                  oldActiveItem.cleanView();
+
+                  titlebar = oldActiveItem.query('titlebar')[0];
+                  if (titlebar)
+                  {
+                     titlebar.setMasked(Genesis.view.ViewBase.invisibleMask);
+                  }
+               }
                activeItem.createView();
                activeItem.showView();
+
+               titlebar = activeItem.query('titlebar')[0];
+               if (titlebar)
+               {
+                  titlebar.setMasked(false);
+               }
 
                //Ext.Viewport.setMasked(false);
                //
                // Delete oldActiveItem to save DOM memory
                //
-               if (oldActiveItem)
+               //if (oldActiveItem)
                {
-                  Ext.defer(function()
-                  {
-                     //oldActiveItem.destroy();
-                     controller.resume();
-                     //console.debug('Destroyed View [' + oldActiveItem._itemId + ']');
-                  }, 0.1 * 1000, this);
+                  controller.resume();
+                  //console.debug('Destroyed View [' + oldActiveItem._itemId + ']');
                }
             }, this);
          }
@@ -110,9 +125,9 @@ Ext.define('Genesis.view.Viewport',
             //Ext.Viewport.setMasked(false);
          }
       }
-      
+
       //console.debug("animateActiveItem");
-      
+
       var rc = this.setActiveItem(activeItem);
       if (!layout.isCard)
       {
@@ -120,8 +135,17 @@ Ext.define('Genesis.view.Viewport',
          // Defer timeout is required to ensure that
          // if createView called is delayed, we will be scheduled behind it
          //
+         if (oldActiveItem)
+         {
+            oldActiveItem.cleanView();
+            var titlebar = oldActiveItem.query('titlebar')[0];
+            if (titlebar)
+            {
+               titlebar.setMasked(Genesis.view.ViewBase.invisibleMask);
+            }
+         }
          activeItem.createView();
-         Ext.defer(activeItem.showView, 1, activeItem);
+         activeItem.showView();
          //Ext.Viewport.setMasked(false);
       }
       return rc;

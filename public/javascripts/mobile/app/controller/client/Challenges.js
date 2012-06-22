@@ -155,8 +155,13 @@ Ext.define('Genesis.controller.client.Challenges',
    visitFirstMsg : 'You must visit this establishment first before you are eligible to do this Challenge',
    init : function(app)
    {
+      var me = this;
       this.callParent(arguments);
       console.log("Challenge Init");
+      //
+      // Preload Pages
+      //
+      me.getChallengePage();
    },
    // --------------------------------------------------------------------------
    // Event Handlers
@@ -741,7 +746,7 @@ Ext.define('Genesis.controller.client.Challenges',
       Ext.defer(function()
       {
          //activeItem.createView();
-         
+
          var desc = me.getChallengeDescContainer();
          for (var i = 0; i < desc.getItems().length; i++)
          {
@@ -752,15 +757,11 @@ Ext.define('Genesis.controller.client.Challenges',
          }
       }, 1, activeItem);
       //activeItem.createView();
-      
+
       delete me.selectedItem;
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      var me = this;
-      
-      me.getChallengeContainer().hide();      
-      oldActiveItem.removeAll(true);
    },
    completeChallenge : function(qrcode, position, eOpts, eInfo)
    {
@@ -827,8 +828,6 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    onReferralsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
-      var me = this;
-      oldActiveItem.removeAll(true);
    },
    onCompleteReferralsChallenge : function(b, e, eOpts)
    {
@@ -951,8 +950,6 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    onUploadPhotosDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      var me = this;
-      oldActiveItem.removeAll(true);
       this.getPhotoTextarea().setValue(null);
       //this.getPostBtn().hide();
    },

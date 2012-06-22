@@ -47,20 +47,25 @@ Ext.define('Genesis.controller.ControllerBase',
          'slide' :
          {
             type : 'slide',
-            direction : 'left'
+            direction : 'left',
+            duration : 400
          },
          'slideUp' :
          {
             type : 'slide',
-            direction : 'up'
+            direction : 'up',
+            duration : 400
          },
          'flip' :
          {
-            type : 'flip'
+            type : 'flip',
+            duration : 400
          },
          'fade' :
          {
-            type : 'fade'
+            type : 'fade',
+            duration : 400
+
          }
       },
       playSoundFile : function(sound_file, successCallback, failCallback)

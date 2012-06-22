@@ -85,6 +85,10 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       this.callParent(arguments);
       console.log("Client Rewards Init");
+      //
+      // Preload Pages
+      //
+      this.getRewards();
    },
    // --------------------------------------------------------------------------
    // Event Handlers
@@ -303,12 +307,12 @@ Ext.define('Genesis.controller.client.Rewards',
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      var container = me.getRewards();
-      var viewport = me.getViewPortCntlr();
-
       Ext.defer(function()
       {
-         activeItem.createView();
+         var container = me.getRewards();
+         var viewport = me.getViewPortCntlr();
+
+         //activeItem.createView();
          me.startRouletteScreen();
          Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
          {
@@ -323,8 +327,6 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      var me = this;
-      //oldActiveItem.removeAll(true);
       //this.getBackButton().enable();
    },
    onContainerActivate : function(c, value, oldValue, eOpts)

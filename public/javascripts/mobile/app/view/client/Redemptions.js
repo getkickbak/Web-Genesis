@@ -20,20 +20,29 @@ Ext.define('Genesis.view.client.Redemptions',
          }]
       })]
    },
+   cleanView : function()
+   {
+      this.removeAll(true);
+   },
    showView : function()
    {
       this.callParent(arguments);
-
       var list = this.query('list[tag=redemptionsList]')[0];
-      list.setStore('RedemptionsStore');
-      list.setMasked(false);
+      list.setVisibility(true);
    },
    createView : function()
    {
+      var app = _application;
+      var viewport = app.getController('Viewport');
+      //
+      // Update Customer info
+      Ext.StoreMgr.get('RedemptionRenderCStore').setData(viewport.getCustomer());
+
       if (!this.callParent(arguments))
       {
          return;
       }
+
       // ------------------------------------------------------------------------
       // Redemptions Points Earned Panel
       // ------------------------------------------------------------------------
@@ -85,9 +94,10 @@ Ext.define('Genesis.view.client.Redemptions',
       Ext.create('Ext.List',
       {
          xtype : 'list',
+         deferEmptyText : false,
          scrollable : undefined,
          ui : 'bottom-round',
-         //store : 'RedemptionsStore',
+         store : 'RedemptionsStore',
          cls : 'redemptionsList separator_pad',
          tag : 'redemptionsList',
          /*

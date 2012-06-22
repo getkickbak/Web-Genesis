@@ -92,6 +92,7 @@ Ext.define('Genesis.view.client.AccountsTransfer',
             },
             {
                xtype : 'list',
+               deferEmptyText : false,
                scrollable : false,
                //ui : 'bottom-round',
                cls : 'transferPanel',
@@ -284,7 +285,6 @@ Ext.define('Genesis.view.client.AccountsTransfer',
             }]
          }]
       })]));
-      this.query('titlebar')[0].setMasked(false);
    },
    statics :
    {

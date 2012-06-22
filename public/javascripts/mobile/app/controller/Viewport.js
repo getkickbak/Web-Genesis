@@ -262,8 +262,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    onAccountsButtonTap : function(b, e, eOpts, eInfo)
    {
-      Ext.defer(this.redirectTo, 1, this, ['accounts']);
-      //this.redirect('accounts');
+      this.redirect('accounts');
       //this.fireEvent('openpage', 'Accounts', null, null);
       console.log("Going to Accounts Page ...");
    },
@@ -280,10 +279,7 @@ Ext.define('Genesis.controller.Viewport',
          }
          else
          {
-            Ext.defer(function()
-            {
-               me.fireEvent('openpage', 'client.Challenges', null, null);
-            }, 0.2 * 1000, me);
+            me.fireEvent('openpage', 'client.Challenges', null, null);
             console.log("Going to Challenges Page ...");
          }
       }
@@ -332,36 +328,29 @@ Ext.define('Genesis.controller.Viewport',
    },
    onRedemptionsButtonTap : function(b, e, eOpts, eInfo)
    {
-      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['redemptions']);
-      //this.redirectTo('redemptions');
+      this.redirectTo('redemptions');
       //this.fireEvent('openpage', 'client.Redemptions', 'redemptions', null);
       console.log("Going to Client Redemptions Page ...");
    },
    onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
-      Ext.defer(this.redirectTo, 1, this, ['merchantPrizes']);
-      //this.redirectTo('merchantPrizes');
+      this.redirectTo('merchantPrizes');
       //this.fireEvent('openpage', 'Prizes', 'merchantPrizes', null);
       console.log("Going to Merchant Prizes Page ...");
    },
    onHomeButtonTap : function(b, e, eOpts, eInfo)
    {
-      var vport = this.getViewport();
-      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['main']);
-      //this.redirectTo('main');
-      //this.fireEvent('openpage', 'MainPage', null, null);
+      this.redirectTo('main');
       console.log("Going back to HomePage ...");
    },
    onCheckedInAccountTap : function(b, e, eOpts, eInfo)
    {
       var info = this.getViewPortCntlr().getCheckinInfo();
-      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['venue' + '/' + info.venue.getId() + '/' + info.customer.getId() + '/1']);
-      //this.redirectTo('venue' + '/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
+      this.redirectTo('venue' + '/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
    },
    onBrowseTap : function(b, e, eOpts, eInfo)
    {
-      Ext.defer(this.redirectTo, 0.5 * 1000, this, ['exploreS']);
-      //this.redirectTo('exploreS');
+      this.redirectTo('exploreS');
       //this.fireEvent('openpage', 'Checkins', 'explore', 'slideUp');
    },
    // --------------------------------------------------------------------------

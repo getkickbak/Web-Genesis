@@ -116,11 +116,7 @@ Ext.define('Genesis.view.SignInPage',
       return rc;
    },
    createView : Ext.emptyFn,
-   showView : function()
-   {
-      var titlebar = this.query('titlebar')[0];
-      Ext.defer(titlebar.setMasked, 0.3 * 1000, titlebar, [false]);
-   }
+   showView : Ext.emptyFn
 });
 
 Ext.define('Genesis.view.CreateAccountPage',
@@ -196,9 +192,5 @@ Ext.define('Genesis.view.CreateAccountPage',
       return rc;
    },
    createView : Ext.emptyFn,
-   showView : function()
-   {
-      var titlebar = this.query('titlebar')[0];
-      Ext.defer(titlebar.setMasked, 0.3 * 1000, titlebar, [false]);
-   }
+   showView : Ext.emptyFn
 });

@@ -18,6 +18,7 @@ Ext.define('Genesis.controller.Checkins',
       {
          backBtn : 'checkinexploreview button[tag=back]',
          closeBtn : 'checkinexploreview button[tag=close]',
+         exploreList : 'checkinexploreview list',
          explore :
          {
             selector : 'checkinexploreview',
@@ -37,7 +38,7 @@ Ext.define('Genesis.controller.Checkins',
             activate : 'onExploreActivate',
             deactivate : 'onExploreDeactivate'
          },
-         'checkinexploreview list' :
+         exploreList :
          {
             select : 'onExploreSelect',
             disclose : 'onExploreDisclose'
@@ -83,6 +84,10 @@ Ext.define('Genesis.controller.Checkins',
       });
       this.callParent(arguments);
       console.log("Checkins Init");
+      //
+      // Prelod Page
+      //
+      this.getExplore();
    },
    // --------------------------------------------------------------------------
    // Common Functions
@@ -431,18 +436,16 @@ Ext.define('Genesis.controller.Checkins',
             checkinContainer.hide();
             break;
       }
-      Ext.defer(function()
-      {
-         //activeItem.createView();
-         me.onExploreLoad();
-      }, 1, activeItem);
       //activeItem.createView();
-      //me.onExploreLoad();
+      me.onExploreLoad();
    },
    onExploreDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
-      //oldActiveItem.removeAll(true);
+      if (me.getExploreList())
+      {
+         me.getExploreList().setVisibility(false);
+      }
    },
    onExploreSelect : function(d, model, eOpts)
    {
