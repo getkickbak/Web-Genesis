@@ -6,7 +6,7 @@ class Api::V1::CheckInsController < ApplicationController
     if !APP_PROP["SIMULATOR_MODE"] && current_user.role != "test"
       begin
         encrypted_data = params[:auth_code].split('$')
-        venue = Venue.get(encrypted_data[0])
+        venue = Venue.get(encrypted_data[0]) || not_found
         cipher = Gibberish::AES.new(venue.auth_code)
         decrypted = cipher.dec(encrypted_data[1])
         decrypted_data = JSON.parse(decrypted)
