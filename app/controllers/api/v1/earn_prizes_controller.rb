@@ -88,8 +88,8 @@ class Api::V1::EarnPrizesController < ApplicationController
             :reward => @earn_prize.to_redeemed,
             :expiry_ts => (6.hour.from_now).to_i*1000
           }.to_json
-          cipher = Gibberish::AES.new(@earn_prize.venue.auth_code)
-          @encrypted_data = cipher.enc(data)
+          cipher = Gibberish::AES.new(@earn_prize.merchant.prize_auth_code)
+          @encrypted_data = "p$#{cipher.enc(data)}"
           render :template => '/api/v1/earn_prizes/redeem'
           logger.info("User(#{current_user.id}) successfully redeemed Prize(#{@earn_prize.id})")
         else

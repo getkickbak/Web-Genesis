@@ -71,7 +71,7 @@ Genesis::Application.routes.draw do
       resources :users
       resources :staffs
       resources :merchants do
-        #resources :deals
+        resources :devices
       end
       
       match "/marketing" => 'marketing#index', :as => :marketing

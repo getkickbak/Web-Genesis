@@ -3,7 +3,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
   before_filter :authenticate_user!
   
   def earn
-    if params[:venue_id].nil?
+    if params[:venue_id] == 0
       encrypted_data = params[:data].split('$')
       @venue = Venue.get(encrypted_data[0]) || not_found
     else
@@ -14,13 +14,6 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     
     logger.info("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
     Time.zone = @venue.time_zone
-    if !Common.within_geo_distance?(current_user, params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.out_of_distance").split('\n') } }
-      end
-      return
-    end
     
     @prize = nil
     authorized = false

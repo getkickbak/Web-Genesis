@@ -19,6 +19,8 @@ class Invoice
   
   attr_accessible :invoice_id, :amount, :trans_amount, :transactions, :monthly_fee, :trans_fee, :start_date, :end_date
   
+  belongs_to :merchant
+
   def self.create(merchant, invoice_info)
     now = Time.now
     invoice = Invoice.new(
@@ -37,9 +39,7 @@ class Invoice
     invoice.save
     return invoice  
   end
-  
-  belongs_to :merchant
-  
+    
   def to_param
     self.invoice_id
   end

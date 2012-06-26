@@ -66,7 +66,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
             :expiry_ts => (6.hour.from_now).to_i*1000
           }.to_json
           cipher = Gibberish::AES.new(@venue.auth_code)
-          @encrypted_data = cipher.enc(data)
+          @encrypted_data = "r$#{cipher.enc(data)}"
           @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])
           @eligible_rewards = []
           challenge_type_id = ChallengeType.value_to_id["vip"]

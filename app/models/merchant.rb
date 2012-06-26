@@ -30,6 +30,7 @@ class Merchant
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :pending
   property :prize_terms, String, :required => true, :default => ""
   property :auth_code, String, :required => true, :default => ""
+  property :prize_auth_code, String, :required => true, :default => ""
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -38,7 +39,7 @@ class Merchant
   attr_accessor :type_id, :current_password, :eager_load_type
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :photo, :alt_photo, :role, :status, :prize_terms, :auth_code, :current_password, :password, :password_confirmation
+  attr_accessible :type_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :photo, :alt_photo, :role, :status, :prize_terms, :auth_code, :prize_auth_code, :current_password, :password, :password_confirmation
   
   has 1, :merchant_to_type, :constraint => :destroy
   has 1, :type, 'MerchantType', :through => :merchant_to_type, :via => :merchant_type
@@ -77,7 +78,8 @@ class Merchant
       :role => merchant_info[:role],
       :status => merchant_info[:status],
       :prize_terms => merchant_info[:prize_terms],
-      :auth_code => String.random_alphanumeric(32)
+      :auth_code => String.random_alphanumeric(32),
+      :prize_auth_code => String.random_alphanumeric(32)
     )
     merchant[:created_ts] = now
     merchant[:update_ts] = now
@@ -155,6 +157,15 @@ class Merchant
     self.status = merchant_info[:status]
     self.update_ts = now
     self.type = type
+    save
+  end
+    
+  def update_prize_auth_code
+    now = Time.now
+    self.type_id = self.type.id
+    self.current_password = nil
+    self.prize_auth_code = String.random_alphanumeric(32)
+    self.update_ts = now
     save
   end
     

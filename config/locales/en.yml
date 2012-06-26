@@ -110,7 +110,7 @@ en:
         soup: "Soup"
         custom: "Custom"
   prize:
-      terms: "No cash value.  Non-transferable."    
+      terms: "No cash value.  Non-transferable.  Valid at participating locations only."    
   transaction:
       earn: "Earn Points"
       transfer: "Transfer Points"
@@ -189,6 +189,9 @@ en:
       merchants:
         create_success: "Merchant was successfully created."
         update_success: "Merchant was successfully updated."
+      devices:
+        create_success: "Device was successfully created."
+        update_success: "Device was successfully updated."  
       staffs:
         create_success: "Staff was successfully created."
         update_success: "Staff was successfully updated."

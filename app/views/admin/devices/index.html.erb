@@ -1,0 +1,28 @@
+<h1>Listing Devices</h1>
+
+<table>
+	<tr>
+		<th>Id</th>
+		<th>Serial Num</th>
+		<th>Status</th>
+		<th></th>
+		<th></th>
+		<th></th>
+	</tr>
+
+	<% @devices.each do |device| %>
+	<tr>
+		<td><%= device.id %></td>
+		<td><%= device.serial_num %></td>
+	    <td><%= device.status %></td>
+		<td><%= link_to 'Show', merchant_device_path(device) %></td>
+		<td><%= link_to 'Edit', edit_merchant_device_path(device) %></td>
+		<td><%= link_to 'Destroy', merchant_device_path(device), :confirm => 'Are you sure?', :method => :delete %></td>
+	</tr>
+	<% end %>
+</table>
+<%= will_paginate @devices %>
+
+<br />
+
+<%= link_to 'New Device', new_admin_merchant_device_path(@merchant) %>
