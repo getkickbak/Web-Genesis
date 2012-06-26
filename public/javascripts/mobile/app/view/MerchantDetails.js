@@ -86,6 +86,10 @@ Ext.define('Genesis.view.MerchantDetails',
          }]
       })]
    },
+   cleanView : function()
+   {
+      this.removeAll(true);
+   },
    createView : function()
    {
       if (!this.callParent(arguments))

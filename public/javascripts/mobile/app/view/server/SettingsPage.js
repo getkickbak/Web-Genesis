@@ -51,6 +51,9 @@ Ext.define('Genesis.view.server.SettingsPage',
          }]
       }]
    },
+   cleanView : function()
+   {
+   },
    /**
     * Removes all items currently in the Container, optionally destroying them all
     * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
@@ -65,9 +68,5 @@ Ext.define('Genesis.view.server.SettingsPage',
       return rc;
    },
    createView : Ext.emptyFn,
-   showView : function()
-   {
-      var titlebar = this.query('titlebar')[0];
-      Ext.defer(titlebar.setMasked, 0.3 * 1000, titlebar, [false]);
-   }
+   showView : Ext.emptyFn
 });

@@ -119,6 +119,10 @@ Ext.define('Genesis.view.client.ChallengePage',
       }
       this.photoAction.show();
    },
+   cleanView : function()
+   {
+      this.removeAll(true);
+   },
    createView : function()
    {
       if (!this.callParent(arguments))

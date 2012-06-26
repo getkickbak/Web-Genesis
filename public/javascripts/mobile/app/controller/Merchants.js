@@ -132,6 +132,11 @@ Ext.define('Genesis.controller.Merchants',
       me.callParent(arguments);
 
       console.log("Merchants Init");
+
+      //
+      // Preloading Pages to memory
+      //
+      me.getMainPage();
    },
    // --------------------------------------------------------------------------
    // Merchant Details Page
@@ -181,8 +186,6 @@ Ext.define('Genesis.controller.Merchants',
    },
    onDetailsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
-      var me = this;
-      oldActiveItem.removeAll(true);
       //this.getShareBtn().hide();
    },
    onMapRender : function(map, gmap, eOpts)
@@ -232,6 +235,48 @@ Ext.define('Genesis.controller.Merchants',
       var checkedIn = (cvenue != null);
       var checkedInMatch = (checkedIn && (cvenue.getId() == venueId));
 
+      //me.getDescPanel().setData(vrecord);
+      //me.getDescContainer().show();
+
+      //
+      // CheckIn button
+      //
+      page.showCheckinBtn = (checkedIn && !checkedInMatch);
+      //
+      // Main Menu button
+      //
+      page.showMainBtn = (!checkedIn || !checkedInMatch);
+      //
+      // Update Badges
+      //
+      var prizesCount = 0, prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
+      for (var i = 0; i < prizes.length; i++)
+      {
+         if (prizes[i].getMerchant().getId() == merchantId)
+         {
+            prizesCount++;
+         }
+      }
+      page.prizesCount = (prizesCount > 0) ? prizesCount : null;
+
+      if (!oldActiveItem || //
+      (oldActiveItem.isXType('mainpageview', true) || oldActiveItem.isXType('checkinexploreview', true)))
+      {
+         //
+         // Update Winners Count
+         //
+         if (me.winnersCount)
+         {
+            vrecord.set('winners_count', me.winnersCount['winners_count']);
+            //me.onUpdateWinnerssCount(me.winnersCount);
+         }
+
+         // Refresh Merchant Panel Info
+         Ext.StoreMgr.get('MerchantRenderStore').setData(vrecord);
+
+         //this.getMerchantTabBar().hide();
+      }
+
       //
       // Either we are checked-in or
       // customer exploring a venue they checked-in in the past ...
@@ -254,66 +299,17 @@ Ext.define('Genesis.controller.Merchants',
          //me.getStats().hide();
          console.debug("Merchant Explore Mode");
       }
-      //me.getDescPanel().setData(vrecord);
-      //me.getDescContainer().show();
-
-      //
-      // Show Map Buttons
-      //
-      me.getMapBtn().show();
-
-      //
-      // CheckIn button
-      //
-      me.getCheckinBtn()[(!checkedIn || !checkedInMatch) ? 'show' : 'hide']();
-
-      //
-      // Main Menu button
-      //
-      page.showCheckinBtn = (checkedIn && !checkedInMatch);
-
-      //
-      // Update Badges
-      //
-      var prizesCount = 0, prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
-      for (var i = 0; i < prizes.length; i++)
-      {
-         if (prizes[i].getMerchant().getId() == merchantId)
-         {
-            prizesCount++;
-         }
-      }
-      page.prizesCount = (prizesCount > 0) ? prizesCount : null;
-
-      if (this.getMainBtn())
-      {
-         this.getMainBtn().hide();
-      }
-
-      if (oldActiveItem.isXType('mainpageview', true) || oldActiveItem.isXType('checkinexploreview', true))
-      {
-         //
-         // Update Winners Count
-         //
-         if (me.winnersCount)
-         {
-            vrecord.set('winners_count', me.winnersCount['winners_count']);
-            //me.onUpdateWinnerssCount(me.winnersCount);
-         }
-
-         // Refresh Merchant Panel Info
-         Ext.StoreMgr.get('MerchantRenderStore').setData(vrecord);
-
-         this.getMerchantTabBar().hide();
-      }
-
+      /*
       Ext.defer(function()
       {
-         //page.createView();
-         // Update TitleBar
-         activeItem.query('titlebar')[0].setTitle(vrecord.get('name'));
+      page.removeAll(true);
+      page.createView();
       }, 1, page);
+      */
       //page.createView();
+
+      // Update TitleBar
+      activeItem.query('titlebar')[0].setTitle(vrecord.get('name'));
 
       var scroll = page.getScrollable();
       scroll.getScroller().scrollTo(0, 0);
@@ -321,20 +317,10 @@ Ext.define('Genesis.controller.Merchants',
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
       var me = this;
-      //if (activeItem.isXType('mainpageview', true) || activeItem.isXType('checkinexploreview', true))
+      if (me.getFeedContainer())
       {
-         oldActiveItem.removeAll(true);
+         me.getFeedContainer().setVisibility(false);
       }
-      /*
-      else
-      {
-      var list = me.getFeedContainer().query('list')[0];
-      list.setStore(Ext.create('Ext.data.Store',
-      {
-      }));
-      }
-      */
-      //this.getMapBtn().hide();
       //this.getCheckinBtn().hide();
    },
    onMainDisclose : function(list, record, target, index, e, eOpts)
@@ -490,16 +476,22 @@ Ext.define('Genesis.controller.Merchants',
          {
             Ext.defer(function()
             {
-               if (newTab)
+               try
                {
-                  newTab.setActive(false);
-               }
+                  if (newTab)
+                  {
+                     newTab.setActive(false);
+                  }
 
-               if (oldTab)
-               {
-                  oldTab.setActive(false);
+                  if (oldTab)
+                  {
+                     oldTab.setActive(false);
+                  }
+                  bar._activeTab = null;
                }
-               bar._activeTab = null;
+               catch(e)
+               {
+               }
             }, 2 * 1000);
             break;
          }

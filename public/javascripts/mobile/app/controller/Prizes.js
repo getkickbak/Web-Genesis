@@ -152,6 +152,15 @@ Ext.define('Genesis.controller.Prizes',
       this.callParent(arguments);
 
       console.log("Prizes Init");
+      //
+      // Preloading Pages to memory
+      //
+      Ext.defer(function()
+      {
+         me.getUserPrizes();
+         me.getMerchantPrizes();
+         me.getShowPrize();
+      }, 1, me);
    },
    // --------------------------------------------------------------------------
    // Utility Functions
@@ -504,8 +513,6 @@ Ext.define('Genesis.controller.Prizes',
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      var me = this;
-      oldActiveItem.removeAll(true);
    },
    onDoneTap : function(b, e, eOpts, eInfo, overrideMode)
    {
@@ -736,10 +743,8 @@ Ext.define('Genesis.controller.Prizes',
    openPage : function(subFeature)
    {
       this.setMode(subFeature);
-      Ext.defer(function()
-      {
-         this.pushView(this.getMainPage())
-      }, 1, this);
+      this.pushView(this.getMainPage());
+      console.log("Prizes Page Opened");
    },
    getMainCarousel : function()
    {

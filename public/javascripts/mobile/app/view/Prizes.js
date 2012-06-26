@@ -6,7 +6,6 @@ Ext.define('Genesis.view.Prizes',
    config :
    {
       scrollable : undefined,
-      fullscreen : true,
       cls : 'prizesMain',
       layout : 'card',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
@@ -39,8 +38,19 @@ Ext.define('Genesis.view.Prizes',
          }]
       })]
    },
+   cleanView : function()
+   {
+      this.removeAll(true);
+   },
    createView : function()
    {
+      /*
+      if (!this.callParent(arguments))
+      {
+         return;
+      }
+      */
+
       switch (this.config.tag)
       {
          case 'userPrizes' :
@@ -253,7 +263,6 @@ Ext.define('Genesis.view.ShowPrize',
    config :
    {
       scrollable : false,
-      fullscreen : true,
       cls : 'prizesMain',
       layout : 'fit',
       items : [
@@ -312,8 +321,19 @@ Ext.define('Genesis.view.ShowPrize',
          ui : 'orange-large'
       }]
    },
+   cleanView : function()
+   {
+      this.removeAll(true);
+   },
    createView : function()
    {
+      /*
+      if (!this.callParent(arguments))
+      {
+         return;
+      }
+      */
+
       this.getPreRender().push(Ext.create('Ext.dataview.DataView',
       {
          tag : 'rewardPanel',

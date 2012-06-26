@@ -21,6 +21,11 @@ Ext.define('Genesis.view.ViewBase',
                   iconMask : true
                }
             });
+      },
+      invisibleMask :
+      {
+         xtype : 'mask',
+         transparent : true
       }
    },
    config :
@@ -32,6 +37,7 @@ Ext.define('Genesis.view.ViewBase',
       this.callParent(arguments);
       this.setPreRender([]);
    },
+   cleanView : Ext.emptyFn,
    /**
     * Removes all items currently in the Container, optionally destroying them all
     * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
@@ -56,7 +62,5 @@ Ext.define('Genesis.view.ViewBase',
       {
          this.add(this.getPreRender());
       }
-      var titlebar = this.query('titlebar')[0];
-      Ext.defer(titlebar.setMasked, 0.3 * 1000, titlebar, [false]);
    }
 });

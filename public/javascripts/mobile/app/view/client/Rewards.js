@@ -22,10 +22,10 @@ Ext.define('Genesis.view.client.Rewards',
          },
          tpl :
          // @formatter:off
-      '<div class="rouletteBg"></div>'+
-      '<div class="rouletteTable"></div>'+
-      '<div class="rouletteBall"></div>',
-      // @formatter:on
+         '<div class="rouletteBg"></div>'+
+         '<div class="rouletteTable"></div>'+
+         '<div class="rouletteBall"></div>',
+          // @formatter:on
       }]
    },
    statics :

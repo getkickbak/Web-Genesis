@@ -101,6 +101,10 @@ Ext.define('Genesis.view.MainPage',
     * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
     * @return {Ext.Component} this
     */
+   cleanView : function()
+   {
+      this.removeAll(true);
+   },
    removeAll : function(destroy, everything)
    {
       var rc = this.callParent(arguments);
@@ -240,6 +244,5 @@ Ext.define('Genesis.view.MainPage',
       {
          carousel.setActiveItem(0);
       }
-      this.query('titlebar')[0].setMasked(false);
    }
 });

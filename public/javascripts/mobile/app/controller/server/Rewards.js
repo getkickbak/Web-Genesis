@@ -62,6 +62,10 @@ Ext.define('Genesis.controller.server.Rewards',
    {
       this.callParent(arguments);
       console.log("Server Rewards Init");
+      //
+      // Preload Pages
+      //
+      this.getRewards();
    },
    getPricePrecision : function(num)
    {

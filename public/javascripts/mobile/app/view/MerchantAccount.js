@@ -113,14 +113,14 @@ Ext.define('Genesis.view.MerchantAccount',
    {
       this.query('tabbar')[0].show();
       this.callParent(arguments);
-      var list = this.query('container[tag=feedContainer] list')[0];
-      list.setStore('EligibleRewardsStore');
-      list.setMasked(false);
+      var feedContainer = this.query('container[tag=feedContainer]')[0];
+      feedContainer.setVisibility(true);
    },
    createView : function()
    {
-      Ext.ComponentQuery.query('button[tag=main]')[0][(!this.showCheckinBtn) ? 'hide':'show']();
-      Ext.ComponentQuery.query('button[tag=prizes]')[0].setBadgeText((this.prizesCount > 0) ? this.prizesCount : null);
+      this.query('button[tag=checkin]')[0][(this.showCheckinBtn) ? 'show':'hide']();
+      this.query('button[tag=main]')[0][(this.showMainBtn) ? 'show':'hide']();
+      this.query('button[tag=prizes]')[0].setBadgeText((this.prizesCount > 0) ? this.prizesCount : null);
 
       if (!this.callParent(arguments))
       {
@@ -176,7 +176,7 @@ Ext.define('Genesis.view.MerchantAccount',
                xtype : 'list',
                scrollable : false,
                ui : 'bottom-round',
-               //store : 'EligibleRewardsStore',
+               store : 'EligibleRewardsStore',
                cls : 'feedPanel separator',
                itemTpl : Ext.create('Ext.XTemplate',
                // @formatter:off
