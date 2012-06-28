@@ -56,7 +56,7 @@ class Api::V1::CheckInsController < ApplicationController
         @winners_count = EarnPrize.count(EarnPrize.merchant.id => @venue.merchant.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
         @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])
         @eligible_rewards = []
-        challenge_type_id = ChallengeType. _to_id["vip"]
+        challenge_type_id = ChallengeType.value_to_id["vip"]
         challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
         if challenge
           logger.debug("Setup vip challenge")
