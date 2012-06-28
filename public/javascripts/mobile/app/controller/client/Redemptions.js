@@ -10,12 +10,17 @@ Ext.define('Genesis.controller.client.Redemptions',
    models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
+      mode : 'redeem',
       routes :
       {
-         'redemptions' : 'redemptionsPage'
+         'redemptions' : 'redemptionsPage',
+         'redeemChooseSC' : 'redeemChooseSCPage',
+         'redemptionsSC' : 'redemptionsSCPage'
       },
       refs :
       {
+         backBtn : 'clientredemptionsview button[tag=back]',
+         closeBtn : 'clientredemptionsview button[tag=close]',
          //
          // Redemptions
          //
@@ -109,11 +114,13 @@ Ext.define('Genesis.controller.client.Redemptions',
       me.exploreMode = !cvenue || (cvenue && (cvenue.getId() != venue.getId()));
 
       //activeItem.createView();
+      for (var i = 0; i < activeItem.getInnerItems().length; i++)
+      {
+         //activeItem.getInnerItems()[i].setVisibility(false);
+      }
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      var me = this;
-      me.getRedemptionsList().setVisibility(false);
    },
    onItemListSelect : function(d, model, eOpts)
    {
@@ -127,19 +134,45 @@ Ext.define('Genesis.controller.client.Redemptions',
       var viewport = me.getViewPortCntlr();
 
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-      if (!me.exploreMode)
+      switch (this.getMode())
       {
-         var totalPts = viewport.getCustomer().get('points');
-         var points = record.get('points');
-         if (points > totalPts)
+         case 'redeem' :
          {
-            Ext.device.Notification.show(
+            if (!me.exploreMode)
             {
-               title : 'Oops!',
-               message : me.needPointsMsg(points - totalPts)
-            });
+               var totalPts = viewport.getCustomer().get('points');
+               var points = record.get('points');
+               if (points > totalPts)
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Oops!',
+                     message : me.needPointsMsg(points - totalPts)
+                  });
+               }
+               else
+               {
+                  var controller = me.getApplication().getController('Prizes');
+                  controller.fireEvent('redeemrewards', Ext.create('Genesis.model.EarnPrize',
+                  {
+                     //'id' : 1,
+                     'expiry_date' : null,
+                     'reward' : record,
+                     'merchant' : viewport.getCheckinInfo().venue.getMerchant()
+                  }));
+               }
+            }
+            else
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Warning',
+                  message : me.checkinFirstMsg
+               });
+            }
+            break;
          }
-         else
+         case 'redeemSC' :
          {
             var controller = me.getApplication().getController('Prizes');
             controller.fireEvent('redeemrewards', Ext.create('Genesis.model.EarnPrize',
@@ -147,19 +180,11 @@ Ext.define('Genesis.controller.client.Redemptions',
                //'id' : 1,
                'expiry_date' : null,
                'reward' : record,
-               'merchant' : viewport.getCheckinInfo().venue.getMerchant()
+               'merchant' : viewport.getVenue().getMerchant()
             }));
+            break;
          }
       }
-      else
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Warning',
-            message : me.checkinFirstMsg
-         });
-      }
-
       return true;
    },
    onRedeemCheckMetaData : function(metaData)
@@ -200,6 +225,19 @@ Ext.define('Genesis.controller.client.Redemptions',
    redemptionsPage : function()
    {
       this.openPage('redemptions');
+      this.getCloseBtn().show();
+      this.getBackBtn().hide();
+   },
+   redeemChooseSCPage : function()
+   {
+      var controller = this.getApplication().getController('client.Accounts');
+      controller.redemptionsSCPage();
+   },
+   redemptionsSCPage : function()
+   {
+      this.openPage('redemptionsSC');
+      this.getCloseBtn().hide();
+      this.getBackBtn().show();
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
@@ -215,10 +253,19 @@ Ext.define('Genesis.controller.client.Redemptions',
 
       switch (subFeature)
       {
+         case 'redemptionsSC':
+         {
+            me.setMode('redeemSC');
+            var page = me.getRedemptions();
+            me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
+            me.pushView(page);
+            break;
+         }
          case 'redemptions':
          {
+            me.setMode('redeem');
             var page = me.getRedemptions();
-            me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
+            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
             me.pushView(page);
             break;
          }

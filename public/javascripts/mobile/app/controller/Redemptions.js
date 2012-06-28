@@ -205,7 +205,7 @@ Ext.define('Genesis.controller.Redemptions',
       {
          case 'redemptions':
          {
-            me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
+            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
             page = me.getRedemptions();
             list = me.getRedemptionsList();
             store = Ext.StoreMgr.get('RedemptionsStore');

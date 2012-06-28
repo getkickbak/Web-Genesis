@@ -6,6 +6,7 @@ Ext.define('Genesis.view.client.Referrals',
    config :
    {
       layout : 'vbox',
+      cls : 'viewport',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
          title : 'Refer A Friend',

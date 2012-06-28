@@ -10,6 +10,7 @@ Ext.define('Genesis.controller.client.Rewards',
    models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
+      mode : 'rewards',
       routes :
       {
          'scanAndWin' : 'scanAndWinPage'
@@ -47,9 +48,10 @@ Ext.define('Genesis.controller.client.Rewards',
    authCodeReqMsg : 'Proceed to scan an Authorization Code from your server to earn Reward Points!',
    prizeCheckMsg : 'Find out if you won a PRIZE!',
    earnPtsMsg : 'Updating Points Earned ...',
-   getPointsMsg : function(points)
+   getPointsMsg : function(points, total)
    {
-      return 'You\'ve earned ' + points + ' Points from this purchase!';
+      return 'You\'ve earned ' + points + ' Pts from this purchase.' + Genesis.constants.addCRLF() + //
+      'Your grand total is now ' + total + ' Pts!';
    },
    getReferralMsg : function(points)
    {
@@ -122,8 +124,7 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      var venue = viewport.getVenue();
-      var venueId = venue.getId();
+      var venueId = (me.getMode() == 'rewardsSC') ? 0 : viewport.getVenue().getId();
       var reader = CustomerReward.getProxy().getReader();
       var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
 
@@ -180,7 +181,24 @@ Ext.define('Genesis.controller.client.Rewards',
       var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
       rouletteBall.addCls('spinBack');
    },
-   onEarnPtsTap : function(b, e, eOpts, eInfo)
+   onEarnPtsSC : function()
+   {
+      var me = this;
+      Ext.device.Notification.show(
+      {
+         title : 'Earning Reward Points',
+         message : me.authCodeReqMsg,
+         buttons : ['OK', 'Cancel'],
+         callback : function(btn)
+         {
+            if (btn.toLowerCase() == 'ok')
+            {
+               me.scanQRCode();
+            }
+         }
+      });
+   },
+   onEarnPts : function()
    {
       var me = this;
       var allowedMsg = me.isOpenAllowed();
@@ -195,24 +213,8 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         var _onSuccess = function()
-         {
-            //me.popView();
-            Ext.device.Notification.show(
-            {
-               title : 'Earning Reward Points',
-               message : me.authCodeReqMsg,
-               buttons : ['OK', 'Cancel'],
-               callback : function(btn)
-               {
-                  if (btn.toLowerCase() == 'ok')
-                  {
-                     me.scanQRCode();
-                  }
-               }
-            });
-         };
-         me.checkReferralPrompt(_onSuccess, _onSuccess);
+         var earnPts = Ext.bind(me.onEarnPtsSC, me);
+         me.checkReferralPrompt(earnPts, earnPts);
       }
    },
    metaDataHandler : function(metaData)
@@ -233,27 +235,29 @@ Ext.define('Genesis.controller.client.Rewards',
       //
       var cstore = Ext.StoreMgr.get('CustomerStore');
       var customerId = viewport.getCustomer().getId();
+      var customer = cstore.getById(customerId);
+
+      customer.beginEdit();
       if (metaData['account_points'])
       {
-         cstore.getById(customerId).set('points', metaData['account_points']);
+         customer.set('points', metaData['account_points']);
       }
       if (metaData['account_visits'])
       {
-         cstore.getById(customerId).set('visits', metaData['account_visits']);
+         customer.set('visits', metaData['account_visits']);
       }
+      customer.endEdit();
 
       if (Ext.isDefined(metaData['points']))
       {
-         me.getRewards();
-         // Preload page
-         message = me.getPointsMsg(metaData['points']);
+         message = me.getPointsMsg(metaData['points'], metaData['account_points']);
          if (!metaData['vip_challenge'] && !metaData['referral_challenge'])
          {
             message += Genesis.constants.addCRLF() + me.prizeCheckMsg;
          }
          Ext.device.Notification.show(
          {
-            title : 'Reward Points Update',
+            title : 'Reward Points',
             message : message,
             callback : function()
             {
@@ -311,14 +315,15 @@ Ext.define('Genesis.controller.client.Rewards',
       {
          var container = me.getRewards();
          var viewport = me.getViewPortCntlr();
+         var app = me.getApplication();
+         var controller = app.getController('Prizes');
 
          //activeItem.createView();
          me.startRouletteScreen();
          Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
          {
             console.debug("RouletteSound Done, checking for prizes ...");
-            var app = me.getApplication();
-            app.getController('Prizes').fireEvent('prizecheck', me.loadCallback[0], me.loadCallback[1]);
+            controller.fireEvent('prizecheck', me.loadCallback[0], me.loadCallback[1]);
             delete me.loadCallback;
          });
       }, 1, activeItem);
@@ -351,6 +356,8 @@ Ext.define('Genesis.controller.client.Rewards',
    openPage : function(subFeature)
    {
       var me = this;
+
+      me.setMode(subFeature);
       switch (subFeature)
       {
          case 'scanAndWin' :
@@ -358,13 +365,18 @@ Ext.define('Genesis.controller.client.Rewards',
             //
             // Go back to Main Reward Screen
             //
-            me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
+            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
             me.pushView(me.getRewards());
+            break;
+         }
+         case 'rewardsSC':
+         {
+            me.onEarnPtsSC();
             break;
          }
          case 'rewards':
          {
-            me.onEarnPtsTap();
+            me.onEarnPts();
             break;
          }
       }

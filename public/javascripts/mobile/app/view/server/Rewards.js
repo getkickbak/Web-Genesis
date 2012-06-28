@@ -6,6 +6,7 @@ Ext.define('Genesis.view.server.Rewards',
    config :
    {
       layout : 'fit',
+      cls : 'viewport',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
          cls : 'navigationBarTop kbTitle',

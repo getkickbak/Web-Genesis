@@ -76,9 +76,17 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'onRewardsButtonTap'
          },
+         'tabbar[cls=navigationBarBottom] button[tag=rewardsSC]' :
+         {
+            tap : 'onRewardsSCButtonTap'
+         },
          'tabbar[cls=navigationBarBottom] button[tag=redemption]' :
          {
             tap : 'onRedemptionsButtonTap'
+         },
+         'tabbar[cls=navigationBarBottom] button[tag=redemptionSC]' :
+         {
+            tap : 'onRedemptionsSCButtonTap'
          },
          'tabbar[cls=navigationBarBottom] button[tag=main]' :
          {
@@ -263,7 +271,7 @@ Ext.define('Genesis.controller.Viewport',
    onAccountsButtonTap : function(b, e, eOpts, eInfo)
    {
       this.redirect('accounts');
-      //this.fireEvent('openpage', 'Accounts', null, null);
+      //this.fireEvent('openpage', 'client.Accounts', null, null);
       console.log("Going to Accounts Page ...");
    },
    onChallengesButtonTap : function(b, e, eOpts, eInfo, callback)
@@ -326,11 +334,21 @@ Ext.define('Genesis.controller.Viewport',
       this.fireEvent('openpage', 'client.Rewards', 'rewards', null);
       console.log("Going to Client Rewards Page ...");
    },
+   onRewardsSCButtonTap : function(b, e, eOpts, eInfo)
+   {
+      this.fireEvent('openpage', 'client.Rewards', 'rewardsSC', null);
+      console.log("Going to Client Rewards Shortcut Page ...");
+   },
    onRedemptionsButtonTap : function(b, e, eOpts, eInfo)
    {
       this.redirectTo('redemptions');
       //this.fireEvent('openpage', 'client.Redemptions', 'redemptions', null);
       console.log("Going to Client Redemptions Page ...");
+   },
+   onRedemptionsSCButtonTap : function(b, e, eOpts, eInfo)
+   {
+      this.redirectTo('redeemChooseSC');
+      console.log("Going to Client Redeem Choose Page ...");
    },
    onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
@@ -351,7 +369,7 @@ Ext.define('Genesis.controller.Viewport',
    onBrowseTap : function(b, e, eOpts, eInfo)
    {
       this.redirectTo('exploreS');
-      //this.fireEvent('openpage', 'Checkins', 'explore', 'slideUp');
+      //this.fireEvent('openpage', 'Checkins', 'explore', 'coverUp');
    },
    // --------------------------------------------------------------------------
    // Page Navigation Handlers

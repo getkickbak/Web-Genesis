@@ -6,7 +6,7 @@ Ext.define('Genesis.view.client.Redemptions',
    config :
    {
       scrollable : 'vertical',
-      cls : 'redemptionsMain',
+      cls : 'redemptionsMain viewport',
       layout : 'vbox',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
@@ -17,18 +17,26 @@ Ext.define('Genesis.view.client.Redemptions',
             tag : 'close',
             ui : 'normal',
             text : 'Close'
+         },
+         {
+            align : 'left',
+            tag : 'back',
+            ui : 'normal',
+            text : 'Back'
          }]
       })]
    },
    cleanView : function()
    {
-      this.removeAll(true);
+      //this.removeAll(true);
    },
    showView : function()
    {
       this.callParent(arguments);
-      var list = this.query('list[tag=redemptionsList]')[0];
-      list.setVisibility(true);
+      for (var i = 0; i < this.getInnerItems().length; i++)
+      {
+         this.getInnerItems()[i].setVisibility(true);
+      }
    },
    createView : function()
    {

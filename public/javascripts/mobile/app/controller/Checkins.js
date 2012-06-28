@@ -55,7 +55,6 @@ Ext.define('Genesis.controller.Checkins',
    },
    metaDataMissingMsg : 'Missing Checkin MetaData information.',
    noCheckinCodeMsg : 'No Checkin Code found!',
-   getMerchantInfoMsg : 'Retrieving Merchant Info ...',
    loadingPlaces : 'Loading ...',
    init : function()
    {
@@ -77,10 +76,9 @@ Ext.define('Genesis.controller.Checkins',
             'metachange' : function(store, proxy, eOpts)
             {
                // Let Other event handlers udpate the metaData first ...
-               me.getViewPortCntlr().updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [proxy.getReader().metaData]);
+               me.getViewPortCntlr().updateRewardsTask.delay(0.1 * 1000, me.updateRewards, me, [proxy.getReader().metaData]);
             }
          }
-
       });
       this.callParent(arguments);
       console.log("Checkins Init");
@@ -267,7 +265,7 @@ Ext.define('Genesis.controller.Checkins',
       var mcntlr = app.getController('Merchants');
       var viewport = me.getViewPortCntlr();
       var vport = me.getViewport();
-      var checkinMode = false;
+      var sync = false, checkinMode = false;
 
       var customerId, customer, venue, points;
       customerId = record.getId();
@@ -291,8 +289,7 @@ Ext.define('Genesis.controller.Checkins',
             customer = custore.getById(customerId);
             if (customer != null)
             {
-               Customer.updateCustomer(customer, record);
-               //customer = custore.add(record)[0];
+               sync = Customer.updateCustomer(customer, record);
                console.debug("Customer ID=[" + customer.getId() + "] is in CustAcct Database");
             }
             //
@@ -300,8 +297,12 @@ Ext.define('Genesis.controller.Checkins',
             //
             else
             {
+               sync = true;
                customer = custore.add(record)[0];
                console.debug("Customer ID=[" + customer.getId() + "] is ADDED to CustAcct Database");
+            }
+            if (sync)
+            {
                me.persistSyncStores('CustomerStore');
             }
          }
@@ -321,7 +322,18 @@ Ext.define('Genesis.controller.Checkins',
       //
       me.resetView();
       Ext.Viewport.setMasked(false);
-      me.redirectTo('venue/' + venue.getId() + '/' + customerId);
+
+      switch(mode)
+      {
+         case 'checkin' :
+         case 'explore' :
+         {
+            me.redirectTo('venue/' + venue.getId() + '/' + customerId);
+            break;
+         }
+         default:
+            break;
+      }
 
       if (callback)
       {
@@ -345,8 +357,12 @@ Ext.define('Genesis.controller.Checkins',
                message : me.recvReferralb4VisitMsg(customer.getMerchant().get('name'))
             });
          }, null]);
+         console.debug("CheckIn - Done");
       }
-      console.debug("CheckIn - Done");
+      else
+      {
+         console.debug("CheckInExplore - Done");
+      }
    },
    // --------------------------------------------------------------------------
    // CheckinExplore Page
@@ -415,11 +431,11 @@ Ext.define('Genesis.controller.Checkins',
 
       switch (me.animMode)
       {
-         case 'slide' :
+         case 'cover' :
             me.getBackBtn().show();
             me.getCloseBtn().hide();
             break;
-         case 'slideUp' :
+         case 'coverUp' :
             me.getBackBtn().hide();
             me.getCloseBtn().show();
             break;
@@ -437,15 +453,14 @@ Ext.define('Genesis.controller.Checkins',
             break;
       }
       //activeItem.createView();
+      if (me.getExploreList())
+      {
+         //me.getExploreList().setVisibility(false);
+      }
       me.onExploreLoad();
    },
    onExploreDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      var me = this;
-      if (me.getExploreList())
-      {
-         me.getExploreList().setVisibility(false);
-      }
    },
    onExploreSelect : function(d, model, eOpts)
    {
@@ -479,7 +494,7 @@ Ext.define('Genesis.controller.Checkins',
    // --------------------------------------------------------------------------
    explorePageUp : function()
    {
-      this.openPage('explore', 'slideUp');
+      this.openPage('explore', 'coverUp');
    },
    explorePage : function()
    {
@@ -497,7 +512,7 @@ Ext.define('Genesis.controller.Checkins',
       var me = this;
       var page = me.getMainPage();
       me.mode = page.mode = subFeature;
-      me.animMode = animMode || 'slide';
+      me.animMode = animMode || 'cover';
       me.setAnimationMode(me.self.superclass.self.animationMode[me.animMode]);
       me.pushView(page);
    },

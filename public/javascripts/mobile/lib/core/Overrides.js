@@ -11,7 +11,8 @@ Genesis.constants =
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
-   debugPrivKey : '5B2PuTj1C5kiJBFpR2kd8l7iGFLyb34z',
+   debugVPrivKey : '5B2PuTj1C5kiJBFpR2kd8l7iGFLyb34z',
+   debugRPrivKey : '5B2PuTj1C5kiJBFpR2kd8l7iGFLyb34z',
    redeemDBSize : 10000,
    createAccountMsg : 'Create user account using Facebook Profile information',
    isNative : function()
@@ -90,7 +91,8 @@ Genesis.constants =
             // Hardcoded for now ...
             me.privKey =
             {
-               'v1' : me.debugPrivKey
+               'v1' : me.debugVPrivKey,
+               'r1' : me.debugRPrivKey
             };
             for (var i in me.privKey)
             {
@@ -98,7 +100,7 @@ Genesis.constants =
             }
          }
       }
-      return (id) ? me.privKey['v' + id] : me.privKey;
+      return (id) ? [me.privKey['v' + id], me.privKey['r' + id]] : me.privKey;
    }
 }
 

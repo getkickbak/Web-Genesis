@@ -58,6 +58,7 @@ Ext.define('Genesis.view.SignInPage',
    requires : ['Ext.field.Email', 'Ext.field.Password'],
    config :
    {
+      cls : 'viewport',
       changeTitle : false,
       scrollable : 'vertical',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
@@ -126,6 +127,7 @@ Ext.define('Genesis.view.CreateAccountPage',
    requires : ['Ext.field.Text', 'Ext.field.Email', 'Ext.field.Password'],
    config :
    {
+      cls : 'viewport',
       changeTitle : false,
       scrollable : 'vertical',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),

@@ -6,7 +6,7 @@ Ext.define('Genesis.view.MerchantAccount',
    config :
    {
       tag : 'merchantMain',
-      cls : 'merchantMain',
+      cls : 'merchantMain viewport',
       scrollable : 'vertical',
       layout :
       {
@@ -108,20 +108,30 @@ Ext.define('Genesis.view.MerchantAccount',
          }]
       }]
    },
+   disableAnimation : true,
    loadingText : 'Loading ...',
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   cleanView : function()
+   {
+      //this.removeAll(true);
+   },
    showView : function()
    {
-      this.query('tabbar')[0].show();
       this.callParent(arguments);
-      var feedContainer = this.query('container[tag=feedContainer]')[0];
-      feedContainer.setVisibility(true);
+
+      this.query('tabbar')[0].show();
+      for (var i = 0; i < this.getInnerItems().length; i++)
+      {
+         this.getInnerItems()[i].setVisibility(true);
+      }
    },
    createView : function()
    {
-      this.query('button[tag=checkin]')[0][(this.showCheckinBtn) ? 'show':'hide']();
-      this.query('button[tag=main]')[0][(this.showMainBtn) ? 'show':'hide']();
-      this.query('button[tag=prizes]')[0].setBadgeText((this.prizesCount > 0) ? this.prizesCount : null);
-
       if (!this.callParent(arguments))
       {
          return;

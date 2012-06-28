@@ -136,7 +136,7 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    photoUploadIncompletesMsg : 'Trouble updating to server.',
    photoUploadFailValidationMsg : 'Please enter a comment with at least 16 characters in length',
-   getPointsMsg : function(points)
+   getPointsMsg : function(points, total)
    {
       return 'You have earned ' + points + ' Pts from this challenge!';
    },
@@ -526,7 +526,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   {
                      console.debug("Opening Merchant Account ...");
                      var app = me.getApplication();
-                     var controller = app.getController('Accounts');
+                     var controller = app.getController('client.Accounts');
                      controller.setMode('profile');
                      controller.fireEvent('selectMerchant', cstore, customer);
                   }
@@ -541,7 +541,7 @@ Ext.define('Genesis.controller.client.Challenges',
                title : 'VIP Challenge',
                message : me.getConsolationMsg(metaData['message'])
             });
-            me.getViewPortCntlr().updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [metaData]);
+            me.getViewPortCntlr().updateRewardsTask.delay(0.1 * 1000, me.updateRewards, me, [metaData]);
             break;
          }
          default:
@@ -559,9 +559,9 @@ Ext.define('Genesis.controller.client.Challenges',
             Ext.device.Notification.show(
             {
                title : 'Earn Points',
-               message : ((metaData['points'] > 0) ? me.getPointsMsg(metaData['points']) : me.getConsolationMsg(metaData['message']))
+               message : ((metaData['points'] > 0) ? me.getPointsMsg(metaData['points'], metaData['account_points']) : me.getConsolationMsg(metaData['message']))
             });
-            me.getViewPortCntlr().updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [metaData]);
+            me.getViewPortCntlr().updateRewardsTask.delay(0.1 * 1000, me.updateRewards, me, [metaData]);
             break;
       }
    },
@@ -612,7 +612,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      me.popView();
                   }
                });
-               viewport.updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [metaData2]);
+               viewport.updateRewardsTask.delay(0.1 * 1000, me.updateRewards, me, [metaData2]);
             }
             else
             {
@@ -664,7 +664,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var desc = this.getChallengeDescContainer();
       Ext.Anim.run(desc.element, 'fade',
       {
-         direction : 'right',
+         //direction : 'right',
          duration : 600,
          out : false,
          autoClear : true,
@@ -1058,12 +1058,12 @@ Ext.define('Genesis.controller.client.Challenges',
       //
       // Show Referrals Page
       //
-      me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
+      me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
       me.pushView(me.getReferralsPage());
    },
    challengesPage : function()
    {
-      this.setAnimationMode(this.self.superclass.self.animationMode['slideUp']);
+      this.setAnimationMode(this.self.superclass.self.animationMode['coverUp']);
       this.pushView(this.getMainPage());
    },
    photoUploadPage : function()
@@ -1072,7 +1072,7 @@ Ext.define('Genesis.controller.client.Challenges',
       //
       // Goto PhotoUpload Page
       //
-      me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
+      me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
       me.pushView(me.getUploadPhotosPage());
    },
    // --------------------------------------------------------------------------

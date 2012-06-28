@@ -5,6 +5,7 @@ Ext.define('Genesis.view.MainPage',
    alias : 'widget.mainpageview',
    config :
    {
+      cls : 'viewport',
       preRender : null,
       direction : 'horizontal',
       items : ( function()
@@ -71,25 +72,65 @@ Ext.define('Genesis.view.MainPage',
                items.push(
                {
                   docked : 'bottom',
-                  cls : 'checkInNow',
-                  tag : 'checkInNow',
-                  xtype : 'container',
+                  cls : 'navigationBarBottom',
+                  xtype : 'tabbar',
+                  ui : 'light',
                   layout :
                   {
-                     type : 'vbox',
-                     pack : 'center'
+                     pack : 'justify',
+                     align : 'stretch'
+                  },
+                  /*
+                   scrollable :
+                   {
+                   direction : 'horizontal',
+                   indicators : false
+                   },
+                   */
+                  defaults :
+                  {
+                     flex : 1,
+                     iconMask : true,
+                     iconAlign : 'left'
                   },
                   items : [
                   {
-                     xtype : 'button',
+                     iconCls : 'rewards',
+                     tag : 'rewardsSC',
+                     title : 'Earn Points'
+                  },
+                  //
+                  // Middle Button
+                  //
+                  /*
+                   {
+                   xtype : 'spacer'
+                   },
+                   */
+                  {
+                     iconCls : 'checkin',
                      tag : 'checkInNow',
-                     text : 'CheckIn Now!'
+                     title : 'CheckIn Now!'
+                  },
+                  //
+                  // Right side Buttons
+                  //
+                  /*
+                   {
+                   xtype : 'spacer'
+                   },
+                   */
+                  {
+                     iconCls : 'redeem',
+                     tag : 'redemptionSC',
+                     title : 'Redeem'
                   }]
                });
             }
             return items;
          }())
    },
+   disableAnimation : (!merchantMode) ? true : false,
    initialize : function()
    {
       this.setPreRender([]);

@@ -12,7 +12,7 @@ Ext.define('Genesis.view.Viewport',
          type : 'card',
          animation :
          {
-            type : 'slide',
+            type : 'cover',
             reverse : false,
             direction : 'left'
          }
@@ -61,8 +61,9 @@ Ext.define('Genesis.view.Viewport',
        });
        */
 
-      var layout = this.getLayout(), defaultAnimation;
+      var layout = this.getLayout(), defaultAnimation = (layout.getAnimation) ? layout.getAnimation() : null;
       var oldActiveItem = this.getActiveItem();
+      var disableAnimation = (activeItem.disableAnimation || ((oldActiveItem) ? oldActiveItem.disableAnimation : false));
 
       if (this.activeItemAnimation)
       {
@@ -70,10 +71,9 @@ Ext.define('Genesis.view.Viewport',
          //console.debug("Destroying AnimateActiveItem ...");
       }
       this.activeItemAnimation = animation = new Ext.fx.layout.Card(animation);
-      if (animation && layout.isCard)
+      if (animation && layout.isCard && !disableAnimation)
       {
          animation.setLayout(layout);
-         defaultAnimation = layout.getAnimation();
          if (defaultAnimation)
          {
             var controller = _application.getController('Viewport').getEventDispatcher().controller;
@@ -128,13 +128,23 @@ Ext.define('Genesis.view.Viewport',
 
       //console.debug("animateActiveItem");
 
+      if (defaultAnimation && disableAnimation)
+      {
+         defaultAnimation.disable();
+      }
+      
       var rc = this.setActiveItem(activeItem);
-      if (!layout.isCard)
+      if (!layout.isCard || disableAnimation)
       {
          //
          // Defer timeout is required to ensure that
          // if createView called is delayed, we will be scheduled behind it
          //
+         if (defaultAnimation)
+         {
+            defaultAnimation.enable();
+         }
+         animation.destroy();
          if (oldActiveItem)
          {
             oldActiveItem.cleanView();
@@ -147,6 +157,11 @@ Ext.define('Genesis.view.Viewport',
          activeItem.createView();
          activeItem.showView();
          //Ext.Viewport.setMasked(false);
+         titlebar = activeItem.query('titlebar')[0];
+         if (titlebar)
+         {
+            titlebar.setMasked(false);
+         }
       }
       return rc;
    },

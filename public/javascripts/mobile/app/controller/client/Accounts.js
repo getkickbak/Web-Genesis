@@ -1,4 +1,4 @@
-Ext.define('Genesis.controller.Accounts',
+Ext.define('Genesis.controller.client.Accounts',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
@@ -15,20 +15,23 @@ Ext.define('Genesis.controller.Accounts',
          'accounts' : 'mainPage',
          'etransfer' : 'emailTransferPage',
          'transfer' : 'transferPage'
+         //,'redemptionsSC' : 'redemptionsSCPage'
       },
       refs :
       {
          //
          // Account Profiles
          //
-         aBB : 'accountsview button[tag=back]',
+         aBB : 'clientaccountsview button[tag=back]',
+         avBB : 'clientaccountsview button[tag=vback]',
          accounts :
          {
-            selector : 'accountsview',
+            selector : 'clientaccountsview',
             autoCreate : true,
-            xtype : 'accountsview'
+            xtype : 'clientaccountsview'
          },
-         accountsList : 'accountsview list[tag=accountsList]',
+         accountsList : 'clientaccountsview list[tag=accountsList]',
+         venuesList : 'clientaccountsview list[tag=venuesList]',
          //
          // Account Transfers
          //
@@ -54,16 +57,26 @@ Ext.define('Genesis.controller.Accounts',
          accounts :
          {
             activate : 'onActivate',
-            deactivate : 'onDeactivate'
+            deactivate : 'onDeactivate',
+            activeitemchange : 'onItemChangeActivate'
          },
          accountsList :
          {
             select : 'onSelect',
             disclose : 'onDisclose'
          },
+         venuesList :
+         {
+            select : 'onVenueSelect',
+            disclose : 'onVenueDisclose'
+         },
          'clientaccountstransferview button[tag=transfer]' :
          {
             select : 'onTransferTap'
+         },
+         avBB :
+         {
+            tap : 'onAvBBTap'
          },
          //
          // Account Transfers
@@ -128,6 +141,7 @@ Ext.define('Genesis.controller.Accounts',
    },
    init : function()
    {
+      var me = this;
       this.callParent(arguments);
       console.log("Accounts Init");
    },
@@ -167,17 +181,6 @@ Ext.define('Genesis.controller.Accounts',
                if (operation.wasSuccessful())
                {
                   var metaData = Customer.getProxy().getReader().metaData;
-                  /*
-                   var customer = cstore.getById(record.getId());
-                   if(cutomer)
-                   {
-                   customer.set('points', record.get('points'));
-                   }
-                   else
-                   {
-                   cstore.add(record);
-                   }
-                   */
                   Ext.device.Notification.show(
                   {
                      title : 'Transfer Received',
@@ -211,13 +214,11 @@ Ext.define('Genesis.controller.Accounts',
    {
       var me = this;
       var merchantId = me.merchantId;
-      var rec = me.rec;
-      var mId = rec.getMerchant().getId();
-      var customerId = rec.getId();
-      var merchantName = rec.getMerchant().get('name');
+      var vstore = Ext.StoreMgr.get('VenueStore')
 
-      Venue['setGetClosestVenueURL']();
-      Venue.load(merchantId,
+      //Venue['setGetClosestVenueURL']();
+      Venue['setFindNearestURL']();
+      vstore.load(
       {
          scope : me,
          params :
@@ -226,28 +227,18 @@ Ext.define('Genesis.controller.Accounts',
             latitude : position.coords.getLatitude(),
             longitude : position.coords.getLongitude()
          },
-         callback : function(record, operation)
+         callback : function(records, operation)
          {
+            Ext.Viewport.setMasked(false);
             if (operation.wasSuccessful())
             {
-               var metaData = Venue.getProxy().getReader().metaData;
-               if (metaData)
+               if (records.length > 1)
                {
-                  var app = me.getApplication();
-                  var controller = app.getController('Checkins');
-                  var cstore = Ext.StoreMgr.get('CustomerStore');
-                  var viewport = me.getViewPortCntlr();
-
-                  //
-                  // Setup minimum customer information require for explore
-                  //
-                  metaData['venue_id'] = record.getId();
-                  viewport.setVenue(record);
-                  controller.fireEvent('checkinMerchant', 'explore', metaData, record.getId(), rec, operation, Ext.emptyFn);
+                  me.getAccounts().setActiveItem(1);
                }
                else
                {
-                  console.log("No MetaData found on Venue!");
+                  me.getVenueMetaData(records[0]);
                }
             }
             else
@@ -266,13 +257,20 @@ Ext.define('Genesis.controller.Accounts',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var mode = this.getMode();
+      var me = this;
+      var mode = me.getMode();
       var tbbar = activeItem.query('titlebar')[0];
       switch(mode)
       {
          case 'profile' :
          {
             tbbar.setTitle('Accounts');
+            tbbar.removeCls('kbTitle')
+            break;
+         }
+         case 'redeemProfile' :
+         {
+            tbbar.setTitle('Redemptions');
             tbbar.removeCls('kbTitle')
             break;
          }
@@ -284,13 +282,15 @@ Ext.define('Genesis.controller.Accounts',
             break;
          }
       }
-      //Ext.defer(activeItem.createView, 1, activeItem);
+      if (activeItem.getInnerItems().length > 0)
+      {
+         activeItem.setActiveItem(0);
+         me.getAccountsList().setVisibility(false);
+      }
       //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      var me = this;
-      me.getAccountsList().setVisibility(false);
    },
    onSelect : function(list, model, eOpts)
    {
@@ -312,8 +312,16 @@ Ext.define('Genesis.controller.Accounts',
       switch(me.getMode())
       {
          case 'profile' :
+         case 'redeemProfile' :
+         {
+            Ext.Viewport.setMasked(
+            {
+               xtype : 'loadmask',
+               message : me.getMerchantInfoMsg
+            });
             me.getGeoLocation();
             break;
+         }
          case 'emailtransfer' :
          case 'transfer' :
          {
@@ -332,11 +340,114 @@ Ext.define('Genesis.controller.Accounts',
             //
             // Select the Amounts of points to Transfer!
             //
-            me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
+            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
             me.pushView(me.getTransferPage());
             break;
          }
       }
+   },
+   onAvBBTap : function(b, e, eOpts)
+   {
+      this.getAccounts().setActiveItem(0);
+   },
+   onVenueSelect : function(list, model, eOpts)
+   {
+      list.deselect([model]);
+      this.onVenueDisclose(list, model);
+      return false;
+   },
+   getVenueMetaData : function(venue)
+   {
+      var me = this;
+      var venueId = venue.getId();
+      var viewport = me.getViewPortCntlr();
+      var controller = me.getApplication().getController('Checkins');
+      var rec = me.rec;
+
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.getVenueInfoMsg
+      });
+      Customer['setVenueExploreUrl'](venueId);
+      Customer.load(venueId,
+      {
+         jsonData :
+         {
+         },
+         params :
+         {
+            latitude : 0,
+            longitude : 0,
+            auth_code : 0,
+            venue_id : venueId
+         },
+         scope : me,
+         callback : function(record, operation)
+         {
+            var metaData = Customer.getProxy().getReader().metaData;
+
+            if (operation.wasSuccessful() && metaData)
+            {
+               viewport.setVenue(venue);
+               metaData['venue_id'] = venueId;
+               switch(me.getMode())
+               {
+                  case 'redeemProfile' :
+                  {
+                     controller.fireEvent('checkinMerchant', 'redemption', metaData, venueId, rec, operation, Ext.emptyFn);
+                     me.redirectTo('redemptionsSC');
+                     break;
+                  }
+                  case 'profile' :
+                  {
+                     controller.fireEvent('checkinMerchant', 'explore', metaData, venueId, rec, operation, Ext.emptyFn);
+                     break;
+                  }
+               }
+               delete me.rec;
+            }
+            else
+            if (!operation.wasSuccessful() && !metaData)
+            {
+               Ext.Viewport.setMasked(false);
+               console.log(me.metaDataMissingMsg);
+            }
+         }
+      });
+   },
+   onVenueDisclose : function(list, record, target, index, e, eOpts)
+   {
+      var me = this;
+      //
+      // Setup minimum customer information require for explore
+      //
+      me.getVenueMetaData(record);
+   },
+   onItemChangeActivate : function(c, value, oldValue, eOpts)
+   {
+      var me = this;
+      var container = me.getAccounts();
+      var animation = container.getLayout().getAnimation();
+
+      switch (value.config.tag)
+      {
+         case 'accountsList' :
+         {
+            animation.setReverse(true);
+            me.getABB().show();
+            me.getAvBB().hide();
+            break;
+         }
+         case 'venuesList' :
+         {
+            animation.setReverse(false);
+            me.getABB().hide();
+            me.getAvBB().show();
+            break;
+         }
+      }
+      console.debug("Accounts onItemChangeActivate Called.");
    },
    // --------------------------------------------------------------------------
    // Accounts Transfer Page
@@ -348,6 +459,7 @@ Ext.define('Genesis.controller.Accounts',
       var container = me.getTransferContainer();
       switch(me.getMode())
       {
+         case 'redeemProfile' :
          case 'profile' :
          {
             me.getAtrCloseBB().hide();
@@ -656,6 +768,10 @@ Ext.define('Genesis.controller.Accounts',
    {
       this.openPage('transfer');
    },
+   redemptionsSCPage : function()
+   {
+      this.openPage('redeemProfile');
+   },
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
@@ -663,18 +779,25 @@ Ext.define('Genesis.controller.Accounts',
    {
       var me = this, page;
 
-      me.setMode('profile');
-      me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
+      me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
       switch (subFeature)
       {
+         case 'redeemProfile' :
+         {
+            me.setMode('redeemProfile');
+            page = me.getMainPage();
+            break;
+         }
          case 'profile' :
          {
+            me.setMode('profile');
             page = me.getMainPage();
             break;
          }
          case 'emailtransfer' :
          case 'transfer' :
          {
+            me.setMode('profile');
             page = me.getTransferPage();
             break;
          }

@@ -4,7 +4,6 @@
 .accountsTransferMain {
    .transferPanel {
       @extend .listNoScrollWrapper;
-      //@extend .viewport;
       .listItemDetailsWrapper {
          padding-left:0 !important;
          height:$icon-size*1.5;

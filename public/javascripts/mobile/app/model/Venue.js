@@ -48,6 +48,10 @@ Ext.define('Genesis.model.Venue',
    {
       setFindNearestURL : function()
       {
+         this.getProxy().setActionMethods(
+         {
+            read : 'GET'
+         });
          this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/venues/find_nearest' : Ext.Loader.getPath("Genesis") + "/store/" + 'checkinRecords.json');
       },
       setGetClosestVenueURL : function()

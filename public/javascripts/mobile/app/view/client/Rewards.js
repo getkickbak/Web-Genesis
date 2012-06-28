@@ -6,6 +6,7 @@ Ext.define('Genesis.view.client.Rewards',
    config :
    {
       layout : 'fit',
+      cls : 'viewport',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
          title : 'Earn Rewards'

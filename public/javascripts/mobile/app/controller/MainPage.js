@@ -51,6 +51,7 @@ Ext.define('Genesis.controller.MainPage',
             xtype : 'mainpageview'
          },
          mainCarousel : 'mainpageview',
+         shortcutTabBar : 'mainpageview tabbar',
          infoBtn : 'button[tag=info]'
       },
       control :
@@ -91,6 +92,10 @@ Ext.define('Genesis.controller.MainPage',
             select : 'onItemSelect',
             itemtouchstart : 'onItemTouchStart',
             itemtouchend : 'onItemTouchEnd'
+         },
+         shortcutTabBar :
+         {
+            tabchange : 'onTabBarTabChange'
          },
          createAccount :
          {
@@ -182,6 +187,11 @@ Ext.define('Genesis.controller.MainPage',
          // Customer Accounts for an user
          //
          me.initCustomerStore();
+
+         //
+         // Venue Store for Redeem Shorcuts
+         //
+         me.initVenueStore();
       }
 
       console.log("MainPage Init");
@@ -245,7 +255,7 @@ Ext.define('Genesis.controller.MainPage',
                   }
                }
 
-               me.getViewPortCntlr().updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [metaData]);
+               me.getViewPortCntlr().updateRewardsTask.delay(0.1 * 1000, me.updateRewards, me, [metaData]);
             }
          },
          grouper :
@@ -283,8 +293,11 @@ Ext.define('Genesis.controller.MainPage',
             // Clump by merchant (ascending order)
             sorterFn : function(o1, o2)
             {
-               return o1.getMerchant().getId() - o2.getMerchant().getId();
-            }
+               var name1 = o1.getMerchant().get('name');
+               var name2 = o2.getMerchant().get('name');
+               return (name1 < name2 ? -1 : (name1 > name2 ? 1 : 0));
+            },
+            direction : 'ASC'
          },
          {
             // Return based on expiry date (descending order)
@@ -311,6 +324,28 @@ Ext.define('Genesis.controller.MainPage',
          }
       });
    },
+   initVenueStore : function()
+   {
+      var me = this;
+      Ext.regStore('VenueStore',
+      {
+         model : 'Genesis.model.Venue',
+         autoLoad : false,
+         sorters : [
+         {
+            property : 'distance',
+            direction : 'ASC'
+         }],
+         listeners :
+         {
+            'metachange' : function(store, proxy, eOpts)
+            {
+               // Let Other event handlers udpate the metaData first ...
+               me.getViewPortCntlr().updateRewardsTask.delay(0.1 * 1000, me.updateRewards, me, [proxy.getReader().metaData]);
+            }
+         }
+      });
+   },
    // --------------------------------------------------------------------------
    // EVent Handlers
    // --------------------------------------------------------------------------
@@ -318,7 +353,7 @@ Ext.define('Genesis.controller.MainPage',
    {
       var me = this;
       var app = me.getApplication();
-      var controller = app.getController('Accounts');
+      var controller = app.getController('client.Accounts');
       controller.fireEvent('authCodeRecv', metaData);
    },
    // --------------------------------------------------------------------------
@@ -378,6 +413,38 @@ Ext.define('Genesis.controller.MainPage',
    {
       //this.getInfoBtn().hide();
    },
+   onTabBarTabChange : function(bar, newTab, oldTab, eOpts)
+   {
+      switch(newTab.config.tag)
+      {
+         default :
+         case 'rewards' :
+         {
+            Ext.defer(function()
+            {
+               try
+               {
+                  if (newTab)
+                  {
+                     newTab.setActive(false);
+                  }
+
+                  if (oldTab)
+                  {
+                     oldTab.setActive(false);
+                  }
+                  bar._activeTab = null;
+               }
+               catch(e)
+               {
+               }
+            }, 2 * 1000);
+            break;
+         }
+      }
+
+      return true;
+   },
    // --------------------------------------------------------------------------
    // Login Page
    // --------------------------------------------------------------------------
@@ -412,11 +479,11 @@ Ext.define('Genesis.controller.MainPage',
    onLoginActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var viewport = this.getViewPortCntlr();
-      
+
       Genesis.db.resetStorage();
       viewport.setLoggedIn(false);
       Genesis.db.removeLocalDBAttrib('auth_code');
-      
+
       //this.getInfoBtn().hide();
       //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
@@ -529,12 +596,12 @@ Ext.define('Genesis.controller.MainPage',
    },
    onCreateAccountTap : function(b, e, eOpts, eInfo)
    {
-      this.setAnimationMode(this.self.superclass.self.animationMode['slide']);
+      this.setAnimationMode(this.self.superclass.self.animationMode['cover']);
       this.pushView(this.getCreateAccount());
    },
    onSignInTap : function(b, e, eOpts, eInfo)
    {
-      this.setAnimationMode(this.self.superclass.self.animationMode['slide']);
+      this.setAnimationMode(this.self.superclass.self.animationMode['cover']);
       this.pushView(this.getSignin());
    },
    // --------------------------------------------------------------------------
@@ -729,7 +796,7 @@ Ext.define('Genesis.controller.MainPage',
       {
          case 'main' :
          {
-            this.setAnimationMode(this.self.superclass.self.animationMode['flip']);
+            this.setAnimationMode(this.self.superclass.self.animationMode['pop']);
             this.pushView(this.getMainPage());
             break;
          }
@@ -756,7 +823,7 @@ Ext.define('Genesis.controller.MainPage',
    openMainPage : function()
    {
       var cntlr = this.getViewPortCntlr();
-      this.setAnimationMode(this.self.superclass.self.animationMode['flip']);
+      this.setAnimationMode(this.self.superclass.self.animationMode['pop']);
       this.pushView(this.getMainPage());
       console.log("MainPage Opened");
    },

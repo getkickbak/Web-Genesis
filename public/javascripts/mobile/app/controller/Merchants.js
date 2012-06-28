@@ -168,20 +168,19 @@ Ext.define('Genesis.controller.Merchants',
       // Refresh Merchant Details Info
       //Ext.StoreMgr.get('MerchantRenderStore').setData(vrecord);
 
+      // Show Share Icon
+      this.getShareBtn().show();
+      //this.getMainBtn().hide();
+
       // Update TitleBar
       activeItem.query('titlebar')[0].setTitle(venue.get('name'));
 
       //var map = page.query('component[tag=map]')[0];
       //var map = page.query('map')[0];
 
-      // Show Share Icon
-      this.getShareBtn().show();
-      //this.getMainBtn().hide();
-
       //this.onActivateCommon(map, map.getMap());
       //this.onActivateCommon(map, null);
 
-      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onDetailsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
@@ -224,7 +223,6 @@ Ext.define('Genesis.controller.Merchants',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      var page = me.getMain();
       var vrecord = viewport.getVenue();
       var crecord = viewport.getCustomer();
       var customerId = viewport.getCustomer().getId();
@@ -239,13 +237,13 @@ Ext.define('Genesis.controller.Merchants',
       //me.getDescContainer().show();
 
       //
-      // CheckIn button
-      //
-      page.showCheckinBtn = (checkedIn && !checkedInMatch);
-      //
       // Main Menu button
       //
-      page.showMainBtn = (!checkedIn || !checkedInMatch);
+      activeItem.showMainBtn = (checkedIn && !checkedInMatch);
+      //
+      // CheckIn button
+      //
+      activeItem.showCheckinBtn = (!checkedIn || !checkedInMatch);
       //
       // Update Badges
       //
@@ -257,23 +255,19 @@ Ext.define('Genesis.controller.Merchants',
             prizesCount++;
          }
       }
-      page.prizesCount = (prizesCount > 0) ? prizesCount : null;
+      activeItem.prizesCount = (prizesCount > 0) ? prizesCount : null;
+
+      //
+      // Update Winners Count
+      //
+      if (me.winnersCount && (vrecord.get('winners_count') != me.winnersCount))
+      {
+         vrecord.set('winners_count', me.winnersCount['winners_count']);
+      }
 
       if (!oldActiveItem || //
       (oldActiveItem.isXType('mainpageview', true) || oldActiveItem.isXType('checkinexploreview', true)))
       {
-         //
-         // Update Winners Count
-         //
-         if (me.winnersCount)
-         {
-            vrecord.set('winners_count', me.winnersCount['winners_count']);
-            //me.onUpdateWinnerssCount(me.winnersCount);
-         }
-
-         // Refresh Merchant Panel Info
-         Ext.StoreMgr.get('MerchantRenderStore').setData(vrecord);
-
          //this.getMerchantTabBar().hide();
       }
 
@@ -283,7 +277,7 @@ Ext.define('Genesis.controller.Merchants',
       //
       if (checkedInMatch)
       {
-         page.renderFeed = true;
+         activeItem.renderFeed = true;
          //me.getAddress().hide();
          //me.getStats().show();
          console.debug("Merchant Checkin Mode");
@@ -293,33 +287,35 @@ Ext.define('Genesis.controller.Merchants',
       //
       else
       {
-         page.renderFeed = me.showFeed;
+         activeItem.renderFeed = me.showFeed;
          //me.getAddress().setData(vrecord.getData(true));
          //me.getAddress().show();
          //me.getStats().hide();
          console.debug("Merchant Explore Mode");
       }
-      /*
-      Ext.defer(function()
-      {
-      page.removeAll(true);
-      page.createView();
-      }, 1, page);
-      */
       //page.createView();
 
-      // Update TitleBar
-      activeItem.query('titlebar')[0].setTitle(vrecord.get('name'));
-
-      var scroll = page.getScrollable();
+      var scroll = activeItem.getScrollable();
       scroll.getScroller().scrollTo(0, 0);
+
+      // Refresh Merchant Panel Info
+      Ext.StoreMgr.get('MerchantRenderStore').setData(vrecord);
+
+      me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();
+      me.getMainBtn()[(activeItem.showMainBtn) ? 'show':'hide']();
+      me.getPrizesBtn().setBadgeText((activeItem.prizesCount > 0) ? activeItem.prizesCount : null);
+      Ext.defer(function()
+      {
+         // Update TitleBar
+         activeItem.query('titlebar')[0].setTitle(vrecord.get('name'));
+      }, 1, me);
    },
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
       var me = this;
-      if (me.getFeedContainer())
+      for (var i = 0; i < activeItem.getInnerItems().length; i++)
       {
-         me.getFeedContainer().setVisibility(false);
+         //activeItem.getInnerItems()[i].setVisibility(false);
       }
       //this.getCheckinBtn().hide();
    },
@@ -393,7 +389,7 @@ Ext.define('Genesis.controller.Merchants',
 
          // Restore Merchant Info
          ccntlr.setupCheckinInfo('checkin', cvenue, ccustomer, cmetaData);
-         viewport.updateRewardsTask.delay(1 * 1000, me.updateRewards, me, [cmetaData]);
+         viewport.updateRewardsTask.delay(0.1 * 1000, me.updateRewards, me, [cmetaData]);
       }
       //
       // Force Page to refresh
@@ -422,7 +418,7 @@ Ext.define('Genesis.controller.Merchants',
       {
          console.log("Going back to Checked-In Merchant Home Account Page ...");
          me.resetView();
-         me.setAnimationMode(me.self.superclass.self.animationMode['flip']);
+         me.setAnimationMode(me.self.superclass.self.animationMode['pop']);
          me.pushView(me.getMainPage());
       }
    },
@@ -463,7 +459,7 @@ Ext.define('Genesis.controller.Merchants',
          //console.debug("Cannot Retrieve Google Map Information.");
       }
 
-      me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
+      me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
       me.pushView(me.getMerchantDetails());
    },
    onTabBarTabChange : function(bar, newTab, oldTab, eOpts)
@@ -531,7 +527,7 @@ Ext.define('Genesis.controller.Merchants',
       me.showFeed = showFeed;
       if (!backToMain)
       {
-         me.setAnimationMode(me.self.superclass.self.animationMode['flip']);
+         me.setAnimationMode(me.self.superclass.self.animationMode['pop']);
          me.pushView(me.getMainPage());
       }
       else

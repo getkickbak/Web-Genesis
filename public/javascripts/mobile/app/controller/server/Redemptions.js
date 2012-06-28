@@ -55,67 +55,115 @@ Ext.define('Genesis.controller.server.Redemptions',
       var keys = Genesis.constants.getPrivKey();
       GibberishAES.size(256);
       var dbI = Genesis.db.getRedeemIndexDB();
-      for (var key in keys)
+
+      var hdr = encrypted.split('$')[0];
+      encrypted = encrypted.split('$')[1];
+      var keyUsed = null;
+      switch (hdr)
       {
-         try
+         //
+         // Use Rewards Key for Prizes
+         //
+         case 'p' :
          {
-            console.debug("Decrypting message using key[" + keys[key] + "]");
-            data = GibberishAES.dec(encrypted, keys[key]);
-            console.debug("Decrypted Data[" + data + "]");
-            var decrypted = Ext.decode(data);
-            console.debug("Decoded Data!");
-            var date = new Date(decrypted["expiry_ts"]);
-
-            if (dbI[encrypted])
-            {
-               console.log(me.authCodeNoLongValidMsg());
-               Ext.device.Notification.show(
-               {
-                  title : 'Error!',
-                  message : me.authCodeNoLongValidMsg()
-               });
-               return;
-            }
-            else
-            if ((date >= Date.now()) && (date <= new Date().addHours(3 * 2)))
-            {
-               console.log("Found QRCode type[" + decrypted['type'] + "]");
-               switch (decrypted['type'])
-               {
-                  case 'redeem_prize' :
-                     break;
-                  case 'redeem_reward' :
-                     break;
-               }
-
-               //
-               // Add to Persistent Store to make sure it cannot be rescanned again
-               //
-               Genesis.db.addRedeemSortedDB([encrypted, dbI[encrypted]]);
-               Genesis.db.addRedeemIndexDB(encrypted, decrypted["expiry_ts"]);
-
-               var controller = me.getApplication().getController('Prizes');
-               controller.fireEvent('authreward', Ext.create('Genesis.model.EarnPrize',
-               {
-                  //'id' : 1,
-                  'expiry_date' : null,
-                  'reward' : Ext.create('Genesis.model.CustomerReward',
-                  {
-                     type : decrypted['reward'].type,
-                     title : decrypted['reward'].title
-                  }),
-                  'merchant' : null
-               }));
-               return;
-            }
-            else
-            {
-               console.log("Decrypted data used an expired key from Vendor[" + key + "]");
-            }
+            keyUsed = 'r';
+            break;
          }
-         catch(e)
+         //
+         // Use Venue Key for Redemptions
+         //
+         case 'r' :
          {
-            console.log("Error decrypted data [" + e + "]");
+            keyUsed = 'v';
+            break;
+         }
+      }
+      if (keyUsed)
+      {
+         for (var key in keys)
+         {
+            if (key.split(keyUsed)[1] > 0)
+            {
+               try
+               {
+                  console.debug("Decrypting message using key[" + keys[key] + "]");
+
+                  var data = GibberishAES.dec(encrypted, keys[key]);
+                  console.debug("Decrypted Data[" + data + "]");
+
+                  var decrypted = Ext.decode(data);
+                  console.debug("Decoded Data!");
+
+                  var date = new Date(decrypted["expiry_ts"]);
+
+                  if (dbI[encrypted])
+                  {
+                     console.log(me.authCodeNoLongValidMsg());
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Error!',
+                        message : me.authCodeNoLongValidMsg()
+                     });
+                     return;
+                  }
+                  else
+                  if ((date >= Date.now()) && (date <= new Date().addHours(3 * 2)))
+                  {
+                     console.log("Found QRCode type[" + decrypted['type'] + "]");
+                     switch (decrypted['type'])
+                     {
+                        case 'redeem_prize' :
+                        {
+                           if (hdr != 'p')
+                           {
+                              throw "DataType mismatch (Not a Prize)";
+                           }
+                           break;
+                        }
+                        case 'redeem_reward' :
+                        {
+                           if (hdr != 'r')
+                           {
+                              throw "DataType mismatch (Not a Reward)";
+                           }
+                           break;
+                        }
+                        default :
+                           throw "DataType mismatch (No type found!)";
+                           break;
+                     }
+
+                     //
+                     // Add to Persistent Store to make sure it cannot be rescanned again
+                     //
+                     Genesis.db.addRedeemSortedDB([encrypted, dbI[encrypted]]);
+                     Genesis.db.addRedeemIndexDB(encrypted, decrypted["expiry_ts"]);
+
+                     var controller = me.getApplication().getController('Prizes');
+                     controller.fireEvent('authreward', Ext.create('Genesis.model.EarnPrize',
+                     {
+                        //'id' : 1,
+                        'expiry_date' : null,
+                        'reward' : Ext.create('Genesis.model.CustomerReward',
+                        {
+                           type : decrypted['reward'].type,
+                           title : decrypted['reward'].title
+                        }),
+                        'merchant' : null
+                     }));
+
+                     return;
+                  }
+                  else
+                  {
+                     console.log("Decrypted data used an expired key from Vendor[" + key + "]");
+                  }
+               }
+               catch(e)
+               {
+                  console.log("Error decrypted data [" + e + "]");
+               }
+            }
          }
       }
       Ext.device.Notification.show(
@@ -129,46 +177,26 @@ Ext.define('Genesis.controller.server.Redemptions',
    // --------------------------------------------------------------------------
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      var me = this;
-      oldActiveItem.removeAll(true);
    },
    onScannedQRcode : function(encrypted)
    {
       var me = this;
       if (!encrypted)
       {
-         /*
-          if(Ext.isDefined(encrypted))
-          {
-          encrypted = Genesis.controller.ControllerBase.genQRCodeFromParams(
-          {
-          "type" : 'redeem_reward',
-          "reward" :
-          {
-          type :
-          {
-          value : 'reward'
-          },
-          title : 'Test QR Code'
-          }
-          });
-          }
-          else
-          */
+         Ext.device.Notification.show(
          {
-            Ext.device.Notification.show(
-            {
-               title : 'Error!',
-               message : me.invalidAuthCodeMsg
-            });
-         }
+            title : 'Error!',
+            message : me.invalidAuthCodeMsg
+         });
       }
-      me.verifyQRCode(encrypted);
+      else
+      {
+         me.verifyQRCode(encrypted);
+      }
    },
    onRedeemVerification : function()
    {

@@ -6,6 +6,7 @@ Ext.define('Genesis.view.client.ChallengePage',
    config :
    {
       layout : 'fit',
+      cls : 'viewport',
       scrollable : undefined,
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {

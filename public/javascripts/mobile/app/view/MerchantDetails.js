@@ -5,7 +5,7 @@ Ext.define('Genesis.view.MerchantDetails',
    alias : 'widget.merchantdetailsview',
    config :
    {
-      cls : 'merchantDetails',
+      cls : 'merchantDetails viewport',
       layout :
       {
          type : 'vbox',

@@ -186,7 +186,7 @@ Ext.define('Genesis.controller.Settings',
             break;
          }
       }
-      me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
+      me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
       me.pushView(page);
    },
    isOpenAllowed : function()

@@ -15,6 +15,8 @@ Ext.define('Genesis.controller.ControllerBase',
    geoLocationErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
+   getMerchantInfoMsg : 'Retrieving Merchant Information ...',
+   getVenueInfoMsg : 'Retrieving Venue Information ...',
    missingVenueInfoMsg : 'Error loading Venue information.',
    showToServerMsg : 'Show this to your server before proceeding.',
    errProcQRCodeMsg : 'Error Processing Authentication Code',
@@ -44,6 +46,18 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       animationMode :
       {
+         'cover' :
+         {
+            type : 'cover',
+            direction : 'left',
+            duration : 400
+         },
+         'coverUp' :
+         {
+            type : 'cover',
+            direction : 'up',
+            duration : 400
+         },
          'slide' :
          {
             type : 'slide',
@@ -54,6 +68,11 @@ Ext.define('Genesis.controller.ControllerBase',
          {
             type : 'slide',
             direction : 'up',
+            duration : 400
+         },
+         'pop' :
+         {
+            type : 'pop',
             duration : 400
          },
          'flip' :
@@ -103,14 +122,16 @@ Ext.define('Genesis.controller.ControllerBase',
             sound.currentTime = 0;
          }
       },
-      genQRCodeFromParams : function(params, encryptOnly)
+      genQRCodeFromParams : function(params, addPrizeHdr, addRewardsHdr, encryptOnly)
       {
          var me = this;
          var encrypted;
+         /*
          var seed = function()
          {
-            return Math.random().toFixed(16);
+         return Math.random().toFixed(16);
          }
+         */
          //
          // Show QRCode
          //
@@ -118,21 +139,39 @@ Ext.define('Genesis.controller.ControllerBase',
          // Defaults to 256 bit encryption
          GibberishAES.size(256);
          var keys = Genesis.constants.getPrivKey();
-         var date;
+         var date, venueId;
          for (key in keys)
          {
-            try
+            venueId = (addRewardsHdr || addPrizeHdr) ? key.split('r')[1] : key.split('v')[1];
+            if (venueId > 0)
             {
-               date = new Date().addHours(3);
-               encrypted = GibberishAES.enc(Ext.encode(Ext.applyIf(
+               try
                {
-                  "expiry_ts" : date.getTime()
-               }, params)), keys[key]);
+                  date = new Date().addHours(3);
+                  encrypted = GibberishAES.enc(Ext.encode(Ext.applyIf(
+                  {
+                     "expiry_ts" : date.getTime()
+                  }, params)), keys[key]);
+                  if (addRewardsHdr || addPrizeHdr)
+                  {
+                     var hdr;
+                     if (addPrizeHdr)
+                     {
+                        hdr = 'p';
+                     }
+                     else
+                     if (addRewardsHdr)
+                     {
+                        hdr = 'r';
+                     }
+                     encrypted = hdr + venueId + '$' + encrypted;
+                  }
+               }
+               catch (e)
+               {
+               }
+               break;
             }
-            catch (e)
-            {
-            }
-            break;
          }
          console.log('\n' + //
          "Encrypted Code Length: " + encrypted.length + '\n' + //
@@ -192,7 +231,7 @@ Ext.define('Genesis.controller.ControllerBase',
       //
       // Forward all locally generated page navigation events to viewport
       //
-      this.setAnimationMode(this.self.superclass.self.animationMode['slide']);
+      this.setAnimationMode(this.self.superclass.self.animationMode['cover']);
 
       //
       // Prevent Recursion
@@ -649,11 +688,11 @@ Ext.define('Genesis.controller.ControllerBase',
          //
          // pick the first one on the Neaby Venue in the store
          //
-         var venueId = 0;
+         var venueId = "0";
          if (!merchantMode)
          {
             var venue = Ext.StoreMgr.get('CheckinExploreStore').first() || me.getViewPortCntlr().getVenue() || null;
-            venueId = venue ? venue.getId() : 0;
+            venueId = venue ? venue.getId() : "0";
          }
          callback(
          {

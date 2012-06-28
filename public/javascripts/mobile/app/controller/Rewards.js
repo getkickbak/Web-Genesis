@@ -582,7 +582,7 @@ Ext.define('Genesis.controller.Rewards',
       {
          case 'rewards':
          {
-            me.setAnimationMode(me.self.superclass.self.animationMode['slideUp']);
+            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
             page = me.getRewards();
             list = me.getRewardsList();
             store = Ext.StoreMgr.get('RewardsStore');

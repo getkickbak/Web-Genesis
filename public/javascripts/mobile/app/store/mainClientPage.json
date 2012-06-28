@@ -5,7 +5,7 @@
          "photo_url": "resources/themes/images/v1/mainicons/accounts.png",
          "desc": "Accounts",
          "route" : "accounts",
-         "pageCntlr": "Accounts",
+         "pageCntlr": "client.Accounts",
          "subFeature": "profile"
       }, {
          "name": "Explore",
@@ -33,7 +33,7 @@
          "photo_url": "resources/themes/images/v1/miscicons/points.png",
          "desc": "Transfer Points to other KickBak users",
          "route" : "transfer",
-         "pageCntlr": "Accounts",
+         "pageCntlr": "client.Accounts",
          "subFeature": "transfer"
       }, {
          "name": "Receive Referrals",

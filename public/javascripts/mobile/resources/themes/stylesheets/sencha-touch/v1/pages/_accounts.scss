@@ -27,4 +27,16 @@
          }
       }
    }
+   .venuesList {
+      .x-list-disclosure {
+         bottom: 1.32em;
+      }
+      .itemTitle {
+         font-weight:bold;
+         font-size:$largeFontSize !important;
+      }
+      .itemDesc {
+         font-size:$normalFontSize;
+      }
+   }
 }

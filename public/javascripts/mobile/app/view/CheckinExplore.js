@@ -6,6 +6,7 @@ Ext.define('Genesis.view.CheckinExplore',
    config :
    {
       layout : 'fit',
+      cls : 'viewport',
       merchant : null,
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {

@@ -22,7 +22,7 @@ Ext.define('Genesis.view.Rewards',
             {
                duration : 600,
                easing : 'ease-in-out',
-               type : 'slide',
+               type : 'cover',
                direction : 'down'
             }
          },
@@ -160,7 +160,7 @@ Ext.define('Genesis.view.Rewards',
          cls : 'navigationBarBottom',
          showAnimation : !Ext.os.is.Android2 ?
          {
-            type : 'slideIn',
+            type : 'coverIn',
             direction : 'up',
             duration : 250,
             easing : 'ease-out'

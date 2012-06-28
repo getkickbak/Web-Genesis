@@ -6,8 +6,8 @@ Ext.define('Genesis.view.Prizes',
    config :
    {
       scrollable : undefined,
-      cls : 'prizesMain',
-      layout : 'card',
+      cls : 'prizesMain viewport',
+      layout : 'fit',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
          title : 'Prizes',
@@ -40,16 +40,16 @@ Ext.define('Genesis.view.Prizes',
    },
    cleanView : function()
    {
-      this.removeAll(true);
+      //this.removeAll(true);
    },
    createView : function()
    {
       /*
-      if (!this.callParent(arguments))
-      {
-         return;
-      }
-      */
+       if (!this.callParent(arguments))
+       {
+       return;
+       }
+       */
 
       switch (this.config.tag)
       {
@@ -72,7 +72,6 @@ Ext.define('Genesis.view.Prizes',
 
       if (prizes.length == 0)
       {
-         //view.removeAll();
          this.getPreRender().push(Ext.create('Ext.Component',
          {
             tag : 'rewardPanel',
@@ -234,8 +233,11 @@ Ext.define('Genesis.view.Prizes',
       this.callParent(arguments);
 
       var carousel = this.query('carousel')[0];
-      carousel.setActiveItem(0);
-      carousel.show();
+      if (carousel)
+      {
+         carousel.setActiveItem(0);
+      }
+      this.getInnerItems()[0].setVisibility(true);
    },
    statics :
    {
@@ -258,12 +260,12 @@ Ext.define('Genesis.view.Prizes',
 Ext.define('Genesis.view.ShowPrize',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.XTemplate', 'Ext.Carousel', 'Genesis.view.widgets.RewardItem'],
+   requires : ['Ext.XTemplate', 'Genesis.view.widgets.RewardItem'],
    alias : 'widget.showprizeview',
    config :
    {
-      scrollable : false,
-      cls : 'prizesMain',
+      scrollable : undefined,
+      cls : 'prizesMain viewport',
       layout : 'fit',
       items : [
       {
@@ -281,13 +283,6 @@ Ext.define('Genesis.view.ShowPrize',
             tag : 'close',
             ui : 'normal',
             text : 'Close'
-         },
-         {
-            align : 'left',
-            tag : 'back',
-            //ui : 'back',
-            ui : 'normal',
-            text : 'Back'
          },
          {
             align : 'right',
@@ -328,11 +323,11 @@ Ext.define('Genesis.view.ShowPrize',
    createView : function()
    {
       /*
-      if (!this.callParent(arguments))
-      {
-         return;
-      }
-      */
+       if (!this.callParent(arguments))
+       {
+       return;
+       }
+       */
 
       this.getPreRender().push(Ext.create('Ext.dataview.DataView',
       {

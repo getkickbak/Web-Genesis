@@ -87,7 +87,6 @@
    .feedPanel {
       min-height:5em;
       @extend .listNoScrollWrapper;
-      //@extend .viewport;
       .listItemDetailsWrapper {
          .itemTitle {
             font-weight:bold;

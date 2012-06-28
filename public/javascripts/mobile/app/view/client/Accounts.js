@@ -1,12 +1,22 @@
-Ext.define('Genesis.view.Accounts',
+Ext.define('Genesis.view.client.Accounts',
 {
    extend : 'Genesis.view.ViewBase',
    requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar'],
-   alias : 'widget.accountsview',
+   alias : 'widget.clientaccountsview',
    config :
    {
-      cls : 'accountsMain',
-      layout : 'fit',
+      cls : 'accountsMain viewport',
+      layout :
+      {
+         type : 'card',
+         animation :
+         {
+            duration : 400,
+            easing : 'ease-in-out',
+            type : 'slide',
+            direction : 'left'
+         }
+      },
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
          title : ' ',
@@ -17,8 +27,26 @@ Ext.define('Genesis.view.Accounts',
             //ui : 'back',
             ui : 'normal',
             text : 'Back'
+         },
+         {
+            align : 'left',
+            tag : 'vback',
+            hidden : true,
+            //ui : 'back',
+            ui : 'normal',
+            text : 'Back'
          }]
       })]
+   },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   cleanView : function()
+   {
+      //this.removeAll(true);
    },
    showView : function()
    {
@@ -28,6 +56,7 @@ Ext.define('Genesis.view.Accounts',
       {
          list.setVisibility(true);
       }
+      this.setActiveItem(0);
    },
    createView : function()
    {
@@ -36,11 +65,14 @@ Ext.define('Genesis.view.Accounts',
          return;
       }
 
-      this.getPreRender().push(Ext.create('Ext.List',
+      this.setPreRender(this.getPreRender().concat([
+      //
+      // Accounts List
+      //
+      Ext.create('Ext.List',
       {
          xtype : 'list',
          store : 'CustomerStore',
-         deferEmptyText : false,
          tag : 'accountsList',
          scrollable : 'vertical',
          cls : 'accountsList',
@@ -102,6 +134,33 @@ Ext.define('Genesis.view.Accounts',
             }
          }),
          onItemDisclosure : Ext.emptyFn
-      }));
+      }),
+      //
+      // Venues List
+      //
+      Ext.create('Ext.List',
+      {
+         xtype : 'list',
+         store : 'VenueStore',
+         tag : 'venuesList',
+         scrollable : 'vertical',
+         cls : 'venuesList',
+         deferEmptyText : false,
+         emptyText : ' ',
+         itemTpl : Ext.create('Ext.XTemplate',
+         // @formatter:off
+         '<div class="merchantDetailsWrapper">',
+            '<div class="itemTitle">{name}</div>',
+            '<div class="itemDesc">{[this.getAddress(values)]}</div>',
+         '</div>',
+         // @formatter:on
+         {
+            getAddress : function(values)
+            {
+               return (values.address + ",<br/>" + values.city + ", " + values.state + ", " + values.country + ",</br>" + values.zipcode);
+            }
+         }),
+         onItemDisclosure : Ext.emptyFn
+      })]));
    }
 });

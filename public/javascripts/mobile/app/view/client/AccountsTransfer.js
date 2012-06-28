@@ -6,6 +6,7 @@ Ext.define('Genesis.view.client.AccountsTransfer',
    config :
    {
       layout : 'vbox',
+      cls : 'viewport',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
          cls : 'navigationBarTop kbTitle',
@@ -51,7 +52,7 @@ Ext.define('Genesis.view.client.AccountsTransfer',
             type : 'card',
             animation :
             {
-               duration : 600,
+               duration : 400,
                easing : 'ease-in-out',
                type : 'slide',
                direction : 'up'

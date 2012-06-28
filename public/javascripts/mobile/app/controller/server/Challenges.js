@@ -38,6 +38,7 @@ Ext.define('Genesis.controller.server.Challenges',
    },
    invalidAuthCodeMsg : 'Authorization Code is Invalid',
    genAuthCodeMsg : 'Proceed to generate Authorization Code',
+   generatingAuthCodeMsg : 'Generating Authorization Code ...',
    refreshAuthCodeMsg : 'Refresing Authorization Code ...',
    init : function()
    {
@@ -49,7 +50,7 @@ Ext.define('Genesis.controller.server.Challenges',
       return Genesis.controller.ControllerBase.genQRCodeFromParams(
       {
          "type" : 'earn_points'
-      });
+      }, false, false, false);
    },
    // --------------------------------------------------------------------------
    // Server Challenges Page
@@ -79,7 +80,7 @@ Ext.define('Genesis.controller.server.Challenges',
          var qrcode = me.generateQRCode();
          if (qrcode[0])
          {
-            controller.fireEvent('refreshQRCode',qrcode);
+            controller.fireEvent('refreshQRCode', qrcode);
          }
          Ext.Viewport.setMasked(false);
       }, 1, me);
@@ -87,36 +88,45 @@ Ext.define('Genesis.controller.server.Challenges',
    onGenerateQRCode : function()
    {
       var me = this;
-      var qrcode = me.generateQRCode();
 
-      if (qrcode[0])
+      Ext.Viewport.setMasked(
       {
-         var controller = me.getApplication().getController('Prizes');
-         controller.fireEvent('authreward', Ext.create('Genesis.model.EarnPrize',
+         xtype : 'loadmask',
+         message : me.generatingAuthCodeMsg
+      });
+      Ext.defer(function()
+      {
+         var qrcode = me.generateQRCode();
+         if (qrcode[0])
          {
-            //'id' : 1,
-            'expiry_date' : null,
-            'reward' : Ext.create('Genesis.model.CustomerReward',
+            var controller = me.getApplication().getController('Prizes');
+            controller.fireEvent('authreward', Ext.create('Genesis.model.EarnPrize',
             {
-               id : 0,
-               title : 'Authorization Code',
-               type :
+               //'id' : 1,
+               'expiry_date' : null,
+               'reward' : Ext.create('Genesis.model.CustomerReward',
                {
-                  value : 'earn_points'
-               },
-               photo :
-               {
-                  'thumbnail_ios_medium' :
+                  id : 0,
+                  title : 'Authorization Code',
+                  type :
                   {
-                     url : qrcode[0],
-                     height : qrcode[1],
-                     width : qrcode[2],
+                     value : 'earn_points'
+                  },
+                  photo :
+                  {
+                     'thumbnail_ios_medium' :
+                     {
+                        url : qrcode[0],
+                        height : qrcode[1],
+                        width : qrcode[2],
+                     }
                   }
-               }
-            }),
-            'merchant' : null
-         }));
-      }
+               }),
+               'merchant' : null
+            }));
+         }
+         Ext.Viewport.setMasked(false);
+      }, 1, me);
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

@@ -86,20 +86,33 @@ Ext.define('Genesis.model.Customer',
       },
       updateCustomer : function(cOld, cNew)
       {
-         var attrib;
+         var attrib, sync = false;
+         cOld.beginEdit();
          for (var i = 0; i < cOld.fields.length; i++)
          {
             attrib = cOld.fields.items[i].getName();
-            cOld.set(attrib, cNew.get(attrib));
+            if (cOld.get(attrib) != cNew.get(attrib))
+            {
+               cOld.set(attrib, cNew.get(attrib));
+               sync = true;
+            }
          }
          try
          {
-            cOld.setLastCheckin(cNew.getLastCheckin());
+            if (cOld.getLastCheckin() != cNew.getLastCheckin())
+            {
+               cOld.setLastCheckin(cNew.getLastCheckin());
+               sync = true;
+            }
          }
          catch (e)
          {
             cOld.setLastCheckin(Ext.create('Genesis.model.Checkin'));
+            sync = true;
          }
+         cOld.endEdit();
+         
+         return sync;
       },
       setFbLoginUrl : function()
       {
