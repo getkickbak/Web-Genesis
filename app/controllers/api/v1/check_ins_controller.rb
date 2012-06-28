@@ -59,7 +59,6 @@ class Api::V1::CheckInsController < ApplicationController
         challenge_type_id = ChallengeType.value_to_id["vip"]
         challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
         if challenge
-          logger.debug("Setup vip challenge")
           visits_to_go = @customer.visits % challenge.data.visits
           (visits_to_go = challenge.data.visits) unless visits_to_go > 0
           item = EligibleReward.new(
@@ -75,10 +74,8 @@ class Api::V1::CheckInsController < ApplicationController
         reward_to_types.each do |reward_to_type|
           reward_id_to_type_id[reward_to_type.customer_reward_id] = reward_to_type.customer_reward_type_id
         end
-        logger.debug("Setup eligible rewards")
         @rewards.each do |reward|
           reward.eager_load_type = CustomerRewardType.id_to_type[reward_id_to_type_id[reward.id]]
-          logger.debug("reward: #{reward.id}, #{reward.title}, eager_load_type: #{reward.eager_load_type}")
           item = EligibleReward.new(
             reward.id,
             reward.eager_load_type.value,
