@@ -7,7 +7,7 @@ class Device
   
   property :id, Serial
   property :serial_num, String, :required => true, :default => ""
-  property :status, Enum[:activated, :deactivated], :required => true, :default => :pending
+  property :status, Enum[:activated, :deactivated], :required => true, :default => :activated
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
