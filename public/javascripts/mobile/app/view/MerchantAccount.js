@@ -195,10 +195,10 @@ Ext.define('Genesis.view.MerchantAccount',
                cls : 'feedPanel',
                itemTpl : Ext.create('Ext.XTemplate',
                // @formatter:off
-               '<div class="photo">'+
-                  '<img src="{[this.getPhoto(values)]}"/>'+
-               '</div>',
                '<div class="itemWrapper" style="{[this.getDisclose(values)]}">',
+                  '<div class="photo">'+
+                     '<img src="{[this.getPhoto(values)]}"/>'+
+                  '</div>',
                   '<div class="itemTitle">{[this.getTitle(values)]}</div>',
                   '<div class="itemDesc">{[this.getDesc(values)]}</div>',
                '</div>',

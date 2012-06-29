@@ -93,29 +93,32 @@
       }
       .x-dataview-item {
          padding:$panelTopGap $panelGap;
-      }
-      .x-dataview-item:nth-child(2n){
          border-top: 1px solid #CBCBCF;
       }
+      .x-dataview-item:first-child {
+         border:none;
+      }
       .itemWrapper {
-         padding-left:$icon-size+10px;
+         position:relative;
          min-height:$icon-size;
+         .photo {
+            top:0;
+            left:0;
+            position:absolute;
+            height:$icon-size;
+            img {
+               width : $icon-size;
+               max-height : $icon-size;
+            }
+         }
          .itemTitle {
+            padding-left:$icon-size+10px;
             font-weight:bold;
             font-size:$largeFontSize !important;
          }
          .itemDesc {
+            padding-left:$icon-size+10px;
             font-size:$normalFontSize !important;
-         }
-      }
-      .photo {
-         top:$panelTopGap;
-         left:$panelGap;
-         position:absolute;
-         height:$icon-size;
-         img {
-            width : $icon-size;
-            max-height : $icon-size;
          }
       }
    }
