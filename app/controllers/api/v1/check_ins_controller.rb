@@ -69,7 +69,6 @@ class Api::V1::CheckInsController < ApplicationController
           )
           @eligible_rewards << item
         end
-=begin        
         reward_id_to_type_id = {}
         reward_to_types = CustomerRewardToType.all(:fields => [:customer_reward_id, :customer_reward_type_id], :customer_reward => @rewards)
         reward_to_types.each do |reward_to_type|
@@ -77,6 +76,7 @@ class Api::V1::CheckInsController < ApplicationController
         end        
         @rewards.each do |reward|
           reward.eager_load_type = CustomerRewardType.id_to_type[reward_id_to_type_id[reward.id]]
+=begin          
           item = EligibleReward.new(
             reward.id,
             reward.eager_load_type.value,
@@ -84,8 +84,8 @@ class Api::V1::CheckInsController < ApplicationController
             ::Common.get_eligible_reward_text(@customer.points - reward.points)
           )
           @eligible_rewards << item  
+=end          
         end
-=end        
         render :template => '/api/v1/check_ins/create'
       end
     rescue DataMapper::SaveFailureError => e

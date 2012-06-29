@@ -143,7 +143,6 @@ class Api::V1::ChallengesController < ApplicationController
                 )
                 @eligible_rewards << item
               end
-=begin              
               reward_id_to_type_id = {}
               reward_to_types = CustomerRewardToType.all(:fields => [:customer_reward_id, :customer_reward_type_id], :customer_reward => @rewards)
               reward_to_types.each do |reward_to_type|
@@ -151,6 +150,7 @@ class Api::V1::ChallengesController < ApplicationController
               end              
               @rewards.each do |reward|
                 reward.eager_load_type = CustomerRewardType.id_to_type[reward_id_to_type_id[reward.id]]
+=begin                
                 item = EligibleReward.new(
                   reward.id,
                   reward.eager_load_type.value,
@@ -158,8 +158,8 @@ class Api::V1::ChallengesController < ApplicationController
                   ::Common.get_eligible_reward_text(@customer.points - reward.points)
                 )
                 @eligible_rewards << item  
+=end                
               end
-=end              
               @points = @challenge.points
               render :template => '/api/v1/challenges/complete'
               logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), #{@challenge.points} points awarded")
