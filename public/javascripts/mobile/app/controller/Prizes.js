@@ -500,7 +500,7 @@ Ext.define('Genesis.controller.Prizes',
       }
       for (var i = 0; i < activeItem.getInnerItems().length; i++)
       {
-         activeItem.getInnerItems()[i].setVisibility(false);
+         //activeItem.getInnerItems()[i].setVisibility(false);
       }
       //activeItem.createView();
    },

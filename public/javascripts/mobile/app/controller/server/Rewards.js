@@ -164,7 +164,7 @@ Ext.define('Genesis.controller.server.Rewards',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       var value = b.getText();
       var priceField = me.getPrice();
       var price = Number(priceField.getValue() || 0);

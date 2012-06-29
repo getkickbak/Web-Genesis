@@ -106,6 +106,9 @@ Ext.define('Genesis.controller.client.Redemptions',
       var page = me.getRedemptions();
 
       var viewport = me.getViewPortCntlr();
+      var customer = viewport.getCustomer();
+      var rstore = Ext.StoreMgr.get('RedemptionRenderCStore');
+      //
       var cvenue = viewport.getCheckinInfo().venue;
       var venue = viewport.getVenue();
       var venueId = venue.getId();
@@ -113,6 +116,11 @@ Ext.define('Genesis.controller.client.Redemptions',
 
       me.exploreMode = !cvenue || (cvenue && (cvenue.getId() != venue.getId()));
 
+      // Update Customer info
+      if (customer != rstore.getRange()[0])
+      {
+         rstore.setData(customer);
+      }
       //activeItem.createView();
       for (var i = 0; i < activeItem.getInnerItems().length; i++)
       {

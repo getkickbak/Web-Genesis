@@ -34,6 +34,7 @@ Ext.define('Genesis.view.client.AccountsTransfer',
          }]
       })]
    },
+   disableAnimation : true,
    createView : function(num)
    {
       if (!this.callParent(arguments))

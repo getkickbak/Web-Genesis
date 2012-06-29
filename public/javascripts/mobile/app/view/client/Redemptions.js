@@ -19,6 +19,7 @@ Ext.define('Genesis.view.client.Redemptions',
             text : 'Close'
          },
          {
+            hidden : true,
             align : 'left',
             tag : 'back',
             ui : 'normal',
@@ -28,7 +29,7 @@ Ext.define('Genesis.view.client.Redemptions',
    },
    cleanView : function()
    {
-      //this.removeAll(true);
+      this.removeAll(true);
    },
    showView : function()
    {
@@ -40,12 +41,6 @@ Ext.define('Genesis.view.client.Redemptions',
    },
    createView : function()
    {
-      var app = _application;
-      var viewport = app.getController('Viewport');
-      //
-      // Update Customer info
-      Ext.StoreMgr.get('RedemptionRenderCStore').setData(viewport.getCustomer());
-
       if (!this.callParent(arguments))
       {
          return;
@@ -108,25 +103,15 @@ Ext.define('Genesis.view.client.Redemptions',
          store : 'RedemptionsStore',
          cls : 'redemptionsList separator_pad',
          tag : 'redemptionsList',
-         /*
-         indexBar :
-         {
-         docked : 'right',
-         overlay : true,
-         alphabet : false,
-         centered : false,
-         letters : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
-         },
-         */
-         //pinHeaders : true,
-         grouped : true,
          // @formatter:off
          itemTpl : Ext.create('Ext.XTemplate',
-         '<div class="photo">'+
+         '<div class="photo x-hasbadge">'+
+            '<span class="x-badge round">{[this.getPoints(values)]}</span>',
             '<img src="{[this.getPhoto(values)]}"/>'+
          '</div>',
          '<div class="listItemDetailsWrapper">',
             '<div class="itemTitle">{[this.getTitle(values)]}</div>',
+            //'<div class="itemDesc">{[this.getDesc(values)]}</div>',
          '</div>',
          // @formatter:on
          {
@@ -141,6 +126,14 @@ Ext.define('Genesis.view.client.Redemptions',
             getTitle : function(values)
             {
                return values['title'];
+            },
+            getDesc : function(values)
+            {
+               return 'This will cost you ' + values['points'] + ' Pts';
+            },
+            getPoints : function(values)
+            {
+               return values['points'];
             }
          }),
          onItemDisclosure : Ext.emptyFn

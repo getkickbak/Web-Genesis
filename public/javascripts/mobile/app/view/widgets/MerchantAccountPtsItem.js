@@ -12,31 +12,26 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          // Backgrond Image
          cls : 'tbPanel',
          tag : 'background',
-         flex : 1,
          items : [
          // Display Points
          {
             xtype : 'container',
-            docked : 'bottom',
+            bottom : 0,
+            width : '100%',
             cls : 'container',
-            layout :
-            {
-               type : 'hbox',
-               align : 'stretch'
-            },
+            layout : 'hbox',
             defaults :
             {
+               flex : 1,
                xtype : 'component'
             },
             items : [
             {
-               docked : 'left',
                tag : 'visits',
                tpl : '{visits}',
                cls : 'visitsphoto'
             },
             {
-               docked : 'right',
                tag : 'points',
                tpl : '{points}',
                cls : 'pointsphoto'
@@ -91,12 +86,12 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
    },
    updateBackground : function(newBackground, oldBackground)
    {
-      if(newBackground)
+      if (newBackground)
       {
          this.add(newBackground);
       }
 
-      if(oldBackground)
+      if (oldBackground)
       {
          this.remove(oldBackground);
       }
@@ -122,7 +117,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       //
       // Hide Points if we are not a customer of the Merchant
       //
-      if(Ext.StoreMgr.get('CustomerStore').getById(customer.getId()))
+      if (Ext.StoreMgr.get('CustomerStore').getById(customer.getId()))
       {
          bg.getItems().items[0].show();
          //Update Points
@@ -144,12 +139,12 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
    },
    updateWinnersCount : function(newWinnersCount, oldWinnersCount)
    {
-      if(newWinnersCount)
+      if (newWinnersCount)
       {
          this.add(newWinnersCount);
       }
 
-      if(oldWinnersCount)
+      if (oldWinnersCount)
       {
          this.remove(oldWinnersCount);
       }
@@ -166,26 +161,26 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
     */
    updateRecord : function(newRecord)
    {
-      if(!newRecord)
+      if (!newRecord)
       {
          return;
       }
 
       var me = this, dataview = me.config.dataview, data = dataview.prepareData(newRecord.getData(true), dataview.getStore().indexOf(newRecord), newRecord), items = me.getItems(), item = items.first(), dataMap = me.getDataMap(), componentName, component, setterMap, setterName;
 
-      if(!item)
+      if (!item)
       {
          return;
       }
-      for(componentName in dataMap)
+      for (componentName in dataMap)
       {
          setterMap = dataMap[componentName];
          component = me[componentName]();
-         if(component)
+         if (component)
          {
-            for(setterName in setterMap)
+            for (setterName in setterMap)
             {
-               if(component[setterName])
+               if (component[setterName])
                {
                   switch (setterMap[setterName])
                   {

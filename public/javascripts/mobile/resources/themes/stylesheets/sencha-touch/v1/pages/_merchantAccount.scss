@@ -85,12 +85,37 @@
       }
    }
    .feedPanel {
-      min-height:5em;
-      @extend .listNoScrollWrapper;
-      .listItemDetailsWrapper {
+      @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
+      background-color : $GreyStart;
+      margin:0 $panelGap $panelTopGap $panelGap;
+      .x-list-container {
+         margin:0 $panelGap;
+      }
+      .x-dataview-item {
+         padding:$panelTopGap $panelGap;
+      }
+      .x-dataview-item:nth-child(2n){
+         border-top: 1px solid #CBCBCF;
+      }
+      .itemWrapper {
+         padding-left:$icon-size+10px;
+         min-height:$icon-size;
          .itemTitle {
             font-weight:bold;
             font-size:$largeFontSize !important;
+         }
+         .itemDesc {
+            font-size:$normalFontSize !important;
+         }
+      }
+      .photo {
+         top:$panelTopGap;
+         left:$panelGap;
+         position:absolute;
+         height:$icon-size;
+         img {
+            width : $icon-size;
+            max-height : $icon-size;
          }
       }
    }

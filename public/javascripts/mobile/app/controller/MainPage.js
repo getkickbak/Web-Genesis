@@ -361,7 +361,7 @@ Ext.define('Genesis.controller.MainPage',
    // --------------------------------------------------------------------------
    onItemSelect : function(d, model, eOpts)
    {
-      Genesis.controller.ControllerBase.playSoundFile(this.getViewPortCntlr().sound_files['clickSound']);
+      //Genesis.controller.ControllerBase.playSoundFile(this.getViewPortCntlr().sound_files['clickSound']);
 
       d.deselect([model], false);
       console.log("Controller=[" + model.data.pageCntlr + "]");

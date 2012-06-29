@@ -40,7 +40,18 @@ Ext.define('Genesis.view.Prizes',
    },
    cleanView : function()
    {
-      //this.removeAll(true);
+      switch (this.config.tag)
+      {
+         case 'userPrizes' :
+         {
+            break;
+         }
+         case 'merchantPrizes' :
+         {
+            this.removeAll(true);
+            break;
+         }
+      }
    },
    createView : function()
    {
@@ -87,6 +98,7 @@ Ext.define('Genesis.view.Prizes',
       {
          // Either a carousel or a empty view
          var container = view.getInnerItems()[0];
+         var items = [];
          if (container && container.isXType('carousel', true))
          {
             //
@@ -96,15 +108,14 @@ Ext.define('Genesis.view.Prizes',
          }
          else
          {
-            var items = [];
-            container = view.getInnerItems()[0];
             if (!container)
             {
-               this.getPreRender().push( container = Ext.create('Ext.Carousel',
+               container = Ext.create('Ext.Carousel',
                {
                   xtype : 'carousel',
                   scrollable : undefined
-               }));
+               })
+               this.getPreRender().push(container);
             }
             for (var i = 0; i < prizes.length; i++)
             {
