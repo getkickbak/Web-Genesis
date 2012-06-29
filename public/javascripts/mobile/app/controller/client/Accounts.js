@@ -364,6 +364,7 @@ Ext.define('Genesis.controller.client.Accounts',
       var venueId = venue.getId();
       var viewport = me.getViewPortCntlr();
       var controller = me.getApplication().getController('Checkins');
+      var rstore = Ext.StoreMgr.get('RedemptionsStore');
       var rec = me.rec;
 
       Ext.Viewport.setMasked(
@@ -371,29 +372,27 @@ Ext.define('Genesis.controller.client.Accounts',
          xtype : 'loadmask',
          message : me.getVenueInfoMsg
       });
-      Customer['setVenueExploreUrl'](venueId);
-      Customer.load(venueId,
+      CustomerReward['setGetRedemptionsURL']();
+      rstore.load(
       {
          jsonData :
          {
          },
          params :
          {
-            latitude : 0,
-            longitude : 0,
-            auth_code : 0,
-            redeem : true,
             venue_id : venueId
          },
          scope : me,
-         callback : function(record, operation)
+         callback : function(records, operation)
          {
-            var metaData = Customer.getProxy().getReader().metaData;
-
-            if (operation.wasSuccessful() && metaData)
+            if (operation.wasSuccessful())
             {
+               var metaData =
+               {
+                  'venue_id' : venueId
+               };
                viewport.setVenue(venue);
-               metaData['venue_id'] = venueId;
+
                switch(me.getMode())
                {
                   case 'redeemProfile' :
