@@ -11,6 +11,7 @@
 	<%= f.input :title %>
 	<%= f.input :price %>
 	<%= f.input :points %>
+	<%= f.input :mode, :collection => CustomerReward::Modes %>
 	<div class="venues">
 		<div>Venues</div>
 		<%= f.collection_check_boxes :venue_ids, current_merchant.venues, :id, :display_name, :item_wrapper_tag => :div, :item_wrapper_class => 'checkbox', :checked => @venue_ids %>
