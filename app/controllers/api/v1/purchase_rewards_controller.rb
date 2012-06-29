@@ -277,7 +277,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           prize_info.prize_point_offset = current_point_offset
           prize_info.save
           
-          @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])
+          @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :conditions => [ 'mode = ? OR mode = ?', CustomerReward::Modes.index(:reward_only)+1, CustomerReward::Modes.index(:prize_and_reward)+1], :order => [:points.asc])
           @eligible_rewards = []
           challenge_type_id = ChallengeType.value_to_id["vip"]
           challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
@@ -292,11 +292,12 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             )
             @eligible_rewards << item
           end
+=begin          
           reward_id_to_type_id = {}
           reward_to_types = CustomerRewardToType.all(:fields => [:customer_reward_id, :customer_reward_type_id], :customer_reward => @rewards)
           reward_to_types.each do |reward_to_type|
             reward_id_to_type_id[reward_to_type.customer_reward_id] = reward_to_type.customer_reward_type_id
-          end
+          end          
           @rewards.each do |reward|
             reward.eager_load_type = CustomerRewardType.id_to_type[reward_id_to_type_id[reward.id]]
             item = EligibleReward.new(
@@ -307,6 +308,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             )
             @eligible_rewards << item  
           end
+=end          
           render :template => '/api/v1/purchase_rewards/earn'
           if @referral_challenge
             UserMailer.referral_challenge_confirm_email(referrer.user, @customer.user, @venue, referral_record).deliver
@@ -359,14 +361,15 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       @prize_section = []
       total_points = 0
       lcm = 1
-      @venue.customer_rewards.each do |reward|
+      @prize_rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :conditions => [ 'mode = ? OR mode = ?', CustomerReward::Modes.index(:prize_only)+1, CustomerReward::Modes.index(:prize_and_reward)+1], :order => [:points.asc])
+      @prize_rewards.each do |reward|
         total_points += reward.points
         #puts("reward: #{reward.title} - points: #{reward.points}")
         lcm = lcm.lcm(reward.points)
         #puts("lcm: #{lcm}")
       end
       @total_prize_section_points = 0
-      @venue.customer_rewards.each do |reward|
+      @prize_rewards.each do |reward|
         @total_prize_section_points += (lcm / reward.points * total_points)  
         #puts("total_prize_section_points: #{@total_prize_section_points}")
         @prize_section << @total_prize_section_points
@@ -377,7 +380,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     #puts("chosen section: #{chosen_section}")
     idx = @prize_section.bsearch_upper_boundary {|x| x <=> chosen_section}
     #puts("chosen idx: #{idx}")
-    return @venue.customer_rewards[idx]
+    return @prize_rewards[idx]
   end
   
   def pick_prize_win_offset(prize_interval)

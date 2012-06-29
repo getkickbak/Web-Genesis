@@ -128,7 +128,7 @@ class Api::V1::ChallengesController < ApplicationController
               trans_record.save
               @customer.points += @challenge.points
               @customer.save
-              @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])
+              @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :conditions => [ 'mode = ? OR mode = ?', CustomerReward::Modes.index(:reward_only)+1, CustomerReward::Modes.index(:prize_and_reward)+1], :order => [:points.asc]) + 
               @eligible_rewards = []
               challenge_type_id = ChallengeType.value_to_id["vip"]
               challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
@@ -143,11 +143,12 @@ class Api::V1::ChallengesController < ApplicationController
                 )
                 @eligible_rewards << item
               end
+=begin              
               reward_id_to_type_id = {}
               reward_to_types = CustomerRewardToType.all(:fields => [:customer_reward_id, :customer_reward_type_id], :customer_reward => @rewards)
               reward_to_types.each do |reward_to_type|
                 reward_id_to_type_id[reward_to_type.customer_reward_id] = reward_to_type.customer_reward_type_id
-              end
+              end              
               @rewards.each do |reward|
                 reward.eager_load_type = CustomerRewardType.id_to_type[reward_id_to_type_id[reward.id]]
                 item = EligibleReward.new(
@@ -158,6 +159,7 @@ class Api::V1::ChallengesController < ApplicationController
                 )
                 @eligible_rewards << item  
               end
+=end              
               @points = @challenge.points
               render :template => '/api/v1/challenges/complete'
               logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), #{@challenge.points} points awarded")

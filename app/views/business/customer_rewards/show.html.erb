@@ -10,6 +10,11 @@
   <b>Points:</b>
   <%= @customer_reward.points %>
 </p>
+
+<p>
+  <b>Mode:</b>
+  <%= @customer_reward.mode %>
+</p>
 </div>
 <%= link_to 'Edit', edit_customer_reward_path(@customer_reward) %> |
 <%= link_to 'Back', customer_rewards_path %>

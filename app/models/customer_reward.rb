@@ -1,10 +1,13 @@
 class CustomerReward
   include DataMapper::Resource
+  
+  Modes = [:reward_only, :prize_only, :prize_and_reward]
 
   property :id, Serial
   property :title, String, :length => 24, :required => true, :default => ""
   property :price, Decimal, :required => true, :scale => 2, :min => 1.00
   property :points, Integer, :required => true, :min => 1
+  property :mode, Enum[:reward_only, :prize_only, :prize_and_reward], :required => true, :default => :prize_and_reward
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -14,7 +17,7 @@ class CustomerReward
   attr_accessor :venue_ids
   attr_accessor :eager_load_type
 
-  attr_accessible :type_id, :title, :price, :points
+  attr_accessible :type_id, :title, :price, :points, :mode
 
   belongs_to :merchant
   has 1, :customer_reward_to_type, :constraint => :destroy
@@ -31,7 +34,8 @@ class CustomerReward
       :type_id => type ? type.id : nil,
       :title => reward_info[:title].strip,
       :price => reward_info[:price],
-      :points => reward_info[:points]
+      :points => reward_info[:points],
+      :mode => reward_info[:mode]
     )
     reward[:created_ts] = now
     reward[:update_ts] = now
@@ -48,6 +52,7 @@ class CustomerReward
     self.title = reward_info[:title]
     self.price = reward_info[:price]
     self.points = reward_info[:points]
+    self.mode = reward_info[:mode]
     self.update_ts = now
     self.type = type
     self.customer_reward_venues.destroy

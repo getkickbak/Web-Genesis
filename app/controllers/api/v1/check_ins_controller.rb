@@ -54,7 +54,7 @@ class Api::V1::CheckInsController < ApplicationController
         now = Time.now
         last_check_in = CheckIn.create(@venue, current_user, @customer)
         @winners_count = EarnPrize.count(EarnPrize.merchant.id => @venue.merchant.id, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
-        @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :order => [:points.asc])
+        @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :conditions => [ 'mode = ? OR mode = ?', CustomerReward::Modes.index(:reward_only)+1, CustomerReward::Modes.index(:prize_and_reward)+1], :order => [:points.asc])
         @eligible_rewards = []
         challenge_type_id = ChallengeType.value_to_id["vip"]
         challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
@@ -69,11 +69,12 @@ class Api::V1::CheckInsController < ApplicationController
           )
           @eligible_rewards << item
         end
+=begin        
         reward_id_to_type_id = {}
         reward_to_types = CustomerRewardToType.all(:fields => [:customer_reward_id, :customer_reward_type_id], :customer_reward => @rewards)
         reward_to_types.each do |reward_to_type|
           reward_id_to_type_id[reward_to_type.customer_reward_id] = reward_to_type.customer_reward_type_id
-        end
+        end        
         @rewards.each do |reward|
           reward.eager_load_type = CustomerRewardType.id_to_type[reward_id_to_type_id[reward.id]]
           item = EligibleReward.new(
@@ -84,6 +85,7 @@ class Api::V1::CheckInsController < ApplicationController
           )
           @eligible_rewards << item  
         end
+=end        
         render :template => '/api/v1/check_ins/create'
       end
     rescue DataMapper::SaveFailureError => e
