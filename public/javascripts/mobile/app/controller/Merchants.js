@@ -162,11 +162,7 @@ Ext.define('Genesis.controller.Merchants',
    },
    onDetailsActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var page = this.getMerchantDetails();
       var venue = this.getViewPortCntlr().getVenue();
-
-      // Refresh Merchant Details Info
-      //Ext.StoreMgr.get('MerchantRenderStore').setData(vrecord);
 
       // Show Share Icon
       this.getShareBtn().show();
@@ -205,22 +201,9 @@ Ext.define('Genesis.controller.Merchants',
    // --------------------------------------------------------------------------
    // Merchant Account Page
    // --------------------------------------------------------------------------
-   /*
-    onUpdateWinnersCount : function(metaData)
-    {
-    var panel = this.getPrizesWonPanel();
-    // Initial Main Page Object
-    if(!panel)
-    {
-    this.getMain();
-    panel = this.getPrizesWonPanel();
-    }
-    panel.setData(metaData);
-    this.winnersCount = metaData;
-    },
-    */
    onMainActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
+      console.debug("Merchant Account Activate");
       var me = this;
       var viewport = me.getViewPortCntlr();
       var vrecord = viewport.getVenue();
@@ -257,19 +240,13 @@ Ext.define('Genesis.controller.Merchants',
       }
       activeItem.prizesCount = (prizesCount > 0) ? prizesCount : null;
 
-      //
-      // Update Winners Count
-      //
-      if (me.winnersCount && (vrecord.get('winners_count') != me.winnersCount))
-      {
-         vrecord.set('winners_count', me.winnersCount['winners_count']);
-      }
-
+      /*
       if (!oldActiveItem || //
       (oldActiveItem.isXType('mainpageview', true) || oldActiveItem.isXType('checkinexploreview', true)))
       {
-         //this.getMerchantTabBar().hide();
+      this.getMerchantTabBar().hide();
       }
+      */
 
       //
       // Either we are checked-in or
@@ -298,8 +275,11 @@ Ext.define('Genesis.controller.Merchants',
       var scroll = activeItem.getScrollable();
       scroll.getScroller().scrollTo(0, 0);
 
-      // Refresh Merchant Panel Info
-      Ext.StoreMgr.get('MerchantRenderStore').setData(vrecord);
+      var feedContainer = me.getFeedContainer();
+      if (feedContainer)
+      {
+         feedContainer[activeItem.renderFeed ? 'show' : 'hide'];
+      }
 
       me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();
       me.getMainBtn()[(activeItem.showMainBtn) ? 'show':'hide']();
@@ -308,6 +288,14 @@ Ext.define('Genesis.controller.Merchants',
       {
          // Update TitleBar
          activeItem.query('titlebar')[0].setTitle(vrecord.get('name'));
+
+         // Refresh Merchant Panel Info
+         var rstore = Ext.StoreMgr.get('MerchantRenderStore');
+         //if (rstore.getRange()[0] != vrecord)
+         {
+            rstore.setData(vrecord);
+         }
+
       }, 1, me);
    },
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
@@ -326,7 +314,7 @@ Ext.define('Genesis.controller.Merchants',
       var cvenue = viewport.getCheckinInfo().venue;
       var venue = viewport.getVenue();
 
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       if (!cvenue || !venue || (venue.getId() != cvenue.getId()))
       {
          Ext.device.Notification.show(
@@ -375,7 +363,6 @@ Ext.define('Genesis.controller.Merchants',
       var vport = me.getViewport();
       var app = me.getApplication();
       var ccntlr = app.getController('Checkins');
-      var estore = Ext.StoreMgr.get('EligibleRewardsStore');
       var cinfo = viewport.getCheckinInfo();
 
       var ccustomer = cinfo.customer;

@@ -18,7 +18,7 @@ Ext.define('Genesis.view.MerchantDetails',
       },
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         title : 'Venue Name',
+         title : ' ',
          items : [
          {
             align : 'left',

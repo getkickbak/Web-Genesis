@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.MerchantAccount',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Ext.tab.Bar', 'Genesis.view.widgets.MerchantAccountPtsItem'],
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Ext.tab.Bar', 'Ext.plugin.ListPaging', 'Genesis.view.widgets.MerchantAccountPtsItem'],
    alias : 'widget.merchantaccountview',
    config :
    {
@@ -16,7 +16,7 @@ Ext.define('Genesis.view.MerchantAccount',
       },
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         title : 'Venue Name',
+         title : ' ',
          items : [
          {
             align : 'left',
@@ -129,6 +129,12 @@ Ext.define('Genesis.view.MerchantAccount',
       {
          this.getInnerItems()[i].setVisibility(true);
       }
+      //Ext.StoreMgr.get('EligibleRewardsStore').load();
+      var feedContainer = this.query('container[tag=feedContainer]')[0];
+      if (feedContainer)
+      {
+         feedContainer[(Ext.StoreMgr.get('EligibleRewardsStore').getRange().length > 0) ? 'show' : 'hide']();
+      }
    },
    createView : function()
    {
@@ -176,24 +182,23 @@ Ext.define('Genesis.view.MerchantAccount',
                items : [
                {
                   xtype : 'title',
-                  title : 'What can I get?'
+                  title : 'What\'s going on?'
                },
                {
                   xtype : 'spacer'
                }]
             },
             {
-               xtype : 'list',
-               scrollable : false,
-               ui : 'bottom-round',
+               xtype : 'dataview',
+               scrollable : undefined,
                store : 'EligibleRewardsStore',
-               cls : 'feedPanel separator',
+               cls : 'feedPanel',
                itemTpl : Ext.create('Ext.XTemplate',
                // @formatter:off
                '<div class="photo">'+
                   '<img src="{[this.getPhoto(values)]}"/>'+
                '</div>',
-               '<div class="listItemDetailsWrapper" style="{[this.getDisclose(values)]}">',
+               '<div class="itemWrapper" style="{[this.getDisclose(values)]}">',
                   '<div class="itemTitle">{[this.getTitle(values)]}</div>',
                   '<div class="itemDesc">{[this.getDesc(values)]}</div>',
                '</div>',

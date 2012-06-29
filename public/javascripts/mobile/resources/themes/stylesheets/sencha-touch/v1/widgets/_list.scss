@@ -38,12 +38,18 @@
       padding: $panelTopGap/4 1.02em;
       @include bevel-by-background($list-header-bg-color);
    }
+   .x-scroll-view {
+      background:transparent !important;
+   }
 }
 .x-list-bottom-round {
    @extend .x-list-round;
    .x-inner, .x-list-inner {
-      .x-list-container {
-         @if $include-border-radius { @include border-bottom-radius($panelBorderRadius) }
+     .x-list-container {
+        @if $include-border-radius { @include border-bottom-radius($panelBorderRadius) }
+     }
+     .x-list-paging {
+        @if $include-border-radius { @include border-bottom-radius($panelBorderRadius) }       
      }
    }
 }

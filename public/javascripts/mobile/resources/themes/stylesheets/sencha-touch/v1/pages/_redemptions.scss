@@ -42,12 +42,22 @@
       min-height:5em;
       @extend .listScrollIndexWrapper;
       .x-list-item {
+         .photo {
+            &.x-hasbadge .x-badge {
+               background-color : $OrangeStart;
+               border-color : darken($OrangeStart,5%);
+            }
+         }
          .listItemDetailsWrapper {
             .itemTitle {
+               text-align:center;
                font-weight:bold;
                font-size:$largeFontSize !important;
                white-space: nowrap;
                line-height : $icon-size;
+            }
+            .itemDesc {
+               //font-size:$largeFontSize !important;
             }
          }
       }

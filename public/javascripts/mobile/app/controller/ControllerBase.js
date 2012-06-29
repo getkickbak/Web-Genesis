@@ -321,7 +321,7 @@ Ext.define('Genesis.controller.ControllerBase',
          // (Make sure we are after Redemption because we may depend on it for rendering purposes)
          //
          var erewards = metaData['eligible_rewards'];
-         if (erewards)
+         if (erewards && erewards.length > 0)
          {
             console.debug("Total Eligible Rewards - " + erewards.length);
             var estore = Ext.StoreMgr.get('EligibleRewardsStore');
@@ -346,7 +346,7 @@ Ext.define('Genesis.controller.ControllerBase',
              console.debug("QRCode received for Points Transfer" + '\n' + //
              qrcode);
              */
-            me.fireEvent('authCodeRecv', metaData);
+            me.fireEvent('authcoderecv', metaData);
          }
       }
       catch(e)

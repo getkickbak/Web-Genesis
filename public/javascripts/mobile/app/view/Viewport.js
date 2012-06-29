@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.Viewport',
 {
    extend : 'Ext.Container',
-   requires : ['Ext.fx.layout.Card'],
+   requires : ['Ext.fx.layout.Card', 'Genesis.view.ViewBase'],
    xtype : 'viewportview',
    config :
    {
@@ -53,17 +53,10 @@ Ext.define('Genesis.view.Viewport',
     */
    animateActiveItem : function(activeItem, animation)
    {
-      /*
-       Ext.Viewport.setMasked(
-       {
-       xtype : 'loadmask',
-       message : this.loadingMsg
-       });
-       */
-
       var layout = this.getLayout(), defaultAnimation = (layout.getAnimation) ? layout.getAnimation() : null;
       var oldActiveItem = this.getActiveItem();
       var disableAnimation = (activeItem.disableAnimation || ((oldActiveItem) ? oldActiveItem.disableAnimation : false));
+      var titlebar;
 
       if (this.activeItemAnimation)
       {
@@ -82,8 +75,6 @@ Ext.define('Genesis.view.Viewport',
             controller.pause();
             animation.on('animationend', function()
             {
-               var titlebar;
-
                console.debug("Animation Complete");
 
                defaultAnimation.enable();
@@ -126,13 +117,12 @@ Ext.define('Genesis.view.Viewport',
          }
       }
 
-      //console.debug("animateActiveItem");
-
       if (defaultAnimation && disableAnimation)
       {
          defaultAnimation.disable();
       }
-      
+
+      console.debug('Activate View [' + activeItem._itemId + ']');
       var rc = this.setActiveItem(activeItem);
       if (!layout.isCard || disableAnimation)
       {
@@ -154,14 +144,16 @@ Ext.define('Genesis.view.Viewport',
                titlebar.setMasked(Genesis.view.ViewBase.invisibleMask);
             }
          }
-         activeItem.createView();
-         activeItem.showView();
-         //Ext.Viewport.setMasked(false);
-         titlebar = activeItem.query('titlebar')[0];
-         if (titlebar)
+         Ext.defer(function()
          {
-            titlebar.setMasked(false);
-         }
+            activeItem.createView();
+            activeItem.showView();
+            titlebar = activeItem.query('titlebar')[0];
+            if (titlebar)
+            {
+               titlebar.setMasked(false);
+            }
+         }, 0.1 * 1000, this);
       }
       return rc;
    },

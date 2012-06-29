@@ -285,7 +285,7 @@ Ext.define('Genesis.controller.client.Accounts',
       if (activeItem.getInnerItems().length > 0)
       {
          activeItem.setActiveItem(0);
-         me.getAccountsList().setVisibility(false);
+         //me.getAccountsList().setVisibility(false);
       }
       //activeItem.createView();
    },
@@ -305,7 +305,7 @@ Ext.define('Genesis.controller.client.Accounts',
       //var merchantName = record.getMerchant().get('name');
       var vport = me.getViewport();
 
-      Genesis.controller.ControllerBase.playSoundFile(me.getViewPortCntlr().sound_files['clickSound']);
+      //Genesis.controller.ControllerBase.playSoundFile(me.getViewPortCntlr().sound_files['clickSound']);
       me.merchantId = record.getMerchant().getId();
       me.rec = record;
 
@@ -341,6 +341,8 @@ Ext.define('Genesis.controller.client.Accounts',
             // Select the Amounts of points to Transfer!
             //
             me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+            var container = me.getTransferContainer();
+            container.setActiveItem(1);
             me.pushView(me.getTransferPage());
             break;
          }
@@ -419,6 +421,9 @@ Ext.define('Genesis.controller.client.Accounts',
    onVenueDisclose : function(list, record, target, index, e, eOpts)
    {
       var me = this;
+      var viewport = me.getViewPortCntlr();
+
+      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       //
       // Setup minimum customer information require for explore
       //
@@ -465,7 +470,6 @@ Ext.define('Genesis.controller.client.Accounts',
             me.getAtrCloseBB().hide();
             me.getAtrCalcCloseBB().hide();
             me.getAtrBB().show();
-            //container.setActiveItem(0);
             break;
          }
          case 'emailtransfer' :
@@ -477,12 +481,10 @@ Ext.define('Genesis.controller.client.Accounts',
             if (oldActiveItem && (oldActiveItem == me.getAccounts() && !me.rec))
             {
                me.setMode('profile');
-               //container.setActiveItem(0);
             }
             else
             {
                //me.getPoints().setValue(null);
-               //container.setActiveItem(1);
                screenShow = 1;
             }
             break;
@@ -493,6 +495,12 @@ Ext.define('Genesis.controller.client.Accounts',
    },
    onTransferDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {
+      var me = this;
+      var container = me.getTransferContainer();
+      if (container)
+      {
+         container.setActiveItem(0);
+      }
    },
    onTransferTap : function(b, e, eOpts)
    {
@@ -500,6 +508,9 @@ Ext.define('Genesis.controller.client.Accounts',
    onTransferSelect : function(list, model, eOpts)
    {
       var me = this;
+      var viewport = me.getViewPortCntlr();
+
+      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
 
       list.deselect([model]);
       delete me.merchantId;
@@ -551,7 +562,7 @@ Ext.define('Genesis.controller.client.Accounts',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
 
       var value = b.getText();
       var pointsField = me.getPoints();

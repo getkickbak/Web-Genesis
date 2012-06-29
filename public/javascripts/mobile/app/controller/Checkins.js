@@ -188,6 +188,7 @@ Ext.define('Genesis.controller.Checkins',
             me.callback =
             {
                mode : mode,
+               position : me.getPosition(),
                url : url,
                type : type,
                callback : callback
@@ -199,6 +200,7 @@ Ext.define('Genesis.controller.Checkins',
             me.callback =
             {
                mode : mode,
+               position : me.getPosition(),
                url : url,
                type : '',
                callback : callback
@@ -211,6 +213,7 @@ Ext.define('Genesis.controller.Checkins',
             me.onCheckinCommonTap(null);
             break;
       }
+      me.setPosition(null);
    },
    setupCheckinInfo : function(mode, venue, customer, metaData)
    {
@@ -473,7 +476,7 @@ Ext.define('Genesis.controller.Checkins',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       viewport.setVenue(record);
       switch (this.mode)
       {

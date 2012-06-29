@@ -143,7 +143,7 @@ Genesis.fb =
                if (authToken)
                {
                   db['fbExpiresIn'] = Date.now() + (1000 * session.authResponse['expiresIn']);
-                  db['fbAutoCode'] = authToken;
+                  db['fbAuthCode'] = authToken;
                   Genesis.db.setLocalDB(db);
                   if (me.cb)
                   {
@@ -346,7 +346,7 @@ Genesis.fb =
             if ((response.status == 'connected') && response.authResponse)
             {
                var expireTime = (!db['fbExpiresIn']) ? 0 : new Date(db['fbExpiresIn']).getTime();
-               db['fbAutoCode'] = response.authResponse['authToken'];
+               db['fbAuthCode'] = response.authResponse['authToken'];
 
                //
                // To-do : Implement Facebook Expiry TimeStamp check
@@ -444,7 +444,7 @@ Genesis.fb =
       db['currFbId'] = 0;
       delete db['fbAccountId'];
       delete db['fbResponse'];
-      delete db['fbAutoCode'];
+      delete db['fbAuthCode'];
       delete db['fbExpiresIn'];
       Genesis.db.setLocalDB(db);
 
@@ -1284,189 +1284,51 @@ Ext.define('Genesis.device.connection.PhoneGap',
       this._online = (type != Connection.NONE) && (type != Connection.UNKNOWN);
    }
 });
-/*
-//
-//  FixedButton.js
-//  GT.FixedButton
-//
-//  Created by Roy Yang on 2012-04-21.
-//  Extended from Sencha Ext.Button
-//  For latest and greatest, go to https://github.com/roycyang/Sencha-Touch-Extensions
 
-Ext.define('Genesis.Button',
+Ext.define('Genesis.data.proxy.PagingMemory',
 {
-override : 'Ext.Button',
-//xtype : 'fixedbutton',
+   extend : 'Ext.data.proxy.Memory',
+   alias : 'proxy.pagingmemory',
+   alternateClassName : 'Genesis.data.PagingMemoryProxy',
+   /**
+    * Reads data from the configured {@link #data} object. Uses the Proxy's {@link #reader}, if present.
+    * @param {Ext.data.Operation} operation The read Operation
+    * @param {Function} callback The callback to call when reading has completed
+    * @param {Object} scope The scope to call the callback function in
+    */
+   read : function(operation, callback, scope)
+   {
+      var me = this, reader = me.getReader();
+      var data =
+      {
+         data : reader.getRoot(me.getData()).slice(operation.getStart(), operation.getStart() + operation.getLimit()),
+         total : reader.getTotal(me.getData())
+      }
 
-// removed the tap event and rolling our own logic
-initialize : function()
-{
-this.callParent();
+      if (operation.process('read', reader.process(data)) === false)
+      {
+         this.fireEvent('exception', this, null, operation);
+      }
 
-this.element.on(
-{
-scope : this,
-touchstart : 'onPress',
-dragend : 'onRelease',
-drag : 'onMove',
-tap : 'onTap'
+      Ext.callback(callback, scope || me, [operation]);
+   },
 });
-},
-// @private
-onPress : function(e)
-{
-var element = this.element, pressedCls = this.getPressedCls();
 
-if(!this.getDisabled())
+Ext.define('Genesis.plugin.ListPaging',
 {
-this.isPressed = true;
-// console.log('e.target', e);
-// adding a pressed flag
-if(!e.target.children.length)
-{
-this.pressedTarget = e.target.parentElement.id;
-}
-else
-{
-this.pressedTarget = e.target.id;
-}
-
-// console.log('onPress ' + this.pressTarget);
-
-if(this.hasOwnProperty('releasedTimeout'))
-{
-clearTimeout(this.releasedTimeout);
-delete this.releasedTimeout;
-}
-
-element.addCls(pressedCls);
-
-}
-},
-// @private
-// when user moves, test to see if touch even is still the target
-onMove : function(e, element)
-{
-if(!this.isPressed)
-{
-return;
-}
-
-var currentPressedTarget;
-var elem = Ext.get(element);
-
-if(Ext.getCmp('debugconsole'))
-{
-Ext.getCmp('debugconsole').setHtml(Ext.getCmp('debugconsole').getHtml() + '<br/>touchmove target id: ' + element.id);
-Ext.getCmp('debugconsole').getScrollable().getScroller().scrollToEnd();
-}
-
-// clicked on the label or icon instead of the button
-if(elem.parent('.x-button'))
-{
-currentPressedTarget = elem.parent('.x-button').id;
-}
-else
-if(elem.hasCls('x-button'))
-{
-currentPressedTarget = elem.id;
-}
-if(elem.parent('.x-tab'))
-{
-currentPressedTarget = elem.parent('.x-tab').id;
-}
-//
-// TabBar Buttons
-//
-else
-if(elem.hasCls('x-tab'))
-{
-currentPressedTarget = elem.id;
-}
-
-if(currentPressedTarget != this.pressedTarget)
-{
-this.element.removeCls(this.getPressedCls());
-}
-else
-{
-this.element.addCls(this.getPressedCls());
-}
-},
-// @private
-onRelease : function(e, element)
-{
-this.fireAction('release', [this, e, element], 'doRelease');
-},
-// @private
-doRelease : function(me, e, element)
-{
-var currentPressedTarget;
-var elem = Ext.get(element);
-
-// clicked on the label or icon instead of the button
-if(elem.parent('.x-button'))
-{
-//console.log('inside!');
-currentPressedTarget = elem.parent('.x-button').id;
-}
-else
-if(elem.hasCls('x-button'))
-{
-currentPressedTarget = elem.id;
-}
-//
-// TabBar Buttons
-//
-if(elem.parent('.x-tab'))
-{
-currentPressedTarget = elem.parent('.x-tab').id;
-}
-else
-if(elem.hasCls('x-tab'))
-{
-currentPressedTarget = elem.id;
-}
-
-//console.log('doRelease' + currentPressedTarget);
-
-if(!me.isPressed)
-{
-return;
-}
-
-me.isPressed = false;
-
-if(me.hasOwnProperty('pressedTimeout'))
-{
-clearTimeout(me.pressedTimeout);
-delete me.pressedTimeout;
-}
-
-me.releasedTimeout = setTimeout(function()
-{
-if(me && me.element)
-{
-me.element.removeCls(me.getPressedCls());
-if(currentPressedTarget == me.pressedTarget)
-{
-me.fireAction('tap', [me, e], 'doTap');
-}
-
-}
-
-// remove the pressedTarget flag
-me.pressedTarget = null;
-}, 10);
-},
-// @private
-// disable the existing onTap function from Ext.Button
-onTap : function(e)
-{
-return false;
-}
+   extend : 'Ext.plugin.ListPaging',
+   /**
+    * @private
+    */
+   loadNextPage : function()
+   {
+      var me = this;
+      if (!me.storeFullyLoaded())
+      {
+         me.callParent(arguments);
+      }
+   }
 });
-*/
 
 //---------------------------------------------------------------------------------------------------------------------------------
 // Ext.plugin.PullRefresh
