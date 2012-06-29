@@ -382,6 +382,7 @@ Ext.define('Genesis.controller.client.Accounts',
             latitude : 0,
             longitude : 0,
             auth_code : 0,
+            redeem : true,
             venue_id : venueId
          },
          scope : me,
