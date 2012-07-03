@@ -4,6 +4,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
   
   def earn
     if params[:venue_id] == 0
+      logger.debug("venue_id == 0")
       encrypted_data = params[:data].split('$')
       @venue = Venue.get(encrypted_data[0]) || not_found
     else
@@ -26,6 +27,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     else
       begin
         if defined? encrypted_data
+          logger.debug("encrypted_data is defined")
           data = encrypted_data[1]
         else  
           data = params[:data]
