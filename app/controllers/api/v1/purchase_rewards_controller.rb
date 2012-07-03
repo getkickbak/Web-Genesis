@@ -3,6 +3,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
   before_filter :authenticate_user!
   
   def earn
+    @venue_id = params[:venue_id]
     encrypted_data = params[:data].split('$')
     @venue = Venue.get(encrypted_data[0]) || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found

@@ -11,6 +11,7 @@ node :metaData do
 	{
 		:merchant_id => @venue.merchant.id,
 		:customer_id => @customer.id,
+		:venue => partial('api/v1/venues/base', object => @venue) if @venue_id,
 		:account_points => @customer.points,
 		:account_visits => @customer.visits,
 		:points => @points,
