@@ -26,7 +26,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       authorized = true
     else
       begin
-        if defined? encrypted_data
+        if (defined? encrypted_data)
           logger.debug("encrypted_data is defined")
           data = encrypted_data[1]
         else  
