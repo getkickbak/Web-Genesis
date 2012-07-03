@@ -30,6 +30,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         else  
           data = params[:data]
         end  
+        logger.debug("data: #{data}")
         cipher = Gibberish::AES.new(@venue.auth_code)
         decrypted = cipher.dec(data)
         logger.debug("decrypted text: #{decrypted}")
@@ -38,7 +39,6 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         data_expiry_ts = Time.at(now_secs)
         logger.debug("decrypted type: #{decrypted_data["type"]}")
         logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
-        logger.debug("decrypted data: #{data}")
         logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::EARN_POINTS}")
         logger.debug("Time comparison: #{data_expiry_ts >= Time.now}")
         logger.debug("EarnRewardRecord doesn't exists: #{EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?}")
