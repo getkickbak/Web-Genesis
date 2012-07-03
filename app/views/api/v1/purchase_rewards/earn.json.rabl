@@ -9,6 +9,8 @@ if @prize
 end
 node :metaData do
 	{
+		:merchant_id => @venue.merchant.id,
+		:customer_id => @customer.id,
 		:account_points => @customer.points,
 		:account_visits => @customer.visits,
 		:points => @points,
