@@ -298,7 +298,6 @@ Ext.define('Genesis.controller.Merchants',
          {
             rstore.setData(vrecord);
          }
-
       }, 1, me);
    },
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)

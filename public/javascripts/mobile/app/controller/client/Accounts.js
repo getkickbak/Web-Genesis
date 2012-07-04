@@ -48,7 +48,7 @@ Ext.define('Genesis.controller.client.Accounts',
          points : 'clientaccountstransferview textfield',
          qrcode : 'clientaccountstransferview component[tag=qrcode]',
          title : 'clientaccountstransferview component[tag=title]',
-         transferContainer : 'clientaccountstransferview container[tag=accountsTransferMain]'
+         transferContainer : 'clientaccountstransferview'
       },
       control :
       {
@@ -87,7 +87,7 @@ Ext.define('Genesis.controller.client.Accounts',
             activate : 'onTransferActivate',
             deactivate : 'onTransferDeactivate'
          },
-         'clientaccountstransferview container[tag=accountsTransferMain] list' :
+         'clientaccountstransferview container[tag=accountsTransferMode] list' :
          {
             select : 'onTransferSelect'
          },
@@ -351,9 +351,9 @@ Ext.define('Genesis.controller.client.Accounts',
             //
             // Select the Amounts of points to Transfer!
             //
-            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
             var container = me.getTransferContainer();
             container.setActiveItem(1);
+            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
             me.pushView(me.getTransferPage());
             break;
          }
@@ -496,7 +496,10 @@ Ext.define('Genesis.controller.client.Accounts',
             }
             else
             {
-               //me.getPoints().setValue(null);
+               if (me.getPoints())
+               {
+                  me.getPoints().setValue(null);
+               }
                screenShow = 1;
             }
             break;
