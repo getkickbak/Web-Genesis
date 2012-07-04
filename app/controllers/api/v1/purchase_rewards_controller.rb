@@ -3,12 +3,9 @@ class Api::V1::PurchaseRewardsController < ApplicationController
   before_filter :authenticate_user!
   
   def earn
-    if params[:venue_id] == 0
-      encrypted_data = params[:data].split('$')
-      @venue = Venue.get(encrypted_data[0]) || not_found
-    else
-      @venue = Venue.get(params[:venue_id]) || not_found
-    end
+    @venue_id = params[:venue_id]
+    encrypted_data = params[:data].split('$')
+    @venue = Venue.get(encrypted_data[0]) || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
@@ -25,11 +22,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       authorized = true
     else
       begin
-        if defined? encrypted_data
-          data = encrypted_data[1]
-        else  
-          data = params[:data]
-        end  
+        data = encrypted_data[1] 
+        #logger.debug("data: #{data}")
         cipher = Gibberish::AES.new(@venue.auth_code)
         decrypted = cipher.dec(data)
         #logger.debug("decrypted text: #{decrypted}")
@@ -38,14 +32,13 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         data_expiry_ts = Time.at(now_secs)
         #logger.debug("decrypted type: #{decrypted_data["type"]}")
         #logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
-        #logger.debug("decrypted data: #{data}")
         #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::EARN_POINTS}")
         #logger.debug("Time comparison: #{data_expiry_ts >= Time.now}")
         #logger.debug("EarnRewardRecord doesn't exists: #{EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?}")
         if (decrypted_data["type"] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now) 
           if EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
             amount = decrypted_data["amount"].to_f
-            #logger.debug("Set authorized to true")
+            logger.debug("Set authorized to true")
             authorized = true
           end
         else

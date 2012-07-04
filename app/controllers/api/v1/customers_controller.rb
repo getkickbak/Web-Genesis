@@ -89,6 +89,7 @@ class Api::V1::CustomersController < ApplicationController
     invalid_code = false
     
     begin
+      #logger.debug("data: #{data}")
       cipher = Gibberish::AES.new(@customer.merchant.auth_code)
       decrypted = cipher.dec(data[1])
       #logger.debug("decrypted text: #{decrypted}")
@@ -96,7 +97,6 @@ class Api::V1::CustomersController < ApplicationController
       transfer_id = decrypted_data["id"]
       #logger.debug("decrypted type: #{decrypted_data["type"]}")
       #logger.debug("decrypted id: #{transfer_id}")
-      #logger.debug("decrypted data: #{data}")
       #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL && decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_DIRECT}")
       #logger.debug("TranferPointsRecord doesn't exists: #{TransferPointsRecord.first(:id => transfer_id, :status => :pending, :expiry_ts.gte => Time.now).nil?}")
       if (decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL || decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_DIRECT)

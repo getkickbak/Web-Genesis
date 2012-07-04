@@ -9,6 +9,9 @@ if @prize
 end
 node :metaData do
 	{
+		:merchant_id => @venue.merchant.id,
+		:customer_id => @customer.id,
+		:venue => (partial('api/v1/venues/base', object => @venue) if (@venue_id == 0 || @venue_id.nil?)),
 		:account_points => @customer.points,
 		:account_visits => @customer.visits,
 		:points => @points,
