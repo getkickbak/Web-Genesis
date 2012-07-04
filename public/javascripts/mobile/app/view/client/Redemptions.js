@@ -27,6 +27,7 @@ Ext.define('Genesis.view.client.Redemptions',
          }]
       })]
    },
+   disableAnimation : true,
    cleanView : function()
    {
       this.removeAll(true);

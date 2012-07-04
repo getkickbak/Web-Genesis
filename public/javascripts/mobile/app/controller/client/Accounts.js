@@ -32,6 +32,7 @@ Ext.define('Genesis.controller.client.Accounts',
          },
          accountsList : 'clientaccountsview list[tag=accountsList]',
          venuesList : 'clientaccountsview list[tag=venuesList]',
+         transferHdr : 'clientaccountsview toolbar[tag=transferHdr]',
          //
          // Account Transfers
          //
@@ -144,6 +145,8 @@ Ext.define('Genesis.controller.client.Accounts',
       var me = this;
       this.callParent(arguments);
       console.log("Accounts Init");
+
+      me.getAccounts();
    },
    // --------------------------------------------------------------------------
    // Event Handlers
@@ -265,20 +268,26 @@ Ext.define('Genesis.controller.client.Accounts',
          case 'profile' :
          {
             tbbar.setTitle('Accounts');
-            tbbar.removeCls('kbTitle')
+            tbbar.removeCls('kbTitle');
             break;
          }
          case 'redeemProfile' :
          {
             tbbar.setTitle('Redemptions');
-            tbbar.removeCls('kbTitle')
+            tbbar.removeCls('kbTitle');
             break;
          }
          case 'emailtransfer' :
          case 'transfer' :
          {
             tbbar.setTitle(' ');
-            tbbar.addCls('kbTitle')
+            tbbar.addCls('kbTitle');
+            var transferHdr = me.getTransferHdr();
+            activeItem.showTransferHdr = true;
+            if (transferHdr)
+            {
+               transferHdr.show();
+            }
             break;
          }
       }
@@ -291,6 +300,8 @@ Ext.define('Genesis.controller.client.Accounts',
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var me = this;
+      me.getTransferHdr().hide();
    },
    onSelect : function(list, model, eOpts)
    {
@@ -462,6 +473,7 @@ Ext.define('Genesis.controller.client.Accounts',
       var me = this;
       var screenShow = 0;
       var container = me.getTransferContainer();
+
       switch(me.getMode())
       {
          case 'redeemProfile' :
@@ -497,6 +509,7 @@ Ext.define('Genesis.controller.client.Accounts',
    {
       var me = this;
       var container = me.getTransferContainer();
+
       if (container)
       {
          container.setActiveItem(0);

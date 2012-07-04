@@ -51,7 +51,10 @@
 }
 
 .clientPhotoCache {
-   background-image : theme_image($theme-path, "green_roulette_bg" + ".png"), theme_image($theme-path, "roulette2" + ".png"), theme_image($theme-path, "ball" + ".png");
+   background-image : //
+   url($theme-path-rel + "/green_roulette_bg" + ".png"), //
+   url($theme-path-rel + "/roulette2" + ".png"), //
+   url($theme-path-rel + "/ball" + ".png");
    width:1px;
    height:1px;
    display:none;

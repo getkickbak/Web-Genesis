@@ -49,7 +49,8 @@ Ext.define('Genesis.controller.Checkins',
          'exploreLoad' : 'onExploreLoad',
          'checkin' : 'onCheckinTap',
          'checkinScan' : 'onCheckinScanTap',
-         'checkinMerchant' : 'onCheckinHandler'
+         'checkinMerchant' : 'onCheckinHandler',
+         'setupCheckinInfo' : 'setupCheckinInfo'
       },
       position : null,
    },

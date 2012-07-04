@@ -27,7 +27,8 @@ Ext.define('Genesis.controller.Prizes',
          'authreward' : 'onAuthReward',
          'redeemrewards' : 'onRedeemRewards',
          'showQRCode' : 'onShowPrizeQRCode',
-         'refreshQRCode' : 'onRefreshQRCode'
+         'refreshQRCode' : 'onRefreshQRCode',
+         'updatePrizeViews' : 'onUpdatePrizeViews'
       },
       refs :
       {
@@ -242,8 +243,7 @@ Ext.define('Genesis.controller.Prizes',
    onRedeemPrize : function(btn, venue, view)
    {
       var me = this;
-      var venueId = venue.getId();
-      var merchantId = venue.getMerchant().getId();
+      var venueId = (venue) ? venue.getId() : 0;
 
       var store, item;
       switch (me.getMode())
@@ -561,6 +561,7 @@ Ext.define('Genesis.controller.Prizes',
       var me = this;
       var prizes = me.getMainPage();
       var mode = overrideMode || me.getMode();
+      var carousel = prizes.query('carousel')[0];
       var prize;
 
       if (prizes.isPainted() && !prizes.isHidden())
@@ -571,36 +572,12 @@ Ext.define('Genesis.controller.Prizes',
          if (mode != 'reward')
          {
             var store = Ext.StoreMgr.get('MerchantPrizeStore');
-            var carousel = prizes.query('carousel')[0];
             var container = carousel || prizes;
             var item = carousel ? carousel.getActiveItem() : container.getInnerItems()[0];
-            var prize = item.getStore().getData().items[0];
 
+            prize = item.getStore().getData().items[0];
             store.remove(prize);
             me.persistSyncStores('MerchantPrizeStore');
-
-            //
-            // Update Prize Views
-            //
-            console.log("Updating Prize Views ...");
-            var pages = [me.getMerchantPrizes(), me.getUserPrizes()];
-            for (var i = 0; i < pages.length; i++)
-            {
-               var carousel = pages[i].query('carousel')[0];
-               if (carousel)
-               {
-                  var items = carousel.getInnerItems();
-                  for (var x = 0; x < items.length; x++)
-                  {
-                     if (items[x].getStore().getData().items[0].getId() == prize.getId())
-                     {
-                        console.log("Updated Prize Views[" + i + "] ...");
-                        carousel.remove(items[x]);
-                        break;
-                     }
-                  }
-               }
-            }
          }
 
          switch (mode)
@@ -625,26 +602,35 @@ Ext.define('Genesis.controller.Prizes',
                break;
             }
          }
+
          me.popView();
+
+         //
+         // Remove Prize when it's not in view
+         //
+         if (mode != 'reward')
+         {
+            me.onUpdatePrizeViews(prize);
+         }
       }
    },
    onRedeemPrizeTap : function(b, e, eOpts, eInfo)
    {
-      var me = this;
+      var me = this, venue = null;
       var view = me.getMainPage();
       var bypass = false;
+      var title = view.query('titlebar')[0].getTitle();
 
       switch (me.getMode())
       {
          case 'userPrizes' :
          {
             me.merchantId = view.getInnerItems()[0].getActiveItem().getStore().first().getMerchant().getId();
-            Ext.Viewport.setMasked(
-            {
-               xtype : 'loadmask',
-               message : me.getMerchantInfoMsg
-            });
-            me.getGeoLocation();
+            break;
+         }
+         case 'showPrize' :
+         {
+            me.merchantId = view.getInnerItems()[0].getStore().first().getMerchant().getId();
             break;
          }
          case 'reward' :
@@ -652,9 +638,8 @@ Ext.define('Genesis.controller.Prizes',
             bypass = me.getApplication().getController('client.Redemptions').getMode() == 'redeemSC';
          }
          default :
-            var title = view.query('titlebar')[0].getTitle();
             var viewport = me.getViewPortCntlr();
-            var venue = viewport.getVenue();
+            venue = viewport.getVenue();
             var cvenue = viewport.getCheckinInfo().venue;
 
             if (!bypass && (!cvenue || !venue || (venue.getId() != cvenue.getId())))
@@ -666,21 +651,21 @@ Ext.define('Genesis.controller.Prizes',
                });
                return;
             }
-            Ext.device.Notification.show(
-            {
-               title : title,
-               message : me.redeemPrizeConfirmMsg,
-               buttons : ['Confirm', 'Cancel'],
-               callback : function(btn)
-               {
-                  if (btn.toLowerCase() == 'confirm')
-                  {
-                     me.fireEvent('redeemprize', b, venue, view);
-                  }
-               }
-            });
             break;
       }
+      Ext.device.Notification.show(
+      {
+         title : title,
+         message : me.redeemPrizeConfirmMsg,
+         buttons : ['Confirm', 'Cancel'],
+         callback : function(btn)
+         {
+            if (btn.toLowerCase() == 'confirm')
+            {
+               me.fireEvent('redeemprize', b, venue, view);
+            }
+         }
+      });
    },
    onRefreshQRCode : function(qrcodeMeta)
    {
@@ -716,6 +701,7 @@ Ext.define('Genesis.controller.Prizes',
                dom = Ext.DomQuery.select('div.itemPoints',me.getUserPrizesCarousel().getActiveItem().element.dom)[0];
                me.getURedeemBtn().hide();
                me.getUDoneBtn().show();
+               me.getUBB().hide();
                me.getUCloseBB().hide();
                title = 'Redeem Prize';
                break;
@@ -758,6 +744,45 @@ Ext.define('Genesis.controller.Prizes',
          });
          Ext.device.Notification.vibrate();
       }
+   },
+   onUpdatePrizeViews : function(prize)
+   {
+      var me = this;
+      var prizes = me.getMainPage();
+
+      //
+      // Update Prize Views
+      //
+      Ext.defer(function()
+      {
+         console.log("Updating Prize Views ...");
+         var pages = [me.getMerchantPrizes(), me.getUserPrizes()];
+         for (var i = 0; i < pages.length; i++)
+         {
+            if (prize)
+            {
+               var carousel = pages[i].query('carousel')[0];
+               if (carousel)
+               {
+                  var items = carousel.getInnerItems();
+                  for (var x = 0; x < items.length; x++)
+                  {
+                     if (items[x].getStore().getData().items[0].getId() == prize.getId())
+                     {
+                        console.log("Updated Prize Views[" + x + "] ...");
+                        carousel.remove(items[x]);
+                        break;
+                     }
+                  }
+               }
+            }
+            else
+            {
+               console.log("Emptied Prize View Container[" + i + "] ...");
+               pages[i].removeAll(true);
+            }
+         }
+      }, 1, me);
    },
    onRedeemRewards : function(showPrize)
    {

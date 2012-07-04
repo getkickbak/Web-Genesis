@@ -116,9 +116,12 @@ Ext.define('Genesis.view.MerchantAccount',
     * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
     * @return {Ext.Component} this
     */
-   cleanView : function()
+   cleanView : function(activeItem)
    {
-      //this.removeAll(true);
+      if (activeItem.isXType('checkinexploreview', true) || activeItem.isXType('mainpageview', true))
+      {
+         this.removeAll(true);
+      }
    },
    showView : function()
    {
@@ -129,7 +132,6 @@ Ext.define('Genesis.view.MerchantAccount',
       {
          this.getInnerItems()[i].setVisibility(true);
       }
-      //Ext.StoreMgr.get('EligibleRewardsStore').load();
       var feedContainer = this.query('container[tag=feedContainer]')[0];
       if (feedContainer)
       {

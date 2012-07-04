@@ -104,7 +104,17 @@ Ext.define('Genesis.controller.client.Rewards',
          //container.setActiveItem(0);
          //anim.enable();
          me.qrcode = qrcode;
-         me.getGeoLocation();
+         switch (me.getMode())
+         {
+            case 'rewardsSC' :
+            {
+               me.onLocationUpdate();
+               break;
+            }
+            default :
+               me.getGeoLocation();
+               break;
+         }
       }
       else
       {
@@ -124,7 +134,7 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      var venueId = (me.getMode() == 'rewardsSC') ? 0 : viewport.getVenue().getId();
+      var venueId = (!position) ? 0 : viewport.getVenue().getId();
       var reader = CustomerReward.getProxy().getReader();
       var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
 
@@ -150,8 +160,8 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             venue_id : venueId,
             'data' : me.qrcode,
-            latitude : position.coords.getLatitude(),
-            longitude : position.coords.getLongitude()
+            latitude : (position) ? position.coords.getLatitude() : 0,
+            longitude : (position) ? position.coords.getLongitude() : 0
          },
          callback : function(records, operation)
          {
@@ -161,10 +171,6 @@ Ext.define('Genesis.controller.client.Rewards',
             if (operation.wasSuccessful())
             {
                me.loadCallback = arguments;
-            }
-            else
-            {
-               //me.popView();
             }
          }
       });
@@ -221,75 +227,89 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      var exit = function()
-      {
-         //
-         // Clear Referral DB
-         //
-         Genesis.db.removeReferralDBAttrib("m" + viewport.getVenue().getMerchant().getId());
-         me.redirectTo('scanAndWin');
-      };
-
       //
       // Update points from the purchase or redemption
       //
       var cstore = Ext.StoreMgr.get('CustomerStore');
-      var customerId = viewport.getCustomer().getId();
-      var customer = cstore.getById(customerId);
+      var merchantId;
+      var customer = viewport.getCustomer();
+      var customerId = metaData['customer_id'] || ((customer) ? customer.getId() : 0);
 
-      customer.beginEdit();
-      if (metaData['account_points'])
+      if (customerId > 0)
       {
-         customer.set('points', metaData['account_points']);
+         customer = cstore.getById(customerId);
       }
-      if (metaData['account_visits'])
+      if (customer)
       {
-         customer.set('visits', metaData['account_visits']);
-      }
-      customer.endEdit();
-
-      if (Ext.isDefined(metaData['points']))
-      {
-         message = me.getPointsMsg(metaData['points'], metaData['account_points']);
-         if (!metaData['vip_challenge'] && !metaData['referral_challenge'])
+         var exit = function()
          {
-            message += Genesis.constants.addCRLF() + me.prizeCheckMsg;
-         }
-         Ext.device.Notification.show(
-         {
-            title : 'Reward Points',
-            message : message,
-            callback : function()
+            var venue = (metaData['venue']) ? Ext.create('Genesis.model.Venue', metaData['venue']) : viewport.getVenue();
+            if (venue)
             {
-               if ((metaData['vip_challenge']))
-               {
-                  me.vipPopUp(metaData['vip_challenge'].points, exit);
-               }
-               else
-               if ((metaData['referral_challenge']))
-               {
-                  me.referralPopUp(metaData['referral_challenge'].points, exit);
-               }
-               else
-               {
-                  exit();
-               }
+               merchantId = metaData['merchant_id'] || venue.getMerchant().getId();
+
+               console.debug("customer_id - " + customerId + '\n' + //
+               "merchant_id - " + merchantId + '\n' + //
+               "venue - " + Ext.encode(metaData['venue']) + '\n');
+               me.getApplication().getController('Checkins').fireEvent('setupCheckinInfo', 'explore', venue, customer, null);
             }
-         });
-      }
-      else
-      if (metaData['vip_challenge'])
-      {
-         // Preload page
-         me.getRewards();
-         me.vipPopUp(metaData['vip_challenge'].points, exit);
-      }
-      else
-      if (metaData['referral_challenge'])
-      {
-         // Preload page
-         me.getRewards();
-         me.referralPopUp(metaData['referral_challenge'].points, exit);
+            //
+            // Clear Referral DB
+            //
+            Genesis.db.removeReferralDBAttrib("m" + merchantId);
+            me.redirectTo('scanAndWin');
+         };
+
+         customer.beginEdit();
+         if (metaData['account_points'])
+         {
+            customer.set('points', metaData['account_points']);
+         }
+         if (metaData['account_visits'])
+         {
+            customer.set('visits', metaData['account_visits']);
+         }
+         customer.endEdit();
+
+         if (Ext.isDefined(metaData['points']))
+         {
+            var message = me.getPointsMsg(metaData['points'], metaData['account_points']);
+            if (!metaData['vip_challenge'] && !metaData['referral_challenge'])
+            {
+               message += Genesis.constants.addCRLF() + me.prizeCheckMsg;
+            }
+            Ext.device.Notification.show(
+            {
+               title : 'Reward Points',
+               message : message,
+               callback : function()
+               {
+                  if ((metaData['vip_challenge']))
+                  {
+                     me.vipPopUp(metaData['vip_challenge'].points, exit);
+                  }
+                  else
+                  if ((metaData['referral_challenge']))
+                  {
+                     me.referralPopUp(metaData['referral_challenge'].points, exit);
+                  }
+                  else
+                  {
+                     exit();
+                  }
+               }
+            });
+         }
+         else
+         if (metaData['vip_challenge'])
+         {
+            me.vipPopUp(metaData['vip_challenge'].points, exit);
+         }
+         else
+         if (metaData['referral_challenge'])
+         {
+            me.referralPopUp(metaData['referral_challenge'].points, exit);
+         }
       }
    },
    onPrizeStoreMetaChange : function(pstore, metaData)

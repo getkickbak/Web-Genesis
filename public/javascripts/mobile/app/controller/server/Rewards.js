@@ -90,7 +90,6 @@ Ext.define('Genesis.controller.server.Rewards',
       var me = this;
       var priceField = me.getPrice();
       priceField.setValue(null);
-      me.enablePrecision = false;
    },
    onContainerActivate : function(c, value, oldValue, eOpts)
    {
@@ -104,7 +103,6 @@ Ext.define('Genesis.controller.server.Rewards',
          {
             var priceField = me.getPrice();
             priceField.setValue(null);
-            me.enablePrecision = false;
             animation.setReverse(true);
             break;
          }
@@ -146,7 +144,7 @@ Ext.define('Genesis.controller.server.Rewards',
          {
             "amount" : price,
             "type" : 'earn_points'
-         }, false, false, false);
+         }, 'reward', false);
          me.getQrcode().setStyle(
          {
             'background-image' : 'url(' + qrcodeMetaData[0] + ')',
@@ -162,43 +160,40 @@ Ext.define('Genesis.controller.server.Rewards',
    onCalcBtnTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      var viewport = me.getViewPortCntlr();
-
-      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       var value = b.getText();
       var priceField = me.getPrice();
+      var priceFieldLength = priceField.getValue().length;
       var price = Number(priceField.getValue() || 0);
-      var precision = me.getPricePrecision(priceField.getValue());
       switch (value)
       {
-         case '.' :
-         {
-            me.enablePrecision = true;
-            if (precision == 0)
-            {
-               var num = price.toString().split('.');
-               price = num[0] + '.';
-            }
-            break;
-         }
          case 'AC' :
          {
-            me.enablePrecision = false;
             price = null;
             break;
          }
          default :
-            if (me.enablePrecision)
+            if (priceFieldLength < 2)
             {
-               if (precision < 2)
+               if ((price == 0) && (priceFieldLength > 0))
                {
-                  price += (Number(value) / Math.pow(10, precision + 1));
-                  price = price.toFixed(precision + 1);
+                  price += value;
+               }
+               else
+               {
+                  price = (10 * price) + Number(value);
                }
             }
             else
             {
-               price = (10 * price) + Number(value);
+               if (priceFieldLength == 2)
+               {
+                  price = (price + value) / 100;
+               }
+               else
+               {
+                  price = (10 * price) + (Number(value) / 100);
+               }
+               price = price.toFixed(2);
             }
             break;
       }

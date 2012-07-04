@@ -122,16 +122,10 @@ Ext.define('Genesis.controller.ControllerBase',
             sound.currentTime = 0;
          }
       },
-      genQRCodeFromParams : function(params, addPrizeHdr, addRewardsHdr, encryptOnly)
+      genQRCodeFromParams : function(params, mode, encryptOnly)
       {
          var me = this;
          var encrypted;
-         /*
-         var seed = function()
-         {
-         return Math.random().toFixed(16);
-         }
-         */
          //
          // Show QRCode
          //
@@ -142,7 +136,20 @@ Ext.define('Genesis.controller.ControllerBase',
          var date, venueId;
          for (key in keys)
          {
-            venueId = (addRewardsHdr || addPrizeHdr) ? key.split('r')[1] : key.split('v')[1];
+            switch (mode)
+            {
+               case 'prize' :
+               {
+                  venueId = key.split('r')[1];
+                  break;
+               }
+               case 'reward' :
+               case 'challenge' :
+               {
+                  venueId = key.split('v')[1];
+                  break;
+               }
+            }
             if (venueId > 0)
             {
                try
@@ -152,24 +159,24 @@ Ext.define('Genesis.controller.ControllerBase',
                   {
                      "expiry_ts" : date.getTime()
                   }, params)), keys[key]);
-                  if (addRewardsHdr || addPrizeHdr)
+
+                  switch (mode)
                   {
-                     var hdr;
-                     if (addPrizeHdr)
+                     case 'prize' :
+                     case 'reward' :
                      {
-                        hdr = 'p';
+                        encrypted = venueId + '$' + encrypted;
+                        break;
                      }
-                     else
-                     if (addRewardsHdr)
-                     {
-                        hdr = 'r';
-                     }
-                     encrypted = hdr + venueId + '$' + encrypted;
+                     default :
+                        break;
+
                   }
                }
                catch (e)
                {
                }
+               console.debug("Used key[" + keys[key] + "]");
                break;
             }
          }

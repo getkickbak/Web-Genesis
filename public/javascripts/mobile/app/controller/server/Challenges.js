@@ -50,7 +50,7 @@ Ext.define('Genesis.controller.server.Challenges',
       return Genesis.controller.ControllerBase.genQRCodeFromParams(
       {
          "type" : 'earn_points'
-      }, false, false, false);
+      }, 'challenge', false);
    },
    // --------------------------------------------------------------------------
    // Server Challenges Page

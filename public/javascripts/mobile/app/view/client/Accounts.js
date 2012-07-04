@@ -38,6 +38,7 @@ Ext.define('Genesis.view.client.Accounts',
          }]
       })]
    },
+   showTransferHdr : false,
    /**
     * Removes all items currently in the Container, optionally destroying them all
     * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
@@ -69,71 +70,99 @@ Ext.define('Genesis.view.client.Accounts',
       //
       // Accounts List
       //
-      Ext.create('Ext.List',
+      Ext.create('Ext.Container',
       {
-         xtype : 'list',
-         store : 'CustomerStore',
          tag : 'accountsList',
+         layout : 'vbox',
          scrollable : 'vertical',
-         cls : 'accountsList',
-         deferEmptyText : false,
-         emptyText : ' ',
-         /*
-          indexBar :
-          {
-          docked : 'right',
-          overlay : true,
-          alphabet : true,
-          centered : false
-          //letters : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
-          },
-          */
-         pinHeaders : false,
-         grouped : true,
-         itemTpl : Ext.create('Ext.XTemplate',
-         // @formatter:off
-         '<tpl if="this.isValidCustomer(values)">',
-            '<div class="photo x-hasbadge">',
-               '{[this.getPrizeCount(values)]}',
-               '<img src="{[this.getPhoto(values)]}"/>',
-            '</div>',
-            '<div class="listItemDetailsWrapper">',
-               '<div class="points">{[this.getPoints(values)]}</div>',
-            '</div>',
-         '</tpl>',
-         // @formatter:on
+         items : [
+         //
+         // Transfer Account Hdr
+         //
          {
-            isValidCustomer : function(values)
+            xtype : 'toolbar',
+            centered : false,
+            tag : 'transferHdr',
+            hidden : !this.showTransferHdr,
+            defaults :
             {
-               //return Customer.isValidCustomer(values['id']);
-               return true;
+               iconMask : true
             },
-            getPrizeCount : function(values)
+            items : [
             {
-               var count = 0;
-               var type = values['pageCntlr'];
-               var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
-               if (pstore)
+               xtype : 'title',
+               title : 'Select Account :'
+            },
+            {
+               xtype : 'spacer',
+               align : 'right'
+            }]
+         },
+         {
+            xtype : 'list',
+            store : 'CustomerStore',
+            tag : 'accountsList',
+            cls : 'accountsList',
+            scrollable : undefined,
+            deferEmptyText : false,
+            emptyText : ' ',
+            /*
+             indexBar :
+             {
+             docked : 'right',
+             overlay : true,
+             alphabet : true,
+             centered : false
+             //letters : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
+             },
+             */
+            pinHeaders : false,
+            grouped : true,
+            itemTpl : Ext.create('Ext.XTemplate',
+            // @formatter:off
+            '<tpl if="this.isValidCustomer(values)">',
+               '<div class="photo x-hasbadge">',
+                  '{[this.getPrizeCount(values)]}',
+                  '<img src="{[this.getPhoto(values)]}"/>',
+               '</div>',
+               '<div class="listItemDetailsWrapper">',
+                  '<div class="points">{[this.getPoints(values)]}</div>',
+               '</div>',
+            '</tpl>',
+            // @formatter:on
+            {
+               isValidCustomer : function(values)
                {
-                  var collection = pstore.queryBy(function(record, id)
+                  //return Customer.isValidCustomer(values['id']);
+                  return true;
+               },
+               getPrizeCount : function(values)
+               {
+                  var count = 0;
+                  var type = values['pageCntlr'];
+                  var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
+                  if (pstore)
                   {
-                     return (record.getMerchant().getId() == values.merchant['id'])
-                  });
-                  count = collection.getCount();
+                     var collection = pstore.queryBy(function(record, id)
+                     {
+                        return (record.getMerchant().getId() == values.merchant['id'])
+                     });
+                     count = collection.getCount();
+                  }
+                  return ('<span class="x-badge round ' + //
+                  ((count > 0) ? '' : 'x-item-hidden') + '">' + count + '</span>');
+               },
+               getPhoto : function(values)
+               {
+                  return values.merchant['photo']['thumbnail_ios_small'].url;
+               },
+               getPoints : function(values)
+               {
+                  return values.points + ' Pts';
                }
-               return ('<span class="x-badge round ' + //
-               ((count > 0) ? '' : 'x-item-hidden') + '">' + count + '</span>');
-            },
-            getPhoto : function(values)
-            {
-               return values.merchant['photo']['thumbnail_ios_small'].url;
-            },
-            getPoints : function(values)
-            {
-               return values.points + ' Pts';
-            }
-         }),
-         onItemDisclosure : Ext.emptyFn
+            }),
+            onItemDisclosure : Ext.emptyFn
+         }]
       }),
       //
       // Venues List
@@ -150,6 +179,7 @@ Ext.define('Genesis.view.client.Accounts',
          itemTpl : Ext.create('Ext.XTemplate',
          // @formatter:off
          '<div class="merchantDetailsWrapper">',
+            '<div class="itemDistance">{[this.getDistance(values)]}</div>' +
             '<div class="itemTitle">{name}</div>',
             '<div class="itemDesc">{[this.getAddress(values)]}</div>',
          '</div>',
@@ -158,6 +188,10 @@ Ext.define('Genesis.view.client.Accounts',
             getAddress : function(values)
             {
                return (values.address + ",<br/>" + values.city + ", " + values.state + ", " + values.country + ",</br>" + values.zipcode);
+            },
+            getDistance : function(values)
+            {
+               return values['distance'].toFixed(1) + 'km';
             }
          }),
          onItemDisclosure : Ext.emptyFn

@@ -791,26 +791,30 @@ Ext.define('Genesis.controller.MainPage',
    // --------------------------------------------------------------------------
    openPage : function(subFeature)
    {
-      this.resetView();
+      var me = this;
+      
+      me.resetView();
       switch (subFeature)
       {
          case 'main' :
          {
-            this.setAnimationMode(this.self.superclass.self.animationMode['pop']);
-            this.pushView(this.getMainPage());
+            me.setAnimationMode(me.self.superclass.self.animationMode['pop']);
+            me.pushView(me.getMainPage());
             break;
          }
          case 'merchant' :
          {
-            var info = this.getViewPortCntlr().getCheckinInfo();
-            this.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
+            var info = me.getViewPortCntlr().getCheckinInfo();
+            me.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
             break;
          }
          case 'login' :
          {
-            this.setAnimationMode(this.self.superclass.self.animationMode['fade']);
+            me.getApplication().getController('Checkins').fireEvent('setupCheckinInfo', 'checkin', null, null, null);
+            me.getApplication().getController('Prizes').fireEvent('updatePrizeViews',null);
+            me.setAnimationMode(me.self.superclass.self.animationMode['fade']);
             Ext.Viewport.setMasked(false);
-            this.pushView(this.getLogin());
+            me.pushView(me.getLogin());
             break;
          }
       }

@@ -83,7 +83,7 @@ Ext.define('Genesis.view.Viewport',
 
                if (oldActiveItem)
                {
-                  oldActiveItem.cleanView();
+                  oldActiveItem.cleanView(activeItem);
 
                   titlebar = oldActiveItem.query('titlebar')[0];
                   if (titlebar)
@@ -137,7 +137,7 @@ Ext.define('Genesis.view.Viewport',
          animation.destroy();
          if (oldActiveItem)
          {
-            oldActiveItem.cleanView();
+            oldActiveItem.cleanView(activeItem);
             var titlebar = oldActiveItem.query('titlebar')[0];
             if (titlebar)
             {
@@ -146,7 +146,7 @@ Ext.define('Genesis.view.Viewport',
          }
          Ext.defer(function()
          {
-            activeItem.createView();
+            activeItem.createView(activeItem);
             activeItem.showView();
             titlebar = activeItem.query('titlebar')[0];
             if (titlebar)

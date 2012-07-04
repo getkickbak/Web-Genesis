@@ -29,7 +29,14 @@
    }
    .venuesList {
       .x-list-disclosure {
-         bottom: 1.32em;
+         bottom: 1.10em;
+      }
+      .itemDistance {
+         position:absolute;
+         top:$panelTopGap;
+         right:$panelGap;
+         font-weight:bold;
+         font-size:$normalFontSize;
       }
       .itemTitle {
          font-weight:bold;

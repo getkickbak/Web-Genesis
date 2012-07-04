@@ -6,7 +6,7 @@ Ext.define('Genesis.view.client.Rewards',
    config :
    {
       layout : 'fit',
-      cls : 'viewport',
+      cls : 'rouletteBg',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
          title : 'Earn Rewards'
@@ -23,7 +23,6 @@ Ext.define('Genesis.view.client.Rewards',
          },
          tpl :
          // @formatter:off
-         '<div class="rouletteBg"></div>'+
          '<div class="rouletteTable"></div>'+
          '<div class="rouletteBall"></div>',
           // @formatter:on

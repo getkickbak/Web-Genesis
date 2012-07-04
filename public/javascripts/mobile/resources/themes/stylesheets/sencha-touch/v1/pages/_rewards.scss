@@ -136,6 +136,11 @@
    }
 }
 
+.rouletteBg {
+   background-image : url($theme-path-rel + "/green_roulette_bg" + ".png");
+   background-size : cover;
+}
+
 .prizeCheck {
    position:relative;
    .rouletteBg, .rouletteTable, .rouletteBall {
@@ -149,8 +154,6 @@
       height:100%;
    }
    .rouletteBg {
-      background-image : theme_image($theme-path, "green_roulette_bg" + ".png");
-      background-size : cover;
       z-index:1
    }
    .rouletteTable, .rouletteBall {
@@ -158,11 +161,11 @@
       background-size : contain;
    }
    .rouletteTable {
-      background-image : theme_image($theme-path, "roulette2" + ".png");
+      background-image : url($theme-path-rel + "/roulette2" + ".png");
       z-index:2;
    }
    .rouletteBall {
-      background-image : theme_image($theme-path, "ball" + ".png");
+      background-image : url($theme-path-rel + "/ball" + ".png");
       z-index:3;
    }
    .spinFwd {

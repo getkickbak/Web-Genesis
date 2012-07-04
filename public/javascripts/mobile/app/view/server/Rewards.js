@@ -142,10 +142,8 @@ Ext.define('Genesis.view.server.Rewards',
                      text : 'AC'
                   },
                   {
+                     flex : 2,
                      text : '0'
-                  },
-                  {
-                     text : '.'
                   }]
                }]
             },

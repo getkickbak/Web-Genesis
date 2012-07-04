@@ -284,6 +284,9 @@ Ext.define('Genesis.controller.Merchants',
       me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();
       me.getMainBtn()[(activeItem.showMainBtn) ? 'show':'hide']();
       me.getPrizesBtn().setBadgeText((activeItem.prizesCount > 0) ? activeItem.prizesCount : null);
+      
+      // Update TitleBar
+      activeItem.query('titlebar')[0].setTitle(' ');
       Ext.defer(function()
       {
          // Update TitleBar
@@ -375,7 +378,7 @@ Ext.define('Genesis.controller.Merchants',
          console.log("Update current Venue to be Checked-In Merchant Account ...");
 
          // Restore Merchant Info
-         ccntlr.setupCheckinInfo('checkin', cvenue, ccustomer, cmetaData);
+         ccntlr.fireEvent('setupCheckinInfo', 'checkin', cvenue, ccustomer, cmetaData);
          viewport.updateRewardsTask.delay(0.1 * 1000, me.updateRewards, me, [cmetaData]);
       }
       //
@@ -385,20 +388,22 @@ Ext.define('Genesis.controller.Merchants',
       {
          var controller = vport.getEventDispatcher().controller;
          var anim = new Ext.fx.layout.Card(me.self.superclass.self.animationMode['fade']);
-         if (!controller.isPausing)
+         anim.on('animationend', function()
+         {
+            console.debug("Animation Complete");
+            anim.destroy();
+         }, me);
+         //if (!controller.isPausing)
          {
             console.log("Reloading current Merchant Home Account Page ...");
 
-            // Delete current page and refresh
-            me.getMainPage().destroy();
+            var page = me.getMainPage();
 
-            me.getViewport().animateActiveItem(me.getMainPage(), anim);
-            anim.onActiveItemChange(vport.getLayout(), me.getMainPage(), me.getMainPage(), null, controller);
-            anim.on('animationend', function()
-            {
-               anim.destroy();
-            }, this);
-            vport.doSetActiveItem(me.getMainPage(), null);
+            // Delete current page and refresh
+            page.removeAll(true);
+            me.getViewport().animateActiveItem(page, anim);
+            anim.onActiveItemChange(vport.getLayout(), page, page, null, controller);
+            vport.doSetActiveItem(page, null);
          }
       }
       else
