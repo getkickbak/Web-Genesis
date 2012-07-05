@@ -1,19 +1,43 @@
-<h1>Listing Rewards</h1>
-
-<div class="content row">
-	<% @venues.each do |venue| %>
-	<div><%= venue.name %></div>
-	<% venue.customer_rewards.each do |customer_reward| %>
-	<div>
-		<div><%= link_to customer_reward.title, customer_reward_path(customer_reward) %></div>
-		<div><%= link_to 'Edit', edit_customer_reward_path(customer_reward) %></div>
-		<div><%= link_to 'Destroy', customer_reward_path(customer_reward), :confirm => 'Are you sure?', :method => :delete %></div>
-	</div>
-	<% end %>
-	<% end %>
-</div>
-
-<%= link_to 'New Reward', new_customer_reward_path %>
-<% if current_merchant.status == :pending %>
- | <%= link_to 'Continue Setup', setup_path %>
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
 <% end %>
+<div class="row-fluid">
+   <div class="span3"></div>
+   <div class="span6">
+      <ul class="nav nav-list well">
+         <li class="nav-header"> Rewards </li>
+         <% @venues.each do |venue| %>
+         <li><h3><%= venue.name %></h3></li>
+         <% venue.customer_rewards.each do |customer_reward| %>
+         <li>
+            <!-- -->
+            <div style="position:relative;padding: 3px 15px">
+               <!-- -->
+               <%= customer_reward.title %>
+               <%= link_to( customer_reward_path(customer_reward), :confirm => 'Are you sure?', :method => :delete, :style=>'position:absolute;right:0;') do %> <i class="icon-remove"></i>
+               <!-- -->
+               <% end %>
+               <%= link_to(edit_customer_reward_path(customer_reward),  :style=>'position:absolute;right:26px;') do %> <i class="icon-edit"></i>
+               <!-- -->
+               <% end %>
+               <!-- -->
+            </div>
+            <!-- -->
+         </li>
+         <!-- -->
+         <% end %>
+         <% end %>
+         <!-- -->
+         <!-- -->
+         <li><%= link_to 'New Reward', new_customer_reward_path %>
+            <% if current_merchant.status == :pending %>
+            | <%= link_to 'Continue Setup', setup_path %>
+            <% end %>
+            <!-- -->
+         </li>
+      </ul>
+   </div>
+</div>

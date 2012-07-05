@@ -1,25 +1,35 @@
-<% content_for :script do %> <script type="text/javascript" src="/javascripts/desktop/src/business/venue.js"></script>
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
 <% end %>
-<div class="content row">
-	<div class="span15">
-		<%= simple_form_for @venue do |f| %>
-		<%= f.input :type_id, :collection => VenueType.values[current_merchant.type.value][I18n.locale] %>
-		<%= f.input :name %>
-		<%= f.input :description, :as => :text, :input_html => { :rows => 10 } %>
-		<%= f.input :address %>
-		<%= f.input :city %>
-		<%= f.input :state %>
-		<%= f.input :zipcode %>
-		<%= f.input :country %>
-		<%= f.input :time_zone, :as => :time_zone %>
-		<%= f.input :phone %>
-		<%= f.input :website, :required => false %>
-		<%= f.input :longitude, :as => :hidden, :input_html => { :value => @venue.longitude } %>
-		<%= f.input :latitude, :as => :hidden, :input_html => { :value => @venue.latitude } %>
-		<%= f.button :submit, :class => "btn primary noWrap" %>
-		<% end %>
-	</div>
-	<div class="span14">
-		<div id="gmap" class="" style="height:235px;width:100%;"></div>
-	</div>
+<% content_for :script do %>
+<!-- -->
+<script type="text/javascript" src="/javascripts/desktop/src/business/venue.js"></script>
+<% end %>
+<div class="row-fluid">
+   <div class="span1"></div>
+   <div class="span5">
+      <%= simple_form_for @venue do |f| %>
+      <%= f.input :type_id, :collection => VenueType.values[current_merchant.type.value][I18n.locale] %>
+      <%= f.input :name %>
+      <%= f.input :description, :as => :text, :input_html => { :rows => 10 } %>
+      <%= f.input :address %>
+      <%= f.input :city %>
+      <%= f.input :state %>
+      <%= f.input :zipcode %>
+      <%= f.input :country %>
+      <%= f.input :time_zone, :as => :time_zone %>
+      <%= f.input :phone %>
+      <%= f.input :website, :required => false %>
+      <%= f.input :longitude, :as => :hidden, :input_html => { :value => @venue.longitude } %>
+      <%= f.input :latitude, :as => :hidden, :input_html => { :value => @venue.latitude } %>
+      <%= f.button :submit, :class => "btn primary noWrap" %>
+      <% end %>
+   </div>
+   <div class="span5">
+      <div id="gmap" class="" style="height:235px;width:100%;"></div>
+   </div>
+   <div class="span1"></div>
 </div>

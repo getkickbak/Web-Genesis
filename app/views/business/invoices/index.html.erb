@@ -1,7 +1,17 @@
-<h1>Listing Invoices</h1>
-
-<div class="content row">
-	<% @invoices.each do |invoice| %>
-	<div><%= link_to invoice.created_ts.strftime("%b %Y"), invoice_path(invoice) %></div>
-	<% end %>
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
+<% end %>
+<div class="row-fluid">
+   <div class="span3"></div>
+   <div class="span6">
+      <h1>Listing Invoices</h1>
+      <% @invoices.each do |invoice| %>
+      <div>
+         <%= link_to invoice.created_ts.strftime("%b %Y"), invoice_path(invoice) %>
+      </div>
+      <% end %>
+   </div>
 </div>

@@ -3,6 +3,9 @@
 //------------------------------------------------------------------------------
 .x-list {
    background:transparent;
+   .x-list-item {
+      -webkit-transform : translateZ(0); // Enable HW Accel in iOS
+   }
    .x-list-disclosure {
       background: theme_image($theme-path + "/miscicons", "disclose" + ".png");
       background-size: 2em;

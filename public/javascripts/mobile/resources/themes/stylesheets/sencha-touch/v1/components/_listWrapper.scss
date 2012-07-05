@@ -36,8 +36,8 @@
 .listScrollWrapper, .listNoScrollWrapper, .listScrollIndexWrapper {
    &.x-list {
       .x-list-disclosure {
-         top:1.50em;
-         bottom: 0em;
+         //top:1.50em;
+         bottom: 1.10em;
       }
       .x-list-item {
          &.x-list-header-item .x-list-disclosure {

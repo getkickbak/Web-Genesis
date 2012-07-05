@@ -1,5 +1,17 @@
-<div class="content row">
-<div><a href="<%= account_photo_path %>">Change Photo</a></div>
-<div><a href="<%= reward_model_path %>">Change Reward Model</a></div>
-<div><a href="<%= invoices_path %>">Invoices</a></div>
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
+<% end %>
+<div class="row-fluid">
+   <div class="span3"></div>
+   <div class="span6">
+      <ul class="nav nav-list well">
+         <li class="nav-header"> Features </li>
+         <li><a href="<%= account_photo_path %>">Change Photo</a></li>
+         <li><a href="<%= reward_model_path %>">Change Reward Model</a></li>
+         <li><a href="<%= invoices_path %>">Invoices</a></li>
+      </ul>
+   </div>
 </div>

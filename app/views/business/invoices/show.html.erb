@@ -1,17 +1,23 @@
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
+<% end %>
 <div class="content row">
-Invoice #<%= @invoice.invoice_id %>
-<br>
-Receipt Date: <%= Time.now.strftime("%m/%d/%Y") %>
-<br>
-Order Total: $ <%= @invoice.amount %>
-<br>
-<br>
-Monthly Fee: $ <%= @invoice.monthly_fee %>
-<br>
-# of Transactions: <%= @invoice.transactions %>
-<br>
-Transactions Fee: $ <%= @invoice.trans_fee %>
-<br>
-Total Amount Billed: $ <%= @invoice.amount %>
+   Invoice #<%= @invoice.invoice_id %>
+   <br>
+   Receipt Date: <%= Time.now.strftime("%m/%d/%Y") %>
+   <br>
+   Order Total: $ <%= @invoice.amount %>
+   <br>
+   <br>
+   Monthly Fee: $ <%= @invoice.monthly_fee %>
+   <br>
+   # of Transactions: <%= @invoice.transactions %>
+   <br>
+   Transactions Fee: $ <%= @invoice.trans_fee %>
+   <br>
+   Total Amount Billed: $ <%= @invoice.amount %>
 </div>
 <%= link_to 'Back', invoices_path %>

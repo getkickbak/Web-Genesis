@@ -1,11 +1,35 @@
-<div class="content row">
-	<div>
-		<%= link_to 'Poster', "http://files.getkickbak.com/poster.jpg" %>
-	</div>
-	<% @venues.each do |venue| %>
-	<div><%= venue.name %></div>
-	<div>
-		<%= link_to 'Print', ::Common.generate_full_merchant_qr_code_image_file_path(current_merchant.id,venue.check_in_code.qr_code_img) %>
-	</div>
-	<% end %>
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
+<% end %>
+<div class="row-fluid">
+   <div class="span3"></div>
+   <div class="span6">
+      <ul class="nav nav-list well">
+         <li class="nav-header"> Marketing Posters </li>
+         <li> <%= link_to("http://files.getkickbak.com/poster.jpg", :style=>'display:block;') do %>
+            <!-- -->
+            Poster
+            <!-- -->
+            <i class="icon-print" style="float:right;"></i>
+            <!-- -->
+            <% end %>
+            <!-- -->
+         </li>
+         <li class="nav-header"> Table Toppers </li>
+         <% @venues.each do |venue| %>
+         <li> <%= link_to(::Common.generate_full_merchant_qr_code_image_file_path(current_merchant.id,venue.check_in_code.qr_code_img), :style=>'display:block;') do %>
+            <!-- -->
+            <%= venue.name %>
+            <!-- -->
+            <i class="icon-print" style="float:right;"></i>
+            <!-- -->
+            <% end %>
+            <!-- -->
+         </li>
+         <% end %>
+      </ul>
+   </div>
 </div>

@@ -1,19 +1,42 @@
-<h1>Listing Challenges</h1>
-
-<div class="content row">
-	<% @venues.each do |venue| %>
-	<div><%= venue.name %></div>
-	<% venue.challenges.each do |challenge| %>
-	<div>
-		<div><%= link_to challenge.name, challenge_path(challenge) %></div>
-		<div><%= link_to 'Edit', edit_challenge_path(challenge) %></div>
-		<div><%= link_to 'Delete', challenge_path(challenge), :confirm => 'Are you sure?', :method => :delete %></div>
-	</div>
-	<% end %>
-	<% end %>
-</div>
-
-<%= link_to 'New Challenge', new_challenge_path %>
-<% if current_merchant.status == :pending %>
- | <%= link_to 'Continue Setup', setup_path %>
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
 <% end %>
+<div class="row-fluid">
+   <div class="span3"></div>
+   <div class="span6">
+      <ul class="nav nav-list well">
+         <li class="nav-header"> Challenges </li>
+         <% @venues.each do |venue| %>
+         <li><h3> <%= venue.name %> </h3></li>
+         <% venue.challenges.each do |challenge| %>
+         <li>
+            <!-- -->
+            <div style="position:relative;padding: 3px 15px">
+               <!-- -->
+               <%= challenge.name %>
+               <%= link_to edit_challenge_path(challenge), :style=>'position:absolute;right:26px;' do %>
+               <i class="icon-edit"></i>
+               <!-- -->
+               <% end %>
+               <%= link_to challenge_path(challenge), :confirm => 'Are you sure?', :method => :delete, :style=>'position:absolute;right:0;' do %>
+               <i class="icon-remove"></i>
+               <!-- -->
+               <% end %>
+            </div>
+            <!-- -->
+         </li>
+         <% end %>
+         <% end %>
+         <li><%= link_to 'New Challenge', new_challenge_path %>
+            <% if current_merchant.status == :pending %>
+            | <%= link_to 'Continue Setup', setup_path %>
+            <% end %>
+            <!-- -->
+         </li>
+         <!-- -->
+      </ul>
+   </div>
+</div>

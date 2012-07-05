@@ -1,15 +1,24 @@
-<div class="content row">
-<%= simple_form_for @merchant, :url => update_account_path do |f| %>
-	<%= f.input :name %>
-	<%= f.input :description, :as => :text, :input_html => { :rows => 10 } %>
-	<%= f.input :email %>
-	<%= f.input :account_first_name %>
-	<%= f.input :account_last_name %>
-	<%= f.input :phone %>
-	<%= f.input :website, :required => false %>
-	<%= f.input :current_password %>
-	<%= f.input :password %>
-	<%= f.input :password_confirmation %>
-	<%= f.button :submit, :class => "btn primary noWrap" %>
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
 <% end %>
+<div class="row-fluid">
+   <div class="span3"></div>
+   <div class="span6">
+      <%= simple_form_for @merchant, :url => update_account_path do |f| %>
+      <%= f.input :name %>
+      <%= f.input :description, :as => :text, :input_html => { :rows => 10 } %>
+      <%= f.input :email %>
+      <%= f.input :account_first_name %>
+      <%= f.input :account_last_name %>
+      <%= f.input :phone %>
+      <%= f.input :website, :required => false %>
+      <%= f.input :current_password %>
+      <%= f.input :password %>
+      <%= f.input :password_confirmation %>
+      <%= f.button :submit, :class => "btn primary noWrap" %>
+      <% end %>
+   </div>
 </div>

@@ -1,19 +1,40 @@
-<h1>Listing Rewards</h1>
-
-<div class="content row">
-	<% @venues.each do |venue| %>
-	<div><%= venue.name %></div>
-	<% venue.purchase_rewards.each do |purchase_reward| %>
-	<div>
-		<div><%= link_to purchase_reward.title, purchase_reward_path(purchase_reward) %></div>
-		<div><%= link_to 'Edit', edit_purchase_reward_path(purchase_reward) %></div>
-		<div><%= link_to 'Destroy', purchase_reward_path(purchase_reward), :confirm => 'Are you sure?', :method => :delete %></div>
-	</div>
-	<% end %>
-	<% end %>
-</div>
-
-<%= link_to 'New Reward', new_purchase_reward_path %>
-<% if current_merchant.status == :pending %>
- | <%= link_to 'Continue Setup', setup_path %>
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
 <% end %>
+<div class="row-fluid">
+   <div class="span3"></div>
+   <div class="span6">
+      <ul class="nav nav-list well">
+         <li class="nav-header"> Listing Rewards </li>
+         <% @venues.each do |venue| %>
+         <li><h3><%= venue.name %></h3></li>
+         <% venue.purchase_rewards.each do |purchase_reward| %>
+         <li>
+            <!-- -->
+            <div style="position:relative;padding: 3px 15px">
+               <!-- -->
+               <%= purchase_reward.title %>
+               <%= link_to( purchase_reward_path(purchase_reward), :confirm => 'Are you sure?', :method => :delete, :style=>'position:absolute;right:0;') do %> <i class="icon-remove"></i>
+               <!-- -->
+               <% end %>
+               <%= link_to(edit_purchase_reward_path(purchase_reward),  :style=>'position:absolute;right:26px;') do %> <i class="icon-edit"></i>
+               <!-- -->
+               <% end %>
+               <!-- -->
+            </div>
+            <!-- -->
+         </li>
+         <% end %>
+         <% end %>
+         <li><%= link_to 'New Reward', new_purchase_reward_path %>
+            <% if current_merchant.status == :pending %>
+            | <%= link_to 'Continue Setup', setup_path %>
+            <% end %>
+            <!-- -->
+         </li>
+      </ul>
+   </div>
+</div>

@@ -20,7 +20,7 @@ $base-gradient: 'smooth';
 $active-color: darken(saturate($OrangeEnd, 55%), 10%);
 
 // Highlights
-$include-highlights: true; // Can disable all theme-generated gradients, text-shadows, and box-shadows.
+$include-highlights: false; // Can disable all theme-generated gradients, text-shadows, and box-shadows.
 
 //Buttons
 $include-buttons-uis : false;

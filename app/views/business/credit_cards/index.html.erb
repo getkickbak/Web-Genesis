@@ -1,41 +1,71 @@
-<% content_for :script do %> 
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
+<% end %>
+<% content_for :script do %>
 <script type="text/javascript" src="/javascripts/desktop/src/business/credit_card.js"></script>
 <% end %>
-<h1>Credit Cards</h1>
-<div class="content row">
-	<% @credit_cards.each do |credit_card| %>
-	<div>
-		<div><%= credit_card.number %></div>
-		<div><%= link_to 'Edit', '#', :onclick => "edit_credit_card(#{credit_card.id});" %></div>
-		<div><%= link_to 'Destroy', delete_credit_card_path, :confirm => 'Are you sure?' %></div>
-	</div>
-	<div>
-		<%= simple_form_for credit_card, :html => { :id => "edit_credit_card_#{credit_card.id}", :style => "display:none;" }, :url => update_credit_card_path do |f| %>
-		<%= f.input :name %>
-		<%= f.input :number %>
-		<%= f.input :expiry_date, :as => :date, :order => [:month, :year] %>
-		<%= f.input :security_code %>
-		<%= f.input :address %>
-		<%= f.input :city %>
-		<%= f.input :state %>
-		<%= f.input :zip %>
-		<%= f.button :submit, 'Update', :class => "btn primary noWrap" %>
-		<% end %>
-	<div>
-	<% end %>
-	<% if @credit_cards.length == 0 %>
-	<div>
-		<%= simple_form_for @credit_card, :url => create_credit_card_path do |f| %>
-		<%= f.input :name %>
-		<%= f.input :number %>
-		<%= f.input :expiry_date, :as => :date, :order => [:month, :year] %>
-		<%= f.input :security_code %>
-		<%= f.input :address %>
-		<%= f.input :city %>
-		<%= f.input :state %>
-		<%= f.input :zip %>
-		<%= f.button :submit, 'Add', :class => "btn primary noWrap" %>
-		<% end %>
-	</div>
-	<% end %>
+
+<div class="row-fluid">
+   <div class="span3"></div>
+   <div class="span6">
+      <ul class="nav nav-list well">
+         <li class="nav-header"> Credit Cards Information </li>
+         <% @credit_cards.each do |credit_card| %>
+         <li>
+            <!-- -->
+            <div style="position:relative;padding: 3px 15px">
+               <!-- -->
+               <%= credit_card.number %>
+               <%= link_to '#', :onclick => "edit_credit_card(#{credit_card.id});", :style=>'position:absolute;right:0px;' do %>
+               <i class="icon-edit"></i>
+               <!-- -->
+               <% end %>
+               <%= link_to delete_credit_card_path, :style=>'position:absolute;right:0px;', :confirm => 'Are you sure?' do %>
+               <i class="icon-remove"></i>
+               <!-- -->
+               <% end %>
+            </div>
+            <!-- -->
+         </li>
+         <li>
+            <div>
+               <%= simple_form_for credit_card, :html => { :id => "edit_credit_card_#{credit_card.id}", :style => "display:none;" }, :url => update_credit_card_path do |f| %>
+               <%= f.input :name %>
+               <%= f.input :number %>
+               <%= f.input :expiry_date, :as => :date, :order => [:month, :year] %>
+               <%= f.input :security_code %>
+               <%= f.input :address %>
+               <%= f.input :city %>
+               <%= f.input :state %>
+               <%= f.input :zip %>
+               <%= f.button :submit, 'Update', :class => "btn primary noWrap" %>
+               <% end %>
+            </div>
+            <!-- -->
+         </li>
+         <!-- -->
+         <% end %>
+         <% if @credit_cards.length == 0 %>
+         <li>
+            <div>
+               <%= simple_form_for @credit_card, :url => create_credit_card_path do |f| %>
+               <%= f.input :name %>
+               <%= f.input :number %>
+               <%= f.input :expiry_date, :as => :date, :order => [:month, :year] %>
+               <%= f.input :security_code %>
+               <%= f.input :address %>
+               <%= f.input :city %>
+               <%= f.input :state %>
+               <%= f.input :zip %>
+               <%= f.button :submit, 'Add', :class => "btn primary noWrap" %>
+               <% end %>
+            </div>
+            <!-- -->
+         </li>
+         <% end %>
+      </ul>
+   </div>
 </div>

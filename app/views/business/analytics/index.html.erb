@@ -1,46 +1,66 @@
-<% content_for :script do %> <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
+<style TYPE="text/css">
+   body::after {
+      height : 2096px;
+      background-size : 1600px 2096px;
+   }
+</style>
+<% end %>
+<% content_for :script do %>
+<!-- -->
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript" src="/javascripts/desktop/src/business/analytics.js"></script>
 <% end %>
-<div class="content row">
-	<div class="span29">
-		<div class="row">
-			<div class="span18">
-				<div id="new_customers">
-					&nbsp;
-				</div>
-			</div>
-			<div class="span11">
-				<div>
-					<%= @customers_total %> people in your loyalty program
-				</div>
-				<div>
-					<%= @new_customers_total %> new customers joined in the last 2 weeks
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="span18">
-				<div id="purchases_line_chart">
-					&nbsp;
-				</div>
-			</div>
-			<div class="span11">
-				<div>
-					<%= @purchases_total %> purchases in the last 2 months
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="span18">
-				<div id="challenges_line_chart">
-					&nbsp;
-				</div>
-			</div>
-			<div class="span11">
-				<div id="challenges_pie_chart">
-					&nbsp;
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="row-fluid">
+   <div class="span1"></div>
+   <div class="span6">
+      <h3>New Cutomers</h3>
+      <div id="new_customers">
+         &nbsp;
+      </div>
+   </div>
+   <div class="span4">
+      <div>
+         <%= @customers_total %> people in your loyalty program
+      </div>
+      <div>
+         <%= @new_customers_total %> new customers joined in the last 2 weeks
+      </div>
+   </div>
+   <div class="span1"></div>
+</div>
+<div class="row-fluid">
+   <div class="span1"></div>
+   <div class="span6">
+      <h3>Purchase Chart</h3>
+      <div id="purchases_line_chart">
+         &nbsp;
+      </div>
+   </div>
+   <div class="span4">
+      <div>
+         <%= @purchases_total %> purchases in the last 2 months
+      </div>
+   </div>
+   <div class="span1"></div>
+</div>
+<div class="row-fluid">
+   <div class="span1"></div>
+   <div class="span6">
+      <h3>Challenges Line Chart</h3>
+      <div id="challenges_line_chart">
+         &nbsp;
+      </div>
+   </div>
+   <div class="span4">
+      <h3 style="float:right;">Challenges Pie Chart</h3>
+      <div style="float:right;clear:both;" id="challenges_pie_chart">
+         &nbsp;
+      </div>
+   </div>
+   <div class="span1"></div>
 </div>
