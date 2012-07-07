@@ -150,19 +150,8 @@
             {
                if (Ext.device)
                {
-                  //_application.getController('Viewport').persistSyncCustomerStore();
                   console.log("Phone is Online");
-                  if (Ext.device.Connection.isOnline())
-                  {
-                     /*
-                      Ext.device.Notification.show(
-                      {
-                      title : 'Network Connection Established',
-                      message : 'You are currently connected via ' + Ext.device.Connection.getType()
-                      });
-                      */
-                  }
-                  else
+                  if (!Ext.device.Connection.isOnline())
                   {
                      _onGotoMain();
                   }
@@ -173,19 +162,8 @@
             {
                if (Ext.device)
                {
-                  //_application.getController('Viewport').persistSyncCustomerStore();
                   console.log("Phone is Offline");
-                  if (Ext.device.Connection.isOnline())
-                  {
-                     /*
-                      Ext.device.Notification.show(
-                      {
-                      title : 'Network Connection Established',
-                      message : 'You are currently connected via ' + Ext.device.Connection.getType()
-                      });
-                      */
-                  }
-                  else
+                  if (!Ext.device.Connection.isOnline())
                   {
                      _onGotoMain();
                   }
@@ -199,7 +177,6 @@
 
             document.addEventListener("resume", function()
             {
-               //_application.getController('Viewport').persistSyncCustomerStore();
                console.log("App is Resumed");
                if (Ext.device)
                {
@@ -209,8 +186,7 @@
                   }
                   else
                   {
-                     var viewport = _application.getController('Viewport');
-                     viewport.fireEvent('openpage', 'MainPage', 'main', null);
+                     _onGotoMainCallBackFn();
                   }
                }
             }, false);
@@ -253,6 +229,7 @@
             }, function(status)
             {
                console.warn(JSON.stringify(['registerDevice - ', status]));
+               Genesis.constants.deviceId = status['deviceToken'];
             }, function(status)
             {
                console.warn(JSON.stringify(['failed to register - ', status]));
@@ -262,27 +239,29 @@
             appInit();
          }
 
+         function _onGotoMainCallBackFn()
+         {
+            var viewport = _application.getController('Viewport');
+            if (viewport)
+            {
+               if (viewport.getLoggedIn())
+               {
+                  viewport.fireEvent('openpage', 'MainPage', 'main', null);
+               }
+               else
+               {
+                  viewport.fireEvent('openpage', 'MainPage', 'login', null);
+               }
+            }
+         }
+
          function _onGotoMain()
          {
             Ext.device.Notification.show(
             {
                title : 'Network Error',
                message : 'You have lost internet connectivity',
-               callback : function()
-               {
-                  var viewport = _application.getController('Viewport');
-                  if (viewport)
-                  {
-                     if (viewport.getLoggedIn())
-                     {
-                        viewport.fireEvent('openpage', 'MainPage', 'main', null);
-                     }
-                     else
-                     {
-                        viewport.fireEvent('openpage', 'MainPage', 'login', null);
-                     }
-                  }
-               }
+               callback : _onGotoMainCallBackFn
             });
          }
       </script>

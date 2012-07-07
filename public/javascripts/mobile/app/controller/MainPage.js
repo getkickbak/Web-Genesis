@@ -458,7 +458,10 @@ Ext.define('Genesis.controller.MainPage',
          jsonData :
          {
          },
-         params : params,
+         params : Ext.apply(params,
+         {
+            'device_id' : Genesis.constants.deviceId
+         }),
          callback : function(records, operation)
          {
             //
@@ -471,7 +474,8 @@ Ext.define('Genesis.controller.MainPage',
             }
             else
             {
-               me.persistSyncStores();
+               Genesis.db.setLocalDBAttrib('deviceId', Genesis.constants.deviceId);
+               me.persistSyncStores('CustomerStore');
             }
          }
       });
@@ -482,10 +486,8 @@ Ext.define('Genesis.controller.MainPage',
 
       Genesis.db.resetStorage();
       viewport.setLoggedIn(false);
-      Genesis.db.removeLocalDBAttrib('auth_code');
 
       //this.getInfoBtn().hide();
-      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onLoginDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -678,6 +680,7 @@ Ext.define('Genesis.controller.MainPage',
       var me = this;
       var params =
       {
+         'device_id' : Genesis.constants.deviceId
       };
 
       if (username)
@@ -708,6 +711,7 @@ Ext.define('Genesis.controller.MainPage',
             }
             else
             {
+               Genesis.db.setLocalDBAttrib('deviceId', Genesis.constants.deviceId);
                me.persistSyncStores('CustomerStore');
             }
          }
@@ -792,7 +796,7 @@ Ext.define('Genesis.controller.MainPage',
    openPage : function(subFeature)
    {
       var me = this;
-      
+
       me.resetView();
       switch (subFeature)
       {
@@ -811,7 +815,7 @@ Ext.define('Genesis.controller.MainPage',
          case 'login' :
          {
             me.getApplication().getController('Checkins').fireEvent('setupCheckinInfo', 'checkin', null, null, null);
-            me.getApplication().getController('Prizes').fireEvent('updatePrizeViews',null);
+            me.getApplication().getController('Prizes').fireEvent('updatePrizeViews', null);
             me.setAnimationMode(me.self.superclass.self.animationMode['fade']);
             Ext.Viewport.setMasked(false);
             me.pushView(me.getLogin());
