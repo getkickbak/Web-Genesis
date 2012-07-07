@@ -130,7 +130,7 @@ Ext.define('Genesis.view.MainPage',
             return items;
          }())
    },
-   disableAnimation : (!merchantMode) ? true : false,
+   disableAnimation : (!merchantMode) ? true : true,
    initialize : function()
    {
       this.setPreRender([]);

@@ -93,7 +93,7 @@ Ext.define('Genesis.view.SignInPage',
             xtype : 'passwordfield',
             name : 'password',
             label : 'Password',
-            clearIcon : false
+            clearIcon : true
          }]
       },
       {
@@ -170,7 +170,7 @@ Ext.define('Genesis.view.CreateAccountPage',
             xtype : 'passwordfield',
             name : 'password',
             label : 'Password',
-            clearIcon : false
+            clearIcon : true
          }]
       },
       {
