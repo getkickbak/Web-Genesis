@@ -116,6 +116,7 @@ Ext.define('Genesis.view.SignInPage',
 
       return rc;
    },
+   cleanView : Ext.emptyFn,
    createView : Ext.emptyFn,
    showView : Ext.emptyFn
 });
@@ -193,6 +194,7 @@ Ext.define('Genesis.view.CreateAccountPage',
 
       return rc;
    },
+   cleanView : Ext.emptyFn,
    createView : Ext.emptyFn,
    showView : Ext.emptyFn
 });

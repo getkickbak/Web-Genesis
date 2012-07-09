@@ -144,6 +144,7 @@ Ext.define('Genesis.controller.MainPage',
                   {
                      me.persistLoadStores(function()
                      {
+                        Genesis.constants.device = db['device'];
                         me.redirectTo('main');
                      });
                   }
@@ -460,23 +461,23 @@ Ext.define('Genesis.controller.MainPage',
          },
          params : Ext.apply(params,
          {
-            'device_id' : Genesis.constants.deviceId
+            device : Genesis.constants.device
          }),
          callback : function(records, operation)
          {
             //
             // Login Error, redo login
             //
-            Ext.Viewport.setMasked(false);
             if (!operation.wasSuccessful())
             {
                me.redirectTo('login');
             }
             else
             {
-               Genesis.db.setLocalDBAttrib('deviceId', Genesis.constants.deviceId);
+               Genesis.db.setLocalDBAttrib('device', Genesis.constants.device);
                me.persistSyncStores('CustomerStore');
             }
+            Ext.Viewport.setMasked(false);
          }
       });
    },
@@ -637,7 +638,8 @@ Ext.define('Genesis.controller.MainPage',
          {
             name : values.name,
             email : values.username,
-            password : values.password
+            password : values.password,
+            device : Genesis.constants.device
          };
 
          if (response)
@@ -680,7 +682,7 @@ Ext.define('Genesis.controller.MainPage',
       var me = this;
       var params =
       {
-         'device_id' : Genesis.constants.deviceId
+         device : Genesis.constants.device
       };
 
       if (username)
@@ -704,16 +706,16 @@ Ext.define('Genesis.controller.MainPage',
             //
             // Login Error, redo login
             //
-            Ext.Viewport.setMasked(false);
             if (!operation.wasSuccessful())
             {
                me.redirectTo('login');
             }
             else
             {
-               Genesis.db.setLocalDBAttrib('deviceId', Genesis.constants.deviceId);
+               Genesis.db.setLocalDBAttrib('device', Genesis.constants.device);
                me.persistSyncStores('CustomerStore');
             }
+            Ext.Viewport.setMasked(false);
          }
       });
    },
@@ -751,7 +753,6 @@ Ext.define('Genesis.controller.MainPage',
             username : response.email
          });
       }
-      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onCreateDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)

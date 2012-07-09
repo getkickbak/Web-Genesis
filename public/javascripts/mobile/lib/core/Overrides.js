@@ -857,12 +857,11 @@ Genesis.db =
    resetStorage : function()
    {
       Genesis.fb.facebook_onLogout(null, false);
-      this.removeLocalDBAttrib('auth_code');
-
+      //this.removeLocalDBAttrib('auth_code');
       var db = this.getLocalStorage();
       for (var i in db)
       {
-         if (i != 'kickbak')
+         if ((i == 'kickbak') || (i == 'kickbakreferral'))
          {
             try
             {
