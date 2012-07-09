@@ -23,7 +23,7 @@ class UserDevice
     count = UserDevice.count(UserDevice.user.id => user.id)
     device = UserDevice.new(
       :device_id => device_info[:device_id],
-      :device_type => PushwooshType_to_type[device_info[:device_type]]
+      :device_type => PushwooshType_to_type[device_info[:device_type].to_s]
     )
     device[:created_ts] = now
     device[:update_ts] = now
