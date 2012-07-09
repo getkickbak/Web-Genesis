@@ -5,13 +5,17 @@
 <![endif]-->
 <% end %>
 <div class="row-fluid">
-   <div class="span3"></div>
-   <div class="span6">
-      <h1>Listing Invoices</h1>
-      <% @invoices.each do |invoice| %>
-      <div>
-         <%= link_to invoice.created_ts.strftime("%b %Y"), invoice_path(invoice) %>
-      </div>
-      <% end %>
-   </div>
+	<div class="span3"></div>
+	<div class="span6">
+		<ul class="nav nav-list well">
+			<li class="nav-header">
+				Listing Invoices
+			</li>
+			<% @invoices.each do |invoice| %>
+			<div>
+				<%= link_to invoice.created_ts.strftime("%b %Y"), invoice_path(invoice) %>
+			</div>
+			<% end %>
+		</ul>
+	</div>
 </div>

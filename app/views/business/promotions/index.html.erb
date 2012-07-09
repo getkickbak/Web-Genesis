@@ -1,0 +1,26 @@
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
+<% end %>
+<div class="row-fluid">
+   <div class="span3"></div>
+   <div class="span6">
+      <ul class="nav nav-list well">
+         <li class="nav-header"> Listing Promotions </li>
+         <% @promotions.each do |promotion| %>
+         <li>
+            <!-- -->
+            <div style="position:relative;padding: 3px 15px">
+               <!-- -->
+               <%= promotion.message %> <%= promotion.start_date.strftime("%b %Y") %> <%= promotion.end_date.strftime("%b %Y") %>
+            </div>
+            <!-- -->
+         </li>
+         <% end %>
+         <li><%= link_to 'New Promotion', new_promotion_path %>
+         </li>
+      </ul>
+   </div>
+</div>

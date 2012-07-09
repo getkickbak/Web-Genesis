@@ -47,6 +47,14 @@ class Common
     return true
   end
 
+  def self.register_user_device(user, device_info)
+    device = UserDevice.first(:device_id => device_info[:device_id])   
+    if device.nil?
+      device = UserDevice.create(user, device_info)
+    end
+    return device
+  end
+  
   def self.get_eligible_reward_text(points)
     if points >= 0
       I18n.t("api.customer_rewards.qualified_rewards")

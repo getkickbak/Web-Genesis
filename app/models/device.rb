@@ -18,7 +18,7 @@ class Device
   belongs_to :merchant
   belongs_to :venue
   
-  def self.create(device_info)
+  def self.create(merchant, venue, device_info)
     now = Time.now
     device = Device.new(
       :serial_num => device_info[:serial_num].strip,

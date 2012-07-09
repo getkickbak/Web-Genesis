@@ -1,0 +1,17 @@
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
+<% end %>
+<div class="row-fluid">
+	<div class="span1"></div>
+	<div class="span5">
+		<%= simple_form_for @promotion do |f| %>
+		<%= f.input :message, :as => :text, :input_html => { :rows => 10 } %>
+		<%= f.input :start_date, :as => :date, :order => [:day, :month, :year] %>
+		<%= f.input :end_date, :as => :date, :order => [:day, :month, :year] %>
+		<%= f.button :submit %>
+		<% end %>
+	</div>
+</div>

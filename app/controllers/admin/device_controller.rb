@@ -41,11 +41,12 @@ module Admin
     end
 
     def create
+      @merchant = Merchant.get(params[:merchant_id]) || not_found
       authorize! :create, Device
 
       begin
         Device.transaction do
-          @device = Device.create(params[:device])
+          @device = Device.create(merchant, params[:device])
           respond_to do |format|
             format.html { redirect_to(merchant_device_path(@device), :notice => t("admin.devices.create_success")) }
           #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }

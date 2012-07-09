@@ -288,7 +288,8 @@ namespace :db do
         {
           :title => "#{reward_names[reward_type.value.to_sym]} #{reward_names_count[reward_type.value.to_sym]+1}",
           :price => price,
-          :points => points
+          :points => points,
+          :mode => :prize_and_reward
         },
         venues)
         if i == picked_prize
