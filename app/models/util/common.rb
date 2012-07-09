@@ -48,6 +48,9 @@ class Common
   end
 
   def self.register_user_device(user, device_info)
+    if device_info.nil?
+      return nil
+    end
     device = UserDevice.first(:device_id => device_info[:device_id])   
     if device.nil?
       device = UserDevice.create(user, device_info)
