@@ -4,6 +4,7 @@ class UserDevice
   include DataMapper::Resource
   
   Types = [:ios, :android, :blackberry]
+  PushwooshType_to_type = { "1" => :iphone, "2" => :blackberry, "3" => :android }
   
   property :id, Serial
   property :device_id, String, :required => true, :default => ""
@@ -22,7 +23,7 @@ class UserDevice
     count = UserDevice.count(UserDevice.user.id => user.id)
     device = UserDevice.new(
       :device_id => device_info[:device_id],
-      :device_type => device_info[:device_type]
+      :device_type => PushwooshType_to_type[device_info[:device_type]]
     )
     device[:created_ts] = now
     device[:update_ts] = now
