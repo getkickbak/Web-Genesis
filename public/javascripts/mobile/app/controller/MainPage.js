@@ -461,7 +461,7 @@ Ext.define('Genesis.controller.MainPage',
          },
          params : Ext.apply(params,
          {
-            device : Genesis.constants.device
+            device : Ext.encode(Genesis.constants.device)
          }),
          callback : function(records, operation)
          {
@@ -639,7 +639,7 @@ Ext.define('Genesis.controller.MainPage',
             name : values.name,
             email : values.username,
             password : values.password,
-            device : Genesis.constants.device
+            device : Ext.encode(Genesis.constants.device)
          };
 
          if (response)
@@ -682,7 +682,7 @@ Ext.define('Genesis.controller.MainPage',
       var me = this;
       var params =
       {
-         device : Genesis.constants.device
+         device : Ext.encode(Genesis.constants.device)
       };
 
       if (username)
@@ -818,7 +818,6 @@ Ext.define('Genesis.controller.MainPage',
             me.getApplication().getController('Checkins').fireEvent('setupCheckinInfo', 'checkin', null, null, null);
             me.getApplication().getController('Prizes').fireEvent('updatePrizeViews', null);
             me.setAnimationMode(me.self.superclass.self.animationMode['fade']);
-            Ext.Viewport.setMasked(false);
             me.pushView(me.getLogin());
             break;
          }

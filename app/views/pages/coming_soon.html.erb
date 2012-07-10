@@ -1,0 +1,29 @@
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
+<style type="text/css">
+   body {
+      height : 1000px;
+   }
+   body::after {
+      background-position : center 0;
+      background-size : cover;
+      height : 100%;
+   }
+</style>
+<% end %>
+<% content_for :script do %>
+<!-- -->
+<script type="text/javascript">
+   $(document).ready(function()
+   {
+      $(".navbar.navbar-fixed-top")[0].style.cssText = "display:none;"
+   }); 
+</script>
+<% end %>
+
+<div class="container">
+   <img src="/javascripts/desktop/resources/themes/v1/comingsoon/comingsoon_android.png">
+</div>
