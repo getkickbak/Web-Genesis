@@ -1,5 +1,3 @@
-require 'api'
-
 module CreatePromotion
   @queue = :create_promotion
   
