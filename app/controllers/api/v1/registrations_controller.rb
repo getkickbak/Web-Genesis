@@ -33,7 +33,8 @@ class Api::V1::RegistrationsController < ApplicationController
         @user = User.create(user_info)
         @results = Customer.find(@user.id, start, max)
         @earn_prizes = []
-        Common.register_user_device(@user, params[:device])
+        device_info = JSON.parse(params[:device], { :symbolize_names => true })
+        Common.register_user_device(@user, device_info)
         render :template => '/api/v1/tokens/create'     
       end
     rescue DataMapper::SaveFailureError => e
