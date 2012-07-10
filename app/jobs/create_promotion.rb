@@ -1,3 +1,5 @@
+require 'caller'
+
 module CreatePromotion
   @queue = :create_promotion
   
