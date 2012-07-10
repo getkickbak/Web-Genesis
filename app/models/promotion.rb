@@ -38,7 +38,7 @@ class Promotion
     promotion[:update_ts] = now
     promotion.merchant = merchant
     promotion.save
-    return reward
+    return promotion
   end
   
   private
