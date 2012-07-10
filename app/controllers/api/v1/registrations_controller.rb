@@ -33,7 +33,7 @@ class Api::V1::RegistrationsController < ApplicationController
         @user = User.create(user_info)
         @results = Customer.find(@user.id, start, max)
         @earn_prizes = []
-        if params[:device]
+        if params[:device] && params[:device] != "null"
           device_info = JSON.parse(params[:device], { :symbolize_names => true })
           Common.register_user_device(@user, device_info)
         end
