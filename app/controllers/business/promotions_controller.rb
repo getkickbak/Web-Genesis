@@ -1,3 +1,5 @@
+require 'pushwoosh/remote_api'
+
 module Business
   class PromotionsController < BaseApplicationController
     before_filter :authenticate_merchant!
