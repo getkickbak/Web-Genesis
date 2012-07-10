@@ -687,11 +687,11 @@ Ext.define('Genesis.controller.MainPage',
 
       if (username)
       {
-         params =
+         params = Ext.apply(params,
          {
             email : username,
             password : password
-         };
+         });
       }
       Customer['setLoginUrl']();
       console.log("setLoginUrl - Logging in ...");

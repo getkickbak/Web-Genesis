@@ -240,7 +240,7 @@
             }, function(status)
             {
                console.warn(JSON.stringify(['failed to register - ', status]));
-               Genesis.constants.device = undefined;
+               Genesis.constants.device = null;
             });
             pushNotification.setApplicationIconBadgeNumber(0);
             console.log("onDeviceReady");
