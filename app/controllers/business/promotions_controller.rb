@@ -1,4 +1,4 @@
-require 'pushwoosh/remote_api'
+require 'remote_api'
 
 module Business
   class PromotionsController < BaseApplicationController

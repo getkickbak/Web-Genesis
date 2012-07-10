@@ -1,7 +1,6 @@
 module Pushwoosh
   class RemoteApi
-    def initialize
-      super  
+    def initialize  
     end
     
     def create_message(message, time, device_list)
