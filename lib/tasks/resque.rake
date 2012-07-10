@@ -1,4 +1,5 @@
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../../lib'
+puts $LOAD_PATH
 require 'resque/tasks'
 require 'resque_scheduler/tasks'
 
