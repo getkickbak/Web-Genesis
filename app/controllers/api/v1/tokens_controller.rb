@@ -142,6 +142,9 @@ class Api::V1::TokensController < ApplicationController
           prize.merchant.eager_load_type = MerchantType.id_to_type[merchant_id_to_type_id[prize.merchant.id]]
           prize.reward.eager_load_type = CustomerRewardType.id_to_type[reward_id_to_type_id[prize.reward.id]]
         end 
+        device_type = params[:device]["device_type"].to_s
+        logger.debug("device_type: #{device_type}")
+        logger.debug("pushwooshType_to_type: #{UserDevice::PushwooshType_to_type[device_type]}")
         Common.register_user_device(@user, params[:device])
         render :template => '/api/v1/tokens/create'
       end
