@@ -1,5 +1,9 @@
 module Pushwoosh
-  class Caller
+  class Api
+    def initialize
+      super  
+    end
+    
     def create_message(message, time, device_list)
       service = "createMessage"
       body ={
