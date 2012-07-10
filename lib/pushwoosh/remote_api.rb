@@ -1,5 +1,5 @@
 module Pushwoosh
-  class Api
+  class RemoteApi
     def initialize
       super  
     end

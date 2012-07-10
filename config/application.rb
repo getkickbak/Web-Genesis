@@ -48,6 +48,7 @@ module Genesis
     config.filter_parameters += [:password]
 
     config.autoload_paths += %W(#{config.root}/lib)
+    config.autoload_paths += Dir["#{config.root}/lib/**/"]
 
     DataMapper::Model.append_inclusions(DataMapper::MassAssignmentSecurity)
     DataMapper::Model.raise_on_save_failure = true

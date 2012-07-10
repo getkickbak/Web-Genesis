@@ -9,7 +9,7 @@ module CreatePromotion
     now = Time.now
     logger.info("Create Promotion started at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
     promotion = Promotion.get(id)
-    push = Pushwoosh::Api.new
+    push = Pushwoosh::RemoteApi.new
     count = Customer.count(Customer.merchant.id => promotion.merchant.id)
     max = 1000
     n = 1
