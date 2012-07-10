@@ -4,7 +4,7 @@ class UserDevice
   include DataMapper::Resource
   
   Types = [:ios, :android, :blackberry]
-  PushwooshType_to_type = { "1" => :iphone, "2" => :blackberry, "3" => :android }
+  PushwooshType_to_type = { "1" => :ios, "2" => :blackberry, "3" => :android }
   
   property :id, Serial
   property :device_id, String, :required => true, :default => ""
