@@ -1,4 +1,4 @@
-require 'remote_api'
+require 'pushwoosh/remote_api'
 
 module CreatePromotion
   @queue = :create_promotion
