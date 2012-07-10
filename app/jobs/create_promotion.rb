@@ -1,3 +1,5 @@
+require 'remote_api'
+
 module CreatePromotion
   @queue = :create_promotion
   
