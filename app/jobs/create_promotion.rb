@@ -6,7 +6,7 @@ module CreatePromotion
   end
 
   def self.perform(id)
-    ow = Time.now
+    now = Time.now
     logger.info("Create Promotion started at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
     promotion = Promotion.get(id)
     push = Pushwoosh::Caller.new
