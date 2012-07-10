@@ -13,7 +13,7 @@ Genesis.constants =
    site : 'www.getkickbak.com',
    debugVPrivKey : '5B2PuTj1C5kiJBFpR2kd8l7iGFLyb34z',
    debugRPrivKey : '5B2PuTj1C5kiJBFpR2kd8l7iGFLyb34z',
-   deviceId : null,
+   device : null,
    redeemDBSize : 10000,
    createAccountMsg : 'Create user account using Facebook Profile information',
    isNative : function()

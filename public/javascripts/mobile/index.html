@@ -199,7 +199,8 @@
                Ext.device.Notification.show(
                {
                   title : 'KickBak Push Notification',
-                  message : JSON.stringify(['push-notification!', event.notification])
+                  message : JSON.stringify(event.notification)[1].aps['alert']
+                  //message : JSON.stringify(['push-notification!', event.notification])
                });
             });
 
@@ -216,7 +217,7 @@
                Ext.device.Notification.show(
                {
                   title : 'KickBak Push Notification',
-                  message : JSON.stringify(invokeString)
+                  message : JSON.stringify(invokeString)[1].aps['alert']
                });
             }
 
@@ -233,12 +234,13 @@
                console.warn(JSON.stringify(['registerDevice - ', status]));
                Genesis.constants.device =
                {
-                  deviceType : status['type'],
-                  deviceId : status['deviceToken']
+                  'device_type' : 1, //for iOS
+                  'device_id' : status['deviceToken']
                };
             }, function(status)
             {
                console.warn(JSON.stringify(['failed to register - ', status]));
+               Genesis.constants.device = undefined;
             });
             pushNotification.setApplicationIconBadgeNumber(0);
             console.log("onDeviceReady");
