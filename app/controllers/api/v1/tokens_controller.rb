@@ -62,8 +62,10 @@ class Api::V1::TokensController < ApplicationController
         prize.merchant.eager_load_type = MerchantType.id_to_type[merchant_id_to_type_id[prize.merchant.id]]
         prize.reward.eager_load_type = CustomerRewardType.id_to_type[reward_id_to_type_id[prize.reward.id]]
       end 
-      device_info = JSON.parse(params[:device], { :symbolize_names => true })
-      Common.register_user_device(@user, device_info)
+      if params[:device]
+        device_info = JSON.parse(params[:device], { :symbolize_names => true })
+        Common.register_user_device(@user, device_info)
+      end
       render :template => '/api/v1/tokens/create'
     end
   end
@@ -143,8 +145,10 @@ class Api::V1::TokensController < ApplicationController
           prize.merchant.eager_load_type = MerchantType.id_to_type[merchant_id_to_type_id[prize.merchant.id]]
           prize.reward.eager_load_type = CustomerRewardType.id_to_type[reward_id_to_type_id[prize.reward.id]]
         end 
-        device_info = JSON.parse(params[:device], { :symbolize_names => true })
-        Common.register_user_device(@user, device_info)
+        if params[:device]
+          device_info = JSON.parse(params[:device], { :symbolize_names => true })
+          Common.register_user_device(@user, device_info)
+        end
         render :template => '/api/v1/tokens/create'
       end
     rescue DataMapper::SaveFailureError => e
