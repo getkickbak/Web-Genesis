@@ -83,9 +83,9 @@ module Pushwoosh
       response = JSON.parse(data, { :symbolize_names => true })
       case service
       when "createMessage", "unregisterDevice"
-        @success = response[:status_code] == "200"
+        @success = response[:status_code] == 200
       when "registerDevice"
-        @success = response[:status_code] == "103"  
+        @success = response[:status_code] == 103  
       end
       @response = response
     end

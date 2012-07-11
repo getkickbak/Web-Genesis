@@ -7,6 +7,7 @@ module CreatePromotion
 
   def self.perform(id)
     now = Time.now
+    logger.info("===================================================================")
     logger.info("Create Promotion started at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
     begin
       promotion = Promotion.get(id)
