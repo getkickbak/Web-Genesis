@@ -34,7 +34,7 @@ module CreatePromotion
         devices.each do |device|
           device_list << device.device_id
         end
-        logger.info("Device list: #{device_list}")
+        logger.debug("Device list: #{device_list}")
         message = "#{promotion.merchant.name} - #{promotion.message}"
         ret = push.create_message(logger, message, promotion.start_date, device_list)
         logger.info("Response body: #{ret.response}")
