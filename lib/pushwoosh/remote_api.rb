@@ -80,13 +80,14 @@ module Pushwoosh
   
   class Transaction
     def initialize(service, data)
+      response = JSON.parse(data, { :symbolize_names => true })
       case service
       when "createMessage", "unregisterDevice"
-        @success = data["status_code"] == "200"
+        @success = response[:status_code] == "200"
       when "registerDevice"
-        @success = data["status_code"] == "103"  
+        @success = response[:status_code] == "103"  
       end
-      @response = data
+      @response = response
     end
 
     def success?
