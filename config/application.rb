@@ -50,13 +50,13 @@ module Genesis
     config.autoload_paths += %W(#{config.root}/lib)
     config.autoload_paths += Dir["#{config.root}/lib/**/"]
 
+    Dir["#{Rails.root}/lib/**/*.rb"].each { |file| 
+      require file 
+    }
+
     DataMapper::Model.append_inclusions(DataMapper::MassAssignmentSecurity)
     DataMapper::Model.raise_on_save_failure = true
     DataMapper::Property::String.length(255)
-    
-    require 'string_extension'
-    require 'math_extension'
-    require 'bsearch'
     
     WillPaginate.per_page = 10
     

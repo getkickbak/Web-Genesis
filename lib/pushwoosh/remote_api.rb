@@ -33,7 +33,7 @@ module Pushwoosh
           ]
         }
       }.to_json
-      call(path, body)
+      call_api(path, body)
     end
     
     def register_device(device_id, device_type, hw_id)
@@ -48,7 +48,7 @@ module Pushwoosh
           "device_type" => device_type
         }
       }.to_json
-      call(path, body)
+      call_api(path, body)
     end
     
     def unregister_device(device_id, device_type)
@@ -60,12 +60,12 @@ module Pushwoosh
           "device_type" => device_type
         }
       }.to_json
-      call(service, body)
+      call_api(service, body)
     end
     
     private
     
-    def call(service, body)
+    def call_api(service, body)
       uri = URI.parse("https://cp.pushwoosh.com/json/1.2/#{service}")
       https = Net::HTTP.new(uri.host,uri.port)
       https.verify_mode = OpenSSL::SSL::VERIFY_NONE #unless ssl_strict
