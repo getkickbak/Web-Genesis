@@ -33,6 +33,7 @@ module CreatePromotion
         devices.each do |device|
           device_list << device.id
         end
+        logger.info("Device list: #{device_list}")
         ret = push.create_message(promotion.message, promotion.start_date, device_list)
         if ret.success?
           logger.info("Completed iteration #{i+1}")
