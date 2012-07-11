@@ -35,7 +35,8 @@ module CreatePromotion
           device_list << device.device_id
         end
         logger.info("Device list: #{device_list}")
-        ret = push.create_message(logger, promotion.message, promotion.start_date, device_list)
+        message = "#{promotion.merchant.name} - #{promotion.message}"
+        ret = push.create_message(logger, message, promotion.start_date, device_list)
         logger.info("Response body: #{ret.response}")
         if ret.success?
           logger.info("Completed iteration #{i+1}")
