@@ -35,12 +35,13 @@ module CreatePromotion
         end
         logger.info("Device list: #{device_list}")
         ret = push.create_message(promotion.message, promotion.start_date, device_list)
+        logger.info("Response body: #{ret.response}")
         if ret.success?
           logger.info("Completed iteration #{i+1}")
         else  
           now = Time.now
           logger.info("Failed to complete iteration #{i+1}")
-          logger.info("Create Promotion failed to send message for Promotion(#{promotion.id}), Error Code(#{ret.response["status_code"]}) at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+          logger.info("Create Promotion failed to send message for Promotion(#{promotion.id}), Error Code(#{ret.response['status_code']}) at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
           return
         end
       end  
