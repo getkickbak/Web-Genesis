@@ -34,7 +34,7 @@ module Business
           promotion = Promotion.create(current_merchant, params[:promotion])
           Resque.enqueue(CreatePromotion, promotion.id)
           respond_to do |format|
-            format.html { redirect_to promotions_path(:notice => t("business.promotion.create_success")) }
+            format.html { redirect_to promotions_path(:notice => t("business.promotions.create_success")) }
           #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
           #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
           end

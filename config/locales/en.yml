@@ -223,6 +223,8 @@ en:
       merchants:
         update_success: "Merchant was successfully updated."
         update_photo_success: "Merchant photo was successfully updated."
+      promotions:
+        create_success: "Promotion was successfully created."  
       purchase_rewards:
         create_success: "Reward was successfully created."
         update_success: "Reward was successfully updated."
