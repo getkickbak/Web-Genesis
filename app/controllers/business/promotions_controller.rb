@@ -32,34 +32,9 @@ module Business
       begin
         Promotion.transaction do
           promotion = Promotion.create(current_merchant, params[:promotion])
-          #Resque.enqueue(CreatePromotion, promotion.id)
-          push = Pushwoosh::RemoteApi.new
-          count = Customer.count(Customer.merchant.id => promotion.merchant.id)
-          max = 1000
-          n = 1
-          if count == max
-            n = count/max
-          elsif count > max
-            n = count/max + 1
-          end  
-          for i in 0..n-1
-            start = i*max
-            customers = Customer.all(Customer.merchant.id => promotion.merchant.id, :offset => start, :limit => max)
-            user_list = []
-            customers.each do |customer|
-              user_list << customer.user.id 
-            end
-            devices = UserDevice.all(UserDevice.user.id => user_list)
-            device_list = []
-            devices.each do |device|
-              device_list << device.id
-            end
-            push.create_message(promotion.message, promotion.start_date, device_list)
-          end
-          promotion.status = :delivered
-          promotion.save
+          Resque.enqueue(CreatePromotion, promotion.id)
           respond_to do |format|
-            format.html { redirect_to promotions_path(:notice => t("business.promotion.create_success")) }
+            format.html { redirect_to promotions_path(:notice => t("business.promotions.create_success")) }
           #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
           #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
           end
