@@ -16,24 +16,20 @@ class Promotion
   attr_accessor :start_date_str, :end_date_str
   attr_accessible :message, :start_date, :end_date   
   
-  validates_with_method :validate_start_date, :validate_end_date
+  validates_with_method :start_date, :method => :validate_start_date
+  validates_with_method :end_date, :method => :validate_end_date
   
   belongs_to :merchant
   
   def self.create(merchant, promotion_info)
     now = Time.now
-    dates = ["start_date","end_date"]
-    r = {}
-    dates.each do |d|
-      r[d] = promotion_info[d+"(1i)"]+'-'+promotion_info[d+"(2i)"]+'-'+promotion_info[d+"(3i)"]
-    end
     promotion = Promotion.new(
       :message => promotion_info[:message].strip,
       :start_date => now.to_date,
       :end_date => now.to_date
     )
-    promotion.start_date_str = r["start_date"]
-    promotion.end_date_str = r["end_date"]
+    promotion.start_date_str = promotion_info[:start_date]
+    promotion.end_date_str = promotion_info[:end_date]
     promotion[:created_ts] = now
     promotion[:update_ts] = now
     promotion.merchant = merchant
@@ -56,11 +52,24 @@ class Promotion
   end
   
   def validate_start_date
-    validate_date("start_date", "start_date_str")
+    valid = validate_date("start_date", "start_date_str")
+    return valid if valid.kind_of?(Array)
+      
+    today = Date.today
+    if self.start_date < today
+      return [false, I18n.t('business.promotions.min_start_date')]
+    end
+    return true  
   end
   
   def validate_end_date
-    validate_date("end_date", "end_date_str")
+    valid = validate_date("end_date", "end_date_str")
+    return valid if valid.kind_of?(Array)
+    
+    if self.end_date < self.start_date
+      return [false, I18n.t('business.promotions.min_end_date')]
+    end      
+    return true 
   end
   
   def validate_date(n,v)
