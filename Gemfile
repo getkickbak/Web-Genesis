@@ -64,6 +64,7 @@ gem 'rabl'
 gem 'activemerchant', :require => 'active_merchant', :git => 'git@github.com:justformyfriends/active_merchant'
 gem 'gibberish'
 gem 'faye'
+gem 'thin'
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION
