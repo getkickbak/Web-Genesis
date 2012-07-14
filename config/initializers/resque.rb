@@ -1,3 +1,4 @@
+require 'resque/server'
 ENV["REDISTOGO_URL"] ||= YAML.load_file("#{Rails.root}/config/properties.yml")[Rails.env]["REDIS_URL"]
 uri = URI.parse(ENV["REDISTOGO_URL"])
 
