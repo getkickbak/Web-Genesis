@@ -1,5 +1,4 @@
 <% content_for :link do %>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
 <!--[if lt IE 9]>
 <link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
 <![endif]-->
@@ -16,8 +15,8 @@
             <!-- -->
             <div style="position:relative;padding: 3px 15px">
                <!-- -->
-               <%= purchase_reward.title %>
-               <%= link_to( purchase_reward_path(purchase_reward), :confirm => 'Are you sure?', :method => :delete, :style=>'position:absolute;right:0;') do %> <i class="icon-remove"></i>
+               <%= link_to purchase_reward.title, purchase_reward_path(purchase_reward) %>
+               <%= link_to( purchase_reward_path(purchase_reward), :data => { :confirm => 'Are you sure?' }, :method => :delete, :style=>'position:absolute;right:0;') do %> <i class="icon-remove"></i>
                <!-- -->
                <% end %>
                <%= link_to(edit_purchase_reward_path(purchase_reward),  :style=>'position:absolute;right:26px;') do %> <i class="icon-edit"></i>

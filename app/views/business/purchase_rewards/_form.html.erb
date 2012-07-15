@@ -1,5 +1,5 @@
 <% content_for :link do %>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
+<link rel="stylesheet" href="/javascripts/desktop/css/page_common.css"/>
 <!--[if lt IE 9]>
 <link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
 <![endif]-->
@@ -30,7 +30,7 @@
          </div>
          <%= f.collection_check_boxes :venue_ids, current_merchant.venues, :id, :display_name, :item_wrapper_tag => :div, :item_wrapper_class => 'checkbox', :checked => @venue_ids %>
       </div>
-      <%= f.button :submit, :class => "btn primary noWrap" %>
+      <%= f.button :submit, :class => 'btn-primary' %>
       <% end %>
    </div>
 </div>

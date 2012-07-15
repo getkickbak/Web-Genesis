@@ -1,5 +1,4 @@
 <% content_for :link do %>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
 <!--[if lt IE 9]>
 <link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
 <![endif]-->
@@ -14,7 +13,7 @@
             <!-- -->
             <div style="position:relative;padding: 3px 15px">
                <!-- -->
-               <%= venue.name %>
+               <%= link_to venue.name, venue_path(venue) %>
                <%= link_to edit_venue_path(venue), :style=>'position:absolute;right:0px;' do %>
                <i class="icon-edit"></i>
                <!-- -->

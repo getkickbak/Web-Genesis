@@ -2,7 +2,7 @@
 <script type="text/javascript" src="/javascripts/desktop/src/business/challenge.js"></script>
 <% end %>
 <div class="content">
-<%= simple_form_for @challenge do |f| %>
+<%= simple_form_for @challenge, :html => { :class => 'form-horizontal' } do |f| %>
 	<%= f.input :type_id, :collection => @available_challenge_types %>
 	<% if @challenge.type && @challenge.type.value == 'birthday' %>
 		<div class="challenge_desc">
@@ -63,9 +63,9 @@
 	<% if @challenge.type && @challenge.type.value != '' %>
 	<div class="venues">
 		<div>Venues</div>
-		<%= f.collection_check_boxes :venue_ids, current_merchant.venues, :id, :display_name, :item_wrapper_tag => :div, :item_wrapper_class => 'checkbox' %>
+		<%= f.input :venue_ids, :collection => current_merchant.venues.collect{ |p| [p.display_name, p.id, ] }, :as => :check_boxes, :checked => @venue_ids %>
 	</div>
-	<%= f.submit "Save", :class => "btn primary noWrap", :disable_with => "Working..." %>
+	<%= f.submit "Save", :class => 'btn-primary', :disable_with => "Working..." %>
 	<% end %>
 <% end %>
 </div>

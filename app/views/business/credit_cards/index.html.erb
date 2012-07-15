@@ -1,5 +1,4 @@
 <% content_for :link do %>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
 <!--[if lt IE 9]>
 <link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
 <![endif]-->
@@ -32,16 +31,16 @@
          </li>
          <li>
             <div>
-               <%= simple_form_for credit_card, :html => { :id => "edit_credit_card_#{credit_card.id}", :style => "display:none;" }, :url => update_credit_card_path do |f| %>
+               <%= simple_form_for credit_card, :html => { :id => "edit_credit_card_#{credit_card.id}", :style => "display:none;", :class => 'form-horizontal' }, :url => update_credit_card_path do |f| %>
                <%= f.input :name %>
                <%= f.input :number %>
-               <%= f.input :expiry_date, :as => :date, :order => [:month, :year] %>
+               <%= f.input :expiry_date, :as => :date, :input_html => { :style => 'width:auto;' }, :order => [:month, :year] %>
                <%= f.input :security_code %>
                <%= f.input :address %>
                <%= f.input :city %>
                <%= f.input :state %>
                <%= f.input :zip %>
-               <%= f.button :submit, 'Update', :class => "btn primary noWrap" %>
+               <%= f.button :submit, 'Update', :class => 'btn-primary' %>
                <% end %>
             </div>
             <!-- -->
@@ -51,16 +50,16 @@
          <% if @credit_cards.length == 0 %>
          <li>
             <div>
-               <%= simple_form_for @credit_card, :url => create_credit_card_path do |f| %>
+               <%= simple_form_for @credit_card, :url => create_credit_card_path, :html => { :class => 'form-horizontal' } do |f| %>
                <%= f.input :name %>
                <%= f.input :number %>
-               <%= f.input :expiry_date, :as => :date, :order => [:month, :year] %>
+               <%= f.input :expiry_date, :as => :date, :input_html => { :style => 'width:auto;' }, :order => [:month, :year] %>
                <%= f.input :security_code %>
                <%= f.input :address %>
                <%= f.input :city %>
                <%= f.input :state %>
                <%= f.input :zip %>
-               <%= f.button :submit, 'Add', :class => "btn primary noWrap" %>
+               <%= f.button :submit, 'Add', :class => 'btn-primary' %>
                <% end %>
             </div>
             <!-- -->

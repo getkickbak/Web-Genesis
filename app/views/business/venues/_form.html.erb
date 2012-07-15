@@ -1,5 +1,4 @@
 <% content_for :link do %>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
 <!--[if lt IE 9]>
 <link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
 <![endif]-->
@@ -11,7 +10,7 @@
 <div class="row-fluid">
    <div class="span1"></div>
    <div class="span5">
-      <%= simple_form_for @venue do |f| %>
+      <%= simple_form_for @venue, :html => { :class => 'form-horizontal' } do |f| %>
       <%= f.input :type_id, :collection => VenueType.values[current_merchant.type.value][I18n.locale] %>
       <%= f.input :name %>
       <%= f.input :description, :as => :text, :input_html => { :rows => 10 } %>
@@ -25,7 +24,7 @@
       <%= f.input :website, :required => false %>
       <%= f.input :longitude, :as => :hidden, :input_html => { :value => @venue.longitude } %>
       <%= f.input :latitude, :as => :hidden, :input_html => { :value => @venue.latitude } %>
-      <%= f.button :submit, :class => "btn primary noWrap" %>
+      <%= f.button :submit, :class => 'btn-primary' %>
       <% end %>
    </div>
    <div class="span5">

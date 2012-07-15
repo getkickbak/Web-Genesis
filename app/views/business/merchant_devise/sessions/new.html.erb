@@ -10,7 +10,7 @@
    <% end -%>
    <div class="well" style="margin:auto;width:500px;padding: 20px; border: 1px solid;">
       <h3 class="alignCenter">Sign In to KICKBAK</h3>
-      <%= simple_form_for resource, :url => session_path(resource_name), :html => {} do |f| %>
+      <%= simple_form_for resource, :url => session_path(resource_name), :html => { :class => 'form-horizontal' } do |f| %>
       <%= f.input :email %>
       <%= f.input :password %>
       <% if devise_mapping.rememberable? %>

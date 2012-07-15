@@ -1,5 +1,4 @@
 <% content_for :link do %>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
 <!--[if lt IE 9]>
 <link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
 <![endif]-->
@@ -18,7 +17,7 @@
 <div class="row-fluid">
    <div class="span3"></div>
    <div class="span6">
-      <%= simple_form_for @customer_reward do |f| %>
+      <%= simple_form_for @customer_reward, :html => { :class => 'form-horizontal' } do |f| %>
       <%= f.input :type_id, :collection => CustomerRewardType.values[current_merchant.type.value][I18n.locale] %>
       <%= f.input :title %>
       <%= f.input :price %>
@@ -28,9 +27,9 @@
          <div>
             Venues
          </div>
-         <%= f.collection_check_boxes :venue_ids, current_merchant.venues, :id, :display_name, :item_wrapper_tag => :div, :item_wrapper_class => 'checkbox', :checked => @venue_ids %>
+         <%= f.input :venue_ids, :collection => current_merchant.venues.collect{ |p| [p.display_name, p.id, ] }, :as => :check_boxes, :checked => @venue_ids %>
       </div>
-      <%= f.button :submit, :class => "btn primary noWrap" %>
+      <%= f.button :submit, :class => 'btn-primary' %>
       <% end %>
    </div>
 </div>

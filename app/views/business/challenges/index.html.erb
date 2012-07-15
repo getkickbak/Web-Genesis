@@ -1,5 +1,4 @@
 <% content_for :link do %>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
 <!--[if lt IE 9]>
 <link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
 <![endif]-->
@@ -16,12 +15,12 @@
             <!-- -->
             <div style="position:relative;padding: 3px 15px">
                <!-- -->
-               <%= challenge.name %>
+               <%= link_to challenge.name, challenge_path(challenge) %>
                <%= link_to edit_challenge_path(challenge), :style=>'position:absolute;right:26px;' do %>
                <i class="icon-edit"></i>
                <!-- -->
                <% end %>
-               <%= link_to challenge_path(challenge), :confirm => 'Are you sure?', :method => :delete, :style=>'position:absolute;right:0;' do %>
+               <%= link_to challenge_path(challenge), :data => { :confirm => 'Are you sure?' }, :method => :delete, :style=>'position:absolute;right:0;' do %>
                <i class="icon-remove"></i>
                <!-- -->
                <% end %>

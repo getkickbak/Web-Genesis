@@ -1,5 +1,4 @@
 <% content_for :link do %>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
 <!--[if lt IE 9]>
 <link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
 <![endif]-->
@@ -7,24 +6,24 @@
 <div class="row-fluid">
    <div class="span3"></div>
    <div class="span6">
-      <div style="margin: 10px 0 10px 120px;">
+      <div style="margin: 10px 0 10px 160px;">
          <%= image_tag @merchant.photo_url.to_s %>
       </div>
-      <%= simple_form_for @merchant, :url => update_account_photo_path, :html => {:multipart => true} do |f| %>
+      <%= simple_form_for @merchant, :url => update_account_photo_path, :html => { :class => 'form-horizontal', :multipart => true} do |f| %>
       <%= f.input :photo, :as => :file %>
-      <%= f.button :submit, 'Upload', :class => "btn primary noWrap" %>
+      <%= f.button :submit, 'Upload', :class => 'btn-primary' %>
       <% end %>
    </div>
 </div>
 <div class="row-fluid">
    <div class="span3"></div>
    <div class="span6">
-      <div style="margin: 10px 0 10px 120px;">
+      <div style="margin: 10px 0 10px 160px;">
          <%= image_tag @merchant.alt_photo_url.to_s %>
       </div>
-      <%= simple_form_for @merchant, :url => update_account_alt_photo_path, :html => {:multipart => true} do |f| %>
+      <%= simple_form_for @merchant, :url => update_account_alt_photo_path, :html => { :class => 'form-horizontal', :multipart => true} do |f| %>
       <%= f.input :alt_photo, :as => :file %>
-      <%= f.button :submit, 'Upload', :class => "btn primary noWrap" %>
+      <%= f.button :submit, 'Upload', :class => 'btn-primary' %>
       <% end %>
    </div>
    <% if current_merchant.status == :pending %>
