@@ -1,0 +1,3 @@
+.simple_form input[type="text"], .simple_form input[type="tel"], .simple_form input[type="password"], .simple_form input[type="date_picker"], .simple_form input[type="email"], .simple_form textarea {
+	width: 300px;
+}

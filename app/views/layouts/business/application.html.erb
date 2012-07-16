@@ -1,97 +1,130 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-   <head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-      <title>KICKBAK</title>
-      <!--
-      <%= stylesheet_link_tag :all %>
-      <%= javascript_include_tag :defaults %>
-      -->
-      <link rel="shortcut icon" href="http://files.getkickbak.com/v1/favicon.jpg"/>
-      <link rel="stylesheet" href="/javascripts/desktop/css/twitter-bootstrap-b261f97/bootstrap/css/bootstrap.min.css"/>
-      <link rel="stylesheet" href="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/css/ui-lightness/jquery-ui-1.8.20.custom.css"/>
-      <link rel="stylesheet" href="/javascripts/desktop/css/page_common.css"/>
-      <link rel="stylesheet" href="/javascripts/desktop/css/common.css"/>
-      <!--[if lt IE 9]>
-      <link rel="stylesheet" href="/javascripts/desktop/css/common-ie8.css"/>
-      <![endif]-->
-      <link rel="stylesheet" href="/stylesheets/application.css"/>
-      <!--
-      <link rel="stylesheet" href="/javascripts/desktop/css/twitter-bootstrap-b261f97/docs/assets/css/docs.css"/>
-      <script type="text/javascript" src="/javascripts/desktop/lib/jquery.xdomainajax.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop/lib/date.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop/lib/Datejs-all/src/extras.js"></script>
-      -->
-      <%= yield :link %>
-      <script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-1.7.2.min.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-ui-1.8.20.custom.min.js"></script>
-      <script type="text/javascript" src="/javascripts/jquery_ujs.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop/css/twitter-bootstrap-b261f97/bootstrap/js/bootstrap.min.js"></script>
-      <script type="text/javascript">
-         var clientTime = new Date();
-      </script>
-      <script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=places&amp;sensor=true"></script>
-      <script type="text/javascript" src="/javascripts/application.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop/src/common.js"></script>
-      <%= yield :script %>
-      <%= csrf_meta_tag %>
-   </head>
-   <body class="homepage">
-      <div class="navbar navbar-fixed-top">
-         <div class="navbar-inner">
-            <div class="container">
-               <a class="brand" href="/">&#160;</a>
-               <ul class="nav pull-right">
-                  <% if signed_in? %>
-                  <% if current_merchant.status == :active %>
-                  <li class=""><a href="/dashboard">Dashboard</a></li>
-                  <li class=""><a href="/marketing">Marketing</a></li>
-                  <li class=""><a href="/analytics">Analytics</a></li>
-                  <li class=""><a href="/customer_rewards">Rewards</a></li>
-                  <li class=""><a href="/challenges">Challenges</a></li>
-                  <li class=""><a href="/venues">Venues</a></li>
-                  <% end %>
-                  <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
-                     <ul class="dropdown-menu">
-                        <li><a href="/account">Settings</a></li>
-                        <li class="divider"></li>
-                        <li><a href="/billings">Billings</a></li>
-                     </ul></li>
-                  <li class=""><a href="/sign_out">Sign Out</a></li>
-                  <% end %>
-               </ul>
-            </div>
-         </div>
-      </div>
-      <!--/container-->
-      <div name="top" class="container-fluid">
-         <div style="margin-top:100px;">
-            &#160;
-         </div>
-         <div class="clearfix"></div>
-         <div class="alert-message warning fade hide">
-            <a class="close">x</a>
-         </div>
-         <div class="alert-message error fade hide">
-            <a class="close">x</a>
-         </div>
-         <%= yield %>
-      </div>
-      <div style="margin-top:100px;">
-         &#160;
-      </div>
-      <!-- Footer  -->
-      <div class="navbar navbar-fixed-bottom">
-         <div class="navbar-inner">
-            <div class="container">
-               <ul class="nav pull-left">
-                  <li><a href="/">&copy; Copyright KICKBAK 2012</a></li>
-               </ul>
-               <ul class="nav pull-right">
-                  <% if signed_in? %> <li><a href="/merchant_terms">Terms</a></li><% end %> <li><a href="/contact_us">Contact Us</a></li>
-               </ul>
-            </div>
-         </div>
-      </div>
-   </body>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>KICKBAK</title>
+		<!--
+		<%= stylesheet_link_tag :all %>
+		<%= javascript_include_tag :defaults %>
+		-->
+		<link rel="shortcut icon" href="http://files.getkickbak.com/v1/favicon.jpg"/>
+		<link rel="stylesheet" href="/javascripts/desktop/css/twitter-bootstrap-b261f97/bootstrap/css/bootstrap.min.css"/>
+		<link rel="stylesheet" href="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/css/ui-lightness/jquery-ui-1.8.20.custom.css"/>
+		<link rel="stylesheet" href="/javascripts/desktop/css/page_common.css"/>
+		<link rel="stylesheet" href="/javascripts/desktop/css/common.css"/>
+		<!--[if lt IE 9]>
+		<link rel="stylesheet" href="/javascripts/desktop/css/common-ie8.css"/>
+		<![endif]-->
+		<% if signed_in? %>
+		<link rel="stylesheet" href="/stylesheets/application.css"/>
+		<% else %>
+		<link rel="stylesheet" href="/stylesheets/application_alt.css"/>
+		<% end %>
+		<!--
+		<link rel="stylesheet" href="/javascripts/desktop/css/twitter-bootstrap-b261f97/docs/assets/css/docs.css"/>
+		<script type="text/javascript" src="/javascripts/desktop/lib/jquery.xdomainajax.js"></script>
+		<script type="text/javascript" src="/javascripts/desktop/lib/date.js"></script>
+		<script type="text/javascript" src="/javascripts/desktop/lib/Datejs-all/src/extras.js"></script>
+		-->
+		<%= yield :link %>
+		<script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-ui-1.8.20.custom.min.js"></script>
+		<script type="text/javascript" src="/javascripts/jquery_ujs.js"></script>
+		<script type="text/javascript" src="/javascripts/desktop/css/twitter-bootstrap-b261f97/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript">
+			var clientTime=new Date();
+		</script>
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=places&amp;sensor=true"></script>
+		<script type="text/javascript" src="/javascripts/application.js"></script>
+		<script type="text/javascript" src="/javascripts/desktop/src/common.js"></script>
+		<%= yield :script %>
+		<%= csrf_meta_tag %>
+	</head>
+	<body class="homepage">
+		<div class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<a class="brand" href="/">&#160;</a>
+					<ul class="nav pull-right">
+						<% if signed_in? %>
+						<% if current_merchant.status == :active %>
+						<li class="">
+							<a href="/dashboard">Dashboard</a>
+						</li>
+						<li class="">
+							<a href="/marketing">Marketing</a>
+						</li>
+						<li class="">
+							<a href="/analytics">Analytics</a>
+						</li>
+						<li class="">
+							<a href="/customer_rewards">Rewards</a>
+						</li>
+						<li class="">
+							<a href="/challenges">Challenges</a>
+						</li>
+						<li class="">
+							<a href="/venues">Venues</a>
+						</li>
+						<% end %>
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li>
+									<a href="/account">Settings</a>
+								</li>
+								<li class="divider"></li>
+								<li>
+									<a href="/billings">Billings</a>
+								</li>
+							</ul>
+						</li>
+						<li class="">
+							<a href="/sign_out">Sign Out</a>
+						</li>
+						<% end %>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!--/container-->
+		<div name="top" class="container-fluid">
+			<div style="margin-top:100px;">
+				&#160;
+			</div>
+			<div class="clearfix"></div>
+			<div class="alert-message warning fade hide">
+				<a class="close">x</a>
+			</div>
+			<div class="alert-message error fade hide">
+				<a class="close">x</a>
+			</div>
+			<%= yield %>
+		</div>
+		<div style="margin-top:100px;">
+			&#160;
+		</div>
+		<!-- Footer  -->
+		<div class="navbar navbar-fixed-bottom">
+			<div class="navbar-inner">
+				<div class="container">
+					<ul class="nav pull-left">
+						<li>
+							<a href="/">&copy; Copyright KICKBAK 2012</a>
+						</li>
+					</ul>
+					<ul class="nav pull-right">
+						<% if signed_in? %>
+						<li>
+							<a href="/merchant_terms">Terms</a>
+						</li>
+						<% end %>
+						<li>
+							<a href="/contact_us">Contact Us</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</body>
 </html>

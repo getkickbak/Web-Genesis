@@ -15,7 +15,11 @@
 		<!--[if lt IE 9]>
 		<link rel="stylesheet" href="/javascripts/desktop/css/common-ie8.css"/>
 		<![endif]-->
+		<% if signed_in? %> 
 		<link rel="stylesheet" href="/stylesheets/application.css"/>
+		<% else %>
+		<link rel="stylesheet" href="/stylesheets/application_alt.css"/>
+		<% end %>
 		<!--
 		<link rel="stylesheet" href="/javascripts/desktop/css/twitter-bootstrap-b261f97/docs/assets/css/docs.css"/>
 		<script type="text/javascript" src="/javascripts/desktop/lib/jquery.xdomainajax.js"></script>
