@@ -1,11 +1,16 @@
-<div class="content row">
-	<div>
-		<%= link_to 'Print Poster', "http://files.getkickbak.com/poster.jpg" %>
-	</div>
-	<div>
-		<%= link_to 'Print Table Topper', "http://files.getkickbak.com/check_in.pdf" %>
-	</div>
-	<div>
-		<%= link_to 'Update Table Topper', update_checkin_image_path %>
-	</div>
+<% content_for :link do %>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
+<% end %>
+<div class="row-fluid">
+   <div class="span3"></div>
+   <div class="span6">
+      <ul class="nav nav-list well">
+         <li class="nav-header"> Features </li>
+         <li><%= link_to 'Print Poster', "http://files.getkickbak.com/poster.jpg" %></li>
+         <li><%= link_to 'Print Table Topper', "http://files.getkickbak.com/check_in.pdf" %></li>
+         <li><%= link_to 'Update Table Topper', update_checkin_image_path %></li>
+      </ul>
+   </div>
 </div>

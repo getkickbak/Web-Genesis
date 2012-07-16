@@ -1,26 +1,36 @@
-<h1>Listing staffs</h1>
-
-<table>
-	<tr>
-		<th>Name</th>
-		<th>Email</th>
-		<th></th>
-		<th></th>
-		<th></th>
-	</tr>
-
-	<% @staffs.each do |staff| %>
-	<tr>
-		<td><%= staff.name %></td>
-		<td><%= staff.email %></td>
-		<td><%= link_to 'Show', staff_path(staff) %></td>
-		<td><%= link_to 'Edit', edit_staff_path(staff) %></td>
-		<td><%= link_to 'Destroy', staff_path(staff), :confirm => 'Are you sure?', :method => :delete %></td>
-	</tr>
-	<% end %>
-</table>
-<%= will_paginate @staffs %>
-
-<br />
-
-<%= link_to 'New Staff', new_staff_path %>
+<% content_for :link do %> <!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
+<% end %>
+<div class="row-fluid">
+	<div class="span3"></div>
+	<div class="span6">
+		<ul class="nav nav-list well">
+			<li class="nav-header">
+				Staffs
+			<% @staffs.each do |staff| %>
+			<li>
+				<!-- -->
+				<div style="position:relative;padding: 3px 15px">
+					<!-- -->
+					<%= link_to staff.name, staff_path(staff) %>
+					<%= staff.email %>
+					<%= link_to edit_staff_path(staff), :style=>'position:absolute;right:26px;' do %>
+					<i class="icon-edit"></i>
+					<!-- -->
+					<% end %>
+					<%= link_to staff_path(staff), :data => { :confirm => 'Are you sure?' }, :method => :delete, :style=>'position:absolute;right:0px;' do %>
+					<i class="icon-remove"></i>
+					<!-- -->
+					<% end %>
+				</div>
+				<!-- -->
+			</li>
+			<% end %>
+			<%= will_paginate @staffs %>
+			<li>
+				<%= link_to 'New Staff', new_staff_path %>
+			</li>
+		</ul>
+	</div>
+</div>

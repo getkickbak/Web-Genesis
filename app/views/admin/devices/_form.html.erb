@@ -1,5 +1,7 @@
-<%= simple_form_for [@merchant, @device] do |f| %>
+<div class="content">
+	<%= simple_form_for [@merchant, @device], :html => { :class => 'form-horizontal' } do |f| %>
 	<%= f.input :serial_num %>
 	<%= f.input :status, :collection => Device::Statuses %>
-	<%= f.button :submit %>
-<% end %>
+	<%= f.button :submit, :class => 'btn-primary' %>
+	<% end %>
+</div>

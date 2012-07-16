@@ -1,36 +1,40 @@
-<h1>Listing Merchants</h1>
-
-<table>
-	<tr>
-		<th>Id</th>
-		<th>Name</th>
-		<th>Email</th>
-		<th>First Name</th>
-		<th>Last Name</th>
-		<th>Phone</th>
-		<th>Status</th>
-		<th></th>
-		<th></th>
-		<th></th>
-	</tr>
-
-	<% @merchants.each do |merchant| %>
-	<tr>
-		<td><%= merchant.id %></td>
-		<td><%= merchant.name %></td>
-		<td><%= merchant.email %></td>
-		<td><%= merchant.account_first_name %></td>
-		<td><%= merchant.account_last_name %></td>
-	    <td><%= merchant.phone %></td>
-	    <td><%= merchant.status %></td>
-		<td><%= link_to 'Show', merchant_path(merchant) %></td>
-		<td><%= link_to 'Edit', edit_merchant_path(merchant) %></td>
-		<td><%= link_to 'Destroy', merchant_path(merchant), :confirm => 'Are you sure?', :method => :delete %></td>
-	</tr>
-	<% end %>
-</table>
-<%= will_paginate @merchants %>
-
-<br />
-
-<%= link_to 'New Merchant', new_merchant_path %>
+<% content_for :link do %> <!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
+<% end %>
+<div class="row-fluid">
+	<div class="span3"></div>
+	<div class="span6">
+		<ul class="nav nav-list well">
+			<li class="nav-header">
+				Merchants
+			</li>
+			<% @merchants.each do |merchant| %>
+			<li>
+				<!-- -->
+				<div style="position:relative;padding: 3px 15px">
+					<!-- -->
+					<%= link_to merchant.name, merchant_path(merchant) %>
+					<%= merchant.email %>
+					<%= "#{merchant.account_first_name} #{merchant.account_last_name}" %>
+					<%= merchant.phone %>
+					<%= merchant.status %>
+					<%= link_to edit_merchant_path(merchant), :style=>'position:absolute;right:26px;' do %>
+					<i class="icon-edit"></i>
+					<!-- -->
+					<% end %>
+					<%= link_to merchant_path(merchant), :data => { :confirm => 'Are you sure?' }, :method => :delete, :style=>'position:absolute;right:0px;' do %>
+					<i class="icon-remove"></i>
+					<!-- -->
+					<% end %>
+				</div>
+				<!-- -->
+			</li>
+			<% end %>
+			<%= will_paginate @devices %>
+			<li>
+				<%= link_to 'New Merchant', new_merchant_path %>
+			</li>
+		</ul>
+	</div>
+</div>

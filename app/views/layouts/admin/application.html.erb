@@ -1,57 +1,47 @@
 <!DOCTYPE html>
 <html xmlns:og="http://ogp.me/ns#">
-   <head>
-      <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-      <title>JustForMyFriends</title>
-      <!--
-      <%= stylesheet_link_tag :all %>
-      <%= javascript_include_tag :defaults %>
-      -->
-      <link rel="icon" href="http://photos.justformyfriends.com/favicon.ico" type="image/x-icon">
-      <link rel="shortcut icon" href="http://photos.justformyfriends.com/favicon.ico" type="image/x-icon">
-      <link rel="stylesheet/less" href="/javascripts/desktop/lib/twitter-bootstrap-e4993fc/lib/bootstrap.less?v=1"/>
-      <link rel="stylesheet" href="/javascripts/desktop/lib/twitter-bootstrap-e4993fc/docs/assets/css/docs.css"/>
-      <link rel="stylesheet" href="/stylesheets/application.css"/>
-      <!--
-      <link rel="stylesheet" href="/javascripts/desktop/lib/jquery-ui-1.8.16.custom/css/south-street/jquery-ui-1.8.16.custom.css"/>
-      <script type="text/javascript" src="/javascripts/desktop/lib/jquery.xdomainajax.js"></script>
-      -->
-      <script type="text/javascript" src="/javascripts/desktop/lib/date.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop/lib/Datejs-all/src/extras.js"></script>
-      <script type="text/javascript">
-         var clientTime = new Date();
-         var _login = function()
-         {
-         };
-         var _logout = function()
-         {
-         };
-
-      </script>
-      <script type="text/javascript" src="/javascripts/desktop/less-1.1.4.min.js"></script>
-      <script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=places&amp;sensor=true"></script>
-      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
-      <script type="text/javascript" src="/javascripts/jquery_ujs.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop/lib/cubiq-iscroll-8165866/src/iscroll.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop/lib/twitter-bootstrap-e4993fc/js/bootstrap-modal.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop/lib/twitter-bootstrap-e4993fc/js/bootstrap-alerts.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop/lib/twitter-bootstrap-e4993fc/js/bootstrap-dropdown.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop/lib/twitter-bootstrap-e4993fc/js/bootstrap-tabs.js"></script>
-      <script type="text/javascript" src="/javascripts/application.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop//lib/fridek-gmap-f5658d5/jquery.gmap.min.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop//lib/Slides/source/slides.min.jquery.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop/lib/carhartl-jquery-cookie-575a419/jquery.cookie.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop/src/common.js"></script>
-      <%= yield :script %>
-      <%= csrf_meta_tag %>
-   </head>
-   <body>
-		<div id="topbar" class="topbar">
-			<div class="topbar-inner noWrap">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>KICKBAK</title>
+		<!--
+		<%= stylesheet_link_tag :all %>
+		<%= javascript_include_tag :defaults %>
+		-->
+		<link rel="shortcut icon" href="http://files.getkickbak.com/v1/favicon.jpg"/>
+		<link rel="stylesheet" href="/javascripts/desktop/css/twitter-bootstrap-b261f97/bootstrap/css/bootstrap.min.css"/>
+		<link rel="stylesheet" href="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/css/ui-lightness/jquery-ui-1.8.20.custom.css"/>
+		<link rel="stylesheet" href="/javascripts/desktop/css/page_common.css"/>
+		<link rel="stylesheet" href="/javascripts/desktop/css/common.css"/>
+		<!--[if lt IE 9]>
+		<link rel="stylesheet" href="/javascripts/desktop/css/common-ie8.css"/>
+		<![endif]-->
+		<link rel="stylesheet" href="/stylesheets/application.css"/>
+		<!--
+		<link rel="stylesheet" href="/javascripts/desktop/css/twitter-bootstrap-b261f97/docs/assets/css/docs.css"/>
+		<script type="text/javascript" src="/javascripts/desktop/lib/jquery.xdomainajax.js"></script>
+		<script type="text/javascript" src="/javascripts/desktop/lib/date.js"></script>
+		<script type="text/javascript" src="/javascripts/desktop/lib/Datejs-all/src/extras.js"></script>
+		-->
+		<%= yield :link %>
+		<script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-ui-1.8.20.custom.min.js"></script>
+		<script type="text/javascript" src="/javascripts/jquery_ujs.js"></script>
+		<script type="text/javascript" src="/javascripts/desktop/css/twitter-bootstrap-b261f97/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript">
+			var clientTime=new Date();
+		</script>
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=places&amp;sensor=true"></script>
+		<script type="text/javascript" src="/javascripts/application.js"></script>
+		<script type="text/javascript" src="/javascripts/desktop/src/common.js"></script>
+		<%= yield :script %>
+		<%= csrf_meta_tag %>
+	</head>
+	<body class="homepage">
+		<div class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
 				<div class="container">
-					<h3><a href="/"><img width="200" style="position:absolute;top:0px;left:-10px;" src="http://photos.justformyfriends.com/logo.png"/>JustForMyFriends</a></h3>
-					<ul class="nav secondary-nav">
+					<a class="brand" href="/">&#160;</a>
+					<ul class="nav pull-right">
 						<% if signed_in? %>
 						<li class="">
 							<a href="/marketing">Marketing</a>
@@ -81,8 +71,9 @@
 				</div>
 			</div>
 		</div>
-		<div name="top" class="container">
-			<div style="margin-top:100px;" >
+		<!--/container-->
+		<div name="top" class="container-fluid">
+			<div style="margin-top:100px;">
 				&#160;
 			</div>
 			<div class="clearfix"></div>
@@ -92,14 +83,22 @@
 			<div class="alert-message error fade hide">
 				<a class="close">x</a>
 			</div>
-			<%= yield %> <!-- Footer  -->
-			<footer>
-				<div class="right">
+			<%= yield %>
+		</div>
+		<div style="margin-top:100px;">
+			&#160;
+		</div>
+		<!-- Footer  -->
+		<div class="navbar navbar-fixed-bottom">
+			<div class="navbar-inner">
+				<div class="container">
+					<ul class="nav pull-left">
+						<li>
+							<a href="/">&copy; Copyright KICKBAK 2012</a>
+						</li>
+					</ul>
 				</div>
-				<p>
-					&copy;JustForMyFriends 2011
-				</p>
-			</footer>
+			</div>
 		</div>
 	</body>
 </html>

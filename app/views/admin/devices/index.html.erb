@@ -1,28 +1,37 @@
-<h1>Listing Devices</h1>
-
-<table>
-	<tr>
-		<th>Id</th>
-		<th>Serial Num</th>
-		<th>Status</th>
-		<th></th>
-		<th></th>
-		<th></th>
-	</tr>
-
-	<% @devices.each do |device| %>
-	<tr>
-		<td><%= device.id %></td>
-		<td><%= device.serial_num %></td>
-	    <td><%= device.status %></td>
-		<td><%= link_to 'Show', merchant_device_path(device) %></td>
-		<td><%= link_to 'Edit', edit_merchant_device_path(device) %></td>
-		<td><%= link_to 'Destroy', merchant_device_path(device), :confirm => 'Are you sure?', :method => :delete %></td>
-	</tr>
-	<% end %>
-</table>
-<%= will_paginate @devices %>
-
-<br />
-
-<%= link_to 'New Device', new_admin_merchant_device_path(@merchant) %>
+<% content_for :link do %> <!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
+<![endif]-->
+<% end %>
+<div class="row-fluid">
+	<div class="span3"></div>
+	<div class="span6">
+		<ul class="nav nav-list well">
+			<li class="nav-header">
+				Devices
+			</li>
+			<% @devices.each do |device| %>
+			<li>
+				<!-- -->
+				<div style="position:relative;padding: 3px 15px">
+					<!-- -->
+					<%= link_to device.serial_num, device_path(device) %>
+					<%= device.status %>
+					<%= link_to edit_device_path(device), :style=>'position:absolute;right:26px;' do %>
+					<i class="icon-edit"></i>
+					<!-- -->
+					<% end %>
+					<%= link_to device_path(device), :data => { :confirm => 'Are you sure?' }, :method => :delete, :style=>'position:absolute;right:0px;' do %>
+					<i class="icon-remove"></i>
+					<!-- -->
+					<% end %>
+				</div>
+				<!-- -->
+			</li>
+			<% end %>
+			<%= will_paginate @devices %>
+			<li>
+				<%= link_to 'New Device', new_admin_merchant_device_path(@merchant) %>
+			</li>
+		</ul>
+	</div>
+</div>
