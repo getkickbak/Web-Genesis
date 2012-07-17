@@ -8,3 +8,7 @@ body:after  {
    background : transparent url(http://files.getkickbak.com/v1/contentbg.png) center 48px no-repeat;
    background-size:1600px 1096px;
 }
+
+.navbar-fixed-top .navbar-inner {
+   background-position: 0 -36px;
+}

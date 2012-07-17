@@ -1,5 +1,4 @@
 class Api::V1::PurchaseRewardsController < ApplicationController
-  skip_before_filter :verify_authenticity_token  
   before_filter :authenticate_user!
   
   def earn

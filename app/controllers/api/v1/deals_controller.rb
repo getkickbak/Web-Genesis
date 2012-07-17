@@ -1,7 +1,6 @@
 require 'util/constant'
 
 class Api::V1::DealsController < ApplicationController
-  skip_before_filter :verify_authenticity_token  
   before_filter :authenticate_user!, :except => [:index, :show]
   #load_and_authorize_resource
 

@@ -1,5 +1,4 @@
 class Api::V1::CustomersController < ApplicationController
-  skip_before_filter :verify_authenticity_token  
   before_filter :authenticate_user!, :only => [:edit, :update, :destroy]
    
   def index
