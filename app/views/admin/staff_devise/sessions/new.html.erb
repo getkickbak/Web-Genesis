@@ -8,7 +8,7 @@
 		<% end -%>
 		</div>
 		<% end %>
-		<%= simple_form_for resource, :url => session_path(resource_name) do |f| %>
+		<%= simple_form_for resource, :url => session_path(resource_name), :html => { :class => 'form-vertical' } do |f| %>
 		<%= f.input :email %>
 		<%= f.input :password %>
 		<% if devise_mapping.rememberable? %>
