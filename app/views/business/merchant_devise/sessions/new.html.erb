@@ -1,29 +1,60 @@
 <% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/pages/signin.css"/>
 <link rel="stylesheet" href="/javascripts/desktop/css/homepage.css"/>
 <!--[if lt IE 9]>
 <link rel="stylesheet" href="/javascripts/desktop/css/homepage-ie8.css"/>
 <![endif]-->
 <% end %>
-<div class="content">
-	<div class="well" style="margin:auto;width:500px;padding: 20px; border: 1px solid;">
-		<h3 class="alignCenter">Sign In to KICKBAK</h3>
-		<% if flash[:alert] %>
-		<div class="alert alert-error">
-		<% flash.each do |name, msg| %>
-		<%= content_tag :div, msg, :id => "flash_#{name}", :style => 'margin:auto;' %>
-		<% end -%>
-		</div>
-		<% end %>
-		<%= simple_form_for resource, :url => session_path(resource_name) do |f| %>
-		<%= f.input :email %>
-		<%= f.input :password %>
-		<% if devise_mapping.rememberable? %>
-		<%= f.input :remember_me, :as => :boolean, :label => false, :inline_label => true %>
-		<% end %>
-		<%= f.button :submit, "Sign In", :class => 'btn primary' %>
-		<div style="margin-top:10px;">
-			<%= render :partial => "business/merchant_devise/shared/links" %>
-		</div>
-		<% end %>
-	</div>
+<% content_for :script do %>
+<script type="text/javascript">
+   if (navigator.userAgent.toLowerCase().indexOf("webkit") >= 0)
+   {
+      var _interval = window.setInterval(function()
+      {
+         var autofills = $('input:-webkit-autofill');
+         if (autofills.length > 0)
+         {
+            window.clearInterval(_interval);
+            // stop polling
+            autofills.each(function()
+            {
+               var clone = $(this).clone(true, true);
+               $(this).after(clone).remove();
+            });
+         }
+      }, 500);
+   }
+</script>
+<% end %>
+<div class="account-container">
+   <div class="content clearfix">
+      <% if flash[:alert] %>
+      <div class="alert alert-error">
+         <% flash.each do |name, msg| %>
+         <%= content_tag :div, msg, :id => "flash_#{name}", :style => 'margin:auto;' %>
+         <% end -%>
+      </div>
+      <% end %>
+      <%= simple_form_for resource, :url => session_path(resource_name) do |f| %>
+      <h1>KICKBAK Login</h1>
+      <div class="login-fields">
+         <p>Sign in using your registered account:</p>
+         <%= f.input :email, :placeholder => "Email Address", :html => {:class=> "field"}, :input_html=>{:class => "login username-field"} %>
+         <%= f.input :password, :placeholder => "Password", :html => {:class=> "field"}, :input_html=>{:class => "login password-field"} %>
+      </div>
+      <div class="login-actions">
+         <% if devise_mapping.rememberable? %>
+         <span class="login-checkbox">
+            <!---->
+            <%= f.input :remember_me, :as => :boolean, :label => false, :inline_label => true %>
+            <!---->
+         </span>
+         <% end %>
+         <%= f.button :submit, "Sign In", :class => 'button btn  btn-warning btn-large' %>
+         <div style="margin-top:10px;clear:both;">
+            <%= render :partial => "business/merchant_devise/shared/links" %>
+         </div>
+      </div>
+      <% end %>
+   </div>
 </div>
