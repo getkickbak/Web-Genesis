@@ -195,6 +195,8 @@
 
             document.addEventListener('push-notification', function(event)
             {
+               var pushNotification = window.plugins.pushNotification;
+               
                console.warn('push-notification!: ' + event.notification);
                Ext.device.Notification.show(
                {
@@ -202,6 +204,7 @@
                   message : JSON.stringify(event.notification)[1].aps['alert']
                   //message : JSON.stringify(['push-notification!', event.notification])
                });
+               pushNotification.setApplicationIconBadgeNumber(0);
             });
 
             document.addEventListener("deviceready", onDeviceReady, false);
@@ -210,6 +213,8 @@
 
          function onDeviceReady()
          {
+            var pushNotification = window.plugins.pushNotification;
+
             if ( typeof (invokeString) != "undefined" && invokeString.length > 0 && invokeString[0] == '{')
             {
                //push notification
@@ -219,9 +224,9 @@
                   title : 'KickBak Push Notification',
                   message : JSON.stringify(invokeString)[1].aps['alert']
                });
+               pushNotification.setApplicationIconBadgeNumber(0);
             }
 
-            var pushNotification = window.plugins.pushNotification;
             pushNotification.registerDevice(
             {
                alert : true,
@@ -242,7 +247,6 @@
                console.warn(JSON.stringify(['failed to register - ', status]));
                Genesis.constants.device = null;
             });
-            pushNotification.setApplicationIconBadgeNumber(0);
             console.log("onDeviceReady");
             appInit();
          }

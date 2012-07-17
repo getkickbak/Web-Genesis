@@ -144,7 +144,6 @@ Ext.define('Genesis.controller.MainPage',
                   {
                      me.persistLoadStores(function()
                      {
-                        Genesis.constants.device = db['device'];
                         me.redirectTo('main');
                      });
                   }
@@ -474,7 +473,6 @@ Ext.define('Genesis.controller.MainPage',
             }
             else
             {
-               Genesis.db.setLocalDBAttrib('device', Genesis.constants.device);
                me.persistSyncStores('CustomerStore');
             }
             Ext.Viewport.setMasked(false);
@@ -712,7 +710,6 @@ Ext.define('Genesis.controller.MainPage',
             }
             else
             {
-               Genesis.db.setLocalDBAttrib('device', Genesis.constants.device);
                me.persistSyncStores('CustomerStore');
             }
             Ext.Viewport.setMasked(false);
