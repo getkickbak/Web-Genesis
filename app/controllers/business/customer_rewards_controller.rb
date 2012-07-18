@@ -7,6 +7,7 @@ module Business
       
       @venues = current_merchant.venues
       @cusotmer_rewards = CustomerReward.all(CustomerReward.merchant.id => current_merchant.id)
+      @display = params[:display]
       
       respond_to do |format|
         format.html # index.html.erb
