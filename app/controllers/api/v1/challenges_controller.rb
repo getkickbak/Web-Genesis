@@ -1,4 +1,5 @@
 class Api::V1::ChallengesController < ApplicationController
+  skip_before_filter :verify_authenticity_token, :only => [:complete]
   before_filter :authenticate_user!
   
   def index
