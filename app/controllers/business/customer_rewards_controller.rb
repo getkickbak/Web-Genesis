@@ -4,8 +4,10 @@ module Business
     
     def index
       authorize! :read, CustomerReward
+      
       @venues = current_merchant.venues
-
+      @cusotmer_rewards = CustomerReward.all(CustomerReward.merchant.id => current_merchant.id)
+      
       respond_to do |format|
         format.html # index.html.erb
         #format.xml  { render :xml => @merchants }

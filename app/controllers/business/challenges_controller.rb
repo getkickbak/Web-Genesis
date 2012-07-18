@@ -6,6 +6,7 @@ module Business
       authorize! :read, Challenge
       
       @venues = current_merchant.venues
+      @challenges = Challenge.all(Challenge.merchant.id => current_merchant.id)
 
       respond_to do |format|
         format.html # index.html.erb
