@@ -1059,34 +1059,32 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          console.debug("Ajax ErrorHandler called. Operation(" + operation.wasSuccessful() + ")");
          me.fireEvent('exception', me, response, operation);
       }
+      try
+      {
+         resultSet = reader.process(response);
+      }
+      catch(e)
+      {
+         console.debug('Ajax call failed with message=[' + e.message + '] url=[' + request.getUrl() + ']');
+         operation.setException(operation,
+         {
+            status : null,
+            statusText : e.message
+         });
+
+         errorHandler();
+         return;
+      }
       if ((success === true) || (!request.aborted && (Genesis.constants.isNative() === true)))
       {
-         try
-         {
-            resultSet = reader.process(response);
-         }
-         catch(e)
-         {
-            console.debug('Ajax call failed with message=[' + e.message + '] url=[' + request.getUrl() + ']');
-            operation.setException(operation,
-            {
-               status : null,
-               statusText : e.message
-            });
-
-            errorHandler();
-            return;
-         }
-
          if (operation.process(action, resultSet, request, response) === false)
          {
             errorHandler();
-         }
+         }         
       }
       else
       {
          console.debug('Ajax call failed with status=[' + response.status + '] url=[' + request.getUrl() + ']');
-         me.setException(operation, response);
          /**
           * @event exception
           * Fires when the server returns an exception
@@ -1094,6 +1092,8 @@ Ext.define('Genesis.data.proxy.OfflineServer',
           * @param {Object} response The response from the AJAX request
           * @param {Ext.data.Operation} operation The operation that triggered request
           */
+         me.setException(operation, response);
+         
          errorHandler();
       }
 
