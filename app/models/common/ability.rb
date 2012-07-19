@@ -22,7 +22,6 @@ class Ability
     can :manage, Customer, :user => { :id => @user.id }
     can :manage, CreditCard
     can :read, CustomerReward
-    can :read, PurchaseReward
     can :read, Challenge 
     can :read, Venue
     can :read, EarnPrize

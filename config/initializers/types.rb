@@ -46,26 +46,6 @@ if exists
       venue_type_value_to_name[type.value][locale] = name
     end
   end
-  purchase_reward_types = PurchaseRewardType.all
-  purchase_reward_type_values = {}
-  purchase_reward_type_value_to_name = {}
-  purchase_reward_types.each do |type|
-    merchant_type_value = merchant_type_id_to_value[type.merchant_type_id]
-    if !purchase_reward_type_values.include? merchant_type_value
-      purchase_reward_type_values[merchant_type_value] = {}
-    end
-    if !purchase_reward_type_value_to_name.include? type.value
-      purchase_reward_type_value_to_name[type.value] = {}
-    end
-    I18n.available_locales.each do |locale|
-      name = I18n.t "purchase_reward.type.#{type.value}", :locale => locale
-      if !purchase_reward_type_values[merchant_type_value].include? locale
-        purchase_reward_type_values[merchant_type_value][locale] = []
-      end
-      purchase_reward_type_values[merchant_type_value][locale] << [name, type.id]
-      purchase_reward_type_value_to_name[type.value][locale] = name
-    end
-  end
   customer_reward_types = CustomerRewardType.all
   customer_reward_type_values = {}
   customer_reward_type_value_to_name = {}
@@ -86,6 +66,31 @@ if exists
       end
       customer_reward_type_values[merchant_type_value][locale] << [name, type.id]
       customer_reward_type_value_to_name[type.value][locale] = name
+    end
+  end
+  customer_reward_subtypes = CustomerRewardSubtype.all
+  customer_reward_subtype_values = {}
+  customer_reward_subtype_value_to_name = {}
+  customer_reward_subtype_id_to_type = {}
+  customer_reward_subtypes.each do |subtype|
+    customer_reward_subtype_id_to_type[subtype.id] = subtype
+    merchant_type_value = merchant_type_id_to_value[subtype.merchant_type_id]
+    if !customer_reward_subtype_values.include? merchant_type_value
+      customer_reward_subtype_values[merchant_type_value] = {}
+    end
+    if !customer_reward_subtype_values[merchant_type_value].include? subtype.value
+      customer_reward_subtype_values[merchant_type_value][subtype.value] = {}
+    end
+    if !customer_reward_subtype_value_to_name.include? subtype.value
+      customer_reward_subtype_value_to_name[subtype.value] = {}
+    end
+    I18n.available_locales.each do |locale|
+      name = I18n.t "customer_reward.subtype.#{subtype.value}", :locale => locale
+      if !customer_reward_subtype_values[merchant_type_value].include? locale
+        customer_reward_subtype_values[merchant_type_value][subtype.value][locale] = []
+      end
+      customer_reward_subtype_values[merchant_type_value][subtype.value][locale] << [name, subtype.id]
+      customer_reward_subtype_value_to_name[subtype.value][locale] = name
     end
   end
   challenge_types = ChallengeType.all
@@ -124,11 +129,12 @@ if exists
   VenueType.values = venue_type_values
   VenueType.value_to_name = venue_type_value_to_name
   VenueType.id_to_type = venue_type_id_to_type
-  PurchaseRewardType.values = purchase_reward_type_values
-  PurchaseRewardType.value_to_name = purchase_reward_type_value_to_name
   CustomerRewardType.values = customer_reward_type_values
   CustomerRewardType.value_to_name = customer_reward_type_value_to_name
   CustomerRewardType.id_to_type = customer_reward_type_id_to_type
+  CustomerRewardSubtype.values = customer_reward_subtype_values
+  CustomerRewardSubtype.value_to_name = customer_reward_subtype_value_to_name
+  CustomerRewardSubtype.id_to_type = customer_reward_subtype_id_to_type
   ChallengeType.values = challenge_type_values
   ChallengeType.id_to_value = challenge_type_id_to_value
   ChallengeType.value_to_id = challenge_type_value_to_id

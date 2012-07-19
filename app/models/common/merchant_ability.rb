@@ -10,7 +10,6 @@ class MerchantAbility
     can :manage, Challenge, :merchant => { :id => @merchant.id }
     can :manage, Venue, :merchant => { :id => @merchant.id }
     can :manage, CustomerReward, :merchant => { :id => @merchant.id }
-    can :manage, PurchaseReward, :merchant => { :id => @merchant.id }
     can [:read, :create], Promotion, :merchant => { :id => @merchant.id }
   end
 

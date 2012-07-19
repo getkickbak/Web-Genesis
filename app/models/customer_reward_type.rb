@@ -8,7 +8,9 @@ class CustomerRewardType
   property :id, Serial
   property :merchant_type_id, Integer, :required => true, :default => 0
   property :value, String, :required => true, :default => ""
-  
+    
+  has n, :customer_reward_subtypes, :constraint => :destroy
+    
   def self.values
     @@values
   end
@@ -31,5 +33,9 @@ class CustomerRewardType
   
   def self.id_to_type=(id_to_type)
     @@id_to_type = id_to_type
+  end
+  
+  def display_value
+    @@value_to_name[self.value][I18n.locale]
   end
 end
