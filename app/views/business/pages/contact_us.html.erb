@@ -1,42 +1,75 @@
-<% content_for :script do %> <script type="text/javascript">
+<% content_for :link do %>
+<% end %>
+<% content_for :script do %>
+<!---->
+<script type="text/javascript">
    $(document).ready($(function()
    {
       var msg = $("#notice").html();
-      if(msg) {
+      if (msg)
+      {
          Genesis.showWarningMsg(msg, null, true);
       }
-   }));
-
+   })); 
 </script>
+<script type="text/javascript" src="/javascripts/desktop/src/business/base.js"></script>
 <% end %>
 <% if @notice %>
 <div style="display:none;" id="notice">
    <p><%= @notice %></p>
 </div>
 <% end %>
-<div class="row">
-   <div class="span22">
-      <h2>Email KICKBAK</h2>
-      <div class="panelBodyHighlights">
-         <%= simple_form_for @contact, :url => create_contact_path, :html => { :class => 'form-vertical' } do |f| %>
-         <%= f.input :name %>
-         <% if signed_in? && @contact.errors.empty? %>
-         <%= f.input :email, :input_html => { :value => current_merchant.email } %>
-         <% else %>
-         <%= f.input :email %>
-         <% end %>
-         <%= f.input :topic, :collection => Contact.merchant_topic_list %>
-         <%= f.input :message, :as => :text, :input_html => { :rows => 10 } %>
-         <div class="alignLeft">
-            <%= f.button :submit, 'Submit Request', :disable_with => "Working...", :class =>"large primary btn" %>
+<div class="main">
+   <div class="main-inner">
+      <div class="container">
+         <div class="row">
+            <div class="span8">
+               <div class="widget">
+                  <div class="widget-header">
+                     <i class="icon-envelope"></i>
+                     <h3>Contact Us</h3>
+                  </div>
+                  <!-- /widget-header -->
+                  <div class="widget-content">
+                     <div class="tabbable">
+                        <div class="tab-content">
+                           <div class="tab-pane active">
+                              <%= simple_form_for @contact, :url => create_contact_path, :html => { :class => 'form-vertical' } do |f| %>
+                              <fieldset>
+                                 <%= f.input :name, :input_html=>{:class => "input-xlarge"} %>
+                                 <% if signed_in? && @contact.errors.empty? %>
+                                 <%= f.input :email, :input_html => { :value => current_merchant.email, :class => 'input-xxlarge' } %>
+                                 <% else %>
+                                 <%= f.input :email, :input_html=>{:class => "input-xxlarge"}%>
+                                 <% end %>
+                                 <%= f.input :topic, :collection => Contact.merchant_topic_list, :input_html=>{:class => "input-large"} %>
+                                 <%= f.input :message, :as => :text, :input_html => { :rows => 10, :class => "input-xxlarge" } %>
+                              </fieldset>
+                              <br />
+                              <div class="form-actions">
+                                 <%= f.button :submit, 'Submit Request', :disable_with => "Working...", :class =>"btn btn-primary" %>
+                              </div>
+                              <!-- /form-actions -->
+                              <% end %>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="span4">
+               <div class="widget">
+                  <div class="widget-header">
+                     <i class="icon-phone"></i>
+                     <h3>Contact Info</h3>
+                  </div>
+                  <!-- /widget-header -->
+                  <div class="widget-content">
+                     <p>Email: <a href="mailto:help@getkickbak.com">help@getkickbak.com</a></p>
+                  </div>
+               </div>
+            </div>
          </div>
-         <% end %>
-      </div>
-   </div>
-   <div id="faq" class="span10">
-      <h2>Contact Info</h2>
-      <div class="panelBodyHighlights">
-         <p>Email: <a href="mailto:help@getkickbak.com">help@getkickbak.com</a></p>
       </div>
    </div>
 </div>
