@@ -1,17 +1,28 @@
 <% content_for :link do %>
-<!--[if lt IE 9]>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
-<![endif]-->
 <% end %>
-<div class="row-fluid">
-   <div class="span3"></div>
-   <div class="span6">
-      <ul class="nav nav-list well">
-         <li class="nav-header"> Features </li>
-         <li><a href="<%= account_photo_path %>">Change Photo</a></li>
-         <li><a href="<%= reward_model_path %>">Change Reward Model</a></li>
-         <li><a href="<%= promotions_path %>">Promotions</a></li>
-         <li><a href="<%= invoices_path %>">Invoices</a></li>
-      </ul>
+<% content_for :script do %>
+<script type="text/javascript" src="/javascripts/desktop/src/business/base.js"></script>
+<% end %>
+<div class="main">
+   <div class="main-inner">
+      <div class="container">
+         <div class="row">
+            <div class="span6">
+               <div class="widget">
+                  <div class="widget-header">
+                     <i class="icon-briefcase"></i>
+                     <h3>Features</h3>
+                  </div>
+                  <div class="widget-content">
+                     <li><%= link_to("Change Photo", account_photo_path) %></li>
+                     <li><%= link_to("Change Reward Model", reward_model_path) %></li>
+                     <li><%= link_to("Promotions", promotions_path) %></li>
+                     <li><%= link_to("Invoices", invoices_path) %></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
    </div>
 </div>

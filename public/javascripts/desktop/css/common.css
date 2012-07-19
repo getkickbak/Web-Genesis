@@ -1,6 +1,12 @@
 /* *****************************************************************
  * NavigationBar
  * *****************************************************************/
+body {
+}
+
+.main {
+   min-height:600px;   
+}
 
 .navbar .brand {
    width : 100px;
@@ -10,7 +16,8 @@
 }
 .navbar-fixed-top .navbar-inner {
    filter : none;
-   background : url(http://files.getkickbak.com/v1/header.png) 0 -50px repeat-x;
+   background : url(http://files.getkickbak.com/v1/header.png) 0 0 repeat-x;
+   background-size:100% 100%;
 }
 .navbar-fixed-top, .navbar-fixed-bottom {
    position : static;

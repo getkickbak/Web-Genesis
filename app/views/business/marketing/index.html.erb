@@ -1,34 +1,79 @@
 <% content_for :link do %>
-<!--[if lt IE 9]>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
-<![endif]-->
 <% end %>
-<div class="row-fluid">
-   <div class="span3"></div>
-   <div class="span6">
-      <ul class="nav nav-list well">
-         <li class="nav-header"> Marketing Posters </li>
-         <li> <%= link_to("http://files.getkickbak.com/poster.jpg", :style=>'display:block;') do %>
-            <!-- -->
-            Poster
-            <!-- -->
-            <i class="icon-print" style="float:right;"></i>
-            <!-- -->
-            <% end %>
-            <!-- -->
-         </li>
-         <li class="nav-header"> Table Toppers </li>
-         <% @venues.each do |venue| %>
-         <li> <%= link_to(::Common.generate_full_merchant_qr_code_image_file_path(current_merchant.id,venue.check_in_code.qr_code_img), :style=>'display:block;') do %>
-            <!-- -->
-            <%= venue.name %>
-            <!-- -->
-            <i class="icon-print" style="float:right;"></i>
-            <!-- -->
-            <% end %>
-            <!-- -->
-         </li>
-         <% end %>
-      </ul>
+<% content_for :script do %>
+<script type="text/javascript" src="/javascripts/desktop/src/business/base.js"></script>
+<% end %>
+<div class="main">
+   <div class="main-inner">
+      <div class="container">
+         <div class="row">
+            <div class="span6">
+               <div class="widget widget-table action-table">
+                  <div class="widget-header">
+                     <i class="icon-picture"></i>
+                     <h3>Marketing Posters</h3>
+                  </div>
+                  <div class="widget-content">
+                     <table class="table table-striped table-bordered">
+                        <thead>
+                           <tr>
+                              <th>Promotional Poster</th>
+                              <th class="td-actions"></th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr>
+                              <td>Poster</td>
+                              <td class="td-actions">
+                              <!-- -->
+                              <%= link_to("http://files.getkickbak.com/poster.jpg", :class=>"btn btn-small btn-warning", :title=>"print" ) do %>
+                              <!-- -->
+                              <i class="btn-icon-only icon-print"></i>
+                              <!-- -->
+                              <% end %>
+                              <!-- -->
+                              </td>
+                           </tr>
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+            <div class="span6">
+               <div class="widget widget-table action-table">
+                  <div class="widget-header">
+                     <i class="icon-paper-clip"></i>
+                     <h3>Toppers</h3>
+                  </div>
+                  <div class="widget-content">
+                     <table class="table table-striped table-bordered">
+                        <thead>
+                           <tr>
+                              <th>Table Toppers</th>
+                              <th class="td-actions"></th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <% @venues.each do |venue| %>
+                           <tr>
+                              <td><%= venue.name %></td>
+                              <td class="td-actions">
+                              <!-- -->
+                              <%= link_to(::Common.generate_full_merchant_qr_code_image_file_path(current_merchant.id,venue.check_in_code.qr_code_img), :class => "btn btn-small btn-warning", :title=>"print" ) do %>
+                              <!-- -->
+                              <i class="btn-icon-only icon-print"></i>
+                              <!-- -->
+                              <% end %>
+                              <!-- -->
+                              </td>
+                           </tr>
+                           <% end %>
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
    </div>
 </div>

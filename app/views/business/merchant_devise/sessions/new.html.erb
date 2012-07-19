@@ -1,9 +1,5 @@
 <% content_for :link do %>
 <link rel="stylesheet" href="/javascripts/desktop/css/pages/signin.css"/>
-<link rel="stylesheet" href="/javascripts/desktop/css/homepage.css"/>
-<!--[if lt IE 9]>
-<link rel="stylesheet" href="/javascripts/desktop/css/homepage-ie8.css"/>
-<![endif]-->
 <% end %>
 <% content_for :script do %>
 <script type="text/javascript">
@@ -22,9 +18,10 @@
                $(this).after(clone).remove();
             });
          }
-      }, 500);
+      }, 20);
    }
 </script>
+<script type="text/javascript" src="/javascripts/desktop/src/business/signin.js"></script>
 <% end %>
 <div class="account-container">
    <div class="content clearfix">
@@ -35,12 +32,12 @@
          <% end -%>
       </div>
       <% end %>
-      <%= simple_form_for resource, :url => session_path(resource_name) do |f| %>
+      <%= simple_form_for resource, :html => {:class => 'form-vertical' }, :url => session_path(resource_name) do |f| %>
       <h1>KICKBAK Login</h1>
       <div class="login-fields">
          <p>Sign in using your registered account:</p>
-         <%= f.input :email, :placeholder => "Email Address", :html => {:class=> "field"}, :input_html=>{:class => "login username-field"} %>
-         <%= f.input :password, :placeholder => "Password", :html => {:class=> "field"}, :input_html=>{:class => "login password-field"} %>
+         <%= f.input :email, :placeholder => "Email Address", :input_html=>{:class => "login username-field"} %>
+         <%= f.input :password, :placeholder => "Password", :input_html=>{:class => "login password-field"} %>
       </div>
       <div class="login-actions">
          <% if devise_mapping.rememberable? %>

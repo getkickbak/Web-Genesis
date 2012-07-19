@@ -1,0 +1,16 @@
+<% content_for :link do %>
+<% end %>
+<% content_for :script do %>
+<% end %>
+<%= simple_form_for @reward_model, :url => update_reward_model_path, :html => { :class => 'form-horizontal' } do |f| %>
+<fieldset>
+   <%= f.input :rebate_rate, :input_html=>{:class => "input-medium"} %>
+   <%= f.input :prize_rebate_rate, :input_html=>{:class => "input-medium"}%>
+   <%= f.input :price_per_point, :input_html => { :disabled => 'disabled', :class => 'input-medium' } %>
+   <br />
+   <div class="form-actions">
+      <%= f.button :submit , "Save", :class => 'btn btn-primary' %>
+   </div>
+   <!-- /form-actions -->
+</fieldset>
+<% end %>

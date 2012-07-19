@@ -1,34 +1,28 @@
-<% content_for :script do %> <script type="text/javascript" src="/javascripts/desktop/src/business/challenge.js"></script>
+<% content_for :script do %>
 <% end %>
 <% content_for :link do %>
-<!--[if lt IE 9]>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
-<![endif]-->
 <% end %>
-<div class="row-fluid">
-   <div class="span3"></div>
-   <div class="span6">
-	<%= simple_form_for @challenge, :html => { :class => 'form-horizontal' } do |f| %>
-	<%= f.input :type_id, :collection => @available_challenge_types %>
-	<%= f.input :name %>
-	<% if @challenge.type.value == 'custom' %>
-	<%= f.input :description, :as => :text, :input_html => { :rows => 10 } %>
-	<% else %>
-	<%= f.input :description, :as => :text, :input_html => { :rows => 10, :disabled => true } %>
-	<% end %>
-	<%= f.input :require_verif, :as => :hidden %>
-	<% if @challenge.data %>
-	<%= f.simple_fields_for @data do |builder| %>
-	<%= render "challenge_data", :f => builder, :type => @challenge.type.value %>
-	<% end %>
-	<% end %>
-	<%= f.input :points %>
-	<div class="venues">
-		<div>
-			Venues
-		</div>
-		<%= f.input :venue_ids, :collection => current_merchant.venues.collect{ |p| [p.display_name, p.id, ] }, :as => :check_boxes, :checked => @venue_ids %>
-	</div>
-	<%= f.button :submit, :class => 'btn-primary' %>
-	<% end %>
-</div>
+<%= simple_form_for @challenge, :html => { :class => 'form-horizontal' } do |f| %>
+<fieldset>
+   <%= f.input :type_id, :collection => @available_challenge_types, :input_html => {:class=>"input-large"} %>
+   <%= f.input :name, :input_html => {:class=>"input-medium"} %>
+   <% if @challenge.type.value == 'custom' %>
+   <%= f.input :description, :as => :text, :input_html => { :rows => 10, :class=>"input-xxlarge" } %>
+   <% else %>
+   <%= f.input :description, :as => :text, :input_html => { :rows => 10, :disabled => true, :class=>"input-xxlarge" } %>
+   <% end %>
+   <%= f.input :require_verif, :as => :hidden %>
+   <% if @challenge.data %>
+   <%= f.simple_fields_for @data do |builder| %>
+   <%= render "challenge_data", :f => builder, :type => @challenge.type.value %>
+   <% end %>
+   <% end %>
+   <%= f.input :points, :input_html => {:class=>"input-medium"} %>
+   <%= f.input :venue_ids, :collection => current_merchant.venues.collect{ |p| [p.display_name, p.id, ] }, :as => :check_boxes, :checked => @venue_ids, :input_html => {:class=>"input-xxlarge checkbox"}  %>
+   <br />
+   <div class="form-actions">
+      <%= f.button :submit , "Save", :class => 'btn btn-primary' %>
+   </div>
+   <!-- /form-actions -->
+</fieldset>
+<% end %>

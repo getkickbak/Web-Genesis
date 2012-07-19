@@ -1,70 +1,99 @@
 <% content_for :link do %>
-<!--[if lt IE 9]>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
-<![endif]-->
 <% end %>
 <% content_for :script do %>
+<script type="text/javascript" src="/javascripts/desktop/src/business/base.js"></script>
+<!--
 <script type="text/javascript" src="/javascripts/desktop/src/business/credit_card.js"></script>
+-->
 <% end %>
-
-<div class="row-fluid">
-   <div class="span3"></div>
-   <div class="span6">
-      <ul class="nav nav-list well">
-         <li class="nav-header"> Credit Cards Information </li>
-         <% @credit_cards.each do |credit_card| %>
-         <li>
-            <!-- -->
-            <div style="position:relative;padding: 3px 15px">
-               <!-- -->
-               <%= credit_card.number %>
-               <%= link_to '#', :onclick => "edit_credit_card(#{credit_card.id});", :style=>'position:absolute;right:0px;' do %>
-               <i class="icon-edit"></i>
-               <!-- -->
-               <% end %>
-               <%= link_to delete_credit_card_path, :style=>'position:absolute;right:0px;', :confirm => 'Are you sure?' do %>
-               <i class="icon-remove"></i>
-               <!-- -->
-               <% end %>
+<div class="main">
+   <div class="main-inner">
+      <div class="container">
+         <div class="row">
+            <div class="span8">
+               <div class="widget ">
+                  <div class="widget-header">
+                     <i class="icon-credit-card"></i>
+                     <h3>Credit Card Information
+                        <!---->
+                        <% if current_merchant.status == :pending && current_merchant.reward_model %>
+                        (<%= link_to 'Continue Setup', setup_path %>)
+                        <% end %>
+                        <!---->
+                     </h3>
+                  </div>
+                  <!-- /widget-header -->
+                  <div class="widget-content">
+                     <% if @credit_cards.length > 0 %>
+                     <div class="tabbable">
+                        <ul class="nav nav-tabs">
+                           <% @credit_cards.each_with_index do |credit_card, i| %>
+                           <li class="<% if i == 0 %>active<% end %>"
+                           <!-- -->
+                           <a href="#<%= credit_card.number %>" data-toggle="tab"><%= credit_card.number %></a>
+                           <!-- -->
+                           <%= link_to delete_credit_card_path, :confirm => 'Are you sure?' do %>
+                              <!-- -->
+                              <i class="icon-remove"></i>
+                              <!-- -->
+                              <% end %>
+                              <!---->
+                           </li>
+                           <% end %>
+                        </ul>
+                        <br>
+                        <div class="tab-content">
+                           <% @credit_cards.each do |credit_card| %>
+                           <div class="tab-pane active" id="<%= credit_card.number %>">
+                              <%= simple_form_for credit_card, :html => { :id => "edit_credit_card_#{credit_card.id}", :class =>
+                              'form-horizontal' }, :url => update_credit_card_path do |f| %>
+                              <fieldset>
+                                 <%= f.input :name, :input_html=>{:class => "input-large"} %>
+                                 <%= f.input :number, :input_html=>{:class => "input-medium"} %>
+                                 <%= f.input :expiry_date, :as => :date, :input_html => { :style => 'width:auto;' }, :order => [:month, :year] %>
+                                 <%= f.input :security_code, :input_html=>{:class => "input-small"} %>
+                                 <%= f.input :address, :input_html=>{:class => "input-xxlarge"} %>
+                                 <%= f.input :city, :input_html=>{:class => "input-large"} %>
+                                 <%= f.input :state, :input_html=>{:class => "input-large"} %>
+                                 <%= f.input :zip, :input_html=>{:class => "input-medium"} %>
+                                 <br />
+                                 <div class="form-actions">
+                                    <%= f.button :submit , "Update Credit Card", :class => 'btn btn-primary' %>
+                                 </div>
+                                 <!-- /form-actions -->
+                              </fieldset>
+                              <% end %>
+                           </div>
+                           <% end %>
+                        </div>
+                     </div>
+                     <% else %>
+                     <div class="tab-content">
+                        <div class="tab-pane active" id="addcreditcard">
+                           <%= simple_form_for @credit_card, :url => create_credit_card_path, :html => { :class => 'form-horizontal' } do |f| %>
+                           <fieldset>
+                              <%= f.input :name, :input_html=>{:class => "input-large"} %>
+                              <%= f.input :number, :input_html=>{:class => "input-medium"} %>
+                              <%= f.input :expiry_date, :as => :date, :input_html => { :style => 'width:auto;' }, :order => [:month, :year] %>
+                              <%= f.input :security_code, :input_html=>{:class => "input-small"} %>
+                              <%= f.input :address, :input_html=>{:class => "input-xxlarge"} %>
+                              <%= f.input :city, :input_html=>{:class => "input-large"} %>
+                              <%= f.input :state, :input_html=>{:class => "input-large"} %>
+                              <%= f.input :zip, :input_html=>{:class => "input-medium"} %>
+                              <br />
+                              <div class="form-actions">
+                                 <%= f.button :submit , "Add Credit Card", :class => 'btn btn-primary' %>
+                              </div>
+                              <!-- /form-actions -->
+                           </fieldset>
+                           <% end %>
+                        </div>
+                     </div>
+                     <% end %>
+                  </div>
+               </div>
             </div>
-            <!-- -->
-         </li>
-         <li>
-            <div>
-               <%= simple_form_for credit_card, :html => { :id => "edit_credit_card_#{credit_card.id}", :style => "display:none;", :class => 'form-horizontal' }, :url => update_credit_card_path do |f| %>
-               <%= f.input :name %>
-               <%= f.input :number %>
-               <%= f.input :expiry_date, :as => :date, :input_html => { :style => 'width:auto;' }, :order => [:month, :year] %>
-               <%= f.input :security_code %>
-               <%= f.input :address %>
-               <%= f.input :city %>
-               <%= f.input :state %>
-               <%= f.input :zip %>
-               <%= f.button :submit, 'Update', :class => 'btn-primary' %>
-               <% end %>
-            </div>
-            <!-- -->
-         </li>
-         <!-- -->
-         <% end %>
-         <% if @credit_cards.length == 0 %>
-         <li>
-            <div>
-               <%= simple_form_for @credit_card, :url => create_credit_card_path, :html => { :class => 'form-horizontal' } do |f| %>
-               <%= f.input :name %>
-               <%= f.input :number %>
-               <%= f.input :expiry_date, :as => :date, :input_html => { :style => 'width:auto;' }, :order => [:month, :year] %>
-               <%= f.input :security_code %>
-               <%= f.input :address %>
-               <%= f.input :city %>
-               <%= f.input :state %>
-               <%= f.input :zip %>
-               <%= f.button :submit, 'Add', :class => 'btn-primary' %>
-               <% end %>
-            </div>
-            <!-- -->
-         </li>
-         <% end %>
-      </ul>
+         </div>
+      </div>
    </div>
 </div>

@@ -1,5 +1,5 @@
 <% if type == 'vip' %>
-<%= f.input :visits %>
+<%= f.input :visits, :input_html => {:class=>"input-medium"} %>
 <% elsif type == 'referral' %>
-<%= f.input :referral_points %>
+<%= f.input :referral_points, :input_html => {:class=>"input-medium"} %>
 <% end %>
