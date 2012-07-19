@@ -8,7 +8,7 @@ module Business
       @venues = current_merchant.venues
       @cusotmer_rewards = CustomerReward.all(CustomerReward.merchant.id => current_merchant.id)
       @display = params[:display] || "default"
-      @venue = Venue.get(params[:venue_id]) || @venues.get(0)
+      @venue = Venue.get(params[:venue_id]) || @venues.first
       
       respond_to do |format|
         format.html # index.html.erb
