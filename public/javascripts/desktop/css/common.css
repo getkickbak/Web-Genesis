@@ -11,8 +11,8 @@ body {
 .navbar .brand {
    width : 100px;
    height : 20px;
-   background-size : 100px;
    background : url(http://files.getkickbak.com/v1/logo.png) center center no-repeat;
+   background-size : 100px;
 }
 .navbar-fixed-top .navbar-inner {
    filter : none;
