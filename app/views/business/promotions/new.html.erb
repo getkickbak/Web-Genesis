@@ -1,18 +1,35 @@
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/css/ui-lightness/jquery-ui-1.8.20.custom.css"/>
+<% end %>
 <% content_for :script do %>
+<script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-ui-1.8.20.custom.min.js"/>
 <script type="text/javascript" src="/javascripts/desktop/src/business/base.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/src/business/promotion.js"></script>
 <% end %>
 <div class="main">
    <div class="main-inner">
       <div class="container">
          <div class="row">
-            <div class="span12">
+            <div class="span9">
                <div class="widget ">
                   <div class="widget-header">
-                     <i class="icon-user"></i>
+                     <i class="icon-rss"></i>
                      <h3>New Promotion</h3>
-                     <div class="widget-content">
-                        <%= render 'form' %>
-                     </div>
+                  </div>
+                  <div class="widget-content">
+                     <%= render 'form' %>
+                  </div>
+               </div>
+            </div>
+            <div class="span3">
+               <div class="widget ">
+                  <div class="widget-header">
+                     <i class="icon-rss"></i>
+                     <h3>Extra Info</h3>
+                  </div>
+                  <div class="widget-content">
+                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                     <p> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
                   </div>
                </div>
             </div>
