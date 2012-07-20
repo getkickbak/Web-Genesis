@@ -20,8 +20,8 @@ class CustomerReward
   attr_accessible :type_id, :title, :price, :points, :mode
 
   belongs_to :merchant
-  has 1, :customer_reward_to_type, :constraint => :destroy
-  has 1, :type, 'CustomerRewardType', :through => :customer_reward_to_type,  :via => :customer_reward_type
+  has 1, :customer_reward_to_subtype, :constraint => :destroy
+  has 1, :type, 'CustomerRewardSubtype', :through => :customer_reward_to_subtype,  :via => :customer_reward_subtype
   has n, :customer_reward_venues, :constraint => :destroy
   has n, :venues, :through => :customer_reward_venues
 

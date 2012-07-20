@@ -34,10 +34,8 @@ class Venue
   has 1, :check_in_code, :constraint => :destroy
   has 1, :prize_info, :constraint => :destroy
   has n, :challenge_venues, :constraint => :destroy
-  has n, :purchase_reward_venues, :constraint => :destroy
   has n, :customer_reward_venues, :constraint => :destroy
   has n, :challenges, :through => :challenge_venues
-  has n, :purchase_rewards, :through => :purchase_reward_venues
   has n, :customer_rewards, :through => :customer_reward_venues
   
   validates_with_method :type_id, :method => :check_type_id

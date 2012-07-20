@@ -272,21 +272,22 @@ namespace :db do
         end  
       end
       purchase_rewards = []
-      reward_names = {:entrees => "Entrees", :appetizers => "Appetizers", :drinks => "Drinks", :desserts => "Desserts", :soup => "Soup",
-                      :bread => "Bread", :salad => "Salad", :noodles => "Noodles", :side_dishes => "Side Dishes", :sandwiches => "Sandwiches",
+      reward_subtype_id = [19, 1, 14, 10, 34, 2, 33, 21, 30, 25, 22, 29, 35]
+      reward_names = {:entree => "Entree", :appetizer => "Appetizer", :drink => "Drink", :dessert => "Dessert", :soup => "Soup", 
+                      :bread => "Bread", :salad => "Salad", :noodles => "Noodles", :side_dish => "Side Dish", :sandwich => "Sandwich",
                       :pasta => "Pasta", :pastry => "Pastry", :custom => "Custom"}
-      reward_names_count = {:entrees => 0, :appetizers => 0, :drinks => 0, :desserts => 0, :soup => 0,
-                      :bread => 0, :salad => 0, :noodles => 0, :side_dishes => 0, :sandwiches => 0,
+      reward_names_count = {:entree => 0, :appetizer => 0, :drink => 0, :dessert => 0, :soup => 0,
+                      :bread => 0, :salad => 0, :noodles => 0, :side_dish => 0, :sandwich => 0,
                       :pasta => 0, :pastry => 0, :custom => 0}
       picked_prize = rand(reward_names.length)              
       reward_names.length.times do |i|
-        idx = rand(reward_names.length)+1
-        reward_type = CustomerRewardType.get(idx)
+        id = reward_subtype_id[rand(reward_names.length)]
+        reward_sub_type = CustomerRewardSubtype.get(id)
         price = rand(10) + 10.75
         points = (price / merchant.reward_model.price_per_point / merchant.reward_model.rebate_rate * 100).to_i
-        reward = CustomerReward.create(merchant,reward_type,
+        reward = CustomerReward.create(merchant,reward_sub_type,
         {
-          :title => "#{reward_names[reward_type.value.to_sym]} #{reward_names_count[reward_type.value.to_sym]+1}",
+          :title => "#{reward_names[reward_sub_type.value.to_sym]} #{reward_names_count[reward_sub_type.value.to_sym]+1}",
           :price => price,
           :points => points,
           :mode => :prize_and_reward
@@ -304,7 +305,7 @@ namespace :db do
           earn_prize.user = users[rand(users.length)]
           earn_prize.save
         end  
-        reward_names_count[reward_type.value.to_sym] += 1
+        reward_names_count[reward_sub_type.value.to_sym] += 1
       end
       challenges = []
       challenge_type = ChallengeType.get(1)

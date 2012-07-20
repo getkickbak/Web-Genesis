@@ -42,7 +42,7 @@ module Business
       
       begin
         CustomerReward.transaction do
-          type = CustomerRewardType.get(params[:customer_reward][:type_id])
+          type = CustomerRewardSubtype.get(params[:customer_reward][:type_id])
           params[:customer_reward][:venue_ids].delete("")
           if params[:customer_reward][:venue_ids].length > 0
             venues = Venue.all(:conditions => ["id IN ?", params[:customer_reward][:venue_ids]])
@@ -85,7 +85,7 @@ module Business
 
       begin
         CustomerReward.transaction do
-          type = CustomerRewardType.get(params[:customer_reward][:type_id])
+          type = CustomerRewardSubtype.get(params[:customer_reward][:type_id])
           params[:customer_reward][:venue_ids].delete("")
           if params[:customer_reward][:venue_ids].length > 0
             venues = Venue.all(:conditions => ["id IN ?", params[:customer_reward][:venue_ids]])

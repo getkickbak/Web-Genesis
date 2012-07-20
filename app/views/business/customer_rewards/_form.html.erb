@@ -10,7 +10,12 @@
 </div>
 <%= simple_form_for @customer_reward, :html => { :class => 'form-horizontal' } do |f| %>
 <fieldset>
-   <%= f.input :type_id, :collection => CustomerRewardType.values[current_merchant.type.value][I18n.locale], :input_html=>{:class => "input-xlarge"} %>
+   <%= f.input :type_id, :collection => CustomerRewardType.all(:merchant_type_id => current_merchant.type.id, :order => [ :value.asc ]), 
+      					:as => :grouped_select,
+      					:group_method => :customer_reward_subtypes,
+      					:group_label_method => :display_value,
+      					:label_method => :display_value,
+      					:include_blank => "", :input_html=>{:class => "input-xlarge"} %>
    <%= f.input :title, :input_html=>{:class => "input-xlarge"} %>
    <%= f.input :price, :input_html=>{:class => "input-large"} %>
    <%= f.input :points, :input_html=>{:class => "input-large"} %>

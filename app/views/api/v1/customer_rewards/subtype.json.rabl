@@ -1,0 +1,2 @@
+object @customer_reward_subtype
+attributes :value
