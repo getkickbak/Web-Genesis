@@ -271,7 +271,6 @@ namespace :db do
           CheckIn.create(venue, user, customer)
         end  
       end
-      purchase_rewards = []
       reward_subtype_id = [19, 1, 14, 10, 34, 2, 33, 21, 30, 25, 22, 29, 35]
       reward_names = {:entree => "Entree", :appetizer => "Appetizer", :drink => "Drink", :dessert => "Dessert", :soup => "Soup", 
                       :bread => "Bread", :salad => "Salad", :noodles => "Noodles", :side_dish => "Side Dish", :sandwich => "Sandwich",
@@ -427,7 +426,15 @@ namespace :db do
         customer.points += (record.points + challenge.points)
         customer.visits += 1
         customer.save
-      end        
+      end  
+      10.times do |i|
+        promotion = Promotion.create(merchant, 
+        {
+          :message => "This is a test #{i}",
+          :start_date => now.to_date.to_s,
+          :end_date => now.to_date.to_s
+        })
+      end      
     end
     puts "Complete Merchant creation"
   end
