@@ -2,25 +2,6 @@
 <link rel="stylesheet" href="/javascripts/desktop/css/pages/signin.css"/>
 <% end %>
 <% content_for :script do %>
-<script type="text/javascript">
-   if (navigator.userAgent.toLowerCase().indexOf("webkit") >= 0)
-   {
-      var _interval = window.setInterval(function()
-      {
-         var autofills = $('input:-webkit-autofill');
-         if (autofills.length > 0)
-         {
-            window.clearInterval(_interval);
-            // stop polling
-            autofills.each(function()
-            {
-               var clone = $(this).clone(true, true);
-               $(this).after(clone).remove();
-            });
-         }
-      }, 20);
-   }
-</script>
 <script type="text/javascript" src="/javascripts/desktop/src/business/signin.js"></script>
 <% end %>
 <div class="account-container">

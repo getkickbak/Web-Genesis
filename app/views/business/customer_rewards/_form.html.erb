@@ -10,17 +10,17 @@
 </div>
 <%= simple_form_for @customer_reward, :html => { :class => 'form-horizontal' } do |f| %>
 <fieldset>
-   <%= f.input :type_id, :collection => CustomerRewardType.all(:merchant_type_id => current_merchant.type.id, :order => [ :value.asc ]), 
-      					:as => :grouped_select,
-      					:group_method => :customer_reward_subtypes,
-      					:group_label_method => :display_value,
-      					:label_method => :display_value,
-      					:include_blank => "", :input_html=>{:class => "input-xlarge"} %>
-   <%= f.input :title, :input_html=>{:class => "input-xlarge"} %>
-   <%= f.input :price, :input_html=>{:class => "input-large"} %>
+   <%= f.input :type_id, :collection => CustomerRewardType.all(:merchant_type_id => current_merchant.type.id, :order => [ :value.asc ]),
+   :as => :grouped_select,
+   :group_method => :customer_reward_subtypes,
+   :group_label_method => :display_value,
+   :label_method => :display_value,
+   :include_blank => "", :input_html=>{:class => "input-xlarge"} %>
+   <%= f.input :title, :input_html=>{:class => "input-medium"} %>
+   <%= f.input :price, :input_html=>{:class => "input-medium"} %>
    <%= f.input :points, :input_html=>{:class => "input-large"} %>
    <%= f.input :mode, :collection => CustomerReward::Modes, :input_html=>{:class => "input-large"} %>
-   <%= f.input :venue_ids, :collection => current_merchant.venues.collect{ |p| [p.display_name, p.id, ] }, :as => :check_boxes, :checked => @venue_ids, :input_html=>{:class => "input-large checkbox"}  %>
+   <%= f.input :venue_ids, :collection => current_merchant.venues.collect{ |p| [p.display_name, p.id, ] }, :as => :check_boxes, :checked => @venue_ids %>
    <br />
    <div class="form-actions">
       <%= f.button :submit , "Save", :class => 'btn btn-primary' %>

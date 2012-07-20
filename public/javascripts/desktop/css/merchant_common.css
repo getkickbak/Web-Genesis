@@ -21,3 +21,7 @@ body {
 .btn [class^="icon-"], .btn [class*=" icon-"] {
    line-height: 16px;
 }
+
+.disabled {
+   color : #999;
+}
