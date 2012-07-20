@@ -128,7 +128,7 @@ en:
         soup: "Soup"
         custom: "Custom"   
         gift_cert: "Gift Certificate"
-        ticket: "ticket"
+        ticket: "Ticket"
   prize:
       terms: "No cash value.  Non-transferable.  Valid at participating locations only."    
   transaction:
