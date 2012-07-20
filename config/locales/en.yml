@@ -127,8 +127,8 @@ en:
         salad: "Salad"
         soup: "Soup"
         custom: "Custom"   
-        gift_cert: "gift_cert"
-        ticket: "ticket"
+        gift_cert: "Gift Certificate"
+        ticket: "Ticket"
   prize:
       terms: "No cash value.  Non-transferable.  Valid at participating locations only."    
   transaction:
