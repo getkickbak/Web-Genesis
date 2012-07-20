@@ -18,7 +18,7 @@
    <% end %>
    <% end %>
    <%= f.input :points, :input_html => {:class=>"input-medium"} %>
-   <%= f.input :venue_ids, :collection => current_merchant.venues.collect{ |p| [p.display_name, p.id, ] }, :as => :check_boxes, :checked => @venue_ids, :input_html => {:class=>"input-xxlarge checkbox"}  %>
+   <%= f.input :venue_ids, :collection => current_merchant.venues.collect{ |p| [p.display_name, p.id, ] }, :as => :check_boxes, :checked => @venue_ids %>
    <br />
    <div class="form-actions">
       <%= f.button :submit , "Save", :class => 'btn btn-primary' %>
