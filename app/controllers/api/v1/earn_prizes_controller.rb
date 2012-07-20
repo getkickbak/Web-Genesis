@@ -20,14 +20,14 @@ class Api::V1::EarnPrizesController < ApplicationController
     merchant_to_types.each do |merchant_to_type|
       merchant_id_to_type_id[merchant_to_type.merchant_id] = merchant_to_type.merchant_type_id
     end
-    reward_id_to_type_id = {}
-    reward_to_types = CustomerRewardToType.all(:fields => [:customer_reward_id, :customer_reward_type_id], :customer_reward_id => reward_ids)
-    reward_to_types.each do |reward_to_type|
-      reward_id_to_type_id[reward_to_type.customer_reward_id] = reward_to_type.customer_reward_type_id
+    reward_id_to_subtype_id = {}
+    reward_to_subtypes = CustomerRewardToType.all(:fields => [:customer_reward_id, :customer_reward_subtype_id], :customer_reward_id => reward_ids)
+    reward_to_subtypes.each do |reward_to_subtype|
+      reward_id_to_subtype_id[reward_to_subtype.customer_reward_id] = reward_to_subtype.customer_reward_subtype_id
     end
     @earn_prizes.each do |prize|
       prize.merchant.eager_load_type = MerchantType.id_to_type[merchant_id_to_type_id[prize.merchant.id]]
-      prize.reward.eager_load_type = CustomerRewardType.id_to_type[reward_id_to_type_id[prize.reward.id]]
+      prize.reward.eager_load_type = CustomerRewardSubtype.id_to_type[reward_id_to_subtype_id[prize.reward.id]]
     end
     render :template => '/api/v1/earn_prizes/index'
   end

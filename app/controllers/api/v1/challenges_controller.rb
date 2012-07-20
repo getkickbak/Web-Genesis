@@ -143,13 +143,13 @@ class Api::V1::ChallengesController < ApplicationController
                 )
                 @eligible_rewards << item
               end
-              reward_id_to_type_id = {}
-              reward_to_types = CustomerRewardToType.all(:fields => [:customer_reward_id, :customer_reward_type_id], :customer_reward => @rewards)
-              reward_to_types.each do |reward_to_type|
-                reward_id_to_type_id[reward_to_type.customer_reward_id] = reward_to_type.customer_reward_type_id
+              reward_id_to_subtype_id = {}
+              reward_to_subtypes = CustomerRewardToSubtype.all(:fields => [:customer_reward_id, :customer_reward_subtype_id], :customer_reward => @rewards)
+              reward_to_subtypes.each do |reward_to_subtype|
+                reward_id_to_subtype_id[reward_to_subtype.customer_reward_id] = reward_to_subtype.customer_reward_subtype_id
               end              
               @rewards.each do |reward|
-                reward.eager_load_type = CustomerRewardType.id_to_type[reward_id_to_type_id[reward.id]]
+                reward.eager_load_type = CustomerRewardSubtype.id_to_type[reward_id_to_subtype_id[reward.id]]
 =begin                
                 item = EligibleReward.new(
                   reward.id,
