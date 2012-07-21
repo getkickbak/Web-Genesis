@@ -908,17 +908,21 @@ Ext.define('Genesis.controller.client.Challenges',
                message : me.cameraAccessMsg
             });
 
-            var cameraOptions =
+            Ext.device.Camera.capture(
             {
+               success : me.onCameraSuccessFn,
+               failure : me.onCameraErrorFn,
+               scope : me,
                quality : 49,
-               destinationType : Camera.DestinationType.FILE_URI,
-               sourceType : sourceType,
+               correctOrientation : true,
+               //saveToPhotoAlbum : false,
+               destination : "file",
+               source : sourceType,
                allowEdit : true,
-               encodingType : Camera.EncodingType.JPEG,
-               targetWidth : 960
+               encoding : "jpeg",
+               width : 960
                //targetHeight : 480
-            };
-            navigator.camera.getPicture(Ext.bind(me.onCameraSuccessFn, me), Ext.bind(me.onCameraErrorFn, me), cameraOptions);
+            });
          }, true, me.photoUploadFbReqMsg);
       }
       else
@@ -929,15 +933,18 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    onLibraryBtnTap : function(b, e, eOpts, eInfo)
    {
-      this.onPhotoBtnCommon(Genesis.constants.isNative() ? Camera.PictureSourceType.PHOTOLIBRARY : null);
+      //this.onPhotoBtnCommon(Genesis.constants.isNative() ? Camera.PictureSourceType.PHOTOLIBRARY : null);
+      this.onPhotoBtnCommon(Genesis.constants.isNative() ? "library" : null);
    },
    onAlbumBtnTap : function(b, e, eOpts, eInfo)
    {
-      this.onPhotoBtnCommon(Genesis.constants.isNative() ? Camera.PictureSourceType.SAVEDPHOTOALBUM : null);
+      //this.onPhotoBtnCommon(Genesis.constants.isNative() ? Camera.PictureSourceType.SAVEDPHOTOALBUM : null);
+      this.onPhotoBtnCommon(Genesis.constants.isNative() ? "album" : null);
    },
    onCameraBtnTap : function(b, e, eOpts, eInfo)
    {
-      this.onPhotoBtnCommon(Genesis.constants.isNative() ? Camera.PictureSourceType.CAMERA : null);
+      //this.onPhotoBtnCommon(Genesis.constants.isNative() ? Camera.PictureSourceType.CAMERA : null);
+      this.onPhotoBtnCommon(Genesis.constants.isNative() ? "camera" : null);
    },
    onUploadPhotosActivate : function(activeItem, c, oldActiveItem, eOpts)
    {

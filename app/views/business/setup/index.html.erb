@@ -1,61 +1,89 @@
-<% content_for :script do %> 
+<% content_for :link do %>
+<% end %>
+<% content_for :script do %>
+<script type="text/javascript" src="/javascripts/desktop/src/business/base.js"></script>
 <script type="text/javascript" src="/javascripts/desktop/src/business/setup.js"></script>
 <% end %>
-<div class="content row">
-<div style="width:400px;">
-<div id="progressbar"></div><div><%= "#{@checklist[:count]} out of #{@checklist[:total]} steps completed" %></div>
-</div>
-<div style="display:none;">
-	<div id="total"><%= @checklist[:total] %></div>
-	<div id="count"><%= @checklist[:count] %></div>
-</div>
-<div>
-	<div>
-		<% if !@checklist[:data][:upload_photo] %>
-		<% proceed_next_step = false %>
-		<a href="<%= account_photo_path %>">Upload Photo</a>
-		<% else %>
-		<% proceed_next_step = true %>
-		Upload Photo
-		<% end %>
-	</div>
-	<div>
-		<% if !@checklist[:data][:venues] && proceed_next_step %>
-		<% proceed_next_step = false %>
-		<a href="<%= new_venue_path %>">Create Venue</a>
-		<% else %>
-		Create Venue
-		<% end %>
-	</div>
-	<div>
-		<% if !@checklist[:data][:reward_model] && proceed_next_step %>
-		<% proceed_next_step = false %>
-		<a href="<%= reward_model_path %>">Setup Reward Model</a>
-		<% else %>
-		Setup Reward Model
-		<% end %>
-	</div>
-	<div>
-		<% if !@checklist[:data][:customer_rewards] && proceed_next_step %>
-		<% proceed_next_step = false %>
-		<a href="<%= new_customer_reward_path %>">Create Customer Reward</a>
-		<% else %>
-		Create Customer Reward
-		<% end %>
-	</div>
-	<div>
-		<% if !@checklist[:data][:challenges] && proceed_next_step %>
-		<a href="<%= new_challenge_path %>">Create Challenge</a>
-		<% else %>
-		Create Challenge
-		<% end %>
-	</div>
-	<div>
-		<% if @checklist[:data][:venues] && proceed_next_step %>
-		<a href="<%= setup_activate_path %>" class="btn pricetag alignCenter">Activate</a>
-		<% else %>
-		<a class="btn pricetag alignCenter disabled">Activate</a>
-		<% end %>
-	</div>
-</div>
+<div class="main">
+   <div class="main-inner">
+      <div class="container">
+         <div class="row">
+            <div class="span6">
+               <div class="widget widget-table action-table">
+                  <div class="widget-header">
+                     <i class="icon-map-marker"></i>
+                     <h3>Venues Listing (<%= link_to("New Venue", new_venue_path) %><% if current_merchant.status == :pending %>
+                        | <%= link_to 'Continue Setup', setup_path %>
+                        <% end %>)
+                        <!---->
+                     </h3>
+                  </div>
+                  <div class="widget-content">
+                     <div id="progressbar"></div>
+                     <div>
+                        <%= "#{@checklist[:count]} out of #{@checklist[:total]} steps completed" %>
+                     </div>
+                     <div style="display:none;">
+                        <div id="total">
+                           <%= @checklist[:total] %>
+                        </div>
+                        <div id="count">
+                           <%= @checklist[:count] %>
+                        </div>
+                     </div>
+                     <div>
+                        <div>
+                           <% if !@checklist[:data][:upload_photo] %>
+                           <% proceed_next_step = false %>
+                           <a href="<%= account_photo_path %>">Upload Photo</a>
+                           <% else %>
+                           <% proceed_next_step = true %>
+                           Upload Photo
+                           <% end %>
+                        </div>
+                        <div>
+                           <% if !@checklist[:data][:venues] && proceed_next_step %>
+                           <% proceed_next_step = false %>
+                           <a href="<%= new_venue_path %>">Create Venue</a>
+                           <% else %>
+                           Create Venue
+                           <% end %>
+                        </div>
+                        <div>
+                           <% if !@checklist[:data][:reward_model] && proceed_next_step %>
+                           <% proceed_next_step = false %>
+                           <a href="<%= reward_model_path %>">Setup Reward Model</a>
+                           <% else %>
+                           Setup Reward Model
+                           <% end %>
+                        </div>
+                        <div>
+                           <% if !@checklist[:data][:customer_rewards] && proceed_next_step %>
+                           <% proceed_next_step = false %>
+                           <a href="<%= new_customer_reward_path %>">Create Customer Reward</a>
+                           <% else %>
+                           Create Customer Reward
+                           <% end %>
+                        </div>
+                        <div>
+                           <% if !@checklist[:data][:challenges] && proceed_next_step %>
+                           <a href="<%= new_challenge_path %>">Create Challenge</a>
+                           <% else %>
+                           Create Challenge
+                           <% end %>
+                        </div>
+                        <div>
+                           <% if @checklist[:data][:venues] && proceed_next_step %>
+                           <a href="<%= setup_activate_path %>" class="btn pricetag alignCenter">Activate</a>
+                           <% else %>
+                           <a class="btn pricetag alignCenter disabled">Activate</a>
+                           <% end %>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
 </div>
