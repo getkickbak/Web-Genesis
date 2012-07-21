@@ -11,12 +11,7 @@
                <div class="widget ">
                   <div class="widget-header">
                      <i class="icon-gift"></i>
-                     <h3>Reward Model
-                        <!---->
-                        <% if current_merchant.status == :pending && current_merchant.reward_model %>
-                        (<%= link_to 'Continue Setup', setup_path %>) <% end %>
-                        <!---->
-                     </h3>
+                     <h3>Reward Model<% if current_merchant.status == :pending && current_merchant.reward_model %>(<%= link_to 'Continue Setup', setup_path %>) <% end %></h3>
                   </div>
                   <!-- /widget-header -->
                   <div class="widget-content">
