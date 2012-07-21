@@ -812,7 +812,7 @@ Ext.define('Genesis.controller.MainPage',
          }
          case 'login' :
          {
-            me.getApplication().getController('Checkins').fireEvent('setupCheckinInfo', 'checkin', null, null, null);
+            me.getApplication().getController('client.Checkins').fireEvent('setupCheckinInfo', 'checkin', null, null, null);
             me.getApplication().getController('Prizes').fireEvent('updatePrizeViews', null);
             me.setAnimationMode(me.self.superclass.self.animationMode['fade']);
             me.pushView(me.getLogin());

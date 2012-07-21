@@ -11,8 +11,6 @@
       <style rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 2)">
          body {
             font-size : 228%;
-            background-image : url(/resources/startup/640x920.png) no-repeat;
-            background-size : contain;
          }
       </style>
       <!-- Dirty hack for Android qHD devices -->
@@ -40,19 +38,14 @@
       <title>KickBak</title>
       <link rel="stylesheet" href="resources/css/sencha-touch.css" type="text/css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
-      <script type="text/javascript" src="http://192.168.0.52:8080/target/target-script-min.js"></script>
       directory and include it here -->
+      <script type="text/javascript" src="lib/core/qrcode.js"></script>
+      <script type="text/javascript" src="lib/core/date.js"></script>
+      <script type="text/javascript" src="lib/core/extras.js"></script>
       <!-- Debug Javascript on mobile browser -->
-      <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
-      <!--
-      <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
-      -->
-      <!--
-      Phone Gap Libs
-      -->
-      <script type="text/javascript" src="lib/cordova-1.8.1.js"></script>
+      <script type="text/javascript" src="lib/sencha-touch-2.0.1.1/sencha-touch-all-debug.js"></script>
       <script type="text/javascript">
-         var phoneGapAvailable = true;
+         var phoneGapAvailable = false;
          var debugMode = false;
          var merchantMode = false;
          var appName = 'GetKickBak';
@@ -65,24 +58,105 @@
          var _appId = "197968780267830";
 
          var _browser = Ext.browser;
-         _browser.setFlag('WebView');
-         _browser.setFlag('PhoneGap');
-
-         //
-         // Bug fix to prevent bunching up of cls aggregation
-         //
-         //Ext.baseCSSPrefix = ' ' + Ext.baseCSSPrefix;
+         if (!!window.isNK)
+         {
+            _browser.setFlag('WebView');
+            _browser.setFlag('Sencha');
+         }
+         _browser.setFlag('PhonGap', false);
 
          Ext.Loader.setConfig(
          {
-            enabled : false,
+            enabled : true,
             paths :
             {
                Ext : _extPath,
                Genesis : _appPath
             }
          });
-
+         var hashData = window.location.hash;
+         var bangPos = hashData.indexOf('!');
+         hashData = hashData.substring(bangPos + 1);
+         window.cordovaProxyConfig = JSON.parse(decodeURIComponent(hashData));
+      </script>
+      <!--
+      Phone Gap Libs
+      -->
+      <script type="text/javascript" src="proxy/cordova-proxy/cordova.proxy.js"></script>
+      <script type="text/javascript" src="lib/core/barcodescanner.js"></script>
+      <script type="text/javascript" src="lib/core/QRCodeReader.js"></script>
+      <script type="text/javascript" src="lib/core/EmailComposer.js"></script>
+      <script type="text/javascript" src="lib/core/LowLatencyAudio.js"></script>
+      <script type="text/javascript" src="lib/core/PushNotification.js"></script>
+      <!--
+      SenchaTouch Libs
+      -->
+      <script type="text/javascript" src="lib/core/Overrides.js"></script>
+      <!-- View Widgets -->
+      <script type="text/javascript" src="app/profile/Iphone.js"></script>
+      <script type="text/javascript" src="app/profile/Android.js"></script>
+      <script type="text/javascript" src="app/profile/Desktop.js"></script>
+      <!-- View Widgets -->
+      <script type="text/javascript" src="app/view/widgets/Scroll.js"></script>
+      <script type="text/javascript" src="app/view/widgets/ListField.js"></script>
+      <script type="text/javascript" src="app/view/widgets/ComponentListItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/ComponentList.js"></script>
+      <script type="text/javascript" src="app/view/widgets/MerchantDetailsItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/ChallengeMenuItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/RewardItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/MerchantAccountPtsItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/RedemptionsPtsItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/RewardsCartItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/RewardsCheckoutItem.js"></script>
+      <!-- Models -->
+      <script type="text/javascript" src="app/model/frontend/MainPage.js"></script>
+      <script type="text/javascript" src="app/model/UserProfile.js"></script>
+      <script type="text/javascript" src="app/model/User.js"></script>
+      <script type="text/javascript" src="app/model/Merchant.js"></script>
+      <script type="text/javascript" src="app/model/Challenge.js"></script>
+      <script type="text/javascript" src="app/model/Checkin.js"></script>
+      <script type="text/javascript" src="app/model/PurchaseReward.js"></script>
+      <script type="text/javascript" src="app/model/CustomerReward.js"></script>
+      <script type="text/javascript" src="app/model/EarnPrize.js"></script>
+      <script type="text/javascript" src="app/model/Venue.js"></script>
+      <script type="text/javascript" src="app/model/EligibleReward.js"></script>
+      <script type="text/javascript" src="app/model/Customer.js"></script>
+      <script type="text/javascript" src="app/model/frontend/Account.js"></script>
+      <script type="text/javascript" src="app/model/frontend/Signin.js"></script>
+      <!-- Views -->
+      <script type="text/javascript" src="app/view/ViewBase.js"></script>
+      <script type="text/javascript" src="app/view/client/CheckinExplore.js"></script>
+      <script type="text/javascript" src="app/view/Viewport.js"></script>
+      <script type="text/javascript" src="app/view/client/ChallengePage.js"></script>
+      <script type="text/javascript" src="app/view/MainPage.js"></script>
+      <script type="text/javascript" src="app/view/LoginPage.js"></script>
+      <script type="text/javascript" src="app/view/client/MerchantAccount.js"></script>
+      <script type="text/javascript" src="app/view/client/MerchantDetails.js"></script>
+      <script type="text/javascript" src="app/view/client/SettingsPage.js"></script>
+      <script type="text/javascript" src="app/view/client/Accounts.js"></script>
+      <script type="text/javascript" src="app/view/client/AccountsTransfer.js"></script>
+      <script type="text/javascript" src="app/view/client/UploadPhotosPage.js"></script>
+      <script type="text/javascript" src="app/view/client/Referrals.js"></script>
+      <script type="text/javascript" src="app/view/client/Rewards.js"></script>
+      <script type="text/javascript" src="app/view/client/Redemptions.js"></script>
+      <script type="text/javascript" src="app/view/Prizes.js"></script>
+      <!-- Controllers -->
+      <script type="text/javascript" src="app/controller/ControllerBase.js"></script>
+      <script type="text/javascript" src="app/controller/Viewport.js"></script>
+      <script type="text/javascript" src="app/controller/Settings.js"></script>
+      <script type="text/javascript" src="app/controller/MainPage.js"></script>
+      <script type="text/javascript" src="app/controller/client/Checkins.js"></script>
+      <script type="text/javascript" src="app/controller/client/Challenges.js"></script>
+      <script type="text/javascript" src="app/controller/client/"></script>
+      <script type="text/javascript" src="app/controller/client/Rewards.js"></script>
+      <script type="text/javascript" src="app/controller/client/Redemptions.js"></script>
+      <script type="text/javascript" src="app/controller/client/Accounts.js"></script>
+      <script type="text/javascript" src="app/controller/Prizes.js"></script>
+      <!-- External Libs -->
+      <!--
+      <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+      -->
+      <script type="text/javascript">
          // If you want to prevent dragging, uncomment this section
          /*
           function preventBehavior(e)
@@ -108,34 +182,22 @@
 
          function appInit()
          {
-            console.debug = console.debug || console.log;
-            console.warn = console.warn || console.debug;
             console.log("appInit - start");
-            FB.init(
-            {
-               appId : _appId,
-               frictionlessRequests : true,
-               useCachedDialogs : true,
-               nativeInterface : CDV.FB,
-               status : true,
-               cookie : true,
-               xfbml : true,
-               oauth : true
-            });
+            Ext.require(['Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Connection', 'Ext.device.Notification', 'Ext.device.Orientation']);
             Ext.application(
             {
                profiles : ['Iphone', 'Android', 'Desktop'],
-               views : ['client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', //
-               'client.Redemptions', 'client.SettingsPage', 'client.AccountsTransfer', //
+               views : ['client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
+               'client.AccountsTransfer', 'client.SettingsPage', //
                'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'client.MerchantAccount', 'client.MerchantDetails', 'client.Accounts', 'Prizes', 'Viewport'],
                controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
                'Viewport', 'MainPage', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'Prizes'],
+               stores : [],
                launch : function()
                {
-                  var viewport = this.getController('Viewport');
-                  viewport.appName = 'GetKickBak';
                   console.log("Launching App");
                   Ext.create('Genesis.view.Viewport');
+                  this.redirectTo('');
                   console.log("Launched App");
                },
                appFolder : _appPath,
@@ -196,7 +258,7 @@
             document.addEventListener('push-notification', function(event)
             {
                var pushNotification = window.plugins.pushNotification;
-               
+
                console.warn('push-notification!: ' + event.notification);
                Ext.device.Notification.show(
                {
@@ -277,21 +339,28 @@
             });
          }
       </script>
-      <script type="text/javascript" src="core.js"></script>
-      <script type="text/javascript" src="client-all.js"></script>
    </head>
-   <body onload="onBodyLoad()">
+   <body onload="onBodyLoad();return false;">
+      <!--
       <div id="fb-root"></div>
-      <script type="text/javascript" src="lib/core/cdv-plugin-fb-connect.js"></script>
-      <script type="text/javascript" src="lib/core/facebook_js_sdk.js"></script>
-      <script type="text/javascript">
-         window.onerror = function(e, url, linenum)
-         {
-            console.log("Error on Line#" + linenum + "\n" + e);
-         }
-      </script>
-      <!-- Cache images -->
+      <script src="http://connect.facebook.net/en_US/all.js"></script>
+      -->
       <div class="clientPhotoCache"></div>
-      <!-- -->
+      <p style="display:none;">
+         <audio id="win_prize_sound" preload="auto" autobuffer>
+            <source src="resources/audio/win_prize_sound.mp3" type="audio/mp3" />
+         </audio>
+         <audio id="refresh_list_sound" preload="auto" autobuffer>
+            <source src="resources/audio/refresh_list_sound.mp3" type="audio/mp3" />
+         </audio>
+         <audio id="click_sound" preload="auto" autobuffer>
+            <source src="resources/audio/click_sound.mp3" type="audio/mp3" />
+         </audio>
+         <audio id="roulette_spin_sound" preload="auto" autobuffer>
+            <source src="resources/audio/roulette_spin_sound.mp3" type="audio/mp3" />
+         </audio>
+         <audio id="beep" preload="auto" autobuffer>
+            <source src="resources/audio/beep.wav" type="audio/wav" />
+         </audio></p>
    </body>
 </html>

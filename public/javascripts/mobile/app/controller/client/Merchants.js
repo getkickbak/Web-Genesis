@@ -1,4 +1,4 @@
-Ext.define('Genesis.controller.Merchants',
+Ext.define('Genesis.controller.client.Merchants',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
@@ -6,7 +6,7 @@ Ext.define('Genesis.controller.Merchants',
    {
       googleMapStaticUrl : 'http://maps.googleapis.com/maps/api/staticmap'
    },
-   xtype : 'merchantsCntlr',
+   xtype : 'clientmerchantsCntlr',
    config :
    {
       routes :
@@ -18,30 +18,30 @@ Ext.define('Genesis.controller.Merchants',
       {
          main :
          {
-            selector : 'merchantaccountview',
+            selector : 'clientmerchantaccountview',
             autoCreate : true,
-            xtype : 'merchantaccountview'
+            xtype : 'clientmerchantaccountview'
          },
-         merchantMain : 'merchantaccountview container[tag=merchantMain]',
-         tbPanel : 'merchantaccountview dataview[tag=tbPanel]',
-         prizesWonPanel : 'merchantaccountview component[tag=prizesWonPanel]',
-         feedContainer : 'merchantaccountview container[tag=feedContainer]',
-         descContainer : 'merchantaccountview container[tag=descContainer]',
-         descPanel : 'merchantaccountview container[tag=descPanel]',
-         //address : 'merchantaccountview component[tag=address]',
-         //stats : 'merchantaccountview formpanel[tag=stats]',
+         merchantMain : 'clientmerchantaccountview container[tag=merchantMain]',
+         tbPanel : 'clientmerchantaccountview dataview[tag=tbPanel]',
+         prizesWonPanel : 'clientmerchantaccountview component[tag=prizesWonPanel]',
+         feedContainer : 'clientmerchantaccountview container[tag=feedContainer]',
+         descContainer : 'clientmerchantaccountview container[tag=descContainer]',
+         descPanel : 'clientmerchantaccountview container[tag=descPanel]',
+         //address : 'clientmerchantaccountview component[tag=address]',
+         //stats : 'clientmerchantaccountview formpanel[tag=stats]',
          merchantDetails :
          {
-            selector : 'merchantdetailsview',
+            selector : 'clientmerchantdetailsview',
             autoCreate : true,
-            xtype : 'merchantdetailsview'
+            xtype : 'clientmerchantdetailsview'
          },
          mapBtn : 'viewportview button[tag=mapBtn]',
          shareBtn : 'viewportview button[tag=shareBtn]',
          checkinBtn : 'viewportview button[tag=checkin]',
-         mainBtn : 'merchantaccountview tabbar[cls=navigationBarBottom] button[tag=main]',
-         prizesBtn : 'merchantaccountview tabbar[cls=navigationBarBottom] button[tag=prizes]',
-         merchantTabBar : 'merchantaccountview tabbar'
+         mainBtn : 'clientmerchantaccountview tabbar[cls=navigationBarBottom] button[tag=main]',
+         prizesBtn : 'clientmerchantaccountview tabbar[cls=navigationBarBottom] button[tag=prizes]',
+         merchantTabBar : 'clientmerchantaccountview tabbar'
       },
       control :
       {
@@ -54,11 +54,11 @@ Ext.define('Genesis.controller.Merchants',
          {
             tap : 'onMapBtnTap'
          },
-         'merchantaccountview button[ui=orange]' :
+         'clientmerchantaccountview button[ui=orange]' :
          {
             tap : 'onMerchantAccountRewardsTap'
          },
-         'merchantaccountview list' :
+         'clientmerchantaccountview list' :
          {
             select : 'onMainSelect',
             disclose : 'onMainDisclose'
@@ -79,11 +79,11 @@ Ext.define('Genesis.controller.Merchants',
             activate : 'onDetailsActivate',
             deactivate : 'onDetailsDeactivate'
          },
-         'merchantdetailsview map' :
+         'clientmerchantdetailsview map' :
          {
             maprender : 'onMapRender'
          },
-         'merchantdetailsview component[tag=map]' :
+         'clientmerchantdetailsview component[tag=map]' :
          {
             // Goto CheckinMerchant.js for "painted" support
             //painted : 'onMapPainted'
@@ -194,7 +194,7 @@ Ext.define('Genesis.controller.Merchants',
    {
       var me = this;
       var app = me.getApplication();
-      var controller = app.getController('Checkins');
+      var controller = app.getController('client.Checkins');
       controller.setPosition(position);
       controller.fireEvent('checkin');
    },
@@ -364,7 +364,7 @@ Ext.define('Genesis.controller.Merchants',
       var viewport = me.getViewPortCntlr();
       var vport = me.getViewport();
       var app = me.getApplication();
-      var ccntlr = app.getController('Checkins');
+      var ccntlr = app.getController('client.Checkins');
       var cinfo = viewport.getCheckinInfo();
 
       var ccustomer = cinfo.customer;

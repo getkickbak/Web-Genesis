@@ -1,11 +1,11 @@
-Ext.define('Genesis.controller.Checkins',
+Ext.define('Genesis.controller.client.Checkins',
 {
    extend : 'Genesis.controller.ControllerBase',
    statics :
    {
       checkin_path : '/checkin'
    },
-   xtype : 'checkinsCntlr',
+   xtype : 'clientcheckinsCntlr',
    config :
    {
       routes :
@@ -16,16 +16,16 @@ Ext.define('Genesis.controller.Checkins',
       },
       refs :
       {
-         backBtn : 'checkinexploreview button[tag=back]',
-         closeBtn : 'checkinexploreview button[tag=close]',
-         exploreList : 'checkinexploreview list',
+         backBtn : 'clientcheckinexploreview button[tag=back]',
+         closeBtn : 'clientcheckinexploreview button[tag=close]',
+         exploreList : 'clientcheckinexploreview list',
          explore :
          {
-            selector : 'checkinexploreview',
+            selector : 'clientcheckinexploreview',
             autoCreate : true,
-            xtype : 'checkinexploreview'
+            xtype : 'clientcheckinexploreview'
          },
-         checkInNowBar : 'checkinexploreview container[tag=checkInNow]',
+         checkInNowBar : 'clientcheckinexploreview container[tag=checkInNow]',
          shareBtn : 'viewportview button[tag=shareBtn]'
       },
       control :
@@ -266,7 +266,7 @@ Ext.define('Genesis.controller.Checkins',
       var app = me.getApplication();
       var custore = Ext.StoreMgr.get('CustomerStore');
       var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-      var mcntlr = app.getController('Merchants');
+      var mcntlr = app.getController('client.Merchants');
       var viewport = me.getViewPortCntlr();
       var vport = me.getViewport();
       var sync = false, checkinMode = false;

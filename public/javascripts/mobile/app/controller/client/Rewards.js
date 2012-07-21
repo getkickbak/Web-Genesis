@@ -251,7 +251,7 @@ Ext.define('Genesis.controller.client.Rewards',
                console.debug("customer_id - " + customerId + '\n' + //
                "merchant_id - " + merchantId + '\n' + //
                "venue - " + Ext.encode(metaData['venue']) + '\n');
-               me.getApplication().getController('Checkins').fireEvent('setupCheckinInfo', 'explore', venue, customer, null);
+               me.getApplication().getController('cilent.Checkins').fireEvent('setupCheckinInfo', 'explore', venue, customer, null);
             }
             //
             // Clear Referral DB

@@ -1,8 +1,8 @@
-Ext.define('Genesis.view.CheckinExplore',
+Ext.define('Genesis.view.client.CheckinExplore',
 {
    extend : 'Genesis.view.ViewBase',
    requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.plugin.PullRefresh'],
-   alias : 'widget.checkinexploreview',
+   alias : 'widget.clientcheckinexploreview',
    config :
    {
       layout : 'fit',
@@ -90,7 +90,7 @@ Ext.define('Genesis.view.CheckinExplore',
             //pullRefreshText: 'Pull down for more new Tweets!',
             refreshFn : function(plugin)
             {
-               var controller = _application.getController('Checkins');
+               var controller = _application.getController('client.Checkins');
                controller.fireEvent('exploreLoad', true);
             }
          }]

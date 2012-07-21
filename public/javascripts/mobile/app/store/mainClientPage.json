@@ -12,7 +12,7 @@
          "photo_url": "resources/themes/images/v1/mainicons/explore.png",
          "desc": "Explore Merchants Nearby",
          "route" : "explore",
-         "pageCntlr": "Checkins",
+         "pageCntlr": "client.Checkins",
          "subFeature": "explore"
       }, {
          "name": "Prizes",
@@ -53,7 +53,7 @@
          "photo_url": "resources/themes/images/v1/mainicons/checkin.png",
          "desc": "Check-ins Menu for Merchants Nearby",
          "route" : "checkin",
-         "pageCntlr": "Checkins",
+         "pageCntlr": "client.Checkins",
          "subFeature": "checkin"
       }
    ]

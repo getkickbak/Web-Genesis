@@ -374,7 +374,7 @@ Ext.define('Genesis.controller.client.Accounts',
       var me = this;
       var venueId = venue.getId();
       var viewport = me.getViewPortCntlr();
-      var controller = me.getApplication().getController('Checkins');
+      var controller = me.getApplication().getController('client.Checkins');
       var rstore = Ext.StoreMgr.get('RedemptionsStore');
       var rec = me.rec;
 

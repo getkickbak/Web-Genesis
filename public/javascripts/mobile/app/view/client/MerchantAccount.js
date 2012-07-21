@@ -1,8 +1,8 @@
-Ext.define('Genesis.view.MerchantAccount',
+Ext.define('Genesis.view.client.MerchantAccount',
 {
    extend : 'Genesis.view.ViewBase',
    requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Ext.tab.Bar', 'Ext.plugin.ListPaging', 'Genesis.view.widgets.MerchantAccountPtsItem'],
-   alias : 'widget.merchantaccountview',
+   alias : 'widget.clientmerchantaccountview',
    config :
    {
       tag : 'merchantMain',

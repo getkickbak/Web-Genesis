@@ -872,6 +872,12 @@ Genesis.db =
             }
          }
       }
+      //
+      // Clean up ALL Object cache!
+      //
+      Ext.data.Model.cache =
+      {
+      };
    }
 }
 
@@ -1080,7 +1086,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          if (operation.process(action, resultSet, request, response) === false)
          {
             errorHandler();
-         }         
+         }
       }
       else
       {
@@ -1093,7 +1099,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
           * @param {Ext.data.Operation} operation The operation that triggered request
           */
          me.setException(operation, response);
-         
+
          errorHandler();
       }
 

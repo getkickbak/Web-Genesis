@@ -138,13 +138,13 @@
       <script type="text/javascript" src="app/model/frontend/Signin.js"></script>
       <!-- Views -->
       <script type="text/javascript" src="app/view/ViewBase.js"></script>
-      <script type="text/javascript" src="app/view/CheckinExplore.js"></script>
+      <script type="text/javascript" src="app/view/client/CheckinExplore.js"></script>
       <script type="text/javascript" src="app/view/Viewport.js"></script>
       <script type="text/javascript" src="app/view/client/ChallengePage.js"></script>
       <script type="text/javascript" src="app/view/MainPage.js"></script>
       <script type="text/javascript" src="app/view/LoginPage.js"></script>
-      <script type="text/javascript" src="app/view/MerchantAccount.js"></script>
-      <script type="text/javascript" src="app/view/MerchantDetails.js"></script>
+      <script type="text/javascript" src="app/view/client/MerchantAccount.js"></script>
+      <script type="text/javascript" src="app/view/client/MerchantDetails.js"></script>
       <!--
       <script type="text/javascript" src="app/view/Rewards.js"></script>
       -->
@@ -161,9 +161,9 @@
       <script type="text/javascript" src="app/controller/Viewport.js"></script>
       <script type="text/javascript" src="app/controller/Settings.js"></script>
       <script type="text/javascript" src="app/controller/MainPage.js"></script>
-      <script type="text/javascript" src="app/controller/Checkins.js"></script>
+      <script type="text/javascript" src="app/controller/client//Checkins.js"></script>
       <script type="text/javascript" src="app/controller/client/Challenges.js"></script>
-      <script type="text/javascript" src="app/controller/Merchants.js"></script>
+      <script type="text/javascript" src="app/controller/client/Merchants.js"></script>
       <!--
       <script type="text/javascript" src="app/controller/Rewards.js"></script>
       -->
@@ -214,9 +214,9 @@
                profiles : ['Iphone', 'Android', 'Desktop'],
                views : ['client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
                'client.AccountsTransfer', 'client.SettingsPage', //
-               'CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'MerchantAccount', 'MerchantDetails', 'client.Accounts', 'Prizes', 'Viewport'],
+               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'client.MerchantAccount', 'client.MerchantDetails', 'client.Accounts', 'Prizes', 'Viewport'],
                controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
-               'Viewport', 'MainPage', 'Merchants', 'client.Accounts', 'Settings', 'Checkins', 'Prizes'],
+               'Viewport', 'MainPage', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'Prizes'],
                stores : [],
                launch : function()
                {

@@ -1,8 +1,8 @@
-Ext.define('Genesis.view.MerchantDetails',
+Ext.define('Genesis.view.client.MerchantDetails',
 {
    extend : 'Genesis.view.ViewBase',
    requires : ['Ext.dataview.DataView', 'Ext.XTemplate', 'Ext.Map', 'Genesis.view.widgets.MerchantDetailsItem'],
-   alias : 'widget.merchantdetailsview',
+   alias : 'widget.clientmerchantdetailsview',
    config :
    {
       cls : 'merchantDetails viewport',
@@ -132,7 +132,7 @@ Ext.define('Genesis.view.MerchantDetails',
          {
             painted : function(map, eOpts)
             {
-               cntlr = _application.getController('Merchants');
+               cntlr = _application.getController('client.Merchants');
                var size = map.innerElement.getSize();
                map.setSize(size.width - (1 * 15), size.height - (1 * 12));
                var queryString = Ext.Object.toQueryString(Ext.apply(

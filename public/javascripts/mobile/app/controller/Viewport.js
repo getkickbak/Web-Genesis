@@ -142,7 +142,7 @@ Ext.define('Genesis.controller.Viewport',
    {
       var me = this;
       var app = me.getApplication();
-      var controller = app.getController('Checkins');
+      var controller = app.getController('client.Checkins');
       var cestore = Ext.StoreMgr.get('CheckinExploreStore');
 
       Venue['setFindNearestURL']();
@@ -374,7 +374,7 @@ Ext.define('Genesis.controller.Viewport',
    onBrowseTap : function(b, e, eOpts, eInfo)
    {
       this.redirectTo('exploreS');
-      //this.fireEvent('openpage', 'Checkins', 'explore', 'coverUp');
+      //this.fireEvent('openpage', 'client.Checkins', 'explore', 'coverUp');
    },
    // --------------------------------------------------------------------------
    // Page Navigation Handlers
