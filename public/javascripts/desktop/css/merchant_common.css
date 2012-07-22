@@ -3,6 +3,10 @@ body {
    background-size : 100% 100%;
 }
 
+.modal-backdrop {
+   background-color : transparent;
+}
+
 .navbar-fixed-top .navbar-inner {
 }
 
@@ -19,11 +23,11 @@ body {
 }
 
 .btn [class^="icon-"], .btn [class*=" icon-"] {
-   line-height: 16px;
+   line-height : 16px;
 }
 
 .news-items li {
-   width :100%;
+   width : 100%;
 }
 
 .disabled {
