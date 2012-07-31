@@ -46,3 +46,12 @@
       content : 'Visits';
    }
 }
+.prizepointsphoto {
+   @extend .pointsphoto;
+   &:before {
+      //background-image: theme_image($theme-path + "/miscicons", "prize_points" + ".png");
+   }
+   &:after {
+      content : 'Prize Pts';
+   }
+}

@@ -27,9 +27,9 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             },
             items : [
             {
-               tag : 'visits',
-               tpl : '{visits}',
-               cls : 'visitsphoto'
+               tag : 'prize_points',
+               tpl : '{prize_points}',
+               cls : 'prizepointsphoto'
             },
             {
                tag : 'points',
