@@ -92,7 +92,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                var viewport = _application.getController('Viewport');
                var customer = viewport.getCustomer();
                values['_customer'] = Ext.StoreMgr.get('CustomerStore').getById(customer.getId());
-               
+
                return ( customer ? true : false);
             },
             getBadge : function(values)
@@ -136,6 +136,10 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          getWinnersCount :
          {
             setData : 'winnersCount'
+         },
+         getBadgeProgress :
+         {
+            setData : 'badgeProgress'
          }
       }
    },
@@ -184,8 +188,8 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          //Update Points
          var points = this.query('component[tag=points]')[0];
          points.setData(customer.getData());
-         var visits = this.query('component[tag=visits]')[0];
-         visits.setData(customer.getData());
+         var prizepoints = this.query('component[tag=prizepoints]')[0];
+         prizepoints.setData(customer.getData());
       }
       else
       {
@@ -214,6 +218,29 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
    {
       var prizePanel = this.query('component[tag=prizesWonPanel]')[0];
       prizePanel.setData(data);
+   },
+   applyBadgeProcess : function(config)
+   {
+      return Ext.factory(Ext.apply(config,
+      {
+      }), Ext.Container, this.getBadgeProcess());
+   },
+   updateBadgeProcess : function(newBadgeProcess, oldBadgeProcess)
+   {
+      if (newBadgeProcess)
+      {
+         this.add(newBadgeProcess);
+      }
+
+      if (oldBadgeProcess)
+      {
+         this.remove(oldBadgeProcess);
+      }
+   },
+   setBadgeProcess : function(data)
+   {
+      var badgeProcess = this.query('component[tag=badgeProgressPanel]')[0];
+      badgeProcess.setData(data);
    },
    /**
     * Updates this container's child items, passing through the dataMap.
@@ -249,6 +276,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                      case 'background':
                         me.setDataBackground(data);
                         break;
+                     case 'badgeProgressPanel' :
                      case 'winnersCount':
                         me.setDataWinnersCount(data);
                         break;
