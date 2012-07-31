@@ -263,6 +263,8 @@ Ext.define('Genesis.controller.client.Accounts',
       var me = this;
       var mode = me.getMode();
       var tbbar = activeItem.query('titlebar')[0];
+      
+      activeItem.mode = mode;
       switch(mode)
       {
          case 'profile' :

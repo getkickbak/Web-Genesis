@@ -41,6 +41,7 @@ Ext.define('Genesis.controller.client.Merchants',
          checkinBtn : 'viewportview button[tag=checkin]',
          mainBtn : 'clientmerchantaccountview tabbar[cls=navigationBarBottom] button[tag=main]',
          prizesBtn : 'clientmerchantaccountview tabbar[cls=navigationBarBottom] button[tag=prizes]',
+         rewardsBtn : 'clientmerchantaccountview tabbar[cls=navigationBarBottom] button[tag=rewards]',
          merchantTabBar : 'clientmerchantaccountview tabbar'
       },
       control :
@@ -228,27 +229,6 @@ Ext.define('Genesis.controller.client.Merchants',
       //
       activeItem.showCheckinBtn = (!checkedIn || !checkedInMatch);
       //
-      // Update Badges
-      //
-      var prizesCount = 0, prizes = Ext.StoreMgr.get('PrizeStore').getRange();
-      for (var i = 0; i < prizes.length; i++)
-      {
-         if (prizes[i].getMerchant().getId() == merchantId)
-         {
-            prizesCount++;
-         }
-      }
-      activeItem.prizesCount = (prizesCount > 0) ? prizesCount : null;
-
-      /*
-      if (!oldActiveItem || //
-      (oldActiveItem.isXType('mainpageview', true) || oldActiveItem.isXType('checkinexploreview', true)))
-      {
-      this.getMerchantTabBar().hide();
-      }
-      */
-
-      //
       // Either we are checked-in or
       // customer exploring a venue they checked-in in the past ...
       //
@@ -283,7 +263,8 @@ Ext.define('Genesis.controller.client.Merchants',
 
       me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();
       me.getMainBtn()[(activeItem.showMainBtn) ? 'show':'hide']();
-      me.getPrizesBtn().setBadgeText((activeItem.prizesCount > 0) ? activeItem.prizesCount : null);
+      me.getPrizesBtn().setBadgeText(crecord.get('eligible_for_prize') ? '&#10004;' : null);
+      me.getRewardsBtn().setBadgeText(crecord.get('eligible_for_reward') ? '&#10004;' : null);
 
       // Update TitleBar
       activeItem.query('titlebar')[0].setTitle(' ');

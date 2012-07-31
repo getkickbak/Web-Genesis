@@ -61,12 +61,13 @@ Ext.define('Genesis.view.client.Accounts',
    },
    createView : function()
    {
-      if (!this.callParent(arguments))
+      var me = this;
+      if (!me.callParent(arguments))
       {
          return;
       }
 
-      this.setPreRender(this.getPreRender().concat([
+      me.setPreRender(me.getPreRender().concat([
       //
       // Accounts List
       //
@@ -83,7 +84,7 @@ Ext.define('Genesis.view.client.Accounts',
             xtype : 'toolbar',
             centered : false,
             tag : 'transferHdr',
-            hidden : !this.showTransferHdr,
+            hidden : !me.showTransferHdr,
             defaults :
             {
                iconMask : true
@@ -141,22 +142,34 @@ Ext.define('Genesis.view.client.Accounts',
                   //return Customer.isValidCustomer(values['id']);
                   return true;
                },
-               isEligible : function(values)
+               isEligible : function(customer)
                {
-                  /*
-                   var isEligible = null;
-                   var type = values['pageCntlr'];
-                   var stores = [Ext.StoreMgr.get('PrizeStore'), Ext.StoreMgr.get('RedemptionsStore')];
-                   for (var i = 0; i < stores.length; i++)
-                   {
-                   if (stores[i])
-                   {
-                   }
-                   }
-                   return ('<span class="x-badge round ' + //
-                   ((isEligible) ? '' : 'x-item-hidden') + '">Redeem!</span>');
-                   */
-                  return '';
+                  var isEligible = false;
+                  switch (me.mode)
+                  {
+                     case 'redeemRewardsProfile' :
+                     {
+                        isEligible = customer['eligible_for_reward'];
+                        break;
+                     }
+                     case 'redeemPrizesProfile' :
+                     {
+                        isEligible = customer['eligible_for_prize'];
+                        break;
+                     }
+                     case 'profile' :
+                     {
+                        isEligible = customer['eligible_for_reward'] || customer['eligible_for_prize'];
+                        break;
+                     }
+                     case 'emailtransfer' :
+                     case 'transfer' :
+                     default :
+                        break;
+                  }
+
+                  return ('<span class="x-badge round ' + //
+                  ((isEligible) ? '' : 'x-item-hidden') + '">&#10004;</span>');
                },
                getPhoto : function(values)
                {
