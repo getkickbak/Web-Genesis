@@ -36,22 +36,21 @@ Ext.define('Genesis.controller.client.Rewards',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          }
-      },
-      listeners :
-      {
-         'metadataChange' : 'onPrizeStoreMetaChange'
       }
    },
    loadCallback : null,
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
    checkinFirstMsg : 'Please Check-In before earning rewards',
    authCodeReqMsg : 'Proceed to scan an Authorization Code from your server to earn Reward Points!',
-   prizeCheckMsg : 'Find out if you won a PRIZE!',
+   prizeCheckMsg : 'Play our Instant Win Game to find out how many Prize Points you won!',
    earnPtsMsg : 'Updating Points Earned ...',
-   getPointsMsg : function(points, total)
+   getPointsMsg : function(reward_info)
    {
-      return 'You\'ve earned ' + points + ' Pts from this purchase.' + Genesis.constants.addCRLF() + //
-      'Your grand total is now ' + total + ' Pts!';
+      var points = reward_info['points'];
+      var extraPoints = reward_info['referral_points'];
+
+      return 'You\'ve earned' + points + ' Points from this purchase.' + //
+      ((extraPoints > 0) ? Genesis.constants.addCRLF() + me.prizeCheckMsg : '');
    },
    getReferralMsg : function(points)
    {
@@ -59,9 +58,9 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    getVipMsg : function(points)
    {
-      return 'You\'ve earned an ' + Genesis.constants.addCRLF() + //
-      'additional ' + points + ' Points!' + Genesis.constants.addCRLF() + //
-      this.prizeCheckMsg;
+      return ('You\'ve earned an ' + Genesis.constants.addCRLF() + //
+      'additional ' + points + ' Reward Points!' + Genesis.constants.addCRLF() + //
+      this.prizeCheckMsg);
    },
    vipPopUp : function(points, callback)
    {
@@ -135,15 +134,14 @@ Ext.define('Genesis.controller.client.Rewards',
       var me = this;
       var viewport = me.getViewPortCntlr();
       var venueId = (!position) ? 0 : viewport.getVenue().getId();
-      var reader = CustomerReward.getProxy().getReader();
-      var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
+      var reader = PurchaseReward.getProxy().getReader();
 
       //
       // Triggers PrizeCheck and MetaDataChange
       // - subject CustomerReward also needs to be reset to ensure property processing of objects
       //
       //console.debug("qrcode =[" + me.qrcode + ']');
-      EarnPrize['setEarnPrizeURL']();
+      PurchaseReward['setEarnPointsURL']();
       reader.setRootProperty('');
       reader.buildExtractors();
       Ext.Viewport.setMasked(
@@ -151,7 +149,7 @@ Ext.define('Genesis.controller.client.Rewards',
          xtype : 'loadmask',
          message : me.earnPtsMsg
       });
-      pstore.loadPage(1,
+      PurchaseReward.load(1,
       {
          jsonData :
          {
@@ -163,14 +161,14 @@ Ext.define('Genesis.controller.client.Rewards',
             latitude : (position) ? position.coords.getLatitude() : 0,
             longitude : (position) ? position.coords.getLongitude() : 0
          },
-         callback : function(records, operation)
+         callback : function(record, operation)
          {
             reader.setRootProperty('data');
             reader.buildExtractors();
             Ext.Viewport.setMasked(false);
             if (operation.wasSuccessful())
             {
-               me.loadCallback = arguments;
+               me.loadCallback = [reader.metaData, operation];
             }
          }
       });
@@ -223,108 +221,59 @@ Ext.define('Genesis.controller.client.Rewards',
          me.checkReferralPrompt(earnPts, earnPts);
       }
    },
-   metaDataHandler : function(metaData)
+   updateMetaData : function(metaData)
    {
       var me = this;
-      var viewport = me.getViewPortCntlr();
+      var data = metaData['data'] || null;
+
+      metaData['data'] = null;
+      var customer = me.callParent(arguments);
+      var custimerId = customer.getId();
+      metaData['data'] = data;
       //
       // Update points from the purchase or redemption
       //
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var merchantId;
-      var customer = viewport.getCustomer();
-      var customerId = metaData['customer_id'] || ((customer) ? customer.getId() : 0);
+      //if (customer)
 
-      if (customerId > 0)
+      var exit = function()
       {
-         customer = cstore.getById(customerId);
-      }
-      if (customer)
-      {
-         var exit = function()
+         var venue = (metaData['venue']) ? Ext.create('Genesis.model.Venue', metaData['venue']) : viewport.getVenue();
+         if (venue)
          {
-            var venue = (metaData['venue']) ? Ext.create('Genesis.model.Venue', metaData['venue']) : viewport.getVenue();
-            if (venue)
-            {
-               merchantId = metaData['merchant_id'] || venue.getMerchant().getId();
+            var controller = me.getApplication().getController('client.Checkins');
+            var merchantId = metaData['merchant_id'] || venue.getMerchant().getId();
 
-               console.debug("customer_id - " + customerId + '\n' + //
-               "merchant_id - " + merchantId + '\n' + //
-               "venue - " + Ext.encode(metaData['venue']) + '\n');
-               me.getApplication().getController('cilent.Checkins').fireEvent('setupCheckinInfo', 'explore', venue, customer, null);
-            }
+            console.debug("customer_id - " + customerId + '\n' + //
+            "merchant_id - " + merchantId + '\n' + //
+            "venue - " + Ext.encode(metaData['venue']));
+            controller.fireEvent('setupCheckinInfo', 'explore', venue, customer, null);
             //
             // Clear Referral DB
             //
             Genesis.db.removeReferralDBAttrib("m" + merchantId);
-            me.redirectTo('scanAndWin');
-         };
-
-         customer.beginEdit();
-         if (metaData['account_points'])
-         {
-            customer.set('points', metaData['account_points']);
          }
-         if (metaData['account_visits'])
+         me.redirectTo('scanAndWin');
+      };
+      var info = metaData['reward_info'];
+      Ext.device.Notification.show(
+      {
+         title : 'Reward Points',
+         message : me.getPointsMsg(info),
+         callback : function()
          {
-            customer.set('visits', metaData['account_visits']);
-         }
-         customer.endEdit();
-
-         if (Ext.isDefined(metaData['points']))
-         {
-            var message = me.getPointsMsg(metaData['points'], metaData['account_points']);
-            if (!metaData['vip_challenge'] && !metaData['referral_challenge'])
+            if (info['referral_points'] > 0)
             {
-               message += Genesis.constants.addCRLF() + me.prizeCheckMsg;
+               me.referralPopUp(info['referral_points'], exit);
             }
-            Ext.device.Notification.show(
+            else
             {
-               title : 'Reward Points',
-               message : message,
-               callback : function()
-               {
-                  if ((metaData['vip_challenge']))
-                  {
-                     me.vipPopUp(metaData['vip_challenge'].points, exit);
-                  }
-                  else
-                  if ((metaData['referral_challenge']))
-                  {
-                     me.referralPopUp(metaData['referral_challenge'].points, exit);
-                  }
-                  else
-                  {
-                     exit();
-                  }
-               }
-            });
+               exit();
+            }
          }
-         else
-         if (metaData['vip_challenge'])
-         {
-            me.vipPopUp(metaData['vip_challenge'].points, exit);
-         }
-         else
-         if (metaData['referral_challenge'])
-         {
-            me.referralPopUp(metaData['referral_challenge'].points, exit);
-         }
-      }
-   },
-   onPrizeStoreMetaChange : function(pstore, metaData)
-   {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-
-      //
-      // Added to Earn Rewards Handling
-      //
-      me.metaDataHandler(metaData);
-
+      });
       if (metaData['data'])
       {
-         var controller = me.getApplication().getController('Prizes');
+         var controller = me.getApplication().getController('client.Prizes');
          controller.fireEvent('showQRCode', 0, metaData['data']);
       }
    },
@@ -336,7 +285,7 @@ Ext.define('Genesis.controller.client.Rewards',
          var container = me.getRewards();
          var viewport = me.getViewPortCntlr();
          var app = me.getApplication();
-         var controller = app.getController('Prizes');
+         var controller = app.getController('client.Prizes');
 
          //activeItem.createView();
          me.startRouletteScreen();

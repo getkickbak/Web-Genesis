@@ -11,6 +11,7 @@ Genesis.constants =
    sign_in_path : '/sign_in',
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
+   photoSite : 'http://photos.getkickbak.com',
    debugVPrivKey : '5B2PuTj1C5kiJBFpR2kd8l7iGFLyb34z',
    debugRPrivKey : '5B2PuTj1C5kiJBFpR2kd8l7iGFLyb34z',
    device : null,
@@ -25,9 +26,9 @@ Genesis.constants =
    {
       return ((!this.isNative()) ? '<br/>' : '\n');
    },
-   getIconPath : function(type, name)
+   getIconPath : function(type, name, remote)
    {
-      return 'resources/themes/images/' + this.themeName + '/' + type + '/' + name + '.png';
+      return ((!remote) ? 'resources/themes/images/' + this.themeName : this.photoSite) + '/' + type + '/' + name + '.png';
    },
    getPrivKey : function(id)
    {

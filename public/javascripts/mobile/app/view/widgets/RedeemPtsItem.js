@@ -1,9 +1,9 @@
-Ext.define('Genesis.view.widgets.RedemptionsPtsItem',
+Ext.define('Genesis.view.widgets.RedeemPtsItem',
 {
    extend : 'Ext.dataview.component.DataItem',
    requires : ['Ext.XTemplate'],
-   xtype : 'redemptionsptsitem',
-   alias : 'widget.redemptionsptsitem',
+   xtype : 'redeemptsitem',
+   alias : 'widget.redeemptsitem',
    config :
    {
       layout :

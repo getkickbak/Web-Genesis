@@ -306,46 +306,112 @@ Ext.define('Genesis.controller.ControllerBase',
    // --------------------------------------------------------------------------
    // Utility Functions
    // --------------------------------------------------------------------------
-   updateRewards : function(metaData)
+   updateMetaData : function(metaData)
    {
       var me = this;
+      var viewport = me.getViewPortCntlr();
+      var merchant = viewport.getVenue().getMerchant();
+
       try
       {
          //
-         // Update Customer Rewards (Redemptions)
+         // Update Customer Rewards (Rewards Redemptions)
          //
          var rewards = metaData['rewards'];
-         if (rewards)
+         if (rewards && (rewards.length > 0))
          {
-            var viewport = me.getViewPortCntlr();
-            var venueId = metaData['venue_id'] || viewport.getVenue().getId();
             console.debug("Total Redemption Rewards - " + rewards.length);
+            for (var i = 0; i < rewards.length; i++)
+            {
+               rewards['merchant'] = merchant;
+            }
             var rstore = Ext.StoreMgr.get('RedemptionsStore');
             rstore.setData(rewards);
          }
          //
-         // Update Eligible Rewards
+         // Update Customer Rewards (Prizes Redemptions)
+         //
+         rewards = metaData['prizes'];
+         if (rewards && (rewards.length > 0))
+         {
+            console.debug("Total Redemption Prizes - " + rewards.length);
+            for (var i = 0; i < rewards.length; i++)
+            {
+               rewards['merchant'] = merchant;
+            }
+            var pstore = Ext.StoreMgr.get('PrizeStore');
+            pstore.setData(rewards);
+         }
+         //
+         // Update News
          // (Make sure we are after Redemption because we may depend on it for rendering purposes)
          //
-         var erewards = metaData['eligible_rewards'];
-         if (erewards && erewards.length > 0)
+         var news = metaData['newsfeed'];
+         if (news && (news.length > 0))
          {
-            console.debug("Total Eligible Rewards - " + erewards.length);
-            var estore = Ext.StoreMgr.get('EligibleRewardsStore');
-            estore.setData(erewards);
+            console.debug("Total News Items - " + news.length);
+            var nstore = Ext.StoreMgr.get('NewsStore');
+            nstore.setData(news);
          }
          //
          // Winners' Circle'
          //
-         var prizesCount = metaData['winners_count'];
+         var prizesCount = metaData['prizes_count'];
          if (prizesCount >= 0)
          {
-            console.debug("Prizes won by customers at this merchant this month - [" + prizesCount + "]");
-            viewport.getVenue().set('winners_count', prizesCount);
+            console.debug("Prizes won redeemed by customers at this merchant this month - [" + prizesCount + "]");
+            viewport.getVenue().set('prizes_count', prizesCount);
          }
+         //
+         // Update points from the purchase or redemption
+         // Update Customer info
+         //
+         var viewport = me.getViewPortCntlr();
+         var cstore = Ext.StoreMgr.get('CustomerStore');
+         var customer = viewport.getCustomer();
+         var customerId = metaData['customer_id'] || ((customer) ? customer.getId() : 0);
+         if (customerId > 0)
+         {
+            customer = cstore.getById(customerId);
+         }
+         customer.beginEdit();
+         var info = metaData['account_info'];
+         if (info)
+         {
+            customer.set('points', info['points']);
+            customer.set('prize_points', info['prize_points']);
+            customer.set('visits', info['visits']);
+            //
+            // Badge Status
+            //
+            var currentBadge = info['badge'];
+            if (currentBadge)
+            {
+               console.debug("Customer's Current Badge is - [" + currentBadge['type'].value + "/" + currentBadge['visits'] + "]");
+               customer.set('badge', currentBadge);
+            }
+            var nextBadge = info['next_badge'];
+            if (nextBadge)
+            {
+               console.debug("Customer's next Badge is - [" + nextBadge['type'].value + "/" + nextBadge['visits'] + "]");
+               customer.set('next_badge', nextBadge);
+            }
+            var eligible_reward = info['eligible_for_reward'];
+            if (Ext.isDefined(eligible_reward))
+            {
+               customer.set('eligible_for_reward', eligible_reward);
+            }
+            var eligible_prize = info['eligible_for_prize'];
+            if (Ext.isDefined(eligible_prize))
+            {
+               customer.set('eligible_for_prize', eligible_prize);
+            }
+         }
+         customer.endEdit();
 
          //
          // QR Code from Transfer Points
+         //
          var qrcode = metaData['data'];
          if (qrcode)
          {
@@ -358,8 +424,10 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       catch(e)
       {
-         console.debug("updateRewards Exception - " + e);
+         console.debug("updateMetaData Exception - " + e);
       }
+
+      return customer;
    },
    checkReferralPrompt : function(cbOnSuccess, cbOnFail)
    {
@@ -401,8 +469,9 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var stores =
       {
-         'CustomerStore' : [Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'CustomerJSON'],
-         'MerchantPrizeStore' : [Ext.StoreMgr.get('Persistent' + 'MerchantPrizeStore'), 'MerchantPrizeStore', 'EarnPrizeJSON']
+         'CustomerStore' : [Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'CustomerJSON']
+         //,'PrizeStore' : [Ext.StoreMgr.get('Persistent' + 'PrizeStore'), 'PrizeStore',
+         // 'CustomerRewardJSON']
       };
       for (var i in stores)
       {
@@ -422,7 +491,9 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    persistLoadStores : function(callback)
    {
-      var stores = [[this.persistStore('CustomerStore'), 'CustomerStore', 0x01], [this.persistStore('MerchantPrizeStore'), 'MerchantPrizeStore', 0x10]];
+      var stores = [[this.persistStore('CustomerStore'), 'CustomerStore', 0x01]
+      //,[this.persistStore('PrizeStore'), 'PrizeStore', 0x10]];
+      ];
       var flag = 0x0;
 
       callback = callback || Ext.emptyFn;
@@ -449,7 +520,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   console.debug("Error Restoring " + stores[i][1] + " ...");
                }
 
-               if ((flag |= stores[i][2]) == 0x11)
+               //if ((flag |= stores[i][2]) == 0x11)
                {
                   callback();
                }
@@ -459,7 +530,9 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    persistSyncStores : function(storeName, cleanOnly)
    {
-      var stores = [[this.persistStore('CustomerStore'), 'CustomerStore', 0x01], [this.persistStore('MerchantPrizeStore'), 'MerchantPrizeStore', 0x10]];
+      var stores = [[this.persistStore('CustomerStore'), 'CustomerStore', 0x01]
+      //, [this.persistStore('PrizeStore'), 'PrizeStore', 0x10]];
+      ];
       for (var i = 0; i < stores.length; i++)
       {
          if (!storeName || (stores[i][1] == storeName))

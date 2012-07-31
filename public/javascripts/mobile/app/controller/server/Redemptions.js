@@ -21,7 +21,7 @@ Ext.define('Genesis.controller.server.Redemptions',
             autoCreate : true,
             xtype : 'serverredemptionsview'
          },
-         verifyBtn : 'showprizeview[tag=showPrize] button[tag=verify]',
+         verifyBtn : 'showprizeview[tag=redeemItem] button[tag=verify]',
       },
       control :
       {
@@ -139,19 +139,26 @@ Ext.define('Genesis.controller.server.Redemptions',
                      Genesis.db.addRedeemSortedDB([encrypted, dbI[encrypted]]);
                      Genesis.db.addRedeemIndexDB(encrypted, decrypted["expiry_ts"]);
 
-                     var controller = me.getApplication().getController('Prizes');
-                     controller.fireEvent('authreward', Ext.create('Genesis.model.EarnPrize',
+                     var controller = me.getApplication().getController('server.Prizes');
+                     var reward = Ext.create('Genesis.model.CustomerReward',
                      {
-                        //'id' : 1,
-                        'expiry_date' : null,
-                        'reward' : Ext.create('Genesis.model.CustomerReward',
-                        {
-                           type : decrypted['reward'].type,
-                           title : decrypted['reward'].title
-                        }),
-                        'merchant' : null
-                     }));
-
+                        type : decrypted['reward'].type,
+                        title : decrypted['reward'].title
+                     });
+                     controller.fireEvent('authreward', reward);
+                     /*
+                      Ext.create('Genesis.model.EarnPrize',
+                      {
+                      //'id' : 1,
+                      'expiry_date' : null,
+                      'reward' : Ext.create('Genesis.model.CustomerReward',
+                      {
+                      type : decrypted['reward'].type,
+                      title : decrypted['reward'].title
+                      }),
+                      'merchant' : null
+                      });
+                      */
                      return;
                   }
                   else

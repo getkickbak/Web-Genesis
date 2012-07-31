@@ -253,15 +253,15 @@ Ext.define('Genesis.controller.Prizes',
          {
             var carousel = me.getMainCarousel();
             item = carousel.getActiveItem();
-            store = Ext.StoreMgr.get('MerchantPrizeStore');
-            EarnPrize['setRedeemPrizeURL'](item.getStore().first().getId());
+            store = Ext.StoreMgr.get('PrizeStore');
+            CustomerReward['setRedeemPrizeURL'](item.getStore().first().getId());
             break;
          }
          case 'showPrize' :
          {
             item = view.getInnerItems()[0];
-            store = Ext.StoreMgr.get('MerchantPrizeStore');
-            EarnPrize['setRedeemPrizeURL'](item.getStore().first().getId());
+            store = Ext.StoreMgr.get('PrizeStore');
+            CustomerReward['setRedeemPrizeURL'](item.getStore().first().getId());
             break;
          }
          case 'reward' :
@@ -361,14 +361,14 @@ Ext.define('Genesis.controller.Prizes',
    onShowPrize : function(showPrize)
    {
       var me = this;
-      var store = Ext.StoreMgr.get('MerchantPrizeStore');
+      var store = Ext.StoreMgr.get('PrizeStore');
 
       //
       // Show prize on ShowPrize Container
       //
       me.showPrize = showPrize;
       store.add(showPrize);
-      me.persistSyncStores('MerchantPrizeStore');
+      me.persistSyncStores('PrizeStore');
 
       me.redirectTo('prize');
    },
@@ -445,7 +445,7 @@ Ext.define('Genesis.controller.Prizes',
       var viewport = me.getViewPortCntlr();
       var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
       var prizesList = [];
-      var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
+      var prizes = Ext.StoreMgr.get('PrizeStore').getRange();
       if (prizes.length > 0)
       {
          for (var i = 0; i < prizes.length; i++)
@@ -485,7 +485,7 @@ Ext.define('Genesis.controller.Prizes',
       me.getUBB().show();
       //me.getURedeemBtn().hide();
 
-      var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
+      var prizes = Ext.StoreMgr.get('PrizeStore').getRange();
       for (var i = 0; i < prizes.length; i++)
       {
          prizesList.push(prizes[i]);
@@ -571,13 +571,13 @@ Ext.define('Genesis.controller.Prizes',
          //
          if (mode != 'reward')
          {
-            var store = Ext.StoreMgr.get('MerchantPrizeStore');
+            var store = Ext.StoreMgr.get('PrizeStore');
             var container = carousel || prizes;
             var item = carousel ? carousel.getActiveItem() : container.getInnerItems()[0];
 
             prize = item.getStore().getData().items[0];
             store.remove(prize);
-            me.persistSyncStores('MerchantPrizeStore');
+            me.persistSyncStores('PrizeStore');
          }
 
          switch (mode)

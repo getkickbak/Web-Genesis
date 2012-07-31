@@ -116,11 +116,10 @@
       <script type="text/javascript" src="app/view/widgets/ComponentList.js"></script>
       <script type="text/javascript" src="app/view/widgets/MerchantDetailsItem.js"></script>
       <script type="text/javascript" src="app/view/widgets/ChallengeMenuItem.js"></script>
-      <script type="text/javascript" src="app/view/widgets/RewardItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/RedeemItem.js"></script>
       <script type="text/javascript" src="app/view/widgets/MerchantAccountPtsItem.js"></script>
-      <script type="text/javascript" src="app/view/widgets/RedemptionsPtsItem.js"></script>
-      <script type="text/javascript" src="app/view/widgets/RewardsCartItem.js"></script>
-      <script type="text/javascript" src="app/view/widgets/RewardsCheckoutItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/RedeemPtsItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/RedeemItemDetail.js"></script>
       <!-- Models -->
       <script type="text/javascript" src="app/model/frontend/MainPage.js"></script>
       <script type="text/javascript" src="app/model/UserProfile.js"></script>
@@ -130,9 +129,8 @@
       <script type="text/javascript" src="app/model/Checkin.js"></script>
       <script type="text/javascript" src="app/model/PurchaseReward.js"></script>
       <script type="text/javascript" src="app/model/CustomerReward.js"></script>
-      <script type="text/javascript" src="app/model/EarnPrize.js"></script>
       <script type="text/javascript" src="app/model/Venue.js"></script>
-      <script type="text/javascript" src="app/model/EligibleReward.js"></script>
+      <script type="text/javascript" src="app/model/News.js"></script>
       <script type="text/javascript" src="app/model/Customer.js"></script>
       <script type="text/javascript" src="app/model/frontend/Account.js"></script>
       <script type="text/javascript" src="app/model/frontend/Signin.js"></script>
@@ -154,8 +152,9 @@
       <script type="text/javascript" src="app/view/client/UploadPhotosPage.js"></script>
       <script type="text/javascript" src="app/view/client/Referrals.js"></script>
       <script type="text/javascript" src="app/view/client/Rewards.js"></script>
+      <script type="text/javascript" src="app/view/client/RedeemBase.js"></script>
       <script type="text/javascript" src="app/view/client/Redemptions.js"></script>
-      <script type="text/javascript" src="app/view/Prizes.js"></script>
+      <script type="text/javascript" src="app/view/client/Prizes.js"></script>
       <!-- Controllers -->
       <script type="text/javascript" src="app/controller/ControllerBase.js"></script>
       <script type="text/javascript" src="app/controller/Viewport.js"></script>
@@ -168,9 +167,10 @@
       <script type="text/javascript" src="app/controller/Rewards.js"></script>
       -->
       <script type="text/javascript" src="app/controller/client/Rewards.js"></script>
+      <script type="text/javascript" src="app/controller/client/RedeemBase.js"></script>
       <script type="text/javascript" src="app/controller/client/Redemptions.js"></script>
       <script type="text/javascript" src="app/controller/client/Accounts.js"></script>
-      <script type="text/javascript" src="app/controller/Prizes.js"></script>
+      <script type="text/javascript" src="app/controller/client/Prizes.js"></script>
       <!-- External Libs -->
       <!--
       <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
@@ -214,7 +214,7 @@
                profiles : ['Iphone', 'Android', 'Desktop'],
                views : ['client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
                'client.AccountsTransfer', 'client.SettingsPage', //
-               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'client.MerchantAccount', 'client.MerchantDetails', 'client.Accounts', 'Prizes', 'Viewport'],
+               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'client.MerchantAccount', 'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'widget.PrizesDetail', 'widget.ShowPrizeDetail', 'Viewport'],
                controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
                'Viewport', 'MainPage', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'Prizes'],
                stores : [],

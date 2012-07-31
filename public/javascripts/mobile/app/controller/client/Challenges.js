@@ -541,7 +541,7 @@ Ext.define('Genesis.controller.client.Challenges',
                title : 'VIP Challenge',
                message : me.getConsolationMsg(metaData['message'])
             });
-            me.getViewPortCntlr().updateRewardsTask.delay(0.1 * 1000, me.updateRewards, me, [metaData]);
+            me.getViewPortCntlr().updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [metaData]);
             break;
          }
          default:
@@ -561,7 +561,7 @@ Ext.define('Genesis.controller.client.Challenges',
                title : 'Earn Points',
                message : ((metaData['points'] > 0) ? me.getPointsMsg(metaData['points'], metaData['account_points']) : me.getConsolationMsg(metaData['message']))
             });
-            me.getViewPortCntlr().updateRewardsTask.delay(0.1 * 1000, me.updateRewards, me, [metaData]);
+            me.getViewPortCntlr().updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [metaData]);
             break;
       }
    },
@@ -612,7 +612,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      me.popView();
                   }
                });
-               viewport.updateRewardsTask.delay(0.1 * 1000, me.updateRewards, me, [metaData2]);
+               viewport.updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [metaData2]);
             }
             else
             {
@@ -823,7 +823,6 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       //var container = me.getReferralsContainer();
       //container.setActiveItem(0);
-      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onReferralsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
@@ -952,7 +951,6 @@ Ext.define('Genesis.controller.client.Challenges',
 
       //me.getPostBtn().show();
       activeItem.metaData = me.metaData;
-      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
    },
    onUploadPhotosDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)

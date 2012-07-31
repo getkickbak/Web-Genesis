@@ -153,3 +153,9 @@
   @extend .x-listmark-base;
   background-color: $color;
 }
+
+@mixin badge-panel-icon($ui-label, $start-color, $end-color, $position, $image, $ui-prefix : ".badgephoto") {
+   #{$ui-prefix}-#{$ui-label}:before {
+      @include custom-linear-gradient($start-color, $end-color, $position, $image);
+   }
+}

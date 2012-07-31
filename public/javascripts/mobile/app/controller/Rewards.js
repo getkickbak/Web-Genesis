@@ -221,7 +221,7 @@ Ext.define('Genesis.controller.Rewards',
    earnPts : function()
    {
       var me = this;
-      var pstore = Ext.StoreMgr.get('MerchantPrizeStore')
+      var pstore = Ext.StoreMgr.get('PrizeStore')
       var rcstore = Ext.StoreMgr.get('RewardsCartStore')
       var viewport = me.getViewPortCntlr();
       var cvenue = viewport.getCheckinInfo().venue;

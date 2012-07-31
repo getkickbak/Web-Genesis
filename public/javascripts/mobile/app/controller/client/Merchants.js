@@ -230,7 +230,7 @@ Ext.define('Genesis.controller.client.Merchants',
       //
       // Update Badges
       //
-      var prizesCount = 0, prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
+      var prizesCount = 0, prizes = Ext.StoreMgr.get('PrizeStore').getRange();
       for (var i = 0; i < prizes.length; i++)
       {
          if (prizes[i].getMerchant().getId() == merchantId)
@@ -284,7 +284,7 @@ Ext.define('Genesis.controller.client.Merchants',
       me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();
       me.getMainBtn()[(activeItem.showMainBtn) ? 'show':'hide']();
       me.getPrizesBtn().setBadgeText((activeItem.prizesCount > 0) ? activeItem.prizesCount : null);
-      
+
       // Update TitleBar
       activeItem.query('titlebar')[0].setTitle(' ');
       Ext.defer(function()
@@ -334,16 +334,23 @@ Ext.define('Genesis.controller.client.Merchants',
          }
          default:
             var app = me.getApplication();
-            var controller = app.getController('Prizes');
+            //
+            // To-do : Depending on what to redeem
+            //
+            var controller = app.getController('client.Prizes');
+            //var controller = app.getController('client.Redemptions');
             var rstore = Ext.StoreMgr.get('RedemptionsStore');
             record = rstore.getById(record.get('reward_id'));
-            controller.fireEvent('redeemrewards', Ext.create('Genesis.model.EarnPrize',
-            {
-               //'id' : 1,
-               'expiry_date' : null,
-               'reward' : record,
-               'merchant' : viewport.getCheckinInfo().venue.getMerchant()
-            }));
+            controller.fireEvent('showredeemitem', record);
+            /*
+             Ext.create('Genesis.model.CustomerReward',
+             {
+             //'id' : 1,
+             'expiry_date' : null,
+             'reward' : record,
+             'merchant' : viewport.getCheckinInfo().venue.getMerchant()
+             }));
+             */
             break;
       }
    },
@@ -378,7 +385,7 @@ Ext.define('Genesis.controller.client.Merchants',
 
          // Restore Merchant Info
          ccntlr.fireEvent('setupCheckinInfo', 'checkin', cvenue, ccustomer, cmetaData);
-         viewport.updateRewardsTask.delay(0.1 * 1000, me.updateRewards, me, [cmetaData]);
+         viewport.updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [cmetaData]);
       }
       //
       // Force Page to refresh

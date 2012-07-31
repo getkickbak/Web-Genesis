@@ -57,12 +57,73 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             // Updated Automatically when the Customer\'s metadata is updated
             getTitle : function(values)
             {
-               return 'Prizes won this month';
+               return 'Prizes redeemed this month';
             },
             // Updated Automatically when the Customer\'s metadata is updated
             getDesc : function(values)
             {
-               return (values['winners_count'] > 0) ? values['winners_count'] + ' Winners!' : 'Be our first winner!';
+               return (values['prizes_count'] > 0) ? values['prizes_count'] + ' Prizes Redeemed!' : 'Be our first winner!';
+            }
+         })
+      },
+      badgeProgress :
+      {
+         // -----------------------------------------------------------------------
+         // Prizes won by customers!
+         // -----------------------------------------------------------------------
+         tag : 'badgeProgressPanel',
+         xtype : 'component',
+         cls : 'badgeProgressPanel',
+         tpl : Ext.create('Ext.XTemplate',
+         // @formatter:off
+         '<tpl if="this.isVisible(values)">',
+            '<div class="badgephoto badgephoto-{}">',
+               '<div class="itemTitle">{[this.getTitle(values)]}</div>',
+               '<div class="itemDesc progressBarValue" style="{[this.getProgress(values)]}">{[this.getDesc(values)]}</div>',
+            '</div>',
+         '</tpl>',
+         // @formatter:on
+         {
+            //
+            // Hide Points if we are not a customer of the Merchant
+            //
+            isVisible : function(values)
+            {
+               var viewport = _application.getController('Viewport');
+               var customer = viewport.getCustomer();
+               values['_customer'] = Ext.StoreMgr.get('CustomerStore').getById(customer.getId());
+               
+               return ( customer ? true : false);
+            },
+            getBadge : function(values)
+            {
+               return values['_customer'].get('badge')['type'].toLowerCase();
+            },
+            // Updated Automatically when the Customer\'s metadata is updated
+            getTitle : function(values)
+            {
+               return 'Visits for next Badge';
+            },
+            getProgress : function(values)
+            {
+               var customer = values['_customer'];
+               var cvisit = customer.get('badge').visits;
+               var nvisit = customer.get('next_badge').visits;
+               var tvisit = customer.get('visits');
+
+               var current = tvisits - cvisit;
+               var total = nvisit - cvisit;
+
+               values['_total'] = total;
+               values['_current'] = current;
+               delete values['_customer'];
+
+               return ('width:' + (current / total * 100) + '%;');
+            },
+            // Updated Automatically when the Customer\'s metadata is updated
+            getDesc : function(values)
+            {
+               return values['_current'] + ' of ' + values['_total'];
             }
          })
       },

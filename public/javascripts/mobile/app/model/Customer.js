@@ -71,7 +71,9 @@ Ext.define('Genesis.model.Customer',
             rootProperty : 'data'
          }
       },
-      fields : ['points', 'visits', 'id'],
+      fields : ['badge', 'points', 'prize_points', 'visits', 'id', 'eligible_for_reward', 'eligible_for_prize',
+      //
+      'next_badge'],
       idProperty : 'id'
    },
    getUser : function()
@@ -111,7 +113,7 @@ Ext.define('Genesis.model.Customer',
             sync = true;
          }
          cOld.endEdit();
-         
+
          return sync;
       },
       setFbLoginUrl : function()

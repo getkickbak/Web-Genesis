@@ -86,7 +86,7 @@ Ext.define('Genesis.controller.Viewport',
          },
          'tabbar[cls=navigationBarBottom] button[tag=redemptionSC]' :
          {
-            tap : 'onRedemptionsSCButtonTap'
+            tap : 'onRedeemRewardsSCButtonTap'
          },
          'tabbar[cls=navigationBarBottom] button[tag=main]' :
          {
@@ -350,16 +350,21 @@ Ext.define('Genesis.controller.Viewport',
       //this.fireEvent('openpage', 'client.Redemptions', 'redemptions', null);
       console.log("Going to Client Redemptions Page ...");
    },
-   onRedemptionsSCButtonTap : function(b, e, eOpts, eInfo)
+   onRedeemRewardsSCButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.redirectTo('redeemChooseSC');
-      console.log("Going to Client Redeem Choose Page ...");
+      this.redirectTo('redeemRewardsChooseSC');
+      console.log("Going to Client Redeem Rewards Choose Page ...");
    },
    onPrizesButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.redirectTo('merchantPrizes');
-      //this.fireEvent('openpage', 'Prizes', 'merchantPrizes', null);
+      this.redirectTo('prizes');
+      //this.fireEvent('openpage', 'client.Prizes', 'prizes', null);
       console.log("Going to Merchant Prizes Page ...");
+   },
+   onRedeemPrizesSCButtonTap : function(b, e, eOpts, eInfo)
+   {
+      this.redirectTo('redeemPrizesChooseSC');
+      console.log("Going to Client Redeem Prizes Choose Page ...");
    },
    onHomeButtonTap : function(b, e, eOpts, eInfo)
    {
@@ -508,7 +513,7 @@ Ext.define('Genesis.controller.Viewport',
       if (!merchantMode)
       {
          Genesis.fb.initFb();
-         me.updateRewardsTask = Ext.create('Ext.util.DelayedTask');
+         me.updateMetaDataTask = Ext.create('Ext.util.DelayedTask');
       }
 
       if (Ext.isDefined(window.device))

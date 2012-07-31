@@ -1,21 +1,31 @@
 Ext.define('Genesis.controller.client.Redemptions',
 {
-   extend : 'Genesis.controller.ControllerBase',
+   extend : 'Genesis.controller.client.RedeemBase',
    requires : ['Ext.data.Store'],
    statics :
    {
       clientRedemption_path : '/clientRedemptions'
    },
    xtype : 'clientRedemptionsCntlr',
-   models : ['PurchaseReward', 'CustomerReward'],
+   controllerType : 'redemption',
    config :
    {
-      mode : 'redeem',
+      mode : 'redeemBrowse',
+      renderStore : 'RedemptionRenderCStore',
+      redemptionsStore : 'RedemptionsStore',
+      redeemPointsFn : 'setRedeemPointsURL',
+      getRedemptionURL : 'setGetRedemptionsURL',
+      getRedemptionPath : 'redeemBrowseRewardsSC',
+      title : 'Rewards',
       routes :
       {
-         'redemptions' : 'redemptionsPage',
-         'redeemChooseSC' : 'redeemChooseSCPage',
-         'redemptionsSC' : 'redemptionsSCPage'
+         // Browse Redemption Page
+         'redemptions' : 'redeemBrowsePage',
+         //Shortcut to choose venue to redeem rewards
+         'redeemRewardsChooseSC' : 'redeemChooseSCPage',
+         //Shortcut to visit Merchant Account for the Vnue Page
+         'redeemBrowseRewardsSC' : 'redeemBrowseSCPage',
+         'redeemReward' : 'redeemItemPage'
       },
       refs :
       {
@@ -32,7 +42,23 @@ Ext.define('Genesis.controller.client.Redemptions',
          },
          redemptionsList : 'clientredemptionsview list[tag=redemptionsList]',
          redemptionsPts : 'clientredemptionsview component[tag=points]',
-         redemptionsPtsEarnPanel : 'clientredemptionsview dataview[tag=ptsEarnPanel]'
+         redemptionsPtsEarnPanel : 'clientredemptionsview dataview[tag=ptsEarnPanel]',
+         //
+         // Redeem Rewards
+         //
+         sCloseBB : 'showredeemitemdetailview[tag=redeemReward] button[tag=close]',
+         //sBB : 'showredeemitemdetailview[tag=redeemReward] button[tag=back]',
+         sDoneBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=done]',
+         sRedeemBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=redeem]',
+         refreshBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=refresh]',
+         verifyBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=verify]',
+         redeemItem :
+         {
+            selector : 'showredeemitemdetailview[tag=redeemReward]',
+            autoCreate : true,
+            tag : 'redeemReward',
+            xtype : 'showredeemitemdetailview'
+         }
       },
       control :
       {
@@ -46,242 +72,56 @@ Ext.define('Genesis.controller.client.Redemptions',
             select : 'onItemListSelect',
             disclose : 'onItemListDisclose'
 
-         }
-      }
-   },
-   checkinFirstMsg : 'Please Check-In before redeeming rewards',
-   needPointsMsg : function(pointsDiff)
-   {
-      return 'You need ' + pointsDiff + ' more points ' + Genesis.constants.addCRLF() + 'to be eligible for this item.';
-   },
-   //orderTitle : 'Rewards List',
-   //checkoutTitle : 'Check Out',
-   init : function()
-   {
-      var me = this;
-      Ext.regStore('RedemptionRenderCStore',
-      {
-         model : 'Genesis.model.Customer',
-         autoLoad : false
-      });
-      Ext.regStore('RedemptionsStore',
-      {
-         model : 'Genesis.model.CustomerReward',
-         autoLoad : false,
-         grouper :
-         {
-            groupFn : function(record)
-            {
-               return record.get('points') + ' Points';
-            }
          },
-         sorters : [
+         sDoneBtn :
          {
-            property : 'points',
-            direction : 'ASC'
-         }],
-         listeners :
+            tap : 'onDoneTap'
+         },
+         sRedeemBtn :
          {
-            scope : me,
-            'metachange' : function(store, proxy, eOpts)
-            {
-               this.onRedeemMetaChange(store, proxy.getReader().metaData);
-            }
+            tap : 'onRedeemItemTap'
+         },
+         redeemItem :
+         {
+            activate : 'onRedeemItemActivate',
+            deactivate : 'onDeactivate'
          }
-      });
-
-      this.callParent(arguments);
-      console.log("Client Redemptions Init");
-      //
-      // Prelod Page
-      //
-      this.getRedemptions();
+      },
+      listeners :
+      {
+         //
+         // Redeem Rewards
+         //
+         'redeemitem' : 'onRedeemItem',
+         'showredeemitem' : 'onShowRedeemItem',
+         'showQRCode' : 'onShowItemQRCode',
+         'refreshQRCode' : 'onRefreshQRCode'
+      }
    },
+   checkinFirstMsg : 'Please Check-In before redeeming Rewards',
    // --------------------------------------------------------------------------
-   // Redemptions Page
+   // Redemption Page
    // --------------------------------------------------------------------------
-   onActivate : function(activeItem, c, oldActiveItem, eOpts)
+   onShowRedeemItem : function(redeemItem)
    {
       var me = this;
-      var page = me.getRedemptions();
 
-      var viewport = me.getViewPortCntlr();
-      var customer = viewport.getCustomer();
-      var rstore = Ext.StoreMgr.get('RedemptionRenderCStore');
       //
-      var cvenue = viewport.getCheckinInfo().venue;
-      var venue = viewport.getVenue();
-      var venueId = venue.getId();
-      var merchantId = venue.getMerchant().getId();
-
-      me.exploreMode = !cvenue || (cvenue && (cvenue.getId() != venue.getId()));
-
-      // Update Customer info
-      if (customer != rstore.getRange()[0])
-      {
-         rstore.setData(customer);
-      }
-      //activeItem.createView();
-      for (var i = 0; i < activeItem.getInnerItems().length; i++)
-      {
-         //activeItem.getInnerItems()[i].setVisibility(false);
-      }
-   },
-   onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
-   {
-   },
-   onItemListSelect : function(d, model, eOpts)
-   {
-      d.deselect([model]);
-      this.onItemListDisclose(d, model);
-      return false;
-   },
-   onItemListDisclose : function(list, record, target, index, e, eOpts)
-   {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-      switch (this.getMode())
-      {
-         case 'redeem' :
-         {
-            if (!me.exploreMode)
-            {
-               var totalPts = viewport.getCustomer().get('points');
-               var points = record.get('points');
-               if (points > totalPts)
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Oops!',
-                     message : me.needPointsMsg(points - totalPts)
-                  });
-               }
-               else
-               {
-                  var controller = me.getApplication().getController('Prizes');
-                  controller.fireEvent('redeemrewards', Ext.create('Genesis.model.EarnPrize',
-                  {
-                     //'id' : 1,
-                     'expiry_date' : null,
-                     'reward' : record,
-                     'merchant' : viewport.getCheckinInfo().venue.getMerchant()
-                  }));
-               }
-            }
-            else
-            {
-               Ext.device.Notification.show(
-               {
-                  title : 'Warning',
-                  message : me.checkinFirstMsg
-               });
-            }
-            break;
-         }
-         case 'redeemSC' :
-         {
-            var controller = me.getApplication().getController('Prizes');
-            controller.fireEvent('redeemrewards', Ext.create('Genesis.model.EarnPrize',
-            {
-               //'id' : 1,
-               'expiry_date' : null,
-               'reward' : record,
-               'merchant' : viewport.getVenue().getMerchant()
-            }));
-            break;
-         }
-      }
-      return true;
-   },
-   onRedeemCheckMetaData : function(metaData)
-   {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
+      // Show prize on redeemItem Container
       //
-      // Update points from the purchase or redemption
-      //
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var customerId = viewport.getCustomer().getId();
-      if (metaData['account_points'])
-      {
-         cstore.getById(customerId).set('points', metaData['account_points']);
-      }
-      if (metaData['account_visits'])
-      {
-         cstore.getById(customerId).set('visits', metaData['account_visits']);
-      }
-   },
-   onRedeemMetaChange : function(store, metaData)
-   {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-
-      me.onRedeemCheckMetaData(metaData);
-
-      if (metaData['data'])
-      {
-         var app = me.getApplication();
-         var controller = app.getController('Prizes');
-         controller.fireEvent('showQRCode', 0, metaData['data']);
-      }
+      me.redeemItem = redeemItem;
+      me.redirectTo('redeemReward');
    },
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------
-   redemptionsPage : function()
-   {
-      this.openPage('redemptions');
-      this.getCloseBtn().show();
-      this.getBackBtn().hide();
-   },
    redeemChooseSCPage : function()
    {
       var controller = this.getApplication().getController('client.Accounts');
-      controller.redemptionsSCPage();
+      controller.redeemRewardsChooseSCPage();
    },
-   redemptionsSCPage : function()
+   redeemItemPage : function()
    {
-      this.openPage('redemptionsSC');
-      this.getCloseBtn().hide();
-      this.getBackBtn().show();
+      this.openPage('redeemReward');
    },
-   // --------------------------------------------------------------------------
-   // Base Class Overrides
-   // --------------------------------------------------------------------------
-   getMainPage : function()
-   {
-      var page = this.getRedemptions();
-      return page;
-   },
-   openPage : function(subFeature)
-   {
-      var me = this;
-
-      switch (subFeature)
-      {
-         case 'redemptionsSC':
-         {
-            me.setMode('redeemSC');
-            var page = me.getRedemptions();
-            me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
-            me.pushView(page);
-            break;
-         }
-         case 'redemptions':
-         {
-            me.setMode('redeem');
-            var page = me.getRedemptions();
-            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
-            me.pushView(page);
-            break;
-         }
-      }
-   },
-   isOpenAllowed : function()
-   {
-      // VenueId can be found after the User checks into a venue
-      return ((this.getViewPortCntlr().getVenue()) ? true : "You need to Explore or Check-in to a Venue first");
-   }
 });

@@ -1,12 +1,12 @@
-Ext.define('Genesis.view.Prizes',
+Ext.define('Genesis.view.widget.RedeemItemDetail',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.XTemplate', 'Ext.Carousel', 'Genesis.view.widgets.RewardItem'],
-   alias : 'widget.prizesview',
+   requires : ['Ext.XTemplate', 'Ext.Carousel', 'Genesis.view.widgets.RedeemItem'],
+   alias : 'widget.redeemitemdetailview',
    config :
    {
       scrollable : undefined,
-      cls : 'prizesMain viewport',
+      cls : 'redeemItemMain viewport',
       layout : 'fit',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
@@ -79,7 +79,7 @@ Ext.define('Genesis.view.Prizes',
    onUserCreateView : function()
    {
       var view = this;
-      var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
+      var prizes = Ext.StoreMgr.get('PrizeStore').getRange();
 
       if (prizes.length == 0)
       {
@@ -154,7 +154,7 @@ Ext.define('Genesis.view.Prizes',
       //
       // List all the prizes won by the Customer
       //
-      var prizes = Ext.StoreMgr.get('MerchantPrizeStore').getRange();
+      var prizes = Ext.StoreMgr.get('PrizeStore').getRange();
       if (prizes.length > 0)
       {
          for (var i = 0; i < prizes.length; i++)
@@ -270,15 +270,15 @@ Ext.define('Genesis.view.Prizes',
    }
 });
 
-Ext.define('Genesis.view.ShowPrize',
+Ext.define('Genesis.view.widget.ShowRedeemItemDetail',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.XTemplate', 'Genesis.view.widgets.RewardItem'],
-   alias : 'widget.showprizeview',
+   requires : ['Ext.XTemplate', 'Genesis.view.widgets.RedeemItem'],
+   alias : 'widget.showredeemitemdetailview',
    config :
    {
       scrollable : undefined,
-      cls : 'prizesMain viewport',
+      cls : 'redeemItemMain viewport',
       layout : 'fit',
       items : [
       {
@@ -348,17 +348,17 @@ Ext.define('Genesis.view.ShowPrize',
          xtype : 'dataview',
          store :
          {
-            model : 'Genesis.model.EarnPrize',
+            model : 'Genesis.model.CustomerReward',
             autoLoad : false,
-            data : this.showPrize
+            data : this.redeemItem
          },
          maxItemCache : 0,
          useComponents : true,
          scrollable : false,
-         defaultType : 'rewarditem',
+         defaultType : 'redeemitem',
          defaultUnit : 'em',
          margin : '0 0 0.8 0'
       }));
-      delete this.showPrize;
+      delete this.redeemItem;
    }
 });

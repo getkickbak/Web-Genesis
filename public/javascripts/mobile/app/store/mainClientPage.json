@@ -17,10 +17,8 @@
       }, {
          "name": "Prizes",
          "photo_url": "resources/themes/images/v1/mainicons/prizes.png",
-         "desc": "Prizes Won by you",
-         "route" : "userPrizes",
-         "pageCntlr": "Prizes",
-         "subFeature": "userPrizes"
+         "desc": "Shortcut to Redeem Prizes",
+         "route" : "redeemPrizesChooseSC"
       }, {
          "name": "KickBak",
          "photo_url": "resources/themes/images/v1/mainicons/tocheckedinmerch.png",

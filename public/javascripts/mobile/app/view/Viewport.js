@@ -146,7 +146,7 @@ Ext.define('Genesis.view.Viewport',
          }
          Ext.defer(function()
          {
-            activeItem.createView(activeItem);
+            activeItem.createView();
             activeItem.showView();
             titlebar = activeItem.query('titlebar')[0];
             if (titlebar)

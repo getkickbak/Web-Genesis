@@ -135,7 +135,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
       var feedContainer = this.query('container[tag=feedContainer]')[0];
       if (feedContainer)
       {
-         feedContainer[(Ext.StoreMgr.get('EligibleRewardsStore').getRange().length > 0) ? 'show' : 'hide']();
+         feedContainer[(Ext.StoreMgr.get('NewsStore').getRange().length > 0) ? 'show' : 'hide']();
       }
    },
    createView : function()
@@ -193,7 +193,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
             {
                xtype : 'dataview',
                scrollable : undefined,
-               store : 'EligibleRewardsStore',
+               store : 'NewsStore',
                cls : 'feedPanel',
                itemTpl : Ext.create('Ext.XTemplate',
                // @formatter:off

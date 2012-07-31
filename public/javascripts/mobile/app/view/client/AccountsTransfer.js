@@ -36,13 +36,13 @@ Ext.define('Genesis.view.client.AccountsTransfer',
       })]
    },
    disableAnimation : true,
-   createView : function(activeItem, num)
+   createView : function(store, activeItemIndex)
    {
       if (!this.callParent(arguments))
       {
          return;
       }
-      this.num = num;
+      this.num = activeItemIndex;
 
       this.setPreRender(this.getPreRender().concat([
       // -------------------------------------------------------------------

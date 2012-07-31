@@ -5,7 +5,7 @@ Ext.define('Genesis.model.CustomerReward',
    alternateClassName : 'CustomerReward',
    config :
    {
-      fields : ['id', 'title', 'points', 'type', 'photo'],
+      fields : ['id', 'title', 'points', 'type', 'photo', 'quantity_limited', 'quantity', 'time_limited', 'expiry_date'],
       idProperty : 'id',
       belongsTo : [
       {
@@ -34,6 +34,9 @@ Ext.define('Genesis.model.CustomerReward',
    },
    statics :
    {
+      //
+      // Redeem Points
+      //
       setGetRedemptionsURL : function()
       {
          this.getProxy().setActionMethods(
@@ -49,6 +52,25 @@ Ext.define('Genesis.model.CustomerReward',
             read : 'POST'
          });
          this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customer_rewards/' + id + '/redeem');
+      },
+      //
+      // Prize Points
+      //
+      setGetPrizesURL : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'GET'
+         });
+         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/customer_rewards?mode=prize' : Ext.Loader.getPath("Genesis") + "/store/" + 'redemptions.json');
+      },
+      setRedeemPrizeURL : function(id)
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customer_rewards/' + id + '/redeem?mode=prize');
       }
    }
 });

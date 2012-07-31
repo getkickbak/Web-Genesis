@@ -10,7 +10,7 @@ Ext.define('Genesis.model.Venue',
       // Used for Frontend sorting purposes
       'sort_id',
       // Winners Count for front end purposes
-      'winners_count'],
+      'prizes_count'],
       belongsTo : [
       {
          model : 'Genesis.model.Merchant',

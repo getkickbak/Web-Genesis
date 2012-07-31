@@ -1,3 +1,4 @@
+
 //------------------------------------------------------------------------------
 // Merchant Account Page and Merchant Prize Page
 //------------------------------------------------------------------------------
@@ -35,7 +36,7 @@
             max-height:57px + 2*12px;
          }
       }
-      .prizeswonphoto {
+      .prizeswonphoto, .badgephoto {
          @extend .pointsphotobase;
          text-align:left;
          background-color: transparent;
@@ -123,3 +124,15 @@
       }
    }
 }
+
+@include badge-panel-icon("firsttimer", $BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/badges/" + "firsttimer" + ".png"));
+@include badge-panel-icon("enthusiast", $BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/badges/" + "enthusiast" + ".png"));
+@include badge-panel-icon("fan", $BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/badges/" + "fan" + ".png"));
+@include badge-panel-icon("follower", $BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/badges/" + "follower" + ".png"));
+@include badge-panel-icon("groupie", $BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/badges/" + "groupie" + ".png"));
+@include badge-panel-icon("nut", $BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/badges/" + "nut" + ".png"));
+@include badge-panel-icon("junkie", $BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/badges/" + "junkie" + ".png"));
+@include badge-panel-icon("addict", $BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/badges/" + "addict" + ".png"));
+@include badge-panel-icon("fanatic", $BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/badges/" + "fanatic" + ".png"));
+@include badge-panel-icon("lifer", $BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/badges/" + "lifer" + ".png"));
+@include badge-panel-icon("boss", $BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/badges/" + "boss" + ".png"));

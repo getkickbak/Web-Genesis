@@ -225,7 +225,7 @@ Ext.define('Genesis.view.MainPage',
                   {
                      var count = 0;
                      var type = values['pageCntlr'];
-                     var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
+                     var pstore = Ext.StoreMgr.get('PrizeStore');
                      if (pstore)
                      {
                         count = pstore.getCount();
@@ -250,7 +250,7 @@ Ext.define('Genesis.view.MainPage',
          //
          // Refresh All Badge Counts
          //
-         var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
+         var pstore = Ext.StoreMgr.get('PrizeStore');
          if (pstore)
          {
             var count = pstore.getCount();

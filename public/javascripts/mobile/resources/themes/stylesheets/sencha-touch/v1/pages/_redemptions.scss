@@ -1,7 +1,57 @@
 //------------------------------------------------------------------------------
-// Redemptions Page
+// RedeemItem Page
 //------------------------------------------------------------------------------
-.redemptionsMain {
+.redeemItem {
+   .title {
+     line-height:$xlargeFontSize*2 + 2*$panelTopGap;
+   }
+   .itemPhoto {
+      background-size : $icon-size*3 $icon-size*3; //Maximum size of QR Code as well
+      background-position : center center;
+      background-repeat : no-repeat;
+   }
+   .itemPoints {
+      position:absolute;
+      bottom:$panelTopGap;
+      right:$panelGap;
+      font-size:$xlargeFontSize;
+   }
+   .info {
+      position:relative;
+      padding:$panelTopGap $panelGap $panelTopGap*2 $panelGap;
+      .photo {
+         position:absolute;
+         right : 0.8em;
+         img {
+            width : $icon-size;
+            max-height : $icon-size;
+         }
+      }
+      .infoWrapper {
+         padding-right:$icon-size + 10px;
+         width:16em;
+         min-height:$icon-size;
+         .name {
+            font-size:$normalFontSize;
+            font-weight:bold;
+            @include ellipsis;
+            padding-bottom : $panelTopGap;
+         }
+         .disclaimer {
+            font-size:$smallFontSize;
+         }
+         .date {
+            font-size:$normalFontSize;
+            font-weight:bold;
+         }
+      }
+   }
+}
+
+//------------------------------------------------------------------------------
+// Redemptions and Prize Page
+//------------------------------------------------------------------------------
+.redemptionsMain, .prizesMain {
    .ptsEarnPanelHdr {
       @extend .panelHdr;
       &:nth-child(3) {
@@ -38,7 +88,7 @@
    .x-scroll-scroller {
       position:static;
    }
-   .redemptionsList {
+   .redemptionsList, .prizesList {
       min-height:5em;
       @extend .listScrollIndexWrapper;
       .x-list-item {

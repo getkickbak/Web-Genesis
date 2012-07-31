@@ -28,6 +28,17 @@
 @include toolbar-iconmask('checkin');
 @include toolbar-iconmask('maps');
 
+//@include toolbar-iconmask('badges/firsttimer');
+//@include toolbar-iconmask('badges/enthusiast');
+//@include toolbar-iconmask('badges/fan');
+//@include toolbar-iconmask('badges/groupie');
+//@include toolbar-iconmask('badges/nut');
+//@include toolbar-iconmask('badges/junkie');
+//@include toolbar-iconmask('badges/addict');
+//@include toolbar-iconmask('badges/fanatic');
+//@include toolbar-iconmask('badges/lifer');
+//@include toolbar-iconmask('badges/boss');
+
 .x-toolbar-dark, .x-tabbar-dark {
    @include custom-linear-gradient($BlackStart 10%, $BlackEnd 85%, top);
    color : $Grey;

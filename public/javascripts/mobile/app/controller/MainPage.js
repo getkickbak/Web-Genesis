@@ -1,7 +1,7 @@
 Ext.define('Genesis.controller.MainPage',
 {
    extend : 'Genesis.controller.ControllerBase',
-   requires : ['Ext.data.Store', 'Genesis.model.EarnPrize'],
+   requires : ['Ext.data.Store'],
    statics :
    {
    },
@@ -17,7 +17,7 @@ Ext.define('Genesis.controller.MainPage',
          'signin' : 'signInPage',
          'createAccount' : 'createAccountPage',
       },
-      models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'EligibleReward', 'Customer', 'User', 'Merchant', 'EarnPrize', 'CustomerReward'],
+      models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'News', 'Customer', 'User', 'Merchant', 'CustomerReward'],
       listeners :
       {
          'authcoderecv' : 'onAuthCodeRecv'
@@ -169,17 +169,12 @@ Ext.define('Genesis.controller.MainPage',
          });
 
          //
-         // Prizes that a User Earned
-         //
-         me.initMerchantPrizeStore();
-
-         //
          // Store storing the Customer's Eligible Rewards at a Venue
          // Used during Checkin
          //
-         Ext.regStore('EligibleRewardsStore',
+         Ext.regStore('NewsStore',
          {
-            model : 'Genesis.model.EligibleReward',
+            model : 'Genesis.model.News',
             autoLoad : false
          });
 
@@ -231,15 +226,17 @@ Ext.define('Genesis.controller.MainPage',
                var metaData = proxy.getReader().metaData;
 
                //
-               // Update MerchantPrizeStore
+               // Update PrizeStore
                //
+               /*
                var prizes = metaData['prizes'];
                if (prizes)
                {
-                  console.debug("Total Prizes - " + prizes.length);
-                  Ext.StoreMgr.get('MerchantPrizeStore').setData(prizes);
-                  me.persistSyncStores('MerchantPrizeStore');
+               console.debug("Total Prizes - " + prizes.length);
+               Ext.StoreMgr.get('rizeStore').setData(prizes);
+               me.persistSyncStores('PrizeStore');
                }
+               */
 
                //
                // Update Authentication Token
@@ -255,7 +252,7 @@ Ext.define('Genesis.controller.MainPage',
                   }
                }
 
-               me.getViewPortCntlr().updateRewardsTask.delay(0.1 * 1000, me.updateRewards, me, [metaData]);
+               me.getViewPortCntlr().updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [metaData]);
             }
          },
          grouper :
@@ -279,51 +276,6 @@ Ext.define('Genesis.controller.MainPage',
          }]
       });
    },
-   initMerchantPrizeStore : function()
-   {
-      var me = this;
-      var app = me.getApplication();
-      Ext.regStore('MerchantPrizeStore',
-      {
-         model : 'Genesis.model.EarnPrize',
-         autoLoad : false,
-         clearOnPageLoad : false,
-         sorters : [
-         {
-            // Clump by merchant (ascending order)
-            sorterFn : function(o1, o2)
-            {
-               var name1 = o1.getMerchant().get('name');
-               var name2 = o2.getMerchant().get('name');
-               return (name1 < name2 ? -1 : (name1 > name2 ? 1 : 0));
-            },
-            direction : 'ASC'
-         },
-         {
-            // Return based on expiry date (descending order)
-            sorterFn : function(o1, o2)
-            {
-               return Date.parse(o2.get('expiry_date')) - Date.parse(o1.get('expiry_date'));
-            }
-         },
-         {
-            // Return based on issue date (Bigger Id == issued later)
-            sorterFn : function(o1, o2)
-            {
-               return o2.getId() - o1.getId();
-            }
-         }],
-         listeners :
-         {
-            scope : this,
-            'metachange' : function(store, proxy, eOpts)
-            {
-               var controller = app.getController('client.Rewards');
-               controller.fireEvent('metadataChange', store, proxy.getReader().metaData);
-            }
-         }
-      });
-   },
    initVenueStore : function()
    {
       var me = this;
@@ -341,7 +293,7 @@ Ext.define('Genesis.controller.MainPage',
             'metachange' : function(store, proxy, eOpts)
             {
                // Let Other event handlers udpate the metaData first ...
-               me.getViewPortCntlr().updateRewardsTask.delay(0.1 * 1000, me.updateRewards, me, [proxy.getReader().metaData]);
+               me.getViewPortCntlr().updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [proxy.getReader().metaData]);
             }
          }
       });
@@ -405,7 +357,6 @@ Ext.define('Genesis.controller.MainPage',
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      //Ext.defer(activeItem.createView, 1, activeItem);
       //activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
    },
@@ -813,7 +764,7 @@ Ext.define('Genesis.controller.MainPage',
          case 'login' :
          {
             me.getApplication().getController('client.Checkins').fireEvent('setupCheckinInfo', 'checkin', null, null, null);
-            me.getApplication().getController('Prizes').fireEvent('updatePrizeViews', null);
+            //me.getApplication().getController('Prizes').fireEvent('updatePrizeViews', null);
             me.setAnimationMode(me.self.superclass.self.animationMode['fade']);
             me.pushView(me.getLogin());
             break;

@@ -122,43 +122,53 @@ Ext.define('Genesis.view.client.Accounts',
             // @formatter:off
             '<tpl if="this.isValidCustomer(values)">',
                '<div class="photo x-hasbadge">',
-                  '{[this.getPrizeCount(values)]}',
+                  '{[this.isEligible(values)]}',
                   '<img src="{[this.getPhoto(values)]}"/>',
                '</div>',
                '<div class="listItemDetailsWrapper">',
-                  '<div class="points">{[this.getPoints(values)]}</div>',
+                  '<div class="title">{[this.getTitle()]}</div>',
+                  '<div class="points">{[this.getRewardPoints(values)]}<br/>{[this.getPrizePoints(values)]}</div>',
                '</div>',
             '</tpl>',
             // @formatter:on
             {
+               getTitle : function()
+               {
+                  return ('Reward Points: <br/>Prize Points:');
+               },
                isValidCustomer : function(values)
                {
                   //return Customer.isValidCustomer(values['id']);
                   return true;
                },
-               getPrizeCount : function(values)
+               isEligible : function(values)
                {
-                  var count = 0;
-                  var type = values['pageCntlr'];
-                  var pstore = Ext.StoreMgr.get('MerchantPrizeStore');
-                  if (pstore)
-                  {
-                     var collection = pstore.queryBy(function(record, id)
-                     {
-                        return (record.getMerchant().getId() == values.merchant['id'])
-                     });
-                     count = collection.getCount();
-                  }
-                  return ('<span class="x-badge round ' + //
-                  ((count > 0) ? '' : 'x-item-hidden') + '">' + count + '</span>');
+                  /*
+                   var isEligible = null;
+                   var type = values['pageCntlr'];
+                   var stores = [Ext.StoreMgr.get('PrizeStore'), Ext.StoreMgr.get('RedemptionsStore')];
+                   for (var i = 0; i < stores.length; i++)
+                   {
+                   if (stores[i])
+                   {
+                   }
+                   }
+                   return ('<span class="x-badge round ' + //
+                   ((isEligible) ? '' : 'x-item-hidden') + '">Redeem!</span>');
+                   */
+                  return '';
                },
                getPhoto : function(values)
                {
                   return values.merchant['photo']['thumbnail_ios_small'].url;
                },
-               getPoints : function(values)
+               getRewardPoints : function(values)
                {
-                  return values.points + ' Pts';
+                  return values['points'] + ' Pts';
+               },
+               getPrizePoints : function(values)
+               {
+                  return values['prize_points'] + ' Pts';
                }
             }),
             onItemDisclosure : Ext.emptyFn

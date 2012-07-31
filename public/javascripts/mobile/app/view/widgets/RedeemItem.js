@@ -1,16 +1,16 @@
-Ext.define('Genesis.view.widgets.RewardItem',
+Ext.define('Genesis.view.widgets.RedeemItem',
 {
    extend : 'Ext.dataview.component.DataItem',
    requires : ['Ext.Button', 'Ext.XTemplate'],
-   xtype : 'rewarditem',
-   alias : 'widget.rewarditem',
+   xtype : 'redeemitem',
+   alias : 'widget.redeemitem',
    config :
    {
       background :
       {
          // Backgrond Image
-         cls : 'rewardItem',
-         tag : 'rewardItem',
+         cls : 'redeemItem',
+         tag : 'redeemItem',
          layout :
          {
             type : 'vbox',
@@ -98,7 +98,7 @@ Ext.define('Genesis.view.widgets.RewardItem',
          {
             var height = Ext.ComponentQuery.query('viewportview')[0].getActiveItem().renderElement.getHeight();
             //c.config.dataview.setHeight(height);
-            //c.query('container[tag=rewardItem]')[0].setHeight(height);
+            //c.query('container[tag=redeemItem]')[0].setHeight(height);
             //c.setHeight(height);
          }
       }
@@ -123,7 +123,8 @@ Ext.define('Genesis.view.widgets.RewardItem',
    },
    setDataBackground : function(data)
    {
-      var reward = data['reward'];
+      //var reward = data['reward'];
+      var reward = data;
       var photo = Genesis.view.Prizes.getPhoto(reward['type']) || reward['photo']['thumbnail_ios_medium'];
       var info = this.query("component[tag=info]")[0];
 

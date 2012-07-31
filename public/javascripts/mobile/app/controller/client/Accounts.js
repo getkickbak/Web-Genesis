@@ -15,7 +15,7 @@ Ext.define('Genesis.controller.client.Accounts',
          'accounts' : 'mainPage',
          'etransfer' : 'emailTransferPage',
          'transfer' : 'transferPage'
-         //,'redemptionsSC' : 'redemptionsSCPage'
+         //,'redememChooseSC' : 'redeemChooseSCPage'
       },
       refs :
       {
@@ -271,9 +271,15 @@ Ext.define('Genesis.controller.client.Accounts',
             tbbar.removeCls('kbTitle');
             break;
          }
-         case 'redeemProfile' :
+         case 'redeemRewardsProfile' :
          {
             tbbar.setTitle('Redemptions');
+            tbbar.removeCls('kbTitle');
+            break;
+         }
+         case 'redeemPrizesProfile' :
+         {
+            tbbar.setTitle('Prizes');
             tbbar.removeCls('kbTitle');
             break;
          }
@@ -323,7 +329,8 @@ Ext.define('Genesis.controller.client.Accounts',
       switch(me.getMode())
       {
          case 'profile' :
-         case 'redeemProfile' :
+         case 'redeemRewardsProfile' :
+         case 'redeemPrizesProfile' :
          {
             Ext.Viewport.setMasked(
             {
@@ -375,15 +382,30 @@ Ext.define('Genesis.controller.client.Accounts',
       var venueId = venue.getId();
       var viewport = me.getViewPortCntlr();
       var controller = me.getApplication().getController('client.Checkins');
-      var rstore = Ext.StoreMgr.get('RedemptionsStore');
       var rec = me.rec;
+      var rstore, url, rcontroller;
 
       Ext.Viewport.setMasked(
       {
          xtype : 'loadmask',
          message : me.getVenueInfoMsg
       });
-      CustomerReward['setGetRedemptionsURL']();
+      switch (me.getMode())
+      {
+         case 'redeemPrizesProfile' :
+         {
+            rcontroller = me.getApplication().getController('Prizes');
+            break;
+         }
+         case 'redeemRewardsProfile' :
+         default :
+            rcontroller = me.getApplication().getController('Redemptions');
+            break;
+      }
+      rstore = Ext.StoreMgr.get(rcontroller.getRedemptionsStore());
+      url = rcontroller.getRedemptionURL();
+      path = rcontroller.getRedemptionPath();
+      CustomerReward[url]();
       rstore.load(
       {
          jsonData :
@@ -402,21 +424,21 @@ Ext.define('Genesis.controller.client.Accounts',
                {
                   'venue_id' : venueId
                };
+               
                viewport.setVenue(venue);
-
                switch(me.getMode())
                {
-                  case 'redeemProfile' :
-                  {
-                     controller.fireEvent('checkinMerchant', 'redemption', metaData, venueId, rec, operation, Ext.emptyFn);
-                     me.redirectTo('redemptionsSC');
-                     break;
-                  }
                   case 'profile' :
                   {
                      controller.fireEvent('checkinMerchant', 'explore', metaData, venueId, rec, operation, Ext.emptyFn);
                      break;
                   }
+                  case 'redeemRewardsProfile' :
+                  case 'redeemPrizesProfile' :
+                  default:
+                     controller.fireEvent('checkinMerchant', 'redemption', metaData, venueId, rec, operation, Ext.emptyFn);
+                     me.redirectTo(path);
+                     break;
                }
                delete me.rec;
             }
@@ -476,7 +498,8 @@ Ext.define('Genesis.controller.client.Accounts',
 
       switch(me.getMode())
       {
-         case 'redeemProfile' :
+         case 'redeemRewardsProfile' :
+         case 'redeemPrizesProfile' :
          case 'profile' :
          {
             me.getAtrCloseBB().hide();
@@ -505,7 +528,6 @@ Ext.define('Genesis.controller.client.Accounts',
             break;
          }
       }
-      //Ext.defer(activeItem.createView, 1, activeItem, [screenShow]);
       //activeItem.createView(screenShow);
    },
    onTransferDeactivate : function(oldActiveItem, c, activeItem, eOpts)
@@ -795,9 +817,13 @@ Ext.define('Genesis.controller.client.Accounts',
    {
       this.openPage('transfer');
    },
-   redemptionsSCPage : function()
+   redeemRewardsChooseSCPage : function()
    {
-      this.openPage('redeemProfile');
+      this.openPage('redeemRewardsProfile');
+   },
+   redeemPrizesChooseSCPage : function()
+   {
+      this.openPage('redeemPrizesProfile');
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
@@ -809,18 +835,6 @@ Ext.define('Genesis.controller.client.Accounts',
       me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
       switch (subFeature)
       {
-         case 'redeemProfile' :
-         {
-            me.setMode('redeemProfile');
-            page = me.getMainPage();
-            break;
-         }
-         case 'profile' :
-         {
-            me.setMode('profile');
-            page = me.getMainPage();
-            break;
-         }
          case 'emailtransfer' :
          case 'transfer' :
          {
@@ -828,6 +842,13 @@ Ext.define('Genesis.controller.client.Accounts',
             page = me.getTransferPage();
             break;
          }
+         case 'redeemPrizesProfile' :
+         case 'redeemRewardsProfile' :
+         case 'profile' :
+         default :
+            me.setMode(subFeature);
+            page = me.getMainPage();
+            break;
       }
 
       me.pushView(page);

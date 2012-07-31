@@ -9,11 +9,17 @@
       @extend .listScrollWrapper;
       .listItemDetailsWrapper {
          padding-left:0 !important;
+         .title {
+            text-align:left;
+            font-size:$largeFontSize;
+            font-weight:normal;
+            line-height:$icon-size/2;
+         }
          .points {
             text-align:right;
             font-size:$xlargeFontSize;
             font-weight:bold;
-            line-height:$icon-size;
+            line-height:$icon-size/2;
          }
       }
       .x-list-emptytext {
