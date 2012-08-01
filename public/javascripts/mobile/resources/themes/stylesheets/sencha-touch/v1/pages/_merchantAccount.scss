@@ -12,7 +12,7 @@
         padding : $panelTopGap $panelGap;
       }
    }
-   .prizesWonPanel {
+   .prizesWonPanel, .badgeProgressPanel {
       @if $include-border-radius { @include border-radius($panelBorderRadius); }
       @if $include-highlights {
          @include box-shadow(0.2em 0.2em 0em rgba(80,81,82,0.6));
