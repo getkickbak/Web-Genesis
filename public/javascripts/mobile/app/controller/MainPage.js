@@ -197,7 +197,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    initCustomerStore : function()
    {
-      var me = this, db;
+      var me = this;
       Ext.regStore('CustomerStore',
       {
          model : 'Genesis.model.Customer',
@@ -213,7 +213,7 @@ Ext.define('Genesis.controller.MainPage',
 
                if (successful && metaData && metaData['auth_token'])
                {
-                  db = Genesis.db.getLocalDB();
+                  var db = Genesis.db.getLocalDB();
                   console.debug(//
                   "auth_code [" + db['auth_code'] + "]" + "\n" + //
                   "currFbId [" + db['currFbId'] + "]");
@@ -222,37 +222,20 @@ Ext.define('Genesis.controller.MainPage',
             },
             'metachange' : function(store, proxy, eOpts)
             {
-               // Load Prizes into DataStore
-               var metaData = proxy.getReader().metaData;
+               me.getViewPortCntlr().updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [proxy.getReader().metaData]);
 
                //
                // Update PrizeStore
                //
                /*
-               var prizes = metaData['prizes'];
-               if (prizes)
-               {
-               console.debug("Total Prizes - " + prizes.length);
-               Ext.StoreMgr.get('rizeStore').setData(prizes);
-               me.persistSyncStores('PrizeStore');
-               }
-               */
-
-               //
-               // Update Authentication Token
-               //
-               var authCode = metaData['auth_token'];
-               if (authCode)
-               {
-                  console.debug("Login Auth Code - " + authCode)
-                  db = Genesis.db.getLocalDB();
-                  if (authCode != db['auth_code'])
-                  {
-                     Genesis.db.setLocalDBAttrib('auth_code', authCode);
-                  }
-               }
-
-               me.getViewPortCntlr().updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [metaData]);
+                var prizes = metaData['prizes'];
+                if (prizes)
+                {
+                console.debug("Total Prizes - " + prizes.length);
+                Ext.StoreMgr.get('rizeStore').setData(prizes);
+                me.persistSyncStores('PrizeStore');
+                }
+                */
             }
          },
          grouper :
@@ -763,6 +746,8 @@ Ext.define('Genesis.controller.MainPage',
          }
          case 'login' :
          {
+            // Remove all previous view from viewStack
+            me.resetView();
             me.getApplication().getController('client.Checkins').fireEvent('setupCheckinInfo', 'checkin', null, null, null);
             //me.getApplication().getController('Prizes').fireEvent('updatePrizeViews', null);
             me.setAnimationMode(me.self.superclass.self.animationMode['fade']);

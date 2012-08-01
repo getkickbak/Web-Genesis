@@ -27,7 +27,7 @@ Ext.define('Genesis.model.CustomerJSON',
 Ext.define('Genesis.model.Customer',
 {
    extend : 'Ext.data.Model',
-   requires : ['Genesis.model.Checkin'],
+   requires : ['Genesis.model.Checkin', 'Genesis.model.Badge'],
    alternateClassName : 'Customer',
    id : 'Customer',
    config :
@@ -47,7 +47,7 @@ Ext.define('Genesis.model.Customer',
          getterName : 'getUser',
          setterName : 'setUser'
       }],
-      hasOne :
+      hasOne : [
       {
          model : 'Genesis.model.Checkin',
          associationKey : 'last_check_in',
@@ -56,6 +56,22 @@ Ext.define('Genesis.model.Customer',
          getterName : 'getLastCheckin',
          setterName : 'setLastCheckin'
       },
+      {
+         model : 'Genesis.model.Badge',
+         associationKey : 'badge',
+         name : 'badge',
+         // User to make sure no underscore
+         getterName : 'getBadge',
+         setterName : 'setBadge'
+      },
+      {
+         model : 'Genesis.model.Badge',
+         associationKey : 'next_badge',
+         name : 'next_badge',
+         // User to make sure no underscore
+         getterName : 'getNextBadge',
+         setterName : 'setNextBadge'
+      }],
       proxy :
       {
          type : 'ajax',

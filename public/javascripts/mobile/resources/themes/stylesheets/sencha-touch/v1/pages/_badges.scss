@@ -1,7 +1,7 @@
 //------------------------------------------------------------------------------
 // Icon Select CSS (Challenge Page)
 //------------------------------------------------------------------------------
-.challengeMenuSelections {
+.badgesMenuSelections {
    @extend .mainMenuSelections;
    .x-hasbadge .x-badge {
       right:0em;
@@ -9,8 +9,9 @@
       border-color : darken($OrangeStart,5%);
    }
    .x-dataview-item, .x-data-item {
-      width:33%;
-      height:($panelTopGap*2)+($normalFontSize*1.25*2)+(1.25*5em);
+      width:25%;
+      height:($panelTopGap*1)+($normalFontSize*1*2)+(1*2.5em);
+      font-size:$normalFontSize;
       .itemWrapper {
          .photo {
             height : $icon-size;
@@ -21,28 +22,7 @@
          }
       }
    }
-   .x-dataview-item:nth-child(3n+1) {
+   .x-dataview-item:nth-child(4n+1) {
       clear:both;
-   }
-}
-
-.challengePageItem {
-   .x-carousel-item {
-      @if $include-highlights {
-         @include box-shadow(inset 0em -0.1em 0.1em rgba(0,0,0,0.6));
-      }
-   }
-}
-.challengePageItemDescWrapper {
-   min-height : 4em;
-   max-height : 4em;
-   padding:$panelTopGap/2 $panelGap;
-   background: rgba(252, 252, 253, .5);
-   .itemDesc {
-      font-size:$normalFontSize*1.25;
-      padding-bottom:$panelTopGap/2;  
-   }
-   .itemDescName {
-      text-align:center;
    }
 }

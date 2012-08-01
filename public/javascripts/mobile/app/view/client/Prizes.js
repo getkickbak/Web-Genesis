@@ -46,18 +46,6 @@ Ext.define('Genesis.view.client.Prizes',
                break;
          }
          return photo_url;
-      },
-      getBadge : function(badge, remote)
-      {
-         var photo_url = null;
-         switch (type.value)
-         {
-            default :
-               photo_url = Genesis.constants.getIconPath('badges', type.value, remote);
-               //console.debug("Icon Path [" + photo_url + "]");
-               break;
-         }
-         return photo_url;
       }
    }
 });

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------
-// Icon Select CSS (MainPage and Challenge Page)
+// Icon Select CSS (MainPage Page)
 //------------------------------------------------------------------------------
 .mainMenuSelections {
    padding:$panelGap;
@@ -18,8 +18,8 @@
       font-size:$normalFontSize*1.25;
       color:$BlackStart;
       position:relative; // Used for add Icon Mask to the selection
-      .mainPageItemWrapper {
-        padding:$panelTopGap/2 $panelGap/2;
+      .itemWrapper {
+         padding:$panelTopGap/2 $panelGap/2;
          text-align:center;
          .photo {
             height : $icon-size*1.25;

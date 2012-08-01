@@ -309,7 +309,7 @@ Ext.define('Genesis.controller.client.Prizes',
             link : venue.get('website') || site,
             caption : link,
             description : desc,
-            picture : Genesis.view.client.Prizes.getBadge(badge.get('type'), true),
+            picture : Genesis.view.client.Badges.getPhoto(badge.get('type'), true),
             message : message
          }, function(response)
          {
@@ -422,7 +422,7 @@ Ext.define('Genesis.controller.client.Prizes',
       /*
        var store = Ext.StoreMgr.get('PrizeStore');
        store.add(redeemItem);
-       me.persistSyncStores('rizeStore');
+       me.persistSyncStores('PrizeStore');
        */
       me.redirectTo('redeemPrize');
    },

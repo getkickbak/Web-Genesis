@@ -17,7 +17,7 @@ Ext.define('Genesis.view.widgets.ChallengeMenuItem',
          cls : 'photo',
          tpl : Ext.create('Ext.XTemplate',
          // @formatter:off
-         '<div class="mainPageItemWrapper x-hasbadge">',
+         '<div class="itemWrapper x-hasbadge">',
             '<span class="x-badge round">{[this.getPoints(values)]}</span>',
             '<div class="photo">'+
                '<img src="{[this.getPhoto(values)]}" />'+

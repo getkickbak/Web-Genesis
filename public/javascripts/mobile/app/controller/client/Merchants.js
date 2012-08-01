@@ -25,6 +25,7 @@ Ext.define('Genesis.controller.client.Merchants',
          merchantMain : 'clientmerchantaccountview container[tag=merchantMain]',
          tbPanel : 'clientmerchantaccountview dataview[tag=tbPanel]',
          prizesWonPanel : 'clientmerchantaccountview component[tag=prizesWonPanel]',
+         badgeProgressPanel : 'clientmerchantaccountview component[tag=badgeProgressPanel]',
          feedContainer : 'clientmerchantaccountview container[tag=feedContainer]',
          descContainer : 'clientmerchantaccountview container[tag=descContainer]',
          descPanel : 'clientmerchantaccountview container[tag=descPanel]',
@@ -88,6 +89,10 @@ Ext.define('Genesis.controller.client.Merchants',
          {
             // Goto CheckinMerchant.js for "painted" support
             //painted : 'onMapPainted'
+         },
+         badgeProgressPanel :
+         {
+            tap : 'onBadgeTap'
          }
       },
       listeners :
@@ -473,6 +478,10 @@ Ext.define('Genesis.controller.client.Merchants',
       }
 
       return true;
+   },
+   onBadgeTap : function(b, e, eOpts, eInfo)
+   {
+      console.log("Opening Badge Browse Page");
    },
    // --------------------------------------------------------------------------
    // Page Navigation
