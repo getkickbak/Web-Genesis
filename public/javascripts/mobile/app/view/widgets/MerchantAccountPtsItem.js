@@ -102,7 +102,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             // Updated Automatically when the Customer\'s metadata is updated
             getTitle : function(values)
             {
-               return 'Visits for next Badge';
+               return 'Current Badge (<b>' + values['_customer'].get('badge')['display_type'].toUpperCase() + '</b>)';
             },
             getProgress : function(values)
             {
@@ -123,7 +123,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             // Updated Automatically when the Customer\'s metadata is updated
             getDesc : function(values)
             {
-               return values['_current'] + ' of ' + values['_total'];
+               return (values['_total'] - values['_current']) + ' visit(s) before your next promotion!';
             }
          })
       },
@@ -276,7 +276,9 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                      case 'background':
                         me.setDataBackground(data);
                         break;
-                     case 'badgeProgressPanel' :
+                     case 'badgeProgress' :
+                        me.setBadgeProgress(data);
+                        break;
                      case 'winnersCount':
                         me.setDataWinnersCount(data);
                         break;
