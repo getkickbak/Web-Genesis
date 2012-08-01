@@ -95,19 +95,14 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
 
                return ( customer ? true : false);
             },
-            getBadge : function(values)
-            {
-               return values['_customer'].getBadge().get('type').display_value.toLowerCase();
-            },
-            // Updated Automatically when the Customer\'s metadata is updated
             getTitle : function(values)
             {
-               return 'Current Badge (<b>' + values['_customer'].getBadge().get('display_type').toUpperCase() + '</b>)';
+               return 'Current Badge (<b>' + values['_customer'].getBadge().get('type').display_value + '</b>)';
             },
             getProgress : function(values)
             {
                var customer = values['_customer'];
-               var nvisit = customer.getNextBadge().get('visits');               
+               var nvisit = customer.getNextBadge().get('visits');
                var tvisit = customer.get('next_badge_visits');
 
                return ('width:' + (tvisit / nvisit * 100) + '%;');
@@ -116,9 +111,8 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             getDesc : function(values)
             {
                var customer = values['_customer'];
-               var nvisit = customer.getNextBadge().get('visits');               
+               var nvisit = customer.getNextBadge().get('visits');
                var tvisit = customer.get('next_badge_visits');
-
                delete values['_customer'];
                return (nvisit - tvisit) + ' visit(s) before your next promotion!';
             }
