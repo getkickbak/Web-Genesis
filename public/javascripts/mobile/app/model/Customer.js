@@ -87,7 +87,7 @@ Ext.define('Genesis.model.Customer',
             rootProperty : 'data'
          }
       },
-      fields : ['badge', 'points', 'prize_points', 'visits', 'id', 'eligible_for_reward', 'eligible_for_prize',
+      fields : ['badge', 'points', 'prize_points', 'visits', 'next_badge_visits', 'id', 'eligible_for_reward', 'eligible_for_prize',
       //
       'next_badge'],
       idProperty : 'id'

@@ -107,23 +107,20 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             getProgress : function(values)
             {
                var customer = values['_customer'];
-               var cvisit = customer.getBadge().get('visits');
-               var nvisit = customer.getNextBadge().get('visits');
-               var tvisit = customer.get('visits');
+               var nvisit = customer.getNextBadge().get('visits');               
+               var tvisit = customer.get('next_badge_visits');
 
-               var current = tvisits - cvisit;
-               var total = nvisit - cvisit;
-
-               values['_total'] = total;
-               values['_current'] = current;
-               delete values['_customer'];
-
-               return ('width:' + (current / total * 100) + '%;');
+               return ('width:' + (tvisit / nvisit * 100) + '%;');
             },
             // Updated Automatically when the Customer\'s metadata is updated
             getDesc : function(values)
             {
-               return (values['_total'] - values['_current']) + ' visit(s) before your next promotion!';
+               var customer = values['_customer'];
+               var nvisit = customer.getNextBadge().get('visits');               
+               var tvisit = customer.get('next_badge_visits');
+
+               delete values['_customer'];
+               return (nvisit - tvisit) + ' visit(s) before your next promotion!';
             }
          })
       },
