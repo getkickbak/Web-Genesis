@@ -67,12 +67,18 @@ Ext.define('Genesis.view.widgets.RedeemItem',
             {
                getExpiryDate : function(values)
                {
-                  var date = values['expiry_date'];
-                  return ((!date) ? '' : 'Offer Expires ' + date);
+                  var limited = values['time_limited'];
+                  var date = (limited) ? values['expiry_date'] : 'N/A';
+                  return ('Offer Expires: ' + date);
                },
                getDisclaimer : function(values)
                {
-                  return values['merchant']['prize_terms'] || 'Not valid with any other offer. No cash value. One coupon per customer per visit. Void where prohibited. Good at participating stores only.';
+                  var quantity = (values['quantity_limited']) ? //
+                  '<b>Quantity Left : ' + values['quantity'] + '</b><br/>' : //
+                  'Limited Quantities. ';
+                  var terms = values['merchant']['prize_terms'] || '';
+
+                  return (quantity + terms);
                },
                getPhoto : function(values)
                {
@@ -111,12 +117,12 @@ Ext.define('Genesis.view.widgets.RedeemItem',
    },
    updateBackground : function(newBackground, oldBackground)
    {
-      if(newBackground)
+      if (newBackground)
       {
          this.add(newBackground);
       }
 
-      if(oldBackground)
+      if (oldBackground)
       {
          this.remove(oldBackground);
       }
@@ -135,7 +141,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
       //
       // Hide Merchant Information if it's missing
       //
-      if(data['merchant'])
+      if (data['merchant'])
       {
          //refresh.hide();
          //verify.hide();
@@ -162,10 +168,13 @@ Ext.define('Genesis.view.widgets.RedeemItem',
          'background-image' : 'url(' + photo.url + ')',
          'background-size' : (photo.width) ? Genesis.fn.addUnit(photo.width) + ' ' + Genesis.fn.addUnit(photo.height) : ''
       });
-      itemPhoto.setData((!data['expiry_date'] || (data['expiry_date'] == 'N/A')) ? reward :
-      {
-         points : null
-      });
+      /*
+       itemPhoto.setData((!data['time_limited'] || (data['expiry_date'] == 'N/A')) ? reward :
+       {
+       points : null
+       });
+       */
+      itemPhoto.setData(reward);
    },
    /**
     * Updates this container's child items, passing through the dataMap.
@@ -174,26 +183,26 @@ Ext.define('Genesis.view.widgets.RedeemItem',
     */
    updateRecord : function(newRecord)
    {
-      if(!newRecord)
+      if (!newRecord)
       {
          return;
       }
 
       var me = this, dataview = me.config.dataview, data = dataview.prepareData(newRecord.getData(true), dataview.getStore().indexOf(newRecord), newRecord), items = me.getItems(), item = items.first(), dataMap = me.getDataMap(), componentName, component, setterMap, setterName;
 
-      if(!item)
+      if (!item)
       {
          return;
       }
-      for(componentName in dataMap)
+      for (componentName in dataMap)
       {
          setterMap = dataMap[componentName];
          component = me[componentName]();
-         if(component)
+         if (component)
          {
-            for(setterName in setterMap)
+            for (setterName in setterMap)
             {
-               if(component[setterName])
+               if (component[setterName])
                {
                   switch (setterMap[setterName])
                   {

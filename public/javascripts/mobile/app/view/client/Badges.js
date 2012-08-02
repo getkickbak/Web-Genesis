@@ -85,7 +85,7 @@ Ext.define('Genesis.view.client.Badges',
                },
                getPhoto : function(values)
                {
-                  return Genesis.view.client.Badges.getPhoto(values['type'], true);
+                  return Genesis.view.client.Badges.getPhoto(values['type'], false);
                }
             }),
             autoScroll : true

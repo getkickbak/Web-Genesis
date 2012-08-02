@@ -5,7 +5,16 @@ Ext.define('Genesis.model.CustomerReward',
    alternateClassName : 'CustomerReward',
    config :
    {
-      fields : ['id', 'title', 'points', 'type', 'photo', 'quantity_limited', 'quantity', 'time_limited', 'expiry_date'],
+      fields : ['id', 'title', 'points', 'type', 'photo', 'quantity_limited', 'quantity', 'time_limited',
+      {
+         name : 'expiry_date',
+         type : 'date',
+         convert : function(value, format)
+         {
+            var value = Date.parse(value, "yyyy-MM-dd");
+            return (!value) ? "N/A" : Genesis.fn.convertDateNoTimeNoWeek.apply(this, arguments);
+         }
+      }],
       idProperty : 'id',
       belongsTo : [
       {

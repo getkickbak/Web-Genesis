@@ -27,7 +27,7 @@ Ext.define('Genesis.model.CustomerJSON',
 Ext.define('Genesis.model.Customer',
 {
    extend : 'Ext.data.Model',
-   requires : ['Genesis.model.Checkin', 'Genesis.model.Badge'],
+   requires : ['Genesis.model.Checkin', 'Genesis.model.Badge', 'Genesis.model.Merchant'],
    alternateClassName : 'Customer',
    id : 'Customer',
    config :
@@ -87,9 +87,7 @@ Ext.define('Genesis.model.Customer',
             rootProperty : 'data'
          }
       },
-      fields : ['badge', 'points', 'prize_points', 'visits', 'next_badge_visits', 'id', 'eligible_for_reward', 'eligible_for_prize',
-      //
-      'next_badge'],
+      fields : ['id', 'points', 'prize_points', 'visits', 'next_badge_visits', 'eligible_for_reward', 'eligible_for_prize'],
       idProperty : 'id'
    },
    getUser : function()
@@ -120,6 +118,11 @@ Ext.define('Genesis.model.Customer',
             if (cOld.getLastCheckin() != cNew.getLastCheckin())
             {
                cOld.setLastCheckin(cNew.getLastCheckin());
+               sync = true;
+            }
+            if (cOld.getBadge() != cNew.getBadge())
+            {
+               cOld.setBadge(cNew.getBadge());
                sync = true;
             }
          }
