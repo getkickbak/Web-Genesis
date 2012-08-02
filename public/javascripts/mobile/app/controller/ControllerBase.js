@@ -442,7 +442,7 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      
+
       try
       {
          //
@@ -572,9 +572,8 @@ Ext.define('Genesis.controller.ControllerBase',
                model : 'Genesis.model.' + stores[i][2],
                autoLoad : false
             });
+            stores[i][0] = Ext.StoreMgr.get('Persistent' + stores[i][1]);
          }
-
-         stores[i][0] = Ext.StoreMgr.get('Persistent' + stores[i][1]);
       }
 
       return stores[storeName][0];
@@ -610,7 +609,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   console.debug("Error Restoring " + stores[i][1] + " ...");
                }
 
-               //if ((flag |= stores[i][2]) == 0x11)
+               if ((flag |= stores[i][2]) == 0x11)
                {
                   callback();
                }
