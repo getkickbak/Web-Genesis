@@ -371,7 +371,7 @@ Ext.define('Genesis.controller.client.Merchants',
 
          // Restore Merchant Info
          ccntlr.fireEvent('setupCheckinInfo', 'checkin', cvenue, ccustomer, cmetaData);
-         viewport.updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [cmetaData]);
+         Ext.defer(me.updateMetaData, 0.1 * 1000, me, [cmetaData]);
       }
       //
       // Force Page to refresh

@@ -158,55 +158,6 @@ Ext.define('Genesis.controller.client.Prizes',
 
       console.log("Prizes Init");
    },
-   /*
-   initPrizeStore : function()
-   {
-   var me = this;
-   var app = me.getApplication();
-   Ext.regStore('PrizeStore',
-   {
-   model : 'Genesis.model.CustomerReward',
-   autoLoad : false,
-   clearOnPageLoad : false,
-   sorters : [
-   {
-   // Clump by merchant (ascending order)
-   sorterFn : function(o1, o2)
-   {
-   var name1 = o1.getMerchant().get('name');
-   var name2 = o2.getMerchant().get('name');
-   return (name1 < name2 ? -1 : (name1 > name2 ? 1 : 0));
-   },
-   direction : 'ASC'
-   },
-
-   //{
-   // Return based on expiry date (descending order)
-   //sorterFn : function(o1, o2)
-   //{
-   //return Date.parse(o2.get('expiry_date')) - Date.parse(o1.get('expiry_date'));
-   //}
-   //},
-   {
-   // Return based on issue date (Bigger Id == issued later)
-   sorterFn : function(o1, o2)
-   {
-   return o2.getId() - o1.getId();
-   }
-   }],
-   listeners :
-   {
-   scope : this,
-   'metachange' : function(store, proxy, eOpts)
-   {
-   var viewport = _application.getController('Viewport');
-   var controller = _application.getController('client.Rewards');
-   viewport.updateMetaDataTask.delay(0.1 * 1000, controller.updateMetaData, controller, [metaData]);
-   }
-   }
-   });
-   },
-   */
    // --------------------------------------------------------------------------
    // Utility Functions
    // --------------------------------------------------------------------------
@@ -223,7 +174,6 @@ Ext.define('Genesis.controller.client.Prizes',
       var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
       rouletteBall.removeCls('spinBack');
       rouletteBall.addCls('spinFwd');
-      // Match the speed of Roulette Table to make it look like it stopped
    },
    stopRouletteScreen : function()
    {

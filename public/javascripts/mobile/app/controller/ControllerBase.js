@@ -384,7 +384,7 @@ Ext.define('Genesis.controller.ControllerBase',
 
       if (updateBadge)
       {
-         viewport.updateMetaDataTask.delay(0.1 * 1000, me.refreshBadges, me);
+         Ext.defer(me.refreshBadges, 0.1 * 1000, me);
       }
    },
    updateRewards : function(rewards)
@@ -478,18 +478,6 @@ Ext.define('Genesis.controller.ControllerBase',
          //
          me.updateBadges(metaData['badges']);
          me.updateAccountInfo(metaData['account_info']);
-         //
-         // QR Code from Transfer Points
-         //
-         var qrcode = metaData['data'];
-         if (qrcode)
-         {
-            /*
-             console.debug("QRCode received for Points Transfer" + '\n' + //
-             qrcode);
-             */
-            me.fireEvent('authcoderecv', metaData);
-         }
       }
       catch(e)
       {

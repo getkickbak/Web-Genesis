@@ -48,7 +48,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
             scope : me,
             'metachange' : function(store, proxy, eOpts)
             {
-               me.getViewPortCntlr().updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [metaData]);
+               Ext.defer(me.updateMetaData, 0.1 * 1000, me, [metaData]);
             }
          }
       });
@@ -173,11 +173,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
    updateMetaData : function(metaData)
    {
       var me = this;
-      var data = metaData['data'] || null;
-
-      metaData['data'] = null;
       me.callParent(arguments);
-      metaData['data'] = data;
 
       //
       // Claim Reward Item by showing QRCode to server!

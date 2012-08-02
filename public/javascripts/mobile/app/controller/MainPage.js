@@ -18,10 +18,6 @@ Ext.define('Genesis.controller.MainPage',
          'createAccount' : 'createAccountPage',
       },
       models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'News', 'Customer', 'User', 'Merchant', 'CustomerReward'],
-      listeners :
-      {
-         'authcoderecv' : 'onAuthCodeRecv'
-      },
       refs :
       {
          // Login Page
@@ -222,8 +218,22 @@ Ext.define('Genesis.controller.MainPage',
             },
             'metachange' : function(store, proxy, eOpts)
             {
-               me.getViewPortCntlr().updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [proxy.getReader().metaData]);
+               Ext.defer(me.updateMetaData, 0.1 * 1000, me, [proxy.getReader().metaData]);
 
+               //
+               // QR Code from Transfer Points
+               //
+               var qrcode = metaData['data'];
+               if (qrcode)
+               {
+                  /*
+                   console.debug("QRCode received for Points Transfer" + '\n' + //
+                   qrcode);
+                   */
+                  var app = me.getApplication();
+                  var controller = app.getController('client.Accounts');
+                  controller.fireEvent('authcoderecv', metaData);
+               }
                //
                // Update PrizeStore
                //
@@ -276,7 +286,7 @@ Ext.define('Genesis.controller.MainPage',
             'metachange' : function(store, proxy, eOpts)
             {
                // Let Other event handlers udpate the metaData first ...
-               me.getViewPortCntlr().updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [proxy.getReader().metaData]);
+               Ext.defer(me.updateMetaData, 0.1 * 1000, me, [proxy.getReader().metaData]);
             }
          }
       });
@@ -284,13 +294,6 @@ Ext.define('Genesis.controller.MainPage',
    // --------------------------------------------------------------------------
    // EVent Handlers
    // --------------------------------------------------------------------------
-   onAuthCodeRecv : function(metaData)
-   {
-      var me = this;
-      var app = me.getApplication();
-      var controller = app.getController('client.Accounts');
-      controller.fireEvent('authCodeRecv', metaData);
-   },
    // --------------------------------------------------------------------------
    // MainPage
    // --------------------------------------------------------------------------

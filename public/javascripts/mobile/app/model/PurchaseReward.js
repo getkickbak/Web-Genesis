@@ -29,15 +29,12 @@ Ext.define('Genesis.model.PurchaseReward',
          {
             'metachange' : function(proxy, metaData, eOpts)
             {
-               var viewport = _application.getController('Viewport');
                var controller = _application.getController('client.Rewards');
-               viewport.updateMetaDataTask.delay(0.1 * 1000, controller.updateMetaData, controller, [metaData]);
+               Ext.defer(controller.updateMetaData, 0.1 * 1000, controller, [metaData]);
             }
          }
       },
-      fields : ['id', 'title', 'points', 'type', 'photo', 'created_ts', 'update_ts',
-      // Added in frontend of shopping cart tracking
-      'qty']
+      fields : ['id', 'title', 'points', 'type', 'photo', 'created_ts', 'update_ts']
    },
    getMerchant : function()
    {

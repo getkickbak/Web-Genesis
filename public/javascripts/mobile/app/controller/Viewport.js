@@ -513,7 +513,6 @@ Ext.define('Genesis.controller.Viewport',
       if (!merchantMode)
       {
          Genesis.fb.initFb();
-         me.updateMetaDataTask = Ext.create('Ext.util.DelayedTask');
       }
 
       if (Ext.isDefined(window.device))

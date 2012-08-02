@@ -77,7 +77,7 @@ Ext.define('Genesis.controller.client.Checkins',
             'metachange' : function(store, proxy, eOpts)
             {
                // Let Other event handlers udpate the metaData first ...
-               me.getViewPortCntlr().updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [proxy.getReader().metaData]);
+               Ext.defer(me.updateMetaData, 0.1 * 1000, me, [proxy.getReader().metaData]);
             }
          }
       });

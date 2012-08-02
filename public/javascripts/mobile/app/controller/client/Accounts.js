@@ -110,8 +110,8 @@ Ext.define('Genesis.controller.client.Accounts',
       },
       listeners :
       {
-         'selectMerchant' : 'onDisclose',
-         'authCodeRecv' : 'onAuthCodeRecv'
+         'selectmerchant' : 'onDisclose',
+         'authcoderecv' : 'onAuthCodeRecv'
       }
    },
    qrcodeRegExp : /%qrcode_image%/,
@@ -193,7 +193,7 @@ Ext.define('Genesis.controller.client.Accounts',
                         me.silentPopView(1);
                         Ext.defer(function()
                         {
-                           me.fireEvent('selectMerchant', cstore, records[0]);
+                           me.fireEvent('selectmerchant', cstore, records[0]);
                            //me.pushView(me.getAccounts());
                         }, 1, me);
                      }

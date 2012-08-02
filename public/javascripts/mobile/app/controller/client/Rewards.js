@@ -224,12 +224,8 @@ Ext.define('Genesis.controller.client.Rewards',
    updateMetaData : function(metaData)
    {
       var me = this;
-      var data = metaData['data'] || null;
-
-      metaData['data'] = null;
       var customer = me.callParent(arguments);
       var custimerId = customer.getId();
-      metaData['data'] = data;
       //
       // Update points from the purchase or redemption
       //
@@ -271,6 +267,7 @@ Ext.define('Genesis.controller.client.Rewards',
             }
          }
       });
+      
       if (metaData['data'])
       {
          var controller = me.getApplication().getController('client.Prizes');

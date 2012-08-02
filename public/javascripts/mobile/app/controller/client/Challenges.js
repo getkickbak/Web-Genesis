@@ -541,7 +541,7 @@ Ext.define('Genesis.controller.client.Challenges',
                title : 'VIP Challenge',
                message : me.getConsolationMsg(metaData['message'])
             });
-            me.getViewPortCntlr().updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [metaData]);
+            Ext.defer(me.updateMetaData, 0.1 * 1000, me, [metaData]);
             break;
          }
          default:
@@ -561,7 +561,7 @@ Ext.define('Genesis.controller.client.Challenges',
                title : 'Earn Points',
                message : ((metaData['points'] > 0) ? me.getPointsMsg(metaData['points'], metaData['account_points']) : me.getConsolationMsg(metaData['message']))
             });
-            me.getViewPortCntlr().updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [metaData]);
+            Ext.defer(me.updateMetaData, 0.1 * 1000, me, [metaData]);
             break;
       }
    },
@@ -612,7 +612,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      me.popView();
                   }
                });
-               viewport.updateMetaDataTask.delay(0.1 * 1000, me.updateMetaData, me, [metaData2]);
+               Ext.defer(me.updateMetaData, 0.1 * 1000, me, [metaData2]);
             }
             else
             {
