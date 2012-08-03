@@ -28,7 +28,9 @@ Genesis.constants =
    },
    getIconPath : function(type, name, remote)
    {
-      return ((!remote) ? 'resources/themes/images/' + this.themeName : this.photoSite) + '/' + type + '/' + name + '.png';
+      return ((!remote) ? //
+      'resources/themes/images/' + this.themeName : //
+      this.photoSite + '/' + this.themeName + '/' + 'icons') + '/' + type + '/' + name + '.png';
    },
    getPrivKey : function(id)
    {
