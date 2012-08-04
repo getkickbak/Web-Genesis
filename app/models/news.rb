@@ -1,10 +1,11 @@
-class EligibleReward
-  attr_accessor :reward_id, :reward_type, :reward_title, :reward_text
+class News
+  attr_accessor :type, :item_id, :item_type, :title, :text
   
-  def initialize(reward_id, reward_type, reward_title, reward_text)  
-    @reward_id = reward_id
-    @reward_type = reward_type
-    @reward_title = reward_title
-    @reward_text = reward_text
+  def initialize(type, item_id, item_type, title, text)  
+    @type = type
+    @item_id = item_id
+    @item_type = item_type
+    @title = title
+    @text = text
   end
 end
