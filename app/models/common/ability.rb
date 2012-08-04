@@ -24,8 +24,6 @@ class Ability
     can :read, CustomerReward
     can :read, Challenge 
     can :read, Venue
-    can :read, EarnPrize
-    can :update, EarnPrize, :user => { :id => @user.id }
   end
   
   def test

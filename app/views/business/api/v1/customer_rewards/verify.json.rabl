@@ -3,5 +3,5 @@ node :success do
 	true
 end
 node :data do
-	partial('business/api/v1/common/redeem_reward', :object => @decrypted_data) 
+	partial('business/api/v1/customer_rewards/base', :object => @decrypted_data) 
 end

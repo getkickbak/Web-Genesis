@@ -10,6 +10,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
    config :
    {
    },
+   lastMode : null,
    //orderTitle : 'Rewards List',
    //checkoutTitle : 'Check Out',
    needPointsMsg : function(pointsDiff)
@@ -27,7 +28,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
          model : 'Genesis.model.Customer',
          autoLoad : false
       });
-      Ext.regStore(me.getRedemptionsStore(),
+      Ext.regStore(me.getRedeemStore(),
       {
          model : 'Genesis.model.CustomerReward',
          autoLoad : false,
@@ -48,7 +49,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
             scope : me,
             'metachange' : function(store, proxy, eOpts)
             {
-               Ext.defer(me.updateMetaData, 0.1 * 1000, me, [metaData]);
+               me.fireEvent('updatemetadata', proxy.getReader().metaData);
             }
          }
       });
@@ -84,6 +85,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       var venueId = venue.getId();
       var merchantId = venue.getMerchant().getId();
 
+      me.lastMode = me.getMode();
       me.exploreMode = !cvenue || (cvenue && (cvenue.getId() != venue.getId()));
 
       // Update Customer info
@@ -154,8 +156,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
          }
          case 'redeemBrowseSC' :
          {
-            var controller = me.getApplication().getController('client.Prizes');
-            controller.fireEvent('redeemitem', record);
+            me.fireEvent('showredeemitem', record);
             /*
              Ext.create('Genesis.model.EarnPrize',
              {
@@ -173,7 +174,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
    updateMetaData : function(metaData)
    {
       var me = this;
-      me.callParent(arguments);
+      var customer = me.callParent(arguments);
 
       //
       // Claim Reward Item by showing QRCode to server!
@@ -182,6 +183,8 @@ Ext.define('Genesis.controller.client.RedeemBase',
       {
          me.fireEvent('showQRCode', 0, metaData['data']);
       }
+      
+      return customer;
    },
    // --------------------------------------------------------------------------
    // Handler Functions
@@ -242,7 +245,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       var me = this;
       var venueId = (venue) ? venue.getId() : 0;
       var item = view.getInnerItems()[0];
-      var store = me.getredemptionsStore();
+      var store = me.getredeemStore();
 
       CustomerReward[me.getRedeemPointsFn()](item.getStore().first().getId());
 
@@ -275,12 +278,13 @@ Ext.define('Genesis.controller.client.RedeemBase',
    },
    onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var me = this;
+      var me = this;      
       var view = me.getMainPage();
       var viewport = me.getViewPortCntlr();
 
       var tbbar = activeItem.query('titlebar')[0];
       var photo = me.redeemItem.get('photo');
+      
       me.getSCloseBB().show();
       //me.getSBB().hide();
       tbbar.setTitle(me.getTitle());
@@ -298,6 +302,15 @@ Ext.define('Genesis.controller.client.RedeemBase',
       }, 1, activeItem);
       //view.createView();
       //delete me.redeemItem;
+   },
+   onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
+   {
+      var me = this;
+      if (me.lastMode)
+   	  {
+         me.setMode(me.lastMode);
+         me.lastMode = null;
+   	  }
    },
    onDoneTap : function(b, e, eOpts, eInfo, overrideMode)
    {
@@ -387,19 +400,19 @@ Ext.define('Genesis.controller.client.RedeemBase',
          case 'redeemPrize' :
          case 'redeemReward' :
          {
-            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+            me.setAnimationMode(Genesis.controller.ControllerBase.animationMode['coverUp']);
             page = me.getRedeemItem();
             break;
          }
          case 'redeemBrowse' :
          {
-            me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
+            me.setAnimationMode(Genesis.controller.ControllerBase.animationMode['cover']);
             page = me.getRedemptions();
             break;
          }
          case 'redeemBrowseSC' :
          {
-            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+            me.setAnimationMode(Genesis.controller.ControllerBase.animationMode['coverUp']);
             page = me.getRedemptions();
             break;
          }

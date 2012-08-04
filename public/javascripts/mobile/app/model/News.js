@@ -6,6 +6,6 @@ Ext.define('Genesis.model.News',
    config :
    {
       idProperty : 'id',
-      fields : ['id', 'news_id', 'news_title', 'news_text', 'news_type', 'photo']
+      fields : ['id', 'item_id', 'title', 'text', 'type', 'item_type', 'photo']
    }
 });

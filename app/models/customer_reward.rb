@@ -1,13 +1,17 @@
 class CustomerReward
   include DataMapper::Resource
   
-  Modes = [:reward_only, :prize_only, :prize_and_reward]
+  Modes = [:reward, :prize]
 
   property :id, Serial
   property :title, String, :length => 24, :required => true, :default => ""
   property :price, Decimal, :required => true, :scale => 2, :min => 1.00
   property :points, Integer, :required => true, :min => 1
-  property :mode, Enum[:reward_only, :prize_only, :prize_and_reward], :required => true, :default => :prize_and_reward
+  property :mode, Enum[:reward, :prize], :required => true, :default => :reward
+  property :quantity_limited, Boolean, :required  => true, :default => false
+  property :quantity, Integer, :default => 0
+  property :time_limited, Boolean, :required => true, :default => false
+  property :expiry_date, Date, :default => ::Constant::MIN_DATE
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -17,7 +21,7 @@ class CustomerReward
   attr_accessor :venue_ids
   attr_accessor :eager_load_type
 
-  attr_accessible :type_id, :title, :price, :points, :mode
+  attr_accessible :type_id, :title, :price, :points, :mode, :quantity_limited, :quantity, :time_limited, :expiry_date
 
   belongs_to :merchant
   has 1, :customer_reward_to_subtype, :constraint => :destroy
@@ -35,7 +39,11 @@ class CustomerReward
       :title => reward_info[:title].strip,
       :price => reward_info[:price],
       :points => reward_info[:points],
-      :mode => reward_info[:mode]
+      :mode => reward_info[:mode],
+      :quantity_limited => reward_info[:quantity_limited],
+      :quantity => reward_info[:quantity_limited] ? reward_info[:quantity] : 0,
+      :time_limited => reward_info[:time_limited],
+      :expiry_date => reward_info[:time_limited] ? reward_info[:expiry_date] : Constant::MIN_DATE
     )
     reward[:created_ts] = now
     reward[:update_ts] = now
@@ -53,6 +61,10 @@ class CustomerReward
     self.price = reward_info[:price]
     self.points = reward_info[:points]
     self.mode = reward_info[:mode]
+    self.quantity_limited = reward_info[:quantity_limited]
+    self.quantity = reward_info[:quantity_limited] ? reward_info[:quantity] : 0
+    self.time_limited = reward_info[:time_limited]
+    self.expiry_date = reward_info[:time_limited] ? reward_info[:expiry_date] : Constant::MIN_DATE
     self.update_ts = now
     self.type = type
     self.customer_reward_venues.destroy
@@ -62,7 +74,7 @@ class CustomerReward
   
   def to_redeemed
     type = {
-      :value => RedeemedReward::TYPE_REWARD
+      :value => self.mode == "reward" ? RedeemedReward::TYPE_REWARD : RedeemdReward::TYPE_PRIZE
     }
     RedeemedReward.new(type, self.title)
   end

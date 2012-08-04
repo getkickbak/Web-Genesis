@@ -1,5 +1,5 @@
 class Api::V1::CustomersController < ApplicationController
-  before_filter :authenticate_user!, :only => [:edit, :update, :destroy]
+  before_filter :authenticate_user!
    
   def index
     authorize! :read, Customer
@@ -131,7 +131,7 @@ class Api::V1::CustomersController < ApplicationController
             sender.points -= @record.points
             sender.save
             sender_trans_record = TransactionRecord.new(
-              :type => :transfer,
+              :type => :transfer_points,
               :ref_id => @record.id,
               :description => I18n.t("transaction.transfer"),
               :points => -points,
@@ -145,7 +145,7 @@ class Api::V1::CustomersController < ApplicationController
             @customer.points += @record.points
             @customer.save
             trans_record = TransactionRecord.new(
-              :type => :transfer,
+              :type => :transfer_points,
               :ref_id => @record.id,
               :description => I18n.t("transaction.transfer"),
               :points => points,

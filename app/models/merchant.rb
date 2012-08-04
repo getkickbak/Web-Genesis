@@ -43,7 +43,7 @@ class Merchant
   property :payment_account_id, String, :default => ""
   property :role, String, :required => true, :default => "merchant"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :pending
-  property :prize_terms, String, :required => true, :default => ""
+  property :reward_terms, String, :required => true, :default => ""
   property :auth_code, String, :required => true, :default => ""
   property :prize_auth_code, String, :required => true, :default => ""
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -51,14 +51,18 @@ class Merchant
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
 
-  attr_accessor :type_id, :current_password, :eager_load_type
+  attr_accessor :type_id, :visit_frequency_id, :current_password, :eager_load_type
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :photo, :alt_photo, :role, :status, :prize_terms, :auth_code, :prize_auth_code, :current_password, :password, :password_confirmation
+  attr_accessible :type_id, :visit_frequency_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :photo, :alt_photo, :role, :status, :reward_terms, :auth_code, :prize_auth_code, :current_password, :password, :password_confirmation
   
   has 1, :merchant_to_type, :constraint => :destroy
   has 1, :type, 'MerchantType', :through => :merchant_to_type, :via => :merchant_type
   has 1, :reward_model, :constraint => :destroy
+  has 1, :merchant_to_visit_frequency_type, :constraint => :destroy
+  has 1, :visit_frequency, 'VisitFrequencyType', :through => :merchant_to_visit_frequency_type, :via => :visit_frequency_type
+  has n, :merchant_to_badge, :constraint => :destroy
+  has n, :badges, :through => :merchant_to_badge, :via => :badge
   has n, :merchant_credit_cards, :child_key => [ :merchant_id ], :constraint => :destroy
   has n, :credit_cards, :through => :merchant_credit_cards, :via => :credit_card
   has n, :venues, :constraint => :destroy
@@ -68,18 +72,20 @@ class Merchant
   before_save :ensure_authentication_token
   
   validates_with_method :type_id, :method => :check_type_id
+  validates_with_method :visit_frequency_id, :method => :check_visit_frequency_id
 
   def self.get_cache_key(id)
     "Merchant-#{id}"  
   end
   
-  def self.create(type, merchant_info)
+  def self.create(type, visit_frequency, merchant_info)
     now = Time.now
     merchant_name = merchant_info[:name].squeeze(' ').strip
     password = merchant_info[:password] ? merchant_info[:password].strip : merchant_info.password
     password_confirmation  = merchant_info[:password_confirmation] ? merchant_info[:password_confirmation].strip : merchant_info.password_confirmation
     merchant = Merchant.new(
       :type_id => type ? type.id : nil,
+      :visit_frequency_id => visit_frequency ? visit_frequency.id : nil,
       :name => merchant_name,
       :description => merchant_info[:description].strip,
       :email => merchant_info[:email].strip,
@@ -92,13 +98,14 @@ class Merchant
       :website => merchant_info[:website].strip,
       :role => merchant_info[:role],
       :status => merchant_info[:status],
-      :prize_terms => merchant_info[:prize_terms],
+      :reward_terms => merchant_info[:reward_terms],
       :auth_code => String.random_alphanumeric(32),
       :prize_auth_code => String.random_alphanumeric(32)
     )
     merchant[:created_ts] = now
     merchant[:update_ts] = now
     merchant.type = type
+    merchant.visit_frequency = visit_frequency
     merchant.save
     return merchant
   end
@@ -136,15 +143,17 @@ class Merchant
   # the passwords are valid and the record was saved, false otherwise.
   def reset_password!(new_password, new_password_confirmation)
     self.type_id = self.type.id
+    self.visit_frequency_id = self.visit_frequency.id
     self.password = new_password
     self.password_confirmation = new_password_confirmation
     clear_reset_password_token if valid?
     save
   end
       
-  def update_all(type, merchant_info)
+  def update_all(type, visit_frequency, merchant_info)
     now = Time.now
     self.type_id = type ? type.id : nil
+    self.visit_frequency_id = visit_frequency ? visit_frequency.id : nil
     merchant_name = merchant_info[:name].squeeze(' ').strip
     self.name = merchant_name
     self.description = merchant_info[:description].strip
@@ -172,12 +181,14 @@ class Merchant
     self.status = merchant_info[:status]
     self.update_ts = now
     self.type = type
+    self.visit_frequency = visit_frequency
     save
   end
     
   def update_prize_auth_code
     now = Time.now
     self.type_id = self.type.id
+    self.visit_frequency_id = self.visit_frequency.id
     self.current_password = nil
     self.prize_auth_code = String.random_alphanumeric(32)
     self.update_ts = now
@@ -191,6 +202,7 @@ class Merchant
     end
     now = Time.now
     self.type_id = self.type.id
+    self.visit_frequency_id = self.visit_frequency.id
     self.current_password = nil
     self.photo = merchant_info[:photo]
     self.update_ts = now  
@@ -204,6 +216,7 @@ class Merchant
     end
     now = Time.now
     self.type_id = self.type.id
+    self.visit_frequency_id = self.visit_frequency.id
     self.current_password = nil
     self.alt_photo = merchant_info[:alt_photo]
     self.update_ts = now  
@@ -224,10 +237,17 @@ class Merchant
   
   private
   
-   def check_type_id
+  def check_type_id
     if self.type && self.type.id
       return true  
     end
     return [false, ValidationErrors.default_error_message(:blank, :type_id)]
+  end
+  
+  def check_visit_frequency_id
+    if self.visit_frequency && self.visit_frequency.id
+      return true  
+    end
+    return [false, ValidationErrors.default_error_message(:blank, :visit_frequency_id)]
   end
 end

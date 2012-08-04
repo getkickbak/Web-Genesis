@@ -30,6 +30,7 @@ module Business
       authorize! :create, CustomerReward
 
       @customer_reward = CustomerReward.new
+      @customer_reward.expiry_date = Date.today
       
       respond_to do |format|
         format.html # index.html.erb
@@ -73,6 +74,9 @@ module Business
       authorize! :update, @customer_reward
       
       @customer_reward.type_id = @customer_reward.type.id
+      if @customer_reward.time_limited && @customer_reward.expiry_date < Date.today
+        @customer_reward.expiry_date = Date.today
+      end
       @venue_ids = []
       @customer_reward.venues.each do |venue|
         @venue_ids << venue.id

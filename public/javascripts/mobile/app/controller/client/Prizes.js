@@ -14,11 +14,11 @@ Ext.define('Genesis.controller.client.Prizes',
       timeoutPeriod : 10,
       minPrizePts : 10,
       mode : 'redeemBrowse',
-      renderStore : 'PrizesRenderCStore',
-      redemptionsStore : 'PrizesStore',
+      renderStore : 'PrizeRenderCStore',
+      redeemStore : 'PrizeStore',
       redeemPointsFn : 'setRedeemPrizePointsURL',
-      getRedemptionURL : 'setGetPrizesURL',
-      getRedemptionPath : 'redeemBrowsePrizesSC',
+      redeemUrl : 'setGetPrizesURL',
+      redeemPath : 'redeemBrowsePrizesSC',
       title : 'Prizes',
       routes :
       {
@@ -92,7 +92,7 @@ Ext.define('Genesis.controller.client.Prizes',
          redeemItem :
          {
             activate : 'onRedeemItemActivate',
-            deactivate : 'onDeactivate'
+            deactivate : 'onRedeemItemDeactivate'
          }
       },
       listeners :
@@ -120,7 +120,7 @@ Ext.define('Genesis.controller.client.Prizes',
       var points = reward_info['prize_points'];
       var badgePrizePts = reward_info['badge_prize_points'];
 
-      return ('You\'ve earned' + points + ' Prize Points from this purchase.' + //
+      return ('You\'ve earned ' + points + ' Prize Points from this purchase.' + //
       ((!extraPoints) ? Genesis.constants.addCRLF() + me.eligibleRewardMsg : ''));
    },
    wonPrizeEmailMsg : function(prizeName, venueName)
@@ -259,7 +259,7 @@ Ext.define('Genesis.controller.client.Prizes',
             link : venue.get('website') || site,
             caption : link,
             description : desc,
-            picture : Genesis.view.client.Badges.getPhoto(badge.get('type'), true),
+            picture : Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_medium_url'),
             message : message
          }, function(response)
          {
@@ -416,8 +416,12 @@ Ext.define('Genesis.controller.client.Prizes',
    redeemItemPage : function()
    {
       this.openPage('redeemPrize');
-   }
+   },
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
+   isOpenAllowed : function()
+   {
+      return true;
+   }
 });

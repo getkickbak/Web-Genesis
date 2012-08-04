@@ -85,21 +85,29 @@ module ExpireUserPoints
         customers.each do |customer|
           expired_points = ((customer_id_to_expired_points[customer.id] || 0) + (customer_id_to_transfer_in_points[customer.id] || 0)) - ((customer_id_to_redeemed_points[customer.id] || 0) + (customer_id_to_transfer_out_points[customer.id] || 0))
           if expired_points > 0
-            customer.points -= expired_points
-            customer.update_ts = now
-            customer.save
-            trans_record = TransactionRecord.new(
-              :type => :expire,
-              :ref_id => 0,
-              :description => I18n.t("transactions.expire"),
-              :points => -expired_points,
-              :created_ts => now,
-              :update_ts => now
-            )
-            trans_record.merchant = customer.merchant
-            trans_record.customer = customer
-            trans_record.user = user
-            trans_record.save
+            begin
+              Customer.transaction do
+                @customer_mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
+                acquired = @customer_mutex.acquire
+                customer.points -= expired_points
+                customer.update_ts = now
+                customer.save
+                trans_record = TransactionRecord.new(
+                  :type => :expire_points,
+                  :ref_id => 0,
+                  :description => I18n.t("transactions.expire"),
+                  :points => -expired_points,
+                  :created_ts => now,
+                  :update_ts => now
+                )
+                trans_record.merchant = customer.merchant
+                trans_record.customer = customer
+                trans_record.user = user
+                trans_record.save
+              end
+            ensure
+              @customer_mutex.release if ((defined? @customer_mutex) && !@customer_mutex.nil?)  
+            end    
           end
         end
       end

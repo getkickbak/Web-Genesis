@@ -123,6 +123,51 @@ if exists
       challenge_type_value_to_name[challenge_type.value][locale] = name
     end
   end
+  badge_types = BadgeType.all
+  badge_type_values = {}
+  badge_type_value_to_name = {}
+  badge_type_id_to_type = {}
+  badge_types.each do |type|
+    badge_type_id_to_type[type.id] = type
+    if !badge_type_value_to_name.include? type.value
+      badge_type_value_to_name[type.value] = {}
+    end
+    I18n.available_locales.each do |locale|
+      name = I18n.t "badge.type.#{type.value}", :locale => locale
+      if !badge_type_values.include? locale
+        badge_type_values[locale] = []
+      end
+      badge_type_values[locale] << [name, type.id]
+      badge_type_value_to_name[type.value][locale] = name
+    end
+  end
+  visit_frequency_types = VisitFrequencyType.all
+  visit_frequency_type_values = {}
+  visit_frequency_type_value_to_name = {}
+  visit_frequency_type_id_to_type = {}
+  visit_frequency_types.each do |type|
+    visit_frequency_type_id_to_type[type.id] = type
+    if !visit_frequency_type_value_to_name.include? type.value
+      visit_frequency_type_value_to_name[type.value] = {}
+    end
+    I18n.available_locales.each do |locale|
+      name = I18n.t "visit_frequency.#{type.value}", :locale => locale
+      if !visit_frequency_type_values.include? locale
+        visit_frequency_type_values[locale] = []
+      end
+      visit_frequency_type_values[locale] << [name, type.id]
+      visit_frequency_type_value_to_name[type.value][locale] = name
+    end
+  end
+  badge_type_visits = {}
+  badge_type_settings = BadgeTypeSetting.all
+  badge_type_settings.each do |setting|
+    visit_frequency_type = visit_frequency_type_id_to_type[setting.visit_frequency_type_id]
+    if !badge_type_visits.include? visit_frequency_type.value
+      badge_type_visits[visit_frequency_type.value] = {}
+    end
+    badge_type_visits[visit_frequency_type.value][badge_type_id_to_type[setting.badge_type_id].value] = setting.visits  
+  end
   MerchantType.values = merchant_type_values
   MerchantType.value_to_name = merchant_type_value_to_name
   MerchantType.id_to_type = merchant_type_id_to_type
@@ -140,4 +185,11 @@ if exists
   ChallengeType.value_to_id = challenge_type_value_to_id
   ChallengeType.value_to_name = challenge_type_value_to_name
   ChallengeType.id_to_type = challenge_type_id_to_type
+  BadgeType.values = badge_type_values
+  BadgeType.value_to_name = badge_type_value_to_name
+  BadgeType.id_to_type = badge_type_id_to_type
+  BadgeType.visits = badge_type_visits
+  VisitFrequencyType.values = visit_frequency_type_values
+  VisitFrequencyType.value_to_name = visit_frequency_type_value_to_name
+  VisitFrequencyType.id_to_type = visit_frequency_type_id_to_type
 end

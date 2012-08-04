@@ -14,7 +14,7 @@ class Business::Api::V1::CustomerRewardsController < ApplicationController
       decrypted = cipher.dec(data)
       @decrypted_data = JSON.parse(decrypted)
       data_expiry_ts = Time.at(decrypted_data["expiry_ts"]/1000)
-      if (decrypted_data["type"] == EncryptedDataType::REDEEM_REWARD) && (data_expiry_ts >= Time.now) && Cache.get(data).nil?
+      if (data_expiry_ts >= Time.now) && Cache.get(data).nil?
         authorized = true
       end
     rescue

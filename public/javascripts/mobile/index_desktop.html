@@ -119,7 +119,6 @@
       <script type="text/javascript" src="app/view/widgets/RedeemItem.js"></script>
       <script type="text/javascript" src="app/view/widgets/MerchantAccountPtsItem.js"></script>
       <script type="text/javascript" src="app/view/widgets/RedeemPtsItem.js"></script>
-      <script type="text/javascript" src="app/view/widgets/RedeemItemDetail.js"></script>
       <!-- Models -->
       <script type="text/javascript" src="app/model/frontend/MainPage.js"></script>
       <script type="text/javascript" src="app/model/UserProfile.js"></script>
@@ -142,6 +141,7 @@
       <script type="text/javascript" src="app/view/client/ChallengePage.js"></script>
       <script type="text/javascript" src="app/view/MainPage.js"></script>
       <script type="text/javascript" src="app/view/LoginPage.js"></script>
+      <script type="text/javascript" src="app/view/RedeemItemDetail.js"></script>
       <script type="text/javascript" src="app/view/client/Badges.js"></script>
       <script type="text/javascript" src="app/view/client/MerchantAccount.js"></script>
       <script type="text/javascript" src="app/view/client/MerchantDetails.js"></script>
@@ -217,10 +217,9 @@
                profiles : ['Iphone', 'Android', 'Desktop'],
                views : ['client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
                'client.AccountsTransfer', 'client.SettingsPage', //
-               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'client.Badges', 'client.MerchantAccount', 'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'widget.PrizesDetail', 'widget.ShowPrizeDetail', 'Viewport'],
+               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'RedeemItemDetail', 'client.Badges', 'client.MerchantAccount', 'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
                controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
-               'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'Prizes'],
-               stores : [],
+               'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.Prizes'],
                launch : function()
                {
                   console.log("Launching App");

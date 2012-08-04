@@ -10,6 +10,8 @@
       .listItemDetailsWrapper {
          padding-left:0 !important;
          .title {
+            float: left;
+            margin-left:$icon-size + 10px;
             text-align:left;
             font-size:$largeFontSize;
             font-weight:normal;

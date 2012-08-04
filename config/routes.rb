@@ -12,7 +12,6 @@ Genesis::Application.routes.draw do
         namespace :v1  do
           resources :tokens, :only => [:create, :destroy] 
           
-          match "earn_prizes/verify" => 'earn_prizes#verify', :via => :post
           match "customer_rewards/verify" => 'customer_rewards#verify', :via => :post  
         end
       end
@@ -25,6 +24,7 @@ Genesis::Application.routes.draw do
       end
       resources :invoices, :only => [:index, :show]
       resources :promotions, :only => [:index, :new, :create]
+      resources :badges, :only => [:index]
       #resources :deals
               
       match "/dashboard" => 'dashboard#index', :as => :dashboard
@@ -131,11 +131,7 @@ Genesis::Application.routes.draw do
         match '/customer_rewards' => 'customer_rewards#index'
         match '/customer_rewards/:id/redeem' => 'customer_rewards#redeem', :via => :post
 
-        match '/purchase_rewards/earn' => 'purchase_rewards#earn', :via => :post
-
-        match '/earn_prizes' => 'earn_prizes#index'
-        match '/earn_prizes/show_venues' => 'earn_prizes#show_venues'
-        match '/earn_prizes/:id/redeem' => 'earn_prizes#redeem', :via => :post
+        match '/purchase_rewards/earn' => 'purchase_rewards#earn', :via => :post        
       end
     end
   

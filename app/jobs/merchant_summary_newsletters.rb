@@ -17,15 +17,18 @@ module MerchantSummaryNewsletters
       total_customer_count = Customer.count(Customer.merchant.id => merchant.id)
       new_customer_count = Customer.count(Customer.merchant.id => merchant.id, :created_ts => (beginning_of_last_week..end_of_last_week))
       new_total_spent = EarnRewardRecord.sum(:amount, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
-      total_reward_points = (EarnRewardRecord.sum(:points, :merchant => merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => merchant) || 0)
+      total_reward_points = (EarnRewardRecord.sum(:points, :merchant => merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => merchant, :mode => :reward) || 0)
       new_reward_points_earned = EarnRewardRecord.sum(:points, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
-      new_reward_points_redeemed = RedeemRewardRecord.sum(:points, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
-      new_purchases_count = EarnRewardRecord.count(:merchant => merchant, :challenge_id => 0, :created_ts => (beginning_of_last_week..end_of_last_week))
-      new_challenges_count = EarnRewardRecord.count(:merchant => merchant, :challenge_id.gt => 0, :created_ts => (beginning_of_last_week..end_of_last_week))
+      new_reward_points_redeemed = RedeemRewardRecord.sum(:points, :merchant => merchant, :mode => :reward, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
+      total_prize_points = (EarnPrizeRecord.sum(:points, :merchant => merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => merchant, :mode => :prize) || 0)
+      new_prize_points_earned = EarnPrizeRecord.sum(:points, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
+      new_prize_points_redeemed = RedeemRewardRecord.sum(:points, :merchant => merchant, :mode => :prize, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
+      new_purchases_count = EarnRewardRecord.count(:merchant => merchant, :type => :purchase, :created_ts => (beginning_of_last_week..end_of_last_week))
+      new_challenges_count = EarnRewardRecord.count(:merchant => merchant, :type => :challenge, :created_ts => (beginning_of_last_week..end_of_last_week))
       new_challenges_indv_count = []
       challenges = Challenge.all(Challenge.merchant.id => merchant.id)
       challenges.each do |challenge|
-        count = EarnRewardRecord.count(:challenge_id => challenge.id, :created_ts => (beginning_of_last_week..end_of_last_week))
+        count = EarnRewardRecord.count(:type => :challenge, :ref_id => challenge.id, :created_ts => (beginning_of_last_week..end_of_last_week))
         percentage = new_challenges_count > 0 ? (count / Float(new_challenges_count) * 100) : 0
         new_challenges_indv_count << {:name => challenge.name, :count => count, :percentage => percentage}
       end
@@ -36,6 +39,9 @@ module MerchantSummaryNewsletters
         :total_reward_points => total_reward_points,
         :new_reward_points_earned => new_reward_points_earned,
         :new_reward_points_redeemed => new_reward_points_redeemed,
+        :total_prize_points => total_prize_points,
+        :new_prize_points_earned => new_prize_points_earned,
+        :new_prize_points_redeemed => new_prize_points_redeemed,
         :new_purchases_count => new_purchases_count,
         :new_challenges_count => new_challenges_count,
         :new_challenges_indv_count => new_challenges_indv_count

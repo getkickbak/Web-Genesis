@@ -68,25 +68,24 @@ Ext.define('Genesis.view.widgets.RedeemItem',
                getExpiryDate : function(values)
                {
                   var limited = values['time_limited'];
-                  var date = (limited) ? values['expiry_date'] : 'N/A';
-                  return ('Offer Expires: ' + date);
+                  return ((limited) ? 'Offer Expires: ' + values['expiry_date'] : '');
                },
                getDisclaimer : function(values)
                {
                   var quantity = (values['quantity_limited']) ? //
                   '<b>Quantity Left : ' + values['quantity'] + '</b><br/>' : //
                   'Limited Quantities. ';
-                  var terms = values['merchant']['prize_terms'] || '';
+                  var terms = values['Merchant']['reward_terms'] || '';
 
                   return (quantity + terms);
                },
                getPhoto : function(values)
                {
-                  return values['merchant']['photo']['thumbnail_ios_small'].url;
+                  return values['Merchant']['photo']['thumbnail_ios_small'].url;
                },
                getName : function(values)
                {
-                  return values['merchant']['name'];
+                  return values['Merchant']['name'];
                }
             })
          }]
@@ -131,7 +130,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
    {
       //var reward = data['reward'];
       var reward = data;
-      var photo = Genesis.view.Prizes.getPhoto(reward['type']) || reward['photo']['thumbnail_ios_medium'];
+      var photo = Genesis.view.client.Prizes.getPhoto(reward['type']) || reward['photo']['thumbnail_ios_medium'];
       var info = this.query("component[tag=info]")[0];
 
       //var refresh = this.query("button[tag=refresh]")[0];
@@ -141,7 +140,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
       //
       // Hide Merchant Information if it's missing
       //
-      if (data['merchant'])
+      if (data['Merchant'])
       {
          //refresh.hide();
          //verify.hide();

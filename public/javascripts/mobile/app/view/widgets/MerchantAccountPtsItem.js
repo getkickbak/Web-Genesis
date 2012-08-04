@@ -27,7 +27,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             },
             items : [
             {
-               tag : 'prize_points',
+               tag : 'prizepoints',
                tpl : '{prize_points}',
                cls : 'prizepointsphoto'
             },
@@ -77,10 +77,12 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          tpl : Ext.create('Ext.XTemplate',
          // @formatter:off
          '<tpl if="this.isVisible(values)">',
-            '<div class="badgephoto badgephoto-{}">',
+            '<div class="badgephoto">',
+               '<img class="itemPhoto" src="{[this.getPhoto(values)]}"/>',
                '<div class="itemTitle">{[this.getTitle(values)]}</div>',
                '<div class="itemDesc badgeProgress">',
-                  '<div class="progressBarValue" style="{[this.getProgress(values)]}">{[this.getDesc(values)]}</div>',
+                  '<div class="progressBar" style="{[this.getProgress(values)]}"></div>',
+                  '<div class="progressBarValue">{[this.getDesc(values)]}</div>',
                '</div>',
             '</div>',
          '</tpl>',
@@ -93,18 +95,25 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             {
                var viewport = _application.getController('Viewport');
                var customer = viewport.getCustomer();
+               
                values['_customer'] = Ext.StoreMgr.get('CustomerStore').getById(customer.getId());
 
                return ( customer ? true : false);
             },
+            getPhoto : function(values)
+            {
+               values['_badgeType'] = Ext.StoreMgr.get('BadgeStore').getById(values['_customer'].get('badge_id')).get('type');
+               
+               return Genesis.view.client.Badges.getPhoto(values['_badgeType'], 'thumbnail_medium_url');
+            },
             getTitle : function(values)
             {
-               return 'Current Badge (<b>' + values['_customer'].getBadge().get('type').display_value + '</b>)';
+               return 'Current Badge (<span class ="badgehighlight">' + values['_badgeType'].display_value + '</span>)';
             },
             getProgress : function(values)
             {
                var customer = values['_customer'];
-               var nvisit = customer.getNextBadge().get('visits');
+               var nvisit = values['_nvisit'] = Ext.StoreMgr.get('BadgeStore').getById(customer.get('next_badge_id')).get('visits');
                var tvisit = customer.get('next_badge_visits');
 
                return ('width:' + (tvisit / nvisit * 100) + '%;');
@@ -113,10 +122,14 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             getDesc : function(values)
             {
                var customer = values['_customer'];
-               var nvisit = customer.getNextBadge().get('visits');
+               var nvisit = values['_nvisit'];
                var tvisit = customer.get('next_badge_visits');
+               
                delete values['_customer'];
-               return (nvisit - tvisit) + ' visit(s) before your next promotion!';
+               delete values['_badgeType'];
+               delete values['_nvisit'];
+               
+               return tvisit + '/' + nvisit + ' visits to get your next badge!';
             }
          })
       },
@@ -212,28 +225,28 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       var prizePanel = this.query('component[tag=prizesWonPanel]')[0];
       prizePanel.setData(data);
    },
-   applyBadgeProcess : function(config)
+   applyBadgeProgress : function(config)
    {
       return Ext.factory(Ext.apply(config,
       {
-      }), Ext.Container, this.getBadgeProcess());
+      }), Ext.Container, this.getBadgeProgress());
    },
-   updateBadgeProcess : function(newBadgeProcess, oldBadgeProcess)
+   updateBadgeProgress : function(newBadgeProgress, oldBadgeProgress)
    {
-      if (newBadgeProcess)
+      if (newBadgeProgress)
       {
-         this.add(newBadgeProcess);
+         this.add(newBadgeProgress);
       }
 
-      if (oldBadgeProcess)
+      if (oldBadgeProgress)
       {
-         this.remove(oldBadgeProcess);
+         this.remove(oldBadgeProgress);
       }
    },
-   setBadgeProcess : function(data)
+   setDataBadgeProgress : function(data)
    {
-      var badgeProcess = this.query('component[tag=badgeProgressPanel]')[0];
-      badgeProcess.setData(data);
+      var badgeProgress = this.query('component[tag=badgeProgressPanel]')[0];
+      badgeProgress.setData(data);
    },
    /**
     * Updates this container's child items, passing through the dataMap.
@@ -270,7 +283,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                         me.setDataBackground(data);
                         break;
                      case 'badgeProgress' :
-                        me.setBadgeProgress(data);
+                        me.setDataBadgeProgress(data);
                         break;
                      case 'winnersCount':
                         me.setDataWinnersCount(data);

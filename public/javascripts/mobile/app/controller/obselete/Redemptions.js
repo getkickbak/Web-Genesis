@@ -48,7 +48,7 @@ Ext.define('Genesis.controller.Redemptions',
    //checkoutTitle : 'Check Out',
    init : function()
    {
-      Ext.regStore('RedemptionsStore',
+      Ext.regStore('RedeemStore',
       {
          model : 'Genesis.model.CustomerReward',
          autoLoad : false,
@@ -208,7 +208,7 @@ Ext.define('Genesis.controller.Redemptions',
             me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
             page = me.getRedemptions();
             list = me.getRedemptionsList();
-            store = Ext.StoreMgr.get('RedemptionsStore');
+            store = Ext.StoreMgr.get('RedeemStore');
             rstore = list.getStore();
             scroll = page.getScrollable();
             //CustomerReward['setGetRedemptionsURL']();

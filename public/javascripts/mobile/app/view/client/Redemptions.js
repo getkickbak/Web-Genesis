@@ -5,7 +5,8 @@ Ext.define('Genesis.view.client.Redemptions',
    config :
    {
       defaultItemType : 'redeemptsitem',
-      toolbarTitleText : 'Redemptions Available (Select an item below)',
+      redeemTitleText : 'Rewards available to redeem (Select an item below)',
+      ptsEarnTitleText : 'Rewards Points Available',
       listCls : 'redemptionsList',
       scrollable : 'vertical',
       cls : 'redemptionsMain viewport',
@@ -31,7 +32,11 @@ Ext.define('Genesis.view.client.Redemptions',
    },
    createView : function(activeItemIndex)
    {
-      this._createView('RedemptionsStore', 'RedemptionRenderCStore', activeItemIndex);
+      if (!this.callParent(arguments))
+      {
+         return;
+      }
+      this._createView('RedeemStore', 'RedemptionRenderCStore', activeItemIndex);
    },
    statics :
    {

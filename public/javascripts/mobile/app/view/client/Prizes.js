@@ -5,7 +5,8 @@ Ext.define('Genesis.view.client.Prizes',
    config :
    {
       defaultItemType : 'redeemptsitem',
-      toolbarTitleText : 'Redemptions Available (Select an item below)',
+      ptsEarnTitleText : 'Prize Points Available',
+      redeemTitleText : 'Prizes available to redeem (Select an item below)',
       listCls : 'prizesList',
       scrollable : 'vertical',
       cls : 'prizesMain viewport',
@@ -31,6 +32,10 @@ Ext.define('Genesis.view.client.Prizes',
    },
    createView : function(activeItemIndex)
    {
+      if (!this.callParent(arguments))
+      {
+         return;
+      }
       this._createView('PrizeStore', 'PrizeRenderCStore', activeItemIndex);
    },
    statics :

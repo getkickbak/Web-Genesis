@@ -1,5 +1,5 @@
 object @merchant
-attributes :id, :name, :prize_terms
+attributes :id, :name, :reward_terms
 child( { :photo => :photo } ) do
 	extends 'api/v1/common/photo_uploader'
 end

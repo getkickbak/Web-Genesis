@@ -18,6 +18,7 @@
          "name": "Prizes",
          "photo_url": "resources/themes/images/v1/mainicons/prizes.png",
          "desc": "Shortcut to Redeem Prizes",
+         "pageCntlr": "client.Prizes",
          "route" : "redeemPrizesChooseSC"
       }, {
          "name": "KickBak",

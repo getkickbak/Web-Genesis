@@ -12,10 +12,11 @@
    font-size: 1.1em;
    height: 2em;
    text-align: center;
-   overflow: hidden;   
+   overflow: hidden; 
+   position: relative;
 }
 
-.progressBarValue {
+.progressBar {
    -moz-border-radius: 4px 0 0 4px;
    -webkit-border-radius: 4px 0 0 4px;
    -khtml-border-radius: 4px 0 0 4px;
@@ -25,6 +26,12 @@
    height: 100%;
    border: 1px solid #AAA;
    background: #CCC url(images/ui-bg_highlight-soft_75_cccccc_1x100.png) 50% 50% repeat-x;
+}
+
+.progressBarValue {
+   position: absolute;
+   top: 0;
+   width:100%;
    color: #222;
    font-weight: bold;
 }

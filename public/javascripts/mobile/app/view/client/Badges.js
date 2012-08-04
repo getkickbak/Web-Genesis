@@ -85,7 +85,7 @@ Ext.define('Genesis.view.client.Badges',
                },
                getPhoto : function(values)
                {
-                  return Genesis.view.client.Badges.getPhoto(values['type'], false);
+                  return Genesis.view.client.Badges.getPhoto(values['type'], 'thumbnail_medium_url');
                }
             }),
             autoScroll : true
@@ -109,17 +109,9 @@ Ext.define('Genesis.view.client.Badges',
    },
    statics :
    {
-      getPhoto : function(type, remote)
+      getPhoto : function(type, size)
       {
-         var photo_url = null;
-         switch (type.value)
-         {
-            default :
-               photo_url = Genesis.constants.getIconPath('badges', type.value, remote);
-               //console.debug("Icon Path [" + photo_url + "]");
-               break;
-         }
-         return photo_url;
+         return (Genesis.constants.photoSite + type[size]);
       }
    }
 });

@@ -48,6 +48,7 @@ Ext.define('Genesis.controller.client.Checkins',
       {
          'exploreLoad' : 'onExploreLoad',
          'checkin' : 'onCheckinTap',
+         'explore' : 'onNonCheckinTap',
          'checkinScan' : 'onCheckinScanTap',
          'checkinMerchant' : 'onCheckinHandler',
          'setupCheckinInfo' : 'setupCheckinInfo'
@@ -77,7 +78,7 @@ Ext.define('Genesis.controller.client.Checkins',
             'metachange' : function(store, proxy, eOpts)
             {
                // Let Other event handlers udpate the metaData first ...
-               Ext.defer(me.updateMetaData, 0.1 * 1000, me, [proxy.getReader().metaData]);
+               me.fireEvent('updatemetadata', proxy.getReader().metaData);
             }
          }
       });

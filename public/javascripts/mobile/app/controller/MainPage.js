@@ -48,7 +48,8 @@ Ext.define('Genesis.controller.MainPage',
          },
          mainCarousel : 'mainpageview',
          shortcutTabBar : 'mainpageview tabbar',
-         infoBtn : 'button[tag=info]'
+         infoBtn : 'button[tag=info]',
+         redeemBtn : 'mainpageview tabbar[cls=navigationBarBottom] button[tag=redemptionSC]'
       },
       control :
       {
@@ -165,16 +166,6 @@ Ext.define('Genesis.controller.MainPage',
          });
 
          //
-         // Store storing the Customer's Eligible Rewards at a Venue
-         // Used during Checkin
-         //
-         Ext.regStore('NewsStore',
-         {
-            model : 'Genesis.model.News',
-            autoLoad : false
-         });
-
-         //
          // Customer Accounts for an user
          //
          me.initCustomerStore();
@@ -207,45 +198,42 @@ Ext.define('Genesis.controller.MainPage',
                // Load Prizes into DataStore
                var metaData = store.getProxy().getReader().metaData;
 
-               if (successful && metaData && metaData['auth_token'])
+               if (successful && metaData && store.metaChanged)
                {
-                  var db = Genesis.db.getLocalDB();
-                  console.debug(//
-                  "auth_code [" + db['auth_code'] + "]" + "\n" + //
-                  "currFbId [" + db['currFbId'] + "]");
-                  me.goToMain();
+                  me.fireEvent('updatemetadata', metaData);
                }
+               store.metaChanged = false;
             },
             'metachange' : function(store, proxy, eOpts)
             {
-               Ext.defer(me.updateMetaData, 0.1 * 1000, me, [proxy.getReader().metaData]);
-
-               //
-               // QR Code from Transfer Points
-               //
-               var qrcode = metaData['data'];
-               if (qrcode)
-               {
-                  /*
-                   console.debug("QRCode received for Points Transfer" + '\n' + //
-                   qrcode);
-                   */
+               var metaData = proxy.getReader().metaData;
+               store.metaChanged = true;               
+	           //
+	           // QR Code from Transfer Points
+	           //
+	           var qrcode = metaData['data'];
+	           if (qrcode)
+	           {
+	              /*
+	               console.debug("QRCode received for Points Transfer" + '\n' + //
+	               qrcode);
+	              */
                   var app = me.getApplication();
-                  var controller = app.getController('client.Accounts');
-                  controller.fireEvent('authcoderecv', metaData);
-               }
-               //
-               // Update PrizeStore
+	              var controller = app.getController('client.Accounts');
+	              controller.fireEvent('authcoderecv', metaData);
+	           }
+	           //
+	           // Update PrizeStore
                //
                /*
-                var prizes = metaData['prizes'];
-                if (prizes)
-                {
-                console.debug("Total Prizes - " + prizes.length);
-                Ext.StoreMgr.get('rizeStore').setData(prizes);
-                me.persistSyncStores('PrizeStore');
-                }
-                */
+	           var prizes = metaData['prizes'];
+	           if (prizes)
+	           {
+	              console.debug("Total Prizes - " + prizes.length);
+	              Ext.StoreMgr.get('rizeStore').setData(prizes);
+	              me.persistSyncStores('PrizeStore');
+	           }
+	           */
             }
          },
          grouper :
@@ -286,7 +274,7 @@ Ext.define('Genesis.controller.MainPage',
             'metachange' : function(store, proxy, eOpts)
             {
                // Let Other event handlers udpate the metaData first ...
-               Ext.defer(me.updateMetaData, 0.1 * 1000, me, [proxy.getReader().metaData]);
+               me.fireEvent('updatemetadata', proxy.getReader().metaData);
             }
          }
       });
@@ -345,6 +333,22 @@ Ext.define('Genesis.controller.MainPage',
    {
       //activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
+      if (!merchantMode)
+      {
+         var showIcon = false;
+         var customers = Ext.StoreMgr.get('CustomerStore').getRange();
+         
+         for (var i = 0; i < customers.length; i++)
+         {
+            var customer = customers[i];
+            if (customer.get('eligible_for_reward'))
+            {
+               showIcon = true;
+               break;
+            }
+         }
+         this.getRedeemBtn().setBadgeText(showIcon ? '✔' : null);
+      }
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -752,7 +756,7 @@ Ext.define('Genesis.controller.MainPage',
             // Remove all previous view from viewStack
             me.resetView();
             me.getApplication().getController('client.Checkins').fireEvent('setupCheckinInfo', 'checkin', null, null, null);
-            //me.getApplication().getController('Prizes').fireEvent('updatePrizeViews', null);
+            //me.getApplication().getController('client.Prizes').fireEvent('updatePrizeViews', null);
             me.setAnimationMode(me.self.superclass.self.animationMode['fade']);
             me.pushView(me.getLogin());
             break;

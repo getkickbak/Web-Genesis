@@ -30,7 +30,7 @@ Ext.define('Genesis.model.PurchaseReward',
             'metachange' : function(proxy, metaData, eOpts)
             {
                var controller = _application.getController('client.Rewards');
-               Ext.defer(controller.updateMetaData, 0.1 * 1000, controller, [metaData]);
+               controller.fireEvent('updatemetadata', metaData);
             }
          }
       },

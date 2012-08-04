@@ -12,10 +12,10 @@ Ext.define('Genesis.controller.client.Redemptions',
    {
       mode : 'redeemBrowse',
       renderStore : 'RedemptionRenderCStore',
-      redemptionsStore : 'RedemptionsStore',
+      redeemStore : 'RedeemStore',
       redeemPointsFn : 'setRedeemPointsURL',
-      getRedemptionURL : 'setGetRedemptionsURL',
-      getRedemptionPath : 'redeemBrowseRewardsSC',
+      redeemUrl : 'setGetRedemptionsURL',
+      redeemPath : 'redeemBrowseRewardsSC',
       title : 'Rewards',
       routes :
       {
@@ -84,7 +84,7 @@ Ext.define('Genesis.controller.client.Redemptions',
          redeemItem :
          {
             activate : 'onRedeemItemActivate',
-            deactivate : 'onDeactivate'
+            deactivate : 'onRedeemItemDeactivate'
          }
       },
       listeners :

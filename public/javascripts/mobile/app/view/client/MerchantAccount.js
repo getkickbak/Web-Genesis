@@ -64,8 +64,10 @@ Ext.define('Genesis.view.client.MerchantAccount',
             title : 'Home'
          },
          {
-            iconCls : 'prizes',
+            //iconCls : 'prizes',
+            //icon : '',
             tag : 'prizes',
+            iconMask : false,
             badgeCls : 'x-badge round',
             title : 'Prizes'
          },
@@ -92,8 +94,9 @@ Ext.define('Genesis.view.client.MerchantAccount',
             xtype : 'spacer'
          },
          {
-            iconCls : 'rewards',
-            tag : 'rewards',
+            iconCls : 'redeem',
+            badgeCls : 'x-badge round',
+            tag : 'redemption',
             title : 'Rewards'
          },
          {
@@ -208,7 +211,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
                {
                   getDisclose : function(values)
                   {
-                     switch (values['reward_type'])
+                     switch (values['type'])
                      {
                         case 'vip' :
                         {
@@ -222,20 +225,20 @@ Ext.define('Genesis.view.client.MerchantAccount',
                   {
                      if (!values.photo)
                      {
-                        return Genesis.view.client.Rewards.getPhoto(
+                        return Genesis.view.client.MerchantAccount.getPhoto(
                         {
-                           value : values['reward_type']
+                           value : values['type']
                         });
                      }
                      return values.photo.url;
                   },
                   getTitle : function(values)
                   {
-                     return values['reward_title'];
+                     return values['title'];
                   },
                   getDesc : function(values)
                   {
-                     return values['reward_text'];
+                     return values['text'];
                   }
                }),
                onItemDisclosure : Ext.emptyFn
@@ -290,5 +293,15 @@ Ext.define('Genesis.view.client.MerchantAccount',
    },
    statics :
    {
+      getPhoto : function(type)
+      {
+         if (!type.value)
+         {
+         	return Genesis.constants.getIconPath('miscicons', 'pushnotification');
+         }
+         else
+         {
+         }
+      }
    }
 });

@@ -42,7 +42,7 @@ Ext.define('Genesis.controller.client.Merchants',
          checkinBtn : 'viewportview button[tag=checkin]',
          mainBtn : 'clientmerchantaccountview tabbar[cls=navigationBarBottom] button[tag=main]',
          prizesBtn : 'clientmerchantaccountview tabbar[cls=navigationBarBottom] button[tag=prizes]',
-         rewardsBtn : 'clientmerchantaccountview tabbar[cls=navigationBarBottom] button[tag=rewards]',
+         redeemBtn : 'clientmerchantaccountview tabbar[cls=navigationBarBottom] button[tag=redemption]',
          merchantTabBar : 'clientmerchantaccountview tabbar'
       },
       control :
@@ -125,6 +125,16 @@ Ext.define('Genesis.controller.client.Merchants',
       {
          console.debug("Google Maps API cannot be instantiated");
       }
+
+      //
+      // Store storing the Customer's Eligible Rewards at a Venue
+      // Used during Checkin
+      //
+      Ext.regStore('NewsStore',
+      {
+         model : 'Genesis.model.News',
+         autoLoad : false
+      });
 
       //
       // Store used for rendering purposes
@@ -268,8 +278,21 @@ Ext.define('Genesis.controller.client.Merchants',
 
       me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();
       me.getMainBtn()[(activeItem.showMainBtn) ? 'show':'hide']();
-      me.getPrizesBtn().setBadgeText(crecord.get('eligible_for_prize') ? '&#10004;' : null);
-      me.getRewardsBtn().setBadgeText(crecord.get('eligible_for_reward') ? '&#10004;' : null);
+      var prizeBtn = me.getPrizesBtn();
+      if (!Customer.isValidCustomer(crecord))
+      {
+         prizeBtn.setIcon('');
+         prizeBtn.setIconCls('prizes');
+      }
+      else
+      {
+         var type = Ext.StoreMgr.get('BadgeStore').getById(crecord.get('badge_id')).get('type');
+         
+         prizeBtn.setIconCls('prizeicon');
+         prizeBtn.setIcon(Genesis.view.client.Badges.getPhoto(type, 'thumbnail_small_url'));
+      }
+      me.getPrizesBtn().setBadgeText(crecord.get('eligible_for_prize') ? '✔' : null);
+      me.getRedeemBtn().setBadgeText(crecord.get('eligible_for_reward') ? '✔' : null);
 
       // Update TitleBar
       activeItem.query('titlebar')[0].setTitle(' ');
@@ -325,7 +348,7 @@ Ext.define('Genesis.controller.client.Merchants',
             //
             var controller = app.getController('client.Prizes');
             //var controller = app.getController('client.Redemptions');
-            var rstore = Ext.StoreMgr.get('RedemptionsStore');
+            var rstore = Ext.StoreMgr.get('RedeemStore');
             record = rstore.getById(record.get('reward_id'));
             controller.fireEvent('showredeemitem', record);
             /*
@@ -371,7 +394,7 @@ Ext.define('Genesis.controller.client.Merchants',
 
          // Restore Merchant Info
          ccntlr.fireEvent('setupCheckinInfo', 'checkin', cvenue, ccustomer, cmetaData);
-         Ext.defer(me.updateMetaData, 0.1 * 1000, me, [cmetaData]);
+         me.fireEvent('updatemetadata', cmetaData);
       }
       //
       // Force Page to refresh

@@ -25,7 +25,7 @@ module Business
       begin
         Merchant.transaction do
           params[:merchant][:status] = @merchant.status
-          @merchant.update_all(@merchant.type, params[:merchant])
+          @merchant.update_all(@merchant.type, @merchant.visit_frequency, params[:merchant])
           sign_in(current_merchant, :bypass => true)
           respond_to do |format|
             format.html { redirect_to(:action => "show", :notice => t("business.merchants.update_success")) }

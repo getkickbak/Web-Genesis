@@ -121,7 +121,8 @@ Ext.define('Genesis.view.MainPage',
                    },
                    */
                   {
-                     iconCls : 'rewards',
+                     iconCls : 'redeem',
+                     badgeCls : 'x-badge round',
                      tag : 'redemptionSC',
                      title : 'Rewards'
                   }]
@@ -223,27 +224,26 @@ Ext.define('Genesis.view.MainPage',
                   },
                   isEligible : function(values)
                   {
-                     var count = 0;
-                     var type = values['pageCntlr'];
+                     var eligible = (values['pageCntlr'] == 'client.Prizes');
+                     var showIcon = false;
 
-                     if (type == 'Prizes')
+                     if (eligible)
                      {
                         var customers = Ext.StoreMgr.get('CustomerStore').getRange();
-                        var eligible = false;
                         for (var i = 0; i < customers.length; i++)
                         {
                            var customer = customers[i];
                            if (customer.get('eligible_for_reward') || customer.get('eligible_for_prize'))
                            {
-                              eligible = true;
+                              showIcon = true;
                               break;
                            }
                         }
                      }
-                     return ((type == 'Prizes') ? //
-                     '<span data="' + type + '" ' + //
-                     'class="x-badge round ' + ((eligible) ? '' : 'x-item-hidden') + '">' + //
-                     '&#10004;' + '</span>' : '');
+                     return ((eligible) ? //
+                     '<span data="' + values['pageCntlr'] + '" ' + //
+                     'class="x-badge round ' + ((showIcon) ? '' : 'x-item-hidden') + '">' + //
+                     '✔' + '</span>' : '');
                   },
                   getPhoto : function(photoURL)
                   {
@@ -258,20 +258,20 @@ Ext.define('Genesis.view.MainPage',
       else
       {
          //
-         // Refresh All Badge Counts
+         // Refresh All Badges
          //
          var customers = Ext.StoreMgr.get('CustomerStore').getRange();
          var eligible = false;
          for (var i = 0; i < customers.length; i++)
          {
             var customer = customers[i];
-            if (customer.get('eligible_for_reward') || customer.get('eligible_for_prize'))
+            if (customer.get('eligible_for_prize'))
             {
                eligible = true;
                break;
             }
          }
-         var dom = Ext.DomQuery.select('span[data=Prizes]',carousel.query('dataview')[0].element.dom)[0];
+         var dom = Ext.DomQuery.select('span[data=client.Prizes]',carousel.query('dataview')[0].element.dom)[0];
          if (eligible)
          {
             dom.innerHTML = count;
@@ -286,7 +286,7 @@ Ext.define('Genesis.view.MainPage',
          }
          console.log("MainPage Icons Not changed.");
       }
-      delete carousel._listitems;
+      delete carousel._listitems;      
    },
    showView : function()
    {

@@ -171,7 +171,7 @@ Ext.define('Genesis.view.client.Accounts',
                   }
 
                   return ('<span class="x-badge round ' + //
-                  ((isEligible) ? '' : 'x-item-hidden') + '">&#10004;</span>');
+                  ((isEligible) ? '' : 'x-item-hidden') + '">✔</span>');
                },
                getPhoto : function(values)
                {

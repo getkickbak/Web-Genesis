@@ -51,7 +51,7 @@ class Array
     while lower + 1 != upper
       mid = ((lower + upper) / 2).to_i # for working with mathn.rb (Rational)
       if yield(self[mid]) < 0
-        ower = mid
+        lower = mid
       else 
         upper = mid
       end

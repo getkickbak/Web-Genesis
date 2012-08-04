@@ -1,10 +1,14 @@
 require 'util/constant'
 
+
 class EarnRewardRecord
   include DataMapper::Resource
 
+  Types = [:purchase, :challenge]
+
   property :id, Serial
-  property :challenge_id, Integer, :default => 0
+  property :type, Enum[:purchase, :challenge], :required => true, :default => :draw
+  property :ref_id, Integer, :default => 0
   property :venue_id, Integer, :required => true, :default => 0
   property :data, String, :default => ""
   property :data_expiry_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -15,7 +19,7 @@ class EarnRewardRecord
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessible :challenge_id, :venue_id, :data, :data_expiry_ts, :points, :amount, :created_ts, :update_ts
+  attr_accessible :type, :ref_id, :venue_id, :data, :data_expiry_ts, :points, :amount, :created_ts, :update_ts
   
   belongs_to :merchant
   belongs_to :customer

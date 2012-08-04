@@ -47,8 +47,19 @@ module Admin
         Merchant.transaction do
           params[:merchant][:status] = :pending
           type = MerchantType.get(params[:merchant][:type_id])
-          params[:merchant][:prize_terms] = I18n.t 'prize.terms'
-          @merchant = Merchant.create(type, params[:merchant])
+          visit_frequency = VisitFrequencyType.get(params[:merchant][:visit_frequency_id])
+          params[:merchant][:reward_terms] = I18n.t 'customer_reward.terms'
+          @merchant = Merchant.create(type, visit_frequency, params[:merchant])
+          badges = []
+          badge_types = BadgeType.all
+          badge_types.each do |badge_type|
+            badge = Badge.new(:visits => BadgeType.visits[@merchant.visit_frequency_type.value][badge_type.value])
+            badge.type = badge_type
+            badge.save
+            badges << badge
+          end  
+          @merchant.badges.concat(badges)
+          @merchant.save
           respond_to do |format|
             format.html { redirect_to(merchant_path(@merchant), :notice => t("admin.merchants.create_success")) }
           #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
@@ -72,7 +83,8 @@ module Admin
       begin
         Merchant.transaction do
           type = MerchantType.get(params[:merchant][:type_id])
-          @merchant.update_all(type, params[:merchant])
+          visit_frequency = VisitFrequencyType.get(params[:merchant][:visit_frequency_id])
+          @merchant.update_all(type, visit_frequency, params[:merchant])
           respond_to do |format|
             format.html { redirect_to(merchant_path(@merchant), :notice => t("admin.merchants.update_success")) }
           #format.xml  { head :ok }

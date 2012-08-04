@@ -55,22 +55,6 @@ Ext.define('Genesis.model.Customer',
          // User to make sure no underscore
          getterName : 'getLastCheckin',
          setterName : 'setLastCheckin'
-      },
-      {
-         model : 'Genesis.model.Badge',
-         associationKey : 'badge',
-         name : 'badge',
-         // User to make sure no underscore
-         getterName : 'getBadge',
-         setterName : 'setBadge'
-      },
-      {
-         model : 'Genesis.model.Badge',
-         associationKey : 'next_badge',
-         name : 'next_badge',
-         // User to make sure no underscore
-         getterName : 'getNextBadge',
-         setterName : 'setNextBadge'
       }],
       proxy :
       {
@@ -87,7 +71,7 @@ Ext.define('Genesis.model.Customer',
             rootProperty : 'data'
          }
       },
-      fields : ['id', 'points', 'prize_points', 'visits', 'next_badge_visits', 'eligible_for_reward', 'eligible_for_prize'],
+      fields : ['id', 'points', 'prize_points', 'visits', 'next_badge_visits', 'eligible_for_reward', 'eligible_for_prize', 'badge_id', 'next_badge_id'],
       idProperty : 'id'
    },
    getUser : function()

@@ -1,4 +1,4 @@
- class CustomerRewardToSubtype
+class CustomerRewardToSubtype
   include DataMapper::Resource
 
   belongs_to :customer_reward, :key => true

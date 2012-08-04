@@ -95,7 +95,6 @@
       <script type="text/javascript" src="app/view/widgets/ComponentListItem.js"></script>
       <script type="text/javascript" src="app/view/widgets/ComponentList.js"></script>
       <script type="text/javascript" src="app/view/widgets/RedeemItem.js"></script>
-      <script type="text/javascript" src="app/view/widgets/RedeemItemDetail.js"></script>
       <!-- Models -->
       <script type="text/javascript" src="app/model/frontend/MainPage.js"></script>
       <script type="text/javascript" src="app/model/UserProfile.js"></script>
@@ -113,6 +112,7 @@
       <script type="text/javascript" src="app/view/ViewBase.js"></script>
       <script type="text/javascript" src="app/view/Viewport.js"></script>
       <script type="text/javascript" src="app/view/MainPage.js"></script>
+      <script type="text/javascript" src="app/view/RedeemItemDetail.js"></script>
       <script type="text/javascript" src="app/view/server/SettingsPage.js"></script>
       <script type="text/javascript" src="app/view/server/Rewards.js"></script>
       <script type="text/javascript" src="app/view/server/Redemptions.js"></script>
@@ -166,7 +166,7 @@
                // 'PurchaseReward',
                //'SubDeal', 'User', 'UserProfile',
                //'Venue'],
-               views : ['server.Rewards', 'server.Redemptions', 'MainPage', 'server.SettingsPage', 'Prizes', 'Viewport'],
+               views : ['server.Rewards', 'server.Redemptions', 'MainPage', 'RedeemItemDetail', 'server.SettingsPage', 'Viewport'],
                controllers : ['Viewport', 'MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'Settings', 'Prizes'],
                stores : [],
                launch : function()

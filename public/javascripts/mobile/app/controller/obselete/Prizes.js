@@ -267,7 +267,7 @@ Ext.define('Genesis.controller.Prizes',
          case 'reward' :
          {
             item = view.getInnerItems()[0];
-            store = Ext.StoreMgr.get('RedemptionsStore');
+            store = Ext.StoreMgr.get('RedeemStore');
             CustomerReward['setRedeemPointsURL'](item.getStore().first().getCustomerReward().getId());
             break;
          }

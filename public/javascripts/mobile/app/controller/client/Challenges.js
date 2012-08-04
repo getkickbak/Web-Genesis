@@ -541,7 +541,7 @@ Ext.define('Genesis.controller.client.Challenges',
                title : 'VIP Challenge',
                message : me.getConsolationMsg(metaData['message'])
             });
-            Ext.defer(me.updateMetaData, 0.1 * 1000, me, [metaData]);
+            me.fireEvent('updatemetadata', metaData);
             break;
          }
          default:
@@ -561,7 +561,7 @@ Ext.define('Genesis.controller.client.Challenges',
                title : 'Earn Points',
                message : ((metaData['points'] > 0) ? me.getPointsMsg(metaData['points'], metaData['account_points']) : me.getConsolationMsg(metaData['message']))
             });
-            Ext.defer(me.updateMetaData, 0.1 * 1000, me, [metaData]);
+            me.fireEvent('updatemetadata', metaData);
             break;
       }
    },
@@ -612,7 +612,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      me.popView();
                   }
                });
-               Ext.defer(me.updateMetaData, 0.1 * 1000, me, [metaData2]);
+               me.fireEvent('updatemetadata', metaData2);
             }
             else
             {

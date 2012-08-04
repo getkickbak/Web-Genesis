@@ -1,4 +1,4 @@
-Ext.define('Genesis.view.widget.RedeemItemDetail',
+Ext.define('Genesis.view.RedeemItemDetail',
 {
    extend : 'Genesis.view.ViewBase',
    requires : ['Ext.XTemplate', 'Ext.Carousel', 'Genesis.view.widgets.RedeemItem'],
@@ -270,7 +270,7 @@ Ext.define('Genesis.view.widget.RedeemItemDetail',
    }
 });
 
-Ext.define('Genesis.view.widget.ShowRedeemItemDetail',
+Ext.define('Genesis.view.ShowRedeemItemDetail',
 {
    extend : 'Genesis.view.ViewBase',
    requires : ['Ext.XTemplate', 'Genesis.view.widgets.RedeemItem'],

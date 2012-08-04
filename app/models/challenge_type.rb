@@ -49,4 +49,8 @@ class ChallengeType
   def self.id_to_type=(id_to_type)
     @@id_to_type = id_to_type
   end
+  
+  def display_value
+    @@value_to_name[self.value][I18n.locale]
+  end
 end

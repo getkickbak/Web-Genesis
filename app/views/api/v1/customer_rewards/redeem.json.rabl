@@ -4,16 +4,21 @@ node :success do
 end
 node :metaData do
 	{
-		:account_points => @customer.points,
+		:account_info => @account_info,
 		:data => @encrypted_data,
 		:rewards => (
 			@rewards.map do |r|
 		 		partial('api/v1/customer_rewards/base', :object => r)
 			end
 		),
-		:eligible_rewards => (
-			@eligible_rewards.map do |r|
-		 		partial('api/v1/customers/eligible_reward', :object => r)
+		:prizes => (
+			@prizes.map do |r|
+		 		partial('api/v1/customer_rewards/base', :object => r)
+			end
+		),
+		:newsfeed => (
+			@newsfeed.map do |r|
+		 		partial('api/v1/common/news', :object => r)
 			end
 		)
 	}

@@ -195,7 +195,8 @@ namespace :db do
     ]
     merchant_info.length.times do |n|
       type = MerchantType.get(1)
-      merchant = Merchant.create(type,
+      visit_frequency_type = VisitFrequencyType.get(1)
+      merchant = Merchant.create(type, visit_frequency_type,
       {
         :name => merchant_info[n][:name],
         :description => merchant_info[n][:description],
@@ -208,8 +209,18 @@ namespace :db do
         :website => merchant_info[n][:website],
         :role => :test,
         :status => :active,
-        :prize_terms => I18n.t('prize.terms')
+        :reward_terms => I18n.t('customer_reward.terms')
       })
+      badges = []
+      badge_types = BadgeType.all
+      badge_types.each do |badge_type|
+        badge = Badge.new(:visits => BadgeType.visits[merchant.visit_frequency.value][badge_type.value])
+        badge.type = badge_type
+        badge.save
+        badges << badge
+      end  
+      merchant.badges.concat(badges)
+      merchant.save
       puts "Finished creating Merchant(#{merchant.name})"
       filenames = ["thai.jpg","chicken.jpg","burrito.jpg","salad.jpg","focaccia.jpg"]
       file_idx = rand(filenames.length)
@@ -241,6 +252,7 @@ namespace :db do
       )
       RewardModel.create(merchant,
       {
+        :signup_points => 0,
         :rebate_rate => 10,
         :prize_rebate_rate => 5
       })
@@ -271,40 +283,49 @@ namespace :db do
           CheckIn.create(venue, user, customer)
         end  
       end
+      rewards = []
       reward_subtype_id = [19, 1, 14, 10, 34, 2, 33, 21, 30, 25, 22, 29, 35]
       reward_names = {:entree => "Entree", :appetizer => "Appetizer", :drink => "Drink", :dessert => "Dessert", :soup => "Soup", 
                       :bread => "Bread", :salad => "Salad", :noodles => "Noodles", :side_dish => "Side Dish", :sandwich => "Sandwich",
                       :pasta => "Pasta", :pastry => "Pastry", :custom => "Custom"}
-      reward_names_count = {:entree => 0, :appetizer => 0, :drink => 0, :dessert => 0, :soup => 0,
-                      :bread => 0, :salad => 0, :noodles => 0, :side_dish => 0, :sandwich => 0,
-                      :pasta => 0, :pastry => 0, :custom => 0}
-      picked_prize = rand(reward_names.length)              
       reward_names.length.times do |i|
-        id = reward_subtype_id[rand(reward_names.length)]
+        id = reward_subtype_id[i]
         reward_sub_type = CustomerRewardSubtype.get(id)
         price = rand(10) + 10.75
         points = (price / merchant.reward_model.price_per_point / merchant.reward_model.rebate_rate * 100).to_i
         reward = CustomerReward.create(merchant,reward_sub_type,
         {
-          :title => "#{reward_names[reward_sub_type.value.to_sym]} #{reward_names_count[reward_sub_type.value.to_sym]+1}",
+          :title => "#{reward_names[reward_sub_type.value.to_sym]}",
           :price => price,
           :points => points,
-          :mode => :prize_and_reward
+          :mode => :reward,
+          :quantity_limited => false,
+          :quantity => 0,
+          :time_limited => false,
+          :expiry_date => Date.today
         },
         venues)
-        if i == picked_prize
-          earn_prize = EarnPrize.new(
-            :points => reward.points,
-            :expiry_date => 6.month.from_now,
-            :created_ts => now
-          )
-          earn_prize.reward = reward
-          earn_prize.merchant = merchant
-          earn_prize.venue = venues[rand(venues.length)]
-          earn_prize.user = users[rand(users.length)]
-          earn_prize.save
-        end  
-        reward_names_count[reward_sub_type.value.to_sym] += 1
+        rewards << reward
+      end
+      prize_subtype_id = [19, 1, 14, 35]
+      prize_names = {:entree => "Dinner For 2", :appetizer => "Special Appetizer", :drink => "3 Free Drinks", :custom => "$20 Gift Certificate"}
+      prize_names.length.times do |i|
+        id = prize_subtype_id[i]
+        prize_sub_type = CustomerRewardSubtype.get(id)
+        price = rand(10) + 10.75
+        points = (price / merchant.reward_model.price_per_prize_point / merchant.reward_model.prize_rebate_rate * 100 / (100 - APP_PROP["BADGE_REBATE_RATE"]) * 100).to_i
+        prize = CustomerReward.create(merchant,prize_sub_type,
+        {
+          :title => "#{prize_names[prize_sub_type.value.to_sym]}",
+          :price => price,
+          :points => points,
+          :mode => :prize,
+          :quantity_limited => true,
+          :quantity => rand(10) + 10,
+          :time_limited => true,
+          :expiry_date => Date.today >> 6
+        },
+        venues)
       end
       challenges = []
       challenge_type = ChallengeType.get(1)
@@ -351,17 +372,6 @@ namespace :db do
       challenge_type = ChallengeType.get(5)
       challenge = Challenge.create(merchant,challenge_type,
       {
-        :name => (I18n.t "challenge.type.vip.name"),
-        :description => ((I18n.t "challenge.type.vip.description") % [24]),
-        :data => ActiveSupport::HashWithIndifferentAccess.new(:visits => 24),
-        :require_verif => false,
-        :points => rand(10) + 10
-      },
-      venues)
-      challenges << challenge
-      challenge_type = ChallengeType.get(6)
-      challenge = Challenge.create(merchant,challenge_type,
-      {
         :name => (I18n.t "challenge.type.custom.name"),
         :description => (I18n.t "challenge.type.custom.description"),
         :require_verif => true,
@@ -372,9 +382,10 @@ namespace :db do
       10.times do |i|
         user = users[rand(users.length)]
         customer = Customer.first(Customer.merchant.id => merchant.id, Customer.user.id => user.id)
-        challenge = challenges[rand(6)]
+        challenge = challenges[rand(5)]
         record = EarnRewardRecord.new(
-          :challenge_id => challenge.id,
+          :type => :challenge,
+          :ref_id => challenge.id,
           :venue_id => venues[rand(2)].id,
           :data => String.random_alphanumeric(32),
           :data_expiry_ts => now,
@@ -386,7 +397,7 @@ namespace :db do
         record.user = user
         record.save
         trans_record = TransactionRecord.new(
-          :type => :earn,
+          :type => :earn_points,
           :ref_id => record.id,
           :description => challenge.name,
           :points => challenge.points,
@@ -399,6 +410,7 @@ namespace :db do
         trans_record.save
         amount = rand(30) + 1
         record = EarnRewardRecord.new(
+          :type => :purchase,
           :venue_id => venues[rand(2)].id,
           :data => String.random_alphanumeric(32),
           :data_expiry_ts => now,
@@ -411,7 +423,29 @@ namespace :db do
         record.user = user
         record.save
         trans_record = TransactionRecord.new(
-          :type => :earn,
+          :type => :earn_points,
+          :ref_id => record.id,
+          :description => (I18n.t "transaction.earn"),
+          :points => record.points,
+          :created_ts => now,
+          :update_ts => now
+        )
+        trans_record.merchant = merchant
+        trans_record.customer = customer
+        trans_record.user = user
+        trans_record.save
+        record = EarnPrizeRecord.new(
+          :type => :game,
+          :venue_id => venues[rand(2)].id,
+          :points => (amount / merchant.reward_model.price_per_prize_point).to_i,
+          :created_ts => now
+        )
+        record.merchant = merchant
+        record.customer = customer
+        record.user = user
+        record.save
+        trans_record = TransactionRecord.new(
+          :type => :earn_prize_points,
           :ref_id => record.id,
           :description => (I18n.t "transaction.earn"),
           :points => record.points,
@@ -425,6 +459,7 @@ namespace :db do
         customer = Customer.first(Customer.merchant.id => merchant.id, Customer.user.id => user.id)
         customer.points += (record.points + challenge.points)
         customer.visits += 1
+        customer.eligible_for_reward = !Common.find_eligible_reward(rewards, customer.points).nil?
         customer.save
       end  
       10.times do |i|

@@ -8,16 +8,27 @@ end
 node :metaData do
 	{ 
 		:venue_id => @venue.id,
-		:winners_count => @winners_count,
+		:prizes_count => @prizes_count,
+		:badges => (
+			@badges.map do |r|
+				partial('api/v1/customers/badge', :object => r)
+			end if defined? @badges
+		),
+		:account_info => (@account_info if defined? @account_info),
 		:rewards => (
 			@rewards.map do |r|
 		 		partial('api/v1/customer_rewards/base', :object => r)
 			end
 		),
-		:eligible_rewards => (
-			@eligible_rewards.map do |r|
-		 		partial('api/v1/customers/eligible_reward', :object => r)
-			end if defined? @eligible_rewards
+		:prizes => (
+			@prizes.map do |r|
+		 		partial('api/v1/customer_rewards/base', :object => r)
+			end
+		),
+		:newsfeed => (
+			@newsfeed.map do |r|
+		 		partial('api/v1/common/news', :object => r)
+			end
 		)
 	}.delete_if { |k,v| v.nil? }		 	
 end

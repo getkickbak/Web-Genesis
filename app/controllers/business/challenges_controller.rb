@@ -68,9 +68,7 @@ module Business
 
       begin
         Challenge.transaction do
-          if type.value == 'vip'
-            params[:challenge][:data] = params[:challenge][:check_in_data]
-          elsif type.value == 'referral'
+          if type.value == 'referral'
             params[:challenge][:data] = params[:challenge][:referral_data]  
           end
           params[:challenge][:venue_ids].delete("")
@@ -81,8 +79,6 @@ module Business
           end
           if type.value == 'menu'  
             params[:challenge][:description] = ((t "challenge.type.menu.description") % [params[:challenge][:name]])
-          elsif type.value == 'vip'
-            params[:challenge][:description] = ((t "challenge.type.vip.description") % [params[:challenge][:data][:visits]])
           end
           @challenge = Challenge.create(current_merchant, type, params[:challenge], venues)
           respond_to do |format|
@@ -118,8 +114,6 @@ module Business
         @challenge.type = ChallengeType.get(@challenge.type_id)
         if type == 'menu'
           @challenge.description = @challenge.description % [@challenge.name]
-        elsif type == 'vip'
-          @challenge.description = @challenge.description % [@challenge.data.visits]  
         end
       else
         @challenge.type_id = @challenge.type.id
@@ -153,9 +147,7 @@ module Business
 
       begin
         Challenge.transaction do
-          if type.value == 'vip'
-            params[:challenge][:data] = params[:challenge][:check_in_data]
-          elsif type.value == 'referral'
+          if type.value == 'referral'
             params[:challenge][:data] = params[:challenge][:referral_data]  
           end
           params[:challenge][:venue_ids].delete("")
@@ -166,8 +158,6 @@ module Business
           end
           if type.value == 'menu'  
             params[:challenge][:description] = ((t "challenge.type.menu.description") % [params[:challenge][:name]])
-          elsif type.value == 'vip'
-            params[:challenge][:description] = ((t "challenge.type.vip.description") % [params[:challenge][:data][:visits]])
           end
           @challenge.update(type, params[:challenge], venues)
           respond_to do |format|
@@ -248,13 +238,6 @@ module Business
           :name => (t "challenge.type.referral.name"),
           :description => (t "challenge.type.referral.description"),
           :data => ReferralData.new,
-          :require_verif => false
-        },
-        "vip" =>
-        {
-          :name => (t "challenge.type.vip.name"),
-          :description => (t "challenge.type.vip.description"),
-          :data => CheckInData.new,
           :require_verif => false
         },
         "custom" =>

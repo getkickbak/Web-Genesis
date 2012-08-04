@@ -82,6 +82,7 @@ en:
           name: "Custom"
           description: "Whatever you want!"
   customer_reward:
+      terms: "To redeem you must accumulate sufficient points balance. All rewards and prizes are subject to KICKBAK terms of service."
       type:
         appetizers: "Appetizers"
         bread: "Bread" 
@@ -129,8 +130,23 @@ en:
         custom: "Custom"   
         gift_cert: "Gift Certificate"
         ticket: "Ticket"
-  prize:
-      terms: "No cash value.  Non-transferable.  Valid at participating locations only."    
+  badge:
+      type:
+        newbie: "Newbie"
+        enthusiast: "Enthusiast"
+        fan: "Fan"
+        follower: "Follower"
+        groupie: "Groupie"
+        nut: "Nut"
+        junkie: "Junkie"
+        addict: "Addict"
+        fanatic: "Fanatic"
+        lifer: "Lifer"
+        boss: "Boss"    
+  visit_frequency:
+      low: "Low"
+      regular: "Regular"
+      high: "High"               
   transaction:
       earn: "Earn Points"
       transfer: "Transfer Points"
@@ -139,12 +155,11 @@ en:
   api:
       out_of_distance: "Outside of distance.\nPlease try again."
       photo_blank: "Uploaded photo is blank."
+      reward: "reward"
+      prize: "prize"
       point:
         one: "point"
-        other: "points"
-      visit:
-        one: "visit"
-        other: "visits"  
+        other: "points"  
       time:
         one: "time"
         other: "times"
@@ -161,13 +176,11 @@ en:
         already_referred: "You have already been referred by %s!"
         must_be_customer_to_refer: "You must be a current customer to refer!"
         missing_requirements: "Something went wrong."
-        qualified_visits: "Earn %s bonus %s with %s more %s!"
         start_failure: "Trouble starting the challenge.\nPlease try again."
         complete_failure: "Trouble completing the challenge.\nPlease try again."
         complete_referral_failure: "Trouble completing referral.\nPlease try again."
         limit_reached_ok: "Thank you for completing this challenge!"
         limit_reached_invalid: "You can't do this more than %s %s a %s!"
-        vip_success: "You are only %s %s away from %s bonus points!"
         unsupported_success: "Nothing to do here."
       check_ins:
         invalid_code: "Invalid check-in code.\nPlease try again."
@@ -179,16 +192,10 @@ en:
         expired_transfer_code: "Transfer code is no longer valid."
         receive_points_failure: "Trouble receiving points.\nPlease try again." 
       customer_rewards:
-        not_available: "Sorry, but the reward is not available at this venue!"
-        insufficient_points: "Not enough points to redeem reward."
-        redeem_failure: "Trouble redeeming the reward.\nPlease try again."
-        qualified_rewards: "Go ahead and redeem it now."
-        potential_rewards: "Earn %s more %s and it's yours!"
-      earn_prizes:
-        not_available: "Sorry, but the prize is not available at this venue!"
-        expired: "Prize has expired."
-        already_redeemed: "Prize has already been redeemed."
-        redeem_failure: "Trouble redeeming the prize.\nPlease try again."
+        not_available: "Sorry, but the %s is not available at this venue!"
+        insufficient_points: "Not enough points to redeem %s."
+        redeem_failure: "Trouble redeeming the %s.\nPlease try again."
+        no_longer_available: "Sorry, but this %s is no longer available!\nPlease choose another."
       purchase_rewards:
         expired_code: "Authorization code no longer valid."
         invalid_code: "Authorization code is not valid."
@@ -221,9 +228,6 @@ en:
   business:
       api:
         customer_rewards:
-          expired_code: "Verification code no longer valid."
-          invalid_code: "Verification code is not valid."
-        earn_prizes:
           expired_code: "Verification code no longer valid."
           invalid_code: "Verification code is not valid."
         tokens:

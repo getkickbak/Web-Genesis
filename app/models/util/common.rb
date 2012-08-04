@@ -55,16 +55,41 @@ class Common
     return device
   end
   
-  def self.get_eligible_reward_text(points)
-    if points >= 0
-      I18n.t("api.customer_rewards.qualified_rewards")
-    else  
-      I18n.t('api.customer_rewards.potential_rewards') % [points.abs, I18n.t('api.point', :count => points.abs)]
+  def self.find_next_badge(badges, badge)
+    idx = badges.bsearch_upper_boundary {|x| x.rank <=> badge.rank}
+    badges[idx]
+  end
+  
+  def self.find_eligible_reward(rewards, points)
+    idx = rewards.bsearch_lower_boundary {|x| x.points <=> points}
+    idx = (idx == rewards.length ? rewards.length - 1 : idx)
+    reward = rewards[idx]
+    if reward.points > points
+      idx > 0 ? rewards[idx-1] : nil
     end
   end
   
-  def self.get_eligible_challenge_vip_text(points, visits)
-    I18n.t("api.challenges.qualified_visits") % [points, I18n.t('api.point', :count => points), visits, I18n.t('api.visit', :count => visits)]
+  def self.populate_badge_type_images(user_agent, badge_types)
+    type_ids = []
+    badge_type_id_to_type = {}
+    badge_types.each do |badge_type|
+      type_ids << badge_type.id
+      badge_type_id_to_type[badge_type.id] = badge_type
+    end
+    case user_agent  
+    when /iPhone/
+      agent = :phone
+    when /Android/
+      agent = :android  
+    else
+      agent = :iphone  
+    end
+    badge_type_images = BadgeTypeImage.all(:badge_type_id => type_ids, :user_agent => agent)
+    badge_type_images.each do |badge_type_image|
+      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_small_url = badge_type_image.thumbnail_small_url
+      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = badge_type_image.thumbnail_medium_url
+      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = badge_type_image.thumbnail_large_url
+    end
   end
   
   private

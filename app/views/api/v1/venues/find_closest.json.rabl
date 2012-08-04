@@ -7,15 +7,27 @@ node :data do
 end
 node :metaData do
 	{ 
-		:winners_count => @winners_count,
+		:prizes_count => @prizes_count,
+		:badges => (
+			@badges.map do |r|
+				partial('api/v1/customers/badge', :object => r)
+			end
+		),
+		:account_info => @account_info,
 		:rewards => (
 			@rewards.map do |r|
 		 		partial('api/v1/customer_rewards/base', :object => r)
 			end
 		),
-		:eligible_rewards =>
-			@eligible_rewards.map do |r|
-		 		partial('api/v1/customers/eligible_reward', :object => r)
+		:prizes => (
+			@prizes.map do |r|
+		 		partial('api/v1/customer_rewards/base', :object => r)
 			end
+		),
+		:newsfeed => {
+			@newsfeed.map do |r|
+		 		partial('api/v1/common/news', :object => r)
+			end
+		}
 	}		 	
 end

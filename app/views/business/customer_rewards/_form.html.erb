@@ -1,31 +1,51 @@
 <% content_for :link do %>
 <% end %>
 <div style="display:none;">
-   <div id="price_per_point">
-      <%= current_merchant.reward_model.price_per_point %>
-   </div>
-   <div id="rebate_rate">
-      <%= current_merchant.reward_model.rebate_rate %>
-   </div>
+	<div id="price_per_point">
+		<%= current_merchant.reward_model.price_per_point %>
+	</div>
+	<div id="rebate_rate">
+		<%= current_merchant.reward_model.rebate_rate %>
+	</div>
+	<div id="price_per_prize_point">
+		<%= current_merchant.reward_model.price_per_prize_point %>
+	</div>
+	<div id="prize_rebate_rate">
+		<%= current_merchant.reward_model.prize_rebate_rate %>
+	</div>
+	<div id="badge_rebate_rate">
+		<%= APP_PROP["badge_rebate_rate"] %>
+	</div>
 </div>
 <%= simple_form_for @customer_reward, :html => { :class => 'form-horizontal' } do |f| %>
 <fieldset>
-   <%= f.input :type_id, :collection => CustomerRewardType.all(:merchant_type_id => current_merchant.type.id, :order => [ :value.asc ]),
-   :as => :grouped_select,
-   :group_method => :customer_reward_subtypes,
-   :group_label_method => :display_value,
-   :label_method => :display_value,
-   :include_blank => "", :input_html=>{:class => "input-xlarge"} %>
-   <%= f.input :title, :input_html=>{:class => "input-medium"} %>
-   <%= f.input :price, :input_html=>{:class => "input-medium"} %>
-   <%= f.input :points, :input_html=>{:class => "input-large"} %>
-   <%= f.input :mode, :collection => CustomerReward::Modes, :input_html=>{:class => "input-large"} %>
-   <%= f.input :venue_ids, :collection => current_merchant.venues.collect{ |p| [p.display_name, p.id, ] }, :as => :check_boxes, :checked => @venue_ids %>
-   <br />
-   <div class="form-actions">
-      <%= f.button :submit , "Save", :class => 'btn btn-primary' %>
-      <%= link_to("Cancel", customer_reward_path, :class => 'btn') %>
-   </div>
-   <!-- /form-actions -->
+	<%= f.input :type_id, :collection => CustomerRewardType.all(:merchant_type_id => current_merchant.type.id, :order => [ :value.asc ]),
+		:as => :grouped_select,
+		:group_method => :customer_reward_subtypes,
+		:group_label_method => :display_value,
+		:label_method => :display_value,
+		:include_blank => "", :input_html=>{:class => "input-xlarge"} %>
+	<%= f.input :title, :input_html=>{:class => "input-medium"} %>
+	<%= f.input :price, :input_html=>{:class => "input-medium"} %>
+	<%= f.input :points, :input_html=>{:disabled => 'disabled', :class => "input-large"} %>
+	<%= f.input :mode, :collection => CustomerReward::Modes, :input_html=>{:class => "input-large"} %>
+	<%= f.input :quantity_limited, :as => :boolean %>
+	<% if @customer_reward.quantity_limited %>
+	<%= f.input :quantity, :wrapper_html => { :id => 'customer_reward_quantity_wrap' }%>
+	<% else %>
+	<%= f.input :quantity, :wrapper_html => { :id => 'customer_reward_quantity_wrap', :style => 'display:none;' } %>
+	<% end %>
+	<%= f.input :time_limited, :as => :boolean %>
+	<% if @customer_reward.time_limited %>
+	<%= f.input :expiry_date, :as => :date_picker, :input_html => { :class => 'input-xlarge' }, :wrapper_html => { :id => 'customer_reward_expiry_date_wrap' } %>
+	<% else %>
+	<%= f.input :expiry_date, :as => :date_picker, :input_html => { :class => 'input-xlarge' }, :wrapper_html => { :id => 'customer_reward_expiry_date_wrap', :style => 'display:none;' } %>
+	<% end %>
+	<%= f.input :venue_ids, :collection => current_merchant.venues.collect{ |p| [p.display_name, p.id, ] }, :as => :check_boxes, :checked => @venue_ids %>
+	<br />
+	<div class="form-actions">
+		<%= f.button :submit , "Save", :class => 'btn btn-primary' %>
+	</div>
+	<!-- /form-actions -->
 </fieldset>
 <% end %>

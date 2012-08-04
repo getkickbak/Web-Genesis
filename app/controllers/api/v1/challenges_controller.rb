@@ -1,5 +1,4 @@
 class Api::V1::ChallengesController < ApplicationController
-  skip_before_filter :verify_authenticity_token, :only => [:complete]
   before_filter :authenticate_user!
   
   def index
@@ -94,15 +93,17 @@ class Api::V1::ChallengesController < ApplicationController
     begin     
       Customer.transaction do
         if authorized
-          @points = 0
+          @mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
+          acquired = @mutex.acquire
+          @customer.reload
+          @account_info = { :points => @customer.points }
+          @reward_info = { :points => 0 }
           if points_eligible?
             if not challenge_limit_reached?
-              @mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
-              acquired = @mutex.acquire
-              @customer.reload
               now = Time.now
               record = EarnRewardRecord.new(
-                :challenge_id => @challenge.id,
+                :type => :challenge,
+                :ref_id => @challenge.id,
                 :venue_id => @venue.id,
                 :data => data || "",
                 :data_expiry_ts => @data_expiry_ts || ::Constant::MIN_TIME,
@@ -115,7 +116,7 @@ class Api::V1::ChallengesController < ApplicationController
               record.user = current_user
               record.save
               trans_record = TransactionRecord.new(
-                :type => :earn,
+                :type => :earn_points,
                 :ref_id => record.id,
                 :description => @challenge.name,
                 :points => @challenge.points,
@@ -127,48 +128,39 @@ class Api::V1::ChallengesController < ApplicationController
               trans_record.user = current_user
               trans_record.save
               @customer.points += @challenge.points
+              @account_info[:points] = @customer.points
+              @reward_info[:points] = @challenge.points
+              rewards = @venue.customer_rewards.all(:mode => :reward)
+              eligible_for_reward = !Common.find_eligible_reward(rewards.to_a, @customer.points).nil?
+              @customer.eligible_for_reward = eligible_for_reward
               @customer.save
-              @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :conditions => [ 'mode = ? OR mode = ?', CustomerReward::Modes.index(:reward_only)+1, CustomerReward::Modes.index(:prize_and_reward)+1], :order => [:points.asc]) + 
-              @eligible_rewards = []
-              challenge_type_id = ChallengeType.value_to_id["vip"]
-              challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
-              if challenge
-                visits_to_go = @customer.visits % challenge.data.visits
-                (visits_to_go = challenge.data.visits) unless visits_to_go > 0
-                item = EligibleReward.new(
-                  challenge.id,
-                  challenge.type.value,
-                  challenge.name,
-                  ::Common.get_eligible_challenge_vip_text(challenge.points, visits_to_go)
+              @account_info[:eligible_for_reward] = eligible_for_reward
+              @account_info = @account_info.to_json
+              @reward_info = @reward_info.to_json
+              @newsfeed = []
+              promotions = Promotion.all(:merchant => @venue.merchant)
+              promotions.each do |promotion|
+                @newsfeed << News.new(
+                  "",
+                  0,
+                  "",
+                  "",
+                  promotion.message
                 )
-                @eligible_rewards << item
               end
-              reward_id_to_subtype_id = {}
-              reward_to_subtypes = CustomerRewardToSubtype.all(:fields => [:customer_reward_id, :customer_reward_subtype_id], :customer_reward => @rewards)
-              reward_to_subtypes.each do |reward_to_subtype|
-                reward_id_to_subtype_id[reward_to_subtype.customer_reward_id] = reward_to_subtype.customer_reward_subtype_id
-              end              
-              @rewards.each do |reward|
-                reward.eager_load_type = CustomerRewardSubtype.id_to_type[reward_id_to_subtype_id[reward.id]]
-=begin                
-                item = EligibleReward.new(
-                  reward.id,
-                  reward.eager_load_type.value,
-                  reward.title,
-                  ::Common.get_eligible_reward_text(@customer.points - reward.points)
-                )
-                @eligible_rewards << item  
-=end                
-              end
-              @points = @challenge.points
               render :template => '/api/v1/challenges/complete'
               logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), #{@challenge.points} points awarded")
             else
+              @account_info[:eligible_for_reward] = @customer.eligible_for_reward
+              @account_info = @account_info.to_json
+              @reward_info = @reward_info.to_json
               @msg = get_success_no_points_limit_reached_msg.split('\n')  
               render :template => '/api/v1/challenges/complete'
               logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because limit reached")
             end
           else
+            @account_info = @account_info.to_json
+            @reward_info = @reward_info.to_json
             @msg = get_success_no_points_msg.split('\n')  
             render :template => '/api/v1/challenges/complete'
             logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because it is not eligible")
@@ -343,18 +335,15 @@ class Api::V1::ChallengesController < ApplicationController
     return true
   end
   
-  def points_eligible?
-    if @challenge.type.value == "vip"
-      return false
-    end 
+  def points_eligible? 
     return true
   end
   
   def challenge_limit_reached?
     if @challenge.type.value == "photo"
-      return EarnRewardRecord.count(:challenge_id => @challenge.id, :merchant => @challenge.merchant, :user => current_user, :created_ts.gte => Date.today.to_time) > 0
+      return EarnRewardRecord.count(:type => :challenge, :ref_id => @challenge.id, :merchant => @challenge.merchant, :user => current_user, :created_ts.gte => Date.today.to_time) > 0
     elsif @challenge.type.value == "birthday"
-      return EarnRewardRecord.count(:challenge_id => @challenge.id, :merchant => @challenge.merchant, :user => current_user, :created_ts.gte => 11.month.ago.to_time) > 0  
+      return EarnRewardRecord.count(:type => :challenge, :ref_id => @challenge.id, :merchant => @challenge.merchant, :user => current_user, :created_ts.gte => 11.month.ago.to_time) > 0  
     end
     return false  
   end
@@ -415,12 +404,6 @@ class Api::V1::ChallengesController < ApplicationController
   end
   
   def get_success_no_points_msg
-    case @challenge.type.value
-    when "vip"
-      visits = @customer.visits % @challenge.data.visits
-      t("api.challenges.vip_success") % [visits, I18n.t('api.visit', :count => visits), @challenge.points]
-    else
-      t("api.challenges.unsupported_success")  
-    end
+    t("api.challenges.unsupported_success")  
   end
 end

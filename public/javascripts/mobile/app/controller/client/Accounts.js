@@ -396,17 +396,25 @@ Ext.define('Genesis.controller.client.Accounts',
       {
          case 'redeemPrizesProfile' :
          {
-            rcontroller = me.getApplication().getController('Prizes');
+            rcontroller = me.getApplication().getController('client.Prizes');
             break;
          }
          case 'redeemRewardsProfile' :
+         {
+            rcontroller = me.getApplication().getController('client.Redemptions');
+            break;
+         }
+         case 'profile' :
          default :
-            rcontroller = me.getApplication().getController('Redemptions');
+            viewport.setVenue(venue);
+            var controller = me.getApplication().getController('client.Checkins');
+            controller.fireEvent('explore');
+            return;
             break;
       }
-      rstore = Ext.StoreMgr.get(rcontroller.getRedemptionsStore());
-      url = rcontroller.getRedemptionURL();
-      path = rcontroller.getRedemptionPath();
+      rstore = Ext.StoreMgr.get(rcontroller.getRedeemStore());
+      url = rcontroller.getRedeemUrl();
+      path = rcontroller.getRedeemPath();
       CustomerReward[url]();
       rstore.load(
       {
@@ -427,14 +435,20 @@ Ext.define('Genesis.controller.client.Accounts',
                   'venue_id' : venueId
                };
                
+               for (var i = 0; i <records.length; i++)
+               {
+                  records[i].setMerchant(venue.getMerchant());
+               }
                viewport.setVenue(venue);
                switch(me.getMode())
                {
+               	 /*
                   case 'profile' :
                   {
                      controller.fireEvent('checkinMerchant', 'explore', metaData, venueId, rec, operation, Ext.emptyFn);
                      break;
                   }
+                  */
                   case 'redeemRewardsProfile' :
                   case 'redeemPrizesProfile' :
                   default:

@@ -1,8 +1,8 @@
-Ext.define('Genesis.view.client.RedemptionsBase',
+Ext.define('Genesis.view.client.RedeemBase',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RedemptionsPtsItem'],
-   alias : 'widget.clientredemptionsbaseview',
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RedeemPtsItem'],
+   alias : 'widget.clientredeeembaseview',
    config :
    {
    },
@@ -23,11 +23,6 @@ Ext.define('Genesis.view.client.RedemptionsBase',
    {
       var me = this;
 
-      if (!me.callParent(arguments))
-      {
-         return;
-      }
-
       // ------------------------------------------------------------------------
       // Redemptions Points Earned Panel
       // ------------------------------------------------------------------------
@@ -40,7 +35,7 @@ Ext.define('Genesis.view.client.RedemptionsBase',
          items : [
          {
             xtype : 'title',
-            title : 'Points Earned'
+            title : me.getPtsEarnTitleText()
          },
          {
             xtype : 'spacer'
@@ -67,7 +62,7 @@ Ext.define('Genesis.view.client.RedemptionsBase',
          items : [
          {
             xtype : 'title',
-            title : me.getToolbarTitleText()
+            title : me.getRedeemTitleText()
          },
          {
             xtype : 'spacer'
@@ -101,7 +96,7 @@ Ext.define('Genesis.view.client.RedemptionsBase',
             {
                if (!values.photo)
                {
-                  return me.statics().getPhoto(values['type']);
+                  return me.self.getPhoto(values['type']);
                }
                return values.photo.url;
             },

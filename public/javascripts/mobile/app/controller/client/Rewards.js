@@ -49,7 +49,7 @@ Ext.define('Genesis.controller.client.Rewards',
       var points = reward_info['points'];
       var extraPoints = reward_info['referral_points'];
 
-      return 'You\'ve earned' + points + ' Points from this purchase.' + //
+      return 'You\'ve earned ' + points + ' Reward Points from this purchase.' + //
       ((extraPoints > 0) ? Genesis.constants.addCRLF() + me.prizeCheckMsg : '');
    },
    getReferralMsg : function(points)
@@ -224,8 +224,9 @@ Ext.define('Genesis.controller.client.Rewards',
    updateMetaData : function(metaData)
    {
       var me = this;
+      var viewport = me.getViewPortCntlr();
       var customer = me.callParent(arguments);
-      var custimerId = customer.getId();
+      var customerId = customer.getId();
       //
       // Update points from the purchase or redemption
       //
