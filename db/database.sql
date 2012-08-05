@@ -68,17 +68,17 @@ INSERT INTO merchant_challenge_types VALUES (1,3);
 INSERT INTO merchant_challenge_types VALUES (1,4);
 INSERT INTO merchant_challenge_types VALUES (1,5);
 
-INSERT INTO badge_types VALUES (1,'newbie',1);
-INSERT INTO badge_types VALUES (2,'enthusiast',100);
-INSERT INTO badge_types VALUES (3,'fan',200);
-INSERT INTO badge_types VALUES (4,'follower',300);
-INSERT INTO badge_types VALUES (5,'groupie',400);
-INSERT INTO badge_types VALUES (6,'nut',500);
-INSERT INTO badge_types VALUES (7,'junkie',600);
-INSERT INTO badge_types VALUES (8,'addict',700);
-INSERT INTO badge_types VALUES (9,'fanatic',800);
-INSERT INTO badge_types VALUES (10,'lifer',900);
-INSERT INTO badge_types VALUES (11,'boss',1000);
+INSERT INTO badge_types VALUES (1,1,'newbie',1);
+INSERT INTO badge_types VALUES (2,1,'enthusiast',100);
+INSERT INTO badge_types VALUES (3,1,'fan',200);
+INSERT INTO badge_types VALUES (4,1,'follower',300);
+INSERT INTO badge_types VALUES (5,1,'groupie',400);
+INSERT INTO badge_types VALUES (6,1,'nut',500);
+INSERT INTO badge_types VALUES (7,1,'junkie',600);
+INSERT INTO badge_types VALUES (8,1,'addict',700);
+INSERT INTO badge_types VALUES (9,1,'fanatic',800);
+INSERT INTO badge_types VALUES (10,1,'lifer',900);
+INSERT INTO badge_types VALUES (11,1,'boss',1000);
 
 INSERT INTO visit_frequency_types VALUES (1,'low');
 INSERT INTO visit_frequency_types VALUES (2,'regular');

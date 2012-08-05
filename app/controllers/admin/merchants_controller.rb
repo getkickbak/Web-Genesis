@@ -51,7 +51,7 @@ module Admin
           params[:merchant][:reward_terms] = I18n.t 'customer_reward.terms'
           @merchant = Merchant.create(type, visit_frequency, params[:merchant])
           badges = []
-          badge_types = BadgeType.all
+          badge_types = BadgeType.all(:merchant_type_id => @merchant.type.id)
           badge_types.each do |badge_type|
             badge = Badge.new(:visits => BadgeType.visits[@merchant.visit_frequency_type.value][badge_type.value])
             badge.type = badge_type
