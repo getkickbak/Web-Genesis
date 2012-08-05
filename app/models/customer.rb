@@ -41,16 +41,9 @@ class Customer
   def self.find(user_id, start, max)
     count = Customer.count(Customer.user.id => user_id)
     customers = Customer.all(Customer.user.id => user_id, :order => [ :created_ts.desc ], :offset => start, :limit => max)
-    badge_ids = []
     merchant_ids = []
     customers.each do |customer|
-      badge_ids << customer.badge.id
       merchant_ids << customer.merchant.id
-    end
-    badge_id_to_type_id = {}
-    badge_to_types = BadgeToType.all(:fields => [:badge_id, :badge_type_id], :badge_id => badge_ids)
-    badge_to_types.each do |badge_to_type|
-      badge_id_to_type_id[badge_to_type.badge_id] = badge_to_type.badge_type_id
     end
     merchant_id_to_type_id = {}
     merchant_to_types = MerchantToType.all(:fields => [:merchant_id, :merchant_type_id], :merchant_id => merchant_ids)
@@ -59,7 +52,6 @@ class Customer
     end
     customers.each do |customer|
       customer.merchant.eager_load_type = MerchantType.id_to_type[merchant_id_to_type_id[customer.merchant.id]]
-      customer.badge.eager_load_type = BadgeType.id_to_type[badge_id_to_type_id[customer.badge.id]]
     end
     result = {}
     result[:total] = count
