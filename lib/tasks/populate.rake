@@ -302,7 +302,7 @@ namespace :db do
           :quantity_limited => false,
           :quantity => 0,
           :time_limited => false,
-          :expiry_date => Date.today
+          :expiry_date => Date.today.to_s
         },
         venues)
         rewards << reward
@@ -323,7 +323,7 @@ namespace :db do
           :quantity_limited => true,
           :quantity => rand(10) + 10,
           :time_limited => true,
-          :expiry_date => Date.today >> 6
+          :expiry_date => (Date.today >> 6).to_s
         },
         venues)
       end
