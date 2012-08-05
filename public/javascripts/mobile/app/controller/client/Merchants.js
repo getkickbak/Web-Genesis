@@ -22,10 +22,14 @@ Ext.define('Genesis.controller.client.Merchants',
             autoCreate : true,
             xtype : 'clientmerchantaccountview'
          },
+         badgesPage :
+         {
+            selector : 'clientbadgesview',
+            autoCreate : true,
+            xtype : 'clientbadgesview'
+         },
          merchantMain : 'clientmerchantaccountview container[tag=merchantMain]',
          tbPanel : 'clientmerchantaccountview dataview[tag=tbPanel]',
-         prizesWonPanel : 'clientmerchantaccountview component[tag=prizesWonPanel]',
-         badgeProgressPanel : 'clientmerchantaccountview component[tag=badgeProgressPanel]',
          feedContainer : 'clientmerchantaccountview container[tag=feedContainer]',
          descContainer : 'clientmerchantaccountview container[tag=descContainer]',
          descPanel : 'clientmerchantaccountview container[tag=descPanel]',
@@ -50,7 +54,9 @@ Ext.define('Genesis.controller.client.Merchants',
          main :
          {
             activate : 'onMainActivate',
-            deactivate : 'onMainDeactivate'
+            deactivate : 'onMainDeactivate',
+            prizeTap : 'onBadgeTap',
+            badgeTap : 'onBadgeTap'
          },
          mapBtn :
          {
@@ -90,10 +96,6 @@ Ext.define('Genesis.controller.client.Merchants',
             // Goto CheckinMerchant.js for "painted" support
             //painted : 'onMapPainted'
          },
-         badgeProgressPanel :
-         {
-            tap : 'onBadgeTap'
-         }
       },
       listeners :
       {
@@ -287,7 +289,7 @@ Ext.define('Genesis.controller.client.Merchants',
       else
       {
          var type = Ext.StoreMgr.get('BadgeStore').getById(crecord.get('badge_id')).get('type');
-         
+
          prizeBtn.setIconCls('prizeicon');
          prizeBtn.setIcon(Genesis.view.client.Badges.getPhoto(type, 'thumbnail_small_url'));
       }
@@ -504,6 +506,9 @@ Ext.define('Genesis.controller.client.Merchants',
    },
    onBadgeTap : function(b, e, eOpts, eInfo)
    {
+      var me = this;
+      me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
+      me.pushView(me.getBadgesPage());
       console.log("Opening Badge Browse Page");
    },
    // --------------------------------------------------------------------------

@@ -130,8 +130,8 @@
       <script type="text/javascript" src="app/model/CustomerReward.js"></script>
       <script type="text/javascript" src="app/model/Venue.js"></script>
       <script type="text/javascript" src="app/model/News.js"></script>
-      <script type="text/javascript" src="app/model/Customer.js"></script>
       <script type="text/javascript" src="app/model/Badge.js"></script>
+      <script type="text/javascript" src="app/model/Customer.js"></script>
       <script type="text/javascript" src="app/model/frontend/Account.js"></script>
       <script type="text/javascript" src="app/model/frontend/Signin.js"></script>
       <!-- Views -->
@@ -145,9 +145,6 @@
       <script type="text/javascript" src="app/view/client/Badges.js"></script>
       <script type="text/javascript" src="app/view/client/MerchantAccount.js"></script>
       <script type="text/javascript" src="app/view/client/MerchantDetails.js"></script>
-      <!--
-      <script type="text/javascript" src="app/view/Rewards.js"></script>
-      -->
       <script type="text/javascript" src="app/view/client/SettingsPage.js"></script>
       <script type="text/javascript" src="app/view/client/Accounts.js"></script>
       <script type="text/javascript" src="app/view/client/AccountsTransfer.js"></script>
@@ -162,13 +159,10 @@
       <script type="text/javascript" src="app/controller/Viewport.js"></script>
       <script type="text/javascript" src="app/controller/Settings.js"></script>
       <script type="text/javascript" src="app/controller/MainPage.js"></script>
-      <script type="text/javascript" src="app/controller/client//Checkins.js"></script>
+      <script type="text/javascript" src="app/controller/client/Checkins.js"></script>
       <script type="text/javascript" src="app/controller/client/Challenges.js"></script>
       <script type="text/javascript" src="app/controller/client/Merchants.js"></script>
       <script type="text/javascript" src="app/controller/client/Badges.js"></script>
-      <!--
-      <script type="text/javascript" src="app/controller/Rewards.js"></script>
-      -->
       <script type="text/javascript" src="app/controller/client/Rewards.js"></script>
       <script type="text/javascript" src="app/controller/client/RedeemBase.js"></script>
       <script type="text/javascript" src="app/controller/client/Redemptions.js"></script>
@@ -217,7 +211,8 @@
                profiles : ['Iphone', 'Android', 'Desktop'],
                views : ['client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
                'client.AccountsTransfer', 'client.SettingsPage', //
-               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'RedeemItemDetail', 'client.Badges', 'client.MerchantAccount', 'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
+               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'RedeemItemDetail', 'client.Badges', 'client.MerchantAccount', //
+               'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
                controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
                'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.Prizes'],
                launch : function()

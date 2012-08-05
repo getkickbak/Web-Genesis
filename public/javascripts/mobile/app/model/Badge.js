@@ -1,29 +1,3 @@
-Ext.define('Genesis.model.BadgeJSON',
-{
-   extend : 'Ext.data.Model',
-   alternateClassName : 'BadgeJSON',
-   id : 'BadgeJSON',
-   config :
-   {
-      proxy :
-      {
-         type : 'localstorage',
-         id : 'BadgeJSON',
-         writer :
-         {
-            type : 'json'
-         },
-         reader :
-         {
-            type : 'json'
-         }
-      },
-      identifier : 'uuid',
-      fields : ['json', 'id'],
-      idProperty : 'id'
-   }
-});
-
 Ext.define('Genesis.model.Badge',
 {
    extend : 'Ext.data.Model',

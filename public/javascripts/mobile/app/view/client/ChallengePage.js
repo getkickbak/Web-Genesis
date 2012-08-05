@@ -161,6 +161,7 @@ Ext.define('Genesis.view.client.ChallengePage',
             {
                xtype : 'dataview',
                cls : 'challengeMenuSelections',
+               tag : 'challengeMenuSelections',
                useComponents : true,
                defaultType : 'challengemenuitem',
                scrollable : undefined,

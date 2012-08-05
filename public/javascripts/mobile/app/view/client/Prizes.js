@@ -1,10 +1,11 @@
 Ext.define('Genesis.view.client.Prizes',
 {
    extend : 'Genesis.view.client.RedeemBase',
+   requires : ['Genesis.view.widgets.PrizePtsItem'],
    alias : 'widget.clientprizesview',
    config :
    {
-      defaultItemType : 'redeemptsitem',
+      defaultItemType : 'prizeptsitem',
       ptsEarnTitleText : 'Prize Points Available',
       redeemTitleText : 'Prizes available to redeem (Select an item below)',
       listCls : 'prizesList',

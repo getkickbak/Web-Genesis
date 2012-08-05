@@ -275,7 +275,7 @@ Ext.define('Genesis.controller.client.Accounts',
          }
          case 'redeemRewardsProfile' :
          {
-            tbbar.setTitle('Redemptions');
+            tbbar.setTitle('Rewards');
             tbbar.removeCls('kbTitle');
             break;
          }

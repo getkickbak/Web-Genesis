@@ -9,7 +9,7 @@ Ext.define('Genesis.view.client.Rewards',
       cls : 'rouletteBg',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         title : 'Earn Rewards'
+         title : 'Scan and Win'
       }),
       {
          xtype : 'component',

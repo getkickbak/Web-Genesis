@@ -120,8 +120,8 @@ Ext.define('Genesis.controller.client.RedeemBase',
          {
             if (!me.exploreMode)
             {
-               var totalPts = viewport.getCustomer().get('points');
-               var points = record.get('points');
+               var totalPts = viewport.getCustomer().get(me.getPtsProperty());
+               var points = record.get(me.getPtsProperty());
                if (points > totalPts)
                {
                   Ext.device.Notification.show(

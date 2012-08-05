@@ -102,11 +102,9 @@ Ext.define('Genesis.view.MainPage',
                   //
                   // Middle Button
                   //
-                  /*
-                   {
-                   xtype : 'spacer'
-                   },
-                   */
+                  {
+                     xtype : 'spacer'
+                  },
                   {
                      iconCls : 'checkin',
                      tag : 'checkInNow',
@@ -115,11 +113,9 @@ Ext.define('Genesis.view.MainPage',
                   //
                   // Right side Buttons
                   //
-                  /*
-                   {
-                   xtype : 'spacer'
-                   },
-                   */
+                  {
+                     xtype : 'spacer'
+                  },
                   {
                      iconCls : 'redeem',
                      badgeCls : 'x-badge round',
@@ -202,6 +198,7 @@ Ext.define('Genesis.view.MainPage',
             {
                xtype : 'dataview',
                cls : 'mainMenuSelections',
+               tag : 'mainMenuSelections',
                scrollable : false,
                deferInitialRefresh : false,
                store :
@@ -286,7 +283,7 @@ Ext.define('Genesis.view.MainPage',
          }
          console.log("MainPage Icons Not changed.");
       }
-      delete carousel._listitems;      
+      delete carousel._listitems;
    },
    showView : function()
    {

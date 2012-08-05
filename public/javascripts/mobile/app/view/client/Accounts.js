@@ -179,11 +179,11 @@ Ext.define('Genesis.view.client.Accounts',
                },
                getRewardPoints : function(values)
                {
-                  return values['points'] + ' Pts';
+                  return values['points'];
                },
                getPrizePoints : function(values)
                {
-                  return values['prize_points'] + ' Pts';
+                  return values['prize_points'];
                }
             }),
             onItemDisclosure : Ext.emptyFn

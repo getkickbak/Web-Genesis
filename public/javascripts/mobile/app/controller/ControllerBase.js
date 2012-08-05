@@ -315,7 +315,7 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          // Update All Badges
          bstore.setData(badges);
-         me.persistSyncStores('BadgeStore');
+         //me.persistSyncStores('BadgeStore');
       }
    },
    updateAccountInfo : function(metaData, info)
@@ -569,8 +569,8 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var stores =
       {
-         'CustomerStore' : [Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'CustomerJSON'],
-         'BadgeStore' : [Ext.StoreMgr.get('Persistent' + 'BadgeStore'), 'BadgeStore', 'BadgeJSON']
+         'CustomerStore' : [Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'CustomerJSON']
+         //'BadgeStore' : [Ext.StoreMgr.get('Persistent' + 'BadgeStore'), 'BadgeStore', 'BadgeJSON']
          //,'PrizeStore' : [Ext.StoreMgr.get('Persistent' + 'PrizeStore'), 'PrizeStore',
          // 'CustomerRewardJSON']
       };
@@ -591,9 +591,10 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    persistLoadStores : function(callback)
    {
-      var stores = [[this.persistStore('CustomerStore'), 'CustomerStore', 0x01], //
-      [this.persistStore('BadgeStore'), 'BadgeStore', 0x10]];
+      var stores = [[this.persistStore('CustomerStore'), 'CustomerStore', 0x01] //
+      //[this.persistStore('BadgeStore'), 'BadgeStore', 0x10]];
       //,[this.persistStore('PrizeStore'), 'PrizeStore', 0x10]];
+      ];
       var flag = 0x0;
 
       callback = callback || Ext.emptyFn;
@@ -620,7 +621,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   console.debug("Error Restoring " + stores[i][1] + " ...");
                }
 
-               if ((flag |= stores[i][2]) == 0x11)
+               //if ((flag |= stores[i][2]) == 0x11)
                {
                   callback();
                }
@@ -630,9 +631,10 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    persistSyncStores : function(storeName, cleanOnly)
    {
-      var stores = [[this.persistStore('CustomerStore'), 'CustomerStore', 0x01], //
-      [this.persistStore('BadgeStore'), 'BadgeStore', 0x10]];
+      var stores = [[this.persistStore('CustomerStore'), 'CustomerStore', 0x01] //
+      //[this.persistStore('BadgeStore'), 'BadgeStore', 0x10]];
       //, [this.persistStore('PrizeStore'), 'PrizeStore', 0x10]];
+      ];
       for (var i = 0; i < stores.length; i++)
       {
          if (!storeName || (stores[i][1] == storeName))

@@ -16,6 +16,7 @@ Ext.define('Genesis.controller.client.Redemptions',
       redeemPointsFn : 'setRedeemPointsURL',
       redeemUrl : 'setGetRedemptionsURL',
       redeemPath : 'redeemBrowseRewardsSC',
+      ptsProperty : 'points',
       title : 'Rewards',
       routes :
       {

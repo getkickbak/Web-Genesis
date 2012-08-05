@@ -27,7 +27,7 @@ Ext.define('Genesis.model.CustomerJSON',
 Ext.define('Genesis.model.Customer',
 {
    extend : 'Ext.data.Model',
-   requires : ['Genesis.model.Checkin', 'Genesis.model.Badge', 'Genesis.model.Merchant'],
+   requires : ['Genesis.model.Checkin', 'Genesis.model.Merchant'],
    alternateClassName : 'Customer',
    id : 'Customer',
    config :
@@ -102,11 +102,6 @@ Ext.define('Genesis.model.Customer',
             if (cOld.getLastCheckin() != cNew.getLastCheckin())
             {
                cOld.setLastCheckin(cNew.getLastCheckin());
-               sync = true;
-            }
-            if (cOld.getBadge() != cNew.getBadge())
-            {
-               cOld.setBadge(cNew.getBadge());
                sync = true;
             }
          }

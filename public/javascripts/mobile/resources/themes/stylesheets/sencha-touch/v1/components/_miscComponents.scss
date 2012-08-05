@@ -17,13 +17,29 @@
       background-size: contain;
       background-repeat: no-repeat;
       background-color: transparent;
-      background-image: theme_image($theme-path + "/miscicons",  "points" + ".png");
+   }
+}
+
+.prizephoto {
+   @extend .pointsphotobase;
+   &:before {
+      background-image: theme_image($theme-path + "/miscicons",  "prize_points" + ".png");
    }
 }
 .pointsphoto {
    @extend .pointsphotobase;
+   &:before {
+      background-image: theme_image($theme-path + "/miscicons",  "points" + ".png");
+   }
+}
+
+.pointsphotodesc {
+   @extend .pointsphotobase;
    height:$icon-size+10px;
    max-height:$icon-size+10px;
+   &:before {
+      background-image: theme_image($theme-path + "/miscicons",  "points" + ".png");
+   }
    &:after {
       font-size:$smallFontSize;
       font-weight:bold;
@@ -31,14 +47,15 @@
       z-index:1;
       top:$icon-size/2+3px;
       left:0;
-      content : 'Points';
+      content : 'Rewards';
       width : $icon-size;
       height : 1em;
       max-height: 1em;
    }
 }
-.visitsphoto {
-   @extend .pointsphoto;
+
+.visitsphotodesc {
+   @extend .pointsphotodesc;
    &:before {
       background-image: theme_image($theme-path + "/miscicons", "number_visits" + ".png");
    }
@@ -46,12 +63,12 @@
       content : 'Visits';
    }
 }
-.prizepointsphoto {
-   @extend .pointsphoto;
+.prizephotodesc {
+   @extend .pointsphotodesc;
    &:before {
-      //background-image: theme_image($theme-path + "/miscicons", "prize_points" + ".png");
+      background-image: theme_image($theme-path + "/miscicons", "prize_points" + ".png");
    }
    &:after {
-      content : 'Prize Pts';
+      content : 'Prizes';
    }
 }

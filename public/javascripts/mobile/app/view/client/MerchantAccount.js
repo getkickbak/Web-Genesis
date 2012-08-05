@@ -109,6 +109,19 @@ Ext.define('Genesis.view.client.MerchantAccount',
             tag : 'browse',
             title : 'Explore'
          }]
+      }],
+      listeners : [
+      {
+         element : 'element',
+         delegate : "div.badgephoto",
+         event : "tap",
+         fn : "onBadgeTap"
+      },
+      {
+         element : 'element',
+         delegate : "div.prizeswonphoto",
+         event : "tap",
+         fn : "onPrizeTap"
       }]
    },
    disableAnimation : true,
@@ -291,13 +304,25 @@ Ext.define('Genesis.view.client.MerchantAccount',
          }]
       })]));
    },
+   onBadgeTap : function(b, e, eOpts)
+   {
+      var viewport = _application.getController('Viewport');
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      this.fireEvent('badgeTap');
+   },
+   onPrizeTap : function(b, e, eOpts)
+   {
+      var viewport = _application.getController('Viewport');
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      this.fireEvent('prizeTap');
+   },
    statics :
    {
       getPhoto : function(type)
       {
          if (!type.value)
          {
-         	return Genesis.constants.getIconPath('miscicons', 'pushnotification');
+            return Genesis.constants.getIconPath('miscicons', 'pushnotification');
          }
          else
          {

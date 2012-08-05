@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.client.RedeemBase',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RedeemPtsItem'],
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RedeemPtsItemBase'],
    alias : 'widget.clientredeeembaseview',
    config :
    {
@@ -24,7 +24,7 @@ Ext.define('Genesis.view.client.RedeemBase',
       var me = this;
 
       // ------------------------------------------------------------------------
-      // Redemptions Points Earned Panel
+      // Redeem Points Earned Panel
       // ------------------------------------------------------------------------
       me.setPreRender(me.getPreRender().concat([Ext.create('Ext.Toolbar',
       {
@@ -51,7 +51,7 @@ Ext.define('Genesis.view.client.RedeemBase',
          store : renderStore
       }),
       // ------------------------------------------------------------------------
-      // Redemptions Available Panel
+      // Redeem Available Panel
       // ------------------------------------------------------------------------
       Ext.create('Ext.Toolbar',
       {
@@ -118,17 +118,5 @@ Ext.define('Genesis.view.client.RedeemBase',
    },
    statics :
    {
-      getPhoto : function(type)
-      {
-         var photo_url = null;
-         switch (type.value)
-         {
-            default :
-               photo_url = Genesis.constants.getIconPath('fooditems', type.value);
-               //console.debug("Icon Path [" + photo_url + "]");
-               break;
-         }
-         return photo_url;
-      }
    }
 });

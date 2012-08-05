@@ -97,7 +97,15 @@ Ext.define('Genesis.controller.Viewport',
             tap : 'onBrowseTap'
          },
          //
-         'viewportview dataview' :
+         'viewportview dataview[tag=mainMenuSelections]' :
+         {
+            select : 'onButtonTap'
+         },
+         'viewportview dataview[tag=challengeMenuSelections]' :
+         {
+            select : 'onButtonTap'
+         },
+         'viewportview dataview[tag=challengeMenuSelections]' :
          {
             select : 'onButtonTap'
          },

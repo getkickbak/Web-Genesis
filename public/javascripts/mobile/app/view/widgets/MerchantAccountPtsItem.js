@@ -29,12 +29,12 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             {
                tag : 'prizepoints',
                tpl : '{prize_points}',
-               cls : 'prizepointsphoto'
+               cls : 'prizephotodesc'
             },
             {
                tag : 'points',
                tpl : '{points}',
-               cls : 'pointsphoto'
+               cls : 'pointsphotodesc'
             }],
          }]
       },
@@ -80,9 +80,11 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             '<div class="badgephoto">',
                '<img class="itemPhoto" src="{[this.getPhoto(values)]}"/>',
                '<div class="itemTitle">{[this.getTitle(values)]}</div>',
-               '<div class="itemDesc badgeProgress">',
-                  '<div class="progressBar" style="{[this.getProgress(values)]}"></div>',
-                  '<div class="progressBarValue">{[this.getDesc(values)]}</div>',
+               '<div class="itemDesc">',
+                  '<div class="progressBarContainer">',
+                     '<div class="progressBar" style="{[this.getProgress(values)]}"></div>',
+                     '<div class="progressBarValue">{[this.getDesc(values)]}</div>',
+                  '</div>',
                '</div>',
             '</div>',
          '</tpl>',
@@ -95,7 +97,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             {
                var viewport = _application.getController('Viewport');
                var customer = viewport.getCustomer();
-               
+
                values['_customer'] = Ext.StoreMgr.get('CustomerStore').getById(customer.getId());
 
                return ( customer ? true : false);
@@ -103,7 +105,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             getPhoto : function(values)
             {
                values['_badgeType'] = Ext.StoreMgr.get('BadgeStore').getById(values['_customer'].get('badge_id')).get('type');
-               
+
                return Genesis.view.client.Badges.getPhoto(values['_badgeType'], 'thumbnail_medium_url');
             },
             getTitle : function(values)
@@ -124,11 +126,10 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                var customer = values['_customer'];
                var nvisit = values['_nvisit'];
                var tvisit = customer.get('next_badge_visits');
-               
                delete values['_customer'];
                delete values['_badgeType'];
                delete values['_nvisit'];
-               
+
                return tvisit + '/' + nvisit + ' visits to get your next badge!';
             }
          })

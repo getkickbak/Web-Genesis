@@ -27,7 +27,7 @@
          background-color: $Grey;
          margin :0 !important;
          padding:$panelTopGap $panelGap;
-         font-size:1em;
+         font-size:$largeFontSize*1.25;
          &:before {
             @if $include-border-radius { @include border-left-radius($panelBorderRadius); }
             @include custom-linear-gradient($BlueStart 10%, $BlueEnd 85%, top);
@@ -40,19 +40,20 @@
          @extend .pointsphotobase;
          text-align:left;
          background-color: transparent;
-         font-size:1em;
+         font-size:$largeFontSize*1.25;
          &:before {
            @include custom-linear-gradient($BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/miscicons/" + "prizeswon" + ".png"));
          }
          .itemTitle {
             font-weight:bold;
             line-height:1em;
-            font-size:$largeFontSize !important;
+            font-size:$normalFontSize !important;
          }
          .itemDesc {
             line-height:2.25em;
             font-style:italic;
-            //font-size:$largeFontSize !important;
+            font-size:$normalFontSize !important;
+            padding:1.05em 0;
          }
       }
       .badgephoto {
@@ -73,12 +74,13 @@
          }
          .itemDesc {
             font-size:$smallFontSize !important;
+            padding:3.15em 0 1.15em 0 !important;
          }
       }
    }
    .feedPanelHdr {
       @extend .panelHdr;
-      @include custom-linear-gradient($GreyHdrStart 10%, #77787B 85%, top);
+      @include custom-linear-gradient($GreyHdrStart 10%, $GreyHdrEnd 85%, top);
    }
    .descPanelHdr {
       @extend .panelHdr;

@@ -126,16 +126,19 @@
             {
                profiles : ['Iphone', 'Android', 'Desktop'],
                views : ['client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
-               'client.SettingsPage', 'client.AccountsTransfer', //
-               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'RedeemItemDetail', 'client.Badges', 'client.MerchantAccount', 'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
+               'client.AccountsTransfer', 'client.SettingsPage', //
+               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'RedeemItemDetail', 'client.Badges', 'client.MerchantAccount', //
+               'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
                controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
                'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.Prizes'],
                launch : function()
                {
                   var viewport = this.getController('Viewport');
                   viewport.appName = 'GetKickBak';
+                  
                   console.log("Launching App");
                   Ext.create('Genesis.view.Viewport');
+                  this.redirectTo('');
                   console.log("Launched App");
                },
                appFolder : _appPath,
