@@ -129,15 +129,22 @@ if exists
   badge_type_id_to_type = {}
   badge_types.each do |type|
     badge_type_id_to_type[type.id] = type
+    merchant_type_value = merchant_type_id_to_value[type.merchant_type_id]
+    if !badge_type_values.include? merchant_type_value
+      badge_type_values[merchant_type_value] = {}
+    end
+    if !badge_type_values[merchant_type_value].include? type.value
+      badge_type_values[merchant_type_value][type.value] = {}
+    end
     if !badge_type_value_to_name.include? type.value
       badge_type_value_to_name[type.value] = {}
     end
     I18n.available_locales.each do |locale|
       name = I18n.t "badge.type.#{type.value}", :locale => locale
-      if !badge_type_values.include? locale
-        badge_type_values[locale] = []
+      if !badge_type_values[merchant_type_value].include? locale
+        badge_type_values[merchant_type_value][locale] = []
       end
-      badge_type_values[locale] << [name, type.id]
+      badge_type_values[merchant_type_value][locale] << [name, type.id]
       badge_type_value_to_name[type.value][locale] = name
     end
   end

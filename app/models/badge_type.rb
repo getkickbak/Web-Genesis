@@ -7,6 +7,7 @@ class BadgeType
   @@visits = {}
   
   property :id, Serial
+  property :merchant_type_id, Integer, :required => true, :default => 0
   property :value, String, :required => true, :default => ""
   property :rank, Integer, :required => true, :default => 0
         

@@ -212,9 +212,9 @@ namespace :db do
         :reward_terms => I18n.t('customer_reward.terms')
       })
       badges = []
-      badge_types = BadgeType.all
+      badge_types = BadgeType.all(:merchant_type_id => merchant.type.id)
       badge_types.each do |badge_type|
-        badge = Badge.new(:visits => BadgeType.visits[merchant.visit_frequency.value][badge_type.value])
+        badge = Badge.new(:custom => false, :visits => BadgeType.visits[merchant.visit_frequency.value][badge_type.value])
         badge.type = badge_type
         badge.save
         badges << badge
@@ -302,7 +302,7 @@ namespace :db do
           :quantity_limited => false,
           :quantity => 0,
           :time_limited => false,
-          :expiry_date => Date.today
+          :expiry_date => Date.today.to_s
         },
         venues)
         rewards << reward
@@ -323,7 +323,7 @@ namespace :db do
           :quantity_limited => true,
           :quantity => rand(10) + 10,
           :time_limited => true,
-          :expiry_date => Date.today >> 6
+          :expiry_date => (Date.today >> 6).to_s
         },
         venues)
       end

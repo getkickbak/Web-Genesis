@@ -4,7 +4,7 @@ node :success do
 end
 node :metaData do
 	{ 
-		:account_info => @account_info 
+		:account_info => @account_info, 
 		:reward_info => @reward_info,
 		:newsfeed => (
 			@newsfeed.map do |r|

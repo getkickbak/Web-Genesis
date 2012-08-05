@@ -265,7 +265,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           badges = @venue.merchant.badges.sort_by { |b| b.rank }
           next_badge = Common.find_next_badge(badges.to_a, @customer.badge)
           if (@customer.next_badge_visits == next_badge.visits) && (@customer.badge.id != next_badge.id)
-            badge_prize_points = (@reward_model.total_spend / @reward_model.total_visits * next_badge.visits * APP_PROP["BADGE_REBATE_RATE"] / 100 / @reward_model.price_per_prize_point).to_i
+            badge_prize_points = (reward_model.total_spend / reward_model.total_visits * next_badge.visits * APP_PROP["BADGE_REBATE_RATE"] / 100 / reward_model.price_per_prize_point).to_i
             @customer.badge = next_badge
             @customer.prize_points += badge_prize_points
             @customer.next_badge_visits = 0
