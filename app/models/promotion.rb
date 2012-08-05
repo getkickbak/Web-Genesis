@@ -52,6 +52,10 @@ class Promotion
     end
   end
   
+  def validate_date(n,v)
+    convert_date(n.to_sym, v) ? true : [false, "#{n.gsub('_',' ').capitalize} #{I18n.t('errors.messages.not_valid')}"] 
+  end
+  
   def validate_start_date
     valid = validate_date("start_date", "start_date_str")
     return valid if valid.kind_of?(Array)
@@ -71,9 +75,5 @@ class Promotion
       return [false, I18n.t('business.promotions.min_end_date')]
     end      
     return true 
-  end
-  
-  def validate_date(n,v)
-    convert_date(n.to_sym, v) ? true : [false, "#{n.gsub('_',' ').capitalize} #{I18n.t('errors.messages.not_valid')}"] 
   end
 end

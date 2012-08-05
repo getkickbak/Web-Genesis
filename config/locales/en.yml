@@ -243,6 +243,7 @@ en:
       customer_rewards:
         create_success: "Reward was successfully created."
         update_success: "Reward was successfully updated."
+        min_expiry_date: "Expiry date must be greater than or equal to today."
       merchants:
         update_success: "Merchant was successfully updated."
         update_photo_success: "Merchant photo was successfully updated."

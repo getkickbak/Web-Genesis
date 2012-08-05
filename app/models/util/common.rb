@@ -64,7 +64,7 @@ class Common
     idx = rewards.bsearch_lower_boundary {|x| x.points <=> points}
     idx = (idx == rewards.length ? rewards.length - 1 : idx)
     reward = rewards[idx]
-    if reward.points > points
+    if points >= reward.points
       idx > 0 ? rewards[idx-1] : nil
     end
   end
