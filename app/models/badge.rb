@@ -4,8 +4,8 @@ class Badge
   include DataMapper::Resource
 
   property :id, Serial
+  property :custom, Boolean, :required => true, :default => false
   property :visits, Integer, :required => true, :default => 0
-  property :rank, Integer, :required => true, :default => 0
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -15,8 +15,17 @@ class Badge
   
   has 1, :badge_to_type, :constraint => :destroy
   has 1, :type, 'BadgeType', :through => :badge_to_type,  :via => :badge_type
+  has 1, :merchant_badge_type
   
   def rank
-    self.type.rank
+    if self.custom
+      self.merchant_badge_type.rank
+    else
+      if self.eager_load_type
+        self.eager_load_type.rank
+      else
+        self.type.rank
+      end
+    end
   end
 end

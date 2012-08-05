@@ -53,7 +53,7 @@ module Admin
           badges = []
           badge_types = BadgeType.all(:merchant_type_id => @merchant.type.id)
           badge_types.each do |badge_type|
-            badge = Badge.new(:visits => BadgeType.visits[@merchant.visit_frequency_type.value][badge_type.value])
+            badge = Badge.new(:custom => false, :visits => BadgeType.visits[@merchant.visit_frequency_type.value][badge_type.value])
             badge.type = badge_type
             badge.save
             badges << badge
