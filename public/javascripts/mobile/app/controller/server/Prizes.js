@@ -67,7 +67,7 @@ Ext.define('Genesis.controller.server.Prizes',
       //
       Ext.defer(function()
       {
-         me.getRewardPrize();
+         me.getRedeemItem();
       }, 1, me);
    },
    // --------------------------------------------------------------------------
@@ -156,7 +156,7 @@ Ext.define('Genesis.controller.server.Prizes',
          case 'authReward' :
          {
             me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
-            page = me.getRewardPrize();
+            page = me.getRedeemItem();
             break;
          }
       }

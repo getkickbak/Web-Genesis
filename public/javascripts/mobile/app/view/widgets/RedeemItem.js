@@ -130,7 +130,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
    {
       //var reward = data['reward'];
       var reward = data;
-      var photo = Genesis.view.client.Prizes.getPhoto(reward['type']) || reward['photo']['thumbnail_ios_medium'];
+      var photo = this.self.getPhoto(reward['type']) || reward['photo']['thumbnail_ios_medium'];
       var info = this.query("component[tag=info]")[0];
 
       //var refresh = this.query("button[tag=refresh]")[0];
@@ -219,5 +219,24 @@ Ext.define('Genesis.view.widgets.RedeemItem',
       }
       // Bypassing setter because sometimes we pass the same object (different properties)
       item.updateData(data);
+   },
+   statics :
+   {
+      getPhoto : function(type)
+      {
+         var photo_url = null;
+         switch (type.value)
+         {
+            case 'earn_points' :
+            {
+               break;
+            }
+            default :
+               photo_url = Genesis.constants.getIconPath('fooditems', type.value);
+               //console.debug("Icon Path [" + photo_url + "]");
+               break;
+         }
+         return photo_url;
+      }
    }
 });
