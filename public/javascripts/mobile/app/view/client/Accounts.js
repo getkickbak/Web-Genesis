@@ -166,10 +166,13 @@ Ext.define('Genesis.view.client.Accounts',
                   '<img src="{[this.getPhoto(values)]}"/>',
                '</div>',
                '<div class="listItemDetailsWrapper">',
-                  '<div class="title">{[this.getTitle()]}</div>',
-                  '<div class="points">{[this.getRewardPoints(values)]}',
-                  '<br/>',
-                  '{[this.getPrizePoints(values)]}</div>',
+                  //'<div class="title">{[this.getTitle()]}</div>',
+                  '<div class="points">',
+                     '{[this.getRewardPoints(values)]}',
+                  '</div>',
+                  '<div class="points">',
+                     '{[this.getPrizePoints(values)]}'+
+                  '</div>',
                '</div>',
             '</tpl>',
             // @formatter:on
@@ -218,11 +221,11 @@ Ext.define('Genesis.view.client.Accounts',
                },
                getRewardPoints : function(values)
                {
-                  return values['points'];
+                  return values['points'] + '<img src="' + Genesis.constants.getIconPath('miscicons', 'points') + '">';
                },
                getPrizePoints : function(values)
                {
-                  return values['prize_points'];
+                  return values['prize_points'] + '<img src="' + Genesis.constants.getIconPath('miscicons', 'prize_points') + '">';
                }
             }),
             onItemDisclosure : Ext.emptyFn

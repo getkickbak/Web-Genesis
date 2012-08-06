@@ -18,10 +18,18 @@
             line-height:$icon-size/2;
          }
          .points {
+            position:relative;
             text-align:right;
             font-size:$xlargeFontSize;
             font-weight:bold;
             line-height:$icon-size/2;
+            padding-right:$icon-size/2 + 10px;
+            img {
+               position:absolute;
+               right:0;
+               top:0;
+               width:$icon-size/2;
+            }
          }
       }
       .x-list-emptytext {
