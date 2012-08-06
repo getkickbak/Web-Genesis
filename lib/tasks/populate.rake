@@ -463,6 +463,8 @@ namespace :db do
         customer.prize_points += prize_record.points
         customer.visits += 1
         customer.next_badge_visits += 1
+        rewards = rewards.sort_by { |b| b.points }
+        prizes = prizes.sort_by { |b| b.points }
         customer.eligible_for_reward = !Common.find_eligible_reward(rewards, customer.points).nil?
         customer.eligible_for_prize = !Common.find_eligible_reward(prizes, customer.prize_points).nil?
         customer.save

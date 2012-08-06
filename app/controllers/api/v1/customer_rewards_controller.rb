@@ -93,8 +93,8 @@ class Api::V1::CustomerRewardsController < ApplicationController
             @customer.prize_points -= @reward.points
             @account_info[:prize_points] = @customer.prize_points
           end  
-          rewards = @venue.customer_rewards.all(:mode => :reward)
-          prizes = @venue.customer_rewards.all(:mode => :prize)
+          rewards = @venue.customer_rewards.all(:mode => :reward, :order => [ :points.asc ])
+          prizes = @venue.customer_rewards.all(:mode => :prize, :order => [ :points.asc ])
           eligible_for_reward = !Common.find_eligible_reward(rewards.to_a, @customer.points).nil?
           eligible_for_prize = !Common.find_eligible_reward(prizes.to_a, @customer.prize_points).nil?
           @customer.eligible_for_reward = eligible_for_reward

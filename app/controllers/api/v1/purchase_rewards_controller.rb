@@ -203,11 +203,12 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           end
           current_point_offset = prize_info.prize_point_offset + points
           #logger.debug("Check if Prize has been won yet.")
+          won_prize_before = EarnPrizeRecord.count(EarnPrizeRecord.customer.id => @customer.id, :type => :game, :points.gt => 1) > 0
           if (prize_info.prize_point_offset < prize_info.prize_win_offset)
-            if (current_point_offset >= prize_info.prize_win_offset)
+            if (current_point_offset >= prize_info.prize_win_offset) || ((@customer.visits > 1) && !won_prize_before)
               prize_points = prize_interval 
             end             
-            if (current_point_offset < prize_info.prize_win_offset)
+            if (current_point_offset < prize_info.prize_win_offset) && ((@customer.visits > 1) && !won_prize_before)
               prize_info.prize_win_offset = current_point_offset
             end
           end
@@ -217,7 +218,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             prize_interval = pick_prize_interval(reward_model, @venue)
             prize_info.prize_interval = prize_interval
             prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
-            if (prize_points == 1) && ((current_point_offset >= prize_info.prize_win_offset))
+            if (prize_points == 1) && ((current_point_offset >= prize_info.prize_win_offset) || ((@customer.visits > 1) && !won_prize_before))
               prize_points = prize_interval
               if current_point_offset >= prize_info.prize_win_offset
                 prize_interval = pick_prize_interval(reward_model, @venue)
@@ -304,8 +305,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           @account_info[:prize_points] = @customer.prize_points
           @account_info[:badge_id] = @customer.badge.id
           @account_info[:next_badge_id] = next_badge.id
-          rewards = @venue.customer_rewards.all(:mode => :reward)
-          prizes = @venue.customer_rewards.all(:mode => :prize)
+          rewards = @venue.customer_rewards.all(:mode => :reward, :order => [ :points.asc ])
+          prizes = @venue.customer_rewards.all(:mode => :prize, :order => [ :points.asc ])
           eligible_prize = Common.find_eligible_reward(prizes.to_a, @customer.prize_points - previous_prize_points)
           @reward_info[:eligible_prize_id] = eligible_prize.id if !eligible_prize.nil?
           eligible_for_reward = !Common.find_eligible_reward(rewards.to_a, @customer.points).nil?
@@ -369,8 +370,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
   def pick_prize_interval(reward_model, venue)
     if not @pick_prize_initialized
       @prize_rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => venue.id }, :mode => :prize, :order => [:points.asc])
-      @min_prize_points = (@prize_rewards.first.price / reward_model.price_per_point / reward_model.prize_rebate_rate * 100).to_i
-      @max_prize_points = (@prize_rewards.last.price / reward_model.price_per_point / reward_model.prize_rebate_rate * 100).to_i
+      @min_prize_points = @prize_rewards.first.points
+      @max_prize_points = @prize_rewards.last.points
       @pick_prize_initialized = true
     end
     Random.rand(@max_prize_points - @min_prize_points + 1) + @min_prize_points

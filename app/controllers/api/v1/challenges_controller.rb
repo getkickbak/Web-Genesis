@@ -130,7 +130,7 @@ class Api::V1::ChallengesController < ApplicationController
               @customer.points += @challenge.points
               @account_info[:points] = @customer.points
               @reward_info[:points] = @challenge.points
-              rewards = @venue.customer_rewards.all(:mode => :reward)
+              rewards = @venue.customer_rewards.all(:mode => :reward, :order => [ :points.asc ])
               eligible_for_reward = !Common.find_eligible_reward(rewards.to_a, @customer.points).nil?
               @customer.eligible_for_reward = eligible_for_reward
               @customer.save
