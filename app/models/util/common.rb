@@ -64,9 +64,10 @@ class Common
     idx = rewards.bsearch_lower_boundary {|x| x.points <=> points}
     idx = (idx == rewards.length ? rewards.length - 1 : idx)
     reward = rewards[idx]
-    if points >= reward.points
-      idx > 0 ? rewards[idx-1] : nil
+    if points < reward.points
+      reward = nil if (idx == 0)
     end
+    return reward
   end
   
   def self.populate_badge_type_images(user_agent, badge_types)
