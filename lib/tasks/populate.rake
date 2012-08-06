@@ -254,7 +254,7 @@ namespace :db do
       {
         :signup_points => 0,
         :rebate_rate => 10,
-        :prize_rebate_rate => 5
+        :prize_rebate_rate => 10
       })
       venues = []
       2.times do |i|
