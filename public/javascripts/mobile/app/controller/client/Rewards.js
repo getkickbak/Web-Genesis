@@ -258,7 +258,7 @@ Ext.define('Genesis.controller.client.Rewards',
          message : me.getPointsMsg(info),
          callback : function()
          {
-            if (info['referral_points'] > 0)
+            if (Ext.isDefined(info['referral_points']) && (info['referral_points'] > 0))
             {
                me.referralPopUp(info['referral_points'], exit);
             }
@@ -268,7 +268,7 @@ Ext.define('Genesis.controller.client.Rewards',
             }
          }
       });
-      
+
       if (metaData['data'])
       {
          var controller = me.getApplication().getController('client.Prizes');

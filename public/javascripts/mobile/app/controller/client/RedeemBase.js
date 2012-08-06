@@ -183,7 +183,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       {
          me.fireEvent('showQRCode', 0, metaData['data']);
       }
-      
+
       return customer;
    },
    // --------------------------------------------------------------------------
@@ -278,13 +278,13 @@ Ext.define('Genesis.controller.client.RedeemBase',
    },
    onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var me = this;      
+      var me = this;
       var view = me.getMainPage();
       var viewport = me.getViewPortCntlr();
 
       var tbbar = activeItem.query('titlebar')[0];
       var photo = me.redeemItem.get('photo');
-      
+
       me.getSCloseBB().show();
       //me.getSBB().hide();
       tbbar.setTitle(me.getTitle());
@@ -307,16 +307,16 @@ Ext.define('Genesis.controller.client.RedeemBase',
    {
       var me = this;
       if (me.lastMode)
-   	  {
+      {
          me.setMode(me.lastMode);
          me.lastMode = null;
-   	  }
+      }
    },
    onDoneTap : function(b, e, eOpts, eInfo, overrideMode)
    {
       var me = this;
       var view = me.getMainPage();
-      
+
       if (view.isPainted() && !view.isHidden())
       {
          me.getSDoneBtn().hide();
@@ -394,7 +394,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
    getMainPage : function()
    {
       var me = this;
-      var page;
+      var page = null;
       switch (me.getMode())
       {
          case 'redeemPrize' :

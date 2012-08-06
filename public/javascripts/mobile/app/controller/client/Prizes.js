@@ -30,7 +30,8 @@ Ext.define('Genesis.controller.client.Prizes',
          //Shortcut to visit Merchant Account for the Vnue Page
          'redeemBrowsePrizesSC' : 'redeemBrowseSCPage',
          //'prize' : 'prizePage',
-         'redeemPrize' : 'redeemItemPage'
+         'redeemPrize' : 'redeemItemPage',
+         'badgeDetail' : 'badgeDetailPage'
       },
       refs :
       {
@@ -65,9 +66,18 @@ Ext.define('Genesis.controller.client.Prizes',
             xtype : 'showredeemitemdetailview'
          },
          //
-         // Scan and Win Rewards Page
+         // Scan and Play Rewards Page
          //
-         prizeCheckScreen : 'clientrewardsview'
+         prizeCheckScreen : 'clientrewardsview',
+         //
+         // Redemptions
+         //
+         badgeDetail :
+         {
+            selector : 'clientbadgedetailview',
+            autoCreate : true,
+            xtype : 'clientbadgedetailview'
+         }
       },
       control :
       {
@@ -94,6 +104,11 @@ Ext.define('Genesis.controller.client.Prizes',
          {
             activate : 'onRedeemItemActivate',
             deactivate : 'onRedeemItemDeactivate'
+         },
+         badgeDetail :
+         {
+            activate : 'onBadgeDetailActivate',
+            deactivate : 'onBadgeDetailDeactivate'
          }
       },
       listeners :
@@ -111,7 +126,10 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    checkinFirstMsg : 'Please Check-In before redeeming Prizes',
    eligibleRewardMsg : 'Find out an Eligible Prize you can redeem with your Prize Points!',
+   scanPlayTitle : 'Scan And Play',
    evtFlag : 0,
+   flag : 0,
+   badgePrizePopUpCallBackFn : Ext.emptyFn,
    loadCallback : null,
    initSound : false,
    authRewardVerifiedMsg : 'Verified',
@@ -119,24 +137,14 @@ Ext.define('Genesis.controller.client.Prizes',
    wonPrizeMsg : function(reward_info)
    {
       var points = reward_info['prize_points'];
-      var badgePrizePts = reward_info['badge_prize_points'];
+      var extraPoints = reward_info['badge_prize_points'];
 
       return ('You\'ve earned ' + points + ' Prize Points from this purchase.' + //
-      ((!extraPoints) ? Genesis.constants.addCRLF() + me.eligibleRewardMsg : ''));
+      ((!Ext.isDefined(extraPoints)) ? Genesis.constants.addCRLF() + me.eligibleRewardMsg : ''));
    },
    wonPrizeEmailMsg : function(prizeName, venueName)
    {
       return ('I\'ve just won enough Prize Points to redeem "' + prizeName + '" for eating out at ' + venueName + '!');
-   },
-   badgePrizePopUp : function(points, callback)
-   {
-      callback = callback || Ext.emptyFn;
-      Ext.device.Notification.show(
-      {
-         title : 'Badge Upgrade Alert!',
-         message : this.getBadegePrizeMsg(points),
-         callback : callback
-      });
    },
    getBadegePrizeMsg : function(points)
    {
@@ -150,7 +158,39 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    gotMinPrizePtsMsg : function(points)
    {
-      return ('You\'ve won ' + points + ' Prize Points!');
+      return ('You\'ve earned ' + points + ' Prize Points!');
+   },
+   badgePrizePopUp : function(badgeId, points, callback)
+   {
+      var me = this;
+      var badge = Ext.StoreMgr.get('BadgeStore').getById(badgeId);
+
+      me.badgePrizePopUpCallBackFn = callback || Ext.emptyFn;
+      Ext.device.Notification.show(
+      {
+         title : 'Badge Promotion Alert!',
+         message : this.getBadegePrizeMsg(points),
+         callback : function()
+         {
+            me.redeemItem = Ext.create('Genesis.model.CustomerReward',
+            {
+               'title' : badge.get('type').display_value,
+               'type' :
+               {
+                  value : 'badges'
+               },
+               'photo' :
+               {
+                  'thumbnail_ios_medium' : Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_large_url')
+               },
+               'points' : points,
+               'time_limited' : false,
+               'quantity_limited' : false,
+               'merchant' : null
+            });
+            me.redirectTo('badgeDetail');
+         }
+      });
    },
    init : function()
    {
@@ -282,30 +322,63 @@ Ext.define('Genesis.controller.client.Prizes',
          'Post was not published to Facebook.');
       }
    },
+   redeemPrize : function(setFlag, prize, info)
+   {
+      var me = this;
+      if ((me.flag |= setFlag) == 0x11)
+      {
+         me.fireEvent('showredeemprize', prize, info);
+         me.flag = 0;
+      }
+   },
    // --------------------------------------------------------------------------
    // Event Handler
    // --------------------------------------------------------------------------
    onPrizeCheck : function(metaData, operation)
    {
-      var me = this;
+      var me = this, prize;
       var viewport = me.getViewPortCntlr();
       var info = metaData['reward_info'];
+      var badgeId = metaData['badge_id'];
+      var tryagain = function(setFlag)
+      {
+         if ((flag |= setFlag) == 0x11)
+         {
+            me.flag = 0;
+            me.popView();
+         }
+      }
 
       me.stopRouletteBall();
       //
       // Minimum Prize Points
       //
-      if ((!info['eligible_prize_id']) || (info['eligible_prize_id'] <= 0))
+      if (!Ext.isDefined(info['eligible_prize_id']) || (info['eligible_prize_id'] == 0))
       {
          console.log("No Prize to Show.");
 
+         //
+         // Play the prize winning music!
+         //
+         Genesis.controller.ControllerBase.playSoundFile(//
+         viewport.sound_files['losePrizeSound'], Ext.bind(tryagain, me, [0x01]));
+
          Ext.device.Notification.show(
          {
-            title : 'Scan And Win!',
+            title : me.scanPlayTitle + '!',
             message : me.gotMinPrizePtsMsg(info['prize_points']),
             callback : function()
             {
-               Ext.defer(me.popView, 1 * 1000, me);
+               if (info['badge_prize_points'] > 0)
+               {
+                  me.badgePrizePopUp(badgeId, //
+                  info['badge_prize_points'], //
+                  Ext.bind(tryagain, me, [0x10]));
+               }
+               else
+               {
+                  tryagain(0x10);
+               }
             }
          });
       }
@@ -316,44 +389,30 @@ Ext.define('Genesis.controller.client.Prizes',
       {
          console.log("WON LumpSum Prize Points.");
 
-         var flag = 0;
-         var pstore = Ext.StoreMgr.get('PrizeStore');
-         var prize = pstore.getById(metaData['eligible_prize_id']);
-
+         var prize = Ext.StoreMgr.get('PrizeStore').getById(info['eligible_prize_id']);
          //
          // Play the prize winning music!
          //
-         Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['winPrizeSound'], function()
-         {
-            if ((flag |= 0x01) == 0x11)
-            {
-               me.fireEvent('showredeemprize', prize, info);
-            }
-         });
+         Genesis.controller.ControllerBase.playSoundFile(//
+         viewport.sound_files['winPrizeSound'], //
+         Ext.bind(me.redeemPrize, me, [0x01, prize, info]));
 
          Ext.device.Notification.vibrate();
          Ext.device.Notification.show(
          {
-            title : 'Scan And Win!',
+            title : me.scanPlayTitle + '!',
             message : me.wonPrizeMsg(info),
             callback : function()
             {
-               if (info['badge_prize_points'] > me.getMinPrizePts())
+               if (info['badge_prize_points'] > 0)
                {
-                  me.badgePrizePopUp(info['badge_prize_points'], function()
-                  {
-                     if ((flag |= 0x01) == 0x11)
-                     {
-                        me.fireEvent('showredeemprize', prize, info);
-                     }
-                  });
+                  me.badgePrizePopUp(badgeId, //
+                  info['badge_prize_points'], //
+                  Ext.bind(me.redeemPrize, me, [0x10, prize, info]));
                }
                else
                {
-                  if ((flag |= 0x01) == 0x11)
-                  {
-                     me.fireEvent('showredeemprize', prize, info);
-                  }
+                  me.redeemPrize(0x10, prize, info);
                }
             }
          });
@@ -406,6 +465,15 @@ Ext.define('Genesis.controller.client.Prizes',
       }
       //,3 * 1000, me);
    },
+   onBadgeDetailActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+   },
+   onBadgeDetailDeactivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+      me.silentPopView(1);
+      me.badgePrizePopUpCallBackFn();
+   },
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------
@@ -418,9 +486,33 @@ Ext.define('Genesis.controller.client.Prizes',
    {
       this.openPage('redeemPrize');
    },
+   badgeDetailPage : function()
+   {
+      this.openPage('badgeDetail');
+   },
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
+   getMainPage : function()
+   {
+      var me = this;
+      var page = me.callParent(arguments);
+
+      if (!page)
+      {
+         switch (me.getMode())
+         {
+            case 'badgeDetail' :
+            {
+               me.setAnimationMode(Genesis.controller.ControllerBase.animationMode['coverUp']);
+               page = me.getBadgeDetail();
+               break;
+            }
+         }
+      }
+
+      return page;
+   },
    isOpenAllowed : function()
    {
       return true;

@@ -121,7 +121,6 @@ Ext.define('Genesis.view.client.Badges',
          {
             case 'nobadge':
             {
-               url = Genesis.constants.photoSite + '/' + Genesis.constants.themeName + '/icons/badges';
                switch (size)
                {
                   case 'thumbnail_small_url' :
@@ -140,7 +139,7 @@ Ext.define('Genesis.view.client.Badges',
                      break;
                   }
                }
-               url += '/' + size + '/' + 'nobadge' + '.png';
+               url = Genesis.constants.getIconPath('badges', size + '/' + 'nobadge', false);
                break;
             }
             default:

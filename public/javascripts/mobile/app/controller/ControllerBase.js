@@ -335,19 +335,19 @@ Ext.define('Genesis.controller.ControllerBase',
       customer.beginEdit();
       if (info)
       {
-         if (info['points'])
+         if (Ext.isDefined(info['points']))
          {
             customer.set('points', info['points']);
          }
-         if (info['prize_points'])
+         if (Ext.isDefined(info['prize_points']))
          {
             customer.set('prize_points', info['prize_points']);
          }
-         if (info['visits'])
+         if (Ext.isDefined(info['visits']))
          {
             customer.set('visits', info['visits']);
          }
-         if (info['next_badge_visits'])
+         if (Ext.isDefined(info['next_badge_visits']))
          {
             customer.set('next_badge_visits', info['next_badge_visits']);
          }
@@ -367,7 +367,7 @@ Ext.define('Genesis.controller.ControllerBase',
          }];
          for (var i = 0; i < badges.length; i++)
          {
-            if (badges[i].id)
+            if (Ext.isDefined(badges[i].id))
             {
                var badge = bstore.getById(badges[i].id);
                console.debug(badges[i].prefix + //
