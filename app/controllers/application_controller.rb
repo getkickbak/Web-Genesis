@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
   
   def layout_by_resource
     if !Domain.matches?(request)
-      if request.subdomain == 'merchant'
+      if request.subdomain == 'merchant' || request.subdomain == 'devmerchant'
         "business/application"
       else
         "admin/application"
