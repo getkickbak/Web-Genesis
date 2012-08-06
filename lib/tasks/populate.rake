@@ -307,6 +307,7 @@ namespace :db do
         venues)
         rewards << reward
       end
+      prizes = []
       prize_subtype_id = [19, 1, 14, 35]
       prize_names = {:entree => "Dinner For 2", :appetizer => "Special Appetizer", :drink => "3 Free Drinks", :custom => "$20 Gift Certificate"}
       prize_names.length.times do |i|
@@ -326,6 +327,7 @@ namespace :db do
           :expiry_date => (Date.today >> 6).to_s
         },
         venues)
+        prizes << prize
       end
       challenges = []
       challenge_type = ChallengeType.get(1)
@@ -379,11 +381,11 @@ namespace :db do
       },
       venues)
       challenges << challenge
-      10.times do |i|
+      4.times do |i|
         user = users[rand(users.length)]
         customer = Customer.first(Customer.merchant.id => merchant.id, Customer.user.id => user.id)
         challenge = challenges[rand(5)]
-        record = EarnRewardRecord.new(
+        challenge_record = EarnRewardRecord.new(
           :type => :challenge,
           :ref_id => challenge.id,
           :venue_id => venues[rand(2)].id,
@@ -392,13 +394,13 @@ namespace :db do
           :points => challenge.points,
           :created_ts => now
         )
-        record.merchant = merchant
-        record.customer = customer
-        record.user = user
-        record.save
+        challenge_record.merchant = merchant
+        challenge_record.customer = customer
+        challenge_record.user = user
+        challenge_record.save
         trans_record = TransactionRecord.new(
           :type => :earn_points,
-          :ref_id => record.id,
+          :ref_id => challenge_record.id,
           :description => challenge.name,
           :points => challenge.points,
           :created_ts => now,
@@ -409,7 +411,7 @@ namespace :db do
         trans_record.user = user
         trans_record.save
         amount = rand(30) + 1
-        record = EarnRewardRecord.new(
+        purchase_record = EarnRewardRecord.new(
           :type => :purchase,
           :venue_id => venues[rand(2)].id,
           :data => String.random_alphanumeric(32),
@@ -418,15 +420,15 @@ namespace :db do
           :amount => amount,
           :created_ts => now
         )
-        record.merchant = merchant
-        record.customer = customer
-        record.user = user
-        record.save
+        purchase_record.merchant = merchant
+        purchase_record.customer = customer
+        purchase_record.user = user
+        purchase_record.save
         trans_record = TransactionRecord.new(
           :type => :earn_points,
-          :ref_id => record.id,
+          :ref_id => purchase_record.id,
           :description => (I18n.t "transaction.earn"),
-          :points => record.points,
+          :points => purchase_record.points,
           :created_ts => now,
           :update_ts => now
         )
@@ -434,21 +436,21 @@ namespace :db do
         trans_record.customer = customer
         trans_record.user = user
         trans_record.save
-        record = EarnPrizeRecord.new(
+        prize_record = EarnPrizeRecord.new(
           :type => :game,
           :venue_id => venues[rand(2)].id,
           :points => (amount / merchant.reward_model.price_per_prize_point).to_i,
           :created_ts => now
         )
-        record.merchant = merchant
-        record.customer = customer
-        record.user = user
-        record.save
+        prize_record.merchant = merchant
+        prize_record.customer = customer
+        prize_record.user = user
+        prize_record.save
         trans_record = TransactionRecord.new(
           :type => :earn_prize_points,
-          :ref_id => record.id,
+          :ref_id => prize_record.id,
           :description => (I18n.t "transaction.earn"),
-          :points => record.points,
+          :points => prize_record.points,
           :created_ts => now,
           :update_ts => now
         )
@@ -457,9 +459,12 @@ namespace :db do
         trans_record.user = user
         trans_record.save
         customer = Customer.first(Customer.merchant.id => merchant.id, Customer.user.id => user.id)
-        customer.points += (record.points + challenge.points)
+        customer.points += (purchase_record.points + challenge_record.points)
+        customer.prize_points += prize_record.points
         customer.visits += 1
+        customer.next_badge_visits += 1
         customer.eligible_for_reward = !Common.find_eligible_reward(rewards, customer.points).nil?
+        customer.eligible_for_prize = !Common.find_eligible_reward(prizes, customer.prize_points).nil?
         customer.save
       end  
       10.times do |i|
