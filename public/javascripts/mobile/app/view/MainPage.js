@@ -230,7 +230,7 @@ Ext.define('Genesis.view.MainPage',
                         for (var i = 0; i < customers.length; i++)
                         {
                            var customer = customers[i];
-                           if (customer.get('eligible_for_reward') || customer.get('eligible_for_prize'))
+                           if (customer.get('eligible_for_prize'))
                            {
                               showIcon = true;
                               break;
