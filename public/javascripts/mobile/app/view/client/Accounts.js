@@ -64,6 +64,45 @@ Ext.define('Genesis.view.client.Accounts',
       var me = this;
       if (!me.callParent(arguments))
       {
+         var isEligible;
+         //
+         // Badge Update for Eligible for Rewards/Prizes
+         //
+         var merchants = Ext.DomQuery.select('.x-badge', me.query('container[tag=accountsList] list[tag=accountsList]')[0].element.dom);
+         var customers = Ext.StoreMgr.get('CustomerStore').getRange();
+
+         for (var i = 0; i < merchants.length; i++)
+         {
+            var merchant = Ext.get(merchants[i]);
+            var customer = customers[i];
+
+            switch (me.mode)
+            {
+               case 'redeemRewardsProfile' :
+               {
+                  isEligible = customer.get('eligible_for_reward');
+                  break;
+               }
+               case 'redeemPrizesProfile' :
+               {
+                  isEligible = customer.get('eligible_for_prize');
+                  break;
+               }
+               case 'profile' :
+               {
+                  isEligible = customer.get('eligible_for_reward') || customer.get('eligible_for_prize');
+                  break;
+               }
+               case 'emailtransfer' :
+               case 'transfer' :
+               default :
+                  return;
+                  break;
+            }
+
+            merchant[(isEligible) ? 'removeCls' : 'addCls']('x-item-hidden');
+         }
+
          return;
       }
 
