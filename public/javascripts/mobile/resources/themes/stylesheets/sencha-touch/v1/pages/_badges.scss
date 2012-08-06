@@ -10,7 +10,7 @@
    }
    .x-dataview-item, .x-data-item {
       width:25%;
-      height:($panelTopGap*1)+($normalFontSize*1*2)+(1*2.5em);
+      height:auto;
       font-size:$normalFontSize;
       .itemWrapper {
          .photo {

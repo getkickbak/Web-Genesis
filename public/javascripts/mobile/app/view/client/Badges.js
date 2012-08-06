@@ -116,7 +116,38 @@ Ext.define('Genesis.view.client.Badges',
    {
       getPhoto : function(type, size)
       {
-         return (Genesis.constants.photoSite + type[size]);
+         var url;
+         switch (type)
+         {
+            case 'nobadge':
+            {
+               url = Genesis.constants.photoSite + '/' + Genesis.constants.themeName + '/icons/badges';
+               switch (size)
+               {
+                  case 'thumbnail_small_url' :
+                  {
+                     size = 'small';
+                     break;
+                  }
+                  case 'thumbnail_medium_url' :
+                  {
+                     size = 'medium';
+                     break;
+                  }
+                  case 'thumbnail_large_url' :
+                  {
+                     size = 'large';
+                     break;
+                  }
+               }
+               url += '/' + size + '/' + 'nobadge' + '.png';
+               break;
+            }
+            default:
+               url = (Genesis.constants.photoSite + type[size]);
+               break;
+         }
+         return url;
       }
    }
 });
