@@ -16,7 +16,7 @@ class Api::V1::VenuesController < ApplicationController
       @customer.merchant = @venue.merchant
       is_customer = false
     else
-      @badges = @venue.merchant.badges.sort_by { |b| b.rank }
+      @badges = @venue.merchant.badges
       if @venue.merchant.custom_badges
         badge_types = MerchantBadgeType.all(MerchantBadgeType.merchant.id => @venue.merchant.id).to_a
       else
@@ -35,6 +35,7 @@ class Api::V1::VenuesController < ApplicationController
           badge_types << badge.eager_load_type
         end
       end
+      @badges = @venue.merchant.badges.sort_by { |b| b.rank }
       Common.populate_badge_type_images(request.env['HTTP_USER_AGENT'], @venue.merchant.custom_badges, badge_types)
       @next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)  
       @account_info = { :badge_id => @customer.badge.id, :next_badge_id => @next_badge.id }
@@ -83,7 +84,7 @@ class Api::V1::VenuesController < ApplicationController
     @venue = Venue.find_nearest(current_user, @merchant.id, latitude, longitude, 1).first
     @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id)
     @prizes_count = RedeemRewardRecord.count(RedeemRewardRecord.merchant.id => @merchant.id, :mode => :prize, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
-    @badges = @venue.merchant.badges.sort_by { |b| b.rank }
+    @badges = @venue.merchant.badges
     if @venue.merchant.custom_badges
       badge_types = MerchantBadgeType.all(MerchantBadgeType.merchant.id => @venue.merchant.id).to_a
     else
@@ -102,6 +103,7 @@ class Api::V1::VenuesController < ApplicationController
         badge_types << badge.eager_load_type
       end
     end
+    @badges = @venue.merchant.badges.sort_by { |b| b.rank }
     Common.populate_badge_type_images(request.env['HTTP_USER_AGENT'], @venue.merchant.custom_badges, badge_types)
     @next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
     @account_info = { :badge_id => @customer.badge.id, :next_badge_id => @next_badge.id }
