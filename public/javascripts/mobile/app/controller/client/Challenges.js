@@ -493,12 +493,13 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       var me = this;
       var metaData = Challenge.getProxy().getReader().metaData;
-      var cstore = Ext.StoreMgr.get('CustomerStore');
+
       switch (type)
       {
          case 'referral' :
          {
             var id = metaData['id'];
+            var cstore = Ext.StoreMgr.get('CustomerStore');
             var customer = cstore.getById(id);
             if (!customer)
             {
@@ -545,21 +546,14 @@ Ext.define('Genesis.controller.client.Challenges',
             break;
          }
          default:
-            console.log('Total Points - ' + metaData['account_points']);
-            if (metaData['account_points'])
-            {
-               cstore.getById(customerId).set('points', metaData['account_points']);
-            }
-            //
-            // Update points from the purchase or redemption
-            // Bugfix - Copy string from server to prevent PhoneGap crash
-
-            console.log('Points Earned - ' + metaData['points']);
-
+            var account_info = metaData['account_info'];
+            var reward_info = metaData['reward_info'];
             Ext.device.Notification.show(
             {
                title : 'Earn Points',
-               message : ((metaData['points'] > 0) ? me.getPointsMsg(metaData['points'], metaData['account_points']) : me.getConsolationMsg(metaData['message']))
+               message : ((account_info['points'] > 0) ? //
+               me.getPointsMsg(reward_info['points'], account_info['points']) : //
+               me.getConsolationMsg(metaData['message']))
             });
             me.fireEvent('updatemetadata', metaData);
             break;
@@ -600,12 +594,16 @@ Ext.define('Genesis.controller.client.Challenges',
                //
                // Update points from the purchase or redemption
                //
-               cstore.getById(customerId).set('points', metaData2['account_points']);
+               var account_info = metaData2['account_info'];
+               var reward_info = metaData2['reward_info'];
+               cstore.getById(customerId).set('points', account_info['points']);
                console.debug("Points Earned = " + metaData2['points'] + ' Pts');
                Ext.device.Notification.show(
                {
                   title : 'Upload Complete',
-                  message : ((metaData2['points'] > 0) ? me.photoUploadSuccessMsg(metaData2['points']) : me.getConsolationMsg(metaData2['message'])),
+                  message : ((reward_info['points'] > 0) ? //
+                  me.photoUploadSuccessMsg(reward_info['points']) : //
+                  me.getConsolationMsg(metaData2['message'])),
                   callback : function()
                   {
                      me.metaData = null;
