@@ -345,11 +345,15 @@ Ext.define('Genesis.controller.client.Prizes',
       var viewport = me.getViewPortCntlr();
       var info = metaData['reward_info'];
       var badgeId = metaData['account_info']['badge_id'];
-      var tryagain = function(setFlag)
+      var tryagain = function(setFlag, viewsPopLength)
       {
          if ((me.flag |= setFlag) == 0x11)
          {
             me.flag = 0;
+            if (viewsPopLength > 0)
+            {
+               me.silentPopView(viewsPopLength);
+            }
             me.popView();
          }
       }
@@ -380,12 +384,12 @@ Ext.define('Genesis.controller.client.Prizes',
                   {
                      me.badgePrizePopUp(badgeId, //
                      info['badge_prize_points'], //
-                     Ext.bind(tryagain, me, [0x10]));
+                     Ext.bind(tryagain, me, [0x10, 1]));
                   }, 1, me);
                }
                else
                {
-                  tryagain(0x10);
+                  tryagain(0x10, 0);
                }
             }
          });
