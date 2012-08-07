@@ -98,7 +98,6 @@ class Api::V1::ChallengesController < ApplicationController
           @customer.reload
           @account_info = { :points => @customer.points }
           @reward_info = { :points => 0 }
-          @newsfeed = Common.get_news(@venue)
           if points_eligible?
             if not challenge_limit_reached?
               now = Time.now

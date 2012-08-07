@@ -298,7 +298,6 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           @customer.save
           @account_info[:eligible_for_reward] = eligible_for_reward
           @account_info[:eligible_for_prize] = eligible_for_prize
-          @newsfeed = Common.get_news(@venue)
           render :template => '/api/v1/purchase_rewards/earn'
           if referral_challenge
             UserMailer.referral_challenge_confirm_email(referrer.user, @customer.user, @venue, referral_record).deliver

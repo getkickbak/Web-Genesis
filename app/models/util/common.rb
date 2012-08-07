@@ -55,6 +55,19 @@ class Common
     return device
   end
   
+  def self.get_rewards(venue, mode)
+    rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => venue.id }, :mode => mode, :order => [:points.asc])
+    reward_id_to_subtype_id = {}
+    reward_to_subtypes = CustomerRewardToSubtype.all(:fields => [:customer_reward_id, :customer_reward_subtype_id], :customer_reward => rewards)
+    reward_to_subtypes.each do |reward_to_subtype|
+      reward_id_to_subtype_id[reward_to_subtype.customer_reward_id] = reward_to_subtype.customer_reward_subtype_id
+    end       
+    rewards.each do |reward|
+      reward.eager_load_type = CustomerRewardSubtype.id_to_type[reward_id_to_subtype_id[reward.id]]       
+    end
+    return rewards  
+  end
+  
   def self.find_next_badge(badges, badge)
     idx = badges.bsearch_upper_boundary {|x| x.rank <=> badge.rank}
     badges[idx]
