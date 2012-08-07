@@ -342,7 +342,7 @@ Ext.define('Genesis.controller.client.Prizes',
       var badgeId = metaData['badge_id'];
       var tryagain = function(setFlag)
       {
-         if ((flag |= setFlag) == 0x11)
+         if ((me.flag |= setFlag) == 0x11)
          {
             me.flag = 0;
             me.popView();
