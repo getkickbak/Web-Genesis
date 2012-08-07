@@ -45,7 +45,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
           logger.info("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), quantity limited")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => (t("api.customer_rewards.no_longer_available") % (@reward.mode == :reward ? t("api.reward") : t("api.prize"))).split('\n') } }
+            format.json { render :json => { :success => false, :message => (t("api.customer_rewards.no_longer_available") % [@reward.mode == :reward ? t("api.reward") : t("api.prize")]).split('\n') } }
           end
           return
         end
@@ -53,7 +53,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
           logger.info("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), time limited")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => (t("api.customer_rewards.no_longer_available") % (@reward.mode == :reward ? t("api.reward") : t("api.prize"))).split('\n') } }
+            format.json { render :json => { :success => false, :message => (t("api.customer_rewards.no_longer_available") % [@reward.mode == :reward ? t("api.reward") : t("api.prize")]).split('\n') } }
           end
           return
         end
@@ -152,13 +152,13 @@ class Api::V1::CustomerRewardsController < ApplicationController
       logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => (t("api.customer_rewards.redeem_failure") % (@reward.mode == :reward ? t("api.reward") : t("api.prize"))).split('\n') } }
+        format.json { render :json => { :success => false, :message => (t("api.customer_rewards.redeem_failure") % [@reward.mode == :reward ? t("api.reward") : t("api.prize")]).split('\n') } }
       end
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => (t("api.customer_rewards.redeem_failure") % (@reward.mode == :reward ? t("api.reward") : t("api.prize"))).split('\n') } }
+        format.json { render :json => { :success => false, :message => (t("api.customer_rewards.redeem_failure") % [@reward.mode == :reward ? t("api.reward") : t("api.prize")]).split('\n') } }
       end 
     ensure
       @mutex.release if ((defined? @mutex) && !@mutex.nil?)  
