@@ -245,7 +245,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       var me = this;
       var venueId = (venue) ? venue.getId() : 0;
       var item = view.getInnerItems()[0];
-      var store = me.getredeemStore();
+      var store = me.getRedeemStore();
 
       CustomerReward[me.getRedeemPointsFn()](item.getStore().first().getId());
 
