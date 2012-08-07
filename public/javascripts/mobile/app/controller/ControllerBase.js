@@ -190,7 +190,7 @@ Ext.define('Genesis.controller.ControllerBase',
       genQRCode : function(text, dotsize, QRCodeVersion)
       {
          dotsize = dotsize || 4;
-         QRCodeVersion = QRCodeVersion || 8;
+         QRCodeVersion = QRCodeVersion || 10;
 
          // size of box drawn on canvas
          var padding = 0;
