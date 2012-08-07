@@ -141,6 +141,7 @@ Ext.define('Genesis.controller.client.Prizes',
    updateOnFbMsg : 'Tell your friends on Facebook about it!',
    wonPrizeMsg : function(reward_info)
    {
+      var me = this;
       var points = reward_info['prize_points'];
       var extraPoints = reward_info['badge_prize_points'];
 
