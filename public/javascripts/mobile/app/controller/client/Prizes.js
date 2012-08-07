@@ -146,7 +146,7 @@ Ext.define('Genesis.controller.client.Prizes',
       var extraPoints = reward_info['badge_prize_points'];
 
       return (((points > me.getMinPrizePts()) ? //
-      'You\'ve won a JACKPOT of ' + points + ' Prize Points!' : gotMinPrizePtsMsg(points)) + //
+      'You\'ve won a JACKPOT of ' + points + ' Prize Points!' : me.gotMinPrizePtsMsg(points)) + //
       ((extraPoints == 0) ? Genesis.constants.addCRLF() + me.eligibleRewardMsg : ''));
    },
    wonPrizeEmailMsg : function(prizeName, venueName)
