@@ -75,17 +75,7 @@ class Api::V1::CheckInsController < ApplicationController
         @prizes.each do |prize|
           prize.eager_load_type = CustomerRewardSubtype.id_to_type[prize_id_to_subtype_id[prize.id]]         
         end
-        @newsfeed = []
-        promotions = Promotion.all(:merchant => @venue.merchant)
-        promotions.each do |promotion|
-          @newsfeed << News.new(
-            "",
-            0,
-            "",
-            "",
-            promotion.message
-          )
-        end
+        @newsfeed = Common.get_news(@venue)
         render :template => '/api/v1/check_ins/create'
       end
     rescue DataMapper::SaveFailureError => e

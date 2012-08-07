@@ -119,6 +119,21 @@ class Common
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = badge_type_image.thumbnail_medium_url
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = badge_type_image.thumbnail_large_url
     end
+    
+    def self.get_news(venue)
+      newsfeed = []
+      promotions = Promotion.all(:merchant => venue.merchant)
+      promotions.each do |promotion|
+        newsfeed << News.new(
+          "",
+          0,
+          "",
+          "",
+          promotion.message
+        )
+      end
+      return newsfeed
+    end
   end
   
   private

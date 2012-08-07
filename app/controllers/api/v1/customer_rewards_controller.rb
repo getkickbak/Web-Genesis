@@ -127,17 +127,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
           @prizes.each do |prize|
             prize.eager_load_type = CustomerRewardSubtype.id_to_type[prize_id_to_subtype_id[prize.id]]         
           end
-          @newsfeed = []
-          promotions = Promotion.all(:merchant => @venue.merchant)
-          promotions.each do |promotion|
-            @newsfeed << News.new(
-              "",
-              0,
-              "",
-              "",
-              promotion.message
-            )
-          end
+          @newsfeed = Common.get_news(@venue)
           render :template => '/api/v1/customer_rewards/redeem'
           logger.info("User(#{current_user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")
         else
