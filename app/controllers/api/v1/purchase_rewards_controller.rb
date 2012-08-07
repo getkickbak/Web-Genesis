@@ -53,7 +53,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       end
     end    
       
-    @badges = @venue.merchant.badges.sort_by { |b| b.rank }
+    @badges = @venue.merchant.badges
     if @venue.merchant.custom_badges
       badge_types = MerchantBadgeType.all(MerchantBadgeType.merchant.id => @venue.merchant.id).to_a
     else  
@@ -72,7 +72,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         badge_types << badge.eager_load_type
       end
     end
-      
+    @badges = @venue.merchant.badges.sort_by { |b| b.rank }
     Common.populate_badge_type_images(request.env['HTTP_USER_AGENT'], @venue.merchant.custom_badges, badge_types)
       
     begin  
