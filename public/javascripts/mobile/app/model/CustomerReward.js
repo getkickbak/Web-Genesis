@@ -46,7 +46,7 @@ Ext.define('Genesis.model.CustomerReward',
       //
       // Redeem Points
       //
-      setGetRedemptionsURL : function()
+      setGetRewardsURL : function()
       {
          this.getProxy().setActionMethods(
          {

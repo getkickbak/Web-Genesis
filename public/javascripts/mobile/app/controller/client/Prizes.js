@@ -244,7 +244,7 @@ Ext.define('Genesis.controller.client.Prizes',
          var desc = venue.get('description').trunc(256);
          var message = me.wonPrizeEmailMsg(earnprize.get('title'), venue.get('name'));
 
-         console.log('Posting to Facebook ...' + '\n' + //
+         console.log('Posting Prize Win to Facebook ...' + '\n' + //
          'Name: ' + name + '\n' + //
          'Caption: ' + link + '\n' + //
          'Description: ' + desc + '\n' + //
@@ -291,9 +291,9 @@ Ext.define('Genesis.controller.client.Prizes',
          var name = venue.get('name');
          var link = wsite[wsite.length - 1] || site;
          var desc = venue.get('description').trunc(256);
-         var message = me.upgradeBadgeEmailMsg(badge.get('type').value, venue.get('name'));
+         var message = me.upgradeBadgeEmailMsg(badge.get('type').display_value, venue.get('name'));
 
-         console.log('Posting to Facebook ...' + '\n' + //
+         console.log('Posting Badge Promotion to Facebook ...' + '\n' + //
          'Name: ' + name + '\n' + //
          'Caption: ' + link + '\n' + //
          'Description: ' + desc + '\n' + //
@@ -371,7 +371,7 @@ Ext.define('Genesis.controller.client.Prizes',
          // Play the prize winning music!
          //
          Genesis.controller.ControllerBase.playSoundFile(//
-         viewport.sound_files['losePrizeSound'], Ext.bind(tryagain, me, [0x01]));
+         viewport.sound_files['losePrizeSound'], Ext.bind(tryagain, me, [0x01, (info['badge_prize_points'] > 0) ? 1 : 0]));
 
          Ext.device.Notification.show(
          {

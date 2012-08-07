@@ -454,7 +454,7 @@ Ext.define('Genesis.controller.ControllerBase',
             Genesis.db.setLocalDBAttrib('auth_code', authCode);
          }
          console.debug(//
-         "auth_code [" + db['auth_code'] + "]" + "\n" + //
+         "auth_code [" + authCode + "]" + "\n" + //
          "currFbId [" + db['currFbId'] + "]");
 
          me.goToMain();
