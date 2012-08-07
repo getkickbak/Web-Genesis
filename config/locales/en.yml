@@ -194,7 +194,7 @@ en:
       customer_rewards:
         not_available: "Sorry, but the %s is not available at this venue!"
         insufficient_points: "Not enough points to redeem %s."
-        redeem_failure: "Trouble redeeming the %s.\nPlease try again."
+        redeem_failure: "Trouble redeeming this %s.\nPlease try again."
         no_longer_available: "Sorry, but this %s is no longer available!\nPlease choose another."
       purchase_rewards:
         expired_code: "Authorization code no longer valid."
@@ -234,6 +234,8 @@ en:
           create_missing_info: "Missing email or password."
           create_invalid_info: "The email/password you entered is incorrect.\nPlease try again."
           destroy_failure: "Trouble with logout.\nPlease try again."  
+      badges:
+        create_success: "Badges successfully created."    
       challenges:
         create_success: "Challenge was successfully created."
         update_success: "Challenge was successfully updated."

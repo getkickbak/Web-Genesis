@@ -70,6 +70,30 @@ class Common
     return reward
   end
   
+  def self.populate_badges(merchant, user_agent)
+    badges = merchant.badges
+    if merchant.custom_badges
+      badge_types = MerchantBadgeType.all(MerchantBadgeType.merchant.id => merchant.id).to_a
+    else
+      badge_ids = []
+      badges.each do |badge|
+        badge_ids << badge.id
+      end
+      badge_id_to_type_id = {}
+      badge_to_types = BadgeToType.all(:fields => [:badge_id, :badge_type_id], :badge_id => badge_ids)
+      badge_to_types.each do |badge_to_type|
+        badge_id_to_type_id[badge_to_type.badge_id] = badge_to_type.badge_type_id
+      end
+      badge_types = []
+      badges.each do |badge|
+        badge.eager_load_type = BadgeType.id_to_type[badge_id_to_type_id[badge.id]]
+        badge_types << badge.eager_load_type
+      end
+    end
+    populate_badge_type_images(user_agent, merchant.custom_badges, badge_types)
+    merchant.badges.sort_by { |b| b.rank }  
+  end
+  
   def self.populate_badge_type_images(user_agent, custom_badges, badge_types)
     type_ids = []
     badge_type_id_to_type = {}

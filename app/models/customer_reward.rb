@@ -74,7 +74,7 @@ class CustomerReward
   
   def to_redeemed
     type = {
-      :value => self.mode == "reward" ? RedeemedReward::TYPE_REWARD : RedeemdReward::TYPE_PRIZE
+      :value => self.mode == "reward" ? RedeemedReward::TYPE_REWARD : RedeemedReward::TYPE_PRIZE
     }
     RedeemedReward.new(type, self.title)
   end
