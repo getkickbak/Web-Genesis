@@ -235,7 +235,9 @@ en:
           create_invalid_info: "The email/password you entered is incorrect.\nPlease try again."
           destroy_failure: "Trouble with logout.\nPlease try again."  
       badges:
-        create_success: "Badges successfully created."    
+        create_many_success: "Badges successfully created."
+        create_success: "Badge successfully created."    
+        update_success: "Badge successfully updated."
       challenges:
         create_success: "Challenge was successfully created."
         update_success: "Challenge was successfully updated."

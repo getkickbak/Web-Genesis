@@ -50,16 +50,15 @@ module Business
           current_merchant.badges.concat(badges)
           current_merchant.save
           respond_to do |format|
-            format.html { redirect_to challenges_path(:notice => t("business.badges.create_success")) }
+            format.html { redirect_to challenges_path(:notice => t("business.badges.create_many_success")) }
           #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
           #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
           end
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
-        @badge = e.resource
         respond_to do |format|
-          format.html { render :action => "new" }
+          format.html { render :action => "index" }
           #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
           #format.json { render :json => { :success => false } }
         end
