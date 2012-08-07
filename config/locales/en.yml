@@ -148,6 +148,7 @@ en:
       regular: "Regular"
       high: "High"               
   transaction:
+      signup: "Signup Points"
       earn: "Earn Points"
       transfer: "Transfer Points"
       expire: "Expire Points"
