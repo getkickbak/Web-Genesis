@@ -551,7 +551,7 @@ Ext.define('Genesis.controller.client.Challenges',
             Ext.device.Notification.show(
             {
                title : 'Earn Points',
-               message : ((account_info['points'] > 0) ? //
+               message : ((reward_info['points'] > 0) ? //
                me.getPointsMsg(reward_info['points'], account_info['points']) : //
                me.getConsolationMsg(metaData['message']))
             });
