@@ -436,10 +436,10 @@ Ext.define('Genesis.controller.client.Prizes',
        */
       me.redirectTo('redeemPrize');
    },
-   onShowRedeemPrize : function(reward_info)
+   onShowRedeemPrize : function(prize, reward_info)
    {
       var me = this;
-      var redeemItem = me.redeemItem;
+      var redeemItem = me.redeemItem = prize;
 
       me.silentPopView(1);
       me.setMode('redeemPrize');

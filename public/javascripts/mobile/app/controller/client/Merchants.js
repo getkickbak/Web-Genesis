@@ -99,7 +99,7 @@ Ext.define('Genesis.controller.client.Merchants',
       },
       listeners :
       {
-         'backToMain' : 'onCheckedInAccountTap'
+         'backToMain' : 'onBackToCheckIn'
       }
    },
    checkinFirstMsg : 'Please Check-in before redeeming rewards',
@@ -219,6 +219,48 @@ Ext.define('Genesis.controller.client.Merchants',
    // --------------------------------------------------------------------------
    // Merchant Account Page
    // --------------------------------------------------------------------------
+   checkInAccount : function()
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      var vport = me.getViewport();
+      var app = me.getApplication();
+      var ccntlr = app.getController('client.Checkins');
+      var venue = viewport.getVenue();
+
+      //
+      // Force Page to refresh
+      //
+      if (me.getMainPage() == vport.getActiveItem())
+      {
+         var controller = vport.getEventDispatcher().controller;
+         var anim = new Ext.fx.layout.Card(me.self.superclass.self.animationMode['fade']);
+         anim.on('animationend', function()
+         {
+            console.debug("Animation Complete");
+            anim.destroy();
+         }, me);
+         //if (!controller.isPausing)
+         {
+            console.log("Reloading current Merchant Home Account Page ...");
+
+            var page = me.getMainPage();
+
+            // Delete current page and refresh
+            page.removeAll(true);
+            me.getViewport().animateActiveItem(page, anim);
+            anim.onActiveItemChange(vport.getLayout(), page, page, null, controller);
+            vport.doSetActiveItem(page, null);
+         }
+      }
+      else
+      {
+         console.log("Going back to Checked-In Merchant Home Account Page ...");
+         me.resetView();
+         me.setAnimationMode(me.self.superclass.self.animationMode['pop']);
+         me.pushView(me.getMainPage());
+      }
+   },
    onMainActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       console.debug("Merchant Account Activate");
@@ -376,19 +418,16 @@ Ext.define('Genesis.controller.client.Merchants',
       var me = this;
       me.getGeoLocation();
    },
-   onCheckedInAccountTap : function(b, e, eOpts, eInfo)
+   onBackToCheckIn : function()
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      var vport = me.getViewport();
-      var app = me.getApplication();
-      var ccntlr = app.getController('client.Checkins');
+      var venue = viewport.getVenue();
       var cinfo = viewport.getCheckinInfo();
 
       var ccustomer = cinfo.customer;
       var cvenue = cinfo.venue;
       var cmetaData = cinfo.metaData;
-      var venue = viewport.getVenue();
 
       if (venue.getId() != cvenue.getId())
       {
@@ -398,38 +437,8 @@ Ext.define('Genesis.controller.client.Merchants',
          ccntlr.fireEvent('setupCheckinInfo', 'checkin', cvenue, ccustomer, cmetaData);
          me.fireEvent('updatemetadata', cmetaData);
       }
-      //
-      // Force Page to refresh
-      //
-      if (me.getMainPage() == vport.getActiveItem())
-      {
-         var controller = vport.getEventDispatcher().controller;
-         var anim = new Ext.fx.layout.Card(me.self.superclass.self.animationMode['fade']);
-         anim.on('animationend', function()
-         {
-            console.debug("Animation Complete");
-            anim.destroy();
-         }, me);
-         //if (!controller.isPausing)
-         {
-            console.log("Reloading current Merchant Home Account Page ...");
 
-            var page = me.getMainPage();
-
-            // Delete current page and refresh
-            page.removeAll(true);
-            me.getViewport().animateActiveItem(page, anim);
-            anim.onActiveItemChange(vport.getLayout(), page, page, null, controller);
-            vport.doSetActiveItem(page, null);
-         }
-      }
-      else
-      {
-         console.log("Going back to Checked-In Merchant Home Account Page ...");
-         me.resetView();
-         me.setAnimationMode(me.self.superclass.self.animationMode['pop']);
-         me.pushView(me.getMainPage());
-      }
+      me.checkInAccount();
    },
    onMapBtnTap : function(b, e, eOpts, eInfo)
    {
@@ -538,13 +547,21 @@ Ext.define('Genesis.controller.client.Merchants',
    openMainPage : function(showFeed, backToMain)
    {
       var me = this;
+      var vport = me.getViewport();
 
       // Check if this is the first time logging into the venue
       me.showFeed = showFeed;
       if (!backToMain)
       {
-         me.setAnimationMode(me.self.superclass.self.animationMode['pop']);
-         me.pushView(me.getMainPage());
+         if (me.getMainPage() == vport.getActiveItem())
+         {
+            me.checkInAccount();
+         }
+         else
+         {
+            me.setAnimationMode(me.self.superclass.self.animationMode['pop']);
+            me.pushView(me.getMainPage());
+         }
       }
       else
       {
