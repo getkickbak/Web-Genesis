@@ -98,6 +98,17 @@ class Api::V1::ChallengesController < ApplicationController
           @customer.reload
           @account_info = { :points => @customer.points }
           @reward_info = { :points => 0 }
+          @newsfeed = []
+          promotions = Promotion.all(:merchant => @venue.merchant)
+          promotions.each do |promotion|
+            @newsfeed << News.new(
+              "",
+              0,
+              "",
+              "",
+              promotion.message
+            )
+          end
           if points_eligible?
             if not challenge_limit_reached?
               now = Time.now
@@ -135,32 +146,15 @@ class Api::V1::ChallengesController < ApplicationController
               @customer.eligible_for_reward = eligible_for_reward
               @customer.save
               @account_info[:eligible_for_reward] = eligible_for_reward
-              @account_info = @account_info.to_json
-              @reward_info = @reward_info.to_json
-              @newsfeed = []
-              promotions = Promotion.all(:merchant => @venue.merchant)
-              promotions.each do |promotion|
-                @newsfeed << News.new(
-                  "",
-                  0,
-                  "",
-                  "",
-                  promotion.message
-                )
-              end
               render :template => '/api/v1/challenges/complete'
               logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), #{@challenge.points} points awarded")
             else
               @account_info[:eligible_for_reward] = @customer.eligible_for_reward
-              @account_info = @account_info.to_json
-              @reward_info = @reward_info.to_json
               @msg = get_success_no_points_limit_reached_msg.split('\n')  
               render :template => '/api/v1/challenges/complete'
               logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because limit reached")
             end
           else
-            @account_info = @account_info.to_json
-            @reward_info = @reward_info.to_json
             @msg = get_success_no_points_msg.split('\n')  
             render :template => '/api/v1/challenges/complete'
             logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because it is not eligible")
