@@ -43,6 +43,7 @@ class Merchant
   property :payment_account_id, String, :default => ""
   property :role, String, :required => true, :default => "merchant"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :pending
+  property :custom_badges, Boolean, :required => true, :default => false
   property :reward_terms, String, :required => true, :default => ""
   property :auth_code, String, :required => true, :default => ""
   property :prize_auth_code, String, :required => true, :default => ""
@@ -98,6 +99,7 @@ class Merchant
       :website => merchant_info[:website].strip,
       :role => merchant_info[:role],
       :status => merchant_info[:status],
+      :custom_badges => merchant_info[:custom_badges],
       :reward_terms => merchant_info[:reward_terms],
       :auth_code => String.random_alphanumeric(32),
       :prize_auth_code => String.random_alphanumeric(32)
@@ -179,6 +181,7 @@ class Merchant
     self.website = merchant_info[:website].strip
     self.role = merchant_info[:role]
     self.status = merchant_info[:status]
+    self.custom_badges = merchant_info[:custom_badges]
     self.update_ts = now
     self.type = type
     self.visit_frequency = visit_frequency

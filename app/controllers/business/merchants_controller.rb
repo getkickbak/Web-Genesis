@@ -25,6 +25,7 @@ module Business
       begin
         Merchant.transaction do
           params[:merchant][:status] = @merchant.status
+          params[:merchant][:custom_badges] = @merchant.custom_badges
           @merchant.update_all(@merchant.type, @merchant.visit_frequency, params[:merchant])
           sign_in(current_merchant, :bypass => true)
           respond_to do |format|

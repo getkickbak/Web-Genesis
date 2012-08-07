@@ -53,23 +53,27 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       end
     end    
       
-    @badges = @venue.merchant.badges
-    badge_ids = []
-    @badges.each do |badge|
-      badge_ids << badge.id
-    end
-    badge_id_to_type_id = {}
-    badge_to_types = BadgeToType.all(:fields => [:badge_id, :badge_type_id], :badge_id => badge_ids)
-    badge_to_types.each do |badge_to_type|
-      badge_id_to_type_id[badge_to_type.badge_id] = badge_to_type.badge_type_id
-    end
-    badge_types = []
-    @badges.each do |badge|
-      badge.eager_load_type = BadgeType.id_to_type[badge_id_to_type_id[badge.id]]
-      badge_types << badge.eager_load_type
+    @badges = @venue.merchant.badges.sort_by { |b| b.rank }
+    if @venue.merchant.custom_badges
+      badge_types = MerchantBadgeType.all(MerchantBadgeType.merchant.id => @venue.merchant.id).to_a
+    else  
+      badge_ids = []
+      @badges.each do |badge|
+        badge_ids << badge.id
+      end
+      badge_id_to_type_id = {}
+      badge_to_types = BadgeToType.all(:fields => [:badge_id, :badge_type_id], :badge_id => badge_ids)
+      badge_to_types.each do |badge_to_type|
+        badge_id_to_type_id[badge_to_type.badge_id] = badge_to_type.badge_type_id
+      end
+      badge_types = []
+      @badges.each do |badge|
+        badge.eager_load_type = BadgeType.id_to_type[badge_id_to_type_id[badge.id]]
+        badge_types << badge.eager_load_type
+      end
     end
       
-    Common.populate_badge_type_images(request.env['HTTP_USER_AGENT'], badge_types)
+    Common.populate_badge_type_images(request.env['HTTP_USER_AGENT'], @venue.merchant.custom_badges, badge_types)
       
     begin  
       Customer.transaction do
@@ -263,15 +267,13 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           prize_trans_record.customer = @customer
           prize_trans_record.user = current_user
           prize_trans_record.save
-          badges = @venue.merchant.badges.sort_by { |b| b.rank }
-          next_badge = Common.find_next_badge(badges.to_a, @customer.badge)
+          next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
           if (@customer.next_badge_visits == next_badge.visits) && (@customer.badge.id != next_badge.id)
             badge_prize_points = (reward_model.total_spend / reward_model.total_visits * next_badge.visits * APP_PROP["BADGE_REBATE_RATE"] / 100 / reward_model.price_per_prize_point).to_i
             @customer.badge = next_badge
             @customer.prize_points += badge_prize_points
             @customer.next_badge_visits = 0
-            badges = @venue.merchant.badges.sort_by { |b| b.rank }
-            next_badge = Common.find_next_badge(badges.to_a, @customer.badge)
+            next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
             @reward_info[:badge_prize_points] = badge_prize_points
             
             badge_prize_record = EarnPrizeRecord.new(
