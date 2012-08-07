@@ -73,7 +73,7 @@ Ext.define('Genesis.model.CustomerReward',
          });
          this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/customer_rewards?mode=prize' : Ext.Loader.getPath("Genesis") + "/store/" + 'redemptions.json');
       },
-      setRedeemPrizeURL : function(id)
+      setRedeemPrizePointsURL : function(id)
       {
          this.getProxy().setActionMethods(
          {
