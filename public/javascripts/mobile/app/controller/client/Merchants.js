@@ -224,8 +224,6 @@ Ext.define('Genesis.controller.client.Merchants',
       var me = this;
       var viewport = me.getViewPortCntlr();
       var vport = me.getViewport();
-      var app = me.getApplication();
-      var ccntlr = app.getController('client.Checkins');
       var venue = viewport.getVenue();
 
       //
@@ -424,6 +422,8 @@ Ext.define('Genesis.controller.client.Merchants',
       var viewport = me.getViewPortCntlr();
       var venue = viewport.getVenue();
       var cinfo = viewport.getCheckinInfo();
+      var app = me.getApplication();
+      var ccntlr = app.getController('client.Checkins');
 
       var ccustomer = cinfo.customer;
       var cvenue = cinfo.venue;
