@@ -19,10 +19,9 @@ Ext.define('Genesis.view.client.BadgeDetail',
          },
          items : [
          {
-            align : 'left',
-            tag : 'close',
-            ui : 'normal',
-            text : 'Close'
+            align : 'right',
+            tag : 'done',
+            text : 'Done'
          }]
       }]
    }

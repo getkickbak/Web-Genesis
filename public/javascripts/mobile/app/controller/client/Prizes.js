@@ -1,7 +1,7 @@
 Ext.define('Genesis.controller.client.Prizes',
 {
    extend : 'Genesis.controller.client.RedeemBase',
-   requires : ['Ext.data.Store'],
+   requires : ['Ext.data.Store', 'Genesis.view.client.Prizes', 'Genesis.view.client.Badges', 'Genesis.view.client.BadgeDetail'],
    statics :
    {
       clientRedemption_path : '/clientPrizes',
@@ -77,7 +77,8 @@ Ext.define('Genesis.controller.client.Prizes',
             selector : 'clientbadgedetailview',
             autoCreate : true,
             xtype : 'clientbadgedetailview'
-         }
+         },
+         bDoneBtn : 'clientbadgedetailview button[tag=done]'
       },
       control :
       {
@@ -109,6 +110,10 @@ Ext.define('Genesis.controller.client.Prizes',
          {
             activate : 'onBadgeDetailActivate',
             deactivate : 'onBadgeDetailDeactivate'
+         },
+         bDoneBtn :
+         {
+            tap : 'onBadgeDetailDoneTap'
          }
       },
       listeners :
@@ -321,12 +326,12 @@ Ext.define('Genesis.controller.client.Prizes',
          'Post was not published to Facebook.');
       }
    },
-   redeemPrize : function(setFlag, prize, info)
+   redeemPrize : function(setFlag, prize, info, viewsPopLength)
    {
       var me = this;
       if ((me.flag |= setFlag) == 0x11)
       {
-         me.fireEvent('showredeemprize', prize, info);
+         me.fireEvent('showredeemprize', prize, info, viewsPopLength);
          me.flag = 0;
       }
    },
@@ -397,7 +402,7 @@ Ext.define('Genesis.controller.client.Prizes',
          //
          Genesis.controller.ControllerBase.playSoundFile(//
          viewport.sound_files['winPrizeSound'], //
-         Ext.bind(me.redeemPrize, me, [0x01, prize, info]));
+         Ext.bind(me.redeemPrize, me, [0x01, prize, info, (info['badge_prize_points'] > 0) ? 2 : 1]));
 
          Ext.device.Notification.vibrate();
          Ext.device.Notification.show(
@@ -412,16 +417,21 @@ Ext.define('Genesis.controller.client.Prizes',
                   {
                      me.badgePrizePopUp(badgeId, //
                      info['badge_prize_points'], //
-                     Ext.bind(me.redeemPrize, me, [0x10, prize, info]));
+                     Ext.bind(me.redeemPrize, me, [0x10, prize, info, 2]));
                   }, 1, me);
                }
                else
                {
-                  me.redeemPrize(0x10, prize, info);
+                  me.redeemPrize(0x10, prize, info, 1);
                }
             }
          });
       }
+   },
+   onBadgeDetailDoneTap : function(b, e, eOpts)
+   {
+      var me = this;
+      me.badgePrizePopUpCallBackFn();
    },
    // --------------------------------------------------------------------------
    // Prizes Page
@@ -441,12 +451,12 @@ Ext.define('Genesis.controller.client.Prizes',
        */
       me.redirectTo('redeemPrize');
    },
-   onShowRedeemPrize : function(prize, reward_info)
+   onShowRedeemPrize : function(prize, reward_info, viewsPopLength)
    {
       var me = this;
       var redeemItem = me.redeemItem = prize;
 
-      me.silentPopView(1);
+      me.silentPopView(viewsPopLength);
       me.setMode('redeemPrize');
       //Ext.defer(function()
       {
@@ -475,9 +485,6 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    onBadgeDetailDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var me = this;
-      me.silentPopView(1);
-      me.badgePrizePopUpCallBackFn();
    },
    // --------------------------------------------------------------------------
    // Page Navigation
