@@ -15,11 +15,11 @@ class Badge
   
   has 1, :badge_to_type, :constraint => :destroy
   has 1, :type, 'BadgeType', :through => :badge_to_type,  :via => :badge_type
-  has 1, :merchant_badge_type
+  has 1, :custom_type, 'MerchantBadgeType'
   
   def rank
     if self.custom
-      self.merchant_badge_type.rank
+      self.custom_type.rank
     else
       if self.eager_load_type
         self.eager_load_type.rank

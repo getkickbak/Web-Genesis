@@ -45,21 +45,27 @@ module Admin
 
       begin
         Merchant.transaction do
+          now = Time.now
           params[:merchant][:status] = :pending
+          params[:merchant][:custom_badges] = false
           type = MerchantType.get(params[:merchant][:type_id])
           visit_frequency = VisitFrequencyType.get(params[:merchant][:visit_frequency_id])
           params[:merchant][:reward_terms] = I18n.t 'customer_reward.terms'
           @merchant = Merchant.create(type, visit_frequency, params[:merchant])
-          badges = []
-          badge_types = BadgeType.all(:merchant_type_id => @merchant.type.id)
-          badge_types.each do |badge_type|
-            badge = Badge.new(:custom => false, :visits => BadgeType.visits[@merchant.visit_frequency_type.value][badge_type.value])
-            badge.type = badge_type
-            badge.save
-            badges << badge
-          end  
-          @merchant.badges.concat(badges)
-          @merchant.save
+          if !@merchant.custom_badges
+            badges = []
+            badge_types = BadgeType.all(:merchant_type_id => @merchant.type.id)
+            badge_types.each do |badge_type|
+              badge = Badge.new(:custom => false, :visits => BadgeType.visits[@merchant.visit_frequency_type.value][badge_type.value])
+              badge[:created_ts] = now
+              badge[:update_ts] = now
+              badge.type = badge_type
+              badge.save
+              badges << badge
+            end  
+            @merchant.badges.concat(badges)
+            @merchant.save
+          end
           respond_to do |format|
             format.html { redirect_to(merchant_path(@merchant), :notice => t("admin.merchants.create_success")) }
           #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }

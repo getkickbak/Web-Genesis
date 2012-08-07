@@ -17,17 +17,21 @@ class Api::V1::VenuesController < ApplicationController
       is_customer = false
     else
       @badges = @venue.merchant.badges.sort_by { |b| b.rank }
-      badge_ids = []
-      @badges.each do |badge|
-        badge_ids << badge.id
-      end
-      badge_id_to_type_id = {}
-      badge_to_types = BadgeToType.all(:fields => [:badge_id, :badge_type_id], :badge_id => badge_ids)
-      badge_to_types.each do |badge_to_type|
-        badge_id_to_type_id[badge_to_type.badge_id] = badge_to_type.badge_type_id
-      end
-      @badges.each do |badge|
-        badge.eager_load_type = BadgeType.id_to_type[badge_id_to_type_id[badge.id]]
+      if @venue.merchant.custom_badges
+        badge_types = MerchantBadgeType.all(MerchantBadgeType.merchant.id => @venue.merchant.id).to_a
+      else
+        badge_ids = []
+        @badges.each do |badge|
+          badge_ids << badge.id
+        end
+        badge_id_to_type_id = {}
+        badge_to_types = BadgeToType.all(:fields => [:badge_id, :badge_type_id], :badge_id => badge_ids)
+        badge_to_types.each do |badge_to_type|
+          badge_id_to_type_id[badge_to_type.badge_id] = badge_to_type.badge_type_id
+        end
+        @badges.each do |badge|
+          badge.eager_load_type = BadgeType.id_to_type[badge_id_to_type_id[badge.id]]
+        end
       end
       @next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)  
       @account_info = { :badge_id => @customer.badge.id, :next_badge_id => @next_badge.id }
@@ -76,8 +80,8 @@ class Api::V1::VenuesController < ApplicationController
     @venue = Venue.find_nearest(current_user, @merchant.id, latitude, longitude, 1).first
     @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id)
     @prizes_count = RedeemRewardRecord.count(RedeemRewardRecord.merchant.id => @merchant.id, :mode => :prize, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
-    badges = @venue.merchant.badges.sort_by { |b| b.rank }
-    @next_badge = Common.find_next_badge(badges.to_a, @customer.badge)
+    @badges = @venue.merchant.badges.sort_by { |b| b.rank }
+    @next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
     @account_info = { :badge_id => @customer.badge.id, :next_badge_id => @next_badge.id }
     @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :mode => :reward, :order => [:points.asc])
     @prizes = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :mode => :prize, :order => [:points.asc])

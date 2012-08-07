@@ -70,7 +70,7 @@ class Common
     return reward
   end
   
-  def self.populate_badge_type_images(user_agent, badge_types)
+  def self.populate_badge_type_images(user_agent, custom_badges, badge_types)
     type_ids = []
     badge_type_id_to_type = {}
     badge_types.each do |badge_type|
@@ -85,7 +85,11 @@ class Common
     else
       agent = :iphone  
     end
-    badge_type_images = BadgeTypeImage.all(:badge_type_id => type_ids, :user_agent => agent)
+    if custom_badges
+      badge_type_images = MerchantBadgeTypeImage.all(:merchant_badge_type_id => type_ids, :user_agent => agent)
+    else
+      badge_type_images = BadgeTypeImage.all(:badge_type_id => type_ids, :user_agent => agent)
+    end  
     badge_type_images.each do |badge_type_image|
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_small_url = badge_type_image.thumbnail_small_url
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = badge_type_image.thumbnail_medium_url
