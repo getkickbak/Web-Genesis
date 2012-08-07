@@ -49,7 +49,13 @@ Ext.define('Genesis.controller.client.RedeemBase',
             scope : me,
             'metachange' : function(store, proxy, eOpts)
             {
-               me.fireEvent('updatemetadata', proxy.getReader().metaData);
+               //
+               // Prevent Incorrect Store from calling MetaData Handler
+               //
+               if (store.isLoading())
+               {
+                  me.fireEvent('updatemetadata', proxy.getReader().metaData);
+               }
             }
          }
       });

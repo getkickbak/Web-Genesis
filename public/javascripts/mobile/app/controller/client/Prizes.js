@@ -12,7 +12,7 @@ Ext.define('Genesis.controller.client.Prizes',
    config :
    {
       timeoutPeriod : 10,
-      minPrizePts : 10,
+      minPrizePts : 1,
       mode : 'redeemBrowse',
       renderStore : 'PrizeRenderCStore',
       redeemStore : 'PrizeStore',
@@ -145,7 +145,8 @@ Ext.define('Genesis.controller.client.Prizes',
       var points = reward_info['prize_points'];
       var extraPoints = reward_info['badge_prize_points'];
 
-      return ('You\'ve won a JACKPOT of ' + points + ' Prize Points!' + //
+      return (((points > me.getMinPrizePts()) ? //
+      'You\'ve won a JACKPOT of ' + points + ' Prize Points!' : gotMinPrizePtsMsg(points)) + //
       ((extraPoints == 0) ? Genesis.constants.addCRLF() + me.eligibleRewardMsg : ''));
    },
    wonPrizeEmailMsg : function(prizeName, venueName)
