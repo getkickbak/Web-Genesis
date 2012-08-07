@@ -93,10 +93,10 @@ class Api::V1::CustomerRewardsController < ApplicationController
             @customer.prize_points -= @reward.points
             @account_info[:prize_points] = @customer.prize_points
           end  
-          rewards = @venue.customer_rewards.all(:mode => :reward, :order => [ :points.asc ])
-          prizes = @venue.customer_rewards.all(:mode => :prize, :order => [ :points.asc ])
-          eligible_for_reward = !Common.find_eligible_reward(rewards.to_a, @customer.points).nil?
-          eligible_for_prize = !Common.find_eligible_reward(prizes.to_a, @customer.prize_points).nil?
+          @rewards = Common.get_rewards(@venue, :reward)
+          @prizes = Common.get_rewards(@venue, :prize)
+          eligible_for_reward = !Common.find_eligible_reward(@rewards.to_a, @customer.points).nil?
+          eligible_for_prize = !Common.find_eligible_reward(@prizes.to_a, @customer.prize_points).nil?
           @customer.eligible_for_reward = eligible_for_reward
           @customer.eligible_for_prize = eligible_for_prize
           @customer.save
@@ -109,8 +109,6 @@ class Api::V1::CustomerRewardsController < ApplicationController
           }.to_json
           cipher = Gibberish::AES.new(@venue.auth_code)
           @encrypted_data = "r$#{cipher.enc(data)}"
-          @rewards = Common.get_rewards(@venue, :reward)
-          @prizes = Common.get_rewards(@venue, :prize)
           render :template => '/api/v1/customer_rewards/redeem'
           logger.info("User(#{current_user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")
         else
