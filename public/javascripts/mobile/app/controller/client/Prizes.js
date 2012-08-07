@@ -139,8 +139,8 @@ Ext.define('Genesis.controller.client.Prizes',
       var points = reward_info['prize_points'];
       var extraPoints = reward_info['badge_prize_points'];
 
-      return ('You\'ve earned ' + points + ' Prize Points from this purchase.' + //
-      ((!Ext.isDefined(extraPoints)) ? Genesis.constants.addCRLF() + me.eligibleRewardMsg : ''));
+      return ('You\'ve won a JACKPOT of ' + points + ' Prize Points!' + //
+      ((extraPoints == 0) ? Genesis.constants.addCRLF() + me.eligibleRewardMsg : ''));
    },
    wonPrizeEmailMsg : function(prizeName, venueName)
    {
@@ -158,13 +158,11 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    gotMinPrizePtsMsg : function(points)
    {
-      return ('You\'ve earned ' + points + ' Prize Points!');
+      return ('You\'ve won ' + points + ' Prize Points!');
    },
    badgePrizePopUp : function(badgeId, points, callback)
    {
       var me = this;
-      var badge = Ext.StoreMgr.get('BadgeStore').getById(badgeId);
-
       me.badgePrizePopUpCallBackFn = callback || Ext.emptyFn;
       Ext.device.Notification.show(
       {
@@ -172,6 +170,7 @@ Ext.define('Genesis.controller.client.Prizes',
          message : this.getBadegePrizeMsg(points),
          callback : function()
          {
+            var badge = Ext.StoreMgr.get('BadgeStore').getById(badgeId);
             me.redeemItem = Ext.create('Genesis.model.CustomerReward',
             {
                'title' : badge.get('type').display_value,
@@ -339,7 +338,7 @@ Ext.define('Genesis.controller.client.Prizes',
       var me = this, prize;
       var viewport = me.getViewPortCntlr();
       var info = metaData['reward_info'];
-      var badgeId = metaData['badge_id'];
+      var badgeId = metaData['account_info']['badge_id'];
       var tryagain = function(setFlag)
       {
          if ((me.flag |= setFlag) == 0x11)
@@ -371,9 +370,12 @@ Ext.define('Genesis.controller.client.Prizes',
             {
                if (info['badge_prize_points'] > 0)
                {
-                  me.badgePrizePopUp(badgeId, //
-                  info['badge_prize_points'], //
-                  Ext.bind(tryagain, me, [0x10]));
+                  Ext.defer(function()
+                  {
+                     me.badgePrizePopUp(badgeId, //
+                     info['badge_prize_points'], //
+                     Ext.bind(tryagain, me, [0x10]));
+                  }, 1, me);
                }
                else
                {
@@ -406,9 +408,12 @@ Ext.define('Genesis.controller.client.Prizes',
             {
                if (info['badge_prize_points'] > 0)
                {
-                  me.badgePrizePopUp(badgeId, //
-                  info['badge_prize_points'], //
-                  Ext.bind(me.redeemPrize, me, [0x10, prize, info]));
+                  Ext.defer(function()
+                  {
+                     me.badgePrizePopUp(badgeId, //
+                     info['badge_prize_points'], //
+                     Ext.bind(me.redeemPrize, me, [0x10, prize, info]));
+                  }, 1, me);
                }
                else
                {
@@ -457,7 +462,7 @@ Ext.define('Genesis.controller.client.Prizes',
             {
                me.updatingPrizeOnFacebook(redeemItem);
             }
-            if ((reward_info['badge_prize_points']) && (reward_info['badge_prize_points'] > 0))
+            if (reward_info['badge_prize_points'] > 0)
             {
                me.updatingBadgeOnFacebook(redeemItem);
             }
