@@ -482,6 +482,7 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    onBadgeDetailActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
+      activeItem = me.redeemItem;
    },
    onBadgeDetailDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {
