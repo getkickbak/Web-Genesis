@@ -252,7 +252,7 @@ namespace :db do
       )
       RewardModel.create(merchant,
       {
-        :signup_points => 0,
+        :signup_points => 100,
         :rebate_rate => 10,
         :prize_rebate_rate => 10
       })
@@ -384,6 +384,8 @@ namespace :db do
       4.times do |i|
         user = users[rand(users.length)]
         customer = Customer.first(Customer.merchant.id => merchant.id, Customer.user.id => user.id)
+        customer.visits += 1
+        customer.next_badge_visits += 1
         challenge = challenges[rand(5)]
         challenge_record = EarnRewardRecord.new(
           :type => :challenge,
@@ -410,6 +412,32 @@ namespace :db do
         trans_record.customer = customer
         trans_record.user = user
         trans_record.save
+        if customer.visits == 1 && 
+          signup_record = EarnRewardRecord.new(
+            :type => :signup,
+            :venue_id => venues[rand(2)].id,
+            :points => merchant.reward_model.signup_points,
+            :created_ts => now,
+            :update_ts => now
+          )
+          signup_record.merchant = merchant
+          signup_record.customer = customer
+          signup_record.user = user
+          signup_record.save
+          trans_record = TransactionRecord.new(
+            :type => :signup_points,
+            :ref_id => signup_record.id,
+            :description => I18n.t("transaction.signup"),
+            :points => merchant.reward_model.signup_points,
+            :created_ts => now,
+            :update_ts => now
+          )
+          trans_record.merchant = merchant
+          trans_record.customer = customer
+          trans_record.user = user
+          trans_record.save
+          customer.points += merchant.reward_model.signup_points
+        end
         amount = rand(30) + 1
         purchase_record = EarnRewardRecord.new(
           :type => :purchase,
@@ -458,11 +486,8 @@ namespace :db do
         trans_record.customer = customer
         trans_record.user = user
         trans_record.save
-        customer = Customer.first(Customer.merchant.id => merchant.id, Customer.user.id => user.id)
         customer.points += (purchase_record.points + challenge_record.points)
         customer.prize_points += prize_record.points
-        customer.visits += 1
-        customer.next_badge_visits += 1
         rewards = rewards.sort_by { |b| b.points }
         prizes = prizes.sort_by { |b| b.points }
         customer.eligible_for_reward = !Common.find_eligible_reward(rewards, customer.points).nil?

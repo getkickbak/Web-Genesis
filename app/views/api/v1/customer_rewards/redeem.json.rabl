@@ -15,11 +15,6 @@ node :metaData do
 			@prizes.map do |r|
 		 		partial('api/v1/customer_rewards/base', :object => r)
 			end
-		),
-		:newsfeed => (
-			@newsfeed.map do |r|
-		 		partial('api/v1/common/news', :object => r)
-			end
 		)
 	}
 end

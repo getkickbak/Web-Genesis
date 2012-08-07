@@ -136,7 +136,37 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           end
           @customer.visits += 1
           @customer.next_badge_visits += 1
+                    
           reward_model = @venue.merchant.reward_model
+          
+          if @customer.visits == 1 && reward_model.signup_points > 0
+            record = EarnRewardRecord.new(
+              :type => :signup,
+              :venue_id => @venue.id,
+              :points => reward_model.signup_points,
+              :created_ts => now,
+              :update_ts => now
+            )
+            record.merchant = @venue.merchant
+            record.customer = @customer
+            record.user = current_user
+            record.save
+            trans_record = TransactionRecord.new(
+              :type => :signup_points,
+              :ref_id => record.id,
+              :description => I18n.t("transaction.signup"),
+              :points => reward_model.signup_points,
+              :created_ts => now,
+              :update_ts => now
+            )
+            trans_record.merchant = @venue.merchant
+            trans_record.customer = @customer
+            trans_record.user = current_user
+            trans_record.save
+            @customer.points += reward_model.signup_points
+            @reward_info[:signup_points] = reward_model.signup_points
+          end
+          
           points = (amount / reward_model.price_per_point).to_i
           record = EarnRewardRecord.new(
             :type => :purchase,
@@ -298,17 +328,6 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           @customer.save
           @account_info[:eligible_for_reward] = eligible_for_reward
           @account_info[:eligible_for_prize] = eligible_for_prize
-          @newsfeed = []
-          promotions = Promotion.all(:merchant => @venue.merchant)
-          promotions.each do |promotion|
-            @newsfeed << News.new(
-              "",
-              0,
-              "",
-              "",
-              promotion.message
-            )
-          end
           render :template => '/api/v1/purchase_rewards/earn'
           if referral_challenge
             UserMailer.referral_challenge_confirm_email(referrer.user, @customer.user, @venue, referral_record).deliver

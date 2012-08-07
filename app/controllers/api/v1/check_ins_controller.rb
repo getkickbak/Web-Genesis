@@ -57,35 +57,9 @@ class Api::V1::CheckInsController < ApplicationController
         @prizes_count = RedeemRewardRecord.count(RedeemRewardRecord.merchant.id => @venue.merchant.id, :mode => :prize, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
         @next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
         @account_info = { :badge_id => @customer.badge.id, :next_badge_id => @next_badge.id }
-        @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :mode => :reward, :order => [:points.asc])
-        @prizes = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :mode => :prize, :order => [:points.asc])
-        reward_id_to_subtype_id = {}
-        reward_to_subtypes = CustomerRewardToSubtype.all(:fields => [:customer_reward_id, :customer_reward_subtype_id], :customer_reward => @rewards)
-        reward_to_subtypes.each do |reward_to_subtype|
-          reward_id_to_subtype_id[reward_to_subtype.customer_reward_id] = reward_to_subtype.customer_reward_subtype_id
-        end    
-        prize_id_to_subtype_id = {}
-        prize_to_subtypes = CustomerRewardToSubtype.all(:fields => [:customer_reward_id, :customer_reward_subtype_id], :customer_reward => @prizes)
-        prize_to_subtypes.each do |prize_to_subtype|
-          prize_id_to_subtype_id[prize_to_subtype.customer_reward_id] = prize_to_subtype.customer_reward_subtype_id
-        end    
-        @rewards.each do |reward|
-          reward.eager_load_type = CustomerRewardSubtype.id_to_type[reward_id_to_subtype_id[reward.id]]       
-        end
-        @prizes.each do |prize|
-          prize.eager_load_type = CustomerRewardSubtype.id_to_type[prize_id_to_subtype_id[prize.id]]         
-        end
-        @newsfeed = []
-        promotions = Promotion.all(:merchant => @venue.merchant)
-        promotions.each do |promotion|
-          @newsfeed << News.new(
-            "",
-            0,
-            "",
-            "",
-            promotion.message
-          )
-        end
+        @rewards = Common.get_rewards(@venue, :reward)
+        @prizes = Common.get_rewards(@venue, :prize)
+        @newsfeed = Common.get_news(@venue)
         render :template => '/api/v1/check_ins/create'
       end
     rescue DataMapper::SaveFailureError => e

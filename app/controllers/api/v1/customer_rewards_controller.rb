@@ -93,10 +93,10 @@ class Api::V1::CustomerRewardsController < ApplicationController
             @customer.prize_points -= @reward.points
             @account_info[:prize_points] = @customer.prize_points
           end  
-          rewards = @venue.customer_rewards.all(:mode => :reward, :order => [ :points.asc ])
-          prizes = @venue.customer_rewards.all(:mode => :prize, :order => [ :points.asc ])
-          eligible_for_reward = !Common.find_eligible_reward(rewards.to_a, @customer.points).nil?
-          eligible_for_prize = !Common.find_eligible_reward(prizes.to_a, @customer.prize_points).nil?
+          @rewards = Common.get_rewards(@venue, :reward)
+          @prizes = Common.get_rewards(@venue, :prize)
+          eligible_for_reward = !Common.find_eligible_reward(@rewards.to_a, @customer.points).nil?
+          eligible_for_prize = !Common.find_eligible_reward(@prizes.to_a, @customer.prize_points).nil?
           @customer.eligible_for_reward = eligible_for_reward
           @customer.eligible_for_prize = eligible_for_prize
           @customer.save
@@ -109,35 +109,6 @@ class Api::V1::CustomerRewardsController < ApplicationController
           }.to_json
           cipher = Gibberish::AES.new(@venue.auth_code)
           @encrypted_data = "r$#{cipher.enc(data)}"
-          @rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :mode => :reward, :order => [:points.asc])
-          @prizes = CustomerReward.all(:customer_reward_venues => { :venue_id => @venue.id }, :mode => :prize, :order => [:points.asc])
-          reward_id_to_subtype_id = {}
-          reward_to_subtypes = CustomerRewardToSubtype.all(:fields => [:customer_reward_id, :customer_reward_subtype_id], :customer_reward => @rewards)
-          reward_to_subtypes.each do |reward_to_subtype|
-            reward_id_to_subtype_id[reward_to_subtype.customer_reward_id] = reward_to_subtype.customer_reward_subtype_id
-          end    
-          prize_id_to_subtype_id = {}
-          prize_to_subtypes = CustomerRewardToSubtype.all(:fields => [:customer_reward_id, :customer_reward_subtype_id], :customer_reward => @prizes)
-          prize_to_subtypes.each do |prize_to_subtype|
-            prize_id_to_subtype_id[prize_to_subtype.customer_reward_id] = prize_to_subtype.customer_reward_subtype_id
-          end    
-          @rewards.each do |reward|
-            reward.eager_load_type = CustomerRewardSubtype.id_to_type[reward_id_to_subtype_id[reward.id]]       
-          end
-          @prizes.each do |prize|
-            prize.eager_load_type = CustomerRewardSubtype.id_to_type[prize_id_to_subtype_id[prize.id]]         
-          end
-          @newsfeed = []
-          promotions = Promotion.all(:merchant => @venue.merchant)
-          promotions.each do |promotion|
-            @newsfeed << News.new(
-              "",
-              0,
-              "",
-              "",
-              promotion.message
-            )
-          end
           render :template => '/api/v1/customer_rewards/redeem'
           logger.info("User(#{current_user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")
         else

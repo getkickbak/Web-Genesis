@@ -13,11 +13,6 @@ node :metaData do
 			end
 		),
 		:account_info => @account_info,
-		:reward_info => @reward_info,
-		:newsfeed => (
-			@newsfeed.map do |r|
-		 		partial('api/v1/common/news', :object => r)
-			end
-		)	
+		:reward_info => @reward_info
 	}.delete_if { |k,v| v.nil? }
 end	
