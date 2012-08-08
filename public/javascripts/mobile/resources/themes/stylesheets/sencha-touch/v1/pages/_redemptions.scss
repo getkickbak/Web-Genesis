@@ -106,12 +106,17 @@
             }
          }
          .listItemDetailsWrapper {
+            display:table;
+            width:100%;
+            height : $icon-size;
             .itemTitle {
+               display:table-cell;
+               vertical-align:middle;
                text-align:center;
                font-weight:bold;
-               font-size:$largeFontSize !important;
-               white-space: nowrap;
-               line-height : $icon-size;
+               //font-size:$largeFontSize !important;
+               //white-space: nowrap;
+               //line-height : $icon-size;
             }
             .itemDesc {
                //font-size:$largeFontSize !important;
