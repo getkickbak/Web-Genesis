@@ -96,7 +96,6 @@ Ext.define('Genesis.view.client.Accounts',
                case 'emailtransfer' :
                case 'transfer' :
                default :
-                  return;
                   break;
             }
 

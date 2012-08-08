@@ -3,7 +3,14 @@
 //------------------------------------------------------------------------------
 .redeemItem {
    .title {
-     line-height:$xlargeFontSize*2 + 2*$panelTopGap;
+      //line-height:$xlargeFontSize*2 + 2*$panelTopGap;
+      display : table;
+      width : 100%;
+      padding : 0 $panelGap;
+      .x-innerhtml {
+         display : table-cell;
+         vertical-align : middle;
+      }
    }
    .itemPhoto {
       background-size : $icon-size*3 $icon-size*3; //Maximum size of QR Code as well
