@@ -129,6 +129,7 @@ class Api::V1::CustomersController < ApplicationController
           if sender.points >= @record.points
             now = Time.now
             sender.points -= @record.points
+            sender.update_ts = now
             sender.save
             sender_trans_record = TransactionRecord.new(
               :type => :transfer_points,
@@ -143,6 +144,7 @@ class Api::V1::CustomersController < ApplicationController
             sender.trans_record.user = sender.user
             sender.trans_record.save
             @customer.points += @record.points
+            @customer.update_ts = now
             @customer.save
             trans_record = TransactionRecord.new(
               :type => :transfer_points,

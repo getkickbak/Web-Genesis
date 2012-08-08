@@ -126,6 +126,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             referral_trans_record.user = current_user
             referral_trans_record.save
             referrer.points += challenge.points
+            referrer.update_ts = now
             referrer.save
             @customer.points += challenge.data.referral_points
             referral_record.status = :complete
@@ -279,7 +280,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           prize_trans_record.save
           next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
           if (@customer.next_badge_visits == next_badge.visits) && (@customer.badge.id != next_badge.id)
-            badge_prize_points = (reward_model.total_spend / reward_model.total_visits * next_badge.visits * APP_PROP["BADGE_REBATE_RATE"] / 100 / reward_model.price_per_prize_point).to_i
+            badge_prize_points = (reward_model.total_spend / reward_model.total_visits * next_badge.visits / reward_model.price_per_prize_point).to_i
             @customer.badge = next_badge
             @customer.prize_points += badge_prize_points
             @customer.next_badge_visits = 0
@@ -325,6 +326,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           eligible_for_prize = !Common.find_eligible_reward(prizes.to_a, @customer.prize_points).nil?
           @customer.eligible_for_reward = eligible_for_reward
           @customer.eligible_for_prize = eligible_for_prize
+          @customer.update_ts = now
           @customer.save
           @account_info[:eligible_for_reward] = eligible_for_reward
           @account_info[:eligible_for_prize] = eligible_for_prize

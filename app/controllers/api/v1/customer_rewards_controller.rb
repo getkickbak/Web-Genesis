@@ -41,7 +41,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
         acquired = @mutex.acquire
         @customer.reload
         
-        if @reward.quantity_limited && @reward.quantity == 0
+        if @reward.quantity_limited && (@reward.quantity_count == @reward.quantity)
           logger.info("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), quantity limited")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -93,12 +93,18 @@ class Api::V1::CustomerRewardsController < ApplicationController
             @customer.prize_points -= @reward.points
             @account_info[:prize_points] = @customer.prize_points
           end  
+          if @reward.quantity_limited
+            @reward.quantity_count += 1
+            @reward.update_ts = now
+            @reward.save
+          end
           @rewards = Common.get_rewards(@venue, :reward)
           @prizes = Common.get_rewards(@venue, :prize)
           eligible_for_reward = !Common.find_eligible_reward(@rewards.to_a, @customer.points).nil?
           eligible_for_prize = !Common.find_eligible_reward(@prizes.to_a, @customer.prize_points).nil?
           @customer.eligible_for_reward = eligible_for_reward
           @customer.eligible_for_prize = eligible_for_prize
+          @customer.update_ts = now
           @customer.save
           @account_info[:eligible_for_reward] = eligible_for_reward
           @account_info[:eligible_for_prize] = eligible_for_prize
