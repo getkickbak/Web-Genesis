@@ -145,6 +145,7 @@ en:
         boss: "Boss"    
   visit_frequency:
       low: "Low"
+      kinda_regular: "Kinda Regular"
       regular: "Regular"
       high: "High"               
   transaction:

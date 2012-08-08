@@ -4,7 +4,7 @@ class CustomerReward
   Modes = [:reward, :prize]
 
   property :id, Serial
-  property :title, String, :length => 24, :required => true, :default => ""
+  property :title, String, :length => 40, :required => true, :default => ""
   property :price, Decimal, :required => true, :scale => 2, :min => 1.00
   property :points, Integer, :required => true, :min => 1
   property :mode, Enum[:reward, :prize], :required => true, :default => :reward
