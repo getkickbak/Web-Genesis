@@ -320,7 +320,7 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var me = this;
       var startIndex = me.callBackStack['startIndex']++;
-      var length = me.earnPtsCallBackStack['callbacks'].length;
+      var length = me.callBackStack['callbacks'].length;
       for (var i = startIndex; i < length; i++)
       {
          if (me.callBackStack['callbacks'][i].apply(me, me.callBackStack['arguments']))
