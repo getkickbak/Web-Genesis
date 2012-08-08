@@ -7,13 +7,14 @@ Ext.define('Genesis.controller.client.Rewards',
       clientRewards_path : '/clientRewards'
    },
    xtype : 'clientRewardsCntlr',
-   models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
       mode : 'rewards',
+      models : ['PurchaseReward', 'CustomerReward'],
       routes :
       {
-         'scanAndWin' : 'scanAndWinPage'
+         'scanAndWin' : 'scanAndWinPage',
+         'signupPromotion' : 'signupPromotionPage'
       },
       refs :
       {
@@ -27,7 +28,18 @@ Ext.define('Genesis.controller.client.Rewards',
             autoCreate : true,
             xtype : 'clientrewardsview'
          },
-         price : 'clientrewardsview textfield'
+         price : 'clientrewardsview textfield',
+         //
+         // SignUp Promotion
+         //
+         signupPromotion :
+         {
+            selector : 'promotionalitemview',
+            autoCreate : true,
+            tag : 'signupPromotion',
+            xtype : 'promotionalitemview'
+         },
+         sDoneBtn : 'promotionalitemview[tag=signupPromotion] button[tag=done]'
       },
       control :
       {
@@ -35,15 +47,28 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             activate : 'onActivate',
             deactivate : 'onDeactivate'
+         },
+         signupPromotion :
+         {
+            activate : 'onSignupPromotionActivate',
+            deactivate : 'onSignupPromotionDeactivate'
+         },
+         sDoneBtn :
+         {
+            tap : 'onSignupPromotionDoneTap'
          }
       }
    },
-   loadCallback : null,
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
    checkinFirstMsg : 'Please Check-In before earning rewards',
    authCodeReqMsg : 'Proceed to scan an Authorization Code from your server to earn Reward Points!',
+   signupPromotionTitle : 'Signup Promotion',
    prizeCheckMsg : 'Play our Instant Win Game to find out how many Prize Points you won!',
    earnPtsMsg : 'Updating Points Earned ...',
+   signupPromotionMsg : function(points)
+   {
+      return 'You\'ve earned ' + points + ' Reward Points from Signing Up with this Merchant!';
+   },
    getPointsMsg : function(reward_info)
    {
       var points = reward_info['points'];
@@ -72,20 +97,17 @@ Ext.define('Genesis.controller.client.Rewards',
          callback : callback
       });
    },
-   referralPopUp : function(points, callback)
-   {
-      callback = callback || Ext.emptyFn;
-      Ext.device.Notification.show(
-      {
-         title : 'Referral Challenge',
-         message : this.getReferralMsg(points),
-         callback : callback
-      });
-   },
    init : function()
    {
       this.callParent(arguments);
       console.log("Client Rewards Init");
+
+      this.callBackStack =
+      {
+         callbacks : ['signupPromotionHandler', 'earnPtsHandler', 'referralHandler', 'scanAndWinHandler'],
+         arguments : [],
+         startIndex : 0
+      };
       //
       // Preload Pages
       //
@@ -168,7 +190,7 @@ Ext.define('Genesis.controller.client.Rewards',
             Ext.Viewport.setMasked(false);
             if (operation.wasSuccessful())
             {
-               me.loadCallback = [reader.metaData, operation];
+               me.fireEvent('triggerCallbacksChain');
             }
          }
       });
@@ -177,6 +199,105 @@ Ext.define('Genesis.controller.client.Rewards',
    // --------------------------------------------------------------------------
    // Rewards Page
    // --------------------------------------------------------------------------
+   signupPromotionHandler : function(metaData, customer, venue, merchantId)
+   {
+      var me = this;
+
+      var points = metaData['signup_points'];
+      var rc = Ext.isDefined(points) && (points > 0);
+
+      if (rc)
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Signup Promotion Alert!',
+            message : me.signupPromotionMsg(points),
+            callback : function()
+            {
+               me.redeemItem = Ext.create('Genesis.model.CustomerReward',
+               {
+                  'title' : me.signupPromotionTitle,
+                  'type' :
+                  {
+                     value : 'reward'
+                  },
+                  'points' : points,
+                  'time_limited' : false,
+                  'quantity_limited' : false,
+                  'merchant' : null
+               });
+               me.redirectTo('signupPromotion');
+            }
+         });
+      }
+
+      return rc;
+   },
+   earnPtsHandler : function(metaData, customer, venue, merchantId)
+   {
+      var me = this;
+      var info = metaData['reward_info'];
+      //
+      // Update points from the purchase or redemption
+      //
+
+      Ext.device.Notification.show(
+      {
+         title : 'Reward Points',
+         message : me.getPointsMsg(info),
+         callback : function()
+         {
+            me.fireEvent('triggerCallbacksChain');
+         }
+      });
+
+      return true;
+   },
+   referralHandler : function(metaData, customer, venue, merchantId)
+   {
+      var me = this;
+      //
+      // Update points from the purchase or redemption
+      //
+      var info = metaData['reward_info'];
+      var rc = Ext.isDefined(info['referral_points']) && (info['referral_points'] > 0);
+
+      if (rc)
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Referral Challenge',
+            message : me.getReferralMsg(points),
+            callback : function()
+            {
+               me.fireEvent('triggerCallbacksChain');
+            }
+         });
+      }
+
+      return rc;
+   },
+   scanAndWinHandler : function(metaData, customer, venue, merchantId)
+   {
+      var me = this;
+
+      if (venue)
+      {
+         var controller = me.getApplication().getController('client.Checkins');
+
+         console.debug("customer_id - " + customer.getId() + '\n' + //
+         "merchant_id - " + merchantId + '\n' + //
+         "venue - " + Ext.encode(metaData['venue']));
+         controller.fireEvent('setupCheckinInfo', 'explore', venue, customer, null);
+         //
+         // Clear Referral DB
+         //
+         Genesis.db.removeReferralDBAttrib("m" + merchantId);
+      }
+      me.redirectTo('scanAndWin');
+
+      return true;
+   },
    startRouletteScreen : function()
    {
       var scn = this.getRewards();
@@ -221,54 +342,21 @@ Ext.define('Genesis.controller.client.Rewards',
          me.checkReferralPrompt(earnPts, earnPts);
       }
    },
+   onSignupPromotionDoneTap : function(b, e, eOpts)
+   {
+      var me = this;
+      me.silentPopView(1);
+      me.fireEvent('triggerCallbacksChain');
+   },
    updateMetaData : function(metaData)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
       var customer = me.callParent(arguments);
-      var customerId = customer.getId();
-      //
-      // Update points from the purchase or redemption
-      //
-      //if (customer)
+      var venue = (metaData['venue']) ? Ext.create('Genesis.model.Venue', metaData['venue']) : viewport.getVenue();
+      var merchantId = metaData['merchant_id'] || venue.getMerchant().getId();
 
-      var exit = function()
-      {
-         var venue = (metaData['venue']) ? Ext.create('Genesis.model.Venue', metaData['venue']) : viewport.getVenue();
-         if (venue)
-         {
-            var controller = me.getApplication().getController('client.Checkins');
-            var merchantId = metaData['merchant_id'] || venue.getMerchant().getId();
-
-            console.debug("customer_id - " + customerId + '\n' + //
-            "merchant_id - " + merchantId + '\n' + //
-            "venue - " + Ext.encode(metaData['venue']));
-            controller.fireEvent('setupCheckinInfo', 'explore', venue, customer, null);
-            //
-            // Clear Referral DB
-            //
-            Genesis.db.removeReferralDBAttrib("m" + merchantId);
-         }
-         me.redirectTo('scanAndWin');
-      };
-      var info = metaData['reward_info'];
-      Ext.device.Notification.show(
-      {
-         title : 'Reward Points',
-         message : me.getPointsMsg(info),
-         callback : function()
-         {
-            if (Ext.isDefined(info['referral_points']) && (info['referral_points'] > 0))
-            {
-               me.referralPopUp(info['referral_points'], exit);
-            }
-            else
-            {
-               exit();
-            }
-         }
-      });
-
+      me.callBackStack['arguments'] = [metaData, customer, venue, merchantId];
       if (metaData['data'])
       {
          var controller = me.getApplication().getController('client.Prizes');
@@ -278,6 +366,8 @@ Ext.define('Genesis.controller.client.Rewards',
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
+      var metaData = me.callBackStack['arguments'][0]; // cache this object before deletion.
+      
       Ext.defer(function()
       {
          var container = me.getRewards();
@@ -290,12 +380,10 @@ Ext.define('Genesis.controller.client.Rewards',
          Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
          {
             console.debug("RouletteSound Done, checking for prizes ...");
-            controller.fireEvent('prizecheck', me.loadCallback[0], me.loadCallback[1]);
-            delete me.loadCallback;
+            controller.fireEvent('prizecheck', metaData);
          });
       }, 1, activeItem);
       //activeItem.createView();
-
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -304,6 +392,19 @@ Ext.define('Genesis.controller.client.Rewards',
    onContainerActivate : function(c, value, oldValue, eOpts)
    {
    },
+   onSignupPromotionActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+      var tbbar = activeItem.query('titlebar')[0];
+
+      tbbar.setTitle('Signup Promotion');
+      activeItem.redeemItem = me.redeemItem;
+      delete me.redeemItem;
+   },
+   onSignupPromotionDeactivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      this.fireEvent('triggerCallbacksChain');
+   },
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------
@@ -311,6 +412,11 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       var me = this;
       this.openPage('scanAndWin');
+   },
+   signupPromotionPage : function()
+   {
+      var me = this;
+      this.openPage('promotion');
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
@@ -344,6 +450,12 @@ Ext.define('Genesis.controller.client.Rewards',
          case 'rewards':
          {
             me.onEarnPts();
+            break;
+         }
+         case 'promotion' :
+         {
+            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+            me.pushView(me.getSignupPromotion());
             break;
          }
       }

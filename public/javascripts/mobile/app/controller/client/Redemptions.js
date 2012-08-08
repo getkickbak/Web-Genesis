@@ -10,7 +10,8 @@ Ext.define('Genesis.controller.client.Redemptions',
    controllerType : 'redemption',
    config :
    {
-      mode : 'redeemBrowse',
+      browseMode : 'redeemBrowse',
+      redeemMode : 'redeemReward',
       renderStore : 'RedemptionRenderCStore',
       redeemStore : 'RedeemStore',
       redeemPointsFn : 'setRedeemPointsURL',

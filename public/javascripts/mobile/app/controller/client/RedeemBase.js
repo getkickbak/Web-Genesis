@@ -10,7 +10,6 @@ Ext.define('Genesis.controller.client.RedeemBase',
    config :
    {
    },
-   lastMode : null,
    //orderTitle : 'Rewards List',
    //checkoutTitle : 'Check Out',
    needPointsMsg : function(pointsDiff)
@@ -91,7 +90,6 @@ Ext.define('Genesis.controller.client.RedeemBase',
       var venueId = venue.getId();
       var merchantId = venue.getMerchant().getId();
 
-      me.lastMode = me.getMode();
       me.exploreMode = !cvenue || (cvenue && (cvenue.getId() != venue.getId()));
 
       // Update Customer info
@@ -120,7 +118,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       var viewport = me.getViewPortCntlr();
 
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-      switch (this.getMode())
+      switch (me.getBrowseMode())
       {
          case 'redeemBrowse' :
          {
@@ -198,25 +196,16 @@ Ext.define('Genesis.controller.client.RedeemBase',
    onRedeemItemTap : function(b, e, eOpts, eInfo)
    {
       var me = this, venue = null;
-      var view = me.getMainPage();
-      var bypass = false;
+      var view = me.getRedeemMainPage();
       var title = view.query('titlebar')[0].getTitle();
+      var btn = b;
 
-      switch (me.getMode())
+      switch (me.getRedeemMode())
       {
-         /*
-          case 'redeemPrize' :
-          {
-          me.merchantId = view.getInnerItems()[0].getStore().first().getMerchant().getId();
-          break;
-          }
-          */
          case 'redeemPrize' :
          case 'redeemReward' :
          {
-            bypass = me.getMode() == 'redeemBrowseSC';
-         }
-         default :
+            var bypass = me.getBrowseMode() == 'redeemBrowseSC';
             var viewport = me.getViewPortCntlr();
             venue = viewport.getVenue();
             var cvenue = viewport.getCheckinInfo().venue;
@@ -228,23 +217,26 @@ Ext.define('Genesis.controller.client.RedeemBase',
                   title : title,
                   message : me.checkinFirstMsg
                });
-               return;
+            }
+            else
+            {
+               Ext.device.Notification.show(
+               {
+                  title : title,
+                  message : me.redeemItemConfirmMsg,
+                  buttons : ['Confirm', 'Cancel'],
+                  callback : function(b)
+                  {
+                     if (btn.toLowerCase() == 'confirm')
+                     {
+                        me.fireEvent('redeemitem', btn, venue, view);
+                     }
+                  }
+               });
             }
             break;
-      }
-      Ext.device.Notification.show(
-      {
-         title : title,
-         message : me.redeemItemConfirmMsg,
-         buttons : ['Confirm', 'Cancel'],
-         callback : function(btn)
-         {
-            if (btn.toLowerCase() == 'confirm')
-            {
-               me.fireEvent('redeemitem', b, venue, view);
-            }
          }
-      });
+      }
    },
    onRedeemItem : function(btn, venue, view)
    {
@@ -285,7 +277,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
    onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      var view = me.getMainPage();
+      var view = me.getRedeemMainPage();
       var viewport = me.getViewPortCntlr();
 
       var tbbar = activeItem.query('titlebar')[0];
@@ -311,17 +303,11 @@ Ext.define('Genesis.controller.client.RedeemBase',
    },
    onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      var me = this;
-      if (me.lastMode)
-      {
-         me.setMode(me.lastMode);
-         me.lastMode = null;
-      }
    },
    onDoneTap : function(b, e, eOpts, eInfo, overrideMode)
    {
       var me = this;
-      var view = me.getMainPage();
+      var view = me.getRedeemMainPage();
 
       if (view.isPainted() && !view.isHidden())
       {
@@ -369,7 +355,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
    {
       var me = this;
 
-      var view = me.getMainPage();
+      var view = me.getRedeemMainPage();
       var carousel = view.query('carousel')[0];
       var item = carousel ? carousel.getActiveItem() : view.getInnerItems()[0];
       var photo = item.query('component[tag=itemPhoto]')[0];
@@ -397,11 +383,11 @@ Ext.define('Genesis.controller.client.RedeemBase',
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
-   getMainPage : function()
+   getRedeemMainPage : function()
    {
       var me = this;
       var page = null;
-      switch (me.getMode())
+      switch (me.getRedeemMode())
       {
          case 'redeemPrize' :
          case 'redeemReward' :
@@ -410,6 +396,16 @@ Ext.define('Genesis.controller.client.RedeemBase',
             page = me.getRedeemItem();
             break;
          }
+      }
+
+      return page;
+   },
+   getBrowseMainPage : function()
+   {
+      var me = this;
+      var page = null;
+      switch (me.getBrowseMode())
+      {
          case 'redeemBrowse' :
          {
             me.setAnimationMode(Genesis.controller.ControllerBase.animationMode['cover']);
@@ -430,8 +426,16 @@ Ext.define('Genesis.controller.client.RedeemBase',
    {
       var me = this;
 
-      me.setMode(subFeature);
-      me.pushView(me.getMainPage());
+      if (subFeature.match(/Browse/))
+      {
+         me.setBrowseMode(subFeature);
+         me.pushView(me.getBrowseMainPage());
+      }
+      else
+      {
+         me.setRedeemMode(subFeature);
+         me.pushView(me.getRedeemMainPage());
+      }
    },
    isOpenAllowed : function()
    {

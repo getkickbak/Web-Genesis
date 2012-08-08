@@ -1,7 +1,7 @@
 Ext.define('Genesis.controller.client.Prizes',
 {
    extend : 'Genesis.controller.client.RedeemBase',
-   requires : ['Ext.data.Store', 'Genesis.view.client.Prizes', 'Genesis.view.client.Badges', 'Genesis.view.client.BadgeDetail'],
+   requires : ['Ext.data.Store', 'Genesis.view.client.Prizes', 'Genesis.view.client.Badges'],
    statics :
    {
       clientRedemption_path : '/clientPrizes',
@@ -13,7 +13,8 @@ Ext.define('Genesis.controller.client.Prizes',
    {
       timeoutPeriod : 10,
       minPrizePts : 1,
-      mode : 'redeemBrowse',
+      browseMode : 'redeemBrowse',
+      redeemMode : 'redeemPrize',
       renderStore : 'PrizeRenderCStore',
       redeemStore : 'PrizeStore',
       redeemPointsFn : 'setRedeemPrizePointsURL',
@@ -70,15 +71,16 @@ Ext.define('Genesis.controller.client.Prizes',
          //
          prizeCheckScreen : 'clientrewardsview',
          //
-         // Redemptions
+         // BadgeDetail
          //
          badgeDetail :
          {
-            selector : 'clientbadgedetailview',
+            selector : 'promotionalitemview',
             autoCreate : true,
-            xtype : 'clientbadgedetailview'
+            tag : 'badgeDetail',
+            xtype : 'promotionalitemview'
          },
-         bDoneBtn : 'clientbadgedetailview button[tag=done]'
+         bDoneBtn : 'promotionalitemview[tag=badgeDetail] button[tag=done]'
       },
       control :
       {
@@ -134,7 +136,6 @@ Ext.define('Genesis.controller.client.Prizes',
    scanPlayTitle : 'Scan And Play',
    evtFlag : 0,
    flag : 0,
-   badgePrizePopUpCallBackFn : Ext.emptyFn,
    loadCallback : null,
    initSound : false,
    authRewardVerifiedMsg : 'Verified',
@@ -153,7 +154,7 @@ Ext.define('Genesis.controller.client.Prizes',
    {
       return ('I\'ve just won enough Prize Points to redeem "' + prizeName + '" for eating out at ' + venueName + '!');
    },
-   getBadegePrizeMsg : function(points)
+   getBadgePrizeMsg : function(points)
    {
       return ('You\'ve been awarded an ' + Genesis.constants.addCRLF() + //
       'additional ' + points + ' Prize Points!' + Genesis.constants.addCRLF() + //
@@ -167,41 +168,17 @@ Ext.define('Genesis.controller.client.Prizes',
    {
       return ('You\'ve won ' + points + ' Prize Points!');
    },
-   badgePrizePopUp : function(badgeId, points, callback)
-   {
-      var me = this;
-      me.badgePrizePopUpCallBackFn = callback || Ext.emptyFn;
-      Ext.device.Notification.show(
-      {
-         title : 'Badge Promotion Alert!',
-         message : this.getBadegePrizeMsg(points),
-         callback : function()
-         {
-            var badge = Ext.StoreMgr.get('BadgeStore').getById(badgeId);
-            me.redeemItem = Ext.create('Genesis.model.CustomerReward',
-            {
-               'title' : badge.get('type').display_value,
-               'type' :
-               {
-                  value : 'badges'
-               },
-               'photo' :
-               {
-                  'thumbnail_ios_medium' : Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_large_url')
-               },
-               'points' : points,
-               'time_limited' : false,
-               'quantity_limited' : false,
-               'merchant' : null
-            });
-            me.redirectTo('badgeDetail');
-         }
-      });
-   },
    init : function()
    {
       var me = this;
       me.callParent(arguments);
+
+      me.earnPtsCallBackStack =
+      {
+         callbacks : ['eligibleForPrizeHandler', 'badgePrizePointsHandler', 'redeemPrizeHandler'],
+         arguments : [],
+         startIndex : 0
+      };
 
       console.log("Prizes Init");
    },
@@ -328,42 +305,84 @@ Ext.define('Genesis.controller.client.Prizes',
          'Post was not published to Facebook.');
       }
    },
-   redeemPrize : function(setFlag, prize, info, viewsPopLength)
+   removeViewHandler : function(metaData, viewsPopLength)
    {
       var me = this;
-      if ((me.flag |= setFlag) == 0x11)
+      if (viewsPopLength > 0)
       {
+         me.silentPopView(viewsPopLength);
+      }
+      me.popView();
+   },
+   redeemPrizeHandler : function(metaData, viewsPopLength)
+   {
+      var me = this;
+      var eligible = info['eligible_prize_id'] > 0;
+
+      if (eligible)
+      {
+         var info = metaData['reward_info'];
+         var prize = Ext.StoreMgr.get('PrizeStore').getById(info['eligible_prize_id']);
+
          me.fireEvent('showredeemprize', prize, info, viewsPopLength);
-         me.flag = 0;
+      }
+      else
+      {
+         me.removeViewHandler(metaData, viewsPopLength);
       }
    },
-   // --------------------------------------------------------------------------
-   // Event Handler
-   // --------------------------------------------------------------------------
-   onPrizeCheck : function(metaData, operation)
+   badgePrizePointsHandler : function(metaData, viewsPopLength)
    {
-      var me = this, prize;
-      var viewport = me.getViewPortCntlr();
+      var me = this;
       var info = metaData['reward_info'];
       var badgeId = metaData['account_info']['badge_id'];
-      var tryagain = function(setFlag, viewsPopLength)
+      var rc = info['badge_prize_points'] > 0;
+
+      if (rc)
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Badge Promotion Alert!',
+            message : me.getBadgePrizeMsg(info['badge_prize_points']),
+            callback : function()
+            {
+               var badge = Ext.StoreMgr.get('BadgeStore').getById(badgeId);
+               me.redeemItem = Ext.create('Genesis.model.CustomerReward',
+               {
+                  'title' : badge.get('type').display_value,
+                  'type' :
+                  {
+                     value : 'promotion'
+                  },
+                  'photo' :
+                  {
+                     'thumbnail_ios_medium' : Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_large_url')
+                  },
+                  'points' : info['badge_prize_points'],
+                  'time_limited' : false,
+                  'quantity_limited' : false,
+                  'merchant' : null
+               });
+
+               me.redirectTo('badgeDetail');
+            }
+         });
+      }
+
+      return rc;
+   },
+   eligibleForPrizeHandler : function(metaData, viewsPopLength)
+   {
+      var eligible = info['eligible_prize_id'] > 0;
+      var eligiblePrizeCallback = function(setFlag, viewsPopLength)
       {
          if ((me.flag |= setFlag) == 0x11)
          {
             me.flag = 0;
-            if (viewsPopLength > 0)
-            {
-               me.silentPopView(viewsPopLength);
-            }
-            me.popView();
+            me.fireEvent('triggerCallbacksChain');
          }
       }
-
-      me.stopRouletteBall();
-      //
-      // Minimum Prize Points
-      //
-      if (!Ext.isDefined(info['eligible_prize_id']) || (info['eligible_prize_id'] == 0))
+      if (!eligible)
       {
          console.log("No Prize to Show.");
 
@@ -371,29 +390,53 @@ Ext.define('Genesis.controller.client.Prizes',
          // Play the prize winning music!
          //
          Genesis.controller.ControllerBase.playSoundFile(//
-         viewport.sound_files['losePrizeSound'], Ext.bind(tryagain, me, [0x01, (info['badge_prize_points'] > 0) ? 1 : 0]));
+         viewport.sound_files['losePrizeSound'], Ext.bind(eligiblePrizeCallback, me, [0x01, viewsPopLength]));
 
          Ext.device.Notification.show(
          {
             title : me.scanPlayTitle + '!',
             message : me.gotMinPrizePtsMsg(info['prize_points']),
-            callback : function()
-            {
-               if (info['badge_prize_points'] > 0)
-               {
-                  Ext.defer(function()
-                  {
-                     me.badgePrizePopUp(badgeId, //
-                     info['badge_prize_points'], //
-                     Ext.bind(tryagain, me, [0x10, 1]));
-                  }, 1, me);
-               }
-               else
-               {
-                  tryagain(0x10, 0);
-               }
-            }
+            callback : Ext.bind(eligiblePrizeCallback, me, [0x10, viewsPopLength])
          });
+      }
+      else
+      {
+         //
+         // Play the prize winning music!
+         //
+         Genesis.controller.ControllerBase.playSoundFile(//
+         viewport.sound_files['winPrizeSound'], //
+         Ext.bind(eligiblePrizeCallback, me, [0x01, viewsPopLength]));
+
+         Ext.device.Notification.vibrate();
+         Ext.device.Notification.show(
+         {
+            title : me.scanPlayTitle + '!',
+            message : me.wonPrizeMsg(info),
+            callback : Ext.bind(eligiblePrizeCallback, me, [0x10, viewsPopLength])
+         });
+      }
+
+      return true;
+   },
+   // --------------------------------------------------------------------------
+   // Event Handler
+   // --------------------------------------------------------------------------
+   onPrizeCheck : function(metaData)
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      var info = metaData['reward_info'];
+
+      me.stopRouletteBall();
+
+      //
+      // Minimum Prize Points
+      //
+      if (!Ext.isDefined(info['eligible_prize_id']) || (info['eligible_prize_id'] == 0))
+      {
+         console.log("No Prize to Show.");
+         viewsPopLength = (info['badge_prize_points'] > 0) ? 1 : 0;
       }
       //
       // LumpSum Prize Points
@@ -401,43 +444,16 @@ Ext.define('Genesis.controller.client.Prizes',
       else
       {
          console.log("WON LumpSum Prize Points.");
-
-         var prize = Ext.StoreMgr.get('PrizeStore').getById(info['eligible_prize_id']);
-         //
-         // Play the prize winning music!
-         //
-         Genesis.controller.ControllerBase.playSoundFile(//
-         viewport.sound_files['winPrizeSound'], //
-         Ext.bind(me.redeemPrize, me, [0x01, prize, info, (info['badge_prize_points'] > 0) ? 2 : 1]));
-
-         Ext.device.Notification.vibrate();
-         Ext.device.Notification.show(
-         {
-            title : me.scanPlayTitle + '!',
-            message : me.wonPrizeMsg(info),
-            callback : function()
-            {
-               if (info['badge_prize_points'] > 0)
-               {
-                  Ext.defer(function()
-                  {
-                     me.badgePrizePopUp(badgeId, //
-                     info['badge_prize_points'], //
-                     Ext.bind(me.redeemPrize, me, [0x10, prize, info, 2]));
-                  }, 1, me);
-               }
-               else
-               {
-                  me.redeemPrize(0x10, prize, info, 1);
-               }
-            }
-         });
+         viewsPopLength = (info['badge_prize_points'] > 0) ? 2 : 1;
       }
+
+      me.callBackStack['arguments'] = [metaData, viewsPopLength];
+      me.fireEvent('triggerCallbacksChain');
    },
    onBadgeDetailDoneTap : function(b, e, eOpts)
    {
       var me = this;
-      me.badgePrizePopUpCallBackFn();
+      me.fireEvent('triggerCallbacksChain');
    },
    // --------------------------------------------------------------------------
    // Prizes Page
@@ -463,32 +479,28 @@ Ext.define('Genesis.controller.client.Prizes',
       var redeemItem = me.redeemItem = prize;
 
       me.silentPopView(viewsPopLength);
-      me.setMode('redeemPrize');
-      //Ext.defer(function()
+      me.setRedeemMode('redeemPrize');
+
+      me.stopRouletteScreen();
+      me.pushView(me.getRedeemMainPage());
+      //Update on Facebook
+      Genesis.fb.facebook_onLogin(function(params)
       {
-         me.stopRouletteScreen();
-
-         me.pushView(me.getMainPage());
-         //me.redeemItem get deleted
-
-         //Update on Facebook
-         Genesis.fb.facebook_onLogin(function(params)
+         if ((reward_info['eligible_prize_id']) && (reward_info['eligible_prize_id'] > 0))
          {
-            if ((reward_info['eligible_prize_id']) && (reward_info['eligible_prize_id'] > 0))
-            {
-               me.updatingPrizeOnFacebook(redeemItem);
-            }
-            if (reward_info['badge_prize_points'] > 0)
-            {
-               me.updatingBadgeOnFacebook(redeemItem);
-            }
-         }, false, me.updateOnFbMsg);
-      }
-      //,3 * 1000, me);
+            me.updatingPrizeOnFacebook(redeemItem);
+         }
+         if (reward_info['badge_prize_points'] > 0)
+         {
+            me.updatingBadgeOnFacebook(redeemItem);
+         }
+      }, false, me.updateOnFbMsg);
    },
    onBadgeDetailActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
+      var tbbar = activeItem.query('titlebar')[0];
+      tbbar.setTitle('Badge Promotion');
       activeItem.redeemItem = me.redeemItem;
    },
    onBadgeDetailDeactivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -513,14 +525,14 @@ Ext.define('Genesis.controller.client.Prizes',
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
-   getMainPage : function()
+   getRedeemMainPage : function()
    {
       var me = this;
       var page = me.callParent(arguments);
 
       if (!page)
       {
-         switch (me.getMode())
+         switch (me.getRedeemMode())
          {
             case 'badgeDetail' :
             {

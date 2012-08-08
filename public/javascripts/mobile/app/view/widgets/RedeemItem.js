@@ -228,7 +228,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
          switch (type.value)
          {
             case 'earn_points' :
-            case 'badges' :
+            case 'promotion' :
             {
                break;
             }

@@ -263,7 +263,7 @@ Ext.define('Genesis.controller.client.Accounts',
       var me = this;
       var mode = me.getMode();
       var tbbar = activeItem.query('titlebar')[0];
-      
+
       activeItem.mode = mode;
       switch(mode)
       {
@@ -434,21 +434,25 @@ Ext.define('Genesis.controller.client.Accounts',
                {
                   'venue_id' : venueId
                };
-               
-               for (var i = 0; i <records.length; i++)
+
+               for (var i = 0; i < records.length; i++)
                {
-                  records[i].setMerchant(venue.getMerchant());
+                  records[i].handleInlineAssociationData(
+                  {
+                     'merchant' : venue.getMerchant().raw
+                  });
+                  //records[i].setMerchant(venue.getMerchant());
                }
                viewport.setVenue(venue);
                switch(me.getMode())
                {
-               	 /*
-                  case 'profile' :
-                  {
-                     controller.fireEvent('checkinMerchant', 'explore', metaData, venueId, rec, operation, Ext.emptyFn);
-                     break;
-                  }
-                  */
+                  /*
+                   case 'profile' :
+                   {
+                   controller.fireEvent('checkinMerchant', 'explore', metaData, venueId, rec, operation, Ext.emptyFn);
+                   break;
+                   }
+                   */
                   case 'redeemRewardsProfile' :
                   case 'redeemPrizesProfile' :
                   default:

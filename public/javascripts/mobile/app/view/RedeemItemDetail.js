@@ -362,3 +362,32 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
       delete this.redeemItem;
    }
 });
+
+Ext.define('Genesis.view.PromotionItem',
+{
+   extend : 'Genesis.view.ShowRedeemItemDetail',
+   alias : 'widget.promotionalitemview',
+   config :
+   {
+      scrollable : undefined,
+      cls : 'redeemItemMain viewport',
+      layout : 'fit',
+      items : [
+      {
+         xtype : 'titlebar',
+         docked : 'top',
+         cls : 'navigationBarTop',
+         title : ' ',
+         defaults :
+         {
+            iconMask : true
+         },
+         items : [
+         {
+            align : 'right',
+            tag : 'done',
+            text : 'Done'
+         }]
+      }]
+   }
+});

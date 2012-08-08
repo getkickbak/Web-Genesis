@@ -233,9 +233,18 @@ Ext.define('Genesis.controller.ControllerBase',
          'scannedqrcode' : this.onScannedQRcode,
          'locationupdate' : this.onLocationUpdate,
          'openpage' : this.onOpenPage,
-         'updatemetadata' : this.updateMetaData
+         'updatemetadata' : this.updateMetaData,
+         'triggerCallbacksChain' : this.triggerCallbacksChain
       });
 
+      /*
+      this.callBackStack =
+      {
+         callbacks : ['signupPromotionHandler', 'earnPtsHandler', 'referralHandler', 'scanAndWinHandler'],
+         arguments : [],
+         startIndex : 0
+      };
+      */
       //
       // Forward all locally generated page navigation events to viewport
       //
@@ -307,6 +316,30 @@ Ext.define('Genesis.controller.ControllerBase',
    // --------------------------------------------------------------------------
    // Utility Functions
    // --------------------------------------------------------------------------
+   triggerCallbacksChain : function()
+   {
+      var me = this;
+      var startIndex = me.earnPtsCallBackStack['startIndex']++;
+      var length = me.earnPtsCallBackStack['callbacks'].length;
+      for (var i = startIndex; i < length; i++)
+      {
+         if (me.callBackStack['callbacks'][i].apply(me, me.earnPtsCallBackStack['arguments']))
+         {
+            //
+            // Break the chain and contine Out-of-Scope
+            //
+            break;
+         }
+      }
+      if (i >= (length - 1))
+      {
+         //
+         // End of Callback Chain
+         //
+         me.earnPtsCallBackStack['startIndex'] = 0;
+         me.earnPtsCallBackStack['arguments'] = [];
+      }
+   },
    updateBadges : function(badges)
    {
       var me = this;
