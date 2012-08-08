@@ -2,6 +2,23 @@
 <% end %>
 <% content_for :link do %>
 <% end %>
+<div style="display:none;">
+	<div id="price_per_point">
+		<%= current_merchant.reward_model.price_per_point %>
+	</div>
+	<div id="rebate_rate">
+		<%= current_merchant.reward_model.rebate_rate %>
+	</div>
+	<div id="price_per_prize_point">
+		<%= current_merchant.reward_model.price_per_prize_point %>
+	</div>
+	<div id="prize_rebate_rate">
+		<%= current_merchant.reward_model.prize_rebate_rate %>
+	</div>
+	<div id="badge_rebate_rate">
+		<%= APP_PROP["badge_rebate_rate"] %>
+	</div>
+</div>
 <%= simple_form_for @challenge, :html => { :class => 'form-horizontal' } do |f| %>
 <fieldset>
    <%= f.input :type_id, :collection => @available_challenge_types, :input_html => {:class=>"input-large"} %>
@@ -17,6 +34,7 @@
    <%= render "challenge_data", :f => builder, :type => @challenge.type.value %>
    <% end %>
    <% end %>
+   <%= f.input :reward_amount, :input_html => {:class=>"input-medium"} %>
    <%= f.input :points, :input_html => {:class=>"input-medium"} %>
    <%= f.input :venue_ids, :collection => current_merchant.venues.collect{ |p| [p.display_name, p.id, ] }, :as => :check_boxes, :checked => @venue_ids %>
    <br />

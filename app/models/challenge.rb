@@ -8,6 +8,7 @@ class Challenge
   property :description, String, :required => true, :default => ""
   property :require_verif, Boolean, :required => true, :default => false
   property :data, Object
+  property :reward_amount, Decimal, :required => true, :scale => 2, :min => 1.00
   property :points, Integer, :required => true, :min => 1
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -18,7 +19,7 @@ class Challenge
   attr_accessor :venue_ids
   attr_accessor :eager_load_type
   
-  attr_accessible :type_id, :name, :description, :require_verif, :data, :points
+  attr_accessible :type_id, :name, :description, :require_verif, :data, :reward_amount, :points
   
   belongs_to :merchant
   has 1, :challenge_to_type, :constraint => :destroy
@@ -38,6 +39,7 @@ class Challenge
       :name => challenge_info[:name].strip,
       :description => challenge_info[:description].strip,
       :require_verif => challenge_info[:require_verif],
+      :reward_amount => challenge_info[:reward_amount],
       :points => challenge_info[:points]
     )
     if challenge_info.include? :data
@@ -57,6 +59,7 @@ class Challenge
     self.type_id = type ? type.id : nil
     self.name = challenge_info[:name]
     self.description = challenge_info[:description]
+    self.reward_amount = challenge_info[:reward_amount]
     self.points = challenge_info[:points]   
     self.require_verif = challenge_info[:require_verif]
     if challenge_info.include? :data
@@ -74,6 +77,7 @@ class Challenge
     self.type = nil
     self.name = challenge_info[:name]
     self.description = challenge_info[:description]
+    self.reward_amount = challenge_info[:reward_amount]
     self.points = challenge_info[:points]
     self.require_verif = challenge_info[:require_verif]
     if challenge_info.include? :data

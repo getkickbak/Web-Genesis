@@ -331,53 +331,68 @@ namespace :db do
       end
       challenges = []
       challenge_type = ChallengeType.get(1)
+      reward_amount = rand(10) + 10
+      reward_points = reward_amount / merchant.reward_model.rebate_rate * 100
       challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.birthday.name"),
         :description => (I18n.t "challenge.type.birthday.description"),
         :require_verif => true,
-        :points => rand(10) + 10
+        :reward_amount => reward_amount,
+        :points => reward_points
       },
       venues)
       challenges << challenge
       challenge_type = ChallengeType.get(2)
+      reward_amount = rand(10) + 10
+      reward_points = reward_amount / merchant.reward_model.rebate_rate * 100
       challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.menu.name"),
         :description => ((I18n.t "challenge.type.menu.description") % [(I18n.t "challenge.type.menu.name")]),
         :require_verif => true,
-        :points => rand(10) + 10
+        :reward_amount => reward_amount,
+        :points => reward_points
       },
       venues)
       challenges << challenge
       challenge_type = ChallengeType.get(3)
+      reward_amount = rand(10) + 10
+      reward_points = reward_amount / merchant.reward_model.rebate_rate * 100
       challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.photo.name"),
         :description => (I18n.t "challenge.type.photo.description"),
         :require_verif => false,
-        :points => rand(10) + 10
+        :reward_amount => reward_amount,
+        :points => reward_points
       },
       venues)
       challenges << challenge
       challenge_type = ChallengeType.get(4)
+      reward_amount = rand(10) + 10
+      reward_points = reward_amount / merchant.reward_model.rebate_rate * 100
       challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.referral.name"),
         :description => (I18n.t "challenge.type.referral.description"),
-        :data => ActiveSupport::HashWithIndifferentAccess.new(:referral_points => rand(10) + 10),
+        :data => ActiveSupport::HashWithIndifferentAccess.new(:referral_reward_amount => reward_amount, :referral_points => reward_points),
         :require_verif => false,
-        :points => rand(10) + 10
+        :reward_amount => reward_amount,
+        :points => reward_points
       },
       venues)
       challenges << challenge
       challenge_type = ChallengeType.get(5)
+      reward_amount = rand(10) + 10
+      reward_points = reward_amount / merchant.reward_model.rebate_rate * 100
       challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.custom.name"),
         :description => (I18n.t "challenge.type.custom.description"),
         :require_verif => true,
-        :points => rand(10) + 10
+        :reward_amount => reward_amount,
+        :points => reward_points
       },
       venues)
       challenges << challenge

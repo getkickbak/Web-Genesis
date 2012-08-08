@@ -243,6 +243,8 @@ en:
       challenges:
         create_success: "Challenge was successfully created."
         update_success: "Challenge was successfully updated."
+        min_referral_amount: "Referral amount must be greater than 0."
+        min_referral_points: "Referral points must be greater than 0."
       credit_cards:
         create_success: "Credit card was successfully added."
         update_success: "Credit card was successfully updated."
