@@ -296,7 +296,7 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       me.redirectTo('scanAndWin');
 
-      return true;
+      return false;
    },
    startRouletteScreen : function()
    {
@@ -403,7 +403,6 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    onSignupPromotionDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      this.fireEvent('triggerCallbacksChain');
    },
    // --------------------------------------------------------------------------
    // Page Navigation

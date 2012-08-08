@@ -332,7 +332,7 @@ Ext.define('Genesis.controller.ControllerBase',
             break;
          }
       }
-      if (i >= (length - 1))
+      if (i >= length)
       {
          //
          // End of Callback Chain

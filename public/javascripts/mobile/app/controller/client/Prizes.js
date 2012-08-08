@@ -331,6 +331,8 @@ Ext.define('Genesis.controller.client.Prizes',
       {
          me.removeViewHandler(metaData, viewsPopLength);
       }
+      
+      return false;
    },
    badgePrizePointsHandler : function(metaData, viewsPopLength)
    {
