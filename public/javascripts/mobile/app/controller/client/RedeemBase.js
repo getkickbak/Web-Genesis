@@ -227,7 +227,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
                   buttons : ['Confirm', 'Cancel'],
                   callback : function(b)
                   {
-                     if (btn.toLowerCase() == 'confirm')
+                     if (b.toLowerCase() == 'confirm')
                      {
                         me.fireEvent('redeemitem', btn, venue, view);
                      }
