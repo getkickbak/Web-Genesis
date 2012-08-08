@@ -319,11 +319,11 @@ Ext.define('Genesis.controller.ControllerBase',
    triggerCallbacksChain : function()
    {
       var me = this;
-      var startIndex = me.earnPtsCallBackStack['startIndex']++;
+      var startIndex = me.callBackStack['startIndex']++;
       var length = me.earnPtsCallBackStack['callbacks'].length;
       for (var i = startIndex; i < length; i++)
       {
-         if (me.callBackStack['callbacks'][i].apply(me, me.earnPtsCallBackStack['arguments']))
+         if (me.callBackStack['callbacks'][i].apply(me, me.callBackStack['arguments']))
          {
             //
             // Break the chain and contine Out-of-Scope
@@ -336,8 +336,8 @@ Ext.define('Genesis.controller.ControllerBase',
          //
          // End of Callback Chain
          //
-         me.earnPtsCallBackStack['startIndex'] = 0;
-         me.earnPtsCallBackStack['arguments'] = [];
+         me.callBackStack['startIndex'] = 0;
+         me.callBackStack['arguments'] = [];
       }
    },
    updateBadges : function(badges)
