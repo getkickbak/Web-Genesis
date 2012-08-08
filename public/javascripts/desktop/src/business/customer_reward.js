@@ -11,7 +11,8 @@ $(document).ready($(function() {
 			if (mode == "reward") {
 				$("#customer_reward_points").val(parseInt(price / price_per_point / rebate_rate * 100));
 			} else {
-				$("#customer_reward_points").val(parseInt(price / price_per_prize_point / prize_rebate_rate * 100));
+				var badge_rebate_rate = parseFloat($("#badge_rebate_rate").html());
+				$("#customer_reward_points").val(parseInt(price / price_per_prize_point / prize_rebate_rate * 100 / (100 - badge_rebate_rate) * 100));
 			}
 
 		}

@@ -15,7 +15,7 @@ class Badge
   
   has 1, :badge_to_type, :constraint => :destroy
   has 1, :type, 'BadgeType', :through => :badge_to_type,  :via => :badge_type
-  has 1, :custom_type, 'MerchantBadgeType'
+  has 1, :custom_type, 'MerchantBadgeType', :constraint => :destroy
   
   def rank
     if self.custom
