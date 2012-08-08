@@ -283,7 +283,9 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             adjustment_ratio = APP_PROP["BADGE_REBATE_RATE"] / (100 - APP_PROP["BADGE_REBATE_RATE"])
             badge_prize_points_average = (reward_model.total_spend / reward_model.total_visits * next_badge.visits * adjustment_ratio / reward_model.price_per_prize_point).to_i
             badge_prize_points_diff = badge_prize_points_average / 2
-            badge_prize_points = Random.rand(badge_prize_points_average-badge_prize_points_diff..badge_prize_points_average+badge_prize_points_diff)
+            min_badge_prize_points = badge_prize_points_average - badge_prize_points_diff
+            max_badge_prize_points = badge_prize_points_average + badge_prize_points_diff
+            badge_prize_points = Random.rand(max_badge_prize_points - min_badge_prize_points + 1) + min_badge_prize_points
             @customer.badge = next_badge
             @customer.prize_points += badge_prize_points
             @customer.next_badge_visits = 0
