@@ -133,6 +133,7 @@ class Api::V1::ChallengesController < ApplicationController
               rewards = @venue.customer_rewards.all(:mode => :reward, :order => [ :points.asc ])
               eligible_for_reward = !Common.find_eligible_reward(rewards.to_a, @customer.points).nil?
               @customer.eligible_for_reward = eligible_for_reward
+              @customer.update_ts = now
               @customer.save
               @account_info[:eligible_for_reward] = eligible_for_reward
               render :template => '/api/v1/challenges/complete'

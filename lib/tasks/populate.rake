@@ -309,12 +309,12 @@ namespace :db do
       end
       prizes = []
       prize_subtype_id = [19, 1, 14, 35]
-      prize_names = {:entree => "Dinner For 2", :appetizer => "Special Appetizer", :drink => "3 Free Drinks", :custom => "$20 Gift Certificate"}
+      prize_names = {:entree => "Dinner For 2", :appetizer => "Special Appetizer", :drink => "3 Free Drinks", :custom => "$20 OFF Next Purchase"}
       prize_names.length.times do |i|
         id = prize_subtype_id[i]
         prize_sub_type = CustomerRewardSubtype.get(id)
         price = rand(10) + 10.75
-        points = (price / merchant.reward_model.price_per_prize_point / merchant.reward_model.prize_rebate_rate * 100 / (100 - APP_PROP["BADGE_REBATE_RATE"]) * 100).to_i
+        points = (price / merchant.reward_model.price_per_prize_point / merchant.reward_model.prize_rebate_rate * 100).to_i
         prize = CustomerReward.create(merchant,prize_sub_type,
         {
           :title => "#{prize_names[prize_sub_type.value.to_sym]}",

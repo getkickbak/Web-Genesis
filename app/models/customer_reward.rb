@@ -10,6 +10,7 @@ class CustomerReward
   property :mode, Enum[:reward, :prize], :required => true, :default => :reward
   property :quantity_limited, Boolean, :required  => true, :default => false
   property :quantity, Integer, :default => 0
+  property :quantity_count, Integer, :default => 0
   property :time_limited, Boolean, :required => true, :default => false
   property :expiry_date, Date, :default => ::Constant::MIN_DATE
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
