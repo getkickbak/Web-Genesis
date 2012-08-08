@@ -173,7 +173,7 @@ Ext.define('Genesis.controller.client.Prizes',
       var me = this;
       me.callParent(arguments);
 
-      me.earnPtsCallBackStack =
+      me.callBackStack =
       {
          callbacks : ['eligibleForPrizeHandler', 'badgePrizePointsHandler', 'redeemPrizeHandler'],
          arguments : [],
@@ -317,6 +317,7 @@ Ext.define('Genesis.controller.client.Prizes',
    redeemPrizeHandler : function(metaData, viewsPopLength)
    {
       var me = this;
+      var info = metaData['reward_info'];
       var eligible = info['eligible_prize_id'] > 0;
 
       if (eligible)
@@ -373,6 +374,9 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    eligibleForPrizeHandler : function(metaData, viewsPopLength)
    {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      var info = metaData['reward_info'];
       var eligible = info['eligible_prize_id'] > 0;
       var eligiblePrizeCallback = function(setFlag, viewsPopLength)
       {

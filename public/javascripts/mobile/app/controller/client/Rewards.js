@@ -202,8 +202,8 @@ Ext.define('Genesis.controller.client.Rewards',
    signupPromotionHandler : function(metaData, customer, venue, merchantId)
    {
       var me = this;
-
-      var points = metaData['signup_points'];
+      var info = metaData['reward_info'];
+      var points = info['signup_points'];
       var rc = Ext.isDefined(points) && (points > 0);
 
       if (rc)

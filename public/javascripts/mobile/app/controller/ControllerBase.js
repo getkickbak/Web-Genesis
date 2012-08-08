@@ -319,11 +319,12 @@ Ext.define('Genesis.controller.ControllerBase',
    triggerCallbacksChain : function()
    {
       var me = this;
-      var startIndex = me.callBackStack['startIndex']++;
+      var startIndex = me.callBackStack['startIndex'];
       var length = me.callBackStack['callbacks'].length;
       for (var i = startIndex; i < length; i++)
       {
-         if (me.callBackStack['callbacks'][i].apply(me, me.callBackStack['arguments']))
+         me.callBackStack['startIndex']++;
+         if (me[me.callBackStack['callbacks'][i]].apply(me, me.callBackStack['arguments']))
          {
             //
             // Break the chain and contine Out-of-Scope
