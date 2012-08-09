@@ -4,7 +4,7 @@ class EarnPrizeRecord
   include DataMapper::Resource
 
   property :id, Serial
-  property :type, Enum[:game, :badge], :required => true, :default => :draw
+  property :type, Enum[:game, :badge], :required => true, :default => :game
   property :venue_id, Integer, :required => true, :default => 0
   property :points, Integer, :required => true, :default => 0
   property :created_ts, DateTime, :required => true, :default => ::Constant::MIN_TIME
