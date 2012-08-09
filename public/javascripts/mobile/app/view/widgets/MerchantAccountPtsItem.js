@@ -110,12 +110,14 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             },
             getTitle : function(values)
             {
-               return 'Current Badge (<span class ="badgehighlight">' + values['_badgeType'].display_value + '</span>)';
+               return ('You are currently a <span class ="badgehighlight">' + //
+               values['_badgeType'].display_value.toUpperCase() + '</span>');
             },
             getProgress : function(values)
             {
                var customer = values['_customer'];
-               var nvisit = values['_nvisit'] = Ext.StoreMgr.get('BadgeStore').getById(customer.get('next_badge_id')).get('visits');
+               var nextBadge = values['_nextBadge'] = Ext.StoreMgr.get('BadgeStore').getById(customer.get('next_badge_id'));
+               var nvisit = values['_nvisit'] = nextBadge.get('visits');
                var tvisit = customer.get('next_badge_visits');
 
                return ('width:' + (tvisit / nvisit * 100) + '%;');
@@ -126,11 +128,14 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                var customer = values['_customer'];
                var nvisit = values['_nvisit'];
                var tvisit = customer.get('next_badge_visits');
+               var nextBadge = values['_nextBadge']; 
                delete values['_customer'];
+               delete values['_nextBadge'];
                delete values['_badgeType'];
                delete values['_nvisit'];
 
-               return tvisit + '/' + nvisit + ' visits to get your next badge!';
+               return ((nvisit - tvisit) + ' more visits to become a ' + //
+               nextBadge.get('type').display_value.toUpperCase() + '!');
             }
          })
       },
