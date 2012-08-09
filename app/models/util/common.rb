@@ -32,13 +32,13 @@ class Common
   end
 
   def self.generate_temp_file_path(filename)
-    "temp/#{filename}"  
+    "temp/#{filename}"
   end
-  
+
   def self.generate_full_temp_file_path(filename)
     get_photo_host+generate_temp_file_path(filename)
   end
-  
+
   def self.within_geo_distance?(user, latitude_1, longitude_1, latitude_2, longitude_2)
     if !APP_PROP["SIMULATOR_MODE"] && user.role != "test"
       cal_distance = 6371000 * Math.acos( Math.cos( Math.radians( latitude_1 ) ) * Math.cos( Math.radians( latitude_2 ) ) * Math.cos( Math.radians( longitude_2 ) - Math.radians( longitude_1 ) ) + Math.sin( Math.radians( latitude_1 ) ) * Math.sin( Math.radians( latitude_2 ) ) )
@@ -48,31 +48,31 @@ class Common
   end
 
   def self.register_user_device(user, device_info)
-    device = UserDevice.first(:device_id => device_info[:device_id])   
+    device = UserDevice.first(:device_id => device_info[:device_id])
     if device.nil?
       device = UserDevice.create(user, device_info)
     end
     return device
   end
-  
+
   def self.get_rewards(venue, mode)
     rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => venue.id }, :mode => mode, :order => [:points.asc])
     reward_id_to_subtype_id = {}
     reward_to_subtypes = CustomerRewardToSubtype.all(:fields => [:customer_reward_id, :customer_reward_subtype_id], :customer_reward => rewards)
     reward_to_subtypes.each do |reward_to_subtype|
       reward_id_to_subtype_id[reward_to_subtype.customer_reward_id] = reward_to_subtype.customer_reward_subtype_id
-    end       
-    rewards.each do |reward|
-      reward.eager_load_type = CustomerRewardSubtype.id_to_type[reward_id_to_subtype_id[reward.id]]       
     end
-    return rewards  
+    rewards.each do |reward|
+      reward.eager_load_type = CustomerRewardSubtype.id_to_type[reward_id_to_subtype_id[reward.id]]
+    end
+    return rewards
   end
-  
+
   def self.find_next_badge(badges, badge)
     idx = badges.bsearch_upper_boundary {|x| x.rank <=> badge.rank}
     badges[idx]
   end
-  
+
   def self.find_eligible_reward(rewards, points)
     idx = rewards.bsearch_lower_boundary {|x| x.points <=> points}
     idx = (idx == rewards.length ? rewards.length - 1 : idx)
@@ -82,7 +82,7 @@ class Common
     end
     return reward
   end
-  
+
   def self.populate_badges(merchant, user_agent)
     badges = merchant.badges
     if merchant.custom_badges
@@ -104,9 +104,9 @@ class Common
       end
     end
     populate_badge_type_images(user_agent, merchant.custom_badges, badge_types)
-    merchant.badges.sort_by { |b| b.rank }  
+    merchant.badges.sort_by { |b| b.rank }
   end
-  
+
   def self.populate_badge_type_images(user_agent, custom_badges, badge_types)
     type_ids = []
     badge_type_id_to_type = {}
@@ -114,41 +114,41 @@ class Common
       type_ids << badge_type.id
       badge_type_id_to_type[badge_type.id] = badge_type
     end
-    case user_agent  
-    when /iPhone/
-      agent = :phone
-    when /Android/
-      agent = :android  
+    case user_agent
+      when /iPhone/
+        agent = :phone
+      when /Android/
+        agent = :android
     else
-      agent = :iphone  
+    agent = :iphone
     end
     if custom_badges
       badge_type_images = MerchantBadgeTypeImage.all(:merchant_badge_type_id => type_ids, :user_agent => agent)
     else
       badge_type_images = BadgeTypeImage.all(:badge_type_id => type_ids, :user_agent => agent)
-    end  
+    end
     badge_type_images.each do |badge_type_image|
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_small_url = badge_type_image.thumbnail_small_url
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = badge_type_image.thumbnail_medium_url
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = badge_type_image.thumbnail_large_url
     end
-    
-    def self.get_news(venue)
-      newsfeed = []
-      promotions = Promotion.all(:merchant => venue.merchant)
-      promotions.each do |promotion|
-        newsfeed << News.new(
-          "",
-          0,
-          "",
-          "",
-          promotion.message
-        )
-      end
-      return newsfeed
-    end
   end
-  
+
+  def self.get_news(venue)
+    newsfeed = []
+    promotions = Promotion.all(:merchant => venue.merchant)
+    promotions.each do |promotion|
+      newsfeed << News.new(
+        "",
+        0,
+        "",
+        "",
+        promotion.message
+      )
+    end
+    return newsfeed
+  end
+
   private
 
   def self.get_photo_host_bucket
