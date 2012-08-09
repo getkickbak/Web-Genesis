@@ -73,7 +73,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
                getDisclaimer : function(values)
                {
                   var quantity = (values['quantity_limited']) ? //
-                  '<b>Quantity Left : ' + values['quantity'] + '</b><br/>' : //
+                  '<b>Quantity : ' + values['quantity'] + '</b><br/>' : //
                   'Limited Quantities. ';
                   var terms = values['Merchant']['reward_terms'] || '';
 
@@ -233,7 +233,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
                break;
             }
             default :
-               photo_url = Genesis.constants.getIconPath('fooditems', type.value);
+               photo_url = Genesis.constants.getIconPath('prizewon', type.value);
                //console.debug("Icon Path [" + photo_url + "]");
                break;
          }

@@ -110,7 +110,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             },
             getTitle : function(values)
             {
-               return ('You are currently a <span class ="badgehighlight">' + //
+               return ('You are currently our <span class ="badgehighlight">' + //
                values['_badgeType'].display_value.toUpperCase() + '</span>');
             },
             getProgress : function(values)
@@ -134,7 +134,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                delete values['_badgeType'];
                delete values['_nvisit'];
 
-               return ((nvisit - tvisit) + ' more visits to become a ' + //
+               return ((nvisit - tvisit) + ' more visits to be our ' + //
                nextBadge.get('type').display_value.toUpperCase() + '!');
             }
          })

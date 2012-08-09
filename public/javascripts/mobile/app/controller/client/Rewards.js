@@ -34,7 +34,7 @@ Ext.define('Genesis.controller.client.Rewards',
          //
          signupPromotion :
          {
-            selector : 'promotionalitemview',
+            selector : 'promotionalitemview[tag=signupPromotion]',
             autoCreate : true,
             tag : 'signupPromotion',
             xtype : 'promotionalitemview'
@@ -62,7 +62,7 @@ Ext.define('Genesis.controller.client.Rewards',
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
    checkinFirstMsg : 'Please Check-In before earning rewards',
    authCodeReqMsg : 'Proceed to scan an Authorization Code from your server to earn Reward Points!',
-   signupPromotionTitle : 'Signup Promotion',
+   signupPromotionTitle : 'Welcome!',
    prizeCheckMsg : 'Play our Instant Win Game to find out how many Prize Points you won!',
    earnPtsMsg : 'Updating Points Earned ...',
    signupPromotionMsg : function(points)
@@ -219,7 +219,11 @@ Ext.define('Genesis.controller.client.Rewards',
                   'title' : me.signupPromotionTitle,
                   'type' :
                   {
-                     value : 'reward'
+                     value : 'promotion'
+                  },
+                  'photo' :
+                  {
+                     'thumbnail_ios_medium' : Genesis.constants.getIconPath('prizewon', 'reward')
                   },
                   'points' : points,
                   'time_limited' : false,
@@ -397,7 +401,7 @@ Ext.define('Genesis.controller.client.Rewards',
       var me = this;
       var tbbar = activeItem.query('titlebar')[0];
 
-      tbbar.setTitle('Signup Promotion');
+      tbbar.setTitle('Signup Reward');
       activeItem.redeemItem = me.redeemItem;
       delete me.redeemItem;
    },

@@ -75,7 +75,7 @@ Ext.define('Genesis.controller.client.Prizes',
          //
          badgeDetail :
          {
-            selector : 'promotionalitemview',
+            selector : 'promotionalitemview[tag=badgeDetail]',
             autoCreate : true,
             tag : 'badgeDetail',
             xtype : 'promotionalitemview'
