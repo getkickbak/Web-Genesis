@@ -58,12 +58,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     end    
       
     @badges = Common.populate_badges(@venue.merchant, request.env['HTTP_USER_AGENT'])
-    @badges.each do |badge|
-      logger.debug(badge.eager_load_type.value)
-      logger.debug(badge.eager_load_type.thumbnail_small_url)
-      logger.debug(badge.eager_load_type.thumbnail_medium_url)
-      logger.debug(badge.eager_load_type.thumbnail_large_url)
-    end  
+      
     begin  
       Customer.transaction do
         if authorized

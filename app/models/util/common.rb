@@ -116,7 +116,7 @@ class Common
     end
     case user_agent
     when /iPhone/
-      agent = :phone
+      agent = :iphone
     when /Android/
       agent = :android
     else
