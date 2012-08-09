@@ -240,9 +240,9 @@ Ext.define('Genesis.controller.ControllerBase',
       /*
       this.callBackStack =
       {
-         callbacks : ['signupPromotionHandler', 'earnPtsHandler', 'referralHandler', 'scanAndWinHandler'],
-         arguments : [],
-         startIndex : 0
+      callbacks : ['signupPromotionHandler', 'earnPtsHandler', 'referralHandler', 'scanAndWinHandler'],
+      arguments : [],
+      startIndex : 0
       };
       */
       //
@@ -348,6 +348,7 @@ Ext.define('Genesis.controller.ControllerBase',
       if (badges)
       {
          // Update All Badges
+         //console.debug('badges - [' + Ext.encode(badges) + ']');
          bstore.setData(badges);
          //me.persistSyncStores('BadgeStore');
       }
