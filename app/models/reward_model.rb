@@ -4,7 +4,8 @@ class RewardModel
   include DataMapper::Resource
   
   property :id, Serial
-  property :signup_points, Integer, :required => true, :default => 0
+  property :signup_amount, Decimal, :required => true, :min => 1.00
+  property :signup_points, Integer, :required => true, :min => 1
   property :rebate_rate, Integer, :required => true, :min => 1
   property :prize_rebate_rate, Integer, :required => true, :min => 1
   property :price_per_point, Decimal, :scale => 2, :min => 1.00, :default => 1.00
@@ -16,13 +17,14 @@ class RewardModel
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false  
   
-  attr_accessible :signup_points, :rebate_rate, :prize_rebate_rate, :price_per_point, :price_per_prize_point
+  attr_accessible :signup_amount, :signup_points, :rebate_rate, :prize_rebate_rate, :price_per_point, :price_per_prize_point
   
   belongs_to :merchant
   
   def self.create(merchant, reward_model_info)
     now = Time.now
     reward_model = RewardModel.new(
+      :signup_amount => reward_model_info[:signup_amount],
       :signup_points => reward_model_info[:signup_points],
       :rebate_rate => reward_model_info[:rebate_rate],
       :prize_rebate_rate => reward_model_info[:prize_rebate_rate]
@@ -38,6 +40,7 @@ class RewardModel
   
   def update(reward_model_info)
     now = Time.now
+    self.signup_amount = reward_model_info[:signup_amount]
     self.signup_points = reward_model_info[:signup_points]
     self.rebate_rate = reward_model_info[:rebate_rate]
     self.prize_rebate_rate = reward_model_info[:prize_rebate_rate]
