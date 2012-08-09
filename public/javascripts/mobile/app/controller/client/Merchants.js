@@ -321,11 +321,12 @@ Ext.define('Genesis.controller.client.Merchants',
       me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();
       me.getMainBtn()[(activeItem.showMainBtn) ? 'show':'hide']();
       var prizeBtn = me.getPrizesBtn();
-      if (!Customer.isValidCustomer(crecord))
+      //if (!Customer.isValidCustomer(crecord))
       {
          prizeBtn.setIcon('');
          prizeBtn.setIconCls('prizes');
       }
+      /*
       else
       {
          var type = Ext.StoreMgr.get('BadgeStore').getById(crecord.get('badge_id')).get('type');
@@ -333,6 +334,7 @@ Ext.define('Genesis.controller.client.Merchants',
          prizeBtn.setIconCls('prizeicon');
          prizeBtn.setIcon(Genesis.view.client.Badges.getPhoto(type, 'thumbnail_small_url'));
       }
+      */
       me.getPrizesBtn().setBadgeText(crecord.get('eligible_for_prize') ? '✔' : null);
       me.getRedeemBtn().setBadgeText(crecord.get('eligible_for_reward') ? '✔' : null);
 
