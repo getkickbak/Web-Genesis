@@ -3,8 +3,12 @@ class Api::V1::PurchaseRewardsController < ApplicationController
   
   def earn
     @venue_id = params[:venue_id]
-    encrypted_data = params[:data].split('$')
-    @venue = Venue.get(encrypted_data[0]) || not_found
+    if APP_PROP["SIMULATOR_MODE"]
+      @venue = Venue.get(@venue_id) || not_found
+    else  
+      encrypted_data = params[:data].split('$')
+      @venue = Venue.get(encrypted_data[0]) || not_found
+    end
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
