@@ -252,7 +252,8 @@ namespace :db do
       )
       RewardModel.create(merchant,
       {
-        :signup_points => 100,
+        :signup_amount => 10,
+        :signup_points => 10 / 10 * 100,
         :rebate_rate => 10,
         :prize_rebate_rate => 10
       })
