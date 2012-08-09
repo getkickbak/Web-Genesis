@@ -119,8 +119,9 @@ class Common
         agent = :phone
       when /Android/
         agent = :android
-    else
-    agent = :iphone
+      else
+        agent = :iphone
+      end  
     end
     if custom_badges
       badge_type_images = MerchantBadgeTypeImage.all(:merchant_badge_type_id => type_ids, :user_agent => agent)
