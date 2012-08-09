@@ -42,7 +42,7 @@ class Common
   def self.within_geo_distance?(user, latitude_1, longitude_1, latitude_2, longitude_2)
     if !APP_PROP["SIMULATOR_MODE"] && user.role != "test"
       cal_distance = 6371000 * Math.acos( Math.cos( Math.radians( latitude_1 ) ) * Math.cos( Math.radians( latitude_2 ) ) * Math.cos( Math.radians( longitude_2 ) - Math.radians( longitude_1 ) ) + Math.sin( Math.radians( latitude_1 ) ) * Math.sin( Math.radians( latitude_2 ) ) )
-      return cal_distance <= 100
+    return cal_distance <= 100
     end
     return true
   end
@@ -115,12 +115,12 @@ class Common
       badge_type_id_to_type[badge_type.id] = badge_type
     end
     case user_agent
-      when /iPhone/
-        agent = :phone
-      when /Android/
-        agent = :android
+    when /iPhone/
+      agent = :iphone
+    when /Android/
+      agent = :android
     else
-    agent = :iphone
+      agent = :iphone
     end
     if custom_badges
       badge_type_images = MerchantBadgeTypeImage.all(:merchant_badge_type_id => type_ids, :user_agent => agent)
@@ -139,11 +139,11 @@ class Common
     promotions = Promotion.all(:merchant => venue.merchant)
     promotions.each do |promotion|
       newsfeed << News.new(
-        "",
-        0,
-        "",
-        "",
-        promotion.message
+      "",
+      0,
+      "",
+      "",
+      promotion.message
       )
     end
     return newsfeed

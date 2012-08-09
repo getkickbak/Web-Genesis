@@ -49,7 +49,7 @@ class Api::V1::CheckInsController < ApplicationController
     end
     
     @badges = Common.populate_badges(@venue.merchant, request.env['HTTP_USER_AGENT'])
-        
+       
     begin
       CheckIn.transaction do
         now = Time.now
