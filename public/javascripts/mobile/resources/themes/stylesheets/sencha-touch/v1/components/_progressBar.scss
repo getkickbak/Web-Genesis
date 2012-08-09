@@ -17,7 +17,7 @@
       //margin: -1px;
       height: 100%;
       //border: 1px solid $GreyEnd;
-      @include custom-linear-gradient($GreyHdrStart 10%, $GreyHdrEnd 85%, top);
+      @include custom-linear-gradient($OrangeEnd 10%, lighten($OrangeStart, 15%) 85%, top);
    }
 
    .progressBarValue {
