@@ -348,7 +348,7 @@ Ext.define('Genesis.controller.ControllerBase',
       if (badges)
       {
          // Update All Badges
-         console.debug('badges - [' + Ext.encode(badges) + ']');
+         //console.debug('badges - [' + Ext.encode(badges) + ']');
          bstore.setData(badges);
          //me.persistSyncStores('BadgeStore');
       }
