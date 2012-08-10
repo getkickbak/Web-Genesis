@@ -20,7 +20,7 @@ Ext.define('Genesis.view.widgets.ListField',
        * @hide
        * @accessor
        */
-      clearIcon : false,
+      clearIcon : true,
       iconCls : '',
       readOnly : false
    },

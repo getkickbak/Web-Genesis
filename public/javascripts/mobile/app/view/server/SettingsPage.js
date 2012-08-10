@@ -52,9 +52,7 @@ Ext.define('Genesis.view.server.SettingsPage',
          }]
       }]
    },
-   cleanView : function()
-   {
-   },
+   cleanView : Ext.emptyFn,
    /**
     * Removes all items currently in the Container, optionally destroying them all
     * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component

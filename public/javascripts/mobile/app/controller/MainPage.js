@@ -17,7 +17,7 @@ Ext.define('Genesis.controller.MainPage',
          'signin' : 'signInPage',
          'createAccount' : 'createAccountPage',
       },
-      models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'News', 'Customer', 'User', 'Merchant', 'CustomerReward'],
+      models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'Customer', 'User', 'Merchant', 'CustomerReward'],
       refs :
       {
          // Login Page

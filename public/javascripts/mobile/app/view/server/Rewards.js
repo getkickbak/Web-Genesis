@@ -207,7 +207,7 @@ Ext.define('Genesis.view.server.Rewards',
                photo_url = Genesis.constants.getIconPath('miscicons', type.value);
                break;
             default :
-               photo_url = Genesis.constants.getIconPath('fooditems', type.value);
+               photo_url = Genesis.constants.getIconPath('prizewon', type.value);
                break;
          }
          return photo_url;

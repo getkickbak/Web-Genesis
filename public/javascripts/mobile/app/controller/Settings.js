@@ -177,12 +177,12 @@ Ext.define('Genesis.controller.Settings',
       {
          case 'client' :
          {
-            page = this.getClientSettingsPage();
+            page = me.getClientSettingsPage();
             break;
          }
          case 'server' :
          {
-            page = this.getServerSettingsPage();
+            page = me.getServerSettingsPage();
             break;
          }
       }
