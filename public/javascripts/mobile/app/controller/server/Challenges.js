@@ -7,9 +7,9 @@ Ext.define('Genesis.controller.server.Challenges',
       serverRedemption_path : '/serverChallenges'
    },
    xtype : 'serverChallengesCntlr',
-   models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
+      models : ['PurchaseReward', 'CustomerReward'],
       refs :
       {
          //

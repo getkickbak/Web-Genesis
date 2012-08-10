@@ -1,7 +1,7 @@
 Ext.define('Genesis.controller.ControllerBase',
 {
    extend : 'Ext.app.Controller',
-   requires : ['Ext.data.Store', 'Ext.util.Geolocation', 'Genesis.model.Badge'],
+   requires : ['Ext.data.Store', 'Ext.util.Geolocation'],
    config :
    {
       animationMode : null
