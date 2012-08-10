@@ -35,6 +35,9 @@
       &:before {
          @if $include-highlights { background: -webkit-gradient(linear, 0% 0%, 100% 0%, from(rgba($form-field-bg-color, 0)), color-stop(.5, rgba($form-field-bg-color, 1))); }
       }
+      .x-field-input .x-clear-icon {
+         background:none;
+      }
    }
 }
 
