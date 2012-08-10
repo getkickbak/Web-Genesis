@@ -14,10 +14,6 @@ points_expiration_reminders:
   cron: 0 0 1 * *
   class: PointsExpirationReminders
   description: Points Expiration Reminders
-prize_expiration_reminders:
-  cron: 0 1 * * *
-  class: PrizeExpirationReminders
-  description: Prize Expiration Reminders
 voucher_expiration_reminders:
   cron: 0 1 * * *
   class: VoucherExpirationReminders

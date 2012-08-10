@@ -43,28 +43,6 @@ module Business
       end    
     end
     
-    def update_prize_auth_code
-      @merchant = current_merchant
-      authorize! :update, @merchant
-
-      begin
-        Merchant.transaction do
-          @merchant.update_prize_auth_code()
-          respond_to do |format|
-            format.html { redirect_to(:action => "show", :notice => t("business.merchants.update_success")) }
-          #format.xml  { head :ok }
-          end
-        end
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        @merchant = e.resource
-        respond_to do |format|
-          format.html { render :action => "edit" }
-          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
-        end
-      end  
-    end
-    
     def photo
       @merchant = current_merchant  
       authorize! :read, @merchant  
