@@ -49,7 +49,7 @@ Ext.define('Genesis.controller.MainPage',
          mainCarousel : 'mainpageview',
          shortcutTabBar : 'mainpageview tabbar',
          infoBtn : 'button[tag=info]',
-         redeemBtn : 'mainpageview tabbar[cls=navigationBarBottom] button[tag=redemptionSC]'
+         prizesBtn : 'mainpageview tabbar[cls=navigationBarBottom] button[tag=prizesSC]'
       },
       control :
       {
@@ -341,13 +341,13 @@ Ext.define('Genesis.controller.MainPage',
          for (var i = 0; i < customers.length; i++)
          {
             var customer = customers[i];
-            if (customer.get('eligible_for_reward'))
+            if (customer.get('eligible_for_prize'))
             {
                showIcon = true;
                break;
             }
          }
-         this.getRedeemBtn().setBadgeText(showIcon ? '✔' : null);
+         this.getPrizesBtn().setBadgeText(showIcon ? '✔' : null);
       }
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)

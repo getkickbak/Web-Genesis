@@ -15,11 +15,11 @@
          "pageCntlr": "client.Checkins",
          "subFeature": "explore"
       }, {
-         "name": "Prizes",
-         "photo_url": "resources/themes/images/v1/mainicons/prizes.png",
-         "desc": "Shortcut to Redeem Prizes",
-         "pageCntlr": "client.Prizes",
-         "route" : "redeemPrizesChooseSC"
+         "name": "Rewards",
+         "photo_url": "resources/themes/images/v1/mainicons/rewards.png",
+         "desc": "Shortcut to Redeem Rewards",
+         "pageCntlr": "client.Redemptions",
+         "route" : "redeemRewardsChooseSC"
       }, {
          "name": "KickBak",
          "photo_url": "resources/themes/images/v1/mainicons/tocheckedinmerch.png",

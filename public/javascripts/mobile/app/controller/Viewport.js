@@ -64,6 +64,10 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'onPrizesButtonTap'
          },
+         'tabbar[cls=navigationBarBottom] button[tag=prizesSC]' :
+         {
+            tap : 'onRedeemPrizesSCButtonTap'
+         },
          'tabbar[cls=navigationBarBottom] button[tag=accounts]' :
          {
             tap : 'onAccountsButtonTap'

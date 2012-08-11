@@ -78,7 +78,7 @@ Ext.define('Genesis.view.MainPage',
                   layout :
                   {
                      pack : 'justify',
-                     align : 'stretch'
+                     align : 'center'
                   },
                   /*
                    scrollable :
@@ -89,9 +89,9 @@ Ext.define('Genesis.view.MainPage',
                    */
                   defaults :
                   {
-                     flex : 1,
+                     //flex : 1,
                      iconMask : true,
-                     iconAlign : 'left'
+                     iconAlign : 'top'
                   },
                   items : [
                   {
@@ -117,10 +117,10 @@ Ext.define('Genesis.view.MainPage',
                      xtype : 'spacer'
                   },
                   {
-                     iconCls : 'redeem',
+                     iconCls : 'prizes',
                      badgeCls : 'x-badge round',
-                     tag : 'redemptionSC',
-                     title : 'Rewards'
+                     tag : 'prizesSC',
+                     title : 'Prizes'
                   }]
                });
             }
@@ -221,7 +221,7 @@ Ext.define('Genesis.view.MainPage',
                   },
                   isEligible : function(values)
                   {
-                     var eligible = (values['pageCntlr'] == 'client.Prizes');
+                     var eligible = (values['pageCntlr'] == 'client.Redemptions');
                      var showIcon = false;
 
                      if (eligible)
@@ -230,7 +230,7 @@ Ext.define('Genesis.view.MainPage',
                         for (var i = 0; i < customers.length; i++)
                         {
                            var customer = customers[i];
-                           if (customer.get('eligible_for_prize'))
+                           if (customer.get('eligible_for_reward'))
                            {
                               showIcon = true;
                               break;
@@ -262,13 +262,13 @@ Ext.define('Genesis.view.MainPage',
          for (var i = 0; i < customers.length; i++)
          {
             var customer = customers[i];
-            if (customer.get('eligible_for_prize'))
+            if (customer.get('eligible_for_reward'))
             {
                eligible = true;
                break;
             }
          }
-         var dom = Ext.DomQuery.select('span[data=client.Prizes]',carousel.query('dataview')[0].element.dom)[0];
+         var dom = Ext.DomQuery.select('span[data=client.Redemptions]',carousel.query('dataview')[0].element.dom)[0];
          if (eligible)
          {
             dom.innerHTML = count;
