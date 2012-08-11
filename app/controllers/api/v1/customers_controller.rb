@@ -13,18 +13,18 @@ class Api::V1::CustomersController < ApplicationController
   def show_jackpot_winners
     authorize! :read, Venue
     
-    winner_records = EarnPrizeRecord.all(:fields => [:user_id, :points], EarnPrizeRecord.merchant.id => params[:merchant_id], :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+    winner_records = EarnPrizeRecord.all(:fields => [:user_id, :points, :created_ts], EarnPrizeRecord.merchant.id => params[:merchant_id], :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     winner_ids = []
     winner_id_to_points = {}
     winner_records.each do |winner_record|
       user_id = winner_record[:user_id]
       winner_ids << user_id
-      winner_id_to_points[user_id] = winner_record[:points]
+      winner_id_to_record[user_id] = winner_record
     end
     users = User.all(:id => winner_ids)
     @jackpot_winners = []
     users.each do |user|
-      @jackpot_winners << { :name => user.name, :facebook_id => user.facebook_id, :points => winner_id_to_points[user.id] }
+      @jackpot_winners << { :name => user.name, :facebook_id => user.facebook_id, :points => winner_id_to_record[user.id][:points], :time => winner_id_to_record[user.id][:created_ts].to_i*1000}
     end
     render :template => '/api/v1/customers/show_jackpot_winners'  
   end
