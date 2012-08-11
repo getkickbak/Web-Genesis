@@ -5,7 +5,7 @@ module Business
     default :from => "KICKBAK <mail@getkickbak.com>"
     def contact_email(contact)
       @contact = contact
-      mail(:from => "#{@contact.name} <#{@contact.email}>", :to => 'business_help@getkickbak.com', :subject => @contact.topic)
+      mail(:from => "#{@contact.name} <#{@contact.email}>", :to => 'help@getkickbak.com', :subject => @contact.topic)
     end
 
     def summary_newsletter_email(merchant, stats)
