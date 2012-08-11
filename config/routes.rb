@@ -111,6 +111,7 @@ Genesis::Application.routes.draw do
         resources :customers, :only => [:index] do
           post "transfer_points", :on => :collection
           post "receive_points", :on => :collection
+          get "show_jackpot_winners", :on => :collection    
         end
                 
         match "/sign_up" => 'registrations#create', :via => :post
@@ -131,7 +132,7 @@ Genesis::Application.routes.draw do
         match '/customer_rewards' => 'customer_rewards#index'
         match '/customer_rewards/:id/redeem' => 'customer_rewards#redeem', :via => :post
 
-        match '/purchase_rewards/earn' => 'purchase_rewards#earn', :via => :post        
+        match '/purchase_rewards/earn' => 'purchase_rewards#earn', :via => :post     
       end
     end
   

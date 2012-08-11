@@ -8,7 +8,7 @@ end
 node :metaData do
 	{ 
 		:venue_id => @venue.id,
-		:prizes_count => @prizes_count,
+		:prize_jackpots => @prize_jackpots,
 		:badges => (
 			@badges.map do |r|
 				partial('api/v1/customers/badge', :object => r)

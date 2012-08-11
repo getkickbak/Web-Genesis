@@ -54,7 +54,7 @@ class Api::V1::CheckInsController < ApplicationController
       CheckIn.transaction do
         now = Time.now
         last_check_in = CheckIn.create(@venue, current_user, @customer)
-        @prizes_count = RedeemRewardRecord.count(RedeemRewardRecord.merchant.id => @venue.merchant.id, :mode => :prize, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+        @prize_jackpots = EarnPrizeRecord.count(EarnPrizeRecord.merchant.id => @venue.merchant.id, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
         @next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
         @account_info = { :badge_id => @customer.badge.id, :next_badge_id => @next_badge.id }
         @rewards = Common.get_rewards(@venue, :reward)

@@ -20,7 +20,7 @@ class Api::V1::VenuesController < ApplicationController
       @next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)  
       @account_info = { :badge_id => @customer.badge.id, :next_badge_id => @next_badge.id }
     end
-    @prizes_count = RedeemRewardRecord.count(RedeemRewardRecord.merchant.id => @venue.merchant.id, :mode => :prize, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+    @prize_jackpots = EarnPrizeRecord.count(EarnPrizeRecord.merchant.id => @venue.merchant.id, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     @rewards = Common.get_rewards(@venue, :reward)
     @prizes = Common.get_rewards(@venue, :prize)
     @newsfeed = Common.get_news(@venue)
@@ -35,7 +35,7 @@ class Api::V1::VenuesController < ApplicationController
     longitude = params[:longitude].to_f
     @venue = Venue.find_nearest(current_user, @merchant.id, latitude, longitude, 1).first
     @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id)
-    @prizes_count = RedeemRewardRecord.count(RedeemRewardRecord.merchant.id => @merchant.id, :mode => :prize, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+    @prize_jackpots = EarnPrizeRecord.count(EarnPrizeRecord.merchant.id => @venue.merchant.id, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     @badges = Common.populate_badges(@venue.merchant, request.env['HTTP_USER_AGENT'])
     @next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
     @account_info = { :badge_id => @customer.badge.id, :next_badge_id => @next_badge.id }

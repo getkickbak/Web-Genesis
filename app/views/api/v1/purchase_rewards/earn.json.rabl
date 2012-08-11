@@ -7,6 +7,7 @@ node :metaData do
 		:merchant_id => @venue.merchant.id,
 		:customer_id => @customer.id,
 		:venue => (partial('api/v1/venues/base', object => @venue) if (@venue_id == 0 || @venue_id.nil?)),
+		:prize_jackpots => @prize_jackpots,
 		:badges => (
 			@badges.map do |r|
 				partial('api/v1/customers/badge', :object => r)

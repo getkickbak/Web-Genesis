@@ -320,6 +320,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             badge_prize_trans_record.user = current_user
             badge_prize_trans_record.save
           end
+          @prize_jackpots = EarnPrizeRecord.count(EarnPrizeRecord.merchant.id => @venue.merchant.id, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
           @account_info = {}
           @account_info[:visits] = @customer.visits
           @account_info[:next_badge_visits] = @customer.next_badge_visits
