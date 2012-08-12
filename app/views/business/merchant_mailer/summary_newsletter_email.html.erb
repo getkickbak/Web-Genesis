@@ -52,6 +52,9 @@
 											<td align="left" style="padding:10px 10px 10px 0px;">Total loyalty spend:</td><td align="center" style="font-size:16px;"><b>$<%= "%0.2f" % @stats[:total_spend] %></b></td>
 										</tr>
 										<tr>
+											<td align="left" style="padding:10px 10px 10px 0px;">Average loyalty spend:</td><td align="center" style="font-size:16px;"><b>$<%= "%0.2f" % @stats[:average_spend] %></b></td>
+										</tr>
+										<tr>
 											<td align="left" style="padding:10px 10px 10px 0px;">New loyalty spend total this week:</td><td align="center" style="font-size:16px;"><b>$<%= "%0.2f" % @stats[:new_total_spend] %></b></td>
 										</tr>
 										<tr>
@@ -139,7 +142,7 @@
 												<tr>
 													<td align="left" style="padding:10px 10px 9px;border:0 !important;"><%= challenge[:name] %></td>
 													<td align="center" style="padding:10px 10px 9px;border:0 !important;"><%= challenge[:count] %></td>
-													<td align="center" style="padding:10px 10px 9px;border:0 !important;"><%= "#{challenge[:percentage]}%" %></td>
+													<td align="center" style="padding:10px 10px 9px;border:0 !important;"><%= "%0.2f" % challenge[:percentage] %>%</td>
 												</tr>
 												<% end %>
 											</table></td>
@@ -161,7 +164,7 @@
 												<tr>
 													<td align="left" style="padding:10px 10px 9px;border:0 !important;"><%= challenge[:name] %></td>
 													<td align="center" style="padding:10px 10px 9px;border:0 !important;"><%= challenge[:count] %></td>
-													<td align="center" style="padding:10px 10px 9px;border:0 !important;"><%= "#{challenge[:percentage]}%" %></td>
+													<td align="center" style="padding:10px 10px 9px;border:0 !important;"><%= "%0.2f" % challenge[:percentage] %>%</td>
 												</tr>
 												<% end %>
 											</table></td>
