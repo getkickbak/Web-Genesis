@@ -529,17 +529,18 @@ Ext.define('Genesis.controller.ControllerBase',
          //
          // Winners' Circle'
          //
-         var prizesCount = metaData['prizes_count'];
-         if (prizesCount >= 0)
+         var prizeJackpotsCount = metaData['prize_jackpots'];
+         if (prizeJackpotsCount >= 0)
          {
-            console.debug("Prizes won redeemed by customers at this merchant this month - [" + prizesCount + "]");
-            viewport.getVenue().set('prizes_count', prizesCount);
+            console.debug("Prize Jackpots won customers at this merchant this month - [" + prizeJackpotsCount + "]");
+            viewport.getVenue().set('prize_jackpots', prizeJackpotsCount);
          }
          //
          // Update points from the purchase or redemption
          // Update Customer info
          //
          me.updateBadges(metaData['badges']);
+         
          customer = me.updateAccountInfo(metaData, metaData['account_info']);
       }
       catch(e)

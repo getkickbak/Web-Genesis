@@ -22,12 +22,6 @@ Ext.define('Genesis.controller.client.Merchants',
             autoCreate : true,
             xtype : 'clientmerchantaccountview'
          },
-         badgesPage :
-         {
-            selector : 'clientbadgesview',
-            autoCreate : true,
-            xtype : 'clientbadgesview'
-         },
          merchantMain : 'clientmerchantaccountview container[tag=merchantMain]',
          tbPanel : 'clientmerchantaccountview dataview[tag=tbPanel]',
          feedContainer : 'clientmerchantaccountview container[tag=feedContainer]',
@@ -55,7 +49,7 @@ Ext.define('Genesis.controller.client.Merchants',
          {
             activate : 'onMainActivate',
             deactivate : 'onMainDeactivate',
-            prizeTap : 'onBadgeTap',
+            jackpotWinnersTap : 'onJackpotWinnersTap',
             badgeTap : 'onBadgeTap'
          },
          mapBtn :
@@ -327,14 +321,14 @@ Ext.define('Genesis.controller.client.Merchants',
          prizeBtn.setIconCls('prizes');
       }
       /*
-      else
-      {
-         var type = Ext.StoreMgr.get('BadgeStore').getById(crecord.get('badge_id')).get('type');
+       else
+       {
+       var type = Ext.StoreMgr.get('BadgeStore').getById(crecord.get('badge_id')).get('type');
 
-         prizeBtn.setIconCls('prizeicon');
-         prizeBtn.setIcon(Genesis.view.client.Badges.getPhoto(type, 'thumbnail_small_url'));
-      }
-      */
+       prizeBtn.setIconCls('prizeicon');
+       prizeBtn.setIcon(Genesis.view.client.Badges.getPhoto(type, 'thumbnail_small_url'));
+       }
+       */
       me.getPrizesBtn().setBadgeText(crecord.get('eligible_for_prize') ? '✔' : null);
       me.getRedeemBtn().setBadgeText(crecord.get('eligible_for_reward') ? '✔' : null);
 
@@ -515,12 +509,15 @@ Ext.define('Genesis.controller.client.Merchants',
 
       return true;
    },
-   onBadgeTap : function(b, e, eOpts, eInfo)
+   onJackpotWinnersTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
-      me.pushView(me.getBadgesPage());
-      console.log("Opening Badge Browse Page");
+      var merchantId = me.getViewPortCntlr().getVenue().getMerchant().getId();
+      me.redirectTo('jackpotWinners/' + merchantId);
+   },
+   onBadgeTap : function(b, e, eOpts, eInfo)
+   {
+      this.redirectTo('badges');
    },
    // --------------------------------------------------------------------------
    // Page Navigation

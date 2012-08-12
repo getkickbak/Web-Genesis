@@ -527,7 +527,6 @@ Ext.define('Genesis.controller.client.Checkins',
       return page;
    },
    openMainPage : function()
-
    {
       var page = this.getMainPage();
       // Hack to fix bug in Sencha Touch API

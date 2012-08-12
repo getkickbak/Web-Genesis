@@ -473,6 +473,13 @@ Genesis.fb =
       {
          cb();
       }
+   },
+   //
+   // Graph API
+   //
+   getFbProfilePhoto : function(fbId)
+   {
+      return 'http://graph.facebook.com/' + fbId + '/picture?type=square';
    }
 };
 
@@ -481,6 +488,8 @@ Genesis.fb =
 // **************************************************************************
 Genesis.fn =
 {
+   systemTime : (new Date()).getTime(),
+   clientTime : (new Date()).getTime(),
    weekday : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
    // **************************************************************************
    // Date Time
@@ -529,7 +538,7 @@ Genesis.fn =
       {
          var currentDate = new Date().getTime();
          // Adjust for time drift between Client computer and Application Server
-         var offsetTime = Genesis.fn.currentDateTime(currentDate);
+         var offsetTime = this.currentDateTime(currentDate);
 
          var timeExpiredSec = (offsetTime - date.getTime()) / 1000;
 
@@ -553,7 +562,7 @@ Genesis.fn =
             if (((timeExpiredSec) < 2) && ((new Date().getDay() - date.getDay()) == 1))
                return [date, 'Yesterday at ' + date.format('g:i A')];
             if ((timeExpiredSec) < 7)
-               return [date, Genesis.fn.weekday[date.getDay()] + ' at ' + date.format('g:i A')];
+               return [date, this.weekday[date.getDay()] + ' at ' + date.format('g:i A')];
             timeExpiredSec = timeExpiredSec / 7;
             if (((timeExpiredSec) < 2) && (timeExpiredSec % 7 == 0))
                return [date, 'a week ago'];
@@ -593,7 +602,7 @@ Genesis.fn =
    },
    convertDate : function(v, dateFormat)
    {
-      var rc = Genesis.fn.convertDateCommon.call(this, v, dateFormat);
+      var rc = this.convertDateCommon(v, dateFormat);
       if (rc[1] != -1)
       {
          return (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
@@ -605,7 +614,7 @@ Genesis.fn =
    },
    convertDateNoTime : function(v)
    {
-      var rc = Genesis.fn.convertDateCommon.call(this, v, null, true);
+      var rc = this.convertDateCommon(v, null, true);
       if (rc[1] != -1)
       {
          return (rc[1] == null) ? rc[0].format('D, M d, Y') : rc[1];
@@ -617,7 +626,7 @@ Genesis.fn =
    },
    convertDateNoTimeNoWeek : function(v)
    {
-      var rc = Genesis.fn.convertDateCommon.call(this, v, null, true);
+      var rc = this.convertDateCommon(v, null, true);
       if (rc[1] != -1)
       {
          rc = (rc[1] == null) ? rc[0].format('M d, Y') : rc[1];
@@ -630,7 +639,7 @@ Genesis.fn =
    },
    convertDateInMins : function(v)
    {
-      var rc = Genesis.fn.convertDateCommon.call(this, v, null, true);
+      var rc = this.convertDateCommon(v, null, true);
       if (rc[1] != -1)
       {
          return (rc[1] == null) ? rc[0].format('h:ia T') : rc[1];
@@ -642,7 +651,7 @@ Genesis.fn =
    },
    currentDateTime : function(currentDate)
    {
-      return systemTime + (currentDate - clientTime);
+      return (this.systemTime - this.clientTime) + currentDate;
    },
    addUnit : function(unit)
    {

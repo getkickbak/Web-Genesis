@@ -57,12 +57,12 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             // Updated Automatically when the Customer\'s metadata is updated
             getTitle : function(values)
             {
-               return 'Prizes redeemed this month';
+               return 'Prize Jackpot(s) given out this month';
             },
             // Updated Automatically when the Customer\'s metadata is updated
             getDesc : function(values)
             {
-               return (values['prizes_count'] > 0) ? values['prizes_count'] + ' Prizes Redeemed!' : 'Be our first winner!';
+               return (values['prize_jackpots'] > 0) ? values['prize_jackpots'] + ' Prize Jackpots!' : 'Be our first winner!';
             }
          })
       },

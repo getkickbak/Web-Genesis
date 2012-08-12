@@ -11,8 +11,8 @@ Ext.define('Genesis.model.CustomerReward',
          type : 'date',
          convert : function(value, format)
          {
-            var value = Date.parse(value, "yyyy-MM-dd");
-            return (value) ? Genesis.fn.convertDateNoTimeNoWeek.apply(this, arguments) : null;
+            value = Date.parse(value, "yyyy-MM-dd");
+            return (value) ? Genesis.fn.convertDateNoTimeNoWeek(value) : null;
          }
       }],
       idProperty : 'id',

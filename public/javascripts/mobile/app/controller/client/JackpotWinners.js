@@ -1,28 +1,27 @@
-Ext.define('Genesis.controller.client.Badges',
+Ext.define('Genesis.controller.client.JackpotWinners',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
    statics :
    {
    },
-   xtype : 'clientbadgesCntlr',
+   xtype : 'clientJackpotWinnersCntlr',
    config :
    {
       routes :
       {
-         'badges' : 'mainPage',
+         'jackpotWinners/:id' : 'mainPage',
       },
-      models : ['Badge', 'Customer', 'Merchant'],
+      models : ['frontend.JackpotWinner'],
       refs :
       {
          // Main Page
          main :
          {
-            selector : 'clientbadgesview',
+            selector : 'clientjackpotwinnersview',
             autoCreate : true,
-            xtype : 'clientbadgesview'
-         },
-         mainCarousel : 'clientbadgesview'
+            xtype : 'clientjackpotwinnersview'
+         }
       },
       control :
       {
@@ -31,6 +30,10 @@ Ext.define('Genesis.controller.client.Badges',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          }
+      },
+      listeners :
+      {
+         'reload' : 'onReload'
       }
    },
    init : function(app)
@@ -41,14 +44,14 @@ Ext.define('Genesis.controller.client.Badges',
       //
       // Loads Front Page Metadata
       //
-      Ext.regStore('BadgeStore',
+      Ext.regStore('JackpotWinnerStore',
       {
-         model : 'Genesis.model.Badge',
+         model : 'Genesis.model.frontend.JackpotWinner',
          autoLoad : false,
          sorters : [
          {
-            property : 'rank',
-            direction : 'ASC'
+            property : 'id',
+            direction : 'DESC'
          }],
          listeners :
          {
@@ -59,7 +62,7 @@ Ext.define('Genesis.controller.client.Badges',
          }
       });
 
-      console.log("Badges Init");
+      console.log("JackpotWinners Init");
       //
       // Preloading Pages to memory
       //
@@ -68,6 +71,24 @@ Ext.define('Genesis.controller.client.Badges',
    // --------------------------------------------------------------------------
    // EVent Handlers
    // --------------------------------------------------------------------------
+   onReload : function()
+   {
+      var me = this;
+      JackpotWinner['setGetJackpotWinnersUrl']();
+      Ext.StoreMgr.get('JackpotWinnerStore').load(
+      {
+         jsonData :
+         {
+         },
+         params :
+         {
+            'merchant_id' : me.merchantId
+         },
+         callback : function(records, operation)
+         {
+         }
+      })
+   },
    // --------------------------------------------------------------------------
    // MainPage
    // --------------------------------------------------------------------------
@@ -77,19 +98,18 @@ Ext.define('Genesis.controller.client.Badges',
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      //this.getInfoBtn().hide();
    },
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------
-   mainPage : function()
+   mainPage : function(merchantId)
    {
-      this.openPage('main');
+      this.openPage('main', merchantId);
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
-   openPage : function(subFeature)
+   openPage : function(subFeature, merchantId)
    {
       var me = this;
 
@@ -97,8 +117,10 @@ Ext.define('Genesis.controller.client.Badges',
       {
          case 'main' :
          {
+            me.merchantId = merchantId;
             me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
             me.pushView(me.getMainPage());
+            me.onReload();
             break;
          }
       }
@@ -110,10 +132,10 @@ Ext.define('Genesis.controller.client.Badges',
    },
    openMainPage : function()
    {
-      var cntlr = this.getViewPortCntlr();
-      this.setAnimationMode(this.self.superclass.self.animationMode['cover']);
-      this.pushView(this.getMainPage());
-      console.log("Badges Page Opened");
+      var me = this;
+      me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+      me.pushView(me.getMainPage());
+      console.log("Jackpot Winners Page Opened");
    },
    isOpenAllowed : function()
    {

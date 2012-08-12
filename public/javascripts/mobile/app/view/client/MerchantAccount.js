@@ -121,7 +121,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
          element : 'element',
          delegate : "div.prizeswonphoto",
          event : "tap",
-         fn : "onPrizeTap"
+         fn : "onJackpotWinnersTap"
       }]
    },
    disableAnimation : true,
@@ -310,11 +310,11 @@ Ext.define('Genesis.view.client.MerchantAccount',
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       this.fireEvent('badgeTap');
    },
-   onPrizeTap : function(b, e, eOpts)
+   onJackpotWinnersTap : function(b, e, eOpts)
    {
       var viewport = _application.getController('Viewport');
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-      this.fireEvent('prizeTap');
+      this.fireEvent('jackpotWinnersTap');
    },
    statics :
    {

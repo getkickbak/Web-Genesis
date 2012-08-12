@@ -1,0 +1,33 @@
+//------------------------------------------------------------------------------
+// Accounts Page
+//------------------------------------------------------------------------------
+.jackpotWinnersMain {
+   .jackpotWinnersList {
+      @extend .listScrollWrapper;
+      .listItemDetailsWrapper {
+         min-height:$icon-size/2 !important;
+         .itemTitle {
+            font-weight: bold;
+            line-height: 1em;
+            font-size: $normalFontSize;
+            margin-bottom:$panelTopGap;
+         }
+      }
+      .photo {
+         height : $icon-size/2 !important;
+         img {
+            width : $icon-size/2 !important;
+         }
+      }
+      .x-list-emptytext {
+         position:absolute;
+         width:100%;
+         height:100%;
+         @extend .emptyPage;
+         background: theme_image($theme-path,  "noprizes" + ".png") center no-repeat;
+         &:before {
+            content:"Be our first Jackpot Winner this month!";
+         }
+      }
+   }
+}
