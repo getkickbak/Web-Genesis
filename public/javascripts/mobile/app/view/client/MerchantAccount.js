@@ -102,7 +102,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
          {
             iconCls : 'tocheckedinmerch',
             tag : 'main',
-            title : 'Main Menu'
+            title : 'Meal Stop'
          },
          {
             iconCls : 'explore',

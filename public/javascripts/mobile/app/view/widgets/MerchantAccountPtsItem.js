@@ -56,11 +56,16 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          {
             getTitle : function(values)
             {
-               return 'Prize Jackpots given out this month';
+               var jackpot = ' Jackpot' + ((values['prize_jackpots'] > 1) ? 's' : '');
+               var msg = ((values['prize_jackpots'] > 0) ? values['prize_jackpots'] + jackpot + ' won this month' : 'Be our first winner this month!');
+               msg += '<img style="width:1em;float:right;"' + //
+               ' src="' + Genesis.constants.getIconPath('miscicons', 'disclose') + '" />';
+
+               return msg;
             },
             getDesc : function(values)
             {
-               return (values['prize_jackpots'] > 0) ? values['prize_jackpots'] + ' Winners (Click to find out more!)' : 'Be our first winner!';
+               return ((values['prize_jackpots'] > 0) ? 'Click here to find out more!' : '');
             }
          })
       },
@@ -108,8 +113,11 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             },
             getTitle : function(values)
             {
-               return ('You are currently our <span class ="badgehighlight">' + //
+               var msg = ('You are currently our <span class ="badgehighlight">' + //
                values['_badgeType'].display_value.toUpperCase() + '</span>');
+               return msg += '<img style="width:1em;float:right;"' + //
+               ' src="' + Genesis.constants.getIconPath('miscicons', 'disclose') + '" />';
+
             },
             getProgress : function(values)
             {
