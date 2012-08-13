@@ -49,11 +49,11 @@ Genesis::Application.configure do
   config.action_mailer.default_url_options = { :host => 'getkickbak.com' }
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
-    :address              => "smtp.gmail.com",
+    :address              => "email-smtp.us-east-1.amazonaws.com",
     :port                 => 587,
     :domain               => 'getkickbak.com',
-    :user_name            => 'admin@getkickbak.com',
-    :password             => 'Intern96',
+    :user_name            => 'AKIAIQHTJ2545DNOIIPA',
+    :password             => 'Anmu/wO/5gWkCg3uJFhRLIa2Wb2clpTctaq6ElcJsDLZ',
     :authentication       => :plain,
     :enable_starttls_auto => true
     #:openssl_verify_mode  => 'none'
