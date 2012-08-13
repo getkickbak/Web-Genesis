@@ -16,7 +16,6 @@ module MerchantSummaryNewsletters
     merchants.each do |merchant|
       total_customer_count = Customer.count(Customer.merchant.id => merchant.id)
       new_customer_count = Customer.count(Customer.merchant.id => merchant.id, :created_ts => (beginning_of_last_week..end_of_last_week))
-      total_spend = EarnRewardRecord.sum(:amount, :merchant => merchant) || 0
       new_total_spend = EarnRewardRecord.sum(:amount, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
       total_reward_points = (EarnRewardRecord.sum(:points, :merchant => merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => merchant, :mode => :reward) || 0)
       total_reward_points_earned = EarnRewardRecord.sum(:points, :merchant => merchant) || 0
@@ -32,7 +31,6 @@ module MerchantSummaryNewsletters
       new_prize_points_redeemed = RedeemRewardRecord.sum(:points, :merchant => merchant, :mode => :prize, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
       total_prizes_redeemed = RedeemRewardRecord.count(:merchant => merchant, :mode => :prize) || 0
       new_prizes_redeemed = RedeemRewardRecord.count(:merchant => merchant, :mode => :prize, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
-      total_purchases_count = EarnRewardRecord.count(:merchant => merchant, :type => :purchase)
       new_purchases_count = EarnRewardRecord.count(:merchant => merchant, :type => :purchase, :created_ts => (beginning_of_last_week..end_of_last_week))
       total_challenges_count = EarnRewardRecord.count(:merchant => merchant, :type => :challenge)
       new_challenges_count = EarnRewardRecord.count(:merchant => merchant, :type => :challenge, :created_ts => (beginning_of_last_week..end_of_last_week))
@@ -52,7 +50,8 @@ module MerchantSummaryNewsletters
       stats = {
         :total_customer_count => total_customer_count,
         :new_customer_count => new_customer_count,
-        :total_spend => total_spend,
+        :total_spend => merchant.reward_model.total_spend,
+        :average_spend => merchant.reward_model.total_spend / merchant.reward_model.total_visits,
         :new_total_spend => new_total_spend,
         :total_reward_points => total_reward_points,
         :total_reward_points_earned => total_reward_points_earned,
@@ -68,7 +67,7 @@ module MerchantSummaryNewsletters
         :new_prize_points_redeemed => new_prize_points_redeemed,
         :total_prizes_redeemed => total_prizes_redeemed,
         :new_prizes_redeemed => new_prizes_redeemed,
-        :total_purchases_count => total_purchases_count,
+        :total_purchases_count => merchant.reward_model.total_visits,
         :new_purchases_count => new_purchases_count,
         :total_challenges_count => total_challenges_count,
         :total_challenges_indv_count => total_challenges_indv_count,

@@ -252,8 +252,8 @@ namespace :db do
       )
       RewardModel.create(merchant,
       {
-        :signup_amount => 10,
-        :signup_points => 10 / 10 * 100,
+        :signup_amount => 10.00,
+        :signup_points => 10.00 / 10 * 100,
         :rebate_rate => 10,
         :prize_rebate_rate => 10
       })
@@ -332,8 +332,8 @@ namespace :db do
       end
       challenges = []
       challenge_type = ChallengeType.get(1)
-      reward_amount = rand(10) + 10
-      reward_points = reward_amount / merchant.reward_model.rebate_rate * 100
+      reward_amount = rand(10) + 10.00
+      reward_points = (reward_amount / merchant.reward_model.price_per_prize_point / merchant.reward_model.rebate_rate * 100).to_i
       challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.birthday.name"),
@@ -345,8 +345,8 @@ namespace :db do
       venues)
       challenges << challenge
       challenge_type = ChallengeType.get(2)
-      reward_amount = rand(10) + 10
-      reward_points = reward_amount / merchant.reward_model.rebate_rate * 100
+      reward_amount = rand(10) + 10.00
+      reward_points = (reward_amount / merchant.reward_model.price_per_prize_point / merchant.reward_model.rebate_rate * 100).to_i
       challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.menu.name"),
@@ -358,8 +358,8 @@ namespace :db do
       venues)
       challenges << challenge
       challenge_type = ChallengeType.get(3)
-      reward_amount = rand(10) + 10
-      reward_points = reward_amount / merchant.reward_model.rebate_rate * 100
+      reward_amount = rand(10) + 10.00
+      reward_points = (reward_amount / merchant.reward_model.price_per_prize_point / merchant.reward_model.rebate_rate * 100).to_i
       challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.photo.name"),
@@ -371,8 +371,8 @@ namespace :db do
       venues)
       challenges << challenge
       challenge_type = ChallengeType.get(4)
-      reward_amount = rand(10) + 10
-      reward_points = reward_amount / merchant.reward_model.rebate_rate * 100
+      reward_amount = rand(10) + 10.00
+      reward_points = (reward_amount / merchant.reward_model.price_per_prize_point / merchant.reward_model.rebate_rate * 100).to_i
       challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.referral.name"),
@@ -385,8 +385,8 @@ namespace :db do
       venues)
       challenges << challenge
       challenge_type = ChallengeType.get(5)
-      reward_amount = rand(10) + 10
-      reward_points = reward_amount / merchant.reward_model.rebate_rate * 100
+      reward_amount = rand(10) + 10.00
+      reward_points = (reward_amount / merchant.reward_model.price_per_prize_point / merchant.reward_model.rebate_rate * 100).to_i
       challenge = Challenge.create(merchant,challenge_type,
       {
         :name => (I18n.t "challenge.type.custom.name"),
@@ -480,6 +480,9 @@ namespace :db do
         trans_record.customer = customer
         trans_record.user = user
         trans_record.save
+        merchant.reward_model.total_spend += amount
+        merchant.reward_model.total_visits += 1
+        merchant.reward_model.save
         prize_record = EarnPrizeRecord.new(
           :type => :game,
           :venue_id => venues[rand(2)].id,
