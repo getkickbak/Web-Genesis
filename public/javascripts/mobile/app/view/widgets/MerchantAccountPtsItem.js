@@ -54,15 +54,13 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          '</div>',
          // @formatter:on
          {
-            // Updated Automatically when the Customer\'s metadata is updated
             getTitle : function(values)
             {
-               return 'Prize Jackpot(s) given out this month';
+               return 'Prize Jackpots given out this month';
             },
-            // Updated Automatically when the Customer\'s metadata is updated
             getDesc : function(values)
             {
-               return (values['prize_jackpots'] > 0) ? values['prize_jackpots'] + ' Prize Jackpots!' : 'Be our first winner!';
+               return (values['prize_jackpots'] > 0) ? values['prize_jackpots'] + ' Winners (Click to find out more!)' : 'Be our first winner!';
             }
          })
       },
@@ -128,13 +126,13 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                var customer = values['_customer'];
                var nvisit = values['_nvisit'];
                var tvisit = customer.get('next_badge_visits');
-               var nextBadge = values['_nextBadge']; 
+               var nextBadge = values['_nextBadge'];
                delete values['_customer'];
                delete values['_nextBadge'];
                delete values['_badgeType'];
                delete values['_nvisit'];
 
-               return ((nvisit - tvisit) + ' more visits to be our ' + //
+               return ((nvisit - tvisit) + ' more visit' + (((nvisit - tvisit) > 1) ? 's' : '') + ' to be our ' + //
                nextBadge.get('type').display_value.toUpperCase() + '!');
             }
          })
