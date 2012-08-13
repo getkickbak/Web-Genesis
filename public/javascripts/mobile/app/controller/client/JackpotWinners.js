@@ -50,7 +50,7 @@ Ext.define('Genesis.controller.client.JackpotWinners',
          autoLoad : false,
          sorters : [
          {
-            property : 'id',
+            property : 'date',
             direction : 'DESC'
          }],
          listeners :

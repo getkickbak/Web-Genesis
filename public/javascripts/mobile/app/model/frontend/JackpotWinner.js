@@ -11,10 +11,10 @@ Ext.define('Genesis.model.frontend.JackpotWinner',
          type : 'date',
          convert : function(value, obj)
          {
-            obj.set('id', value);
+            obj.set('date', value);
             return (value) ? Genesis.fn.convertDate(value) : null;
          }
-      }, 'id', 'facebook_id', 'name', 'points'],
+      }, 'facebook_id', 'name', 'points', 'date'],
       idProperty : 'id',
       proxy :
       {
