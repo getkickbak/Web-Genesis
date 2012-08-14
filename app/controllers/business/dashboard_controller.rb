@@ -21,22 +21,22 @@ module Business
       two_months_ago = today >> -2
       earn_rewards = DataMapper.repository(:default).adapter.select(
       "SELECT DATE(created_ts) AS created_date, SUM(points) AS total_points FROM earn_reward_records WHERE
-              merchant_id = ? AND created_date >= ? AND deleted_ts IS NULL
+              merchant_id = ? AND DATE(created_ts) >= ? AND deleted_ts IS NULL
               GROUP BY created_date", current_merchant.id, two_months_ago
       )
       redeem_rewards = DataMapper.repository(:default).adapter.select(
       "SELECT DATE(created_ts) AS created_date, SUM(points) AS total_points FROM redeem_reward_records WHERE
-              merchant_id = ? AND mode = ? AND created_date >= ? AND deleted_ts IS NULL
+              merchant_id = ? AND mode = ? AND DATE(created_ts) >= ? AND deleted_ts IS NULL
               GROUP BY created_date", current_merchant.id, RedeemCustomerRecord::Modes.index(:reward)+1, two_months_ago
       )
       earn_prizes = DataMapper.repository(:default).adapter.select(
       "SELECT DATE(created_ts) AS created_date, SUM(points) AS total_points FROM earn_prize_records WHERE
-              merchant_id = ? AND created_date >= ? AND deleted_ts IS NULL
+              merchant_id = ? AND DATE(created_ts) >= ? AND deleted_ts IS NULL
               GROUP BY created_date", current_merchant.id, two_months_ago
       )
       redeem_prizes = DataMapper.repository(:default).adapter.select(
       "SELECT DATE(created_ts) AS created_date, SUM(points) AS total_points FROM redeem_reward_records WHERE
-              merchant_id = ? AND mode = ? AND created_date >= ? AND deleted_ts IS NULL
+              merchant_id = ? AND mode = ? AND DATE(created_ts) >= ? AND deleted_ts IS NULL
               GROUP BY created_date", current_merchant.id, RedeemCustomerRecord::Modes.index(:prize)+1, two_months_ago
       )
       earn_rewards_data = []

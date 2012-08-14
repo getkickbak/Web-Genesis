@@ -25,7 +25,7 @@ module Business
       new_customers_data = []
       new_customers = DataMapper.repository(:default).adapter.select(
           "SELECT DATE(created_ts) AS created_date, COUNT(*) AS count FROM customers WHERE merchant_id = ? 
-              AND created_date >= ? AND deleted_ts IS NULL
+              AND DATE(created_ts) >= ? AND deleted_ts IS NULL
               GROUP BY created_date", current_merchant.id, today - 14
         )
       
@@ -63,7 +63,7 @@ module Business
       earn_rewards_total = []
       earn_rewards = DataMapper.repository(:default).adapter.select(
         "SELECT DATE(created_ts) AS created_date, SUM(amount) AS total_amount, COUNT(*) AS count FROM earn_reward_records WHERE type = ? 
-            AND merchant_id = ? AND created_date >= ? AND deleted_ts IS NULL
+            AND merchant_id = ? AND DATE(created_ts) >= ? AND deleted_ts IS NULL
             GROUP BY created_date", EarnRewardRecord::Types.index(:purchase)+1, current_merchant.id, two_months_ago
       )
       
@@ -74,7 +74,7 @@ module Business
       challenges.each do |challenge|
         data = DataMapper.repository(:default).adapter.select(
           "SELECT DATE(created_ts) AS created_date, COUNT(*) AS count FROM earn_reward_records WHERE type = ? 
-              AND ref_id = ? AND created_date >= ? AND deleted_ts IS NULL
+              AND ref_id = ? AND DATE(created_ts) >= ? AND deleted_ts IS NULL
               GROUP BY created_date", EarnRewardRecord::Types.index(:challenge)+1, challenge.id, two_months_ago
         )
         #challenge_records[:names] << challenge.name
