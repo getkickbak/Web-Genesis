@@ -40,6 +40,7 @@ module Business
         inserted = false
         while x < new_customers.length
           created_date = new_customers[x][:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
           if created_date < date
             x += 1
           elsif created_date == date
@@ -98,6 +99,7 @@ module Business
         inserted = false
         while x < earn_rewards.length
           created_date = earn_rewards[x][:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
           if created_date < date
             x += 1
           elsif created_date == date
@@ -125,6 +127,7 @@ module Business
           inserted = false
           while x < records[:data].length
             created_date = records[:data][x][:created_date]
+            created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
             if created_date < date
               x += 1
             elsif created_date == date
@@ -158,6 +161,7 @@ module Business
           inserted = false
           while x < records[:data].length
             created_date = records[:data][x][:created_date]
+            created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
             if created_date < date
               x += 1
             elsif created_date == date

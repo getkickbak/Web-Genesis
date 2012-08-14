@@ -51,6 +51,7 @@ module Business
         inserted = false
         while x < earn_rewards.length
           created_date = earn_rewards[x][:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
           if created_date < date
           x += 1
           elsif created_date == date
@@ -70,6 +71,7 @@ module Business
         inserted = false
         while x < redeem_rewards.length
           created_date = redeem_rewards[x][:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
           if created_date < date
           x += 1
           elsif created_date == date
@@ -89,6 +91,7 @@ module Business
         inserted = false
         while x < earn_prizes.length
           created_date = earn_prizes[x][:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
           if created_date < date
           x += 1
           elsif created_date == date
@@ -108,6 +111,7 @@ module Business
         inserted = false
         while x < redeem_prizes.length
           created_date = redeem_prizes[x][:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
           if created_date < date
           x += 1
           elsif created_date == date
