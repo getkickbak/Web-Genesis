@@ -104,14 +104,7 @@ module Business
             x += 1
           elsif created_date == date
             earn_rewards_data[:count][i] << earn_rewards[x][:count]
-            total_amount = earn_rewards[x][:total_amount]
-            if total_amount.is_a? String
-              logger.debug("#{total_amount} is a string")
-            else
-              logger.debug("#{total_amount} is not a string")
-            end
-            total_amount = (total_amount.is_a? String) ? total_amount.to_f : total_amount
-            earn_rewards_data[:amount][i] << total_amount
+            earn_rewards_data[:amount][i] << earn_rewards[x][:total_amount]
             inserted = true
             break
           else
