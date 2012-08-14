@@ -39,9 +39,7 @@ module Business
         #puts "new_customers_data: " + new_customers_data[i].to_s 
         inserted = false
         while x < new_customers.length
-          logger.debug(new_customers[x][:created_date])
           created_date = new_customers[x][:created_date]
-          logger.debug("end")
           if created_date < date
             x += 1
           elsif created_date == date
@@ -99,7 +97,7 @@ module Business
         #puts "earn_rewards: " + earn_rewards[i].to_s
         inserted = false
         while x < earn_rewards.length
-          created_date = Date.strptime(earn_rewards[x][:created_date],"%Y-%m-%d")
+          created_date = earn_rewards[x][:created_date]
           if created_date < date
             x += 1
           elsif created_date == date
@@ -126,7 +124,7 @@ module Business
           x = records[:counter]
           inserted = false
           while x < records[:data].length
-            created_date = Date.strptime(records[:data][x][:created_date],"%Y-%m-%d")
+            created_date = records[:data][x][:created_date]
             if created_date < date
               x += 1
             elsif created_date == date
@@ -159,7 +157,7 @@ module Business
           x = records[:counter]
           inserted = false
           while x < records[:data].length
-            created_date = Date.strptime(records[:data][x][:created_date],"%Y-%m-%d")
+            created_date = records[:data][x][:created_date]
             if created_date < date
               x += 1
             elsif created_date == date

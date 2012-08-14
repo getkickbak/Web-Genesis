@@ -60,14 +60,14 @@ module PointsExpirationReminders
         earned_points_records.each do |record|
           merchant_ids << record[:merchant_id]
           customer_ids << record[:customer_id]
-          beginning_of_month = (Date.strptime(record[:created_date],"%Y-%m-%d") + 12.months).at_beginning_of_month
+          beginning_of_month = (record[:created_date] + 12.months).at_beginning_of_month
           merchant_id_to_earned_points[record[:merchant_id]] = { :points => record[:earned_points], :expiry_date => beginning_of_month }    
         end
         merchant_id_to_transfer_in_points = {}
         transfer_in_points_records.each do |record|
           merchant_ids << record[:merchant_id]
           customer_ids << record[:recipient_id]
-          beginning_of_month = (Date.strptime(record[:created_date],"%Y-%m-%d") + 12.months).at_beginning_of_month
+          beginning_of_month = (record[:created_date] + 12.months).at_beginning_of_month
           merchant_id_to_transfer_in_points[record[:merchant_id]] = { :points => record[:transfer_in_points], :expiry_date => beginning_of_month }
         end
         customer_ids.uniq!
