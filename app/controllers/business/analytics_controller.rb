@@ -40,7 +40,7 @@ module Business
         inserted = false
         while x < new_customers.length
           logger.debug(new_customers[x][:created_date])
-          created_date = Date.strptime(new_customers[x][:created_date],"%Y-%m-%d")
+          created_date = new_customers[x][:created_date]
           logger.debug("end")
           if created_date < date
             x += 1
