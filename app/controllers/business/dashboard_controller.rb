@@ -21,22 +21,22 @@ module Business
       two_months_ago = today >> -2
       earn_rewards = DataMapper.repository(:default).adapter.select(
       "SELECT DATE(created_ts) AS created_date, SUM(points) AS total_points FROM earn_reward_records WHERE
-              merchant_id = ? AND created_date >= ? AND deleted_ts IS NULL
+              merchant_id = ? AND DATE(created_ts) >= ? AND deleted_ts IS NULL
               GROUP BY created_date", current_merchant.id, two_months_ago
       )
       redeem_rewards = DataMapper.repository(:default).adapter.select(
       "SELECT DATE(created_ts) AS created_date, SUM(points) AS total_points FROM redeem_reward_records WHERE
-              merchant_id = ? AND mode = ? AND created_date >= ? AND deleted_ts IS NULL
+              merchant_id = ? AND mode = ? AND DATE(created_ts) >= ? AND deleted_ts IS NULL
               GROUP BY created_date", current_merchant.id, RedeemCustomerRecord::Modes.index(:reward)+1, two_months_ago
       )
       earn_prizes = DataMapper.repository(:default).adapter.select(
       "SELECT DATE(created_ts) AS created_date, SUM(points) AS total_points FROM earn_prize_records WHERE
-              merchant_id = ? AND created_date >= ? AND deleted_ts IS NULL
+              merchant_id = ? AND DATE(created_ts) >= ? AND deleted_ts IS NULL
               GROUP BY created_date", current_merchant.id, two_months_ago
       )
       redeem_prizes = DataMapper.repository(:default).adapter.select(
       "SELECT DATE(created_ts) AS created_date, SUM(points) AS total_points FROM redeem_reward_records WHERE
-              merchant_id = ? AND mode = ? AND created_date >= ? AND deleted_ts IS NULL
+              merchant_id = ? AND mode = ? AND DATE(created_ts) >= ? AND deleted_ts IS NULL
               GROUP BY created_date", current_merchant.id, RedeemCustomerRecord::Modes.index(:prize)+1, two_months_ago
       )
       earn_rewards_data = []
@@ -50,7 +50,8 @@ module Business
         redeem_prizes_data[i] = [date.to_time.to_i*1000]
         inserted = false
         while x < earn_rewards.length
-          created_date = Date.strptime(earn_rewards[x][:created_date],"%Y-%m-%d")
+          created_date = earn_rewards[x][:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
           if created_date < date
           x += 1
           elsif created_date == date
@@ -69,7 +70,8 @@ module Business
 
         inserted = false
         while x < redeem_rewards.length
-          created_date = Date.strptime(redeem_rewards[x][:created_date],"%Y-%m-%d")
+          created_date = redeem_rewards[x][:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
           if created_date < date
           x += 1
           elsif created_date == date
@@ -88,7 +90,8 @@ module Business
         
         inserted = false
         while x < earn_prizes.length
-          created_date = Date.strptime(earn_prizes[x][:created_date],"%Y-%m-%d")
+          created_date = earn_prizes[x][:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
           if created_date < date
           x += 1
           elsif created_date == date
@@ -107,7 +110,8 @@ module Business
         
         inserted = false
         while x < redeem_prizes.length
-          created_date = Date.strptime(redeem_prizes[x][:created_date],"%Y-%m-%d")
+          created_date = redeem_prizes[x][:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
           if created_date < date
           x += 1
           elsif created_date == date

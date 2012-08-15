@@ -14,16 +14,16 @@ module PointsExpirationReminders
               GROUP BY merchant_id"
       redeemed_points_sql = "SELECT merchant_id, SUM(points) AS redeemed_points, PERIODDIFF(date_format(?, '%Y%m') - date_format(created_ts, '%Y%m')) AS months_ago
               FROM redeem_reward_record
-              WHERE cutomer_id IN (?) AND (months_ago BETWEEN 0 AND 9) AND deleted_ts IS NULL
-              GROUP BY merchant_id"   
+              WHERE cutomer_id IN (?) AND deleted_ts IS NULL
+              GROUP BY merchant_id HAVING (months_ago BETWEEN 0 AND 9)"   
       transfer_in_points_sql = "SELECT merchant_id, recipient_id, SUM(points) AS transfer_in_points, DATE(created_ts) AS created_date
               FROM transfer_points_record 
               WHERE recipient_user_id = ? AND PERIODDIFF(date_format(?, '%Y%m') - date_format(created_ts, '%Y%m')) = 9 AND deleted_ts IS NULL
               GROUP BY recipient_id"
       transfer_out_points_sql = "SELECT merchant_id, sender_id, SUM(points) AS transfer_out_points, PERIODDIFF(date_format(?, '%Y%m') - date_format(created_ts, '%Y%m')) AS months_ago
               FROM transfer_points_record 
-              WHERE sender_id IN (?) AND (months_ago BETWEEN 0 AND 9) AND deleted_ts IS NULL
-              GROUP BY sender_id"                    
+              WHERE sender_id IN (?) AND deleted_ts IS NULL
+              GROUP BY sender_id HAVING (months_ago BETWEEN 0 AND 9)"                    
     else
       earned_points_sql = "SELECT merchant_id, customer_id, SUM(points) AS earned_points, DATE(created_ts) AS created_date
               FROM earn_reward_record 
@@ -31,16 +31,16 @@ module PointsExpirationReminders
               GROUP BY merchant_id"     
       redeemed_points_sql = "SELECT merchant_id, SUM(points) AS redeemed_points, (julianday(strftime('%Y-%m-%d',?)) - julianday(strftime('%Y-%m-%d',created_ts))) / 30 AS months_ago
               FROM redeem_reward_record 
-              WHERE customer_id IN (?) AND (months_ago BETWEEN 0 AND 9) AND deleted_ts IS NULL
-              GROUP BY merchant_id"   
+              WHERE customer_id IN (?) AND deleted_ts IS NULL
+              GROUP BY merchant_id HAVING (months_ago BETWEEN 0 AND 9)"   
       transfer_in_points_sql = "SELECT merchant_id, recipient_id, SUM(points) AS transfer_in_points, DATE(created_ts) AS created_date
               FROM transfer_points_record
               WHERE sender_user_id = ? AND (julianday(strftime('%Y-%m-%d',?)) - julianday(strftime('%Y-%m-%d',created_ts))) / 30 = 9 AND deleted_ts IS NULL
               GROUP BY recipient_id"
       transfer_out_points_sql = "SELECT merchant_id, sender_id, SUM(points) AS transfer_out_points, (julianday(strftime('%Y-%m-%d',?)) - julianday(strftime('%Y-%m-%d',created_ts))) / 30 AS months_ago
               FROM transfer_points_record
-              WHERE sender_id IN (?) AND (months_ago BETWEEN 0 AND 9) AND deleted_ts IS NULL
-              GROUP BY sender_id"           
+              WHERE sender_id IN (?) AND deleted_ts IS NULL
+              GROUP BY sender_id HAVING (months_ago BETWEEN 0 AND 9)"           
     end
     now = Time.now
     logger.info("Points Expiration Reminders started at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
@@ -60,14 +60,18 @@ module PointsExpirationReminders
         earned_points_records.each do |record|
           merchant_ids << record[:merchant_id]
           customer_ids << record[:customer_id]
-          beginning_of_month = (Date.strptime(record[:created_date],"%Y-%m-%d") + 12.months).at_beginning_of_month
+          created_date = record[:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
+          beginning_of_month = (created_date + 12.months).at_beginning_of_month
           merchant_id_to_earned_points[record[:merchant_id]] = { :points => record[:earned_points], :expiry_date => beginning_of_month }    
         end
         merchant_id_to_transfer_in_points = {}
         transfer_in_points_records.each do |record|
           merchant_ids << record[:merchant_id]
           customer_ids << record[:recipient_id]
-          beginning_of_month = (Date.strptime(record[:created_date],"%Y-%m-%d") + 12.months).at_beginning_of_month
+          created_date = record[:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
+          beginning_of_month = (created_date] + 12.months).at_beginning_of_month
           merchant_id_to_transfer_in_points[record[:merchant_id]] = { :points => record[:transfer_in_points], :expiry_date => beginning_of_month }
         end
         customer_ids.uniq!

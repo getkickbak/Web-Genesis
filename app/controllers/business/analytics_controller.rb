@@ -25,7 +25,7 @@ module Business
       new_customers_data = []
       new_customers = DataMapper.repository(:default).adapter.select(
           "SELECT DATE(created_ts) AS created_date, COUNT(*) AS count FROM customers WHERE merchant_id = ? 
-              AND created_date >= ? AND deleted_ts IS NULL
+              AND created_ts >= ? AND deleted_ts IS NULL
               GROUP BY created_date", current_merchant.id, today - 14
         )
       
@@ -39,7 +39,8 @@ module Business
         #puts "new_customers_data: " + new_customers_data[i].to_s 
         inserted = false
         while x < new_customers.length
-          created_date = Date.strptime(new_customers[x][:created_date],"%Y-%m-%d")
+          created_date = new_customers[x][:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
           if created_date < date
             x += 1
           elsif created_date == date
@@ -63,7 +64,7 @@ module Business
       earn_rewards_total = []
       earn_rewards = DataMapper.repository(:default).adapter.select(
         "SELECT DATE(created_ts) AS created_date, SUM(amount) AS total_amount, COUNT(*) AS count FROM earn_reward_records WHERE type = ? 
-            AND merchant_id = ? AND created_date >= ? AND deleted_ts IS NULL
+            AND merchant_id = ? AND created_ts >= ? AND deleted_ts IS NULL
             GROUP BY created_date", EarnRewardRecord::Types.index(:purchase)+1, current_merchant.id, two_months_ago
       )
       
@@ -74,7 +75,7 @@ module Business
       challenges.each do |challenge|
         data = DataMapper.repository(:default).adapter.select(
           "SELECT DATE(created_ts) AS created_date, COUNT(*) AS count FROM earn_reward_records WHERE type = ? 
-              AND ref_id = ? AND created_date >= ? AND deleted_ts IS NULL
+              AND ref_id = ? AND created_ts >= ? AND deleted_ts IS NULL
               GROUP BY created_date", EarnRewardRecord::Types.index(:challenge)+1, challenge.id, two_months_ago
         )
         #challenge_records[:names] << challenge.name
@@ -97,7 +98,8 @@ module Business
         #puts "earn_rewards: " + earn_rewards[i].to_s
         inserted = false
         while x < earn_rewards.length
-          created_date = Date.strptime(earn_rewards[x][:created_date],"%Y-%m-%d")
+          created_date = earn_rewards[x][:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
           if created_date < date
             x += 1
           elsif created_date == date
@@ -124,7 +126,8 @@ module Business
           x = records[:counter]
           inserted = false
           while x < records[:data].length
-            created_date = Date.strptime(records[:data][x][:created_date],"%Y-%m-%d")
+            created_date = records[:data][x][:created_date]
+            created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
             if created_date < date
               x += 1
             elsif created_date == date
@@ -157,7 +160,8 @@ module Business
           x = records[:counter]
           inserted = false
           while x < records[:data].length
-            created_date = Date.strptime(records[:data][x][:created_date],"%Y-%m-%d")
+            created_date = records[:data][x][:created_date]
+            created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
             if created_date < date
               x += 1
             elsif created_date == date
