@@ -11,3 +11,7 @@ class String
     raise ArgumentError.new("invalid value for Boolean: \"#{self}\"")
   end
 end
+
+class BigDecimal
+  def as_json(options = nil) self end
+end
