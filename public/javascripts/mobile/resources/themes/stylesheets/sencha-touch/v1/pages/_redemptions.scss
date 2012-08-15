@@ -25,7 +25,7 @@
    }
    .info {
       position:relative;
-      padding:$panelTopGap $panelGap $panelTopGap*2 $panelGap;
+      padding:$panelTopGap $panelGap;
       .photo {
          position:absolute;
          right : 0.8em;
@@ -56,9 +56,9 @@
 }
 
 //------------------------------------------------------------------------------
-// Redemptions and Prize Page
+// Redemptions Page
 //------------------------------------------------------------------------------
-.redemptionsMain, .prizesMain {
+.redemptionsMain {
    .ptsEarnPanelHdr {
       @extend .panelHdr;
       &:nth-child(3) {
@@ -95,7 +95,7 @@
    .x-scroll-scroller {
       position:static;
    }
-   .redemptionsList, .prizesList {
+   .redemptionsList {
       min-height:5em;
       @extend .listScrollIndexWrapper;
       .x-list-item {

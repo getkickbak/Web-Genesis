@@ -21,7 +21,7 @@ Ext.define('Genesis.controller.server.Redemptions',
             autoCreate : true,
             xtype : 'serverredemptionsview'
          },
-         verifyBtn : 'showprizeview[tag=redeemItem] button[tag=verify]',
+         verifyBtn : 'showredeemitemdetailview[tag=redeemItem] button[tag=verify]',
       },
       control :
       {

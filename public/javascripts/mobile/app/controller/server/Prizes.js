@@ -17,7 +17,8 @@ Ext.define('Genesis.controller.server.Prizes',
       },
       listeners :
       {
-         'authreward' : 'onAuthReward'
+         'authreward' : 'onAuthReward',
+         'refreshQRCode' : 'onRefreshQRCode'
       },
       refs :
       {
@@ -51,6 +52,10 @@ Ext.define('Genesis.controller.server.Prizes',
          {
             activate : 'onShowPrizeActivate',
             deactivate : 'onDeactivate'
+         },
+         verifyBtn :
+         {
+            tap : 'popView'
          }
       }
    },
@@ -76,6 +81,23 @@ Ext.define('Genesis.controller.server.Prizes',
    // --------------------------------------------------------------------------
    // Event Handler
    // --------------------------------------------------------------------------
+   onRefreshQRCode : function(qrcodeMeta)
+   {
+      var me = this;
+
+      var view = me.getMainPage();
+      var item = view.getInnerItems()[0];
+
+      var info = item.query('component[tag=info]')[0];
+      info.hide();
+
+      var photo = item.query('component[tag=itemPhoto]')[0];
+      photo.element.setStyle(
+      {
+         'background-image' : 'url(' + qrcodeMeta[0] + ')',
+         'background-size' : Genesis.fn.addUnit(qrcodeMeta[1]) + ' ' + Genesis.fn.addUnit(qrcodeMeta[2])
+      });
+   },
    // --------------------------------------------------------------------------
    // Prizes Page
    // --------------------------------------------------------------------------

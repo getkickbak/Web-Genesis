@@ -155,9 +155,22 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      var venueId = (!position) ? 0 : viewport.getVenue().getId();
+      var venueId = (!position) ? null : viewport.getVenue().getId();
       var reader = PurchaseReward.getProxy().getReader();
+      var params =
+      {
+         'data' : me.qrcode,
+         latitude : (position) ? position.coords.getLatitude() : 0,
+         longitude : (position) ? position.coords.getLongitude() : 0
+      }
 
+      if (venueId)
+      {
+         params = Ext.apply(params,
+         {
+            venue_id : venueId
+         });
+      }
       //
       // Triggers PrizeCheck and MetaDataChange
       // - subject CustomerReward also needs to be reset to ensure property processing of objects
@@ -176,13 +189,7 @@ Ext.define('Genesis.controller.client.Rewards',
          jsonData :
          {
          },
-         params :
-         {
-            venue_id : venueId,
-            'data' : me.qrcode,
-            latitude : (position) ? position.coords.getLatitude() : 0,
-            longitude : (position) ? position.coords.getLongitude() : 0
-         },
+         params : params,
          callback : function(record, operation)
          {
             reader.setRootProperty('data');
@@ -370,8 +377,9 @@ Ext.define('Genesis.controller.client.Rewards',
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      var metaData = me.callBackStack['arguments'][0]; // cache this object before deletion.
-      
+      var metaData = me.callBackStack['arguments'][0];
+      // cache this object before deletion.
+
       Ext.defer(function()
       {
          var container = me.getRewards();

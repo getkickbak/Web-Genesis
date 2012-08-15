@@ -115,17 +115,17 @@ Ext.define('Genesis.controller.Prizes',
          {
             activate : 'onShowPrizeActivate',
             deactivate : 'onDeactivate'
-         }
+         },
          /*
-          ,refreshBtn :
-          {
-          tap : 'onRefreshQRCode'
-          },
-          verifyBtn :
-          {
-          tap : 'popView'
-          }
-          */
+         refreshBtn :
+         {
+            tap : 'onRefreshQRCode'
+         },
+         */
+         verifyBtn :
+         {
+            tap : 'popView'
+         }
       }
    },
    evtFlag : 0,

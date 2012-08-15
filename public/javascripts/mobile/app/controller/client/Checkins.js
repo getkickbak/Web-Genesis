@@ -376,7 +376,6 @@ Ext.define('Genesis.controller.client.Checkins',
    {
       var me = this;
       var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-      var checkinContainer = me.getCheckInNowBar();
 
       Venue['setFindNearestURL']();
       cestore.load(
@@ -391,6 +390,7 @@ Ext.define('Genesis.controller.client.Checkins',
             //Ext.Viewport.setMasked(false);
             if (operation.wasSuccessful())
             {
+               var checkinContainer = me.getCheckInNowBar();
                me.setPosition(position);
                checkinContainer.setDisabled(false);
             }

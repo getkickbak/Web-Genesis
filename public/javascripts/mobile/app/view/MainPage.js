@@ -97,7 +97,7 @@ Ext.define('Genesis.view.MainPage',
                   {
                      iconCls : 'rewards',
                      tag : 'rewardsSC',
-                     title : 'Earn Points'
+                     title : 'Earn Pts'
                   },
                   //
                   // Middle Button

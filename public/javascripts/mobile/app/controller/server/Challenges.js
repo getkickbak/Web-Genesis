@@ -21,7 +21,7 @@ Ext.define('Genesis.controller.server.Challenges',
             autoCreate : true,
             xtype : 'serverchallengesview'
          },
-         refreshBtn : 'showprizeview[tag=redeemItem] button[tag=refresh]',
+         refreshBtn : 'showredeemitemdetailview[tag=redeemItem] button[tag=refresh]',
       },
       control :
       {

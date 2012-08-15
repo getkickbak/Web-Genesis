@@ -303,6 +303,8 @@ Ext.define('Genesis.controller.client.RedeemBase',
    },
    onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var me = this;
+      me.getSDoneBtn().hide();
    },
    onDoneTap : function(b, e, eOpts, eInfo, overrideMode)
    {
@@ -311,8 +313,6 @@ Ext.define('Genesis.controller.client.RedeemBase',
 
       if (view.isPainted() && !view.isHidden())
       {
-         me.getSDoneBtn().hide();
-         me.getSRedeemBtn().hide();
          me.popView();
       }
    },
@@ -358,12 +358,17 @@ Ext.define('Genesis.controller.client.RedeemBase',
       var view = me.getRedeemMainPage();
       var carousel = view.query('carousel')[0];
       var item = carousel ? carousel.getActiveItem() : view.getInnerItems()[0];
+
+      var info = item.query('component[tag=info]')[0];
+      info.hide();
+
       var photo = item.query('component[tag=itemPhoto]')[0];
       photo.element.setStyle(
       {
          'background-image' : 'url(' + qrcodeMeta[0] + ')',
-         'background-size' : Genesis.fn.addUnit(qrcodeMeta[1]) + ' ' + Genesis.fn.addUnit(qrcodeMeta[2])
+         'background-size' : Genesis.fn.addUnit(qrcodeMeta[1] * 1.5) + ' ' + Genesis.fn.addUnit(qrcodeMeta[2] * 1.5)
       });
+      photo.element.setHeight('16em');
    },
    // --------------------------------------------------------------------------
    // Page Navigation

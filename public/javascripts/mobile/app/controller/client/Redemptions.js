@@ -87,6 +87,10 @@ Ext.define('Genesis.controller.client.Redemptions',
          {
             activate : 'onRedeemItemActivate',
             deactivate : 'onRedeemItemDeactivate'
+         },
+         verifyBtn :
+         {
+            tap : 'popView'
          }
       },
       listeners :

@@ -28,7 +28,7 @@
          "subFeature": "merchant",
          "hide": "true"
       }, {
-         "name": "Points Transfer",
+         "name": "Reward Pts Xfer",
          "photo_url": "resources/themes/images/v1/miscicons/points.png",
          "desc": "Transfer Points to other KickBak users",
          "route" : "transfer",

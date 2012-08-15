@@ -36,11 +36,13 @@ Ext.define('Genesis.view.widgets.RedeemItem',
          },
          {
             xtype : 'component',
-            height : 210,
             flex : 1,
             tag : 'itemPhoto',
             cls : 'itemPhoto',
-            tpl : Ext.create('Ext.XTemplate', '<div class="itemPoints">{[this.getPoints(values)]}</div>',
+            tpl : Ext.create('Ext.XTemplate',
+            // @formatter:off
+            '<div class="itemPoints">{[this.getPoints(values)]}</div>',
+            // @formatter:on
             {
                getPoints : function(values)
                {
@@ -167,6 +169,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
          'background-image' : 'url(' + photo.url + ')',
          'background-size' : (photo.width) ? Genesis.fn.addUnit(photo.width) + ' ' + Genesis.fn.addUnit(photo.height) : ''
       });
+      itemPhoto.element.setHeight('12.7em');
       /*
        itemPhoto.setData((!data['time_limited'] || (data['expiry_date'] == 'N/A')) ? reward :
        {
