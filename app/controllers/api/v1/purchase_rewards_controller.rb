@@ -4,7 +4,11 @@ class Api::V1::PurchaseRewardsController < ApplicationController
   def earn
     @venue_id = params[:venue_id]
     if APP_PROP["SIMULATOR_MODE"]
-      @venue = Venue.get(@venue_id) || not_found
+      if @venue_id.nil?
+        @venue = Venue.first(:offset => 0, :limit => 1)
+      else
+        @venue = Venue.get(@venue_id) || not_found
+      end
     else  
       encrypted_data = params[:data].split('$')
       @venue = Venue.get(encrypted_data[0]) || not_found
