@@ -156,5 +156,5 @@ Ext.define('Genesis.view.Viewport',
          }, 0.1 * 1000, this);
       }
       return rc;
-   },
+   }
 });

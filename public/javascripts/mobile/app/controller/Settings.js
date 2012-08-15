@@ -7,10 +7,16 @@ Ext.define('Genesis.controller.Settings',
    xtype : 'settingsCntlr',
    config :
    {
+      termsOfServiceTitle : 'Term of Service',
+      privacyTitle : 'Term of Service',
+      aboutUsTitle : 'About Us',
       routes :
       {
          'clientSettings' : 'clientSettingsPage',
-         'serverSettings' : 'serverSettingsPage'
+         'serverSettings' : 'serverSettingsPage',
+         'aboutus' : 'documentPage',
+         'privacy' : 'documentPage',
+         'termsOfService' : 'documentPage'
       },
       refs :
       {
@@ -25,6 +31,12 @@ Ext.define('Genesis.controller.Settings',
             selector : 'serversettingspageview',
             autoCreate : true,
             xtype : 'serversettingspageview'
+         },
+         documentPage :
+         {
+            selector : 'documentview',
+            autoCreate : true,
+            xtype : 'documentview'
          }
       },
       control :
@@ -63,6 +75,7 @@ Ext.define('Genesis.controller.Settings',
             clearicontap : 'onFacebookTap'
          }
       });
+      this.getDocumentPage();
    },
    initServerControl : function()
    {
@@ -80,26 +93,6 @@ Ext.define('Genesis.controller.Settings',
          {
             clearicontap : 'onAboutUsTap'
          }
-      });
-   },
-   /*
-    getMainPage : function()
-    {
-    return this.getSettingsPage();
-    },
-    openMainPage : function()
-    {
-    var page = this.getMainPage();
-    this.pushView(page);
-    console.log("SettingsPage Opened");
-    },
-    */
-   onTermsTap : function(b, e)
-   {
-      Ext.device.Notification.show(
-      {
-         title : 'Button Tapped',
-         message : 'Disclose List Item'
       });
    },
    onFacebookTap : function(b, e)
@@ -134,26 +127,62 @@ Ext.define('Genesis.controller.Settings',
    },
    onTermsTap : function(b, e)
    {
-      Ext.device.Notification.show(
+      var me = this;
+      var page = me.getDocumentPage();
+      page.query('title')[0].setTitle(me.getTermsOfServiceTitle());
+
+      Ext.Ajax.request(
       {
-         title : 'Terms Tapped',
-         message : 'Disclose List Item'
+         url : 'term_of_service.htm',
+         success : function(response)
+         {
+            page.setHtml(response.responseText);
+            me.redirectTo('termsOfService');
+         },
+         failure : function()
+         {
+            console.debug("Error Loading Term of Service Document.");
+         }
       });
    },
    onPrivacyTap : function(b, e)
    {
-      Ext.device.Notification.show(
+      var me = this;
+      var page = me.getDocumentPage();
+      page.query('title')[0].setTitle(me.getPrivacyTitle());
+
+      Ext.Ajax.request(
       {
-         title : 'Privacy Tapped',
-         message : 'Disclose List Item'
+         url : 'privacy.htm',
+         success : function(response)
+         {
+            page.setHtml(response.responseText);
+            me.redirectTo('privacy');
+         },
+         failure : function()
+         {
+            console.debug("Error Loading Privacy Document.");
+         }
       });
    },
    onAboutUsTap : function(b, e)
    {
-      Ext.device.Notification.show(
+      var me = this;
+      var page = me.getDocumentPage();
+      page.query('title')[0].setTitle(me.getAboutUsTitle());
+
+      Ext.Ajax.request(
       {
-         title : 'About Us Tapped',
-         message : 'Disclose List Item'
+         url : 'aboutUs.htm',
+         success : function(response)
+         {
+            page.setHtml(response.responseText);
+            me.redirectTo('privacy');
+         },
+         failure : function()
+         {
+            console.debug("Error Loading AboutUs Document.");
+         }
       });
    },
    // --------------------------------------------------------------------------
@@ -167,6 +196,10 @@ Ext.define('Genesis.controller.Settings',
    {
       this.openPage('server');
    },
+   documentPage : function()
+   {
+      this.openPage('document');
+   },
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
@@ -175,18 +208,25 @@ Ext.define('Genesis.controller.Settings',
       var me = this, page;
       switch(subFeature)
       {
+         case 'document' :
+         {
+            page = me.getDocumentPage();
+            me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
+            break;
+         }
          case 'client' :
          {
             page = me.getClientSettingsPage();
+            me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
             break;
          }
          case 'server' :
          {
             page = me.getServerSettingsPage();
+            me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
             break;
          }
       }
-      me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
       me.pushView(page);
    },
    isOpenAllowed : function()
