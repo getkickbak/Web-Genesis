@@ -156,7 +156,7 @@ class Api::V1::CustomersController < ApplicationController
               :type => :transfer_points,
               :ref_id => @record.id,
               :description => I18n.t("transaction.transfer"),
-              :points => -points,
+              :points => -@record.points,
               :created_ts => now,
               :update_ts => now
             )
@@ -171,7 +171,7 @@ class Api::V1::CustomersController < ApplicationController
               :type => :transfer_points,
               :ref_id => @record.id,
               :description => I18n.t("transaction.transfer"),
-              :points => points,
+              :points => @record.points,
               :created_ts => now,
               :update_ts => now
             )
