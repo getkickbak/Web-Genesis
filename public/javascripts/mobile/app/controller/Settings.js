@@ -133,7 +133,7 @@ Ext.define('Genesis.controller.Settings',
 
       Ext.Ajax.request(
       {
-         url : 'term_of_service.htm',
+         url : ((Genesis.constants.isNative()) ? '/' : '') + 'term_of_service.htm',
          success : function(response)
          {
             page.setHtml(response.responseText);
@@ -153,7 +153,7 @@ Ext.define('Genesis.controller.Settings',
 
       Ext.Ajax.request(
       {
-         url : 'privacy.htm',
+         url : ((Genesis.constants.isNative()) ? '/' : '') + 'privacy.htm',
          success : function(response)
          {
             page.setHtml(response.responseText);
@@ -173,7 +173,7 @@ Ext.define('Genesis.controller.Settings',
 
       Ext.Ajax.request(
       {
-         url : 'aboutUs.htm',
+         url : ((Genesis.constants.isNative()) ? '/' : '') + 'aboutUs.htm',
          success : function(response)
          {
             page.setHtml(response.responseText);
