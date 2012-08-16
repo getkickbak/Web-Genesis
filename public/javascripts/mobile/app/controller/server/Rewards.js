@@ -148,7 +148,7 @@ Ext.define('Genesis.controller.server.Rewards',
          me.getQrcode().setStyle(
          {
             'background-image' : 'url(' + qrcodeMetaData[0] + ')',
-            'background-size' : Genesis.fn.addUnit(qrcodeMetaData[1]) + ' ' + Genesis.fn.addUnit(qrcodeMetaData[2])
+            'background-size' : Genesis.fn.addUnit(qrcodeMetaData[1] * 1.25) + ' ' + Genesis.fn.addUnit(qrcodeMetaData[2] * 1.25)
          });
          me.getTitle().setData(
          {

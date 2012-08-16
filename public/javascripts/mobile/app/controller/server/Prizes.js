@@ -95,7 +95,7 @@ Ext.define('Genesis.controller.server.Prizes',
       photo.element.setStyle(
       {
          'background-image' : 'url(' + qrcodeMeta[0] + ')',
-         'background-size' : Genesis.fn.addUnit(qrcodeMeta[1]) + ' ' + Genesis.fn.addUnit(qrcodeMeta[2])
+         'background-size' : Genesis.fn.addUnit(qrcodeMeta[1] * 1.25) + ' ' + Genesis.fn.addUnit(qrcodeMeta[2] * 1.25)
       });
    },
    // --------------------------------------------------------------------------
