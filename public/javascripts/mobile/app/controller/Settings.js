@@ -133,15 +133,21 @@ Ext.define('Genesis.controller.Settings',
 
       Ext.Ajax.request(
       {
-         url : ((Genesis.constants.isNative()) ? '/' : '') + 'term_of_service.htm',
-         success : function(response)
+         async : true,
+         disableCaching : false,
+         url : Ext.Loader.getPath("Genesis") + '/../' + 'term_of_service.htm',
+         callback : function(option, success, response)
          {
-            page.setHtml(response.responseText);
-            me.redirectTo('termsOfService');
-         },
-         failure : function()
-         {
-            console.debug("Error Loading Term of Service Document.");
+            if (success)
+            {
+               page.setHtml(response.responseText);
+               me.redirectTo('termsOfService');
+            }
+            else
+            {
+               console.debug("Error Loading Term of Service Document.");
+               console.debug('Status code ' + response.status);
+            }
          }
       });
    },
@@ -153,15 +159,20 @@ Ext.define('Genesis.controller.Settings',
 
       Ext.Ajax.request(
       {
-         url : ((Genesis.constants.isNative()) ? '/' : '') + 'privacy.htm',
-         success : function(response)
+         disableCaching : false,
+         url : Ext.Loader.getPath("Genesis") + '/../' + 'privacy.htm',
+         callback : function(option, success, response)
          {
-            page.setHtml(response.responseText);
-            me.redirectTo('privacy');
-         },
-         failure : function()
-         {
-            console.debug("Error Loading Privacy Document.");
+            if (success)
+            {
+               page.setHtml(response.responseText);
+               me.redirectTo('privacy');
+            }
+            else
+            {
+               console.debug("Error Loading Privacy Document.");
+               console.debug('Status code ' + response.status);
+            }
          }
       });
    },
@@ -173,15 +184,20 @@ Ext.define('Genesis.controller.Settings',
 
       Ext.Ajax.request(
       {
-         url : ((Genesis.constants.isNative()) ? '/' : '') + 'aboutUs.htm',
-         success : function(response)
+         disableCaching : false,
+         url : Ext.Loader.getPath("Genesis") + '/../' + 'about_us.htm',
+         callback : function(option, success, response)
          {
-            page.setHtml(response.responseText);
-            me.redirectTo('privacy');
-         },
-         failure : function()
-         {
-            console.debug("Error Loading AboutUs Document.");
+            if (success)
+            {
+               page.setHtml(response.responseText);
+               me.redirectTo('aboutUs');
+            }
+            else
+            {
+               console.debug("Error Loading About US Document.");
+               console.debug('Status code ' + response.status);
+            }
          }
       });
    },

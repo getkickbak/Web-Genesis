@@ -1174,7 +1174,7 @@ Ext.define('Genesis.data.Connection',
 
       if (Genesis.constants.isNative() && (status === 0))
       {
-         //success = true;
+         success = true;
       }
       if (!success)
       {

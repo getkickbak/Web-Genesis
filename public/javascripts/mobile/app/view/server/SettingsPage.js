@@ -34,22 +34,23 @@ Ext.define('Genesis.view.server.SettingsPage',
             xtype : 'textfield',
             value : 'Version 1.0',
             readOnly : true
-         },
-         {
-            xtype : 'listfield',
-            name : 'terms',
-            value : 'Terms & Conditions'
-         },
-         {
-            xtype : 'listfield',
-            name : 'privacy',
-            value : 'Privacy'
-         },
-         {
-            xtype : 'listfield',
-            name : 'aboutus',
-            value : 'About Us'
-         }]
+         }/*,
+          {
+          xtype : 'listfield',
+          name : 'terms',
+          value : 'Terms & Conditions'
+          },
+          {
+          xtype : 'listfield',
+          name : 'privacy',
+          value : 'Privacy'
+          },
+          {
+          xtype : 'listfield',
+          name : 'aboutus',
+          value : 'About Us'
+          }
+          */]
       }]
    },
    cleanView : Ext.emptyFn,
