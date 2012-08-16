@@ -26,9 +26,14 @@ Ext.define('Genesis.view.Document',
          html : ' '
       }]
    },
+   disableAnimation : true,
    setHtml : function(html)
    {
-      this.query('panel')[0].setHtml(html);
+      var page = this.query('panel')[0];
+      var scroll = page.getScrollable();
+      
+      scroll.getScroller().scrollTo(0, 0);
+      page.setHtml(html);
    },
    createView : function()
    {
