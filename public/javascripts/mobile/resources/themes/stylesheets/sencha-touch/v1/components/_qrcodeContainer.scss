@@ -1,12 +1,12 @@
 .qrcodeContainer  {
    background : white;
    .x-inner {
-      margin: $panelTopGap*2 $panelGap*2;
+      margin: $panelTopGap $panelGap*2;
    }
    .title {
-     height:$xlargeFontSize*2;
+     height:$xlargeFontSize*1.65;
      font-size:$xlargeFontSize*2;
-     padding: $panelTopGap $panelGap;
+     padding: $panelTopGap/2 $panelGap;
    }
    .subtitle {
      font-size:$xlargeFontSize;

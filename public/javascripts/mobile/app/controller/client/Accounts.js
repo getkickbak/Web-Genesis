@@ -664,7 +664,7 @@ Ext.define('Genesis.controller.client.Accounts',
                me.getQrcode().setStyle(
                {
                   'background-image' : 'url(' + qrcode[0] + ')',
-                  'background-size' : Genesis.fn.addUnit(qrcode[1]) + ' ' + Genesis.fn.addUnit(qrcode[2])
+                  'background-size' : Genesis.fn.addUnit(qrcode[1] * 1.25) + ' ' + Genesis.fn.addUnit(qrcode[2] * 1.25)
                });
                me.getTitle().setData(
                {

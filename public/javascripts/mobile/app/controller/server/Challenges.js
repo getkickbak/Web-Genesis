@@ -113,8 +113,8 @@ Ext.define('Genesis.controller.server.Challenges',
                   'thumbnail_ios_medium' :
                   {
                      url : qrcode[0],
-                     height : qrcode[1],
-                     width : qrcode[2],
+                     height : qrcode[1] * 1.25,
+                     width : qrcode[2] * 1.25,
                   }
                }
             });
