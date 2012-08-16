@@ -160,10 +160,10 @@ class Api::V1::CustomersController < ApplicationController
               :created_ts => now,
               :update_ts => now
             )
-            sender.trans_record.merchant = merchant
-            sender.trans_record.customer = sender
-            sender.trans_record.user = sender.user
-            sender.trans_record.save
+            sender_trans_record.merchant = merchant
+            sender_trans_record.customer = sender
+            sender_trans_record.user = sender.user
+            sender_trans_record.save
             @customer.points += @record.points
             @customer.update_ts = now
             @customer.save
