@@ -56,12 +56,12 @@ Ext.define('Genesis.view.client.SettingsPage',
             xtype : 'listfield',
             name : 'privacy',
             value : 'Privacy'
-         },
-         {
-            xtype : 'listfield',
-            name : 'aboutus',
-            value : 'About Us'
-         }]
+         }/*,
+          {
+          xtype : 'listfield',
+          name : 'aboutus',
+          value : 'About Us'
+          }*/]
       }]
    },
    cleanView : Ext.emptyFn,
