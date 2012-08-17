@@ -1,7 +1,7 @@
 Genesis::Application.routes.draw do
 
   scope :module => "business" do
-    constraints :subdomain => /merchant|devmerchant/ do
+    constraints :subdomain => /merchant/ do
       devise_for :merchants, :path => "", :controllers => {
         :sessions => "business/merchant_devise/sessions",
         :registrations => "business/merchant_devise/registrations",
@@ -62,7 +62,7 @@ Genesis::Application.routes.draw do
   end
 
   scope :module => "admin" do
-    constraints :subdomain => /manage|devmanage/ do
+    constraints :subdomain => /manage/ do
       devise_for :staffs, :path => "", :controllers => {
         :sessions => "admin/staff_devise/sessions",
         :registrations => "admin/staff_devise/registrations",
