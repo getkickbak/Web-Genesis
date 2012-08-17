@@ -480,7 +480,7 @@ namespace :db do
         trans_record.customer = customer
         trans_record.user = user
         trans_record.save
-        merchant.reward_model.total_spend += amount
+        merchant.reward_model.avg_spend = (merchant.reward_model.avg_spend * merchant.reward_model.total_visits + amount) / (merchant.reward_model.total_visits + 1)
         merchant.reward_model.total_visits += 1
         merchant.reward_model.save
         prize_record = EarnPrizeRecord.new(
