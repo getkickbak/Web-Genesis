@@ -13,6 +13,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       encrypted_data = params[:data].split('$')
       @venue = Venue.get(encrypted_data[0]) || not_found
     end
+    @venue.eager_load_type = @venue.type
+    @venue.merchant.eager_load_type = @venue.merchant.type
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
