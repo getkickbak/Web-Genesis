@@ -52,10 +52,6 @@ Ext.define('Genesis.controller.server.Prizes',
          {
             activate : 'onShowPrizeActivate',
             deactivate : 'onDeactivate'
-         },
-         verifyBtn :
-         {
-            tap : 'popView'
          }
       }
    },

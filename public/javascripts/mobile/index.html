@@ -257,6 +257,7 @@
 
          function _onGotoMainCallBackFn()
          {
+            Ext.Viewport.setMasked(false);
             var viewport = _application.getController('Viewport');
             if (viewport)
             {

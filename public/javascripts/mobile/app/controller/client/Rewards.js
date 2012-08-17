@@ -254,7 +254,7 @@ Ext.define('Genesis.controller.client.Rewards',
 
       Ext.device.Notification.show(
       {
-         title : 'Reward Points',
+         title : 'Rewards',
          message : me.getPointsMsg(info),
          callback : function()
          {
@@ -322,7 +322,7 @@ Ext.define('Genesis.controller.client.Rewards',
       var me = this;
       Ext.device.Notification.show(
       {
-         title : 'Earning Reward Points',
+         title : 'Rewards',
          message : me.authCodeReqMsg,
          buttons : ['OK', 'Cancel'],
          callback : function(btn)

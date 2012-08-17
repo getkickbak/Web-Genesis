@@ -276,7 +276,6 @@ Ext.define('Genesis.controller.ControllerBase',
       var me = this;
       var viewport = me.getViewPortCntlr();
       viewport.setLoggedIn(true);
-      me.resetView();
       me.redirectTo('main');
       //me.fireEvent('openpage', 'MainPage', 'main', null);
       console.log("LoggedIn, Going back to Main Page ...");
@@ -292,18 +291,20 @@ Ext.define('Genesis.controller.ControllerBase',
    onLocationUpdate : Ext.emptyFn,
    onOpenPage : function(feature, subFeature, cb, eOpts, eInfo)
    {
-      if ((appName == 'GetKickBak') && !Ext.device.Connection.isOnline() && (subFeature != 'login'))
+      if ((appName == 'GetKickBak') && !Ext.device.Connection.isOnline() && (feature != 'MainPage'))
       {
          Ext.device.Notification.show(
          {
             title : 'Network Error',
             message : 'You have lost internet connectivity'
          });
+         var viewport = this.getViewPortCntlr();
+         viewport.fireEvent('openpage', 'MainPage', 'login', null);
          return;
       }
 
       var app = this.getApplication();
-      var controller = app.getController(feature);
+      controller = app.getController(feature);
       if (!subFeature)
       {
          controller.openMainPage();
@@ -540,7 +541,7 @@ Ext.define('Genesis.controller.ControllerBase',
          // Update Customer info
          //
          me.updateBadges(metaData['badges']);
-         
+
          customer = me.updateAccountInfo(metaData, metaData['account_info']);
       }
       catch(e)
