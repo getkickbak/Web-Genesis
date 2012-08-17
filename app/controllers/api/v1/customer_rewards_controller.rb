@@ -114,7 +114,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
             :expiry_ts => (6.hour.from_now).to_i*1000
           }.to_json
           cipher = Gibberish::AES.new(@venue.auth_code)
-          @encrypted_data = "r$#{cipher.enc(data)}"
+          @encrypted_data = "#{@reward.mode == :reward ? 'r' : 'p'}$#{cipher.enc(data)}"
           render :template => '/api/v1/customer_rewards/redeem'
           logger.info("User(#{current_user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")
         else

@@ -13,6 +13,10 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       encrypted_data = params[:data].split('$')
       @venue = Venue.get(encrypted_data[0]) || not_found
     end
+    if @venue_id.nil?
+      @venue.eager_load_type = @venue.type
+      @venue.merchant.eager_load_type = @venue.merchant.type
+    end
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
     
@@ -213,7 +217,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           #logger.debug("Cache mutex acquired(#{acquired}).")
           @pick_prize_initialized = false
           reward_model = @venue.merchant.reward_model
-          reward_model.total_spend += amount
+          reward_model.avg_spend = (reward_model.avg_spend * reward_model.total_visits + amount) / (reward_model.total_visits + 1)
           reward_model.total_visits += 1
           reward_model.save
           prize_info = @venue.prize_info
@@ -289,7 +293,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
           if (@customer.next_badge_visits == next_badge.visits) && (@customer.badge.id != next_badge.id)
             adjustment_ratio = APP_PROP["BADGE_REBATE_RATE"] / (100 - APP_PROP["BADGE_REBATE_RATE"])
-            badge_prize_points_average = (reward_model.total_spend / reward_model.total_visits * next_badge.visits * adjustment_ratio / reward_model.price_per_prize_point).to_i
+            badge_prize_points_average = (reward_model.avg_spend * next_badge.visits * adjustment_ratio / reward_model.price_per_prize_point).to_i
             badge_prize_points_diff = badge_prize_points_average / 2
             min_badge_prize_points = badge_prize_points_average - badge_prize_points_diff
             max_badge_prize_points = badge_prize_points_average + badge_prize_points_diff

@@ -4,13 +4,13 @@ class RewardModel
   include DataMapper::Resource
   
   property :id, Serial
-  property :signup_amount, Decimal, :required => true, :min => 1.00
+  property :signup_amount, Decimal, :required => true, :scale => 2, :min => 1.00
   property :signup_points, Integer, :required => true, :min => 1
   property :rebate_rate, Integer, :required => true, :min => 1
   property :prize_rebate_rate, Integer, :required => true, :min => 1
   property :price_per_point, Decimal, :scale => 2, :min => 1.00, :default => 1.00
   property :price_per_prize_point, Decimal, :scale => 2, :min => 1.00, :default => 1.00
-  property :total_spend, Decimal, :scale => 2, :default => 0.00
+  property :avg_spend, Decimal, :scale => 2, :default => 0.00
   property :total_visits, Integer, :default => 0
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
