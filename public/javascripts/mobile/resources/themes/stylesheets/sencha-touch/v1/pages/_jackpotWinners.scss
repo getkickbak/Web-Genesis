@@ -22,7 +22,7 @@
       .x-list-emptytext {
          position:absolute;
          width:100%;
-         height:100%;
+         height:480px;
          @extend .emptyPage;
          background: theme_image($theme-path,  "noprizes" + ".png") center no-repeat;
          &:before {
