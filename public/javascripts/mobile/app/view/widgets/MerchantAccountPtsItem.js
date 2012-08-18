@@ -101,9 +101,9 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                var viewport = _application.getController('Viewport');
                var customer = viewport.getCustomer();
 
-               values['_customer'] = (Customer.isValid(customer)) ? Ext.StoreMgr.get('CustomerStore').getById(customer.getId()) : customer;
+               values['_customer'] = (Customer.isValid(customer)) ? Ext.StoreMgr.get('CustomerStore').getById(customer.getId()) : null;
 
-               return ( customer ? true : false);
+               return (Customer.isValid(customer));
             },
             getPhoto : function(values)
             {
