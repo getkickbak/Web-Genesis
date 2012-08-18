@@ -257,8 +257,15 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
    },
    setDataBadgeProgress : function(data)
    {
+      var viewport = _application.getController('Viewport');
       var badgeProgress = this.query('component[tag=badgeProgressPanel]')[0];
-      badgeProgress.setData(data);
+      var valid = Customer.isValid(viewport.getCustomer());
+
+      if (valid)
+      {
+         badgeProgress.setData(data);
+      }
+      badgeProgress[ (valid) ? 'show' : 'hide']();
    },
    /**
     * Updates this container's child items, passing through the dataMap.
