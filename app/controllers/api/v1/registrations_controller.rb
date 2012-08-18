@@ -12,8 +12,8 @@ class Api::V1::RegistrationsController < ApplicationController
         start = params[:start].to_i
         max = params[:limit].to_i
         if user_info.include? :facebook_id
-          existing_user = User.first(:facebook_id => user_info[:facebook_id])
-          if !existing_user.nil?
+          existing_user = User.first(:facebook_id => user_info[:facebook_id], :status => :active)
+          if existing_user
             respond_to do |format|
               #format.xml  { head :ok }
               format.json { render :json => { :success => false, :message => t("api.facebook_account_already_exists_failure").split('\n') } }

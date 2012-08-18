@@ -15,10 +15,10 @@ class Api::V1::TokensController < ApplicationController
         end  
         return  
       else
-        @user = User.first(:email => email.downcase) 
+        @user = User.first(:email => email.downcase, :status => :active) 
       end
     else
-      @user = User.first(:authentication_token => auth_token)  
+      @user = User.first(:authentication_token => auth_token, :status => :active)  
     end
 
     if @user.nil?
@@ -63,14 +63,14 @@ class Api::V1::TokensController < ApplicationController
         end  
         return
       end
-      @user = User.first(:facebook_id => facebook_id)
+      @user = User.first(:facebook_id => facebook_id, :status => :active)
       if @user.nil?
-        @user = User.first(:email => params[:email])
+        @user = User.first(:email => params[:email], :status => :active)
       end
     else
-      @user = User.first(:authentication_token => auth_token)  
+      @user = User.first(:authentication_token => auth_token, :status => :active)  
       if @user.nil?
-        if facebook_id && User.first(:facebook_id => facebook_id)
+        if facebook_id && User.first(:facebook_id => facebook_id, :status => :active)
           respond_to do |format|
             #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
             format.json { render :json => { :success => false, :metaData => { :rescode => 'login_invalid_info' }, :message => t("api.tokens.create_invalid_info").split('\n') } }
