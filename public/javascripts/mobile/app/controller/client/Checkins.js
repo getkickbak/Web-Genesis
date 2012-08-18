@@ -328,6 +328,15 @@ Ext.define('Genesis.controller.client.Checkins',
       me.resetView();
       Ext.Viewport.setMasked(false);
 
+      //
+      // Winners' Circle'
+      //
+      var prizeJackpotsCount = metaData['prize_jackpots'];
+      if (prizeJackpotsCount >= 0)
+      {
+         console.debug("Prize Jackpots won by customers at this merchant this month - [" + prizeJackpotsCount + "]");
+         venue.set('prize_jackpots', prizeJackpotsCount);
+      }
       switch(mode)
       {
          case 'checkin' :

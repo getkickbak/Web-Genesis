@@ -296,7 +296,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       Ext.defer(function()
       {
          //activeItem.createView();
-         delete me.redeemItem;
+         //delete me.redeemItem;
       }, 1, activeItem);
       //view.createView();
       //delete me.redeemItem;

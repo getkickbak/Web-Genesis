@@ -427,6 +427,7 @@ Ext.define('Genesis.controller.ControllerBase',
             }
          }
          customer.endEdit();
+         me.persistSyncStores('CustomerStore');
       }
       /*
        if (updateBadge)
@@ -505,7 +506,7 @@ Ext.define('Genesis.controller.ControllerBase',
    updateMetaData : function(metaData)
    {
       var me = this;
-      var customer;
+      var customer = null;
       var viewport = me.getViewPortCntlr();
 
       try
@@ -516,6 +517,37 @@ Ext.define('Genesis.controller.ControllerBase',
          if (me.updateAuthCode(metaData['auth_token']))
          {
             return;
+         }
+
+         //
+         // Update points from the purchase or redemption
+         // Update Customer info
+         //
+         me.updateBadges(metaData['badges']);
+
+         customer = me.updateAccountInfo(metaData, metaData['account_info']);
+         //
+         // Short Cut to earn points, customer object wil be given by server
+         //
+         if (Ext.isDefined(metaData['venue']))
+         {
+            var venue = Ext.create('Genesis.model.Venue', metaData['venue']);
+            var controller = me.getApplication().getController('client.Checkins');
+            //
+            // Winners' Circle'
+            //
+            var prizeJackpotsCount = metaData['prize_jackpots'];
+            if (prizeJackpotsCount >= 0)
+            {
+               console.debug("Prize Jackpots won by customers at this merchant this month - [" + prizeJackpotsCount + "]");
+               venue.set('prize_jackpots', prizeJackpotsCount);
+            }
+
+            console.debug("customer_id - " + customer.getId() + '\n' + //
+            "merchant_id - " + venue.getMerchant().getId() + '\n' + //
+            //"venue - " + Ext.encode(metaData['venue']));
+            '');
+            controller.fireEvent('setupCheckinInfo', 'explore', venue, customer, null);
          }
 
          //
@@ -531,22 +563,6 @@ Ext.define('Genesis.controller.ControllerBase',
          // (Make sure we are after Redemption because we may depend on it for rendering purposes)
          //
          me.updateNews(metaData['newsfeed']);
-         //
-         // Winners' Circle'
-         //
-         var prizeJackpotsCount = metaData['prize_jackpots'];
-         if (prizeJackpotsCount >= 0)
-         {
-            console.debug("Prize Jackpots won customers at this merchant this month - [" + prizeJackpotsCount + "]");
-            viewport.getVenue().set('prize_jackpots', prizeJackpotsCount);
-         }
-         //
-         // Update points from the purchase or redemption
-         // Update Customer info
-         //
-         me.updateBadges(metaData['badges']);
-
-         customer = me.updateAccountInfo(metaData, metaData['account_info']);
       }
       catch(e)
       {

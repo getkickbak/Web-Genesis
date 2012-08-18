@@ -294,12 +294,6 @@ Ext.define('Genesis.controller.client.Rewards',
 
       if (venue)
       {
-         var controller = me.getApplication().getController('client.Checkins');
-
-         console.debug("customer_id - " + customer.getId() + '\n' + //
-         "merchant_id - " + merchantId + '\n' + //
-         "venue - " + Ext.encode(metaData['venue']));
-         controller.fireEvent('setupCheckinInfo', 'explore', venue, customer, null);
          //
          // Clear Referral DB
          //
@@ -364,7 +358,7 @@ Ext.define('Genesis.controller.client.Rewards',
       var me = this;
       var viewport = me.getViewPortCntlr();
       var customer = me.callParent(arguments);
-      var venue = (metaData['venue']) ? Ext.create('Genesis.model.Venue', metaData['venue']) : viewport.getVenue();
+      var venue = viewport.getVenue();
       var merchantId = metaData['merchant_id'] || venue.getMerchant().getId();
 
       me.callBackStack['arguments'] = [metaData, customer, venue, merchantId];
@@ -411,7 +405,7 @@ Ext.define('Genesis.controller.client.Rewards',
 
       tbbar.setTitle('Signup Reward');
       activeItem.redeemItem = me.redeemItem;
-      delete me.redeemItem;
+      //delete me.redeemItem;
    },
    onSignupPromotionDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {

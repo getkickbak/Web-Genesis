@@ -220,7 +220,8 @@ Ext.define('Genesis.controller.MainPage',
                    */
                   var app = me.getApplication();
                   var controller = app.getController('client.Accounts');
-                  controller.fireEvent('authcoderecv', metaData);
+                  controller.callBackStack['arguments'] = [metaData];
+                  controller.fireEvent('triggerCallbacksChain');
                }
                //
                // Update PrizeStore

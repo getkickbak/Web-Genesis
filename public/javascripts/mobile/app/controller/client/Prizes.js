@@ -125,7 +125,7 @@ Ext.define('Genesis.controller.client.Prizes',
          // Redeem Prize
          //
          'redeemitem' : 'onRedeemItem',
-         'showredeemitem' : 'onShowRedeemItem',         
+         'showredeemitem' : 'onShowRedeemItem',
          'showredeemprize' : 'onShowRedeemPrize', //Redeem Prize broadcast to Social Media
          'showQRCode' : 'onShowItemQRCode',
          'refreshQRCode' : 'onRefreshQRCode'
@@ -325,10 +325,12 @@ Ext.define('Genesis.controller.client.Prizes',
          var info = metaData['reward_info'];
          var prize = Ext.StoreMgr.get('PrizeStore').getById(info['eligible_prize_id']);
 
+         console.debug("Eligible Prize Id[" + info['eligible_prize_id'] + "]");
          me.fireEvent('showredeemprize', prize, info, viewsPopLength);
       }
       else
       {
+         console.debug("No Eligible Prize");
          me.removeViewHandler(metaData, viewsPopLength);
       }
 
@@ -390,8 +392,6 @@ Ext.define('Genesis.controller.client.Prizes',
       }
       if (!eligible)
       {
-         console.log("No Prize to Show.");
-
          //
          // Play the prize winning music!
          //

@@ -14,7 +14,9 @@ Ext.define('Genesis.controller.client.Accounts',
       {
          'accounts' : 'mainPage',
          'etransfer' : 'emailTransferPage',
-         'transfer' : 'transferPage'
+         'transfer' : 'transferPage',
+         'selectTransfer' : 'selectTransferPage',
+         'transferComplete' : 'transferCompletePage',
          //,'redememChooseSC' : 'redeemChooseSCPage'
       },
       refs :
@@ -110,8 +112,7 @@ Ext.define('Genesis.controller.client.Accounts',
       },
       listeners :
       {
-         'selectmerchant' : 'onDisclose',
-         'authcoderecv' : 'onAuthCodeRecv'
+         'selectmerchant' : 'onDisclose'
       }
    },
    qrcodeRegExp : /%qrcode_image%/,
@@ -140,11 +141,19 @@ Ext.define('Genesis.controller.client.Accounts',
       'towards your account at ' + //
       Genesis.constants.addCRLF() + merchantName + '!';
    },
+   xferCodeRecv : false,
    init : function()
    {
       var me = this;
       this.callParent(arguments);
       console.log("Accounts Init");
+
+      me.callBackStack =
+      {
+         callbacks : ['onXferCodeRecv'],
+         arguments : [],
+         startIndex : 0
+      };
 
       me.getAccounts();
    },
@@ -356,13 +365,7 @@ Ext.define('Genesis.controller.client.Accounts',
 
             // Drop the previous page history
             me.silentPopView(2);
-            //
-            // Select the Amounts of points to Transfer!
-            //
-            var container = me.getTransferContainer();
-            container.setActiveItem(1);
-            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
-            me.pushView(me.getTransferPage());
+            me.redirectTo('transferComplete');
             break;
          }
       }
@@ -506,143 +509,11 @@ Ext.define('Genesis.controller.client.Accounts',
       }
       console.debug("Accounts onItemChangeActivate Called.");
    },
-   // --------------------------------------------------------------------------
-   // Accounts Transfer Page
-   // --------------------------------------------------------------------------
-   onTransferActivate : function(activeItem, c, oldActiveItem, eOpts)
+   onXferCodeRecv : function(metaData)
    {
       var me = this;
-      var screenShow = 0;
-      var container = me.getTransferContainer();
 
-      switch(me.getMode())
-      {
-         case 'redeemRewardsProfile' :
-         case 'redeemPrizesProfile' :
-         case 'profile' :
-         {
-            me.getAtrCloseBB().hide();
-            me.getAtrCalcCloseBB().hide();
-            me.getAtrBB().show();
-            break;
-         }
-         case 'emailtransfer' :
-         case 'transfer' :
-         {
-            me.getAtrCloseBB().hide();
-            me.getAtrCalcCloseBB().show();
-            me.getAtrBB().hide();
-            if (oldActiveItem && (oldActiveItem == me.getAccounts() && !me.rec))
-            {
-               me.setMode('profile');
-            }
-            else
-            {
-               if (me.getPoints())
-               {
-                  me.getPoints().setValue(null);
-               }
-               screenShow = 1;
-            }
-            break;
-         }
-      }
-      //activeItem.createView(screenShow);
-   },
-   onTransferDeactivate : function(oldActiveItem, c, activeItem, eOpts)
-   {
-      var me = this;
-      var container = me.getTransferContainer();
-
-      if (container)
-      {
-         container.setActiveItem(0);
-      }
-   },
-   onTransferTap : function(b, e, eOpts)
-   {
-   },
-   onTransferSelect : function(list, model, eOpts)
-   {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-
-      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-
-      list.deselect([model]);
-      delete me.merchantId;
-      delete me.rec;
-
-      switch (model.get('tag'))
-      {
-         //
-         // Select the Merchant to generate the QRCode
-         //
-         case 'sender' :
-         {
-            me.setMode('transfer');
-            me.openMainPage();
-            break;
-         }
-         case 'emailsender' :
-         {
-            me.setMode('emailtransfer');
-            me.openMainPage();
-            break;
-         }
-         //
-         // Scan Sender's QRCode
-         //
-         case 'recipient' :
-         {
-            me.setMode('profile');
-            Ext.device.Notification.show(
-            {
-               title : 'Start Transfer',
-               message : me.startTransferMsg,
-               buttons : ['Proceed', 'Cancel'],
-               callback : function(btn)
-               {
-                  if (btn.toLowerCase() == 'proceed')
-                  {
-                     me.scanQRCode();
-                  }
-               }
-            });
-            break;
-         }
-      }
-      return false;
-   },
-   onCalcBtnTap : function(b, e, eOpts, eInfo)
-   {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-
-      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-
-      var value = b.getText();
-      var pointsField = me.getPoints();
-      var points = pointsField.getValue() || "0";
-      if (points.length < 8)
-      {
-         switch (value)
-         {
-            case 'AC' :
-            {
-               points = null;
-               break;
-            }
-            default :
-               points = (points != "0") ? points.concat(value) : value;
-               break;
-         }
-         pointsField.setValue(points);
-      }
-   },
-   onAuthCodeRecv : function(metaData)
-   {
-      var me = this;
+      me.xferCodeRecv = true;
       switch (me.getMode())
       {
          case 'transfer' :
@@ -652,7 +523,7 @@ Ext.define('Genesis.controller.client.Accounts',
             var points = metaData['points'] || me.getPoints().getValue();
 
             console.debug('\n' + //
-            'QRCode - ' + qrcode[0] + '\n' + //
+            //'QRCode - ' + qrcode[0] + '\n' + //
             //'Body - ' + emailTpl + '\n' + //
             'Points - ' + points);
             //
@@ -740,6 +611,142 @@ Ext.define('Genesis.controller.client.Accounts',
             break;
          }
       }
+
+      return false;
+   },
+   // --------------------------------------------------------------------------
+   // Accounts Transfer Page
+   // --------------------------------------------------------------------------
+   onTransferActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+      var screenShow = 0;
+      var container = me.getTransferContainer();
+
+      switch(me.getMode())
+      {
+         case 'redeemRewardsProfile' :
+         case 'redeemPrizesProfile' :
+         case 'profile' :
+         {
+            me.getAtrCloseBB().hide();
+            me.getAtrCalcCloseBB().hide();
+            me.getAtrBB().show();
+            break;
+         }
+         case 'emailtransfer' :
+         case 'transfer' :
+         {
+            me.getAtrCloseBB().hide();
+            me.getAtrCalcCloseBB().show();
+            me.getAtrBB().hide();
+            if (oldActiveItem && (oldActiveItem == me.getAccounts() && !me.rec))
+            {
+               me.setMode('profile');
+            }
+            else
+            {
+               if (me.getPoints())
+               {
+                  me.getPoints().setValue(null);
+               }
+               screenShow = 1;
+            }
+            break;
+         }
+      }
+      //activeItem.createView(screenShow);
+   },
+   onTransferDeactivate : function(oldActiveItem, c, activeItem, eOpts)
+   {
+      var me = this;
+      var container = me.getTransferContainer();
+
+      if (container)
+      {
+         container.setActiveItem(0);
+      }
+   },
+   onTransferTap : function(b, e, eOpts)
+   {
+   },
+   onTransferSelect : function(list, model, eOpts)
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+
+      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+
+      list.deselect([model]);
+      delete me.merchantId;
+      delete me.rec;
+
+      switch (model.get('tag'))
+      {
+         //
+         // Select the Merchant to generate the QRCode
+         //
+         case 'sender' :
+         {
+            me.setMode('transfer')
+            me.redirectTo('selectTransfer');
+            break;
+         }
+         case 'emailsender' :
+         {
+            me.setMode('emailtransfer')
+            me.redirectTo('selectTransfer');
+            break;
+         }
+         //
+         // Scan Sender's QRCode
+         //
+         case 'recipient' :
+         {
+            me.setMode('profile');
+            Ext.device.Notification.show(
+            {
+               title : 'Start Transfer',
+               message : me.startTransferMsg,
+               buttons : ['Proceed', 'Cancel'],
+               callback : function(btn)
+               {
+                  if (btn.toLowerCase() == 'proceed')
+                  {
+                     me.scanQRCode();
+                  }
+               }
+            });
+            break;
+         }
+      }
+      return false;
+   },
+   onCalcBtnTap : function(b, e, eOpts, eInfo)
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+
+      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+
+      var value = b.getText();
+      var pointsField = me.getPoints();
+      var points = pointsField.getValue() || "0";
+      if (points.length < 8)
+      {
+         switch (value)
+         {
+            case 'AC' :
+            {
+               points = null;
+               break;
+            }
+            default :
+               points = (points != "0") ? points.concat(value) : value;
+               break;
+         }
+         pointsField.setValue(points);
+      }
    },
    onShowQrCodeTap : function(b, e, eOpts, eInfo)
    {
@@ -815,11 +822,29 @@ Ext.define('Genesis.controller.client.Accounts',
    onTransferCompleteTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
+      var _exit = function()
+      {
+         //
+         // Go back to Accounts Page
+         //
+         me.popView();
+      }
+
       me.setMode('profile');
-      //
-      // Go back to Accounts Page
-      //
-      me.popView();
+      if (me.xferCodeRecv)
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Transfer Success!',
+            message : me.transferSuccessMsg(),
+            callback : _exit
+         });
+      }
+      else
+      {
+         _exit();
+      }
+      me.xferCodeRecv = false;
    },
    // --------------------------------------------------------------------------
    // Page Navigation
@@ -835,6 +860,22 @@ Ext.define('Genesis.controller.client.Accounts',
    transferPage : function()
    {
       this.openPage('transfer');
+   },
+   selectTransferPage : function()
+   {
+      this.openMainPage();
+   },
+   transferCompletePage : function()
+   {
+      var me = this;
+      var container = me.getTransferContainer();
+      //
+      // Select the Amounts of points to Transfer!
+      //
+      container.setActiveItem(1);
+
+      me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+      me.pushView(me.getTransferPage());
    },
    redeemRewardsChooseSCPage : function()
    {
