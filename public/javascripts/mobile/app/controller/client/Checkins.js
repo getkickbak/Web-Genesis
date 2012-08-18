@@ -289,7 +289,7 @@ Ext.define('Genesis.controller.client.Checkins',
          //
          // Update our Database with the latest value from Server
          //
-         if (Customer.isValidCustomer(customerId))
+         if (Customer.isValid(customerId))
          {
             customer = custore.getById(customerId);
             if (customer != null)
@@ -487,7 +487,7 @@ Ext.define('Genesis.controller.client.Checkins',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       viewport.setVenue(record);
       switch (this.mode)
       {

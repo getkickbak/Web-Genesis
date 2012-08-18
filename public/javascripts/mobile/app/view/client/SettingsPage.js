@@ -50,7 +50,7 @@ Ext.define('Genesis.view.client.SettingsPage',
          {
             xtype : 'listfield',
             name : 'terms',
-            value : 'Terms & Conditions'
+            value : 'Terms of Use'
          },
          {
             xtype : 'listfield',

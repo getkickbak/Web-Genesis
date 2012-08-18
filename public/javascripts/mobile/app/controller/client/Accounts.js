@@ -123,8 +123,7 @@ Ext.define('Genesis.controller.client.Accounts',
    transferSavedMsg : 'Transfer messasge was saved, but not sent.',
    transferSuccessMsg : function()
    {
-      return 'Transfer operation was successfully completed.' + Genesis.constants.addCRLF() + //
-      'Your account information won\'t be updated until your next check-in.';
+      return 'Your account information won\'t be updated until your next check-in.';
    },
    xferWithinRangeMsg : function(min, max)
    {
@@ -332,7 +331,7 @@ Ext.define('Genesis.controller.client.Accounts',
       //var merchantName = record.getMerchant().get('name');
       var vport = me.getViewport();
 
-      //Genesis.controller.ControllerBase.playSoundFile(me.getViewPortCntlr().sound_files['clickSound']);
+      Genesis.controller.ControllerBase.playSoundFile(me.getViewPortCntlr().sound_files['clickSound']);
       me.merchantId = record.getMerchant().getId();
       me.rec = record;
 
@@ -478,7 +477,7 @@ Ext.define('Genesis.controller.client.Accounts',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       //
       // Setup minimum customer information require for explore
       //

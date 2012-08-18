@@ -263,11 +263,11 @@
             {
                if (viewport.getLoggedIn())
                {
-                  viewport.fireEvent('openpage', 'MainPage', 'main', null);
+                  viewport.redirectTo('main');
                }
                else
                {
-                  viewport.fireEvent('openpage', 'MainPage', 'login', null);
+                  viewport.redirectTo('login');
                }
             }
          }

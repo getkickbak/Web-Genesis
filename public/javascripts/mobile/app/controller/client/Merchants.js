@@ -13,7 +13,7 @@ Ext.define('Genesis.controller.client.Merchants',
       {
          'venue/:id/:id' : 'mainPage',
          'venue/:id/:id/:id' : 'backToMainPage',
-         'venueDetails' : 'merchantDetails'
+         'venueDetails' : 'venueDetails'
       },
       refs :
       {
@@ -316,7 +316,7 @@ Ext.define('Genesis.controller.client.Merchants',
       me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();
       me.getMainBtn()[(activeItem.showMainBtn) ? 'show':'hide']();
       var prizeBtn = me.getPrizesBtn();
-      //if (!Customer.isValidCustomer(crecord))
+      //if (!Customer.isValid(crecord))
       {
          prizeBtn.setIcon('');
          prizeBtn.setIconCls('prizes');

@@ -37,7 +37,7 @@ Ext.define('Genesis.controller.server.Redemptions',
       }
    },
    invalidAuthCodeMsg : 'Authorization Code is Invalid',
-   authCodeNoLongValidMsg : function()
+   authCodeNotValidMsg : function()
    {
       return 'Authorization Code' + Genesis.constants.addCRLF() + 'is no longer valid'
    },
@@ -98,11 +98,11 @@ Ext.define('Genesis.controller.server.Redemptions',
 
                   if (dbI[encrypted])
                   {
-                     console.log(me.authCodeNoLongValidMsg());
+                     console.log(me.authCodeNotValidMsg());
                      Ext.device.Notification.show(
                      {
                         title : 'Error!',
-                        message : me.authCodeNoLongValidMsg()
+                        message : me.authCodeNotValidMsg()
                      });
                      return;
                   }

@@ -133,7 +133,7 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    checkinFirstMsg : 'Please Check-In before redeeming Prizes',
    eligibleRewardMsg : 'Check out an Eligible Prize you can redeem with your Prize Points!',
-   scanPlayTitle : 'Scan And Play',
+   scanPlayTitle : 'Scan and Play',
    evtFlag : 0,
    flag : 0,
    loadCallback : null,
@@ -147,7 +147,7 @@ Ext.define('Genesis.controller.client.Prizes',
       var extraPoints = reward_info['badge_prize_points'];
 
       return (((points > me.getMinPrizePts()) ? //
-      'You\'ve won a JACKPOT' + Genesis.constants.addCRLF() + 'of ' + points + ' Prize Points!' : me.gotMinPrizePtsMsg(points)) + //
+      'You\'ve won a JACKPOT of' + Genesis.constants.addCRLF() + points + ' Prize Points!' : me.gotMinPrizePtsMsg(points)) + //
       ((extraPoints == 0) ? Genesis.constants.addCRLF() + me.eligibleRewardMsg : ''));
    },
    wonPrizeEmailMsg : function(prizeName, venueName)

@@ -8,7 +8,7 @@ Ext.define('Genesis.controller.Settings',
    config :
    {
       termsOfServiceTitle : 'Term of Service',
-      privacyTitle : 'Term of Service',
+      privacyTitle : 'Privacy',
       aboutUsTitle : 'About Us',
       routes :
       {
@@ -16,7 +16,7 @@ Ext.define('Genesis.controller.Settings',
          'serverSettings' : 'serverSettingsPage',
          'aboutus' : 'documentPage',
          'privacy' : 'documentPage',
-         'termsOfService' : 'documentPage'
+         'termsOfUse' : 'multipartDocumentPage'
       },
       refs :
       {
@@ -37,12 +37,21 @@ Ext.define('Genesis.controller.Settings',
             selector : 'documentview',
             autoCreate : true,
             xtype : 'documentview'
+         },
+         multipartDocumentPage :
+         {
+            selector : 'multipartdocumentview',
+            autoCreate : true,
+            xtype : 'multipartdocumentview'
          }
       },
       control :
       {
       }
    },
+   termsLoaded : false,
+   privacyLoaded : false,
+   aboutUsLoaded : false,
    fbLoggedInIdentityMsg : function(email)
    {
       return 'You\'re logged into Facebook as ' + Genesis.constants.addCRLF() + email;
@@ -75,6 +84,7 @@ Ext.define('Genesis.controller.Settings',
             clearicontap : 'onFacebookTap'
          }
       });
+      this.getMultipartDocumentPage();
       this.getDocumentPage();
    },
    initServerControl : function()
@@ -98,6 +108,9 @@ Ext.define('Genesis.controller.Settings',
    onFacebookTap : function(b, e)
    {
       var me = this;
+      var viewport = me.getViewPortCntlr();
+      
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       Genesis.fb.facebook_onLogin(function(params)
       {
          Ext.Viewport.setMasked(false);
@@ -127,79 +140,154 @@ Ext.define('Genesis.controller.Settings',
    },
    onTermsTap : function(b, e)
    {
-      var me = this;
-      var page = me.getDocumentPage();
+      var me = this, flag = 0;
+      var viewport = me.getViewPortCntlr();
+      var responses = [];
+      var page = me.getMultipartDocumentPage();
+      
       page.query('title')[0].setTitle(me.getTermsOfServiceTitle());
-
-      Ext.Ajax.request(
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      if (!me.termsLoaded)
       {
-         async : true,
-         disableCaching : false,
-         url : Ext.Loader.getPath("Genesis") + '/../' + 'term_of_service.htm',
-         callback : function(option, success, response)
+         var _exit = function()
          {
-            if (success)
+            for (var i = 0; i < responses.length; i++)
             {
-               page.setHtml(response.responseText);
-               me.redirectTo('termsOfService');
+               page.setHtml(i, responses[i].cardConfig);
             }
-            else
-            {
-               console.debug("Error Loading Term of Service Document.");
-               console.debug('Status code ' + response.status);
-            }
+            me.redirectTo('termsOfUse');
+            me.termsLoaded = true;
          }
-      });
+
+         Ext.Ajax.request(
+         {
+            async : true,
+            disableCaching : false,
+            url : Ext.Loader.getPath("Genesis") + '/../' + 'term_of_service.htm',
+            callback : function(option, success, response)
+            {
+               if (success)
+               {
+                  responses[0] = response;
+                  response.cardConfig =
+                  {
+                     title : 'Terms of Use',
+                     html : response.responseText
+                  }
+                  if ((flag |= 0x01) == 0x11)
+                  {
+                     _exit();
+                  }
+               }
+               else
+               {
+                  console.debug("Error Loading Term of Service Document.");
+                  console.debug('Status code ' + response.status);
+               }
+            }
+         });
+         Ext.Ajax.request(
+         {
+            async : true,
+            disableCaching : false,
+            url : Ext.Loader.getPath("Genesis") + '/../' + 'program_rules.htm',
+            callback : function(option, success, response)
+            {
+               if (success)
+               {
+                  responses[1] = response;
+                  response.cardConfig =
+                  {
+                     title : 'Program Rules',
+                     html : response.responseText
+                  }
+                  if ((flag |= 0x10) == 0x11)
+                  {
+                     _exit();
+                  }
+               }
+               else
+               {
+                  console.debug("Error Loading Program Rules Document.");
+                  console.debug('Status code ' + response.status);
+               }
+            }
+         });
+      }
+      else
+      {
+         me.redirectTo('termsOfUse');
+      }
    },
    onPrivacyTap : function(b, e)
    {
       var me = this;
+      var viewport = me.getViewPortCntlr();
       var page = me.getDocumentPage();
+      
       page.query('title')[0].setTitle(me.getPrivacyTitle());
-
-      Ext.Ajax.request(
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      if (!me.privacyLoaded)
       {
-         disableCaching : false,
-         url : Ext.Loader.getPath("Genesis") + '/../' + 'privacy.htm',
-         callback : function(option, success, response)
+         Ext.Ajax.request(
          {
-            if (success)
+            disableCaching : false,
+            url : Ext.Loader.getPath("Genesis") + '/../' + 'privacy.htm',
+            callback : function(option, success, response)
             {
-               page.setHtml(response.responseText);
-               me.redirectTo('privacy');
+               if (success)
+               {
+                  page.setHtml(response.responseText);
+                  me.redirectTo('privacy');
+                  me.privacyLoaded = true;
+               }
+               else
+               {
+                  console.debug("Error Loading Privacy Document.");
+                  console.debug('Status code ' + response.status);
+               }
             }
-            else
-            {
-               console.debug("Error Loading Privacy Document.");
-               console.debug('Status code ' + response.status);
-            }
-         }
-      });
+         });
+      }
+      else
+      {
+         me.redirectTo('privacy');
+      }
    },
    onAboutUsTap : function(b, e)
    {
       var me = this;
+      var viewport = me.getViewPortCntlr();
       var page = me.getDocumentPage();
+      
       page.query('title')[0].setTitle(me.getAboutUsTitle());
-
-      Ext.Ajax.request(
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      if (me.aboutUsLoaded)
       {
-         disableCaching : false,
-         url : Ext.Loader.getPath("Genesis") + '/../' + 'about_us.htm',
-         callback : function(option, success, response)
+         Ext.Ajax.request(
          {
-            if (success)
+            disableCaching : false,
+            url : Ext.Loader.getPath("Genesis") + '/../' + 'about_us.htm',
+            callback : function(option, success, response)
             {
-               page.setHtml(response.responseText);
-               me.redirectTo('aboutUs');
+               if (success)
+               {
+                  page.setHtml(response.responseText);
+                  me.redirectTo('aboutUs');
+                  me.aboutUsLoaded = true;
+               }
+               else
+               {
+                  console.debug("Error Loading About US Document.");
+                  console.debug('Status code ' + response.status);
+               }
             }
-            else
-            {
-               console.debug("Error Loading About US Document.");
-               console.debug('Status code ' + response.status);
-            }
-         }
-      });
+         });
+      }
+      else
+      {
+         me.redirectTo('aboutUs');
+      }
    },
    // --------------------------------------------------------------------------
    // Page Navigation
@@ -211,6 +299,10 @@ Ext.define('Genesis.controller.Settings',
    serverSettingsPage : function()
    {
       this.openPage('server');
+   },
+   multipartDocumentPage : function()
+   {
+      this.openPage('multipartDocument');
    },
    documentPage : function()
    {
@@ -224,6 +316,12 @@ Ext.define('Genesis.controller.Settings',
       var me = this, page;
       switch(subFeature)
       {
+         case 'multipartDocument' :
+         {
+            page = me.getMultipartDocumentPage();
+            me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
+            break;
+         }
          case 'document' :
          {
             page = me.getDocumentPage();

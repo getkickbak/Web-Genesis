@@ -182,7 +182,7 @@ Ext.define('Genesis.view.client.Accounts',
                },
                isValidCustomer : function(values)
                {
-                  //return Customer.isValidCustomer(values['id']);
+                  //return Customer.isValid(values['id']);
                   return true;
                },
                isEligible : function(customer)

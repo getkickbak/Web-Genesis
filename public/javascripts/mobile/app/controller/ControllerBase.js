@@ -298,8 +298,7 @@ Ext.define('Genesis.controller.ControllerBase',
             title : 'Network Error',
             message : 'You have lost internet connectivity'
          });
-         var viewport = this.getViewPortCntlr();
-         viewport.fireEvent('openpage', 'MainPage', 'login', null);
+         me.redirectTo('login');
          return;
       }
 

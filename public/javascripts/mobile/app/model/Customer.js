@@ -80,7 +80,7 @@ Ext.define('Genesis.model.Customer',
    },
    statics :
    {
-      isValidCustomer : function(customerId)
+      isValid : function(customerId)
       {
          return customerId != 0;
       },
