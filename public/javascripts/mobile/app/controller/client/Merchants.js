@@ -316,7 +316,7 @@ Ext.define('Genesis.controller.client.Merchants',
       me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();
       me.getMainBtn()[(activeItem.showMainBtn) ? 'show':'hide']();
       var prizeBtn = me.getPrizesBtn();
-      //if (!Customer.isValid(crecord))
+      //if (!Customer.isValid(crecord.getId()))
       {
          prizeBtn.setIcon('');
          prizeBtn.setIconCls('prizes');

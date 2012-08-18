@@ -100,10 +100,11 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             {
                var viewport = _application.getController('Viewport');
                var customer = viewport.getCustomer();
+               var valid = Customer.isValid(customer.getId());
 
-               values['_customer'] = (Customer.isValid(customer)) ? Ext.StoreMgr.get('CustomerStore').getById(customer.getId()) : null;
+               values['_customer'] = (valid) ? Ext.StoreMgr.get('CustomerStore').getById(customer.getId()) : null;
 
-               return (Customer.isValid(customer));
+               return valid;
             },
             getPhoto : function(values)
             {
@@ -259,7 +260,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
    {
       var viewport = _application.getController('Viewport');
       var badgeProgress = this.query('component[tag=badgeProgressPanel]')[0];
-      var valid = Customer.isValid(viewport.getCustomer());
+      var valid = Customer.isValid(viewport.getCustomer().getId());
 
       if (valid)
       {
