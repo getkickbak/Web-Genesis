@@ -14,6 +14,16 @@ node :metaData do
 			end
 		),
 		:account_info => @account_info,
-		:reward_info => @reward_info
+		:reward_info => @reward_info,
+		:rewards => (
+			@rewards.map do |r|
+		 		partial('api/v1/customer_rewards/base', :object => r)
+			end if defined? @rewards
+		),
+		:prizes => (
+			@prizes.map do |r|
+		 		partial('api/v1/customer_rewards/base', :object => r)
+			end if defined? @prizes
+		)
 	}.delete_if { |k,v| v.nil? }
 end	
