@@ -18,7 +18,7 @@ module Business
     end
     
     def activate
-      if current_merchant.status == :pending && has_venues? && set_reward_model? && has_purchase_rewards? && has_customer_rewards? && has_challenges?
+      if current_merchant.status == :pending && has_venues? && set_reward_model? && has_customer_rewards? && has_challenges?
         begin
           Merchant.transaction do
             current_merchant.update_without_password(:type_id => current_merchant.type.id, :status => :active)

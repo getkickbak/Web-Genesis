@@ -217,7 +217,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           #logger.debug("Cache mutex acquired(#{acquired}).")
           @pick_prize_initialized = false
           reward_model = @venue.merchant.reward_model
-          reward_model.avg_spend = (reward_model.avg_spend * reward_model.total_visits + amount) / (reward_model.total_visits + 1)
+          reward_model.avg_spend = (reward_model.avg_spend * reward_model.total_visits + amount) / (reward_model.total_visits + 1).round(2)
           reward_model.total_visits += 1
           reward_model.save
           prize_info = @venue.prize_info
