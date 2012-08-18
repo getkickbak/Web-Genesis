@@ -12,7 +12,8 @@ Ext.define('Genesis.controller.client.Merchants',
       routes :
       {
          'venue/:id/:id' : 'mainPage',
-         'venue/:id/:id/:id' : 'backToMainPage'
+         'venue/:id/:id/:id' : 'backToMainPage',
+         'venueDetails' : 'merchantDetails'
       },
       refs :
       {
@@ -439,42 +440,7 @@ Ext.define('Genesis.controller.client.Merchants',
    onMapBtnTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      /*
-       var gm = (window.google && window.google.maps && window.google.maps.LatLng) ? window.google.maps : null;
-       //
-       // Loads currently checked-in / explore Venue into the store
-       //
-       if(gm)
-       {
-       this.latLng = new gm.LatLng(record.get('latitude'), record.get('longitude'));
-       this.markerOptions =
-       {
-       position : this.latLng,
-       title : record.get('name')
-       }
-       }
-       else
-       */
-      {
-         var record = me.getViewPortCntlr().getVenue();
-         me.latLng = record.get('latitude') + ',' + record.get('longitude');
-         var color = 'red', label = '';
-         var address = record.get('address') + ', ' + record.get('city') + ', ' +
-         //
-         record.get('state') + ', ' + record.get('country') + ', ' + record.get('zipcode');
-
-         me.markerOptions =
-         {
-            markers : 'color:' + color + '|' + 'label:' + label + '|' + this.latLng,
-            //center : address,
-            center : me.latLng,
-            title : record.get('name')
-         }
-         //console.debug("Cannot Retrieve Google Map Information.");
-      }
-
-      me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
-      me.pushView(me.getMerchantDetails());
+      me.redirectTo('venueDetails');
    },
    onTabBarTabChange : function(bar, newTab, oldTab, eOpts)
    {
@@ -532,6 +498,46 @@ Ext.define('Genesis.controller.client.Merchants',
       var cvenue = viewport.getCheckinInfo().venue;
       var showFeed = (customerId > 0) || (cvenue && (cvenue.getId() == venueId));
       this.openMainPage(showFeed, backToMain > 0);
+   },
+   venueDetails : function()
+   {
+      var me = this;
+      /*
+       var gm = (window.google && window.google.maps && window.google.maps.LatLng) ? window.google.maps : null;
+       //
+       // Loads currently checked-in / explore Venue into the store
+       //
+       if(gm)
+       {
+       this.latLng = new gm.LatLng(record.get('latitude'), record.get('longitude'));
+       this.markerOptions =
+       {
+       position : this.latLng,
+       title : record.get('name')
+       }
+       }
+       else
+       */
+      {
+         var record = me.getViewPortCntlr().getVenue();
+         me.latLng = record.get('latitude') + ',' + record.get('longitude');
+         var color = 'red', label = '';
+         var address = record.get('address') + ', ' + record.get('city') + ', ' +
+         //
+         record.get('state') + ', ' + record.get('country') + ', ' + record.get('zipcode');
+
+         me.markerOptions =
+         {
+            markers : 'color:' + color + '|' + 'label:' + label + '|' + this.latLng,
+            //center : address,
+            center : me.latLng,
+            title : record.get('name')
+         }
+         //console.debug("Cannot Retrieve Google Map Information.");
+      }
+
+      me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
+      me.pushView(me.getMerchantDetails());
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

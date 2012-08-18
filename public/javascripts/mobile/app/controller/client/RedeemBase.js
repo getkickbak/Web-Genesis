@@ -445,6 +445,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
    isOpenAllowed : function()
    {
       // VenueId can be found after the User checks into a venue
-      return ((this.getViewPortCntlr().getVenue()) ? true : "You need to Explore or Check-in to a Venue first");
+      //return ((this.getViewPortCntlr().getVenue()) ? true : "You need to Explore or Check-in to a Venue first");
+      return true;
    }
 });

@@ -29,12 +29,4 @@ body:after {
  * iPhone Rendering
  * *****************************************************************/
 .iphone4 {
-   background : none;
-   /*
-    background-size : 140px 313px;
-    background : transparent url(http://files.getkickbak.com/v1/iphone4.png) center center no-repeat;
-    -pie-background : url(http://files.getkickbak.com/v1/iphone4.png) center center no-repeat 0 0 /140px 313px transparent;
-    behavior : url(/javascripts/desktop/lib/PIE-1.0.0/PIE.htc);
-    */
-   -ms-filter : "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='http://files.getkickbak.com/v1/iphone4.png',sizingMethod='scale');"
 }

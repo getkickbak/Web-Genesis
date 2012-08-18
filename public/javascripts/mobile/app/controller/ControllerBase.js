@@ -365,66 +365,69 @@ Ext.define('Genesis.controller.ControllerBase',
       var customerId = metaData['customer_id'] || ((customer) ? customer.getId() : 0);
       if (customerId > 0)
       {
+         console.debug("updateAccountInfo - customerId[" + customerId + "]");
          customer = cstore.getById(customerId);
       }
 
-      customer.beginEdit();
-      if (info)
+      if (customer)
       {
-         if (Ext.isDefined(info['points']))
+         customer.beginEdit();
+         if (info)
          {
-            customer.set('points', info['points']);
-         }
-         if (Ext.isDefined(info['prize_points']))
-         {
-            customer.set('prize_points', info['prize_points']);
-         }
-         if (Ext.isDefined(info['visits']))
-         {
-            customer.set('visits', info['visits']);
-         }
-         if (Ext.isDefined(info['next_badge_visits']))
-         {
-            customer.set('next_badge_visits', info['next_badge_visits']);
-         }
-         //
-         // Badge Status
-         //
-         var badges = [
-         {
-            id : info['badge_id'],
-            prefix : "Customer's Current Badge is - [",
-            badgeId : 'badge_id'
-         }, //
-         {
-            id : info['next_badge_id'],
-            prefix : "Customer's Next Badge is - [",
-            badgeId : 'next_badge_id'
-         }];
-         for (var i = 0; i < badges.length; i++)
-         {
-            if (Ext.isDefined(badges[i].id))
+            if (Ext.isDefined(info['points']))
             {
-               var badge = bstore.getById(badges[i].id);
-               console.debug(badges[i].prefix + //
-               badge.get('type').display_value + "/" + badge.get('visits') + "]");
+               customer.set('points', info['points']);
+            }
+            if (Ext.isDefined(info['prize_points']))
+            {
+               customer.set('prize_points', info['prize_points']);
+            }
+            if (Ext.isDefined(info['visits']))
+            {
+               customer.set('visits', info['visits']);
+            }
+            if (Ext.isDefined(info['next_badge_visits']))
+            {
+               customer.set('next_badge_visits', info['next_badge_visits']);
+            }
+            //
+            // Badge Status
+            //
+            var badges = [
+            {
+               id : info['badge_id'],
+               prefix : "Customer's Current Badge is - [",
+               badgeId : 'badge_id'
+            }, //
+            {
+               id : info['next_badge_id'],
+               prefix : "Customer's Next Badge is - [",
+               badgeId : 'next_badge_id'
+            }];
+            for (var i = 0; i < badges.length; i++)
+            {
+               if (Ext.isDefined(badges[i].id))
+               {
+                  var badge = bstore.getById(badges[i].id);
+                  console.debug(badges[i].prefix + //
+                  badge.get('type').display_value + "/" + badge.get('visits') + "]");
 
-               customer.set(badges[i].badgeId, badges[i].id);
+                  customer.set(badges[i].badgeId, badges[i].id);
+               }
+            }
+            var eligible_reward = info['eligible_for_reward'];
+            if (Ext.isDefined(eligible_reward))
+            {
+               customer.set('eligible_for_reward', eligible_reward);
+            }
+            var eligible_prize = info['eligible_for_prize'];
+            if (Ext.isDefined(eligible_prize))
+            {
+               customer.set('eligible_for_prize', eligible_prize);
             }
          }
-         var eligible_reward = info['eligible_for_reward'];
-         if (Ext.isDefined(eligible_reward))
-         {
-            customer.set('eligible_for_reward', eligible_reward);
-         }
-         var eligible_prize = info['eligible_for_prize'];
-         if (Ext.isDefined(eligible_prize))
-         {
-            customer.set('eligible_for_prize', eligible_prize);
-         }
+         customer.endEdit();
       }
-      customer.endEdit();
-
       /*
        if (updateBadge)
        {
@@ -502,6 +505,7 @@ Ext.define('Genesis.controller.ControllerBase',
    updateMetaData : function(metaData)
    {
       var me = this;
+      var customer;
       var viewport = me.getViewPortCntlr();
 
       try

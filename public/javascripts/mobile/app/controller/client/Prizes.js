@@ -125,8 +125,8 @@ Ext.define('Genesis.controller.client.Prizes',
          // Redeem Prize
          //
          'redeemitem' : 'onRedeemItem',
-         'showredeemitem' : 'onShowRedeemItem',
-         'showredeemprize' : 'onShowRedeemPrize',
+         'showredeemitem' : 'onShowRedeemItem',         
+         'showredeemprize' : 'onShowRedeemPrize', //Redeem Prize broadcast to Social Media
          'showQRCode' : 'onShowItemQRCode',
          'refreshQRCode' : 'onRefreshQRCode'
       }
@@ -485,10 +485,11 @@ Ext.define('Genesis.controller.client.Prizes',
       var redeemItem = me.redeemItem = prize;
 
       me.silentPopView(viewsPopLength);
-      me.setRedeemMode('redeemPrize');
 
       me.stopRouletteScreen();
-      me.pushView(me.getRedeemMainPage());
+      //me.setRedeemMode('redeemPrize');
+      //me.pushView(me.getRedeemMainPage());
+      me.redirectTo('redeemPrize');
       //Update on Facebook
       Genesis.fb.facebook_onLogin(function(params)
       {

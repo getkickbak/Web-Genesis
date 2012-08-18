@@ -458,6 +458,7 @@ Ext.define('Genesis.controller.Viewport',
          while (num-- > 0)
          {
             var lastView = me.viewStack.pop();
+            actions.pop();
             //
             // Viewport will automatically detect not to delete current view
             // until is no longer the activeItem
@@ -469,6 +470,7 @@ Ext.define('Genesis.controller.Viewport',
    popView : function()
    {
       var me = this;
+      var actions = me.getApplication().getHistory().getActions();
 
       if (me.viewStack.length > 0)
       {
@@ -477,6 +479,7 @@ Ext.define('Genesis.controller.Viewport',
 
          Ext.defer(function()
          {
+            actions.pop();
             //
             // Recreate View if the view was destroyed for DOM memory optimization
             //

@@ -49,16 +49,15 @@ body:after {
 /* *****************************************************************
  * iPhone Rendering
  * *****************************************************************/
-.iphone4 {
+#iphone4 {
    position : absolute;
    top : -65px;
    left : 400px;
-   width : 140px;
-   height : 313px;
-   background-size : 140px 313px;
-   background : transparent url(http://files.getkickbak.com/v1/iphone4.png) center center no-repeat;
 }
 
+.iphone4 {
+   width : 140px;
+}
 /* *****************************************************************
  * ScanToWin Slogin
  * *****************************************************************/

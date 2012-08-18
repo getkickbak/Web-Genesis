@@ -190,14 +190,12 @@ Ext.define('Genesis.controller.client.Accounts',
                      message : me.recvTransferMsg(metaData['points'], records[0].getMerchant().get('name')),
                      callback : function(btn)
                      {
-                        me.silentPopView(1);
-                        Ext.defer(function()
-                        {
-                           me.fireEvent('selectmerchant', cstore, records[0]);
-                           //me.pushView(me.getAccounts());
-                        }, 1, me);
+                        me.resetView();
+                        me.redirectTo('accounts');
+                        //me.fireEvent('selectmerchant', cstore, records[0]);
                      }
                   });
+                  me.persistSyncStores('CustomerStore');
                }
             }
          });
@@ -235,6 +233,7 @@ Ext.define('Genesis.controller.client.Accounts',
             Ext.Viewport.setMasked(false);
             if (operation.wasSuccessful())
             {
+               console.debug('Found ' + records.length + ' venues matching current location ...');
                if (records.length > 1)
                {
                   me.getAccounts().setActiveItem(1);
