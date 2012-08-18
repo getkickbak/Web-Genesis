@@ -19,6 +19,7 @@ class Venue
   property :latitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :longitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :auth_code, String, :required => true, :default => ""
+  property :merchant_role, String, :required => true, :default => "merchant"
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -57,7 +58,8 @@ class Venue
       :website => venue_info[:website].strip,
       :latitude => venue_info[:latitude].to_f,
       :longitude => venue_info[:longitude].to_f,
-      :auth_code => String.random_alphanumeric(32)
+      :auth_code => String.random_alphanumeric(32),
+      :merchant_role => merchant.role
     )
     venue[:created_ts] = now
     venue[:update_ts] = now
@@ -89,19 +91,14 @@ class Venue
         if user.role != "test"
           venues_info = DataMapper.repository(:default).adapter.select(
             "SELECT id, round( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
-            FROM venues WHERE deleted_ts IS NULL
+            FROM venues WHERE merchant_role = 'merchant' AND deleted_ts IS NULL
             ORDER BY distance
             ASC LIMIT 0,?", latitude, longitude, latitude, max 
           )
         else
-          merchants = Merchant.all(:fields => [:id], :role => :test)
-          merchant_ids = []
-          merchants.each do |merchant|
-            merchant_ids << merchant.id
-          end
           venues_info = DataMapper.repository(:default).adapter.select(
             "SELECT id, round( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
-            FROM venues WHERE merchant_id IN (#{merchant_ids.join(',')}) AND deleted_ts IS NULL
+            FROM venues WHERE merchant_role = 'test' AND deleted_ts IS NULL
             ORDER BY distance
             ASC LIMIT 0,?", latitude, longitude, latitude, max 
           )
