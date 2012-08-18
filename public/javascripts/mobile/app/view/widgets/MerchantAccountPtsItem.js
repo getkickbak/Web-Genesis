@@ -100,11 +100,11 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             {
                var viewport = _application.getController('Viewport');
                var customer = viewport.getCustomer();
+               var valid = Customer.isValid(customer.getId());
 
-               values['_customer'] = (Customer.isValid(customer)) ? Ext.StoreMgr.get('CustomerStore').getById(customer.getId()) : customer;
-               if ()
+               values['_customer'] = (valid) ? Ext.StoreMgr.get('CustomerStore').getById(customer.getId()) : null;
 
-                  return ( customer ? true : false);
+               return valid;
             },
             getPhoto : function(values)
             {
@@ -258,8 +258,15 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
    },
    setDataBadgeProgress : function(data)
    {
+      var viewport = _application.getController('Viewport');
       var badgeProgress = this.query('component[tag=badgeProgressPanel]')[0];
-      badgeProgress.setData(data);
+      var valid = Customer.isValid(viewport.getCustomer().getId());
+
+      if (valid)
+      {
+         badgeProgress.setData(data);
+      }
+      badgeProgress[ (valid) ? 'show' : 'hide']();
    },
    /**
     * Updates this container's child items, passing through the dataMap.
