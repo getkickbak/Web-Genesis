@@ -19,7 +19,7 @@ class CheckInCode
   def self.generate_qr_code(merchant_id, code)
     filename = "#{code}.png"
     if APP_PROP["GENERATE_QRCODE"]
-      qr = RQRCode::QRCode.new( code, :size => 5, :level => :h )
+      qr = RQRCode::QRCode.new( code, :size => 5, :level => :m )
       png = qr.to_img.resize(85,85) 
       png.rotate_180!
       AWS::S3::S3Object.store(
