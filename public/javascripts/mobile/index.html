@@ -151,6 +151,8 @@
 
          function onBodyLoad()
          {
+            var offlineDialogShown = false;
+
             Ext.triggerReady();
             document.addEventListener("online", function()
             {
@@ -270,16 +272,20 @@
                   viewport.redirectTo('login');
                }
             }
+            offlineDialogShown = false;
          }
 
          function _onGotoMain()
          {
-            Ext.device.Notification.show(
+            if (!offlineDialogShown)
             {
-               title : 'Network Error',
-               message : 'You have lost internet connectivity',
-               callback : _onGotoMainCallBackFn
-            });
+               Ext.device.Notification.show(
+               {
+                  title : 'Network Error',
+                  message : 'You have lost internet connectivity',
+                  callback : _onGotoMainCallBackFn
+               });
+            }
          }
       </script>
       <script type="text/javascript" src="core.js"></script>

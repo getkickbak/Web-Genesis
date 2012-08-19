@@ -546,7 +546,7 @@ Ext.define('Genesis.controller.ControllerBase',
             "merchant_id - " + venue.getMerchant().getId() + '\n' + //
             //"venue - " + Ext.encode(metaData['venue']));
             '');
-            controller.fireEvent('setupCheckinInfo', 'explore', venue, customer, null);
+            controller.fireEvent('setupCheckinInfo', 'checkin', venue, customer, metaData);
          }
 
          //
