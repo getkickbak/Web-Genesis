@@ -6,6 +6,7 @@ $(document).ready($(function() {
 		var price_per_point = parseFloat($("#price_per_point").html());
 		var prize_rebate_rate = parseFloat($("#prize_rebate_rate").html());
 		var price_per_prize_point = parseFloat($("#price_per_prize_point").html());
+		var badge_rebate_rate = parseFloat($("badge_rebate_rate").html());
 		if (!isNaN(price)) {
 			var mode = $("#customer_reward_mode").val();
 			if (mode == "reward") {
