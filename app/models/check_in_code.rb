@@ -18,7 +18,7 @@ class CheckInCode
   
   def self.generate_qr_code(merchant_id, code)
     filename = "#{code}.png"
-    if APP_PROP[:GENERATE_QRCODE]
+    if APP_PROP["GENERATE_QRCODE"]
       qr = RQRCode::QRCode.new( code, :size => 4, :level => :h )
       png = qr.to_img.resize(85,85) 
       AWS::S3::S3Object.store(
@@ -34,7 +34,7 @@ class CheckInCode
   
   def generate_qr_code_image(merchant_id)
     filename = "#{String.random_alphanumeric(32)}.pdf"
-    if APP_PROP[:GENERATE_QRCODE]
+    if APP_PROP["GENERATE_QRCODE"]
       html = @@template.result(binding)
       kit = PDFKit.new(html, :page_size => 'Tabloid')
       AWS::S3::S3Object.store(
