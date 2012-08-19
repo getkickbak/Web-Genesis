@@ -19,7 +19,7 @@ class Venue
   property :latitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :longitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :auth_code, String, :required => true, :default => ""
-  property :merchant_role, String, :required => true, :default => "merchant"
+  property :merchant_role, String, :default => "merchant"
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -58,9 +58,9 @@ class Venue
       :website => venue_info[:website].strip,
       :latitude => venue_info[:latitude].to_f,
       :longitude => venue_info[:longitude].to_f,
-      :auth_code => String.random_alphanumeric(32),
-      :merchant_role => merchant.role
+      :auth_code => String.random_alphanumeric(32)
     )
+    venue[:merchant_role] = merchant.role
     venue[:created_ts] = now
     venue[:update_ts] = now
     venue.type = type
