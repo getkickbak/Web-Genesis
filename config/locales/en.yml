@@ -226,7 +226,8 @@ en:
         update_success: "Staff was successfully updated."
       users:     
         create_success: "Account was successfully created."
-        update_success: "Account was successfully updated."   
+        update_success: "Account was successfully updated."  
+        reset_password_success: "Reset password instructions sent successfully." 
   business:
       api:
         customer_rewards:
