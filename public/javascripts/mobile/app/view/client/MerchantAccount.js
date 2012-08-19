@@ -179,7 +179,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
       // -----------------------------------------------------------------------
       // What can I get ?
       // -----------------------------------------------------------------------
-      if (this.renderFeed)
+      if (this.renderFeed && (Ext.StoreMgr.get('NewsStore').getCount() > 0))
       {
          this.getPreRender().push(Ext.create('Ext.Container',
          {

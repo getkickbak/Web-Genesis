@@ -65,7 +65,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             },
             getDesc : function(values)
             {
-               return ((values['prize_jackpots'] > 0) ? 'Click here to find out more!' : '');
+               return 'Click here to find out more!';
             }
          })
       },

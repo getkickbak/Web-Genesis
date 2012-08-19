@@ -496,7 +496,8 @@ Ext.define('Genesis.controller.client.Merchants',
    {
       var viewport = this.getViewPortCntlr();
       var cvenue = viewport.getCheckinInfo().venue;
-      var showFeed = (customerId > 0) || (cvenue && (cvenue.getId() == venueId));
+      //var showFeed = (customerId > 0) || (cvenue && (cvenue.getId() == venueId));
+      var showFeed = true;
       this.openMainPage(showFeed, backToMain > 0);
    },
    venueDetails : function()
