@@ -11,27 +11,25 @@ $Grey : #F3F3F4;
 $GreyNoEntry : #E7E7E8;
 $GreyStart : #F3F3F4; $GreyEnd : #D1D2D4;
 $GreyHdrStart : #A7A9AC; $GreyHdrEnd : #777878;
+
 //------------------------------------------------------------------------------
 // Global Vars Default Theme Override
 //------------------------------------------------------------------------------
-$base-color: $BlueStart;
+$base-color: $BlueStart !default;
 $base-gradient: 'smooth';
-$active-color: darken(saturate($OrangeEnd, 55%), 10%);
-
-// Highlights
-$include-highlights: false; // Can disable all theme-generated gradients, text-shadows, and box-shadows.
+$active-color: darken(saturate($OrangeEnd, 55%), 10%) !default;
 
 //Buttons
 $include-buttons-uis : false;
 $include-default-icons : false;
 
 // Forms
-//$form-dark: #FFF;
-$form-light: $BlueEnd ;
-$form-field-bg-color : $Grey;
+//$form-dark: #FFF !default;
+$form-light: $BlueEnd !default;
+$form-field-bg-color : $Grey !default;
 
 // Lists
-$list-bg-color: $Grey;
+$list-bg-color: $Grey !default;
 $list-active-gradient: 'bevel';
 //$list-header-bg-color: transparentize(saturate($base-color, 10%), .25);
 $list-header-bg-color: $OrangeStart;
@@ -61,11 +59,11 @@ $xlargeFontSize : 1.2em;
 
 // Theme Path
 $theme-path : 'v1';
-$theme-path-rel : '../themes/images/v1';
+$theme-path-rel : '../../sdk/resources/themes/images/v1';
 
 // Badges Theme
-$badgePoints-bg-color: darken($GreenEnd, 10%);
-$badgePoints-bg-gradient: $base-gradient;
+$badgePoints-bg-color: darken($GreenEnd, 10%) !default;
+$badgePoints-bg-gradient: $base-gradient !default;
 
 //------------------------------------------------------------------------------
 // Default Theme Includes
@@ -81,7 +79,7 @@ $badgePoints-bg-gradient: $base-gradient;
 //@include sencha-toolbar-forms;
 @include sencha-indexbar;
 @include sencha-list;
-@include sencha-list-paging;
+//@include sencha-list-paging;
 @include sencha-list-pullrefresh;
 @include sencha-layout;
 @include sencha-carousel;
