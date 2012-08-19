@@ -17,7 +17,7 @@ class CheckInCode
   belongs_to :venue
   
   def self.generate_qr_code(merchant_id, code)
-    filename = "#{code}.png"
+    filename = "#{String.random_alphanumeric(32)}.png"
     if APP_PROP["GENERATE_QRCODE"]
       qr = RQRCode::QRCode.new( code, :size => 5, :level => :m )
       png = qr.to_img.resize(85,85) 
