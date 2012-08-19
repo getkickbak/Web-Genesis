@@ -207,7 +207,7 @@ namespace :db do
         :account_last_name => Faker::Name.name,
         :phone => merchant_info[n][:phone],
         :website => merchant_info[n][:website],
-        :role => :test,
+        :role => "test",
         :status => :active,
         :reward_terms => I18n.t('customer_reward.terms')
       })
