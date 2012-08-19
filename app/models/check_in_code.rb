@@ -21,6 +21,7 @@ class CheckInCode
     if APP_PROP["GENERATE_QRCODE"]
       qr = RQRCode::QRCode.new( code, :size => 4, :level => :h )
       png = qr.to_img.resize(85,85) 
+      png.rotate "-180>"
       AWS::S3::S3Object.store(
         ::Common.generate_merchant_qr_code_file_path(merchant_id,filename), 
         png.to_string,
