@@ -110,6 +110,19 @@ Ext.define('Genesis.model.Customer',
             cOld.setLastCheckin(Ext.create('Genesis.model.Checkin'));
             sync = true;
          }
+         var oMerchant = cOld.getMerchant() || '';
+         var nMerchant = cNew.getMerchant() || '';
+         var oString = oMerchant.toString();
+         var nString = nMerchant.toString();
+         if ((oString != nString) && (nString != ''))
+         {
+            cOld.handleInlineAssociationData(
+            {
+               'merchant' : nMerchant.raw
+            });
+            sync = true;
+         }
+
          cOld.endEdit();
 
          return sync;
