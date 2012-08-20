@@ -116,6 +116,7 @@ body:after {
  * *****************************************************************/
 .footer {
    margin : 80px auto 140px auto;
+   border : none;
 }
 .earnpoints {
    width : 380px;
