@@ -69,7 +69,9 @@ Genesis::Application.routes.draw do
         :passwords => "admin/staff_devise/passwords"
       }
 
-      resources :users
+      resources :users do
+        post 'reset_password', :on => :member, :as => :reset_password
+      end
       resources :staffs
       resources :merchants do
         resources :devices
@@ -93,7 +95,7 @@ Genesis::Application.routes.draw do
   end
 
   constraints Domain do
-    devise_for :users, :skip => [:sessions, :registrations, :passwords]
+    devise_for :users, :skip => [:sessions, :registrations]
     #devise_for :users, :path => "", :controllers => {
     #  :sessions => "user_devise/sessions",
     #  :registrations => "user_devise/registrations",
