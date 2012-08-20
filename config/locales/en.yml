@@ -41,8 +41,11 @@ en:
           incorrect_password: "Incorrect password"
           reuse_password: "New password must be different from current password"  
         exception:
+          http_401_headline: "Unauthorized Access"
           http_401: "Something went wrong.  Unauthorized access."
+          http_404_headline: "Page Not Found"
           http_404: "Something went wrong.  Not found."
+          http_500_headline: "Server Error"
           http_500: "Something went wrong.  Server error." 
   datamapper:
       errors:
