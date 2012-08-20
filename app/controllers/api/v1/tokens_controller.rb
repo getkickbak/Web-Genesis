@@ -133,6 +133,7 @@ class Api::V1::TokensController < ApplicationController
       end  
     else
       @user.reset_authentication_token!
+      sign_out(@user)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => true } }
