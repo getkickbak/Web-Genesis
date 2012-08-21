@@ -21,6 +21,20 @@
       {
          $('div.tabbable').addClass('tabs-left');
       }
+      $(window).resize(function()
+      {
+         var matches = window.matchMedia("(min-width: 767px)").matches;
+         var length = $('div.tabbable.tabs-left').length;
+         if (matches && (length == 0))
+         {
+            $('div.tabbable').addClass('tabs-left');
+         }
+         else
+         if (!matches && (length > 0))
+         {
+            $('div.tabbable').removeClass('tabs-left');
+         }
+      });
    }); 
 </script>
 <% end %>
