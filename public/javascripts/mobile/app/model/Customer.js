@@ -165,7 +165,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/password_reset');
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/reset_password');
       },
       setPasswdChangeUrl : function()
       {
@@ -173,7 +173,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'POST'
          });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/password_change');
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/change_password');
       },
       setCreateAccountUrl : function()
       {
