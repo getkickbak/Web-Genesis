@@ -18,13 +18,17 @@
 	$('#terms_of_service').load('/javascripts/mobile/term_of_service.htm');
 	$('#program_rules').load('/javascripts/mobile/program_rules.htm');
 	});
+	if (window.matchMedia("(min-width: 767px)").matches)
+	{
+	   $('div.tabs-left').addClass('tabs-left');
+	}
 </script>
 <% end %>
 
 <div class="container">
 	<div class="row">
 		<div class="span12" style="padding:30px 0;">
-			<div class="tabbable tabs-left">
+			<div id="docTabs" class="tabbable">
 				<!-- Only required for left/right tabs -->
 				<ul class="nav nav-tabs">
 					<li class="active">
