@@ -159,6 +159,22 @@ Ext.define('Genesis.model.Customer',
          });
          this.getProxy().setUrl(Genesis.constants.host + '/api/v1/tokens/' + auth_code);
       },
+      setPasswdResetUrl : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/password_reset');
+      },
+      setPasswdChangeUrl : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/password_change');
+      },
       setCreateAccountUrl : function()
       {
          this.getProxy().setActionMethods(

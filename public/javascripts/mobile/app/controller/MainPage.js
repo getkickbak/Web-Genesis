@@ -15,6 +15,8 @@ Ext.define('Genesis.controller.MainPage',
          'login' : 'loginPage',
          'merchant' : 'merchantPage',
          'signin' : 'signInPage',
+         'password_reset' : 'signInResetPage',
+         'password_change' : 'signInChangePage',
          'createAccount' : 'createAccountPage',
       },
       models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'Customer', 'User', 'Merchant', 'CustomerReward'],
@@ -32,6 +34,18 @@ Ext.define('Genesis.controller.MainPage',
             selector : 'signinpageview',
             autoCreate : true,
             xtype : 'signinpageview'
+         },
+         passwdReset :
+         {
+            selector : 'passwdresetpageview',
+            autoCreate : true,
+            xtype : 'passwdresetpageview'
+         },
+         passwdChange :
+         {
+            selector : 'passwdchangepageview',
+            autoCreate : true,
+            xtype : 'passwdchangepageview'
          },
          createAccount :
          {
@@ -74,6 +88,18 @@ Ext.define('Genesis.controller.MainPage',
          {
             tap : 'onSignInSubmit'
          },
+         'signinpageview button[tag=reset]' :
+         {
+            tap : 'onSignInResetSubmit'
+         },
+         'passwdresetpageview button[tag=submit]' :
+         {
+            tap : 'onPasswdResetSubmit'
+         },
+         'passwdchangepageview button[tag=submit]' :
+         {
+            tap : 'onPasswdChangeSubmit'
+         },
          'actionsheet button[tag=logout]' :
          {
             tap : 'onLogoutTap'
@@ -105,9 +131,23 @@ Ext.define('Genesis.controller.MainPage',
          }
       }
    },
+   passwdResetSuccessMsg : function()
+   {
+      return ('Password Reset was Successful.' + Genesis.constants.addCRLF() + //
+      'Please check your email account for instructions.');
+   },
+   passwdChangeSuccessMsg : 'Password Change was Successful.',
    signInFailMsg : function(msg)
    {
       return msg + Genesis.constants.addCRLF() + 'Please Try Again';
+   },
+   passwdResetFailMsg : function(msg)
+   {
+      return msg + Genesis.constants.addCRLF() + 'Please fix the errors';
+   },
+   passwdChangeFailMsg : function(msg)
+   {
+      return msg + Genesis.constants.addCRLF() + 'Please retype the passwords';
    },
    loginWithFbMsg : function(msg)
    {
@@ -544,8 +584,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    onSignInTap : function(b, e, eOpts, eInfo)
    {
-      this.setAnimationMode(this.self.superclass.self.animationMode['cover']);
-      this.pushView(this.getSignin());
+      this.redirectTo('signin');
    },
    // --------------------------------------------------------------------------
    // SignIn and CreateAccount Page
@@ -658,6 +697,10 @@ Ext.define('Genesis.controller.MainPage',
          }
       });
    },
+   onSignInResetSubmit : function(b, e, eOpts, eInfo)
+   {
+      this.redirectTo('password_reset');
+   },
    onSignInSubmit : function(b, e, eOpts, eInfo)
    {
       var signin = this.getSignin();
@@ -672,12 +715,157 @@ Ext.define('Genesis.controller.MainPage',
          Ext.device.Notification.show(
          {
             title : 'Oops',
-            message : signInFailMsg(label + ' ' + field.getMessage())
+            message : this.signInFailMsg(label + ' ' + field.getMessage())
          });
       }
       else
       {
          this.onSignIn(values.username, values.password);
+      }
+   },
+   onPasswdReset : function(username, password)
+   {
+      var me = this;
+      var params =
+      {
+         device : Ext.encode(Genesis.constants.device)
+      };
+
+      if (username)
+      {
+         params = Ext.apply(params,
+         {
+            email : username
+         });
+      }
+      Customer['setPasswdResetUrl']();
+      console.log("setPasswdResetUrl - Resetting Password ...");
+      Customer.load(0,
+      {
+         params : params,
+         jsonData :
+         {
+         },
+         callback : function(record, operation)
+         {
+            //
+            // Login Error, redo login
+            //
+            if (operation.wasSuccessful())
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Password Reset',
+                  message : me.passwdResetSuccessMsg()
+               });
+               me.popView();
+            }
+            Ext.Viewport.setMasked(false);
+         }
+      });
+   },
+   onPasswdResetSubmit : function(b, e, eOpts, eInfo)
+   {
+      var reset = this.getPasswdReset();
+      var values = reset.getValues();
+      var user = Ext.create('Genesis.model.frontend.Signin', values);
+      var validateErrors = user.validate();
+
+      if (!validateErrors.isValid())
+      {
+         validateErrors.each(function(item, index, length)
+         {
+            if (item.getField() == 'username')
+            {
+               var label = reset.query('field[name=username]')[0].getLabel();
+               Ext.device.Notification.show(
+               {
+                  title : 'Oops',
+                  message : this.passwdResetFailMsg(label + ' ' + field.getMessage())
+               });
+               return;
+            }
+         }, this);
+      }
+      else
+      {
+         this.onPasswdReset(values.username);
+      }
+   },
+   onPasswdChange : function(oldpassword, newpassword)
+   {
+      var me = this;
+      var params =
+      {
+         device : Ext.encode(Genesis.constants.device)
+      };
+
+      if (oldpassword && newpassword)
+      {
+         params = Ext.apply(params,
+         {
+            oldpassword : oldpassword,
+            newpassword : newpassword
+         });
+      }
+      Customer['setPasswdChangetUrl']();
+      console.log("setPasswdChangeUrl - Changing Password ...");
+      Customer.load(0,
+      {
+         params : params,
+         jsonData :
+         {
+         },
+         callback : function(record, operation)
+         {
+            //
+            // Login Error, redo login
+            //
+            if (operation.wasSuccessful())
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Password Reset',
+                  message : me.passwdChangeSuccessMsg()
+               });
+               me.popView();
+            }
+            Ext.Viewport.setMasked(false);
+         }
+      });
+   },
+   onPasswdChangeSubmit : function(b, e, eOpts, eInfo)
+   {
+      var change = this.getPasswdChange();
+      var values = change.getValues(true);
+      var validateErrors = user.validate();
+
+      if (!validateErrors.isValid())
+      {
+         var field = validateErrors.first();
+         var label = Ext.ComponentQuery.query('field[name='+field.getField()+']')[0].getLabel();
+         var message = this.passwdChangeFailMsg(label + ' ' + field.getMessage());
+         console.log(message);
+         Ext.device.Notification.show(
+         {
+            title : 'Oops',
+            message : message
+         });
+      }
+      else
+      if (values['oldpassword'] != values['newpassword'])
+      {
+         var label = change.query('field[name=newpassword]')[0].getLabel();
+         var message = this.passwdChangeFailMsg(label + ' ' + item.getMessage());
+         Ext.device.Notification.show(
+         {
+            title : 'Oops',
+            message : message
+         });
+      }
+      else
+      {
+         this.onPasswdChange(values.username);
       }
    },
    onCreateActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -723,13 +911,25 @@ Ext.define('Genesis.controller.MainPage',
       }
       else
       {
-         this.onSignInTap();
+         this.setAnimationMode(this.self.superclass.self.animationMode['cover']);
+         this.pushView(this.getSignin());
       }
+   },
+   signInResetPage : function()
+   {
+      this.setAnimationMode(this.self.superclass.self.animationMode['slide']);
+      this.pushView(this.getPasswdReset());
+   },
+   signInChangePage : function()
+   {
+      this.setAnimationMode(this.self.superclass.self.animationMode['slide']);
+      this.pushView(this.getPasswdChange());
    },
    createAccountPage : function()
    {
       this.onCreateAccountTap();
    },
+
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------

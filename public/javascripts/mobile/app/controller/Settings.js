@@ -82,6 +82,10 @@ Ext.define('Genesis.controller.Settings',
          'clientsettingspageview listfield[name=facebook]' :
          {
             clearicontap : 'onFacebookTap'
+         },
+         'clientsettingspageview listfield[name=changepassword]' :
+         {
+            clearicontap : 'onPasswordChangeTap'
          }
       });
       this.getMultipartDocumentPage();
@@ -109,7 +113,7 @@ Ext.define('Genesis.controller.Settings',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      
+
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       Genesis.fb.facebook_onLogin(function(params)
       {
@@ -144,7 +148,7 @@ Ext.define('Genesis.controller.Settings',
       var viewport = me.getViewPortCntlr();
       var responses = [];
       var page = me.getMultipartDocumentPage();
-      
+
       page.query('title')[0].setTitle(me.getTermsOfServiceTitle());
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       if (!me.termsLoaded)
@@ -224,7 +228,7 @@ Ext.define('Genesis.controller.Settings',
       var me = this;
       var viewport = me.getViewPortCntlr();
       var page = me.getDocumentPage();
-      
+
       page.query('title')[0].setTitle(me.getPrivacyTitle());
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       if (!me.privacyLoaded)
@@ -259,7 +263,7 @@ Ext.define('Genesis.controller.Settings',
       var me = this;
       var viewport = me.getViewPortCntlr();
       var page = me.getDocumentPage();
-      
+
       page.query('title')[0].setTitle(me.getAboutUsTitle());
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       if (me.aboutUsLoaded)
@@ -288,6 +292,10 @@ Ext.define('Genesis.controller.Settings',
       {
          me.redirectTo('aboutUs');
       }
+   },
+   onPasswordChangeTap : function(b, e)
+   {
+      this.redirectTo('password_change');
    },
    // --------------------------------------------------------------------------
    // Page Navigation

@@ -98,9 +98,157 @@ Ext.define('Genesis.view.SignInPage',
       },
       {
          xtype : 'button',
-         ui : 'login',
+         ui : 'action',
          tag : 'login',
-         text : 'Sign In'
+         text : 'Sign In',
+         defaultUnit : 'em',
+         xtype : 'button',
+         margin : '0.5 0 0 0'
+      },
+      {
+         xtype : 'button',
+         tag : 'reset',
+         text : 'Password Reset',
+         defaultUnit : 'em',
+         xtype : 'button',
+         margin : '0.5 0 0 0'
+      }]
+   },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   removeAll : function(destroy, everything)
+   {
+      var rc = this.callParent(arguments);
+      this.setPreRender([]);
+
+      return rc;
+   },
+   cleanView : Ext.emptyFn,
+   createView : Ext.emptyFn,
+   showView : Ext.emptyFn
+});
+
+Ext.define('Genesis.view.PasswdResetPage',
+{
+   extend : 'Ext.form.Panel',
+   alias : 'widget.passwdresetpageview',
+   requires : ['Ext.field.Email'],
+   config :
+   {
+      cls : 'viewport',
+      changeTitle : false,
+      scrollable : 'vertical',
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
+      {
+         title : 'Password Reset',
+         items : [
+         {
+            align : 'left',
+            //ui : 'back',
+            ui : 'normal',
+            tag : 'back',
+            text : 'Back'
+         }]
+      }),
+      {
+         xtype : 'fieldset',
+         title : 'Login Credentials:',
+         defaults :
+         {
+            required : true,
+            labelAlign : 'top'
+         },
+         items : [
+         {
+            xtype : 'emailfield',
+            name : 'username',
+            label : 'User Name',
+            clearIcon : true,
+            placeHolder : 'Email Address'
+         }]
+      },
+      {
+         xtype : 'button',
+         tag : 'submit',
+         text : 'Password Reset',
+         defaultUnit : 'em',
+         xtype : 'button',
+         margin : '0.5 0 0 0'
+      }]
+   },
+   /**
+    * Removes all items currently in the Container, optionally destroying them all
+    * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
+    * @param {Boolean} everything If true, completely remove all items including docked / centered and floating items
+    * @return {Ext.Component} this
+    */
+   removeAll : function(destroy, everything)
+   {
+      var rc = this.callParent(arguments);
+      this.setPreRender([]);
+
+      return rc;
+   },
+   cleanView : Ext.emptyFn,
+   createView : Ext.emptyFn,
+   showView : Ext.emptyFn
+});
+
+Ext.define('Genesis.view.PasswdChangePage',
+{
+   extend : 'Ext.form.Panel',
+   alias : 'widget.passwdchangepageview',
+   requires : ['Ext.field.Password', 'Ext.field.Text'],
+   config :
+   {
+      cls : 'viewport',
+      changeTitle : false,
+      scrollable : 'vertical',
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
+      {
+         title : 'Password Change',
+         items : [
+         {
+            align : 'left',
+            //ui : 'back',
+            ui : 'normal',
+            tag : 'back',
+            text : 'Back'
+         }]
+      }),
+      {
+         xtype : 'fieldset',
+         title : 'Login Credentials:',
+         defaults :
+         {
+            required : true,
+            labelAlign : 'top'
+         },
+         items : [
+         {
+            xtype : 'passwordfield',
+            name : 'password',
+            label : 'Old Password',
+            clearIcon : true
+         },
+         {
+            xtype : 'textfield',
+            name : 'newpassword',
+            label : 'New Password',
+            clearIcon : true
+         }]
+      },
+      {
+         xtype : 'button',
+         tag : 'submit',
+         text : 'Change Password',
+         defaultUnit : 'em',
+         xtype : 'button',
+         margin : '0.5 0 0 0'
       }]
    },
    /**

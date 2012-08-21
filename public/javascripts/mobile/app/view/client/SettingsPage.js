@@ -35,6 +35,11 @@ Ext.define('Genesis.view.client.SettingsPage',
             iconCls : 'facebook',
             name : 'facebook',
             value : 'Facebook'
+         },
+         {
+            xtype : 'listfield',
+            name : 'changepassword',
+            value : 'Change Password'
          }]
       },
       {
