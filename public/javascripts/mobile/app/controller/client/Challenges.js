@@ -486,6 +486,7 @@ Ext.define('Genesis.controller.client.Challenges',
             title : 'Error',
             message : me.noCodeScannedMsg
          });
+         me.referralCbFn = null;
       }
       me.metaData = null;
    },
@@ -501,9 +502,13 @@ Ext.define('Genesis.controller.client.Challenges',
             var id = metaData['id'];
             var cstore = Ext.StoreMgr.get('CustomerStore');
             var customer = cstore.getById(id);
+            //
+            // Persist the newly created Customer object
+            //
             if (!customer)
             {
                customer = cstore.add(metaData)[0];
+               me.persistSyncStores('CustomerStore');
             }
             //
             // Add to Referral DB
@@ -1084,10 +1089,6 @@ Ext.define('Genesis.controller.client.Challenges',
    openPage : function(subFeature, cb)
    {
       var me = this;
-      if (cb)
-      {
-         me.referralCbFn = cb;
-      }
       switch (subFeature)
       {
          case 'referrals' :
@@ -1101,6 +1102,10 @@ Ext.define('Genesis.controller.client.Challenges',
                {
                   if (btn.toLowerCase() == 'proceed')
                   {
+                     if (cb)
+                     {
+                        me.referralCbFn = cb;
+                     }
                      delete me.selectedItem;
                      me.metaData = null;
                      me.scanQRCode();
