@@ -46,4 +46,10 @@ class UserMailer < ActionMailer::Base
     @record = record
     mail(:to => sender.email, :subject => I18n.t("mailer.email_subject_confirm_points_transfer"))
   end
+  
+  def reset_password_email(user, new_password)
+    @user = user
+    @new_password = mew_password
+    mail(:to => user.email, :subject => I18n.t("mailer.email_subject_reset_password"))
+  end
 end

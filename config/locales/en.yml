@@ -278,6 +278,7 @@ en:
       mailer:
         email_subject_summary_newsletter: "Weekly Summary Newsletter - %s"
         email_subject_invoice: "Monthly KICKBAK Invoice #%s"  
+        email_subject_reset_password: "Reset Password"
   mailer:
       email_subject_referral_challenge: "KICKBAK Referral"
       email_subject_confirm_referral_challenge: "KICKBAK Referral - Confirmation"
