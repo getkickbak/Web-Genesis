@@ -190,7 +190,7 @@ class Api::V1::ChallengesController < ApplicationController
     @customer = Customer.first(Customer.user.id => current_user.id, Customer.merchant.id => merchant.id)
     if @customer.nil?
       @customer = Customer.create(merchant, current_user)
-    elsif @customer.visits > 0
+    elsif @customer.visits > 1
       already_customer = true
     end
     authorize! :read, @customer
@@ -231,8 +231,7 @@ class Api::V1::ChallengesController < ApplicationController
         msg = t("api.challenges.already_customer").split('\n')
         logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge_id}), already a customer")
       else
-        referrer = Customer.get(referrer_id)
-        msg = (t("api.challenges.already_referred").split('\n') % [referrer.user.name])
+        msg = t("api.challenges.already_referred").split('\n')
         logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge_id}), already referred")
       end  
       respond_to do |format|
@@ -240,6 +239,16 @@ class Api::V1::ChallengesController < ApplicationController
         format.json { render :json => { :success => false, :message => msg } }
       end  
       return
+    else
+      if ReferralChallengeRecord.first(:referral_id => @customer.id)
+        msg = t("api.challenges.already_referred").split('\n')
+        logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge_id}), already referred")
+        respond_to do |format|
+          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+          format.json { render :json => { :success => false, :message => msg } }
+        end 
+        return
+      end
     end
     
     begin

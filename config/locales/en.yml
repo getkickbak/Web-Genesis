@@ -178,7 +178,7 @@ en:
         invalid_code: "Authorization code is not valid."
         invalid_referral_code: "Referral code is not valid."
         already_customer: "You are already a customer!"
-        already_referred: "You have already been referred by %s!"
+        already_referred: "You have already been referred!"
         must_be_customer_to_refer: "You must be a current customer to refer!"
         missing_requirements: "Something went wrong."
         start_failure: "Trouble starting the challenge.\nPlease try again."
