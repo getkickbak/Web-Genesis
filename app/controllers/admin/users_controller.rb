@@ -89,19 +89,6 @@ module Admin
         end
       end    
     end
-
-    def reset_password
-      @user = User.get(params[:id]) || not_found
-      authorize! :update, @user
-      
-      @user.send_reset_password_instructions
-      
-      respond_to do |format|
-        format.html { redirect_to(user_path(@user), :notice => t("admin.users.reset_password_success")) }
-        #format.xml  { head :ok }
-        #format.json { render :json => { :success => true, :data => @user, :total => 1 } }
-      end
-    end
     
     def destroy
       @user = User.get(params[:id]) || not_found

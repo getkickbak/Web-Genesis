@@ -69,9 +69,7 @@ Genesis::Application.routes.draw do
         :passwords => "admin/staff_devise/passwords"
       }
 
-      resources :users do
-        post 'reset_password', :on => :member, :as => :reset_password
-      end
+      resources :users
       resources :staffs
       resources :merchants do
         resources :devices
@@ -95,9 +93,9 @@ Genesis::Application.routes.draw do
   end
 
   constraints Domain do
-    devise_for :users, :path => "", :skip => [:sessions, :registrations], :controllers => {
-      #:sessions => "user_devise/sessions",
-      #:registrations => "user_devise/registrations",
+    devise_for :users, :path => "", :skip => [:sessions,:registrations,:passwords], :controllers => {
+      :sessions => "user_devise/sessions",
+      :registrations => "user_devise/registrations",
       :passwords => "user_devise/passwords",
     } do
       #match "/facebook_sign_in" => 'user_devise/sessions#create_from_facebook'
@@ -119,6 +117,8 @@ Genesis::Application.routes.draw do
         
         match "/account/update" => 'users#update', :via => :post
         match "/account/update_facebook_info" => 'users#update_facebook_info', :via => :post
+        match "/account/reset_password" => 'users#reset_password', :via => :post
+        match "/account/change_password" => 'users#change_password', :via => :post
     
         match '/venues/find_closest' => 'venues#find_closest'
         match '/venues/find_nearest' => 'venues#find_nearest'

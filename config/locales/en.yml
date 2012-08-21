@@ -171,8 +171,6 @@ en:
       year:
         one: "year"
         other: "years"    
-      facebook_account_already_exists_failure: "Facebook account already exists."
-      not_available: "Not yet available to the general public!"
       challenges:
         expired_code: "Authorization code no longer valid."
         invalid_code: "Authorization code is not valid."
@@ -205,8 +203,11 @@ en:
         expired_code: "Authorization code no longer valid."
         invalid_code: "Authorization code is not valid."
         earn_failure: "Trouble earning points.\nPlease try again."
-      registrations:
+      users:  
         create_failure: "Trouble with sign up.\nPlease try again."
+        facebook_account_already_exists_failure: "Facebook account already exists."
+        reset_password_invalid_info: "The email you entered is invalid.\nPlease try again."
+        change_password_invalid_info: "Invalid password.\nPlease try again."
       tokens:
         create_missing_info: "Missing email or password."
         create_missing_facebook_info: "Missing facebook info."
@@ -230,7 +231,6 @@ en:
       users:     
         create_success: "Account was successfully created."
         update_success: "Account was successfully updated."  
-        reset_password_success: "Reset password instructions sent successfully." 
   business:
       api:
         customer_rewards:

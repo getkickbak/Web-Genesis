@@ -16,7 +16,7 @@ class Api::V1::RegistrationsController < ApplicationController
           if existing_user
             respond_to do |format|
               #format.xml  { head :ok }
-              format.json { render :json => { :success => false, :message => t("api.facebook_account_already_exists_failure").split('\n') } }
+              format.json { render :json => { :success => false, :message => t("api.users.facebook_account_already_exists_failure").split('\n') } }
             end
             return  
           end
@@ -39,7 +39,7 @@ class Api::V1::RegistrationsController < ApplicationController
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.registrations.create_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.users.create_failure").split('\n') } }
       end  
     end        
   end

@@ -1,5 +1,6 @@
 class Api::V1::UsersController < ApplicationController
   before_filter :authenticate_user!
+  skip_authorization_check :only => :reset_password
 
   def update
     @user = current_user
@@ -23,6 +24,12 @@ class Api::V1::UsersController < ApplicationController
         #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :metaData => { :rescode => 'update_account_invalid_info' }, :message => e.resource.errors } }
       end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.users.update_failure").split('\n') } }
+      end 
     end    
   end
   
@@ -45,7 +52,7 @@ class Api::V1::UsersController < ApplicationController
         else
           respond_to do |format|
             #format.xml  { head :ok }
-            format.json { render :json => { :success => false, :message => t("api.facebook_account_already_exists_failure").split('\n') } }
+            format.json { render :json => { :success => false, :message => t("api.users.facebook_account_already_exists_failure").split('\n') } }
           end  
         end
       end
@@ -55,6 +62,49 @@ class Api::V1::UsersController < ApplicationController
         #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :metaData => { :rescode => 'update_account_invalid_facebook_info' }, :message => e.resource.errors } }
       end
+    rescue StandardError => e  
+      logger.error("Exception: " + e.message)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.users.update_failure").split('\n') } }
+      end
     end    
-  end    
+  end  
+  
+  def reset_password
+    @user = User.first(:email => params[:email])
+    
+    if @user.nil?
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.users.reset_password_invalid_info").split('\n') } }
+      end  
+      return
+    end
+    
+    @user.reset_password!(params[:new_password], params[:new_password])
+    respond_to do |format|
+      #format.xml  { head :ok }
+      format.json { render :json => { :success => true } }
+    end    
+  end
+  
+  def change_password
+    @user = current_user
+    authorize! :update, @user
+    
+    if not @user.valid_password?(params[:old_password])
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.users.change_password_invalid_info").split('\n') } }
+      end  
+      return
+    end
+    
+    @user.reset_password!(params[:new_password], params[:new_password])
+    respond_to do |format|
+      #format.xml  { head :ok }
+      format.json { render :json => { :success => true } }
+    end
+  end  
 end
