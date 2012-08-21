@@ -574,33 +574,41 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-
-      cbOnSuccess = cbOnSuccess || Ext.emptyFn;
-      cbOnFail = cbOnFail || Ext.emptyFn;
-      var merchantId = viewport.getVenue().getMerchant().getId();
-      if ((viewport.getCheckinInfo().customer.get('visits') == 0) && (!Genesis.db.getReferralDBAttrib("m" + merchantId)))
+      var customer = viewport.getCustomer();
+      var merchant = viewport.getVenue().getMerchant();
+      var merchantId = merchant.getId();
+      var success = cbOnSuccess || Ext.emptyFn;
+      var fail = cbOnFail || Ext.emptyFn;
+      
+      var callback = function(btn)
+      {
+         Ext.defer(function()
+         {
+            if (btn.toLowerCase() == 'yes')
+            {
+               me.fireEvent('openpage', 'client.Challenges', 'referrals', success);
+            }
+            else
+            {
+               fail();
+            }
+         }, 1, me);
+      }
+      
+      if (!Customer.isValid(customer.getId()) || //
+      ((customer.get('visits') <= 1) && (!Genesis.db.getReferralDBAttrib("m" + merchantId))))
       {
          Ext.device.Notification.show(
          {
             title : 'Referral Challenge',
-            message : me.referredByFriendsMsg(viewport.getVenue().getMerchant().get('name')),
+            message : me.referredByFriendsMsg(merchant.get('name')),
             buttons : ['Yes', 'No'],
-            callback : function(btn)
-            {
-               if (btn.toLowerCase() == 'yes')
-               {
-                  me.fireEvent('openpage', 'client.Challenges', 'referrals', cbOnSuccess);
-               }
-               else
-               {
-                  cbOnFail();
-               }
-            }
+            callback : callback
          });
       }
       else
       {
-         cbOnFail();
+         fail();
       }
    },
    /*
@@ -822,7 +830,7 @@ Ext.define('Genesis.controller.ControllerBase',
                         console.debug("POSITION_UNAVAILABLE");
                         if (++i <= 5)
                         {
-                           Ext.Function.defer(me.getGeoLocation, 1 * 1000, me, [callback, i]);
+                           Ext.defer(me.getGeoLocation, 1 * 1000, me, [callback, i]);
                            console.debug("Retry getting current location(" + i + ") ...");
                         }
                         else
