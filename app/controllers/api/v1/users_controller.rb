@@ -85,10 +85,7 @@ class Api::V1::UsersController < ApplicationController
     new_password = String.random_alphanumeric(8)
     @user.reset_password!(new_password, new_password)
     UserMailer.reset_password_email(@user, new_password)
-    respond_to do |format|
-      #format.xml  { head :ok }
-      format.json { render :json => { :success => true } }
-    end    
+    render :template => '/api/v1/account/change_password'    
   end
   
   def change_password
@@ -104,9 +101,6 @@ class Api::V1::UsersController < ApplicationController
     end
     
     @user.reset_password!(params[:new_password], params[:new_password])
-    respond_to do |format|
-      #format.xml  { head :ok }
-      format.json { render :json => { :success => true } }
-    end
+    render :template => '/api/v1/account/change_password'
   end  
 end
