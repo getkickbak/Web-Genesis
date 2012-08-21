@@ -174,7 +174,7 @@ Ext.define('Genesis.view.PasswdResetPage',
       {
          xtype : 'button',
          tag : 'submit',
-         text : 'Password Reset',
+         text : 'Reset',
          defaultUnit : 'em',
          xtype : 'button',
          margin : '0.5 0 0 0'
@@ -231,7 +231,7 @@ Ext.define('Genesis.view.PasswdChangePage',
          items : [
          {
             xtype : 'passwordfield',
-            name : 'password',
+            name : 'oldpassword',
             label : 'Old Password',
             clearIcon : true
          },

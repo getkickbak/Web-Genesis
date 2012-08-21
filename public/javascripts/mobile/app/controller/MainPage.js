@@ -766,31 +766,49 @@ Ext.define('Genesis.controller.MainPage',
    },
    onPasswdResetSubmit : function(b, e, eOpts, eInfo)
    {
-      var reset = this.getPasswdReset();
-      var values = reset.getValues();
-      var user = Ext.create('Genesis.model.frontend.Signin', values);
-      var validateErrors = user.validate();
+      var me = this;
+      var confirmReset = function()
+      {
+         var reset = me.getPasswdReset();
+         var values = reset.getValues();
+         var user = Ext.create('Genesis.model.frontend.Signin', values);
+         var validateErrors = user.validate();
 
-      if (!validateErrors.isValid())
-      {
-         validateErrors.each(function(item, index, length)
+         if (!validateErrors.isValid())
          {
-            if (item.getField() == 'username')
+            validateErrors.each(function(item, index, length)
             {
-               var label = reset.query('field[name=username]')[0].getLabel();
-               Ext.device.Notification.show(
+               if (item.getField() == 'username')
                {
-                  title : 'Oops',
-                  message : this.passwdResetFailMsg(label + ' ' + field.getMessage())
-               });
-               return;
-            }
-         }, this);
+                  var label = reset.query('field[name=username]')[0].getLabel();
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Oops',
+                     message : me.passwdResetFailMsg(label + ' ' + field.getMessage())
+                  });
+                  return;
+               }
+            }, me);
+         }
       }
-      else
+      Ext.device.Notification.show(
       {
-         this.onPasswdReset(values.username);
-      }
+         title : 'Password Reset',
+         message : this.passwdResetConfirmMsg,
+         buttons : ['Confirm', 'Cancel'],
+         callback : function(btn)
+         {
+            if (btn.toLowerCase() == 'confirm')
+            {
+               Ext.defer(confirmReset, 1);
+            }
+            else
+            {
+               me.onPasswdReset(values.username);
+            }
+
+         }
+      });
    },
    onPasswdChange : function(oldpassword, newpassword)
    {
