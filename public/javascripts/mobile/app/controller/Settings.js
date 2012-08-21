@@ -295,7 +295,11 @@ Ext.define('Genesis.controller.Settings',
    },
    onPasswordChangeTap : function(b, e)
    {
-      this.redirectTo('password_change');
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      me.redirectTo('password_change');
    },
    // --------------------------------------------------------------------------
    // Page Navigation
