@@ -642,7 +642,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      proxy.supressErrorsPopup = false;
                      if (btn.toLowerCase() == 'try again')
                      {
-                        Ext.defer(me.completeUploadPhotosChallenge, 1 * 1000, me);
+                        Ext.defer(me.onFbPhotoUploadComplete, 1 * 1000, me);
                      }
                      else
                      {
@@ -650,8 +650,7 @@ Ext.define('Genesis.controller.client.Challenges',
                         // Go back to Checked-in Merchant Account
                         //
                         me.metaData = null;
-                        me.redirectTo('main');
-                        //me.fireEvent('openpage', 'MainPage', 'main', null);
+                        viewport.onCheckedInAccountTap();
                      }
                   }
                });

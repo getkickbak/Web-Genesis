@@ -109,10 +109,6 @@ Ext.define('Genesis.controller.Viewport',
          {
             select : 'onButtonTap'
          },
-         'viewportview dataview[tag=challengeMenuSelections]' :
-         {
-            select : 'onButtonTap'
-         },
          //
          'viewportview button' :
          {
