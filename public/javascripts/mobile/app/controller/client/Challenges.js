@@ -257,6 +257,63 @@ Ext.define('Genesis.controller.client.Challenges',
          }
       }
    },
+   sendReferralEmailHandler : function(qrcode, emailTpl, subject)
+   {
+      var me = this;
+
+      window.plugins.emailComposer.showEmailComposerWithCB(function(res)
+      {
+         // Delay is needed to not block email sending ...
+         Ext.defer(function()
+         {
+            Ext.Viewport.setMasked(false);
+            switch (res)
+            {
+               case EmailComposer.ComposeResultType.Failed:
+               case EmailComposer.ComposeResultType.NotSent:
+               case EmailComposer.ComposeResultType.Cancelled:
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Email Error',
+                     message : me.referralFailedMsg,
+                     callback : function()
+                     {
+                        me.onCompleteReferralsChallenge();
+                     }
+                  });
+                  break;
+               }
+               case EmailComposer.ComposeResultType.Saved:
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Email Saved',
+                     message : me.referralSavedMsg,
+                     callback : function()
+                     {
+                        me.onCompleteReferralsChallenge();
+                     }
+                  });
+                  break;
+               }
+               case EmailComposer.ComposeResultType.Sent:
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Email Sent!',
+                     message : me.sendReferralSuccessMsg(),
+                     callback : function()
+                     {
+                        me.onCompleteReferralsChallenge();
+                     }
+                  });
+                  break;
+               }
+            }
+         }, 1, me);
+      }, subject, emailTpl, null, null, null, true, [qrcode]);
+   },
    referralEventHandler : function(referralsSelected)
    {
       var me = this, type;
@@ -368,58 +425,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      //'Encoded Body - ' + emailTpl);
                      qrcode = Genesis.controller.ControllerBase.genQRCode(qrcode)[0].replace('data:image/gif;base64,', "");
 
-                     window.plugins.emailComposer.showEmailComposerWithCB(function(res)
-                     {
-                        // Delay is needed to not block email sending ...
-                        Ext.defer(function()
-                        {
-                           Ext.Viewport.setMasked(false);
-                           switch (res)
-                           {
-                              case EmailComposer.ComposeResultType.Failed:
-                              case EmailComposer.ComposeResultType.NotSent:
-                              case EmailComposer.ComposeResultType.Cancelled:
-                              {
-                                 Ext.device.Notification.show(
-                                 {
-                                    title : 'Email Error',
-                                    message : me.referralFailedMsg,
-                                    callback : function()
-                                    {
-                                       me.onCompleteReferralsChallenge();
-                                    }
-                                 });
-                                 break;
-                              }
-                              case EmailComposer.ComposeResultType.Saved:
-                              {
-                                 Ext.device.Notification.show(
-                                 {
-                                    title : 'Email Saved',
-                                    message : me.referralSavedMsg,
-                                    callback : function()
-                                    {
-                                       me.onCompleteReferralsChallenge();
-                                    }
-                                 });
-                                 break;
-                              }
-                              case EmailComposer.ComposeResultType.Sent:
-                              {
-                                 Ext.device.Notification.show(
-                                 {
-                                    title : 'Email Sent!',
-                                    message : me.sendReferralSuccessMsg(),
-                                    callback : function()
-                                    {
-                                       me.onCompleteReferralsChallenge();
-                                    }
-                                 });
-                                 break;
-                              }
-                           }
-                        }, 1, me);
-                     }, subject, emailTpl, null, null, null, true, [qrcode]);
+                     me.sendReferralEmailHandler(qrcode, emailTpl, subject);
                      break;
                   }
                }
@@ -494,13 +500,13 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       var me = this;
       var metaData = Challenge.getProxy().getReader().metaData;
+      var cstore = Ext.StoreMgr.get('CustomerStore');
 
       switch (type)
       {
          case 'referral' :
          {
             var id = metaData['id'];
-            var cstore = Ext.StoreMgr.get('CustomerStore');
             var customer = cstore.getById(id);
             //
             // Persist the newly created Customer object
@@ -555,11 +561,12 @@ Ext.define('Genesis.controller.client.Challenges',
             var reward_info = metaData['reward_info'];
             Ext.device.Notification.show(
             {
-               title : 'Earn Points',
+               title : 'Completed Challenge!',
                message : ((reward_info['points'] > 0) ? //
                me.getPointsMsg(reward_info['points'], account_info['points']) : //
                me.getConsolationMsg(metaData['message']))
             });
+
             me.fireEvent('updatemetadata', metaData);
             break;
       }
@@ -575,6 +582,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var customerId = viewport.getCustomer().getId();
       var points = me.selectedItem.get('points');
       var id = me.selectedItem.getId();
+      var proxy = Challenge.getProxy();
 
       Challenge['setCompleteChallengeURL'](id);
       Challenge.load(id,
@@ -593,7 +601,7 @@ Ext.define('Genesis.controller.client.Challenges',
          {
             Ext.Viewport.setMasked(false);
 
-            var metaData2 = Challenge.getProxy().getReader().metaData;
+            var metaData2 = proxy.getReader().metaData;
             if (operation.wasSuccessful() && metaData2)
             {
                //
@@ -601,7 +609,11 @@ Ext.define('Genesis.controller.client.Challenges',
                //
                var account_info = metaData2['account_info'];
                var reward_info = metaData2['reward_info'];
-               cstore.getById(customerId).set('points', account_info['points']);
+               var customer = cstore.getById(customerId);
+
+               customer.set('points', account_info['points']);
+               me.persistSyncStores('CustomerStore');
+
                console.debug("Points Earned = " + metaData2['points'] + ' Pts');
                Ext.device.Notification.show(
                {
@@ -619,6 +631,7 @@ Ext.define('Genesis.controller.client.Challenges',
             }
             else
             {
+               proxy.supressErrorsPopup = true;
                Ext.device.Notification.show(
                {
                   title : 'Upload Failed!',
@@ -626,6 +639,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   buttons : ['Try Again', 'Cancel'],
                   callback : function(btn)
                   {
+                     proxy.supressErrorsPopup = false;
                      if (btn.toLowerCase() == 'try again')
                      {
                         Ext.defer(me.completeUploadPhotosChallenge, 1 * 1000, me);

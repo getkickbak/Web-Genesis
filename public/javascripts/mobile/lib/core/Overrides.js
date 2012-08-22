@@ -991,6 +991,14 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          {
          };
          Ext.Viewport.setMasked(false);
+         
+         //
+         // Supress Error Messages on Manual Override
+         //
+         if (me.supressErrorsPopup)
+         {
+            return;
+         }
 
          switch (metaData['rescode'])
          {
@@ -1077,6 +1085,8 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          console.debug("Ajax ErrorHandler called. Operation(" + operation.wasSuccessful() + ")");
          me.fireEvent('exception', me, response, operation);
       }
+      
+      
       try
       {
          resultSet = reader.process(response);

@@ -112,7 +112,7 @@ Ext.define('Genesis.controller.client.Accounts',
       },
       listeners :
       {
-         'selectmerchant' : 'onDisclose'
+         'selectMerchant' : 'onDisclose'
       }
    },
    qrcodeRegExp : /%qrcode_image%/,
@@ -223,7 +223,8 @@ Ext.define('Genesis.controller.client.Accounts',
    {
       var me = this;
       var merchantId = me.merchantId;
-      var vstore = Ext.StoreMgr.get('VenueStore')
+      var vstore = Ext.StoreMgr.get('VenueStore');
+      var proxy = vstore.getProxy();
 
       //Venue['setGetClosestVenueURL']();
       Venue['setFindNearestURL']();
@@ -253,10 +254,15 @@ Ext.define('Genesis.controller.client.Accounts',
             }
             else
             {
+               proxy.supressErrosPopup = true;
                Ext.device.Notification.show(
                {
                   title : 'Error',
-                  message : me.missingVenueInfoMsg
+                  message : me.missingVenueInfoMsg,
+                  callback : function()
+                  {
+                     proxy.supressErrosPopup = false;
+                  }
                });
             }
          },
