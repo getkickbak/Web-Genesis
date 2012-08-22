@@ -642,7 +642,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      proxy.supressErrorsPopup = false;
                      if (btn.toLowerCase() == 'try again')
                      {
-                        Ext.defer(me.onFbPhotoUploadComplete, 1 * 1000, me);
+                        Ext.defer(me.fireEvent, 1 * 1000, me, ['fbphotouploadcomplete']);
                      }
                      else
                      {
@@ -1040,7 +1040,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   {
                      if (btn.toLowerCase() == 'try again')
                      {
-                        Ext.defer(me.onUploadPhotosTap, 100, me);
+                        Ext.defer(me.onUploadPhotosTap, 1 * 1000, me);
                      }
                      else
                      {
@@ -1048,7 +1048,7 @@ Ext.define('Genesis.controller.client.Challenges',
                         // Go back to Checked-in Merchant Account
                         //
                         me.metaData = null;
-                        me.popView();
+                        viewport.onCheckedInAccountTap();
                      }
                   }
                });
