@@ -991,7 +991,13 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          {
          };
          Ext.Viewport.setMasked(false);
-         
+
+         //this callback is the one that was passed to the 'read' or 'write' function above
+         if ( typeof callback == 'function')
+         {
+            callback.call(scope || me, operation);
+         }
+
          //
          // Supress Error Messages on Manual Override
          //
@@ -1085,8 +1091,6 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          console.debug("Ajax ErrorHandler called. Operation(" + operation.wasSuccessful() + ")");
          me.fireEvent('exception', me, response, operation);
       }
-      
-      
       try
       {
          resultSet = reader.process(response);
