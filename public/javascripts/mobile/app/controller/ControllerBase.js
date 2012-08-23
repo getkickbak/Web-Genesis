@@ -597,6 +597,7 @@ Ext.define('Genesis.controller.ControllerBase',
       if ((!Customer.isValid(customer.getId()) || (customer.get('visits') <= 1))//
       && (!Genesis.db.getReferralDBAttrib("m" + merchantId)))
       {
+         console.debug("Customer Visit Count[" + customer.get('visits') + "]")
          Ext.device.Notification.show(
          {
             title : 'Referral Challenge',

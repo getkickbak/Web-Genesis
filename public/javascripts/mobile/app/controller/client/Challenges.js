@@ -540,7 +540,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      var app = me.getApplication();
                      var controller = app.getController('client.Accounts');
                      controller.setMode('profile');
-                     controller.fireEvent('selectMerchant', cstore, customer);
+                     controller.fireEvent('selectMerchant', null, customer);
                   }
                });
             }
@@ -837,8 +837,11 @@ Ext.define('Genesis.controller.client.Challenges',
    onReferralsActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      //var container = me.getReferralsContainer();
-      //container.setActiveItem(0);
+      var container = me.getReferralsContainer();
+      if (container)
+      {
+         container.setActiveItem(0);
+      }
       //activeItem.createView();
    },
    onReferralsDeactivate : function(oldActiveItem, c, activeItem, eOpts)

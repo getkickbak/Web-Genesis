@@ -245,7 +245,12 @@ Ext.define('Genesis.controller.client.Accounts',
                console.debug('Found ' + records.length + ' venues matching current location ...');
                if (records.length > 1)
                {
-                  me.getAccounts().setActiveItem(1);
+                  var view = me.getAccounts();
+                  if (view.isHidden())
+                  {
+                     me.redirectTo('accounts');
+                  }
+                  view.setActiveItem(1);
                }
                else
                {
