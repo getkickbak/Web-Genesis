@@ -112,7 +112,7 @@ Ext.define('Genesis.controller.client.Accounts',
       },
       listeners :
       {
-         'selectmerchant' : 'onDisclose'
+         'selectMerchant' : 'onDisclose'
       }
    },
    qrcodeRegExp : /%qrcode_image%/,
@@ -223,7 +223,8 @@ Ext.define('Genesis.controller.client.Accounts',
    {
       var me = this;
       var merchantId = me.merchantId;
-      var vstore = Ext.StoreMgr.get('VenueStore')
+      var vstore = Ext.StoreMgr.get('VenueStore');
+      var proxy = vstore.getProxy();
 
       //Venue['setGetClosestVenueURL']();
       Venue['setFindNearestURL']();
@@ -244,7 +245,13 @@ Ext.define('Genesis.controller.client.Accounts',
                console.debug('Found ' + records.length + ' venues matching current location ...');
                if (records.length > 1)
                {
-                  me.getAccounts().setActiveItem(1);
+                  var view = me.getAccounts();
+                  if (view.isHidden())
+                  {
+                     console.debug('Opening Accounts Page ...');
+                     me.redirectTo('accounts');
+                  }
+                  view.setActiveItem(1);
                }
                else
                {
@@ -253,13 +260,18 @@ Ext.define('Genesis.controller.client.Accounts',
             }
             else
             {
+               proxy.supressErrosPopup = true;
                Ext.device.Notification.show(
                {
                   title : 'Error',
-                  message : me.missingVenueInfoMsg
+                  message : me.missingVenueInfoMsg,
+                  callback : function()
+                  {
+                     proxy.supressErrosPopup = false;
+                  }
                });
             }
-         },
+         }
       });
    },
    // --------------------------------------------------------------------------
@@ -506,7 +518,7 @@ Ext.define('Genesis.controller.client.Accounts',
             break;
          }
       }
-      console.debug("Accounts onItemChangeActivate Called.");
+      console.debug("Accounts onItemChangeActivate[" + value.config.tag + "] Called.");
    },
    onXferCodeRecv : function(metaData)
    {
@@ -551,7 +563,7 @@ Ext.define('Genesis.controller.client.Accounts',
             var subject = metaData['data']['subject'];
 
             console.debug('\n' + //
-            'QRCode - ' + qrcode + '\n' + //
+            //'QRCode - ' + qrcode + '\n' + //
             //'Body - ' + emailTpl + '\n' + //
             'Subject - ' + subject + '\n' //
             );

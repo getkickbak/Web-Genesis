@@ -579,7 +579,7 @@ Ext.define('Genesis.controller.ControllerBase',
       var merchantId = merchant.getId();
       var success = cbOnSuccess || Ext.emptyFn;
       var fail = cbOnFail || Ext.emptyFn;
-      
+
       var callback = function(btn)
       {
          Ext.defer(function()
@@ -594,10 +594,10 @@ Ext.define('Genesis.controller.ControllerBase',
             }
          }, 1, me);
       }
-      
-      if (!Customer.isValid(customer.getId()) || //
-      ((customer.get('visits') <= 1) && (!Genesis.db.getReferralDBAttrib("m" + merchantId))))
+      if ((!Customer.isValid(customer.getId()) || (customer.get('visits') <= 1))//
+      && (!Genesis.db.getReferralDBAttrib("m" + merchantId)))
       {
+         console.debug("Customer Visit Count[" + customer.get('visits') + "]")
          Ext.device.Notification.show(
          {
             title : 'Referral Challenge',

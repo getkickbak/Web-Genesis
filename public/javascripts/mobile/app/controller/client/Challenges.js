@@ -125,6 +125,7 @@ Ext.define('Genesis.controller.client.Challenges',
    photoUploadFbReqMsg : 'Connectivity to Facebook is required to upload photos to your account',
    completingChallengeMsg : 'Completing Challenge ...',
    referralInstructionMsg : 'Get your friend to scan this code using their KickBak App on their mobile phone!',
+   customerFirstMsg : 'Before you can make referrals, your must be one of our paying customers! ;-)',
    photoUploadSuccessMsg : function(points)
    {
       return 'We\'ve added earned ' + points + ' points' + Genesis.constants.addCRLF() + //
@@ -257,6 +258,63 @@ Ext.define('Genesis.controller.client.Challenges',
          }
       }
    },
+   sendReferralEmailHandler : function(qrcode, emailTpl, subject)
+   {
+      var me = this;
+
+      window.plugins.emailComposer.showEmailComposerWithCB(function(res)
+      {
+         // Delay is needed to not block email sending ...
+         Ext.defer(function()
+         {
+            Ext.Viewport.setMasked(false);
+            switch (res)
+            {
+               case EmailComposer.ComposeResultType.Failed:
+               case EmailComposer.ComposeResultType.NotSent:
+               case EmailComposer.ComposeResultType.Cancelled:
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Email Error',
+                     message : me.referralFailedMsg,
+                     callback : function()
+                     {
+                        me.onCompleteReferralsChallenge();
+                     }
+                  });
+                  break;
+               }
+               case EmailComposer.ComposeResultType.Saved:
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Email Saved',
+                     message : me.referralSavedMsg,
+                     callback : function()
+                     {
+                        me.onCompleteReferralsChallenge();
+                     }
+                  });
+                  break;
+               }
+               case EmailComposer.ComposeResultType.Sent:
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Email Sent!',
+                     message : me.sendReferralSuccessMsg(),
+                     callback : function()
+                     {
+                        me.onCompleteReferralsChallenge();
+                     }
+                  });
+                  break;
+               }
+            }
+         }, 1, me);
+      }, subject, emailTpl, null, null, null, true, [qrcode]);
+   },
    referralEventHandler : function(referralsSelected)
    {
       var me = this, type;
@@ -327,10 +385,11 @@ Ext.define('Genesis.controller.client.Challenges',
                   {
                      qrcode = Genesis.controller.ControllerBase.genQRCode(metaData['data']);
 
+                     /*
                      console.debug('\n' + //
                      'QRCode - ' + qrcode[0] + '\n' //
-                     //+ 'Body - ' + emailTpl + '\n' + //
                      );
+                     */
                      //
                      // Query server to get generate qrcode
                      //
@@ -368,58 +427,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      //'Encoded Body - ' + emailTpl);
                      qrcode = Genesis.controller.ControllerBase.genQRCode(qrcode)[0].replace('data:image/gif;base64,', "");
 
-                     window.plugins.emailComposer.showEmailComposerWithCB(function(res)
-                     {
-                        // Delay is needed to not block email sending ...
-                        Ext.defer(function()
-                        {
-                           Ext.Viewport.setMasked(false);
-                           switch (res)
-                           {
-                              case EmailComposer.ComposeResultType.Failed:
-                              case EmailComposer.ComposeResultType.NotSent:
-                              case EmailComposer.ComposeResultType.Cancelled:
-                              {
-                                 Ext.device.Notification.show(
-                                 {
-                                    title : 'Email Error',
-                                    message : me.referralFailedMsg,
-                                    callback : function()
-                                    {
-                                       me.onCompleteReferralsChallenge();
-                                    }
-                                 });
-                                 break;
-                              }
-                              case EmailComposer.ComposeResultType.Saved:
-                              {
-                                 Ext.device.Notification.show(
-                                 {
-                                    title : 'Email Saved',
-                                    message : me.referralSavedMsg,
-                                    callback : function()
-                                    {
-                                       me.onCompleteReferralsChallenge();
-                                    }
-                                 });
-                                 break;
-                              }
-                              case EmailComposer.ComposeResultType.Sent:
-                              {
-                                 Ext.device.Notification.show(
-                                 {
-                                    title : 'Email Sent!',
-                                    message : me.sendReferralSuccessMsg(),
-                                    callback : function()
-                                    {
-                                       me.onCompleteReferralsChallenge();
-                                    }
-                                 });
-                                 break;
-                              }
-                           }
-                        }, 1, me);
-                     }, subject, emailTpl, null, null, null, true, [qrcode]);
+                     me.sendReferralEmailHandler(qrcode, emailTpl, subject);
                      break;
                   }
                }
@@ -494,13 +502,13 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       var me = this;
       var metaData = Challenge.getProxy().getReader().metaData;
+      var cstore = Ext.StoreMgr.get('CustomerStore');
 
       switch (type)
       {
          case 'referral' :
          {
             var id = metaData['id'];
-            var cstore = Ext.StoreMgr.get('CustomerStore');
             var customer = cstore.getById(id);
             //
             // Persist the newly created Customer object
@@ -534,7 +542,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      var app = me.getApplication();
                      var controller = app.getController('client.Accounts');
                      controller.setMode('profile');
-                     controller.fireEvent('selectMerchant', cstore, customer);
+                     controller.fireEvent('selectMerchant', null, customer);
                   }
                });
             }
@@ -555,11 +563,12 @@ Ext.define('Genesis.controller.client.Challenges',
             var reward_info = metaData['reward_info'];
             Ext.device.Notification.show(
             {
-               title : 'Earn Points',
+               title : 'Completed Challenge!',
                message : ((reward_info['points'] > 0) ? //
                me.getPointsMsg(reward_info['points'], account_info['points']) : //
                me.getConsolationMsg(metaData['message']))
             });
+
             me.fireEvent('updatemetadata', metaData);
             break;
       }
@@ -575,6 +584,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var customerId = viewport.getCustomer().getId();
       var points = me.selectedItem.get('points');
       var id = me.selectedItem.getId();
+      var proxy = Challenge.getProxy();
 
       Challenge['setCompleteChallengeURL'](id);
       Challenge.load(id,
@@ -593,7 +603,7 @@ Ext.define('Genesis.controller.client.Challenges',
          {
             Ext.Viewport.setMasked(false);
 
-            var metaData2 = Challenge.getProxy().getReader().metaData;
+            var metaData2 = proxy.getReader().metaData;
             if (operation.wasSuccessful() && metaData2)
             {
                //
@@ -601,7 +611,11 @@ Ext.define('Genesis.controller.client.Challenges',
                //
                var account_info = metaData2['account_info'];
                var reward_info = metaData2['reward_info'];
-               cstore.getById(customerId).set('points', account_info['points']);
+               var customer = cstore.getById(customerId);
+
+               customer.set('points', account_info['points']);
+               me.persistSyncStores('CustomerStore');
+
                console.debug("Points Earned = " + metaData2['points'] + ' Pts');
                Ext.device.Notification.show(
                {
@@ -619,6 +633,7 @@ Ext.define('Genesis.controller.client.Challenges',
             }
             else
             {
+               proxy.supressErrorsPopup = true;
                Ext.device.Notification.show(
                {
                   title : 'Upload Failed!',
@@ -626,9 +641,10 @@ Ext.define('Genesis.controller.client.Challenges',
                   buttons : ['Try Again', 'Cancel'],
                   callback : function(btn)
                   {
+                     proxy.supressErrorsPopup = false;
                      if (btn.toLowerCase() == 'try again')
                      {
-                        Ext.defer(me.completeUploadPhotosChallenge, 1 * 1000, me);
+                        Ext.defer(me.fireEvent, 1 * 1000, me, ['fbphotouploadcomplete']);
                      }
                      else
                      {
@@ -636,8 +652,7 @@ Ext.define('Genesis.controller.client.Challenges',
                         // Go back to Checked-in Merchant Account
                         //
                         me.metaData = null;
-                        me.redirectTo('main');
-                        //me.fireEvent('openpage', 'MainPage', 'main', null);
+                        viewport.onCheckedInAccountTap();
                      }
                   }
                });
@@ -692,19 +707,40 @@ Ext.define('Genesis.controller.client.Challenges',
       var venue = viewport.getVenue();
       var selectedItem = me.selectedItem;
 
-      // VenueId can be found after the User checks into a venue
-      if (!(cvenue && venue && (cvenue.getId() == venue.getId())))
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Error',
-            message : me.checkinFirstMsg
-         });
-         return;
-      }
-
       if (selectedItem)
       {
+         switch (selectedItem.get('type').value)
+         {
+            case 'referral' :
+            {
+               //
+               // You can refer a friend as long as you are a paying customer
+               //
+               if (viewport.getCustomer().get('visits') <= 0)
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Refer A Friend',
+                     message : me.customerFirstMsg
+                  });
+                  return;
+               }
+               break;
+            }
+            default :
+               // VenueId can be found after the User checks into a venue
+               if (!(cvenue && venue && (cvenue.getId() == venue.getId())))
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Error',
+                     message : me.checkinFirstMsg
+                  });
+                  return;
+               }
+               break;
+         }
+
          switch (selectedItem.get('type').value)
          {
             case 'photo' :
@@ -824,8 +860,11 @@ Ext.define('Genesis.controller.client.Challenges',
    onReferralsActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      //var container = me.getReferralsContainer();
-      //container.setActiveItem(0);
+      var container = me.getReferralsContainer();
+      if (container)
+      {
+         container.setActiveItem(0);
+      }
       //activeItem.createView();
    },
    onReferralsDeactivate : function(oldActiveItem, c, activeItem, eOpts)
@@ -1027,7 +1066,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   {
                      if (btn.toLowerCase() == 'try again')
                      {
-                        Ext.defer(me.onUploadPhotosTap, 100, me);
+                        Ext.defer(me.onUploadPhotosTap, 1 * 1000, me);
                      }
                      else
                      {
@@ -1035,7 +1074,7 @@ Ext.define('Genesis.controller.client.Challenges',
                         // Go back to Checked-in Merchant Account
                         //
                         me.metaData = null;
-                        me.popView();
+                        viewport.onCheckedInAccountTap();
                      }
                   }
                });

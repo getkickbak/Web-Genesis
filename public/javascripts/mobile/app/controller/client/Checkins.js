@@ -385,6 +385,7 @@ Ext.define('Genesis.controller.client.Checkins',
    {
       var me = this;
       var cestore = Ext.StoreMgr.get('CheckinExploreStore');
+      var proxy = cestore.getProxy();
 
       Venue['setFindNearestURL']();
       cestore.load(
@@ -405,10 +406,15 @@ Ext.define('Genesis.controller.client.Checkins',
             }
             else
             {
+               proxy.supressErrosPopup = true;
                Ext.device.Notification.show(
                {
                   title : 'Warning',
-                  message : me.missingVenueInfoMsg
+                  message : me.missingVenueInfoMsg,
+                  callback : function()
+                  {
+                     proxy.supressErrosPopup = false;
+                  }
                });
             }
          },

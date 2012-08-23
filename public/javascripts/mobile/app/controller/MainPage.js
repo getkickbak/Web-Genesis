@@ -786,9 +786,12 @@ Ext.define('Genesis.controller.MainPage',
                      title : 'Oops',
                      message : me.passwdResetFailMsg(label + ' ' + field.getMessage())
                   });
-                  return;
                }
             }, me);
+         }
+         else
+         {
+            me.onPasswdReset(values.username);
          }
       }
       Ext.device.Notification.show(
@@ -802,11 +805,6 @@ Ext.define('Genesis.controller.MainPage',
             {
                Ext.defer(confirmReset, 1);
             }
-            else
-            {
-               me.onPasswdReset(values.username);
-            }
-
          }
       });
    },
@@ -822,33 +820,32 @@ Ext.define('Genesis.controller.MainPage',
       {
          params = Ext.apply(params,
          {
-            oldpassword : oldpassword,
-            newpassword : newpassword
+            old_password : oldpassword,
+            new_password : newpassword
          });
       }
       Customer['setPasswdChangetUrl']();
       console.log("setPasswdChangeUrl - Changing Password ...");
-      Customer.load(0,
+      Ext.StoreMgr.get('CustomerStore').load(
       {
          params : params,
          jsonData :
          {
          },
-         callback : function(record, operation)
+         callback : function(records, operation)
          {
             //
             // Login Error, redo login
             //
             if (operation.wasSuccessful())
             {
+               Ext.Viewport.setMasked(false);
                Ext.device.Notification.show(
                {
                   title : 'Password Reset',
                   message : me.passwdChangeSuccessMsg()
                });
-               me.popView();
             }
-            Ext.Viewport.setMasked(false);
          }
       });
    },

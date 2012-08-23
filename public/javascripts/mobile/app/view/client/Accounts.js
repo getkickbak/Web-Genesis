@@ -57,7 +57,7 @@ Ext.define('Genesis.view.client.Accounts',
       {
          list.setVisibility(true);
       }
-      this.setActiveItem(0);
+      //this.setActiveItem(0);
    },
    createView : function()
    {

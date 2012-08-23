@@ -992,6 +992,20 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          };
          Ext.Viewport.setMasked(false);
 
+         //this callback is the one that was passed to the 'read' or 'write' function above
+         if ( typeof callback == 'function')
+         {
+            callback.call(scope || me, operation);
+         }
+
+         //
+         // Supress Error Messages on Manual Override
+         //
+         if (me.supressErrorsPopup)
+         {
+            return;
+         }
+
          switch (metaData['rescode'])
          {
             //
@@ -1099,6 +1113,15 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          {
             errorHandler();
          }
+         else
+         {
+            //this callback is the one that was passed to the 'read' or 'write' function above
+            if ( typeof callback == 'function')
+            {
+               callback.call(scope || me, operation);
+            }
+
+         }
       }
       else
       {
@@ -1113,12 +1136,6 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          me.setException(operation, response);
 
          errorHandler();
-      }
-
-      //this callback is the one that was passed to the 'read' or 'write' function above
-      if ( typeof callback == 'function')
-      {
-         callback.call(scope || me, operation);
       }
 
       me.afterRequest(request, success);
