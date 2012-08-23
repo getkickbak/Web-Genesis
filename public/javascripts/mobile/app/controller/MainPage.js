@@ -131,6 +131,7 @@ Ext.define('Genesis.controller.MainPage',
          }
       }
    },
+   passwdResetConfirmMsg : 'Please confirm to reset your account password',
    passwdResetSuccessMsg : function()
    {
       return ('Password Reset was Successful.' + Genesis.constants.addCRLF() + //
