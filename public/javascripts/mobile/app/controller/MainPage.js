@@ -724,7 +724,7 @@ Ext.define('Genesis.controller.MainPage',
          this.onSignIn(values.username, values.password);
       }
    },
-   onPasswdReset : function(username, password)
+   onPasswdReset : function(username)
    {
       var me = this;
       var params =
@@ -774,6 +774,7 @@ Ext.define('Genesis.controller.MainPage',
          var values = reset.getValues();
          var user = Ext.create('Genesis.model.frontend.Signin', values);
          var validateErrors = user.validate();
+         var resetPassword = true;
 
          if (!validateErrors.isValid())
          {
@@ -787,10 +788,12 @@ Ext.define('Genesis.controller.MainPage',
                      title : 'Oops',
                      message : me.passwdResetFailMsg(label + ' ' + field.getMessage())
                   });
+                  resetPassword = false;
                }
             }, me);
          }
-         else
+         
+         if (resetPassword)
          {
             me.onPasswdReset(values.username);
          }
