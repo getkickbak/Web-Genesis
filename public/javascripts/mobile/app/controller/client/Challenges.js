@@ -125,6 +125,7 @@ Ext.define('Genesis.controller.client.Challenges',
    photoUploadFbReqMsg : 'Connectivity to Facebook is required to upload photos to your account',
    completingChallengeMsg : 'Completing Challenge ...',
    referralInstructionMsg : 'Get your friend to scan this code using their KickBak App on their mobile phone!',
+   customerFirstMsg : 'Before you can make referrals, your must be one of our paying customers! ;-)',
    photoUploadSuccessMsg : function(points)
    {
       return 'We\'ve added earned ' + points + ' points' + Genesis.constants.addCRLF() + //
@@ -706,19 +707,40 @@ Ext.define('Genesis.controller.client.Challenges',
       var venue = viewport.getVenue();
       var selectedItem = me.selectedItem;
 
-      // VenueId can be found after the User checks into a venue
-      if (!(cvenue && venue && (cvenue.getId() == venue.getId())))
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Error',
-            message : me.checkinFirstMsg
-         });
-         return;
-      }
-
       if (selectedItem)
       {
+         switch (selectedItem.get('type').value)
+         {
+            case 'referral' :
+            {
+               //
+               // You can refer a friend as long as you are a paying customer
+               //
+               if (viewport.getCustomer().get('visits') <= 0)
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Refer A Friend',
+                     message : me.customerFirstMsg
+                  });
+                  return;
+               }
+               break;
+            }
+            default :
+               // VenueId can be found after the User checks into a venue
+               if (!(cvenue && venue && (cvenue.getId() == venue.getId())))
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Error',
+                     message : me.checkinFirstMsg
+                  });
+                  return;
+               }
+               break;
+         }
+
          switch (selectedItem.get('type').value)
          {
             case 'photo' :
