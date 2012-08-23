@@ -1,62 +1,129 @@
 <p id="notice">
 	<%= notice %>
 </p>
-<div class="content row">
-	<div class="span19">
-		<p>
-			<b>Name:</b>
-			<%= @venue.name %>
-		</p>
-		<p>
-			<b>Address:</b>
-			<%= @venue.address %>
-		</p>
-		<p>
-			<b>City:</b>
-			<%= @venue.city %>
-		</p>
-		<p>
-			<b>State:</b>
-			<%= @venue.state %>
-		</p>
-		<p>
-			<b>ZipCode:</b>
-			<%= @venue.zipcode %>
-		</p>
-		<p>
-			<b>Country:</b>
-			<%= @venue.country %>
-		</p>
-		<p>
-			<b>Time Zone:</b>
-			<%= @venue.time_zone %>
-		</p>
-		<p>
-			<b>Phone:</b>
-			<%= @venue.phone %>
-		</p>
-		<% if not @venue.website.empty? %>
-		<p>
-			<b>Website:</b>
-			<%= @venue.website %>
-		</p>
-		<% end %>
-		<p>
-			<b>Longitude:</b>
-			<%= @venue.longitude %>
-		</p>
-		<p>
-			<b>Latitude:</b>
-			<%= @venue.latitude %>
-		</p>
-		<p>
-			<b>Authorization Code:</b>
-			<%= @venue.auth_code %>
-		</p>
-		<div>
-			<%= link_to 'Update Authorization Code', update_auth_code_venue_path(@venue) %>
+<div class="main">
+	<div class="main-inner">
+		<div class="container">
+			<div class="row">
+				<div class="span9">
+					<div class="widget ">
+						<div class="widget-header">
+							<i class="icon-map-marker"></i>
+							<h3>Venue</h3>
+						</div>
+						<!-- /widget-header -->
+						<div class="widget-content">
+							<div class="tabbable">
+								<ul class="nav nav-tabs">
+									<li class="active">
+										<a href="#venue" data-toggle="tab">Show</a>
+									</li>
+								</ul>
+								<br>
+								<div class="tab-content">
+									<div class="tab-pane active" id="venue">
+										<p>
+											<b>Name:</b>
+											<%= @venue.name %>
+										</p>
+										<p>
+											<b>Address:</b>
+											<%= @venue.address %>
+										</p>
+										<p>
+											<b>City:</b>
+											<%= @venue.city %>
+										</p>
+										<p>
+											<b>State:</b>
+											<%= @venue.state %>
+										</p>
+										<p>
+											<b>ZipCode:</b>
+											<%= @venue.zipcode %>
+										</p>
+										<p>
+											<b>Country:</b>
+											<%= @venue.country %>
+										</p>
+										<p>
+											<b>Time Zone:</b>
+											<%= @venue.time_zone %>
+										</p>
+										<p>
+											<b>Phone:</b>
+											<%= @venue.phone %>
+										</p>
+										<% if not @venue.website.empty? %>
+										<p>
+											<b>Website:</b>
+											<%= @venue.website %>
+										</p>
+										<% end %>
+										<p>
+											<b>Longitude:</b>
+											<%= @venue.longitude %>
+										</p>
+										<p>
+											<b>Latitude:</b>
+											<%= @venue.latitude %>
+										</p>
+										<p>
+											<b>Authorization Code:</b>
+											<%= @venue.auth_code %>
+										</p>
+										<div>
+											<%= link_to 'Update Authorization Code', update_auth_code_venue_path(@venue) %>
+										</div>
+										<div>
+											<%= link_to 'Update CheckIn Code', update_check_in_auth_code_venue_path(@venue) %>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- /widget-content -->
+					</div>
+					<!-- /widget -->
+				</div>
+				<!-- /span9 -->
+				<div class="span3">
+					<div class="widget widget-box">
+						<div class="widget-header">
+							<i class="icon-question-sign"></i>
+							<h3>Extra Info</h3>
+						</div>
+						<!-- /widget-header -->
+						<div class="widget-content">
+							<p>
+								Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+							</p>
+							<p>
+								Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+							</p>
+						</div>
+						<!-- /widget-content -->
+					</div>
+					<!-- /widget-box -->
+					<div class="widget widget-box">
+						<div class="widget-header">
+							<i class="icon-globe"></i>
+							<h3>Location Map</h3>
+						</div>
+						<!-- /widget-header -->
+						<div class="widget-content">
+							<div id="gmap" class="" style="height:235px;width:100%;"></div>
+						</div>
+						<!-- /widget-content -->
+					</div>
+					<!-- /widget-box -->
+				</div>
+				<!-- /span3 -->
+			</div>
+			<!-- /row -->
 		</div>
+		<!-- /container -->
 	</div>
+	<!-- /main-inner -->
 </div>
-<%= link_to 'Edit', edit_venue_path(@venue) %> |
-<%= link_to 'Back', venues_path %> 
+<!-- /main -->

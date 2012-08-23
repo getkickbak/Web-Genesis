@@ -1,13 +1,13 @@
-module MerchantSummaryNewsletters
-  @queue = :merchant_summary_newsletters
+module MerchantSummary
+  @queue = :merchant_summary
   
   def self.logger
-    @logger ||= Logger.new("#{Rails.root}/log/merchant_summary_newsletters.log")
+    @logger ||= Logger.new("#{Rails.root}/log/merchant_summary.log")
   end
 
   def self.perform()
     now = Time.now
-    logger.info("Merchant Summary Newsletters started at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+    logger.info("Merchant Summary started at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
     beginning_of_last_week = 1.week.ago.beginning_of_week
     end_of_last_week = 1.week.ago.end_of_week
     #beginning_of_last_week = Date.today.beginning_of_week
@@ -75,9 +75,9 @@ module MerchantSummaryNewsletters
         :new_challenges_count => new_challenges_count,
         :new_challenges_indv_count => new_challenges_indv_count
       }
-      Business::MerchantMailer.summary_newsletter_email(merchant,stats).deliver
+      Business::MerchantMailer.summary_email(merchant,stats).deliver
     end
     now = Time.now
-    logger.info("Merchant Summary Newsletters completed successfully at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+    logger.info("Merchant Summary completed successfully at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
   end
 end

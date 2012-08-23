@@ -23,11 +23,7 @@
 <fieldset>
    <%= f.input :type_id, :collection => @available_challenge_types, :input_html => {:class=>"input-large"} %>
    <%= f.input :name, :input_html => {:class=>"input-medium"} %>
-   <% if @challenge.type.value == 'custom' %>
    <%= f.input :description, :as => :text, :input_html => { :rows => 10, :class=>"input-xxlarge" } %>
-   <% else %>
-   <%= f.input :description, :as => :text, :input_html => { :rows => 10, :disabled => true, :class=>"input-xxlarge" } %>
-   <% end %>
    <%= f.input :require_verif, :as => :hidden %>
    <% if @challenge.data %>
    <%= f.simple_fields_for @data do |builder| %>

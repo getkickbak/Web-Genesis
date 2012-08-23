@@ -18,7 +18,7 @@
                         <tbody>
                            <% @venues.each do |venue| %>
                            <tr>
-                              <td><%= venue.name %></td>
+                              <td><%= link_to venue.name, venue_path(venue) %></td>
                               <td class="td-actions">
                               <!-- -->
                               <%= link_to(edit_venue_path(venue), :class=>"btn btn-small btn-warning", :title=>"edit") do %>

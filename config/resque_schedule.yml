@@ -1,7 +1,7 @@
-merchant_summary_newsletters:
+merchant_summary:
   cron: 0 0 * * Mon
-  class: MerchantSummaryNewsletters
-  description: Merchant Summary Newsletters
+  class: MerchantSummary
+  description: Merchant Summary
 merchant_payments:
   cron: 0 0 1 * *
   class: MerchantPayments

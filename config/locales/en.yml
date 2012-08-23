@@ -276,13 +276,15 @@ en:
       venues:
         create_success: "Venue was successfully created."
         update_success: "Venue was successfully updated."
-        update_authcode_success: "Authentication Code was successfully updated."
-        update_authcode_failure: "Failed to update Authentication Code."
+        update_authcode_success: "Authentication code was successfully updated."
+        update_authcode_failure: "Failed to update authentication code."
+        update_checkin_authcode_success: "Check in code was successfully updated."
+        update_checkin_authcode_failure: "Failed to update check in code."
         destroy_failure: "Failed to delete venue.  Please check to make sure no challenges or rewards are associated with this venue."
       mailer:
-        email_subject_summary_newsletter: "Weekly Summary Newsletter - %s"
-        email_subject_invoice: "Monthly KICKBAK Invoice #%s"  
-        email_subject_reset_password: "Reset Password"
+        email_subject_summary: "Weekly Summary - %s"
+        email_subject_invoice: "Monthly Invoice #%s"  
+        email_subject_reset_password: "Reset password instructions"
   mailer:
       email_subject_referral_challenge: "Referral"
       email_subject_confirm_referral_challenge: "Referral confirmation"

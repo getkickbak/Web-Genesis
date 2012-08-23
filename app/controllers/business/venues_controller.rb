@@ -96,6 +96,7 @@ module Business
       begin
         Venue.transaction do
           @venue.update_auth_code()
+          @venue.update_check_in_auth_code()
           respond_to do |format|
             format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.update_authcode_success")) }
           #format.xml  { head :ok }
@@ -110,11 +111,32 @@ module Business
       end        
     end
     
+    def update_check_in_auth_code
+      @venue = Venue.get(params[:id]) || not_found
+      authorize! :update, @venue
+
+      begin
+        Venue.transaction do
+          @venue.update_check_in_auth_code()
+          respond_to do |format|
+            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.update_checkin_authcode_success")) }
+          #format.xml  { head :ok }
+          end
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        respond_to do |format|
+          format.html { redirect_to(:action => "show", :id => @venue.id, :error => t("business.venues.update_checkin_authcode_failure")) }
+          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+        end
+      end
+    end
+    
     def check_in_template
-      venue = Venue.get(params[:id]) || not_found
-      authorize! :manage, venue
+      @venue = Venue.get(params[:id]) || not_found
+      authorize! :read, @venue
       
-      @qr_code = venue.check_in_code.qr_code
+      @qr_code = @venue.check_in_code.qr_code
       respond_to do |format|
         format.html
       #format.xml  { render :xml => @order }

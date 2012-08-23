@@ -20,7 +20,8 @@ Genesis::Application.routes.draw do
       resources :customer_rewards
       resources :venues do
         get 'update_auth_code', :on => :member, :as => :update_auth_code
-        get 'check_in_template', :on => :member
+        get 'update_check_in_auth_code', :on => :member, :as => :update_check_in_auth_code
+        get 'check_in_template', :on => :member, :as => :check_in_template
       end
       resources :invoices, :only => [:index, :show]
       resources :promotions, :only => [:index, :new, :create]
