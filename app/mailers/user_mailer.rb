@@ -49,7 +49,7 @@ class UserMailer < ActionMailer::Base
   
   def reset_password_email(user, new_password)
     @user = user
-    @new_password = mew_password
+    @new_password = new_password
     mail(:to => user.email, :subject => I18n.t("mailer.email_subject_reset_password"))
   end
 end

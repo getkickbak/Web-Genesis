@@ -1,6 +1,7 @@
 class Api::V1::UsersController < ApplicationController
-  before_filter :authenticate_user!
-  skip_authorization_check :only => :reset_password
+  skip_before_filter :verify_authenticity_token, :only => [:reset_password]
+  before_filter :authenticate_user!, :except => [:reset_password]
+  skip_authorization_check :only => [:reset_password]
 
   def update
     @user = current_user
@@ -85,7 +86,7 @@ class Api::V1::UsersController < ApplicationController
     new_password = String.random_alphanumeric(8)
     @user.reset_password!(new_password, new_password)
     @user.reset_authentication_token!
-    UserMailer.reset_password_email(@user, new_password)
+    UserMailer.reset_password_email(@user, new_password).deliver
     respond_to do |format|
       #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
       format.json { render :json => { :success => true } }
