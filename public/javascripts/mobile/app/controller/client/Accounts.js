@@ -248,6 +248,7 @@ Ext.define('Genesis.controller.client.Accounts',
                   var view = me.getAccounts();
                   if (view.isHidden())
                   {
+                     console.debug('Opening Accounts Page ...');
                      me.redirectTo('accounts');
                   }
                   view.setActiveItem(1);
@@ -270,7 +271,7 @@ Ext.define('Genesis.controller.client.Accounts',
                   }
                });
             }
-         },
+         }
       });
    },
    // --------------------------------------------------------------------------
@@ -517,7 +518,7 @@ Ext.define('Genesis.controller.client.Accounts',
             break;
          }
       }
-      console.debug("Accounts onItemChangeActivate Called.");
+      console.debug("Accounts onItemChangeActivate[" + value.config.tag + "] Called.");
    },
    onXferCodeRecv : function(metaData)
    {
@@ -562,7 +563,7 @@ Ext.define('Genesis.controller.client.Accounts',
             var subject = metaData['data']['subject'];
 
             console.debug('\n' + //
-            'QRCode - ' + qrcode + '\n' + //
+            //'QRCode - ' + qrcode + '\n' + //
             //'Body - ' + emailTpl + '\n' + //
             'Subject - ' + subject + '\n' //
             );

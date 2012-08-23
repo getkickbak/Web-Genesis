@@ -384,10 +384,11 @@ Ext.define('Genesis.controller.client.Challenges',
                   {
                      qrcode = Genesis.controller.ControllerBase.genQRCode(metaData['data']);
 
+                     /*
                      console.debug('\n' + //
                      'QRCode - ' + qrcode[0] + '\n' //
-                     //+ 'Body - ' + emailTpl + '\n' + //
                      );
+                     */
                      //
                      // Query server to get generate qrcode
                      //
