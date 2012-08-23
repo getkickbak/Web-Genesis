@@ -20,6 +20,7 @@ class Venue
   property :longitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :auth_code, String, :required => true, :default => ""
   property :merchant_role, String, :default => "merchant"
+  property :status, Enum[:active, :pending, :suspended, :deleted], :default => :active
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -92,24 +93,24 @@ class Venue
         if user.role != "test"
           venues_info = DataMapper.repository(:default).adapter.select(
             "SELECT id, round( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
-            FROM venues WHERE merchant_role = 'merchant' AND deleted_ts IS NULL
+            FROM venues WHERE merchant_role = 'merchant' AND status = ? AND deleted_ts IS NULL
             ORDER BY distance
-            ASC LIMIT 0,?", latitude, longitude, latitude, max 
+            ASC LIMIT 0,?", latitude, longitude, latitude, Merchant::Statuses.index(:active)+1, max 
           )
         else
           venues_info = DataMapper.repository(:default).adapter.select(
             "SELECT id, round( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
-            FROM venues WHERE merchant_role = 'test' AND deleted_ts IS NULL
+            FROM venues WHERE merchant_role = 'test' AND status = ? AND deleted_ts IS NULL
             ORDER BY distance
-            ASC LIMIT 0,?", latitude, longitude, latitude, max 
+            ASC LIMIT 0,?", latitude, longitude, latitude, Merchant::Statuses.index(:active)+1, max 
           )
         end
       else
         venues_info = DataMapper.repository(:default).adapter.select(
           "SELECT id, round( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
-          FROM venues WHERE merchant_id = ? AND deleted_ts IS NULL
+          FROM venues WHERE merchant_id = ? AND status = ? AND deleted_ts IS NULL
           ORDER BY distance
-          ASC LIMIT 0,?", latitude, longitude, latitude, merchant_id, max 
+          ASC LIMIT 0,?", latitude, longitude, latitude, merchant_id, Merchant::Statuses.index(:active)+1, max 
         )
       end   
       venue_id_to_distance_map = {}
@@ -140,9 +141,9 @@ class Venue
       end
     else
       if merchant_id.nil?
-        venues = Venue.all(:offset => 0, :limit => max)
+        venues = Venue.all(:status => :active, :offset => 0, :limit => max)
       else
-        venues = Venue.all(Venue.merchant.id => merchant_id, :offset => 0, :limit => max)
+        venues = Venue.all(Venue.merchant.id => merchant_id, :status => :active, :offset => 0, :limit => max)
       end
       venue_id_to_type_id = {}
       venue_to_types = VenueToType.all(:fields => [:venue_id, :venue_type_id], :venue => venues)

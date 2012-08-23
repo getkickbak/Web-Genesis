@@ -43,7 +43,9 @@ class Merchant
   property :payment_account_id, String, :default => ""
   property :role, String, :required => true, :default => "merchant"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :pending
-  property :custom_badges, Boolean, :required => true, :default => false
+  property :will_terminate, Boolean, :default => false
+  property :termination_date, Date, :default => ::Constant::MIN_DATE
+  property :custom_badges, Boolean, :required => true,  :default => false
   property :reward_terms, String, :required => true, :default => ""
   property :auth_code, String, :required => true, :default => ""
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -51,10 +53,10 @@ class Merchant
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
 
-  attr_accessor :type_id, :visit_frequency_id, :current_password, :eager_load_type
+  attr_accessor :type_id, :visit_frequency_id, :current_password, :eager_load_type, :termination_date_str
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :visit_frequency_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :photo, :alt_photo, :role, :status, :reward_terms, :auth_code, :current_password, :password, :password_confirmation
+  attr_accessible :type_id, :visit_frequency_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :photo, :alt_photo, :role, :status, :will_terminate, :termination_date, :reward_terms, :auth_code, :current_password, :password, :password_confirmation
   
   has 1, :merchant_to_type, :constraint => :destroy
   has 1, :type, 'MerchantType', :through => :merchant_to_type, :via => :merchant_type
@@ -98,10 +100,13 @@ class Merchant
       :website => merchant_info[:website].strip,
       :role => merchant_info[:role],
       :status => merchant_info[:status],
+      :will_terminate => merchant_info[:will_terminate],
+      :termination_date => now.to_date,
       :custom_badges => merchant_info[:custom_badges],
       :reward_terms => merchant_info[:reward_terms],
       :auth_code => String.random_alphanumeric(32)
     )
+    merchant.termination_date_str = merchant_info[:will_terminate] ? merchant_info[:termination_date] : ""
     merchant[:created_ts] = now
     merchant[:update_ts] = now
     merchant.type = type
@@ -179,6 +184,8 @@ class Merchant
     self.website = merchant_info[:website].strip
     self.role = merchant_info[:role]
     self.status = merchant_info[:status]
+    self.will_terminate = merchant_info[:will_terminate]
+    self.termination_date_str = merchant_info[:will_terminate] ? merchant_info[:termination_date] : ""
     self.custom_badges = merchant_info[:custom_badges]
     self.update_ts = now
     self.type = type
@@ -228,6 +235,18 @@ class Merchant
   
   private
   
+  def convert_date(field, field_str)
+    begin
+      date_str = self.send(field_str)
+      if date_str
+        self[field] = Time.zone.parse(date_str).to_date
+      end  
+      return true
+    rescue ArgumentError
+      return false
+    end
+  end
+  
   def check_type_id
     if self.type && self.type.id
       return true  
@@ -240,5 +259,22 @@ class Merchant
       return true  
     end
     return [false, ValidationErrors.default_error_message(:blank, :visit_frequency_id)]
+  end
+  
+  def validate_date(n,v)
+    convert_date(n.to_sym, v) ? true : [false, "#{n.gsub('_',' ').capitalize} #{I18n.t('errors.messages.not_valid')}"] 
+  end
+  
+  def validate_expiry_date
+    if self.will_terminate
+      valid = validate_date("termination_date", "termination_date_str")
+      return valid if valid.kind_of?(Array)
+      
+      today = Date.today
+      if self.termination_date < today
+        return [false, I18n.t('admin.merchants.min_termination_date')]
+      end
+    end
+    return true  
   end
 end

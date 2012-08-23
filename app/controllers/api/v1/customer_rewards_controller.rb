@@ -18,6 +18,13 @@ class Api::V1::CustomerRewardsController < ApplicationController
   
   def redeem
     @venue = Venue.get(params[:venue_id]) || not_found
+    if @venue.status != :active
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
+      end
+      return  
+    end
     @reward = CustomerReward.first(:id => params[:id], CustomerReward.merchant.id => @venue.merchant.id) || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer

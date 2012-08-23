@@ -10,6 +10,12 @@
 	<%= f.input :website %>
 	<%= f.input :role, :collection => Merchant::Roles %>
 	<%= f.input :status, :collection => Merchant::Statuses %>
+	<%= f.input :will_terminate, :as => :boolean %>
+	<% if @merchant.will_terminate %>
+	<%= f.input :termination_date, :as => :date_picker, :input_html => { :class => 'input-xlarge' }, :wrapper_html => { :id => 'merchant_termination_date_wrap' } %>
+	<% else %>
+	<%= f.input :termination_date, :as => :date_picker, :input_html => { :class => 'input-xlarge' }, :wrapper_html => { :id => 'merchant_termination_date_wrap', :style => 'display:none;' } %>
+	<% end %>
 	<%= f.input :current_password %>
 	<%= f.input :password %>
 	<%= f.input :password_confirmation %>

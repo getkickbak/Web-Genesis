@@ -18,6 +18,13 @@ class Api::V1::ChallengesController < ApplicationController
 
   def start
     @venue = Venue.get(params[:venue_id]) || not_found
+    if @venue.status != :active
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
+      end
+      return  
+    end
     @challenge = Challenge.first(:id => params[:id], Challenge.merchant.id => @venue.merchant.id) || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
@@ -50,6 +57,13 @@ class Api::V1::ChallengesController < ApplicationController
   
   def complete    
     @venue = Venue.get(params[:venue_id]) || not_found
+    if @venue.status != :active
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
+      end
+      return  
+    end
     @challenge = Challenge.first(:id => params[:id], Challenge.merchant.id => @venue.merchant.id) || not_found
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
     authorize! :update, @customer
@@ -186,6 +200,13 @@ class Api::V1::ChallengesController < ApplicationController
   def complete_referral
     data = params[:data].split('$')
     merchant = Merchant.get(data[0]) || not_found
+    if merchant.status != :active
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
+      end
+      return  
+    end
     already_customer = false
     @customer = Customer.first(Customer.user.id => current_user.id, Customer.merchant.id => merchant.id)
     if @customer.nil?

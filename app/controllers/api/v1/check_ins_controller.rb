@@ -33,6 +33,15 @@ class Api::V1::CheckInsController < ApplicationController
         @venue = Venue.first(:offset => 0, :limit => 1)
       end
     end  
+    
+    if @venue.status != :active
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
+      end
+      return  
+    end
+    
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
     if @customer.nil?
       @customer = Customer.create(@venue.merchant, current_user)

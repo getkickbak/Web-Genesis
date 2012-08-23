@@ -3,8 +3,15 @@ class Api::V1::VenuesController < ApplicationController
   
   def explore
     @venue = Venue.get(params[:id]) || not_found
+     if @venue.status != :active
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
+      end
+      return  
+    end
     authorize! :read, @venue
-
+    
     @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
     is_customer = true
     if @customer.nil?

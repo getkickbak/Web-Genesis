@@ -69,9 +69,15 @@ module Admin
 
       begin
         User.transaction do
+          previous_status = @user.status
           @user.update_all(params[:user])
-          if !current_user.nil?
-            sign_in(current_user, :bypass => true)
+          if @user.status != previous_status && previous_status == :active
+            new_password = String.random_alphanumeric(8)
+            @user.reset_password!(new_password, new_password)
+            @user.reset_authentication_token!
+            DataMapper.repository(:default).adapter.execute(
+              "UPDATE customers SET status = ? WHERE user_id = ? ", User::Statuses.index(@user.status)+1, @user.id
+            )
           end
           respond_to do |format|
             format.html { redirect_to(user_path(@user), :notice => t("admin.users.update_success")) }

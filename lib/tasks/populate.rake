@@ -209,6 +209,8 @@ namespace :db do
         :website => merchant_info[n][:website],
         :role => "test",
         :status => :active,
+        :will_terminate => false,
+        :custom_badges => false,
         :reward_terms => I18n.t('customer_reward.terms')
       })
       badges = []

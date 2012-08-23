@@ -11,7 +11,7 @@ class Api::V1::CustomersController < ApplicationController
   end
   
   def show_jackpot_winners
-    authorize! :read, Venue
+    authorize! :read, Merchant
     
     winner_records = EarnPrizeRecord.all(:fields => [:user_id, :points, :created_ts], EarnPrizeRecord.merchant.id => params[:merchant_id], :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     winner_ids = []
@@ -33,6 +33,13 @@ class Api::V1::CustomersController < ApplicationController
   
   def transfer_points
     @customer = Customer.first(Customer.user.id => current_user.id, Customer.merchant.id => params[:merchant_id]) || not_found
+    if @customer.merchant.status != :active
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
+      end
+      return  
+    end
     authorize! :read, @customer
     
     logger.info("Transfer points Customer(#{@customer.id}), User(#{current_user.id})")
@@ -98,6 +105,13 @@ class Api::V1::CustomersController < ApplicationController
   def receive_points
     data = params[:data].split('$')
     merchant = Merchant.get(data[0]) || not_found
+    if merchant.status != :active
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
+      end
+      return  
+    end
     @customer = Customer.first(Customer.user.id => current_user.id, Customer.merchant.id => merchant.id)
     if @customer.nil?
       @customer = Customer.create(merchant, current_user)

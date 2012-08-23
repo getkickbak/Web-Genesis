@@ -11,6 +11,7 @@ class Customer
   property :next_badge_visits, Integer, :default => 0
   property :eligible_for_reward, Boolean, :default => false
   property :eligible_for_prize, Boolean, :default => false
+  property :status, Enum[:active, :pending, :suspended, :deleted], :default => :active
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -40,7 +41,7 @@ class Customer
   
   def self.find(user_id, start, max)
     count = Customer.count(Customer.user.id => user_id)
-    customers = Customer.all(Customer.user.id => user_id, :order => [ :created_ts.desc ], :offset => start, :limit => max)
+    customers = Customer.all(Customer.user.id => user_id, :status => :active, :order => [ :created_ts.desc ], :offset => start, :limit => max)
     merchant_ids = []
     customers.each do |customer|
       merchant_ids << customer.merchant.id

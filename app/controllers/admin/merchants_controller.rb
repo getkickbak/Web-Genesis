@@ -38,6 +38,9 @@ module Admin
       authorize! :update, @merchant
       
       @merchant.type_id = @merchant.type.id
+      if @merchant.will_terminate && @customer_reward.termination_date < Date.today
+        @customer_reward.termination_date = Date.today
+      end
     end
 
     def create
@@ -47,6 +50,7 @@ module Admin
         Merchant.transaction do
           now = Time.now
           params[:merchant][:status] = :pending
+          params[:merchant][:will_terminate] = false
           params[:merchant][:custom_badges] = false
           type = MerchantType.get(params[:merchant][:type_id])
           visit_frequency = VisitFrequencyType.get(params[:merchant][:visit_frequency_id])
@@ -88,9 +92,21 @@ module Admin
 
       begin
         Merchant.transaction do
+          previous_status = @merchant.status
+          params[:merchant][:custom_badges] = false
           type = MerchantType.get(params[:merchant][:type_id])
-          visit_frequency = VisitFrequencyType.get(params[:merchant][:visit_frequency_id])
-          @merchant.update_all(type, visit_frequency, params[:merchant])
+          @merchant.update_all(type, @merchant.visit_frequency, params[:merchant])
+          if @merchant.status != previous_status && previous_status == :active
+            new_password = String.random_alphanumeric(8)
+            @merchant.reset_password!(new_password, new_password)
+            @merchant.reset_authentication_token!
+            DataMapper.repository(:default).adapter.execute(
+              "UPDATE venues SET status = ?  WHERE merchant_id = ?", Merchant::Statuses.index(@merchant.status)+1, @merchant.id
+            )
+            DataMapper.repository(:default).adapter.execute(
+              "UPDATE customers SET status = ?  WHERE merchant_id = ?", Merchant::Statuses.index(@merchant.status)+1, @merchant.id
+            )
+          end
           respond_to do |format|
             format.html { redirect_to(merchant_path(@merchant), :notice => t("admin.merchants.update_success")) }
           #format.xml  { head :ok }
