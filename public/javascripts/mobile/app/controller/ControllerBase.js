@@ -594,7 +594,7 @@ Ext.define('Genesis.controller.ControllerBase',
             }
          }, 1, me);
       }
-      if ((!Customer.isValid(customer.getId()) || (customer.get('visits') <= 1))//
+      if ((!Customer.isValid(customer.getId()) || (customer.get('visits') <= 0))//
       && (!Genesis.db.getReferralDBAttrib("m" + merchantId)))
       {
          console.debug("Customer Visit Count[" + customer.get('visits') + "]")
