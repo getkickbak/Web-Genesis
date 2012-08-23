@@ -739,9 +739,9 @@ Ext.define('Genesis.controller.MainPage',
             email : username
          });
       }
-      Customer['setPasswdResetUrl']();
+      Account['setPasswdResetUrl']();
       console.log("setPasswdResetUrl - Resetting Password ...");
-      Customer.load(0,
+      Account.load(0,
       {
          params : params,
          jsonData :
@@ -828,15 +828,15 @@ Ext.define('Genesis.controller.MainPage',
             new_password : newpassword
          });
       }
-      Customer['setPasswdChangetUrl']();
+      Account['setPasswdChangeUrl']();
       console.log("setPasswdChangeUrl - Changing Password ...");
-      Ext.StoreMgr.get('CustomerStore').load(
+      Account.load(0,
       {
          params : params,
          jsonData :
          {
          },
-         callback : function(records, operation)
+         callback : function(record, operation)
          {
             //
             // Login Error, redo login
