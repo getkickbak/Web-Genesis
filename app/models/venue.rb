@@ -62,6 +62,9 @@ class Venue
       :auth_code => String.random_alphanumeric(32)
     )
     venue[:merchant_role] = merchant.role
+    if merchant.status == :pending
+      venue[:status] = :pending 
+    end
     venue[:created_ts] = now
     venue[:update_ts] = now
     venue.type = type
