@@ -43,7 +43,7 @@ class Merchant
   property :payment_account_id, String, :default => ""
   property :role, String, :required => true, :default => "merchant"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :pending
-  property :will_terminate, Boolean, :default => false
+  property :will_terminate, Boolean, :required => true, :default => false
   property :termination_date, Date, :default => ::Constant::MIN_DATE
   property :custom_badges, Boolean, :required => true,  :default => false
   property :reward_terms, String, :required => true, :default => ""
