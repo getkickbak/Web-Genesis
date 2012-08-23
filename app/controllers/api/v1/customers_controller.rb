@@ -11,7 +11,7 @@ class Api::V1::CustomersController < ApplicationController
   end
   
   def show_jackpot_winners
-    authorize! :read, Merchant
+    authorize! :read, Venue
     
     winner_records = EarnPrizeRecord.all(:fields => [:user_id, :points, :created_ts], EarnPrizeRecord.merchant.id => params[:merchant_id], :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     winner_ids = []

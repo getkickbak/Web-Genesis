@@ -101,10 +101,10 @@ module Admin
             @merchant.reset_password!(new_password, new_password)
             @merchant.reset_authentication_token!
             DataMapper.repository(:default).adapter.execute(
-              "UPDATE venues SET status = ?  WHERE merchant_id = ?", Merchant::Statuses.index(@merchant.status)+1, @merchant.id
+              "UPDATE venues SET status = ? WHERE merchant_id = ?", Merchant::Statuses.index(@merchant.status)+1, @merchant.id
             )
             DataMapper.repository(:default).adapter.execute(
-              "UPDATE customers SET status = ?  WHERE merchant_id = ?", Merchant::Statuses.index(@merchant.status)+1, @merchant.id
+              "UPDATE customers SET status = ? WHERE merchant_id = ?", Merchant::Statuses.index(@merchant.status)+1, @merchant.id
             )
           end
           respond_to do |format|

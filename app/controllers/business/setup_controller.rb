@@ -22,6 +22,9 @@ module Business
         begin
           Merchant.transaction do
             current_merchant.update_without_password(:type_id => current_merchant.type.id, :status => :active)
+            DataMapper.repository(:default).adapter.execute(
+              "UPDATE venues SET status = ? WHERE merchant_id = ?", Merchant::Statuses.index(:active)+1, @merchant.id
+            )
             respond_to do |format|
               format.html { redirect_to dashboard_path }
             end
