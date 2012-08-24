@@ -236,7 +236,7 @@ Ext.define('Genesis.view.PasswdChangePage',
             clearIcon : true
          },
          {
-            xtype : 'textfield',
+            xtype : 'passwordfield',
             name : 'newpassword',
             label : 'New Password',
             clearIcon : true
