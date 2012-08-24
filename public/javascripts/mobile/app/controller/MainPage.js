@@ -792,7 +792,7 @@ Ext.define('Genesis.controller.MainPage',
                }
             }, me);
          }
-         
+
          if (resetPassword)
          {
             me.onPasswdReset(values.username);
@@ -857,6 +857,7 @@ Ext.define('Genesis.controller.MainPage',
    {
       var change = this.getPasswdChange();
       var values = change.getValues(true);
+      var user = Ext.create('Genesis.model.frontend.ChangePassword', values);
       var validateErrors = user.validate();
 
       if (!validateErrors.isValid())
@@ -872,19 +873,8 @@ Ext.define('Genesis.controller.MainPage',
          });
       }
       else
-      if (values['oldpassword'] != values['newpassword'])
       {
-         var label = change.query('field[name=newpassword]')[0].getLabel();
-         var message = this.passwdChangeFailMsg(label + ' ' + item.getMessage());
-         Ext.device.Notification.show(
-         {
-            title : 'Oops',
-            message : message
-         });
-      }
-      else
-      {
-         this.onPasswdChange(values.username);
+         this.onPasswdChange(values['oldpassword'], values['newpassword']);
       }
    },
    onCreateActivate : function(activeItem, c, oldActiveItem, eOpts)

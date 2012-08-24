@@ -5,20 +5,16 @@ Ext.define('Genesis.model.frontend.ChangePassword',
    id : 'ChangePassword',
    config :
    {
-      fields : ['username', 'password', 'confirmpassword'],
+      fields : ['oldpassword', 'newpassword'],
       validations : [
       {
-         type : 'email',
-         field : 'username'
-      },
-      {
          type : 'length',
-         field : 'password',
+         field : 'oldpassword',
          min : 6
       },
       {
          type : 'length',
-         field : 'confirmpassword',
+         field : 'newpassword',
          min : 6
       }]
    }

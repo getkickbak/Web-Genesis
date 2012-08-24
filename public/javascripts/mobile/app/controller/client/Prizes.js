@@ -139,7 +139,7 @@ Ext.define('Genesis.controller.client.Prizes',
    loadCallback : null,
    initSound : false,
    authRewardVerifiedMsg : 'Verified',
-   updateOnFbMsg : 'Tell your friends on Facebook about it!',
+   updateOnFbMsg : 'Would you like to friends on Facebook about it?',
    wonPrizeMsg : function(reward_info)
    {
       var me = this;
@@ -400,7 +400,7 @@ Ext.define('Genesis.controller.client.Prizes',
 
          Ext.device.Notification.show(
          {
-            title : me.scanPlayTitle + '!',
+            title : me.scanPlayTitle,
             message : me.gotMinPrizePtsMsg(info['prize_points']),
             callback : Ext.bind(eligiblePrizeCallback, me, [0x10, viewsPopLength])
          });
@@ -417,7 +417,7 @@ Ext.define('Genesis.controller.client.Prizes',
          Ext.device.Notification.vibrate();
          Ext.device.Notification.show(
          {
-            title : me.scanPlayTitle + '!',
+            title : me.scanPlayTitle,
             message : me.wonPrizeMsg(info),
             callback : Ext.bind(eligiblePrizeCallback, me, [0x10, viewsPopLength])
          });
@@ -483,6 +483,7 @@ Ext.define('Genesis.controller.client.Prizes',
    {
       var me = this;
       var redeemItem = me.redeemItem = prize;
+      var info = reward_info;
 
       me.silentPopView(viewsPopLength);
 
@@ -493,11 +494,11 @@ Ext.define('Genesis.controller.client.Prizes',
       //Update on Facebook
       Genesis.fb.facebook_onLogin(function(params)
       {
-         if ((reward_info['eligible_prize_id']) && (reward_info['eligible_prize_id'] > 0))
+         if ((info['eligible_prize_id']) && (info['eligible_prize_id'] > 0))
          {
             me.updatingPrizeOnFacebook(redeemItem);
          }
-         if (reward_info['badge_prize_points'] > 0)
+         if (info['badge_prize_points'] > 0)
          {
             me.updatingBadgeOnFacebook(redeemItem);
          }

@@ -331,16 +331,19 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
    },
    cleanView : function()
    {
-      this.removeAll(true);
+      //this.removeAll(true);
    },
    createView : function()
    {
-      /*
-       if (!this.callParent(arguments))
-       {
-       return;
-       }
-       */
+      if (!this.callParent(arguments))
+      {
+         //
+         // Refresh RedeemItem
+         //
+         this.query('dataview[tag=rewardPanel]')[0].getStore().setData(this.redeemItem);
+         delete this.redeemItem;
+         return;
+      }
 
       this.getPreRender().push(Ext.create('Ext.dataview.DataView',
       {
