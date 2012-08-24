@@ -232,7 +232,7 @@ en:
       staffs:
         create_success: "Staff was successfully created."
         update_success: "Staff was successfully updated."
-      users:     
+      users:   
         create_success: "Account was successfully created."
         update_success: "Account was successfully updated."  
   business:

@@ -26,6 +26,8 @@ module Admin
 
     def new
       authorize! :create, Device
+      
+      @merchant = Merchant.get(params[:merchant_id]) || not_found
       @device = Device.new
 
       respond_to do |format|
