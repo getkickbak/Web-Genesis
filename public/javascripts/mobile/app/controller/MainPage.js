@@ -847,11 +847,7 @@ Ext.define('Genesis.controller.MainPage',
                Ext.device.Notification.show(
                {
                   title : 'Password Reset',
-                  message : me.passwdChangeSuccessMsg,
-                  callback : function()
-                  {
-                     me.redirectTo('main');
-                  }
+                  message : me.passwdChangeSuccessMsg
                });
             }
          }
