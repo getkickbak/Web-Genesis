@@ -62,5 +62,6 @@ Ext.define('Genesis.view.ViewBase',
       {
          this.add(this.getPreRender());
       }
+      this.fireEvent('showView');
    }
 });

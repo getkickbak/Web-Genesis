@@ -241,7 +241,7 @@ Ext.define('Genesis.controller.client.Merchants',
 
             // Delete current page and refresh
             page.removeAll(true);
-            me.getViewport().animateActiveItem(page, anim);
+            vport.animateActiveItem(page, anim);
             anim.onActiveItemChange(vport.getLayout(), page, page, null, controller);
             vport.doSetActiveItem(page, null);
          }

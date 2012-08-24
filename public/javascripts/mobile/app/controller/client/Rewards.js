@@ -14,7 +14,7 @@ Ext.define('Genesis.controller.client.Rewards',
       routes :
       {
          'scanAndWin' : 'scanAndWinPage',
-         'signupPromotion' : 'signupPromotionPage'
+         'promotion' : 'promotionPage'
       },
       refs :
       {
@@ -30,16 +30,16 @@ Ext.define('Genesis.controller.client.Rewards',
          },
          price : 'clientrewardsview textfield',
          //
-         // SignUp Promotion
+         // SignUp - Referra; Promotion
          //
-         signupPromotion :
+         promotion :
          {
-            selector : 'promotionalitemview[tag=signupPromotion]',
+            selector : 'promotionalitemview[tag=promotion]',
             autoCreate : true,
-            tag : 'signupPromotion',
+            tag : 'promotion',
             xtype : 'promotionalitemview'
          },
-         sDoneBtn : 'promotionalitemview[tag=signupPromotion] button[tag=done]'
+         pDoneBtn : 'promotionalitemview[tag=promotion] button[tag=done]'
       },
       control :
       {
@@ -48,34 +48,36 @@ Ext.define('Genesis.controller.client.Rewards',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
-         signupPromotion :
+         promotion :
          {
-            activate : 'onSignupPromotionActivate',
-            deactivate : 'onSignupPromotionDeactivate'
+            activate : 'onPromotionActivate',
+            deactivate : 'onPromotionDeactivate'
          },
-         sDoneBtn :
+         pDoneBtn :
          {
-            tap : 'onSignupPromotionDoneTap'
+            tap : 'onPromotionDoneTap'
          }
       }
    },
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
    checkinFirstMsg : 'Please Check-In before earning rewards',
-   authCodeReqMsg : 'Proceed to scan an Authorization Code from your server to earn Reward Points!',
+   authCodeReqMsg : 'Proceed to scan an Authorization Code from your server to earn Reward Pts!',
    signupPromotionTitle : 'Welcome!',
-   prizeCheckMsg : 'Play our Instant Win Game to find out how many Prize Points you won!',
+   referralPromotionTitle : 'Refer A Friend',
+   prizeCheckMsg : 'Play our Instant Win Game to find out how many Prize Pts you won!',
    earnPtsMsg : 'Updating Points Earned ...',
    signupPromotionMsg : function(points)
    {
-      return 'You\'ve earned ' + points + ' Reward Points from Signing Up with this Merchant!';
+      return 'You\'ve earned ' + points + ' Reward Pts from Signing Up with this Merchant!';
    },
    getPointsMsg : function(reward_info)
    {
+      var me = this;
       var points = reward_info['points'];
       var extraPoints = reward_info['referral_points'];
 
-      return 'You\'ve earned ' + points + ' Reward Points from this purchase.' + //
-      ((extraPoints > 0) ? Genesis.constants.addCRLF() + me.prizeCheckMsg : '');
+      return 'You\'ve earned ' + points + ' Reward Pts from this purchase.' + //
+      ((extraPoints > 0) ? '' : ' ' + me.prizeCheckMsg);
    },
    getReferralMsg : function(points)
    {
@@ -83,8 +85,8 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    getVipMsg : function(points)
    {
-      return ('You\'ve earned an ' + Genesis.constants.addCRLF() + //
-      'additional ' + points + ' Reward Points!' + Genesis.constants.addCRLF() + //
+      return ('You\'ve earned an additional ' + Genesis.constants.addCRLF() + //
+      points + ' Reward Pts!' + Genesis.constants.addCRLF() + //
       this.prizeCheckMsg);
    },
    vipPopUp : function(points, callback)
@@ -104,7 +106,7 @@ Ext.define('Genesis.controller.client.Rewards',
 
       this.callBackStack =
       {
-         callbacks : ['signupPromotionHandler', 'earnPtsHandler', 'referralHandler', 'scanAndWinHandler'],
+         callbacks : ['signupPromotionHandler', 'earnPtsHandler', 'referralPromotionHandler', 'scanAndWinHandler'],
          arguments : [],
          startIndex : 0
       };
@@ -206,10 +208,37 @@ Ext.define('Genesis.controller.client.Rewards',
    // --------------------------------------------------------------------------
    // Rewards Page
    // --------------------------------------------------------------------------
+   promotionHandler : function(title, points)
+   {
+      var me = this;
+      var vport = me.getViewport();
+      if (vport.getActiveItem() != me.getPromotion())
+      {
+         me.silentPopView(1);
+      }
+      me.redeemItem = Ext.create('Genesis.model.CustomerReward',
+      {
+         'title' : title,
+         'type' :
+         {
+            value : 'promotion'
+         },
+         'photo' :
+         {
+            'thumbnail_ios_medium' : Genesis.constants.getIconPath('prizewon', 'reward')
+         },
+         'points' : points,
+         'time_limited' : false,
+         'quantity_limited' : false,
+         'merchant' : null
+      });
+      me.redirectTo('promotion');
+   },
    signupPromotionHandler : function(metaData, customer, venue, merchantId)
    {
       var me = this;
       var info = metaData['reward_info'];
+      var vport = me.getViewport();
       var points = info['signup_points'];
       var rc = Ext.isDefined(points) && (points > 0);
 
@@ -219,26 +248,7 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             title : 'Signup Promotion Alert!',
             message : me.signupPromotionMsg(points),
-            callback : function()
-            {
-               me.redeemItem = Ext.create('Genesis.model.CustomerReward',
-               {
-                  'title' : me.signupPromotionTitle,
-                  'type' :
-                  {
-                     value : 'promotion'
-                  },
-                  'photo' :
-                  {
-                     'thumbnail_ios_medium' : Genesis.constants.getIconPath('prizewon', 'reward')
-                  },
-                  'points' : points,
-                  'time_limited' : false,
-                  'quantity_limited' : false,
-                  'merchant' : null
-               });
-               me.redirectTo('signupPromotion');
-            }
+            callback : Ext.bind(me.promotionHandler, me, [me.signupPromotionTitle, points])
          });
       }
 
@@ -264,14 +274,15 @@ Ext.define('Genesis.controller.client.Rewards',
 
       return true;
    },
-   referralHandler : function(metaData, customer, venue, merchantId)
+   referralPromotionHandler : function(metaData, customer, venue, merchantId)
    {
       var me = this;
+      var info = metaData['reward_info'];
       //
       // Update points from the purchase or redemption
       //
-      var info = metaData['reward_info'];
-      var rc = Ext.isDefined(info['referral_points']) && (info['referral_points'] > 0);
+      var points = info['referral_points'];
+      var rc = Ext.isDefined(points) && (points > 0);
 
       if (rc)
       {
@@ -279,10 +290,7 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             title : 'Referral Challenge',
             message : me.getReferralMsg(points),
-            callback : function()
-            {
-               me.fireEvent('triggerCallbacksChain');
-            }
+            callback : Ext.bind(me.promotionHandler, me, [me.referralPromotionTitle, points])
          });
       }
 
@@ -347,10 +355,9 @@ Ext.define('Genesis.controller.client.Rewards',
          me.checkReferralPrompt(earnPts, earnPts);
       }
    },
-   onSignupPromotionDoneTap : function(b, e, eOpts)
+   onPromotionDoneTap : function(b, e, eOpts)
    {
       var me = this;
-      me.silentPopView(1);
       me.fireEvent('triggerCallbacksChain');
    },
    updateMetaData : function(metaData)
@@ -398,7 +405,7 @@ Ext.define('Genesis.controller.client.Rewards',
    onContainerActivate : function(c, value, oldValue, eOpts)
    {
    },
-   onSignupPromotionActivate : function(activeItem, c, oldActiveItem, eOpts)
+   onPromotionActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
       var tbbar = activeItem.query('titlebar')[0];
@@ -407,7 +414,7 @@ Ext.define('Genesis.controller.client.Rewards',
       activeItem.redeemItem = me.redeemItem;
       //delete me.redeemItem;
    },
-   onSignupPromotionDeactivate : function(activeItem, c, oldActiveItem, eOpts)
+   onPromotionDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {
    },
    // --------------------------------------------------------------------------
@@ -418,7 +425,7 @@ Ext.define('Genesis.controller.client.Rewards',
       var me = this;
       this.openPage('scanAndWin');
    },
-   signupPromotionPage : function()
+   promotionPage : function()
    {
       var me = this;
       this.openPage('promotion');
@@ -434,6 +441,7 @@ Ext.define('Genesis.controller.client.Rewards',
    openPage : function(subFeature)
    {
       var me = this;
+      var vport = me.getViewport();
 
       me.setMode(subFeature);
       switch (subFeature)
@@ -459,8 +467,31 @@ Ext.define('Genesis.controller.client.Rewards',
          }
          case 'promotion' :
          {
-            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
-            me.pushView(me.getSignupPromotion());
+            var page = me.getPromotion();
+            if (vport.getActiveItem() == page)
+            {
+               var controller = vport.getEventDispatcher().controller;
+               var anim = new Ext.fx.layout.Card(me.self.superclass.self.animationMode['fade']);
+               anim.on('animationend', function()
+               {
+                  console.debug("Animation Complete");
+                  anim.destroy();
+               }, me);
+               //if (!controller.isPausing)
+               {
+                  console.log("Reloading Promotion Page");
+                  // Delete current page and refresh
+                  //page.removeAll(true);
+                  vport.animateActiveItem(page, anim);
+                  anim.onActiveItemChange(vport.getLayout(), page, page, null, controller);
+                  vport.doSetActiveItem(page, null);
+               }
+            }
+            else
+            {
+               me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+               me.pushView(me.getPromotion());
+            }
             break;
          }
       }

@@ -246,12 +246,23 @@ Ext.define('Genesis.controller.client.Accounts',
                if (records.length > 1)
                {
                   var view = me.getAccounts();
-                  if (view.isHidden())
+                  if (!view.isPainted() || view.isHidden())
                   {
                      console.debug('Opening Accounts Page ...');
+                     view.on('showView', function()
+                     {
+                        this.setActiveItem(1);
+                     }, view,
+                     {
+                        single : true
+                     });
                      me.redirectTo('accounts');
                   }
-                  view.setActiveItem(1);
+                  else
+                  {
+                     view.setActiveItem(1);
+                  }
+
                }
                else
                {

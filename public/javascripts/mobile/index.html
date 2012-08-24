@@ -52,6 +52,7 @@
       -->
       <script type="text/javascript" src="lib/cordova-1.8.1.js"></script>
       <script type="text/javascript">
+         var offlineDialogShown = false;
          var phoneGapAvailable = true;
          var debugMode = false;
          var merchantMode = false;
@@ -151,8 +152,6 @@
 
          function onBodyLoad()
          {
-            var offlineDialogShown = false;
-
             Ext.triggerReady();
             document.addEventListener("online", function()
             {
@@ -194,7 +193,7 @@
                   }
                   else
                   {
-                     _onGotoMainCallBackFn();
+                     //_onGotoMainCallBackFn();
                   }
                }
             }, false);
@@ -286,6 +285,7 @@
                   callback : _onGotoMainCallBackFn
                });
             }
+            offlineDialogShown = true;
          }
       </script>
       <script type="text/javascript" src="core.js"></script>
