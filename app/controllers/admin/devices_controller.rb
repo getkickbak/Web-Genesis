@@ -15,7 +15,8 @@ module Admin
     end
 
     def show
-      @device = Device.get(params[:device_id]) || not_found
+      @merchant = Merchant.get(params[:merchant_id]) || not_found
+      @device = Device.get(params[:id]) || not_found
       authorize! :read, @device
 
       respond_to do |format|
@@ -38,8 +39,10 @@ module Admin
 
     def edit
       @merchant = Merchant.get(params[:merchant_id]) || not_found
-      @device = Device.get(params[:device_id]) || not_found
+      @device = Device.get(params[:id]) || not_found
       authorize! :update, @device      
+      
+      @device.venue_id = @device.merchant_venue.id
     end
 
     def create
@@ -48,9 +51,10 @@ module Admin
 
       begin
         Device.transaction do
-          @device = Device.create(merchant, params[:device])
+          venue = Venue.get(params[:device][:venue_id])
+          @device = Device.create(@merchant, venue, params[:device])
           respond_to do |format|
-            format.html { redirect_to(merchant_device_path(@device), :notice => t("admin.devices.create_success")) }
+            format.html { redirect_to(merchant_device_path(@merchant, @device), :notice => t("admin.devices.create_success")) }
           #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }
           end
         end
@@ -65,14 +69,16 @@ module Admin
     end
 
     def update
-      @device = Device.get(params[:device_id]) || not_found
+      @merchant = Merchant.get(params[:merchant_id]) || not_found
+      @device = Device.get(params[:id]) || not_found
       authorize! :update, @device
 
       begin
         Device.transaction do
-          @device.update(params[:device])
+          venue = Venue.get(params[:device][:venue_id])
+          @device.update(venue, params[:device])
           respond_to do |format|
-            format.html { redirect_to(merchant_device_path(@device), :notice => t("admin.devices.update_success")) }
+            format.html { redirect_to(merchant_device_path(@merchant, @device), :notice => t("admin.devices.update_success")) }
           #format.xml  { head :ok }
           end
         end
@@ -87,7 +93,7 @@ module Admin
     end
 
     def destroy
-      @device = Device.get(params[:device_id]) || not_found
+      @device = Device.get(params[:id]) || not_found
       authorize! :destroy, @device
 
       @device.destroy

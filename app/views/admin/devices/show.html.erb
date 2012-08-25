@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Id:</b>
+  <%= @device.id %>
+</p>
+
+<p>
+  <b>Serial</b>
+  <%= @device.serial_num %>
+</p>
+
+<p>
+  <b>Status</b>
+  <%= @device.status %>
+</p>
+
+<%= link_to 'Edit', edit_merchant_device_path(@merchant, @device) %> |
+<%= link_to 'Back', merchant_devices_path %>
