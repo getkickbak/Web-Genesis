@@ -697,7 +697,7 @@ Ext.define('Genesis.controller.client.Accounts',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
 
       list.deselect([model]);
       delete me.merchantId;
