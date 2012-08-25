@@ -13,30 +13,45 @@ class Device
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessible :serial_num, :status
+  attr_accessor :venue_id
+  attr_accessible :venue_id, :serial_num, :status
    
   belongs_to :merchant
-  belongs_to :venue
+  belongs_to :merchant_venue, 'Venue'
+  
+  validates_with_method :venue_id, :method => :check_venue_id
   
   def self.create(merchant, venue, device_info)
     now = Time.now
     device = Device.new(
+      :venue_id => venue ? venue.id : nil,
       :serial_num => device_info[:serial_num].strip,
       :status => device_info[:status]
     )
     device[:created_ts] = now
     device[:update_ts] = now
     device.merchant = merchant
-    device.venue = venue
+    device.merchant_venue = venue
     device.save
     return device
   end
   
-  def update(device_info)
+  def update(venue, device_info)
     now = Time.now
+    self.venue_id = venue ? venue.id : nil
     self.serial_num = device_info[:serial_num]
     self.status = device_info[:status]
     self.update_ts = now
+    self.merchant_venue = venue
     save
+  end
+  
+  private
+  
+  def check_venue_id
+    if self.merchant_venue
+      return true  
+    end
+    return [false, ValidationErrors.default_error_message(:blank, :venue_id)]
   end
 end

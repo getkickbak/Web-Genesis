@@ -93,7 +93,7 @@ class Challenge
   private
   
   def check_type_id
-    if self.type && self.type.id
+    if self.type
       return true  
     end
     return [false, ValidationErrors.default_error_message(:blank, :type_id)]

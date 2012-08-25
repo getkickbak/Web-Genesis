@@ -139,7 +139,7 @@ Genesis::Application.routes.draw do
     end
   
     constraints :user_agent => /iPhone/ do
-      match "/download" => redirect {|params, req| "http:/itunes.com/apps/kickbak" }
+      match "/download" => redirect {|params, req| "http://www.itunes.com/apps/kickbak" }
     end
     #constraints :user_agent => /Android/ do
     #  match "/download" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.kickbak.android" }

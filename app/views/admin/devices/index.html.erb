@@ -14,13 +14,13 @@
 				<!-- -->
 				<div style="position:relative;padding: 3px 15px">
 					<!-- -->
-					<%= link_to device.serial_num, device_path(device) %>
+					<%= link_to device.serial_num, merchant_device_path(@merchant, device) %>
 					<%= device.status %>
-					<%= link_to edit_device_path(device), :style=>'position:absolute;right:26px;' do %>
+					<%= link_to edit_merchant_device_path(@merchant, device), :style=>'position:absolute;right:26px;' do %>
 					<i class="icon-edit"></i>
 					<!-- -->
 					<% end %>
-					<%= link_to device_path(device), :data => { :confirm => 'Are you sure?' }, :method => :delete, :style=>'position:absolute;right:0px;' do %>
+					<%= link_to merchant_device_path(@merchant, device), :data => { :confirm => 'Are you sure?' }, :method => :delete, :style=>'position:absolute;right:0px;' do %>
 					<i class="icon-remove"></i>
 					<!-- -->
 					<% end %>

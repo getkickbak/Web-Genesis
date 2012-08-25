@@ -248,14 +248,14 @@ class Merchant
   end
   
   def check_type_id
-    if self.type && self.type.id
+    if self.type
       return true  
     end
     return [false, ValidationErrors.default_error_message(:blank, :type_id)]
   end
   
   def check_visit_frequency_id
-    if self.visit_frequency && self.visit_frequency.id
+    if self.visit_frequency
       return true  
     end
     return [false, ValidationErrors.default_error_message(:blank, :visit_frequency_id)]
