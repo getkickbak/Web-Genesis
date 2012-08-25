@@ -15,7 +15,8 @@
 				<div style="position:relative;padding: 3px 15px">
 					<!-- -->
 					<%= link_to device.serial_num, merchant_device_path(@merchant, device) %>
-					<%= device.status %>
+					<%= device.merchant_venue.name %>
+					<%= device.status %>			
 					<%= link_to edit_merchant_device_path(@merchant, device), :style=>'position:absolute;right:26px;' do %>
 					<i class="icon-edit"></i>
 					<!-- -->
