@@ -310,6 +310,7 @@ Ext.define('Genesis.controller.client.Prizes',
       var me = this;
       if (viewsPopLength > 0)
       {
+         console.debug("Removing Last " + viewsPopLength + " Views from History ...");
          me.silentPopView(viewsPopLength);
       }
       me.popView();
@@ -485,7 +486,11 @@ Ext.define('Genesis.controller.client.Prizes',
       var redeemItem = me.redeemItem = prize;
       var info = reward_info;
 
-      me.silentPopView(viewsPopLength);
+      if (viewsPopLength > 0)
+      {
+         console.debug("Removing Last " + viewsPopLength + " Views from History ...");
+         me.silentPopView(viewsPopLength);
+      }
 
       me.stopRouletteScreen();
       //me.setRedeemMode('redeemPrize');

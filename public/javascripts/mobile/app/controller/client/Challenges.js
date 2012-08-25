@@ -878,8 +878,10 @@ Ext.define('Genesis.controller.client.Challenges',
    onReferralsSelect : function(list, model, eOpts)
    {
       var me = this;
+      var viewport = me.getViewPortCntlr();
 
-      if (me.getViewPortCntlr().getCustomer().get('visits') > 0)
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      if (viewport.getCustomer().get('visits') > 0)
       {
          if (list)
          {

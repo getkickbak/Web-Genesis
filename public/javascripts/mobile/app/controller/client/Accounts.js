@@ -271,14 +271,14 @@ Ext.define('Genesis.controller.client.Accounts',
             }
             else
             {
-               proxy.supressErrosPopup = true;
+               proxy.supressErrorsPopup = true;
                Ext.device.Notification.show(
                {
                   title : 'Error',
                   message : me.missingVenueInfoMsg,
                   callback : function()
                   {
-                     proxy.supressErrosPopup = false;
+                     proxy.supressErrorsPopup = false;
                   }
                });
             }
@@ -697,7 +697,7 @@ Ext.define('Genesis.controller.client.Accounts',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
 
       list.deselect([model]);
       delete me.merchantId;

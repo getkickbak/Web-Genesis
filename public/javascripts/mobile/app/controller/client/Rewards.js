@@ -62,8 +62,10 @@ Ext.define('Genesis.controller.client.Rewards',
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
    checkinFirstMsg : 'Please Check-In before earning rewards',
    authCodeReqMsg : 'Proceed to scan an Authorization Code from your server to earn Reward Pts!',
+   signupPageTitle : 'Signup Reward',
    signupPromotionTitle : 'Welcome!',
-   referralPromotionTitle : 'Refer A Friend',
+   referralPageTitle : 'Refer A Friend',
+   referralPromotionTitle : 'Referral Award',
    prizeCheckMsg : 'Play our Instant Win Game to find out how many Prize Pts you won!',
    earnPtsMsg : 'Updating Points Earned ...',
    signupPromotionMsg : function(points)
@@ -208,17 +210,16 @@ Ext.define('Genesis.controller.client.Rewards',
    // --------------------------------------------------------------------------
    // Rewards Page
    // --------------------------------------------------------------------------
-   promotionHandler : function(title, points)
+   promotionHandler : function(pageTitle, title, points)
    {
       var me = this;
       var vport = me.getViewport();
-      if (vport.getActiveItem() != me.getPromotion())
-      {
-         me.silentPopView(1);
-      }
+      var page = me.getPromotion();
+      
+      me.promoteCount++;
       me.redeemItem = Ext.create('Genesis.model.CustomerReward',
       {
-         'title' : title,
+         'title' : null,
          'type' :
          {
             value : 'promotion'
@@ -232,6 +233,8 @@ Ext.define('Genesis.controller.client.Rewards',
          'quantity_limited' : false,
          'merchant' : null
       });
+      var tbbar = page.query('titlebar')[0];
+      tbbar.setTitle(pageTitle);
       me.redirectTo('promotion');
    },
    signupPromotionHandler : function(metaData, customer, venue, merchantId)
@@ -242,13 +245,14 @@ Ext.define('Genesis.controller.client.Rewards',
       var points = info['signup_points'];
       var rc = Ext.isDefined(points) && (points > 0);
 
+      me.promoteCount = 0;
       if (rc)
       {
+         me.promotionHandler(me.signupPageTitle, me.signupPromotionTitle, points);
          Ext.device.Notification.show(
          {
             title : 'Signup Promotion Alert!',
-            message : me.signupPromotionMsg(points),
-            callback : Ext.bind(me.promotionHandler, me, [me.signupPromotionTitle, points])
+            message : me.signupPromotionMsg(points)
          });
       }
 
@@ -286,11 +290,11 @@ Ext.define('Genesis.controller.client.Rewards',
 
       if (rc)
       {
+         me.promotionHandler(me.referralPageTitle, me.referralPromotionTitle, points);
          Ext.device.Notification.show(
          {
             title : 'Referral Challenge',
-            message : me.getReferralMsg(points),
-            callback : Ext.bind(me.promotionHandler, me, [me.referralPromotionTitle, points])
+            message : me.getReferralMsg(points)
          });
       }
 
@@ -300,7 +304,13 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       var me = this;
 
-      if (venue)
+      if (me.promoteCount > 0)
+      {
+         console.debug("Removing Promotion View from History ...");
+         me.silentPopView(1);
+      }
+      me.promoteCount = 0;
+      if (merchantId > 0)
       {
          //
          // Clear Referral DB
@@ -355,11 +365,6 @@ Ext.define('Genesis.controller.client.Rewards',
          me.checkReferralPrompt(earnPts, earnPts);
       }
    },
-   onPromotionDoneTap : function(b, e, eOpts)
-   {
-      var me = this;
-      me.fireEvent('triggerCallbacksChain');
-   },
    updateMetaData : function(metaData)
    {
       var me = this;
@@ -408,14 +413,16 @@ Ext.define('Genesis.controller.client.Rewards',
    onPromotionActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      var tbbar = activeItem.query('titlebar')[0];
-
-      tbbar.setTitle('Signup Reward');
       activeItem.redeemItem = me.redeemItem;
       //delete me.redeemItem;
    },
    onPromotionDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {
+   },
+   onPromotionDoneTap : function(b, e, eOpts)
+   {
+      var me = this;
+      me.fireEvent('triggerCallbacksChain');
    },
    // --------------------------------------------------------------------------
    // Page Navigation
