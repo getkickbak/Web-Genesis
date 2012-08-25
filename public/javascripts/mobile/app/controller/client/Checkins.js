@@ -406,14 +406,14 @@ Ext.define('Genesis.controller.client.Checkins',
             }
             else
             {
-               proxy.supressErrosPopup = true;
+               proxy.supressErrorsPopup = true;
                Ext.device.Notification.show(
                {
                   title : 'Warning',
                   message : me.missingVenueInfoMsg,
                   callback : function()
                   {
-                     proxy.supressErrosPopup = false;
+                     proxy.supressErrorsPopup = false;
                   }
                });
             }

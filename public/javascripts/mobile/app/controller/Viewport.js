@@ -171,14 +171,14 @@ Ext.define('Genesis.controller.Viewport',
             }
             else
             {
-               proxy.supressErrosPopup = true;
+               proxy.supressErrorsPopup = true;
                Ext.device.Notification.show(
                {
                   title : 'Error',
                   message : me.missingVenueInfoMsg,
                   callback : function()
                   {
-                     proxy.supressErrosPopup = false;
+                     proxy.supressErrorsPopup = false;
                   }
                });
             }

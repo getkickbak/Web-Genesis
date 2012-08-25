@@ -158,8 +158,17 @@ Ext.define('Genesis.view.widgets.RedeemItem',
          //refresh[reward['photo'] ? 'show' : 'hide']();
          //verify[reward['photo'] ? 'hide' : 'show']();
       }
-
-      this.query("component[tag=title]")[0].setData(reward);
+      var title = this.query("component[tag=title]")[0];
+      title.element.setVisibilityMode(Ext.dom.Element.VISIBILITY);
+      if (reward['title'])
+      {
+         title.setData(reward);
+         title.element.setVisible(true);
+      }
+      else
+      {
+         title.element.setVisible(false);
+      }
       itemPhoto.element.setStyle((Ext.isString(photo)) ?
       {
          'background-image' : 'url(' + photo + ')',

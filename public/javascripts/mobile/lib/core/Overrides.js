@@ -12,8 +12,8 @@ Genesis.constants =
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
    photoSite : 'http://files.getkickbak.com',
-   debugVPrivKey : 'aVkMUdkCSx3Tys9hIqaNLdYOa3jrTXi2',
-   debugRPrivKey : 'aVkMUdkCSx3Tys9hIqaNLdYOa3jrTXi2',
+   debugVPrivKey : 'Aeh8fmJs3IuGsG4pBOlw7HTSw6QoPCVP',
+   debugRPrivKey : 'Aeh8fmJs3IuGsG4pBOlw7HTSw6QoPCVP',
    device : null,
    redeemDBSize : 10000,
    createAccountMsg : 'Create user account using Facebook Profile information',
@@ -1001,96 +1001,95 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          //
          // Supress Error Messages on Manual Override
          //
-         if (me.supressErrorsPopup)
+         if (!me.supressErrorsPopup)
          {
-            return;
-         }
-
-         switch (metaData['rescode'])
-         {
-            //
-            // Error from server, display this to user
-            //
-            case 'server_error' :
+            switch (metaData['rescode'])
             {
-               Ext.device.Notification.show(
+               //
+               // Error from server, display this to user
+               //
+               case 'server_error' :
                {
-                  title : 'Server Error(s)',
-                  message : messages,
-                  callback : function()
+                  Ext.device.Notification.show(
                   {
-                     if (metaData['session_timeout'])
+                     title : 'Server Error(s)',
+                     message : messages,
+                     callback : function()
                      {
-                        Genesis.db.removeLocalDBAttrib('auth_code');
+                        if (metaData['session_timeout'])
+                        {
+                           Genesis.db.removeLocalDBAttrib('auth_code');
+                           viewport.setLoggedIn(false);
+                           viewport.fireEvent('openpage', 'MainPage', 'login', null);
+                           return;
+                        }
+                        else
+                        {
+                           //
+                           // No need to take any action. Let to user try again.
+                           //
+                        }
+                     }
+                  });
+                  break;
+               }
+               //
+               // Sign in failed due to invalid Facebook info, Create Account.
+               //
+               case 'login_invalid_facebook_info' :
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Create Account',
+                     message : Genesis.constants.createAccountMsg,
+                     callback : function(button)
+                     {
                         viewport.setLoggedIn(false);
+                        Genesis.db.removeLocalDBAttrib('auth_code');
+                        var controller = app.getController('MainPage');
+                        app.dispatch(
+                        {
+                           action : 'onCreateAccountTap',
+                           args : [null, null, null, null],
+                           controller : controller,
+                           scope : controller
+                        });
+                     }
+                  });
+                  return;
+               }
+               case 'update_account_invalid_info' :
+               case 'signup_invalid_info' :
+               case 'update_account_invalid_facebook_info' :
+               case 'login_invalid_info' :
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Login Error',
+                     message : messages,
+                     callback : function()
+                     {
+                        viewport.setLoggedIn(false);
+                        Genesis.db.resetStorage();
                         viewport.fireEvent('openpage', 'MainPage', 'login', null);
-                        return;
                      }
-                     else
-                     {
-                        //
-                        // No need to take any action. Let to user try again.
-                        //
-                     }
-                  }
-               });
-               break;
-            }
-            //
-            // Sign in failed due to invalid Facebook info, Create Account.
-            //
-            case 'login_invalid_facebook_info' :
-            {
-               Ext.device.Notification.show(
-               {
-                  title : 'Create Account',
-                  message : Genesis.constants.createAccountMsg,
-                  callback : function(button)
+                  });
+                  return;
+               }
+               default:
+                  //console.log("Error - " + metaData['rescode']);
+                  Ext.device.Notification.show(
                   {
-                     viewport.setLoggedIn(false);
-                     Genesis.db.removeLocalDBAttrib('auth_code');
-                     var controller = app.getController('MainPage');
-                     app.dispatch(
-                     {
-                        action : 'onCreateAccountTap',
-                        args : [null, null, null, null],
-                        controller : controller,
-                        scope : controller
-                     });
-                  }
-               });
-               return;
+                     title : 'Error',
+                     message : messages
+                  });
+                  break;
             }
-            case 'update_account_invalid_info' :
-            case 'signup_invalid_info' :
-            case 'update_account_invalid_facebook_info' :
-            case 'login_invalid_info' :
-            {
-               Ext.device.Notification.show(
-               {
-                  title : 'Login Error',
-                  message : messages,
-                  callback : function()
-                  {
-                     viewport.setLoggedIn(false);
-                     Genesis.db.resetStorage();
-                     viewport.fireEvent('openpage', 'MainPage', 'login', null);
-                  }
-               });
-               return;
-            }
-            default:
-               console.log("Error - " + metaData['rescode']);
-               Ext.device.Notification.show(
-               {
-                  title : 'Error',
-                  message : messages
-               });
-               break;
          }
          console.debug("Ajax ErrorHandler called. Operation(" + operation.wasSuccessful() + ")");
          me.fireEvent('exception', me, response, operation);
       }
+      
       try
       {
          resultSet = reader.process(response);

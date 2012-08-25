@@ -391,6 +391,7 @@ Ext.define('Genesis.controller.MainPage',
          }
          this.getPrizesBtn().setBadgeText( showIcon ? '✔' : null);
       }
+      Ext.Viewport.setMasked(false);
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -458,7 +459,6 @@ Ext.define('Genesis.controller.MainPage',
             {
                me.persistSyncStores('CustomerStore');
             }
-            Ext.Viewport.setMasked(false);
          }
       });
    },
@@ -642,7 +642,6 @@ Ext.define('Genesis.controller.MainPage',
                //
                // Login Error, redo login
                //
-               Ext.Viewport.setMasked(false);
                if (!operation.wasSuccessful())
                {
                }
@@ -694,7 +693,6 @@ Ext.define('Genesis.controller.MainPage',
             {
                me.persistSyncStores('CustomerStore');
             }
-            Ext.Viewport.setMasked(false);
          }
       });
    },
