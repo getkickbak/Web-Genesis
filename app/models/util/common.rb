@@ -72,6 +72,7 @@ class Common
 
   def self.find_next_badge(badges, badge)
     idx = badges.bsearch_upper_boundary {|x| x.rank <=> badge.rank}
+    idx = (idx == badges.length ? badges.length - 1 : idx)
     badges[idx]
   end
 
