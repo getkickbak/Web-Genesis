@@ -12,8 +12,8 @@ Genesis.constants =
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
    photoSite : 'http://files.getkickbak.com',
-   debugVPrivKey : 'Aeh8fmJs3IuGsG4pBOlw7HTSw6QoPCVP',
-   debugRPrivKey : 'Aeh8fmJs3IuGsG4pBOlw7HTSw6QoPCVP',
+   debugVPrivKey : 'i1U2Cdfq0pcUMCSNt91rtOTXHfxphpz4',
+   debugRPrivKey : 'i1U2Cdfq0pcUMCSNt91rtOTXHfxphpz4',
    device : null,
    redeemDBSize : 10000,
    createAccountMsg : 'Create user account using Facebook Profile information',
@@ -1089,7 +1089,6 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          console.debug("Ajax ErrorHandler called. Operation(" + operation.wasSuccessful() + ")");
          me.fireEvent('exception', me, response, operation);
       }
-      
       try
       {
          resultSet = reader.process(response);
@@ -1176,6 +1175,33 @@ Ext.define('Genesis.data.Connection',
 {
    override : 'Ext.data.Connection',
 
+   /**
+    * Setup all the headers for the request
+    * @private
+    * @param {Object} xhr The xhr object
+    * @param {Object} options The options for the request
+    * @param {Object} data The data for the request
+    * @param {Object} params The params for the request
+    */
+   setupHeaders : function(xhr, options, data, params)
+   {
+      var me = this;
+      options = options ||
+      {
+      };
+      var db = Genesis.db.getLocalDB();
+      var method = (options.method || me.getMethod() || ((params || data) ? 'POST' : 'GET')).toUpperCase();
+      if (db['csrf_code'] && (method == 'POST'))
+      {
+         options.headers = Ext.apply(options.headers,
+         {
+            'X-CSRF-Token' : db['csrf_code']
+         });
+      }
+      var headers = me.callParent(arguments);
+
+      return headers;
+   },
    /**
     * Checks if the response status was successful
     * @param {Number} status The status code
