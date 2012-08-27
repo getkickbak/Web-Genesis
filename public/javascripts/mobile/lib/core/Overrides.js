@@ -1019,8 +1019,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                         if (metaData['session_timeout'])
                         {
                            Genesis.db.removeLocalDBAttrib('auth_code');
-                           viewport.setLoggedIn(false);
-                           viewport.fireEvent('openpage', 'MainPage', 'login', null);
+                           viewport.redirectTo('login');
                            return;
                         }
                         else
@@ -1069,9 +1068,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                      message : messages,
                      callback : function()
                      {
-                        viewport.setLoggedIn(false);
-                        Genesis.db.resetStorage();
-                        viewport.fireEvent('openpage', 'MainPage', 'login', null);
+                        viewport.redirectTo('login');
                      }
                   });
                   return;
@@ -1084,6 +1081,31 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                      message : messages
                   });
                   break;
+            }
+         }
+         else
+         {
+            switch (metaData['rescode'])
+            {
+               //
+               // Error from server, display this to user
+               //
+               case 'server_error' :
+               {
+                  if (metaData['session_timeout'])
+                  {
+                     Genesis.db.removeLocalDBAttrib('auth_code');
+                     viewport.redirectTo('login');
+                     return;
+                  }
+                  else
+                  {
+                     //
+                     // No need to take any action. Let to user try again.
+                     //
+                  }
+                  break;
+               }
             }
          }
          console.debug("Ajax ErrorHandler called. Operation(" + operation.wasSuccessful() + ")");

@@ -226,7 +226,7 @@ Ext.define('Genesis.controller.Viewport',
                         break;
                      }
                   }
-                  controller.fireEvent('dochallenge');
+                  controller.fireEvent('doChallenge');
                });
             }
          }
@@ -305,7 +305,7 @@ Ext.define('Genesis.controller.Viewport',
          }
          else
          {
-            me.fireEvent('openpage', 'client.Challenges', null, null);
+            me.redirectTo('challenges');
             console.log("Going to Challenges Page ...");
          }
       }
