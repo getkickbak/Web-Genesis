@@ -1185,18 +1185,20 @@ Ext.define('Genesis.data.Connection',
     */
    setupHeaders : function(xhr, options, data, params)
    {
+      var me = this;
       options = options ||
       {
       };
       var db = Genesis.db.getLocalDB();
-      if (db['csrf_token'])
+      var method = (options.method || me.getMethod() || ((params || data) ? 'POST' : 'GET')).toUpperCase();
+      if (db['csrf_token'] && (method == 'POST'))
       {
          options = Ext.apply(options,
          {
             'X-CSRF-Token' : db['csrf_token']
          });
       }
-      var headers = this.callParent(arguments);
+      var headers = me.callParent(arguments);
 
       return headers;
    },
