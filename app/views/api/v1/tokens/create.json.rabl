@@ -9,6 +9,7 @@ node :data do
 end
 node :metaData do
 	{ 
+		:csrf_token => form_authenticity_token,
 		:auth_token => @user.authentication_token
 	}
 end	
