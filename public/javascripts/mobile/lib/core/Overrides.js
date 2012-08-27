@@ -1191,11 +1191,11 @@ Ext.define('Genesis.data.Connection',
       };
       var db = Genesis.db.getLocalDB();
       var method = (options.method || me.getMethod() || ((params || data) ? 'POST' : 'GET')).toUpperCase();
-      if (db['csrf_token'] && (method == 'POST'))
+      if (db['csrf_code'] && (method == 'POST'))
       {
          options = Ext.apply(options,
          {
-            'X-CSRF-Token' : db['csrf_token']
+            'X-CSRF-Token' : db['csrf_code']
          });
       }
       var headers = me.callParent(arguments);
