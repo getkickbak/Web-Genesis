@@ -1193,7 +1193,7 @@ Ext.define('Genesis.data.Connection',
       var method = (options.method || me.getMethod() || ((params || data) ? 'POST' : 'GET')).toUpperCase();
       if (db['csrf_code'] && (method == 'POST'))
       {
-         options = Ext.apply(options,
+         options.headers = Ext.apply(options.headers,
          {
             'X-CSRF-Token' : db['csrf_code']
          });
