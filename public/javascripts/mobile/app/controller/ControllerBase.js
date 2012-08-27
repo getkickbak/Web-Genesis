@@ -491,11 +491,11 @@ Ext.define('Genesis.controller.ControllerBase',
          if (authCode != db['auth_code'])
          {
             Genesis.db.setLocalDBAttrib('auth_code', authCode);
-            Genesis.db.setLocalDBAttrib('csrf_token', csrfCode);
+            Genesis.db.setLocalDBAttrib('csrf_code', csrfCode);
          }
          console.debug(//
          "auth_code [" + authCode + "]" + "\n" + //
-         "csrf_token [" + csrfCode + "]" + "\n" + //
+         "csrf_code [" + csrfCode + "]" + "\n" + //
          "currFbId [" + db['currFbId'] + "]");
 
          me.goToMain();
