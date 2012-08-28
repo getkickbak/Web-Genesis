@@ -11,10 +11,11 @@ module Business
     def summary_email(merchant, stats)
       @merchant = merchant
       @stats = stats
-      to_email = merchant.email
-      if merchant.role == "test"
-        to_email = "paul.chan@getkickbak.com"
-      end
+      to_email = "paul.chan@getkickbak.com"
+      #to_email = merchant.email
+      #if merchant.role == "test"
+      #  to_email = "paul.chan@getkickbak.com"
+      #end
       mail(:to => to_email, :subject => (I18n.t("business.mailer.email_subject_summary") % [@merchant.name]))
     end
     
