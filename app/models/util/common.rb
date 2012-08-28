@@ -81,7 +81,7 @@ class Common
     idx = (idx > (rewards.length - 1) ? rewards.length - 1 : idx)
     reward = rewards[idx]
     if points < reward.points
-      reward = nil
+      reward = (idx > 0) ? rewards[idx-1] : nil
     end
     return reward
   end
