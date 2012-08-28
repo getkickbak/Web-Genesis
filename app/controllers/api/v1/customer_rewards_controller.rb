@@ -48,7 +48,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
         acquired = @mutex.acquire
         @customer.reload
         
-        if @reward.quantity_limited && (@reward.quantity_count == @reward.quantity)
+        if @reward.quantity_limited && (@reward.quantity_count >= @reward.quantity)
           logger.info("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), quantity limited")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }

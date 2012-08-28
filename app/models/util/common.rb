@@ -72,15 +72,16 @@ class Common
 
   def self.find_next_badge(badges, badge)
     idx = badges.bsearch_upper_boundary {|x| x.rank <=> badge.rank}
+    idx = (idx > (badges.length - 1) ? badges.length - 1 : idx)
     badges[idx]
   end
 
   def self.find_eligible_reward(rewards, points)
     idx = rewards.bsearch_lower_boundary {|x| x.points <=> points}
-    idx = (idx == rewards.length ? rewards.length - 1 : idx)
+    idx = (idx > (rewards.length - 1) ? rewards.length - 1 : idx)
     reward = rewards[idx]
     if points < reward.points
-      reward = nil if (idx == 0)
+      reward = (idx > 0) ? rewards[idx-1] : nil
     end
     return reward
   end
