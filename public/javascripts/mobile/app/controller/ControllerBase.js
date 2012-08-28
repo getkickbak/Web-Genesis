@@ -149,6 +149,9 @@ Ext.define('Genesis.controller.ControllerBase',
                   venueId = key.split('v')[1];
                   break;
                }
+               default :
+                  veuneId = 0;
+                  break;
             }
             if (venueId > 0)
             {

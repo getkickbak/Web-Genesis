@@ -14,6 +14,8 @@ Genesis.constants =
    photoSite : 'http://files.getkickbak.com',
    debugVPrivKey : 'i1U2Cdfq0pcUMCSNt91rtOTXHfxphpz4',
    debugRPrivKey : 'i1U2Cdfq0pcUMCSNt91rtOTXHfxphpz4',
+   debugVenuePrivKey : 'Debug Venue',
+   privKey : null,
    device : null,
    redeemDBSize : 10000,
    createAccountMsg : 'Create user account using Facebook Profile information',
@@ -96,7 +98,8 @@ Genesis.constants =
             me.privKey =
             {
                'v1' : me.debugVPrivKey,
-               'r1' : me.debugRPrivKey
+               'r1' : me.debugRPrivKey,
+               'venue' : me.debugVenuePrivKey
             };
             for (var i in me.privKey)
             {
@@ -104,7 +107,7 @@ Genesis.constants =
             }
          }
       }
-      return (id) ? [me.privKey['v' + id], me.privKey['r' + id]] : me.privKey;
+      return (id) ? [me.privKey['v' + id], me.privKey['r' + id], me.privKey[id]] : me.privKey;
    }
 }
 

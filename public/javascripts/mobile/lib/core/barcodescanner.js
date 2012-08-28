@@ -102,3 +102,4 @@
       window.plugins.barcodeScanner = new BarcodeScanner();
    });
 })();
+

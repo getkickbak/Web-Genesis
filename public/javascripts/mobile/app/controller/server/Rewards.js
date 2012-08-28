@@ -57,6 +57,7 @@ Ext.define('Genesis.controller.server.Rewards',
       }
    },
    maxValue : 1000.00,
+   clientNames : null,
    invalidPriceMsg : 'Please enter a valid price (eg. 5.00), upto $1000',
    init : function()
    {
@@ -71,6 +72,42 @@ Ext.define('Genesis.controller.server.Rewards',
    {
       var precision = num.split('.');
       return ((precision.length > 1) ? precision[1].length : 0);
+   },
+   availablePeerListChanged : function(clientList)
+   {
+      var clientId, clientInfo;
+      this.clientNames = [];
+      for (clientId in clientList)
+      {
+         clientInfo =
+         {
+         };
+         clientInfo[clientList[clientId]] = clientId;
+         this.clientNames.push(clientInfo);
+      }
+      console.log("availablePeerListChanged -\n" + Ext.encode(this.clientNames));
+   },
+   connexionRequested : function(clientId)
+   {
+      console.log("connexionRequested ClientId[" + clientId + "]");
+      window.plugins.bluetooth.acceptConnexion(clientId);
+      window.plugins.bluetooth.sendDataToAll(Ext.encode(
+      {
+         message : "This is a test!"
+      }));
+      Ext.defer(function()
+      {
+         window.plugins.bluetooth.stopSession();
+      }, 1000);
+   },
+   connectedListChanged : function()
+   {
+      console.log("connectedListChanged - Disconnect");
+      window.plugins.bluetooth.disconnect();
+   },
+   receiveData : function(result)
+   {
+      console.log("receiveData -\n" + result);
    },
    // --------------------------------------------------------------------------
    // Rewards Page
@@ -136,7 +173,7 @@ Ext.define('Genesis.controller.server.Rewards',
          xtype : 'loadmask',
          message : me.genQRCodeMsg
       });
-      // Needed delay to show the LoadingMask
+
       Ext.defer(function()
       {
          console.debug("Encrypting QRCode with Price:$" + price);
