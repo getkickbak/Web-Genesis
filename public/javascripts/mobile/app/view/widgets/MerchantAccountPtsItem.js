@@ -48,9 +48,10 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          cls : 'prizesWonPanel',
          tpl : Ext.create('Ext.XTemplate',
          // @formatter:off
-         '<div class="prizeswonphoto">',
+         '<div class="prizeswonphoto x-list">',
             '<div class="itemTitle">{[this.getTitle(values)]}</div>',
             '<div class="itemDesc">{[this.getDesc(values)]}</div>',
+            '<div class="x-list-disclosure"></div>',
          '</div>',
          // @formatter:on
          {
@@ -58,14 +59,16 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             {
                var jackpot = ' Jackpot' + ((values['prize_jackpots'] > 1) ? 's' : '');
                var msg = ((values['prize_jackpots'] > 0) ? values['prize_jackpots'] + jackpot + ' won this month' : 'Be our first winner this month!');
-               msg += '<img style="width:1em;float:right;"' + //
-               ' src="' + Genesis.constants.getIconPath('miscicons', 'disclose') + '" />';
+               /*
+                msg += '<img style="width:1em;float:right;"' + //
+                ' src="' + Genesis.constants.getIconPath('miscicons', 'disclose') + '" />';
+                */
 
                return msg;
             },
             getDesc : function(values)
             {
-               return 'Click here to find out more!';
+               return 'Check out our winners!';
             }
          })
       },
@@ -116,8 +119,11 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             {
                var msg = ('You are currently our <span class ="badgehighlight">' + //
                values['_badgeType'].display_value.toUpperCase() + '</span>');
-               return msg += '<img style="width:1em;float:right;"' + //
-               ' src="' + Genesis.constants.getIconPath('miscicons', 'disclose') + '" />';
+               /*
+                return msg += '<img style="width:1em;float:right;"' + //
+                ' src="' + Genesis.constants.getIconPath('miscicons', 'disclose') + '" />';
+                */
+               return msg;
 
             },
             getProgress : function(values)
