@@ -95,6 +95,7 @@ Ext.define('Genesis.controller.client.Checkins',
    onCheckinCommonTap : function(qrcode)
    {
       var me = this;
+      var cstore = Ext.StoreMgr.get('CustomerStore');
       var mode = me.callback['mode'];
       var url = me.callback['url'];
       var position = me.callback['position'];
@@ -131,19 +132,20 @@ Ext.define('Genesis.controller.client.Checkins',
 
       console.debug("CheckIn - auth_code:'" + qrcode + "' venue_id:'" + venueId + "'");
 
-      Customer.load(venueId,
+      cstore.load(
       {
+         addRecords : true,
          jsonData :
          {
          },
          params : params,
          scope : me,
-         callback : function(record, operation)
+         callback : function(records, operation)
          {
             var metaData = Customer.getProxy().getReader().metaData;
             if (operation.wasSuccessful() && metaData)
             {
-               me.fireEvent('checkinMerchant', mode, metaData, venueId, record, operation, callback);
+               me.fireEvent('checkinMerchant', mode, metaData, venueId, records[0], operation, callback);
             }
             else
             if (!operation.wasSuccessful() && !metaData)
@@ -292,30 +294,32 @@ Ext.define('Genesis.controller.client.Checkins',
          if (Customer.isValid(customerId))
          {
             customer = custore.getById(customerId);
-            if (customer != null)
-            {
-               sync = Customer.updateCustomer(customer, record);
-               console.debug("Customer ID=[" + customer.getId() + "] is in CustAcct Database");
-            }
-            //
-            // First time Customer ... add it to CustomerStore
-            //
-            else
-            {
-               sync = true;
-               customer = custore.add(record)[0];
-               console.debug("Customer ID=[" + customer.getId() + "] is ADDED to CustAcct Database");
-            }
-            if (sync)
-            {
-               me.persistSyncStores('CustomerStore');
-            }
+            /*
+             if (customer != null)
+             {
+             sync = Customer.updateCustomer(customer, record);
+             console.debug("Customer ID=[" + customer.getId() + "/" + sync + "] is in CustAcct Database");
+             }
+             //
+             // First time Customer ... add it to CustomerStore
+             //
+             else
+             {
+             sync = true;
+             customer = custore.add(record)[0];
+             console.debug("Customer ID=[" + customer.getId() + "] is ADDED to CustAcct Database");
+             }
+             if (sync)
+             {
+             me.persistSyncStores('CustomerStore');
+             }
+             */
          }
          else
          {
             console.debug("Exploring Venue ...");
          }
-         console.debug("CheckIn - points:'" + points + "'");
+         console.debug("CheckIn - points:'" + points + "/" + customer.get('points') + "'");
 
          me.setupCheckinInfo(mode, venue, customer || record, metaData);
       }

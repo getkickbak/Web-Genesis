@@ -175,7 +175,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       }
       return true;
    },
-   updateMetaData : function(metaData)
+   updateMetaDataInfo : function(metaData)
    {
       var me = this;
       var customer = me.callParent(arguments);
