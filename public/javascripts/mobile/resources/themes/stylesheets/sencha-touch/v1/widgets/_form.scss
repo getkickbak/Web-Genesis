@@ -62,5 +62,6 @@
 }
 .x-form-label {
    @include custom-linear-gradient($BlueStart 10%, $BlueEnd 85%, top);
+   text-shadow: #000 0 1px 1px;
    color : white;
 }

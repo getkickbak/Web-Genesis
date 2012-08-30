@@ -241,7 +241,11 @@ Ext.define('Genesis.controller.MainPage',
 
                if (successful && metaData && store.metaChanged)
                {
-                  me.fireEvent('updatemetadata', metaData);
+                  // Delay until "callback" functions are called on store load, before "updatemetadata" is called
+                  Ext.defer(function()
+                  {
+                     me.fireEvent('updatemetadata', metaData);
+                  }, 1, me);
                }
                store.metaChanged = false;
             },

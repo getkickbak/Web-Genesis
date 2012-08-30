@@ -365,7 +365,7 @@ Ext.define('Genesis.controller.client.Rewards',
          me.checkReferralPrompt(earnPts, earnPts);
       }
    },
-   updateMetaData : function(metaData)
+   updateMetaDataInfo : function(metaData)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();

@@ -236,7 +236,7 @@ Ext.define('Genesis.controller.ControllerBase',
          'scannedqrcode' : this.onScannedQRcode,
          'locationupdate' : this.onLocationUpdate,
          'openpage' : this.onOpenPage,
-         'updatemetadata' : this.updateMetaData,
+         'updatemetadata' : this.updateMetaDataInfo,
          'triggerCallbacksChain' : this.triggerCallbacksChain
       });
 
@@ -507,7 +507,7 @@ Ext.define('Genesis.controller.ControllerBase',
 
       return rc;
    },
-   updateMetaData : function(metaData)
+   updateMetaDataInfo : function(metaData)
    {
       var me = this;
       var customer = null;
@@ -570,7 +570,7 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       catch(e)
       {
-         console.debug("updateMetaData Exception - " + e);
+         console.debug("updateMetaDataInfo Exception - " + e);
       }
 
       return customer;
