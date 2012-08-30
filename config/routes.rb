@@ -25,7 +25,10 @@ Genesis::Application.routes.draw do
       end
       resources :invoices, :only => [:index, :show]
       resources :promotions, :only => [:index, :new, :create]
-      resources :badges, :only => [:index]
+      resources :badges, :only => [:index] do
+        post 'update_badges', :on => :collection, :as => :update_badges
+        post 'create_custom_badges', :on => :collection, :as => :create_custom_badges
+      end
       #resources :deals
               
       match "/dashboard" => 'dashboard#index', :as => :dashboard
@@ -139,7 +142,7 @@ Genesis::Application.routes.draw do
     end
   
     constraints :user_agent => /iPhone/ do
-      match "/download" => redirect {|params, req| "http://www.itunes.com/apps/kickbak" }
+      match "/download" => redirect {|params, req| "http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8" }
     end
     #constraints :user_agent => /Android/ do
     #  match "/download" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.kickbak.android" }
