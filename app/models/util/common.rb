@@ -76,6 +76,20 @@ class Common
     badges[idx]
   end
 
+  def self.find_badge(badges, visits)
+    total_visits = 0
+    found_badge = badges.first
+    badges.each do |badge|
+      total_visits += badge.visits
+      if total_visits > visits
+        break
+      else
+        found_badge = badge  
+      end
+    end
+    return found_badge
+  end
+  
   def self.find_eligible_reward(rewards, points)
     idx = rewards.bsearch_lower_boundary {|x| x.points <=> points}
     idx = (idx > (rewards.length - 1) ? rewards.length - 1 : idx)

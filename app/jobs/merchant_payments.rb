@@ -9,7 +9,7 @@ module MerchantPayments
 =begin
     now = Time.now
     logger.info("Merchant Payments started at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
-    merchants = Merchant.all
+    merchants = Merchant.all(:status => :active)
     merchants.each do |merchant|
       logger.info("Begin billing Merchant(#{merchant.name} at #{now.strftime("%a %m/%d/%y %H:%M %Z")})")
       beginning_of_month = 1.month.ago.beginning_of_month

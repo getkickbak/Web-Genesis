@@ -18,12 +18,12 @@ module Business
     end
     
     def activate
-      if current_merchant.status == :pending && has_venues? && set_reward_model? && has_customer_rewards? && has_challenges?
+      if current_merchant.status == :pending && has_badges? && has_venues? && set_reward_model? && has_customer_rewards? && has_challenges?
         begin
           Merchant.transaction do
             current_merchant.update_without_password(:type_id => current_merchant.type.id, :status => :active)
             DataMapper.repository(:default).adapter.execute(
-              "UPDATE venues SET status = ? WHERE merchant_id = ?", Merchant::Statuses.index(:active)+1, @merchant.id
+              "UPDATE venues SET status = ? WHERE merchant_id = ?", Merchant::Statuses.index(:active)+1, current_merchant.id
             )
             respond_to do |format|
               format.html { redirect_to dashboard_path }
@@ -53,6 +53,9 @@ module Business
     def build_checklist
       @checklist = {:total => 0, :count => 0, :data => {} }
       @checklist[:data][:upload_photo] = upload_photo?
+      if current_merchant.custom_badges
+        @checklist[:data][:badges] = has_badges?
+      end
       @checklist[:data][:venues] = has_venues?
       @checklist[:data][:reward_model] = set_reward_model?
       @checklist[:data][:customer_rewards] = has_customer_rewards?
@@ -68,6 +71,10 @@ module Business
     
     def upload_photo?
       current_merchant.photo_url ? true : false  
+    end
+    
+    def has_badges?
+      MerchantToBadge.count(:merchant => current_merchant) > 0 ? true : false  
     end
     
     def has_venues?

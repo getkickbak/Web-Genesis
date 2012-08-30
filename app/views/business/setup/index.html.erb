@@ -39,6 +39,16 @@
                            Upload Photo
                            <% end %>
                         </div>
+                        <% if current_merchant.custom_badges %>
+                        <div>
+                           <% if !@checklist[:data][:badges] && proceed_next_step %>
+                           <% proceed_next_step = false %>
+                           <a href="<%= create_custom_badges_path %>">Create Custom Badges</a>
+                           <% else %>
+                           Create Custom Badges
+                           <% end %>
+                        </div>
+                        <% end %>
                         <div>
                            <% if !@checklist[:data][:venues] && proceed_next_step %>
                            <% proceed_next_step = false %>

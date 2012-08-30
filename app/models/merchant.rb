@@ -56,7 +56,8 @@ class Merchant
   attr_accessor :type_id, :visit_frequency_id, :current_password, :eager_load_type, :termination_date_str
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :visit_frequency_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :photo, :alt_photo, :role, :status, :will_terminate, :termination_date, :reward_terms, :auth_code, :current_password, :password, :password_confirmation
+  attr_accessible :type_id, :visit_frequency_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :photo, :alt_photo, :role, :status, :will_terminate, :termination_date, 
+                  :reward_terms, :auth_code, :current_password, :password, :password_confirmation, :badges_attributes
   
   has 1, :merchant_to_type, :constraint => :destroy
   has 1, :type, 'MerchantType', :through => :merchant_to_type, :via => :merchant_type
@@ -71,10 +72,12 @@ class Merchant
   mount_uploader :photo, MerchantPhotoUploader
   mount_uploader :alt_photo, MerchantPhotoUploader
 
-  before_save :ensure_authentication_token
+  accepts_nested_attributes_for :badges, :reject_if => lambda { |b| b[:visits].blank? }
   
   validates_with_method :type_id, :method => :check_type_id
   validates_with_method :visit_frequency_id, :method => :check_visit_frequency_id
+  
+  before_save :ensure_authentication_token
 
   def self.get_cache_key(id)
     "Merchant-#{id}"  
@@ -113,16 +116,6 @@ class Merchant
     merchant.visit_frequency = visit_frequency
     merchant.save
     return merchant
-  end
-  
-  def self.find(start, max)
-    count = Merchant.count
-    merchants = Merchant.all(:offset => start, :limit => max)
-    #result = {}
-    #result[:total] = count
-    #result[:items] = orders
-    #return result
-    return merchants
   end
   
   def cache_key

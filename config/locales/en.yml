@@ -245,9 +245,11 @@ en:
           create_invalid_info: "The email/password you entered is incorrect.\nPlease try again."
           destroy_failure: "Trouble with logout.\nPlease try again."  
       badges:
-        create_many_success: "Badges successfully created."
-        create_success: "Badge successfully created."    
-        update_success: "Badge successfully updated."
+        create_custom_badges_success: "Custom badges successfully created."
+        create_custom_badges_failure: "Failed to create custom badges."
+        too_few_custom_badges: "Too few custom badges."
+        not_in_custom_badge_mode: "Not in custom badge mode."
+        update_success: "Badges successfully updated."
       challenges:
         create_success: "Challenge was successfully created."
         update_success: "Challenge was successfully updated."

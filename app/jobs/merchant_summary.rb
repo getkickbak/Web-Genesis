@@ -12,7 +12,7 @@ module MerchantSummary
     end_of_last_week = 1.week.ago.end_of_week
     #beginning_of_last_week = Date.today.beginning_of_week
     #end_of_last_week = Date.today.end_of_week
-    merchants = Merchant.all
+    merchants = Merchant.all(:status => :active)
     merchants.each do |merchant|
       total_customer_count = Customer.count(Customer.merchant.id => merchant.id)
       new_customer_count = Customer.count(Customer.merchant.id => merchant.id, :created_ts => (beginning_of_last_week..end_of_last_week))
@@ -76,6 +76,7 @@ module MerchantSummary
         :new_challenges_indv_count => new_challenges_indv_count
       }
       Business::MerchantMailer.summary_email(merchant,stats).deliver
+      Business::MerchantMailer.summary_email(merchant,stats,"system").deliver
     end
     now = Time.now
     logger.info("Merchant Summary completed successfully at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")

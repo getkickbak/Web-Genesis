@@ -84,16 +84,6 @@ class User
     user.save
     return user 
   end
-  
-  def self.find(start, max)
-    count = User.count
-    users = User.all(:offset => start, :limit => max)
-    #result = {}
-    #result[:total] = count
-    #result[:items] = users
-    #return result
-    return users  
-  end
     
   def to_param
     self.id

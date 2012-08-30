@@ -1,0 +1,13 @@
+<div class="fields" >
+	<p>
+		Badge
+	</p>
+	<% if f.object.custom %>
+	<%= f.simple_fields_for :custom_type do |builder| %>
+	<%= builder.input :display_value %>
+	<% end %>
+	<% else %>
+	<p><%= f.object.eager_load_type.display_value %></p>
+	<% end %>
+	<%= f.input :visits %>
+</div>

@@ -25,10 +25,6 @@ Genesis::Application.routes.draw do
       end
       resources :invoices, :only => [:index, :show]
       resources :promotions, :only => [:index, :new, :create]
-      resources :badges, :only => [:index] do
-        post 'update_badges', :on => :collection, :as => :update_badges
-        post 'create_custom_badges', :on => :collection, :as => :create_custom_badges
-      end
       #resources :deals
               
       match "/dashboard" => 'dashboard#index', :as => :dashboard
@@ -42,6 +38,9 @@ Genesis::Application.routes.draw do
       match "/marketing" => 'marketing#index', :as => :marketing
       match "/analytics" => 'analytics#index', :as => :analytics
       match "/analytics/show_charts" => 'analytics#show_charts'
+      match "/badges" => 'badges#index', :as => :badges
+      match "/badges/update_badges" => 'badges#update_badges', :as => :update_badges
+      match "/badges/create_custom_badges" => 'badges#create_custom_badges', :via => :post, :as => :create_custom_badges
       match "/account" => 'merchants#show', :as => :account
       match "/account/edit" => 'merchants#edit', :as => :edit_account
       match "/account/update" => 'merchants#update', :as => :update_account

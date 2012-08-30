@@ -61,16 +61,6 @@ class Staff
     return staff 
   end
   
-  def self.find(start, max)
-    count = Staff.count
-    staffs = Staff.all(:offset => start, :limit => max)
-    #result = {}
-    #result[:total] = count
-    #result[:items] = staffs
-    #return result
-    return staffs  
-  end
-  
   def to_param
     self.id
   end
