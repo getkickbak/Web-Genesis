@@ -1,5 +1,6 @@
 class Api::V1::TokensController < ApplicationController
   skip_before_filter :verify_authenticity_token
+  before_filter :authenticate_user!, :only => [:get_csrf_token]
   skip_authorization_check
   respond_to :json
   
@@ -124,6 +125,10 @@ class Api::V1::TokensController < ApplicationController
     end      
   end
 
+  def get_csrf_token    
+    render :template => '/api/v1/tokens/get_csrf_token'
+  end
+  
   def destroy
     @user = User.first(:authentication_token => params[:id])
     if @user.nil?
