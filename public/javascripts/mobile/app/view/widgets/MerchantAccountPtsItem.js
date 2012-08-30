@@ -193,6 +193,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       var venue = viewport.getVenue();
       var venueId = venue.getId();
       var cvenue = viewport.getCheckinInfo().venue;
+      var customerId = customer.getId();
 
       //var crecord = cstore.getById(data.Merchant['merchant_id']);
       var bg = this.query('container[tag=background]')[0];
@@ -207,7 +208,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       //
       // Hide Points if we are not a customer of the Merchant
       //
-      if (Ext.StoreMgr.get('CustomerStore').getById(customer.getId()))
+      if (Customer.isValid(customerId) && Ext.StoreMgr.get('CustomerStore').getById(customerId))
       {
          bg.getItems().items[0].show();
          //Update Points

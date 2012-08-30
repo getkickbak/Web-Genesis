@@ -14,7 +14,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
          layout :
          {
             type : 'vbox',
-            pack : 'center',
+            pack : 'top',
             align : 'stretch'
          },
          items : [
@@ -41,7 +41,28 @@ Ext.define('Genesis.view.widgets.RedeemItem',
             cls : 'itemPhoto',
             tpl : Ext.create('Ext.XTemplate',
             // @formatter:off
-            '<div class="itemPoints">{[this.getPoints(values)]}</div>',
+            '<div class="itemPoints {[this.isVisible(values)]}">{[this.getPoints(values)]}</div>',
+            // @formatter:on
+            {
+               isVisible : function(values)
+               {
+                  return ((values['title']) ? '' : 'x-item-hidden');
+               },
+               getPoints : function(values)
+               {
+                  return ((values['points'] > 0) ? values['points'] + '  Pts' : '');
+               }
+            })
+         },
+         {
+            docked : 'bottom',
+            xtype : 'component',
+            hidden : true,
+            tag : 'itemPoints',
+            cls : 'itemPoints',
+            tpl : Ext.create('Ext.XTemplate',
+            // @formatter:off
+            '{[this.getPoints(values)]}',
             // @formatter:on
             {
                getPoints : function(values)
@@ -147,11 +168,12 @@ Ext.define('Genesis.view.widgets.RedeemItem',
          //refresh.hide();
          //verify.hide();
          info.setData(data);
-         info.show();
+         info.element.setVisibility(true);
       }
       else
       {
-         info.hide();
+         info.element.setVisibility(false);
+         info.element.setHeight('4.5em');
          //
          // Verification of Prizes/Rewards Mode
          //
@@ -159,13 +181,17 @@ Ext.define('Genesis.view.widgets.RedeemItem',
          //verify[reward['photo'] ? 'hide' : 'show']();
       }
       var title = this.query("component[tag=title]")[0];
+      var points = this.query("component[tag=itemPoints]")[0];
       if (reward['title'])
       {
+         points.hide();
          title.setData(reward);
          title.element.setVisibility(true);
       }
       else
       {
+         points.setData(data);
+         points.show();
          title.element.setVisibility(false);
       }
       itemPhoto.element.setStyle((Ext.isString(photo)) ?

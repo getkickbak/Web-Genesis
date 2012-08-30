@@ -289,6 +289,13 @@ Ext.define('Genesis.controller.MainPage',
                return record.getMerchant().get('name');
             }
          },
+         filters : [
+         {
+            filterFn : function(record)
+            {
+               return Customer.isValid(record.getId());
+            }
+         }],
          sorters : [
          {
             sorterFn : function(o1, o2)

@@ -368,68 +368,68 @@ Ext.define('Genesis.controller.ControllerBase',
       if (customerId > 0)
       {
          console.debug("updateAccountInfo - customerId[" + customerId + "]");
+         
          customer = cstore.getById(customerId);
-      }
-
-      if (customer)
-      {
-         customer.beginEdit();
-         if (info)
+         if (customer)
          {
-            if (Ext.isDefined(info['points']))
+            customer.beginEdit();
+            if (info)
             {
-               customer.set('points', info['points']);
-            }
-            if (Ext.isDefined(info['prize_points']))
-            {
-               customer.set('prize_points', info['prize_points']);
-            }
-            if (Ext.isDefined(info['visits']))
-            {
-               customer.set('visits', info['visits']);
-            }
-            if (Ext.isDefined(info['next_badge_visits']))
-            {
-               customer.set('next_badge_visits', info['next_badge_visits']);
-            }
-            //
-            // Badge Status
-            //
-            var badges = [
-            {
-               id : info['badge_id'],
-               prefix : "Customer's Current Badge is - [",
-               badgeId : 'badge_id'
-            }, //
-            {
-               id : info['next_badge_id'],
-               prefix : "Customer's Next Badge is - [",
-               badgeId : 'next_badge_id'
-            }];
-            for (var i = 0; i < badges.length; i++)
-            {
-               if (Ext.isDefined(badges[i].id))
+               if (Ext.isDefined(info['points']))
                {
-                  var badge = bstore.getById(badges[i].id);
-                  console.debug(badges[i].prefix + //
-                  badge.get('type').display_value + "/" + badge.get('visits') + "]");
+                  customer.set('points', info['points']);
+               }
+               if (Ext.isDefined(info['prize_points']))
+               {
+                  customer.set('prize_points', info['prize_points']);
+               }
+               if (Ext.isDefined(info['visits']))
+               {
+                  customer.set('visits', info['visits']);
+               }
+               if (Ext.isDefined(info['next_badge_visits']))
+               {
+                  customer.set('next_badge_visits', info['next_badge_visits']);
+               }
+               //
+               // Badge Status
+               //
+               var badges = [
+               {
+                  id : info['badge_id'],
+                  prefix : "Customer's Current Badge is - [",
+                  badgeId : 'badge_id'
+               }, //
+               {
+                  id : info['next_badge_id'],
+                  prefix : "Customer's Next Badge is - [",
+                  badgeId : 'next_badge_id'
+               }];
+               for (var i = 0; i < badges.length; i++)
+               {
+                  if (Ext.isDefined(badges[i].id))
+                  {
+                     var badge = bstore.getById(badges[i].id);
+                     console.debug(badges[i].prefix + //
+                     badge.get('type').display_value + "/" + badge.get('visits') + "]");
 
-                  customer.set(badges[i].badgeId, badges[i].id);
+                     customer.set(badges[i].badgeId, badges[i].id);
+                  }
+               }
+               var eligible_reward = info['eligible_for_reward'];
+               if (Ext.isDefined(eligible_reward))
+               {
+                  customer.set('eligible_for_reward', eligible_reward);
+               }
+               var eligible_prize = info['eligible_for_prize'];
+               if (Ext.isDefined(eligible_prize))
+               {
+                  customer.set('eligible_for_prize', eligible_prize);
                }
             }
-            var eligible_reward = info['eligible_for_reward'];
-            if (Ext.isDefined(eligible_reward))
-            {
-               customer.set('eligible_for_reward', eligible_reward);
-            }
-            var eligible_prize = info['eligible_for_prize'];
-            if (Ext.isDefined(eligible_prize))
-            {
-               customer.set('eligible_for_prize', eligible_prize);
-            }
+            customer.endEdit();
+            me.persistSyncStores('CustomerStore');
          }
-         customer.endEdit();
-         me.persistSyncStores('CustomerStore');
       }
       /*
        if (updateBadge)
@@ -512,6 +512,7 @@ Ext.define('Genesis.controller.ControllerBase',
       var me = this;
       var customer = null;
       var viewport = me.getViewPortCntlr();
+      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
 
       try
       {
@@ -533,9 +534,14 @@ Ext.define('Genesis.controller.ControllerBase',
          //
          // Short Cut to earn points, customer object wil be given by server
          //
+         // Find venueId from metaData or from DataStore
+         var new_venueId = metaData['venue_id'] || cestore.first().getId();
+         // Find venue from DataStore or current venue info
+         venue = cestore.getById(new_venueId) || viewport.getVenue();
+
          if (Ext.isDefined(metaData['venue']))
          {
-            var venue = Ext.create('Genesis.model.Venue', metaData['venue']);
+            venue = Ext.create('Genesis.model.Venue', metaData['venue']);
             var controller = me.getApplication().getController('client.Checkins');
             //
             // Winners' Circle'
@@ -552,6 +558,18 @@ Ext.define('Genesis.controller.ControllerBase',
             //"venue - " + Ext.encode(metaData['venue']));
             '');
             controller.fireEvent('setupCheckinInfo', 'checkin', venue, customer, metaData);
+         }
+         else
+         {
+            //
+            // Winners' Circle'
+            //
+            var prizeJackpotsCount = metaData['prize_jackpots'];
+            if (prizeJackpotsCount >= 0)
+            {
+               console.debug("Prize Jackpots won by customers at this merchant this month - [" + prizeJackpotsCount + "]");
+               venue.set('prize_jackpots', prizeJackpotsCount);
+            }
          }
 
          //
