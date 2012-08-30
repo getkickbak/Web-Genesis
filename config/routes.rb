@@ -108,6 +108,7 @@ Genesis::Application.routes.draw do
       namespace :v1  do
         resources :tokens, :only => [:create, :destroy] do
           post "create_from_facebook", :on => :collection
+          get "get_csrf_token", :on => :collection
         end
         resources :check_ins, :only => [:create]
         resources :customers, :only => [:index] do
