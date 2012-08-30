@@ -63,6 +63,14 @@ Ext.define('Genesis.model.frontend.Account',
             read : 'POST'
          });
          this.getProxy().setUrl(Genesis.constants.host + '/api/v1/account/change_password');
+      },
+      setRefreshCsrfTokenUrl : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'GET'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/tokens/get_csrf_token');
       }
    }
 });
