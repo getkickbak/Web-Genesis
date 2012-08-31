@@ -78,16 +78,19 @@ class Common
 
   def self.find_badge(badges, visits)
     total_visits = 0
+    next_badge_visits = visits
     found_badge = badges.first
     badges.each do |badge|
       total_visits += badge.visits
       if total_visits > visits
+        next_badge_visits = visits - (total_visits - badge.visits)
         break
       else
         found_badge = badge  
+        next_badge_visits = visits - total_visits
       end
     end
-    return found_badge
+    return found_badge, next_badge_visits
   end
   
   def self.find_eligible_reward(rewards, points)

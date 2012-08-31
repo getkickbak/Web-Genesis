@@ -12,6 +12,7 @@ class Customer
   property :eligible_for_reward, Boolean, :default => false
   property :eligible_for_prize, Boolean, :default => false
   property :status, Enum[:active, :pending, :suspended, :deleted], :default => :active
+  property :badge_reset_ts, DateTime, :default => ::Constant::MIN_TIME
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -29,6 +30,7 @@ class Customer
     auth_code = "#{String.random_alphanumeric}-#{merchant.id}-#{user.id}"
     customer = Customer.new
     customer[:auth_code] = auth_code
+    customer[:badge_reset_ts] = now
     customer[:created_ts] = now
     customer[:update_ts] = now
     badges = merchant.badges.sort_by { |b| b.rank }
