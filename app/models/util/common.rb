@@ -106,7 +106,10 @@ class Common
   def self.populate_badges(merchant, user_agent)
     badges = merchant.badges
     if merchant.custom_badges
-      badge_types = MerchantBadgeType.all(MerchantBadgeType.merchant.id => merchant.id).to_a
+      badge_types = []
+      badges.each do |badge|
+        badge_types << badge.custom_type
+      end
     else
       badge_ids = []
       badges.each do |badge|
