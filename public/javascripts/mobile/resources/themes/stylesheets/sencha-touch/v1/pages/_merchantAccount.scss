@@ -36,6 +36,12 @@
             max-height:57px + 2*12px;
          }
       }
+      &.x-list {
+         .x-list-disclosure {
+            //top:1.50em;
+            bottom: 1.10em;
+         }
+      }
       .prizeswonphoto, .badgephoto {
          @extend .pointsphotobase;
          text-align:left;

@@ -137,7 +137,7 @@ Ext.define('Genesis.controller.Viewport',
    animationFlag : 0,
    gatherCheckinInfoMsg : 'Gathering Checkin information ...',
    retrieveChallengesMsg : 'Retrieving Challenges ...',
-   fbShareSuccessMsg : 'Posted on your Timeline!',
+   fbShareSuccessMsg : 'Posted on your Facebook Timeline!',
    shareReqMsg : function()
    {
       return 'Would you like to do our' + Genesis.constants.addCRLF() + //

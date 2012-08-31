@@ -535,11 +535,11 @@ Ext.define('Genesis.controller.client.Accounts',
    {
       var me = this;
 
-      me.xferCodeRecv = true;
       switch (me.getMode())
       {
          case 'transfer' :
          {
+            me.xferCodeRecv = true;
             var container = me.getTransferContainer();
             var qrcode = Genesis.controller.ControllerBase.genQRCode(metaData['data']);
             var points = metaData['points'] || me.getPoints().getValue();
@@ -619,12 +619,8 @@ Ext.define('Genesis.controller.client.Accounts',
                      }
                      case EmailComposer.ComposeResultType.Sent:
                      {
+                        me.xferCodeRecv = true;
                         me.onTransferCompleteTap();
-                        Ext.device.Notification.show(
-                        {
-                           title : 'Transfer Success!',
-                           message : me.transferSuccessMsg()
-                        });
                         break;
                      }
                   }

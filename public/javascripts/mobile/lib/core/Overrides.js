@@ -8,8 +8,6 @@ Genesis.constants =
    //host : 'http://192.168.0.52:3000',
    host : 'http://www.getkickbak.com',
    themeName : 'v1',
-   sign_in_path : '/sign_in',
-   sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
    photoSite : 'http://files.getkickbak.com',
    debugVPrivKey : 'KSz7BnokL9bAegTz08QyY3fLC8L5Q10C',
