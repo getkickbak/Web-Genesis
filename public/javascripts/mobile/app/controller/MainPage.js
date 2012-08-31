@@ -613,20 +613,6 @@ Ext.define('Genesis.controller.MainPage',
             {
                me.persistLoadStores(Ext.emptyFn);
             }
-            else
-            {
-               proxy.supressErrorsPopup = true;
-               Ext.device.Notification.show(
-               {
-                  title : 'Error',
-                  message : me.sessionTimeoutMsg,
-                  callback : function()
-                  {
-                     proxy.supressErrorsPopup = false;
-                     me.redirectTo('login');
-                  }
-               });
-            }
          }
       });
    },
