@@ -621,11 +621,6 @@ Ext.define('Genesis.controller.client.Accounts',
                      {
                         me.xferCodeRecv = true;
                         me.onTransferCompleteTap();
-                        Ext.device.Notification.show(
-                        {
-                           title : 'Transfer Success!',
-                           message : me.transferSuccessMsg()
-                        });
                         break;
                      }
                   }
