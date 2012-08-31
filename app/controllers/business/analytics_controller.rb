@@ -1,22 +1,17 @@
 module Business
   class AnalyticsController < BaseApplicationController
     before_filter :authenticate_merchant!
+    before_filter :check_status
     skip_authorization_check
     
     def index
-      if current_merchant.status == :pending
-        respond_to do |format|
-          format.html { redirect_to setup_path }
-        end
-      else
-        @customers_total = get_customers_total(nil)
-        @new_customers_total = get_customers_total(Date.today - 14) 
-        @purchases_total = get_purchases_total(nil, Date.today >> -2)
-        @revenue_total = get_revenue_total(nil, Date.today >> -2)
-        respond_to do |format|
-          format.html # index.html.erb
-          #format.xml  { render :xml => @merchants }
-        end
+      @customers_total = get_customers_total(nil)
+      @new_customers_total = get_customers_total(Date.today - 14) 
+      @purchases_total = get_purchases_total(nil, Date.today >> -2)
+      @revenue_total = get_revenue_total(nil, Date.today >> -2)
+      respond_to do |format|
+        format.html # index.html.erb
+        #format.xml  { render :xml => @merchants }
       end
     end
     

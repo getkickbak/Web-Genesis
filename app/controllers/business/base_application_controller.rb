@@ -7,5 +7,13 @@ module Business
     def current_ability
       @current_ability ||= MerchantAbility.new(current_merchant)
     end
+    
+    def check_status
+      if current_merchant.status == :pending
+        respond_to do |format|
+          format.html { redirect_to setup_path }
+        end
+      end
+    end
   end
 end

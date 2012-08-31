@@ -2,6 +2,7 @@ module Business
   class VenuesController < BaseApplicationController
     before_filter :authenticate_merchant!
     #load_and_authorize_resource
+    
     def index
       authorize! :read, Venue
       @venues = current_merchant.venues

@@ -3,7 +3,6 @@ module Business
     before_filter :authenticate_merchant!, :only => [:merchant_terms]
     skip_authorization_check
 
-    
     def contact_us
       @contact = Contact.new
       @notice = request.filtered_parameters['notice']

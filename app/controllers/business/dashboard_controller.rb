@@ -1,19 +1,15 @@
 module Business
   class DashboardController < BaseApplicationController
     before_filter :authenticate_merchant!
+    before_filter :check_status
     skip_authorization_check
+    
     def index
-      if current_merchant.status == :pending
-        respond_to do |format|
-          format.html { redirect_to setup_path }
-        end
-      else
-        @total_reward_points = (EarnRewardRecord.sum(:points, :merchant => current_merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => current_merchant, :mode => :reward) || 0)
-        @total_prize_points = (EarnPrizeRecord.sum(:points, :merchant => current_merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => current_merchant, :mode => :prize) || 0)
-        respond_to do |format|
-          format.html # index.html.erb
-        #format.xml  { render :xml => @merchants }
-        end
+      @total_reward_points = (EarnRewardRecord.sum(:points, :merchant => current_merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => current_merchant, :mode => :reward) || 0)
+      @total_prize_points = (EarnPrizeRecord.sum(:points, :merchant => current_merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => current_merchant, :mode => :prize) || 0)
+      respond_to do |format|
+        format.html # index.html.erb
+      #format.xml  { render :xml => @merchants }
       end
     end
 
