@@ -351,7 +351,7 @@ Genesis.fb =
                //
                console.debug('FB ExpiryDate TimeStamp = ' + Date(expireTime) + '\n' + //
                "Already Logged into Facebook, bypass permission request.");
-               
+
                db['fbExpiresIn'] = Date.now() + (1000 * response.authResponse['expiresIn']);
                Genesis.db.setLocalDB(db);
 
@@ -407,25 +407,32 @@ Genesis.fb =
                me._fb_connect();
                //me.getFriendsList();
 
-               console.debug("Updating Facebook Login Info ...");
-               Account['setUpdateFbLoginUrl']();
-               Account.load(0,
+               if (db['auth_code'])
                {
-                  jsonData :
+                  console.debug("Updating Facebook Login Info ...");
+                  Account['setUpdateFbLoginUrl']();
+                  Account.load(0,
                   {
-                  },
-                  params :
-                  {
-                     user : Ext.encode(params)
-                  },
-                  callback : function(record, operation)
-                  {
-                     if (cb)
+                     jsonData :
                      {
-                        cb(params, operation);
+                     },
+                     params :
+                     {
+                        user : Ext.encode(params)
+                     },
+                     callback : function(record, operation)
+                     {
+                        if (cb)
+                        {
+                           cb(params, operation);
+                        }
                      }
-                  }
-               });
+                  });
+               }
+               else
+               {
+                  cb(params, null);
+               }
             }
          }
          else
