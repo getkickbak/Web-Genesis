@@ -48,6 +48,14 @@ Ext.define('Genesis.model.frontend.Account',
    },
    statics :
    {
+      setUpdateFbLoginUrl : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/account/update_facebook_info');
+      },
       setPasswdResetUrl : function()
       {
          this.getProxy().setActionMethods(

@@ -225,11 +225,6 @@ Genesis.fb =
                         me.fbLogin(cb, false);
                      }, true);
                   }
-                  else
-                  {
-                     //fb.setItem('access_token', response.authResponse.accessToken);
-                     //me.facebook_loginCallback(cb);
-                  }
                }
             });
          }
@@ -267,7 +262,6 @@ Genesis.fb =
          {
             console.debug("Logged into Facebook!");
             Genesis.db.setLocalDBAttrib('fbExpiresIn', Date.now() + (1000 * response.authResponse['expiresIn']));
-            //Genesis.db.setLocalDBAttrib('fbAuthCode', response.authResponse['authToken']);
             if (me.cb)
             {
                me.facebook_loginCallback(me.cb);
@@ -278,7 +272,6 @@ Genesis.fb =
          {
             console.debug("Login Failed! ...");
             Genesis.db.removeLocalDBAttrib('fbExpiresIn');
-            //Genesis.db.removeLocalDBAttrib('fbAuthCode');
             if (!supress)
             {
                Ext.Viewport.setMasked(false);
@@ -356,14 +349,14 @@ Genesis.fb =
                //
                // To-do : Implement Facebook Expiry TimeStamp check
                //
-               console.debug('FB ExpiryDate TimeStamp = ' + Date(expireTime));
-
-               console.debug("Already Logged into Facebook, bypass permission request.");
+               console.debug('FB ExpiryDate TimeStamp = ' + Date(expireTime) + '\n' + //
+               "Already Logged into Facebook, bypass permission request.");
+               
                db['fbExpiresIn'] = Date.now() + (1000 * response.authResponse['expiresIn']);
                Genesis.db.setLocalDB(db);
 
                // Use Previous Login information!
-               cb(db['fbResponse']);
+               cb(db['fbResponse'], null);
             }
             else
             {
@@ -395,26 +388,44 @@ Genesis.fb =
             if (db['currFbId'] == facebook_id)
             {
                console.debug("Session information same as previous session[" + facebook_id + "]");
+               if (cb)
+               {
+                  cb(params, null);
+               }
             }
             else
             {
                console.debug("Session ID[" + facebook_id + "]");
-            }
+               db['currFbId'] = facebook_id;
+               db['fbAccountId'] = response.email;
+               var params = db['fbResponse'] = me.createFbResponse(response);
+               Genesis.db.setLocalDB(db);
 
-            db['currFbId'] = facebook_id;
-            db['fbAccountId'] = response.email;
-            var params = db['fbResponse'] = me.createFbResponse(response);
-            Genesis.db.setLocalDB(db);
+               console.debug('You\`ve logged into Facebook! ' + '\n' + //
+               'Email(' + db['fbAccountId'] + ')' + '\n' + //
+               'ID(' + facebook_id + ')' + '\n');
+               me._fb_connect();
+               //me.getFriendsList();
 
-            console.debug('You\`ve logged into Facebook! ' + '\n' + //
-            'Email(' + db['fbAccountId'] + ')' + '\n' + //
-            'ID(' + facebook_id + ')' + '\n');
-            me._fb_connect();
-            //me.getFriendsList();
-
-            if (cb)
-            {
-               Ext.defer(cb, 1, me, [params]);
+               console.debug("Updating Facebook Login Info ...");
+               Account['setUpdateFbLoginUrl']();
+               Account.load(0,
+               {
+                  jsonData :
+                  {
+                  },
+                  params :
+                  {
+                     user : Ext.encode(params)
+                  },
+                  callback : function(record, operation)
+                  {
+                     if (cb)
+                     {
+                        cb(params, operation);
+                     }
+                  }
+               });
             }
          }
          else
