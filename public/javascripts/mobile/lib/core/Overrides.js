@@ -12,8 +12,8 @@ Genesis.constants =
    sign_out_path : '/sign_out',
    site : 'www.getkickbak.com',
    photoSite : 'http://files.getkickbak.com',
-   debugVPrivKey : 'i1U2Cdfq0pcUMCSNt91rtOTXHfxphpz4',
-   debugRPrivKey : 'i1U2Cdfq0pcUMCSNt91rtOTXHfxphpz4',
+   debugVPrivKey : 'KSz7BnokL9bAegTz08QyY3fLC8L5Q10C',
+   debugRPrivKey : 'KSz7BnokL9bAegTz08QyY3fLC8L5Q10C',
    debugVenuePrivKey : 'Debug Venue',
    privKey : null,
    device : null,
@@ -872,7 +872,6 @@ Genesis.db =
    resetStorage : function()
    {
       Genesis.fb.facebook_onLogout(null, false);
-      //this.removeLocalDBAttrib('auth_code');
       var db = this.getLocalStorage();
       for (var i in db)
       {
@@ -885,6 +884,7 @@ Genesis.db =
             catch(e)
             {
             }
+            console.debug("Removed [" + i + "]");
          }
       }
       //
@@ -1021,7 +1021,6 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                      {
                         if (metaData['session_timeout'])
                         {
-                           Genesis.db.removeLocalDBAttrib('auth_code');
                            viewport.redirectTo('login');
                            return;
                         }
@@ -1047,7 +1046,6 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                      callback : function(button)
                      {
                         viewport.setLoggedIn(false);
-                        Genesis.db.removeLocalDBAttrib('auth_code');
                         var controller = app.getController('MainPage');
                         app.dispatch(
                         {
@@ -1097,7 +1095,6 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                {
                   if (metaData['session_timeout'])
                   {
-                     Genesis.db.removeLocalDBAttrib('auth_code');
                      viewport.redirectTo('login');
                      return;
                   }

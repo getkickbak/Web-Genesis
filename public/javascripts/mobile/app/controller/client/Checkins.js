@@ -51,7 +51,7 @@ Ext.define('Genesis.controller.client.Checkins',
          'explore' : 'onNonCheckinTap',
          'checkinScan' : 'onCheckinScanTap',
          'checkinMerchant' : 'onCheckinHandler',
-         'setupCheckinInfo' : 'setupCheckinInfo'
+         'setupCheckinInfo' : 'onSetupCheckinInfo'
       },
       position : null,
    },
@@ -89,10 +89,7 @@ Ext.define('Genesis.controller.client.Checkins',
       //
       this.getExplore();
    },
-   // --------------------------------------------------------------------------
-   // Common Functions
-   // --------------------------------------------------------------------------
-   onCheckinCommonTap : function(qrcode)
+   checkinCommon : function(qrcode)
    {
       var me = this;
       var cstore = Ext.StoreMgr.get('CustomerStore');
@@ -155,6 +152,9 @@ Ext.define('Genesis.controller.client.Checkins',
          }
       });
    },
+   // --------------------------------------------------------------------------
+   // Common Functions
+   // --------------------------------------------------------------------------
    onScannedQRcode : function(qrcode)
    {
       var me = this;
@@ -168,7 +168,7 @@ Ext.define('Genesis.controller.client.Checkins',
          });
 
          // Retrieve GPS Coordinates
-         me.onCheckinCommonTap(qrcode);
+         me.checkinCommon(qrcode);
       }
       else
       {
@@ -214,12 +214,12 @@ Ext.define('Genesis.controller.client.Checkins',
                xtype : 'loadmask',
                message : me.getMerchantInfoMsg
             });
-            me.onCheckinCommonTap(null);
+            me.checkinCommon(null);
             break;
       }
       me.setPosition(null);
    },
-   setupCheckinInfo : function(mode, venue, customer, metaData)
+   onSetupCheckinInfo : function(mode, venue, customer, metaData)
    {
       var viewport = this.getViewPortCntlr();
       viewport.setVenue(venue)
@@ -252,7 +252,7 @@ Ext.define('Genesis.controller.client.Checkins',
    },
    onCheckinTap : function(b, e, eOpts, einfo)
    {
-      // Scan QR Code to confirm Checkin
+      // Already in Merchant Account Page, Scan QR Code to confirm Checkin
       this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueCheckinUrl', 'scan', function()
       {
          Ext.device.Notification.vibrate();
@@ -277,6 +277,7 @@ Ext.define('Genesis.controller.client.Checkins',
       var customerId, customer, venue, points;
       customerId = record.getId();
       points = record.get('points');
+      callback = callback || Ext.emptyFn;
 
       // Find venueId from metaData or from DataStore
       var new_venueId = metaData['venue_id'] || cestore.first().getId();
@@ -284,7 +285,9 @@ Ext.define('Genesis.controller.client.Checkins',
       venue = cestore.getById(new_venueId) || viewport.getVenue();
 
       // Find Matching Venue or pick the first one returned if no venueId is set
-      console.debug("CheckIn - new_venueId:'" + new_venueId + "' venue_id:'" + venueId + "'");
+      console.debug("CheckIn - new_venueId:'" + new_venueId + //
+      "' venue_id:'" + venueId + //
+      "' points:'" + points + "'");
       if ((new_venueId == venueId) || (venueId == null))
       {
          checkinMode = (mode == 'checkin');
@@ -294,37 +297,20 @@ Ext.define('Genesis.controller.client.Checkins',
          if (Customer.isValid(customerId))
          {
             customer = custore.getById(customerId);
-            /*
-             if (customer != null)
-             {
-             sync = Customer.updateCustomer(customer, record);
-             console.debug("Customer ID=[" + customer.getId() + "/" + sync + "] is in CustAcct Database");
-             }
-             //
-             // First time Customer ... add it to CustomerStore
-             //
-             else
-             {
-             sync = true;
-             customer = custore.add(record)[0];
-             console.debug("Customer ID=[" + customer.getId() + "] is ADDED to CustAcct Database");
-             }
-             if (sync)
-             {
-             me.persistSyncStores('CustomerStore');
-             }
-             */
+            console.debug("Checking In Venue ...");
          }
          else
          {
             console.debug("Exploring Venue ...");
          }
-         console.debug("CheckIn - points:'" + points + "'");
 
-         me.setupCheckinInfo(mode, venue, customer || record, metaData);
+         me.fireEvent('setupCheckinInfo', mode, venue, customer || record, metaData);
+         me.fireEvent('updatemetadata', metaData);
       }
-
-      console.debug("CheckIn - Opening Merchant Account Page ...");
+      else
+      {
+         console.log("CheckIn - venueIDs do not match!");
+      }
 
       //
       // Cleans up Back Buttons on Check-in
@@ -344,10 +330,7 @@ Ext.define('Genesis.controller.client.Checkins',
             break;
       }
 
-      if (callback)
-      {
-         callback();
-      }
+      callback();
 
       if (checkinMode)
       {
@@ -366,11 +349,11 @@ Ext.define('Genesis.controller.client.Checkins',
                message : me.recvReferralb4VisitMsg(customer.getMerchant().get('name'))
             });
          }, null]);
-         console.debug("CheckIn - Done");
+         console.debug("CheckIn - Complete");
       }
       else
       {
-         console.debug("CheckInExplore - Done");
+         console.debug("CheckInExplore - Complete");
       }
    },
    // --------------------------------------------------------------------------

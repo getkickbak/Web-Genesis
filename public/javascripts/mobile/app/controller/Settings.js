@@ -119,7 +119,7 @@ Ext.define('Genesis.controller.Settings',
       {
          Ext.Viewport.setMasked(false);
          Customer['setUpdateFbLoginUrl']();
-         Customer.load(1,
+         Customer.load(0,
          {
             jsonData :
             {

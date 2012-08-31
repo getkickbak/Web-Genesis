@@ -280,8 +280,7 @@ Ext.define('Genesis.controller.ControllerBase',
       var viewport = me.getViewPortCntlr();
       viewport.setLoggedIn(true);
       me.redirectTo('main');
-      //me.fireEvent('openpage', 'MainPage', 'main', null);
-      console.log("LoggedIn, Going back to Main Page ...");
+      console.log("LoggedIn, Going to Main Page ...");
    },
    isOpenAllowed : function()
    {
@@ -368,7 +367,7 @@ Ext.define('Genesis.controller.ControllerBase',
       if (customerId > 0)
       {
          console.debug("updateAccountInfo - customerId[" + customerId + "]");
-         
+
          customer = cstore.getById(customerId);
          if (customer)
          {
@@ -489,14 +488,14 @@ Ext.define('Genesis.controller.ControllerBase',
 
       if (authCode)
       {
-         console.debug("Login Auth Code - " + authCode)
          var db = Genesis.db.getLocalDB();
-         if (authCode != db['auth_code'])
+         if ((authCode != db['auth_code']) || (csrfCode != db['csrf_code']))
          {
-            Genesis.db.setLocalDBAttrib('auth_code', authCode);
-            Genesis.db.setLocalDBAttrib('csrf_code', csrfCode);
+            db['auth_code'] = authCode;
+            db['csrf_code'] = csrfCode;
+            Genesis.db.setLocalDB(db);
          }
-         console.debug(//
+         console.debug('\n' + //
          "auth_code [" + authCode + "]" + "\n" + //
          "csrf_code [" + csrfCode + "]" + "\n" + //
          "currFbId [" + db['currFbId'] + "]");

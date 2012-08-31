@@ -129,8 +129,13 @@ Ext.define('Genesis.controller.MainPage',
          {
             tap : 'onCreateAccountSubmit'
          }
+      },
+      listeners :
+      {
+         'refreshCSRF' : 'onRefreshCSRF'
       }
    },
+   sessionTimeoutMsg : 'Session Timeout',
    passwdResetConfirmMsg : 'Please confirm to reset your account password',
    passwdResetSuccessMsg : function()
    {
@@ -180,10 +185,7 @@ Ext.define('Genesis.controller.MainPage',
                   var db = Genesis.db.getLocalDB();
                   if (db['auth_code'])
                   {
-                     me.persistLoadStores(function()
-                     {
-                        me.redirectTo('main');
-                     });
+                     me.fireEvent('refreshCSRF');
                   }
                   else
                   {
@@ -236,23 +238,10 @@ Ext.define('Genesis.controller.MainPage',
             scope : me,
             "load" : function(store, records, successful, operation, eOpts)
             {
-               // Load Prizes into DataStore
-               var metaData = store.getProxy().getReader().metaData;
-
-               if (successful && metaData && store.metaChanged)
-               {
-                  // Delay until "callback" functions are called on store load, before "updatemetadata" is called
-                  Ext.defer(function()
-                  {
-                     me.fireEvent('updatemetadata', metaData);
-                  }, 1, me);
-               }
-               store.metaChanged = false;
             },
             'metachange' : function(store, proxy, eOpts)
             {
                var metaData = proxy.getReader().metaData;
-               store.metaChanged = true;
                //
                // QR Code from Transfer Points
                //
@@ -327,6 +316,9 @@ Ext.define('Genesis.controller.MainPage',
             'metachange' : function(store, proxy, eOpts)
             {
                // Let Other event handlers udpate the metaData first ...
+               //
+               // No MetaData returned for now ...
+               //
                me.fireEvent('updatemetadata', proxy.getReader().metaData);
             }
          }
@@ -469,6 +461,7 @@ Ext.define('Genesis.controller.MainPage',
             else
             {
                me.persistSyncStores('CustomerStore');
+               me.fireEvent('updatemetadata', Customer.getProxy().getReader().metaData);
             }
          }
       });
@@ -601,6 +594,42 @@ Ext.define('Genesis.controller.MainPage',
    // --------------------------------------------------------------------------
    // SignIn and CreateAccount Page
    // --------------------------------------------------------------------------
+   onRefreshCSRF : function()
+   {
+      var me = this;
+      var proxy = Account.getProxy();
+
+      Account['setRefreshCsrfTokenUrl']();
+      console.log("setRefreshCsrfTokenUrl - Refreshing CSRF Token ...");
+      Account.load(0,
+      {
+         jsonData :
+         {
+         },
+         callback : function(record, operation)
+         {
+            Ext.Viewport.setMasked(false);
+            if (operation.wasSuccessful())
+            {
+               me.persistLoadStores(Ext.emptyFn);
+            }
+            else
+            {
+               proxy.supressErrorsPopup = true;
+               Ext.device.Notification.show(
+               {
+                  title : 'Error',
+                  message : me.sessionTimeoutMsg,
+                  callback : function()
+                  {
+                     proxy.supressErrorsPopup = false;
+                     me.redirectTo('login');
+                  }
+               });
+            }
+         }
+      });
+   },
    onCreateAccountSubmit : function(b, e, eOpts, eInfo)
    {
       var me = this;
@@ -659,6 +688,7 @@ Ext.define('Genesis.controller.MainPage',
                else
                {
                   me.persistSyncStores();
+                  me.fireEvent('updatemetadata', Customer.getProxy().getReader().metaData);
                }
             }
          });
@@ -703,6 +733,7 @@ Ext.define('Genesis.controller.MainPage',
             else
             {
                me.persistSyncStores('CustomerStore');
+               me.fireEvent('updatemetadata', Customer.getProxy().getReader().metaData);
             }
          }
       });
@@ -973,7 +1004,8 @@ Ext.define('Genesis.controller.MainPage',
          case 'login' :
          {
             // Remove all previous view from viewStack
-            me.getApplication().getController('client.Checkins').fireEvent('setupCheckinInfo', 'checkin', null, null, null);
+            var controller = me.getApplication().getController('client.Checkins');
+            controller.fireEvent('setupCheckinInfo', 'checkin', null, null, null);
             //me.getApplication().getController('client.Prizes').fireEvent('updatePrizeViews', null);
             me.setAnimationMode(me.self.superclass.self.animationMode['fade']);
             me.pushView(me.getLogin());
