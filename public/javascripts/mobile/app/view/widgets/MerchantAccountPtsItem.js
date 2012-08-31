@@ -45,14 +45,14 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          // -----------------------------------------------------------------------
          tag : 'prizesWonPanel',
          xtype : 'component',
-         cls : 'prizesWonPanel',
+         cls : 'prizesWonPanel x-list',
          tpl : Ext.create('Ext.XTemplate',
          // @formatter:off
-         '<div class="prizeswonphoto x-list">',
+         '<div class="prizeswonphoto">',
             '<div class="itemTitle">{[this.getTitle(values)]}</div>',
             '<div class="itemDesc">{[this.getDesc(values)]}</div>',
-            '<div class="x-list-disclosure"></div>',
          '</div>',
+         '<div class="x-list-disclosure"></div>',
          // @formatter:on
          {
             getTitle : function(values)
