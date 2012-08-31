@@ -48,6 +48,7 @@ class Merchant
   property :custom_badges, Boolean, :required => true,  :default => false
   property :reward_terms, String, :required => true, :default => ""
   property :auth_code, String, :required => true, :default => ""
+  property :badges_update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime

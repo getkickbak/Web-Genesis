@@ -39,6 +39,7 @@ Genesis::Application.routes.draw do
       match "/analytics" => 'analytics#index', :as => :analytics
       match "/analytics/show_charts" => 'analytics#show_charts'
       match "/badges" => 'badges#index', :as => :badges
+      match "/badges/edit" => 'badges#edit', :as => :edit_badges
       match "/badges/update_badges" => 'badges#update_badges', :as => :update_badges
       match "/badges/create_custom_badges" => 'badges#create_custom_badges', :via => :post, :as => :create_custom_badges
       match "/account" => 'merchants#show', :as => :account

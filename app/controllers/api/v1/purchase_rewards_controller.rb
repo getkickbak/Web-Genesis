@@ -305,6 +305,10 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           prize_trans_record.customer = @customer
           prize_trans_record.user = current_user
           prize_trans_record.save
+          if @customer.badge_reset_ts <= @venue.merchant.badges_update_ts
+            @customer.badge, @customer.next_badge_visits = Common.find_badge(@badges.to_a, @customer.visits)
+            @customer.badge_reset_ts = now
+          end
           next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
           if (@customer.next_badge_visits >= next_badge.visits) && (@customer.badge.id != next_badge.id)
             adjustment_ratio = APP_PROP["BADGE_REBATE_RATE"] / (100 - APP_PROP["BADGE_REBATE_RATE"])

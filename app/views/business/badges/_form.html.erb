@@ -1,0 +1,6 @@
+<%= simple_form_for @merchant, :url => update_badges_path, :html => {:novalidate => true} do |f| %>
+<%= f.simple_fields_for :badges do |builder| %>
+<%= render "badge_fields", :f => builder %>
+<% end %>
+<%= f.button :submit %>
+<% end %>

@@ -4,45 +4,12 @@ module Business
     
     def index
       authorize! :read, Badge
-      
-      if current_merchant.status == :pending
-        respond_to do |format|
-          format.html { redirect_to setup_path }
-        end
-      else
-        @merchant = current_merchant
-        @merchant.badges = Common.populate_badges(current_merchant, request.env['HTTP_USER_AGENT'])  
+     
+      @badges = Common.populate_badges(current_merchant, request.env['HTTP_USER_AGENT'])  
 
-        respond_to do |format|
-          format.html # index.html.erb
-        #format.xml  { render :xml => @merchants }
-        end
-      end
-    end
-    
-    def update_badges
-      authorize! :update, Badge
-      
-      @merchant = current_merchant
-      @merchant.badges = Common.populate_badges(current_merchant, request.env['HTTP_USER_AGENT'])
-      
-      begin
-        Badge.transaction do
-          current_merchant.badges_attributes = params[:merchant][:badges_attributes]
-          current_merchant.save
-          respond_to do |format|
-            format.html { redirect_to badges_path(:notice => t("business.badges.update_success")) }
-          #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
-          #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
-          end
-        end  
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        respond_to do |format|
-          format.html { render :action => "index" }
-          #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
-          #format.json { render :json => { :success => false } }
-        end
+      respond_to do |format|
+        format.html # index.html.erb
+      #format.xml  { render :xml => @merchants }
       end
     end
     
@@ -69,6 +36,7 @@ module Business
                 badge.custom_type = merchant_badge_type
                 current_merchant.badges.concat(badge)
               end
+              current_merchant.badges_update_ts = now
               current_merchant.save
               respond_to do |format|
                 format.html { redirect_to badges_path(:notice => t("business.badges.create_custom_badges_success")) }
@@ -95,6 +63,45 @@ module Business
         flash[:alert] = t("business.badges.create_custom_badges_failure")
         @merchant = current_merchant
         @merchant.badges = Common.populate_badges(current_merchant, request.env['HTTP_USER_AGENT'])
+        respond_to do |format|
+          format.html { render :action => "index" }
+          #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
+          #format.json { render :json => { :success => false } }
+        end
+      end
+    end
+    
+    def edit
+      authorize! :update, Badge
+            
+      @merchant = current_merchant
+      @merchant.badges = Common.populate_badges(current_merchant, request.env['HTTP_USER_AGENT'])  
+
+      respond_to do |format|
+        format.html # index.html.erb
+      #format.xml  { render :xml => @merchants }
+      end
+    end
+    
+    def update_badges
+      authorize! :update, Badge
+      
+      @merchant = current_merchant
+      @merchant.badges = Common.populate_badges(current_merchant, request.env['HTTP_USER_AGENT'])
+      
+      begin
+        Badge.transaction do
+          current_merchant.badges_attributes = params[:merchant][:badges_attributes]
+          current_merchant.badges_update_ts = Time.now
+          current_merchant.save
+          respond_to do |format|
+            format.html { redirect_to badges_path(:notice => t("business.badges.update_success")) }
+          #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
+          #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
+          end
+        end  
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
           format.html { render :action => "index" }
           #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
