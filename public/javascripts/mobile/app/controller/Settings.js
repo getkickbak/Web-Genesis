@@ -115,31 +115,16 @@ Ext.define('Genesis.controller.Settings',
       var viewport = me.getViewPortCntlr();
 
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-      Genesis.fb.facebook_onLogin(function(params)
+      Genesis.fb.facebook_onLogin(function(params, operation)
       {
-         Ext.Viewport.setMasked(false);
-         Customer['setUpdateFbLoginUrl']();
-         Customer.load(0,
+         if (!operation || operation.wasSuccessful())
          {
-            jsonData :
+            Ext.device.Notification.show(
             {
-            },
-            params :
-            {
-               user : Ext.encode(params)
-            },
-            callback : function(record, operation)
-            {
-               if (operation.wasSuccessful())
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Facebook Connect',
-                     message : me.fbLoggedInIdentityMsg(params['email'])
-                  });
-               }
-            }
-         });
+               title : 'Facebook Connect',
+               message : me.fbLoggedInIdentityMsg(params['email'])
+            });
+         }
       }, true);
    },
    onTermsTap : function(b, e)

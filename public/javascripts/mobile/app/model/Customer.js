@@ -135,14 +135,6 @@ Ext.define('Genesis.model.Customer',
          });
          this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/tokens/create_from_facebook' : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
       },
-      setUpdateFbLoginUrl : function()
-      {
-         this.getProxy().setActionMethods(
-         {
-            read : 'POST'
-         });
-         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/account/update_facebook_info');
-      },
       setLoginUrl : function()
       {
          this.getProxy().setActionMethods(
