@@ -20,6 +20,7 @@ Ext.define('Genesis.view.Document',
       }),
       {
          xtype : 'container',
+         tag : 'content',
          scrollable : 'vertical',
          padding : '0.7 0.8',
          defaultUnit : 'em',
@@ -29,11 +30,14 @@ Ext.define('Genesis.view.Document',
    disableAnimation : true,
    setHtml : function(html)
    {
-      var page = this.query('panel')[0];
+      var page = this.query('container[tag=content]')[0];
       var scroll = page.getScrollable();
 
-      scroll.getScroller().scrollTo(0, 0);
       page.setHtml(html);
+      if (scroll)
+      {
+         scroll.getScroller().scrollTo(0, 0);
+      }
    },
    createView : function()
    {
