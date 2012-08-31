@@ -49,7 +49,7 @@ Ext.define('Genesis.view.client.SettingsPage',
          items : [
          {
             xtype : 'textfield',
-            value : 'Version 1.0',
+            value : 'Version 1.01',
             readOnly : true
          },
          {
