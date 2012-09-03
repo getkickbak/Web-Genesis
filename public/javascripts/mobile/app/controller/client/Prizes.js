@@ -385,6 +385,8 @@ Ext.define('Genesis.controller.client.Prizes',
       var viewport = me.getViewPortCntlr();
       var info = metaData['reward_info'];
       var eligible = info['eligible_prize_id'] > 0;
+      var soundType, message;
+      
       var eligiblePrizeCallback = function(setFlag, viewsPopLength)
       {
          if ((me.flag |= setFlag) == 0x11)
