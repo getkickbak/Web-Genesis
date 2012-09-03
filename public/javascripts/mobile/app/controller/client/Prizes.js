@@ -393,38 +393,30 @@ Ext.define('Genesis.controller.client.Prizes',
             me.fireEvent('triggerCallbacksChain');
          }
       }
-      if (!eligible)
+      
+      if (info['prize_points'] > me.getMinPrizePts())
       {
-         //
-         // Play the prize winning music!
-         //
-         Genesis.controller.ControllerBase.playSoundFile(//
-         viewport.sound_files['losePrizeSound'], Ext.bind(eligiblePrizeCallback, me, [0x01, viewsPopLength]));
-
-         Ext.device.Notification.show(
-         {
-            title : me.scanPlayTitle,
-            message : me.gotMinPrizePtsMsg(info['prize_points']),
-            callback : Ext.bind(eligiblePrizeCallback, me, [0x10, viewsPopLength])
-         });
+         soundType = 'winPrizeSound';
+         message = me.wonPrizeMsg(info);
+         
+         Ext.device.Notification.vibrate();
       }
       else
       {
-         //
-         // Play the prize winning music!
-         //
-         Genesis.controller.ControllerBase.playSoundFile(//
-         viewport.sound_files['winPrizeSound'], //
-         Ext.bind(eligiblePrizeCallback, me, [0x01, viewsPopLength]));
-
-         Ext.device.Notification.vibrate();
-         Ext.device.Notification.show(
-         {
-            title : me.scanPlayTitle,
-            message : me.wonPrizeMsg(info),
-            callback : Ext.bind(eligiblePrizeCallback, me, [0x10, viewsPopLength])
-         });
+         soundType = 'losePrizeSound';
+         message = me.gotMinPrizePtsMsg(info['prize_points']);
       }
+      //
+      // Play the prize winning music!
+      //
+      Genesis.controller.ControllerBase.playSoundFile(//
+      viewport.sound_files[soundType], Ext.bind(eligiblePrizeCallback, me, [0x01, viewsPopLength]));
+      Ext.device.Notification.show(
+      {
+         title : me.scanPlayTitle,
+         message : message,
+         callback : Ext.bind(eligiblePrizeCallback, me, [0x10, viewsPopLength])
+      });
 
       return true;
    },
