@@ -31,6 +31,7 @@ module MerchantPayments
         }
         invoice = Invoice.create(merchant, invoice_info)
         MerchantMailer.invoice_email(invoice).deliver
+        MerchantMailer.invoice_email(invoice, "system").deliver
       else
         logger.info("Failed to bill Merchant(#{merchant.name}, Amount(#{amount}) at #{now.strftime("%a %m/%d/%y %H:%M %Z")})")
       end  

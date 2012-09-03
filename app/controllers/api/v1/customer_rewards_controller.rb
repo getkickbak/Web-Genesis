@@ -48,16 +48,16 @@ class Api::V1::CustomerRewardsController < ApplicationController
         acquired = @mutex.acquire
         @customer.reload
         
-        if @reward.quantity_limited && (@reward.quantity_count >= @reward.quantity)
-          logger.info("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), quantity limited")
+        if @reward.time_limited && @reward.expiry_date < Date.today
+          logger.info("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), time limited")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => (t("api.customer_rewards.no_longer_available") % [@reward.mode == :reward ? t("api.reward") : t("api.prize")]).split('\n') } }
           end
           return
         end
-        if @reward.time_limited && @reward.expiry_date < Date.today
-          logger.info("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), time limited")
+        if @reward.quantity_limited && (@reward.quantity_count >= @reward.quantity)
+          logger.info("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), quantity limited")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => (t("api.customer_rewards.no_longer_available") % [@reward.mode == :reward ? t("api.reward") : t("api.prize")]).split('\n') } }
