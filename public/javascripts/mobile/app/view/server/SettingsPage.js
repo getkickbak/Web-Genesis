@@ -32,7 +32,7 @@ Ext.define('Genesis.view.server.SettingsPage',
          items : [
          {
             xtype : 'textfield',
-            value : 'Version 1.01',
+            value : 'Version 1.0.1',
             readOnly : true
          }/*,
           {

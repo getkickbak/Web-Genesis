@@ -116,7 +116,8 @@ Genesis.fb =
 {
    fbScope : 'email,user_birthday,publish_stream,read_friendlists,publish_actions,offline_access',
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
-   fbConnectReqestMsg : 'Would you like to update friends on Facebook?',
+   fbConnectReqestMsg : 'Would you like to update your Facebook Timeline?',
+   fbConnectReconnectMsg : 'Please confirm to Reconnect to Facebook',
    connectingToFBMsg : 'Connecting to Facebook ...',
    friendsRetrieveErrorMsg : 'You cannot retrieve your Friends List from Facebook. Login and Try Again.',
    /*
@@ -308,24 +309,48 @@ Genesis.fb =
       {
          if (!supress)
          {
-            Ext.device.Notification.show(
+            if (Genesis.db.getLocalDB()['enableFB'])
             {
-               title : 'Facebook Connect',
-               message : message || me.fbConnectReqestMsg,
-               buttons : ['OK', 'Cancel'],
-               callback : function(btn)
+               Ext.device.Notification.show(
                {
-                  if (btn.toLowerCase() == 'ok')
+                  title : 'Facebook Connect',
+                  message : message || me.fbConnectReconnectMsg,
+                  buttons : ['Confirm', 'Cancel'],
+                  callback : function(btn)
                   {
-                     Ext.Viewport.setMasked(
+                     if (btn.toLowerCase() == 'confirm')
                      {
-                        xtype : 'loadmask',
-                        message : me.connectingToFBMsg
-                     });
-                     me.fbLogin(cb, supress);
+                        Ext.Viewport.setMasked(
+                        {
+                           xtype : 'loadmask',
+                           message : me.connectingToFBMsg
+                        });
+                        me.fbLogin(cb, supress);
+                     }
                   }
-               }
-            });
+               });
+            }
+            else
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Facebook Connect',
+                  message : message || me.fbConnectReqestMsg,
+                  buttons : ['OK', 'Cancel'],
+                  callback : function(btn)
+                  {
+                     if (btn.toLowerCase() == 'ok')
+                     {
+                        Ext.Viewport.setMasked(
+                        {
+                           xtype : 'loadmask',
+                           message : me.connectingToFBMsg
+                        });
+                        me.fbLogin(cb, supress);
+                     }
+                  }
+               });
+            }
          }
          else
          {
@@ -422,6 +447,10 @@ Genesis.fb =
                      },
                      callback : function(record, operation)
                      {
+                        if (operation.wasSuccessful())
+                        {
+                           Genesis.db.setLocalDBAttrib('enableFB', true);
+                        }
                         if (cb)
                         {
                            cb(params, operation);

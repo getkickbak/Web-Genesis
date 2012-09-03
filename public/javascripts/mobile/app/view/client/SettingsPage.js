@@ -31,11 +31,20 @@ Ext.define('Genesis.view.client.SettingsPage',
          //instructions : 'Tell us all about yourself',
          items : [
          {
-            xtype : 'listfield',
-            iconCls : 'facebook',
+            xtype : 'togglefield',
             name : 'facebook',
-            value : 'Facebook'
+            label : 'Facebook',
+            labelWidth : (!Genesis.constants.isNative()) ? '65%' : '57.5%',
+            value : 0
          },
+         /*
+          {
+          xtype : 'listfield',
+          iconCls : 'facebook',
+          name : 'facebook',
+          value : 'Facebook'
+          },
+          */
          {
             xtype : 'listfield',
             name : 'changepassword',
@@ -49,7 +58,7 @@ Ext.define('Genesis.view.client.SettingsPage',
          items : [
          {
             xtype : 'textfield',
-            value : 'Version 1.01',
+            value : 'Version 1.0.1',
             readOnly : true
          },
          {
