@@ -162,7 +162,7 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    upgradeBadgeEmailMsg : function(badge)
    {
-      return ('Your status have been upgraded to ' + badge.toUpperCase() + ' at ' + venueName + '!');
+      return ('I\'ve been promoted to ' + badge.toUpperCase() + ' status at ' + venueName + '!');
    },
    gotMinPrizePtsMsg : function(points)
    {
@@ -256,9 +256,10 @@ Ext.define('Genesis.controller.client.Prizes',
          'Post was not published to Facebook.');
       }
    },
-   updatingBadgeOnFacebook : function(badge)
+   updatingBadgeOnFacebook : function(earnprize)
    {
       var me = this;
+      var badgeURL = earnprize.get('photo')['thumbnail_ios_medium'];
       try
       {
          var viewport = me.getViewPortCntlr();
@@ -268,7 +269,7 @@ Ext.define('Genesis.controller.client.Prizes',
          var name = venue.get('name');
          var link = wsite[wsite.length - 1] || site;
          var desc = venue.get('description').trunc(256);
-         var message = me.upgradeBadgeEmailMsg(badge.get('type').display_value, venue.get('name'));
+         var message = me.upgradeBadgeEmailMsg(earnprize.get('title'), venue.get('name'));
 
          console.log('Posting Badge Promotion to Facebook ...' + '\n' + //
          'Name: ' + name + '\n' + //
@@ -283,7 +284,7 @@ Ext.define('Genesis.controller.client.Prizes',
             link : venue.get('website') || site,
             caption : link,
             description : desc,
-            picture : Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_medium_url'),
+            picture : badgeURL,
             message : message
          }, function(response)
          {
@@ -370,6 +371,7 @@ Ext.define('Genesis.controller.client.Prizes',
                   'merchant' : null
                });
 
+               Genesis.controller.ControllerBase.playSoundFile(me.getViewPortCntlr().sound_files['promoteSound']);
                me.redirectTo('badgeDetail');
             }
          });
