@@ -42,10 +42,18 @@ class Api::V1::UsersController < ApplicationController
       User.transaction do
         user_info = JSON.parse(params[:user], { :symbolize_names => true })
         facebook_id = user_info[:facebook_id]
-        facebook_email = user_info[:facebook_email]
+        facebook_email = user_info[:facebook_email] || ""
         existing_user = User.first(:facebook_id => facebook_id)
         if existing_user.nil? || (existing_user.id == current_user.id)
           @user.update_without_password(:facebook_id => facebook_id, :facebook_email => facebook_email, :update_ts => Time.now)
+          if params[:gender] && params[:birthday]
+            profile_info = {
+              :gender => params[:gender],
+              :birthday => params[:birthday]
+            }
+            @user.profile.update(profile_info)
+            @user.save
+          end
           respond_to do |format|
             #format.xml  { head :ok }
             format.json { render :json => { :success => true } }

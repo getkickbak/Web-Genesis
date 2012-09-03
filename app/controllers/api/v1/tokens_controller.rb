@@ -91,16 +91,18 @@ class Api::V1::TokensController < ApplicationController
     
     begin
       User.transaction do
-        profile_info = {
-          :gender => params[:gender],
-          :birthday => params[:birthday]
-        }
         if facebook_id
-          @user.update_without_password(:facebook_id => facebook_id, :facebook_email => params[:facebook_email])
+          @user.update_without_password(:facebook_id => facebook_id, :facebook_email => params[:facebook_email] || "", :update_ts => Time.now)
+          if params[:gender] && params[:birthday]
+            profile_info = {
+              :gender => params[:gender],
+              :birthday => params[:birthday]
+            }
+            @user.profile.update(profile_info)
+          end
+          @user.ensure_authentication_token!
+          @user.save!
         end
-        @user.profile.update(profile_info)
-        @user.ensure_authentication_token!
-        @user.save!
         start = params[:start].to_i
         max = params[:limit].to_i
         @results = Customer.find(@user.id, start, max) 
