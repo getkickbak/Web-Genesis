@@ -1,3 +1,5 @@
+@import 'form-sliders';
+
 //------------------------------------------------------------------------------
 // ListField
 //------------------------------------------------------------------------------
@@ -60,8 +62,20 @@
 .x-field {
    background : $Grey;
 }
-.x-form-label {
+.x-label-align-top .x-form-label {
    @include custom-linear-gradient($BlueStart 10%, $BlueEnd 85%, top);
    text-shadow: #000 0 1px 1px;
    color : white;
+}
+.x-label-align-left .x-form-label {
+   background : transparent;
+   text-shadow : none;
+   color : inherit;
+   padding: .4em;
+   min-height : $form-field-height;
+   line-height : $form-field-height;
+   span {
+      font-size: inherit;
+      font-weight: normal;
+   }
 }

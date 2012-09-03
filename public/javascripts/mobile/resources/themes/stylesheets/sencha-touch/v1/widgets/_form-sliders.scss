@@ -1,0 +1,44 @@
+@if $basic-slider {
+} @else {
+   .x-thumb {
+      // The actual thumb
+      &:before {
+         border: 1px solid darken($GreyStart, 15%);
+         @include background-gradient($GreyStart, 'recessed');
+      }
+      &.x-dragging {
+        &:before {
+          @include background-gradient(darken($GreyStart, 5%));
+        }
+      }
+   }
+   // Create the slider track
+   .x-slider:after {
+      @include background-gradient($GreyStart, 'recessed');
+   }
+   .x-toggle {
+      width: $form-thumb-size * 2.5;
+      border: 1px solid darken($GreyEnd, 15%);
+      @include background-gradient($GreyStart, 'recessed');
+      .x-toggle-inner:after {
+         top:.4em;
+         position:absolute;
+         font-weight:bold;
+      }
+   }
+   .x-toggle-on {
+      @include background-gradient($form-light, 'recessed');
+      color : #FFF;
+      .x-toggle-inner:after {
+         left:$panelGap*1.5;
+         content : 'ON';
+      }
+   }
+   .x-toggle-off {
+      color : darken($GreyEnd, 15%);
+      .x-toggle-inner:after {
+         right:$panelGap*0.75;
+         content : 'OFF';
+      }
+   }
+}

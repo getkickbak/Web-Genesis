@@ -79,9 +79,9 @@ Ext.define('Genesis.controller.Settings',
          {
             clearicontap : 'onAboutUsTap'
          },
-         'clientsettingspageview listfield[name=facebook]' :
+         'clientsettingspageview togglefield[name=facebook]' :
          {
-            clearicontap : 'onFacebookTap'
+            change : 'onFacebookChange'
          },
          'clientsettingspageview listfield[name=changepassword]' :
          {
@@ -109,23 +109,63 @@ Ext.define('Genesis.controller.Settings',
          }
       });
    },
-   onFacebookTap : function(b, e)
+   onFacebookChange : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
+      var db = Genesis.db.getLocalDB();
 
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-      Genesis.fb.facebook_onLogin(function(params, operation)
+      if (newValue == 1)
       {
-         if (!operation || operation.wasSuccessful())
+         Genesis.fb.facebook_onLogin(function(params, operation)
          {
-            Ext.device.Notification.show(
+            if (!operation || operation.wasSuccessful())
             {
-               title : 'Facebook Connect',
-               message : me.fbLoggedInIdentityMsg(params['email'])
-            });
-         }
-      }, true);
+               Ext.device.Notification.show(
+               {
+                  title : 'Facebook Connect',
+                  message : me.fbLoggedInIdentityMsg(params['email'])
+               });
+            }
+            else
+            {
+               toggle.toggle();
+            }
+         }, true);
+      }
+      else
+      if (db['enableFB'])
+      {
+         console.debug("Cancelling Facebook Login ...");
+         var params =
+         {
+            facebook_id : 0
+         };
+
+         Account['setUpdateFbLoginUrl']();
+         Account.load(0,
+         {
+            jsonData :
+            {
+            },
+            params :
+            {
+               user : Ext.encode(params)
+            },
+            callback : function(record, operation)
+            {
+               if (operation.wasSuccessful())
+               {
+                  db['enableFB'] = false;
+                  db['currFbId'] = 0;
+                  delete db['fbAccountId'];
+                  delete db['fbResponse'];
+                  Genesis.db.setLocalDB(db);
+               }
+            }
+         });
+      }
    },
    onTermsTap : function(b, e)
    {
@@ -291,7 +331,14 @@ Ext.define('Genesis.controller.Settings',
    // --------------------------------------------------------------------------
    clientSettingsPage : function()
    {
-      this.openPage('client');
+      var me = this;
+      var form = me.getClientSettingsPage();
+      form.setValues(
+      {
+         facebook : (Genesis.db.getLocalDB()['enableFB']) ? 1 : 0
+      });
+
+      me.openPage('client');
    },
    serverSettingsPage : function()
    {
