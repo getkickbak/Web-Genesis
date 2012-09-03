@@ -544,14 +544,25 @@ Ext.define('Genesis.controller.Viewport',
          this.sound_files =
          {
          };
-         var soundList = [//
-         ['rouletteSpinSound', 'roulette_spin_sound', 'Media'], //
-         ['winPrizeSound', 'win_prize_sound', 'Media'], //
-         ['losePrizeSound', 'lose_prize_sound', 'Media'], //
-         ['promoteSound', 'promote_sound', 'FX'], //
-         ['clickSound', 'click_sound', 'FX'], //
-         //['refreshListSound', 'refresh_list_sound', 'FX'], //
-         ['beepSound', 'beep.wav', 'FX']];
+         var soundList;
+         if (merchantMode)
+         {
+            soundList = [//
+            ['clickSound', 'click_sound', 'FX'], //
+            //['refreshListSound', 'refresh_list_sound', 'FX'], //
+            ['beepSound', 'beep.wav', 'FX']];
+         }
+         else
+         {
+            soundList = [//
+            ['rouletteSpinSound', 'roulette_spin_sound', 'Media'], //
+            ['winPrizeSound', 'win_prize_sound', 'Media'], //
+            ['losePrizeSound', 'lose_prize_sound', 'Media'], //
+            ['promoteSound', 'promote_sound', 'FX'], //
+            ['clickSound', 'click_sound', 'FX'], //
+            //['refreshListSound', 'refresh_list_sound', 'FX'], //
+            ['beepSound', 'beep.wav', 'FX']];
+         }
 
          for (var i = 0; i < soundList.length; i++)
          {
