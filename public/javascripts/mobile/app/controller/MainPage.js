@@ -460,6 +460,7 @@ Ext.define('Genesis.controller.MainPage',
             }
             else
             {
+               Genesis.db.setLocalDBAttrib('enableFB', true);
                me.persistSyncStores('CustomerStore');
                me.fireEvent('updatemetadata', Customer.getProxy().getReader().metaData);
             }
