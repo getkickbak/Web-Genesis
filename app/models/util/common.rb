@@ -159,7 +159,7 @@ class Common
 
   def self.get_news(venue)
     newsfeed = []
-    promotions = Promotion.all(:merchant => venue.merchant)
+    promotions = Promotion.all(Promotion.merchant.id => venue.merchant.id)
     promotions.each do |promotion|
       newsfeed << News.new(
       "",

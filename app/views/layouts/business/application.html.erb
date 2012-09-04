@@ -133,8 +133,8 @@
             <p>Test Modal</p>
          </div>
          <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">Close</a>
-            <a href="#" class="btn btn-primary">OK</a>
+            <a href="#" class="btn" data-dismiss="modal modal-cancel">Close</a>
+            <a href="#" class="btn btn-primary modal-ok">OK</a>
          </div>
       </div>
       <!-- Le javascript
@@ -169,19 +169,63 @@
                }
             }, 20);
          }
-
-         $('#modalPopup').modal(
+		 var popUp = $('#modalPopup');
+		 var element;
+         popUp.modal(
          {
             backdrop : true,
             keyboard : true,
             show : false
          });
 
-         $.rails.confirm = function(message)
+         $("#modalPopup a.modal-cancel").click(function (e)
+         {
+            popUp.toggle(false);
+         });
+         
+         $("#modalPopup a.modal-ok").click(function (e)
+         {
+            popUp.toggle(false);
+
+            // actually handle the element. This has to happen here since it isn't an *actual* modal dialog.
+            // It uses the element to continue proper execution.
+            $.rails.handleLink(element);
+
+            return false;
+         });
+         
+         $.rails.confirm = function(message, elem)
          {
             $("#modalPopup .modal-body p").html(message);
-            $('#modalPopup').modal('show');
+            popUp.modal('show');
+            element = elem;
          }
+         $.rails.allowAction = function(element)
+         {
+            var message = element.data('confirm'),
+            answer = false, callback;
+            if (!message) { return true; }
+
+            if ($.rails.fire(element, 'confirm'))
+            {
+               // le extension.
+               answer = $.rails.confirm(message, element);
+               callback = $.rails.fire(element, 'confirm:complete', [answer]);
+            }
+            return answer && callback;
+         };
+         $.rails.handleLink = function(link)
+         {
+            if (link.data('remote') !== undefined)
+            {
+               $.rails.handleRemote(link);
+            } else if (link.data('method'))
+            {
+               $.rails.handleMethod(link);
+            }
+            return false;
+         };
+
       </script>
       <%= yield :script %>
    </body>
