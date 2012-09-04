@@ -9,10 +9,17 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       else
         @venue = Venue.get(@venue_id) || not_found
       end
-    else  
-      logger.debug("data: #{params[:data]}")
-      encrypted_data = params[:data].split('$')
-      @venue = Venue.get(encrypted_data[0]) || not_found
+    else
+      if current_user.role == "test"
+        if @venue_id.nil?
+          @venue = Venue.first(:offset => 0, :limit => 1)
+        else
+          @venue = Venue.get(@venue_id) || not_found
+        end
+      else
+        encrypted_data = params[:data].split('$')
+        @venue = Venue.get(encrypted_data[0]) || not_found
+      end  
     end
     
     authorized = false
@@ -40,7 +47,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         if (decrypted_data["type"] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now) 
           if EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
             amount = decrypted_data["amount"].to_f
-            logger.debug("Set authorized to true")
+            #logger.debug("Set authorized to true")
             authorized = true
           end
         else
