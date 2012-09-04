@@ -31,6 +31,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       {
          model : 'Genesis.model.CustomerReward',
          autoLoad : false,
+         /*
          grouper :
          {
             groupFn : function(record)
@@ -38,6 +39,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
                return record.get('points') + ' Points';
             }
          },
+         */
          sorters : [
          {
             property : 'points',
