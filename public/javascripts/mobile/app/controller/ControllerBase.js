@@ -534,7 +534,7 @@ Ext.define('Genesis.controller.ControllerBase',
          // Short Cut to earn points, customer object wil be given by server
          //
          // Find venueId from metaData or from DataStore
-         var new_venueId = metaData['venue_id'] || cestore.first().getId();
+         var new_venueId = metaData['venue_id'] || ((cestore.first()) ? cestore.first().getId() : 0);
          // Find venue from DataStore or current venue info
          venue = cestore.getById(new_venueId) || viewport.getVenue();
 

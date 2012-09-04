@@ -46,7 +46,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
             {
                isVisible : function(values)
                {
-                  return ((values['title']) ? '' : 'x-item-hidden');
+                  return ((values['Merchant']) ? '' : 'x-item-hidden');
                },
                getPoints : function(values)
                {
@@ -159,16 +159,19 @@ Ext.define('Genesis.view.widgets.RedeemItem',
       //var refresh = this.query("button[tag=refresh]")[0];
       //var verify = this.query("button[tag=verify]")[0];
       var itemPhoto = this.query("component[tag=itemPhoto]")[0];
+      var title = this.query("component[tag=title]")[0];
+      var points = this.query("component[tag=itemPoints]")[0];
 
       //
       // Hide Merchant Information if it's missing
       //
       if (data['Merchant'])
       {
-         //refresh.hide();
-         //verify.hide();
          info.setData(data);
          info.element.setVisibility(true);
+         //refresh.hide();
+         //verify.hide();         
+         points.hide();
       }
       else
       {
@@ -179,19 +182,16 @@ Ext.define('Genesis.view.widgets.RedeemItem',
          //
          //refresh[reward['photo'] ? 'show' : 'hide']();
          //verify[reward['photo'] ? 'hide' : 'show']();
+         points.setData(data);
+         points.show();
       }
-      var title = this.query("component[tag=title]")[0];
-      var points = this.query("component[tag=itemPoints]")[0];
       if (reward['title'])
       {
-         points.hide();
          title.setData(reward);
          title.element.setVisibility(true);
       }
       else
       {
-         points.setData(data);
-         points.show();
          title.element.setVisibility(false);
       }
       itemPhoto.element.setStyle((Ext.isString(photo)) ?
