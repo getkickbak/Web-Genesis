@@ -51,6 +51,16 @@ Ext.define('Genesis.view.server.SettingsPage',
           value : 'About Us'
           }
           */]
+      },
+      {
+         xtype : 'fieldset',
+         title : 'Merchant Device',
+         items : [
+         {
+            xtype : 'textfield',
+            tag : 'merchantDevice',
+            readOnly : true
+         }]
       }]
    },
    cleanView : Ext.emptyFn,

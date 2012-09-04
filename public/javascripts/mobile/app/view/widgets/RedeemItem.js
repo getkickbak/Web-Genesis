@@ -46,7 +46,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
             {
                isVisible : function(values)
                {
-                  return ((data['Merchant']) ? '' : 'x-item-hidden');
+                  return ((values['Merchant']) ? '' : 'x-item-hidden');
                },
                getPoints : function(values)
                {

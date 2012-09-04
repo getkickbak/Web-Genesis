@@ -43,7 +43,8 @@ Ext.define('Genesis.controller.Settings',
             selector : 'multipartdocumentview',
             autoCreate : true,
             xtype : 'multipartdocumentview'
-         }
+         },
+         merchantDevice : 'serversettingspageview fieldset textfield[tag=merchantDevice]'
       },
       control :
       {
@@ -106,6 +107,10 @@ Ext.define('Genesis.controller.Settings',
          'serversettingspageview listfield[name=aboutus]' :
          {
             clearicontap : 'onAboutUsTap'
+         },
+         serverSettingsPage :
+         {
+            activate : 'onServerActivate'
          }
       });
    },
@@ -325,6 +330,10 @@ Ext.define('Genesis.controller.Settings',
 
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       me.redirectTo('password_change');
+   },
+   onServerActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      this.getMerchantDevice().setValue(Genesis.constants.getPrivKey()['venue']);
    },
    // --------------------------------------------------------------------------
    // Page Navigation
