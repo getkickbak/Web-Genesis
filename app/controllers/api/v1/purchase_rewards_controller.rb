@@ -10,6 +10,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         @venue = Venue.get(@venue_id) || not_found
       end
     else  
+      logger.debug("data: #{params[:data]}")
       encrypted_data = params[:data].split('$')
       @venue = Venue.get(encrypted_data[0]) || not_found
     end
@@ -24,7 +25,10 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       @venue.eager_load_type = @venue.type
       @venue.merchant.eager_load_type = @venue.merchant.type
     end
-    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
+    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
+    if @customer.nil?
+      @customer = Customer.create(@venue.merchant, current_user)
+    end
     authorize! :update, @customer
     
     logger.info("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
