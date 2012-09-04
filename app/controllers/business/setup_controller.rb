@@ -74,7 +74,7 @@ module Business
     end
     
     def has_badges?
-      MerchantToBadge.count(:merchant => current_merchant) > 0 ? true : false  
+      MerchantToBadge.count(MerchantToBadge.merchant.id => current_merchant.id) > 0 ? true : false  
     end
     
     def has_venues?

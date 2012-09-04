@@ -64,8 +64,8 @@
 	</div>
 	<div class="challenge_desc">
 		<span>and their friend will get</span>
-		<input id="challenge_referral_data_reward_amount" name="challenge[referral_data][referral_reward_amount]" type="text" class="numfield" placeholder=""/>
-		<input disabled="disabled" id="challenge_referral_data_referral_points" name="challenge[referral_data][referral_points]" type="text"/>
+		<input id="challenge_referral_data_referral_reward_amount" name="challenge[referral_data][referral_reward_amount]" type="text" class="numfield" placeholder=""/>
+		<input class="hidden" id="challenge_referral_data_referral_points" name="challenge[referral_data][referral_points]" type="hidden">
 		<span>worth of points</span>
 	</div>
 	<% elsif @challenge.type && @challenge.type.value == 'custom' %>

@@ -22,7 +22,7 @@ module Business
             @reward_model.update(params[:reward_model])
             msg = t("business.reward_model.update_success")
           end
-          rewards = CustomerReward.all(:merchant => current_merchant)
+          rewards = CustomerReward.all(CustomerReward.merchant.id => current_merchant.id)
           rewards.each do |reward|
             reward.type_id = reward.type.id
             if reward.mode == :reward
@@ -32,7 +32,7 @@ module Business
             end
             reward.save
           end
-          challenges = Challenge.all(:merchant => current_merchant)
+          challenges = Challenge.all(Challenge.merchant.id => current_merchant.id)
           challenges.each do |challenge|
             challenge.type_id = challenge.type.id
             challenge.points = (challenge.reward_amount / @reward_model.price_per_point / @reward_model.rebate_rate * 100).to_i
