@@ -14,33 +14,6 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       encrypted_data = params[:data].split('$')
       @venue = Venue.get(encrypted_data[0]) || not_found
     end
-    if @venue.status != :active
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
-      end
-      return  
-    end
-    if @venue_id.nil?
-      @venue.eager_load_type = @venue.type
-      @venue.merchant.eager_load_type = @venue.merchant.type
-    end
-    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
-    if @customer.nil?
-      @customer = Customer.create(@venue.merchant, current_user)
-    end
-    authorize! :update, @customer
-    
-    logger.info("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
-    Time.zone = @venue.time_zone
-    
-    if @venue.merchant.will_terminate && Date.today > (@venue.merchant.terminate_date - 30)
-      respond_to do |format|
-        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.program_termination").split('\n') } }
-      end  
-      return
-    end
     
     authorized = false
     invalid_code = false
@@ -83,6 +56,34 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         return
       end
     end    
+      
+    if @venue.status != :active
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
+      end
+      return  
+    end
+    if @venue_id.nil?
+      @venue.eager_load_type = @venue.type
+      @venue.merchant.eager_load_type = @venue.merchant.type
+    end
+    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
+    if @customer.nil?
+      @customer = Customer.create(@venue.merchant, current_user)
+    end
+    authorize! :update, @customer
+    
+    logger.info("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
+    Time.zone = @venue.time_zone
+    
+    if @venue.merchant.will_terminate && Date.today > (@venue.merchant.terminate_date - 30)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.program_termination").split('\n') } }
+      end  
+      return
+    end
       
     @badges = Common.populate_badges(@venue.merchant, request.env['HTTP_USER_AGENT'])
       
