@@ -25,8 +25,8 @@ class Api::V1::ChallengesController < ApplicationController
       end
       return  
     end
-    @challenge = Challenge.first(:id => params[:id], Challenge.merchant.id => @venue.merchant.id) || not_found
-    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
+    @challenge = Challenge.first(:id => params[:id], :merchant => @venue.merchant) || not_found
+    @customer = Customer.first(:merchant => @venue.merchant, :user => current_user) || not_found
     authorize! :update, @customer
     
     begin
@@ -64,8 +64,8 @@ class Api::V1::ChallengesController < ApplicationController
       end
       return  
     end
-    @challenge = Challenge.first(:id => params[:id], Challenge.merchant.id => @venue.merchant.id) || not_found
-    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
+    @challenge = Challenge.first(:id => params[:id], :merchant => @venue.merchant) || not_found
+    @customer = Customer.first(:merchant => @venue.merchant, :user => current_user) || not_found
     authorize! :update, @customer
     
     logger.info("Complete Challenge(#{@challenge.id}), Type(#{@challenge.type.value}), Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
@@ -208,7 +208,7 @@ class Api::V1::ChallengesController < ApplicationController
       return  
     end
     already_customer = false
-    @customer = Customer.first(Customer.user.id => current_user.id, Customer.merchant.id => merchant.id)
+    @customer = Customer.first(:user => current_user, :merchant => merchant)
     if @customer.nil?
       @customer = Customer.create(merchant, current_user)
     elsif @customer.visits > 1

@@ -13,7 +13,7 @@ class Api::V1::CustomersController < ApplicationController
   def show_jackpot_winners
     authorize! :read, Venue
     
-    winner_records = EarnPrizeRecord.all(:fields => [:user_id, :points, :created_ts], EarnPrizeRecord.merchant.id => params[:merchant_id], :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+    winner_records = EarnPrizeRecord.all(:fields => [:user_id, :points, :created_ts], :merchant_id => params[:merchant_id], :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     winner_ids = []
     winner_records.each do |winner_record|
       winner_ids << winner_record[:user_id]
@@ -32,7 +32,7 @@ class Api::V1::CustomersController < ApplicationController
   end
   
   def transfer_points
-    @customer = Customer.first(Customer.user.id => current_user.id, Customer.merchant.id => params[:merchant_id]) || not_found
+    @customer = Customer.first(:user => current_user, :merchant_id => params[:merchant_id]) || not_found
     if @customer.merchant.status != :active
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -112,7 +112,7 @@ class Api::V1::CustomersController < ApplicationController
       end
       return  
     end
-    @customer = Customer.first(Customer.user.id => current_user.id, Customer.merchant.id => merchant.id)
+    @customer = Customer.first(:user => current_user, :merchant => merchant)
     if @customer.nil?
       @customer = Customer.create(merchant, current_user)
     end

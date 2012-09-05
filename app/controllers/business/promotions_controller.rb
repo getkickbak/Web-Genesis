@@ -5,7 +5,7 @@ module Business
 
     def index
       authorize! :read, Promotion
-      @promotions = Promotion.all(Promotion.merchant.id => current_merchant.id)
+      @promotions = Promotion.all(:merchant => current_merchant)
 
       respond_to do |format|
         format.html # index.html.erb

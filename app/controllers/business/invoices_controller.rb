@@ -5,7 +5,7 @@ module Business
     
     def index
       authorize! :read, Invoice
-      @invoices = Invoice.all(Invoice.merchant.id => current_merchant.id)
+      @invoices = Invoice.all(:merchant => current_merchant)
 
       respond_to do |format|
         format.html # index.html.erb

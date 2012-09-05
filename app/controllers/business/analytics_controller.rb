@@ -63,7 +63,7 @@ module Business
             GROUP BY created_date", EarnRewardRecord::Types.index(:purchase)+1, current_merchant.id, two_months_ago
       )
       
-      challenges = Challenge.all(Challenge.merchant.id => current_merchant.id)
+      challenges = Challenge.all(:merchant => current_merchant)
       #challenge_records = { :names => [], :data => [] }
       challenge_records = []
       challenges_total = []
@@ -193,18 +193,18 @@ module Business
     
     def get_customers_total(date)
       if date.nil?
-        Customer.count(Customer.merchant.id => current_merchant.id)
+        Customer.count(:merchant => current_merchant)
       else
-        Customer.count(Customer.merchant.id => current_merchant.id, :created_ts.gte => date)
+        Customer.count(:merchant => current_merchant, :created_ts.gte => date)
       end  
     end
     
     def get_purchases_total(venue, date)
-      EarnRewardRecord.count(:type => :purchase, EarnRewardRecord.merchant.id => current_merchant.id, :created_ts.gte => date)
+      EarnRewardRecord.count(:type => :purchase, :merchant => current_merchant, :created_ts.gte => date)
     end
     
     def get_revenue_total(venue, date)
-      EarnRewardRecord.sum(:amount, :type => :purchase, EarnRewardRecord.merchant.id => current_merchant.id, :created_ts.gte => date)
+      EarnRewardRecord.sum(:amount, :type => :purchase, :merchant => current_merchant, :created_ts.gte => date)
     end
   end
 end

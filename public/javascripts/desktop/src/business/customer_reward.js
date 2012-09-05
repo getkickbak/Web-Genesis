@@ -23,6 +23,7 @@ $(document).ready($(function() {
 	$("input.date_picker").datepicker({
 		dateFormat : "yy-mm-dd"
 	});
+	$("#customer_reward_mode").change(set_fields);
 	$("#customer_reward_price").focusout(set_fields);
 	$("#customer_reward_quantity_limited").click(function() {
 		if (this.checked) {

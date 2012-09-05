@@ -6,7 +6,7 @@ module Business
       authorize! :read, CustomerReward
       
       @venues = current_merchant.venues
-      @customer_rewards = CustomerReward.all(CustomerReward.merchant.id => current_merchant.id)
+      @customer_rewards = CustomerReward.all(:merchant => current_merchant)
       @display = params[:display] || "default"
       @venue = Venue.get(params[:venue_id]) || @venues.first
       

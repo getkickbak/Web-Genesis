@@ -42,8 +42,8 @@ class Customer
   end
   
   def self.find(user_id, start, max)
-    count = Customer.count(Customer.user.id => user_id)
-    customers = Customer.all(Customer.user.id => user_id, :status => :active, :order => [ :created_ts.desc ], :offset => start, :limit => max)
+    count = Customer.count(:user_id => user_id)
+    customers = Customer.all(:user_id => user_id, :status => :active, :order => [ :created_ts.desc ], :offset => start, :limit => max)
     merchant_ids = []
     customers.each do |customer|
       merchant_ids << customer.merchant.id

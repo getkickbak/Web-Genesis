@@ -14,7 +14,7 @@ module MerchantPayments
       logger.info("Begin billing Merchant(#{merchant.name} at #{now.strftime("%a %m/%d/%y %H:%M %Z")})")
       beginning_of_month = 1.month.ago.beginning_of_month
       end_of_month = 1.month.ago.end_of_month
-      trans_amount = EarnRewardRecord.sum(:amount, EarnRewardRecord.merchant.id => merchant.id, :type => :purchase, :created_ts.gte => (beginning_of_month..end_of_month)) || 0
+      trans_amount = EarnRewardRecord.sum(:amount, :merchant => merchant, :type => :purchase, :created_ts.gte => (beginning_of_month..end_of_month)) || 0
       trans_fee = TransactionRecord.sum(:fee, :type => :earn_points, :created_ts.gte => (beginning_of_month..end_of_month)) || 0
       amount = APP_PROP["MONTHLY_FEE"] + trans_fees
       result = BILLING_GATEWAY.purchase(amount, merchant.id)

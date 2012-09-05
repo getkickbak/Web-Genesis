@@ -25,8 +25,8 @@ class Api::V1::CustomerRewardsController < ApplicationController
       end
       return  
     end
-    @reward = CustomerReward.first(:id => params[:id], CustomerReward.merchant.id => @venue.merchant.id) || not_found
-    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id) || not_found
+    @reward = CustomerReward.first(:id => params[:id], :merchant => @venue.merchant) || not_found
+    @customer = Customer.first(:merchant => @venue.merchant, :user => current_user) || not_found
     authorize! :update, @customer
     
     logger.info("Redeem Reward(#{@reward.id}), Type(#{@reward.type.value}), Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")

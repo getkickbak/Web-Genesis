@@ -20,7 +20,7 @@ class UserDevice
   
   def self.create(user, device_info)
     now = Time.now
-    count = UserDevice.count(UserDevice.user.id => user.id)
+    count = UserDevice.count(:user => user)
     device = UserDevice.new(
       :device_id => device_info[:device_id],
       :device_type => PushwooshType_to_type[device_info[:device_type].to_s]
