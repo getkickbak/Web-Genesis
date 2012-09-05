@@ -1032,6 +1032,35 @@ Ext.define('Genesis.data.proxy.OfflineServer',
       var me = this, action = operation.getAction(), reader = me.getReader(), resultSet;
       var app = _application;
       var viewport = app.getController('Viewport');
+
+      if (response.timedout)
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Server Timeout',
+            message : "Error Contacting Server",
+            buttons : ['Try Again', 'Cancel'],
+            callback : function(btn)
+            {
+               if (btn.toLowerCase() == 'try again')
+               {
+                  me.afterRequest(request, success);
+                  //
+                  // Resend request
+                  //
+                  Ext.Ajax.request(response.request.options);
+               }
+               else
+               {
+                  response.timedout = false;
+                  me.processResponse(success, operation, request, response, callback, scope);
+               }
+            }
+         });
+
+         return;
+      }
+
       var errorHandler = function()
       {
          var messages = ((resultSet && Ext.isDefined(resultSet.getMessage)) ? (Ext.isArray(resultSet.getMessage()) ? resultSet.getMessage().join(Genesis.constants.addCRLF()) : resultSet.getMessage()) : 'Error Connecting to Server');
@@ -1121,11 +1150,14 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                }
                default:
                   //console.log("Error - " + metaData['rescode']);
-                  Ext.device.Notification.show(
+                  if (messages)
                   {
-                     title : 'Error',
-                     message : messages
-                  });
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Error',
+                        message : messages
+                     });
+                  }
                   break;
             }
          }

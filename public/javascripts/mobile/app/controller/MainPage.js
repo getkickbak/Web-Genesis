@@ -715,7 +715,7 @@ Ext.define('Genesis.controller.MainPage',
             //
             if (!operation.wasSuccessful())
             {
-               me.redirectTo('login');
+               //me.redirectTo('login');
             }
             else
             {
