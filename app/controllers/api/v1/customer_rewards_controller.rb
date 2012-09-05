@@ -18,6 +18,10 @@ class Api::V1::CustomerRewardsController < ApplicationController
   
   def redeem
     @venue = Venue.get(params[:venue_id]) || not_found
+    @reward = CustomerReward.first(:id => params[:id], :merchant => @venue.merchant) || not_found
+    @customer = Customer.first(:merchant => @venue.merchant, :user => current_user) || not_found
+    authorize! :update, @customer
+    
     if @venue.status != :active
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -25,9 +29,6 @@ class Api::V1::CustomerRewardsController < ApplicationController
       end
       return  
     end
-    @reward = CustomerReward.first(:id => params[:id], :merchant => @venue.merchant) || not_found
-    @customer = Customer.first(:merchant => @venue.merchant, :user => current_user) || not_found
-    authorize! :update, @customer
     
     logger.info("Redeem Reward(#{@reward.id}), Type(#{@reward.type.value}), Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
     reward_venue = CustomerRewardVenue.first(:customer_reward_id => @reward.id, :venue_id => @venue.id)

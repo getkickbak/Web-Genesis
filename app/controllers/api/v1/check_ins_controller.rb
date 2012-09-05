@@ -2,6 +2,8 @@ class Api::V1::CheckInsController < ApplicationController
   before_filter :authenticate_user!
   
   def create
+    authorize! :update, Customer
+    
     if !APP_PROP["SIMULATOR_MODE"] && current_user.role != "test"
       begin
         encrypted_data = params[:auth_code].split('$')

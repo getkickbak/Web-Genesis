@@ -2,6 +2,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
   before_filter :authenticate_user!
   
   def earn
+    authorize! :update, Customer
+    
     @venue_id = params[:venue_id]
     if APP_PROP["SIMULATOR_MODE"]
       if @venue_id.nil?

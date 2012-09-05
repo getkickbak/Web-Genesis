@@ -2,8 +2,10 @@ class Api::V1::VenuesController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => [:share_photo]
   before_filter :authenticate_user!
   
-  def explore
+  def explore    
     @venue = Venue.get(params[:id]) || not_found
+    authorize! :read, @venue
+    
      if @venue.status != :active
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -11,7 +13,6 @@ class Api::V1::VenuesController < ApplicationController
       end
       return  
     end
-    authorize! :read, @venue
     
     @customer = Customer.first(:merchant => @venue.merchant, :user => current_user)
     is_customer = true

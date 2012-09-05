@@ -33,6 +33,8 @@ class Api::V1::CustomersController < ApplicationController
   
   def transfer_points
     @customer = Customer.first(:user => current_user, :merchant_id => params[:merchant_id]) || not_found
+    authorize! :read, @customer
+
     if @customer.merchant.status != :active
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -40,7 +42,6 @@ class Api::V1::CustomersController < ApplicationController
       end
       return  
     end
-    authorize! :read, @customer
     
     logger.info("Transfer points Customer(#{@customer.id}), User(#{current_user.id})")
     begin

@@ -18,6 +18,10 @@ class Api::V1::ChallengesController < ApplicationController
 
   def start
     @venue = Venue.get(params[:venue_id]) || not_found
+    @challenge = Challenge.first(:id => params[:id], :merchant => @venue.merchant) || not_found
+    @customer = Customer.first(:merchant => @venue.merchant, :user => current_user) || not_found
+    authorize! :update, @customer
+    
     if @venue.status != :active
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -25,9 +29,6 @@ class Api::V1::ChallengesController < ApplicationController
       end
       return  
     end
-    @challenge = Challenge.first(:id => params[:id], :merchant => @venue.merchant) || not_found
-    @customer = Customer.first(:merchant => @venue.merchant, :user => current_user) || not_found
-    authorize! :update, @customer
     
     begin
       Customer.transaction do
@@ -57,6 +58,10 @@ class Api::V1::ChallengesController < ApplicationController
   
   def complete    
     @venue = Venue.get(params[:venue_id]) || not_found
+    @challenge = Challenge.first(:id => params[:id], :merchant => @venue.merchant) || not_found
+    @customer = Customer.first(:merchant => @venue.merchant, :user => current_user) || not_found
+    authorize! :update, @customer
+    
     if @venue.status != :active
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -64,9 +69,6 @@ class Api::V1::ChallengesController < ApplicationController
       end
       return  
     end
-    @challenge = Challenge.first(:id => params[:id], :merchant => @venue.merchant) || not_found
-    @customer = Customer.first(:merchant => @venue.merchant, :user => current_user) || not_found
-    authorize! :update, @customer
     
     logger.info("Complete Challenge(#{@challenge.id}), Type(#{@challenge.type.value}), Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
     Time.zone = @venue.time_zone
@@ -200,13 +202,6 @@ class Api::V1::ChallengesController < ApplicationController
   def complete_referral
     data = params[:data].split('$')
     merchant = Merchant.get(data[0]) || not_found
-    if merchant.status != :active
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
-      end
-      return  
-    end
     already_customer = false
     @customer = Customer.first(:user => current_user, :merchant => merchant)
     if @customer.nil?
@@ -215,6 +210,14 @@ class Api::V1::ChallengesController < ApplicationController
       already_customer = true
     end
     authorize! :read, @customer
+    
+    if merchant.status != :active
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
+      end
+      return  
+    end
     
     logger.info("Complete Referral Challenge, Customer(#{@customer.id}), User(#{current_user.id})")
     authorized = false
