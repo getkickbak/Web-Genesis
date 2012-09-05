@@ -43,7 +43,7 @@ class Api::V1::UsersController < ApplicationController
         user_info = JSON.parse(params[:user], { :symbolize_names => true })
         facebook_id = user_info[:facebook_id]
         facebook_email = user_info[:facebook_email] || ""
-        existing_user = User.first(:facebook_id => facebook_id)
+        existing_user = (facebook_id == "0" ? nil : User.first(:facebook_id => facebook_id))
         if existing_user.nil? || (existing_user.id == current_user.id)
           @user.update_without_password(:facebook_id => facebook_id, :facebook_email => facebook_email, :update_ts => Time.now)
           if params[:gender] && params[:birthday]
