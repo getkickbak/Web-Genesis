@@ -26,13 +26,20 @@ class Api::V1::CheckInsController < ApplicationController
         return
       end
       @venue = checkInCode.venue
+      if params[:venue_id] && @venue.id != params[:venue_id]
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => t("api.check_ins.invalid_code").split('\n') } }  
+        end
+        return
+      end
     else
       if params[:venue_id]
         @venue = Venue.get(params[:venue_id])
       else
         @venue = Venue.first(:offset => 0, :limit => 1)
       end
-    end  
+    end
     
     if @venue.status != :active
       respond_to do |format|
@@ -49,7 +56,7 @@ class Api::V1::CheckInsController < ApplicationController
     authorize! :update, @customer
     
     Time.zone = @venue.time_zone
-    if !Common.within_geo_distance?(logger, current_user, params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude) || (params[:venue_id] ? @venue.id != params[:venue_id] : false)
+    if !Common.within_geo_distance?(logger, current_user, params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.out_of_distance").split('\n') } }
