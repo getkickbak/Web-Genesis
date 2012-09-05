@@ -13,7 +13,7 @@ class Api::V1::VenuesController < ApplicationController
     end
     authorize! :read, @venue
     
-    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
+    @customer = Customer.first(:merchant => @venue.merchant, :user => current_user)
     is_customer = true
     if @customer.nil?
       @customer = Customer.new
@@ -33,7 +33,7 @@ class Api::V1::VenuesController < ApplicationController
       @next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)  
       @account_info = { :badge_id => @customer.badge.id, :next_badge_id => @next_badge.id }
     end
-    @prize_jackpots = EarnPrizeRecord.count(EarnPrizeRecord.merchant.id => @venue.merchant.id, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+    @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     @rewards = Common.get_rewards(@venue, :reward)
     @prizes = Common.get_rewards(@venue, :prize)
     @newsfeed = Common.get_news(@venue)
@@ -47,8 +47,8 @@ class Api::V1::VenuesController < ApplicationController
     latitude = params[:latitude].to_f
     longitude = params[:longitude].to_f
     @venue = Venue.find_nearest(current_user, @merchant.id, latitude, longitude, 1).first
-    @customer = Customer.first(Customer.merchant.id => @merchant.id, Customer.user.id => current_user.id)
-    @prize_jackpots = EarnPrizeRecord.count(EarnPrizeRecord.merchant.id => @merchant.id, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+    @customer = Customer.first(:merchant => @merchant, :user => current_user)
+    @prize_jackpots = EarnPrizeRecord.count(:merchant => @merchant, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     @badges = Common.populate_badges(@venue.merchant, request.env['HTTP_USER_AGENT'])
     if @customer.badge_reset_ts <= @venue.merchant.badges_update_ts
       @customer.badge, @customer.next_badge_visits = Common.find_badge(@badges.to_a, @customer.visits)

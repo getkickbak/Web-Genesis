@@ -12,7 +12,7 @@ module CreatePromotion
     begin
       promotion = Promotion.get(id)
       push = Pushwoosh::RemoteApi.new
-      count = Customer.count(Customer.merchant.id => promotion.merchant.id)
+      count = Customer.count(:merchant => promotion.merchant)
       max = 1000
       n = 1
       if count == max
@@ -24,12 +24,12 @@ module CreatePromotion
       for i in 0..n-1
         logger.info("Sending iteration #{i+1}")
         start = i*max
-        customers = Customer.all(Customer.merchant.id => promotion.merchant.id, :offset => start, :limit => max)
+        customers = Customer.all(:merchant => promotion.merchant, :offset => start, :limit => max)
         user_list = []
         customers.each do |customer|
           user_list << customer.user.id 
         end
-        devices = UserDevice.all(UserDevice.user.id => user_list)
+        devices = UserDevice.all(:user_id => user_list)
         device_list = []
         devices.each do |device|
           device_list << device.device_id

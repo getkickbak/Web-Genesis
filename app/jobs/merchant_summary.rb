@@ -14,8 +14,8 @@ module MerchantSummary
     #end_of_last_week = Date.today.end_of_week
     merchants = Merchant.all(:status => :active)
     merchants.each do |merchant|
-      total_customer_count = Customer.count(Customer.merchant.id => merchant.id)
-      new_customer_count = Customer.count(Customer.merchant.id => merchant.id, :created_ts => (beginning_of_last_week..end_of_last_week))
+      total_customer_count = Customer.count(:merchant => merchant)
+      new_customer_count = Customer.count(:merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week))
       total_spend = EarnRewardRecord.sum(:amount, :merchant => merchant) || 0
       new_total_spend = EarnRewardRecord.sum(:amount, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
       total_reward_points = (EarnRewardRecord.sum(:points, :merchant => merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => merchant, :mode => :reward) || 0)
@@ -35,7 +35,7 @@ module MerchantSummary
       new_purchases_count = EarnRewardRecord.count(:merchant => merchant, :type => :purchase, :created_ts => (beginning_of_last_week..end_of_last_week))
       total_challenges_count = EarnRewardRecord.count(:merchant => merchant, :type => :challenge)
       new_challenges_count = EarnRewardRecord.count(:merchant => merchant, :type => :challenge, :created_ts => (beginning_of_last_week..end_of_last_week))
-      challenges = Challenge.all(Challenge.merchant.id => merchant.id)
+      challenges = Challenge.all(:merchant => merchant)
       total_challenges_indv_count = []
       challenges.each do |challenge|
         count = EarnRewardRecord.count(:type => :challenge, :ref_id => challenge.id)

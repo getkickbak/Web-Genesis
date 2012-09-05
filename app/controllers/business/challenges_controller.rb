@@ -6,7 +6,7 @@ module Business
       authorize! :read, Challenge
       
       @venues = current_merchant.venues
-      @challenges = Challenge.all(Challenge.merchant.id => current_merchant.id)
+      @challenges = Challenge.all(:merchant => current_merchant)
       @display = params[:display] || "default"
       @venue = Venue.get(params[:venue_id]) || @venues.first
 
@@ -53,7 +53,7 @@ module Business
       allowed = true
       type = ChallengeType.get(params[:challenge][:type_id])
       if type.value != 'custom' && type.value != 'menu'
-        challenges = Challenge.all(Challenge.merchant.id => current_merchant.id)
+        challenges = Challenge.all(:merchant => current_merchant)
         challenges.each do |challenge|
           if type.value == challenge.type.value
             allowed = false
@@ -132,7 +132,7 @@ module Business
       allowed = true
       type = ChallengeType.get(params[:challenge][:type_id])
       if type.value != 'custom'
-        challenges = Challenge.all(Challenge.merchant.id => current_merchant.id)
+        challenges = Challenge.all(:merchant => current_merchant)
         challenges.each do |challenge|
           if type.value == challenge.type.value && type.value != @challenge.type.value
             allowed = false
@@ -194,7 +194,7 @@ module Business
 
     def get_available_challenge_types(current_type)
       in_use_types = {}
-      challenges = Challenge.all(Challenge.merchant.id => current_merchant.id)
+      challenges = Challenge.all(:merchant => current_merchant)
       challenges.each do |challenge|
         in_use_types[challenge.type.value] = challenge.type.value
       end

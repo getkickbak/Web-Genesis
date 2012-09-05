@@ -74,11 +74,11 @@ module Business
     end
     
     def has_badges?
-      MerchantToBadge.count(MerchantToBadge.merchant.id => current_merchant.id) > 0 ? true : false  
+      MerchantToBadge.count(:merchant => current_merchant) > 0 ? true : false  
     end
     
     def has_venues?
-      Venue.count(Venue.merchant.id => current_merchant.id) > 0 ? true : false
+      Venue.count(:merchant => current_merchant) > 0 ? true : false
     end
     
     def set_reward_model?
@@ -86,11 +86,11 @@ module Business
     end
     
     def has_customer_rewards?
-      CustomerReward.count(CustomerReward.merchant.id => current_merchant.id) > 0 ? true : false
+      CustomerReward.count(:merchant => current_merchant) > 0 ? true : false
     end
     
     def has_challenges?
-      Challenge.count(Challenge.merchant.id => current_merchant.id) > 0 ? true : false
+      Challenge.count(:merchant => current_merchant) > 0 ? true : false
     end
   end
 end

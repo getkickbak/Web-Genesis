@@ -75,7 +75,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       @venue.eager_load_type = @venue.type
       @venue.merchant.eager_load_type = @venue.merchant.type
     end
-    @customer = Customer.first(Customer.merchant.id => @venue.merchant.id, Customer.user.id => current_user.id)
+    @customer = Customer.first(:merchant => @venue.merchant, :user => current_user)
     if @customer.nil?
       @customer = Customer.create(@venue.merchant, current_user)
     end
@@ -257,7 +257,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
           end
           current_point_offset = prize_info.prize_point_offset + points
           #logger.debug("Check if Prize has been won yet.")
-          won_prize_before = EarnPrizeRecord.count(EarnPrizeRecord.customer.id => @customer.id, :type => :game, :points.gt => 1) > 0
+          won_prize_before = EarnPrizeRecord.count(:customer => @customer, :type => :game, :points.gt => 1) > 0
           if (prize_info.prize_point_offset < prize_info.prize_win_offset)
             if (current_point_offset >= prize_info.prize_win_offset) || ((@customer.visits > 1) && !won_prize_before)
               prize_points = prize_interval 
@@ -359,7 +359,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
             badge_prize_trans_record.user = current_user
             badge_prize_trans_record.save
           end
-          @prize_jackpots = EarnPrizeRecord.count(EarnPrizeRecord.merchant.id => @venue.merchant.id, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+          @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
           @account_info = {}
           @account_info[:visits] = @customer.visits
           @account_info[:next_badge_visits] = @customer.next_badge_visits

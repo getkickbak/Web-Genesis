@@ -145,7 +145,7 @@ class Venue
       if merchant_id.nil?
         venues = Venue.all(:status => :active, :offset => 0, :limit => max)
       else
-        venues = Venue.all(Venue.merchant.id => merchant_id, :status => :active, :offset => 0, :limit => max)
+        venues = Venue.all(:merchant_id => merchant_id, :status => :active, :offset => 0, :limit => max)
       end
       venue_id_to_type_id = {}
       venue_to_types = VenueToType.all(:fields => [:venue_id, :venue_type_id], :venue => venues)

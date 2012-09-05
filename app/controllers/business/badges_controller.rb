@@ -20,7 +20,7 @@ module Business
         Badge.transaction do
           if current_merchant.custom_badges
             now = Time.now
-            merchant_badge_types = MerchantBadgeType.all(MerchantBadgeType.merchant.id => current_merchant.id, :order => [:rank.asc])
+            merchant_badge_types = MerchantBadgeType.all(:merchant => current_merchant, :order => [:rank.asc])
             badges = current_merchant.badges.sort_by { |b| b.rank }
             badges_size = badges.length
             if merchant_badges_types.length >= current_merchant.badges.length
