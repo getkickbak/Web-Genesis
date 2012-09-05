@@ -169,8 +169,13 @@
                }
             }, 20);
          }
-		 var popUp = $('#modalPopup');
-		 var element;
+
+         $('body').resize(function()
+         {
+            $('#page-background-bottom').height($('body').height());
+         });
+         var popUp = $('#modalPopup');
+         var element;
          popUp.modal(
          {
             backdrop : true,
@@ -178,12 +183,12 @@
             show : false
          });
 
-         $("#modalPopup a.modal-cancel").click(function (e)
+         $("#modalPopup a.modal-cancel").click(function(e)
          {
             popUp.toggle(false);
          });
-         
-         $("#modalPopup a.modal-ok").click(function (e)
+
+         $("#modalPopup a.modal-ok").click(function(e)
          {
             popUp.toggle(false);
 
@@ -193,7 +198,7 @@
 
             return false;
          });
-         
+
          $.rails.confirm = function(message, elem)
          {
             $("#modalPopup .modal-body p").html(message);
@@ -202,9 +207,11 @@
          }
          $.rails.allowAction = function(element)
          {
-            var message = element.data('confirm'),
-            answer = false, callback;
-            if (!message) { return true; }
+            var message = element.data('confirm'), answer = false, callback;
+            if (!message)
+            {
+               return true;
+            }
 
             if ($.rails.fire(element, 'confirm'))
             {
@@ -219,7 +226,9 @@
             if (link.data('remote') !== undefined)
             {
                $.rails.handleRemote(link);
-            } else if (link.data('method'))
+            }
+            else
+            if (link.data('method'))
             {
                $.rails.handleMethod(link);
             }
