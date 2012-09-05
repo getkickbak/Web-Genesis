@@ -21,7 +21,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       else
         encrypted_data = params[:data].split('$')
         @venue = Venue.get(encrypted_data[0]) || not_found
-        if @venue_id && @venue.id != @venue_id
+        if @venue_id && (@venue.id != @venue_id)
           respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
             format.json { render :json => { :success => false, :message => t("api.purchase_rewards.invalid_code").split('\n') } }
@@ -93,7 +93,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     logger.info("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
     Time.zone = @venue.time_zone
     
-    if @venue.merchant.will_terminate && Date.today > (@venue.merchant.terminate_date - 30)
+    if @venue.merchant.will_terminate && (Date.today > (@venue.merchant.terminate_date - 30))
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.purchase_rewards.program_termination").split('\n') } }

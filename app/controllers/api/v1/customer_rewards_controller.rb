@@ -49,7 +49,7 @@ class Api::V1::CustomerRewardsController < ApplicationController
         acquired = @mutex.acquire
         @customer.reload
         
-        if @reward.time_limited && @reward.expiry_date < Date.today
+        if @reward.time_limited && (@reward.expiry_date < Date.today)
           logger.info("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), time limited")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }

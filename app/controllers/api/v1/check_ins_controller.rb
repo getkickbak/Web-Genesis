@@ -21,7 +21,6 @@ class Api::V1::CheckInsController < ApplicationController
       end
       checkInCode = CheckInCode.first(:auth_code => decrypted_data["auth_code"])
       if checkInCode.nil?
-        logger.debug("CheckInCode nil - auth_code: #{decrypted_data["auth_code"]}")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.check_ins.invalid_code").split('\n') } }  
@@ -29,8 +28,7 @@ class Api::V1::CheckInsController < ApplicationController
         return
       end
       @venue = checkInCode.venue
-      logger.debug("venue id: #{@venue.id}, venue_id: #{params[:venue_id]}")
-      if params[:venue_id] && @venue.id != params[:venue_id]
+      if params[:venue_id] && (@venue.id != params[:venue_id])
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.check_ins.invalid_code").split('\n') } }  
