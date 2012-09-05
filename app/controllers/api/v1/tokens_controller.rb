@@ -57,7 +57,7 @@ class Api::V1::TokensController < ApplicationController
     #logger.debug("auth_token: #{auth_token}")
     #logger.debug("facebook_id: #{params[:facebook_id]}")
     if auth_token.nil?
-      if facebook_id.nil? || facebook_id.to_str == "0"
+      if facebook_id.nil? || facebook_id.to_s == "0"
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.tokens.create_missing_facebook_info").split('\n') } }
