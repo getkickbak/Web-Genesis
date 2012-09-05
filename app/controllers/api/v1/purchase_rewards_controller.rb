@@ -19,6 +19,13 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       else
         encrypted_data = params[:data].split('$')
         @venue = Venue.get(encrypted_data[0]) || not_found
+        if @venue_id && @venue.id != @venue_id
+          respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.invalid_code").split('\n') } }
+          end
+          return
+        end
       end  
     end
     
