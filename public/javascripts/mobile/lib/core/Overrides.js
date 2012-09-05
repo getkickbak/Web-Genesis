@@ -1053,6 +1053,9 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                else
                {
                   response.timedout = false;
+                  request.aborted = true;
+                  success = false;
+                  operation.success = false;
                   me.processResponse(success, operation, request, response, callback, scope);
                }
             }
