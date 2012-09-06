@@ -141,6 +141,7 @@
       \\      ================================================== -->
       <!-- Placed at the end of the document so the pages load faster -->
       <script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-1.7.2.min.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/cowboy-jquery-resize-21ae0ec/jquery.ba-resize.min.js"></script>
       <script type="text/javascript" src="/javascripts/desktop/lib/marioestrada-jQuery-gMap-875c548/jquery.gmap.min.js"></script>
       <script type="text/javascript" src="/javascripts/jquery_ujs.js"></script>
       <script type="text/javascript" src="/javascripts/desktop/css/twitter-bootstrap-857b8fb/bootstrap/js/bootstrap.min.js"></script>
@@ -149,92 +150,6 @@
       <script type="text/javascript" src="/javascripts/desktop/src/common.js"></script>
       <script type="text/javascript">
          var clientTime = new Date();
-         //
-         // Get Rid of autofill yellow highlight
-         //
-         if (navigator.userAgent.toLowerCase().indexOf("webkit") >= 0)
-         {
-            var _interval = window.setInterval(function()
-            {
-               var autofills = $('input:-webkit-autofill');
-               if (autofills.length > 0)
-               {
-                  window.clearInterval(_interval);
-                  // stop polling
-                  autofills.each(function()
-                  {
-                     var clone = $(this).clone(true, true);
-                     $(this).after(clone).remove();
-                  });
-               }
-            }, 20);
-         }
-
-         $('body').resize(function()
-         {
-            $('#page-background-bottom').height($('body').height());
-         });
-         var popUp = $('#modalPopup');
-         var element;
-         popUp.modal(
-         {
-            backdrop : true,
-            keyboard : true,
-            show : false
-         });
-
-         $("#modalPopup a.modal-cancel").click(function(e)
-         {
-            popUp.toggle(false);
-         });
-
-         $("#modalPopup a.modal-ok").click(function(e)
-         {
-            popUp.toggle(false);
-
-            // actually handle the element. This has to happen here since it isn't an *actual* modal dialog.
-            // It uses the element to continue proper execution.
-            $.rails.handleLink(element);
-
-            return false;
-         });
-
-         $.rails.confirm = function(message, elem)
-         {
-            $("#modalPopup .modal-body p").html(message);
-            popUp.modal('show');
-            element = elem;
-         }
-         $.rails.allowAction = function(element)
-         {
-            var message = element.data('confirm'), answer = false, callback;
-            if (!message)
-            {
-               return true;
-            }
-
-            if ($.rails.fire(element, 'confirm'))
-            {
-               // le extension.
-               answer = $.rails.confirm(message, element);
-               callback = $.rails.fire(element, 'confirm:complete', [answer]);
-            }
-            return answer && callback;
-         };
-         $.rails.handleLink = function(link)
-         {
-            if (link.data('remote') !== undefined)
-            {
-               $.rails.handleRemote(link);
-            }
-            else
-            if (link.data('method'))
-            {
-               $.rails.handleMethod(link);
-            }
-            return false;
-         };
-
       </script>
       <%= yield :script %>
    </body>
