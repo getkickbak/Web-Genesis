@@ -4,13 +4,28 @@ class Api::V1::CheckInsController < ApplicationController
   def create
     authorize! :update, Customer
     
+    @venue_id = params[:venue_id]
     if !APP_PROP["SIMULATOR_MODE"] && current_user.role != "test"
       begin
         encrypted_data = params[:auth_code].split('$')
-        venue = Venue.get(encrypted_data[0]) || not_found
+        if encrypted_data.length != 2
+          raise "Invalid check-in code format"
+        end
+        venue = Venue.get(encrypted_data[0])
+        if venue.nil?
+          raise "No such venue: #{encrypted_data[0]}"
+        end
         cipher = Gibberish::AES.new(venue.auth_code)
         decrypted = cipher.dec(encrypted_data[1])
         decrypted_data = JSON.parse(decrypted)
+        checkInCode = CheckInCode.first(:auth_code => decrypted_data["auth_code"])
+        if checkInCode.nil?
+          raise "Incorrect check-in code: #{decrypted_data["auth_code"]}"
+        end
+        @venue = checkInCode.venue
+        if @venue_id && (@venue.id != @venue_id.to_i)
+          raise "Venue information don't match', venue_id:#{@venue_id}, venue id:#{@venue.id}"
+        end
       rescue StandardError => e
         logger.error("Exception: " + e.message)
         respond_to do |format|
@@ -19,27 +34,11 @@ class Api::V1::CheckInsController < ApplicationController
         end  
         return
       end
-      checkInCode = CheckInCode.first(:auth_code => decrypted_data["auth_code"])
-      if checkInCode.nil?
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.check_ins.invalid_code").split('\n') } }  
-        end
-        return
-      end
-      @venue = checkInCode.venue
-      if params[:venue_id] && (@venue.id != params[:venue_id].to_i)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.check_ins.invalid_code").split('\n') } }  
-        end
-        return
-      end
     else
-      if params[:venue_id]
-        @venue = Venue.get(params[:venue_id])
-      else
+      if @venue_id.nil?
         @venue = Venue.first(:offset => 0, :limit => 1)
+      else
+        @venue = Venue.get(@venue_id) || not_found
       end
     end
     

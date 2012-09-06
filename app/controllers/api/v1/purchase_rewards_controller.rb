@@ -5,41 +5,39 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     authorize! :update, Customer
     
     @venue_id = params[:venue_id]
+    authorized = false
+    invalid_code = false
     if APP_PROP["SIMULATOR_MODE"]
       if @venue_id.nil?
         @venue = Venue.first(:offset => 0, :limit => 1)
       else
         @venue = Venue.get(@venue_id) || not_found
       end
-    else
-      if current_user.role == "test"
-        if @venue_id.nil?
-          @venue = Venue.first(:offset => 0, :limit => 1)
-        else
-          @venue = Venue.get(@venue_id) || not_found
-        end
-      else
-        encrypted_data = params[:data].split('$')
-        @venue = Venue.get(encrypted_data[0]) || not_found
-        if @venue_id && (@venue.id != @venue_id.to_i)
-          respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.invalid_code").split('\n') } }
-          end
-          return
-        end
-      end  
-    end
-    
-    authorized = false
-    invalid_code = false
-    if APP_PROP["SIMULATOR_MODE"]
       data = String.random_alphanumeric(32)
       data_expiry_ts = Time.now
       amount = rand(100)+1
       authorized = true
     else
       begin
+        if current_user.role == "test"
+          if @venue_id.nil?
+            @venue = Venue.first(:offset => 0, :limit => 1)
+          else
+            @venue = Venue.get(@venue_id) || not_found
+          end
+        else
+          encrypted_data = params[:data].split('$')
+          if encrypted_data.length != 2
+            raise "Invalid authorization code format"
+          end
+          @venue = Venue.get(encrypted_data[0])
+          if @venue.nil?
+            raise "No such venue: #{encrypted_data[0]}"
+          end
+          if (@venue_id && (@venue.id != @venue_id.to_i))
+            raise "Venue information don't match', venue_id:#{@venue_id}, venue id:#{@venue.id}"
+          end
+        end
         data = encrypted_data[1] 
         #logger.debug("data: #{data}")
         cipher = Gibberish::AES.new(@venue.auth_code)
