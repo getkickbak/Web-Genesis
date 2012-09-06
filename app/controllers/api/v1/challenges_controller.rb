@@ -210,7 +210,7 @@ class Api::V1::ChallengesController < ApplicationController
       else
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_mode").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }
         end
       end  
     elsif @customer.visits > 1
