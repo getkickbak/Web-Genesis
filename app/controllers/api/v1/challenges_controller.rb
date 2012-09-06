@@ -205,7 +205,14 @@ class Api::V1::ChallengesController < ApplicationController
     already_customer = false
     @customer = Customer.first(:user => current_user, :merchant => merchant)
     if @customer.nil?
-      @customer = Customer.create(merchant, current_user)
+      if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && currrent_user.role == "test")
+        @customer = Customer.create(merchant, current_user)
+      else
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_mode").split('\n') } }
+        end
+      end  
     elsif @customer.visits > 1
       already_customer = true
     end
