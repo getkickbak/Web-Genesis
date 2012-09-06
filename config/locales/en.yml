@@ -158,6 +158,7 @@ en:
       expire: "Expire Points"
       adjust: "Adjustment"      
   api:
+      incompatible_merchant_user_role: "Your account is not compatible with selected merchant."
       inactive_merchant: "This merchant is not active.\nPlease try a different one."
       inactive_venue: "This venue is not active.\nPlease try a different one."
       out_of_distance: "Outside of distance.\nPlease try again."
