@@ -605,10 +605,10 @@ $(document).ready($(function()
       }, 20);
    }
 
-   $('#page-background-bottom').height($('body').height());
+   $('#page-background').height($('body').height());
    $('div.main').resize(function()
    {
-      $('#page-background-bottom').height($('body').height());
+      $('#page-background').height($('body').height());
    });
    // --------------------------------------------------------------------------------
    // Popup Initialization Code

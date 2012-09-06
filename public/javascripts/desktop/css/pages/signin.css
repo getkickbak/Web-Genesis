@@ -10,12 +10,18 @@
 
 -------------------------------------------------------------------*/
 
-
-
-
 /** Base Body Styles **/
-body{ background: url(../../img/body-bg.png); color:#838383; font: 13px/1.7em 'Open Sans';}
+body{ color:#838383; font: 13px/1.7em 'Open Sans';}
 
+#page-background-top {
+   display : block;
+}
+#page-background-bottom {
+   display : block;
+}
+#page-background {
+   display : none;
+}
 
 .account-container {
 	width: 380px; 

@@ -9,5 +9,10 @@ $(function () {
 		$('.field').find ('label').show ();
 		
 	}
+   $('#page-background-bottom').height($(window).height()-445);
+   $('body').resize(function()
+   {
+      $('#page-background-bottom').height($(window).height()-445);
+   });
 	
 });
