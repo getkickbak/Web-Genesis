@@ -10,8 +10,6 @@ Ext.define('Genesis.controller.client.RedeemBase',
    config :
    {
    },
-   //orderTitle : 'Rewards List',
-   //checkoutTitle : 'Check Out',
    needPointsMsg : function(pointsDiff)
    {
       return ('You need ' + pointsDiff + ' more points ' + Genesis.constants.addCRLF() + 'to be eligible for this item.');
@@ -31,15 +29,6 @@ Ext.define('Genesis.controller.client.RedeemBase',
       {
          model : 'Genesis.model.CustomerReward',
          autoLoad : false,
-         /*
-         grouper :
-         {
-            groupFn : function(record)
-            {
-               return record.get('points') + ' Points';
-            }
-         },
-         */
          sorters : [
          {
             property : 'points',
@@ -118,6 +107,32 @@ Ext.define('Genesis.controller.client.RedeemBase',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
+      var _showItem = function()
+      {
+         var totalPts = viewport.getCustomer().get(me.getPtsProperty());
+         var points = record.get('points');
+         if (points > totalPts)
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Oops!',
+               message : me.needPointsMsg(points - totalPts)
+            });
+         }
+         else
+         {
+            me.fireEvent('showredeemitem', record);
+            /*
+             Ext.create('Genesis.model.EarnPrize',
+             {
+             //'id' : 1,
+             'expiry_date' : null,
+             'reward' : record,
+             'merchant' : viewport.getCheckinInfo().venue.getMerchant()
+             }));
+             */
+         }
+      }
 
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       switch (me.getBrowseMode())
@@ -126,29 +141,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
          {
             if (!me.exploreMode)
             {
-               var totalPts = viewport.getCustomer().get(me.getPtsProperty());
-               var points = record.get('points');
-               if (points > totalPts)
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Oops!',
-                     message : me.needPointsMsg(points - totalPts)
-                  });
-               }
-               else
-               {
-                  me.fireEvent('showredeemitem', record);
-                  /*
-                   Ext.create('Genesis.model.EarnPrize',
-                   {
-                   //'id' : 1,
-                   'expiry_date' : null,
-                   'reward' : record,
-                   'merchant' : viewport.getCheckinInfo().venue.getMerchant()
-                   }));
-                   */
-               }
+               _showItem();
             }
             else
             {
@@ -162,16 +155,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
          }
          case 'redeemBrowseSC' :
          {
-            me.fireEvent('showredeemitem', record);
-            /*
-             Ext.create('Genesis.model.EarnPrize',
-             {
-             //'id' : 1,
-             'expiry_date' : null,
-             'reward' : record,
-             'merchant' : viewport.getVenue().getMerchant()
-             }));
-             */
+            _showItem();
             break;
          }
       }
