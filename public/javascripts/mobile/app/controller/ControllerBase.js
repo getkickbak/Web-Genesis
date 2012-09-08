@@ -12,7 +12,7 @@ Ext.define('Genesis.controller.ControllerBase',
    genQRCodeMsg : 'Generating QRCode ...',
    retrieveAuthModeMsg : 'Retrieving Authorization Code from Server ...',
    noCodeScannedMsg : 'No Authorization Code was Scanned!',
-   geoLocationErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
+   geoLocationErrorMsg : 'Your current location is unavailable. Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services >> KICKBAK\"',
    geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
@@ -847,24 +847,6 @@ Ext.define('Genesis.controller.ControllerBase',
                         });
                      }
                      else
-                     if (bLocationUnavailable)
-                     {
-                        console.debug("POSITION_UNAVAILABLE");
-                        if (++i <= 5)
-                        {
-                           Ext.defer(me.getGeoLocation, 1 * 1000, me, [callback, i]);
-                           console.debug("Retry getting current location(" + i + ") ...");
-                        }
-                        else
-                        {
-                           Ext.device.Notification.show(
-                           {
-                              title : 'Error',
-                              message : me.geoLocationErrorMsg
-                           });
-                        }
-                     }
-                     else
                      if (bTimeout)
                      {
                         console.debug("TIMEOUT");
@@ -873,6 +855,27 @@ Ext.define('Genesis.controller.ControllerBase',
                            title : 'Timeout Error',
                            message : me.geoLocationTimeoutErrorMsg
                         });
+                     }
+                     else
+                     {
+                        if (bLocationUnavailable)
+                        {
+                           console.debug("POSITION_UNAVAILABLE");
+                           if (++i <= 5)
+                           {
+                              Ext.defer(me.getGeoLocation, 1 * 1000, me, [i]);
+                              console.debug("Retry getting current location(" + i + ") ...");
+                           }
+                        }
+                        else
+                        {
+                           console.debug("PERMISSION ERROR");
+                           Ext.device.Notification.show(
+                           {
+                              title : 'Location Services',
+                              message : me.geoLocationErrorMsg
+                           });
+                        }
                      }
                   }
                }
