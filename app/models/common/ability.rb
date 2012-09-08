@@ -29,4 +29,8 @@ class Ability
   def test
     user
   end
+  
+  def admin
+    user
+  end
 end
