@@ -23,6 +23,10 @@ class Api::V1::RegistrationsController < ApplicationController
         end
         @user = User.create(user_info)
         @results = Customer.find(@user.id, start, max)
+        if params[:user][:device] && (params[:user][:device] != "null")
+          device_info = JSON.parse(params[:user][:device], { :symbolize_names => true })
+          Common.register_user_device(@user, device_info)
+        end
         if params[:device] && (params[:device] != "null")
           device_info = JSON.parse(params[:device], { :symbolize_names => true })
           Common.register_user_device(@user, device_info)
