@@ -3,7 +3,7 @@ require 'util/constant'
 class User
   include DataMapper::Resource
 
-  Roles = %w[test anonymous user]
+  Roles = %w[test anonymous user admin]
   Statuses = [:active, :pending, :suspended, :deleted]
   
   # Include default devise modules. Others available are:

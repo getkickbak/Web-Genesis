@@ -40,11 +40,10 @@ class Common
   end
 
   def self.within_geo_distance?(logger, user, latitude_1, longitude_1, latitude_2, longitude_2)
-    if !APP_PROP["SIMULATOR_MODE"] && user.role != "test"
+    if !APP_PROP["SIMULATOR_MODE"] && user.role != "test" && user.role != "admin"
       cal_distance = 6371000 * Math.acos( Math.cos( Math.radians( latitude_1 ) ) * Math.cos( Math.radians( latitude_2 ) ) * Math.cos( Math.radians( longitude_2 ) - Math.radians( longitude_1 ) ) + Math.sin( Math.radians( latitude_1 ) ) * Math.sin( Math.radians( latitude_2 ) ) )
-      logger.debug("Check geo-distance: #{cal_distance}m away")
-      #return cal_distance <= 100
-      return true
+      #logger.debug("Check geo-distance: #{cal_distance}m away")
+      return cal_distance <= 100
     end
     return true
   end
