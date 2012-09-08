@@ -31,4 +31,12 @@ class UserDevice
     device.save
     return device
   end
+  
+  def update_all(device_info)
+    now = Time.now
+    self.device_id = device_info[:device_id]  
+    self.device_type = PushwooshType_to_type[device_info[:device_type].to_s]
+    self.update_ts = now
+    save
+  end
 end
