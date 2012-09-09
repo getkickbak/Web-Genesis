@@ -10,7 +10,7 @@ class Staff
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
 
   devise :database_authenticatable, #:registerable, #:confirmable,
-          :recoverable, :rememberable, :trackable, 
+          :recoverable, :rememberable, :trackable, :timeoutable,
           :validatable, :authentication_keys => [:email]
           
   property :id, Serial
