@@ -88,13 +88,14 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     end
     @customer = Customer.first(:merchant => @venue.merchant, :user => current_user)
     if @customer.nil?
-      if (@venue.merchant.role == "merchant" && current_user.role == "user") || (@venue.merchant.role == "test" && current_user.role == "test")
+      if (@venue.merchant.role == "merchant" && current_user.role == "user") || (@venue.merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
         @customer = Customer.create(@venue.merchant, current_user)
       else
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }
         end
+        return
       end  
     end
     authorize! :update, @customer

@@ -104,6 +104,7 @@ class Api::V1::CustomersController < ApplicationController
   end
 
   def receive_points
+    authorize! :read, Customer
     data = params[:data].split('$')
     merchant = Merchant.get(data[0]) || not_found
     if merchant.status != :active
@@ -115,13 +116,14 @@ class Api::V1::CustomersController < ApplicationController
     end
     @customer = Customer.first(:user => current_user, :merchant => merchant)
     if @customer.nil?
-      if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test")
+      if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
         @customer = Customer.create(merchant, current_user)
       else
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }
         end
+        return
       end  
     end
     authorize! :read, @customer
