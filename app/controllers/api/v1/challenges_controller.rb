@@ -201,8 +201,16 @@ class Api::V1::ChallengesController < ApplicationController
   
   def complete_referral
     authorize! :read, Customer
+    
     data = params[:data].split('$')
     merchant = Merchant.get(data[0]) || not_found
+    if merchant.status != :active
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
+      end
+      return  
+    end
     already_customer = false
     @customer = Customer.first(:user => current_user, :merchant => merchant)
     if @customer.nil?
@@ -219,14 +227,6 @@ class Api::V1::ChallengesController < ApplicationController
       already_customer = true
     end
     authorize! :read, @customer
-    
-    if merchant.status != :active
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
-      end
-      return  
-    end
     
     logger.info("Complete Referral Challenge, Customer(#{@customer.id}), User(#{current_user.id})")
     authorized = false

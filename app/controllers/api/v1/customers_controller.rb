@@ -105,6 +105,7 @@ class Api::V1::CustomersController < ApplicationController
 
   def receive_points
     authorize! :read, Customer
+    
     data = params[:data].split('$')
     merchant = Merchant.get(data[0]) || not_found
     if merchant.status != :active
