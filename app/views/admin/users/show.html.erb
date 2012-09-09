@@ -15,5 +15,8 @@
   <%= @user.status %>
 </p>
 
+<div>
+	<%= button_to 'Update Auth Token', update_auth_token_user_path(@user) %>
+</div>
 <%= link_to 'Edit', edit_user_path(@user) %> |
 <%= link_to 'Back', users_path %>

@@ -96,6 +96,19 @@ module Admin
       end    
     end
     
+    def update_auth_token
+      @user = User.get(params[:id]) || not_found
+      authorize! :update, @user
+      
+      @user.reset_authentication_token!   
+      
+      respond_to do |format|
+        format.html { redirect_to(user_path(@user), :notice => t("admin.users.update_auth_token_success")) }
+        #format.xml  { head :ok }
+        #format.json { render :json => { :success => true, :data => @user, :total => 1 } }
+      end
+    end
+    
     def destroy
       @user = User.get(params[:id]) || not_found
       authorize! :destroy, @user

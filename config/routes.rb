@@ -73,7 +73,9 @@ Genesis::Application.routes.draw do
         :passwords => "admin/staff_devise/passwords"
       }
 
-      resources :users
+      resources :users do
+        post 'update_auth_token', :on => :member, :as => :update_auth_token
+      end
       resources :staffs
       resources :merchants do
         resources :devices

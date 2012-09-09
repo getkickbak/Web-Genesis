@@ -28,6 +28,7 @@ en:
           min_venues: "Must belong to at least one venue" 
         customer_reward:
           min_venues: "Must belong to at least one venue"
+          no_photo: "Please upload photo"
         merchant:
           incorrect_password: "Incorrect password"
           reuse_password: "New password must be different from current password"
@@ -236,6 +237,7 @@ en:
       users:   
         create_success: "Account was successfully created."
         update_success: "Account was successfully updated."  
+        update_auth_token_success: "Authentication token successsfully updated."
   business:
       api:
         customer_rewards:
