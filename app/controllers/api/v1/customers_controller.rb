@@ -115,7 +115,7 @@ class Api::V1::CustomersController < ApplicationController
     end
     @customer = Customer.first(:user => current_user, :merchant => merchant)
     if @customer.nil?
-      if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && currrent_user.role == "test")
+      if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test")
         @customer = Customer.create(merchant, current_user)
       else
         respond_to do |format|

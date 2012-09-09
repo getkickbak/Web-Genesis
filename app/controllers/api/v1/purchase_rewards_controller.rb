@@ -88,7 +88,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
     end
     @customer = Customer.first(:merchant => @venue.merchant, :user => current_user)
     if @customer.nil?
-      if (@venue.merchant.role == "merchant" && current_user.role == "user") || (@venue.merchant.role == "test" && currrent_user.role == "test")
+      if (@venue.merchant.role == "merchant" && current_user.role == "user") || (@venue.merchant.role == "test" && current_user.role == "test")
         @customer = Customer.create(@venue.merchant, current_user)
       else
         respond_to do |format|
