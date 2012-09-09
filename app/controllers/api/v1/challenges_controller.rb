@@ -214,7 +214,7 @@ class Api::V1::ChallengesController < ApplicationController
     already_customer = false
     @customer = Customer.first(:user => current_user, :merchant => merchant)
     if @customer.nil?
-      if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && currrent_user.role == "test") || current_user.role = "admin"
+      if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
         @customer = Customer.create(merchant, current_user)
       else
         respond_to do |format|
