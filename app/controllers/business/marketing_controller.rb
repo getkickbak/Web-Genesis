@@ -2,6 +2,7 @@ module Business
   class MarketingController < BaseApplicationController
     before_filter :authenticate_merchant!
     before_filter :check_status
+    before_filter :check_is_admin
     skip_authorization_check
     
     def index

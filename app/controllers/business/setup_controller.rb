@@ -1,6 +1,7 @@
 module Business
   class SetupController < BaseApplicationController
     before_filter :authenticate_merchant!
+    before_filter :check_is_admin
     skip_authorization_check
     
     def index

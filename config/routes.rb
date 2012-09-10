@@ -50,7 +50,7 @@ Genesis::Application.routes.draw do
       match "/billings/update" => 'credit_cards#update', :as => :update_credit_card
       match "/billings/delete" => 'credit_cards#destroy', :as => :delete_credit_card
 
-      match "/merchant_terms" => 'pages#merchant_terms'
+      #match "/merchant_terms" => 'pages#merchant_terms'
       match "/contact_us" => 'pages#contact_us'
       match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
 

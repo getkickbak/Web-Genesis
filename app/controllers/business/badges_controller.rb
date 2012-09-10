@@ -1,6 +1,7 @@
 module Business
   class BadgesController < BaseApplicationController
     before_filter :authenticate_merchant!
+    before_filter :check_is_admin
     
     def index
       authorize! :read, Badge
