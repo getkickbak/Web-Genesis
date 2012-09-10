@@ -6,7 +6,7 @@ $(document).ready($(function() {
 	function drawCharts(response_data) {
 		var new_customers_chart = new Highcharts.Chart({
         	chart: {
-            	renderTo: 'new_customers',
+            	renderTo: 'total_customers',
             	type: 'line',
             	marginRight: 50,
 				marginBottom: 35
@@ -15,7 +15,7 @@ $(document).ready($(function() {
          		enabled : false
          	},
          	title: {
-            	text: 'New Customers - Last 2 Weeks'
+            	text: 'Total Customers - Last 2 Weeks'
          	},
          	xAxis: {
             	type: 'datetime',
@@ -42,7 +42,7 @@ $(document).ready($(function() {
 			},
          	series: [{
          		name: 'Customer',
-            	data: response_data.new_customers
+            	data: response_data.total_customers
          	}]
       	});
       	

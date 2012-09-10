@@ -17,7 +17,7 @@ module Business
     
     def show_charts
       today = Date.today
-      new_customers_data = []
+      total_customers_data = []
       new_customers = DataMapper.repository(:default).adapter.select(
           "SELECT DATE(created_ts) AS created_date, COUNT(*) AS count FROM customers WHERE merchant_id = ? 
               AND created_ts >= ? AND deleted_ts IS NULL
@@ -27,29 +27,36 @@ module Business
       i = 0
       x = 0
       two_weeks_ago = today - 14
+      total_customers_two_weeks_ago = Customer.count(:merchant => current_merchant, :created_ts.lt => two_weeks_ago)
       two_weeks_ago.upto(today) do |date|
         #puts "begin"
-        #new_customers_data[i] = [date]
-        new_customers_data[i] = [date.to_time.to_i*1000]
-        #puts "new_customers_data: " + new_customers_data[i].to_s 
+        #total_customers_data[i] = [date]
+        total_customers_data[i] = [date.to_time.to_i*1000]
+        #puts "total_customers_data: " + total_customers_data[i].to_s 
         inserted = false
+        previous_customers_total = 0
+        if i == 0
+          previous_customers_total = total_customers_two_weeks_ago
+        else  
+          previous_customers_total = total_customers_data[i-1][1]
+        end
         while x < new_customers.length
           created_date = new_customers[x][:created_date]
           created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
           if created_date < date
             x += 1
           elsif created_date == date
-            new_customers_data[i] << new_customers[x][:count]
+            total_customers_data[i] << (previous_customers_total + new_customers[x][:count])
             inserted = true
             break  
           else
-            new_customers_data[i] << 0    
+            total_customers_data[i] << previous_customers_total   
             inserted = true
             break  
           end
         end
         if !inserted
-          new_customers_data[i] << 0
+          total_customers_data[i] << previous_customers_total
         end
         i += 1
         #puts "end"
@@ -180,7 +187,7 @@ module Business
       end
       
       data = {}
-      data[:new_customers] = new_customers_data
+      data[:total_customers] = total_customers_data
       data[:purchases] = { :line_data => earn_rewards_data[:count], :line_data_amount => earn_rewards_data[:amount] }
       #data[:challenges] = { :line_data => { :names => challenge_records[:names], :data => challenge_data }, :pie_data => challenges_total }  
       data[:challenges] = { :line_data => challenge_data, :pie_data => challenges_total }  
