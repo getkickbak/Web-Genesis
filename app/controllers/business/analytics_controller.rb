@@ -9,6 +9,10 @@ module Business
       @new_customers_total = get_customers_total(Date.today - 14) 
       @purchases_total = get_purchases_total(nil, Date.today >> -2)
       @revenue_total = get_revenue_total(nil, Date.today >> -2)
+      @rewards_redeemed_total = get_rewards_redeemed_total(nil, :reward)
+      @new_rewards_redeemed_total = get_rewards_redeemed_total(nil, :reward, Date.today >> -2) 
+      @prizes_redeemed_total = get_rewards_redeemed_total(nil, :prize)
+      @new_prizes_redeemed_total = get_rewards_redeemed_total(nil, :prize, Date.today >> -2)
       respond_to do |format|
         format.html # index.html.erb
         #format.xml  { render :xml => @merchants }
@@ -212,6 +216,14 @@ module Business
     
     def get_revenue_total(venue, date)
       EarnRewardRecord.sum(:amount, :type => :purchase, :merchant => current_merchant, :created_ts.gte => date)
+    end
+    
+    def get_rewards_redeemed_total(venue, mode, date = nil)
+      if date.nil?
+        RedeemRewardRecord.count(:merchant => current_merchant, :mode => mode)
+      else
+        RedeemRewardRecord.count(:merchant => current_merchant, :mode => mode, :created_ts.gte => date)
+      end
     end
   end
 end

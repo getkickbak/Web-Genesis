@@ -26,12 +26,13 @@ module Business
       begin
         Merchant.transaction do
           params[:merchant][:status] = @merchant.status
+          params[:merchant][:role] = @merchant.role
           params[:merchant][:will_terminate] = @merchant.will_terminate
           params[:merchant][:custom_badges] = @merchant.custom_badges
           @merchant.update_all(@merchant.type, @merchant.visit_frequency, params[:merchant])
           sign_in(current_merchant, :bypass => true)
           respond_to do |format|
-            format.html { redirect_to(:action => "show", :notice => t("business.merchants.update_success")) }
+            format.html { redirect_to(:action => "edit", :notice => t("business.merchants.update_success")) }
           #format.xml  { head :ok }
           end
         end

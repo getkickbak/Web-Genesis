@@ -43,6 +43,10 @@ body {
    margin-top : 10px;
 }
 
+.controls > .radio:first-child, .controls > .checkbox:nth-of-type(1) {
+   padding-top:5px;
+}
+
 @media (min-width : 768px) and (max-width : 1200px) {
    .input-large, .input-xlarge, .input-xxlarge, input[class*="span"], select[class*="span"], textarea[class*="span"], .uneditable-input {
       display : block;

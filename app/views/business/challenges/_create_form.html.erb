@@ -76,7 +76,7 @@
 	<%= f.input :points, :input_html => { :class => 'input-medium' } %>
 	<% end %>
 	<% if @challenge.type && @challenge.type.value != '' %>
-	<%= f.input :venue_ids, :collection => current_merchant.venues.collect{ |p| [p.display_name, p.id, ] }, :as => :check_boxes, :checked => @venue_ids %>
+	<%= f.input :venue_ids, :label => 'Venues', :collection => current_merchant.venues.collect{ |p| [p.display_name, p.id, ] }, :as => :check_boxes, :checked => @venue_ids %>
 	<% end %>
 	<br />
 	<div class="form-actions">

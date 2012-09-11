@@ -18,18 +18,22 @@ module MerchantSummary
       new_customer_count = Customer.count(:merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week))
       total_spend = EarnRewardRecord.sum(:amount, :merchant => merchant) || 0
       new_total_spend = EarnRewardRecord.sum(:amount, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
+=begin      
       total_reward_points = (EarnRewardRecord.sum(:points, :merchant => merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => merchant, :mode => :reward) || 0)
       total_reward_points_earned = EarnRewardRecord.sum(:points, :merchant => merchant) || 0
       new_reward_points_earned = EarnRewardRecord.sum(:points, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
       total_reward_points_redeemed = RedeemRewardRecord.sum(:points, :merchant => merchant, :mode => :reward) || 0
       new_reward_points_redeemed = RedeemRewardRecord.sum(:points, :merchant => merchant, :mode => :reward, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
+=end      
       total_rewards_redeemed =  RedeemRewardRecord.count(:merchant => merchant, :mode => :reward) || 0
       new_rewards_redeemed = RedeemRewardRecord.count(:merchant => merchant, :mode => :reward, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
+=begin     
       total_prize_points = (EarnPrizeRecord.sum(:points, :merchant => merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => merchant, :mode => :prize) || 0)
       total_prize_points_earned = EarnPrizeRecord.sum(:points, :merchant => merchant) || 0
       new_prize_points_earned = EarnPrizeRecord.sum(:points, :merchant => merchant, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
       total_prize_points_redeemed = RedeemRewardRecord.sum(:points, :merchant => merchant, :mode => :prize) || 0
       new_prize_points_redeemed = RedeemRewardRecord.sum(:points, :merchant => merchant, :mode => :prize, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
+=end      
       total_prizes_redeemed = RedeemRewardRecord.count(:merchant => merchant, :mode => :prize) || 0
       new_prizes_redeemed = RedeemRewardRecord.count(:merchant => merchant, :mode => :prize, :created_ts => (beginning_of_last_week..end_of_last_week)) || 0
       new_purchases_count = EarnRewardRecord.count(:merchant => merchant, :type => :purchase, :created_ts => (beginning_of_last_week..end_of_last_week))
@@ -54,18 +58,22 @@ module MerchantSummary
         :total_spend => total_spend,
         :average_spend => merchant.reward_model.avg_spend,
         :new_total_spend => new_total_spend,
+=begin
         :total_reward_points => total_reward_points,
         :total_reward_points_earned => total_reward_points_earned,
         :new_reward_points_earned => new_reward_points_earned,
         :total_reward_points_redeemed => total_reward_points_redeemed,
         :new_reward_points_redeemed => new_reward_points_redeemed,
+=end        
         :total_rewards_redeemed => total_rewards_redeemed,
         :new_rewards_redeemed => new_rewards_redeemed,
+=begin        
         :total_prize_points => total_prize_points,
         :total_prize_points_earned => total_prize_points_earned,
         :new_prize_points_earned => new_prize_points_earned,
         :total_prize_points_redeemed => total_prize_points_redeemed,
         :new_prize_points_redeemed => new_prize_points_redeemed,
+=end        
         :total_prizes_redeemed => total_prizes_redeemed,
         :new_prizes_redeemed => new_prizes_redeemed,
         :total_purchases_count => merchant.reward_model.total_visits,

@@ -18,14 +18,13 @@
                         <tbody>
                            <% @venues.each do |venue| %>
                            <tr>
-                              <td class="td-description"><%= venue.name %></td>
-                              <td class="td-value">
+                              <td class="td-description">
                               <!-- -->
                               <% if @display != "venue" || venue.id != @venue.id %>
-                              <%= link_to("Get Rewards", :controller => "customer_rewards", :display => "venue", :venue_id => venue.id) %>
+                              <%= link_to(venue.name, :controller => "customer_rewards", :display => "venue", :venue_id => venue.id) %>
                               <!-- -->
                               <% else %>
-                              <%= link_to("Get Rewards", {:controller => "customer_rewards", :display => "venue", :venue_id => venue.id}, :class => "disabled") %>
+                              <%= link_to(venue.name, {:controller => "customer_rewards", :display => "venue", :venue_id => venue.id}, :class => "disabled") %>
                               <!-- -->
                               <% end %>
                               <!-- -->
@@ -39,10 +38,12 @@
             </div>
             <div class="span9">
                <% if @display != "venue" %>
-               <% rewards = @customer_rewards %>
+               <% rewards = @customer_rewards.all(:mode => :reward) %>
+               <% prizes = @customer_rewards.all(:mode => :prize) %>
                <% title = "Merchant Rewards Catalog" %>
                <% else %>
-               <% rewards = @venue.customer_rewards %>
+               <% rewards = @venue.customer_rewards.all(:mode => :reward) %>
+               <% prizes = @venue.customer_rewards.all(:mode => :prize) %>
                <% title = "Rewards for " + @venue.name %>
                <% end %>
                <div class="widget widget-table action-table">
@@ -53,7 +54,32 @@
                   <div class="widget-content">
                      <table class="table table-striped table-bordered">
                         <tbody>
+                           <tr>
+                              <td colspan="2"><h3>Rewards</h3></td>
+                           </tr>	
                            <% rewards.each do |customer_reward| %>
+                           <tr>
+                              <td><%= customer_reward.title %></td>
+                              <td class="td-actions">
+                              <!-- -->
+                              <%= link_to edit_customer_reward_path(customer_reward), :class=>"btn btn-small btn-warning", :title=>"print" do %>
+                              <!-- -->
+                              <i class="btn-icon-only icon-edit"></i>
+                              <!-- -->
+                              <% end %>
+                              <%= link_to customer_reward_path(customer_reward), :data => { :confirm => 'Are you sure?' }, :method => :delete, :class=>"btn btn-small", :title=>"delete" do %>
+                              <!-- -->
+                              <i class="btn-icon-only icon-remove"></i>
+                              <!-- -->
+                              <% end %>
+                              <!-- -->
+                              </td>
+                           </tr>
+                           <% end %>
+                           <tr>
+                              <td colspan="2"><h3>Prizes</h3></td>
+                           </tr>
+                           <% prizes.each do |customer_reward| %>
                            <tr>
                               <td><%= customer_reward.title %></td>
                               <td class="td-actions">

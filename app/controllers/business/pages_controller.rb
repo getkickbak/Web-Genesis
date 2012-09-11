@@ -1,6 +1,6 @@
 module Business
   class PagesController < BaseApplicationController
-    before_filter :authenticate_merchant!, :only => [:merchant_terms]
+    before_filter :authenticate_merchant!
     skip_authorization_check
 
     def contact_us

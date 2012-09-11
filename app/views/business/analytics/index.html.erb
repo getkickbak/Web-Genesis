@@ -27,7 +27,7 @@
                            <span class="value"><%= @new_customers_total %></span>
                         </div>
                         <div class="stat">
-                           <h4>Purchases in the last 2 months</h4>
+                           <h4># of purchases in the last 2 months</h4>
                            <span class="value"><%= @purchases_total %></span>
                         </div>
                         <div class="stat">
@@ -35,7 +35,26 @@
                            <span class="value"><%= @revenue_total %></span>
                         </div>
                      </div>
-                  </div>     
+                     <div id="big_stats" class="cf">
+                        <div class="stat">
+                           <h4>Total rewards redeemed</h4>
+                           <span class="value"><%= @rewards_redeemed_total %></span>
+                        </div>
+                        <!-- .stat -->
+                        <div class="stat">
+                           <h4>Rewards redeemed in the last 2 months</h4>
+                           <span class="value"><%= @new_rewards_redeemed_total %></span>
+                        </div>
+                        <div class="stat">
+                           <h4>Total prizes redeemed</h4>
+                           <span class="value"><%= @prizes_redeemed_total %></span>
+                        </div>
+                        <div class="stat">
+                           <h4>Prizes redeemed in the last 2 months</h4>
+                           <span class="value"><%= @new_prizes_redeemed_total %></span>
+                        </div>
+                     </div>
+                  </div>
                </div>
             </div>
          </div>
