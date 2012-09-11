@@ -17,7 +17,7 @@ module Business
     end
     
     def check_is_admin
-      if session[:is_admin].nil? || (session[:is_admin] && session[:is_admin] == false)
+      if session[:is_admin].nil? || (not session[:is_admin])
         respond_to do |format|
           format.html { redirect_to dashboard_path }
         end

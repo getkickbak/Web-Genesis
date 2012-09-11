@@ -18,14 +18,13 @@
                         <tbody>
                            <% @venues.each do |venue| %>
                            <tr>
-                              <td class="td-description"><%= venue.name %></td>
-                              <td class="td-value">
+                              <td class="td-description">
                               <!-- -->
                               <% if @display != "challenge" || venue.id != @venue.id %>
-                              <%= link_to("Get Challenges", :controller => "challenges", :display => "challenge", :venue_id => venue.id) %>
+                              <%= link_to(venue.name, :controller => "challenges", :display => "challenge", :venue_id => venue.id) %>
                               <!-- -->
                               <% else %>
-                              <%= link_to("Get Challenges", {:controller => "challenges", :display => "challenge", :venue_id => venue.id}, :class => "disabled") %>
+                              <%= link_to(venue.name, {:controller => "challenges", :display => "challenge", :venue_id => venue.id}, :class => "disabled") %>
                               <!-- -->
                               <% end %>
                               <!-- -->

@@ -68,7 +68,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                            <li><a href="/account/edit">Settings</a></li>
-                           <% if session[:is_admin] && session[:is_admin] == true %>
+                           <% if session[:is_admin] %>
                            <li class="divider"></li>
                            <li><a href="/billings">Billings</a></li>
                            <% end %>
@@ -88,11 +88,11 @@
                <ul class="mainnav">
                   <% if current_merchant.status == :active %>
                   <li><a href="/dashboard"> <i class="icon-dashboard"></i> <span>Dashboard</span> </a></li>
-                  <% if session[:is_admin] && session[:is_admin] == true %><li><a href="/marketing"> <i class="icon-rss"></i> <span>Marketing</span> </a></li><% end %>
+                  <% if session[:is_admin] %><li><a href="/marketing"> <i class="icon-rss"></i> <span>Marketing</span> </a></li><% end %>
                   <li><a href="/analytics" class="dropdown-toggle"> <i class="icon-th-large"></i> <span>Analytics</span> </a></li>
                   <li><a href="/customer_rewards"> <i class="icon-gift"></i> <span>Rewards</span> </a></li>
-                  <% if session[:is_admin] && session[:is_admin] == true %><li><a href="/challenges"> <i class="icon-trophy"></i> <span>Challenges</span> </a></li><% end %>
-                  <% if session[:is_admin] && session[:is_admin] == true %><li><a href="/venues"> <i class="icon-map-marker"></i> <span>Venues</span> </a></li><% end %>
+                  <% if session[:is_admin] %><li><a href="/challenges"> <i class="icon-trophy"></i> <span>Challenges</span> </a></li><% end %>
+                  <% if session[:is_admin] %><li><a href="/venues"> <i class="icon-map-marker"></i> <span>Venues</span> </a></li><% end %>
                   <% end %>
                </ul>
             </div>

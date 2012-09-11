@@ -5,8 +5,9 @@ module Business
     skip_authorization_check
     
     def index
-      @total_reward_points = (EarnRewardRecord.sum(:points, :merchant => current_merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => current_merchant, :mode => :reward) || 0)
-      @total_prize_points = (EarnPrizeRecord.sum(:points, :merchant => current_merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => current_merchant, :mode => :prize) || 0)
+      #@total_reward_points = (EarnRewardRecord.sum(:points, :merchant => current_merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => current_merchant, :mode => :reward) || 0)
+      #@total_prize_points = (EarnPrizeRecord.sum(:points, :merchant => current_merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => current_merchant, :mode => :prize) || 0)
+      @promotions = Promotion.all(:merchant => current_merchant)
       respond_to do |format|
         format.html # index.html.erb
       #format.xml  { render :xml => @merchants }

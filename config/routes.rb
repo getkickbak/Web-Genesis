@@ -24,7 +24,7 @@ Genesis::Application.routes.draw do
         get 'check_in_template', :on => :member, :as => :check_in_template
       end
       resources :invoices, :only => [:index, :show]
-      resources :promotions, :only => [:index, :new, :create]
+      resources :promotions, :only => [:new, :create]
       #resources :deals
               
       match "/dashboard" => 'dashboard#index', :as => :dashboard
