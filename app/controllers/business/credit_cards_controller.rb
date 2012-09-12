@@ -130,7 +130,7 @@ module Business
             #current_merchant.payment_account_id = result.params['rbAccountId']
             current_merchant.save
             respond_to do |format|
-              format.html { redirect_to credit_cards_path(:notice => 'Credit card was successfully added.') }
+              format.html { redirect_to(credit_cards_path, :notice => 'Credit card was successfully added.') }
             end
           else
             respond_to do |format|
@@ -214,7 +214,7 @@ module Business
           if result.success?
             @credit_card.update(:card_token => result[:trnOrderNumber])
             respond_to do |format|
-              format.html { redirect_to credit_card_path(:notice => 'Credit card was successfully added.') }
+              format.html { redirect_to(credit_card_path, :notice => 'Credit card was successfully added.') }
             end
           else
             respond_to do |format|

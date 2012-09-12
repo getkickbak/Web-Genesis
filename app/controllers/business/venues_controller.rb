@@ -52,7 +52,7 @@ module Business
           type = VenueType.get(params[:venue][:type_id])
           @venue = Venue.create(current_merchant, type, params[:venue])
           respond_to do |format|
-            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.create_success")) }
+            format.html { redirect_to({:action => "show", :id => @venue.id}, {:notice => t("business.venues.create_success")}) }
           #format.xml  { head :ok }
           end
         end
@@ -76,7 +76,7 @@ module Business
           type = VenueType.get(params[:venue][:type_id])
           @venue.update(type, params[:venue])
           respond_to do |format|
-            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.update_success")) }
+            format.html { redirect_to({:action => "show", :id => @venue.id}, {:notice => t("business.venues.update_success")}) }
           #format.xml  { head :ok }
           end
         end
@@ -100,14 +100,14 @@ module Business
           @venue.update_auth_code()
           @venue.update_check_in_auth_code()
           respond_to do |format|
-            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.update_authcode_success")) }
+            format.html { redirect_to({:action => "show", :id => @venue.id}, {:notice => t("business.venues.update_authcode_success")}) }
           #format.xml  { head :ok }
           end
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
-          format.html { redirect_to(:action => "show", :id => @venue.id, :error => t("business.venues.update_authcode_failure")) }
+          format.html { redirect_to({:action => "show", :id => @venue.id}, {:error => t("business.venues.update_authcode_failure")}) }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
         end
       end        
@@ -121,14 +121,14 @@ module Business
         Venue.transaction do
           @venue.update_check_in_auth_code()
           respond_to do |format|
-            format.html { redirect_to(:action => "show", :id => @venue.id, :notice => t("business.venues.update_checkin_authcode_success")) }
+            format.html { redirect_to({:action => "show", :id => @venue.id}, {:notice => t("business.venues.update_checkin_authcode_success")}) }
           #format.xml  { head :ok }
           end
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         respond_to do |format|
-          format.html { redirect_to(:action => "show", :id => @venue.id, :error => t("business.venues.update_checkin_authcode_failure")) }
+          format.html { redirect_to({:action => "show", :id => @venue.id}, {:error => t("business.venues.update_checkin_authcode_failure")}) }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
         end
       end

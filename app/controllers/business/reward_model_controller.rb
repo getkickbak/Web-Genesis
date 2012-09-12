@@ -40,7 +40,7 @@ module Business
             challenge.save
           end
           respond_to do |format|
-            format.html { redirect_to reward_model_path(:notice => msg) }
+            format.html { redirect_to(reward_model_path, :notice => msg) }
           end
         end
       rescue DataMapper::SaveFailureError => e

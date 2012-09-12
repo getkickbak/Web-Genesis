@@ -1,6 +1,21 @@
-<p id="notice">
-	<%= notice %>
-</p>
+<% content_for :script do %>
+<script type="text/javascript">
+	$(document).ready($(function() {
+	var msg=$("#notice").html();
+	if(msg) {
+	Genesis.showWarningMsg(msg,null,true);
+	}
+	}));
+</script>
+<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+	<p>
+		<%= flash[:notice] %>
+	</p>
+</div>
+<% end %>
 <div class="main">
 	<div class="main-inner">
 		<div class="container">
@@ -72,12 +87,7 @@
 											<b>Authorization Code:</b>
 											<%= @venue.auth_code %>
 										</p>
-										<div>
-											<%= link_to 'Update Authorization Code', update_auth_code_venue_path(@venue) %>
-										</div>
-										<div>
-											<%= link_to 'Update CheckIn Code', update_check_in_auth_code_venue_path(@venue) %>
-										</div>
+										<%= link_to 'Edit', edit_venue_path(@venue) %> | <%= link_to 'Update Authorization Code', update_auth_code_venue_path(@venue) %> | <%= link_to 'Update CheckIn Code', update_check_in_auth_code_venue_path(@venue) %>
 									</div>
 								</div>
 							</div>

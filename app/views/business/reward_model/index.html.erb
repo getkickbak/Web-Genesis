@@ -1,17 +1,40 @@
 <% content_for :link do %>
 <% end %>
 <% content_for :script do %>
+<script type="text/javascript">
+   $(document).ready($(function()
+   {
+      var msg = $("#notice").html();
+      if (msg)
+      {
+         Genesis.showWarningMsg(msg, null, true);
+      }
+   })); 
+</script>
 <script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/src/business/reward_model.js"></script>
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+   <p><%= flash[:notice] %></p>
+</div>
 <% end %>
 <div class="main">
    <div class="main-inner">
       <div class="container">
+      	<% if current_merchant.status == :pending && current_merchant.reward_model %>
+      	<div class="row">
+      		<div class="span9">
+      			<%= link_to 'Continue Setup', setup_path %>
+      		</div>	
+      	</div>
+      	<% end %>
          <div class="row">
             <div class="span9">
                <div class="widget ">
                   <div class="widget-header">
                      <i class="icon-gift"></i>
-                     <h3>Reward Model<% if current_merchant.status == :pending && current_merchant.reward_model %>(<%= link_to 'Continue Setup', setup_path %>) <% end %></h3>
+                     <h3>Reward Model</h3>
                   </div>
                   <!-- /widget-header -->
                   <div class="widget-content">
