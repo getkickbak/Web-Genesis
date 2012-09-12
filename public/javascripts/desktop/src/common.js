@@ -626,6 +626,11 @@ $(document).ready($(function()
       show : false
    });
 
+   $("#modalPopup a.close").click(function(e)
+   {
+      popUp.toggle(false);
+   });
+   
    $("#modalPopup a.modal-cancel").click(function(e)
    {
       popUp.toggle(false);
