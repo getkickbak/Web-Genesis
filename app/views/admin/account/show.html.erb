@@ -1,11 +1,10 @@
+<p id="notice"><%= notice %></p>
 <div class="main">
    <div class="row-fluid">
       <div class="span3"></div>
       <div class="span6">
          <ul class="nav nav-list well">
             <li class="nav-header"> Account Information </li>
-            <p id="notice"><%= notice %></p>
-
             <p><b>Name:</b> <%= @staff.name %> </p>
 
             <p><b>Email:</b> <%= @staff.email %> </p>
@@ -13,6 +12,7 @@
             <p<%= link_to 'Edit', edit_account_path %> |
             <%= link_to 'Back', account_path %>
             </p>
+         </ul>
       </div>
    </div>
 </div>
