@@ -1,40 +1,36 @@
-<% content_for :link do %> <!--[if lt IE 9]>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
-<![endif]-->
+<% content_for :link do %>
 <% end %>
-<div class="row-fluid">
-	<div class="span3"></div>
-	<div class="span6">
-		<ul class="nav nav-list well">
-			<li class="nav-header">
-				Merchants
-			</li>
-			<% @merchants.each do |merchant| %>
-			<li>
-				<!-- -->
-				<div style="position:relative;padding: 3px 15px">
-					<!-- -->
-					<%= link_to merchant.name, merchant_path(merchant) %>
-					<%= merchant.email %>
-					<%= "#{merchant.account_first_name} #{merchant.account_last_name}" %>
-					<%= merchant.phone %>
-					<%= merchant.status %>
-					<%= link_to edit_merchant_path(merchant), :style=>'position:absolute;right:26px;' do %>
-					<i class="icon-edit"></i>
-					<!-- -->
-					<% end %>
-					<%= link_to merchant_path(merchant), :data => { :confirm => 'Do you want to delete this merchant?' }, :method => :delete, :style=>'position:absolute;right:0px;' do %>
-					<i class="icon-remove"></i>
-					<!-- -->
-					<% end %>
-				</div>
-				<!-- -->
-			</li>
-			<% end %>
-			<%= will_paginate @devices %>
-			<li>
-				<%= link_to 'New Merchant', new_merchant_path %>
-			</li>
-		</ul>
-	</div>
+<div class="main">
+   <div class="row-fluid">
+      <div class="span3"></div>
+      <div class="span6">
+         <ul class="nav nav-list well">
+            <li class="nav-header"> Merchants </li>
+            <% @merchants.each do |merchant| %>
+            <li>
+               <!-- -->
+               <div style="position:relative;padding: 3px 15px">
+                  <!-- -->
+                  <%= link_to merchant.name, merchant_path(merchant) %>
+                  <%= merchant.email %>
+                  <%= "#{merchant.account_first_name} #{merchant.account_last_name}" %>
+                  <%= merchant.phone %>
+                  <%= merchant.status %>
+                  <%= link_to edit_merchant_path(merchant), :style=>'position:absolute;right:26px;' do %>
+                  <i class="icon-edit"></i>
+                  <!-- -->
+                  <% end %>
+                  <%= link_to merchant_path(merchant), :data => { :confirm => 'Do you want to delete this merchant?' }, :method => :delete, :style=>'position:absolute;right:0px;' do %>
+                  <i class="icon-remove"></i>
+                  <!-- -->
+                  <% end %>
+               </div>
+               <!-- -->
+            </li>
+            <% end %>
+            <%= will_paginate @devices %>
+            <li> <%= link_to 'New Merchant', new_merchant_path %> </li>
+         </ul>
+      </div>
+   </div>
 </div>

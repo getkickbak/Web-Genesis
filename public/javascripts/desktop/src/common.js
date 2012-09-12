@@ -630,7 +630,7 @@ $(document).ready($(function()
    {
       popUp.toggle(false);
    });
-   
+
    $("#modalPopup a.modal-cancel").click(function(e)
    {
       popUp.toggle(false);
@@ -647,39 +647,42 @@ $(document).ready($(function()
       return false;
    });
 
-   $.rails.confirm = function(message, elem)
+   if ($.rails)
    {
-      $("#modalPopup .modal-body p").html(message);
-      popUp.modal('show');
-      element = elem;
-   }
-   $.rails.allowAction = function(element)
-   {
-      var message = element.data('confirm'), answer = false, callback;
-      if (!message)
+      $.rails.confirm = function(message, elem)
       {
-         return true;
+         $("#modalPopup .modal-body p").html(message);
+         popUp.modal('show');
+         element = elem;
       }
+      $.rails.allowAction = function(element)
+      {
+         var message = element.data('confirm'), answer = false, callback;
+         if (!message)
+         {
+            return true;
+         }
 
-      if ($.rails.fire(element, 'confirm'))
+         if ($.rails.fire(element, 'confirm'))
+         {
+            // le extension.
+            answer = $.rails.confirm(message, element);
+            callback = $.rails.fire(element, 'confirm:complete', [answer]);
+         }
+         return answer && callback;
+      };
+      $.rails.handleLink = function(link)
       {
-         // le extension.
-         answer = $.rails.confirm(message, element);
-         callback = $.rails.fire(element, 'confirm:complete', [answer]);
-      }
-      return answer && callback;
-   };
-   $.rails.handleLink = function(link)
-   {
-      if (link.data('remote') !== undefined)
-      {
-         $.rails.handleRemote(link);
-      }
-      else
-      if (link.data('method'))
-      {
-         $.rails.handleMethod(link);
-      }
-      return false;
-   };
+         if (link.data('remote') !== undefined)
+         {
+            $.rails.handleRemote(link);
+         }
+         else
+         if (link.data('method'))
+         {
+            $.rails.handleMethod(link);
+         }
+         return false;
+      };
+   }
 }));

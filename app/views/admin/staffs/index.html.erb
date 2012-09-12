@@ -1,36 +1,32 @@
-<% content_for :link do %> <!--[if lt IE 9]>
-<link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
-<![endif]-->
+<% content_for :link do %>
 <% end %>
-<div class="row-fluid">
-	<div class="span3"></div>
-	<div class="span6">
-		<ul class="nav nav-list well">
-			<li class="nav-header">
-				Staffs
-			<% @staffs.each do |staff| %>
-			<li>
-				<!-- -->
-				<div style="position:relative;padding: 3px 15px">
-					<!-- -->
-					<%= link_to staff.name, staff_path(staff) %>
-					<%= staff.email %>
-					<%= link_to edit_staff_path(staff), :style=>'position:absolute;right:26px;' do %>
-					<i class="icon-edit"></i>
-					<!-- -->
-					<% end %>
-					<%= link_to staff_path(staff), :data => { :confirm => 'Do you want to delete this staff?' }, :method => :delete, :style=>'position:absolute;right:0px;' do %>
-					<i class="icon-remove"></i>
-					<!-- -->
-					<% end %>
-				</div>
-				<!-- -->
-			</li>
-			<% end %>
-			<%= will_paginate @staffs %>
-			<li>
-				<%= link_to 'New Staff', new_staff_path %>
-			</li>
-		</ul>
-	</div>
+<div class="main">
+   <div class="row-fluid">
+      <div class="span3"></div>
+      <div class="span6">
+         <ul class="nav nav-list well">
+            <li class="nav-header"> Staffs
+               <% @staffs.each do |staff| %> <li>
+               <!-- -->
+               <div style="position:relative;padding: 3px 15px">
+                  <!-- -->
+                  <%= link_to staff.name, staff_path(staff) %>
+                  <%= staff.email %>
+                  <%= link_to edit_staff_path(staff), :style=>'position:absolute;right:26px;' do %>
+                  <i class="icon-edit"></i>
+                  <!-- -->
+                  <% end %>
+                  <%= link_to staff_path(staff), :data => { :confirm => 'Do you want to delete this staff?' }, :method => :delete, :style=>'position:absolute;right:0px;' do %>
+                  <i class="icon-remove"></i>
+                  <!-- -->
+                  <% end %>
+               </div>
+               <!-- -->
+            </li>
+            <% end %>
+            <%= will_paginate @staffs %>
+            <li> <%= link_to 'New Staff', new_staff_path %> </li>
+         </ul>
+      </div>
+   </div>
 </div>
