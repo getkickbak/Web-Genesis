@@ -13,7 +13,9 @@
       <% if flash[:alert] %>
       <div class="alert alert-error">
          <% flash.each do |name, msg| %>
+         <% if name != "timedout" %>
          <%= content_tag :div, msg, :id => "flash_#{name}", :style => 'margin:auto;' %>
+         <% end %>
          <% end -%>
       </div>
       <% end %>
