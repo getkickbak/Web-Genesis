@@ -70,8 +70,8 @@
          </div>
       </div>
       <!--/navbar-->
-      <% if signed_in? %>
       <div class="subnavbar">
+         <% if signed_in? %>
          <div class="subnavbar-inner">
             <div class="container">
                <ul class="mainnav">
@@ -89,9 +89,9 @@
             <!-- /container -->
          </div>
          <!-- /subnavbar-inner -->
+         <% end %>
       </div>
       <!-- /subnavbar -->
-      <% end %>
       <div name="top" class="container">
          <div class="alert alert-warning fade hide">
             <a class="close">x</a>
