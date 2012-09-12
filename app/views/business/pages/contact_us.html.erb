@@ -14,9 +14,9 @@
 </script>
 <script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
 <% end %>
-<% if @notice %>
+<% if flash[:notice] %>
 <div style="display:none;" id="notice">
-   <p><%= @notice %></p>
+   <p><%= flash[:notice] %></p>
 </div>
 <% end %>
 <div class="main">

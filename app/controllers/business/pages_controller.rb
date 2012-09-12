@@ -5,15 +5,14 @@ module Business
 
     def contact_us
       @contact = Contact.new
-      @notice = request.filtered_parameters['notice']
     end
 
     def contact_us_create
       @contact = Contact.new(params[:contact])
       if @contact.valid?
-        UserMailer.merchant_contact_email(@contact).deliver
+        MerchantMailer.contact_email(@contact).deliver
         respond_to do |format|
-          format.html { redirect_to(:action => "contact_us", :notice => 'Email was successfully sent.') }
+          format.html { redirect_to({:action => "contact_us"}, {:notice => 'Email was successfully sent.'}) }
         end
       else
         respond_to do |format|
