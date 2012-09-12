@@ -614,6 +614,16 @@ $(document).ready($(function()
    {
       $('#page-background').height($('body').height());
    });
+   if (!$('navbar navbar-fixed-bottom')[0])
+   {
+      $('#page-background').height('auto');
+      $('#page-background')[0].style['bottom'] = 0;
+      $('div.main')[0].style['border-bottom'] = 'none';
+      $(window).resize(function()
+      {
+         $('#page-background').height('auto');
+      });
+   }
    // --------------------------------------------------------------------------------
    // Popup Initialization Code
    // --------------------------------------------------------------------------------
