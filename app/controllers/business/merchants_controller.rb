@@ -32,7 +32,7 @@ module Business
           @merchant.update_all(@merchant.type, @merchant.visit_frequency, params[:merchant])
           sign_in(current_merchant, :bypass => true)
           respond_to do |format|
-            format.html { redirect_to(:action => "edit", :notice => t("business.merchants.update_success")) }
+            format.html { redirect_to({:action => "edit"}, {:notice => t("business.merchants.update_success")}) }
           #format.xml  { head :ok }
           end
         end
@@ -64,7 +64,7 @@ module Business
         Merchant.transaction do
           @merchant.update_photo(params[:merchant])
           respond_to do |format|
-            format.html { redirect_to(:action => "photo", :notice => t("business.merchants.update_photo_success")) }
+            format.html { redirect_to({:action => "photo"}, {:notice => t("business.merchants.update_photo_success")}) }
           #format.xml  { head :ok }
           end
         end
@@ -86,7 +86,7 @@ module Business
         Merchant.transaction do
           @merchant.update_alt_photo(params[:merchant])
           respond_to do |format|
-            format.html { redirect_to(:action => "photo", :notice => t("business.merchants.update_photo_success")) }
+            format.html { redirect_to({:action => "photo"}, {:notice => t("business.merchants.update_photo_success")}) }
             #format.xml  { head :ok }
           end
         end

@@ -1,7 +1,22 @@
 <% content_for :link do %>
 <% end %>
 <% content_for :script do %>
+<script type="text/javascript">
+   $(document).ready($(function()
+   {
+      var msg = $("#notice").html();
+      if (msg)
+      {
+         Genesis.showWarningMsg(msg, null, true);
+      }
+   })); 
+</script>
 <script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+   <p><%= flash[:notice] %></p>
+</div>
 <% end %>
 <div class="main">
    <div class="main-inner">
