@@ -342,8 +342,8 @@ Genesis =
    perms : 'email,user_birthday,publish_stream,read_friendlists,publish_actions',
    fbAppId : '197968780267830',
 
-   alertWarningClose : 'alert-message.warning .close',
-   alertErrorClose : 'alert-message.error .close',
+   alertWarningClose : '.alert.alert-warning .close',
+   alertErrorClose : '.alert.alert-error .close',
 
    initDone : false,
    errMsg : null,
@@ -527,8 +527,8 @@ $(document).ready($(function()
    clientTime = clientTime.getTime();
 
    genesis._init();
-   genesis.warningMsg = $(".alert-message.warning");
-   genesis.errMsg = $(".alert-message.error");
+   genesis.warningMsg = $(".alert.alert-warning");
+   genesis.errMsg = $(".alert.alert-error");
 
    // --------------------------------------------------------------------------------
    // #Hash Init
@@ -607,6 +607,10 @@ $(document).ready($(function()
 
    $('#page-background').height($('body').height());
    $('div.main').resize(function()
+   {
+      $('#page-background').height($('body').height());
+   });
+   $('body').resize(function()
    {
       $('#page-background').height($('body').height());
    });
