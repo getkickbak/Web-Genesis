@@ -30,6 +30,9 @@ module Business
       authorize! :create, CustomerReward
 
       @customer_reward = CustomerReward.new
+      if params[:mode]
+        @customer_reward.mode = params[:mode].to_sym
+      end  
       @customer_reward.expiry_date = Date.today
       
       respond_to do |format|

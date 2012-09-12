@@ -13,8 +13,13 @@
             <div class="span9">
                <div class="widget ">
                   <div class="widget-header">
-                     <i class="icon-user"></i>
+                  	 <% if params[:mode] && params[:mode].to_sym == :prize %>
+                  	 <i class="icon-star"></i>
+                     <h3>Prize</h3>
+                  	 <% else %>
+                     <i class="icon-gift"></i>
                      <h3>Reward</h3>
+                     <% end %>
                   </div>
                   <!-- /widget-header -->
                   <div class="widget-content">
