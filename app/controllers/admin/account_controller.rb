@@ -29,7 +29,7 @@ module Admin
           @staff.update_all(params[:staff])
           sign_in(current_staff, :bypass => true)
           respond_to do |format|
-            format.html { redirect_to(account_path, :notice => 'User was successfully updated.') }
+            format.html { redirect_to(account_path, :notice => 'Account successfully updated.') }
           #format.xml  { head :ok }
           #format.json { render :json => { :success => true, :data => @staff, :total => 1 } }
           end
