@@ -2,9 +2,10 @@ class Api::V1::ChallengesController < ApplicationController
   before_filter :authenticate_user!
   
   def index
-    authorize! :read, Challenge
+    @venue = Venue.get(params[:venue_id]) || not_found
+    authorize! :read, @venue
     
-    challenge_venues = ChallengeVenue.all(:fields => [:challenge_id], :venue_id => params[:venue_id])
+    challenge_venues = ChallengeVenue.all(:fields => [:challenge_id], :venue_id => @venue.id)
     challenge_ids = []
     challenge_venues.each do |challenge_venue|
       challenge_ids << challenge_venue.challenge_id

@@ -2,9 +2,10 @@ class Api::V1::CustomerRewardsController < ApplicationController
   before_filter :authenticate_user!
   
   def index
-    authorize! :read, CustomerReward
+    @venue = Venue.get(params[:venue_id]) || not_found
+    authorize! :read, @venue
     
-    customer_reward_venues = CustomerRewardVenue.all(:fields => [:customer_reward_id], :venue_id => params[:venue_id])
+    customer_reward_venues = CustomerRewardVenue.all(:fields => [:customer_reward_id], :venue_id => @venue.id)
     customer_reward_ids = []
     customer_reward_venues.each do |reward_venue|
       customer_reward_ids << reward_venue.customer_reward_id
