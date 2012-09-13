@@ -4,9 +4,14 @@ class Api::V1::ChallengesController < ApplicationController
   def index
     authorize! :read, Challenge
     
-    @challenges = Challenge.all(:challenge_venues => { :venue_id => params[:venue_id] })
+    challenge_venues = ChallengeVenue.all(:fields => [:challenge_id], :venue_id => params[:venue_id])
+    challenge_ids = []
+    challenge_venues.each do |challenge_venue|
+      challenge_ids << challenge_venue.challenge_id
+    end
+    @challenges = Challenge.all(:id => challenge_ids)
     challenge_id_to_type_id = {}
-    challenge_to_types = ChallengeToType.all(:fields => [:challenge_id, :challenge_type_id], :challenge => @challenges)
+    challenge_to_types = ChallengeToType.all(:fields => [:challenge_id, :challenge_type_id], :challenge_id => challenge_ids)
     challenge_to_types.each do |challenge_to_type|
       challenge_id_to_type_id[challenge_to_type.challenge_id] = challenge_to_type.challenge_type_id
     end

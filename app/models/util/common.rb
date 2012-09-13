@@ -59,9 +59,14 @@ class Common
   end
 
   def self.get_rewards(venue, mode)
-    rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => venue.id }, :mode => mode, :order => [:points.asc])
+    customer_reward_venues = CustomerRewardVenue.all(:fields => [:customer_reward_id], :venue_id => venue.id)
+    customer_reward_ids = []
+    customer_reward_venues.each do |reward_venue|
+      customer_reward_ids << reward_venue.customer_reward_id
+    end
+    rewards = CustomerReward.all(:id => customer_reward_ids, :mode => mode, :order => [:points.asc])
     reward_id_to_subtype_id = {}
-    reward_to_subtypes = CustomerRewardToSubtype.all(:fields => [:customer_reward_id, :customer_reward_subtype_id], :customer_reward => rewards)
+    reward_to_subtypes = CustomerRewardToSubtype.all(:fields => [:customer_reward_id, :customer_reward_subtype_id], :customer_reward_id => customer_reward_ids)
     reward_to_subtypes.each do |reward_to_subtype|
       reward_id_to_subtype_id[reward_to_subtype.customer_reward_id] = reward_to_subtype.customer_reward_subtype_id
     end
