@@ -30,7 +30,7 @@ Ext.define('Genesis.controller.client.Rewards',
          },
          price : 'clientrewardsview textfield',
          //
-         // SignUp - Referra; Promotion
+         // SignUp - Referral Promotion
          //
          promotion :
          {
@@ -201,6 +201,7 @@ Ext.define('Genesis.controller.client.Rewards',
             Ext.Viewport.setMasked(false);
             if (operation.wasSuccessful())
             {
+               Genesis.db.removeLocalDBAttrib('last_check_in');
                me.fireEvent('triggerCallbacksChain');
             }
          }
@@ -421,6 +422,7 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    onPromotionDoneTap : function(b, e, eOpts)
    {
+      console.debug("Closing Promotional Page");
       var me = this;
       me.fireEvent('triggerCallbacksChain');
    },

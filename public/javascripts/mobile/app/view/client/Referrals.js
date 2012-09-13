@@ -94,6 +94,12 @@ Ext.define('Genesis.view.client.Referrals',
                   desc : '(Refer your friends by sending them an E-Mail)',
                   cls : 'emailsender',
                   tag : 'emailsender'
+               },
+               {
+                  text : 'Receive Referrals',
+                  desc : '(Scan your friends\' Referral Code to get bonus Reward Points!)',
+                  cls : 'receiver',
+                  tag : 'receiver'
                }],
                itemTpl : Ext.create('Ext.XTemplate',
                // @formatter:off

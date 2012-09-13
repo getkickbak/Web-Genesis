@@ -9,6 +9,15 @@
       @extend .listScrollWrapper;
       .listItemDetailsWrapper {
          padding-left:0 !important;
+         &.single {
+            .points {
+               padding-top : $icon-size/4; 
+               padding-bottom : $icon-size/4; 
+               img {
+                  top : $icon-size/4;
+               }
+            }
+         }
          .title {
             float: left;
             margin-left:$icon-size + 10px;

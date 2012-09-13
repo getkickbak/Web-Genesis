@@ -71,7 +71,7 @@ Ext.define('Genesis.view.client.Accounts',
           // Badge Update for Eligible for Rewards/Prizes
           //
           var merchants = Ext.DomQuery.select('.x-badge', me.query('container[tag=accountsList]
-         list[tag=accountsList]')[0].element.dom);
+          list[tag=accountsList]')[0].element.dom);
           var customers = Ext.StoreMgr.get('CustomerStore').getRange();
 
           for (var i = 0; i < merchants.length; i++)
@@ -168,18 +168,41 @@ Ext.define('Genesis.view.client.Accounts',
                   '{[this.isEligible(values)]}',
                   '<img src="{[this.getPhoto(values)]}"/>',
                '</div>',
-               '<div class="listItemDetailsWrapper">',
+               '<div class="listItemDetailsWrapper {[this.isSingle(values)]}">',
                   //'<div class="title">{[this.getTitle()]}</div>',
-                  '<div class="points">',
-                     '{[this.getRewardPoints(values)]}',
-                  '</div>',
-                  '<div class="points">',
-                     '{[this.getPrizePoints(values)]}'+
-                  '</div>',
+                  '<tpl if="this.showRewardPoints()">',
+                     '<div class="points">',
+                        '{[this.getRewardPoints(values)]}',
+                     '</div>',
+                  '</tpl>',
+                  '<tpl if="this.showPrizePoints()">',
+                     '<div class="points">',
+                        '{[this.getPrizePoints(values)]}'+
+                     '</div>',
+                  '</tpl>',
                '</div>',
             '</tpl>',
             // @formatter:on
             {
+               isSingle : function(values)
+               {
+                  rc = '';
+                  switch (me.mode)
+                  {
+                     case 'redeemPrizesProfile' :
+                     case 'redeemRewardsProfile' :
+                     {
+                        rc = 'single';
+                        break;
+                     }
+                     case 'profile' :
+                     case 'emailtransfer' :
+                     case 'transfer' :
+                     default :
+                        break;
+                  }
+                  return rc;
+               },
                getTitle : function()
                {
                   return ('Reward Points: <br/>Prize Points:');
@@ -221,9 +244,47 @@ Ext.define('Genesis.view.client.Accounts',
                {
                   return values.merchant['photo']['thumbnail_ios_small'].url;
                },
+               showRewardPoints : function()
+               {
+                  var rc = true;
+                  switch (me.mode)
+                  {
+                     case 'redeemPrizesProfile' :
+                     {
+                        rc = false;
+                        break;
+                     }
+                     case 'redeemRewardsProfile' :
+                     case 'emailtransfer' :
+                     case 'transfer' :
+                     default :
+                        break;
+                  }
+
+                  return rc;
+               },
                getRewardPoints : function(values)
                {
                   return values['points'] + '<img src="' + Genesis.constants.getIconPath('miscicons', 'points') + '">';
+               },
+               showPrizePoints : function()
+               {
+                  var rc = true;
+                  switch (me.mode)
+                  {
+                     case 'redeemRewardsProfile' :
+                     case 'emailtransfer' :
+                     case 'transfer' :
+                     {
+                        rc = false;
+                        break;
+                     }
+                     case 'redeemPrizesProfile' :
+                     default :
+                        break;
+                  }
+
+                  return rc;
                },
                getPrizePoints : function(values)
                {
@@ -242,6 +303,7 @@ Ext.define('Genesis.view.client.Accounts',
          store : 'VenueStore',
          tag : 'venuesList',
          scrollable : 'vertical',
+         loadingText : null,
          cls : 'venuesList',
          deferEmptyText : false,
          emptyText : ' ',

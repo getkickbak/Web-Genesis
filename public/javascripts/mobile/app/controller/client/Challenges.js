@@ -347,6 +347,12 @@ Ext.define('Genesis.controller.client.Challenges',
             });
             break;
          }
+         case 'receiver' :
+         {
+            me.openPage('referrals');
+            return;
+            break;
+         }
       }
 
       // Request QRCode from server for processing
@@ -785,7 +791,6 @@ Ext.define('Genesis.controller.client.Challenges',
       Ext.defer(function()
       {
          //activeItem.createView();
-
          var desc = me.getChallengeDescContainer();
          for (var i = 0; i < desc.getItems().length; i++)
          {
@@ -793,6 +798,7 @@ Ext.define('Genesis.controller.client.Challenges',
             {
                description : me.defaultDescText
             });
+            me.getChallengeContainer().hide();
          }
       }, 1, activeItem);
       //activeItem.createView();

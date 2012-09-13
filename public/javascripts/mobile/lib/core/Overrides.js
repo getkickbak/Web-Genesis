@@ -10,12 +10,14 @@ Genesis.constants =
    themeName : 'v1',
    site : 'www.getkickbak.com',
    photoSite : 'http://files.getkickbak.com',
-   debugVPrivKey : 'KSz7BnokL9bAegTz08QyY3fLC8L5Q10C',
-   debugRPrivKey : 'KSz7BnokL9bAegTz08QyY3fLC8L5Q10C',
+   debugVPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
+   debugRPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
    debugVenuePrivKey : 'Debug Venue',
    privKey : null,
    device : null,
    redeemDBSize : 10000,
+   minDistance : 0.1 * 1000,
+   //minDistance : 100000 * 1000,
    createAccountMsg : 'Create user account using Facebook Profile information',
    isNative : function()
    {
@@ -460,6 +462,7 @@ Genesis.fb =
                }
                else
                {
+                  Genesis.db.setLocalDBAttrib('enableFB', true);
                   cb(params, null);
                }
             }
@@ -1506,6 +1509,13 @@ Ext.define('Genesis.plugin.PullRefresh',
    }
 });
 
+//---------------------------------------------------------------------------------
+// Math
+//---------------------------------------------------------------------------------
+Math.radians = function(degrees)
+{
+   return (degrees * Math.PI / 180);
+}
 //---------------------------------------------------------------------------------
 // Array
 //---------------------------------------------------------------------------------

@@ -336,6 +336,7 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       if (i >= length)
       {
+         console.debug("Clear Callback Chain[" + i + "].");
          //
          // End of Callback Chain
          //
@@ -500,7 +501,12 @@ Ext.define('Genesis.controller.ControllerBase',
          "csrf_code [" + csrfCode + "]" + "\n" + //
          "currFbId [" + db['currFbId'] + "]");
 
-         me.goToMain();
+         // No Venue Checked-In from previous session
+         if (!db['last_check_in'])
+         {
+            me.goToMain();
+         }
+         
          rc = true;
       }
 

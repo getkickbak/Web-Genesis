@@ -387,6 +387,13 @@ Ext.define('Genesis.view.PromotionItem',
          },
          items : [
          {
+            align : 'left',
+            hidden : true,
+            tag : 'back',
+            ui : 'normal',
+            text : 'Back'
+         },
+         {
             align : 'right',
             tag : 'done',
             text : 'Done'

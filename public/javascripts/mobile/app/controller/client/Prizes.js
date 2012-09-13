@@ -154,11 +154,16 @@ Ext.define('Genesis.controller.client.Prizes',
    {
       return ('I\'ve just won enough Prize Points to redeem "' + prizeName + '" for eating out at ' + venueName + '!');
    },
-   getBadgePrizeMsg : function(points)
+   getBadgePrizeMsg : function(points, badge)
    {
-      return ('You\'ve been awarded an ' + Genesis.constants.addCRLF() + //
-      'additional ' + points + ' Prize Points!' + Genesis.constants.addCRLF() + //
-      this.eligibleRewardMsg);
+      if (points > 0)
+      {
+         return ('You\'ve been awarded an ' + Genesis.constants.addCRLF() + //
+         'additional ' + points + ' Prize Points!' + Genesis.constants.addCRLF() + //
+         this.eligibleRewardMsg);
+      }
+
+      return ('You\'ve been Promoted to Badge Level [' + badge.get('type').display_value + ']!');
    },
    upgradeBadgeEmailMsg : function(badge)
    {
@@ -231,14 +236,13 @@ Ext.define('Genesis.controller.client.Prizes',
          {
             name : name,
             //link : href,
-            link : venue.get('website') || site,
+            link : link,
             caption : link,
             description : desc,
             picture : venue.getMerchant().get('photo')['thumbnail_ios_medium'].url,
             message : message
          }, function(response)
          {
-            Ext.Viewport.setMasked(false);
             if (!response || response.error)
             {
                console.log('Post was not published to Facebook.');
@@ -251,7 +255,6 @@ Ext.define('Genesis.controller.client.Prizes',
       }
       catch (e)
       {
-         Ext.Viewport.setMasked(false);
          console.log('Exception [' + e + ']' + '\n' + //
          'Post was not published to Facebook.');
       }
@@ -269,7 +272,7 @@ Ext.define('Genesis.controller.client.Prizes',
          var name = venue.get('name');
          var link = wsite[wsite.length - 1] || site;
          var desc = venue.get('description').trunc(256);
-         var message = me.upgradeBadgeEmailMsg(earnprize.get('title'), venue.get('name'));
+         var message = me.upgradeBadgeEmailMsg(earnprize.get('title'), name);
 
          console.log('Posting Badge Promotion to Facebook ...' + '\n' + //
          'Name: ' + name + '\n' + //
@@ -281,14 +284,13 @@ Ext.define('Genesis.controller.client.Prizes',
          {
             name : name,
             //link : href,
-            link : venue.get('website') || site,
+            link : link,
             caption : link,
             description : desc,
             picture : badgeURL,
             message : message
          }, function(response)
          {
-            Ext.Viewport.setMasked(false);
             if (!response || response.error)
             {
                console.log('Post was not published to Facebook.');
@@ -301,7 +303,6 @@ Ext.define('Genesis.controller.client.Prizes',
       }
       catch (e)
       {
-         Ext.Viewport.setMasked(false);
          console.log('Exception [' + e + ']' + '\n' + //
          'Post was not published to Facebook.');
       }
@@ -342,18 +343,21 @@ Ext.define('Genesis.controller.client.Prizes',
    {
       var me = this;
       var info = metaData['reward_info'];
+      var ainfo = metaData['account_info'];
       var badgeId = metaData['account_info']['badge_id'];
-      var rc = info['badge_prize_points'] > 0;
-
+      var badge = Ext.StoreMgr.get('BadgeStore').getById(badgeId);
+      //
+      // Badge Promotion or First time visit
+      //
+      var rc = (info['badge_prize_points'] > 0) || (ainfo['visits'] == 1);
       if (rc)
       {
          Ext.device.Notification.show(
          {
             title : 'Badge Promotion Alert!',
-            message : me.getBadgePrizeMsg(info['badge_prize_points']),
+            message : me.getBadgePrizeMsg(info['badge_prize_points'], badge),
             callback : function()
             {
-               var badge = Ext.StoreMgr.get('BadgeStore').getById(badgeId);
                me.redeemItem = Ext.create('Genesis.model.CustomerReward',
                {
                   'title' : badge.get('type').display_value,
@@ -386,7 +390,7 @@ Ext.define('Genesis.controller.client.Prizes',
       var info = metaData['reward_info'];
       var eligible = info['eligible_prize_id'] > 0;
       var soundType, message;
-      
+
       var eligiblePrizeCallback = function(setFlag, viewsPopLength)
       {
          if ((me.flag |= setFlag) == 0x11)
@@ -395,12 +399,11 @@ Ext.define('Genesis.controller.client.Prizes',
             me.fireEvent('triggerCallbacksChain');
          }
       }
-      
       if (info['prize_points'] > me.getMinPrizePts())
       {
          soundType = 'winPrizeSound';
          message = me.wonPrizeMsg(info);
-         
+
          Ext.device.Notification.vibrate();
       }
       else
@@ -430,6 +433,7 @@ Ext.define('Genesis.controller.client.Prizes',
       var me = this;
       var viewport = me.getViewPortCntlr();
       var info = metaData['reward_info'];
+      var ainfo = metaData['account_info'];
 
       me.stopRouletteBall();
 
@@ -439,7 +443,7 @@ Ext.define('Genesis.controller.client.Prizes',
       if (!Ext.isDefined(info['eligible_prize_id']) || (info['eligible_prize_id'] == 0))
       {
          console.log("No Prize to Show.");
-         viewsPopLength = (info['badge_prize_points'] > 0) ? 1 : 0;
+         viewsPopLength = ((info['badge_prize_points'] > 0) || (ainfo['visits'] == 1)) ? 1 : 0;
       }
       //
       // LumpSum Prize Points
@@ -447,7 +451,7 @@ Ext.define('Genesis.controller.client.Prizes',
       else
       {
          console.log("WON LumpSum Prize Points.");
-         viewsPopLength = (info['badge_prize_points'] > 0) ? 2 : 1;
+         viewsPopLength = ((info['badge_prize_points'] > 0) || (ainfo['visits'] == 1)) ? 2 : 1;
       }
 
       me.callBackStack['arguments'] = [metaData, viewsPopLength];
@@ -455,6 +459,7 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    onBadgeDetailDoneTap : function(b, e, eOpts)
    {
+      console.debug("Closing Promotional Badge Details");
       var me = this;
       me.fireEvent('triggerCallbacksChain');
    },

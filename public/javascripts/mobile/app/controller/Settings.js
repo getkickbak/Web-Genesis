@@ -162,11 +162,16 @@ Ext.define('Genesis.controller.Settings',
             {
                if (operation.wasSuccessful())
                {
+                  var db = Genesis.db.getLocalDB();
                   db['enableFB'] = false;
                   db['currFbId'] = 0;
                   delete db['fbAccountId'];
                   delete db['fbResponse'];
                   Genesis.db.setLocalDB(db);
+               }
+               else
+               {
+                  toggle.toggle();
                }
             }
          });

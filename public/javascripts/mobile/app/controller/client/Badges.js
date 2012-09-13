@@ -11,6 +11,7 @@ Ext.define('Genesis.controller.client.Badges',
       routes :
       {
          'badges' : 'mainPage',
+         'badgeDesc' : 'badgeDescPage'
       },
       models : ['Badge', 'Customer', 'Merchant'],
       refs :
@@ -22,7 +23,17 @@ Ext.define('Genesis.controller.client.Badges',
             autoCreate : true,
             xtype : 'clientbadgesview'
          },
-         mainCarousel : 'clientbadgesview'
+         mainCarousel : 'clientbadgesview',
+         //
+         // BadgeDesc
+         //
+         badgeDesc :
+         {
+            selector : 'promotionalitemview[tag=badgeDesc]',
+            autoCreate : true,
+            tag : 'badgeDesc',
+            xtype : 'promotionalitemview'
+         }
       },
       control :
       {
@@ -30,7 +41,16 @@ Ext.define('Genesis.controller.client.Badges',
          {
             activate : 'onActivate',
             deactivate : 'onDeactivate'
-         }
+         },
+         badgeDesc :
+         {
+            activate : 'onBadgeDescActivate',
+            deactivate : 'onBadgeDescDeactivate'
+         },
+         'clientbadgesview dataview' :
+         {
+            select : 'onItemSelect'
+         },
       }
    },
    init : function(app)
@@ -79,9 +99,51 @@ Ext.define('Genesis.controller.client.Badges',
    {
       //this.getInfoBtn().hide();
    },
+   onBadgeDescActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+      var tbbar = activeItem.query('titlebar')[0];
+      
+      activeItem.query('button[tag=back]')[0].show();
+      activeItem.query('button[tag=done]')[0].hide();
+      tbbar.setTitle('Badge Promotion');
+      activeItem.redeemItem = me.redeemItem;
+   },
+   onBadgeDescDeactivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+   },
+   onItemSelect : function(d, model, eOpts)
+   {
+      var me = this;
+      var badge = model;
+      d.deselect([model], false);
+
+      me.redeemItem = Ext.create('Genesis.model.CustomerReward',
+      {
+         'title' : badge.get('type').display_value,
+         'type' :
+         {
+            value : 'promotion'
+         },
+         'photo' :
+         {
+            'thumbnail_ios_medium' : Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_large_url')
+         },
+         //'points' : info['badge_prize_points'],
+         'time_limited' : false,
+         'quantity_limited' : false,
+         'merchant' : null
+      });
+      me.redirectTo('badgeDesc');
+      return false;
+   },
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------
+   badgeDescPage : function()
+   {
+      this.openPage('badgeDesc')
+   },
    mainPage : function()
    {
       this.openPage('main');
@@ -95,6 +157,12 @@ Ext.define('Genesis.controller.client.Badges',
 
       switch (subFeature)
       {
+         case 'badgeDesc' :
+         {
+            me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
+            me.pushView(me.getBadgeDesc());
+            break;
+         }
          case 'main' :
          {
             me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);

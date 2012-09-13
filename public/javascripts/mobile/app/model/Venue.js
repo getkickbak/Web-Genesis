@@ -70,6 +70,14 @@ Ext.define('Genesis.model.Venue',
             read : 'POST'
          });
          this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/venues/share_photo' : Ext.Loader.getPath("Genesis") + "/store/" + 'sharePhoto.json');
+      },
+      setGetLicenseKeyURL : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/venues/updateLicenseKey');
       }
    }
 

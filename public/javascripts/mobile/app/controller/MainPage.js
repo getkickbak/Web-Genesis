@@ -15,6 +15,7 @@ Ext.define('Genesis.controller.MainPage',
          'login' : 'loginPage',
          'merchant' : 'merchantPage',
          'signin' : 'signInPage',
+         'updateLicenseKey' : 'updateLicenseKeyPage',
          'password_reset' : 'signInResetPage',
          'password_change' : 'signInChangePage',
          'createAccount' : 'createAccountPage',
@@ -158,6 +159,10 @@ Ext.define('Genesis.controller.MainPage',
    loginWithFbMsg : function(msg)
    {
       return 'Logging in ...';
+   },
+   licenseKeySuccessMsg : function()
+   {
+      return 'License Key Updated for ' + Genesis.constants.addCRLF() + '[' + Genesis.constants.privKey['venue'] + ']';
    },
    init : function(app)
    {
@@ -319,21 +324,180 @@ Ext.define('Genesis.controller.MainPage',
                //
                // No MetaData returned for now ...
                //
-               me.fireEvent('updatemetadata', proxy.getReader().metaData);
+               if (store.isLoading())
+               {
+                  me.fireEvent('updatemetadata', proxy.getReader().metaData);
+               }
             }
          }
       });
    },
+   updateLicenseKey : function(key)
+   {
+      if (Genesis.constants.isNative())
+      {
+         var failHandler = function(error)
+         {
+            var errorCode =
+            {
+            };
+            errorCode[FileError.NOT_FOUND_ERR] = 'File not found';
+            errorCode[FileError.SECURITY_ERR] = 'Security error';
+            errorCode[FileError.ABORT_ERR] = 'Abort error';
+            errorCode[FileError.NOT_READABLE_ERR] = 'Not readable';
+            errorCode[FileError.ENCODING_ERR] = 'Encoding error';
+            errorCode[FileError.NO_MODIFICATION_ALLOWED_ERR] = 'No mobification allowed';
+            errorCode[FileError.INVALID_STATE_ERR] = 'Invalid state';
+            errorCode[FileError.SYFNTAX_ERR] = 'Syntax error';
+            errorCode[FileError.INVALID_MODIFICATION_ERR] = 'Invalid modification';
+            errorCode[FileError.QUOTA_EXCEEDED_ERR] = 'Quota exceeded';
+            errorCode[FileError.TYPE_MISMATCH_ERR] = 'Type mismatch';
+            errorCode[FileError.PATH_EXISTS_ERR] = 'Path does not exist';
+            var ftErrorCode =
+            {
+            };
+            ftErrorCode[FileTransferError.FILE_NOT_FOUND_ERR] = 'File not found';
+            ftErrorCode[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
+            ftErrorCode[FileTransferError.CONNECTION_ERR] = 'Connection Error';
+
+            console.log("Writing License File Error - [" + errorCode[error.code] + "]");
+         };
+
+         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
+         {
+            var licenseKeyFile = fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/resources/keys.txt';
+            console.debug("License File - [" + licenseKeyFile + "]");
+            fileSystem.root.getFile(licenseKeyFile,
+            {
+               create : true,
+               exclusive : false
+            }, function(fileEntry)
+            {
+               fileEntry.createWriter(function(writer)
+               {
+                  writer.onwriteend = function(evt)
+                  {
+                     console.debug("Content Written to Disk");
+                     Genesis.constants.privKey = key;
+                     Ext.device.Notification.show(
+                     {
+                        title : 'License Key Updated!',
+                        message : me.licenseKeySuccessMsg()
+                     });
+                  };
+                  writer.write(Ext.encode(key));
+               }, failHandler);
+            }, failHandler);
+         }, failHandler);
+
+         return null;
+      }
+      else
+      {
+         // Hardcoded for now ...
+         Genesis.constants.privKey =
+         {
+            'v1' : Genesis.constants.debugVPrivKey,
+            'r1' : Genesis.constants.debugRPrivKey,
+            'venue' : Genesis.constants.debugVenuePrivKey
+         };
+         for (var i in Genesis.constants.privKey)
+         {
+            console.debug("Encryption Key[" + i + "] = [" + Genesis.constants.privKey[i] + "]");
+         }
+         console.debug("Content Written to Memory");
+         Ext.device.Notification.show(
+         {
+            title : 'License Key Updated!',
+            message : me.licenseKeySuccessMsg()
+         });
+      }
+   },
    // --------------------------------------------------------------------------
-   // EVent Handlers
+   // Event Handlers
    // --------------------------------------------------------------------------
+   onLocationUpdate : function(position)
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      var latitude_1 = position.coords.getLatitude();
+      var longitude_1 = position.coords.getLongitude();
+      var db = Genesis.db.getLocalDB();
+      var venue = Ext.create('Genesis.model.Venue', db['last_check_in'].venue);
+      var latitude_2 = venue.get('latitude');
+      var longitude_2 = venue.get('longitude');
+
+      var distance = 6371000 * Math.acos(Math.cos(Math.radians(latitude_1)) * Math.cos(Math.radians(latitude_2)) * Math.cos(Math.radians(longitude_2) - Math.radians(longitude_1)) + Math.sin(Math.radians(latitude_1)) * Math.sin(Math.radians(latitude_2)));
+
+      //
+      // In proximity of the last_check_in location
+      //
+      if (distance <= Genesis.constants.minDistance)
+      {
+         var app = me.getApplication();
+         var controller = app.getController('client.Checkins');
+         var customer = Ext.StoreMgr.get('CustomerStore').getById(db['last_check_in'].customerId);
+         var metaData = db['last_check_in'].metaData;
+
+         console.log("Restoring Previous Venue Location ...");
+         controller.fireEvent('setupCheckinInfo', 'explore', venue, customer, metaData)
+         controller.fireEvent('checkinMerchant', 'checkin', metaData, venue.getId(), customer);
+      }
+      //
+      // We've at somewhere
+      else
+      {
+         console.log("Reset Previous Location back to Home Page ...");
+         Genesis.db.removeLocalDBAttrib('last_check_in');
+         me.goToMain();
+      }
+   },
+   onScannedQRcode : function(qrcode)
+   {
+      var me = this;
+      var vport = me.getViewport();
+
+      if (qrcode)
+      {
+         console.debug("Programming License Key into Merchant Device ...");
+         Venue['setGetLicenseKeyURL'];
+         Venue.load(0,
+         {
+            jsonData :
+            {
+            },
+            params :
+            {
+               update_token : qrcode
+            },
+            callback : function(record, operation)
+            {
+               var metaData = Venue.getProxy().getReader().metaData;
+               Ext.Viewport.setMasked(false);
+
+               if (operation.wasSuccessful())
+               {
+                  me.updateLicenseKey(metaData);
+               }
+            }
+         });
+      }
+      else
+      {
+         console.debug(me.noCodeScannedMsg);
+         Ext.Viewport.setMasked(false);
+         Ext.device.Notification.show(
+         {
+            title : 'Error',
+            message : me.noCodeScannedMsg
+         });
+      }
+   },
    // --------------------------------------------------------------------------
    // MainPage
    // --------------------------------------------------------------------------
    onItemSelect : function(d, model, eOpts)
    {
-      //Genesis.controller.ControllerBase.playSoundFile(this.getViewPortCntlr().sound_files['clickSound']);
-
       d.deselect([model], false);
       console.log("Controller=[" + model.data.pageCntlr + "]");
 
@@ -607,12 +771,24 @@ Ext.define('Genesis.controller.MainPage',
          jsonData :
          {
          },
+         params :
+         {
+            device : Ext.encode(Genesis.constants.device)
+         },
          callback : function(record, operation)
          {
             Ext.Viewport.setMasked(false);
             if (operation.wasSuccessful())
             {
+               var db = Genesis.db.getLocalDB();
+
                me.persistLoadStores(Ext.emptyFn);
+               
+               // Return to previous Venue
+               if (db['last_check_in'])
+               {
+                  me.getGeoLocation();
+               }
             }
          }
       });
@@ -645,8 +821,7 @@ Ext.define('Genesis.controller.MainPage',
          {
             name : values.name,
             email : values.username,
-            password : values.password,
-            device : Ext.encode(Genesis.constants.device)
+            password : values.password
          };
 
          if (response)
@@ -662,7 +837,8 @@ Ext.define('Genesis.controller.MainPage',
             },
             params :
             {
-               user : Ext.encode(params)
+               user : Ext.encode(params),
+               device : Ext.encode(Genesis.constants.device)
             },
             callback : function(records, operation)
             {
@@ -938,6 +1114,10 @@ Ext.define('Genesis.controller.MainPage',
    {
       this.openPage('merchant');
    },
+   updateLicenseKeyPage : function()
+   {
+      this.openPage('updateLicenseKey');
+   },
    signInPage : function()
    {
       var db = Genesis.db.getLocalDB();
@@ -996,6 +1176,11 @@ Ext.define('Genesis.controller.MainPage',
             //me.getApplication().getController('client.Prizes').fireEvent('updatePrizeViews', null);
             me.setAnimationMode(me.self.superclass.self.animationMode['fade']);
             me.pushView(me.getLogin());
+            break;
+         }
+         case 'updateLicenseKey' :
+         {
+            me.scanQRCode();
             break;
          }
       }

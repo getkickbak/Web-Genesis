@@ -78,7 +78,10 @@ Ext.define('Genesis.controller.client.Checkins',
             'metachange' : function(store, proxy, eOpts)
             {
                // Let Other event handlers udpate the metaData first ...
-               me.fireEvent('updatemetadata', proxy.getReader().metaData);
+               if (store.isLoading())
+               {
+                  me.fireEvent('updatemetadata', proxy.getReader().metaData);
+               }
             }
          }
       });
@@ -236,6 +239,12 @@ Ext.define('Genesis.controller.client.Checkins',
                customer : viewport.getCustomer(),
                metaData : viewport.getMetaData()
             });
+            Genesis.db.setLocalDBAttrib('last_check_in',
+            {
+               venue : viewport.getVenue().raw,
+               customerId : viewport.getCustomer().getId(),
+               metaData : viewport.getMetaData()
+            });
             break;
          }
          default :
@@ -280,7 +289,7 @@ Ext.define('Genesis.controller.client.Checkins',
       callback = callback || Ext.emptyFn;
 
       // Find venueId from metaData or from DataStore
-      var new_venueId = metaData['venue_id'] || cestore.first().getId();
+      var new_venueId = metaData['venue_id'] || ((cestore.first()) ? cestore.first().getId() : 0);
       // Find venue from DataStore or current venue info
       venue = cestore.getById(new_venueId) || viewport.getVenue();
 
