@@ -4,7 +4,7 @@ class Promotion
   include DataMapper::Resource
     
   property :id, Serial
-  property :message, String, :required => true, :default => ""
+  property :message, String, :length => 256, :required => true, :default => ""
   property :start_date, Date, :default => ::Constant::MIN_DATE
   property :end_date, Date, :default => ::Constant::MIN_DATE
   property :status, Enum[:pending, :delivered], :default => :pending

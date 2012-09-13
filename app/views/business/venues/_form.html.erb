@@ -4,19 +4,19 @@
 <% end %>
 <%= simple_form_for @venue, :html => { :class => 'form-horizontal' } do |f| %>
 <fieldset>
-   <%= f.input :type_id, :collection => VenueType.values[current_merchant.type.value][I18n.locale], :input_html=>{:class => "input-xlarge"} %>
-   <%= f.input :name, :input_html=>{:class => "input-xlarge"} %>
-   <%= f.input :description, :as => :text, :input_html => { :rows => 10, :class => "input-xxlarge" } %>
-   <%= f.input :address, :input_html=>{:class => "input-xxlarge"} %>
-   <%= f.input :city, :input_html=>{:class => "input-xlarge"} %>
-   <%= f.input :state, :input_html=>{:class => "input-xlarge"} %>
+   <%= f.input :type_id, :collection => VenueType.values[current_merchant.type.value][I18n.locale], :input_html=>{:class => "input-medium"} %>
+   <%= f.input :name, :input_html=>{:class => "input-large"} %>
+   <%= f.input :description, :as => :text, :input_html => { :rows => 10, :class => "input-large" } %>
+   <%= f.input :address, :input_html=>{:class => "input-large"} %>
+   <%= f.input :city, :input_html=>{:class => "input-medium"} %>
+   <%= f.input :state, :input_html=>{:class => "input-medium"} %>
    <%= f.input :zipcode, :input_html=>{:class => "input-medium"} %>
-   <%= f.input :country, :input_html=>{:class => "input-xlarge"} %>
-   <%= f.input :time_zone, :as => :time_zone, :input_html=>{:class => "input-xlarge"} %>
+   <%= f.input :country, :input_html=>{:class => "input-medium"} %>
+   <%= f.input :time_zone, :as => :time_zone, :input_html=>{:class => "input-large"} %>
    <%= f.input :phone, :input_html=>{:class => "input-medium"} %>
-   <%= f.input :website, :required => false, :input_html=>{:class => "input-xxlarge"} %>
-   <%= f.input :longitude, :as => :hidden, :input_html => { :value => @venue.longitude, :class => "input-large"} %>
-   <%= f.input :latitude, :as => :hidden, :input_html => { :value => @venue.latitude, :class => "input-xlarge" } %>
+   <%= f.input :website, :required => false, :input_html=>{:class => "input-large"} %>
+   <%= f.input :longitude, :as => :hidden, :input_html => { :value => @venue.longitude } %>
+   <%= f.input :latitude, :as => :hidden, :input_html => { :value => @venue.latitude } %>
    <br />
    <div class="form-actions">
       <%= f.button :submit , "Save", :class => 'btn btn-primary' %>
