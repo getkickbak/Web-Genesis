@@ -3,16 +3,16 @@
 
 <%= simple_form_for @merchant, :url => update_account_path, :html => { :class => 'form-horizontal' } do |f| %>
 <fieldset>
-   <%= f.input :name, :input_html=>{:class => "input-xlarge disabled"} %>
-   <%= f.input :description, :as => :text, :input_html=>{:class => "input-xxlarge disabled" }, :rows => 10 %>
-   <%= f.input :email, :input_html=>{:class => "input-xxlarge"} %>
+   <%= f.input :name, :input_html=>{:class => "input-large"} %>
+   <%= f.input :description, :as => :text, :input_html=>{:class => "input-large" }, :rows => 10 %>
+   <%= f.input :email, :input_html=>{:class => "input-large"} %>
    <%= f.input :account_first_name, :input_html=>{:class => "input-large"} %>
    <%= f.input :account_last_name, :input_html=>{:class => "input-large"} %>
-   <%= f.input :phone, :input_html=>{:class => "input-large"} %>
-   <%= f.input :website, :input_html=>{:class => "input-xxlarge"}, :required => false %>
-   <%= f.input :current_password, :input_html=>{:class => "input-large"} %>
-   <%= f.input :password, :input_html=>{:class => "input-large"} %>
-   <%= f.input :password_confirmation, :input_html=>{:class => "input-large"} %>
+   <%= f.input :phone, :input_html=>{:class => "input-medium"} %>
+   <%= f.input :website, :input_html=>{:class => "input-large"}, :required => false %>
+   <%= f.input :current_password, :input_html=>{:class => "input-medium"} %>
+   <%= f.input :password, :input_html=>{:class => "input-medium"} %>
+   <%= f.input :password_confirmation, :input_html=>{:class => "input-medium"} %>
    <br />
    <div class="form-actions">
       <%= f.button :submit , "Save", :class => 'btn btn-primary' %>
