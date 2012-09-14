@@ -460,7 +460,7 @@ Ext.define('Genesis.controller.MainPage',
       if (qrcode)
       {
          console.debug("Programming License Key into Merchant Device ...");
-         Venue['setGetLicenseKeyURL'];
+         Venue['setGetLicenseKeyURL']();
          Venue.load(0,
          {
             jsonData :
@@ -468,7 +468,8 @@ Ext.define('Genesis.controller.MainPage',
             },
             params :
             {
-               update_token : qrcode
+               update_token : qrcode,
+               deviceId : (Genesis.constants.isNative()) ? device.uuid : null,
             },
             callback : function(record, operation)
             {
@@ -783,7 +784,7 @@ Ext.define('Genesis.controller.MainPage',
                var db = Genesis.db.getLocalDB();
 
                me.persistLoadStores(Ext.emptyFn);
-               
+
                // Return to previous Venue
                if (db['last_check_in'])
                {

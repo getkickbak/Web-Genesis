@@ -1,0 +1,59 @@
+//
+// Hero unit
+// --------------------------------------------------
+
+
+.hero-unit {
+  //padding: 60px;
+  padding: 36px 0;
+  //margin-bottom: 30px;
+  margin-bottom: 50px;
+  background-color: @heroUnitBackground;
+  .border-radius(6px);
+  // New Attributes
+  margin-top: 20px;
+  h1 {
+    margin-bottom: 0;
+    //font-size: 60px;
+    font-size: 37px;
+    //line-height: 1;
+    line-height: 1.2;
+    color: @heroUnitHeadingColor;
+    //letter-spacing: -1px;
+    // New Attributes
+    text-align:right;
+    text-shadow: black 1px 3px 3px;
+  }
+  p {
+    font-size: 18px;
+    font-weight: 200;
+    line-height: @baseLineHeight * 1.5;
+    color: @heroUnitLeadColor;
+  }
+}
+
+.addbusiness, .contactus {
+  position:relative;
+  img {
+     top:0;
+     right:0;
+     position:absolute;
+     width:450px;
+  }
+  .hero-unit {
+    //padding: 48px 0 0 0;
+    margin: 0px;
+    background-color:transparent;
+    h1 {
+      color: #137BFF;
+      text-align:left;
+      text-shadow: none;
+      margin-bottom: 40px;
+    }
+    p {
+      font-size: 12px;
+      color: @grayDark;
+      font-family: "Helvetica", "Arial", sans-serif;
+    }
+  }
+}
