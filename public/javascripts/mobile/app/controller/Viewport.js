@@ -636,7 +636,6 @@ Ext.define('Genesis.controller.Viewport',
    },
    openMainPage : function()
    {
-      var me = this;
       var db = Genesis.db.getLocalDB();
       var loggedIn = (db['auth_code']) ? true : false;
       if (!merchantMode)
@@ -646,14 +645,14 @@ Ext.define('Genesis.controller.Viewport',
             //var app = this.getApplication();
             //var controller = app.getController('MainPage');
 
-            me.setLoggedIn(loggedIn);
+            this.setLoggedIn(loggedIn);
             console.debug("Going to SignIn Page ...");
-            me.redirectTo('signIn');
+            this.redirectTo('signIn');
          }
          else
          {
             console.debug("Going to Login Page ...");
-            me.redirectTo('login');
+            this.redirectTo('login');
          }
       }
    }
