@@ -259,7 +259,7 @@ Ext.define('Genesis.controller.ControllerBase',
       var viewport = this.getViewPortCntlr();
       if (viewport != this)
       {
-         viewport.relayEvents(this, ['pushview', 'popview', 'silentpopview', 'resetview']);
+         viewport.relayEvents(this, ['pushview', 'popview', 'silentpopview']);
          viewport.on('animationCompleted', this.onAnimationCompleted, this);
       }
    },
@@ -279,7 +279,6 @@ Ext.define('Genesis.controller.ControllerBase',
       var me = this;
       var viewport = me.getViewPortCntlr();
       viewport.setLoggedIn(true);
-      me.resetView();
       me.redirectTo('main');
       console.log("LoggedIn, Going to Main Page ...");
    },
@@ -301,7 +300,6 @@ Ext.define('Genesis.controller.ControllerBase',
             title : 'Network Error',
             message : 'You have lost internet connectivity'
          });
-         me.resetView();
          me.redirectTo('login');
          return;
       }
@@ -508,7 +506,7 @@ Ext.define('Genesis.controller.ControllerBase',
          {
             me.goToMain();
          }
-
+         
          rc = true;
       }
 

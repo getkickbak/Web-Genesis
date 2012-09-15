@@ -1101,7 +1101,6 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                      {
                         if (metaData['session_timeout'])
                         {
-                           viewport.resetView();
                            viewport.redirectTo('login');
                            return;
                         }
@@ -1150,7 +1149,6 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                      message : messages,
                      callback : function()
                      {
-                        viewport.resetView();
                         viewport.redirectTo('login');
                      }
                   });
@@ -1180,7 +1178,6 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                {
                   if (metaData['session_timeout'])
                   {
-                     viewport.resetView();
                      viewport.redirectTo('login');
                      return;
                   }
@@ -1194,7 +1191,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                }
             }
          }
-         console.debug("Ajax ErrorHandler called.\nOperation(" + operation.wasSuccessful() + ")");
+         console.debug("Ajax ErrorHandler called. Operation(" + operation.wasSuccessful() + ")");
          me.fireEvent('exception', me, response, operation);
       }
       try
