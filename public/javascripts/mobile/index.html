@@ -262,6 +262,7 @@
             var viewport = _application.getController('Viewport');
             if (viewport)
             {
+               viewport.resetView();
                if (viewport.getLoggedIn())
                {
                   viewport.redirectTo('main');
