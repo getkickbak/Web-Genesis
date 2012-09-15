@@ -248,6 +248,8 @@ Ext.define('Genesis.controller.client.Merchants',
       }
       else
       {
+         var info = viewport.getCheckinInfo();
+         
          console.log("Going back to Checked-In Merchant Home Account Page ...");
          var info = viewport.getCheckinInfo();
          me.resetView();
