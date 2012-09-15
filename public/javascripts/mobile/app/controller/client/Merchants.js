@@ -249,9 +249,9 @@ Ext.define('Genesis.controller.client.Merchants',
       else
       {
          console.log("Going back to Checked-In Merchant Home Account Page ...");
+         var info = viewport.getCheckinInfo();
          me.resetView();
-         me.setAnimationMode(me.self.superclass.self.animationMode['pop']);
-         me.pushView(me.getMainPage());
+         me.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId());
       }
    },
    onMainActivate : function(activeItem, c, oldActiveItem, eOpts)
