@@ -194,6 +194,7 @@ Ext.define('Genesis.controller.MainPage',
                   }
                   else
                   {
+                     me.resetView();
                      me.redirectTo('login');
                   }
                }
@@ -621,6 +622,7 @@ Ext.define('Genesis.controller.MainPage',
             //
             if (!operation.wasSuccessful())
             {
+               me.resetView();
                me.redirectTo('login');
             }
             else
@@ -663,6 +665,7 @@ Ext.define('Genesis.controller.MainPage',
          {
             Genesis.fb.facebook_onLogout(null, true);
          }
+         me.resetView();
          me.redirectTo('login');
       }
       var _logout = function()
@@ -755,6 +758,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    onSignInTap : function(b, e, eOpts, eInfo)
    {
+      this.resetView();
       this.redirectTo('signin');
    },
    // --------------------------------------------------------------------------
@@ -892,6 +896,7 @@ Ext.define('Genesis.controller.MainPage',
             //
             if (!operation.wasSuccessful())
             {
+               //me.resetView();
                //me.redirectTo('login');
             }
             else
@@ -1154,7 +1159,6 @@ Ext.define('Genesis.controller.MainPage',
    {
       var me = this;
 
-      me.resetView();
       switch (subFeature)
       {
          case 'main' :
@@ -1165,6 +1169,7 @@ Ext.define('Genesis.controller.MainPage',
          }
          case 'merchant' :
          {
+            me.resetView();
             var info = me.getViewPortCntlr().getCheckinInfo();
             me.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
             break;
