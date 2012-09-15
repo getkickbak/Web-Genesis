@@ -239,19 +239,12 @@ Ext.define('Genesis.controller.client.Checkins',
                customer : viewport.getCustomer(),
                metaData : viewport.getMetaData()
             });
-            if (venue)
+            Genesis.db.setLocalDBAttrib('last_check_in',
             {
-               Genesis.db.setLocalDBAttrib('last_check_in',
-               {
-                  venue : viewport.getVenue().raw,
-                  customerId : viewport.getCustomer().getId(),
-                  metaData : viewport.getMetaData()
-               });
-            }
-            else
-            {
-               Genesis.db.removeLocalDBAttrib('last_check_in');
-            }
+               venue : viewport.getVenue().raw,
+               customerId : viewport.getCustomer().getId(),
+               metaData : viewport.getMetaData()
+            });
             break;
          }
          default :

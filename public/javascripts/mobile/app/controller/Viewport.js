@@ -385,7 +385,6 @@ Ext.define('Genesis.controller.Viewport',
    },
    onHomeButtonTap : function(b, e, eOpts, eInfo)
    {
-      this.resetView();
       this.redirectTo('main');
       console.log("Going back to HomePage ...");
    },
@@ -642,7 +641,6 @@ Ext.define('Genesis.controller.Viewport',
       var loggedIn = (db['auth_code']) ? true : false;
       if (!merchantMode)
       {
-         me.resetView();
          if (loggedIn)
          {
             //var app = this.getApplication();
