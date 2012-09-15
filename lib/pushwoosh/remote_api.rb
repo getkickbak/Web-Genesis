@@ -3,7 +3,7 @@ module Pushwoosh
     def initialize  
     end
     
-    def create_message(logger, message, time, device_list)
+    def create_message(message, time, device_list)
       service = "createMessage"
       body ={
         "request" => {
@@ -33,11 +33,11 @@ module Pushwoosh
           ]
         }
       }.to_json
-      logger.debug("Body: #{body}")
+      #Rails.logger.debug("Body: #{body}")
       call_api(service, body)
     end
     
-    def register_device(logger, device_id, device_type, hw_id)
+    def register_device(device_id, device_type, hw_id)
       service = "registerDevice"
       body = {
         "request" => {
@@ -49,11 +49,11 @@ module Pushwoosh
           "device_type" => device_type
         }
       }.to_json
-      logger.debug("Body: #{body}")
+      #Rails.logger.debug("Body: #{body}")
       call_api(service, body)
     end
     
-    def unregister_device(logger, device_id, device_type)
+    def unregister_device(device_id, device_type)
       service = "unregisterDevice"
       body = {
         "request" => {
@@ -62,7 +62,7 @@ module Pushwoosh
           "device_type" => device_type
         }
       }.to_json
-      logger.debug("Body: #{body}")
+      #Rails.logger.debug("Body: #{body}")
       call_api(service, body)
     end
     

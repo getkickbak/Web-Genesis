@@ -34,6 +34,10 @@ module Business
         @customer_reward.mode = params[:mode].to_sym
       end  
       @customer_reward.expiry_date = Date.today
+      @venue_ids = []
+      current_merchant.venues.each do |venue|
+        @venue_ids << venue.id
+      end
       
       respond_to do |format|
         format.html # index.html.erb

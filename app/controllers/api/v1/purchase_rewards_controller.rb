@@ -1,4 +1,4 @@
-class Api::V1::PurchaseRewardsController < ApplicationController
+class Api::V1::PurchaseRewardsController < BaseApplicationController
   before_filter :authenticate_user!
   
   def earn

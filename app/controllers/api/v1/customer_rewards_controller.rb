@@ -1,4 +1,4 @@
-class Api::V1::CustomerRewardsController < ApplicationController
+class Api::V1::CustomerRewardsController < BaseApplicationController
   before_filter :authenticate_user!
   
   def index

@@ -1,4 +1,4 @@
-class Api::V1::CreditCardsController < ApplicationController
+class Api::V1::CreditCardsController < BaseApplicationController
   before_filter :authenticate_user!
 
   def index

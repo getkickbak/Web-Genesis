@@ -1,4 +1,4 @@
-class Api::V1::TokensController < ApplicationController
+class Api::V1::TokensController < BaseApplicationController
   skip_before_filter :verify_authenticity_token
   before_filter :authenticate_user!, :only => [:get_csrf_token]
   skip_authorization_check

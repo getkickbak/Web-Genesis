@@ -1,4 +1,4 @@
-class Api::V1::VenuesController < ApplicationController
+class Api::V1::VenuesController < BaseApplicationController
   skip_before_filter :verify_authenticity_token, :only => [:share_photo]
   before_filter :authenticate_user!
   
