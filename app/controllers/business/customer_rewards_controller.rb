@@ -30,8 +30,10 @@ module Business
       authorize! :create, CustomerReward
 
       @customer_reward = CustomerReward.new
-      if params[:mode]
+      if params[:mode] && (params[:mode] == "reward" || params[:mode] == "prize")
         @customer_reward.mode = params[:mode].to_sym
+      else
+        @customer_reward.mode = :reward  
       end  
       @customer_reward.expiry_date = Date.today
       @venue_ids = []
