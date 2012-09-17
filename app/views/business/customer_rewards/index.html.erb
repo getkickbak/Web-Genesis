@@ -60,13 +60,13 @@
             </div>
             <div class="span9">
                <% if @display != "venue" %>
-               <% rewards = @customer_rewards.all(:mode => :reward) %>
-               <% prizes = @customer_rewards.all(:mode => :prize) %>
+               <% rewards = @customer_rewards.all(:mode => :reward, :order => [:points.asc]) %>
+               <% prizes = @customer_rewards.all(:mode => :prize, :order => [:points.asc]) %>
                <% rtitle = "Merchant Rewards Catalog" %>
                <% ptitle = "Merchant Prizes Catalog" %>
                <% else %>
-               <% rewards = @venue.customer_rewards.all(:mode => :reward) %>
-               <% prizes = @venue.customer_rewards.all(:mode => :prize) %>
+               <% rewards = @venue.customer_rewards.all(:mode => :reward, :order => [:points.asc]) %>
+               <% prizes = @venue.customer_rewards.all(:mode => :prize, :order => [:points.asc]) %>
                <% rtitle = "Rewards for " + @venue.name %>
                <% ptitle = "Prizes for " + @venue.name %>
                <% end %>

@@ -2,6 +2,6 @@
 <%= f.simple_fields_for :badges do |builder| %>
 <%= render "badge_fields", :f => builder %>
 <% end %>
-<%= f.button :submit %>
+<%= f.button :submit, "Update" %>
 <%= link_to("Cancel", badges_path, :class => 'btn') %>
 <% end %>
