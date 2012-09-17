@@ -51,6 +51,20 @@ module Business
         Venue.transaction do
           type = VenueType.get(params[:venue][:type_id])
           @venue = Venue.create(current_merchant, type, params[:venue])
+          rewards = CustomerReward.all(:merchant => current_merchant)
+          rewards.each do |reward|
+            reward_venue = CustomerRewardVenue.new
+            reward_venue.customer_reward = reward
+            reward_venue.venue = @venue
+            reward_venue.save
+          end
+          challenges = Challenge.all(:merchant => current_merchant)
+          challenges.each do |challenge|
+            challenge_venue = ChallengeVenue.new
+            challenge_venue.challenge = challenge
+            challenge_venue.venue = @venue
+            challenge_venue.save
+          end
           respond_to do |format|
             format.html { redirect_to({:action => "show", :id => @venue.id}, {:notice => t("business.venues.create_success")}) }
           #format.xml  { head :ok }
