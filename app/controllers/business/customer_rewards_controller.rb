@@ -1,5 +1,5 @@
 module Business
-  class CustomerRewardsController < BaseApplicationController
+  class CustomerRewardsController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     
     def index

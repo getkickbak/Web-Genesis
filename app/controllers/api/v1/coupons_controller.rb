@@ -1,4 +1,4 @@
-class Api::V1::CouponsController < BaseApplicationController
+class Api::V1::CouponsController < Api::V1::BaseApplicationController
   before_filter :authenticate_user!
   
   def show

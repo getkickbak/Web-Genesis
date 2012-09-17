@@ -1,5 +1,5 @@
 module Admin
-  class StaffsController < BaseApplicationController
+  class StaffsController < Admin::BaseApplicationController
     before_filter :authenticate_staff!
     #load_and_authorize_resource
   

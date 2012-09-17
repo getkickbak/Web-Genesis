@@ -1,4 +1,4 @@
-class Api::V1::OrdersController < BaseApplicationController
+class Api::V1::OrdersController < Api::V1::BaseApplicationController
   before_filter :authenticate_user!, :except => [:new, :create, :confirmed_email]
 
   #load_and_authorize_resource

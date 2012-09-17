@@ -1,5 +1,5 @@
 module Business
-  class PagesController < BaseApplicationController
+  class PagesController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     skip_authorization_check
 

@@ -1,5 +1,5 @@
 module Business
-  class VenuesController < BaseApplicationController
+  class VenuesController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     before_filter :check_is_admin
     #load_and_authorize_resource

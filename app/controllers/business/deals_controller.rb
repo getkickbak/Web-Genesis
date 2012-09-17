@@ -1,7 +1,7 @@
 require 'util/constant'
 
 module Business
-  class DealsController < BaseApplicationController
+  class DealsController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     
     #load_and_authorize_resource

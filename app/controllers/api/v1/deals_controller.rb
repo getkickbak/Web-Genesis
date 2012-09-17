@@ -1,6 +1,6 @@
 require 'util/constant'
 
-class Api::V1::DealsController < BaseApplicationController
+class Api::V1::DealsController < Api::V1::BaseApplicationController
   before_filter :authenticate_user!, :except => [:index, :show]
   #load_and_authorize_resource
 

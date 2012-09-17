@@ -1,5 +1,5 @@
 module Admin
-  class DevicesController < BaseApplicationController
+  class DevicesController < Admin::BaseApplicationController
     before_filter :authenticate_staff!
     
     def index

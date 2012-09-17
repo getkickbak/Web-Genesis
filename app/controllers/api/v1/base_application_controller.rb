@@ -1,4 +1,4 @@
-class BaseApplicationController < ApplicationController
+class Api::V1::BaseApplicationController < ApplicationController
   around_filter :global_request_logging
 
   def global_request_logging 

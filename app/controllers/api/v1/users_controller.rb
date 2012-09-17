@@ -1,4 +1,4 @@
-class Api::V1::UsersController < BaseApplicationController
+class Api::V1::UsersController < Api::V1::BaseApplicationController
   skip_before_filter :verify_authenticity_token, :only => [:reset_password]
   before_filter :authenticate_user!, :except => [:reset_password]
   skip_authorization_check :only => [:reset_password]

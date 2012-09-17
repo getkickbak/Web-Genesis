@@ -4,7 +4,7 @@ require 'uuidtools'
 
 #require 'base64'
 
-class Api::V1::ReferralsController < BaseApplicationController
+class Api::V1::ReferralsController < Api::V1::BaseApplicationController
    before_filter :authenticate_user!, :except => [:find, :find_by_deal, :find_by_user, :upload_photo]
    
    def find

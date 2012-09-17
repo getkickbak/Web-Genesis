@@ -1,5 +1,5 @@
 module Business
-  class PromotionsController < BaseApplicationController
+  class PromotionsController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     before_filter :check_status
 

@@ -1,5 +1,5 @@
 module Admin
-  class MarketingController < BaseApplicationController
+  class MarketingController < Admin::BaseApplicationController
     before_filter :authenticate_staff!
     skip_authorization_check
 

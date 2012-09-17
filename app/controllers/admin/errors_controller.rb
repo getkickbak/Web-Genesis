@@ -1,5 +1,5 @@
 module Admin
-  class ErrorsController < BaseApplicationController
+  class ErrorsController < Admin::BaseApplicationController
     def routing
       not_found
     end
