@@ -106,8 +106,9 @@ module Business
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
+        flash[:error] = t("business.venues.update_authcode_failure")
         respond_to do |format|
-          format.html { redirect_to({:action => "show", :id => @venue.id}, {:error => t("business.venues.update_authcode_failure")}) }
+          format.html { redirect_to({:action => "show", :id => @venue.id}) }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
         end
       end        
@@ -127,8 +128,9 @@ module Business
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
+        flash[:error] = t("business.venues.update_checkin_authcode_failure")
         respond_to do |format|
-          format.html { redirect_to({:action => "show", :id => @venue.id}, {:error => t("business.venues.update_checkin_authcode_failure")}) }
+          format.html { redirect_to({:action => "show", :id => @venue.id}) }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
         end
       end
