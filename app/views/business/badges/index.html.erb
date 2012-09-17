@@ -7,12 +7,12 @@
 	<div class="main-inner">
 		<div class="container">
 			<% if current_merchant.status == :pending %>
-      		<ul class="pager">
-      			<li class="previous">
-      				<%= link_to 'Continue Setup', setup_path %>
-      			</li>	
-      		</ul>
-      		<% end %>
+			<ul class="pager">
+				<li class="previous">
+					<%= link_to 'Continue Setup', setup_path %>
+				</li>
+			</ul>
+			<% end %>
 			<div class="row">
 				<div class="span9">
 					<div class="widget widget-table action-table">
@@ -27,6 +27,11 @@
 									<tr>
 										<td><% if current_merchant.custom_badges %><%= badge.custom_type.display_value %><% else %><%= badge.eager_load_type.display_value %><% end %></td>
 										<td><%= badge.visits %></td>
+									</tr>
+									<% end %>
+									<% if @badges.length == 0 %>
+									<tr>
+										<td colspan="2" style="text-align:center;">No badges</td>
 									</tr>
 									<% end %>
 								</tbody>
