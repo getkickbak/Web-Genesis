@@ -6,16 +6,19 @@
 <div class="main">
    <div class="main-inner">
       <div class="container">
+      	<% if current_merchant.status == :pending %>
+      	<ul class="pager">
+      		<li class="previous">
+      			<%= link_to 'Continue Setup', setup_path %>
+      		</li>	
+      	</ul>
+      	<% end %>
          <div class="row">
             <div class="span6">
                <div class="widget widget-table action-table">
                   <div class="widget-header">
                      <i class="icon-camera"></i>
-                     <h3>Primary Photo <% if current_merchant.status == :pending %>
-                        (<%= link_to 'Continue Setup', setup_path %>)
-                        <% end %>
-                        <!---->
-                     </h3>
+                     <h3>Primary Photo</h3>
                   </div>
                   <div class="widget-content" style="text-align:center;">
                      <%= image_tag @merchant.photo_url.to_s, :style=> "padding:1.6em;" %>
@@ -36,11 +39,7 @@
                <div class="widget widget-table action-table">
                   <div class="widget-header">
                      <i class="icon-camera"></i>
-                     <h3>Secondary Photo <% if current_merchant.status == :pending %>
-                        (<%= link_to 'Continue Setup', setup_path %>)
-                        <% end %>
-                        <!---->
-                     </h3>
+                     <h3>Secondary Photo</h3>
                   </div>
                   <div class="widget-content" style="text-align:center;">
                      <%= image_tag @merchant.alt_photo_url.to_s, :style=> "padding:1.6em;" %>

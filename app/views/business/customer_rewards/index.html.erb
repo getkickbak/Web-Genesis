@@ -22,12 +22,12 @@
    <div class="main-inner">
       <div class="container">
       	<% if current_merchant.status == :pending %>
-      	<div class="row">
-      		<div class="span3">
-			<%= link_to 'Continue Setup', setup_path %>
-			</div>
-		</div>
-		<% end %>
+      	<ul class="pager">
+      		<li class="previous">
+      			<%= link_to 'Continue Setup', setup_path %>
+      		</li>	
+      	</ul>
+      	<% end %>
          <div class="row">
             <div class="span3">
                <div class="widget widget-table action-table">
