@@ -1,4 +1,4 @@
-class Api::V1::CheckInsController < ApplicationController
+class Api::V1::CheckInsController < Api::V1::BaseApplicationController
   before_filter :authenticate_user!
   
   def create
@@ -65,7 +65,7 @@ class Api::V1::CheckInsController < ApplicationController
     authorize! :update, @customer
     
     Time.zone = @venue.time_zone
-    if !Common.within_geo_distance?(logger, current_user, params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
+    if !Common.within_geo_distance?(current_user, params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.out_of_distance").split('\n') } }

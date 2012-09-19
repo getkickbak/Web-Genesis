@@ -1,5 +1,5 @@
 module Admin
-  class DealsController < BaseApplicationController
+  class DealsController < Admin::BaseApplicationController
     before_filter :authenticate_staff!
     
     def index

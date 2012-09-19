@@ -22,11 +22,11 @@
    <div class="main-inner">
       <div class="container">
       	<% if current_merchant.status == :pending %>
-      	<div class="row">
-      		<div class="span3">
+      	<ul class="pager">
+      		<li class="previous">
       			<%= link_to 'Continue Setup', setup_path %>
-      		</div>	
-      	</div>
+      		</li>	
+      	</ul>
       	<% end %>
          <div class="row">
             <div class="span3">
@@ -79,7 +79,7 @@
                               <td><%= challenge.name %></td>
                               <td class="td-actions">
                               <!-- -->
-                              <%= link_to edit_challenge_path(challenge), :class=>"btn btn-small btn-warning", :title=>"print" do %>
+                              <%= link_to edit_challenge_path(challenge), :class=>"btn btn-small btn-warning", :title=>"edit" do %>
                               <!-- -->
                               <i class="btn-icon-only icon-edit"></i>
                               <!-- -->
@@ -91,6 +91,11 @@
                               <% end %>
                               <!-- -->
                               </td>
+                           </tr>
+                           <% end %>
+                           <% if challenges.length == 0 %>
+                           <tr>
+                              <td colspan="2" style="text-align:center;">No challenges</td>
                            </tr>
                            <% end %>
                         </tbody>

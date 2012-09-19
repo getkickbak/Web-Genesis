@@ -1,5 +1,5 @@
 module Business
-  class CustomerRewardsController < BaseApplicationController
+  class CustomerRewardsController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     
     def index
@@ -30,10 +30,16 @@ module Business
       authorize! :create, CustomerReward
 
       @customer_reward = CustomerReward.new
-      if params[:mode]
+      if params[:mode] && (params[:mode] == "reward" || params[:mode] == "prize")
         @customer_reward.mode = params[:mode].to_sym
+      else
+        @customer_reward.mode = :reward  
       end  
       @customer_reward.expiry_date = Date.today
+      @venue_ids = []
+      current_merchant.venues.each do |venue|
+        @venue_ids << venue.id
+      end
       
       respond_to do |format|
         format.html # index.html.erb

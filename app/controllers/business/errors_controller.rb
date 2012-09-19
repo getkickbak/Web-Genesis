@@ -1,5 +1,5 @@
 module Business
-  class ErrorsController < BaseApplicationController
+  class ErrorsController < Business::BaseApplicationController
     def routing
       not_found
     end

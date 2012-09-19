@@ -1,5 +1,5 @@
 module Business
-  class VenuesController < BaseApplicationController
+  class VenuesController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     before_filter :check_is_admin
     #load_and_authorize_resource
@@ -51,6 +51,20 @@ module Business
         Venue.transaction do
           type = VenueType.get(params[:venue][:type_id])
           @venue = Venue.create(current_merchant, type, params[:venue])
+          rewards = CustomerReward.all(:merchant => current_merchant)
+          rewards.each do |reward|
+            reward_venue = CustomerRewardVenue.new
+            reward_venue.customer_reward = reward
+            reward_venue.venue = @venue
+            reward_venue.save
+          end
+          challenges = Challenge.all(:merchant => current_merchant)
+          challenges.each do |challenge|
+            challenge_venue = ChallengeVenue.new
+            challenge_venue.challenge = challenge
+            challenge_venue.venue = @venue
+            challenge_venue.save
+          end
           respond_to do |format|
             format.html { redirect_to({:action => "show", :id => @venue.id}, {:notice => t("business.venues.create_success")}) }
           #format.xml  { head :ok }
@@ -106,8 +120,9 @@ module Business
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
+        flash[:error] = t("business.venues.update_authcode_failure")
         respond_to do |format|
-          format.html { redirect_to({:action => "show", :id => @venue.id}, {:error => t("business.venues.update_authcode_failure")}) }
+          format.html { redirect_to({:action => "show", :id => @venue.id}) }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
         end
       end        
@@ -127,8 +142,9 @@ module Business
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
+        flash[:error] = t("business.venues.update_checkin_authcode_failure")
         respond_to do |format|
-          format.html { redirect_to({:action => "show", :id => @venue.id}, {:error => t("business.venues.update_checkin_authcode_failure")}) }
+          format.html { redirect_to({:action => "show", :id => @venue.id}) }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
         end
       end

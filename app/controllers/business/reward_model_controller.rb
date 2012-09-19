@@ -1,5 +1,5 @@
 module Business
-  class RewardModelController < BaseApplicationController
+  class RewardModelController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     before_filter :check_is_admin
     skip_authorization_check

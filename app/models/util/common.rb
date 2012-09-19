@@ -39,10 +39,10 @@ class Common
     get_photo_host+generate_temp_file_path(filename)
   end
 
-  def self.within_geo_distance?(logger, user, latitude_1, longitude_1, latitude_2, longitude_2)
+  def self.within_geo_distance?(user, latitude_1, longitude_1, latitude_2, longitude_2)
     if !APP_PROP["SIMULATOR_MODE"] && user.role == "user"
       cal_distance = 6371000 * Math.acos( Math.cos( Math.radians( latitude_1 ) ) * Math.cos( Math.radians( latitude_2 ) ) * Math.cos( Math.radians( longitude_2 ) - Math.radians( longitude_1 ) ) + Math.sin( Math.radians( latitude_1 ) ) * Math.sin( Math.radians( latitude_2 ) ) )
-      logger.info("Check geo-distance: #{cal_distance}m away")
+      Rails.logger.info("Check geo-distance: #{cal_distance}m away")
       return cal_distance <= 100
     end
     return true

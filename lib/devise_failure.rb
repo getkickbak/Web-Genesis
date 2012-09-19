@@ -8,7 +8,9 @@ class DeviseFailure < Devise::FailureApp
     if method == "to_xml"
       { :error => i18n_message }.to_xml(:root => "errors")
     elsif method == "to_json" || method == "to_*/*"
-      { :success => false, :metaData => { :session_timeout => true, :rescode => 'server_error' }, :message => [i18n_message] }.to_json
+      res = { :success => false, :metaData => { :session_timeout => true, :rescode => 'server_error' }, :message => [i18n_message] }
+      Rails.logger.debug("Response: #{res}")
+      res.to_json
     elsif {}.respond_to?(method)
       { :error => i18n_message }.send(method)
     else

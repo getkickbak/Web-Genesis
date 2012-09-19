@@ -22,12 +22,12 @@
    <div class="main-inner">
       <div class="container">
       	<% if current_merchant.status == :pending %>
-      	<div class="row">
-      		<div class="span3">
-			<%= link_to 'Continue Setup', setup_path %>
-			</div>
-		</div>
-		<% end %>
+      	<ul class="pager">
+      		<li class="previous">
+      			<%= link_to 'Continue Setup', setup_path %>
+      		</li>	
+      	</ul>
+      	<% end %>
          <div class="row">
             <div class="span3">
                <div class="widget widget-table action-table">
@@ -60,13 +60,13 @@
             </div>
             <div class="span9">
                <% if @display != "venue" %>
-               <% rewards = @customer_rewards.all(:mode => :reward) %>
-               <% prizes = @customer_rewards.all(:mode => :prize) %>
+               <% rewards = @customer_rewards.all(:mode => :reward, :order => [:points.asc]) %>
+               <% prizes = @customer_rewards.all(:mode => :prize, :order => [:points.asc]) %>
                <% rtitle = "Merchant Rewards Catalog" %>
                <% ptitle = "Merchant Prizes Catalog" %>
                <% else %>
-               <% rewards = @venue.customer_rewards.all(:mode => :reward) %>
-               <% prizes = @venue.customer_rewards.all(:mode => :prize) %>
+               <% rewards = @venue.customer_rewards.all(:mode => :reward, :order => [:points.asc]) %>
+               <% prizes = @venue.customer_rewards.all(:mode => :prize, :order => [:points.asc]) %>
                <% rtitle = "Rewards for " + @venue.name %>
                <% ptitle = "Prizes for " + @venue.name %>
                <% end %>
@@ -83,7 +83,7 @@
                               <td><%= customer_reward.title %></td>
                               <td class="td-actions">
                               <!-- -->
-                              <%= link_to edit_customer_reward_path(customer_reward), :class=>"btn btn-small btn-warning", :title=>"print" do %>
+                              <%= link_to edit_customer_reward_path(customer_reward), :class=>"btn btn-small btn-warning", :title=>"edit" do %>
                               <!-- -->
                               <i class="btn-icon-only icon-edit"></i>
                               <!-- -->
@@ -119,7 +119,7 @@
                               <td><%= customer_reward.title %></td>
                               <td class="td-actions">
                               <!-- -->
-                              <%= link_to edit_customer_reward_path(customer_reward), :class=>"btn btn-small btn-warning", :title=>"print" do %>
+                              <%= link_to edit_customer_reward_path(customer_reward), :class=>"btn btn-small btn-warning", :title=>"edit" do %>
                               <!-- -->
                               <i class="btn-icon-only icon-edit"></i>
                               <!-- -->

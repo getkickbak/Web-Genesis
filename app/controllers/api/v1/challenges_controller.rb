@@ -1,4 +1,4 @@
-class Api::V1::ChallengesController < ApplicationController
+class Api::V1::ChallengesController < Api::V1::BaseApplicationController
   before_filter :authenticate_user!
   
   def index
@@ -78,7 +78,7 @@ class Api::V1::ChallengesController < ApplicationController
     
     logger.info("Complete Challenge(#{@challenge.id}), Type(#{@challenge.type.value}), Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
     Time.zone = @venue.time_zone
-    if !Common.within_geo_distance?(logger, current_user, params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
+    if !Common.within_geo_distance?(current_user, params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.out_of_distance").split('\n') } }

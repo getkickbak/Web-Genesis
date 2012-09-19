@@ -1,9 +1,13 @@
 <% content_for :script do %>
 <script type="text/javascript">
 	$(document).ready($(function() {
-	var msg=$("#notice").html();
-	if(msg) {
-	Genesis.showWarningMsg(msg,null,true);
+	var notice_msg=$("#notice").html();
+	if(notice_msg) {
+	Genesis.showWarningMsg(notice_msg,null,true);
+	}
+	var error_msg=$("#error").html();
+	if(error_msg) {
+	Genesis.showErrMsg(error_msg,null,true);
 	}
 	}));
 </script>
@@ -13,6 +17,13 @@
 <div style="display:none;" id="notice">
 	<p>
 		<%= flash[:notice] %>
+	</p>
+</div>
+<% end %>
+<% if flash[:error] %>
+<div style="display:none;" id="error">
+	<p>
+		<%= flash[:error] %>
 	</p>
 </div>
 <% end %>

@@ -1,5 +1,5 @@
 module Business
-  class ChallengesController < BaseApplicationController
+  class ChallengesController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     before_filter :check_is_admin
     
@@ -41,6 +41,10 @@ module Business
         @challenge = Challenge.new
       end
       @data = @challenge.data
+      @venue_ids = []
+      current_merchant.venues.each do |venue|
+        @venue_ids << venue.id
+      end
 
       respond_to do |format|
         format.html # index.html.erb

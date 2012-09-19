@@ -1,5 +1,5 @@
 module Business
-  class AnalyticsController < BaseApplicationController
+  class AnalyticsController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     before_filter :check_status
     skip_authorization_check

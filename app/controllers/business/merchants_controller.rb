@@ -1,5 +1,5 @@
 module Business
-  class MerchantsController < BaseApplicationController
+  class MerchantsController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     before_filter :check_is_admin, :only => [:photo, :update_photo, :update_alt_photo] 
     #load_and_authorize_resource
