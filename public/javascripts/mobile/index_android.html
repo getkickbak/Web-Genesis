@@ -2,12 +2,33 @@
 <html>
    <head>
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-      <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta property="fb:admins" content="725565520"/>
       <meta property="fb:app_id" content="197968780267830"/>
       <!-- Default Fontsize = 11px
       iPad @132dpi = 100% - iPhone @163dpi = 114% - iPhone Retina @326dpi = 228%
       -->
+      <style rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: .75)">
+         body {
+            font-size : 85.5%;
+            background-image : url(/resources/startup/640x920.png) no-repeat;
+            background-size : contain;
+         }
+      </style>
+      <style rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 1)">
+         body {
+            font-size : 114%;
+            background-image : url(/resources/startup/640x920.png) no-repeat;
+            background-size : contain;
+         }
+      </style>
+      <!-- Dirty hack for Android qHD devices -->
+      <style rel="stylesheet"type="text/css"  media="screen and (-webkit-device-pixel-ratio: 1.5) and (min-device-width: 360px) and (max-device-width: 360px)">
+         body {
+            font-size : 171%;
+            background-image : url(/resources/startup/640x920.png) no-repeat;
+            background-size : contain;
+         }
+      </style>
       <style rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 2)">
          body {
             font-size : 228%;
@@ -19,20 +40,9 @@
       <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
       <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
       -->
-      <!--
-      <link rel="apple-touch-icon-precomposed" href="resouces/img/icon_57.png">
-      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="resources/img/icon_72.png"/>
-      <link rel="apple-touch-icon-precomposed" sizes="114x114" href="resources/img/icon_114.png"/>
-      <link rel="apple-touch-startup-image" media="screen and (resolution: 326dpi)" href="resources/themes/images/v1/startup_640.png"
-      />
-      <link rel="apple-touch-startup-image" media="screen and (resolution: 163dpi)" href="resources/themes/images/v1/startup_640.png"
-      />
-      -->
-      <meta name="apple-mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>KickBak</title>
-      <link rel="stylesheet" href="resources/css/ios.css" type="text/css">
+      <link rel="stylesheet" href="resources/css/android.css" type="text/css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
       <script type="text/javascript" src="http://192.168.0.52:8080/target/target-script-min.js"></script>
       directory and include it here -->
@@ -44,7 +54,7 @@
       <!--
       Phone Gap Libs
       -->
-      <script type="text/javascript" src="lib/cordova-1.8.1.js"></script>
+      <script type="text/javascript" src="lib/cordova-2.1.0.android.js"></script>
       <script type="text/javascript">
          var offlineDialogShown = false;
          var phoneGapAvailable = true;
@@ -195,12 +205,17 @@
             document.addEventListener('push-notification', function(event)
             {
                var pushNotification = window.plugins.pushNotification;
+               var title = event.notification.title;
+               var userData = event.notification.userdata;
 
-               console.warn('push-notification!: ' + event.notification);
+               console.warn('push-notification!: ' + JSON.stringify(userData));
+
                Ext.device.Notification.show(
                {
-                  title : 'KickBak Push Notification',
-                  message : JSON.stringify(event.notification)[1].aps['alert']
+                  title : title,
+                  message : JSON.stringify(userData)
+                  //title : 'KickBak Push Notification',
+                  //message : JSON.stringify(event.notification)[1].aps['alert']
                   //message : JSON.stringify(['push-notification!', event.notification])
                });
                pushNotification.setApplicationIconBadgeNumber(0);
@@ -213,15 +228,18 @@
          function onDeviceReady()
          {
             var pushNotification = window.plugins.pushNotification;
-
             if ( typeof (invokeString) != "undefined" && invokeString.length > 0 && invokeString[0] == '{')
             {
                //push notification
-               console.warn('push-notification!: ' + invokeString);
+               var title = invokeString.title;
+               var userData = invokeString.userdata;
+
+               console.warn('push-notification!: ' + JSON.stringify(userData));
+
                Ext.device.Notification.show(
                {
-                  title : 'KickBak Push Notification',
-                  message : JSON.stringify(invokeString)[1].aps['alert']
+                  title : title,
+                  message : JSON.stringify(userData)
                });
                pushNotification.setApplicationIconBadgeNumber(0);
             }
@@ -238,7 +256,7 @@
                console.warn(JSON.stringify(['registerDevice - ', status]));
                Genesis.constants.device =
                {
-                  'device_type' : 1, //for iOS
+                  'device_type' : 3, //for iOS
                   'device_id' : status['deviceToken']
                };
             }, function(status)

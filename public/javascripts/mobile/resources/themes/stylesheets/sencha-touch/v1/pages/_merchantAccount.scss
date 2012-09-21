@@ -31,9 +31,9 @@
          &:before {
             @if $include-border-radius { @include border-left-radius($panelBorderRadius); }
             @include custom-linear-gradient($BlueStart 10%, $BlueEnd 85%, top);
-            width:57px + 1.5*12px;
-            height:57px + 2*12px;
-            max-height:57px + 2*12px;
+            width:$icon-size + 1.5*12px;
+            height:$icon-size + 2*12px;
+            max-height:$icon-size + 2*12px;
          }
       }
       &.x-list {

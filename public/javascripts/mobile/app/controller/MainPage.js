@@ -618,12 +618,13 @@ Ext.define('Genesis.controller.MainPage',
          callback : function(records, operation)
          {
             //
-            // Login Error, redo login
+            // Login Error, let the user login again
             //
             if (!operation.wasSuccessful())
             {
-               me.resetView();
-               me.redirectTo('login');
+               //me.resetView();
+               //Genesis.db.resetStorage();
+               //me.redirectTo('login');
             }
             else
             {
@@ -1126,12 +1127,15 @@ Ext.define('Genesis.controller.MainPage',
    },
    signInPage : function()
    {
-      var db = Genesis.db.getLocalDB();
-      if (db['currFbId'] > 0)
-      {
-         this.facebookLogin(db['fbResponse']);
-      }
-      else
+      /*
+       *  No automatic login
+       var db = Genesis.db.getLocalDB();
+       if (db['currFbId'] > 0)
+       {
+       this.facebookLogin(db['fbResponse']);
+       }
+       else
+       */
       {
          this.setAnimationMode(this.self.superclass.self.animationMode['cover']);
          this.pushView(this.getSignin());

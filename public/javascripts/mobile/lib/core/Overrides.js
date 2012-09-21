@@ -5,8 +5,8 @@ Ext.ns('Genesis.constants');
 
 Genesis.constants =
 {
-   //host : 'http://192.168.0.52:3000',
-   host : 'http://www.getkickbak.com',
+   host : 'http://192.168.0.52:3000',
+   //host : 'http://www.getkickbak.com',
    themeName : 'v1',
    site : 'www.getkickbak.com',
    photoSite : 'http://files.getkickbak.com',
@@ -267,7 +267,7 @@ Genesis.fb =
             Genesis.db.setLocalDBAttrib('fbExpiresIn', Date.now() + (1000 * response.authResponse['expiresIn']));
             if (me.cb)
             {
-               me.facebook_loginCallback(me.cb);
+               Ext.defer(me.facebook_loginCallback, 3 * 1000, me, [me.cb]);
                delete me.cb;
             }
          }
@@ -361,7 +361,8 @@ Genesis.fb =
       }
       // Login if connection missing
       var db = Genesis.db.getLocalDB();
-      var refreshConn = (db['currFbId'] > 0);
+      //var refreshConn = (db['currFbId'] > 0);
+      var refreshConn = true;
       // Logged into FB currently or before!
       console.debug("facebook_onLogin - FbId = [" + db['currFbId'] + "], refreshConn = " + refreshConn);
       if (refreshConn)
@@ -383,7 +384,14 @@ Genesis.fb =
                Genesis.db.setLocalDB(db);
 
                // Use Previous Login information!
-               cb(db['fbResponse'], null);
+               if (db['fbResponse'])
+               {
+                  cb(db['fbResponse'], null);
+               }
+               else
+               {
+                  me.facebook_loginCallback(cb);
+               }
             }
             else
             {
@@ -415,55 +423,54 @@ Genesis.fb =
             if (db['currFbId'] == facebook_id)
             {
                console.debug("Session information same as previous session[" + facebook_id + "]");
-               if (cb)
-               {
-                  cb(params, null);
-               }
             }
             else
             {
                console.debug("Session ID[" + facebook_id + "]");
                db['currFbId'] = facebook_id;
                db['fbAccountId'] = response.email;
-               var params = db['fbResponse'] = me.createFbResponse(response);
+               db['fbResponse'] = me.createFbResponse(response);
                Genesis.db.setLocalDB(db);
+            }
 
-               console.debug('You\`ve logged into Facebook! ' + '\n' + //
-               'Email(' + db['fbAccountId'] + ')' + '\n' + //
-               'ID(' + facebook_id + ')' + '\n');
-               me._fb_connect();
-               //me.getFriendsList();
+            console.debug('You\`ve logged into Facebook! ' + '\n' + //
+            'Email(' + db['fbAccountId'] + ')' + '\n' + //
+            'ID(' + facebook_id + ')' + '\n');
+            me._fb_connect();
+            //me.getFriendsList();
 
-               if (db['auth_code'])
+            if (db['auth_code'])
+            {
+               console.debug("Updating Facebook Login Info ...");
+               Account['setUpdateFbLoginUrl']();
+               Account.load(0,
                {
-                  console.debug("Updating Facebook Login Info ...");
-                  Account['setUpdateFbLoginUrl']();
-                  Account.load(0,
+                  jsonData :
                   {
-                     jsonData :
+                  },
+                  params :
+                  {
+                     user : Ext.encode(params)
+                  },
+                  callback : function(record, operation)
+                  {
+                     if (operation.wasSuccessful())
                      {
-                     },
-                     params :
-                     {
-                        user : Ext.encode(params)
-                     },
-                     callback : function(record, operation)
-                     {
-                        if (operation.wasSuccessful())
-                        {
-                           Genesis.db.setLocalDBAttrib('enableFB', true);
-                        }
-                        if (cb)
-                        {
-                           cb(params, operation);
-                        }
+                        Genesis.db.setLocalDBAttrib('enableFB', true);
                      }
-                  });
-               }
-               else
+                     if (cb)
+                     {
+                        cb(db['fbResponse'], operation);
+                     }
+                  }
+               });
+            }
+            else
+            {
+               Genesis.db.setLocalDBAttrib('enableFB', true);
+               if (cb)
                {
-                  Genesis.db.setLocalDBAttrib('enableFB', true);
-                  cb(params, null);
+                  cb(db['fbResponse'], null);
                }
             }
          }
@@ -720,6 +727,7 @@ Genesis.fn =
 // **************************************************************************
 Genesis.db =
 {
+   _localDB : null,
    getLocalStorage : function()
    {
       return window.localStorage;
@@ -859,13 +867,11 @@ Genesis.db =
    //
    getLocalDB : function()
    {
-      var db = this.getLocalStorage().getItem('kickbak');
-      return ((db) ? Ext.decode(db) :
-      {
-      });
+      return (!this._localDB) ? (this._localDB = Ext.decode(this.getLocalStorage().getItem('kickbak') || "{}")) : this._localDB;
    },
    setLocalDB : function(db)
    {
+      this._localDB = db;
       console.debug("Setting KickBak DB[" + Ext.encode(db) + "]");
       this.getLocalStorage().setItem('kickbak', Ext.encode(db));
    },
@@ -935,6 +941,7 @@ Genesis.db =
             console.debug("Removed [" + i + "]");
          }
       }
+      this._localDB = null;
       //
       // Clean up ALL Object cache!
       //
@@ -1015,7 +1022,12 @@ Ext.define('Genesis.data.reader.Json',
    override : 'Ext.data.reader.Json',
    getResponseData : function(response)
    {
-      var data = this.callParent(arguments);
+      var data;
+      if (response && response.responseText)
+      {
+         //console.debug("ResponseText - \n" + response.responseText);
+      }
+      data = this.callParent(arguments);
       if (!data.metaData)
       {
          delete this.metaData;
@@ -1127,14 +1139,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                      callback : function(button)
                      {
                         viewport.setLoggedIn(false);
-                        var controller = app.getController('MainPage');
-                        app.dispatch(
-                        {
-                           action : 'onCreateAccountTap',
-                           args : [null, null, null, null],
-                           controller : controller,
-                           scope : controller
-                        });
+                        viewport.redirectTo('createAccount');
                      }
                   });
                   return;
@@ -1299,6 +1304,10 @@ Ext.define('Genesis.data.Connection',
       };
       var db = Genesis.db.getLocalDB();
       var method = (options.method || me.getMethod() || ((params || data) ? 'POST' : 'GET')).toUpperCase();
+      options.headers = Ext.apply(options.headers,
+      {
+         'Accept' : '*/*'
+      });
       if (db['csrf_code'] && (method == 'POST'))
       {
          options.headers = Ext.apply(options.headers,
@@ -1308,6 +1317,7 @@ Ext.define('Genesis.data.Connection',
       }
       var headers = me.callParent(arguments);
 
+      //console.debug("Remote Ajax Call Header -\n" + Ext.encode(headers));
       return headers;
    },
    /**

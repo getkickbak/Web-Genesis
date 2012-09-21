@@ -655,6 +655,7 @@ Ext.define('Genesis.controller.Viewport',
          else
          {
             console.debug("Going to Login Page ...");
+            Genesis.db.resetStorage();
             me.redirectTo('login');
          }
       }
