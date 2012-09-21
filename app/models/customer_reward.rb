@@ -13,16 +13,14 @@ class CustomerReward
   property :quantity_count, Integer, :default => 0
   property :time_limited, Boolean, :required => true, :default => false
   property :expiry_date, Date, :default => ::Constant::MIN_DATE
-  property :photo, String, :auto_validation => false
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
 
   attr_accessor :type_id, :venue_ids, :eager_load_type, :expiry_date_str
-  attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :title, :price, :points, :mode, :quantity_limited, :quantity, :time_limited, :expiry_date, :photo
+  attr_accessible :type_id, :title, :price, :points, :mode, :quantity_limited, :quantity, :time_limited, :expiry_date
 
   belongs_to :merchant
   has 1, :customer_reward_to_subtype, :constraint => :destroy
@@ -33,9 +31,7 @@ class CustomerReward
   validates_with_method :type_id, :method => :check_type_id
   validates_with_method :expiry_date, :method => :validate_expiry_date
   validates_with_method :check_venues
-  
-  mount_uploader :photo, CustomerRewardPhotoUploader
-  
+    
   def self.create(merchant, type, reward_info, venues)
     now = Time.now
     reward = CustomerReward.new(
@@ -74,18 +70,6 @@ class CustomerReward
     self.type = type
     self.customer_reward_venues.destroy
     self.venues.concat(venues)
-    save
-  end
-  
-  def update_photo(reward_info)
-    if reward_info.nil?
-      errors.add(:photo, I18n.t("errors.messages.customer_reward.no_photo"))
-      raise DataMapper::SaveFailureError.new("", self)
-    end
-    now = Time.now
-    self.type_id = self.type.id
-    self.photo = merchant_info[:photo]
-    self.update_ts = now  
     save
   end
   
