@@ -17,7 +17,9 @@ Genesis::Application.routes.draw do
       end
       
       resources :challenges
-      resources :customer_rewards
+      resources :customer_rewards do
+        put 'update_photo', :on => :member, :as => :update_photo
+      end
       resources :venues do
         get 'update_auth_code', :on => :member, :as => :update_auth_code
         get 'update_check_in_auth_code', :on => :member, :as => :update_check_in_auth_code
