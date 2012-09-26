@@ -40,9 +40,11 @@
 										<tr>
 											<td align="left" style="padding:10px 10px 10px 0px;">Total # of customers:</td><td align="center" style="font-size:16px;"><b><%= @stats[:total_customer_count] %></b></td>
 										</tr>
+										<!--
 										<tr>
 											<td align="left" style="padding:10px 10px 10px 0px;">New customers this week:</td><td align="center" style="font-size:16px;"><b><%= @stats[:new_customer_count] %></b></td>
 										</tr>
+										-->
 										<tr>
 											<td>
 												<h3>Spending</h3>
@@ -51,12 +53,14 @@
 										<tr>
 											<td align="left" style="padding:10px 10px 10px 0px;">Total loyalty spend:</td><td align="center" style="font-size:16px;"><b>$<%= "%0.2f" % @stats[:total_spend] %></b></td>
 										</tr>
+										<!--
 										<tr>
 											<td align="left" style="padding:10px 10px 10px 0px;">Average loyalty spend:</td><td align="center" style="font-size:16px;"><b>$<%= "%0.2f" % @stats[:average_spend] %></b></td>
 										</tr>
 										<tr>
 											<td align="left" style="padding:10px 10px 10px 0px;">New loyalty spend total this week:</td><td align="center" style="font-size:16px;"><b>$<%= "%0.2f" % @stats[:new_total_spend] %></b></td>
 										</tr>
+										-->
 										<tr>
 											<td>
 												<h3>Purchases</h3>
@@ -65,9 +69,11 @@
 										<tr>
 											<td align="left" style="padding:10px 10px 10px 0px;">Total # of purchases:</td><td align="center" style="font-size:16px;"><b><%= @stats[:total_purchases_count] %></b></td>
 										</tr>
+										<!--
 										<tr>
 											<td align="left" style="padding:10px 10px 10px 0px;">New purchases this week:</td><td align="center" style="font-size:16px;"><b><%= @stats[:new_purchases_count] %></b></td>
 										</tr>
+										-->
 										<tr>
 											<td>
 												<h3>Rewards</h3>
@@ -76,10 +82,10 @@
 										<tr>
 											<td align="left" style="padding:10px 10px 10px 0px;">Total # of rewards redeemed:</td><td align="center" style="font-size:16px;"><b><%= @stats[:total_rewards_redeemed] %></b></td>
 										</tr>
+										<!--
 										<tr>
 											<td align="left" style="padding:10px 10px 10px 0px;">New rewards redeemed this week:</td><td align="center" style="font-size:16px;"><b><%= @stats[:new_rewards_redeemed] %></b></td>
 										</tr>
-										<!--
 										<tr>
 											<td align="left" style="padding:10px 10px 10px 0px;">Outstanding reward points total:</td><td align="center"><%= @stats[:total_reward_points] %></td>
 										</tr>
@@ -104,10 +110,10 @@
 										<tr>
 											<td align="left" style="padding:10px 10px 10px 0px;">Total # of prizes redeemed:</td><td align="center" style="font-size:16px;"><b><%= @stats[:total_prizes_redeemed] %></b></td>
 										</tr>
+										<!--
 										<tr>
 											<td align="left" style="padding:10px 10px 10px 0px;">New prizes redeemed this week:</td><td align="center" style="font-size:16px;"><b><%= @stats[:new_prizes_redeemed] %></b></td>
 										</tr>
-										<!--
 										<tr>
 											<td align="left" style="padding:10px 10px 10px 0px;">Outstanding prize points total:</td><td align="center"><%= @stats[:total_prize_points] %></td>
 										</tr>
@@ -124,6 +130,7 @@
 											<td align="left" style="padding:10px 10px 10px 0px;">New prize points redeemed this week:</td><td align="center"><%= @stats[:new_prize_points_redeemed] %></td>
 										</tr>
 										-->
+										<!--
 										<tr>
 											<td>
 												<h3>Challenges</h3>
@@ -173,6 +180,7 @@
 												<% end %>
 											</table></td>
 										</tr>
+										-->
 									</table></td>
 								</tr>
 							</tbody>
