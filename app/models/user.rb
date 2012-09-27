@@ -10,7 +10,7 @@ class User
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
 
   devise :database_authenticatable, #:registerable, #:confirmable,
-          :recoverable, :rememberable, :trackable, :timeoutable,
+          :recoverable, :rememberable, :trackable, #, :timeoutable,
           :validatable, :token_authenticatable, :authentication_keys => [:email]
           
   property :id, Serial
