@@ -59,3 +59,16 @@ body {
    }
 }
 
+.not-edit label {
+	font-weight: bold;
+	text-align: left !important;
+}
+
+.not-edit .control-group {
+	margin-bottom : 9px;
+}
+
+.not-edit .controls {
+	padding-top : 5px;
+	line-height: 18px;
+}

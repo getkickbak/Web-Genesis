@@ -19,8 +19,12 @@
    <%= f.input :latitude, :as => :hidden, :input_html => { :value => @venue.latitude } %>
    <br />
    <div class="form-actions">
-      <%= f.button :submit , "Save", :class => 'btn btn-primary' %>
+      <%= f.button :submit , "#{f.object.new? ? 'Create' : 'Update'}", :class => 'btn btn-primary' %>
+      <% if f.object.new? %>
+      <%= link_to("Cancel", venues_path, :class => 'btn') %>
+      <% else %>
       <%= link_to("Cancel", venue_path(@venue), :class => 'btn') %>
+      <% end %>
    </div>
    <!-- /form-actions -->
 </fieldset>
