@@ -72,3 +72,10 @@ body {
 	padding-top : 5px;
 	line-height: 18px;
 }
+
+.table .no-data {
+	text-align : center;
+	font-weight : bold;
+	font-size : 1.7em;
+	height : 500px;
+}

@@ -16,11 +16,11 @@ Genesis::Application.routes.draw do
         end
       end
       
-      resources :challenges
-      resources :customer_rewards do
+      resources :challenges, :except => [:show]
+      resources :customer_rewards, :except => [:show] do
         put 'update_photo', :on => :member, :as => :update_photo
       end
-      resources :venues do
+      resources :venues, :except => [:destroy] do
         get 'update_auth_code', :on => :member, :as => :update_auth_code
         get 'update_check_in_auth_code', :on => :member, :as => :update_check_in_auth_code
         get 'check_in_template', :on => :member, :as => :check_in_template
