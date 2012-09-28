@@ -176,6 +176,11 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          }
       }
    },
+   initialize : function()
+   {
+      var bg = this.query('container[tag=background]')[0];
+      bg.setHeight(Ext.Viewport.getSize().width);
+   },
    applyBackground : function(config)
    {
       return Ext.factory(Ext.apply(config,
@@ -207,7 +212,6 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       var bg = this.query('container[tag=background]')[0];
 
       // Update Background Photo
-      bg.setHeight(Ext.Viewport.getSize().width);
       bg.setStyle(
       {
          'background-image' : 'url(' + data.Merchant['alt_photo']['url'] + ')'

@@ -171,10 +171,10 @@ Ext.define('Genesis.view.client.MerchantAccount',
          xtype : 'dataview',
          store : 'MerchantRenderStore',
          useComponents : true,
-         scrollable : false,
+         scrollable : undefined,
          defaultType : 'merchantaccountptsitem',
          defaultUnit : 'em',
-         margin : '0 0 0.8 0'
+         margin : '0 0 0.7 0'
       }));
 
       // -----------------------------------------------------------------------

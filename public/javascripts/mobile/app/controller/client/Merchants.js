@@ -249,7 +249,7 @@ Ext.define('Genesis.controller.client.Merchants',
       else
       {
          var info = viewport.getCheckinInfo();
-         
+
          console.log("Going back to Checked-In Merchant Home Account Page ...");
          me.resetView();
          me.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId());
@@ -335,18 +335,12 @@ Ext.define('Genesis.controller.client.Merchants',
       me.getRedeemBtn().setBadgeText(crecord.get('eligible_for_reward') ? '✔' : null);
 
       // Update TitleBar
-      activeItem.query('titlebar')[0].setTitle(' ');
+      var bar = activeItem.query('titlebar')[0];
+      bar.setTitle(' ');
       Ext.defer(function()
       {
          // Update TitleBar
-         activeItem.query('titlebar')[0].setTitle(vrecord.get('name'));
-
-         // Refresh Merchant Panel Info
-         var rstore = Ext.StoreMgr.get('MerchantRenderStore');
-         //if (rstore.getRange()[0] != vrecord)
-         {
-            rstore.setData(vrecord);
-         }
+         bar.setTitle(vrecord.get('name'));
       }, 1, me);
    },
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
@@ -496,7 +490,7 @@ Ext.define('Genesis.controller.client.Merchants',
    backToMainPage : function(venueId, customerId, backToMain)
    {
       var viewport = this.getViewPortCntlr();
-      var cvenue = viewport.getCheckinInfo().venue;
+      //var cvenue = viewport.getCheckinInfo().venue;
       //var showFeed = (customerId > 0) || (cvenue && (cvenue.getId() == venueId));
       var showFeed = true;
       this.openMainPage(showFeed, backToMain > 0);
@@ -560,6 +554,15 @@ Ext.define('Genesis.controller.client.Merchants',
       me.showFeed = showFeed;
       if (!backToMain)
       {
+         // Refresh Merchant Panel Info
+         var viewport = me.getViewPortCntlr();
+         var venue = viewport.getVenue();
+         var rstore = Ext.StoreMgr.get('MerchantRenderStore');
+         //if (rstore.getRange()[0] != vrecord)
+         {
+            rstore.setData(venue);
+         }
+
          if (me.getMainPage() == vport.getActiveItem())
          {
             me.checkInAccount();
