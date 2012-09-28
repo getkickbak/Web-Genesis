@@ -62,9 +62,9 @@ Ext.define('Genesis.controller.MainPage',
             xtype : 'mainpageview'
          },
          mainCarousel : 'mainpageview',
-         shortcutTabBar : 'mainpageview tabbar',
+         shortcutTabBar : 'mainpageview tabbar[tag=navigationBarBottom]',
          infoBtn : 'button[tag=info]',
-         prizesBtn : 'mainpageview tabbar[cls=navigationBarBottom] button[tag=prizesSC]'
+         prizesBtn : 'mainpageview tabbar[tag=navigationBarBottom] button[tag=prizesSC]'
       },
       control :
       {
@@ -442,7 +442,7 @@ Ext.define('Genesis.controller.MainPage',
 
          console.log("Restoring Previous Venue Location ...");
          controller.fireEvent('setupCheckinInfo', 'explore', venue, customer, metaData)
-         controller.fireEvent('checkinMerchant', 'checkin', metaData, venue.getId(), customer);
+         controller.fireEvent('checkinMerchant', 'checkin', metaData, venue.getId(), customer, null, Ext.emptyFn);
       }
       //
       // We've at somewhere
@@ -759,7 +759,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    onSignInTap : function(b, e, eOpts, eInfo)
    {
-      this.resetView();
+      //this.resetView();
       this.redirectTo('signin');
    },
    // --------------------------------------------------------------------------

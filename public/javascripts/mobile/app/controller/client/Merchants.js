@@ -39,9 +39,9 @@ Ext.define('Genesis.controller.client.Merchants',
          mapBtn : 'viewportview button[tag=mapBtn]',
          shareBtn : 'viewportview button[tag=shareBtn]',
          checkinBtn : 'viewportview button[tag=checkin]',
-         mainBtn : 'clientmerchantaccountview tabbar[cls=navigationBarBottom] button[tag=main]',
-         prizesBtn : 'clientmerchantaccountview tabbar[cls=navigationBarBottom] button[tag=prizes]',
-         redeemBtn : 'clientmerchantaccountview tabbar[cls=navigationBarBottom] button[tag=redemption]',
+         mainBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=main]',
+         prizesBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=prizes]',
+         redeemBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=redemption]',
          merchantTabBar : 'clientmerchantaccountview tabbar'
       },
       control :

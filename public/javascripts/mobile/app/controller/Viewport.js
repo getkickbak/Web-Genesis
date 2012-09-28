@@ -20,6 +20,7 @@ Ext.define('Genesis.controller.Viewport',
          customer : null,
          metaData : null
       },
+      lastPosition : null,
       refs :
       {
          view : 'viewportview',
@@ -52,51 +53,51 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'onCheckinScanTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=info]' :
+         'tabbar[tag=navigationBarTop] button[tag=info]' :
          {
             tap : 'onInfoTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=home]' :
+         'tabbar[tag=navigationBarBottom] button[tag=home]' :
          {
             tap : 'onHomeButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=prizes]' :
+         'tabbar[tag=navigationBarBottom] button[tag=prizes]' :
          {
             tap : 'onPrizesButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=prizesSC]' :
+         'tabbar[tag=navigationBarBottom] button[tag=prizesSC]' :
          {
             tap : 'onRedeemPrizesSCButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=accounts]' :
+         'tabbar[tag=navigationBarBottom] button[tag=accounts]' :
          {
             tap : 'onAccountsButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=challenges]' :
+         'tabbar[tag=navigationBarBottom] button[tag=challenges]' :
          {
             tap : 'onChallengesButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=rewards]' :
+         'tabbar[tag=navigationBarBottom] button[tag=rewards]' :
          {
             tap : 'onRewardsButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=rewardsSC]' :
+         'tabbar[tag=navigationBarBottom] button[tag=rewardsSC]' :
          {
             tap : 'onRewardsSCButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=redemption]' :
+         'tabbar[tag=navigationBarBottom] button[tag=redemption]' :
          {
             tap : 'onRedemptionsButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=redemptionSC]' :
+         'tabbar[tag=navigationBarBottom] button[tag=redemptionSC]' :
          {
             tap : 'onRedeemRewardsSCButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=main]' :
+         'tabbar[tag=navigationBarBottom] button[tag=main]' :
          {
             tap : 'onCheckedInAccountTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=browse]' :
+         'tabbar[tag=navigationBarBottom] button[tag=browse]' :
          {
             tap : 'onBrowseTap'
          },

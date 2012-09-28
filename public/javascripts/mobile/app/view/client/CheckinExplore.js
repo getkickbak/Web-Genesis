@@ -55,7 +55,25 @@ Ext.define('Genesis.view.client.CheckinExplore',
          xtype : 'list',
          deferEmptyText : false,
          store : 'CheckinExploreStore',
-         scrollable : 'vertical',
+         //scrollable : 'vertical',
+         plugins : [
+         {
+            type : 'pullrefresh',
+            //pullRefreshText: 'Pull down for more new Tweets!',
+            refreshFn : function(plugin)
+            {
+               var controller = _application.getController('client.Checkins');
+               controller.fireEvent('exploreLoad', true);
+            }
+         },
+         {
+            type : 'listpaging',
+            autoPaging : true
+         }],
+         refreshHeightOnUpdate : false,
+         variableHeights : false,
+         deferEmptyText : false,
+         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(Genesis.constants.defaultIconSize(), 2 * 0.65, 1), 1),
          emptyText : ' ',
          cls : 'checkInExploreList',
          // @formatter:off
@@ -83,17 +101,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
                return values['distance'].toFixed(1) + 'km';
             }
          }),
-         onItemDisclosure : Ext.emptyFn,
-         plugins : [
-         {
-            xclass : 'Ext.plugin.PullRefresh',
-            //pullRefreshText: 'Pull down for more new Tweets!',
-            refreshFn : function(plugin)
-            {
-               var controller = _application.getController('client.Checkins');
-               controller.fireEvent('exploreLoad', true);
-            }
-         }]
+         onItemDisclosure : Ext.emptyFn
       }));
    },
    showView : function()

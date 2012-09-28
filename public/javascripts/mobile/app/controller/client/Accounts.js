@@ -226,64 +226,67 @@ Ext.define('Genesis.controller.client.Accounts',
       var vstore = Ext.StoreMgr.get('VenueStore');
       var proxy = vstore.getProxy();
 
-      //Venue['setGetClosestVenueURL']();
-      Venue['setFindNearestURL']();
-      vstore.load(
+      if (position)
       {
-         scope : me,
-         params :
+         //Venue['setGetClosestVenueURL']();
+         Venue['setFindNearestURL']();
+         vstore.load(
          {
-            'merchant_id' : merchantId,
-            latitude : position.coords.getLatitude(),
-            longitude : position.coords.getLongitude()
-         },
-         callback : function(records, operation)
-         {
-            Ext.Viewport.setMasked(false);
-            if (operation.wasSuccessful())
+            scope : me,
+            params :
             {
-               console.debug('Found ' + records.length + ' venues matching current location ...');
-               if (records.length > 1)
+               'merchant_id' : merchantId,
+               latitude : position.coords.getLatitude(),
+               longitude : position.coords.getLongitude()
+            },
+            callback : function(records, operation)
+            {
+               Ext.Viewport.setMasked(false);
+               if (operation.wasSuccessful())
                {
-                  var view = me.getAccounts();
-                  if (!view.isPainted() || view.isHidden())
+                  console.debug('Found ' + records.length + ' venues matching current location ...');
+                  if (records.length > 1)
                   {
-                     console.debug('Opening Accounts Page ...');
-                     view.on('showView', function()
+                     var view = me.getAccounts();
+                     if (!view.isPainted() || view.isHidden())
                      {
-                        this.setActiveItem(1);
-                     }, view,
+                        console.debug('Opening Accounts Page ...');
+                        view.on('showView', function()
+                        {
+                           this.setActiveItem(1);
+                        }, view,
+                        {
+                           single : true
+                        });
+                        me.redirectTo('accounts');
+                     }
+                     else
                      {
-                        single : true
-                     });
-                     me.redirectTo('accounts');
+                        view.setActiveItem(1);
+                     }
+
                   }
                   else
                   {
-                     view.setActiveItem(1);
+                     me.getVenueMetaData(records[0]);
                   }
-
                }
                else
                {
-                  me.getVenueMetaData(records[0]);
+                  proxy.supressErrorsPopup = true;
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Error',
+                     message : me.missingVenueInfoMsg,
+                     callback : function()
+                     {
+                        proxy.supressErrorsPopup = false;
+                     }
+                  });
                }
             }
-            else
-            {
-               proxy.supressErrorsPopup = true;
-               Ext.device.Notification.show(
-               {
-                  title : 'Error',
-                  message : me.missingVenueInfoMsg,
-                  callback : function()
-                  {
-                     proxy.supressErrorsPopup = false;
-                  }
-               });
-            }
-         }
-      });
+         });
+      }
    },
    // --------------------------------------------------------------------------
    // Accounts Page

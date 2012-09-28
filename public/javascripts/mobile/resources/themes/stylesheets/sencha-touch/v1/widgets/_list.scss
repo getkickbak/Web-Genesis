@@ -8,7 +8,7 @@
    }
    .x-list-disclosure {
       background: theme_image($theme-path + "/miscicons", "disclose" + ".png");
-      background-size: 2em;
+      @include background-size(2em);
       background-position:center center;
       background-repeat:no-repeat;
    }
@@ -84,7 +84,7 @@
 
 .x-list-normal {
    .x-list-header {
-      line-height:1.7em;
+      line-height:$list-disclosure-size;
    }
 }
 
@@ -92,11 +92,14 @@
    &.x-list-ungrouped, &.x-list-grouped {
       .x-list-container .x-list-item {
          &.x-list-header-item, &.x-list-footer-item {
-            .x-list-item-label {
+            & > .x-dock-vertical > .x-dock-body {
                @if $include-border-radius { @include border-radius(0); }
             }
          }
       }
+   }
+   .x-list-disclosure {
+      margin: ($panelTopGap*2) $panelGap 0 0;
    }
 }
 .x-list-round, .x-list-bottom-round {
@@ -104,7 +107,7 @@
       .x-list-container .x-list-item {
          &:last-child {
             &.x-list-footer-item {
-               .x-list-item-label {
+               & > .x-dock-vertical > .x-dock-body {
                   @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
                }
             }

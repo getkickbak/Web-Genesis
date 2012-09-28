@@ -35,19 +35,10 @@
 }
 .listScrollWrapper, .listNoScrollWrapper, .listScrollIndexWrapper {
    &.x-list {
-      .x-list-disclosure {
-         //top:1.50em;
-         bottom: 1.10em;
-      }
       .x-list-item {
-         &.x-list-header-item .x-list-disclosure {
-            top:1.50em + 1.7em;
-         }
-         .x-list-item-label {
+         & > .x-dock-vertical > .x-dock-body {
             //@if $include-border-radius { @include border-radius(0); }
             position:relative;
-            padding:$panelTopGap $panelGap;
-            min-height:3.25em;
             border-width: 1px 0 0 0;
             border-top: 1px solid darken($list-bg-color, 15%);
             .photo {
@@ -59,13 +50,14 @@
                }
             }
             .listItemDetailsWrapper {
-               padding-left:$icon-size + 10px;
-               padding-right:$list-disclosure-size*1.5;
+               font-size:1em;
+               padding-left:calc-px-em($icon-size,$panelGap,1em);
+               //padding-right:$list-disclosure-size*1.5;
                min-height:$icon-size;
                .itemDistance {
                  position:absolute;
-                 top:$panelTopGap;
-                 right:$panelGap;
+                 top:calc-em(0.65em,$normalFontSize);
+                 right:calc-em(0.5*$list-disclosure-size,$normalFontSize);
                  font-weight:bold;
                  font-size:$normalFontSize;
                }
@@ -78,8 +70,7 @@
                }
             }
          }
-         &:first-child .x-list-item-label {
-            border: none;
+         &:first-child > .x-dock-vertical > .x-dock-body {
             @if $include-border-radius { @include border-radius(0); }
          }
       }

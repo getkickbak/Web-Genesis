@@ -10,6 +10,7 @@ Ext.define('Genesis.view.ViewBase',
             {
                xtype : 'titlebar',
                docked : 'top',
+               tag : 'navigationBarTop',
                cls : 'navigationBarTop',
                masked :
                {

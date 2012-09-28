@@ -9,6 +9,7 @@ Ext.define('Genesis.view.server.Rewards',
       cls : 'viewport',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
+         tag : 'navigationBarTop',
          cls : 'navigationBarTop kbTitle',
          title : ' ',
          items : [

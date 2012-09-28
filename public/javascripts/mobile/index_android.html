@@ -7,45 +7,16 @@
       <!-- Default Fontsize = 11px
       iPad @132dpi = 100% - iPhone @163dpi = 114% - iPhone Retina @326dpi = 228%
       -->
-      <style rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: .75)">
-         body {
-            font-size : 85.5%;
-            background-image : url(/resources/startup/640x920.png) no-repeat;
-            background-size : contain;
-         }
-      </style>
-      <style rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 1)">
-         body {
-            font-size : 114%;
-            background-image : url(/resources/startup/640x920.png) no-repeat;
-            background-size : contain;
-         }
-      </style>
-      <!-- Dirty hack for Android qHD devices -->
-      <style rel="stylesheet"type="text/css"  media="screen and (-webkit-device-pixel-ratio: 1.5) and (min-device-width: 360px) and (max-device-width: 360px)">
-         body {
-            font-size : 171%;
-            background-image : url(/resources/startup/640x920.png) no-repeat;
-            background-size : contain;
-         }
-      </style>
-      <style rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 2)">
-         body {
-            font-size : 228%;
-            background-image : url(/resources/startup/640x920.png) no-repeat;
-            background-size : contain;
-         }
-      </style>
-      <!-- iPad/iPhone specific css below, add after your main css >
-      <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
-      <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
-      -->
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>KickBak</title>
-      <link rel="stylesheet" href="resources/css/android.css" type="text/css">
+      <link rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 1)" href="resources/css/android.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (-webkit-device-pixel-ratio: .75)" href="resources/css/android-ldpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (-webkit-device-pixel-ratio: 1)" href="resources/css/android-mdpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (-webkit-device-pixel-ratio: 1.5)" href="resources/css/android-hdpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 2)" href="resources/css/android-xhdpi.css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
-      <script type="text/javascript" src="http://192.168.0.52:8080/target/target-script-min.js"></script>
       directory and include it here -->
+      <script type="text/javascript" src="http://192.168.0.52:8080/target/target-script-min.js#anonymous"></script>
       <!-- Debug Javascript on mobile browser -->
       <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
       <!--
@@ -65,8 +36,10 @@
          //var pushNotifAppId = '4fef50b25b2f16.74735670';
          var pushNotifAppName = 'KickBak Production';
          var pushNotifAppId = '4fef6fb0691c12.54726991';
+         var pushNotifType = 3;
 
-         var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.1.1/src';
+         var _appPath = "app";
+         var _extPath = 'lib/sencha-touch-2.1.0-beta3/src';
          var _appId = "197968780267830";
 
          var _browser = Ext.browser;
@@ -129,7 +102,7 @@
             });
             Ext.application(
             {
-               profiles : ['Iphone', 'Android', 'Desktop'],
+               profiles : ['Android'],
                views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
                'client.AccountsTransfer', 'client.SettingsPage', //
                'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
@@ -202,69 +175,14 @@
                }
             }, false);
 
-            document.addEventListener('push-notification', function(event)
-            {
-               var pushNotification = window.plugins.pushNotification;
-               var title = event.notification.title;
-               var userData = event.notification.userdata;
-
-               console.warn('push-notification!: ' + JSON.stringify(userData));
-
-               Ext.device.Notification.show(
-               {
-                  title : title,
-                  message : JSON.stringify(userData)
-                  //title : 'KickBak Push Notification',
-                  //message : JSON.stringify(event.notification)[1].aps['alert']
-                  //message : JSON.stringify(['push-notification!', event.notification])
-               });
-               pushNotification.setApplicationIconBadgeNumber(0);
-            });
-
             document.addEventListener("deviceready", onDeviceReady, false);
             console.log("SystemInit");
          }
 
          function onDeviceReady()
          {
-            var pushNotification = window.plugins.pushNotification;
-            if ( typeof (invokeString) != "undefined" && invokeString.length > 0 && invokeString[0] == '{')
-            {
-               //push notification
-               var title = invokeString.title;
-               var userData = invokeString.userdata;
-
-               console.warn('push-notification!: ' + JSON.stringify(userData));
-
-               Ext.device.Notification.show(
-               {
-                  title : title,
-                  message : JSON.stringify(userData)
-               });
-               pushNotification.setApplicationIconBadgeNumber(0);
-            }
-
-            pushNotification.registerDevice(
-            {
-               alert : true,
-               badge : true,
-               sound : true,
-               appid : pushNotifAppId,
-               appname : pushNotifAppName
-            }, function(status)
-            {
-               console.warn(JSON.stringify(['registerDevice - ', status]));
-               Genesis.constants.device =
-               {
-                  'device_type' : 3, //for iOS
-                  'device_id' : status['deviceToken']
-               };
-            }, function(status)
-            {
-               console.warn(JSON.stringify(['failed to register - ', status]));
-               Genesis.constants.device = null;
-            });
             console.log("onDeviceReady");
+            initPushwoosh();
             appInit();
          }
 
@@ -302,6 +220,9 @@
          }
       </script>
       <script type="text/javascript" src="core.js"></script>
+      <script type="text/javascript" src="lib/core/PushNotification.android.js"></script>
+      <!-- View Widgets -->
+      <script type="text/javascript" src="app/profile/Android.js"></script>
       <script type="text/javascript" src="client-all.js"></script>
    </head>
    <body onload="onBodyLoad()">

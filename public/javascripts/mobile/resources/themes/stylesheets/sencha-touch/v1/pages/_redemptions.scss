@@ -13,7 +13,7 @@
       }
    }
    .itemPhoto {
-      background-size : $icon-size*3 $icon-size*3; //Maximum size of QR Code as well
+      @include background-size($icon-size*3 $icon-size*3); //Maximum size of QR Code as well
       background-position : center center;
       background-repeat : no-repeat;
    }
@@ -35,7 +35,8 @@
          }
       }
       .infoWrapper {
-         padding-right:$icon-size + 10px;
+         font-size:1em;
+         padding-right:calc-px-em($icon-size, $panelGap, 1em);
          width:16em;
          min-height:$icon-size;
          .name {
@@ -61,9 +62,7 @@
 .redemptionsMain {
    .ptsEarnPanelHdr {
       @extend .panelHdr;
-      &:nth-child(3) {
-         margin-top:$panelTopGap;
-      }
+      //margin-top:$panelTopGap;
       @if $include-highlights {
          //@include box-shadow(0.2em 0em 0em rgba(80,81,82,0.6));
       }
@@ -77,7 +76,7 @@
          //@include box-shadow(0.2em 0.2em 0em rgba(80,81,82,0.6));
       }
       .x-inner {
-        margin:0 !important;
+        padding:0 !important;
         height:$icon-size;
       }
       .pointsphotobase {
@@ -93,10 +92,11 @@
    }
 
    .x-scroll-scroller {
-      position:static;
+      //position:static;
    }
    .redemptionsList {
       min-height:5em;
+      margin:$panelTopGap $panelGap;
       @extend .listScrollIndexWrapper;
       .x-list-item {
          .photo {

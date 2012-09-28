@@ -37,6 +37,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
       {
          docked : 'bottom',
          cls : 'navigationBarBottom',
+         tag : 'navigationBarBottom',
          xtype : 'tabbar',
          ui : 'light',
          layout :
@@ -193,24 +194,26 @@ Ext.define('Genesis.view.client.MerchantAccount',
             },
             items : [
             {
-               xtype : 'toolbar',
-               ui : 'dark',
-               cls : 'feedPanelHdr',
-               centered : false,
-               items : [
-               {
-                  xtype : 'title',
-                  title : 'What\'s going on?'
-               },
-               {
-                  xtype : 'spacer'
-               }]
-            },
-            {
                xtype : 'dataview',
                scrollable : undefined,
                store : 'NewsStore',
                cls : 'feedPanel',
+               items : [
+               {
+                  docked : 'top',
+                  xtype : 'toolbar',
+                  ui : 'dark',
+                  cls : 'feedPanelHdr',
+                  centered : false,
+                  items : [
+                  {
+                     xtype : 'title',
+                     title : 'What\'s going on?'
+                  },
+                  {
+                     xtype : 'spacer'
+                  }]
+               }],
                itemTpl : Ext.create('Ext.XTemplate',
                // @formatter:off
                '<div class="itemWrapper" style="{[this.getDisclose(values)]}">',
@@ -275,25 +278,27 @@ Ext.define('Genesis.view.client.MerchantAccount',
          },
          items : [
          {
-            xtype : 'toolbar',
-            cls : 'descPanelHdr',
-            ui : 'light',
-            centered : false,
-            items : [
-            {
-               xtype : 'title',
-               title : 'About Us'
-            },
-            {
-               xtype : 'spacer'
-            }]
-         },
-         {
             xtype : 'dataview',
             store : 'MerchantRenderStore',
             scrollable : undefined,
-            cls : 'descPanel separator',
+            cls : 'descPanel',
             tag : 'descPanel',
+            items : [
+            {
+               docked : 'top',
+               xtype : 'toolbar',
+               cls : 'descPanelHdr',
+               ui : 'light',
+               centered : false,
+               items : [
+               {
+                  xtype : 'title',
+                  title : 'About Us'
+               },
+               {
+                  xtype : 'spacer'
+               }]
+            }],
             itemTpl : Ext.create('Ext.XTemplate', '{[this.getDesc(values)]}',
             {
                getDesc : function(values)

@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.client.RedeemBase',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RedeemPtsItemBase'],
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RedeemPtsItemBase', 'Ext.plugin.PullRefresh', 'Ext.plugin.ListPaging'],
    alias : 'widget.clientredeeembaseview',
    config :
    {
@@ -26,56 +26,22 @@ Ext.define('Genesis.view.client.RedeemBase',
       // ------------------------------------------------------------------------
       // Redeem Points Earned Panel
       // ------------------------------------------------------------------------
-      me.setPreRender(me.getPreRender().concat([Ext.create('Ext.Toolbar',
-      {
-         xtype : 'toolbar',
-         ui : 'light',
-         cls : 'ptsEarnPanelHdr',
-         centered : false,
-         items : [
-         {
-            xtype : 'title',
-            title : me.getPtsEarnTitleText()
-         },
-         {
-            xtype : 'spacer'
-         }]
-      }), Ext.create('Ext.dataview.DataView',
-      {
-         cls : 'ptsEarnPanel separator',
-         tag : 'ptsEarnPanel',
-         xtype : 'dataview',
-         useComponents : true,
-         scrollable : undefined,
-         defaultType : me.getDefaultItemType(),
-         store : renderStore
-      }),
-      // ------------------------------------------------------------------------
-      // Redeem Available Panel
-      // ------------------------------------------------------------------------
-      Ext.create('Ext.Toolbar',
-      {
-         xtype : 'toolbar',
-         cls : 'ptsEarnPanelHdr',
-         ui : 'light',
-         centered : false,
-         items : [
-         {
-            xtype : 'title',
-            title : me.getRedeemTitleText()
-         },
-         {
-            xtype : 'spacer'
-         }]
-      }),
+      me.setPreRender(me.getPreRender().concat([
       // ------------------------------------------------------------------------
       // Redemptions
       // ------------------------------------------------------------------------
       Ext.create('Ext.List',
       {
-         xtype : 'list',
+         flex : 1,
+         plugins : [
+         {
+            type : 'listpaging',
+            autoPaging : true
+         }],
+         refreshHeightOnUpdate : false,
+         variableHeights : false,
          deferEmptyText : false,
-         scrollable : undefined,
+         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(Genesis.constants.defaultIconSize(), 2 * 0.65, 1), 1),
          ui : 'bottom-round',
          store : store,
          cls : me.getListCls() + ' separator_pad',
@@ -113,7 +79,51 @@ Ext.define('Genesis.view.client.RedeemBase',
                return values['points'];
             }
          }),
-         onItemDisclosure : Ext.emptyFn
+         onItemDisclosure : Ext.emptyFn,
+         // ------------------------------------------------------------------------
+         // Redeem Available Panel
+         // ------------------------------------------------------------------------
+         items : [
+         {
+            docked : 'top',
+            xtype : 'toolbar',
+            ui : 'light',
+            cls : 'ptsEarnPanelHdr',
+            centered : false,
+            items : [
+            {
+               xtype : 'title',
+               title : me.getPtsEarnTitleText()
+            },
+            {
+               xtype : 'spacer'
+            }]
+         },
+         {
+            docked : 'top',
+            cls : 'ptsEarnPanel',
+            tag : 'ptsEarnPanel',
+            xtype : 'dataview',
+            useComponents : true,
+            scrollable : undefined,
+            defaultType : me.getDefaultItemType(),
+            store : renderStore
+         },
+         {
+            docked : 'top',
+            xtype : 'toolbar',
+            cls : 'ptsEarnPanelHdr',
+            ui : 'light',
+            centered : false,
+            items : [
+            {
+               xtype : 'title',
+               title : me.getRedeemTitleText()
+            },
+            {
+               xtype : 'spacer'
+            }]
+         }]
       })]));
    },
    statics :

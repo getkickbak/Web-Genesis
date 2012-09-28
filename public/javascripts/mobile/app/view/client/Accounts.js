@@ -113,16 +113,42 @@ Ext.define('Genesis.view.client.Accounts',
       //
       // Accounts List
       //
-      Ext.create('Ext.Container',
+      Ext.create('Ext.List',
       {
+         xtype : 'list',
+         store : 'CustomerStore',
          tag : 'accountsList',
-         layout : 'vbox',
-         scrollable : 'vertical',
+         cls : 'accountsList',
+         plugins : [
+         {
+            type : 'listpaging',
+            autoPaging : true
+         }],
+         refreshHeightOnUpdate : false,
+         variableHeights : false,
+         deferEmptyText : false,
+         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(Genesis.constants.defaultIconSize(), 2 * 0.65, 1), 1),
+         loadingText : null,
+         deferEmptyText : false,
+         emptyText : ' ',
+         /*
+          indexBar :
+          {
+          docked : 'right',
+          overlay : true,
+          alphabet : true,
+          centered : false
+          //letters : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
+          },
+          */
+         pinHeaders : false,
+         grouped : true,
          items : [
          //
          // Transfer Account Hdr
          //
          {
+            docked : 'top',
             xtype : 'toolbar',
             centered : false,
             tag : 'transferHdr',
@@ -140,30 +166,9 @@ Ext.define('Genesis.view.client.Accounts',
                xtype : 'spacer',
                align : 'right'
             }]
-         },
-         {
-            xtype : 'list',
-            store : 'CustomerStore',
-            tag : 'accountsList',
-            cls : 'accountsList',
-            loadingText : null,
-            scrollable : undefined,
-            deferEmptyText : false,
-            emptyText : ' ',
-            /*
-             indexBar :
-             {
-             docked : 'right',
-             overlay : true,
-             alphabet : true,
-             centered : false
-             //letters : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13']
-             },
-             */
-            pinHeaders : false,
-            grouped : true,
-            itemTpl : Ext.create('Ext.XTemplate',
-            // @formatter:off
+         }],
+         itemTpl : Ext.create('Ext.XTemplate',
+         // @formatter:off
             '<tpl if="this.isValidCustomer(values)">',
                '<div class="photo x-hasbadge">',
                   '{[this.isEligible(values)]}',
@@ -184,116 +189,115 @@ Ext.define('Genesis.view.client.Accounts',
                '</div>',
             '</tpl>',
             // @formatter:on
+         {
+            isSingle : function(values)
             {
-               isSingle : function(values)
+               rc = '';
+               switch (me.mode)
                {
-                  rc = '';
-                  switch (me.mode)
+                  case 'redeemPrizesProfile' :
+                  case 'redeemRewardsProfile' :
                   {
-                     case 'redeemPrizesProfile' :
-                     case 'redeemRewardsProfile' :
-                     {
-                        rc = 'single';
-                        break;
-                     }
-                     case 'profile' :
-                     case 'emailtransfer' :
-                     case 'transfer' :
-                     default :
-                        break;
+                     rc = 'single';
+                     break;
                   }
-                  return rc;
-               },
-               getTitle : function()
-               {
-                  return ('Reward Points: <br/>Prize Points:');
-               },
-               isValidCustomer : function(values)
-               {
-                  return Customer.isValid(values['id']);
-               },
-               isEligible : function(customer)
-               {
-                  var isEligible = false;
-                  switch (me.mode)
-                  {
-                     case 'redeemRewardsProfile' :
-                     {
-                        isEligible = customer['eligible_for_reward'];
-                        break;
-                     }
-                     case 'redeemPrizesProfile' :
-                     {
-                        isEligible = customer['eligible_for_prize'];
-                        break;
-                     }
-                     case 'profile' :
-                     {
-                        isEligible = customer['eligible_for_reward'] || customer['eligible_for_prize'];
-                        break;
-                     }
-                     case 'emailtransfer' :
-                     case 'transfer' :
-                     default :
-                        break;
-                  }
-
-                  return ('<span class="x-badge round ' + //
-                  ((isEligible) ? '' : 'x-item-hidden') + '">✔</span>');
-               },
-               getPhoto : function(values)
-               {
-                  return values.merchant['photo']['thumbnail_ios_small'].url;
-               },
-               showRewardPoints : function()
-               {
-                  var rc = true;
-                  switch (me.mode)
-                  {
-                     case 'redeemPrizesProfile' :
-                     {
-                        rc = false;
-                        break;
-                     }
-                     case 'redeemRewardsProfile' :
-                     case 'emailtransfer' :
-                     case 'transfer' :
-                     default :
-                        break;
-                  }
-
-                  return rc;
-               },
-               getRewardPoints : function(values)
-               {
-                  return values['points'] + '<img src="' + Genesis.constants.getIconPath('miscicons', 'points') + '">';
-               },
-               showPrizePoints : function()
-               {
-                  var rc = true;
-                  switch (me.mode)
-                  {
-                     case 'redeemRewardsProfile' :
-                     case 'emailtransfer' :
-                     case 'transfer' :
-                     {
-                        rc = false;
-                        break;
-                     }
-                     case 'redeemPrizesProfile' :
-                     default :
-                        break;
-                  }
-
-                  return rc;
-               },
-               getPrizePoints : function(values)
-               {
-                  return values['prize_points'] + '<img src="' + Genesis.constants.getIconPath('miscicons', 'prize_points') + '">';
+                  case 'profile' :
+                  case 'emailtransfer' :
+                  case 'transfer' :
+                  default :
+                     break;
                }
-            }),
-            onItemDisclosure : Ext.emptyFn
-         }]
+               return rc;
+            },
+            getTitle : function()
+            {
+               return ('Reward Points: <br/>Prize Points:');
+            },
+            isValidCustomer : function(values)
+            {
+               return Customer.isValid(values['id']);
+            },
+            isEligible : function(customer)
+            {
+               var isEligible = false;
+               switch (me.mode)
+               {
+                  case 'redeemRewardsProfile' :
+                  {
+                     isEligible = customer['eligible_for_reward'];
+                     break;
+                  }
+                  case 'redeemPrizesProfile' :
+                  {
+                     isEligible = customer['eligible_for_prize'];
+                     break;
+                  }
+                  case 'profile' :
+                  {
+                     isEligible = customer['eligible_for_reward'] || customer['eligible_for_prize'];
+                     break;
+                  }
+                  case 'emailtransfer' :
+                  case 'transfer' :
+                  default :
+                     break;
+               }
+
+               return ('<span class="x-badge round ' + //
+               ((isEligible) ? '' : 'x-item-hidden') + '">✔</span>');
+            },
+            getPhoto : function(values)
+            {
+               return values.merchant['photo']['thumbnail_ios_small'].url;
+            },
+            showRewardPoints : function()
+            {
+               var rc = true;
+               switch (me.mode)
+               {
+                  case 'redeemPrizesProfile' :
+                  {
+                     rc = false;
+                     break;
+                  }
+                  case 'redeemRewardsProfile' :
+                  case 'emailtransfer' :
+                  case 'transfer' :
+                  default :
+                     break;
+               }
+
+               return rc;
+            },
+            getRewardPoints : function(values)
+            {
+               return values['points'] + '<img src="' + Genesis.constants.getIconPath('miscicons', 'points') + '">';
+            },
+            showPrizePoints : function()
+            {
+               var rc = true;
+               switch (me.mode)
+               {
+                  case 'redeemRewardsProfile' :
+                  case 'emailtransfer' :
+                  case 'transfer' :
+                  {
+                     rc = false;
+                     break;
+                  }
+                  case 'redeemPrizesProfile' :
+                  default :
+                     break;
+               }
+
+               return rc;
+            },
+            getPrizePoints : function(values)
+            {
+               return values['prize_points'] + '<img src="' + Genesis.constants.getIconPath('miscicons', 'prize_points') + '">';
+            }
+         }),
+         onItemDisclosure : Ext.emptyFn
       }),
       //
       // Venues List
@@ -303,8 +307,16 @@ Ext.define('Genesis.view.client.Accounts',
          xtype : 'list',
          store : 'VenueStore',
          tag : 'venuesList',
-         scrollable : 'vertical',
          loadingText : null,
+         plugins : [
+         {
+            type : 'listpaging',
+            autoPaging : true
+         }],
+         refreshHeightOnUpdate : false,
+         variableHeights : false,
+         deferEmptyText : false,
+         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(Genesis.constants.defaultIconSize(), 2 * 0.65, 1), 1),
          cls : 'venuesList',
          deferEmptyText : false,
          emptyText : ' ',

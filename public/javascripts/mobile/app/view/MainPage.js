@@ -14,6 +14,7 @@ Ext.define('Genesis.view.MainPage',
             {
                xtype : 'titlebar',
                docked : 'top',
+               tag : 'navigationBarTop',
                cls : 'navigationBarTop kbTitle',
                title : ' ',
                defaults :
@@ -73,6 +74,7 @@ Ext.define('Genesis.view.MainPage',
                {
                   docked : 'bottom',
                   cls : 'navigationBarBottom',
+                  tag : 'navigationBarBottom',
                   xtype : 'tabbar',
                   ui : 'light',
                   layout :

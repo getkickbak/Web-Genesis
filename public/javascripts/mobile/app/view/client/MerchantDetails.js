@@ -133,21 +133,22 @@ Ext.define('Genesis.view.client.MerchantDetails',
             painted : function(map, eOpts)
             {
                cntlr = _application.getController('client.Merchants');
-               var size = map.innerElement.getSize();
-               map.setSize(size.width - (1 * 15), size.height - (1 * 12));
+               var size = map.getSize();
+               var padding = Genesis.fn.calcPx(0.7, 1);
+               map.setSize(size.width, size.height - (1 * 12));
                var queryString = Ext.Object.toQueryString(Ext.apply(
                {
                   zoom : 15,
                   scale : window.devicePixelRatio,
                   maptype : 'roadmap',
                   sensor : false,
-                  size : (size.width - (1 * 15)) + 'x' + (size.height - (1 * 12))
+                  size : size.width + 'x' + (size.height - (1 * padding))
                }, cntlr.markerOptions));
                var string = Ext.String.urlAppend(cntlr.self.googleMapStaticUrl, queryString);
-               map.setData(
+               Ext.getCmp(map.observableId.split(map.observableIdPrefix)[1]).setData(
                {
-                  width : size.width - (1 * 15),
-                  height : size.height - (1 * 12),
+                  width : size.width,
+                  height : size.height - (1 * padding),
                   photo : string
                });
             }

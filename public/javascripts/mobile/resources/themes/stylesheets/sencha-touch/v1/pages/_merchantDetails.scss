@@ -13,7 +13,8 @@
          padding:0!important;
       }
       .photo {
-         height:$icon-size*2+10;
+         font-size:1em;
+         height:calc-px-em($icon-size*2, $panelGap, 1em);
          img {
             width : $icon-size*2;
             max-height:$icon-size*2;
@@ -23,9 +24,7 @@
             margin-right:$panelGap;
          }
       }
-      //margin-left:$icon-size*1.5 + 10px;
       padding-right:0;
-      //width:8.5em !important;
       .itemTitle {
          font-size:$largeFontSize !important;
       }

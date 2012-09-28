@@ -4,7 +4,7 @@ Ext.define('Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store', 'Ext.util.Geolocation'],
    config :
    {
-      animationMode : null
+      animationMode : null,
    },
    checkinMsg : 'Checking in ...',
    loadingScannerMsg : 'Loading Scanner ...',
@@ -15,6 +15,8 @@ Ext.define('Genesis.controller.ControllerBase',
    geoLocationErrorMsg : 'Your current location is unavailable. Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services >> KICKBAK\"',
    geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
+   geoLocationUnavailableMsg : 'We are not able to locate your GPS coordinates',
+   geoLocationUseLastPositionMsg : 'We are not able to locate your GPS coordinates. Using your last Location Coordinates ...',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
    getVenueInfoMsg : 'Retrieving Venue Information ...',
    missingVenueInfoMsg : 'Error loading Venue information.',
@@ -785,6 +787,8 @@ Ext.define('Genesis.controller.ControllerBase',
    getGeoLocation : function(i)
    {
       var me = this;
+      var viewport = me.getViewPortCntlr();
+
       i = i || 0;
       console.debug('Getting GeoLocation ...');
       if (!Genesis.constants.isNative())
@@ -838,13 +842,13 @@ Ext.define('Genesis.controller.ControllerBase',
                      //
                      'Speed: ' + geo.getSpeed() + '\n' + 'Timestamp: ' + new Date(geo.getTimestamp()) + '\n');
 
+                     viewport.setLastPosition(position);
                      me.fireEvent('locationupdate', position);
                   },
                   locationerror : function(geo, bTimeout, bPermissionDenied, bLocationUnavailable, message)
                   {
                      console.debug('GeoLocation Error[' + message + ']');
                      Ext.Viewport.setMasked(false);
-
                      if (bPermissionDenied)
                      {
                         console.debug("PERMISSION_DENIED");
@@ -868,11 +872,23 @@ Ext.define('Genesis.controller.ControllerBase',
                      {
                         if (bLocationUnavailable)
                         {
-                           console.debug("POSITION_UNAVAILABLE");
-                           if (++i <= 5)
+                           if (i < 3)
                            {
-                              Ext.defer(me.getGeoLocation, 1 * 1000, me, [i]);
-                              console.debug("Retry getting current location(" + i + ") ...");
+                              Ext.defer(me.getGeoLocation, 1 * 1000, me, [++i]);
+                              //console.debug("Retry getting current location(" + i + ") ...");
+                           }
+                           else
+                           {
+                              console.debug("POSITION_UNAVAILABLE");
+                              Ext.device.Notification.show(
+                              {
+                                 title : 'Location Services',
+                                 message : (viewport.getLastPosition()) ? me.geoLocationUseLastPositionMsg : me.geoLocationUnavailableMsg,
+                                 callback : function()
+                                 {
+                                    me.fireEvent('locationupdate', viewport.getLastPosition());
+                                 }
+                              });
                            }
                         }
                         else
@@ -895,12 +911,6 @@ Ext.define('Genesis.controller.ControllerBase',
    scanQRCode : function()
    {
       var me = this;
-      var fail = function(message)
-      {
-         Ext.Viewport.setMasked(false);
-         config.callback();
-         console.debug('Failed because: ' + message);
-      };
       var callback = function(r)
       {
          var qrcode;
@@ -911,13 +921,13 @@ Ext.define('Genesis.controller.ControllerBase',
             {
                case 'RL' :
                {
-                  qrcode = (r.response == 'undefined') ? "" : (r.response || "");
+                  qrcode = (r.response == undefined) ? "" : (r.response || "");
                   console.debug("QR Code RL  = " + qrcode);
                   break;
                }
                case 'Nigma' :
                {
-                  qrcode = (r.response == 'undefined') ? "" : (r.response || "");
+                  qrcode = (r.response == undefined) ? "" : (r.response || "");
                   if (!qrcode)
                   {
                      console.debug("QR Code Nigma = Empty");
@@ -967,8 +977,16 @@ Ext.define('Genesis.controller.ControllerBase',
             console.debug("QR Code = " + qrcode);
          }
 
+         Ext.device.Notification.beep();
          me.fireEvent('scannedqrcode', qrcode);
-      };
+      }
+      var fail = function(message)
+      {
+         Ext.Viewport.setMasked(false);
+         console.debug('Failed because: ' + message);
+         Ext.device.Notification.beep();
+         me.fireEvent('scannedqrcode', null);
+      }
 
       console.debug("Scanning QR Code ...")
       if (!Genesis.constants.isNative())

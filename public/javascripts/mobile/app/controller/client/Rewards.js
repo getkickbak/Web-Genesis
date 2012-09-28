@@ -201,7 +201,7 @@ Ext.define('Genesis.controller.client.Rewards',
             Ext.Viewport.setMasked(false);
             if (operation.wasSuccessful())
             {
-               Genesis.db.removeLocalDBAttrib('last_check_in');
+               //Genesis.db.removeLocalDBAttrib('last_check_in');
                me.fireEvent('triggerCallbacksChain');
             }
          }

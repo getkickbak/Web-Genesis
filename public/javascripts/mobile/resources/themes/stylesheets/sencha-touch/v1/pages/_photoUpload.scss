@@ -7,7 +7,7 @@
       background-color:transparent;
       background-position: center center;
       background-repeat : no-repeat;
-      background-size: contain;
+      @include background-size(contain);
    }
    .desc {
      background: rgba(0,0,0,0.3) center center no-repeat;

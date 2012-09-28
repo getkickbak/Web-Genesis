@@ -1,0 +1,88 @@
+//------------------------------------------------------------------------------
+// KickBak Theme Colors
+//------------------------------------------------------------------------------
+$BlueStart : #00ADEE; $BlueEnd : #0A78BE;
+$OrangeStart : #E86025; $OrangeEnd : #FAA845;
+$GreenStart : #42BA7C; $GreenEnd : #1A5D2F;
+$BlackStart : #555658; $BlackEnd : #000000;
+$BlueHomeStart : #89D7F7; $BlueHomeEnd : #00B0EF;
+$BlueMask : #25AAE1;
+$Grey : #F3F3F4;
+$GreyNoEntry : #E7E7E8;
+$GreyStart : #F3F3F4; $GreyEnd : #D1D2D4;
+$GreyHdrStart : #A7A9AC; $GreyHdrEnd : #777878;
+//------------------------------------------------------------------------------
+// Global Vars Default Theme Override
+//------------------------------------------------------------------------------
+$base-color: $BlueStart;
+$base-gradient: 'flat';
+$active-color: darken(saturate($OrangeEnd, 55%), 10%);
+
+// Highlights
+$include-highlights: false; // Can disable all theme-generated gradients, text-shadows, and box-shadows.
+
+//Buttons
+$include-buttons-uis : false;
+$include-default-icons : false;
+
+// Forms
+//$form-dark: #FFF;
+$form-light: $BlueEnd ;
+$form-field-bg-color : $Grey;
+
+// Lists
+$list-bg-color: $Grey;
+$list-active-gradient: 'recessed';
+//$list-header-bg-color: transparentize(saturate($base-color, 10%), .25);
+$list-header-bg-color: $OrangeStart;
+$list-header-gradient: 'bevel';
+
+
+// Tabs
+$tabs-dark: #111;
+$include-toolbar-uis : false;
+
+//------------------------------------------------------------------------------
+// Global Vars Theme
+//------------------------------------------------------------------------------
+
+$screen-height: 480px;
+// Icon Reference size
+$icon-size: 48px;
+// Panel Gaps
+$panelGap: 0.8em;
+$panelTopGap: 0.7em;
+$panelBorderRadius : 0.6em;
+// Font sizes
+$defaultFontSize : (16px * 1.14 * 1.0);
+$xsmallFontSize : 0.3em;
+$smallFontSize : 0.4em;
+$normalFontSize : 0.6em;
+$largeFontSize : 0.8em;
+$xlargeFontSize : 1.2em;
+
+// Theme Path
+$theme-path : 'v1';
+$theme-path-rel : '../themes/images/v1';
+
+// Badges Theme
+$badgePoints-bg-color: darken($GreenEnd, 10%);
+$badgePoints-bg-gradient: $base-gradient;
+
+//------------------------------------------------------------------------------
+// Default Theme Includes
+//------------------------------------------------------------------------------
+@import 'sencha-touch/default-2.1.0/global';
+@import 'compass/css3/box-sizing';
+@import 'blueprint/typography';
+//------------------------------------------------------------------------------
+// Default Theme Includes and CSS Overrides
+//------------------------------------------------------------------------------
+@import 'sencha-touch/v1/all-mdpi';
+
+body {
+   font-size : 114%;
+   background-image : url(/resources/startup/640x920.png) no-repeat;
+   background-size : contain;
+}
+

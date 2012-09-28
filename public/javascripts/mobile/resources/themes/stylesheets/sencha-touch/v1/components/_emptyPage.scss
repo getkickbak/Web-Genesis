@@ -1,6 +1,6 @@
 
 .emptyPage {
-   background-size:contain;
+   @include background-size(contain);  
    font-size:$largeFontSize;
    font-weight:bold;
    &:before {

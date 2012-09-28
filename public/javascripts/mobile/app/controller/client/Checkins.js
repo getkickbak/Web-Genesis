@@ -239,6 +239,7 @@ Ext.define('Genesis.controller.client.Checkins',
                customer : viewport.getCustomer(),
                metaData : viewport.getMetaData()
             });
+            /*
             if (venue)
             {
                Genesis.db.setLocalDBAttrib('last_check_in',
@@ -252,6 +253,7 @@ Ext.define('Genesis.controller.client.Checkins',
             {
                Genesis.db.removeLocalDBAttrib('last_check_in');
             }
+            */
             break;
          }
          default :
@@ -381,39 +383,46 @@ Ext.define('Genesis.controller.client.Checkins',
       var cestore = Ext.StoreMgr.get('CheckinExploreStore');
       var proxy = cestore.getProxy();
 
-      Venue['setFindNearestURL']();
-      cestore.load(
+      if (!position)
       {
-         params :
+         me.popView();
+      }
+      else
+      {
+         Venue['setFindNearestURL']();
+         cestore.load(
          {
-            latitude : position.coords.getLatitude(),
-            longitude : position.coords.getLongitude()
-         },
-         callback : function(records, operation)
-         {
-            //Ext.Viewport.setMasked(false);
-            if (operation.wasSuccessful())
+            params :
             {
-               var checkinContainer = me.getCheckInNowBar();
-               me.setPosition(position);
-               checkinContainer.setDisabled(false);
-            }
-            else
+               latitude : position.coords.getLatitude(),
+               longitude : position.coords.getLongitude()
+            },
+            callback : function(records, operation)
             {
-               proxy.supressErrorsPopup = true;
-               Ext.device.Notification.show(
+               //Ext.Viewport.setMasked(false);
+               if (operation.wasSuccessful())
                {
-                  title : 'Warning',
-                  message : me.missingVenueInfoMsg,
-                  callback : function()
+                  var checkinContainer = me.getCheckInNowBar();
+                  me.setPosition(position);
+                  checkinContainer.setDisabled(false);
+               }
+               else
+               {
+                  proxy.supressErrorsPopup = true;
+                  Ext.device.Notification.show(
                   {
-                     proxy.supressErrorsPopup = false;
-                  }
-               });
-            }
-         },
-         scope : me
-      });
+                     title : 'Warning',
+                     message : me.missingVenueInfoMsg,
+                     callback : function()
+                     {
+                        proxy.supressErrorsPopup = false;
+                     }
+                  });
+               }
+            },
+            scope : me
+         });
+      }
    },
    onExploreLoad : function(forceReload)
    {

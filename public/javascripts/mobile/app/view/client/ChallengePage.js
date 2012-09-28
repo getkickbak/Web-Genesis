@@ -56,7 +56,7 @@ Ext.define('Genesis.view.client.ChallengePage',
          },
          items : [
          {
-            flex : 1,
+            //flex : 1,
             cls : 'itemDesc',
             data :
             {

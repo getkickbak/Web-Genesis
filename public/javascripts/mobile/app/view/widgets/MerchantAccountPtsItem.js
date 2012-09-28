@@ -91,6 +91,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                      '<div class="progressBar" style="{[this.getProgress(values)]}"></div>',
                      '<div class="progressBarValue">{[this.getDesc(values)]}</div>',
                   '</div>',
+                  '{[this.cleanup(values)]}',
                '</div>',
             '</div>',
          '</tpl>',
@@ -103,9 +104,13 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             {
                var viewport = _application.getController('Viewport');
                var customer = viewport.getCustomer();
-               var valid = Customer.isValid(customer.getId());
+               var valid = false;
 
-               values['_customer'] = (valid) ? Ext.StoreMgr.get('CustomerStore').getById(customer.getId()) : null;
+               if (customer)
+               {
+                  valid = Customer.isValid(customer.getId());
+                  values['_customer'] = (valid) ? Ext.StoreMgr.get('CustomerStore').getById(customer.getId()) : null;
+               }
 
                return valid;
             },
@@ -142,13 +147,16 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                var nvisit = values['_nvisit'];
                var tvisit = customer.get('next_badge_visits');
                var nextBadge = values['_nextBadge'];
+
+               return ((nvisit - tvisit) + ' more visit' + (((nvisit - tvisit) > 1) ? 's' : '') + ' to be our ' + //
+               ((nextBadge) ? nextBadge.get('type').display_value.toUpperCase() : 'None') + '!');
+            },
+            cleanup : function(values)
+            {
                delete values['_customer'];
                delete values['_nextBadge'];
                delete values['_badgeType'];
                delete values['_nvisit'];
-
-               return ((nvisit - tvisit) + ' more visit' + (((nvisit - tvisit) > 1) ? 's' : '') + ' to be our ' + //
-               nextBadge.get('type').display_value.toUpperCase() + '!');
             }
          })
       },

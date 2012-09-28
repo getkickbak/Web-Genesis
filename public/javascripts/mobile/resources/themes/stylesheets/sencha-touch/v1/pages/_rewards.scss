@@ -1,3 +1,61 @@
+//------------------------------------------------------------------------------
+// Default Theme CSS Classes
+//------------------------------------------------------------------------------
+@-webkit-keyframes roulette-table-rotate {
+   0%{     -webkit-transform: rotate(0deg);   }         
+   4.17%{     -webkit-transform: rotate(15deg);   }
+   8.33%{  -webkit-transform: rotate(30deg);  }
+   12.5%{  -webkit-transform: rotate(45deg);  }
+   16.66%{ -webkit-transform: rotate(60deg);  }
+   20.83%{ -webkit-transform: rotate(75deg);  }
+   25.00%{    -webkit-transform: rotate(90deg);  }
+   29.17%{    -webkit-transform: rotate(105deg);  }
+   33.33%{ -webkit-transform: rotate(120deg); }
+   37.50%{ -webkit-transform: rotate(135deg); }
+   41.67%{ -webkit-transform: rotate(150deg); }
+   45.83%{ -webkit-transform: rotate(165deg); }
+   50.00%{    -webkit-transform: rotate(180deg); }
+   54.17%{    -webkit-transform: rotate(195deg); }
+   58.33%{ -webkit-transform: rotate(210deg); }
+   62.50%{ -webkit-transform: rotate(225deg); }
+   66.66%{ -webkit-transform: rotate(240deg); }
+   70.83%{ -webkit-transform: rotate(255deg); }
+   75.00%{    -webkit-transform: rotate(270deg); }
+   79.17%{    -webkit-transform: rotate(285deg); }
+   83.33%{ -webkit-transform: rotate(300deg); }
+   87.50%{ -webkit-transform: rotate(315deg); }
+   91.67%{   -webkit-transform: rotate(330deg); }
+   95.83%{   -webkit-transform: rotate(345deg); }
+   100%{   -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes roulette-table-rotate-back {
+   0%{     -webkit-transform: rotate(0deg);   }         
+   4.17%{     -webkit-transform: rotate(345deg);   }
+   8.33%{  -webkit-transform: rotate(330deg);  }
+   12.5%{  -webkit-transform: rotate(315deg);  }
+   16.66%{ -webkit-transform: rotate(300deg);  }
+   20.83%{ -webkit-transform: rotate(285deg);  }
+   25.00%{    -webkit-transform: rotate(270deg);  }
+   29.17%{    -webkit-transform: rotate(255deg);  }
+   33.33%{ -webkit-transform: rotate(240deg); }
+   37.50%{ -webkit-transform: rotate(225deg); }
+   41.67%{ -webkit-transform: rotate(210deg); }
+   45.83%{ -webkit-transform: rotate(195deg); }
+   50.00%{    -webkit-transform: rotate(180deg); }
+   54.17%{    -webkit-transform: rotate(165deg); }
+   58.33%{ -webkit-transform: rotate(150deg); }
+   62.50%{ -webkit-transform: rotate(135deg); }
+   66.66%{ -webkit-transform: rotate(120deg); }
+   70.83%{ -webkit-transform: rotate(105deg); }
+   75.00%{    -webkit-transform: rotate(90deg); }
+   79.17%{    -webkit-transform: rotate(75deg); }
+   83.33%{ -webkit-transform: rotate(60deg); }
+   87.50%{ -webkit-transform: rotate(45deg); }
+   91.67%{   -webkit-transform: rotate(30deg); }
+   95.83%{   -webkit-transform: rotate(15deg); }
+   100%{   -webkit-transform: rotate(0deg); }
+}
+
 .rewardsRedemptionsPanelHdr {
    @extend .panelHdr;
 }
@@ -88,7 +146,7 @@
 
 .rouletteBg {
    background-image : url($theme-path-rel + "/green_roulette_bg" + ".png");
-   background-size : cover;
+   @include background-size(cover);
 }
 
 .prizeCheck {
@@ -108,7 +166,7 @@
    }
    .rouletteTable, .rouletteBall {
       -webkit-transform-origin: 50% 50%;
-      background-size : contain;
+      @include background-size(contain);
    }
    .rouletteTable {
       background-image : url($theme-path-rel + "/roulette2" + ".png");

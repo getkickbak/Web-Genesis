@@ -8,17 +8,6 @@
       <!-- Default Fontsize = 11px
       iPad @132dpi = 100% - iPhone @163dpi = 114% - iPhone Retina @326dpi = 228%
       -->
-      <style rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 2)">
-         body {
-            font-size : 228%;
-            background-image : url(/resources/startup/640x920.png) no-repeat;
-            background-size : contain;
-         }
-      </style>
-      <!-- iPad/iPhone specific css below, add after your main css >
-      <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
-      <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
-      -->
       <!--
       <link rel="apple-touch-icon-precomposed" href="resouces/img/icon_57.png">
       <link rel="apple-touch-icon-precomposed" sizes="72x72" href="resources/img/icon_72.png"/>
@@ -28,7 +17,6 @@
       <link rel="apple-touch-startup-image" media="screen and (resolution: 163dpi)" href="resources/themes/images/v1/startup_640.png"
       />
       -->
-      <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>KickBak</title>
@@ -44,7 +32,7 @@
       <!--
       Phone Gap Libs
       -->
-      <script type="text/javascript" src="lib/cordova-1.8.1.js"></script>
+      <script type="text/javascript" src="lib/cordova-2.1.0.ios.js"></script>
       <script type="text/javascript">
          var offlineDialogShown = false;
          var phoneGapAvailable = true;
@@ -55,8 +43,9 @@
          //var pushNotifAppId = '4fef50b25b2f16.74735670';
          var pushNotifAppName = 'KickBak Production';
          var pushNotifAppId = '4fef6fb0691c12.54726991';
+         var pushNotifType = 1;
 
-         var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.1.1/src';
+         var _appPath = "app", _extPath = 'lib/sencha-touch-2.1.0-beta3/src';
          var _appId = "197968780267830";
 
          var _browser = Ext.browser;
@@ -119,7 +108,7 @@
             });
             Ext.application(
             {
-               profiles : ['Iphone', 'Android', 'Desktop'],
+               profiles : ['Iphone'],
                views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
                'client.AccountsTransfer', 'client.SettingsPage', //
                'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
@@ -192,61 +181,14 @@
                }
             }, false);
 
-            document.addEventListener('push-notification', function(event)
-            {
-               var pushNotification = window.plugins.pushNotification;
-
-               console.warn('push-notification!: ' + event.notification);
-               Ext.device.Notification.show(
-               {
-                  title : 'KickBak Push Notification',
-                  message : JSON.stringify(event.notification)[1].aps['alert']
-                  //message : JSON.stringify(['push-notification!', event.notification])
-               });
-               pushNotification.setApplicationIconBadgeNumber(0);
-            });
-
             document.addEventListener("deviceready", onDeviceReady, false);
             console.log("SystemInit");
          }
 
          function onDeviceReady()
          {
-            var pushNotification = window.plugins.pushNotification;
-
-            if ( typeof (invokeString) != "undefined" && invokeString.length > 0 && invokeString[0] == '{')
-            {
-               //push notification
-               console.warn('push-notification!: ' + invokeString);
-               Ext.device.Notification.show(
-               {
-                  title : 'KickBak Push Notification',
-                  message : JSON.stringify(invokeString)[1].aps['alert']
-               });
-               pushNotification.setApplicationIconBadgeNumber(0);
-            }
-
-            pushNotification.registerDevice(
-            {
-               alert : true,
-               badge : true,
-               sound : true,
-               appid : pushNotifAppId,
-               appname : pushNotifAppName
-            }, function(status)
-            {
-               console.warn(JSON.stringify(['registerDevice - ', status]));
-               Genesis.constants.device =
-               {
-                  'device_type' : 1, //for iOS
-                  'device_id' : status['deviceToken']
-               };
-            }, function(status)
-            {
-               console.warn(JSON.stringify(['failed to register - ', status]));
-               Genesis.constants.device = null;
-            });
             console.log("onDeviceReady");
+            initPushwoosh();
             appInit();
          }
 
@@ -284,6 +226,9 @@
          }
       </script>
       <script type="text/javascript" src="core.js"></script>
+      <script type="text/javascript" src="lib/core/PushNotification.ios.js"></script>
+      <!-- View Widgets -->
+      <script type="text/javascript" src="app/profile/Iphone.js"></script>
       <script type="text/javascript" src="client-all.js"></script>
    </head>
    <body onload="onBodyLoad()">

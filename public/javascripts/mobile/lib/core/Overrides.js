@@ -1,3 +1,10 @@
+//---------------------------------------------------------------------------------
+// Math
+//---------------------------------------------------------------------------------
+Math.radians = function(degrees)
+{
+   return (degrees * Math.PI / 180);
+}
 // **************************************************************************
 // System Functions
 // **************************************************************************
@@ -5,9 +12,29 @@ Ext.ns('Genesis.constants');
 
 Genesis.constants =
 {
-   //host : 'http://192.168.0.52:3000',
-   host : 'http://www.getkickbak.com',
+   host : 'http://192.168.0.52:3000',
+   //host : 'http://www.getkickbak.com',
    themeName : 'v1',
+   defaultFontSize : (function()
+   {
+      return Math.floor(((16 * 1.14 * Math.min(1.0, window.devicePixelRatio)) || (16 * 1.14)));
+   })(),
+   defaultIconSize : function()
+   {
+      if (Ext.os.is.iPhone)
+      {
+         return 57;
+      }
+      else
+      if (Ext.os.is.Android)
+      {
+         return ((window.devicePixelRatio < 1) ? 36 : 48);
+      }
+      else
+      {
+         return 57;
+      }
+   },
    site : 'www.getkickbak.com',
    photoSite : 'http://files.getkickbak.com',
    debugVPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
@@ -16,8 +43,8 @@ Genesis.constants =
    privKey : null,
    device : null,
    redeemDBSize : 10000,
-   minDistance : 0.1 * 1000,
-   //minDistance : 100000 * 1000,
+   //minDistance : 0.1 * 1000,
+   minDistance : 100000 * 1000,
    createAccountMsg : 'Create user account using Facebook Profile information',
    isNative : function()
    {
@@ -719,6 +746,14 @@ Genesis.fn =
    removeUnit : function(unit)
    {
       return unit.match(this._removeUnitRegex)[1];
+   },
+   calcPx : function(em, fontsize)
+   {
+      return Math.floor(((em / fontsize) * Genesis.constants.defaultFontSize));
+   },
+   calcPxEm : function(px, em, fontsize)
+   {
+      return ((px / Genesis.constants.defaultFontSize / fontsize) + (em / fontsize));
    }
 }
 
@@ -1109,7 +1144,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   {
                      title : 'Server Error(s)',
                      message : messages,
-                     callback : function()
+                     callback : function(btn)
                      {
                         if (metaData['session_timeout'])
                         {
@@ -1136,7 +1171,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   {
                      title : 'Create Account',
                      message : Genesis.constants.createAccountMsg,
-                     callback : function(button)
+                     callback : function(btn)
                      {
                         viewport.setLoggedIn(false);
                         viewport.redirectTo('createAccount');
@@ -1153,7 +1188,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   {
                      title : 'Login Error',
                      message : messages,
-                     callback : function()
+                     callback : function(btn)
                      {
                         viewport.resetView();
                         viewport.redirectTo('login');
@@ -1455,12 +1490,32 @@ Ext.define('Genesis.tab.Bar',
 Ext.define('Genesis.device.connection.PhoneGap',
 {
    override : 'Ext.device.connection.PhoneGap',
-
    syncOnline : function()
    {
       var type = navigator.network.connection.type;
       this._type = type;
       this._online = (type != Connection.NONE) && (type != Connection.UNKNOWN);
+   }
+});
+
+Ext.define('Genesis.util.Geolocation',
+{
+   override : 'Genesis.util.Geolocation',
+   parseOptions : function()
+   {
+      var timeout = this.getTimeout(), ret =
+      {
+         maximumAge : this.getMaximumAge(),
+         allowHighAccuracy : this.getAllowHighAccuracy(),
+         enableHighAccuracy : this.getAllowHighAccuracy()
+      };
+
+      //Google doesn't like Infinity
+      if (timeout !== Infinity)
+      {
+         ret.timeout = timeout;
+      }
+      return ret;
    }
 });
 
@@ -1522,13 +1577,6 @@ Ext.define('Genesis.plugin.PullRefresh',
    }
 });
 
-//---------------------------------------------------------------------------------
-// Math
-//---------------------------------------------------------------------------------
-Math.radians = function(degrees)
-{
-   return (degrees * Math.PI / 180);
-}
 //---------------------------------------------------------------------------------
 // Array
 //---------------------------------------------------------------------------------

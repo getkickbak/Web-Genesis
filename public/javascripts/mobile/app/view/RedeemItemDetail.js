@@ -284,6 +284,7 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
       {
          xtype : 'titlebar',
          docked : 'top',
+         tag : 'navigationBarTop',
          cls : 'navigationBarTop',
          title : 'Prizes',
          defaults :
@@ -379,6 +380,7 @@ Ext.define('Genesis.view.PromotionItem',
       {
          xtype : 'titlebar',
          docked : 'top',
+         tag : 'navigationBarTop',
          cls : 'navigationBarTop',
          title : ' ',
          defaults :
