@@ -1,7 +1,28 @@
 <% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/pages/business/reports.css"/>
 <% end %>
 <% content_for :script do %>
+<script type="text/javascript">
+	$(document).ready($(function() {
+	var msg=$("#notice").html();
+	if(msg) {
+	Genesis.showWarningMsg(msg,null,true);
+	}
+	}));
+</script>
+<!--
 <script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/lib/Highcharts-2.2.5/js/highcharts.js" ></script>
+<script type="text/javascript" src="/javascripts/desktop/lib/Highcharts-2.2.5/js/modules/exporting.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/src/business/dashboard.js"></script>
+-->
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+	<p>
+		<%= flash[:notice] %>
+	</p>
+</div>
 <% end %>
 <div class="main">
 	<div class="main-inner">
