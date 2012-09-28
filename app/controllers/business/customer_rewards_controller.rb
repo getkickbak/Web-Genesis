@@ -70,6 +70,11 @@ module Business
         logger.error("Exception: " + e.resource.errors.inspect)
         @customer_reward = e.resource
         @customer_reward.type_id = params[:customer_reward][:type_id]
+        @customer_reward.expiry_date = Date.today
+        @venue_ids = []
+        @customer_reward.venues.each do |venue|
+          @venue_ids << venue.id
+        end
         respond_to do |format|
           format.html { render :action => "new" }
           #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
@@ -107,7 +112,7 @@ module Business
           end
           @customer_reward.update(type, params[:customer_reward], venues)
           respond_to do |format|
-            format.html { redirect_to({:action => "index"}, {:notice => t("business.customer_rewards.update_success")}) }
+            format.html { redirect_to({:action => "edit"}, {:notice => t("business.customer_rewards.update_success")}) }
             #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
             #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
           end
@@ -116,6 +121,13 @@ module Business
         logger.error("Exception: " + e.resource.errors.inspect)
         @customer_reward = e.resource
         @customer_reward.type_id = params[:customer_reward][:type_id]
+        if @customer_reward.time_limited && @customer_reward.expiry_date < Date.today
+          @customer_reward.expiry_date = Date.today
+        end
+        @venue_ids = []
+        @customer_reward.venues.each do |venue|
+          @venue_ids << venue.id
+        end
         respond_to do |format|
           format.html { render :action => "edit" }
           #format.xml  { render :xml => @deal.errors, :status => :unprocessable_entity }

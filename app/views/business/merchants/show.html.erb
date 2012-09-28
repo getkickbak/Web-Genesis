@@ -39,36 +39,59 @@
 								<br>
 								<div class="tab-content">
 									<div class="tab-pane active" id="profile">
-										<p>
-											<b>Name:</b> <%= @merchant.name %>
-										</p>
+										<div class="not-edit form-horizontal">
+											<div class="control-group">
+												<label class="control-label">Name:</label>
+												<div class="controls">
+													<%= @merchant.name %>
+												</div>
+											</div>
 
-										<p>
-											<b>Description:</b> <%= @merchant.description %>
-										</p>
+											<div class="control-group">
+												<label class="control-label">Description:</label>
+												<div class="controls">
+													<%= @merchant.description %>
+												</div>
+											</div>
 
-										<p>
-											<b>Email:</b> <%= @merchant.email %>
-										</p>
+											<div class="control-group">
+												<label class="control-label">Email:</label>
+												<div class="controls">
+													<%= @merchant.email %>
+												</div>
+											</div>
 
-										<p>
-											<b>Account First Name:</b> <%= @merchant.account_first_name %>
-										</p>
+											<div class="control-group">
+												<label class="control-label">Account First Name:</label>
+												<div class="controls">
+													<%= @merchant.account_first_name %>
+												</div>
+											</div>
 
-										<p>
-											<b>Account Last Name:</b> <%= @merchant.account_last_name %>
-										</p>
+											<div class="control-group">
+												<label class="control-label">Account Last Name:</label>
+												<div class="controls">
+													<%= @merchant.account_last_name %>
+												</div>
+											</div>
 
-										<p>
-											<b>Phone:</b> <%= @merchant.phone %>
-										</p>
+											<div class="control-group">
+												<label class="control-label">Phone:</label>
+												<div class="controls">
+													<%= @merchant.phone %>
+												</div>
+											</div>
 
-										<% if not @merchant.website.empty? %>
-										<p>
-											<b>Website:</b> <%= @merchant.website %>
-										</p>
-										<% end %>
-										<%= link_to 'Edit', edit_account_path %>
+											<% if not @merchant.website.empty? %>
+											<div class="control-group">
+												<label class="control-label">Website:</label>
+												<div class="controls">
+													<%= @merchant.website %>
+												</div>
+											</div>
+											<% end %>
+											<%= link_to 'Edit', edit_account_path %>
+										</div>
 									</div>
 								</div>
 							</div>

@@ -20,9 +20,9 @@
 	<%= f.input :description, :as => :hidden %>
 	<%= f.input :require_verif, :as => :hidden %>
 	<%= f.input :points, :as => :hidden %>
-	<div class="challenge_desc">
+	<div class="challenge_desc_last">
 		<span>they will get $</span>
-		<input id="challenge_reward_amount" name="challenge[reward_amount]" type="text" class="numfield" placeholder=""/>
+		<input id="challenge_reward_amount" name="challenge[reward_amount]" type="text" class="input-small" placeholder=""/>
 		<span>worth of points</span>
 	</div>
 	<% elsif @challenge.type && @challenge.type.value == 'menu' %>
@@ -33,9 +33,9 @@
 	<%= f.input :description, :as => :hidden %>
 	<%= f.input :require_verif, :as => :hidden %>
 	<%= f.input :points, :as => :hidden %>
-	<div class="challenge_desc">
+	<div class="challenge_desc_last">
 		<span>they will get $</span>
-		<input id="challenge_reward_amount" name="challenge[reward_amount]" type="text" class="numfield" placeholder=""/>
+		<input id="challenge_reward_amount" name="challenge[reward_amount]" type="text" class="input-small" placeholder=""/>
 		<span>worth of points</span>
 	</div>
 	<% elsif @challenge.type && @challenge.type.value == 'photo' %>
@@ -45,9 +45,9 @@
 	<%= f.input :description, :as => :hidden %>
 	<%= f.input :require_verif, :as => :hidden %>
 	<%= f.input :points, :as => :hidden %>
-	<div class="challenge_desc">
+	<div class="challenge_desc_last">
 		<span>they will get $</span>
-		<input id="challenge_reward_amount" name="challenge[reward_amount]" type="text" class="numfield" placeholder=""/>
+		<input id="challenge_reward_amount" name="challenge[reward_amount]" type="text" class="input-small" placeholder=""/>
 		<span>worh of points</span>
 	</div>
 	<% elsif @challenge.type && @challenge.type.value == 'referral' %>
@@ -58,13 +58,13 @@
 	<%= f.input :require_verif, :as => :hidden %>
 	<div class="challenge_desc">
 		<span>they will get $</span>
-		<input id="challenge_reward_amount" name="challenge[reward_amount]" type="text" class="numfield" placeholder=""/>
+		<input id="challenge_reward_amount" name="challenge[reward_amount]" type="text" class="input-small" placeholder=""/>
 		<%= f.input :points, :as => :hidden %>
 		<span>worth of points</span>
 	</div>
-	<div class="challenge_desc">
-		<span>and their friend will get</span>
-		<input id="challenge_referral_data_referral_reward_amount" name="challenge[referral_data][referral_reward_amount]" type="text" class="numfield" placeholder=""/>
+	<div class="challenge_desc_last">
+		<span>and their friend will get $</span>
+		<input id="challenge_referral_data_referral_reward_amount" name="challenge[referral_data][referral_reward_amount]" type="text" class="input-small" placeholder=""/>
 		<input class="hidden" id="challenge_referral_data_referral_points" name="challenge[referral_data][referral_points]" type="hidden">
 		<span>worth of points</span>
 	</div>

@@ -97,6 +97,10 @@ module Business
         @challenge = e.resource
         @available_challenge_types = get_available_challenge_types(@challenge.type.value)
         @data = @challenge.data
+        @venue_ids = []
+        current_merchant.venues.each do |venue|
+          @venue_ids << venue.id
+        end
         respond_to do |format|
           format.html { render :action => "new" }
           #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
@@ -166,7 +170,7 @@ module Business
           end
           @challenge.update(type, params[:challenge], venues)
           respond_to do |format|
-            format.html { redirect_to(challenges_path, :notice => t("business.challenges.update_success")) }
+            format.html { redirect_to({:action => "edit", :id => @challenge.id}, {:notice => t("business.challenges.update_success")}) }
             format.xml  { head :ok }
           end
         end
@@ -175,6 +179,10 @@ module Business
         @challenge = e.resource
         @available_challenge_types = get_available_challenge_types(@challenge.type.value)
         @data = @challenge.data
+        @venue_ids = []
+        current_merchant.venues.each do |venue|
+          @venue_ids << venue.id
+        end
         respond_to do |format|
           format.html { render :action => "edit" }
           #format.xml  { render :xml => @deal.errors, :status => :unprocessable_entity }
