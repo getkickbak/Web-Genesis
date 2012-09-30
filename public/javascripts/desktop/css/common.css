@@ -59,6 +59,11 @@ body {
    }
 }
 
+input[type="file"] {
+	padding : 5px 0;
+	height : 18px;	
+}
+
 .not-edit label {
 	font-weight: bold;
 	text-align: left !important;
