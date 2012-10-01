@@ -150,6 +150,7 @@
                               if ((backButton && !backButton.isHidden()) || //
                               (closeButton && !closeButton.isHidden()))
                               {
+                                 Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
                                  viewport.popView();
                               }
                            }

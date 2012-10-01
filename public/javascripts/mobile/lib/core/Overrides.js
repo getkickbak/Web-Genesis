@@ -1475,21 +1475,6 @@ Ext.define('Genesis.dataview.List',
       var me = this;
 
       me.callParent(arguments);
-      if (me.getStore())
-      {
-         if (me.isPainted())
-         {
-            //me.refresh();
-         }
-         else
-         {
-            me.on(
-            {
-               painted : 'onResize',
-               single : true
-            });
-         }
-      }
    },
    doRefresh : function(list)
    {
