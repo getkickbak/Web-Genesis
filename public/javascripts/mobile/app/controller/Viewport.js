@@ -114,6 +114,10 @@ Ext.define('Genesis.controller.Viewport',
          {
             select : 'onButtonTap'
          },
+         'viewportview list[tag=jackpotWinnersList]' :
+         {
+            select : 'onButtonTap'
+         },
          //
          'viewportview button' :
          {
@@ -138,6 +142,7 @@ Ext.define('Genesis.controller.Viewport',
          'resetview' : 'resetView'
       }
    },
+   popViewInProgress : false,
    viewStack : [],
    animationFlag : 0,
    gatherCheckinInfoMsg : 'Gathering Checkin information ...',
@@ -479,34 +484,46 @@ Ext.define('Genesis.controller.Viewport',
       var me = this;
       var actions = me.getApplication().getHistory().getActions();
 
-      if (me.viewStack.length > 0)
+      if (me.viewStack.length > 1)
       {
          var lastView = me.viewStack.pop();
          var currView = me.viewStack[me.viewStack.length - 1];
 
-         Ext.defer(function()
+         if (!me.popViewInProgress)
          {
-            actions.pop();
-            //
-            // Recreate View if the view was destroyed for DOM memory optimization
-            //
-            if (currView['view'].isDestroyed)
+            me.popViewInProgress = true;
+            //Ext.defer(function()
             {
-               currView['view'] = Ext.create(currView['view'].alias[0]);
-               //console.debug("Recreated View [" + currView['view']._itemId + "]")
+               actions.pop();
+               //
+               // Recreate View if the view was destroyed for DOM memory optimization
+               //
+               if (currView['view'].isDestroyed)
+               {
+                  currView['view'] = Ext.create(currView['view'].alias[0]);
+                  //console.debug("Recreated View [" + currView['view']._itemId + "]")
+               }
+
+               //
+               // Update URL
+               //
+               me.getApplication().getHistory().setToken(currView['url']);
+               window.location.hash = currView['url'];
+
+               me.getViewport().animateActiveItem(currView['view'], Ext.apply(lastView['animation'],
+               {
+                  reverse : true
+               }));
             }
-
-            //
-            // Update URL
-            //
-            me.getApplication().getHistory().setToken(currView['url']);
-            window.location.hash = currView['url'];
-
-            me.getViewport().animateActiveItem(currView['view'], Ext.apply(lastView['animation'],
-            {
-               reverse : true
-            }));
-         }, 1, me);
+            //, 1, me);
+         }
+      }
+      else
+      {
+      	//
+      	// Go back to HomePage by default
+      	//
+      	me.goToMain();
       }
    },
    // --------------------------------------------------------------------------

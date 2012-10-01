@@ -20,6 +20,11 @@ Ext.define('Genesis.view.client.ChallengePage',
          }]
       }),
       {
+         xtype : 'carousel',
+         cls : 'challengePageItem shadows',
+         direction : 'horizontal'
+      },
+      {
          docked : 'bottom',
          cls : 'checkInNow',
          tag : 'challengeContainer',
@@ -122,23 +127,11 @@ Ext.define('Genesis.view.client.ChallengePage',
    },
    cleanView : function()
    {
-      this.removeAll(true);
+      //this.removeAll(true);
    },
    createView : function()
    {
-      if (!this.callParent(arguments))
-      {
-         return;
-      }
-
-      var carousel;
-      this.getPreRender().push( carousel = Ext.create('Ext.Carousel',
-      {
-         xtype : 'carousel',
-         cls : 'challengePageItem shadows',
-         direction : 'horizontal'
-      }));
-
+      var carousel = this.query('carousel')[0];
       var record = _application.getController('Viewport').getVenue();
       var venueId = record.getId();
       var items = record.challenges().getRange();
@@ -151,6 +144,13 @@ Ext.define('Genesis.view.client.ChallengePage',
          {
             carousel.getInnerItems()[i].deselectAll();
          }
+
+         var ditems = carousel.query('dataview');
+         for (var i = 0; i < ditems.length; i++)
+         {
+            ditems[i].refresh();
+         }
+         console.log("ChallengePage Icons Refreshed.");
       }
       else
       {
@@ -176,7 +176,7 @@ Ext.define('Genesis.view.client.ChallengePage',
          {
             carousel.setActiveItem(0);
          }
-         console.log("ChallengePage Icons Refreshed.");
+         console.log("ChallengePage Icons Updated.");
       }
    }
 });

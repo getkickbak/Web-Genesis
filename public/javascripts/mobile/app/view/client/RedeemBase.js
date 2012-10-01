@@ -18,6 +18,7 @@ Ext.define('Genesis.view.client.RedeemBase',
       {
          this.getInnerItems()[i].setVisibility(true);
       }
+      console.debug("RedeemBase : showView");
    },
    _createView : function(store, renderStore, activeItemIndex)
    {
@@ -27,17 +28,22 @@ Ext.define('Genesis.view.client.RedeemBase',
       // Redeem Points Earned Panel
       // ------------------------------------------------------------------------
       me.setPreRender(me.getPreRender().concat([
+      {
+         //docked : 'top',
+         cls : 'ptsEarnPanel',
+         tag : 'ptsEarnPanel',
+         xtype : 'dataview',
+         useComponents : true,
+         scrollable : undefined,
+         defaultType : me.getDefaultItemType(),
+         store : renderStore
+      },
       // ------------------------------------------------------------------------
       // Redemptions
       // ------------------------------------------------------------------------
       Ext.create('Ext.List',
       {
          flex : 1,
-         plugins : [
-         {
-            type : 'listpaging',
-            autoPaging : true
-         }],
          refreshHeightOnUpdate : false,
          variableHeights : false,
          deferEmptyText : false,
@@ -84,31 +90,22 @@ Ext.define('Genesis.view.client.RedeemBase',
          // Redeem Available Panel
          // ------------------------------------------------------------------------
          items : [
-         {
-            docked : 'top',
-            xtype : 'toolbar',
-            ui : 'light',
-            cls : 'ptsEarnPanelHdr',
-            centered : false,
-            items : [
-            {
-               xtype : 'title',
-               title : me.getPtsEarnTitleText()
-            },
-            {
-               xtype : 'spacer'
-            }]
-         },
-         {
-            docked : 'top',
-            cls : 'ptsEarnPanel',
-            tag : 'ptsEarnPanel',
-            xtype : 'dataview',
-            useComponents : true,
-            scrollable : undefined,
-            defaultType : me.getDefaultItemType(),
-            store : renderStore
-         },
+         /*{
+          docked : 'top',
+          xtype : 'toolbar',
+          ui : 'light',
+          cls : 'ptsEarnPanelHdr',
+          centered : false,
+          items : [
+          {
+          xtype : 'title',
+          title : me.getPtsEarnTitleText()
+          },
+          {
+          xtype : 'spacer'
+          }]
+          },
+          */
          {
             docked : 'top',
             xtype : 'toolbar',

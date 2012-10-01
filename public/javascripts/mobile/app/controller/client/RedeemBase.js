@@ -94,6 +94,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       {
          //activeItem.getInnerItems()[i].setVisibility(false);
       }
+      console.debug("ReedeemBase: onActivate");
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {

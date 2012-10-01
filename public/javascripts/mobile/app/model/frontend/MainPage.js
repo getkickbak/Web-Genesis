@@ -7,6 +7,8 @@ Ext.define('Genesis.model.frontend.MainPage',
       fields : ['name', 'photo_url', 'desc', 'pageCntlr', 'subFeature', 'route', 'hide'],
       proxy :
       {
+         noCache : false,
+         enablePagingParams : false,
          reader :
          {
             type : 'json',

@@ -18,7 +18,7 @@ Ext.define('Genesis.controller.client.Rewards',
       },
       refs :
       {
-         backButton : 'clientrewardsview button[tag=close]',
+         //backButton : 'clientrewardsview button[tag=close]',
          //
          // Rewards
          //

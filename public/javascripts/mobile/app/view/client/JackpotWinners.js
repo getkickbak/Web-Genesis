@@ -80,6 +80,7 @@ Ext.define('Genesis.view.client.JackpotWinners',
                },
                getTitle : function(values)
                {
+                  console.debug(values['name'] + ' won ' + values['points'] + ' Points!');
                   return (values['name'] + ' won ' + values['points'] + ' Points!');
                },
                getDesc : function(values)
@@ -90,8 +91,11 @@ Ext.define('Genesis.view.client.JackpotWinners',
             //onItemDisclosure : Ext.emptyFn,
             plugins : [
             {
-               xclass : 'Ext.plugin.PullRefresh',
-               //pullRefreshText: 'Pull down for more new Tweets!',
+               type : 'listpaging',
+               autoPaging : true
+            },
+            {
+               type : 'pullrefresh',
                refreshFn : function(plugin)
                {
                   _application.getController('client.JackpotWinners').fireEvent('reload');

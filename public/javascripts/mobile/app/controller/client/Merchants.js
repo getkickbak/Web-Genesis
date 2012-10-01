@@ -63,8 +63,8 @@ Ext.define('Genesis.controller.client.Merchants',
          },
          'clientmerchantaccountview list' :
          {
-            select : 'onMainSelect',
-            disclose : 'onMainDisclose'
+            select : 'onMainSelect'
+            //disclose : 'onMainDisclose'
          },
          checkinBtn :
          {

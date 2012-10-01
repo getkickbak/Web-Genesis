@@ -71,9 +71,8 @@ Ext.define('Genesis.controller.client.Redemptions',
          },
          redemptionsList :
          {
-            select : 'onItemListSelect',
-            disclose : 'onItemListDisclose'
-
+            select : 'onItemListSelect'
+            //disclose : 'onItemListDisclose'
          },
          sDoneBtn :
          {

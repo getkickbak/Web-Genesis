@@ -48,6 +48,7 @@ Ext.define('Genesis.controller.client.JackpotWinners',
       {
          model : 'Genesis.model.frontend.JackpotWinner',
          autoLoad : false,
+         pageSize : 5,
          sorters : [
          {
             property : 'date',

@@ -14,7 +14,6 @@
       <link rel="apple-touch-startup-image" media="screen and (resolution: 163dpi)" href="resources/themes/images/v1/startup_640.png"
       />
       -->
-      <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>KickBak</title>
@@ -35,7 +34,7 @@
       <!--
       Phone Gap Libs
       -->
-      <script type="text/javascript" src="lib/cordova-1.8.1.js"></script>
+      <script type="text/javascript" src="lib/cordova-2.1.0.ios.js"></script>
       <script type="text/javascript">
          var phoneGapAvailable = false;
          var debugMode = false;
@@ -54,11 +53,6 @@
             _browser.setFlag('Sencha');
          }
          _browser.setFlag('PhonGap', false);
-
-         //
-         // Bug fix to prevent bunching up of cls aggregation
-         //
-         //Ext.baseCSSPrefix = ' ' + Ext.baseCSSPrefix;
 
          Ext.Loader.setConfig(
          {

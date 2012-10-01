@@ -154,12 +154,18 @@ Ext.define('Genesis.view.MainPage',
    },
    createView : function()
    {
+      var carousel = this;
+      
       if (!Genesis.view.ViewBase.prototype.createView.apply(this, arguments))
       {
+         var ditems = carousel.query('dataview');
+         for (var i = 0; i < ditems.length; i++)
+         {
+            ditems[i].refresh();
+         }
          return;
       }
 
-      var carousel = this;
       var app = _application;
       var viewport = app.getController('Viewport');
       var vport = viewport.getViewport();
@@ -201,7 +207,7 @@ Ext.define('Genesis.view.MainPage',
                xtype : 'dataview',
                cls : 'mainMenuSelections',
                tag : 'mainMenuSelections',
-               scrollable : false,
+               scrollable : undefined,
                deferInitialRefresh : false,
                store :
                {

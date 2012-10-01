@@ -40,8 +40,8 @@ Ext.define('Genesis.controller.client.Checkins',
          },
          exploreList :
          {
-            select : 'onExploreSelect',
-            disclose : 'onExploreDisclose'
+            select : 'onExploreSelect'
+            //disclose : 'onExploreDisclose'
          }
       },
       listeners :
@@ -548,8 +548,8 @@ Ext.define('Genesis.controller.client.Checkins',
    {
       var page = this.getMainPage();
       // Hack to fix bug in Sencha Touch API
-      var plugin = page.query('list')[0].getPlugins()[0];
-      plugin.refreshFn = plugin.getRefreshFn();
+      //var plugin = page.query('list')[0].getPlugins()[0];
+      //plugin.refreshFn = plugin.getRefreshFn();
 
       this.pushView(page);
       console.log("Checkin Explore Opened");

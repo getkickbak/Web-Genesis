@@ -12,6 +12,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          // Backgrond Image
          cls : 'tbPanel',
          tag : 'background',
+         height : window.innerWidth,
          items : [
          // Display Points
          {
@@ -178,8 +179,8 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
    },
    initialize : function()
    {
-      var bg = this.query('container[tag=background]')[0];
-      bg.setHeight(Ext.Viewport.getSize().width);
+      //var bg = this.query('container[tag=background]')[0];
+      //bg.setHeight(Ext.Viewport.getSize().width);
    },
    applyBackground : function(config)
    {
@@ -233,6 +234,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       {
          bg.getItems().items[0].hide();
       }
+      console.debug("MerchantAccount: setDataBackground");
    },
    applyWinnersCount : function(config)
    {

@@ -172,6 +172,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
          store : 'MerchantRenderStore',
          useComponents : true,
          scrollable : undefined,
+         minHeight : window.innerWidth,
          defaultType : 'merchantaccountptsitem',
          defaultUnit : 'em',
          margin : '0 0 0.7 0'

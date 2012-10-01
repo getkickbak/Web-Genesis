@@ -15,8 +15,8 @@
       <link rel="stylesheet" type="text/css" media="only screen and (-webkit-device-pixel-ratio: 1.5)" href="resources/css/android-hdpi.css">
       <link rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 2)" href="resources/css/android-xhdpi.css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
-      directory and include it here -->
       <script type="text/javascript" src="http://192.168.0.52:8080/target/target-script-min.js#anonymous"></script>
+      directory and include it here -->
       <!-- Debug Javascript on mobile browser -->
       <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
       <!--
@@ -27,6 +27,8 @@
       -->
       <script type="text/javascript" src="lib/cordova-2.1.0.android.js"></script>
       <script type="text/javascript">
+         var hostRoot = "";
+         //"/assets/www/";
          var offlineDialogShown = false;
          var phoneGapAvailable = true;
          var debugMode = false;
@@ -38,21 +40,23 @@
          var pushNotifAppId = '4fef6fb0691c12.54726991';
          var pushNotifType = 3;
 
-         var _appPath = "app";
-         var _extPath = 'lib/sencha-touch-2.1.0-beta3/src';
+         var _appPath = hostRoot + "app";
+         var _extPath = hostRoot + 'lib/sencha-touch-2.1.0-beta3/src';
          var _appId = "197968780267830";
 
          var _browser = Ext.browser;
          _browser.setFlag('WebView');
          _browser.setFlag('PhoneGap');
 
+         // Fix for problem  with android 3.x and 4.x which is
+         // the browser has a problem with urls with ? and this
+         // bug has not been fixed by google.  See:
+         // http://code.google.com/p/android/issues/detail?id=17535 or
+         // http://www.sencha.com/forum/showthread.php?162322-Sencha-Touch-2-PhoneGap-are-not-working-on-Android-4/page3&highlight=Loader
          //
-         // Bug fix to prevent bunching up of cls aggregation
-         //
-         //Ext.baseCSSPrefix = ' ' + Ext.baseCSSPrefix;
-
          Ext.Loader.setConfig(
          {
+            disableCaching : false,
             enabled : false,
             paths :
             {
@@ -60,7 +64,7 @@
                Genesis : _appPath
             }
          });
-
+         Ext.Ajax.setDisableCaching(false);
          // If you want to prevent dragging, uncomment this section
          /*
           function preventBehavior(e)
@@ -112,13 +116,49 @@
                'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
                launch : function()
                {
-                  var viewport = this.getController('Viewport');
-                  viewport.appName = 'GetKickBak';
-
                   console.log("Launching App");
                   Ext.create('Genesis.view.Viewport');
                   this.redirectTo('');
                   console.log("Launched App");
+
+                  var viewport = this.getController('Viewport');
+                  var vport = viewport.getViewport();
+                  viewport.appName = 'GetKickBak';
+
+                  //if (Ext.os.is('Android'))
+                  {
+                     // add back button listener
+                     function onBackKeyDown(e)
+                     {
+                        e.preventDefault();
+                        var activeItem = (vport) ? vport.getActiveItem() : null;
+
+                        if (activeItem)
+                        {
+                           var pxtype = activeItem.getXTypes();
+
+                           // you are at the home screen
+                           if (pxtype.match(/mainpageview|loginpageview/))
+                           {
+                              navigator.app.exitApp();
+                           }
+                           else
+                           if (!viewport.popViewInProgress)
+                           {
+                              var backButton = activeItem.query('button[tag=back]')[0];
+                              var closeButton = activeItem.query('button[tag=close]')[0]
+                              if ((backButton && !backButton.isHidden()) || //
+                              (closeButton && !closeButton.isHidden()))
+                              {
+                                 viewport.popView();
+                              }
+                           }
+                        }
+                     }
+
+
+                     document.addEventListener("backbutton", Ext.bind(onBackKeyDown, this), false);
+                  }
                },
                appFolder : _appPath,
                name : 'Genesis'

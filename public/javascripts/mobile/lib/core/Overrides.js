@@ -1464,6 +1464,72 @@ Ext.define('Genesis.dataview.element.List',
 });
 
 //---------------------------------------------------------------------------------------------------------------------------------
+// Ext.dataview.List
+//---------------------------------------------------------------------------------------------------------------------------------
+Ext.define('Genesis.dataview.List',
+{
+   override : 'Ext.dataview.List',
+
+   initialize : function()
+   {
+      var me = this;
+
+      me.callParent(arguments);
+      if (me.getStore())
+      {
+         if (me.isPainted())
+         {
+            //me.refresh();
+         }
+         else
+         {
+            me.on(
+            {
+               painted : 'onResize',
+               single : true
+            });
+         }
+      }
+   },
+   doRefresh : function(list)
+   {
+      var me = this;
+      if (me.getStore())
+      {
+         console.debug("List:doRefresh - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
+      }
+      return me.callParent(arguments);
+   },
+   setItemsCount : function(itemsCount)
+   {
+      var me = this;
+      if (me.getStore())
+      {
+         console.debug("List:setItemsCount - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
+      }
+      return me.callParent(arguments);
+   },
+   updateListItem : function(item, index, info)
+   {
+      var me = this;
+      if (me.getStore())
+      {
+         console.debug("List:updateListItem - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
+      }
+      return me.callParent(arguments);
+   },
+   onResize : function()
+   {
+      var me = this;
+      if (me.getStore())
+      {
+         console.debug("List:onResize - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
+      }
+      return me.callParent(arguments);
+   }
+});
+
+//---------------------------------------------------------------------------------------------------------------------------------
 // Ext.tab.Bar
 //---------------------------------------------------------------------------------------------------------------------------------
 /**
@@ -1500,7 +1566,7 @@ Ext.define('Genesis.device.connection.PhoneGap',
 
 Ext.define('Genesis.util.Geolocation',
 {
-   override : 'Genesis.util.Geolocation',
+   override : 'Ext.util.Geolocation',
    parseOptions : function()
    {
       var timeout = this.getTimeout(), ret =

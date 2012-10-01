@@ -796,6 +796,14 @@ Ext.define('Genesis.controller.MainPage',
                   me.getGeoLocation();
                }
             }
+            //
+            // Error refresh CSRF Token. go back to Login screen
+            //
+            else
+            {
+               me.resetView();
+               me.redirectTo('login');
+            }
          }
       });
    },

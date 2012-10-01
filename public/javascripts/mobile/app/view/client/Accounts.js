@@ -308,11 +308,13 @@ Ext.define('Genesis.view.client.Accounts',
          store : 'VenueStore',
          tag : 'venuesList',
          loadingText : null,
+         /*
          plugins : [
          {
             type : 'listpaging',
             autoPaging : true
          }],
+         */
          refreshHeightOnUpdate : false,
          variableHeights : false,
          deferEmptyText : false,

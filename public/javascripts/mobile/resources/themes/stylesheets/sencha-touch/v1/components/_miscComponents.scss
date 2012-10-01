@@ -20,14 +20,17 @@
    }
 }
 
-.prizephoto {
+.prizephoto, .pointsphoto {
    @extend .pointsphotobase;
+   padding-right:$list-disclosure-size + $panelGap;
+}
+
+.prizephoto {
    &:before {
       background-image: theme_image($theme-path + "/miscicons",  "prize_points" + ".png");
    }
 }
 .pointsphoto {
-   @extend .pointsphotobase;
    &:before {
       background-image: theme_image($theme-path + "/miscicons",  "points" + ".png");
    }

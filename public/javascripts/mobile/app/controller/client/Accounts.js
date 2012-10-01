@@ -65,13 +65,13 @@ Ext.define('Genesis.controller.client.Accounts',
          },
          accountsList :
          {
-            select : 'onSelect',
-            disclose : 'onDisclose'
+            select : 'onSelect'
+            //disclose : 'onDisclose'
          },
          venuesList :
          {
-            select : 'onVenueSelect',
-            disclose : 'onVenueDisclose'
+            select : 'onVenueSelect'
+            //disclose : 'onVenueDisclose'
          },
          'clientaccountstransferview button[tag=transfer]' :
          {
