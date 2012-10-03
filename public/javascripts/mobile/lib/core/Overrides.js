@@ -43,8 +43,8 @@ Genesis.constants =
    privKey : null,
    device : null,
    redeemDBSize : 10000,
-   //minDistance : 0.1 * 1000,
-   minDistance : 100000 * 1000,
+   minDistance : 0.1 * 1000,
+   //minDistance : 100000 * 1000,
    createAccountMsg : 'Create user account using Facebook Profile information',
    isNative : function()
    {

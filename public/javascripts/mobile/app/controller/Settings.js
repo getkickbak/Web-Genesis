@@ -174,6 +174,11 @@ Ext.define('Genesis.controller.Settings',
       if (db['enableFB'])
       {
          console.debug("Cancelling Facebook Login ...");
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : Genesis.fb.connectingToFBMsg
+         });
          var params =
          {
             facebook_id : 0
@@ -199,6 +204,8 @@ Ext.define('Genesis.controller.Settings',
                   delete db['fbAccountId'];
                   delete db['fbResponse'];
                   Genesis.db.setLocalDB(db);
+
+                  facebook_onLogout(Ext.emptyFn, true);
                }
                else
                {
