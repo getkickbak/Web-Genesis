@@ -15,7 +15,7 @@
          @include custom-linear-gradient($OrangeEnd, $list-header-bg-color, top);
          color : $Grey;
       }
-      & > .x-dock-vertical > .x-dock-body .x-list-item {
+      & > .x-dock-vertical > .x-dock-body .x-list-item .x-dock-body {
          background : $Grey;
       }
    }
@@ -37,7 +37,7 @@
 }
 
 .x-list-round, .x-list-bottom-round {
-   .x-list-item-last {
+   .x-list-item-last .x-dock-body {
       @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
    }
 }

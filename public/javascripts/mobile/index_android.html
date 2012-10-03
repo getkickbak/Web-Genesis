@@ -116,9 +116,9 @@
                'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
                launch : function()
                {
-                  console.log("Launching App");
+                  //console.log("Launching App");
                   Ext.create('Genesis.view.Viewport');
-                  this.redirectTo('');
+                  //this.redirectTo('');
                   console.log("Launched App");
 
                   var viewport = this.getController('Viewport');
@@ -132,21 +132,28 @@
                      {
                         e.preventDefault();
                         var activeItem = (vport) ? vport.getActiveItem() : null;
-
                         if (activeItem)
                         {
                            var pxtype = activeItem.getXTypes();
 
-                           // you are at the home screen
+                           // Exit Application
                            if (pxtype.match(/mainpageview|loginpageview/))
                            {
+                              Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
                               navigator.app.exitApp();
+                           }
+                           // Back to Main Page
+                           else
+                           if (pxtype.match(/clientmerchantaccountview/))
+                           {
+                              Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+                              viewport.goToMain();
                            }
                            else
                            if (!viewport.popViewInProgress)
                            {
                               var backButton = activeItem.query('button[tag=back]')[0];
-                              var closeButton = activeItem.query('button[tag=close]')[0]
+                              var closeButton = activeItem.query('button[tag=close]')[0];
                               if ((backButton && !backButton.isHidden()) || //
                               (closeButton && !closeButton.isHidden()))
                               {
@@ -154,6 +161,11 @@
                                  viewport.popView();
                               }
                            }
+                        }
+                        else
+                        {
+                           Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+                           navigator.app.exitApp();
                         }
                      }
 

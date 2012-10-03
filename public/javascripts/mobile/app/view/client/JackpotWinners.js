@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.client.JackpotWinners',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.plugin.PullRefresh'],
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.plugin.ListPaging', 'Ext.plugin.PullRefresh'],
    alias : 'widget.clientjackpotwinnersview',
    config :
    {
@@ -92,7 +92,9 @@ Ext.define('Genesis.view.client.JackpotWinners',
             plugins : [
             {
                type : 'listpaging',
-               autoPaging : true
+               autoPaging : true,
+               loadMoreText : '',
+               noMoreRecordsText : ''
             },
             {
                type : 'pullrefresh',

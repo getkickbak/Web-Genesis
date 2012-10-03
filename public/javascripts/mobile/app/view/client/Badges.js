@@ -59,11 +59,11 @@ Ext.define('Genesis.view.client.Badges',
 
       carousel.removeAll(true);
 
-      var list = Ext.Array.clone(items);
       var app = _application;
       var viewport = app.getController('Viewport');
       var vport = viewport.getViewport();
       var items = Ext.StoreMgr.get('BadgeStore').getRange();
+      var list = Ext.Array.clone(items);
       
       for (var i = 0; i < Math.ceil(items.length / 16); i++)
       {

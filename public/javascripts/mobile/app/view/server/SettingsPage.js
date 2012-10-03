@@ -34,7 +34,13 @@ Ext.define('Genesis.view.server.SettingsPage',
             xtype : 'textfield',
             value : 'Version 1.0.2',
             readOnly : true
-         }/*,
+         },
+         {
+            xtype : 'listfield',
+            name : 'license',
+            value : 'Refresh License Key'
+         }
+         /*,
           {
           xtype : 'listfield',
           name : 'terms',

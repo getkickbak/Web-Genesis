@@ -122,7 +122,9 @@ Ext.define('Genesis.view.client.Accounts',
          plugins : [
          {
             type : 'listpaging',
-            autoPaging : true
+            autoPaging : true,
+            noMoreRecordsText : '',
+            loadMoreText : ''
          }],
          refreshHeightOnUpdate : false,
          variableHeights : false,
@@ -308,13 +310,6 @@ Ext.define('Genesis.view.client.Accounts',
          store : 'VenueStore',
          tag : 'venuesList',
          loadingText : null,
-         /*
-         plugins : [
-         {
-            type : 'listpaging',
-            autoPaging : true
-         }],
-         */
          refreshHeightOnUpdate : false,
          variableHeights : false,
          deferEmptyText : false,

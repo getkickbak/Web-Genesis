@@ -124,7 +124,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
       {
          'painted' : function(c, eOpts)
          {
-            var height = Ext.ComponentQuery.query('viewportview')[0].getActiveItem().renderElement.getHeight();
+            //var height = Ext.ComponentQuery.query('viewportview')[0].getActiveItem().renderElement.getHeight();
             //c.config.dataview.setHeight(height);
             //c.query('container[tag=redeemItem]')[0].setHeight(height);
             //c.setHeight(height);
@@ -170,7 +170,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
          info.setData(data);
          info.element.setVisibility(true);
          //refresh.hide();
-         //verify.hide();         
+         //verify.hide();
          points.hide();
       }
       else

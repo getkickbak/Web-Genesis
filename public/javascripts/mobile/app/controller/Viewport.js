@@ -102,6 +102,10 @@ Ext.define('Genesis.controller.Viewport',
             tap : 'onBrowseTap'
          },
          //
+         view :
+         {
+            activate : 'onActivate'
+         },
          'viewportview dataview[tag=mainMenuSelections]' :
          {
             select : 'onButtonTap'
@@ -195,6 +199,40 @@ Ext.define('Genesis.controller.Viewport',
          },
          scope : me
       });
+   },
+   onActivate : function()
+   {
+      console.log("Loading MainPage Store ...");
+      if (Genesis.constants.isNative())
+      {
+         var file = "app/store/" + ((!merchantMode) ? 'mainClientPage.json' : 'mainServerPage.json'), path = "";
+         if (Ext.os.is('iPhone'))
+         {
+         }
+         else
+         if (Ext.os.is('Android'))
+         {
+            path = "file:///android_asset/www/";
+         }
+
+         var request = new XMLHttpRequest();
+         request.open("GET", path + file, true);
+         request.onreadystatechange = function()
+         {
+            if (request.readyState == 4)
+            {
+               if (request.status == 200 || request.status == 0)
+               {
+                  Ext.StoreMgr.get('MainPageStore').setData(Ext.decode(request.responseText).data);
+               }
+            }
+         }
+         request.send();
+      }
+      else
+      {
+         Ext.StoreMgr.get('MainPageStore').load();
+      }
    },
    // --------------------------------------------------------------------------
    // Button Handlers
@@ -520,10 +558,10 @@ Ext.define('Genesis.controller.Viewport',
       }
       else
       {
-      	//
-      	// Go back to HomePage by default
-      	//
-      	me.goToMain();
+         //
+         // Go back to HomePage by default
+         //
+         me.goToMain();
       }
    },
    // --------------------------------------------------------------------------
@@ -556,7 +594,10 @@ Ext.define('Genesis.controller.Viewport',
 
       if (Ext.isDefined(window.device))
       {
-         console.debug("device.platform - " + device.platform);
+         console.debug(//
+         "\n" + "device.platform - " + device.platform + //
+         "\n" + "Browser EngineVersion - " + Ext.browser.engineVersion + //
+         "");
       }
 
       //
@@ -600,27 +641,38 @@ Ext.define('Genesis.controller.Viewport',
       sound_file = sound_file.split('.')[0];
       if (Genesis.constants.isNative())
       {
-         switch (type)
+         var callback = function()
          {
-            case 'FX' :
-               LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, function()
+            switch(type)
+            {
+               case 'FX' :
                {
-                  console.debug("loaded " + sound_file);
-               }, function(err)
+                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, function()
+                  {
+                     console.debug("loaded " + sound_file);
+                  }, function(err)
+                  {
+                     console.debug("Audio Error: " + err);
+                  });
+                  break;
+               }
+               case 'Audio' :
                {
-                  console.debug("Audio Error: " + err);
-               });
-               break;
-            case 'Audio' :
-               LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, 3, function()
-               {
-                  console.debug("loaded " + sound_file);
-               }, function(err)
-               {
-                  console.debug("Audio Error: " + err);
-               });
-               break;
+                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, 3, function()
+                  {
+                     console.debug("loaded " + sound_file);
+                  }, function(err)
+                  {
+                     console.debug("Audio Error: " + err);
+                  });
+                  break;
+               }
+            }
+         }
+         switch(type)
+         {
             case 'Media' :
+            {
                sound_file = new Media('resources/audio/' + sound_file + ext, function()
                {
                   //console.log("loaded " + me.sound_files[tag].name);
@@ -630,6 +682,10 @@ Ext.define('Genesis.controller.Viewport',
                   me.sound_files[tag].successCallback();
                   console.log("Audio Error: " + err);
                });
+               break;
+            }
+            default :
+               LowLatencyAudio['unload'](sound_file, callback, callback);
                break;
          }
       }

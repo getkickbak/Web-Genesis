@@ -123,7 +123,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             },
             getTitle : function(values)
             {
-               var msg = ('You are currently our <span class ="badgehighlight">' + //
+               var msg = ('You are our <span class ="badgehighlight">' + //
                values['_badgeType'].display_value.toUpperCase() + '</span>');
                /*
                 return msg += '<img style="width:1em;float:right;"' + //
@@ -175,7 +175,15 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          {
             setData : 'badgeProgress'
          }
+      },
+      listeners :
+      {
+         'painted' : function(c, eOpts)
+         {
+            console.debug("MerchantAccountPtsItem - painted[" + c.id + "]");
+         }
       }
+
    },
    initialize : function()
    {
@@ -234,7 +242,6 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       {
          bg.getItems().items[0].hide();
       }
-      console.debug("MerchantAccount: setDataBackground");
    },
    applyWinnersCount : function(config)
    {

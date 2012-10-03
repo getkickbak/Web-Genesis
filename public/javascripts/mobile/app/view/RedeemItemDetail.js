@@ -132,7 +132,7 @@ Ext.define('Genesis.view.RedeemItemDetail',
                   maxItemCache : 0,
                   useComponents : true,
                   scrollable : false,
-                  defaultType : 'rewarditem',
+                  defaultType : 'redeemitem',
                   defaultUnit : 'em',
                   margin : '0 0 0.8 0'
                }));
@@ -228,7 +228,7 @@ Ext.define('Genesis.view.RedeemItemDetail',
                   maxItemCache : 0,
                   useComponents : true,
                   scrollable : false,
-                  defaultType : 'rewarditem',
+                  defaultType : 'reedemitem',
                   defaultUnit : 'em',
                   margin : '0 0 0.8 0'
                }));
@@ -279,7 +279,12 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
    {
       scrollable : undefined,
       cls : 'redeemItemMain viewport',
-      layout : 'fit',
+      layout :
+      {
+         type : 'vbox',
+         pack : 'center',
+         align : 'stretch'
+      },
       items : [
       {
          xtype : 'titlebar',
@@ -348,6 +353,7 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
 
       this.getPreRender().push(Ext.create('Ext.dataview.DataView',
       {
+         flex : 1,
          tag : 'rewardPanel',
          xtype : 'dataview',
          store :

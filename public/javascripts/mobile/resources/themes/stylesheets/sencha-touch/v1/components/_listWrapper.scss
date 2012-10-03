@@ -2,9 +2,6 @@
 // List CSS
 //------------------------------------------------------------------------------
 .listScrollWrapper, .listScrollIndexWrapper {
-   .x-list-item:first-child {
-      //margin-top: 1em;
-   }
    .photo {
       top:$panelTopGap;
       left:$panelGap;
@@ -17,8 +14,6 @@
    padding:0 !important;
 }
 .listNoScrollWrapper.separator {
-   .x-list-item:first-child {
-   }
    /*
    .x-list-item {
       border-left: 1px solid darken($list-bg-color, 15%);
@@ -57,7 +52,7 @@
                .itemDistance {
                  position:absolute;
                  top:calc-em(0.65em,$normalFontSize);
-                 right:calc-em(0.5*$list-disclosure-size,$normalFontSize);
+                 right:calc-em(-1*$list-disclosure-size,$normalFontSize);
                  font-weight:bold;
                  font-size:$normalFontSize;
                }

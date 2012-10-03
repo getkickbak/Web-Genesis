@@ -12,8 +12,8 @@ Ext.ns('Genesis.constants');
 
 Genesis.constants =
 {
-   host : 'http://192.168.0.52:3000',
-   //host : 'http://www.getkickbak.com',
+   //host : 'http://192.168.0.52:3000',
+   host : 'http://www.getkickbak.com',
    themeName : 'v1',
    defaultFontSize : (function()
    {
@@ -66,73 +66,27 @@ Genesis.constants =
       var me = this;
       if (!me.privKey)
       {
-         if (me.isNative())
+         Genesis.fn.readFile('resources/keys.txt', function(content)
          {
-            var failHandler = function(error)
+            if (Genesis.constants.isNative())
             {
-               var errorCode =
+               me.privKey = Ext.decode(content);
+            }
+            else
+            {
+               // Hardcoded for now ...
+               me.privKey =
                {
+                  'v1' : me.debugVPrivKey,
+                  'r1' : me.debugRPrivKey,
+                  'venue' : me.debugVenuePrivKey
                };
-               errorCode[FileError.NOT_FOUND_ERR] = 'File not found';
-               errorCode[FileError.SECURITY_ERR] = 'Security error';
-               errorCode[FileError.ABORT_ERR] = 'Abort error';
-               errorCode[FileError.NOT_READABLE_ERR] = 'Not readable';
-               errorCode[FileError.ENCODING_ERR] = 'Encoding error';
-               errorCode[FileError.NO_MODIFICATION_ALLOWED_ERR] = 'No mobification allowed';
-               errorCode[FileError.INVALID_STATE_ERR] = 'Invalid state';
-               errorCode[FileError.SYFNTAX_ERR] = 'Syntax error';
-               errorCode[FileError.INVALID_MODIFICATION_ERR] = 'Invalid modification';
-               errorCode[FileError.QUOTA_EXCEEDED_ERR] = 'Quota exceeded';
-               errorCode[FileError.TYPE_MISMATCH_ERR] = 'Type mismatch';
-               errorCode[FileError.PATH_EXISTS_ERR] = 'Path does not exist';
-               var ftErrorCode =
-               {
-               };
-               ftErrorCode[FileTransferError.FILE_NOT_FOUND_ERR] = 'File not found';
-               ftErrorCode[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
-               ftErrorCode[FileTransferError.CONNECTION_ERR] = 'Connection Error';
-
-               console.log("Reading License File Error - [" + errorCode[error.code] + "]");
-            };
-
-            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
-            {
-               var licenseKeyFile = fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/resources/keys.txt';
-               console.debug("License File - [" + licenseKeyFile + "]");
-               fileSystem.root.getFile(licenseKeyFile, null, function(fileEntry)
-               {
-                  fileEntry.file(function(file)
-                  {
-                     var reader = new FileReader();
-                     reader.onloadend = function(evt)
-                     {
-                        me.privKey = Ext.decode(evt.target.result);
-                        for (var i in me.privKey)
-                        {
-                           console.debug("Encryption Key[" + i + "] = [" + me.privKey[i] + "]");
-                        }
-                     };
-                     reader.readAsText(file);
-                  }, failHandler);
-               }, failHandler);
-            }, failHandler);
-
-            return null;
-         }
-         else
-         {
-            // Hardcoded for now ...
-            me.privKey =
-            {
-               'v1' : me.debugVPrivKey,
-               'r1' : me.debugRPrivKey,
-               'venue' : me.debugVenuePrivKey
-            };
+            }
             for (var i in me.privKey)
             {
                console.debug("Encryption Key[" + i + "] = [" + me.privKey[i] + "]");
             }
-         }
+         });
       }
       return (id) ? [me.privKey['v' + id], me.privKey['r' + id], me.privKey[id]] : me.privKey;
    }
@@ -477,7 +431,7 @@ Genesis.fb =
                   },
                   params :
                   {
-                     user : Ext.encode(params)
+                     user : Ext.encode(db['fbResponse'])
                   },
                   callback : function(record, operation)
                   {
@@ -754,6 +708,112 @@ Genesis.fn =
    calcPxEm : function(px, em, fontsize)
    {
       return ((px / Genesis.constants.defaultFontSize / fontsize) + (em / fontsize));
+   },
+   failFileHandler : function(error)
+   {
+      var errorCode =
+      {
+      };
+      errorCode[FileError.NOT_FOUND_ERR] = 'File not found';
+      errorCode[FileError.SECURITY_ERR] = 'Security error';
+      errorCode[FileError.ABORT_ERR] = 'Abort error';
+      errorCode[FileError.NOT_READABLE_ERR] = 'Not readable';
+      errorCode[FileError.ENCODING_ERR] = 'Encoding error';
+      errorCode[FileError.NO_MODIFICATION_ALLOWED_ERR] = 'No mobification allowed';
+      errorCode[FileError.INVALID_STATE_ERR] = 'Invalid state';
+      errorCode[FileError.SYFNTAX_ERR] = 'Syntax error';
+      errorCode[FileError.INVALID_MODIFICATION_ERR] = 'Invalid modification';
+      errorCode[FileError.QUOTA_EXCEEDED_ERR] = 'Quota exceeded';
+      errorCode[FileError.TYPE_MISMATCH_ERR] = 'Type mismatch';
+      errorCode[FileError.PATH_EXISTS_ERR] = 'Path does not exist';
+      var ftErrorCode =
+      {
+      };
+      ftErrorCode[FileTransferError.FILE_NOT_FOUND_ERR] = 'File not found';
+      ftErrorCode[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
+      ftErrorCode[FileTransferError.CONNECTION_ERR] = 'Connection Error';
+
+      console.log("File Error - [" + errorCode[error.code] + "]");
+   },
+   readFile : function(path, callback)
+   {
+      var me = this;
+      if (Genesis.constants.isNative())
+      {
+         var handler = function(fileEntry)
+         {
+            fileEntry.file(function(file)
+            {
+               var reader = new FileReader();
+               reader.onloadend = function(evt)
+               {
+                  callback(evt.target.result);
+               };
+               reader.readAsText(rfile);
+            }, me.failFileHandler);
+         }
+         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
+         {
+            var rfile;
+            if (Ext.os.is('iPhone'))
+            {
+               rfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
+            }
+            else
+            if (Ext.os.is('Android'))
+            {
+               wfile = (fileSystem.root.fullPath + appName) + path;
+            }
+            fileSystem.root.getFile(rfile, null, handler, me.failFileHandler);
+            console.debug("Reading from File - [" + rfile + "]");
+         }, me.failFileHandler);
+      }
+      else
+      {
+         callback();
+      }
+   },
+   writeFile : function(path, content, callback)
+   {
+      var me = this;
+      if (Genesis.constants.isNative())
+      {
+         var handler = function(fileEntry)
+         {
+            fileEntry.createWriter(function(writer)
+            {
+               writer.onwriteend = function(evt)
+               {
+                  callback();
+               };
+               writer.write(content);
+            }, me.failFileHandler);
+
+         }
+         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
+         {
+            var wfile;
+            if (Ext.os.is('iPhone'))
+            {
+               wfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
+            }
+            else
+            if (Ext.os.is('Android'))
+            {
+               wfile = (fileSystem.root.fullPath + appName) + path;
+            }
+            fileSystem.root.getFile(wfile,
+            {
+               create : true,
+               exclusive : false
+            }, handler, me.failFileHandler);
+            console.debug("Writing to File - [" + wfile + "]");
+         }, me.failFileHandler);
+      }
+      else
+      {
+         callback();
+      }
    }
 }
 
@@ -920,8 +980,11 @@ Genesis.db =
    removeLocalDBAttrib : function(attrib)
    {
       var db = this.getLocalDB();
-      delete db[attrib];
-      this.setLocalDB(db);
+      if ( typeof (db[attrib]) != 'undefined')
+      {
+         delete db[attrib];
+         this.setLocalDB(db);
+      }
    },
    //
    // Referral DB
@@ -1036,6 +1099,9 @@ Ext.define('Genesis.Component',
    }
 });
 
+// **************************************************************************
+// Ext.util.Collection
+// **************************************************************************
 Ext.define('Genesis.util.Collection',
 {
    override : 'Ext.util.Collection',
@@ -1049,6 +1115,26 @@ Ext.define('Genesis.util.Collection',
    }
 });
 
+// **************************************************************************
+// Ext.util.SizeMonitor
+// **************************************************************************
+Ext.define('Genesis.util.SizeMonitor',
+{
+   override : 'Ext.util.SizeMonitor',
+   constructor : function(config)
+   {
+      if (Ext.browser.engineVersion.gtEq('534'))
+      {
+      	console.debug("Using OverflowChange SizeMonitor ...");
+         return new Ext.util.sizemonitor.OverflowChange(config);
+      }
+      else
+      {
+      	console.debug("Using Scroll SizeMonitor ...");
+         return new Ext.util.sizemonitor.Scroll(config);
+      }
+   }
+});
 //---------------------------------------------------------------------------------------------------------------------------------
 // Ext.data.reader.Json
 //---------------------------------------------------------------------------------------------------------------------------------

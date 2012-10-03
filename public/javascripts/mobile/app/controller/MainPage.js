@@ -15,7 +15,6 @@ Ext.define('Genesis.controller.MainPage',
          'login' : 'loginPage',
          'merchant' : 'merchantPage',
          'signin' : 'signInPage',
-         'updateLicenseKey' : 'updateLicenseKeyPage',
          'password_reset' : 'signInResetPage',
          'password_change' : 'signInChangePage',
          'createAccount' : 'createAccountPage',
@@ -160,10 +159,6 @@ Ext.define('Genesis.controller.MainPage',
    {
       return 'Logging in ...';
    },
-   licenseKeySuccessMsg : function()
-   {
-      return 'License Key Updated for ' + Genesis.constants.addCRLF() + '[' + Genesis.constants.privKey['venue'] + ']';
-   },
    init : function(app)
    {
       var me = this;
@@ -172,33 +167,35 @@ Ext.define('Genesis.controller.MainPage',
       //
       // Loads Front Page Metadata
       //
+      var callback = function()
+      {
+         if (merchantMode)
+         {
+            me.goToMain();
+         }
+         else
+         {
+            var db = Genesis.db.getLocalDB();
+            if (db['auth_code'])
+            {
+               me.fireEvent('refreshCSRF');
+            }
+            else
+            {
+               me.resetView();
+               me.redirectTo('login');
+            }
+         }
+      }
       Ext.regStore('MainPageStore',
       {
          model : 'Genesis.model.frontend.MainPage',
-         autoLoad : true,
+         //autoLoad : true,
+         autoLoad : false,
          listeners :
          {
             scope : me,
-            "load" : function(store, records, successful, operation, eOpts)
-            {
-               if (merchantMode)
-               {
-                  me.goToMain();
-               }
-               else
-               {
-                  var db = Genesis.db.getLocalDB();
-                  if (db['auth_code'])
-                  {
-                     me.fireEvent('refreshCSRF');
-                  }
-                  else
-                  {
-                     me.resetView();
-                     me.redirectTo('login');
-                  }
-               }
-            }
+            "refresh" : callback
          }
       });
 
@@ -242,7 +239,7 @@ Ext.define('Genesis.controller.MainPage',
          listeners :
          {
             scope : me,
-            "load" : function(store, records, successful, operation, eOpts)
+            'load' : function(store, records, successful, operation, eOpts)
             {
             },
             'metachange' : function(store, proxy, eOpts)
@@ -333,87 +330,6 @@ Ext.define('Genesis.controller.MainPage',
          }
       });
    },
-   updateLicenseKey : function(key)
-   {
-      if (Genesis.constants.isNative())
-      {
-         var failHandler = function(error)
-         {
-            var errorCode =
-            {
-            };
-            errorCode[FileError.NOT_FOUND_ERR] = 'File not found';
-            errorCode[FileError.SECURITY_ERR] = 'Security error';
-            errorCode[FileError.ABORT_ERR] = 'Abort error';
-            errorCode[FileError.NOT_READABLE_ERR] = 'Not readable';
-            errorCode[FileError.ENCODING_ERR] = 'Encoding error';
-            errorCode[FileError.NO_MODIFICATION_ALLOWED_ERR] = 'No mobification allowed';
-            errorCode[FileError.INVALID_STATE_ERR] = 'Invalid state';
-            errorCode[FileError.SYFNTAX_ERR] = 'Syntax error';
-            errorCode[FileError.INVALID_MODIFICATION_ERR] = 'Invalid modification';
-            errorCode[FileError.QUOTA_EXCEEDED_ERR] = 'Quota exceeded';
-            errorCode[FileError.TYPE_MISMATCH_ERR] = 'Type mismatch';
-            errorCode[FileError.PATH_EXISTS_ERR] = 'Path does not exist';
-            var ftErrorCode =
-            {
-            };
-            ftErrorCode[FileTransferError.FILE_NOT_FOUND_ERR] = 'File not found';
-            ftErrorCode[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
-            ftErrorCode[FileTransferError.CONNECTION_ERR] = 'Connection Error';
-
-            console.log("Writing License File Error - [" + errorCode[error.code] + "]");
-         };
-
-         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
-         {
-            var licenseKeyFile = fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/resources/keys.txt';
-            console.debug("License File - [" + licenseKeyFile + "]");
-            fileSystem.root.getFile(licenseKeyFile,
-            {
-               create : true,
-               exclusive : false
-            }, function(fileEntry)
-            {
-               fileEntry.createWriter(function(writer)
-               {
-                  writer.onwriteend = function(evt)
-                  {
-                     console.debug("Content Written to Disk");
-                     Genesis.constants.privKey = key;
-                     Ext.device.Notification.show(
-                     {
-                        title : 'License Key Updated!',
-                        message : me.licenseKeySuccessMsg()
-                     });
-                  };
-                  writer.write(Ext.encode(key));
-               }, failHandler);
-            }, failHandler);
-         }, failHandler);
-
-         return null;
-      }
-      else
-      {
-         // Hardcoded for now ...
-         Genesis.constants.privKey =
-         {
-            'v1' : Genesis.constants.debugVPrivKey,
-            'r1' : Genesis.constants.debugRPrivKey,
-            'venue' : Genesis.constants.debugVenuePrivKey
-         };
-         for (var i in Genesis.constants.privKey)
-         {
-            console.debug("Encryption Key[" + i + "] = [" + Genesis.constants.privKey[i] + "]");
-         }
-         console.debug("Content Written to Memory");
-         Ext.device.Notification.show(
-         {
-            title : 'License Key Updated!',
-            message : me.licenseKeySuccessMsg()
-         });
-      }
-   },
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
@@ -451,48 +367,6 @@ Ext.define('Genesis.controller.MainPage',
          console.log("Reset Previous Location back to Home Page ...");
          Genesis.db.removeLocalDBAttrib('last_check_in');
          me.goToMain();
-      }
-   },
-   onScannedQRcode : function(qrcode)
-   {
-      var me = this;
-      var vport = me.getViewport();
-
-      if (qrcode)
-      {
-         console.debug("Programming License Key into Merchant Device ...");
-         Venue['setGetLicenseKeyURL']();
-         Venue.load(0,
-         {
-            jsonData :
-            {
-            },
-            params :
-            {
-               update_token : qrcode,
-               deviceId : (Genesis.constants.isNative()) ? device.uuid : null,
-            },
-            callback : function(record, operation)
-            {
-               var metaData = Venue.getProxy().getReader().metaData;
-               Ext.Viewport.setMasked(false);
-
-               if (operation.wasSuccessful())
-               {
-                  me.updateLicenseKey(metaData);
-               }
-            }
-         });
-      }
-      else
-      {
-         console.debug(me.noCodeScannedMsg);
-         Ext.Viewport.setMasked(false);
-         Ext.device.Notification.show(
-         {
-            title : 'Error',
-            message : me.noCodeScannedMsg
-         });
       }
    },
    // --------------------------------------------------------------------------
@@ -1129,10 +1003,6 @@ Ext.define('Genesis.controller.MainPage',
    {
       this.openPage('merchant');
    },
-   updateLicenseKeyPage : function()
-   {
-      this.openPage('updateLicenseKey');
-   },
    signInPage : function()
    {
       /*
@@ -1194,11 +1064,6 @@ Ext.define('Genesis.controller.MainPage',
             //me.getApplication().getController('client.Prizes').fireEvent('updatePrizeViews', null);
             me.setAnimationMode(me.self.superclass.self.animationMode['fade']);
             me.pushView(me.getLogin());
-            break;
-         }
-         case 'updateLicenseKey' :
-         {
-            me.scanQRCode();
             break;
          }
       }

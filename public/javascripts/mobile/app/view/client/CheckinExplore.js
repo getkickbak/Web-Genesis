@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.client.CheckinExplore',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.plugin.PullRefresh'],
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.plugin.ListPaging', 'Ext.plugin.PullRefresh'],
    alias : 'widget.clientcheckinexploreview',
    config :
    {
@@ -68,7 +68,9 @@ Ext.define('Genesis.view.client.CheckinExplore',
          },
          {
             type : 'listpaging',
-            autoPaging : true
+            autoPaging : true,
+            loadMoreText : '',
+            noMoreRecordsText : ''
          }],
          refreshHeightOnUpdate : false,
          variableHeights : false,

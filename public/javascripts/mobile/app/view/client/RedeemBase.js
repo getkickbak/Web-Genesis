@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.client.RedeemBase',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RedeemPtsItemBase', 'Ext.plugin.PullRefresh', 'Ext.plugin.ListPaging'],
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RedeemPtsItemBase'],
    alias : 'widget.clientredeeembaseview',
    config :
    {

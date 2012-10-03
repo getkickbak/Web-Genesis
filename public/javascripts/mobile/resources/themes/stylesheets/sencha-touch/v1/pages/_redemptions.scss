@@ -13,6 +13,7 @@
       }
    }
    .itemPhoto {
+      width:100%;
       @include background-size($icon-size*3 $icon-size*3); //Maximum size of QR Code as well
       background-position : center center;
       background-repeat : no-repeat;

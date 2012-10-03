@@ -37,7 +37,7 @@ Ext.define('Genesis.controller.server.Challenges',
       }
    },
    invalidAuthCodeMsg : 'Authorization Code is Invalid',
-   genAuthCodeMsg : 'Proceed to generate Authorization Code',
+   //genAuthCodeMsg : 'Proceed to generate Authorization Code',
    generatingAuthCodeMsg : 'Generating Authorization Code ...',
    refreshAuthCodeMsg : 'Refresing Authorization Code ...',
    init : function()
@@ -138,20 +138,23 @@ Ext.define('Genesis.controller.server.Challenges',
    openMainPage : function()
    {
       var me = this;
-      Ext.device.Notification.show(
-      {
-         title : 'Authorize Challenges',
-         message : me.genAuthCodeMsg,
-         buttons : ['OK', 'Cancel'],
-         callback : function(btn)
-         {
-            if (btn.toLowerCase() == 'ok')
-            {
-               console.log(me.genAuthCodeMsg);
-               me.onGenerateQRCode();
-            }
-         }
-      });
+      /*
+       Ext.device.Notification.show(
+       {
+       title : 'Authorize Challenges',
+       message : me.genAuthCodeMsg,
+       buttons : ['OK', 'Cancel'],
+       callback : function(btn)
+       {
+       if (btn.toLowerCase() == 'ok')
+       {
+       console.log(me.genAuthCodeMsg);
+       me.onGenerateQRCode();
+       }
+       }
+       });
+       */
+      me.onGenerateQRCode();
    },
    isOpenAllowed : function()
    {

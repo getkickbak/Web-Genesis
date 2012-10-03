@@ -24,13 +24,6 @@
          "route": "serverSettings",
          "pageCntlr": "Settings",
          "subFeature": "server"
-      }, {
-         "name": "Update License",
-         "photo_url": "resources/themes/images/v1/mainicons/license.png",
-         "desc": "ReProgram License Key after Software Update",
-         "route": "updateLicenseKey",
-         "pageCntlr": "MainPage",
-         "subFeature": "updateLicenseKey"
       }
    ]
 }

@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.client.MerchantAccount',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Ext.tab.Bar', 'Ext.plugin.ListPaging', 'Genesis.view.widgets.MerchantAccountPtsItem'],
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Ext.tab.Bar', 'Genesis.view.widgets.MerchantAccountPtsItem'],
    alias : 'widget.clientmerchantaccountview',
    config :
    {
@@ -175,7 +175,14 @@ Ext.define('Genesis.view.client.MerchantAccount',
          minHeight : window.innerWidth,
          defaultType : 'merchantaccountptsitem',
          defaultUnit : 'em',
-         margin : '0 0 0.7 0'
+         margin : '0 0 0.7 0',
+         listeners :
+         {
+            'painted' : function(c, eOpts)
+            {
+               console.debug("MerchantAccount[MerchantRenderStore] - painted[" + c.id + "]");
+            }
+         }
       }));
 
       // -----------------------------------------------------------------------
