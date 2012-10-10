@@ -205,7 +205,7 @@ Ext.define('Genesis.controller.Settings',
                   delete db['fbResponse'];
                   Genesis.db.setLocalDB(db);
 
-                  facebook_onLogout(Ext.emptyFn, true);
+                  Genesis.fb.facebook_onLogout(null, true);
                }
                else
                {

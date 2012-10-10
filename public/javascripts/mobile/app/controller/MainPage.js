@@ -496,9 +496,10 @@ Ext.define('Genesis.controller.MainPage',
             //
             if (!operation.wasSuccessful())
             {
-               //me.resetView();
-               //Genesis.db.resetStorage();
-               //me.redirectTo('login');
+            	//
+            	// If we are already in Login Page, reset all values
+            	//
+               Genesis.db.resetStorage();
             }
             else
             {
