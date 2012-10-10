@@ -5,12 +5,12 @@ class UserMailer < ActionMailer::Base
   
   def contact_email(contact)
     @contact = contact
-    mail(:from => "#{@contact.name} <#{@contact.email}>", :to => 'help@getkickbak.com', :subject => @contact.topic)
+    mail(:to => 'help@getkickbak.com', :subject => @contact.topic)
   end
   
   def add_merchant_contact_email(contact)
     @contact = contact
-    mail(:from => "#{@contact.name} <#{@contact.email}>", :to => 'add_business@getkickbak.com', :subject => 'Business Inquiry')
+    mail(:to => 'add_business@getkickbak.com', :subject => 'Business Inquiry')
   end
 
   def points_expiration_reminder_email(user, records)
