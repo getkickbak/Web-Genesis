@@ -18,7 +18,7 @@ class PagesController < ApplicationController
     if @contact.valid?
       UserMailer.contact_email(@contact).deliver
       respond_to do |format|
-        format.html { redirect_to(:action => 'contact_us', :notice => 'Email was successfully sent.') }
+        format.html { redirect_to({:action => 'contact_us'}, {:notice => 'Email was successfully sent.'}) }
       end
     else
       respond_to do |format|
@@ -37,7 +37,7 @@ class PagesController < ApplicationController
     if @merchant_contact.valid?
       UserMailer.add_merchant_contact_email(@merchant_contact).deliver
       respond_to do |format|
-        format.html { redirect_to(:action => 'add_business', :notice => 'Email was successfully sent.') }
+        format.html { redirect_to({:action => 'add_business'}, {:notice => 'Email was successfully sent.'}) }
       end
     else
       respond_to do |format|
