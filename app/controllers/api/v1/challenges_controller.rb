@@ -208,8 +208,24 @@ class Api::V1::ChallengesController < ApplicationController
   def complete_referral
     authorize! :read, Customer
     
-    data = params[:data].split('$')
-    merchant = Merchant.get(data[0]) || not_found
+    begin
+      encrypted_data = params[:data].split('$')
+      if encrypted_data.length != 2
+        raise "Invalid referral code format"
+      end
+      merchant = Merchant.get(encrypted_data[0])
+      if merchant.nil?
+        raise "No such merchant: #{encrypted_data[0]}"
+      end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => t("api.challenges.invalid_referral_code").split('\n') } }
+      end  
+      return  
+    end
+    
     if merchant.status != :active
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -238,8 +254,10 @@ class Api::V1::ChallengesController < ApplicationController
     authorized = false
     
     begin
+      data = encrypted_data[1] 
+      #logger.debug("data: #{data}")
       cipher = Gibberish::AES.new(@customer.merchant.auth_code)
-      decrypted = cipher.dec(data[1])
+      decrypted = cipher.dec(data)
       #logger.debug("decrypted text: #{decrypted}")
       decrypted_data = JSON.parse(decrypted)
       referrer_id = decrypted_data["refr_id"]
@@ -247,7 +265,6 @@ class Api::V1::ChallengesController < ApplicationController
       #logger.debug("decrypted type: #{decrypted_data["type"]}")
       #logger.debug("decrypted referrer_id: #{referrer_id}")
       #logger.debug("decrypted challenge_id: #{challenge_id}")
-      #logger.debug("decrypted data: #{data[1]}")
       #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_EMAIL || decrypted_data["type"] == EncryptedDataType::REFERRAL_CHALLENGE_DIRECT}")
       #logger.debug("Challenge doesn't exists: #{Challenge.get(challenge_id).nil?}")
       #logger.debug("ReferralChallengeRecord doesn't exists: #{ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id).nil?}")
