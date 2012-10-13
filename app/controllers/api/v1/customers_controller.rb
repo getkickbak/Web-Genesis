@@ -106,8 +106,25 @@ class Api::V1::CustomersController < ApplicationController
   def receive_points
     authorize! :read, Customer
     
-    data = params[:data].split('$')
-    merchant = Merchant.get(data[0]) || not_found
+    begin
+      encrypted_data = params[:data].split('$')
+      if encrypted_data.length != 2
+        raise "Invalid referral code format"
+      end
+      merchant = Merchant.get(encrypted_data[0])
+      if merchant.nil?
+        raise "No such merchant: #{encrypted_data[0]}"
+      end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      logger.info("User(#{current_user.id}) failed to receive points, invalid transfer code")
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => t("api.customers.invalid_transfer_code").split('\n') } }
+      end  
+      return  
+    end
+      
     if merchant.status != :active
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -134,9 +151,10 @@ class Api::V1::CustomersController < ApplicationController
     invalid_code = false
     
     begin
+      data = encrypted_data[1] 
       #logger.debug("data: #{data}")
       cipher = Gibberish::AES.new(@customer.merchant.auth_code)
-      decrypted = cipher.dec(data[1])
+      decrypted = cipher.dec(data)
       #logger.debug("decrypted text: #{decrypted}")
       decrypted_data = JSON.parse(decrypted)
       transfer_id = decrypted_data["id"]
