@@ -98,7 +98,6 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         return
       end  
     end
-    authorize! :update, @customer
     
     logger.info("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
     Time.zone = @venue.time_zone

@@ -106,51 +106,40 @@ class Api::V1::CustomersController < ApplicationController
   def receive_points
     authorize! :read, Customer
     
+    authorized = false
+    invalid_code = false
+    
     begin
       encrypted_data = params[:data].split('$')
       if encrypted_data.length != 2
-        raise "Invalid referral code format"
+        raise "Invalid transfer code format"
       end
       merchant = Merchant.get(encrypted_data[0])
       if merchant.nil?
         raise "No such merchant: #{encrypted_data[0]}"
       end
-    rescue StandardError => e
-      logger.error("Exception: " + e.message)
-      logger.info("User(#{current_user.id}) failed to receive points, invalid transfer code")
-      respond_to do |format|
-        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.customers.invalid_transfer_code").split('\n') } }
-      end  
-      return  
-    end
       
-    if merchant.status != :active
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
-      end
-      return  
-    end
-    @customer = Customer.first(:user => current_user, :merchant => merchant)
-    if @customer.nil?
-      if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
-        @customer = Customer.create(merchant, current_user)
-      else
+      if merchant.status != :active
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
         end
-        return
-      end  
-    end
-    authorize! :read, @customer
+        return  
+      end
     
-    logger.info("Receive points Customer(#{@customer.id}), User(#{current_user.id})")
-    authorized = false
-    invalid_code = false
+      @customer = Customer.first(:user => current_user, :merchant => merchant)
+      if @customer.nil?
+        if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
+          @customer = Customer.create(merchant, current_user)
+        else
+          respond_to do |format|
+            #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+            format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }
+          end
+          return
+        end  
+      end
     
-    begin
       data = encrypted_data[1] 
       #logger.debug("data: #{data}")
       cipher = Gibberish::AES.new(@customer.merchant.auth_code)
@@ -180,6 +169,8 @@ class Api::V1::CustomersController < ApplicationController
       return
     end
     
+    logger.info("Receive points Customer(#{@customer.id}), User(#{current_user.id})")
+
     begin
       Customer.transaction do
         if authorized

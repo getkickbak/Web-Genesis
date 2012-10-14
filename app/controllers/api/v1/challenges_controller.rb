@@ -208,6 +208,9 @@ class Api::V1::ChallengesController < ApplicationController
   def complete_referral
     authorize! :read, Customer
     
+    already_customer = false
+    authorized = false
+    
     begin
       encrypted_data = params[:data].split('$')
       if encrypted_data.length != 2
@@ -217,44 +220,30 @@ class Api::V1::ChallengesController < ApplicationController
       if merchant.nil?
         raise "No such merchant: #{encrypted_data[0]}"
       end
-    rescue StandardError => e
-      logger.error("Exception: " + e.message)
-      logger.info("User(#{current_user.id}) failed to complete Referral Challenge, invalid referral code")
-      respond_to do |format|
-        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.challenges.invalid_referral_code").split('\n') } }
-      end  
-      return  
-    end
-    
-    if merchant.status != :active
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
-      end
-      return  
-    end
-    already_customer = false
-    @customer = Customer.first(:user => current_user, :merchant => merchant)
-    if @customer.nil?
-      if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
-        @customer = Customer.create(merchant, current_user)
-      else
+      
+      if merchant.status != :active
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
         end
-        return
-      end  
-    elsif @customer.visits > 1
-      already_customer = true
-    end
-    authorize! :read, @customer
+        return  
+      end
     
-    logger.info("Complete Referral Challenge, Customer(#{@customer.id}), User(#{current_user.id})")
-    authorized = false
-    
-    begin
+      @customer = Customer.first(:user => current_user, :merchant => merchant)
+      if @customer.nil?
+        if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
+          @customer = Customer.create(merchant, current_user)
+        else
+          respond_to do |format|
+            #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+            format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }
+          end
+          return
+        end  
+      elsif @customer.visits > 1
+        already_customer = true
+      end
+      
       data = encrypted_data[1] 
       #logger.debug("data: #{data}")
       cipher = Gibberish::AES.new(@customer.merchant.auth_code)
@@ -283,6 +272,8 @@ class Api::V1::ChallengesController < ApplicationController
       return
     end
     
+    logger.info("Complete Referral Challenge, Customer(#{@customer.id}), User(#{current_user.id})")
+
     if already_customer
       if ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id).nil?
         msg = t("api.challenges.already_customer").split('\n')
