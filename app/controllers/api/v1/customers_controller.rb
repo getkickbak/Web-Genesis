@@ -35,7 +35,10 @@ class Api::V1::CustomersController < ApplicationController
     @customer = Customer.first(:user => current_user, :merchant_id => params[:merchant_id]) || not_found
     authorize! :read, @customer
 
+    logger.info("Transfer Points Merchant(#{@customer.merchant.id}), Customer(#{@customer.id}), User(#{current_user.id})")
+
     if @customer.merchant.status != :active
+      logger.info("User(#{current_user.id}) failed to transfer points, merchant is not active")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
@@ -43,7 +46,6 @@ class Api::V1::CustomersController < ApplicationController
       return  
     end
     
-    logger.info("Transfer points Customer(#{@customer.id}), User(#{current_user.id})")
     begin
       Customer.transaction do
         now = Time.now
@@ -120,6 +122,7 @@ class Api::V1::CustomersController < ApplicationController
       end
       
       if merchant.status != :active
+        logger.info("User(#{current_user.id}) failed to receive points at Merchant(#{merchant.id}), merchant is not active")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
@@ -132,6 +135,7 @@ class Api::V1::CustomersController < ApplicationController
         if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
           @customer = Customer.create(merchant, current_user)
         else
+          logger.info("User(#{current_user.id}) failed to receive points at Merchant(#{merchant.id}), account not compatible with merchant")
           respond_to do |format|
             #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
             format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }
@@ -161,7 +165,11 @@ class Api::V1::CustomersController < ApplicationController
       end  
     rescue StandardError => e
       logger.error("Exception: " + e.message)
-      logger.info("Customer(#{@customer.id}) failed to receive points, invalid transfer code")
+      if merchant.nil?
+        logger.info("User(#{current_user.id}) failed to receive points, invalid transfer code")
+      else  
+        logger.info("User(#{current_user.id}) failed to receive points at Merchant(#{merchant.id}), invalid transfer code")
+      end  
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.customers.invalid_transfer_code").split('\n') } }
@@ -169,7 +177,7 @@ class Api::V1::CustomersController < ApplicationController
       return
     end
     
-    logger.info("Receive points Customer(#{@customer.id}), User(#{current_user.id})")
+    logger.info("Receive Points, Merchant(#{merchant.id}), Customer(#{@customer.id}), User(#{current_user.id})")
 
     begin
       Customer.transaction do

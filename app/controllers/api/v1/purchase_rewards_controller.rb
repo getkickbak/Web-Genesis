@@ -75,7 +75,10 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       end
     end    
       
+    logger.info("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
+  
     if @venue.status != :active
+      logger.info("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), venue is not active")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
@@ -91,6 +94,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       if (@venue.merchant.role == "merchant" && current_user.role == "user") || (@venue.merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
         @customer = Customer.create(@venue.merchant, current_user)
       else
+        logger.info("User(#{current_user.id}) failed to earn points at Merchant(#{@venue.merchant.id}), account not compatible with merchant")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }
@@ -98,11 +102,9 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         return
       end  
     end
-    
-    logger.info("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
-    Time.zone = @venue.time_zone
-    
+        
     if @venue.merchant.will_terminate && (Date.today > (@venue.merchant.terminate_date - 30))
+      logger.info("User(#{current_user.id}) failed to earn points at Merchant(#{@venue.merchant.id}), program is being terminated")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.purchase_rewards.program_termination").split('\n') } }
@@ -112,6 +114,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       
     @badges = Common.populate_badges(@venue.merchant, request.env['HTTP_USER_AGENT'])
       
+    Time.zone = @venue.time_zone  
     begin  
       Customer.transaction do
         if authorized

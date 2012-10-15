@@ -43,6 +43,7 @@ class Api::V1::CheckInsController < ApplicationController
     end
     
     if @venue.status != :active
+      logger.info("User(#{current_user.id}) failed to check-in at Venue(#{@venue.id}), venue is not active")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
@@ -51,7 +52,7 @@ class Api::V1::CheckInsController < ApplicationController
     end
     
     if !Common.within_geo_distance?(logger, current_user, params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
-      logger.info("User(#{current_user.id}) failed to check-in to Venue(#{@venue.id}), out of distance")
+      logger.info("User(#{current_user.id}) failed to check-in at Venue(#{@venue.id}), out of distance")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.out_of_distance").split('\n') } }
@@ -64,6 +65,7 @@ class Api::V1::CheckInsController < ApplicationController
       if (@venue.merchant.role == "merchant" && current_user.role == "user") || (@venue.merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
         @customer = Customer.create(@venue.merchant, current_user)  
       else
+        logger.info("User(#{current_user.id}) failed to check-in at Merchant(#{@venue.merchant.id}), account not compatible with merchant")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }

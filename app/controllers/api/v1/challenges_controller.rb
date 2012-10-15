@@ -28,7 +28,10 @@ class Api::V1::ChallengesController < ApplicationController
     @customer = Customer.first(:merchant => @venue.merchant, :user => current_user) || not_found
     authorize! :update, @customer
     
+    logger.info("Start Challenge(#{@challenge.id}), Type(#{@challenge.type.value}), Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
+    
     if @venue.status != :active
+      logger.info("User(#{current_user.id}) failed to start Challenge(#{@challenge.id}), venue is not active")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
@@ -41,6 +44,7 @@ class Api::V1::ChallengesController < ApplicationController
         if is_startable_challenge?
           start_challenge
         else
+          logger.info("User(#{current_user.id}) failed to start Challenge(#{@challenge.id}), not startable")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.challenges.start_failure").split('\n') } }
@@ -68,7 +72,10 @@ class Api::V1::ChallengesController < ApplicationController
     @customer = Customer.first(:merchant => @venue.merchant, :user => current_user) || not_found
     authorize! :update, @customer
     
+    logger.info("Complete Challenge(#{@challenge.id}), Type(#{@challenge.type.value}), Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
+
     if @venue.status != :active
+      logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), venue is not active")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
@@ -76,8 +83,6 @@ class Api::V1::ChallengesController < ApplicationController
       return  
     end
     
-    logger.info("Complete Challenge(#{@challenge.id}), Type(#{@challenge.type.value}), Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
-    Time.zone = @venue.time_zone
     if !Common.within_geo_distance?(logger, current_user, params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), out of distance")
       respond_to do |format|
@@ -113,6 +118,7 @@ class Api::V1::ChallengesController < ApplicationController
       return 
     end
       
+    Time.zone = @venue.time_zone  
     begin     
       Customer.transaction do
         if authorized
@@ -208,7 +214,7 @@ class Api::V1::ChallengesController < ApplicationController
   
   def complete_referral
     authorize! :read, Customer
-    
+        
     already_customer = false
     authorized = false
     
@@ -223,6 +229,7 @@ class Api::V1::ChallengesController < ApplicationController
       end
       
       if merchant.status != :active
+        logger.info("User(#{current_user.id}) failed to complete referral challenge at Merchant(#{merchant.id}), merchant is not active")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
@@ -235,6 +242,7 @@ class Api::V1::ChallengesController < ApplicationController
         if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
           @customer = Customer.create(merchant, current_user)
         else
+          logger.info("User(#{current_user.id}) failed to complete referral challenge at Merchant(#{merchant.id}), account not compatible with merchant")
           respond_to do |format|
             #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
             format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }
@@ -265,7 +273,11 @@ class Api::V1::ChallengesController < ApplicationController
       end  
     rescue StandardError => e
       logger.error("Exception: " + e.message)
-      logger.info("Customer(#{@customer.id}) failed to complete Referral Challenge, invalid referral code")
+      if merchant.nil?
+        logger.info("User(#{current_user.id}) failed to complete Referral Challenge, invalid referral code")
+      else
+        logger.info("User(#{current_user.id}) failed to complete Referral Challenge at Merchant(#{merchant.id}), invalid referral code")  
+      end  
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.challenges.invalid_referral_code").split('\n') } }
@@ -273,7 +285,7 @@ class Api::V1::ChallengesController < ApplicationController
       return
     end
     
-    logger.info("Complete Referral Challenge, Customer(#{@customer.id}), User(#{current_user.id})")
+    logger.info("Complete Referral Challenge, Merchant(#{merchant.id}), Customer(#{@customer.id}), User(#{current_user.id})")
 
     if already_customer
       if ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id).nil?
@@ -315,7 +327,7 @@ class Api::V1::ChallengesController < ApplicationController
           render :template => '/api/v1/challenges/complete_referral'
           logger.info("User(#{current_user.id}) successfully completed Referral Challenge(#{@challenge.id})")
         else  
-          logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge.id}), invalid referral code")
+          logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{@challenge.id}), invalid referral code")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.challenges.invalid_referral_code").split('\n') } }

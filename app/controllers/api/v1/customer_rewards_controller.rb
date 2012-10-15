@@ -28,7 +28,10 @@ class Api::V1::CustomerRewardsController < ApplicationController
     @customer = Customer.first(:merchant => @venue.merchant, :user => current_user) || not_found
     authorize! :update, @customer
     
+    logger.info("Redeem Reward(#{@reward.id}), Type(#{@reward.type.value}), Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
+
     if @venue.status != :active
+      logger.info("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), venue is not active")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
@@ -36,10 +39,9 @@ class Api::V1::CustomerRewardsController < ApplicationController
       return  
     end
     
-    logger.info("Redeem Reward(#{@reward.id}), Type(#{@reward.type.value}), Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
     reward_venue = CustomerRewardVenue.first(:customer_reward_id => @reward.id, :venue_id => @venue.id)
     if reward_venue.nil?
-      logger.info("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), not available at Venue(#{@venue.id})")
+      logger.info("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), not available at venue")
       respond_to do |format|
         #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
