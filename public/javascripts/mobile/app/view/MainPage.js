@@ -183,7 +183,7 @@ Ext.define('Genesis.view.MainPage',
          carousel.removeAll(true);
          for (var i = 0; i < Math.ceil(items.length / 6); i++)
          {
-            carousel.add(Ext.create('Ext.dataview.DataView',
+            carousel.add(
             {
                xtype : 'dataview',
                cls : 'mainMenuSelections',
@@ -237,7 +237,7 @@ Ext.define('Genesis.view.MainPage',
                   }
                }),
                autoScroll : true
-            }));
+            });
          }
          console.log("MainPage Icons Refreshed.");
       }

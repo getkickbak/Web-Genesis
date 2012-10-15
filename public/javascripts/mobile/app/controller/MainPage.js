@@ -106,12 +106,12 @@ Ext.define('Genesis.controller.MainPage',
          },
          main :
          {
+            showView : 'onShowView',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
-         'mainpageview dataview' :
+         'mainpageview > carousel dataview' :
          {
-            //itemtap : 'onItemTap',
             select : 'onItemSelect',
             itemtouchstart : 'onItemTouchStart',
             itemtouchend : 'onItemTouchEnd'
@@ -414,6 +414,20 @@ Ext.define('Genesis.controller.MainPage',
    {
       //Ext.fly(Ext.query('#'+target.id+' div.photo')[0]).unmask();
    },
+   onShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android') && Ext.os.version.isLessThan('4.1'))
+      {
+         var carousel = activeItem.query('carousel')[0];
+         var items = carousel.getInnerItems();
+
+         console.debug("Refreshing MainPage ...");
+			for (var i = 0; i < items.length; i++)
+			{
+				items[i].refresh();				
+			}
+      }
+   },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       //activeItem.createView();
@@ -496,9 +510,9 @@ Ext.define('Genesis.controller.MainPage',
             //
             if (!operation.wasSuccessful())
             {
-            	//
-            	// If we are already in Login Page, reset all values
-            	//
+               //
+               // If we are already in Login Page, reset all values
+               //
                Genesis.db.resetStorage();
             }
             else

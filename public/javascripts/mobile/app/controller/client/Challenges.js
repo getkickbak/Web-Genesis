@@ -58,6 +58,7 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          challengePage :
          {
+            showView : 'onShowView',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
@@ -268,6 +269,7 @@ Ext.define('Genesis.controller.client.Challenges',
          Ext.defer(function()
          {
             Ext.Viewport.setMasked(false);
+            me.onCompleteReferralsChallenge();
             switch (res)
             {
                case EmailComposer.ComposeResultType.Failed:
@@ -277,11 +279,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   Ext.device.Notification.show(
                   {
                      title : 'Email Error',
-                     message : me.referralFailedMsg,
-                     callback : function()
-                     {
-                        me.onCompleteReferralsChallenge();
-                     }
+                     message : me.referralFailedMsg
                   });
                   break;
                }
@@ -290,11 +288,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   Ext.device.Notification.show(
                   {
                      title : 'Email Saved',
-                     message : me.referralSavedMsg,
-                     callback : function()
-                     {
-                        me.onCompleteReferralsChallenge();
-                     }
+                     message : me.referralSavedMsg
                   });
                   break;
                }
@@ -303,11 +297,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   Ext.device.Notification.show(
                   {
                      title : 'Email Sent!',
-                     message : me.sendReferralSuccessMsg(),
-                     callback : function()
-                     {
-                        me.onCompleteReferralsChallenge();
-                     }
+                     message : me.sendReferralSuccessMsg()
                   });
                   break;
                }
@@ -783,6 +773,20 @@ Ext.define('Genesis.controller.client.Challenges',
                break;
             }
          }
+      }
+   },
+   onShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android') && Ext.os.version.isLessThan('4.1'))
+      {
+         var carousel = activeItem.query('carousel')[0];
+         var items = carousel.getInnerItems();
+
+         console.debug("Refreshing MainPage ...");
+			for (var i = 0; i < items.length; i++)
+			{
+				items[i].refresh();				
+			}
       }
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
