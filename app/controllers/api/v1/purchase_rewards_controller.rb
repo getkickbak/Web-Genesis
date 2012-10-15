@@ -74,9 +74,7 @@ class Api::V1::PurchaseRewardsController < ApplicationController
         return
       end
     end    
-      
-    logger.info("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
-  
+        
     if @venue.status != :active
       logger.info("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), venue is not active")
       respond_to do |format|
@@ -103,6 +101,8 @@ class Api::V1::PurchaseRewardsController < ApplicationController
       end  
     end
         
+    logger.info("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
+    
     if @venue.merchant.will_terminate && (Date.today > (@venue.merchant.terminate_date - 30))
       logger.info("User(#{current_user.id}) failed to earn points at Merchant(#{@venue.merchant.id}), program is being terminated")
       respond_to do |format|
