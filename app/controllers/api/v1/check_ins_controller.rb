@@ -20,7 +20,7 @@ class Api::V1::CheckInsController < ApplicationController
         decrypted_data = JSON.parse(decrypted)
         checkInCode = CheckInCode.first(:auth_code => decrypted_data["auth_code"])
         if checkInCode.nil?
-          raise "Incorrect check-in code: #{decrypted_data['auth_code']}"
+          raise "Incorrect check-in code: #{decrypted_data["auth_code"]}"
         end
         @venue = checkInCode.venue
         if @venue_id && (@venue.id != @venue_id.to_i)

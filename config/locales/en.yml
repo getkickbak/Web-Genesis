@@ -291,7 +291,7 @@ en:
         email_subject_invoice: "Monthly Invoice #%s"  
         email_subject_reset_password: "Reset password instructions"
   mailer:
-      email_subject_referral_challenge: "Referral"
+      email_subject_referral_challenge: "Check out %s"
       email_subject_confirm_referral_challenge: "Referral confirmation"
       email_subject_points_transfer: "Reward points transfer" 
       email_subject_confirm_points_transfer: "Reward points transfer confirmation"
