@@ -52,16 +52,11 @@ Ext.define('Genesis.view.RedeemItemDetail',
             break;
          }
       }
+      
+      this.callParent(arguments);
    },
    createView : function()
    {
-      /*
-       if (!this.callParent(arguments))
-       {
-       return;
-       }
-       */
-
       switch (this.config.tag)
       {
          case 'userPrizes' :
@@ -75,6 +70,8 @@ Ext.define('Genesis.view.RedeemItemDetail',
             break;
          }
       }
+      
+      this.callParent(arguments);
    },
    onUserCreateView : function()
    {
@@ -243,14 +240,14 @@ Ext.define('Genesis.view.RedeemItemDetail',
    },
    showView : function()
    {
-      this.callParent(arguments);
-
       var carousel = this.query('carousel')[0];
       if (carousel)
       {
          carousel.setActiveItem(0);
       }
       this.getInnerItems()[0].setVisibility(true);
+      
+      this.callParent(arguments);
    },
    statics :
    {
@@ -338,6 +335,7 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
    cleanView : function()
    {
       //this.removeAll(true);
+      this.callParent(arguments);
    },
    createView : function()
    {

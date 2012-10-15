@@ -47,8 +47,7 @@ Ext.define('Genesis.view.LoginPage',
       });
       this.add(actions);
       this.callParent(arguments);
-   },
-   showView : Ext.emptyFn
+   }
 });
 
 Ext.define('Genesis.view.SignInPage',
@@ -58,6 +57,7 @@ Ext.define('Genesis.view.SignInPage',
    requires : ['Ext.field.Email', 'Ext.field.Password'],
    config :
    {
+      preRender : null,
       fullscreen : true,
       cls : 'viewport',
       layout :
@@ -121,6 +121,11 @@ Ext.define('Genesis.view.SignInPage',
          margin : '0.5 0 0 0'
       }]
    },
+   initialize : function()
+   {
+      this.callParent(arguments);
+      this.setPreRender([]);
+   },
    /**
     * Removes all items currently in the Container, optionally destroying them all
     * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
@@ -129,14 +134,20 @@ Ext.define('Genesis.view.SignInPage',
     */
    removeAll : function(destroy, everything)
    {
-      var rc = this.callParent(arguments);
-      this.setPreRender([]);
-
-      return rc;
+      return Genesis.view.ViewBase.prototype.removeAll.apply(this, arguments);
    },
-   cleanView : Ext.emptyFn,
-   createView : Ext.emptyFn,
-   showView : Ext.emptyFn
+   cleanView : function()
+   {
+      return Genesis.view.ViewBase.prototype.cleanView.apply(this, arguments);
+   },
+   createView : function()
+   {
+      return Genesis.view.ViewBase.prototype.createView.apply(this, arguments);
+   },
+   showView : function()
+   {
+      return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
+   }
 });
 
 Ext.define('Genesis.view.PasswdResetPage',
@@ -146,6 +157,7 @@ Ext.define('Genesis.view.PasswdResetPage',
    requires : ['Ext.field.Email'],
    config :
    {
+      preRender : null,
       fullscreen : true,
       cls : 'viewport',
       layout :
@@ -194,6 +206,11 @@ Ext.define('Genesis.view.PasswdResetPage',
          margin : '0.5 0 0 0'
       }]
    },
+   initialize : function()
+   {
+      this.callParent(arguments);
+      this.setPreRender([]);
+   },
    /**
     * Removes all items currently in the Container, optionally destroying them all
     * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
@@ -202,14 +219,20 @@ Ext.define('Genesis.view.PasswdResetPage',
     */
    removeAll : function(destroy, everything)
    {
-      var rc = this.callParent(arguments);
-      this.setPreRender([]);
-
-      return rc;
+      return Genesis.view.ViewBase.prototype.removeAll.apply(this, arguments);
    },
-   cleanView : Ext.emptyFn,
-   createView : Ext.emptyFn,
-   showView : Ext.emptyFn
+   cleanView : function()
+   {
+      return Genesis.view.ViewBase.prototype.cleanView.apply(this, arguments);
+   },
+   createView : function()
+   {
+      return Genesis.view.ViewBase.prototype.createView.apply(this, arguments);
+   },
+   showView : function()
+   {
+      return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
+   }
 });
 
 Ext.define('Genesis.view.PasswdChangePage',
@@ -219,6 +242,7 @@ Ext.define('Genesis.view.PasswdChangePage',
    requires : ['Ext.field.Password', 'Ext.field.Text'],
    config :
    {
+      preRender : null,
       fullscreen : true,
       cls : 'viewport',
       layout :
@@ -272,6 +296,11 @@ Ext.define('Genesis.view.PasswdChangePage',
          margin : '0.5 0 0 0'
       }]
    },
+   initialize : function()
+   {
+      this.callParent(arguments);
+      this.setPreRender([]);
+   },
    /**
     * Removes all items currently in the Container, optionally destroying them all
     * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
@@ -280,14 +309,20 @@ Ext.define('Genesis.view.PasswdChangePage',
     */
    removeAll : function(destroy, everything)
    {
-      var rc = this.callParent(arguments);
-      this.setPreRender([]);
-
-      return rc;
+      return Genesis.view.ViewBase.prototype.removeAll.apply(this, arguments);
    },
-   cleanView : Ext.emptyFn,
-   createView : Ext.emptyFn,
-   showView : Ext.emptyFn
+   cleanView : function()
+   {
+      return Genesis.view.ViewBase.prototype.cleanView.apply(this, arguments);
+   },
+   createView : function()
+   {
+      return Genesis.view.ViewBase.prototype.createView.apply(this, arguments);
+   },
+   showView : function()
+   {
+      return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
+   }
 });
 
 Ext.define('Genesis.view.CreateAccountPage',
@@ -297,6 +332,7 @@ Ext.define('Genesis.view.CreateAccountPage',
    requires : ['Ext.field.Text', 'Ext.field.Email', 'Ext.field.Password'],
    config :
    {
+      preRender : null,
       fullscreen : true,
       cls : 'viewport',
       layout :
@@ -358,6 +394,11 @@ Ext.define('Genesis.view.CreateAccountPage',
          text : 'Create Account'
       }]
    },
+   initialize : function()
+   {
+      this.callParent(arguments);
+      this.setPreRender([]);
+   },
    /**
     * Removes all items currently in the Container, optionally destroying them all
     * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
@@ -366,12 +407,18 @@ Ext.define('Genesis.view.CreateAccountPage',
     */
    removeAll : function(destroy, everything)
    {
-      var rc = this.callParent(arguments);
-      this.setPreRender([]);
-
-      return rc;
+      return Genesis.view.ViewBase.prototype.removeAll.apply(this, arguments);
    },
-   cleanView : Ext.emptyFn,
-   createView : Ext.emptyFn,
-   showView : Ext.emptyFn
+   cleanView : function()
+   {
+      return Genesis.view.ViewBase.prototype.cleanView.apply(this, arguments);
+   },
+   createView : function()
+   {
+      return Genesis.view.ViewBase.prototype.createView.apply(this, arguments);
+   },
+   showView : function()
+   {
+      return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
+   }
 });

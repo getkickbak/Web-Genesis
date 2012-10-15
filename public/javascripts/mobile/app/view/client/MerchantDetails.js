@@ -86,21 +86,47 @@ Ext.define('Genesis.view.client.MerchantDetails',
          }]
       })]
    },
+   renderView : function(map)
+   {
+      var cntlr = _application.getController('client.Merchants');
+      var size = map.getSize();
+      var padding = Genesis.fn.calcPx(0.7, 1);
+      map.setSize(size.width, size.height - (1 * 12));
+      var queryString = Ext.Object.toQueryString(Ext.apply(
+      {
+         zoom : 15,
+         scale : window.devicePixelRatio,
+         maptype : 'roadmap',
+         sensor : false,
+         size : size.width + 'x' + (size.height - (1 * padding))
+      }, cntlr.markerOptions));
+      var string = Ext.String.urlAppend(cntlr.self.googleMapStaticUrl, queryString);
+      Ext.getCmp(map.observableId.split(map.observableIdPrefix)[1]).setData(
+      {
+         width : size.width,
+         height : size.height - (1 * padding),
+         photo : string
+      });
+   },
    cleanView : function()
    {
       this.removeAll(true);
+      this.callParent(arguments);
    },
    createView : function()
    {
-      if (!this.callParent(arguments))
+      var me = this;
+      if (!me.callParent(arguments))
       {
+         me.renderView(me.query('component[tag=map]')[0]);
          return;
       }
 
-      this.setPreRender(this.getPreRender().concat([Ext.create('Ext.dataview.DataView',
+      me.setPreRender(me.getPreRender().concat([Ext.create('Ext.dataview.DataView',
       {
          xtype : 'dataview',
          cls : 'separator',
+         tag : 'details',
          useComponents : true,
          defaultType : 'merchantdetailsitem',
          scrollable : undefined,
@@ -130,27 +156,9 @@ Ext.define('Genesis.view.client.MerchantDetails',
          defaultUnit : 'em',
          listeners :
          {
-            painted : function(map, eOpts)
+            'painted' : function(c)
             {
-               cntlr = _application.getController('client.Merchants');
-               var size = map.getSize();
-               var padding = Genesis.fn.calcPx(0.7, 1);
-               map.setSize(size.width, size.height - (1 * 12));
-               var queryString = Ext.Object.toQueryString(Ext.apply(
-               {
-                  zoom : 15,
-                  scale : window.devicePixelRatio,
-                  maptype : 'roadmap',
-                  sensor : false,
-                  size : size.width + 'x' + (size.height - (1 * padding))
-               }, cntlr.markerOptions));
-               var string = Ext.String.urlAppend(cntlr.self.googleMapStaticUrl, queryString);
-               Ext.getCmp(map.observableId.split(map.observableIdPrefix)[1]).setData(
-               {
-                  width : size.width,
-                  height : size.height - (1 * padding),
-                  photo : string
-               });
+               me.renderView(c);
             }
          },
          tpl : Ext.create('Ext.XTemplate', '<img height="{height}" width="{width}" src="{photo}"/>')

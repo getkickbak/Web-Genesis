@@ -142,13 +142,7 @@ Ext.define('Genesis.view.MainPage',
    {
       var carousel = this.query('carousel')[0];
       carousel.removeAll(true);
-   },
-   removeAll : function(destroy, everything)
-   {
-      var rc = this.callParent(arguments);
-      this.setPreRender([]);
-
-      return rc;
+      this.callParent(arguments);
    },
    createView : function()
    {
@@ -282,15 +276,16 @@ Ext.define('Genesis.view.MainPage',
          console.log("MainPage Icons Not changed.");
       }
       delete carousel._listitems;
+
+      this.callParent(arguments);
    },
    showView : function()
    {
-      this.callParent(arguments);
-
       var carousel = this.query('carousel')[0];
       if (carousel.getInnerItems().length > 0)
       {
          carousel.setActiveItem(0);
       }
+      this.callParent(arguments);
    }
 });

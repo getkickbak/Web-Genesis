@@ -12,11 +12,34 @@ Ext.define('Genesis.controller.ControllerBase',
    genQRCodeMsg : 'Generating QRCode ...',
    retrieveAuthModeMsg : 'Retrieving Authorization Code from Server ...',
    noCodeScannedMsg : 'No Authorization Code was Scanned!',
-   geoLocationErrorMsg : 'Your current location is unavailable. Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services >> KICKBAK\"',
+   geoLocationErrorMsg : function()
+   {
+      var rc = 'Your current location is unavailable. ';
+      if (Ext.os.is('Android'))
+      {
+         rc += // ((Ext.os.version.isLessThan('4.1')) ? //
+         'Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services >> GPS satellites\"';
+      }
+      else
+      if (Ext.os.is('iPhone'))
+      {
+         rc += ((Ext.os.version.isLessThan('6.0')) ? //
+         'Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services >> KICKBAK\"' :
+         // //
+         'Enable Location Services under Main Screen of your phone: \"Settings App >> Privacy >> Location Services >> KICKBAK\"'//
+         );
+      }
+      else
+      {
+         rc += 'Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services\"';
+      }
+
+      return rc;
+   },
    geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
    geoLocationUnavailableMsg : 'We are not able to locate your GPS coordinates',
-   geoLocationUseLastPositionMsg : 'We are not able to locate your GPS coordinates. Using your last Location Coordinates ...',
+   geoLocationUseLastPositionMsg : 'We are not able to locate your current location. Using your last known GPS Coordinates ...',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
    getVenueInfoMsg : 'Retrieving Venue Information ...',
    missingVenueInfoMsg : 'Error loading Venue information.',
@@ -788,6 +811,13 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
+      var options =
+      {
+         autoUpdate : false,
+         maximumAge : 30000,
+         timeout : 10000,
+         allowHighAccuracy : true
+      }
 
       i = i || 0;
       console.debug('Getting GeoLocation ...');
@@ -807,106 +837,122 @@ Ext.define('Genesis.controller.ControllerBase',
                }
             }
          });
+         return;
       }
-      else
+      var successCallback = function(geo, eOpts)
       {
-         console.debug('Connection type: [' + Ext.device.Connection.getType() + ']');
-         //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
-         if (!me.geoLocation)
+         if (!geo)
          {
-            me.geoLocation = Ext.create('Ext.util.Geolocation',
-            {
-               autoUpdate : false,
-               frequency : 1,
-               maximumAge : 30000,
-               timeout : 50000,
-               allowHighAccuracy : true,
-               listeners :
-               {
-                  locationupdate : function(geo, eOpts)
-                  {
-                     if (!geo)
-                     {
-                        console.log("No GeoLocation found!");
-                        return;
-                     }
-                     var position =
-                     {
-                        coords : geo
-                     }
-                     console.debug('\n' + 'Latitude: ' + geo.getLatitude() + '\n' + 'Longitude: ' + geo.getLongitude() + '\n' +
-                     //
-                     'Altitude: ' + geo.getAltitude() + '\n' + 'Accuracy: ' + geo.getAccuracy() + '\n' +
-                     //
-                     'Altitude Accuracy: ' + geo.getAltitudeAccuracy() + '\n' + 'Heading: ' + geo.getHeading() + '\n' +
-                     //
-                     'Speed: ' + geo.getSpeed() + '\n' + 'Timestamp: ' + new Date(geo.getTimestamp()) + '\n');
+            console.log("No GeoLocation found!");
+            return;
+         }
+         var position =
+         {
+            coords : geo
+         }
+         console.debug('\n' + 'Latitude: ' + geo.getLatitude() + '\n' + 'Longitude: ' + geo.getLongitude() + '\n' +
+         //
+         'Altitude: ' + geo.getAltitude() + '\n' + 'Accuracy: ' + geo.getAccuracy() + '\n' +
+         //
+         'Altitude Accuracy: ' + geo.getAltitudeAccuracy() + '\n' + 'Heading: ' + geo.getHeading() + '\n' +
+         //
+         'Speed: ' + geo.getSpeed() + '\n' + 'Timestamp: ' + new Date(geo.getTimestamp()) + '\n');
 
-                     viewport.setLastPosition(position);
-                     me.fireEvent('locationupdate', position);
-                  },
-                  locationerror : function(geo, bTimeout, bPermissionDenied, bLocationUnavailable, message)
+         viewport.setLastPosition(position);
+         me.fireEvent('locationupdate', position);
+      }
+      var failCallback = function(geo, bTimeout, bPermissionDenied, bLocationUnavailable, message)
+      {
+         console.debug('GeoLocation Error[' + message + ']');
+         Ext.Viewport.setMasked(false);
+         if (bPermissionDenied)
+         {
+            console.debug("PERMISSION_DENIED");
+            Ext.device.Notification.show(
+            {
+               title : 'Permission Error',
+               message : me.geoLocationPermissionErrorMsg
+            });
+         }
+         else
+         if (bTimeout)
+         {
+            console.debug("TIMEOUT");
+            Ext.device.Notification.show(
+            {
+               title : 'Timeout Error',
+               message : (viewport.getLastPosition()) ? me.geoLocationUseLastPositionMsg : me.geoLocationTimeoutErrorMsg,
+               callback : function()
+               {
+                  if (viewport.getLastPosition())
                   {
-                     console.debug('GeoLocation Error[' + message + ']');
-                     Ext.Viewport.setMasked(false);
-                     if (bPermissionDenied)
-                     {
-                        console.debug("PERMISSION_DENIED");
-                        Ext.device.Notification.show(
-                        {
-                           title : 'Permission Error',
-                           message : me.geoLocationPermissionErrorMsg
-                        });
-                     }
-                     else
-                     if (bTimeout)
-                     {
-                        console.debug("TIMEOUT");
-                        Ext.device.Notification.show(
-                        {
-                           title : 'Timeout Error',
-                           message : me.geoLocationTimeoutErrorMsg
-                        });
-                     }
-                     else
-                     {
-                        if (bLocationUnavailable)
-                        {
-                           if (i < 3)
-                           {
-                              Ext.defer(me.getGeoLocation, 1 * 1000, me, [++i]);
-                              //console.debug("Retry getting current location(" + i + ") ...");
-                           }
-                           else
-                           {
-                              console.debug("POSITION_UNAVAILABLE");
-                              Ext.device.Notification.show(
-                              {
-                                 title : 'Location Services',
-                                 message : (viewport.getLastPosition()) ? me.geoLocationUseLastPositionMsg : me.geoLocationUnavailableMsg,
-                                 callback : function()
-                                 {
-                                    me.fireEvent('locationupdate', viewport.getLastPosition());
-                                 }
-                              });
-                           }
-                        }
-                        else
-                        {
-                           console.debug("PERMISSION ERROR");
-                           Ext.device.Notification.show(
-                           {
-                              title : 'Location Services',
-                              message : me.geoLocationErrorMsg
-                           });
-                        }
-                     }
+                     me.fireEvent('locationupdate', viewport.getLastPosition());
                   }
                }
             });
          }
-         me.geoLocation.updateLocation();
+         else
+         {
+            if (bLocationUnavailable)
+            {
+               if (i < 3)
+               {
+                  Ext.defer(me.getGeoLocation, 1 * 1000, me, [++i]);
+                  //console.debug("Retry getting current location(" + i + ") ...");
+               }
+               else
+               {
+                  console.debug("POSITION_UNAVAILABLE");
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Location Services',
+                     message : (viewport.getLastPosition()) ? me.geoLocationUseLastPositionMsg : me.geoLocationUnavailableMsg,
+                     callback : function()
+                     {
+                        me.fireEvent('locationupdate', viewport.getLastPosition());
+                     }
+                  });
+               }
+            }
+            else
+            {
+               console.debug("PERMISSION ERROR");
+               Ext.device.Notification.show(
+               {
+                  title : 'Location Services',
+                  message : me.geoLocationErrorMsg()
+               });
+            }
+         }
       }
+
+      console.debug('Connection type: [' + Ext.device.Connection.getType() + ']');
+      //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
+      if (!me.geoLocation)
+      {
+         me.geoLocation = Ext.create('Ext.util.Geolocation', Ext.applyIf(
+         {
+            listeners :
+            {
+               locationupdate : successCallback,
+               locationerror : function(geo, bTimeout, bPermissionDenied, bLocationUnavailable, message)
+               {
+                  if (bTimeout && (i < 4))
+                  {
+                     me.getGeoLocation(4);
+                  }
+                  else
+                  {
+                     failCallback(geo, bTimeout, bPermissionDenied, bLocationUnavailable, message);
+                  }
+               }
+            }
+         }, options));
+      }
+      me.geoLocation.updateLocation(null, null, (i >= 4) ? Ext.applyIf(
+      {
+         allowHighAccuracy : false
+      }, options) : options);
    },
    scanQRCode : function()
    {

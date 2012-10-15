@@ -128,6 +128,7 @@ Ext.define('Genesis.view.client.ChallengePage',
    cleanView : function()
    {
       //this.removeAll(true);
+      this.callParent(arguments);
    },
    createView : function()
    {
@@ -178,5 +179,7 @@ Ext.define('Genesis.view.client.ChallengePage',
          }
          console.log("ChallengePage Icons Updated.");
       }
+      
+      return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);      
    }
 });

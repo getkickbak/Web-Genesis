@@ -208,7 +208,10 @@
             }, false);
             document.addEventListener("pause", function()
             {
-               _application.getController('Viewport').persistSyncStores();
+               if (_application)
+               {
+                  _application.getController('Viewport').persistSyncStores();
+               }
                console.log("App is Paused");
             }, false);
 
@@ -237,6 +240,19 @@
             console.log("onDeviceReady");
             initPushwoosh();
             appInit();
+            console.log("Geolocation - getCurrentPosition");
+            navigator.geolocation.getCurrentPosition(function()
+            {
+               console.log("Geolocation FOUND!!!");
+            }, function()
+            {
+               console.log("Geolocation ERROR!!!");
+            },
+            {
+               timeout : 30000,
+               enableHighAccuracy : true,
+               maximumAge : 30000
+            });
          }
 
          function _onGotoMainCallBackFn()

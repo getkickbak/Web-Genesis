@@ -48,23 +48,13 @@ Ext.define('Genesis.view.client.Accounts',
    cleanView : function()
    {
       //this.removeAll(true);
-   },
-   showView : function()
-   {
       this.callParent(arguments);
-      var list = this.query('list')[0];
-      if (list)
-      {
-         list.setVisibility(true);
-      }
-      //this.setActiveItem(0);
    },
    createView : function()
    {
       var me = this;
       if (!me.callParent(arguments))
       {
-         me.query('list[tag=accountsList]')[0].refresh();
          /*
           var isEligible;
           //

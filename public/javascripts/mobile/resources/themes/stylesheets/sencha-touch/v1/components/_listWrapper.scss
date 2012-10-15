@@ -14,12 +14,6 @@
    padding:0 !important;
 }
 .listNoScrollWrapper.separator {
-   /*
-   .x-list-item {
-      border-left: 1px solid darken($list-bg-color, 15%);
-      border-right: 1px solid darken($list-bg-color, 15%);
-   }
-   */
    .photo {
       top:$panelTopGap;
       left:$panelGap;
@@ -32,10 +26,6 @@
    &.x-list {
       .x-list-item {
          & > .x-dock-vertical > .x-dock-body {
-            //@if $include-border-radius { @include border-radius(0); }
-            position:relative;
-            border-width: 1px 0 0 0;
-            border-top: 1px solid darken($list-bg-color, 15%);
             .photo {
                position:absolute;
                height:$icon-size;

@@ -43,8 +43,8 @@ Genesis.constants =
    privKey : null,
    device : null,
    redeemDBSize : 10000,
-   minDistance : 0.1 * 1000,
-   //minDistance : 100000 * 1000,
+   //minDistance : 0.1 * 1000,
+   minDistance : 100000 * 1000,
    createAccountMsg : 'Create user account using Facebook Profile information',
    isNative : function()
    {
@@ -1115,26 +1115,6 @@ Ext.define('Genesis.util.Collection',
    }
 });
 
-// **************************************************************************
-// Ext.util.SizeMonitor
-// **************************************************************************
-Ext.define('Genesis.util.SizeMonitor',
-{
-   override : 'Ext.util.SizeMonitor',
-   constructor : function(config)
-   {
-      if (Ext.browser.engineVersion.gtEq('534'))
-      {
-      	console.debug("Using OverflowChange SizeMonitor ...");
-         return new Ext.util.sizemonitor.OverflowChange(config);
-      }
-      else
-      {
-      	console.debug("Using Scroll SizeMonitor ...");
-         return new Ext.util.sizemonitor.Scroll(config);
-      }
-   }
-});
 //---------------------------------------------------------------------------------------------------------------------------------
 // Ext.data.reader.Json
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -1550,57 +1530,6 @@ Ext.define('Genesis.dataview.element.List',
 });
 
 //---------------------------------------------------------------------------------------------------------------------------------
-// Ext.dataview.List
-//---------------------------------------------------------------------------------------------------------------------------------
-Ext.define('Genesis.dataview.List',
-{
-   override : 'Ext.dataview.List',
-
-   initialize : function()
-   {
-      var me = this;
-
-      me.callParent(arguments);
-   },
-   doRefresh : function(list)
-   {
-      var me = this;
-      if (me.getStore())
-      {
-         console.debug("List:doRefresh - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
-      }
-      return me.callParent(arguments);
-   },
-   setItemsCount : function(itemsCount)
-   {
-      var me = this;
-      if (me.getStore())
-      {
-         console.debug("List:setItemsCount - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
-      }
-      return me.callParent(arguments);
-   },
-   updateListItem : function(item, index, info)
-   {
-      var me = this;
-      if (me.getStore())
-      {
-         console.debug("List:updateListItem - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
-      }
-      return me.callParent(arguments);
-   },
-   onResize : function()
-   {
-      var me = this;
-      if (me.getStore())
-      {
-         console.debug("List:onResize - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
-      }
-      return me.callParent(arguments);
-   }
-});
-
-//---------------------------------------------------------------------------------------------------------------------------------
 // Ext.tab.Bar
 //---------------------------------------------------------------------------------------------------------------------------------
 /**
@@ -1652,6 +1581,7 @@ Ext.define('Genesis.util.Geolocation',
       {
          ret.timeout = timeout;
       }
+      console.debug("Geolocation - " + Ext.encode(ret));
       return ret;
    }
 });

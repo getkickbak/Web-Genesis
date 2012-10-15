@@ -56,7 +56,7 @@ Ext.define('Genesis.view.Viewport',
       var layout = this.getLayout(), defaultAnimation = (layout.getAnimation) ? layout.getAnimation() : null;
       var oldActiveItem = this.getActiveItem();
       var disableAnimation = (activeItem.disableAnimation || ((oldActiveItem) ? oldActiveItem.disableAnimation : false));
-      var titlebar;
+      var titlebar, viewport = _application.getController('Viewport');
 
       if (this.activeItemAnimation)
       {
@@ -75,6 +75,7 @@ Ext.define('Genesis.view.Viewport',
 
             defaultAnimation.disable();
             controller.pause();
+            activeItem.createView();
             animation.on('animationend', function()
             {
                console.debug("Animation Complete");
@@ -93,7 +94,6 @@ Ext.define('Genesis.view.Viewport',
                      titlebar.setMasked(Genesis.view.ViewBase.invisibleMask);
                   }
                }
-               activeItem.createView();
                activeItem.showView();
 
                titlebar = activeItem.query('titlebar')[0];
@@ -102,7 +102,6 @@ Ext.define('Genesis.view.Viewport',
                   titlebar.setMasked(false);
                }
 
-               //Ext.Viewport.setMasked(false);
                //
                // Delete oldActiveItem to save DOM memory
                //
@@ -111,7 +110,7 @@ Ext.define('Genesis.view.Viewport',
                   controller.resume();
                   //console.debug('Destroyed View [' + oldActiveItem._itemId + ']');
                }
-               _application.getController('Viewport').popViewInProgress = false;
+               viewport.popViewInProgress = false;
             }, this);
          }
          else
@@ -146,16 +145,16 @@ Ext.define('Genesis.view.Viewport',
                titlebar.setMasked(Genesis.view.ViewBase.invisibleMask);
             }
          }
+         activeItem.createView();
          Ext.defer(function()
          {
-            activeItem.createView();
             activeItem.showView();
             titlebar = activeItem.query('titlebar')[0];
             if (titlebar)
             {
                titlebar.setMasked(false);
             }
-            _application.getController('Viewport').popViewInProgress = false;
+            viewport.popViewInProgress = false;
          }, 0.1 * 1000, this);
       }
       return rc;

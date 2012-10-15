@@ -276,11 +276,11 @@ Ext.define('Genesis.view.client.AccountsTransfer',
    },
    showView : function()
    {
-      this.callParent(arguments);
       if (this.num)
       {
          this.setActiveItem(this.num);
       }
+      this.callParent(arguments);
    },
    statics :
    {

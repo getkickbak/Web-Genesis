@@ -156,7 +156,10 @@
             }, false);
             document.addEventListener("pause", function()
             {
-               _application.getController('Viewport').persistSyncStores();
+               if (_application)
+               {
+                  _application.getController('Viewport').persistSyncStores();
+               }
                console.log("App is Paused");
             }, false);
 

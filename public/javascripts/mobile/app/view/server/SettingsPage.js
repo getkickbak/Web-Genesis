@@ -5,6 +5,7 @@ Ext.define('Genesis.view.server.SettingsPage',
    alias : 'widget.serversettingspageview',
    config :
    {
+      preRender : null,
       cls : 'viewport',
       scrollable : 'vertical',
       layout :
@@ -69,7 +70,15 @@ Ext.define('Genesis.view.server.SettingsPage',
          }]
       }]
    },
-   cleanView : Ext.emptyFn,
+   initialize : function()
+   {
+      this.callParent(arguments);
+      this.setPreRender([]);
+   },
+   cleanView : function()
+   {
+      return Genesis.view.ViewBase.prototype.cleanView.apply(this, arguments);
+   },
    /**
     * Removes all items currently in the Container, optionally destroying them all
     * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
@@ -78,11 +87,14 @@ Ext.define('Genesis.view.server.SettingsPage',
     */
    removeAll : function(destroy, everything)
    {
-      var rc = this.callParent(arguments);
-      this.setPreRender([]);
-
-      return rc;
+      return Genesis.view.ViewBase.prototype.removeAll.apply(this, arguments);
    },
-   createView : Ext.emptyFn,
-   showView : Ext.emptyFn
+   createView : function()
+   {
+      return Genesis.view.ViewBase.prototype.createView.apply(this, arguments);
+   },
+   showView : function()
+   {
+      return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
+   }
 });

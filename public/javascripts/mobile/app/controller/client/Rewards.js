@@ -50,6 +50,7 @@ Ext.define('Genesis.controller.client.Rewards',
          },
          promotion :
          {
+            createView : 'onPromotionCreateView',
             activate : 'onPromotionActivate',
             deactivate : 'onPromotionDeactivate'
          },
@@ -216,7 +217,7 @@ Ext.define('Genesis.controller.client.Rewards',
       var me = this;
       var vport = me.getViewport();
       var page = me.getPromotion();
-      
+
       me.promoteCount++;
       me.redeemItem = Ext.create('Genesis.model.CustomerReward',
       {
@@ -411,10 +412,13 @@ Ext.define('Genesis.controller.client.Rewards',
    onContainerActivate : function(c, value, oldValue, eOpts)
    {
    },
-   onPromotionActivate : function(activeItem, c, oldActiveItem, eOpts)
+   onPromotionCreateView : function(activeItem)
    {
       var me = this;
       activeItem.redeemItem = me.redeemItem;
+   },
+   onPromotionActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
       //delete me.redeemItem;
    },
    onPromotionDeactivate : function(activeItem, c, oldActiveItem, eOpts)

@@ -59,6 +59,7 @@ Ext.define('Genesis.controller.client.Accounts',
          //
          accounts :
          {
+            showView :'onShowView',
             activate : 'onActivate',
             deactivate : 'onDeactivate',
             activeitemchange : 'onItemChangeActivate'
@@ -291,6 +292,11 @@ Ext.define('Genesis.controller.client.Accounts',
    // --------------------------------------------------------------------------
    // Accounts Page
    // --------------------------------------------------------------------------
+   onShowView : function(activeItem)
+   {
+      var me = this;
+      activeItem.query('list[tag=accountsList]')[0].refresh();
+   },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;

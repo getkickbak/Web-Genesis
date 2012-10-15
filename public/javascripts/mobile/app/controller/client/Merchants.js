@@ -48,6 +48,7 @@ Ext.define('Genesis.controller.client.Merchants',
       {
          main :
          {
+            showView : 'onMainShowView',
             activate : 'onMainActivate',
             deactivate : 'onMainDeactivate',
             jackpotWinnersTap : 'onJackpotWinnersTap',
@@ -79,6 +80,7 @@ Ext.define('Genesis.controller.client.Merchants',
          //
          merchantDetails :
          {
+            showView : 'onDetailsShowView',
             activate : 'onDetailsActivate',
             deactivate : 'onDetailsDeactivate'
          },
@@ -173,6 +175,23 @@ Ext.define('Genesis.controller.client.Merchants',
          //console.debug("Cannot load Google Maps");
       }
    },
+   onDetailsShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android') && Ext.os.version.isLessThan('4.1'))
+      {
+         var monitors = this.getEventDispatcher().getPublishers()['elementPaint'].monitors;
+         var map = activeItem.query('component[tag=map]')[0];
+
+         console.debug("Refreshing MerchantDetails ...");
+         activeItem.query('dataview[tag=details]')[0].refresh();
+         monitors[map.element.getId()].onElementPainted(
+         {
+            animationName : 'x-paint-monitor-helper'
+         });
+
+         //activeItem.renderView(map);
+      }
+   },
    onDetailsActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var venue = this.getViewPortCntlr().getVenue();
@@ -255,6 +274,21 @@ Ext.define('Genesis.controller.client.Merchants',
          me.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId());
       }
    },
+   onMainShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android') && Ext.os.version.isLessThan('4.1'))
+      {
+         console.debug("Refreshing MerchantRenderStore ...");
+         activeItem.query('dataview[tag=tbPanel]')[0].refresh();
+         var feedPanel = activeItem.query('dataview[tag=feedPanel]')[0];
+         if (feedPanel)
+         {
+            feedPanel.refresh();
+            ;
+         }
+         activeItem.query('dataview[tag=descPanel]')[0].refresh();
+      }
+   },
    onMainActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       console.debug("Merchant Account Activate");
@@ -262,7 +296,7 @@ Ext.define('Genesis.controller.client.Merchants',
       var viewport = me.getViewPortCntlr();
       var vrecord = viewport.getVenue();
       var crecord = viewport.getCustomer();
-      var customerId = viewport.getCustomer().getId();
+      var customerId = crecord.getId();
       var venueId = vrecord.getId();
       var merchantId = vrecord.getMerchant().getId();
 
@@ -519,7 +553,8 @@ Ext.define('Genesis.controller.client.Merchants',
    },
    backToMainPage : function(venueId, customerId, backToMain)
    {
-      var viewport = this.getViewPortCntlr();
+      var me = this;
+      var viewport = me.getViewPortCntlr();
       //var cvenue = viewport.getCheckinInfo().venue;
       //var showFeed = (customerId > 0) || (cvenue && (cvenue.getId() == venueId));
       var showFeed = true;

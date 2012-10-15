@@ -68,6 +68,23 @@ Ext.define('Genesis.controller.client.RedeemBase',
    // --------------------------------------------------------------------------
    // Redemptions Page
    // --------------------------------------------------------------------------
+   onCreateView : function(activeItem)
+   {
+      var me = this;
+      activeItem.redeemItem = me.redeemItem;
+   },
+   onShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android') && Ext.os.version.isLessThan('4.1'))
+      {
+      	var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
+      	var list = activeItem.query('list[tag='+activeItem.getListCls()+']')[0];
+      	
+         console.debug("Refreshing RenderStore ...");
+         activeItem.query('dataview[tag=ptsEarnPanel]')[0].refresh();
+         monitors[list.container.getId()].forceRefresh();
+      }
+   },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
@@ -262,10 +279,16 @@ Ext.define('Genesis.controller.client.RedeemBase',
          }
       });
    },
-   onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
+   onRedeemItemCreateView : function(activeItem)
    {
       var me = this;
       var view = me.getRedeemMainPage();
+      
+      view.redeemItem = me.redeemItem;
+   },
+   onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
       var viewport = me.getViewPortCntlr();
 
       var tbbar = activeItem.query('titlebar')[0];
@@ -279,15 +302,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       me.getVerifyBtn()['hide']();
       me.getSRedeemBtn().show();
 
-      view.redeemItem = me.redeemItem;
       console.log("RewardItem View - Updated RewardItem View.");
-      Ext.defer(function()
-      {
-         //activeItem.createView();
-         //delete me.redeemItem;
-      }, 1, activeItem);
-      //view.createView();
-      //delete me.redeemItem;
    },
    onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {

@@ -449,12 +449,16 @@ Ext.define('Genesis.controller.Viewport',
    resetView : function()
    {
       var me = this;
+      var vport = me.getViewport();
       //
       // Remove All Views
       //
       me.viewStack = [];
       me.getApplication().getHistory().setActions([]);
-
+      //
+      // Remove all internal buffered views
+      //
+      //delete vport._activeItem;
    },
    pushView : function(view, animation)
    {

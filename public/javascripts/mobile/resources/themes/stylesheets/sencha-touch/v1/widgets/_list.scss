@@ -15,6 +15,13 @@
          @include custom-linear-gradient($OrangeEnd, $list-header-bg-color, top);
          color : $Grey;
       }
+      & > .x-dock-vertical > .x-dock-body {
+         //@if $include-border-radius { @include border-radius(0); }
+         position:relative;
+         border-width: 1px 0 0 0;
+         border-top: 1px solid darken($list-bg-color, 15%);
+         background : $Grey;
+      }
       & > .x-dock-vertical > .x-dock-body .x-list-item .x-dock-body {
          background : $Grey;
       }

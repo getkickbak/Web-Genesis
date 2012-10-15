@@ -180,7 +180,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       {
          'painted' : function(c, eOpts)
          {
-            console.debug("MerchantAccountPtsItem - painted[" + c.id + "]");
+            //console.debug("MerchantAccountPtsItem - painted[" + c.id + "]");
          }
       }
 

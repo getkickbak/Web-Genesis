@@ -50,7 +50,8 @@ Ext.define('Genesis.controller.server.Prizes',
          },
          redeemItem :
          {
-            activate : 'onShowPrizeActivate',
+            createView : 'onCreateView',
+            activate : 'onActivate',
             deactivate : 'onDeactivate'
          }
       }
@@ -97,10 +98,16 @@ Ext.define('Genesis.controller.server.Prizes',
    // --------------------------------------------------------------------------
    // Prizes Page
    // --------------------------------------------------------------------------
-   onShowPrizeActivate : function(activeItem, c, oldActiveItem, eOpts)
+   onCreateView : function(activeItem)
    {
       var me = this;
       var view = me.getMainPage();
+      
+      view.redeemItem = me.redeemItem;
+   },
+   onActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
       var viewport = me.getViewPortCntlr();
 
       var tbbar = activeItem.query('titlebar')[0];
@@ -119,14 +126,8 @@ Ext.define('Genesis.controller.server.Prizes',
             break;
          }
       }
-      view.redeemItem = me.redeemItem;
       console.log("ShowPrize View - Updated ShowPrize View.");
-      Ext.defer(function()
-      {
-         //activeItem.createView();
-         delete me.redeemItem;
-      }, 1, activeItem);
-      //view.createView();
+      
       //delete me.redeemItem;
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)

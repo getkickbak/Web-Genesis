@@ -105,18 +105,5 @@ Ext.define('Genesis.view.client.CheckinExplore',
          }),
          onItemDisclosure : Ext.emptyFn
       }));
-   },
-   showView : function()
-   {
-      this.callParent(arguments);
-      var list = this.query('list')[0];
-      if (list)
-      {
-         list.setVisibility(true);
-      }
-
-      // Hack to fix bug in Sencha Touch API
-      var plugin = this.query('list')[0].getPlugins()[0];
-      plugin.refreshFn = plugin.getRefreshFn();
    }
 });

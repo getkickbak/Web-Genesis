@@ -35,13 +35,11 @@ Ext.define('Genesis.view.client.Badges',
    cleanView : function()
    {
       this.removeAll(true);
+      return Genesis.view.ViewBase.prototype.cleanView.apply(this, arguments);
    },
    removeAll : function(destroy, everything)
    {
-      var rc = this.callParent(arguments);
-      this.setPreRender([]);
-
-      return rc;
+      return Genesis.view.ViewBase.prototype.removeAll.apply(this, arguments);
    },
    createView : function()
    {
@@ -64,7 +62,7 @@ Ext.define('Genesis.view.client.Badges',
       var vport = viewport.getViewport();
       var items = Ext.StoreMgr.get('BadgeStore').getRange();
       var list = Ext.Array.clone(items);
-      
+
       for (var i = 0; i < Math.ceil(items.length / 16); i++)
       {
          this.getPreRender().push(Ext.create('Ext.dataview.DataView',
@@ -119,6 +117,7 @@ Ext.define('Genesis.view.client.Badges',
       {
          carousel.setActiveItem(0);
       }
+      return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
    },
    statics :
    {

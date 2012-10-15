@@ -44,6 +44,7 @@ Ext.define('Genesis.controller.client.Badges',
          },
          badgeDesc :
          {
+            createView : 'onBadgeDescCreateView',
             activate : 'onBadgeDescActivate',
             deactivate : 'onBadgeDescDeactivate'
          },
@@ -53,6 +54,7 @@ Ext.define('Genesis.controller.client.Badges',
          },
       }
    },
+   badgeLevelNotAchievedMsg : 'You have achieved this badge level yet!',
    init : function(app)
    {
       var me = this;
@@ -99,15 +101,19 @@ Ext.define('Genesis.controller.client.Badges',
    {
       //this.getInfoBtn().hide();
    },
+   onBadgeDescCreateView : function(activeItem)
+   {
+      var me = this;
+      activeItem.redeemItem = me.redeemItem;
+   },
    onBadgeDescActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
       var tbbar = activeItem.query('titlebar')[0];
-      
+
       activeItem.query('button[tag=back]')[0].show();
       activeItem.query('button[tag=done]')[0].hide();
       tbbar.setTitle('Badge Promotion');
-      activeItem.redeemItem = me.redeemItem;
    },
    onBadgeDescDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {
@@ -115,26 +121,42 @@ Ext.define('Genesis.controller.client.Badges',
    onItemSelect : function(d, model, eOpts)
    {
       var me = this;
+      var customer = me.getViewPortCntlr().getCustomer();
       var badge = model;
+      var rank = badge.get('rank');      
+      var cbadge = Ext.StoreMgr.get('BadgeStore').getById(customer.get('badge_id'));
+      var crank = cbadge.get('rank');
+
       d.deselect([model], false);
 
-      me.redeemItem = Ext.create('Genesis.model.CustomerReward',
+      if (rank <= crank)
       {
-         'title' : badge.get('type').display_value,
-         'type' :
+         me.redeemItem = Ext.create('Genesis.model.CustomerReward',
          {
-            value : 'promotion'
-         },
-         'photo' :
+            'title' : badge.get('type').display_value,
+            'type' :
+            {
+               value : 'promotion'
+            },
+            'photo' :
+            {
+               'thumbnail_ios_medium' : Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_large_url')
+            },
+            //'points' : info['badge_prize_points'],
+            'time_limited' : false,
+            'quantity_limited' : false,
+            'merchant' : null
+         });
+         me.redirectTo('badgeDesc');
+      }
+      else
+      {
+         Ext.device.Notification.show(
          {
-            'thumbnail_ios_medium' : Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_large_url')
-         },
-         //'points' : info['badge_prize_points'],
-         'time_limited' : false,
-         'quantity_limited' : false,
-         'merchant' : null
-      });
-      me.redirectTo('badgeDesc');
+            title : 'Badges',
+            message : me.badgeLevelNotAchievedMsg
+         });
+      }
       return false;
    },
    // --------------------------------------------------------------------------
