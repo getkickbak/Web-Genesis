@@ -197,6 +197,7 @@ en:
         transfer_points_failure: "Trouble transfering points.\nPlease try again."
         invalid_transfer_code: "Transfer code is not valid."
         expired_transfer_code: "Transfer code is no longer valid."
+        self_transfer_failure: "Receiver account cannot be the same as sender."
         receive_points_failure: "Trouble receiving points.\nPlease try again." 
       customer_rewards:
         not_available: "Sorry, but the %s is not available at this venue!"

@@ -183,6 +183,14 @@ class Api::V1::CustomersController < ApplicationController
       Customer.transaction do
         if authorized
           sender = Customer.get(@record.sender_id)
+          if sender.id == @customer.id
+            logger.info("Customer(#{@customer.id}) failed to receive points from Customer(#{sender.id}), self transfer")
+            respond_to do |format|
+              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+              format.json { render :json => { :success => false, :message => t("api.customers.self_transfer_failure").split('\n') } }
+            end  
+            return
+          end
           @sender_mutex = CacheMutex.new(sender.cache_key, Cache.memcache)
           acquired = @sender_mutex.acquire
           sender.reload
