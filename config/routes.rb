@@ -153,6 +153,9 @@ Genesis::Application.routes.draw do
     constraints :user_agent => /Android/ do
       match "/download" => redirect {|params, req| "http://www.getkickbak.com/coming_soon" }
     end
+    constraints :user_agent => /BlackBerry|Windows/ do
+      match "/download" => redirect {|params, req| "http://www.getkickbak.com/" }
+    end
     
     #match "/how_it_works" => 'pages#how_it_works'
     match "/privacy" => 'pages#privacy'
