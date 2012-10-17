@@ -53,7 +53,6 @@ Ext.define('Genesis.view.client.CheckinExplore',
       this.getPreRender().push(Ext.create('Ext.List',
       {
          xtype : 'list',
-         deferEmptyText : false,
          store : 'CheckinExploreStore',
          //scrollable : 'vertical',
          plugins : [
@@ -77,6 +76,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
          deferEmptyText : false,
          itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(Genesis.constants.defaultIconSize(), 2 * 0.65, 1), 1),
          emptyText : ' ',
+         tag : 'checkInExploreList',
          cls : 'checkInExploreList',
          // @formatter:off
          itemTpl : Ext.create('Ext.XTemplate',

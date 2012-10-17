@@ -10,19 +10,16 @@
       background-repeat:no-repeat;
       margin: ($panelTopGap*2) $panelGap 0 0;
    }
-   .x-container {
+   .x-list-item {
       .x-list-header {
          @include custom-linear-gradient($OrangeEnd, $list-header-bg-color, top);
          color : $Grey;
       }
-      & > .x-dock-vertical > .x-dock-body {
+      .x-dock-horizontal {
          //@if $include-border-radius { @include border-radius(0); }
          position:relative;
          border-width: 1px 0 0 0;
          border-top: 1px solid darken($list-bg-color, 15%);
-         background : $Grey;
-      }
-      & > .x-dock-vertical > .x-dock-body .x-list-item .x-dock-body {
          background : $Grey;
       }
    }
@@ -44,7 +41,7 @@
 }
 
 .x-list-round, .x-list-bottom-round {
-   .x-list-item-last .x-dock-body {
+   .x-list-item-last .x-dock-horizontal {
       @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
    }
 }

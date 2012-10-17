@@ -7,9 +7,9 @@ Ext.define('Genesis.controller.server.Redemptions',
       serverRedemption_path : '/serverRedemptions'
    },
    xtype : 'serverRedemptionsCntlr',
-   models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
+      models : ['PurchaseReward', 'CustomerReward'],
       refs :
       {
          //
@@ -27,7 +27,7 @@ Ext.define('Genesis.controller.server.Redemptions',
       {
          redemptions :
          {
-         	createView : 'onCreateView',
+            createView : 'onCreateView',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },

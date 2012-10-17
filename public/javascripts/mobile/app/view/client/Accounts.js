@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.client.Accounts',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar'],
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Ext.plugin.ListPaging'],
    alias : 'widget.clientaccountsview',
    config :
    {

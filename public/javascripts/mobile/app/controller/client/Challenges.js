@@ -777,7 +777,7 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    onShowView : function(activeItem)
    {
-      if (Ext.os.is('Android') && Ext.os.version.isLessThan('4.1'))
+      if (Ext.os.is('Android'))
       {
          var carousel = activeItem.query('carousel')[0];
          var items = carousel.getInnerItems();

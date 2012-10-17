@@ -35,6 +35,7 @@ Ext.define('Genesis.controller.client.Checkins',
          //
          explore :
          {
+         	showView : 'onExploreShowView',
             activate : 'onExploreActivate',
             deactivate : 'onExploreDeactivate'
          },
@@ -442,6 +443,17 @@ Ext.define('Genesis.controller.client.Checkins',
           });
           */
          me.getGeoLocation();
+      }
+   },
+   onExploreShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android'))
+      {
+         var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
+         var list = activeItem.query('list[tag=checkInExploreList]')[0];
+
+         console.debug("Refreshing CheckinExploreStore ...");
+         monitors[list.container.getId()].forceRefresh();
       }
    },
    onExploreActivate : function(activeItem, c, oldActiveItem, eOpts)

@@ -6,9 +6,9 @@ Ext.define('Genesis.controller.client.RedeemBase',
    {
    },
    xtype : 'clientRedemptionsBaseCntlr',
-   models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
+      models : ['PurchaseReward', 'CustomerReward'],
    },
    needPointsMsg : function(pointsDiff)
    {
@@ -75,11 +75,11 @@ Ext.define('Genesis.controller.client.RedeemBase',
    },
    onShowView : function(activeItem)
    {
-      if (Ext.os.is('Android') && Ext.os.version.isLessThan('4.1'))
+      if (Ext.os.is('Android'))
       {
-      	var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
-      	var list = activeItem.query('list[tag='+activeItem.getListCls()+']')[0];
-      	
+         var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
+         var list = activeItem.query('list[tag='+activeItem.getListCls()+']')[0];
+
          console.debug("Refreshing RenderStore ...");
          activeItem.query('dataview[tag=ptsEarnPanel]')[0].refresh();
          monitors[list.container.getId()].forceRefresh();
@@ -283,7 +283,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
    {
       var me = this;
       var view = me.getRedeemMainPage();
-      
+
       view.redeemItem = me.redeemItem;
    },
    onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)

@@ -25,7 +25,7 @@
 .listScrollWrapper, .listNoScrollWrapper, .listScrollIndexWrapper {
    &.x-list {
       .x-list-item {
-         & > .x-dock-vertical > .x-dock-body {
+         .x-dock-horizontal {
             .photo {
                position:absolute;
                height:$icon-size;
@@ -55,7 +55,7 @@
                }
             }
          }
-         &:first-child > .x-dock-vertical > .x-dock-body {
+         &:first-child .x-dock-horizontal {
             @if $include-border-radius { @include border-radius(0); }
          }
       }

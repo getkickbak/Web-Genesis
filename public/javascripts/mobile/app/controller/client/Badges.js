@@ -39,6 +39,7 @@ Ext.define('Genesis.controller.client.Badges',
       {
          main :
          {
+         	showView : 'onShowView',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
@@ -93,6 +94,20 @@ Ext.define('Genesis.controller.client.Badges',
    // --------------------------------------------------------------------------
    // MainPage
    // --------------------------------------------------------------------------
+   onShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android'))
+      {
+         var carousel = activeItem.query('carousel')[0];
+         var items = carousel.getInnerItems();
+
+         console.debug("Refreshing BadgesPage ...");
+			for (var i = 0; i < items.length; i++)
+			{
+				items[i].refresh();				
+			}
+      }
+   },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       //activeItem.createView();

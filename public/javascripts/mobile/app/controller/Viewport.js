@@ -1,5 +1,3 @@
-var _application;
-
 Ext.define('Genesis.controller.Viewport',
 {
    extend : 'Genesis.controller.ControllerBase',
@@ -575,7 +573,6 @@ Ext.define('Genesis.controller.Viewport',
    {
       var me = this;
       console.log("Viewport Init");
-      _application = app;
 
       me.callParent(arguments);
 

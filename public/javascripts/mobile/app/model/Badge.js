@@ -6,17 +6,17 @@ Ext.define('Genesis.model.Badge',
    config :
    {
       idProperty : 'id',
-      fields : ['id', 'type', 'visits', 'rank']
-   },
-   proxy :
-   {
-      type : 'ajax',
-      disableCaching : false,
-      reader :
+      fields : ['id', 'type', 'visits', 'rank'],
+      proxy :
       {
-         type : 'json',
-         messageProperty : 'message',
-         rootProperty : 'data'
+         type : 'ajax',
+         disableCaching : false,
+         reader :
+         {
+            type : 'json',
+            messageProperty : 'message',
+            rootProperty : 'data'
+         }
       }
    },
    statics :

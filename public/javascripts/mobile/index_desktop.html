@@ -18,8 +18,10 @@
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>KickBak</title>
       <!--
-      <link rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 1)" href="resources/css/android.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 1)" href="resources/css/android-mdpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 1)"
+      href="resources/css/android.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 1)"
+      href="resources/css/android-mdpi.css">
       -->
       <link rel="stylesheet" href="resources/css/ios.css" type="text/css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
@@ -29,8 +31,8 @@
       <script type="text/javascript" src="lib/core/extras.js"></script>
       <!-- Debug Javascript on mobile browser
       <script type="text/javascript" src="lib/sencha-touch-2.0.1.1/sencha-touch-all-debug.js"></script>
-      	-->
-      <script type="text/javascript" src="lib/sencha-touch-2.1.0-rc1/sencha-touch-all-debug.js"></script>
+      -->
+      <script type="text/javascript" src="lib/sencha-touch-2.1.0-rc2/sencha-touch-all-debug.js"></script>
       <!--
       Phone Gap Libs
       -->
@@ -40,10 +42,11 @@
          var debugMode = false;
          var merchantMode = false;
          var appName = 'GetKickBak';
+         var _application;
 
          var _appPath = "app";
          //var _extPath = 'lib/sencha-touch-2.0.1.1/src';
-         var _extPath = 'lib/sencha-touch-2.1.0-rc1/src';
+         var _extPath = 'lib/sencha-touch-2.1.0-rc2/src';
          var _appId = "197968780267830";
 
          var _browser = Ext.browser;
@@ -192,7 +195,6 @@
          function appInit()
          {
             console.log("appInit - start");
-            Ext.require(['Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Connection', 'Ext.device.Notification', 'Ext.device.Orientation']);
             Ext.application(
             {
                profiles : ['Desktop'],
@@ -205,6 +207,7 @@
                'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
                launch : function()
                {
+                  _application = this;
                   //console.log("Launching App");
                   Ext.create('Genesis.view.Viewport');
                   //this.redirectTo('');
@@ -217,37 +220,10 @@
             console.log("appInit - end");
          }
 
-         function onDeviceReady()
-         {
-            document.addEventListener("online", function()
-            {
-               console.log("Phone is Online");
-            }, false);
-
-            document.addEventListener("offline", function()
-            {
-               console.log("Phone is Offline");
-            }, false);
-            document.addEventListener("pause", function()
-            {
-               console.log("App is Paused");
-            }, false);
-
-            document.addEventListener("resume", function()
-            {
-               console.log("App is Resumed");
-            }, false);
-            console.log("onDeviceReady");
-            appInit();
-         }
-
-
-         document.addEventListener("deviceready", onDeviceReady, false);
          window.onerror = function(e, url, linenum)
          {
             console.log("Error on Line#" + linenum + "\n" + e);
          }
-         console.log("SystemInit");
          appInit();
 
       </script>

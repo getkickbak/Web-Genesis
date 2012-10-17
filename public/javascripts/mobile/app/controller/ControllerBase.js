@@ -909,7 +909,10 @@ Ext.define('Genesis.controller.ControllerBase',
                      message : (viewport.getLastPosition()) ? me.geoLocationUseLastPositionMsg : me.geoLocationUnavailableMsg,
                      callback : function()
                      {
-                        me.fireEvent('locationupdate', viewport.getLastPosition());
+                        if (viewport.getLastPosition())
+                        {
+                           me.fireEvent('locationupdate', viewport.getLastPosition());
+                        }
                      }
                   });
                }

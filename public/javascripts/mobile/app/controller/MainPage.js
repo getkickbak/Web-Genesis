@@ -8,6 +8,7 @@ Ext.define('Genesis.controller.MainPage',
    xtype : 'mainPageCntlr',
    config :
    {
+      models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'Customer', 'User', 'Merchant', 'CustomerReward'],
       routes :
       {
          '' : 'openPage', //Default do nothing
@@ -19,7 +20,6 @@ Ext.define('Genesis.controller.MainPage',
          'password_change' : 'signInChangePage',
          'createAccount' : 'createAccountPage',
       },
-      models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'Customer', 'User', 'Merchant', 'CustomerReward'],
       refs :
       {
          // Login Page
@@ -416,7 +416,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    onShowView : function(activeItem)
    {
-      if (Ext.os.is('Android') && Ext.os.version.isLessThan('4.1'))
+      if (Ext.os.is('Android'))
       {
          var carousel = activeItem.query('carousel')[0];
          var items = carousel.getInnerItems();

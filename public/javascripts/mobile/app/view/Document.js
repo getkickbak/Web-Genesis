@@ -50,6 +50,7 @@ Ext.define('Genesis.view.Document',
 
 Ext.define('Genesis.view.MultipartDocument',
 {
+   requires : ['Ext.tab.Panel'],
    extend : 'Genesis.view.ViewBase',
    xtype : 'multipartdocumentview',
    config :

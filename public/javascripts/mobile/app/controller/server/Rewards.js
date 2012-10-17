@@ -7,9 +7,9 @@ Ext.define('Genesis.controller.server.Rewards',
       serverRewards_path : '/serverRewards'
    },
    xtype : 'serverRewardsCntlr',
-   models : ['PurchaseReward', 'CustomerReward'],
    config :
    {
+      models : ['PurchaseReward', 'CustomerReward'],
       routes :
       {
          'earnPts' : 'earnPtsPage'
@@ -187,7 +187,7 @@ Ext.define('Genesis.controller.server.Rewards',
          });
          Ext.Viewport.setMasked(false);
       }, 1, me);
-      
+
       console.debug("Encrypting QRCode with Price:$" + price);
       me.getTitle().setData(
       {

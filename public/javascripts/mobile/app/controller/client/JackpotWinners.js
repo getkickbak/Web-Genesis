@@ -96,7 +96,7 @@ Ext.define('Genesis.controller.client.JackpotWinners',
    // --------------------------------------------------------------------------
    onShowView : function(activeItem)
    {
-      if (Ext.os.is('Android') && Ext.os.version.isLessThan('4.1'))
+      if (Ext.os.is('Android'))
       {
       	var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
       	var list = activeItem.query('list[tag=jackpotWinnersList]')[0];
