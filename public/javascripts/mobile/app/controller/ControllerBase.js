@@ -816,7 +816,8 @@ Ext.define('Genesis.controller.ControllerBase',
          autoUpdate : false,
          maximumAge : 30000,
          timeout : 10000,
-         allowHighAccuracy : true
+         allowHighAccuracy : true,
+         enableHighAccuracy : true
       }
 
       i = i || 0;
@@ -954,7 +955,8 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       me.geoLocation.updateLocation(null, null, (i >= 4) ? Ext.applyIf(
       {
-         allowHighAccuracy : false
+         allowHighAccuracy : false,
+         enableHighAccuracy : false
       }, options) : options);
    },
    scanQRCode : function()

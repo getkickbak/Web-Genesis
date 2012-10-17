@@ -177,7 +177,7 @@ Ext.define('Genesis.controller.client.Merchants',
    },
    onDetailsShowView : function(activeItem)
    {
-      if (Ext.os.is('Android') && Ext.os.version.isLessThan('4.1'))
+      if (Ext.os.is('Android'))
       {
          var monitors = this.getEventDispatcher().getPublishers()['elementPaint'].monitors;
          var map = activeItem.query('component[tag=map]')[0];
@@ -276,7 +276,7 @@ Ext.define('Genesis.controller.client.Merchants',
    },
    onMainShowView : function(activeItem)
    {
-      if (Ext.os.is('Android') && Ext.os.version.isLessThan('4.1'))
+      if (Ext.os.is('Android'))
       {
          console.debug("Refreshing MerchantRenderStore ...");
          activeItem.query('dataview[tag=tbPanel]')[0].refresh();
