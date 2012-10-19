@@ -112,7 +112,8 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          'fbphotouploadcomplete' : 'onFbPhotoUploadComplete',
          'challengecomplete' : 'onChallengeComplete',
-         'doChallenge' : 'onChallengeBtnTap'
+         'doChallenge' : 'onChallengeBtnTap',
+         'itemTap' : 'onItemTap'
       }
    },
    metaData : null,
@@ -659,22 +660,10 @@ Ext.define('Genesis.controller.client.Challenges',
    // --------------------------------------------------------------------------
    // Challenge Page
    // --------------------------------------------------------------------------
-   onItemSelect : function(d, model, eOpts)
+   onItemTap : function(model)
    {
-      //Genesis.controller.ControllerBase.playSoundFile(this.getViewPortCntlr().sound_files['clickSound']);
-
-      var carousel = this.getChallengePage().query('carousel')[0];
-      // No need to update the Challenge Menu. Nothing changed.
-      for (var i = 0; i < carousel.getInnerItems().length; i++)
-      {
-         var list = carousel.getInnerItems()[i];
-         if (list != d)
-         {
-            list.deselectAll();
-         }
-      }
-
-      //d.deselect([model], false);
+      Genesis.controller.ControllerBase.playSoundFile(this.getViewPortCntlr().sound_files['clickSound']);
+      
       var desc = this.getChallengeDescContainer();
       Ext.Anim.run(desc.element, 'fade',
       {
@@ -783,10 +772,10 @@ Ext.define('Genesis.controller.client.Challenges',
          var items = carousel.getInnerItems();
 
          console.debug("Refreshing MainPage ...");
-			for (var i = 0; i < items.length; i++)
-			{
-				items[i].refresh();				
-			}
+         for (var i = 0; i < items.length; i++)
+         {
+            items[i].refresh();
+         }
       }
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)

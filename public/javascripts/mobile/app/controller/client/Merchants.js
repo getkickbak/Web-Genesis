@@ -38,7 +38,7 @@ Ext.define('Genesis.controller.client.Merchants',
          },
          mapBtn : 'viewportview button[tag=mapBtn]',
          shareBtn : 'viewportview button[tag=shareBtn]',
-         checkinBtn : 'viewportview button[tag=checkin]',
+         //checkinBtn : 'viewportview button[tag=checkin]',
          mainBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=main]',
          prizesBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=prizes]',
          redeemBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=redemption]',
@@ -67,10 +67,12 @@ Ext.define('Genesis.controller.client.Merchants',
             select : 'onMainSelect'
             //disclose : 'onMainDisclose'
          },
+         /*
          checkinBtn :
          {
             tap : 'onCheckinTap'
          },
+         */
          merchantTabBar :
          {
             tabchange : 'onTabBarTabChange'
@@ -337,7 +339,7 @@ Ext.define('Genesis.controller.client.Merchants',
       //
       // CheckIn button
       //
-      activeItem.showCheckinBtn = (!checkedIn || !checkedInMatch);
+      //activeItem.showCheckinBtn = (!checkedIn || !checkedInMatch);
       //
       // Either we are checked-in or
       // customer exploring a venue they checked-in in the past ...
@@ -371,7 +373,7 @@ Ext.define('Genesis.controller.client.Merchants',
          feedContainer[activeItem.renderFeed ? 'show' : 'hide'];
       }
 
-      me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();
+      //me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();
       me.getMainBtn()[(activeItem.showMainBtn) ? 'show':'hide']();
       var prizeBtn = me.getPrizesBtn();
       //if (!Customer.isValid(crecord.getId()))

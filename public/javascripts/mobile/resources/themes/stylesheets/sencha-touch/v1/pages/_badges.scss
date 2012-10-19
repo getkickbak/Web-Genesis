@@ -8,11 +8,11 @@
       background-color : $OrangeStart;
       border-color : darken($OrangeStart,5%);
    }
-   .x-dataview-item, .x-data-item {
-      width:25%;
-      height:auto;
+   .x-innerhtml {
       font-size:$normalFontSize;
       .itemWrapper {
+         height:auto;
+         width:25%;
          .photo {
             height : $icon-size;
             img {
@@ -21,11 +21,11 @@
             }
          }
       }
-   }
-   .x-dataview-item:nth-child(2n+1) {
-      clear:none;
-   }
-   .x-dataview-item:nth-child(4n+1) {
-      clear:both;
+      & > div:nth-child(2n+1) {
+         clear:none;
+      }
+      & > div:nth-child(4n+1) {
+         clear:both;
+      }
    }
 }

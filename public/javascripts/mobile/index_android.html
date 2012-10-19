@@ -135,51 +135,6 @@
 
          function onBodyLoad()
          {
-            // Fix for problem  with android 3.x and 4.x which is
-            // the browser has a problem with urls with ? and this
-            // bug has not been fixed by google.  See:
-            // http://code.google.com/p/android/issues/detail?id=17535 or
-            // http://www.sencha.com/forum/showthread.php?162322-Sencha-Touch-2-PhoneGap-are-not-working-on-Android-4/page3&highlight=Loader
-            //
-            Ext.Loader.setConfig(
-            {
-               disableCaching : false,
-               enabled : true,
-               paths :
-               {
-                  Ext : _extPath,
-                  Genesis : _appPath
-               }
-            });
-            Ext.Ajax.setDisableCaching(false);
-            Ext.application(
-            {
-               profiles : ['Android'],
-               views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
-               'client.AccountsTransfer', 'client.SettingsPage', //
-               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
-               // //
-               'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
-               controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
-               'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
-               launch : function()
-               {
-                  _application = this;
-                  if (launched > 0x00)
-                  {
-                     launched |= 0x01;
-                  }
-                  else
-                  {
-                     launched = 0x01;
-                  }
-                  console.log("Ext App Launch")
-                  _appLaunch();
-               },
-               appFolder : _appPath,
-               name : 'Genesis'
-            });
-
             document.addEventListener("online", function()
             {
                if (Ext.device)
@@ -238,7 +193,7 @@
                {
                   return;
                }
-               
+
                console.log("BackButton Pressed");
                var viewport = _application.getController('Viewport');
 
@@ -291,6 +246,51 @@
                document.addEventListener("backbutton", onBackKeyDown, false);
                _appLaunch();
             }, false);
+
+            // Fix for problem  with android 3.x and 4.x which is
+            // the browser has a problem with urls with ? and this
+            // bug has not been fixed by google.  See:
+            // http://code.google.com/p/android/issues/detail?id=17535 or
+            // http://www.sencha.com/forum/showthread.php?162322-Sencha-Touch-2-PhoneGap-are-not-working-on-Android-4/page3&highlight=Loader
+            //
+            Ext.Loader.setConfig(
+            {
+               disableCaching : false,
+               enabled : true,
+               paths :
+               {
+                  Ext : _extPath,
+                  Genesis : _appPath
+               }
+            });
+            Ext.Ajax.setDisableCaching(false);
+            Ext.application(
+            {
+               profiles : ['Android'],
+               views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
+               'client.AccountsTransfer', 'client.SettingsPage', //
+               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
+               // //
+               'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
+               controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
+               'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
+               launch : function()
+               {
+                  _application = this;
+                  if (launched > 0x00)
+                  {
+                     launched |= 0x01;
+                  }
+                  else
+                  {
+                     launched = 0x01;
+                  }
+                  console.log("Ext App Launch")
+                  _appLaunch();
+               },
+               appFolder : _appPath,
+               name : 'Genesis'
+            });
          }
       </script>
       <script type="text/javascript" src="core.js"></script>

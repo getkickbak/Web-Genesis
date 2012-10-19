@@ -81,6 +81,13 @@ Ext.define('Genesis.view.client.ChallengePage',
           tpl : '{name}'
           }
           */]
+      }],
+      listeners : [
+      {
+         element : 'element',
+         delegate : 'div.itemWrapper',
+         event : 'tap',
+         fn : "onItemTap"
       }]
    },
    takePhoto : function()
@@ -125,6 +132,25 @@ Ext.define('Genesis.view.client.ChallengePage',
       }
       this.photoAction.show();
    },
+   deselectItems : function()
+   {
+      var carousel = this.query('carousel')[0];
+      var items = Ext.DomQuery.select('div.itemWrapper', carousel.element.dom);
+      for (var i = 0; i < items.length; i++)
+      {
+         Ext.get(items).removeCls('x-item-selected');
+      }
+   },
+   onItemTap : function(e, target, delegate, eOpts)
+   {
+      this.deselectItems();
+
+      var element = Ext.get(e.delegatedTarget);
+      element.addCls('x-item-selected');
+
+      var data = Ext.create('Genesis.model.Challenge', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
+      _application.getController('client.Challenges').fireEvent('itemTap', data);
+   },
    cleanView : function()
    {
       //this.removeAll(true);
@@ -140,17 +166,8 @@ Ext.define('Genesis.view.client.ChallengePage',
       if ((carousel.getInnerItems().length > 0) && //
       (carousel.getInnerItems()[0].getStore().getRange()[0].getId() == items[0].getId()))
       {
-         // No need to update the Challenge Menu. Nothing changed.
-         for (var i = 0; i < carousel.getInnerItems().length; i++)
-         {
-            carousel.getInnerItems()[i].deselectAll();
-         }
+         this.deselectItems();
 
-         var ditems = carousel.query('dataview');
-         for (var i = 0; i < ditems.length; i++)
-         {
-            ditems[i].refresh();
-         }
          console.log("ChallengePage Icons Refreshed.");
       }
       else
@@ -158,20 +175,40 @@ Ext.define('Genesis.view.client.ChallengePage',
          carousel.removeAll(true);
          for (var i = 0; i < Math.ceil(items.length / 6); i++)
          {
-            carousel.add(Ext.create('Ext.dataview.DataView',
+            carousel.add(
             {
-               xtype : 'dataview',
+               xtype : 'component',
                cls : 'challengeMenuSelections',
                tag : 'challengeMenuSelections',
-               useComponents : true,
-               defaultType : 'challengemenuitem',
                scrollable : undefined,
-               store :
+               data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data'),
+               tpl : Ext.create('Ext.XTemplate',
+               // @formatter:off
+               '<tpl for=".">',
+                  '<div class="itemWrapper x-hasbadge" data="{[this.encodeData(values)]}">',
+                     '<span class="x-badge round">{[this.getPoints(values)]}</span>',
+                     '<div class="photo">'+
+                        '<img src="{[this.getPhoto(values)]}" />'+
+                     '</div>',
+                     '<div class="photoName">{name}</div>',
+                  '</div>',
+               '</tpl>',
+               // @formatter:on
                {
-                  model : 'Genesis.model.Challenge',
-                  data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
-               }
-            }));
+                  encodeData : function(values)
+                  {
+                     return encodeURIComponent(Ext.encode(values));
+                  },
+                  getPoints : function(values)
+                  {
+                     return values['points'] + ' Points';
+                  },
+                  getPhoto : function(values)
+                  {
+                     return Ext.isEmpty(values.photo) ? Genesis.view.client.ChallengePage.getPhoto(values['type']) : values.photo.url;
+                  }
+               })
+            });
          }
          if (carousel.getInnerItems().length > 0)
          {
@@ -179,7 +216,26 @@ Ext.define('Genesis.view.client.ChallengePage',
          }
          console.log("ChallengePage Icons Updated.");
       }
-      
-      return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);      
+
+      this.callParent(arguments);
+      //return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
+   },
+   statics :
+   {
+      getPhoto : function(type)
+      {
+         var photo_url = null;
+         var value = type.value;
+         switch (value)
+         {
+            case 'custom' :
+               value = 'mystery';
+            default :
+               photo_url = Genesis.constants.getIconPath('mainicons', value);
+               //console.debug("Icon Path [" + photo_url + "]");
+               break;
+         }
+         return photo_url;
+      }
    }
 });

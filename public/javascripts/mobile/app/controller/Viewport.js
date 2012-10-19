@@ -95,6 +95,10 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'onCheckedInAccountTap'
          },
+         'tabbar[tag=navigationBarBottom] button[tag=checkin]' :
+         {
+            tap : 'onCheckinTap'
+         },
          'tabbar[tag=navigationBarBottom] button[tag=browse]' :
          {
             tap : 'onBrowseTap'
@@ -439,6 +443,11 @@ Ext.define('Genesis.controller.Viewport',
    onBrowseTap : function(b, e, eOpts, eInfo)
    {
       this.redirectTo('exploreS');
+      //this.fireEvent('openpage', 'client.Checkins', 'explore', 'coverUp');
+   },
+   onCheckinTap : function(b, e, eOpts, eInfo)
+   {
+      this.redirectTo('checkin');
       //this.fireEvent('openpage', 'client.Checkins', 'explore', 'coverUp');
    },
    // --------------------------------------------------------------------------

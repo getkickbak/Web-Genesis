@@ -39,7 +39,7 @@ Ext.define('Genesis.controller.client.Badges',
       {
          main :
          {
-         	showView : 'onShowView',
+            showView : 'onShowView',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
@@ -48,11 +48,11 @@ Ext.define('Genesis.controller.client.Badges',
             createView : 'onBadgeDescCreateView',
             activate : 'onBadgeDescActivate',
             deactivate : 'onBadgeDescDeactivate'
-         },
-         'clientbadgesview dataview' :
-         {
-            select : 'onItemSelect'
-         },
+         }
+      },
+      listeners :
+      {
+         'itemTap' : 'onItemTap'
       }
    },
    badgeLevelNotAchievedMsg : 'You have achieved this badge level yet!',
@@ -102,10 +102,10 @@ Ext.define('Genesis.controller.client.Badges',
          var items = carousel.getInnerItems();
 
          console.debug("Refreshing BadgesPage ...");
-			for (var i = 0; i < items.length; i++)
-			{
-				items[i].refresh();				
-			}
+         for (var i = 0; i < items.length; i++)
+         {
+            items[i].refresh();
+         }
       }
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -133,16 +133,16 @@ Ext.define('Genesis.controller.client.Badges',
    onBadgeDescDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {
    },
-   onItemSelect : function(d, model, eOpts)
+   onItemTap : function(model)
    {
       var me = this;
-      var customer = me.getViewPortCntlr().getCustomer();
+      var viewport = me.getViewPortCntlr();
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      var customer = viewport.getCustomer();
       var badge = model;
-      var rank = badge.get('rank');      
+      var rank = badge.get('rank');
       var cbadge = Ext.StoreMgr.get('BadgeStore').getById(customer.get('badge_id'));
       var crank = cbadge.get('rank');
-
-      d.deselect([model], false);
 
       if (rank <= crank)
       {

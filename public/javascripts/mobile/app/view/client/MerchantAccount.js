@@ -22,13 +22,13 @@ Ext.define('Genesis.view.client.MerchantAccount',
             align : 'left',
             iconCls : 'maps',
             tag : 'mapBtn'
-         },
-         {
-            align : 'right',
-            hidden : true,
-            tag : 'checkin',
-            iconCls : 'checkin'
-         }]
+         }
+         /*,{
+          align : 'right',
+          hidden : true,
+          tag : 'checkin',
+          iconCls : 'checkin'
+          }*/]
       }),
       // -----------------------------------------------------------------------
       // Toolbar
@@ -105,10 +105,17 @@ Ext.define('Genesis.view.client.MerchantAccount',
             tag : 'main',
             title : 'Meal Stop'
          },
+         /*
+          {
+          iconCls : 'explore',
+          tag : 'browse',
+          title : 'Explore'
+          }
+          */
          {
-            iconCls : 'explore',
-            tag : 'browse',
-            title : 'Explore'
+            iconCls : 'checkin',
+            tag : 'checkin',
+            title : 'Check-ins'
          }]
       }],
       listeners : [

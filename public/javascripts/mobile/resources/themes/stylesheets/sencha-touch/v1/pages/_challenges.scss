@@ -8,10 +8,10 @@
       background-color : $OrangeStart;
       border-color : darken($OrangeStart,5%);
    }
-   .x-dataview-item, .x-data-item {
-      width:33%;
-      height:($panelTopGap*2)+($normalFontSize*1.25*2)+(1.25*5em);
+   .x-innerhtml {
       .itemWrapper {
+         width:33%;
+         height:($panelTopGap*2)+($normalFontSize*1.25*2)+(1.25*5em);
          .photo {
             height : $icon-size;
             img {
@@ -20,9 +20,12 @@
             }
          }
       }
-   }
-   .x-dataview-item:nth-child(3n+1) {
-      clear:both;
+      & > div:nth-child(2n+1) {
+         clear:none;
+      }
+      & > div:nth-child(3n+1) {
+         clear:both;
+      }
    }
 }
 

@@ -18,13 +18,25 @@ Ext.define('Genesis.view.client.Badges',
             tag : 'back',
             text : 'Back'
          }]
-      })]
+      })],
+      listeners : [
+      {
+         element : 'element',
+         delegate : 'div.itemWrapper',
+         event : 'tap',
+         fn : "onItemTap"
+      }]
    },
    //disableAnimation : true,
    initialize : function()
    {
       this.setPreRender([]);
       this.callParent(arguments);
+   },
+   onItemTap : function(e, target, delegate, eOpts)
+   {
+      var data = Ext.create('Genesis.model.Badge', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
+      _application.getController('client.Badges').fireEvent('itemTap', data);
    },
    /**
     * Removes all items currently in the Container, optionally destroying them all
@@ -47,11 +59,6 @@ Ext.define('Genesis.view.client.Badges',
 
       if (!Genesis.view.ViewBase.prototype.createView.apply(this, arguments))
       {
-         var ditems = carousel.query('dataview');
-         for (var i = 0; i < ditems.length; i++)
-         {
-            ditems[i].refresh();
-         }
          return;
       }
 
@@ -67,24 +74,23 @@ Ext.define('Genesis.view.client.Badges',
       {
          this.getPreRender().push(Ext.create('Ext.dataview.DataView',
          {
-            xtype : 'dataview',
+            xtype : 'component',
             cls : 'badgesMenuSelections',
             tag : 'badgesMenuSelections',
             scrollable : undefined,
-            deferInitialRefresh : false,
-            store :
-            {
-               model : 'Genesis.model.Badge',
-               data : Ext.Array.pluck(items.slice(i * 16, ((i + 1) * 16)), 'data')
-            },
-            itemTpl : Ext.create('Ext.XTemplate',
+            data : Ext.Array.pluck(items.slice(i * 16, ((i + 1) * 16)), 'data'),
+            tpl : Ext.create('Ext.XTemplate',
             // @formatter:off
-            '<div class="itemWrapper">',
+            '<div class="itemWrapper" data="{[this.encodeData(values)]}">',
                '<div class="photo"><img src="{[this.getPhoto(values)]}" /></div>',
                '<div class="photoName">{[this.getName(values)]}</div>',
             '</div>',
             // @formatter:on
             {
+               encodeData : function(values)
+               {
+                  return encodeURIComponent(Ext.encode(values));
+               },
                getName : function(values)
                {
                   return values['type'].display_value;
@@ -98,8 +104,7 @@ Ext.define('Genesis.view.client.Badges',
 
                   return Genesis.view.client.Badges.getPhoto((values['rank'] <= rank) ? type : 'nobadge', 'thumbnail_medium_url');
                }
-            }),
-            autoScroll : true
+            })
          }));
       }
       console.log("Badge Icons Refreshed.");

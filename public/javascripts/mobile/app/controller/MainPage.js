@@ -111,12 +111,6 @@ Ext.define('Genesis.controller.MainPage',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
-         'mainpageview > carousel dataview' :
-         {
-            select : 'onItemSelect',
-            itemtouchstart : 'onItemTouchStart',
-            itemtouchend : 'onItemTouchEnd'
-         },
          shortcutTabBar :
          {
             tabchange : 'onTabBarTabChange'
@@ -133,7 +127,8 @@ Ext.define('Genesis.controller.MainPage',
       },
       listeners :
       {
-         'refreshCSRF' : 'onRefreshCSRF'
+         'refreshCSRF' : 'onRefreshCSRF',
+         'itemTap' : 'onItemTap'
       }
    },
    sessionTimeoutMsg : 'Session Timeout',
@@ -387,10 +382,9 @@ Ext.define('Genesis.controller.MainPage',
    // --------------------------------------------------------------------------
    // MainPage
    // --------------------------------------------------------------------------
-   onItemSelect : function(d, model, eOpts)
+   onItemTap : function(model)
    {
-      d.deselect([model], false);
-      console.log("Controller=[" + model.data.pageCntlr + "]");
+      console.log("Controller=[" + model.get('pageCntlr') + "]");
 
       var cntlr = this.getApplication().getController(model.get('pageCntlr'));
       var msg = cntlr.isOpenAllowed();
@@ -419,15 +413,6 @@ Ext.define('Genesis.controller.MainPage',
          });
       }
       return false;
-   },
-   onItemTouchStart : function(d, index, target, e, eOpts)
-   {
-      //Ext.fly(Ext.query('#'+target.id+' div.photo')[0]).mask();
-
-   },
-   onItemTouchEnd : function(d, index, target, e, eOpts)
-   {
-      //Ext.fly(Ext.query('#'+target.id+' div.photo')[0]).unmask();
    },
    onShowView : function(activeItem)
    {

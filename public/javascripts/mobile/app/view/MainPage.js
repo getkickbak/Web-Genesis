@@ -7,6 +7,13 @@ Ext.define('Genesis.view.MainPage',
    {
       layout : 'fit',
       cls : 'viewport',
+      listeners : [
+      {
+         element : 'element',
+         delegate : 'div.itemWrapper',
+         event : 'tap',
+         fn : "onItemTap"
+      }],
       scrollable : undefined,
       items : ( function()
          {
@@ -135,6 +142,11 @@ Ext.define('Genesis.view.MainPage',
       this.setPreRender([]);
       this.callParent(arguments);
    },
+   onItemTap : function(e, target, delegate, eOpts)
+   {
+      var data = Ext.create('Genesis.model.frontend.MainPage', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
+      _application.getController('MainPage').fireEvent('itemTap', data);
+   },
    /**
     * Removes all items currently in the Container, optionally destroying them all
     * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
@@ -188,35 +200,37 @@ Ext.define('Genesis.view.MainPage',
          {
             carousel.add(
             {
-               xtype : 'dataview',
+               xtype : 'component',
                cls : 'mainMenuSelections',
                tag : 'mainMenuSelections',
                scrollable : undefined,
-               deferInitialRefresh : false,
-               store :
-               {
-                  model : 'Genesis.model.frontend.MainPage',
-                  data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
-               },
-               itemTpl : Ext.create('Ext.XTemplate',
+               data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data'),
+               tpl : Ext.create('Ext.XTemplate',
                // @formatter:off
-               '<div class="itemWrapper x-hasbadge">',
-                  '{[this.isEligible(values)]}',
-                  '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
-                  '<div class="photoName">{name}</div>',
-               '</div>',
+               '<tpl for=".">',
+                  '<div class="itemWrapper x-hasbadge" data="{[this.encodeData(values)]}">',
+                     '{[this.isEligible(values)]}',
+                     '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
+                     '<div class="photoName">{name}</div>',
+                  '</div>',
+               '</tpl>',
                // @formatter:on
                {
+                  encodeData : function(values)
+                  {
+                     return encodeURIComponent(Ext.encode(values));
+                  },
                   getType : function()
                   {
                      return values['pageCntlr'];
                   },
-                  isEligible : function(values)
+                  isEligible : function(values, xindex)
                   {
                      var eligibleRewards = (values['pageCntlr'] == 'client.Redemptions');
                      var eligiblePrizes = (values['pageCntlr'] == 'client.Prizes');
                      var showIcon = false;
 
+                     values.index = xindex - 1;
                      if (eligibleRewards || eligiblePrizes)
                      {
                         var customers = Ext.StoreMgr.get('CustomerStore').getRange();
@@ -251,8 +265,7 @@ Ext.define('Genesis.view.MainPage',
                   {
                      return Ext.isEmpty(photoURL) ? Ext.BLANK_IMAGE_URL : photoURL;
                   }
-               }),
-               autoScroll : true
+               })
             });
          }
          console.log("MainPage Icons Refreshed.");
