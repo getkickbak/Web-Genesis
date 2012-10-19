@@ -70,21 +70,23 @@ Ext.define('Genesis.view.client.Badges',
       var items = Ext.StoreMgr.get('BadgeStore').getRange();
       var list = Ext.Array.clone(items);
 
-      for (var i = 0; i < Math.ceil(items.length / 16); i++)
+      for (var i = 0; i < Math.ceil(list.length / 16); i++)
       {
-         this.getPreRender().push(Ext.create('Ext.dataview.DataView',
+         this.getPreRender().push(
          {
             xtype : 'component',
             cls : 'badgesMenuSelections',
             tag : 'badgesMenuSelections',
             scrollable : undefined,
-            data : Ext.Array.pluck(items.slice(i * 16, ((i + 1) * 16)), 'data'),
+            data : Ext.Array.pluck(list.slice(i * 16, ((i + 1) * 16)), 'data'),
             tpl : Ext.create('Ext.XTemplate',
             // @formatter:off
-            '<div class="itemWrapper" data="{[this.encodeData(values)]}">',
-               '<div class="photo"><img src="{[this.getPhoto(values)]}" /></div>',
-               '<div class="photoName">{[this.getName(values)]}</div>',
-            '</div>',
+            '<tpl for=".">',
+               '<div class="itemWrapper" data="{[this.encodeData(values)]}">',
+                  '<div class="photo"><img src="{[this.getPhoto(values)]}" /></div>',
+                  '<div class="photoName">{[this.getName(values)]}</div>',
+               '</div>',
+            '</tpl>,
             // @formatter:on
             {
                encodeData : function(values)
@@ -105,7 +107,7 @@ Ext.define('Genesis.view.client.Badges',
                   return Genesis.view.client.Badges.getPhoto((values['rank'] <= rank) ? type : 'nobadge', 'thumbnail_medium_url');
                }
             })
-         }));
+         });
       }
       console.log("Badge Icons Refreshed.");
    },
