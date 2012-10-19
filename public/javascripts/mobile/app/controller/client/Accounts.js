@@ -441,7 +441,7 @@ Ext.define('Genesis.controller.client.Accounts',
          default :
             viewport.setVenue(venue);
             var controller = me.getApplication().getController('client.Checkins');
-            controller.fireEvent('explore');
+            controller.fireEvent('checkin');
             return;
             break;
       }
