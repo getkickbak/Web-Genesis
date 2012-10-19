@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.client.ChallengePage',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.data.Store', 'Ext.Carousel', 'Ext.dataview.DataView', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.model.Challenge', 'Genesis.view.widgets.ChallengeMenuItem'],
+   requires : ['Ext.data.Store', 'Ext.Carousel', 'Ext.dataview.DataView', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.model.Challenge'],
    alias : 'widget.clientchallengepageview',
    config :
    {
