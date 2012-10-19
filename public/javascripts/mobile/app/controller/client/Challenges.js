@@ -772,10 +772,12 @@ Ext.define('Genesis.controller.client.Challenges',
          var items = carousel.getInnerItems();
 
          console.debug("Refreshing MainPage ...");
+         /*
          for (var i = 0; i < items.length; i++)
          {
             items[i].refresh();
          }
+         */
       }
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)

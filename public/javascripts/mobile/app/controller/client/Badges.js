@@ -102,10 +102,12 @@ Ext.define('Genesis.controller.client.Badges',
          var items = carousel.getInnerItems();
 
          console.debug("Refreshing BadgesPage ...");
+         /*
          for (var i = 0; i < items.length; i++)
          {
             items[i].refresh();
          }
+         */
       }
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
