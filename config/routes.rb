@@ -146,15 +146,18 @@ Genesis::Application.routes.draw do
   
     constraints :user_agent => /iPhone/ do
       match "/download" => redirect {|params, req| "http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8" }
+      match "/d" => redirect {|params, req| "http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8" }
     end
     #constraints :user_agent => /Android/ do
     #  match "/download" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.kickbak.android" }
     #end
     constraints :user_agent => /Android/ do
       match "/download" => redirect {|params, req| "http://www.getkickbak.com/coming_soon" }
+      match "/d" => redirect {|params, req| "http://www.getkickbak.com/coming_soon" }
     end
     constraints :user_agent => /BlackBerry|Windows/ do
       match "/download" => redirect {|params, req| "http://www.getkickbak.com/" }
+      match "/d" => redirect {|params, req| "http://www.getkickbak.com/" }
     end
     
     #match "/how_it_works" => 'pages#how_it_works'
