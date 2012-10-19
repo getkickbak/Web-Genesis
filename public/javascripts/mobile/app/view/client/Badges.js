@@ -86,7 +86,7 @@ Ext.define('Genesis.view.client.Badges',
                   '<div class="photo"><img src="{[this.getPhoto(values)]}" /></div>',
                   '<div class="photoName">{[this.getName(values)]}</div>',
                '</div>',
-            '</tpl>,
+            '</tpl>',
             // @formatter:on
             {
                encodeData : function(values)
