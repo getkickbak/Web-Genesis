@@ -662,7 +662,9 @@ Ext.define('Genesis.controller.client.Challenges',
    // --------------------------------------------------------------------------
    onItemTap : function(model)
    {
-      Genesis.controller.ControllerBase.playSoundFile(this.getViewPortCntlr().sound_files['clickSound']);
+   	var viewport = this.getViewPortCntlr();
+   	
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       
       var desc = this.getChallengeDescContainer();
       Ext.Anim.run(desc.element, 'fade',
