@@ -139,7 +139,9 @@ Ext.define('Genesis.controller.client.Badges',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
+      
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      
       var customer = viewport.getCustomer();
       var badge = model;
       var rank = badge.get('rank');

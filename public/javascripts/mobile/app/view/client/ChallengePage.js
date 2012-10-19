@@ -143,6 +143,9 @@ Ext.define('Genesis.view.client.ChallengePage',
    },
    onItemTap : function(e, target, delegate, eOpts)
    {
+   	var viewport = this.getViewPortCntlr();
+   	
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       this.deselectItems();
 
       var element = Ext.get(e.delegatedTarget);
