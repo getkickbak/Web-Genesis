@@ -531,7 +531,7 @@ Ext.define('Genesis.controller.ControllerBase',
          // No Venue Checked-In from previous session
          if (!db['last_check_in'])
          {
-            me.goToMain();
+            me.redirectTo('checkin');
          }
 
          rc = true;

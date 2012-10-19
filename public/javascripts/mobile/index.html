@@ -33,6 +33,8 @@
       <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
       <script type="text/javascript">
          var launched = 0x00;
+         var backBtnCallbackListFn = [];
+
          var offlineDialogShown = false;
          var phoneGapAvailable = true;
          var debugMode = false;
@@ -231,6 +233,7 @@
                appFolder : _appPath,
                name : 'Genesis'
             });
+
          }
       </script>
       <script type="text/javascript" src="app/profile/Iphone.js"></script>

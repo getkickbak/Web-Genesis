@@ -16,8 +16,8 @@ Ext.define('Genesis.controller.client.Checkins',
       },
       refs :
       {
-         backBtn : 'clientcheckinexploreview button[tag=back]',
-         closeBtn : 'clientcheckinexploreview button[tag=close]',
+         //backBtn : 'clientcheckinexploreview button[tag=back]',
+         //closeBtn : 'clientcheckinexploreview button[tag=close]',
          exploreList : 'clientcheckinexploreview list',
          explore :
          {
@@ -35,7 +35,7 @@ Ext.define('Genesis.controller.client.Checkins',
          //
          explore :
          {
-         	showView : 'onExploreShowView',
+            showView : 'onExploreShowView',
             activate : 'onExploreActivate',
             deactivate : 'onExploreDeactivate'
          },
@@ -86,12 +86,24 @@ Ext.define('Genesis.controller.client.Checkins',
             }
          }
       });
-      this.callParent(arguments);
+      me.callParent(arguments);
       console.log("Checkins Init");
       //
       // Prelod Page
       //
-      this.getExplore();
+      me.getExplore();
+
+      backBtnCallbackListFn.push(function(activeItem)
+      {
+         if (activeItem == me.getExplore())
+         {
+            var viewport = me.getViewPortCntlr();
+            Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+            viewport.goToMain();
+            return true;
+         }
+         return false;
+      });
    },
    checkinCommon : function(qrcode)
    {
@@ -241,20 +253,20 @@ Ext.define('Genesis.controller.client.Checkins',
                metaData : viewport.getMetaData()
             });
             /*
-            if (venue)
-            {
-               Genesis.db.setLocalDBAttrib('last_check_in',
-               {
-                  venue : viewport.getVenue().raw,
-                  customerId : viewport.getCustomer().getId(),
-                  metaData : viewport.getMetaData()
-               });
-            }
-            else
-            {
-               Genesis.db.removeLocalDBAttrib('last_check_in');
-            }
-            */
+             if (venue)
+             {
+             Genesis.db.setLocalDBAttrib('last_check_in',
+             {
+             venue : viewport.getVenue().raw,
+             customerId : viewport.getCustomer().getId(),
+             metaData : viewport.getMetaData()
+             });
+             }
+             else
+             {
+             Genesis.db.removeLocalDBAttrib('last_check_in');
+             }
+             */
             break;
          }
          default :
@@ -271,8 +283,8 @@ Ext.define('Genesis.controller.client.Checkins',
    },
    onCheckinTap : function(b, e, eOpts, einfo)
    {
-      // Already in Merchant Account Page, Scan QR Code to confirm Checkin
-      this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueCheckinUrl', 'scan', function()
+      // Already in Merchant Account Page, or Venue info is already loaded, No need to Scan QR Code to confirm Checkin
+      this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueCheckinUrl', 'noscan', function()
       {
          Ext.device.Notification.vibrate();
       });
@@ -442,15 +454,18 @@ Ext.define('Genesis.controller.client.Checkins',
           message : me.loadingPlaces
           });
           */
-         me.getGeoLocation();
+         if (Genesis.db.getLocalDB()['csrf_code'])
+         {
+            me.getGeoLocation();
+         }
       }
    },
    onExploreShowView : function(activeItem)
    {
+      var list = this.getExploreList();
       if (Ext.os.is('Android'))
       {
          var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
-         var list = activeItem.query('list[tag=checkInExploreList]')[0];
 
          console.debug("Refreshing CheckinExploreStore ...");
          monitors[list.container.getId()].forceRefresh();
@@ -467,23 +482,24 @@ Ext.define('Genesis.controller.client.Checkins',
       switch (me.animMode)
       {
          case 'cover' :
-            me.getBackBtn().show();
-            me.getCloseBtn().hide();
+            //me.getBackBtn().show();
+            //me.getCloseBtn().hide();
             break;
          case 'coverUp' :
-            me.getBackBtn().hide();
-            me.getCloseBtn().show();
+            //me.getBackBtn().hide();
+            //me.getCloseBtn().show();
             break;
       }
+      tbbar.removeCls('kbTitle');
       switch (me.mode)
       {
          case 'checkin':
-            tbbar.setTitle('Nearby Places');
+            tbbar.setTitle(' ');
+            tbbar.addCls('kbTitle');
             checkinContainer.setDisabled(true);
             checkinContainer.show();
             break;
          case 'explore' :
-            tbbar.setTitle('Explore Places');
             checkinContainer.hide();
             break;
       }
@@ -492,7 +508,7 @@ Ext.define('Genesis.controller.client.Checkins',
       {
          //me.getExploreList().setVisibility(false);
       }
-      me.onExploreLoad();
+      me.fireEvent('exploreLoad');
    },
    onExploreDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {

@@ -55,7 +55,7 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'onInfoTap'
          },
-         'tabbar[tag=navigationBarBottom] button[tag=home]' :
+         'viewportview button[tag=home]' :
          {
             tap : 'onHomeButtonTap'
          },
@@ -79,7 +79,7 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'onRewardsButtonTap'
          },
-         'tabbar[tag=navigationBarBottom] button[tag=rewardsSC]' :
+         'viewportview button[tag=rewardsSC]' :
          {
             tap : 'onRewardsSCButtonTap'
          },
@@ -563,7 +563,7 @@ Ext.define('Genesis.controller.Viewport',
          //
          // Go back to HomePage by default
          //
-         me.goToMain();
+         me.redirectTo('checkin');
       }
    },
    // --------------------------------------------------------------------------
@@ -674,7 +674,7 @@ Ext.define('Genesis.controller.Viewport',
          {
             case 'Media' :
             {
-               sound_file = new Media('resources/audio/' + sound_file + ext, function()
+               sound_file = new Media((Ext.os.is('Android') ? '/android_asset/www/' : '') + 'resources/audio/' + sound_file + ext, function()
                {
                   //console.log("loaded " + me.sound_files[tag].name);
                   me.sound_files[tag].successCallback();

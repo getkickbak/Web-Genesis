@@ -90,6 +90,7 @@
          }
       </script>
       <script type="text/javascript">
+         var backBtnCallbackListFn = [];
          var launched = 0x00;
          var hostRoot = "";
          //"/assets/www/";
@@ -134,7 +135,51 @@
 
          function onBodyLoad()
          {
-            //Ext.triggerReady();
+            // Fix for problem  with android 3.x and 4.x which is
+            // the browser has a problem with urls with ? and this
+            // bug has not been fixed by google.  See:
+            // http://code.google.com/p/android/issues/detail?id=17535 or
+            // http://www.sencha.com/forum/showthread.php?162322-Sencha-Touch-2-PhoneGap-are-not-working-on-Android-4/page3&highlight=Loader
+            //
+            Ext.Loader.setConfig(
+            {
+               disableCaching : false,
+               enabled : true,
+               paths :
+               {
+                  Ext : _extPath,
+                  Genesis : _appPath
+               }
+            });
+            Ext.Ajax.setDisableCaching(false);
+            Ext.application(
+            {
+               profiles : ['Android'],
+               views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
+               'client.AccountsTransfer', 'client.SettingsPage', //
+               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
+               // //
+               'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
+               controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
+               'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
+               launch : function()
+               {
+                  _application = this;
+                  if (launched > 0x00)
+                  {
+                     launched |= 0x01;
+                  }
+                  else
+                  {
+                     launched = 0x01;
+                  }
+                  console.log("Ext App Launch")
+                  _appLaunch();
+               },
+               appFolder : _appPath,
+               name : 'Genesis'
+            });
+
             document.addEventListener("online", function()
             {
                if (Ext.device)
@@ -193,29 +238,29 @@
                {
                   return;
                }
+               
                console.log("BackButton Pressed");
                var viewport = _application.getController('Viewport');
+
+               if (!viewport || viewport.popViewInProgress)
+               {
+                  return;
+               }
+
                var vport = viewport.getViewport();
                var activeItem = (vport) ? vport.getActiveItem() : null;
                if (activeItem)
                {
-                  var pxtype = activeItem.getXTypes();
-
-                  // Exit Application
-                  if (pxtype.match(/mainpageview|loginpageview/))
+                  var success = false;
+                  for (var i = 0; i < backBtnCallbackListFn.length; i++)
                   {
-                     Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-                     navigator.app.exitApp();
+                     sucess = backBtnCallbackListFn[i](activeItem);
+                     if (success)
+                     {
+                        break;
+                     }
                   }
-                  // Back to Main Page
-                  else
-                  if (pxtype.match(/clientmerchantaccountview/))
-                  {
-                     Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-                     viewport.goToMain();
-                  }
-                  else
-                  if (!viewport.popViewInProgress)
+                  if (!success)
                   {
                      var backButton = activeItem.query('button[tag=back]')[0];
                      var closeButton = activeItem.query('button[tag=close]')[0];
@@ -233,7 +278,8 @@
                   navigator.app.exitApp();
                }
             }
-            
+
+
             document.addEventListener("deviceready", function()
             {
                console.debug = console.debug || console.log;
@@ -241,55 +287,10 @@
 
                launched = 0x10;
                console.log("PhoneGap App Launch");
-               
-               document.addEventListener("backbutton", onBackKeyDown, false);               
+
+               document.addEventListener("backbutton", onBackKeyDown, false);
                _appLaunch();
             }, false);
-
-            // Fix for problem  with android 3.x and 4.x which is
-            // the browser has a problem with urls with ? and this
-            // bug has not been fixed by google.  See:
-            // http://code.google.com/p/android/issues/detail?id=17535 or
-            // http://www.sencha.com/forum/showthread.php?162322-Sencha-Touch-2-PhoneGap-are-not-working-on-Android-4/page3&highlight=Loader
-            //
-            Ext.Loader.setConfig(
-            {
-               disableCaching : false,
-               enabled : true,
-               paths :
-               {
-                  Ext : _extPath,
-                  Genesis : _appPath
-               }
-            });
-            Ext.Ajax.setDisableCaching(false);
-            Ext.application(
-            {
-               profiles : ['Android'],
-               views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
-               'client.AccountsTransfer', 'client.SettingsPage', //
-               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
-               // //
-               'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
-               controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
-               'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
-               launch : function()
-               {
-                  _application = this;
-                  if (launched > 0x00)
-                  {
-                     launched |= 0x01;
-                  }
-                  else
-                  {
-                     launched = 0x01;
-                  }
-                  console.log("Ext App Launch")
-                  _appLaunch();
-               },
-               appFolder : _appPath,
-               name : 'Genesis'
-            });
          }
       </script>
       <script type="text/javascript" src="core.js"></script>

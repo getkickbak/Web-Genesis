@@ -8,6 +8,7 @@ Ext.define('Genesis.controller.MainPage',
    xtype : 'mainPageCntlr',
    config :
    {
+      csrfTokenRecv : false,
       models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'Customer', 'User', 'Merchant', 'CustomerReward'],
       routes :
       {
@@ -164,6 +165,7 @@ Ext.define('Genesis.controller.MainPage',
       var me = this;
       me.callParent(arguments);
 
+      Genesis.db.removeLocalDBAttrib('csrf_code');
       //
       // Loads Front Page Metadata
       //
@@ -227,6 +229,19 @@ Ext.define('Genesis.controller.MainPage',
       // Preloading Pages to memory
       //
       me.getMain();
+
+      backBtnCallbackListFn.push(function(activeItem)
+      {
+         var match = ((activeItem == me.getMain()) || ((merchantMode) ? false : (activeItem == me.getLogin())));
+         if (match)
+         {
+            var viewport = me.getViewPortCntlr();
+            Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+            navigator.app.exitApp();
+            return true;
+         }
+         return false;
+      });
    },
    initCustomerStore : function()
    {
@@ -366,7 +381,7 @@ Ext.define('Genesis.controller.MainPage',
       {
          console.log("Reset Previous Location back to Home Page ...");
          Genesis.db.removeLocalDBAttrib('last_check_in');
-         me.goToMain();
+         me.redirectTo('checkin');
       }
    },
    // --------------------------------------------------------------------------
@@ -422,32 +437,34 @@ Ext.define('Genesis.controller.MainPage',
          var items = carousel.getInnerItems();
 
          console.debug("Refreshing MainPage ...");
-			for (var i = 0; i < items.length; i++)
-			{
-				items[i].refresh();				
-			}
+         for (var i = 0; i < items.length; i++)
+         {
+            items[i].refresh();
+         }
       }
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       //activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
-      if (!merchantMode)
-      {
-         var showIcon = false;
-         var customers = Ext.StoreMgr.get('CustomerStore').getRange();
+      /*
+       if (!merchantMode)
+       {
+       var showIcon = false;
+       var customers = Ext.StoreMgr.get('CustomerStore').getRange();
 
-         for (var i = 0; i < customers.length; i++)
-         {
-            var customer = customers[i];
-            if (customer.get('eligible_for_prize'))
-            {
-               showIcon = true;
-               break;
-            }
-         }
-         this.getPrizesBtn().setBadgeText( showIcon ? '✔' : null);
-      }
+       for (var i = 0; i < customers.length; i++)
+       {
+       var customer = customers[i];
+       if (customer.get('eligible_for_prize'))
+       {
+       showIcon = true;
+       break;
+       }
+       }
+       this.getPrizesBtn().setBadgeText( showIcon ? '✔' : null);
+       }
+       */
       Ext.Viewport.setMasked(false);
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)

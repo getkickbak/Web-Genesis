@@ -151,7 +151,20 @@ Ext.define('Genesis.controller.client.Merchants',
       //
       // Preloading Pages to memory
       //
-      me.getMainPage();
+      me.getMain();
+
+      backBtnCallbackListFn.push(function(activeItem)
+      {
+         if (activeItem == me.getMain())
+         {
+            var viewport = me.getViewPortCntlr();
+            Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+            me.redirectTo('checkin');
+            return true;
+         }
+         return false;
+      });
+
    },
    // --------------------------------------------------------------------------
    // Merchant Details Page

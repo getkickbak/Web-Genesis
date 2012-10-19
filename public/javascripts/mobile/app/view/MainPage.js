@@ -93,11 +93,13 @@ Ext.define('Genesis.view.MainPage',
                      iconAlign : 'top'
                   },
                   items : [
+                  /*
                   {
-                     iconCls : 'rewards',
-                     tag : 'rewardsSC',
-                     title : 'Earn Pts'
+                  iconCls : 'checkin',
+                  tag : 'checkInNow',
+                  title : 'CheckIn Now!'
                   },
+                  */
                   //
                   // Middle Button
                   //
@@ -105,22 +107,23 @@ Ext.define('Genesis.view.MainPage',
                      xtype : 'spacer'
                   },
                   {
-                     iconCls : 'checkin',
-                     tag : 'checkInNow',
-                     title : 'CheckIn Now!'
+                     iconCls : 'rewards',
+                     tag : 'rewardsSC',
+                     title : 'Earn Pts'
                   },
                   //
                   // Right side Buttons
                   //
                   {
                      xtype : 'spacer'
-                  },
-                  {
-                     iconCls : 'prizes',
-                     badgeCls : 'x-badge round',
-                     tag : 'prizesSC',
-                     title : 'Prizes'
-                  }]
+                  }
+                  /*
+                   ,{
+                   iconCls : 'prizes',
+                   badgeCls : 'x-badge round',
+                   tag : 'prizesSC',
+                   title : 'Prizes'
+                   }*/]
                });
             }
             return items;
@@ -210,23 +213,36 @@ Ext.define('Genesis.view.MainPage',
                   },
                   isEligible : function(values)
                   {
-                     var eligible = (values['pageCntlr'] == 'client.Redemptions');
+                     var eligibleRewards = (values['pageCntlr'] == 'client.Redemptions');
+                     var eligiblePrizes = (values['pageCntlr'] == 'client.Prizes');
                      var showIcon = false;
 
-                     if (eligible)
+                     if (eligibleRewards || eligiblePrizes)
                      {
                         var customers = Ext.StoreMgr.get('CustomerStore').getRange();
                         for (var i = 0; i < customers.length; i++)
                         {
                            var customer = customers[i];
-                           if (customer.get('eligible_for_reward'))
+                           if (eligiblePrizes)
                            {
-                              showIcon = true;
-                              break;
+                              if (customer.get('eligible_for_prize'))
+                              {
+                                 showIcon = true;
+                                 break;
+                              }
+                           }
+                           else
+                           if (eligibleRewards)
+                           {
+                              if (customer.get('eligible_for_reward'))
+                              {
+                                 showIcon = true;
+                                 break;
+                              }
                            }
                         }
                      }
-                     return ((eligible) ? //
+                     return ((eligibleRewards || eligiblePrizes) ? //
                      '<span data="' + values['pageCntlr'] + '" ' + //
                      'class="x-badge round ' + ((showIcon) ? '' : 'x-item-hidden') + '">' + //
                      '✔' + '</span>' : '');
@@ -247,20 +263,40 @@ Ext.define('Genesis.view.MainPage',
          // Refresh All Badges
          //
          var customers = Ext.StoreMgr.get('CustomerStore').getRange();
-         var eligible = false;
+         var eligibleReward = false;
+         var eligiblePrize = false;
          for (var i = 0; i < customers.length; i++)
          {
             var customer = customers[i];
             if (customer.get('eligible_for_reward'))
             {
-               eligible = true;
+               eligibleReward = true;
+               break;
+            }
+            if (customer.get('eligible_for_prize'))
+            {
+               eligiblePrize = true;
                break;
             }
          }
          if (carousel.getInnerItems().length > 0)
          {
             var dom = Ext.DomQuery.select('span[data=client.Redemptions]',carousel.element.dom)[0];
-            if (eligible)
+            if (eligibleReward)
+            {
+               dom.innerHTML = count;
+               Ext.fly(dom).removeCls("x-item-hidden");
+            }
+            else
+            {
+               if (!dom.className.match(/x-item-hidden/))
+               {
+                  Ext.fly(dom).addCls("x-item-hidden");
+               }
+            }
+
+            dom = Ext.DomQuery.select('span[data=client.Prizes]',carousel.element.dom)[0];
+            if (eligiblePrize)
             {
                dom.innerHTML = count;
                Ext.fly(dom).removeCls("x-item-hidden");

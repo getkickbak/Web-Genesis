@@ -38,6 +38,7 @@
       -->
       <script type="text/javascript" src="lib/cordova-2.1.0.ios.js"></script>
       <script type="text/javascript">
+         var backBtnCallbackListFn = [];
          var phoneGapAvailable = false;
          var debugMode = false;
          var merchantMode = false;
@@ -49,13 +50,13 @@
          var _extPath = 'lib/sencha-touch-2.1.0-rc2/src';
          var _appId = "197968780267830";
 
-         var _browser = Ext.browser;
-         if (!!window.isNK)
-         {
-            _browser.setFlag('WebView');
-            _browser.setFlag('Sencha');
-         }
-         _browser.setFlag('PhonGap', false);
+         //var _browser = Ext.browser;
+         //if (!!window.isNK)
+         //{
+         //   _browser.setFlag('WebView');
+         //   _browser.setFlag('Sencha');
+         //}
+         //_browser.setFlag('PhonGap', false);
 
          Ext.Loader.setConfig(
          {
@@ -197,6 +198,7 @@
             console.log("appInit - start");
             Ext.application(
             {
+               requires : ['Ext.device.Connection', 'Ext.device.Notification', 'Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
                profiles : ['Desktop'],
                views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
                'client.AccountsTransfer', 'client.SettingsPage', //
@@ -219,6 +221,7 @@
 
             console.log("appInit - end");
          }
+
 
          window.onerror = function(e, url, linenum)
          {

@@ -10,20 +10,20 @@ Ext.define('Genesis.view.client.CheckinExplore',
       merchant : null,
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         title : 'Nearby Places',
+         title : ' ',
          items : [
          {
             align : 'left',
             //ui : 'back',
             ui : 'normal',
-            tag : 'back',
-            text : 'Back'
+            tag : 'home',
+            text : 'Home'
          },
          {
-            align : 'left',
+            align : 'right',
             ui : 'normal',
-            tag : 'close',
-            text : 'Close'
+            tag : 'rewardsSC',
+            text : 'Earn Pts!'
          }]
       }),
       {
@@ -44,10 +44,12 @@ Ext.define('Genesis.view.client.CheckinExplore',
          }]
       }]
    },
+   disableAnimation : true,
    createView : function()
    {
       if (!this.callParent(arguments))
       {
+      	//this.query('list')[0].refresh();
          return;
       }
       this.getPreRender().push(Ext.create('Ext.List',
