@@ -52,15 +52,6 @@ class Api::V1::CheckInsController < ApplicationController
       return  
     end
     
-    if !Common.within_geo_distance?(logger, current_user, params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
-      logger.info("User(#{current_user.id}) failed to check-in at Venue(#{@venue.id}), out of distance")
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.out_of_distance").split('\n') } }
-      end
-      return
-    end
-    
     @customer = Customer.first(:merchant => @venue.merchant, :user => current_user)
     if @customer.nil?
       if (@venue.merchant.role == "merchant" && current_user.role == "user") || (@venue.merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
