@@ -81,6 +81,7 @@ Ext.define('Genesis.view.client.AccountsTransfer',
             scrollable : undefined,
             //ui : 'bottom-round',
             cls : 'transferPanel',
+            tag : 'transferPanel',
             data : [
             {
                text : 'Transfer Out',

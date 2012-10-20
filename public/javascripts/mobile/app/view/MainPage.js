@@ -72,67 +72,6 @@ Ext.define('Genesis.view.MainPage',
                xtype : 'carousel',
                direction : 'horizontal'
             }];
-            if (!merchantMode)
-            {
-               items.push(
-               {
-                  docked : 'bottom',
-                  cls : 'navigationBarBottom',
-                  tag : 'navigationBarBottom',
-                  xtype : 'tabbar',
-                  ui : 'light',
-                  layout :
-                  {
-                     pack : 'justify',
-                     align : 'center'
-                  },
-                  /*
-                   scrollable :
-                   {
-                   direction : 'horizontal',
-                   indicators : false
-                   },
-                   */
-                  defaults :
-                  {
-                     //flex : 1,
-                     iconMask : true,
-                     iconAlign : 'top'
-                  },
-                  items : [
-                  /*
-                  {
-                  iconCls : 'checkin',
-                  tag : 'checkInNow',
-                  title : 'CheckIn Now!'
-                  },
-                  */
-                  //
-                  // Middle Button
-                  //
-                  {
-                     xtype : 'spacer'
-                  },
-                  {
-                     iconCls : 'rewards',
-                     tag : 'rewardsSC',
-                     title : 'Earn Pts'
-                  },
-                  //
-                  // Right side Buttons
-                  //
-                  {
-                     xtype : 'spacer'
-                  }
-                  /*
-                   ,{
-                   iconCls : 'prizes',
-                   badgeCls : 'x-badge round',
-                   tag : 'prizesSC',
-                   title : 'Prizes'
-                   }*/]
-               });
-            }
             return items;
          }())
    },

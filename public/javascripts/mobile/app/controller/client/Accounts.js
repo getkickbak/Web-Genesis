@@ -87,6 +87,7 @@ Ext.define('Genesis.controller.client.Accounts',
          //
          transferPage :
          {
+         	showView : 'onTransferShowView',
             activate : 'onTransferActivate',
             deactivate : 'onTransferDeactivate'
          },
@@ -672,6 +673,17 @@ Ext.define('Genesis.controller.client.Accounts',
    // --------------------------------------------------------------------------
    // Accounts Transfer Page
    // --------------------------------------------------------------------------
+   onTransferShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android'))
+      {
+         var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
+         var list = activeItem.query('list[tag=transferPanel]')[0];
+
+         console.debug("Refreshing TransferPanel ...");
+         monitors[list.container.getId()].forceRefresh();
+      }
+   },
    onTransferActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
