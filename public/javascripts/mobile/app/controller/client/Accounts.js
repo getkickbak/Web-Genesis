@@ -145,7 +145,7 @@ Ext.define('Genesis.controller.client.Accounts',
    init : function()
    {
       var me = this;
-      this.callParent(arguments);
+      me.callParent(arguments);
       console.log("Accounts Init");
 
       me.callBackStack =
@@ -165,7 +165,7 @@ Ext.define('Genesis.controller.client.Accounts',
             var viewport = me.getViewPortCntlr();
             Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
             
-            activeItem.setActiveItem(0);
+            me.onAvBBTap();
             
             return true;
          }

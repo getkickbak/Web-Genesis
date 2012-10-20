@@ -187,14 +187,13 @@
             // add back button listener
             function onBackKeyDown(e)
             {
-               e.preventDefault();
+               //e.preventDefault();
 
                if (!_application)
                {
                   return;
                }
 
-               console.log("BackButton Pressed");
                var viewport = _application.getController('Viewport');
 
                if (!viewport || viewport.popViewInProgress)
@@ -202,6 +201,7 @@
                   return;
                }
 
+               console.log("BackButton Pressed");
                var vport = viewport.getViewport();
                var activeItem = (vport) ? vport.getActiveItem() : null;
                if (activeItem)
@@ -209,7 +209,7 @@
                   var success = false;
                   for (var i = 0; i < backBtnCallbackListFn.length; i++)
                   {
-                     sucess = backBtnCallbackListFn[i](activeItem);
+                     success = backBtnCallbackListFn[i](activeItem);
                      if (success)
                      {
                         break;
