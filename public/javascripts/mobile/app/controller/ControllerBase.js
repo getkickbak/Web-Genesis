@@ -21,7 +21,7 @@ Ext.define('Genesis.controller.ControllerBase',
          'Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services >> GPS satellites\"';
       }
       else
-      if (Ext.os.is('iPhone'))
+      if (Ext.os.is('iOS'))
       {
          rc += ((Ext.os.version.isLessThan('6.0')) ? //
          'Enable Location Services under Main Screen of your phone: \"Settings App >> Location Services >> KICKBAK\"' :

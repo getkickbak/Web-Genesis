@@ -189,13 +189,13 @@ Ext.define('Genesis.view.client.Accounts',
                {
                   case 'redeemPrizesProfile' :
                   case 'redeemRewardsProfile' :
+                  case 'emailtransfer' :
+                  case 'transfer' :
                   {
                      rc = 'single';
                      break;
                   }
                   case 'profile' :
-                  case 'emailtransfer' :
-                  case 'transfer' :
                   default :
                      break;
                }

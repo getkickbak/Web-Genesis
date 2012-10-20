@@ -6,7 +6,7 @@ Ext.define('Genesis.profile.Iphone',
    },
    isActive : function()
    {
-      return Ext.os.is.iPhone;
+      return Ext.os.is('iOS');
    }
 });
 
@@ -25,7 +25,7 @@ Ext.define('Genesis.device.notification.PhoneGap',
    },
    vibrate : function(duration)
    {
-      navigator.notification.vibrate(duration || 2000);
+      navigator.notification.vibrate(duration || 1000);
    }
 });
 

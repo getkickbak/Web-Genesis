@@ -278,7 +278,7 @@ Ext.define('Genesis.controller.client.Checkins',
       // Scan QR Code to confirm Checkin
       this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueScanCheckinUrl', 'scan', function()
       {
-         Ext.device.Notification.vibrate();
+         Ext.device.Notification.beep();
       });
    },
    onCheckinTap : function(b, e, eOpts, einfo)
@@ -286,7 +286,7 @@ Ext.define('Genesis.controller.client.Checkins',
       // Already in Merchant Account Page, or Venue info is already loaded, No need to Scan QR Code to confirm Checkin
       this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueCheckinUrl', 'noscan', function()
       {
-         Ext.device.Notification.vibrate();
+         Ext.device.Notification.beep();
       });
    },
    onNonCheckinTap : function(b, e, eOpts, einfo, callback)
