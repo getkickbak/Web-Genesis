@@ -156,6 +156,21 @@ Ext.define('Genesis.controller.client.Accounts',
       };
 
       me.getAccounts();
+
+      backBtnCallbackListFn.push(function(activeItem)
+      {
+         var match = (activeItem == me.getAccounts());
+         if (match && (activeItem.getActiveItem() != 0))
+         {
+            var viewport = me.getViewPortCntlr();
+            Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+            
+            activeItem.setActiveItem(0);
+            
+            return true;
+         }
+         return false;
+      });
    },
    // --------------------------------------------------------------------------
    // Event Handlers
@@ -294,8 +309,18 @@ Ext.define('Genesis.controller.client.Accounts',
    // --------------------------------------------------------------------------
    onShowView : function(activeItem)
    {
-      var me = this;
-      activeItem.query('list[tag=accountsList]')[0].refresh();
+      if (Ext.os.is('Android'))
+      {
+         var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
+         var list = activeItem.query('list[tag='+activeItem.getListCls()+']')[0];
+
+         console.debug("Refreshing CustomerStore ...");
+         monitors[list.container.getId()].forceRefresh();
+      }
+      else
+      {
+         activeItem.query('list[tag=accountsList]')[0].refresh();
+      }
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
