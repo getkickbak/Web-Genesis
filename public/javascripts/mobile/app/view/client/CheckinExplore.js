@@ -16,8 +16,9 @@ Ext.define('Genesis.view.client.CheckinExplore',
             align : 'left',
             //ui : 'back',
             ui : 'normal',
-            tag : 'home',
-            text : 'Home'
+            iconCls : 'home',
+            //text : 'Home',
+            tag : 'home'
          },
          {
             align : 'right',

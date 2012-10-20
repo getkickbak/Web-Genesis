@@ -7,13 +7,14 @@
 
    font-family: Verdana,Arial,sans-serif;
    font-size: 1.1em;
+   line-height: 2em;
    height: 2em;
    text-align: center;
    overflow: hidden; 
    position: relative;
    
    .progressBar {
-      @include border-left-radius(4px);   
+      //@include border-left-radius(4px);   
       //margin: -1px;
       height: 100%;
       //border: 1px solid $GreyEnd;

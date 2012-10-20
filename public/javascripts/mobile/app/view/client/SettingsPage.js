@@ -5,7 +5,7 @@ Ext.define('Genesis.view.client.SettingsPage',
    alias : 'widget.clientsettingspageview',
    config :
    {
-   	preRender : null,
+      preRender : null,
       cls : 'viewport',
       scrollable : 'vertical',
       layout :
