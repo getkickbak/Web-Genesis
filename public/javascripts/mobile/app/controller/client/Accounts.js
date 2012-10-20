@@ -160,7 +160,7 @@ Ext.define('Genesis.controller.client.Accounts',
       backBtnCallbackListFn.push(function(activeItem)
       {
          var match = (activeItem == me.getAccounts());
-         if (match && (activeItem.getActiveItem() != 0))
+         if (match && (activeItem.getActiveItem() != me.getAccountsList()))
          {
             var viewport = me.getViewPortCntlr();
             Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
@@ -312,7 +312,7 @@ Ext.define('Genesis.controller.client.Accounts',
       if (Ext.os.is('Android'))
       {
          var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
-         var list = activeItem.query('list[tag='+activeItem.getListCls()+']')[0];
+         var list = activeItem.query('list[tag=accountsList]')[0];
 
          console.debug("Refreshing CustomerStore ...");
          monitors[list.container.getId()].forceRefresh();
