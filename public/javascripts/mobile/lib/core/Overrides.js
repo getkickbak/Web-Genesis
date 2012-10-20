@@ -12,8 +12,8 @@ Ext.ns('Genesis.constants');
 
 Genesis.constants =
 {
-   host : 'http://192.168.0.52:3000',
-   //host : 'http://www.getkickbak.com',
+   //host : 'http://192.168.0.52:3000',
+   host : 'http://www.getkickbak.com',
    themeName : 'v1',
    defaultFontSize : (function()
    {
