@@ -872,7 +872,14 @@ Ext.define('Genesis.controller.ControllerBase',
             Ext.device.Notification.show(
             {
                title : 'Permission Error',
-               message : me.geoLocationPermissionErrorMsg
+               message : (viewport.getLastPosition()) ? me.geoLocationUseLastPositionMsg : me.geoLocationUnavailableMsg,
+               callback : function()
+               {
+                  if (Ext.os.is('Android'))
+                  {
+                     navigator.app.exitApp();
+                  }
+               }
             });
          }
          else
@@ -924,7 +931,14 @@ Ext.define('Genesis.controller.ControllerBase',
                Ext.device.Notification.show(
                {
                   title : 'Location Services',
-                  message : me.geoLocationErrorMsg()
+                  message : me.geoLocationErrorMsg(),
+                  callback : function()
+                  {
+                     if (Ext.os.is('Android'))
+                     {
+                        navigator.app.exitApp();
+                     }
+                  }
                });
             }
          }
