@@ -59,7 +59,7 @@ Ext.define('Genesis.controller.client.Accounts',
          //
          accounts :
          {
-            showView :'onShowView',
+            showView : 'onShowView',
             activate : 'onActivate',
             deactivate : 'onDeactivate',
             activeitemchange : 'onItemChangeActivate'
@@ -521,24 +521,27 @@ Ext.define('Genesis.controller.client.Accounts',
       var container = me.getAccounts();
       var animation = container.getLayout().getAnimation();
 
-      switch (value.config.tag)
+      if (Ext.isObject(value))
       {
-         case 'accountsList' :
+         switch (value.config.tag)
          {
-            animation.setReverse(true);
-            me.getABB().show();
-            me.getAvBB().hide();
-            break;
+            case 'accountsList' :
+            {
+               animation.setReverse(true);
+               me.getABB().show();
+               me.getAvBB().hide();
+               break;
+            }
+            case 'venuesList' :
+            {
+               animation.setReverse(false);
+               me.getABB().hide();
+               me.getAvBB().show();
+               break;
+            }
          }
-         case 'venuesList' :
-         {
-            animation.setReverse(false);
-            me.getABB().hide();
-            me.getAvBB().show();
-            break;
-         }
+         console.debug("Accounts onItemChangeActivate[" + value.config.tag + "] Called.");
       }
-      console.debug("Accounts onItemChangeActivate[" + value.config.tag + "] Called.");
    },
    onXferCodeRecv : function(metaData)
    {

@@ -47,7 +47,7 @@ Ext.define('Genesis.view.client.Accounts',
     */
    cleanView : function()
    {
-      //this.removeAll(true);
+      this.removeAll(true);
       this.callParent(arguments);
    },
    createView : function()
