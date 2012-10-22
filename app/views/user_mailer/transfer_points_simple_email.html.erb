@@ -1,5 +1,3 @@
-<br>
-<br>
 <% if @merchant.website.empty? %>
 <%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.point', :count => @record.points) %> that can be used to redeem fabulous rewards at <%= @merchant.name %>!
 <% else %>
@@ -15,5 +13,5 @@ Expiry Date: <%= @record.expiry_date.strftime("%b %d, %Y") %>
 <br>
 Haven't downloaded KICKBAK yet? Get it for your <a href="http:/itunes.com/apps/kickbak">iPhone</a>
 <br>
-Also visit us online at <a rel="nofollow" target="_blank" href="http://getkickbak.com">getkickbak.com</a>
 <br>
+Also visit us online at <a rel="nofollow" target="_blank" href="http://getkickbak.com">getkickbak.com</a>

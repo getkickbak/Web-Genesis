@@ -51,7 +51,7 @@
 									<%= @venue.zipcode %>
 									<br>
 									<% if !@venue.website.empty? %>
-									<%= @venue.website %>
+									<a rel="nofollow" target="_blank" href="<%= @venue.website %>"><%= @venue.website %></a>
 									<br>
 									<% end %>
 								</div>
