@@ -3,25 +3,17 @@
 //------------------------------------------------------------------------------
 .accountsTransferMain {
    .transferPanel {
-      @extend .listNoScrollWrapper;
       .listItemDetailsWrapper {
-         padding: $panelTopGap*2 $panelGap !important;
-         background:$Grey;
-         border-bottom: 1px solid darken($list-bg-color, 15%);
          .itemTitle {
-            font-weight:bold;
-            text-align:center;
-            font-size:$xlargeFontSize*1.25 !important;
+            &.emailsender:before {
+            }
          }
          .itemDesc {
-            text-align:center;
          }
       }
    }
    .accountsMainCalculator {
-      @extend .calculator;
       .x-field {
-         background : black;
       }
    }
 }

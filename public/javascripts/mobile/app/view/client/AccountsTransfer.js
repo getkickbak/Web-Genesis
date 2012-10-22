@@ -34,9 +34,20 @@ Ext.define('Genesis.view.client.AccountsTransfer',
             ui : 'normal',
             text : 'Close'
          }]
-      })]
+      })],
+      listeners : [
+      {
+         element : 'element',
+         delegate : 'div.listItemDetailsWrapper',
+         event : 'tap',
+         fn : "onItemTap"
+      }]
    },
    disableAnimation : true,
+   onItemTap : function(e, target, delegate, eOpts)
+   {
+      _application.getController('client.Accounts').fireEvent('xferItemTap', e.delegatedTarget.getAttribute('data'));
+   },
    createView : function(store, activeItemIndex)
    {
       if (!this.callParent(arguments))
@@ -75,11 +86,9 @@ Ext.define('Genesis.view.client.AccountsTransfer',
             }]
          },
          {
-            xtype : 'list',
-            deferEmptyText : false,
+            xtype : 'component',
             flex : 1,
             scrollable : undefined,
-            //ui : 'bottom-round',
             cls : 'transferPanel',
             tag : 'transferPanel',
             data : [
@@ -101,14 +110,20 @@ Ext.define('Genesis.view.client.AccountsTransfer',
                cls : 'recipient',
                tag : 'recipient'
             }],
-            itemTpl : Ext.create('Ext.XTemplate',
+            tpl : Ext.create('Ext.XTemplate',
             // @formatter:off
-               '<div class="listItemDetailsWrapper" style="padding-right:0;">',
+            '<tpl for=".">',
+               '<div class="listItemDetailsWrapper" data="{[this.encodeData(values)]}">',
                   '<div class="itemTitle {[this.getCls(values)]}">{[this.getTitle(values)]}</div>',
                   '<div class="itemDesc {[this.getCls(values)]}">{[this.getDesc(values)]}</div>',
                '</div>',
-               // @formatter:on
+            '</tpl>',
+            // @formatter:on
             {
+               encodeData : function(values)
+               {
+                  return values['tag'];
+               },
                getCls : function(values)
                {
                   return values['cls'];
@@ -122,7 +137,6 @@ Ext.define('Genesis.view.client.AccountsTransfer',
                   return values['text'];
                }
             })
-            //,onItemDisclosure : Ext.emptyFn
          }]
       }),
       // -------------------------------------------------------------------

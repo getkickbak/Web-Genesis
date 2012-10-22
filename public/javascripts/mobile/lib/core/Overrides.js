@@ -800,7 +800,7 @@ Genesis.fn =
             else
             if (Ext.os.is('Android'))
             {
-               wfile = (fileSystem.root.fullPath + appName) + path;
+               wfile = ('file:///sdcard/' + appName) + path;
             }
             fileSystem.root.getFile(wfile,
             {

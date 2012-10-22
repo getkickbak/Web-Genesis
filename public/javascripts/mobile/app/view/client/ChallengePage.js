@@ -156,34 +156,20 @@ Ext.define('Genesis.view.client.ChallengePage',
       //this.removeAll(true);
       this.callParent(arguments);
    },
-   createView : function()
+   _createView : function(carousel, items)
    {
-      var carousel = this.query('carousel')[0];
-      var record = _application.getController('Viewport').getVenue();
-      var venueId = record.getId();
-      var items = record.challenges().getRange();
-
-      if ((carousel.getInnerItems().length > 0) && //
-      (carousel.getInnerItems()[0].getStore().getRange()[0].getId() == items[0].getId()))
+      carousel.removeAll(true);
+      for (var i = 0; i < Math.ceil(items.length / 6); i++)
       {
-         this.deselectItems();
-
-         console.log("ChallengePage Icons Refreshed.");
-      }
-      else
-      {
-         carousel.removeAll(true);
-         for (var i = 0; i < Math.ceil(items.length / 6); i++)
+         carousel.add(
          {
-            carousel.add(
-            {
-               xtype : 'component',
-               cls : 'challengeMenuSelections',
-               tag : 'challengeMenuSelections',
-               scrollable : undefined,
-               data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data'),
-               tpl : Ext.create('Ext.XTemplate',
-               // @formatter:off
+            xtype : 'component',
+            cls : 'challengeMenuSelections',
+            tag : 'challengeMenuSelections',
+            scrollable : undefined,
+            data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data'),
+            tpl : Ext.create('Ext.XTemplate',
+            // @formatter:off
                '<tpl for=".">',
                   '<div class="itemWrapper x-hasbadge" data="{[this.encodeData(values)]}">',
                      '<span class="x-badge round">{[this.getPoints(values)]}</span>',
@@ -194,27 +180,53 @@ Ext.define('Genesis.view.client.ChallengePage',
                   '</div>',
                '</tpl>',
                // @formatter:on
+            {
+               encodeData : function(values)
                {
-                  encodeData : function(values)
-                  {
-                     return encodeURIComponent(Ext.encode(values));
-                  },
-                  getPoints : function(values)
-                  {
-                     return values['points'] + ' Points';
-                  },
-                  getPhoto : function(values)
-                  {
-                     return Ext.isEmpty(values.photo) ? Genesis.view.client.ChallengePage.getPhoto(values['type']) : values.photo.url;
-                  }
-               })
-            });
-         }
-         if (carousel.getInnerItems().length > 0)
+                  return encodeURIComponent(Ext.encode(values));
+               },
+               getPoints : function(values)
+               {
+                  return values['points'] + ' Points';
+               },
+               getPhoto : function(values)
+               {
+                  return Ext.isEmpty(values.photo) ? Genesis.view.client.ChallengePage.getPhoto(values['type']) : values.photo.url;
+               }
+            })
+         });
+      }
+      if (carousel.getInnerItems().length > 0)
+      {
+         carousel.setActiveItem(0);
+      }
+      console.log("ChallengePage Icons Updated.");
+   },
+   createView : function()
+   {
+      var carousel = this.query('carousel')[0];
+      var record = _application.getController('Viewport').getVenue();
+      var venueId = record.getId();
+      var items = record.challenges().getRange();
+      var element = Ext.DomQuery.select('div.itemWrapper',carousel.element.dom)[0];
+
+      if ((carousel.getInnerItems().length > 0) && element)
+      {
+         var data = Ext.create('Genesis.model.Challenge', Ext.decode(decodeURIComponent(element.getAttribute('data'))));
+         if (data.getId() == items[0].getId())
          {
-            carousel.setActiveItem(0);
+            this.deselectItems();
+
+            console.log("ChallengePage Icons Refreshed.");
          }
-         console.log("ChallengePage Icons Updated.");
+         else
+         {
+            this._createView(carousel, items);
+         }
+      }
+      else
+      {
+         this._createView(carousel, items);
       }
 
       this.callParent(arguments);

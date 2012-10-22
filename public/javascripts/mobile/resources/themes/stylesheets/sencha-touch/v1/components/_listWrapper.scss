@@ -1,6 +1,29 @@
 //------------------------------------------------------------------------------
 // List CSS
 //------------------------------------------------------------------------------
+.listItemDetailsWrapper {
+   position:relative;
+   font-size:1em;
+   padding-left:calc-px-em($icon-size,$panelGap,1em);
+   //padding-right:$list-disclosure-size*1.5;
+   min-height:$icon-size;
+   .itemDistance {
+      position:absolute;
+      //top:calc-em(0.65em,$normalFontSize);
+      top : 0;
+      right:calc-em(-1*($list-disclosure-size+$panelGap),$normalFontSize);
+      font-weight:bold;
+      font-size:$normalFontSize;
+   }
+   .itemTitle {
+      font-size:$normalFontSize;
+   }
+   .itemDesc {
+      font-size:$normalFontSize;
+      word-break:break-word;
+   }
+}
+            
 .listScrollWrapper, .listScrollIndexWrapper {
    .photo {
       top:$panelTopGap;
@@ -32,26 +55,6 @@
                img {
                   width : $icon-size;
                   max-height : $icon-size;
-               }
-            }
-            .listItemDetailsWrapper {
-               font-size:1em;
-               padding-left:calc-px-em($icon-size,$panelGap,1em);
-               //padding-right:$list-disclosure-size*1.5;
-               min-height:$icon-size;
-               .itemDistance {
-                 position:absolute;
-                 top:calc-em(0.65em,$normalFontSize);
-                 right:calc-em(-1*$list-disclosure-size,$normalFontSize);
-                 font-weight:bold;
-                 font-size:$normalFontSize;
-               }
-               .itemTitle {
-                  font-size:$normalFontSize;
-               }
-               .itemDesc {
-                  font-size:$normalFontSize;
-                  word-break:break-word;
                }
             }
          }

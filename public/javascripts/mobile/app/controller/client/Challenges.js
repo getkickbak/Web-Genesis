@@ -96,6 +96,7 @@ Ext.define('Genesis.controller.client.Challenges',
          //
          referralsPage :
          {
+            showView : 'onReferralsShowView',
             activate : 'onReferralsActivate',
             deactivate : 'onReferralsDeactivate'
          },
@@ -113,7 +114,8 @@ Ext.define('Genesis.controller.client.Challenges',
          'fbphotouploadcomplete' : 'onFbPhotoUploadComplete',
          'challengecomplete' : 'onChallengeComplete',
          'doChallenge' : 'onChallengeBtnTap',
-         'itemTap' : 'onItemTap'
+         'itemTap' : 'onItemTap',
+         'referralsItemTap' : 'onReferralsTap'
       }
    },
    metaData : null,
@@ -229,6 +231,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
                   me.redirectTo('photoUpload');
                }
+               navigator.camera.cleanup(Ext.emptyFn, Ext.emptyFn);
                delete me.imageURI;
             }, function(error)
             {
@@ -260,10 +263,8 @@ Ext.define('Genesis.controller.client.Challenges',
          }
       }
    },
-   sendReferralEmailHandler : function(qrcode, emailTpl, subject)
+   sendEmailIOS : function(qrcode, emailTpl, subject)
    {
-      var me = this;
-
       window.plugins.emailComposer.showEmailComposerWithCB(function(res)
       {
          // Delay is needed to not block email sending ...
@@ -306,12 +307,80 @@ Ext.define('Genesis.controller.client.Challenges',
          }, 1, me);
       }, subject, emailTpl, null, null, null, true, [qrcode]);
    },
-   referralEventHandler : function(referralsSelected)
+   sendEmailAndroid : function(stream, emailTpl, subject)
+   {
+      var me = this;
+      var extras =
+      {
+      };
+      extras[WebIntent.EXTRA_SUBJECT] = subject;
+      extras[WebIntent.EXTRA_TEXT] = emailTpl;
+
+      console.log("Saving QRCode to temporary file ...");
+      window.plugins.base64ToPNG.saveImage(stream,
+      {
+         filename : 'qrcode.gif',
+         overwrite : true
+      }, function(result)
+      {
+         extras[WebIntent.EXTRA_STREAM] = 'file://' + result.filename;
+
+         console.log("QRCode saved to " + extras[WebIntent.EXTRA_STREAM]);
+         window.plugins.webintent.startActivity(
+         {
+            action : WebIntent.ACTION_SEND,
+            type : 'text/html',
+            extras : extras
+         }, function()
+         {
+            Ext.Viewport.setMasked(false);
+            me.onCompleteReferralsChallenge();
+            Ext.device.Notification.show(
+            {
+               title : 'Email Sent!',
+               message : me.sendReferralSuccessMsg()
+            });
+         }, function()
+         {
+            Ext.Viewport.setMasked(false);
+            me.onCompleteReferralsChallenge();
+            Ext.device.Notification.show(
+            {
+               title : 'Email Error',
+               message : me.referralFailedMsg
+            });
+         });
+      }, function(error)
+      {
+      });
+      //var writer = new FileWriter('/android_asset/www/' + 'tmp_' + appName + '_' + 'qrcode.gif');
+      //writer.write(window.atob(stream), false);
+      //console.debug("Content Written to Disk");
+      //Genesis.fn.writeFile('qrcode.gif', stream, function(evt)
+      //{
+      //}
+      //);
+   },
+   sendReferralEmailHandler : function(qrcode, emailTpl, subject)
+   {
+      var me = this;
+
+      if (Ext.os.is('iOS'))
+      {
+         me.sendEmailIOS(qrcode, emailTpl, subject);
+      }
+      else
+      if (Ext.os.is('Android'))
+      {
+         me.sendEmailAndroid(qrcode, emailTpl, subject);
+      }
+
+   },
+   referralEventHandler : function(tag)
    {
       var me = this, type;
       var venue = me.getViewPortCntlr().getVenue();
       var container = me.getReferralsContainer();
-      var tag = referralsSelected.get('tag');
 
       //
       // Retrieve QRCode from Server
@@ -662,10 +731,10 @@ Ext.define('Genesis.controller.client.Challenges',
    // --------------------------------------------------------------------------
    onItemTap : function(model)
    {
-   	var viewport = this.getViewPortCntlr();
-   	
+      var viewport = this.getViewPortCntlr();
+
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-      
+
       var desc = this.getChallengeDescContainer();
       Ext.Anim.run(desc.element, 'fade',
       {
@@ -770,16 +839,16 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       if (Ext.os.is('Android'))
       {
-         var carousel = activeItem.query('carousel')[0];
-         var items = carousel.getInnerItems();
+         //var carousel = activeItem.query('carousel')[0];
+         //var items = carousel.getInnerItems();
 
-         console.debug("Refreshing MainPage ...");
+         console.debug("Refreshing Challenge Main Page ...");
          /*
-         for (var i = 0; i < items.length; i++)
-         {
-            items[i].refresh();
-         }
-         */
+          for (var i = 0; i < items.length; i++)
+          {
+          items[i].refresh();
+          }
+          */
       }
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -860,6 +929,13 @@ Ext.define('Genesis.controller.client.Challenges',
    // --------------------------------------------------------------------------
    // Referrals Challenge Page
    // --------------------------------------------------------------------------
+   onReferralsShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android'))
+      {
+         //console.debug("Refreshing Referrals Page ...");
+      }
+   },
    onReferralsActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
@@ -878,7 +954,7 @@ Ext.define('Genesis.controller.client.Challenges',
       // Nothing to do but go back to Main Challenge Page
       this.popView();
    },
-   onReferralsSelect : function(list, model, eOpts)
+   onReferralsTap : function(tag)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
@@ -886,16 +962,12 @@ Ext.define('Genesis.controller.client.Challenges',
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       if (viewport.getCustomer().get('visits') > 0)
       {
-         if (list)
-         {
-            list.deselect([model]);
-         }
-         switch (model.get('tag'))
+         switch (tag)
          {
             case 'emailsender' :
             case 'sender' :
             {
-               me.referralEventHandler(model);
+               me.referralEventHandler(tag);
                break;
             }
          }
@@ -934,6 +1006,7 @@ Ext.define('Genesis.controller.client.Challenges',
          title : 'Error',
          message : me.photoTakenFailMsg(message)
       });
+      navigator.camera.cleanup(Ext.emptyFn, Ext.emptyFn);
    },
    onPhotoBtnCommon : function(sourceType)
    {
@@ -954,7 +1027,7 @@ Ext.define('Genesis.controller.client.Challenges',
                message : me.cameraAccessMsg
             });
 
-            Ext.device.Camera.capture(
+            Ext.device.Camera.getPicture(
             {
                success : me.onCameraSuccessFn,
                failure : me.onCameraErrorFn,
