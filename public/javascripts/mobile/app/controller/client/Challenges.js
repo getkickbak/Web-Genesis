@@ -123,7 +123,7 @@ Ext.define('Genesis.controller.client.Challenges',
    referralCbFn : null,
    defaultDescText : 'Please Select a challenge to perform',
    samplePhotoURL : 'http://photos.getkickbak.com/paella9finish1.jpg',
-   noPhotoUploadedMsg : 'Failed to upload photo to server.',
+   //noPhotoUploadedMsg : 'Failed to upload photo to server.',
    fbUploadFailedMsg : 'Failed to upload the photo onto your Facebook account',
    checkinFirstMsg : 'Please Check-In before performing challenges',
    photoUploadFbReqMsg : 'Connectivity to Facebook is required to upload photos to your account',
@@ -187,6 +187,10 @@ Ext.define('Genesis.controller.client.Challenges',
             {
                "auth_token" : Genesis.db.getLocalDB()['auth_code']
             };
+            options.headers =
+            {
+               'Accept' : '*/*'
+            };
             options.chunkedMode = true;
 
             Ext.Viewport.setMasked(
@@ -197,7 +201,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
             var ft = new FileTransfer();
             var res, metaData;
-            ft.upload(me.imageURI, Genesis.constants.host + '/api/v1/venues/share_photo', function(r)
+            ft.upload(me.imageURI, encodeURI(Genesis.constants.host + '/api/v1/venues/share_photo'), function(r)
             {
                try
                {
@@ -236,12 +240,12 @@ Ext.define('Genesis.controller.client.Challenges',
             }, function(error)
             {
                Ext.Viewport.setMasked(false);
-               console.log(me.noPhotoUploadedMsg(error.message + Genesis.constants.addCRLF()));
+               console.log(me.photoTakenFailMsg(error.message));
                //console.log("An error has occurred: Code = " + error.code);
                Ext.device.Notification.show(
                {
                   title : 'Error',
-                  message : me.noPhotoUploadedMsg(error.message + Genesis.constants.addCRLF())
+                  message : me.photoTakenFailMsg(error.message)
                });
                delete me.imageURI;
             }, options);
@@ -1027,7 +1031,7 @@ Ext.define('Genesis.controller.client.Challenges',
                message : me.cameraAccessMsg
             });
 
-            Ext.device.Camera.getPicture(
+            Ext.device.Camera.capture(
             {
                success : me.onCameraSuccessFn,
                failure : me.onCameraErrorFn,
