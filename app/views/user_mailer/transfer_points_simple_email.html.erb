@@ -1,11 +1,5 @@
 <br>
 <br>
-&lt;Input your message here&gt;
-<br>
-<br>
-<hr>
-<br>
-<br>
 <% if @merchant.website.empty? %>
 <%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.point', :count => @record.points) %> that can be used to redeem fabulous rewards at <%= @merchant.name %>!
 <% else %>
