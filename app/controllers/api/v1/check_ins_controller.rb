@@ -86,7 +86,6 @@ class Api::V1::CheckInsController < ApplicationController
         @prizes = Common.get_rewards(@venue, :prize)
         @newsfeed = Common.get_news(@venue)
         render :template => '/api/v1/check_ins/create'
-        session[:session_test] = String.random_alphanumeric
       end
     rescue DataMapper::SaveFailureError => e
       logger.error("Exception: " + e.resource.errors.inspect)
