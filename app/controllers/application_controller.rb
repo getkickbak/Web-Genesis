@@ -22,14 +22,6 @@ class ApplicationController < ActionController::Base
   end
   
   def set_cache_buster
-    logger.warn "*** BEGIN RAW REQUEST HEADERS ***"
-    self.request.env.each do |header|
-      if header[0] == 'rack.session'
-        logger.warn "HEADER KEY: #{header[0]}"
-        logger.warn "HEADER VAL: #{header[1]}"
-      end
-    end
-    logger.warn "*** END RAW REQUEST HEADERS ***"
     response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
