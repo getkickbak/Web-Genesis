@@ -66,15 +66,7 @@ class Api::V1::ChallengesController < ApplicationController
     end  
   end
   
-  def complete    
-    logger.warn "*** BEGIN RAW REQUEST HEADERS ***"
-    self.request.env.each do |header|
-      if header[0] == 'rack.session'
-        logger.warn "HEADER KEY: #{header[0]}"
-        logger.warn "HEADER VAL: #{header[1]}"
-      end
-    end
-    logger.warn "*** END RAW REQUEST HEADERS ***"
+  def complete
     @venue = Venue.get(params[:venue_id]) || not_found
     @challenge = Challenge.first(:id => params[:id], :merchant => @venue.merchant) || not_found
     @customer = Customer.first(:merchant => @venue.merchant, :user => current_user) || not_found
