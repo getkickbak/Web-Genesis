@@ -98,6 +98,7 @@ class Api::V1::VenuesController < ApplicationController
       @photo_url = ::Common.generate_full_temp_file_path(filename)
       @upload_token = String.random_alphanumeric
       session[:photo_upload_token] = @upload_token
+      session[:photo_upload_token_1] = String.random_alphanumeric
       logger.info("Setting photo_upload_token: #{session[:photo_upload_token]}")
       render :template => '/api/v1/venues/share_photo'
     end
