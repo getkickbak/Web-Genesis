@@ -382,6 +382,7 @@ class Api::V1::ChallengesController < ApplicationController
         session.delete :photo_upload_token
         return true
       end
+      logger.info("Invalid photo upload token: Real(#{session[:photo_upload_token]}), Passed(#{params[:upload_token]})")
       return false
     elsif @challenge.type.value == "referral"
       return false  
