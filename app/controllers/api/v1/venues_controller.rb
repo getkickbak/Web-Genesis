@@ -82,6 +82,7 @@ class Api::V1::VenuesController < ApplicationController
     authorize! :read, Venue
     
     if params[:image].blank?
+      logger.info("Cannot share photo, image is blank")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.photo_blank").split('\n') } }
