@@ -194,6 +194,7 @@ class Api::V1::ChallengesController < ApplicationController
             format.json { render :json => { :success => false, :message => msg } }
           end 
         end
+        session[:session_test_1] = String.random_alphanumeric
       end
     rescue DataMapper::SaveFailureError => e
       logger.error("Exception: " + e.resource.errors.inspect)
