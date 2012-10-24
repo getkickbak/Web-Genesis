@@ -39,6 +39,21 @@ class ApplicationController < ActionController::Base
   def not_found
     raise ActionController::RoutingError.new('Not Found')
   end
+  
+  def log_request_header
+    logger.warn "*** BEGIN RAW REQUEST HEADERS ***"
+    self.request.env.each do |header|
+      logger.warn "HEADER KEY: #{header[0]}"
+      logger.warn "HEADER VAL: #{header[1]}"
+    end
+    logger.warn "*** END RAW REQUEST HEADERS ***"
+  end
+  
+  def show_session_data
+    logger.warn "*** BEGIN RAW SESSION DATA ***"
+    logger.warn session.inspect
+    logger.warn "*** END RAW SESSION DATA ***"
+  end
 
   private
 

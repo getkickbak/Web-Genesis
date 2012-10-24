@@ -1,6 +1,8 @@
 class Api::V1::VenuesController < ApplicationController
   skip_before_filter :verify_authenticity_token, :only => [:share_photo]
   before_filter :authenticate_user!
+  before_filter :log_request_header, :only => [:share_photo]
+  after_filter :show_session_data, :only => [:share_photo]
   
   def explore    
     @venue = Venue.get(params[:id]) || not_found
@@ -79,12 +81,6 @@ class Api::V1::VenuesController < ApplicationController
   end
   
   def share_photo
-    logger.warn "*** BEGIN RAW REQUEST HEADERS ***"
-    self.request.env.each do |header|
-      logger.warn "HEADER KEY: #{header[0]}"
-      logger.warn "HEADER VAL: #{header[1]}"
-    end
-    logger.warn "*** END RAW REQUEST HEADERS ***"
     authorize! :read, Venue
     
     if params[:image].blank?
