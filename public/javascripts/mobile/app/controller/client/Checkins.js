@@ -427,7 +427,7 @@ Ext.define('Genesis.controller.client.Checkins',
                   Ext.device.Notification.show(
                   {
                      title : 'Warning',
-                     message : me.missingVenueInfoMsg,
+                     message : me.missingVenueInfoMsg(operation.getError()),
                      callback : function()
                      {
                         proxy.supressErrorsPopup = false;

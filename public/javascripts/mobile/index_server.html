@@ -3,6 +3,8 @@
    <head>
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="format-detection" content="telephone=no" />
+      <meta name="format-detection" content="email=no" />
       <!-- Default Fontsize = 11px
       iPad @132dpi = 100% - iPhone @163dpi = 114% - iPhone Retina @326dpi = 228%
       -->
@@ -14,47 +16,49 @@
       <link rel="apple-touch-icon-precomposed" href="resouces/img/icon_57.png">
       <link rel="apple-touch-icon-precomposed" sizes="72x72" href="resources/img/icon_72.png"/>
       <link rel="apple-touch-icon-precomposed" sizes="114x114" href="resources/img/icon_114.png"/>
-      <link rel="apple-touch-startup-image" media="screen and (resolution: 326dpi)" href="resources/themes/images/v1/startup_640.png" />
-      <link rel="apple-touch-startup-image" media="screen and (resolution: 163dpi)" href="resources/themes/images/v1/startup_640.png" />
+      <link rel="apple-touch-startup-image" media="screen and (resolution: 326dpi)" href="resources/themes/images/v1/startup_640.png"
+      />
+      <link rel="apple-touch-startup-image" media="screen and (resolution: 163dpi)" href="resources/themes/images/v1/startup_640.png"
+      />
       -->
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>MerKickBak</title>
       <link rel="stylesheet" href="resources/css/ios.css" type="text/css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
-      <script type="text/javascript" src="http://192.168.0.52:8080/target/target-script-min.js"></script>
       directory and include it here -->
       <script type="text/javascript" src="lib/gibberish-aes.min.js"></script>
-      <!-- Debug Javascript on mobile browser -->
+      <script type="text/javascript" src="lib/cordova-2.1.0.ios.js"></script>
+
       <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
       <!--
       Phone Gap Libs
       -->
-      <script type="text/javascript" src="lib/cordova-2.1.0.ios.js"></script>
       <script type="text/javascript">
+         var launched = 0x00;
          var backBtnCallbackListFn = [];
+
+         var offlineDialogShown = false;
          var phoneGapAvailable = true;
          var debugMode = false;
          var merchantMode = true;
-         var appName = 'MerKICKBAK';
+         var appName = 'MerKickBak';
 
          var _appPath = "app", _extPath = 'lib/sencha-touch-2.1.0-rc2/src';
 
-         var _browser = Ext.browser;
-         _browser.setFlag('WebView');
-         _browser.setFlag('PhoneGap');
-
-
-         Ext.Loader.setConfig(
+         function _appLaunch()
          {
-            enabled : false,
-            paths :
+            if (launched == 0x11)
             {
-               Ext : _extPath,
-               Genesis : _appPath
-            }
-         });
+               var viewport = _application.getController('Viewport');
+               viewport.appName = appName;
 
+               Ext.create('Genesis.view.Viewport');
+               console.log("Launched App");
+            }
+         }
+      </script>
+      <script type="text/javascript">
          // If you want to prevent dragging, uncomment this section
          /*
           function preventBehavior(e)
@@ -77,11 +81,90 @@
          /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
           see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
           for more details -jm */
-
-         function appInit()
+         function onBodyLoad()
          {
-            console.debug = console.debug || console.log;
-            console.log("appInit - start");
+            document.addEventListener("online", function()
+            {
+               if (Ext.device)
+               {
+                  console.log(Ext.device.Connection.__proto__.$className);
+               }
+               //Genesis.db.redeemDBCleanup();
+               console.log("Phone is Online");
+            }, false);
+
+            document.addEventListener("offline", function()
+            {
+               if (Ext.device)
+               {
+               }
+               console.log("Phone is Offline");
+            }, false);
+            document.addEventListener("pause", function()
+            {
+               //Genesis.db.redeemDBSync();
+               console.log("App is Paused");
+            }, false);
+
+            document.addEventListener("resume", function()
+            {
+               if (Ext.device)
+               {
+                  //Genesis.db.redeemDBCleanup();
+               }
+               console.log("App is Resumed");
+            }, false);
+            window.addEventListener("batterylow", function(info)
+            {
+               if (Ext.device)
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Battery Level Low',
+                     messsage : 'Battery is at ' + info.level + '%'
+                  });
+                  Ext.device.Notification.vibrate();
+
+               }
+               Genesis.db.redeemDBSync();
+            }, false);
+
+            window.addEventListener("batterycritical", function(info)
+            {
+               if (Ext.device)
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Battery Level Critical',
+                     messsage : 'Battery is at ' + info.level + '%' + '\n' + //
+                     'Recharge Soon!'
+                  });
+                  Ext.device.Notification.vibrate();
+                  Ext.device.Notification.beep();
+               }
+               Genesis.db.redeemDBSync();
+            }, false);
+
+            document.addEventListener("deviceready", function()
+            {
+               console.debug = console.debug || console.log;
+               console.warn = console.warn || console.debug;
+
+               console.log("PhoneGap App Launch");
+               launched = 0x10;
+               _appLaunch();
+            }, false);
+
+            Ext.Loader.setConfig(
+            {
+               enabled : false,
+               paths :
+               {
+                  Ext : _extPath,
+                  Genesis : _appPath
+               }
+            });
+
             Ext.application(
             {
                profiles : ['Iphone'],
@@ -89,141 +172,33 @@
                controllers : ['Viewport', 'MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'Settings', 'server.Prizes'],
                launch : function()
                {
-                  //var viewport = this.getController('Viewport');
-                  console.log("Launching App");
-                  Ext.create('Genesis.view.Viewport');
-                  //viewport.openMainPage();
-                  console.log("Launched App");
+                  _application = this;
+                  if (launched > 0x00)
+                  {
+                     launched |= 0x01;
+                  }
+                  else
+                  {
+                     launched = 0x01;
+                  }
+                  console.log("Ext App Launch")
+                  _appLaunch();
                },
                appFolder : _appPath,
                name : 'Genesis'
             });
-
-            console.log("appInit - end");
-         }
-
-         function onDeviceReady()
-         {
-            Ext.triggerReady();
-            document.addEventListener("online", function()
-            {
-               console.log("Phone is Online");
-               Genesis.db.redeemDBCleanup();
-               /*
-                if(Ext.device)
-                {
-                if(Ext.device.Connection.isOnline())
-                {
-                Ext.device.Notification.show(
-                {
-                title : 'Network Connection Established',
-                message : 'You are currently connected via ' + Ext.device.Connection.getType()
-                });
-                }
-                else
-                {
-                Ext.device.Notification.show(
-                {
-                title : 'Network Error',
-                message : 'You are not currently connected'
-                });
-                }
-                }
-                */
-            }, false);
-
-            document.addEventListener("offline", function()
-            {
-               console.log("Phone is Offline");
-               if(Ext.device)
-               {
-                  /*
-                   if(Ext.device.Connection.isOnline())
-                   {
-                   Ext.device.Notification.show(
-                   {
-                   title : 'Network Connection Established',
-                   message : 'You are currently connected via ' + Ext.device.Connection.getType()
-                   });
-                   }
-                   else
-                   {
-                   Ext.device.Notification.show(
-                   {
-                   title : 'Network Error',
-                   messsage : 'You are not currently connected'
-                   });
-                   }
-                   */
-               }
-            }, false);
-            document.addEventListener("pause", function()
-            {
-               console.log("App is Paused");
-               Genesis.db.redeemDBSync();
-            }, false);
-
-            document.addEventListener("resume", function()
-            {
-               console.log("App is Resumed");
-               if(Ext.device)
-               {
-                  /*
-                   if(!Ext.device.Connection.isOnline())
-                   {
-                   Ext.device.Notification.show(
-                   {
-                   title : 'Network Error',
-                   messsage : 'You are not currently connected'
-                   });
-                   }
-                   */
-                  Genesis.db.redeemDBCleanup();
-               }
-            }, false);
-            window.addEventListener("batterylow", function(info)
-            {
-               Ext.device.Notification.show(
-               {
-                  title : 'Battery Level Low',
-                  messsage : 'Battery is at ' + info.level + '%'
-               });
-               Ext.device.Notification.vibrate();
-               Genesis.db.redeemDBSync();
-            }, false);
-
-            window.addEventListener("batterycritical", function(info)
-            {
-               Ext.device.Notification.show(
-               {
-                  title : 'Battery Level Critical',
-                  messsage : 'Battery is at ' + info.level + '%' + '\n' + //
-                  'Recharge Soon!'
-               });
-               Ext.device.Notification.vibrate();
-               Ext.device.Notification.beep();
-               Genesis.db.redeemDBSync();
-            }, false);
-
-            console.log("onDeviceReady");
-            appInit();
          }
       </script>
-      <script type="text/javascript" src="core.js"></script>
-      <!-- View Widgets -->
       <script type="text/javascript" src="app/profile/Iphone.js"></script>
+      <script type="text/javascript" src="core.js"></script>
       <script type="text/javascript" src="server-all.js"></script>
    </head>
-   <body>
+   <body onload="onBodyLoad()">
       <script type="text/javascript">
          window.onerror = function(e, url, linenum)
          {
             console.log("Error on Line#" + linenum + "\n" + e);
          }
-
-         document.addEventListener("deviceready", onDeviceReady, false);
-         console.log("SystemInit");
-         //appInit();
       </script>
       <!-- Cache images -->
       <div class="serverPhotoCache"></div>

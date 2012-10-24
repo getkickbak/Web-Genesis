@@ -24,14 +24,13 @@
       <title>KickBak</title>
       <link rel="stylesheet" href="resources/css/ios.css" type="text/css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
-      <script type="text/javascript" src="http://192.168.0.52:8080/target/target-script-min.js"></script>
       directory and include it here -->
       <!--
       Phone Gap Libs
       -->
       <script type="text/javascript" src="lib/cordova-2.1.0.ios.js"></script>
       <script type="text/javascript" src="lib/core/PushNotification.ios.js"></script>
-      <!-- Debug Javascript on mobile browser -->
+      
       <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
       <script type="text/javascript">
          var launched = 0x00;
@@ -102,7 +101,7 @@
                });
 
                var viewport = _application.getController('Viewport');
-               viewport.appName = 'GetKickBak';
+               viewport.appName = appName;
 
                //console.log("Launching App");
                Ext.create('Genesis.view.Viewport');

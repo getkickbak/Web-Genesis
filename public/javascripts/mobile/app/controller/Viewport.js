@@ -1,7 +1,6 @@
 Ext.define('Genesis.controller.Viewport',
 {
    extend : 'Genesis.controller.ControllerBase',
-   requires : ['Ext.util.DelayedTask'],
    statics :
    {
    },
@@ -191,7 +190,7 @@ Ext.define('Genesis.controller.Viewport',
                Ext.device.Notification.show(
                {
                   title : 'Error',
-                  message : me.missingVenueInfoMsg,
+                  message : me.missingVenueInfoMsg(operation.getError()),
                   callback : function()
                   {
                      proxy.supressErrorsPopup = false;
@@ -208,7 +207,7 @@ Ext.define('Genesis.controller.Viewport',
       if (Genesis.constants.isNative())
       {
          var file = "app/store/" + ((!merchantMode) ? 'mainClientPage.json' : 'mainServerPage.json'), path = "";
-         if (Ext.os.is('iPhone'))
+         if (Ext.os.is('iOS'))
          {
          }
          else
@@ -217,19 +216,21 @@ Ext.define('Genesis.controller.Viewport',
             path = "file:///android_asset/www/";
          }
 
+         //console.debug("Creating Request [" + path + file + "]");
          var request = new XMLHttpRequest();
-         request.open("GET", path + file, true);
          request.onreadystatechange = function()
          {
             if (request.readyState == 4)
             {
                if (request.status == 200 || request.status == 0)
                {
+                  console.log("Loaded MainPage Store ...");
                   Ext.StoreMgr.get('MainPageStore').setData(Ext.decode(request.responseText).data);
                }
             }
          }
-         request.send();
+         request.open("GET", path + file, true);
+         request.send(null);
       }
       else
       {
@@ -640,6 +641,7 @@ Ext.define('Genesis.controller.Viewport',
 
          for (var i = 0; i < soundList.length; i++)
          {
+            //console.debug("Preloading " + soundList[i][0] + " ...");
             this.loadSoundFile.apply(this, soundList[i]);
          }
       }, 1, me);
@@ -711,8 +713,6 @@ Ext.define('Genesis.controller.Viewport',
          }
       }
 
-      //console.debug("Preloading " + sound_file + " ...");
-
       me.sound_files[tag] =
       {
          name : sound_file,
@@ -722,10 +722,10 @@ Ext.define('Genesis.controller.Viewport',
    openMainPage : function()
    {
       var me = this;
-      var db = Genesis.db.getLocalDB();
-      var loggedIn = (db['auth_code']) ? true : false;
       if (!merchantMode)
       {
+         var db = Genesis.db.getLocalDB();
+         var loggedIn = (db['auth_code']) ? true : false;
          me.resetView();
          if (loggedIn)
          {

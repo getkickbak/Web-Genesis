@@ -42,7 +42,20 @@ Ext.define('Genesis.controller.ControllerBase',
    geoLocationUseLastPositionMsg : 'We are not able to locate your current location. Using your last known GPS Coordinates ...',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
    getVenueInfoMsg : 'Retrieving Venue Information ...',
-   missingVenueInfoMsg : 'Error loading Venue information.',
+   missingVenueInfoMsg : function(errors)
+   {
+      var errorMsg = '';
+      if (Ext.isString(errors))
+      {
+         errorMsg = Genesis.constants.addCRLF() + errors;
+      }
+      else
+      if (Ext.isObject(errors))
+      {
+         errorMsg = Genesis.constants.addCRLF() + errors.statusText;
+      }
+      return ('Error loading Venue information.' + errorMsg);
+   },
    showToServerMsg : 'Show this to your server before proceeding.',
    errProcQRCodeMsg : 'Error Processing Authentication Code',
    cameraAccessMsg : 'Accessing your Camera Phone ...',

@@ -139,7 +139,20 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       return msg + Genesis.constants.addCRLF() + 'No Photos were taken.'
    },
-   photoUploadIncompletesMsg : 'Trouble updating to server.',
+   photoUploadIncompletesMsg : function(errors)
+   {
+      var errorMsg = '';
+      if (Ext.isString(errors))
+      {
+         errorMsg = Genesis.constants.addCRLF() + errors;
+      }
+      else
+      if (Ext.isObject(errors))
+      {
+         errorMsg = Genesis.constants.addCRLF() + errors.statusText;
+      }
+      return ('Trouble updating to server.' + errorMsg);
+   },
    photoUploadFailValidationMsg : 'Please enter a comment with at least 16 characters in length',
    getPointsMsg : function(points, total)
    {
@@ -178,18 +191,21 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          if (Genesis.constants.isNative())
          {
+            var db = Genesis.db.getLocalDB();
             var options = new FileUploadOptions();
+
             options.fileKey = "image";
             // Token filename NOT be used
             options.fileName = "DummyPhoto.jpg";
             options.mimeType = "image/jpg";
             options.params =
             {
-               "auth_token" : Genesis.db.getLocalDB()['auth_code']
+               "auth_token" : db['auth_code']
             };
             options.headers =
             {
-               'Accept' : '*/*'
+               'Accept' : '*/*',
+               'X-CSRF-Token' : db['csrf_code']
             };
             options.chunkedMode = true;
 
@@ -220,12 +236,12 @@ Ext.define('Genesis.controller.client.Challenges',
                   }
                   else
                   {
-                     console.log('No Data returned by the server.');
+                     console.debug('No Data returned by the server.');
                   }
                }
                catch (ex)
                {
-                  console.log('Unable to parse the JSON returned by the server: ' + ex.toString());
+                  console.debug('Unable to parse the JSON returned by the server: ' + ex.toString());
                }
 
                Ext.Viewport.setMasked(false);
@@ -236,6 +252,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   me.redirectTo('photoUpload');
                }
                navigator.camera.cleanup(Ext.emptyFn, Ext.emptyFn);
+               console.debug("Photo Cleanup Complete.")
                delete me.imageURI;
             }, function(error)
             {
@@ -687,19 +704,18 @@ Ext.define('Genesis.controller.client.Challenges',
                me.persistSyncStores('CustomerStore');
 
                console.debug("Points Earned = " + metaData2['points'] + ' Pts');
+
+               me.fireEvent('updatemetadata', metaData2);
+               me.metaData = null;
+               me.popView();
+
                Ext.device.Notification.show(
                {
                   title : 'Upload Complete',
                   message : ((reward_info['points'] > 0) ? //
                   me.photoUploadSuccessMsg(reward_info['points']) : //
-                  me.getConsolationMsg(metaData2['message'])),
-                  callback : function()
-                  {
-                     me.metaData = null;
-                     me.popView();
-                  }
+                  me.getConsolationMsg(metaData2['message']))
                });
-               me.fireEvent('updatemetadata', metaData2);
             }
             else
             {
@@ -707,7 +723,7 @@ Ext.define('Genesis.controller.client.Challenges',
                Ext.device.Notification.show(
                {
                   title : 'Upload Failed!',
-                  message : me.photoUploadIncompletesMsg,
+                  message : me.photoUploadIncompletesMsg(operation.getError()),
                   buttons : ['Try Again', 'Cancel'],
                   callback : function(btn)
                   {
@@ -1011,6 +1027,7 @@ Ext.define('Genesis.controller.client.Challenges',
          message : me.photoTakenFailMsg(message)
       });
       navigator.camera.cleanup(Ext.emptyFn, Ext.emptyFn);
+      console.debug("Photo Cleanup Complete.")
    },
    onPhotoBtnCommon : function(sourceType)
    {
@@ -1038,12 +1055,14 @@ Ext.define('Genesis.controller.client.Challenges',
                scope : me,
                quality : 49,
                correctOrientation : true,
+               //correctOrientation : false,
                //saveToPhotoAlbum : false,
-               destination : "file",
+               destination : 'file',
                source : sourceType,
-               allowEdit : true,
+               allowEdit : false,
                encoding : "jpeg",
-               width : 960
+               width : 960,
+               height : 960
                //targetHeight : 480
             });
          }, true, me.photoUploadFbReqMsg);

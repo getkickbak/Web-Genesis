@@ -21,12 +21,12 @@ Genesis.constants =
    })(),
    defaultIconSize : function()
    {
-      if (Ext.os.is.iPhone)
+      if (Ext.os.is('iOS'))
       {
          return 57;
       }
       else
-      if (Ext.os.is.Android)
+      if (Ext.os.is('Android'))
       {
          return ((window.devicePixelRatio < 1) ? 36 : 48);
       }
@@ -740,6 +740,7 @@ Genesis.fn =
       var me = this;
       if (Genesis.constants.isNative())
       {
+         var rfile;
          var handler = function(fileEntry)
          {
             fileEntry.file(function(file)
@@ -754,8 +755,7 @@ Genesis.fn =
          }
          window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
          {
-            var rfile;
-            if (Ext.os.is('iPhone'))
+            if (Ext.os.is('iOS'))
             {
                rfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
             }
@@ -764,8 +764,8 @@ Genesis.fn =
             {
                wfile = (fileSystem.root.fullPath + appName) + path;
             }
-            fileSystem.root.getFile(rfile, null, handler, me.failFileHandler);
             console.debug("Reading from File - [" + rfile + "]");
+            fileSystem.root.getFile(rfile, null, handler, me.failFileHandler);
          }, me.failFileHandler);
       }
       else
@@ -793,14 +793,14 @@ Genesis.fn =
          window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
          {
             var wfile;
-            if (Ext.os.is('iPhone'))
+            if (Ext.os.is('iOS'))
             {
                wfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
             }
             else
             if (Ext.os.is('Android'))
             {
-               wfile = ('file:///sdcard/' + appName) + path;
+               wfile = ('file:///mnt/sdcard/' + appName) + path;
             }
             fileSystem.root.getFile(wfile,
             {
@@ -1215,7 +1215,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                         if (metaData['session_timeout'])
                         {
                            viewport.resetView();
-                           viewport.redirectTo('login');
+                           viewport.redirectTo('main');
                            return;
                         }
                         else
@@ -1287,7 +1287,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   if (metaData['session_timeout'])
                   {
                      viewport.resetView();
-                     viewport.redirectTo('login');
+                     viewport.redirectTo('main');
                      return;
                   }
                   else
@@ -1300,7 +1300,8 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                }
             }
          }
-         console.debug("Ajax ErrorHandler called. Operation(" + operation.wasSuccessful() + ")");
+         console.debug("Ajax ErrorHandler called. Operation(" + operation.wasSuccessful() + ")" + //
+         ((messages) ? '\n' + messages : ''));
          me.fireEvent('exception', me, response, operation);
       }
       try
@@ -1345,7 +1346,21 @@ Ext.define('Genesis.data.proxy.OfflineServer',
           * @param {Object} response The response from the AJAX request
           * @param {Ext.data.Operation} operation The operation that triggered request
           */
-         me.setException(operation, response);
+         //
+         // Override Default Error Messages
+         //
+         if (messages)
+         {
+            operation.setException(operation,
+            {
+               status : null,
+               statusText : messages
+            });
+         }
+         else
+         {
+            me.setException(operation, response);
+         }
 
          errorHandler();
       }
