@@ -69,10 +69,8 @@ class Api::V1::ChallengesController < ApplicationController
   def complete
     logger.warn "*** BEGIN RAW REQUEST HEADERS ***"
     self.request.env.each do |header|
-      if header[0] == "rack.session"
-        logger.warn "HEADER KEY: #{header[0]}"
-        logger.warn "HEADER VAL: #{header[1]}"
-      end
+      logger.warn "HEADER KEY: #{header[0]}"
+      logger.warn "HEADER VAL: #{header[1]}"
     end
     logger.warn "*** END RAW REQUEST HEADERS ***"
     @venue = Venue.get(params[:venue_id]) || not_found
