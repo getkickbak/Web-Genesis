@@ -34,40 +34,45 @@ Ext.define('Genesis.device.notification.PhoneGap',
 function initPushwoosh()
 {
    var pushNotification = window.plugins.pushNotification;
-   // CHANGE projectid & appid
-   pushNotification.registerDevice(
+   var callback = function(rc)
    {
-      projectid : 733275653511,
-      appid : pushNotifAppId
-   }, function(status)
-   {
-      var deviceToken = status;
-      console.warn('registerDevice: ' + deviceToken);
-      Genesis.constants.device =
+   	// rc could be registrationId or errorCode
+   	
+      // CHANGE projectid & appid
+      pushNotification.registerDevice(
       {
-         'device_type' : pushNotifType, //1 for iOS, 3 for Android
-         'device_id' : deviceToken
-      };
-   }, function(status)
-   {
-      console.warn('failed to register : ' + JSON.stringify(status));
-      Genesis.constants.device = null;
-   });
-
-   document.addEventListener('push-notification', function(event)
-   {
-      var title = event.notification.title;
-      var userData = event.notification.userdata;
-
-      if ( typeof (userData) != "undefined")
+         projectid : 733275653511,
+         appid : pushNotifAppId
+      }, function(status)
       {
-         Ext.device.Notification.show(
+         var deviceToken = status;
+         console.warn('registerDevice: ' + deviceToken);
+         Genesis.constants.device =
          {
-            title : 'Push Notification Alert',
-            message : title
-         });
-         console.warn('push notifcation - userData [' + JSON.stringify(userData) + ']');
-      }
-   });
+            'device_type' : pushNotifType, //1 for iOS, 3 for Android
+            'device_id' : deviceToken
+         };
+      }, function(status)
+      {
+         console.warn('failed to register : ' + JSON.stringify(status));
+         Genesis.constants.device = null;
+      });
 
+      document.addEventListener('push-notification', function(event)
+      {
+         var title = event.notification.title;
+         var userData = event.notification.userdata;
+
+         if ( typeof (userData) != "undefined")
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Push Notification Alert',
+               message : title
+            });
+            console.warn('push notifcation - userData [' + JSON.stringify(userData) + ']');
+         }
+      });
+   }
+   pushNotification.unregisterDevice(callback, callback);
 }

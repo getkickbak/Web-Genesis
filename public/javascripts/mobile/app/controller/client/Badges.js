@@ -98,8 +98,8 @@ Ext.define('Genesis.controller.client.Badges',
    {
       if (Ext.os.is('Android'))
       {
-         var carousel = activeItem.query('carousel')[0];
-         var items = carousel.getInnerItems();
+         //var carousel = activeItem.query('carousel')[0];
+         //var items = carousel.getInnerItems();
 
          console.debug("Refreshing BadgesPage ...");
          /*
