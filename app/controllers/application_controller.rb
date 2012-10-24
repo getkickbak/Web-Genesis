@@ -22,9 +22,6 @@ class ApplicationController < ActionController::Base
   end
   
   def set_cache_buster
-    logger.warn "*** BEGIN RAW SESSION DATA ***"
-    logger.warn session.inspect
-    logger.warn "*** END RAW SESSION DATA ***"
     response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
