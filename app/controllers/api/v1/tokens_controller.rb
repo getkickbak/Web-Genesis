@@ -38,7 +38,8 @@ class Api::V1::TokensController < ApplicationController
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.tokens.create_invalid_info").split('\n') } }
       end  
-    else
+    else  
+      reset_session
       start = params[:start].to_i
       max = params[:limit].to_i
       @results = Customer.find(@user.id, start, max) 
@@ -103,6 +104,7 @@ class Api::V1::TokensController < ApplicationController
           @user.ensure_authentication_token!
           @user.save!
         end
+        reset_session
         start = params[:start].to_i
         max = params[:limit].to_i
         @results = Customer.find(@user.id, start, max) 
@@ -140,6 +142,7 @@ class Api::V1::TokensController < ApplicationController
       end  
     else
       @user.reset_authentication_token!
+      reset_session
       sign_out(@user)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
