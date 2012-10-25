@@ -113,8 +113,7 @@
     @include custom-background-gradient($bg-color, top, false, $type);
 
     .x-button-icon.x-icon-mask {
-      @include mask-by-background($bg-color, 20%, $tabs-bar-gradient);
-      //@include mask-by-background($bg-color);
+      @include mask-by-background($bg-color);
     }
 
     &.x-button-pressing, &.x-button-pressed, &.x-button-active {
@@ -141,21 +140,24 @@
 
 @mixin sencha-button-ui($ui-label, $color, $gradient: $button-gradient) {
   .x-button.x-button-#{$ui-label}, .x-button.x-button-#{$ui-label}-round, .x-button.x-button-#{$ui-label}-small, .x-button.x-button-#{$ui-label}-large {
-    @include toolbar-button($color, $gradient);
-    //border: 1px solid darken($color, 20%);
-    border: 1px solid $color !important;
-    //border-top-color: darken($color, 15%) !important;
+     @include toolbar-button($color, $gradient);
+     .x-button-icon.x-icon-mask {
+        @include mask-by-background($color, 20%, $tabs-bar-gradient);
+     }
+     //border: 1px solid darken($color, 20%);
+     border: 1px solid $color !important;
+     //border-top-color: darken($color, 15%) !important;
   }
 
   .x-button.x-button-#{$ui-label}-round {
-    @extend .x-button-round;
+     @extend .x-button-round;
   }
 
   .x-button.x-button-#{$ui-label}-small {
-    @extend .x-button-small;
+     @extend .x-button-small;
   }
   .x-button.x-button-#{$ui-label}-large {
-    @extend .x-button-large;
+     @extend .x-button-large;
   }
 }
 
