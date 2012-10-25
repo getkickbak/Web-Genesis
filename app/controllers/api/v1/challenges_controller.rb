@@ -1,6 +1,5 @@
 class Api::V1::ChallengesController < ApplicationController
   before_filter :authenticate_user!
-  before_filter :log_request_header, :only => [:complete]
   
   def index
     @venue = Venue.get(params[:venue_id]) || not_found
