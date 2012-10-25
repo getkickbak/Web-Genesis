@@ -140,6 +140,9 @@ class Common
     type_ids = []
     badge_type_id_to_type = {}
     badge_types.each do |badge_type|
+      badge_type.thumbnail_small_url = nil
+      badge_type.thumbnail_medium_url = nil
+      badge_type.thumbnail_large_url = nil
       type_ids << badge_type.id
       badge_type_id_to_type[badge_type.id] = badge_type
     end
@@ -157,7 +160,6 @@ class Common
       badge_type_images = BadgeTypeImage.all(:badge_type_id => type_ids, :user_agent => agent)
     end
     badge_type_images.each do |badge_type_image|
-      Rails.logger.info("Badge Type Image: #{badge_type_image}")
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_small_url = badge_type_image.thumbnail_small_url
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = badge_type_image.thumbnail_medium_url
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = badge_type_image.thumbnail_large_url
