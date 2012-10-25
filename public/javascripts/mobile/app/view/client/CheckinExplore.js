@@ -56,7 +56,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
             {
                iconCls : 'checkin',
                tag : 'checkInNow',
-               text : 'CheckIn Now!'
+               text : 'Check-In'
             }],
             listeners :
             {
