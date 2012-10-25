@@ -659,22 +659,9 @@ Ext.define('Genesis.controller.ControllerBase',
       var success = cbOnSuccess || Ext.emptyFn;
       var fail = cbOnFail || Ext.emptyFn;
 
-      var callback = function(btn)
-      {
-         Ext.defer(function()
-         {
-            if (btn.toLowerCase() == 'yes')
-            {
-               me.fireEvent('openpage', 'client.Challenges', 'referrals', success);
-            }
-            else
-            {
-               fail();
-            }
-         }, 1, me);
-      }
-      if ((!Customer.isValid(customer.getId()) || (customer.get('visits') <= 0))//
-      && (!Genesis.db.getReferralDBAttrib("m" + merchantId)))
+      if (Customer.isValid(customer.getId())// Valid Customer
+      && (customer.get('visits') < 2)// Not a frequent visitor yet
+      && (!Genesis.db.getReferralDBAttrib("m" + merchantId)))// Haven't been referred by a friend yet
       {
          console.debug("Customer Visit Count[" + customer.get('visits') + "]")
          Ext.device.Notification.show(
@@ -682,7 +669,20 @@ Ext.define('Genesis.controller.ControllerBase',
             title : 'Referral Challenge',
             message : me.referredByFriendsMsg(merchant.get('name')),
             buttons : ['Yes', 'No'],
-            callback : callback
+            callback : function(btn)
+            {
+               if (btn.toLowerCase() == 'yes')
+               {
+                  Ext.defer(function()
+                  {
+                     me.fireEvent('openpage', 'client.Challenges', 'referrals', success);
+                  }, 1, me);
+               }
+               else
+               {
+                  fail();
+               }
+            }
          });
       }
       else

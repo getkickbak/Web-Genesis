@@ -294,14 +294,20 @@ Ext.define('Genesis.controller.client.Merchants',
       if (Ext.os.is('Android'))
       {
          console.debug("Refreshing MerchantRenderStore ...");
+         var monitors = this.getEventDispatcher().getPublishers()['elementPaint'].monitors;
+         
          activeItem.query('dataview[tag=tbPanel]')[0].refresh();
          var feedPanel = activeItem.query('dataview[tag=feedPanel]')[0];
          if (feedPanel)
          {
             feedPanel.refresh();
-            ;
          }
          activeItem.query('dataview[tag=descPanel]')[0].refresh();
+
+         monitors[activeItem.element.getId()].onElementPainted(
+         {
+            animationName : 'x-paint-monitor-helper'
+         });         
       }
    },
    onMainActivate : function(activeItem, c, oldActiveItem, eOpts)
