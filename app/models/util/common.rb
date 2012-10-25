@@ -156,13 +156,12 @@ class Common
     else
       badge_type_images = BadgeTypeImage.all(:badge_type_id => type_ids, :user_agent => agent)
     end
-    Rails.logger.info("Badge Type Images: #{badge_type_images}")
     badge_type_images.each do |badge_type_image|
+      Rails.logger.info("Badge Type Image: #{badge_type_image}")
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_small_url = badge_type_image.thumbnail_small_url
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = badge_type_image.thumbnail_medium_url
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = badge_type_image.thumbnail_large_url
     end
-    Rails.logger.info("Badge Types: #{badge_types}")
   end
 
   def self.get_news(venue)
