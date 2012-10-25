@@ -929,6 +929,7 @@ Ext.define('Genesis.controller.ControllerBase',
             {
                if (i < 3)
                {
+                  console.debug("Retry #" + i);
                   Ext.defer(me.getGeoLocation, 1 * 1000, me, [++i]);
                   //console.debug("Retry getting current location(" + i + ") ...");
                }
@@ -967,7 +968,6 @@ Ext.define('Genesis.controller.ControllerBase',
             }
          }
       }
-
       if (!me.geoLocation)
       {
          me.geoLocation = Ext.create('Ext.util.Geolocation', Ext.applyIf(
@@ -979,8 +979,8 @@ Ext.define('Genesis.controller.ControllerBase',
                {
                   if (bTimeout && (i < 4))
                   {
-                     console.debug("Retry #" + i);
-                     me.getGeoLocation(4);
+                  	i = 4;
+                     me.getGeoLocation(i);
                   }
                   else
                   {
