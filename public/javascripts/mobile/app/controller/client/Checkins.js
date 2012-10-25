@@ -25,8 +25,9 @@ Ext.define('Genesis.controller.client.Checkins',
             autoCreate : true,
             xtype : 'clientcheckinexploreview'
          },
-         checkInNowBar : 'clientcheckinexploreview container[tag=checkInNow]',
-         shareBtn : 'viewportview button[tag=shareBtn]'
+         toolbarBottom : 'clientcheckinexploreview container[tag=toolbarBottom]',
+         shareBtn : 'viewportview button[tag=shareBtn]',
+         refreshBtn : 'clientcheckinexploreview button[tag=refresh]'
       },
       control :
       {
@@ -38,6 +39,10 @@ Ext.define('Genesis.controller.client.Checkins',
             showView : 'onExploreShowView',
             activate : 'onExploreActivate',
             deactivate : 'onExploreDeactivate'
+         },
+         refreshBtn :
+         {
+            tap : 'onRefreshTap'
          },
          exploreList :
          {
@@ -415,11 +420,11 @@ Ext.define('Genesis.controller.client.Checkins',
                //Ext.Viewport.setMasked(false);
                if (operation.wasSuccessful())
                {
-               	Ext.Viewport.setMasked(false);
-               	
-                  var checkinContainer = me.getCheckInNowBar();
+                  Ext.Viewport.setMasked(false);
+
+                  var tbb = me.getToolbarBottom();
                   me.setPosition(position);
-                  checkinContainer.setDisabled(false);
+                  tbb.setDisabled(false);
                }
                else
                {
@@ -478,7 +483,7 @@ Ext.define('Genesis.controller.client.Checkins',
       var me = this;
 
       var viewport = me.getViewPortCntlr();
-      var checkinContainer = me.getCheckInNowBar();
+      var tbb = me.getToolbarBottom();
       var tbbar = activeItem.query('titlebar')[0];
 
       switch (me.animMode)
@@ -498,11 +503,11 @@ Ext.define('Genesis.controller.client.Checkins',
          case 'checkin':
             tbbar.setTitle(' ');
             tbbar.addCls('kbTitle');
-            checkinContainer.setDisabled(true);
-            checkinContainer.show();
+            tbb.setDisabled(true);
+            tbb.show();
             break;
          case 'explore' :
-            checkinContainer.hide();
+            tbb.hide();
             break;
       }
       //activeItem.createView();
@@ -514,6 +519,12 @@ Ext.define('Genesis.controller.client.Checkins',
    },
    onExploreDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
+   },
+   onRefreshTap : function(b, e, eOpts)
+   {
+      var me = this;
+      me.fireEvent('exploreLoad', true);
    },
    onExploreSelect : function(d, model, eOpts)
    {

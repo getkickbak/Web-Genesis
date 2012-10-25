@@ -8,8 +8,11 @@
    }
 }
 
-.checkInNow {
-   @include custom-linear-gradient($BlueStart 0%, $BlueEnd 75%, top);
-   color : $Grey;
-   padding: $panelTopGap 2*$panelGap;
+.toolbarBottom {
+   //@include custom-linear-gradient($BlueStart 0%, $BlueEnd 75%, top);
+   .x-segmentedbutton .x-button {
+      color : $Grey;
+      @include border-radius(0);
+      padding: $panelTopGap $panelGap;
+   }
 }

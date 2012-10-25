@@ -334,13 +334,23 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       if ((appName == 'GetKickBak') && !Ext.device.Connection.isOnline() && (feature != 'MainPage'))
       {
-         Ext.device.Notification.show(
+         var viewport = me.getViewPortCntlr();
+         if (!offlineDialogShown)
          {
-            title : 'Network Error',
-            message : 'You have lost internet connectivity'
-         });
+            Ext.device.Notification.show(
+            {
+               title : 'Network Error',
+               message : 'You have lost internet connectivity',
+               callback : function()
+               {
+                  offlineDialogShown = false;
+               }
+            });
+            offlineDialogShown = true;
+         }
+         console.debug("Network Error - " + feature + "," + subFeature);
          me.resetView();
-         me.redirectTo('login');
+         me.redirectTo(viewport.getLoggedIn() ? 'main' : 'login');
          return;
       }
 

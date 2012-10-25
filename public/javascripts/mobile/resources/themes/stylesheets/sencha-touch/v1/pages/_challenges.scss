@@ -49,3 +49,9 @@
       text-align:center;
    }
 }
+
+.challengeContainer {
+   @include custom-linear-gradient($BlueStart 0%, $BlueEnd 75%, top);
+   padding: $panelTopGap 2*$panelGap;
+   color : $Grey;
+}

@@ -26,7 +26,7 @@ Ext.define('Genesis.view.client.ChallengePage',
       },
       {
          docked : 'bottom',
-         cls : 'checkInNow',
+         cls : 'challengeContainer',
          tag : 'challengeContainer',
          hidden : true,
          xtype : 'container',

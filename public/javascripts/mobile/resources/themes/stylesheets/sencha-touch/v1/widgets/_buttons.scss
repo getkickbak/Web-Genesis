@@ -12,6 +12,7 @@
 @include sencha-button-ui('fbBlue', desaturate(darken(#3B5998, 10%), 5%));
 @include sencha-button-ui('action', $active-color);
 @include sencha-button-ui('cancel', $BlackStart);
+@include sencha-button-ui('blue', lighten($BlueEnd, 15%), 'glossy');
 
 // Back/Forward buttons
 $shadow-width: .065em; // Space between tip and its shadow

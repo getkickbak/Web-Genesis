@@ -8,6 +8,7 @@
  *
  * @param {string} $name The name of the icon to be included. This is to match the name of the icon file (located at resources/themes/images/default/pictos) without its extention (.png).
  */
+@include pictos-iconmask('refresh');
 @mixin pictos-iconmask($name) {
 }
 @mixin toolbar-iconmask($name) {
@@ -79,11 +80,19 @@
      } @else if $type == recessed {
         @include background-image($image, linear-gradient($position, color_stops(darken($bg-color, 10%), darken($bg-color, 5%) 10%, $bg-color 65%, lighten($bg-color, .5%))));
      }
+     @else
+     {
+        @include background-gradient($bg-color, $type, $position, $contrast: 1);
+     }
   } @else {
      @if $type == smooth {
         @include background-image(linear-gradient($position, color_stops($bg-color 30%, darken($bg-color, 20%))));    
      } @else if $type == recessed {
         @include background-image(linear-gradient($position, color_stops(darken($bg-color, 10%), darken($bg-color, 5%) 10%, $bg-color 65%, lighten($bg-color, .5%))));
+     }
+     @else
+     {
+        @include background-gradient($bg-color, $type, $position, $contrast: 1);
      }
   }
 }
@@ -104,7 +113,8 @@
     @include custom-background-gradient($bg-color, top, false, $type);
 
     .x-button-icon.x-icon-mask {
-      @include mask-by-background($bg-color);
+      @include mask-by-background($bg-color, 20%, $tabs-bar-gradient);
+      //@include mask-by-background($bg-color);
     }
 
     &.x-button-pressing, &.x-button-pressed, &.x-button-active {

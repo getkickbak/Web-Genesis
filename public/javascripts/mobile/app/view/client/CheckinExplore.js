@@ -23,14 +23,14 @@ Ext.define('Genesis.view.client.CheckinExplore',
          {
             align : 'right',
             ui : 'normal',
-            tag : 'rewardsSC',
-            text : 'Earn Pts!'
+            iconCls : 'refresh',
+            tag : 'refresh'
          }]
       }),
       {
          docked : 'bottom',
-         cls : 'checkInNow',
-         tag : 'checkInNow',
+         cls : 'toolbarBottom',
+         tag : 'toolbarBottom',
          xtype : 'container',
          layout :
          {
@@ -39,9 +39,33 @@ Ext.define('Genesis.view.client.CheckinExplore',
          },
          items : [
          {
-            xtype : 'button',
-            tag : 'checkInNow',
-            text : 'CheckIn Now!'
+            xtype : 'segmentedbutton',
+            allowMultiple : false,
+            defaults :
+            {
+               iconMask : true,
+               ui : 'blue',
+               flex : 1
+            },
+            items : [
+            {
+               iconCls : 'rewards',
+               tag : 'rewardsSC',
+               text : 'Earn Pts'
+            },
+            {
+               iconCls : 'checkin',
+               tag : 'checkInNow',
+               text : 'CheckIn Now!'
+            }],
+            listeners :
+            {
+               toggle : function(container, button, pressed)
+               {
+                  //console.debug("User toggled the '" + button.getText() + "' button: " + ( pressed ? 'on' : 'off'));
+                  container.setPressedButtons([]);
+               }
+            }
          }]
       }]
    },
@@ -50,7 +74,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
    {
       if (!this.callParent(arguments))
       {
-      	//this.query('list')[0].refresh();
+         //this.query('list')[0].refresh();
          return;
       }
       this.getPreRender().push(Ext.create('Ext.List',
