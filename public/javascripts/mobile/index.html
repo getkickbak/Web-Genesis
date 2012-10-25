@@ -30,7 +30,7 @@
       -->
       <script type="text/javascript" src="lib/cordova-2.1.0.ios.js"></script>
       <script type="text/javascript" src="lib/core/PushNotification.ios.js"></script>
-      
+
       <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
       <script type="text/javascript">
          var launched = 0x00;
@@ -141,6 +141,8 @@
                if (Ext.device)
                {
                   console.log(Ext.device.Connection.__proto__.$className);
+                  console.debug('Connection type: [' + Ext.device.Connection.getType() + ']');
+                  //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
                   if (!Ext.device.Connection.isOnline())
                   {
                      _onGotoMain();

@@ -36,8 +36,8 @@ function initPushwoosh()
    var pushNotification = window.plugins.pushNotification;
    var callback = function(rc)
    {
-   	// rc could be registrationId or errorCode
-   	
+      // rc could be registrationId or errorCode
+
       // CHANGE projectid & appid
       pushNotification.registerDevice(
       {
@@ -60,17 +60,24 @@ function initPushwoosh()
 
       document.addEventListener('push-notification', function(event)
       {
-         var title = event.notification.title;
-         var userData = event.notification.userdata;
-
-         if ( typeof (userData) != "undefined")
+         if (event.notification)
          {
-            Ext.device.Notification.show(
+            var title = event.notification.title;
+            var userData = event.notification.userdata;
+
+            if ( typeof (userData) != "undefined")
             {
-               title : 'Push Notification Alert',
-               message : title
-            });
-            console.warn('push notifcation - userData [' + JSON.stringify(userData) + ']');
+               Ext.device.Notification.show(
+               {
+                  title : 'Push Notification Alert',
+                  message : title
+               });
+               console.warn('push notifcation - userData [' + JSON.stringify(userData) + ']');
+            }
+         }
+         else
+         {
+            console.warn('push notifcation - Null Notification');
          }
       });
    }

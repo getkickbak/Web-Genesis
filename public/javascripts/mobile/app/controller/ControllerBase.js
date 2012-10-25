@@ -831,9 +831,10 @@ Ext.define('Genesis.controller.ControllerBase',
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
-   getGeoLocation : function(i)
+   getGeoLocation : function(iter)
    {
       var me = this;
+      var i = iter || 0;
       var viewport = me.getViewPortCntlr();
       var options =
       {
@@ -844,7 +845,6 @@ Ext.define('Genesis.controller.ControllerBase',
          enableHighAccuracy : true
       }
 
-      i = i || 0;
       console.debug('Getting GeoLocation ...');
       if (!Genesis.constants.isNative())
       {
@@ -968,8 +968,6 @@ Ext.define('Genesis.controller.ControllerBase',
          }
       }
 
-      console.debug('Connection type: [' + Ext.device.Connection.getType() + ']');
-      //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
       if (!me.geoLocation)
       {
          me.geoLocation = Ext.create('Ext.util.Geolocation', Ext.applyIf(
@@ -981,6 +979,7 @@ Ext.define('Genesis.controller.ControllerBase',
                {
                   if (bTimeout && (i < 4))
                   {
+                     console.debug("Retry #" + i);
                      me.getGeoLocation(4);
                   }
                   else
