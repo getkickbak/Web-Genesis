@@ -219,6 +219,7 @@ en:
         create_missing_facebook_info: "Missing facebook info."
         create_invalid_info: "The email/password you entered is incorrect.\nPlease try again."
         create_invalid_facebook_info: "Invalid facebook sign in."
+        create_failure: "Trouble with sign in.\nPlease try again."
         create_from_facebook_failure: "Trouble with facebook sign in.\nPlease try again."
         destroy_failure: "Trouble with logout.\nPlease try again."  
   admin:

@@ -33,22 +33,36 @@ class Api::V1::TokensController < ApplicationController
     @user.ensure_authentication_token!
     @user.save!
 
-    if auth_token.nil? && (not @user.valid_password?(password))
+    begin
+      if auth_token.nil? && (not @user.valid_password?(password))
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => t("api.tokens.create_invalid_info").split('\n') } }
+        end  
+      else  
+        reset_session
+        start = params[:start].to_i
+        max = params[:limit].to_i
+        @results = Customer.find(@user.id, start, max) 
+        if params[:device] && (params[:device] != "null")
+          device_info = JSON.parse(params[:device], { :symbolize_names => true })
+          Common.register_user_device(@user, device_info)
+        end
+        render :template => '/api/v1/tokens/create'
+      end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.tokens.create_invalid_info").split('\n') } }
-      end  
-    else  
-      reset_session
-      start = params[:start].to_i
-      max = params[:limit].to_i
-      @results = Customer.find(@user.id, start, max) 
-      if params[:device] && (params[:device] != "null")
-        device_info = JSON.parse(params[:device], { :symbolize_names => true })
-        Common.register_user_device(@user, device_info)
+        format.json { render :json => { :success => false, :message => t("api.tokens.create_failure").split('\n') } }
       end
-      render :template => '/api/v1/tokens/create'
-    end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.tokens.create_failure").split('\n') } }
+      end
+    end   
   end
 
   def create_from_facebook
@@ -134,20 +148,25 @@ class Api::V1::TokensController < ApplicationController
   end
   
   def destroy
-    @user = User.first(:authentication_token => params[:id])
-    if @user.nil?
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.tokens.destroy_failure").split('\n') } }
-      end  
-    else
-      @user.reset_authentication_token!
-      reset_session
-      sign_out(@user)
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => true } }
-      end  
+    begin
+      @user = User.first(:authentication_token => params[:id])
+      if @user.nil?
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => t("api.tokens.destroy_failure").split('\n') } }
+        end  
+      else
+        @user.reset_authentication_token!
+        reset_session
+        sign_out(@user)
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => true } }
+        end  
+      end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      raise
     end
   end
 end
