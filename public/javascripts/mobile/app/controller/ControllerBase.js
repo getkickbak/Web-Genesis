@@ -12,6 +12,7 @@ Ext.define('Genesis.controller.ControllerBase',
    genQRCodeMsg : 'Generating QRCode ...',
    retrieveAuthModeMsg : 'Retrieving Authorization Code from Server ...',
    noCodeScannedMsg : 'No Authorization Code was Scanned!',
+   lostNetworkConenction : 'You have lost network connectivity',
    geoLocationErrorMsg : function()
    {
       var rc = 'Your current location is unavailable. ';
@@ -340,7 +341,7 @@ Ext.define('Genesis.controller.ControllerBase',
             Ext.device.Notification.show(
             {
                title : 'Network Error',
-               message : 'You have lost internet connectivity',
+               message : me.lostNetworkConnectionMsg,
                callback : function()
                {
                   offlineDialogShown = false;
