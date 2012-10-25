@@ -39,10 +39,10 @@ class Common
     get_photo_host+generate_temp_file_path(filename)
   end
 
-  def self.within_geo_distance?(logger, user, latitude_1, longitude_1, latitude_2, longitude_2)
+  def self.within_geo_distance?(user, latitude_1, longitude_1, latitude_2, longitude_2)
     if !APP_PROP["SIMULATOR_MODE"] && user.role == "user"
       cal_distance = 6371000 * Math.acos( Math.cos( Math.radians( latitude_1 ) ) * Math.cos( Math.radians( latitude_2 ) ) * Math.cos( Math.radians( longitude_2 ) - Math.radians( longitude_1 ) ) + Math.sin( Math.radians( latitude_1 ) ) * Math.sin( Math.radians( latitude_2 ) ) )
-      logger.info("Check geo-distance: #{cal_distance}m away")
+      Rails.logger.info("Check geo-distance: #{cal_distance}m away")
       #return cal_distance <= 100
     end
     return true
@@ -156,11 +156,13 @@ class Common
     else
       badge_type_images = BadgeTypeImage.all(:badge_type_id => type_ids, :user_agent => agent)
     end
+    Rails.logger.info("Badge Type Images: #{badge_type_images}")
     badge_type_images.each do |badge_type_image|
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_small_url = badge_type_image.thumbnail_small_url
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = badge_type_image.thumbnail_medium_url
       badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = badge_type_image.thumbnail_large_url
     end
+    Rails.logger.info("Badge Types: #{badge_types}")
   end
 
   def self.get_news(venue)

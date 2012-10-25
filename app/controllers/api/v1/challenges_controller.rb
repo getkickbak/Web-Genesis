@@ -83,7 +83,7 @@ class Api::V1::ChallengesController < ApplicationController
       return  
     end
     
-    if !Common.within_geo_distance?(logger, current_user, params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
+    if !Common.within_geo_distance?(current_user, params[:latitude].to_f, params[:longitude].to_f, @venue.latitude, @venue.longitude)
       logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), out of distance")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
