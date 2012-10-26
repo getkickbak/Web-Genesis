@@ -190,11 +190,15 @@ Ext.define('Genesis.controller.MainPage',
                {
                   title : 'Missing License Key!',
                   message : me.missingLicenseKeyMsg,
-                  callback : function()
+                  buttons : ['Proceed', 'Cancel'],
+                  callback : function(btn)
                   {
-                  	_application.getController('Settings').fireEvent('upgradeDevice');
+                     if (btn.toLowerCase() == 'proceed')
+                     {
+                        _application.getController('Settings').fireEvent('upgradeDevice');
+                     }
                   }
-               });               
+               });
             }
          }
          else
