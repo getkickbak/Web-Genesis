@@ -133,6 +133,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    sessionTimeoutMsg : 'Session Timeout',
    passwdResetConfirmMsg : 'Please confirm to reset your account password',
+   missingLicenseKeyMsg : 'License Key for this Device is missing. Press "Procced" to Scan the License Key into the device.',
    passwdResetSuccessMsg : function()
    {
       return ('Password Reset was Successful.' + Genesis.constants.addCRLF() + //
@@ -169,6 +170,32 @@ Ext.define('Genesis.controller.MainPage',
          if (merchantMode)
          {
             me.goToMain();
+            var keys = Genesis.constants.getPrivKey();
+            var venueId;
+            for (key in keys)
+            {
+               try
+               {
+                  venueId = parseInt(key.split('r')[1] || key.split('v')[1]);
+               }
+               catch (e)
+               {
+                  venueId = 0;
+               }
+               break;
+            }
+            if (venueId == 0)
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Missing License Key!',
+                  message : me.missingLicenseKeyMsg,
+                  callback : function()
+                  {
+                  	_application.getController('Settings').fireEvent('upgradeDevice');
+                  }
+               });               
+            }
          }
          else
          {
@@ -384,10 +411,10 @@ Ext.define('Genesis.controller.MainPage',
    // --------------------------------------------------------------------------
    onItemTap : function(model)
    {
-   	var viewport = this.getViewPortCntlr();
-   	
+      var viewport = this.getViewPortCntlr();
+
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-      
+
       console.log("Controller=[" + model.get('pageCntlr') + "]");
       var cntlr = this.getApplication().getController(model.get('pageCntlr'));
       var msg = cntlr.isOpenAllowed();
@@ -426,11 +453,11 @@ Ext.define('Genesis.controller.MainPage',
 
          console.debug("Refreshing MainPage ...");
          /*
-         for (var i = 0; i < items.length; i++)
-         {
-            items[i].refresh();
-         }
-         */
+          for (var i = 0; i < items.length; i++)
+          {
+          items[i].refresh();
+          }
+          */
       }
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)

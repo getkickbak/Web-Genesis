@@ -14,6 +14,8 @@ Genesis.constants =
 {
    //host : 'http://192.168.0.52:3000',
    host : 'http://www.getkickbak.com',
+   clientVersion : '1.0.2',
+   serverVersion : '1.0.2',
    themeName : 'v1',
    defaultFontSize : (function()
    {

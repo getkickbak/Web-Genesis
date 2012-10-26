@@ -49,6 +49,10 @@ Ext.define('Genesis.controller.Settings',
       },
       control :
       {
+      },
+      listeners :
+      {
+         'upgradeDevice' : 'onUpgradeDevice'
       }
    },
    termsLoaded : false,
@@ -60,6 +64,7 @@ Ext.define('Genesis.controller.Settings',
    },
    proceedToUpdateLicenseMsg : 'Please confirm to proceed with License Update',
    updatingFbLoginMsg : 'Updating Facebok Login Credentials',
+   noLicenseKeyScannedMsg : 'No License Key was found!',
    licenseKeySuccessMsg : function()
    {
       return 'License Key Updated for ' + Genesis.constants.addCRLF() + '[' + Genesis.constants.privKey['venue'] + ']';
@@ -140,6 +145,11 @@ Ext.define('Genesis.controller.Settings',
             activate : 'onServerActivate'
          }
       });
+   },
+   onUpgradeDevice : function()
+   {
+      var me = this;
+      me.scanQRCode();
    },
    updateLicenseKey : function(key)
    {
@@ -260,7 +270,7 @@ Ext.define('Genesis.controller.Settings',
          {
             if (btn.toLowerCase() == 'proceed')
             {
-               me.scanQRCode();
+               me.fireEvent('upgradeDevice');
             }
          }
       });
@@ -460,12 +470,12 @@ Ext.define('Genesis.controller.Settings',
       }
       else
       {
-         console.debug(me.noCodeScannedMsg);
+         console.debug(me.noLicenseKeyScannedMsg);
          Ext.Viewport.setMasked(false);
          Ext.device.Notification.show(
          {
             title : 'Error',
-            message : me.noCodeScannedMsg
+            message : me.noLicenseKeyScannedMsg
          });
       }
    },
