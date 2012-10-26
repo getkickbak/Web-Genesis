@@ -10,6 +10,7 @@ Ext.define('Genesis.controller.Settings',
       termsOfServiceTitle : 'Term of Service',
       privacyTitle : 'Privacy',
       aboutUsTitle : 'About Us',
+      licenseTitle : 'Refresh License Key',
       routes :
       {
          'clientSettings' : 'clientSettingsPage',
@@ -57,6 +58,12 @@ Ext.define('Genesis.controller.Settings',
    {
       return 'You\'re logged into Facebook as ' + Genesis.constants.addCRLF() + email;
    },
+   proceedToUpdateLicenseMsg : 'Please confirm to proceed with License Update',
+   updatingFbLoginMsg : 'Updating Facebok Login Credentials',
+   licenseKeySuccessMsg : function()
+   {
+      return 'License Key Updated for ' + Genesis.constants.addCRLF() + '[' + Genesis.constants.privKey['venue'] + ']';
+   },
    init : function()
    {
       this.callParent(arguments);
@@ -96,6 +103,10 @@ Ext.define('Genesis.controller.Settings',
    {
       this.control(
       {
+         'serversettingspageview listfield[name=license]' :
+         {
+            clearicontap : 'onRefreshLicenseTap'
+         },
          'serversettingspageview listfield[name=terms]' :
          {
             clearicontap : 'onTermsTap'
@@ -114,6 +125,19 @@ Ext.define('Genesis.controller.Settings',
          }
       });
    },
+   updateLicenseKey : function(key)
+   {
+      Genesis.fn.writeFile('resources/keys.txt', Ext.encode(key), function(evt)
+      {
+         console.debug("Content Written to Disk");
+         Genesis.constants.privKey = key;
+         Ext.device.Notification.show(
+         {
+            title : 'License Key Updated!',
+            message : me.licenseKeySuccessMsg()
+         });
+      });
+   },
    onFacebookChange : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
       var me = this;
@@ -121,10 +145,17 @@ Ext.define('Genesis.controller.Settings',
       var db = Genesis.db.getLocalDB();
 
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+
       if (newValue == 1)
       {
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : Genesis.fb.connectingToFBMsg
+         });
          Genesis.fb.facebook_onLogin(function(params, operation)
          {
+            Ext.Viewport.setMasked(false);
             if (!operation || operation.wasSuccessful())
             {
                Ext.device.Notification.show(
@@ -143,6 +174,11 @@ Ext.define('Genesis.controller.Settings',
       if (db['enableFB'])
       {
          console.debug("Cancelling Facebook Login ...");
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : Genesis.fb.connectingToFBMsg
+         });
          var params =
          {
             facebook_id : 0
@@ -168,6 +204,8 @@ Ext.define('Genesis.controller.Settings',
                   delete db['fbAccountId'];
                   delete db['fbResponse'];
                   Genesis.db.setLocalDB(db);
+
+                  facebook_onLogout(Ext.emptyFn, true);
                }
                else
                {
@@ -176,6 +214,26 @@ Ext.define('Genesis.controller.Settings',
             }
          });
       }
+   },
+   // --------------------------------------------------------------------------
+   // Button Handlers
+   // --------------------------------------------------------------------------
+   onRefreshLicenseTap : function(b, e)
+   {
+      var me = this;
+      Ext.device.Notification.show(
+      {
+         title : 'Confirmation Required',
+         message : me.proceedToUpdateLicenseMsg,
+         buttons : ['Proceed', 'Cancel'],
+         callback : function(btn)
+         {
+            if (btn.toLowerCase() == 'proceed')
+            {
+               me.scanQRCode();
+            }
+         }
+      });
    },
    onTermsTap : function(b, e)
    {
@@ -335,6 +393,51 @@ Ext.define('Genesis.controller.Settings',
 
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       me.redirectTo('password_change');
+   },
+   // --------------------------------------------------------------------------
+   // Event Handlers
+   // --------------------------------------------------------------------------
+   onScannedQRcode : function(qrcode)
+   {
+      var me = this;
+      var vport = me.getViewport();
+
+      if (qrcode)
+      {
+         console.debug("Programming License Key into Merchant Device ...");
+         Venue['setGetLicenseKeyURL']();
+         Venue.load(0,
+         {
+            jsonData :
+            {
+            },
+            params :
+            {
+               update_token : qrcode,
+               deviceId : (Genesis.constants.isNative()) ? device.uuid : null,
+            },
+            callback : function(record, operation)
+            {
+               var metaData = Venue.getProxy().getReader().metaData;
+               Ext.Viewport.setMasked(false);
+
+               if (operation.wasSuccessful())
+               {
+                  me.updateLicenseKey(metaData);
+               }
+            }
+         });
+      }
+      else
+      {
+         console.debug(me.noCodeScannedMsg);
+         Ext.Viewport.setMasked(false);
+         Ext.device.Notification.show(
+         {
+            title : 'Error',
+            message : me.noCodeScannedMsg
+         });
+      }
    },
    onServerActivate : function(activeItem, c, oldActiveItem, eOpts)
    {

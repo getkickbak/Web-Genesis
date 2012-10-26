@@ -1,5 +1,5 @@
 module Business
-  class MarketingController < BaseApplicationController
+  class MarketingController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     before_filter :check_status
     before_filter :check_is_admin

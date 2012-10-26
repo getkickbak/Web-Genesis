@@ -12,6 +12,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          // Backgrond Image
          cls : 'tbPanel',
          tag : 'background',
+         height : window.innerWidth,
          items : [
          // Display Points
          {
@@ -91,6 +92,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                      '<div class="progressBar" style="{[this.getProgress(values)]}"></div>',
                      '<div class="progressBarValue">{[this.getDesc(values)]}</div>',
                   '</div>',
+                  '{[this.cleanup(values)]}',
                '</div>',
             '</div>',
          '</tpl>',
@@ -103,9 +105,13 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             {
                var viewport = _application.getController('Viewport');
                var customer = viewport.getCustomer();
-               var valid = Customer.isValid(customer.getId());
+               var valid = false;
 
-               values['_customer'] = (valid) ? Ext.StoreMgr.get('CustomerStore').getById(customer.getId()) : null;
+               if (customer)
+               {
+                  valid = Customer.isValid(customer.getId());
+                  values['_customer'] = (valid) ? Ext.StoreMgr.get('CustomerStore').getById(customer.getId()) : null;
+               }
 
                return valid;
             },
@@ -117,7 +123,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             },
             getTitle : function(values)
             {
-               var msg = ('You are currently our <span class ="badgehighlight">' + //
+               var msg = ('You are our <span class ="badgehighlight">' + //
                values['_badgeType'].display_value.toUpperCase() + '</span>');
                /*
                 return msg += '<img style="width:1em;float:right;"' + //
@@ -142,13 +148,16 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
                var nvisit = values['_nvisit'];
                var tvisit = customer.get('next_badge_visits');
                var nextBadge = values['_nextBadge'];
+
+               return ((nvisit - tvisit) + ' more visit' + (((nvisit - tvisit) > 1) ? 's' : '') + ' to be our ' + //
+               ((nextBadge) ? nextBadge.get('type').display_value.toUpperCase() : 'None') + '!');
+            },
+            cleanup : function(values)
+            {
                delete values['_customer'];
                delete values['_nextBadge'];
                delete values['_badgeType'];
                delete values['_nvisit'];
-
-               return ((nvisit - tvisit) + ' more visit' + (((nvisit - tvisit) > 1) ? 's' : '') + ' to be our ' + //
-               nextBadge.get('type').display_value.toUpperCase() + '!');
             }
          })
       },
@@ -166,7 +175,20 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
          {
             setData : 'badgeProgress'
          }
+      },
+      listeners :
+      {
+         'painted' : function(c, eOpts)
+         {
+            console.debug("MerchantAccountPtsItem - painted[" + c.id + "]");
+         }
       }
+
+   },
+   initialize : function()
+   {
+      //var bg = this.query('container[tag=background]')[0];
+      //bg.setHeight(Ext.Viewport.getSize().width);
    },
    applyBackground : function(config)
    {
@@ -199,7 +221,6 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       var bg = this.query('container[tag=background]')[0];
 
       // Update Background Photo
-      bg.setHeight(Ext.Viewport.getSize().width);
       bg.setStyle(
       {
          'background-image' : 'url(' + data.Merchant['alt_photo']['url'] + ')'

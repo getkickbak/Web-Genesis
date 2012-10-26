@@ -1,18 +1,30 @@
 <% content_for :script do %>
 <script type="text/javascript">
 	$(document).ready($(function() {
-	var msg=$("#notice").html();
-	if(msg) {
-	Genesis.showWarningMsg(msg,null,true);
+	var notice_msg=$("#notice").html();
+	if(notice_msg) {
+	Genesis.showWarningMsg(notice_msg,null,true);
+	}
+	var error_msg=$("#error").html();
+	if(error_msg) {
+	Genesis.showErrMsg(error_msg,null,true);
 	}
 	}));
 </script>
+<script type="text/javascript" src="/javascripts/desktop/src/business/venue.js"></script>
 <script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
 <% end %>
 <% if flash[:notice] %>
 <div style="display:none;" id="notice">
 	<p>
 		<%= flash[:notice] %>
+	</p>
+</div>
+<% end %>
+<% if flash[:error] %>
+<div style="display:none;" id="error">
+	<p>
+		<%= flash[:error] %>
 	</p>
 </div>
 <% end %>
@@ -31,63 +43,95 @@
 							<div class="tabbable">
 								<ul class="nav nav-tabs">
 									<li class="active">
-										<a href="#venue" data-toggle="tab">Show</a>
+										<a href="#venue" data-toggle="tab">Info</a>
 									</li>
 								</ul>
 								<br>
 								<div class="tab-content">
 									<div class="tab-pane active" id="venue">
-										<p>
-											<b>Name:</b>
-											<%= @venue.name %>
-										</p>
-										<p>
-											<b>Address:</b>
-											<%= @venue.address %>
-										</p>
-										<p>
-											<b>City:</b>
-											<%= @venue.city %>
-										</p>
-										<p>
-											<b>State:</b>
-											<%= @venue.state %>
-										</p>
-										<p>
-											<b>ZipCode:</b>
-											<%= @venue.zipcode %>
-										</p>
-										<p>
-											<b>Country:</b>
-											<%= @venue.country %>
-										</p>
-										<p>
-											<b>Time Zone:</b>
-											<%= @venue.time_zone %>
-										</p>
-										<p>
-											<b>Phone:</b>
-											<%= @venue.phone %>
-										</p>
-										<% if not @venue.website.empty? %>
-										<p>
-											<b>Website:</b>
-											<%= @venue.website %>
-										</p>
-										<% end %>
-										<p>
-											<b>Longitude:</b>
-											<%= @venue.longitude %>
-										</p>
-										<p>
-											<b>Latitude:</b>
-											<%= @venue.latitude %>
-										</p>
-										<p>
-											<b>Authorization Code:</b>
-											<%= @venue.auth_code %>
-										</p>
-										<%= link_to 'Edit', edit_venue_path(@venue) %> | <%= link_to 'Update Authorization Code', update_auth_code_venue_path(@venue) %> | <%= link_to 'Update CheckIn Code', update_check_in_auth_code_venue_path(@venue) %>
+										<div class="not-edit form-horizontal">
+											<div class="control-group">
+												<label class="control-label"> Name: </label>
+												<div id="venue_name" class="controls">
+													<%= @venue.name %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> Description: </label>
+												<div class="controls">
+													<%= @venue.description %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> Address: </label>
+												<div id="venue_address" class="controls">
+													<%= @venue.address %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> City: </label>
+												<div id="venue_city" class="controls">
+													<%= @venue.city %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> State: </label>
+												<div id="venue_state" class="controls">
+													<%= @venue.state %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> ZipCode: </label>
+												<div class="controls">
+													<%= @venue.zipcode %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> Country: </label>
+												<div id="venue_country" class="controls">
+													<%= @venue.country %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> Time Zone: </label>
+												<div class="controls">
+													<%= @venue.time_zone %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> Phone: </label>
+												<div class="controls">
+													<%= @venue.phone %>
+												</div>
+											</div>
+											<% if not @venue.website.empty? %>
+											<div class="control-group">
+												<label class="control-label"> Website: </label>
+												<div class="controls">
+													<%= @venue.website %>
+												</div>
+											</div>
+											<% end %>
+											<div class="control-group">
+												<label class="control-label"> Longitude: </label>
+												<div class="controls">
+													<%= @venue.longitude %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> Latitude: </label>
+												<div class="controls">
+													<%= @venue.latitude %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> Authorization Code: </label>
+												<div class="controls">
+													<%= @venue.auth_code %>
+												</div>
+											</div>
+											<%= link_to 'Edit', edit_venue_path(@venue) %> | <%= link_to 'Update Authorization Code', update_auth_code_venue_path(@venue) %> | <%= link_to 'Update CheckIn Code', update_check_in_auth_code_venue_path(@venue) %>
+										</div>
 									</div>
 								</div>
 							</div>

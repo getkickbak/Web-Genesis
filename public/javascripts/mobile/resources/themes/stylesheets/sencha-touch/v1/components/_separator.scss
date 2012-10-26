@@ -1,48 +1,14 @@
-.x-body {
-   div.separator .x-inner:first-child {
-     margin:0em $panelGap;
-     margin-bottom:$panelTopGap;
-   }
-   div.separator:first-child .x-inner:first-child {
-     margin-top:$panelTopGap;
-   }
-   div.separator_pad .x-inner:first-child {
-     padding:0em $panelGap;
-     padding-bottom:$panelTopGap;
-   }
-   div.separator_pad:first-child .x-inner:first-child {
-     padding-top:$panelTopGap;
-   }
-   
-   div.separator > .x-innerhtml:first-child {
-     margin:0em $panelGap;
-     margin-bottom:$panelTopGap;
-   }
-   div.separator:first-child > .x-innerhtml:first-child {
-     margin-top:$panelTopGap;
-   }
-   div.separator_pad > .x-innerhtml:first-child {
-     padding:0em $panelGap;
-     padding-bottom:$panelTopGap;
-   }
-   div.separator_pad:first-child > .x-innerhtml:first-child {
-     padding-top:$panelTopGap;
-   }
-   
-   .x-container, .x-button, .x-map { 
-      &.separator {
-         margin:0em $panelGap;
-         margin-bottom:$panelTopGap;
-      }
-      &.separator:first-child {
-         margin-top:$panelTopGap;
-      }
-      &.separator_pad {
-         padding:0em $panelGap;
-         padding-bottom:$panelTopGap;
-      }
-      &.separator_pad:first-child {
-         padding-top:$panelTopGap;
-      }
-   }
+.separator {
+   margin:0em $panelGap;
+   margin-bottom:$panelTopGap;
+}
+.separator:first-child {
+   margin-top:$panelTopGap;
+}
+.separator_pad {
+   padding:0em $panelGap;
+   padding-bottom:$panelTopGap;
+}
+.separator_pad:first-child {
+   padding-top:$panelTopGap;
 }

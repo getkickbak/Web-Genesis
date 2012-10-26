@@ -1,5 +1,5 @@
 module Business
-  class DashboardController < BaseApplicationController
+  class DashboardController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     before_filter :check_status
     skip_authorization_check
@@ -7,7 +7,7 @@ module Business
     def index
       #@total_reward_points = (EarnRewardRecord.sum(:points, :merchant => current_merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => current_merchant, :mode => :reward) || 0)
       #@total_prize_points = (EarnPrizeRecord.sum(:points, :merchant => current_merchant) || 0) - (RedeemRewardRecord.sum(:points, :merchant => current_merchant, :mode => :prize) || 0)
-      @promotions = Promotion.all(:merchant => current_merchant)
+      @promotions = Promotion.all(:merchant => current_merchant, :order => [ :start_date.desc ], :offset => 0, :limit => 10)
       respond_to do |format|
         format.html # index.html.erb
       #format.xml  { render :xml => @merchants }

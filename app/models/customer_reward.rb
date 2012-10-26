@@ -43,7 +43,8 @@ class CustomerReward
       :quantity_limited => reward_info[:quantity_limited],
       :quantity => reward_info[:quantity_limited] ? reward_info[:quantity] : 0,
       :time_limited => reward_info[:time_limited],
-      :expiry_date => now.to_date
+      :expiry_date => now.to_date,
+      :photo => reward_info[:photo]
     )
     reward.expiry_date_str = reward_info[:time_limited] ? reward_info[:expiry_date] : ""
     reward[:created_ts] = now
@@ -66,6 +67,9 @@ class CustomerReward
     self.quantity = reward_info[:quantity_limited] ? reward_info[:quantity] : 0
     self.time_limited = reward_info[:time_limited]
     self.expiry_date_str = reward_info[:time_limited] ? reward_info[:expiry_date] : ""
+    if reward_info[:photo]
+      self.photo = reward_info[:photo]
+    end
     self.update_ts = now
     self.type = type
     self.customer_reward_venues.destroy

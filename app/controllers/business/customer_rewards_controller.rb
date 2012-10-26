@@ -1,5 +1,5 @@
 module Business
-  class CustomerRewardsController < BaseApplicationController
+  class CustomerRewardsController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     
     def index
@@ -30,10 +30,16 @@ module Business
       authorize! :create, CustomerReward
 
       @customer_reward = CustomerReward.new
-      if params[:mode]
+      if params[:mode] && (params[:mode] == "reward" || params[:mode] == "prize")
         @customer_reward.mode = params[:mode].to_sym
+      else
+        @customer_reward.mode = :reward  
       end  
       @customer_reward.expiry_date = Date.today
+      @venue_ids = []
+      current_merchant.venues.each do |venue|
+        @venue_ids << venue.id
+      end
       
       respond_to do |format|
         format.html # index.html.erb
@@ -64,6 +70,11 @@ module Business
         logger.error("Exception: " + e.resource.errors.inspect)
         @customer_reward = e.resource
         @customer_reward.type_id = params[:customer_reward][:type_id]
+        @customer_reward.expiry_date = Date.today
+        @venue_ids = []
+        @customer_reward.venues.each do |venue|
+          @venue_ids << venue.id
+        end
         respond_to do |format|
           format.html { render :action => "new" }
           #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
@@ -101,7 +112,7 @@ module Business
           end
           @customer_reward.update(type, params[:customer_reward], venues)
           respond_to do |format|
-            format.html { redirect_to({:action => "index"}, {:notice => t("business.customer_rewards.update_success")}) }
+            format.html { redirect_to({:action => "edit"}, {:notice => t("business.customer_rewards.update_success")}) }
             #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
             #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
           end
@@ -110,6 +121,13 @@ module Business
         logger.error("Exception: " + e.resource.errors.inspect)
         @customer_reward = e.resource
         @customer_reward.type_id = params[:customer_reward][:type_id]
+        if @customer_reward.time_limited && @customer_reward.expiry_date < Date.today
+          @customer_reward.expiry_date = Date.today
+        end
+        @venue_ids = []
+        @customer_reward.venues.each do |venue|
+          @venue_ids << venue.id
+        end
         respond_to do |format|
           format.html { render :action => "edit" }
           #format.xml  { render :xml => @deal.errors, :status => :unprocessable_entity }

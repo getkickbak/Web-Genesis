@@ -1,60 +1,74 @@
 <% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/pages/business/reports.css"/>
 <% end %>
 <% content_for :script do %>
+<script type="text/javascript">
+	$(document).ready($(function() {
+	var msg=$("#notice").html();
+	if(msg) {
+	Genesis.showWarningMsg(msg,null,true);
+	}
+	}));
+</script>
+<!--
 <script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/lib/Highcharts-2.2.5/js/highcharts.js" ></script>
+<script type="text/javascript" src="/javascripts/desktop/lib/Highcharts-2.2.5/js/modules/exporting.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/src/business/dashboard.js"></script>
+-->
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+	<p>
+		<%= flash[:notice] %>
+	</p>
+</div>
 <% end %>
 <div class="main">
-   <div class="main-inner">
-      <div class="container">
-         <div class="row">
-            <div class="span9">
-               <div class="widget">
-                  <div class="widget-header">
-                     <i class="icon-rss"></i>
-                     <h3>Latest Promotions (<%= link_to 'New Promotion', new_promotion_path %>)</h3>
-                  </div>
-                  <div class="widget-content">
-                     <ul class="news-items">
-                        <% @promotions.each do |promotion| %>
-                        <li>
-                           <div class="news-item-detail">
-                              <div class="news-item-title">
-                                 <%= promotion.start_date.strftime("%A %b %d %I:%M%p, %Y") %> (<b><%= promotion.status %></b>)
-                              </div>
-                              <div class="news-item-preview">
-                                 <%= promotion.message %>
-                              </div>
-                           </div>
-                           <div class="news-item-date">
-                              <span class="news-item-day"> <%= promotion.start_date.strftime("%d") %> </span>
-                              <span class="news-item-month"> <%= promotion.start_date.strftime("%b") %> </span>
-                           </div>
-                           <!---->
-                        </li>
-                        <!---->
-                        <% end %>
-                        <% if @promotions.length == 0 %>
-                        <li><div class="news-item-detail"></div><div class="news-item-date"></div>
-                           <!---->
-                        </li>
-                        <% end %>
-                     </ul>
-                  </div>
-               </div>
-            </div>
-            <div class="span3">
-               <div class="widget ">
-                  <div class="widget-header">
-                     <i class="icon-question-sign"></i>
-                     <h3>Extra Info</h3>
-                  </div>
-                  <div class="widget-content">
-                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                     <p> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-   </div>
+	<div class="main-inner">
+		<div class="container">
+			<div class="row">
+				<div class="span9">
+					<div class="widget widget-table action-table">
+						<div class="widget-header">
+							<i class="icon-rss"></i>
+							<h3>Latest Promotions (<%= link_to 'New Promotion', new_promotion_path %>)</h3>
+						</div>
+						<div class="widget-content">
+							<% if @promotions.length > 0 %>
+							<ul class="news-items">
+								<% @promotions.each do |promotion| %>
+								<li>
+									<div class="news-item-detail">
+										<div class="news-item-title">
+											<%= promotion.start_date.strftime("%A %b %d %I:%M%p, %Y") %> (<b><%= promotion.status %></b>)
+										</div>
+										<p class="news-item-preview">
+											<%= promotion.message %>
+										</p>
+									</div>
+									<div class="news-item-date">
+										<span class="news-item-day"> <%= promotion.start_date.strftime("%d") %> </span>
+										<span class="news-item-month"> <%= promotion.start_date.strftime("%b") %> </span>
+									</div>
+									<!---->
+								</li>
+								<!---->
+							</ul>
+							<% else %>
+							<table class="table table-striped table-bordered">
+								<tbody>
+									<tr>
+										<td class="no-data">You have no promotions</td>
+									</tr>
+								</tbody>
+							</table>
+							<% end %>
+						</div>
+					</div>
+				</div>
+				<%= render 'info' %>
+			</div>
+		</div>
+	</div>
 </div>

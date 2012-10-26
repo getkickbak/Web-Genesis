@@ -29,6 +29,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       {
          model : 'Genesis.model.CustomerReward',
          autoLoad : false,
+         pageSize : 5,
          sorters : [
          {
             property : 'points',
@@ -93,6 +94,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       {
          //activeItem.getInnerItems()[i].setVisibility(false);
       }
+      console.debug("ReedeemBase: onActivate");
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {

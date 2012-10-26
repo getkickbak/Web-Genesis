@@ -1,25 +1,19 @@
 Ext.define('Genesis.view.MainPage',
 {
-   extend : 'Ext.Carousel',
-   requires : ['Ext.dataview.DataView', 'Ext.XTemplate'],
+   extend : 'Genesis.view.ViewBase',
+   requires : ['Ext.data.Store', 'Ext.Carousel', 'Ext.dataview.DataView', 'Ext.XTemplate', 'Ext.Toolbar'],
    alias : 'widget.mainpageview',
    config :
    {
+      layout : 'fit',
       cls : 'viewport',
-      preRender : null,
-      direction : 'horizontal',
+      scrollable : undefined,
       items : ( function()
          {
-            var items = [
+            var items = [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
             {
                xtype : 'titlebar',
-               docked : 'top',
                cls : 'navigationBarTop kbTitle',
-               title : ' ',
-               defaults :
-               {
-                  iconMask : true
-               },
                items : [
                {
                   align : 'right',
@@ -66,6 +60,10 @@ Ext.define('Genesis.view.MainPage',
                      this.actions.show();
                   }
                }]
+            }),
+            {
+               xtype : 'carousel',
+               direction : 'horizontal'
             }];
             if (!merchantMode)
             {
@@ -73,6 +71,7 @@ Ext.define('Genesis.view.MainPage',
                {
                   docked : 'bottom',
                   cls : 'navigationBarBottom',
+                  tag : 'navigationBarBottom',
                   xtype : 'tabbar',
                   ui : 'light',
                   layout :
@@ -141,7 +140,8 @@ Ext.define('Genesis.view.MainPage',
     */
    cleanView : function()
    {
-      this.removeAll(true);
+      var carousel = this.query('carousel')[0];
+      carousel.removeAll(true);
    },
    removeAll : function(destroy, everything)
    {
@@ -152,12 +152,7 @@ Ext.define('Genesis.view.MainPage',
    },
    createView : function()
    {
-      if (!Genesis.view.ViewBase.prototype.createView.apply(this, arguments))
-      {
-         return;
-      }
-
-      var carousel = this;
+      var carousel = this.query('carousel')[0];
       var app = _application;
       var viewport = app.getController('Viewport');
       var vport = viewport.getViewport();
@@ -194,12 +189,12 @@ Ext.define('Genesis.view.MainPage',
          carousel.removeAll(true);
          for (var i = 0; i < Math.ceil(items.length / 6); i++)
          {
-            this.getPreRender().push(Ext.create('Ext.dataview.DataView',
+            carousel.add(Ext.create('Ext.dataview.DataView',
             {
                xtype : 'dataview',
                cls : 'mainMenuSelections',
                tag : 'mainMenuSelections',
-               scrollable : false,
+               scrollable : undefined,
                deferInitialRefresh : false,
                store :
                {
@@ -268,17 +263,20 @@ Ext.define('Genesis.view.MainPage',
                break;
             }
          }
-         var dom = Ext.DomQuery.select('span[data=client.Redemptions]',carousel.query('dataview')[0].element.dom)[0];
-         if (eligible)
+         if (carousel.getInnerItems().length > 0)
          {
-            dom.innerHTML = count;
-            Ext.fly(dom).removeCls("x-item-hidden");
-         }
-         else
-         {
-            if (!dom.className.match(/x-item-hidden/))
+            var dom = Ext.DomQuery.select('span[data=client.Redemptions]',carousel.element.dom)[0];
+            if (eligible)
             {
-               Ext.fly(dom).addCls("x-item-hidden");
+               dom.innerHTML = count;
+               Ext.fly(dom).removeCls("x-item-hidden");
+            }
+            else
+            {
+               if (!dom.className.match(/x-item-hidden/))
+               {
+                  Ext.fly(dom).addCls("x-item-hidden");
+               }
             }
          }
          console.log("MainPage Icons Not changed.");
@@ -287,13 +285,9 @@ Ext.define('Genesis.view.MainPage',
    },
    showView : function()
    {
-      // Do not add to view, if there's existing items, only re-render on empty views
-      if (this.getInnerItems().length == 0)
-      {
-         this.add(this.getPreRender());
-      }
+      this.callParent(arguments);
 
-      var carousel = this;
+      var carousel = this.query('carousel')[0];
       if (carousel.getInnerItems().length > 0)
       {
          carousel.setActiveItem(0);

@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.client.CheckinExplore',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.plugin.PullRefresh'],
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.plugin.ListPaging', 'Ext.plugin.PullRefresh'],
    alias : 'widget.clientcheckinexploreview',
    config :
    {
@@ -55,7 +55,27 @@ Ext.define('Genesis.view.client.CheckinExplore',
          xtype : 'list',
          deferEmptyText : false,
          store : 'CheckinExploreStore',
-         scrollable : 'vertical',
+         //scrollable : 'vertical',
+         plugins : [
+         {
+            type : 'pullrefresh',
+            //pullRefreshText: 'Pull down for more new Tweets!',
+            refreshFn : function(plugin)
+            {
+               var controller = _application.getController('client.Checkins');
+               controller.fireEvent('exploreLoad', true);
+            }
+         },
+         {
+            type : 'listpaging',
+            autoPaging : true,
+            loadMoreText : '',
+            noMoreRecordsText : ''
+         }],
+         refreshHeightOnUpdate : false,
+         variableHeights : false,
+         deferEmptyText : false,
+         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(Genesis.constants.defaultIconSize(), 2 * 0.65, 1), 1),
          emptyText : ' ',
          cls : 'checkInExploreList',
          // @formatter:off
@@ -83,17 +103,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
                return values['distance'].toFixed(1) + 'km';
             }
          }),
-         onItemDisclosure : Ext.emptyFn,
-         plugins : [
-         {
-            xclass : 'Ext.plugin.PullRefresh',
-            //pullRefreshText: 'Pull down for more new Tweets!',
-            refreshFn : function(plugin)
-            {
-               var controller = _application.getController('client.Checkins');
-               controller.fireEvent('exploreLoad', true);
-            }
-         }]
+         onItemDisclosure : Ext.emptyFn
       }));
    },
    showView : function()

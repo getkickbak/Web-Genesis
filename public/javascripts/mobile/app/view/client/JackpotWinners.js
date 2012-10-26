@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.client.JackpotWinners',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.plugin.PullRefresh'],
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.plugin.ListPaging', 'Ext.plugin.PullRefresh'],
    alias : 'widget.clientjackpotwinnersview',
    config :
    {
@@ -80,6 +80,7 @@ Ext.define('Genesis.view.client.JackpotWinners',
                },
                getTitle : function(values)
                {
+                  console.debug(values['name'] + ' won ' + values['points'] + ' Points!');
                   return (values['name'] + ' won ' + values['points'] + ' Points!');
                },
                getDesc : function(values)
@@ -90,8 +91,13 @@ Ext.define('Genesis.view.client.JackpotWinners',
             //onItemDisclosure : Ext.emptyFn,
             plugins : [
             {
-               xclass : 'Ext.plugin.PullRefresh',
-               //pullRefreshText: 'Pull down for more new Tweets!',
+               type : 'listpaging',
+               autoPaging : true,
+               loadMoreText : '',
+               noMoreRecordsText : ''
+            },
+            {
+               type : 'pullrefresh',
                refreshFn : function(plugin)
                {
                   _application.getController('client.JackpotWinners').fireEvent('reload');

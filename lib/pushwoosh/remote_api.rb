@@ -33,7 +33,7 @@ module Pushwoosh
           ]
         }
       }.to_json
-      Rails.logger.debug("Body: #{body}")
+      #Rails.logger.debug("Body: #{body}")
       call_api(service, body)
     end
     
@@ -49,7 +49,7 @@ module Pushwoosh
           "device_type" => device_type
         }
       }.to_json
-      Rails.logger.debug("Body: #{body}")
+      #Rails.logger.debug("Body: #{body}")
       call_api(service, body)
     end
     
@@ -62,7 +62,7 @@ module Pushwoosh
           "device_type" => device_type
         }
       }.to_json
-      Rails.logger.debug("Body: #{body}")
+      #Rails.logger.debug("Body: #{body}")
       call_api(service, body)
     end
     

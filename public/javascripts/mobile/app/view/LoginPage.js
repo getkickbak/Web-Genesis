@@ -58,9 +58,16 @@ Ext.define('Genesis.view.SignInPage',
    requires : ['Ext.field.Email', 'Ext.field.Password'],
    config :
    {
+      fullscreen : true,
       cls : 'viewport',
+      layout :
+      {
+         type : 'vbox',
+         align : 'stretch',
+         pack : 'start'
+      },
       changeTitle : false,
-      scrollable : 'vertical',
+      //scrollable : 'vertical',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
          title : 'Sign In',
@@ -139,7 +146,14 @@ Ext.define('Genesis.view.PasswdResetPage',
    requires : ['Ext.field.Email'],
    config :
    {
+      fullscreen : true,
       cls : 'viewport',
+      layout :
+      {
+         type : 'vbox',
+         align : 'stretch',
+         pack : 'start'
+      },
       changeTitle : false,
       scrollable : 'vertical',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
@@ -205,7 +219,14 @@ Ext.define('Genesis.view.PasswdChangePage',
    requires : ['Ext.field.Password', 'Ext.field.Text'],
    config :
    {
+      fullscreen : true,
       cls : 'viewport',
+      layout :
+      {
+         type : 'vbox',
+         align : 'stretch',
+         pack : 'start'
+      },
       changeTitle : false,
       scrollable : 'vertical',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
@@ -276,7 +297,14 @@ Ext.define('Genesis.view.CreateAccountPage',
    requires : ['Ext.field.Text', 'Ext.field.Email', 'Ext.field.Password'],
    config :
    {
+      fullscreen : true,
       cls : 'viewport',
+      layout :
+      {
+         type : 'vbox',
+         align : 'stretch',
+         pack : 'start'
+      },
       changeTitle : false,
       scrollable : 'vertical',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
@@ -292,6 +320,7 @@ Ext.define('Genesis.view.CreateAccountPage',
          }]
       }),
       {
+         flex : 1,
          xtype : 'fieldset',
          title : 'Account Credentials:',
          //instructions : 'Enter Username (email address) and Password',

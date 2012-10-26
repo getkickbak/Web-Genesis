@@ -1,4 +1,4 @@
-class Api::V1::ChallengesController < ApplicationController
+class Api::V1::ChallengesController < Api::V1::BaseApplicationController
   before_filter :authenticate_user!
   
   def index

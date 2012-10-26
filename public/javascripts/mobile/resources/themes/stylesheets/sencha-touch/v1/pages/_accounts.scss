@@ -20,7 +20,7 @@
          }
          .title {
             float: left;
-            margin-left:$icon-size + 10px;
+            margin-left:calc-px-em($icon-size, $panelGap, $largeFontSize);
             text-align:left;
             font-size:$largeFontSize;
             font-weight:normal;
@@ -32,7 +32,7 @@
             font-size:$xlargeFontSize;
             font-weight:bold;
             line-height:$icon-size/2;
-            padding-right:$icon-size/2 + 10px;
+            padding-right:calc-px-em($icon-size/2, $panelGap, $xlargeFontSize);
             img {
                position:absolute;
                right:0;
@@ -53,13 +53,10 @@
       }
    }
    .venuesList {
-      .x-list-disclosure {
-         bottom: 1.10em;
-      }
       .itemDistance {
          position:absolute;
-         top:$panelTopGap;
-         right:$panelGap;
+         top:calc-em(0.65em,$normalFontSize);
+         right:calc-em(-1*$list-disclosure-size,$normalFontSize);
          font-weight:bold;
          font-size:$normalFontSize;
       }

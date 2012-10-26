@@ -1,5 +1,5 @@
 module Business
-  class InvoicesController < BaseApplicationController
+  class InvoicesController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     before_filter :check_status
     before_filter :check_is_admin

@@ -159,3 +159,15 @@
       @include custom-linear-gradient($start-color, $end-color, $position, $image);
    }
 }
+
+//------------------------------------------------------------------------------
+// Unit Conversion
+//------------------------------------------------------------------------------
+@function calc-em($target, $context) {
+  @return ($target / $context) * 1em;
+}
+
+@function calc-px-em($target-px, $target-em, $fontsize) {
+  @return (($target-px/$defaultFontSize/$fontsize*1em) + ($target-em/$fontsize*1em));
+}
+ 

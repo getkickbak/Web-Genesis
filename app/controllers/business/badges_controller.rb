@@ -1,5 +1,5 @@
 module Business
-  class BadgesController < BaseApplicationController
+  class BadgesController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     before_filter :check_is_admin
     

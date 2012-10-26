@@ -18,8 +18,9 @@ Ext.define('Genesis.device.notification.PhoneGap',
    override : 'Ext.device.notification.PhoneGap',
    beep : function(times)
    {
-      var viewport = _application.getController('Viewport');
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['beepSound']);
+      //var viewport = _application.getController('Viewport');
+      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['beepSound']);
+      navigator.notification.beep(times);
       console.log("Beep " + times + " times.")
    },
    vibrate : function(duration)
@@ -28,6 +29,9 @@ Ext.define('Genesis.device.notification.PhoneGap',
    }
 });
 
+//---------------------------------------------------------------------------------------------------------------------------------
+// Ext.device.camera.PhoneGap
+//---------------------------------------------------------------------------------------------------------------------------------
 /**
  * @private
  */
@@ -86,3 +90,49 @@ Ext.define('Genesis.device.camera.PhoneGap',
       }
    }
 });
+
+//---------------------------------------------------------------------------------------------------------------------------------
+// PushWoosh Push Notification API
+//---------------------------------------------------------------------------------------------------------------------------------
+function initPushwoosh()
+{
+   var pushNotification = window.plugins.pushNotification;
+   pushNotification.onDeviceReady();
+
+   pushNotification.registerDevice(
+   {
+      alert : true,
+      badge : true,
+      sound : true,
+      pw_appid : pushNotifAppId,
+      appname : pushNotifAppName
+   }, function(status)
+   {
+      var deviceToken = status['deviceToken'];
+      console.warn('registerDevice: ' + deviceToken);
+      Genesis.constants.device =
+      {
+         'device_type' : pushNotifType, //1 for iOS, 3 for Android
+         'device_id' : deviceToken
+      };
+   }, function(status)
+   {
+      console.warn('failed to register : ' + JSON.stringify(status));
+      Genesis.constants.device = null;
+      //navigator.notification.alert(JSON.stringify(['failed to register ', status]));
+   });
+
+   pushNotification.setApplicationIconBadgeNumber(0);
+
+   document.addEventListener('push-notification', function(event)
+   {
+      var notification = event.notification;
+      Ext.device.Notification.show(
+      {
+         title : 'Push Notification Alert',
+         message : notification.aps.alert
+      });
+      //navigator.notification.alert(notification.aps.alert);
+      pushNotification.setApplicationIconBadgeNumber(0);
+   });
+}

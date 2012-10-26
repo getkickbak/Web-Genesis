@@ -91,8 +91,8 @@ Ext.define('Genesis.controller.client.Prizes',
          },
          redemptionsList :
          {
-            select : 'onItemListSelect',
-            disclose : 'onItemListDisclose'
+            select : 'onItemListSelect'
+            //disclose : 'onItemListDisclose'
 
          },
          sDoneBtn :
@@ -497,18 +497,22 @@ Ext.define('Genesis.controller.client.Prizes',
       //me.setRedeemMode('redeemPrize');
       //me.pushView(me.getRedeemMainPage());
       me.redirectTo('redeemPrize');
+      
       //Update on Facebook
-      Genesis.fb.facebook_onLogin(function(params)
+      if (typeof(FB) != "undefined")
       {
-         if ((info['eligible_prize_id']) && (info['eligible_prize_id'] > 0))
+         Genesis.fb.facebook_onLogin(function(params)
          {
-            me.updatingPrizeOnFacebook(redeemItem);
-         }
-         if (info['badge_prize_points'] > 0)
-         {
-            me.updatingBadgeOnFacebook(redeemItem);
-         }
-      }, false, me.updateOnFbMsg);
+            if ((info['eligible_prize_id']) && (info['eligible_prize_id'] > 0))
+            {
+               me.updatingPrizeOnFacebook(redeemItem);
+            }
+            if (info['badge_prize_points'] > 0)
+            {
+               me.updatingBadgeOnFacebook(redeemItem);
+            }
+         }, false, me.updateOnFbMsg);
+      }
    },
    onBadgeDetailActivate : function(activeItem, c, oldActiveItem, eOpts)
    {

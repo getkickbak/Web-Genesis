@@ -8,6 +8,8 @@ Ext.define('Genesis.controller.MainPage',
    xtype : 'mainPageCntlr',
    config :
    {
+      csrfTokenRecv : false,
+      models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'Customer', 'User', 'Merchant', 'CustomerReward'],
       routes :
       {
          '' : 'openPage', //Default do nothing
@@ -15,12 +17,10 @@ Ext.define('Genesis.controller.MainPage',
          'login' : 'loginPage',
          'merchant' : 'merchantPage',
          'signin' : 'signInPage',
-         'updateLicenseKey' : 'updateLicenseKeyPage',
          'password_reset' : 'signInResetPage',
          'password_change' : 'signInChangePage',
          'createAccount' : 'createAccountPage',
       },
-      models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'Customer', 'User', 'Merchant', 'CustomerReward'],
       refs :
       {
          // Login Page
@@ -62,9 +62,9 @@ Ext.define('Genesis.controller.MainPage',
             xtype : 'mainpageview'
          },
          mainCarousel : 'mainpageview',
-         shortcutTabBar : 'mainpageview tabbar',
+         shortcutTabBar : 'mainpageview tabbar[tag=navigationBarBottom]',
          infoBtn : 'button[tag=info]',
-         prizesBtn : 'mainpageview tabbar[cls=navigationBarBottom] button[tag=prizesSC]'
+         prizesBtn : 'mainpageview tabbar[tag=navigationBarBottom] button[tag=prizesSC]'
       },
       control :
       {
@@ -107,15 +107,9 @@ Ext.define('Genesis.controller.MainPage',
          },
          main :
          {
+            showView : 'onShowView',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
-         },
-         'mainpageview dataview' :
-         {
-            //itemtap : 'onItemTap',
-            select : 'onItemSelect',
-            itemtouchstart : 'onItemTouchStart',
-            itemtouchend : 'onItemTouchEnd'
          },
          shortcutTabBar :
          {
@@ -133,11 +127,13 @@ Ext.define('Genesis.controller.MainPage',
       },
       listeners :
       {
-         'refreshCSRF' : 'onRefreshCSRF'
+         'refreshCSRF' : 'onRefreshCSRF',
+         'itemTap' : 'onItemTap'
       }
    },
    sessionTimeoutMsg : 'Session Timeout',
    passwdResetConfirmMsg : 'Please confirm to reset your account password',
+   missingLicenseKeyMsg : 'License Key for this Device is missing. Press "Procced" to Scan the License Key into the device.',
    passwdResetSuccessMsg : function()
    {
       return ('Password Reset was Successful.' + Genesis.constants.addCRLF() + //
@@ -160,44 +156,74 @@ Ext.define('Genesis.controller.MainPage',
    {
       return 'Logging in ...';
    },
-   licenseKeySuccessMsg : function()
-   {
-      return 'License Key Updated for ' + Genesis.constants.addCRLF() + '[' + Genesis.constants.privKey['venue'] + ']';
-   },
    init : function(app)
    {
       var me = this;
       me.callParent(arguments);
 
+      Genesis.db.removeLocalDBAttrib('csrf_code');
       //
       // Loads Front Page Metadata
       //
+      var callback = function()
+      {
+         if (merchantMode)
+         {
+            me.goToMain();
+            var keys = Genesis.constants.getPrivKey();
+            var venueId;
+            for (key in keys)
+            {
+               try
+               {
+                  venueId = parseInt(key.split('r')[1] || key.split('v')[1]);
+               }
+               catch (e)
+               {
+                  venueId = 0;
+               }
+               break;
+            }
+            if (venueId == 0)
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Missing License Key!',
+                  message : me.missingLicenseKeyMsg,
+                  buttons : ['Proceed', 'Cancel'],
+                  callback : function(btn)
+                  {
+                     if (btn.toLowerCase() == 'proceed')
+                     {
+                        _application.getController('Settings').fireEvent('upgradeDevice');
+                     }
+                  }
+               });
+            }
+         }
+         else
+         {
+            var db = Genesis.db.getLocalDB();
+            if (db['auth_code'])
+            {
+               me.fireEvent('refreshCSRF');
+            }
+            else
+            {
+               me.resetView();
+               me.redirectTo('login');
+            }
+         }
+      }
       Ext.regStore('MainPageStore',
       {
          model : 'Genesis.model.frontend.MainPage',
-         autoLoad : true,
+         //autoLoad : true,
+         autoLoad : false,
          listeners :
          {
             scope : me,
-            "load" : function(store, records, successful, operation, eOpts)
-            {
-               if (merchantMode)
-               {
-                  me.goToMain();
-               }
-               else
-               {
-                  var db = Genesis.db.getLocalDB();
-                  if (db['auth_code'])
-                  {
-                     me.fireEvent('refreshCSRF');
-                  }
-                  else
-                  {
-                     me.redirectTo('login');
-                  }
-               }
-            }
+            "refresh" : callback
          }
       });
 
@@ -229,6 +255,19 @@ Ext.define('Genesis.controller.MainPage',
       // Preloading Pages to memory
       //
       me.getMain();
+
+      backBtnCallbackListFn.push(function(activeItem)
+      {
+         var match = ((activeItem == me.getMain()) || ((merchantMode) ? false : (activeItem == me.getLogin())));
+         if (match)
+         {
+            var viewport = me.getViewPortCntlr();
+            Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+            navigator.app.exitApp();
+            return true;
+         }
+         return false;
+      });
    },
    initCustomerStore : function()
    {
@@ -241,7 +280,7 @@ Ext.define('Genesis.controller.MainPage',
          listeners :
          {
             scope : me,
-            "load" : function(store, records, successful, operation, eOpts)
+            'load' : function(store, records, successful, operation, eOpts)
             {
             },
             'metachange' : function(store, proxy, eOpts)
@@ -332,87 +371,6 @@ Ext.define('Genesis.controller.MainPage',
          }
       });
    },
-   updateLicenseKey : function(key)
-   {
-      if (Genesis.constants.isNative())
-      {
-         var failHandler = function(error)
-         {
-            var errorCode =
-            {
-            };
-            errorCode[FileError.NOT_FOUND_ERR] = 'File not found';
-            errorCode[FileError.SECURITY_ERR] = 'Security error';
-            errorCode[FileError.ABORT_ERR] = 'Abort error';
-            errorCode[FileError.NOT_READABLE_ERR] = 'Not readable';
-            errorCode[FileError.ENCODING_ERR] = 'Encoding error';
-            errorCode[FileError.NO_MODIFICATION_ALLOWED_ERR] = 'No mobification allowed';
-            errorCode[FileError.INVALID_STATE_ERR] = 'Invalid state';
-            errorCode[FileError.SYFNTAX_ERR] = 'Syntax error';
-            errorCode[FileError.INVALID_MODIFICATION_ERR] = 'Invalid modification';
-            errorCode[FileError.QUOTA_EXCEEDED_ERR] = 'Quota exceeded';
-            errorCode[FileError.TYPE_MISMATCH_ERR] = 'Type mismatch';
-            errorCode[FileError.PATH_EXISTS_ERR] = 'Path does not exist';
-            var ftErrorCode =
-            {
-            };
-            ftErrorCode[FileTransferError.FILE_NOT_FOUND_ERR] = 'File not found';
-            ftErrorCode[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
-            ftErrorCode[FileTransferError.CONNECTION_ERR] = 'Connection Error';
-
-            console.log("Writing License File Error - [" + errorCode[error.code] + "]");
-         };
-
-         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
-         {
-            var licenseKeyFile = fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/resources/keys.txt';
-            console.debug("License File - [" + licenseKeyFile + "]");
-            fileSystem.root.getFile(licenseKeyFile,
-            {
-               create : true,
-               exclusive : false
-            }, function(fileEntry)
-            {
-               fileEntry.createWriter(function(writer)
-               {
-                  writer.onwriteend = function(evt)
-                  {
-                     console.debug("Content Written to Disk");
-                     Genesis.constants.privKey = key;
-                     Ext.device.Notification.show(
-                     {
-                        title : 'License Key Updated!',
-                        message : me.licenseKeySuccessMsg()
-                     });
-                  };
-                  writer.write(Ext.encode(key));
-               }, failHandler);
-            }, failHandler);
-         }, failHandler);
-
-         return null;
-      }
-      else
-      {
-         // Hardcoded for now ...
-         Genesis.constants.privKey =
-         {
-            'v1' : Genesis.constants.debugVPrivKey,
-            'r1' : Genesis.constants.debugRPrivKey,
-            'venue' : Genesis.constants.debugVenuePrivKey
-         };
-         for (var i in Genesis.constants.privKey)
-         {
-            console.debug("Encryption Key[" + i + "] = [" + Genesis.constants.privKey[i] + "]");
-         }
-         console.debug("Content Written to Memory");
-         Ext.device.Notification.show(
-         {
-            title : 'License Key Updated!',
-            message : me.licenseKeySuccessMsg()
-         });
-      }
-   },
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
@@ -441,7 +399,7 @@ Ext.define('Genesis.controller.MainPage',
 
          console.log("Restoring Previous Venue Location ...");
          controller.fireEvent('setupCheckinInfo', 'explore', venue, customer, metaData)
-         controller.fireEvent('checkinMerchant', 'checkin', metaData, venue.getId(), customer);
+         controller.fireEvent('checkinMerchant', 'checkin', metaData, venue.getId(), customer, null, Ext.emptyFn);
       }
       //
       // We've at somewhere
@@ -449,59 +407,19 @@ Ext.define('Genesis.controller.MainPage',
       {
          console.log("Reset Previous Location back to Home Page ...");
          Genesis.db.removeLocalDBAttrib('last_check_in');
-         me.goToMain();
-      }
-   },
-   onScannedQRcode : function(qrcode)
-   {
-      var me = this;
-      var vport = me.getViewport();
-
-      if (qrcode)
-      {
-         console.debug("Programming License Key into Merchant Device ...");
-         Venue['setGetLicenseKeyURL']();
-         Venue.load(0,
-         {
-            jsonData :
-            {
-            },
-            params :
-            {
-               update_token : qrcode,
-               deviceId : (Genesis.constants.isNative()) ? device.uuid : null,
-            },
-            callback : function(record, operation)
-            {
-               var metaData = Venue.getProxy().getReader().metaData;
-               Ext.Viewport.setMasked(false);
-
-               if (operation.wasSuccessful())
-               {
-                  me.updateLicenseKey(metaData);
-               }
-            }
-         });
-      }
-      else
-      {
-         console.debug(me.noCodeScannedMsg);
-         Ext.Viewport.setMasked(false);
-         Ext.device.Notification.show(
-         {
-            title : 'Error',
-            message : me.noCodeScannedMsg
-         });
+         me.redirectTo('checkin');
       }
    },
    // --------------------------------------------------------------------------
    // MainPage
    // --------------------------------------------------------------------------
-   onItemSelect : function(d, model, eOpts)
+   onItemTap : function(model)
    {
-      d.deselect([model], false);
-      console.log("Controller=[" + model.data.pageCntlr + "]");
+      var viewport = this.getViewPortCntlr();
 
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+
+      console.log("Controller=[" + model.get('pageCntlr') + "]");
       var cntlr = this.getApplication().getController(model.get('pageCntlr'));
       var msg = cntlr.isOpenAllowed();
       if (msg === true)
@@ -530,35 +448,44 @@ Ext.define('Genesis.controller.MainPage',
       }
       return false;
    },
-   onItemTouchStart : function(d, index, target, e, eOpts)
+   onShowView : function(activeItem)
    {
-      //Ext.fly(Ext.query('#'+target.id+' div.photo')[0]).mask();
+      if (Ext.os.is('Android'))
+      {
+         var carousel = activeItem.query('carousel')[0];
+         var items = carousel.getInnerItems();
 
-   },
-   onItemTouchEnd : function(d, index, target, e, eOpts)
-   {
-      //Ext.fly(Ext.query('#'+target.id+' div.photo')[0]).unmask();
+         console.debug("Refreshing MainPage ...");
+         /*
+          for (var i = 0; i < items.length; i++)
+          {
+          items[i].refresh();
+          }
+          */
+      }
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       //activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
-      if (!merchantMode)
-      {
-         var showIcon = false;
-         var customers = Ext.StoreMgr.get('CustomerStore').getRange();
+      /*
+       if (!merchantMode)
+       {
+       var showIcon = false;
+       var customers = Ext.StoreMgr.get('CustomerStore').getRange();
 
-         for (var i = 0; i < customers.length; i++)
-         {
-            var customer = customers[i];
-            if (customer.get('eligible_for_prize'))
-            {
-               showIcon = true;
-               break;
-            }
-         }
-         this.getPrizesBtn().setBadgeText( showIcon ? '✔' : null);
-      }
+       for (var i = 0; i < customers.length; i++)
+       {
+       var customer = customers[i];
+       if (customer.get('eligible_for_prize'))
+       {
+       showIcon = true;
+       break;
+       }
+       }
+       this.getPrizesBtn().setBadgeText( showIcon ? '✔' : null);
+       }
+       */
       Ext.Viewport.setMasked(false);
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -617,11 +544,14 @@ Ext.define('Genesis.controller.MainPage',
          callback : function(records, operation)
          {
             //
-            // Login Error, redo login
+            // Login Error, let the user login again
             //
             if (!operation.wasSuccessful())
             {
-               me.redirectTo('login');
+               //
+               // If we are already in Login Page, reset all values
+               //
+               Genesis.db.resetStorage();
             }
             else
             {
@@ -663,6 +593,7 @@ Ext.define('Genesis.controller.MainPage',
          {
             Genesis.fb.facebook_onLogout(null, true);
          }
+         me.resetView();
          me.redirectTo('login');
       }
       var _logout = function()
@@ -755,6 +686,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    onSignInTap : function(b, e, eOpts, eInfo)
    {
+      //this.resetView();
       this.redirectTo('signin');
    },
    // --------------------------------------------------------------------------
@@ -790,6 +722,14 @@ Ext.define('Genesis.controller.MainPage',
                {
                   me.getGeoLocation();
                }
+            }
+            //
+            // Error refresh CSRF Token. go back to Login screen
+            //
+            else
+            {
+               me.resetView();
+               me.redirectTo('login');
             }
          }
       });
@@ -892,6 +832,7 @@ Ext.define('Genesis.controller.MainPage',
             //
             if (!operation.wasSuccessful())
             {
+               //me.resetView();
                //me.redirectTo('login');
             }
             else
@@ -1115,18 +1056,17 @@ Ext.define('Genesis.controller.MainPage',
    {
       this.openPage('merchant');
    },
-   updateLicenseKeyPage : function()
-   {
-      this.openPage('updateLicenseKey');
-   },
    signInPage : function()
    {
-      var db = Genesis.db.getLocalDB();
-      if (db['currFbId'] > 0)
-      {
-         this.facebookLogin(db['fbResponse']);
-      }
-      else
+      /*
+       *  No automatic login
+       var db = Genesis.db.getLocalDB();
+       if (db['currFbId'] > 0)
+       {
+       this.facebookLogin(db['fbResponse']);
+       }
+       else
+       */
       {
          this.setAnimationMode(this.self.superclass.self.animationMode['cover']);
          this.pushView(this.getSignin());
@@ -1154,7 +1094,6 @@ Ext.define('Genesis.controller.MainPage',
    {
       var me = this;
 
-      me.resetView();
       switch (subFeature)
       {
          case 'main' :
@@ -1165,6 +1104,7 @@ Ext.define('Genesis.controller.MainPage',
          }
          case 'merchant' :
          {
+            me.resetView();
             var info = me.getViewPortCntlr().getCheckinInfo();
             me.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
             break;
@@ -1177,11 +1117,6 @@ Ext.define('Genesis.controller.MainPage',
             //me.getApplication().getController('client.Prizes').fireEvent('updatePrizeViews', null);
             me.setAnimationMode(me.self.superclass.self.animationMode['fade']);
             me.pushView(me.getLogin());
-            break;
-         }
-         case 'updateLicenseKey' :
-         {
-            me.scanQRCode();
             break;
          }
       }

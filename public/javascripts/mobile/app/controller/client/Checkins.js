@@ -16,8 +16,8 @@ Ext.define('Genesis.controller.client.Checkins',
       },
       refs :
       {
-         backBtn : 'clientcheckinexploreview button[tag=back]',
-         closeBtn : 'clientcheckinexploreview button[tag=close]',
+         //backBtn : 'clientcheckinexploreview button[tag=back]',
+         //closeBtn : 'clientcheckinexploreview button[tag=close]',
          exploreList : 'clientcheckinexploreview list',
          explore :
          {
@@ -25,8 +25,9 @@ Ext.define('Genesis.controller.client.Checkins',
             autoCreate : true,
             xtype : 'clientcheckinexploreview'
          },
-         checkInNowBar : 'clientcheckinexploreview container[tag=checkInNow]',
-         shareBtn : 'viewportview button[tag=shareBtn]'
+         toolbarBottom : 'clientcheckinexploreview container[tag=toolbarBottom]',
+         shareBtn : 'viewportview button[tag=shareBtn]',
+         refreshBtn : 'clientcheckinexploreview button[tag=refresh]'
       },
       control :
       {
@@ -35,13 +36,18 @@ Ext.define('Genesis.controller.client.Checkins',
          //
          explore :
          {
+            showView : 'onExploreShowView',
             activate : 'onExploreActivate',
             deactivate : 'onExploreDeactivate'
          },
+         refreshBtn :
+         {
+            tap : 'onRefreshTap'
+         },
          exploreList :
          {
-            select : 'onExploreSelect',
-            disclose : 'onExploreDisclose'
+            select : 'onExploreSelect'
+            //disclose : 'onExploreDisclose'
          }
       },
       listeners :
@@ -85,12 +91,24 @@ Ext.define('Genesis.controller.client.Checkins',
             }
          }
       });
-      this.callParent(arguments);
+      me.callParent(arguments);
       console.log("Checkins Init");
       //
       // Prelod Page
       //
-      this.getExplore();
+      me.getExplore();
+
+      backBtnCallbackListFn.push(function(activeItem)
+      {
+         if (activeItem == me.getExplore())
+         {
+            var viewport = me.getViewPortCntlr();
+            Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+            viewport.goToMain();
+            return true;
+         }
+         return false;
+      });
    },
    checkinCommon : function(qrcode)
    {
@@ -239,12 +257,21 @@ Ext.define('Genesis.controller.client.Checkins',
                customer : viewport.getCustomer(),
                metaData : viewport.getMetaData()
             });
-            Genesis.db.setLocalDBAttrib('last_check_in',
-            {
-               venue : viewport.getVenue().raw,
-               customerId : viewport.getCustomer().getId(),
-               metaData : viewport.getMetaData()
-            });
+            /*
+             if (venue)
+             {
+             Genesis.db.setLocalDBAttrib('last_check_in',
+             {
+             venue : viewport.getVenue().raw,
+             customerId : viewport.getCustomer().getId(),
+             metaData : viewport.getMetaData()
+             });
+             }
+             else
+             {
+             Genesis.db.removeLocalDBAttrib('last_check_in');
+             }
+             */
             break;
          }
          default :
@@ -256,15 +283,15 @@ Ext.define('Genesis.controller.client.Checkins',
       // Scan QR Code to confirm Checkin
       this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueScanCheckinUrl', 'scan', function()
       {
-         Ext.device.Notification.vibrate();
+         Ext.device.Notification.beep();
       });
    },
    onCheckinTap : function(b, e, eOpts, einfo)
    {
-      // Already in Merchant Account Page, Scan QR Code to confirm Checkin
-      this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueCheckinUrl', 'scan', function()
+      // Already in Merchant Account Page, or Venue info is already loaded, No need to Scan QR Code to confirm Checkin
+      this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueCheckinUrl', 'noscan', function()
       {
-         Ext.device.Notification.vibrate();
+         Ext.device.Notification.beep();
       });
    },
    onNonCheckinTap : function(b, e, eOpts, einfo, callback)
@@ -374,39 +401,48 @@ Ext.define('Genesis.controller.client.Checkins',
       var cestore = Ext.StoreMgr.get('CheckinExploreStore');
       var proxy = cestore.getProxy();
 
-      Venue['setFindNearestURL']();
-      cestore.load(
+      if (!position)
       {
-         params :
+         me.popView();
+      }
+      else
+      {
+         Venue['setFindNearestURL']();
+         cestore.load(
          {
-            latitude : position.coords.getLatitude(),
-            longitude : position.coords.getLongitude()
-         },
-         callback : function(records, operation)
-         {
-            //Ext.Viewport.setMasked(false);
-            if (operation.wasSuccessful())
+            params :
             {
-               var checkinContainer = me.getCheckInNowBar();
-               me.setPosition(position);
-               checkinContainer.setDisabled(false);
-            }
-            else
+               latitude : position.coords.getLatitude(),
+               longitude : position.coords.getLongitude()
+            },
+            callback : function(records, operation)
             {
-               proxy.supressErrorsPopup = true;
-               Ext.device.Notification.show(
+               //Ext.Viewport.setMasked(false);
+               if (operation.wasSuccessful())
                {
-                  title : 'Warning',
-                  message : me.missingVenueInfoMsg,
-                  callback : function()
+                  Ext.Viewport.setMasked(false);
+
+                  var tbb = me.getToolbarBottom();
+                  me.setPosition(position);
+                  tbb.setDisabled(false);
+               }
+               else
+               {
+                  proxy.supressErrorsPopup = true;
+                  Ext.device.Notification.show(
                   {
-                     proxy.supressErrorsPopup = false;
-                  }
-               });
-            }
-         },
-         scope : me
-      });
+                     title : 'Warning',
+                     message : me.missingVenueInfoMsg(operation.getError()),
+                     callback : function()
+                     {
+                        proxy.supressErrorsPopup = false;
+                     }
+                  });
+               }
+            },
+            scope : me
+         });
+      }
    },
    onExploreLoad : function(forceReload)
    {
@@ -425,7 +461,21 @@ Ext.define('Genesis.controller.client.Checkins',
           message : me.loadingPlaces
           });
           */
-         me.getGeoLocation();
+         if (Genesis.db.getLocalDB()['csrf_code'])
+         {
+            me.getGeoLocation();
+         }
+      }
+   },
+   onExploreShowView : function(activeItem)
+   {
+      var list = this.getExploreList();
+      if (Ext.os.is('Android'))
+      {
+         var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
+
+         console.debug("Refreshing CheckinExploreStore ...");
+         monitors[list.container.getId()].forceRefresh();
       }
    },
    onExploreActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -433,30 +483,31 @@ Ext.define('Genesis.controller.client.Checkins',
       var me = this;
 
       var viewport = me.getViewPortCntlr();
-      var checkinContainer = me.getCheckInNowBar();
+      var tbb = me.getToolbarBottom();
       var tbbar = activeItem.query('titlebar')[0];
 
       switch (me.animMode)
       {
          case 'cover' :
-            me.getBackBtn().show();
-            me.getCloseBtn().hide();
+            //me.getBackBtn().show();
+            //me.getCloseBtn().hide();
             break;
          case 'coverUp' :
-            me.getBackBtn().hide();
-            me.getCloseBtn().show();
+            //me.getBackBtn().hide();
+            //me.getCloseBtn().show();
             break;
       }
+      tbbar.removeCls('kbTitle');
       switch (me.mode)
       {
          case 'checkin':
-            tbbar.setTitle('Nearby Places');
-            checkinContainer.setDisabled(true);
-            checkinContainer.show();
+            tbbar.setTitle(' ');
+            tbbar.addCls('kbTitle');
+            tbb.setDisabled(true);
+            tbb.show();
             break;
          case 'explore' :
-            tbbar.setTitle('Explore Places');
-            checkinContainer.hide();
+            tbb.hide();
             break;
       }
       //activeItem.createView();
@@ -464,10 +515,16 @@ Ext.define('Genesis.controller.client.Checkins',
       {
          //me.getExploreList().setVisibility(false);
       }
-      me.onExploreLoad();
+      me.fireEvent('exploreLoad');
    },
    onExploreDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
+   },
+   onRefreshTap : function(b, e, eOpts)
+   {
+      var me = this;
+      me.fireEvent('exploreLoad', true);
    },
    onExploreSelect : function(d, model, eOpts)
    {
@@ -532,8 +589,8 @@ Ext.define('Genesis.controller.client.Checkins',
    {
       var page = this.getMainPage();
       // Hack to fix bug in Sencha Touch API
-      var plugin = page.query('list')[0].getPlugins()[0];
-      plugin.refreshFn = plugin.getRefreshFn();
+      //var plugin = page.query('list')[0].getPlugins()[0];
+      //plugin.refreshFn = plugin.getRefreshFn();
 
       this.pushView(page);
       console.log("Checkin Explore Opened");

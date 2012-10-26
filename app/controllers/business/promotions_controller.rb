@@ -1,11 +1,11 @@
 module Business
-  class PromotionsController < BaseApplicationController
+  class PromotionsController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     before_filter :check_status
 
     def index
       authorize! :read, Promotion
-      @promotions = Promotion.all(:merchant => current_merchant)
+      @promotions = Promotion.all(:merchant => current_merchant, :order => [ :start_date.desc ], :offset => 0, :limit => 10)
 
       respond_to do |format|
         format.html # index.html.erb

@@ -1,5 +1,5 @@
 module Business
-  class CouponsController < BaseApplicationController
+  class CouponsController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
     set_tab :coupons
     

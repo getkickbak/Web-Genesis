@@ -50,8 +50,8 @@ body {
    line-height : 16px;
 }
 
-.news-items li {
-   width : 100%;
+.news-item-detail {
+	width : 100%;
 }
 
 .disabled {

@@ -64,6 +64,8 @@ Ext.define('Genesis.view.Viewport',
          //console.debug("Destroying AnimateActiveItem ...");
       }
       this.activeItemAnimation = animation = new Ext.fx.layout.Card(animation);
+
+      console.debug('Activate View [' + activeItem._itemId + ']');
       if (animation && layout.isCard && !disableAnimation)
       {
          animation.setLayout(layout);
@@ -109,6 +111,7 @@ Ext.define('Genesis.view.Viewport',
                   controller.resume();
                   //console.debug('Destroyed View [' + oldActiveItem._itemId + ']');
                }
+               _application.getController('Viewport').popViewInProgress = false;
             }, this);
          }
          else
@@ -122,7 +125,6 @@ Ext.define('Genesis.view.Viewport',
          defaultAnimation.disable();
       }
 
-      console.debug('Activate View [' + activeItem._itemId + ']');
       var rc = this.setActiveItem(activeItem);
       if (!layout.isCard || disableAnimation)
       {
@@ -153,6 +155,7 @@ Ext.define('Genesis.view.Viewport',
             {
                titlebar.setMasked(false);
             }
+            _application.getController('Viewport').popViewInProgress = false;
          }, 0.1 * 1000, this);
       }
       return rc;

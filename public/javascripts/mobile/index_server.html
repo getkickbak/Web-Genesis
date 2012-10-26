@@ -6,19 +6,6 @@
       <!-- Default Fontsize = 11px
       iPad @132dpi = 100% - iPhone @163dpi = 114% - iPhone Retina @326dpi = 228%
       -->
-      <style rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 2)">
-         body {
-            font-size : 228%;
-            background-image : url(/resources/startup/640x920.png) no-repeat;
-            background-size : contain;
-         }
-      </style>
-      <!-- Dirty hack for Android qHD devices -->
-      <style rel="stylesheet"type="text/css"  media="screen and (-webkit-device-pixel-ratio: 1.5) and (min-device-width: 360px) and (max-device-width: 360px)">
-         body {
-            font-size : 171%;
-         }
-      </style>
       <!-- iPad/iPhone specific css below, add after your main css >
       <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
       <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
@@ -30,37 +17,32 @@
       <link rel="apple-touch-startup-image" media="screen and (resolution: 326dpi)" href="resources/themes/images/v1/startup_640.png" />
       <link rel="apple-touch-startup-image" media="screen and (resolution: 163dpi)" href="resources/themes/images/v1/startup_640.png" />
       -->
-      <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-      <title>KickBak</title>
-      <link rel="stylesheet" href="resources/css/sencha-touch.css" type="text/css">
+      <title>MerKickBak</title>
+      <link rel="stylesheet" href="resources/css/ios.css" type="text/css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
       <script type="text/javascript" src="http://192.168.0.52:8080/target/target-script-min.js"></script>
       directory and include it here -->
       <script type="text/javascript" src="lib/gibberish-aes.min.js"></script>
       <!-- Debug Javascript on mobile browser -->
-      <script type="text/javascript" src="lib/sencha-touch-2.0.1.1/sencha-touch-all.js"></script>
+      <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
       <!--
       Phone Gap Libs
       -->
-      <script type="text/javascript" src="lib/cordova-1.8.1.js"></script>
+      <script type="text/javascript" src="lib/cordova-2.1.0.ios.js"></script>
       <script type="text/javascript">
          var phoneGapAvailable = true;
          var debugMode = false;
          var merchantMode = true;
          var appName = 'MerKICKBAK';
 
-         var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.1.1/src';
+         var _appPath = "app", _extPath = 'lib/sencha-touch-2.1.0-beta3/src';
 
          var _browser = Ext.browser;
          _browser.setFlag('WebView');
          _browser.setFlag('PhoneGap');
 
-         //
-         // Bug fix to prevent bunching up of cls aggregation
-         //
-         //Ext.baseCSSPrefix = ' ' + Ext.baseCSSPrefix;
 
          Ext.Loader.setConfig(
          {
@@ -101,7 +83,7 @@
             console.log("appInit - start");
             Ext.application(
             {
-               profiles : ['Iphone', 'Android', 'Desktop'],
+               profiles : ['Iphone'],
                views : ['Document', 'server.Rewards', 'server.Redemptions', 'MainPage', 'RedeemItemDetail', 'server.SettingsPage', 'Viewport'],
                controllers : ['Viewport', 'MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'Settings', 'server.Prizes'],
                launch : function()
@@ -227,6 +209,8 @@
          }
       </script>
       <script type="text/javascript" src="core.js"></script>
+      <!-- View Widgets -->
+      <script type="text/javascript" src="app/profile/Iphone.js"></script>
       <script type="text/javascript" src="server-all.js"></script>
    </head>
    <body>

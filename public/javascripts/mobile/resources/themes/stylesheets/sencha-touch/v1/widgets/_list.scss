@@ -3,35 +3,25 @@
 //------------------------------------------------------------------------------
 .x-list {
    background:transparent;
-   .x-list-item {
-      -webkit-transform : translateZ(0); // Enable HW Accel in iOS
-   }
    .x-list-disclosure {
       background: theme_image($theme-path + "/miscicons", "disclose" + ".png");
-      background-size: 2em;
+      @include background-size(2em);
       background-position:center center;
       background-repeat:no-repeat;
+      margin: ($panelTopGap*2) $panelGap 0 0;
    }
-   .x-list-container {
+   .x-container {
       .x-list-header {
          @include custom-linear-gradient($OrangeEnd, $list-header-bg-color, top);
          color : $Grey;
       }
-      .x-list-item-label {
+      & > .x-dock-vertical > .x-dock-body .x-list-item .x-dock-body {
          background : $Grey;
       }
    }
 }
 
 .x-list-round {
-   .x-inner, .x-list-inner {
-      .x-list-container {
-         @if $include-highlights {
-            //@include box-shadow(inset 0 0 0.3em rgba(0,0,0,.6));
-         }
-         @if $include-border-radius { @include border-radius($panelBorderRadius) }
-      }
-   }
    .x-list-header {
       @include bevel-by-background($list-header-bg-color);
       border-top: 1px solid $list-header-bg-color;
@@ -45,70 +35,15 @@
       background:transparent !important;
    }
 }
-.x-list-bottom-round {
-   @extend .x-list-round;
-   .x-inner, .x-list-inner {
-     .x-list-container {
-        @if $include-border-radius { @include border-bottom-radius($panelBorderRadius) }
-     }
-     .x-list-paging {
-        @if $include-border-radius { @include border-bottom-radius($panelBorderRadius) }       
-     }
-   }
-}
-   
+
 .x-list-round, .x-list-bottom-round {
-   /*
-   .x-list-item:first-child {
-      border-top: 1px solid darken($list-bg-color, 15%);
-      @include border-top-radius($panelBorderRadius)
-   }
-   */
-   &.x-list-ungrouped * .x-list-item-label, &.x-list-grouped * .x-list-item-label {
-      background : $Grey;
-      @if $include-border-radius { @include border-radius(0); }
-   }
-   &.x-list-ungrouped .x-list-item:last-child, &.x-list-grouped .x-list-item:last-child {
-     margin : 0;
-     .x-list-item-label {
-        border-width : 1px 0 0 0;
-     }
-   }
-   &.x-list-grouped .x-list-footer-item {
-     margin-bottom : 0;
-   }
-   .x-list-container {
-     padding : 0;
+   .x-list-item-last .x-dock-body {
+      @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
    }
 }
 
 .x-list-normal {
    .x-list-header {
-      line-height:1.7em;
-   }
-}
-
-.x-list-normal, .x-list-round, .x-list-bottom-round {
-   &.x-list-ungrouped, &.x-list-grouped {
-      .x-list-container .x-list-item {
-         &.x-list-header-item, &.x-list-footer-item {
-            .x-list-item-label {
-               @if $include-border-radius { @include border-radius(0); }
-            }
-         }
-      }
-   }
-}
-.x-list-round, .x-list-bottom-round {
-   &.x-list-ungrouped, &.x-list-grouped {
-      .x-list-container .x-list-item {
-         &:last-child {
-            &.x-list-footer-item {
-               .x-list-item-label {
-                  @if $include-border-radius { @include border-bottom-radius($panelBorderRadius); }
-               }
-            }
-         }
-      }
+      line-height:$list-disclosure-size;
    }
 }

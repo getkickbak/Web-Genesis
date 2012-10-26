@@ -1,0 +1,18 @@
+
+//------------------------------------------------------------------------------
+// Merchant Account Page and Merchant Prize Page
+//------------------------------------------------------------------------------
+.merchantMain {
+   .prizesWonPanel, .badgeProgressPanel {
+      .prizeswonphoto, .badgephoto {
+         .itemDesc {
+               line-height:1.25em;
+         }
+      }
+      .badgephoto {
+         .itemDesc {
+            padding:0.405em 0 0em 0 !important;
+         }
+      }
+   }
+}

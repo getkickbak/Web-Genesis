@@ -5,24 +5,6 @@
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta property="fb:admins" content="725565520"/>
       <meta property="fb:app_id" content="197968780267830"/>
-      <!-- Default Fontsize = 11px
-      iPad @132dpi = 100% - iPhone @163dpi = 114% - iPhone Retina @326dpi = 228%
-      -->
-      <style rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 2)">
-         body {
-            font-size : 228%;
-         }
-      </style>
-      <!-- Dirty hack for Android qHD devices -->
-      <style rel="stylesheet"type="text/css"  media="screen and (-webkit-device-pixel-ratio: 1.5) and (min-device-width: 360px) and (max-device-width: 360px)">
-         body {
-            font-size : 171%;
-         }
-      </style>
-      <!-- iPad/iPhone specific css below, add after your main css >
-      <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
-      <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
-      -->
       <!--
       <link rel="apple-touch-icon-precomposed" href="resouces/img/icon_57.png">
       <link rel="apple-touch-icon-precomposed" sizes="72x72" href="resources/img/icon_72.png"/>
@@ -32,29 +14,36 @@
       <link rel="apple-touch-startup-image" media="screen and (resolution: 163dpi)" href="resources/themes/images/v1/startup_640.png"
       />
       -->
-      <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>KickBak</title>
-      <link rel="stylesheet" href="resources/css/sencha-touch.css" type="text/css">
+      <!--
+      <link rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 1)" href="resources/css/android.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 1)" href="resources/css/android-mdpi.css">
+      -->
+      <link rel="stylesheet" href="resources/css/ios.css" type="text/css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
       directory and include it here -->
       <script type="text/javascript" src="lib/core/qrcode.js"></script>
       <script type="text/javascript" src="lib/core/date.js"></script>
       <script type="text/javascript" src="lib/core/extras.js"></script>
-      <!-- Debug Javascript on mobile browser -->
+      <!-- Debug Javascript on mobile browser
       <script type="text/javascript" src="lib/sencha-touch-2.0.1.1/sencha-touch-all-debug.js"></script>
+      	-->
+      <script type="text/javascript" src="lib/sencha-touch-2.1.0-beta3/sencha-touch-all-debug.js"></script>
       <!--
       Phone Gap Libs
       -->
-      <script type="text/javascript" src="lib/cordova-1.8.1.js"></script>
+      <script type="text/javascript" src="lib/cordova-2.1.0.ios.js"></script>
       <script type="text/javascript">
          var phoneGapAvailable = false;
          var debugMode = false;
          var merchantMode = false;
          var appName = 'GetKickBak';
 
-         var _appPath = "app", _extPath = 'lib/sencha-touch-2.0.1.1/src';
+         var _appPath = "app";
+         //var _extPath = 'lib/sencha-touch-2.0.1.1/src';
+         var _extPath = 'lib/sencha-touch-2.1.0-beta3/src';
          var _appId = "197968780267830";
 
          var _browser = Ext.browser;
@@ -64,11 +53,6 @@
             _browser.setFlag('Sencha');
          }
          _browser.setFlag('PhonGap', false);
-
-         //
-         // Bug fix to prevent bunching up of cls aggregation
-         //
-         //Ext.baseCSSPrefix = ' ' + Ext.baseCSSPrefix;
 
          Ext.Loader.setConfig(
          {
@@ -106,8 +90,6 @@
       -->
       <script type="text/javascript" src="lib/core/Overrides.js"></script>
       <!-- View Widgets -->
-      <script type="text/javascript" src="app/profile/Iphone.js"></script>
-      <script type="text/javascript" src="app/profile/Android.js"></script>
       <script type="text/javascript" src="app/profile/Desktop.js"></script>
       <!-- View Widgets -->
       <script type="text/javascript" src="app/view/widgets/Scroll.js"></script>
@@ -213,7 +195,7 @@
             Ext.require(['Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Connection', 'Ext.device.Notification', 'Ext.device.Orientation']);
             Ext.application(
             {
-               profiles : ['Iphone', 'Android', 'Desktop'],
+               profiles : ['Desktop'],
                views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
                'client.AccountsTransfer', 'client.SettingsPage', //
                'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
@@ -223,9 +205,9 @@
                'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
                launch : function()
                {
-                  console.log("Launching App");
+                  //console.log("Launching App");
                   Ext.create('Genesis.view.Viewport');
-                  this.redirectTo('');
+                  //this.redirectTo('');
                   console.log("Launched App");
                },
                appFolder : _appPath,

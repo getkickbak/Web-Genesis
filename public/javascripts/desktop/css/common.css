@@ -59,3 +59,28 @@ body {
    }
 }
 
+input[type="file"] {
+	padding : 5px 0;
+	height : 18px;	
+}
+
+.not-edit label {
+	font-weight: bold;
+	text-align: left !important;
+}
+
+.not-edit .control-group {
+	margin-bottom : 9px;
+}
+
+.not-edit .controls {
+	padding-top : 5px;
+	line-height: 18px;
+}
+
+.table .no-data {
+	text-align : center;
+	font-weight : bold;
+	font-size : 1.7em;
+	height : 500px;
+}

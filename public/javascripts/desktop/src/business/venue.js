@@ -6,13 +6,13 @@ $(document).ready($(function()
    var city = $("#venue_city");
    var state = $("#venue_state");
    var country = $("#venue_country");
-   var realAddress = address.val() + "," + city.val() + "," + state.val() + "," + country.val()
+   var realAddress = address.html() + "," + city.html() + "," + state.html() + "," + country.html()
    $gmap.gMap(
    {
       markers : [
       {
          address : realAddress,
-         html : venueName
+         html : venueName.html()
       }],
       address : realAddress,
       zoom : 15,
@@ -20,50 +20,4 @@ $(document).ready($(function()
       //maptype : 'roadmap',
       sensor : false
    });
-   var geocoder = new google.maps.Geocoder();
-   function set_coordinates()
-   {
-      if (address.val().length == 0)
-         return
-      if (city.val().length == 0)
-         return
-      if (state.val().length == 0)
-         return
-      if (country.val().length == 0)
-         return realAddress = address.val() + "," + city.val() + "," + state.val() + "," + country.val()
-      geocoder.geocode(
-      {
-         'address' : realAddress
-      }, function(results, status)
-      {
-         if (status == google.maps.GeocoderStatus.OK)
-         {
-            location_coordinates = results[0].geometry.location;
-            $("#venue_latitude").val(parseFloat(location_coordinates.lat()).toFixed(15))
-            $("#venue_longitude").val(parseFloat(location_coordinates.lng()).toFixed(15))
-         }
-         else
-         {
-            alert("Geocode was not successful for the following reason: " + status);
-         }
-      });
-      $gmap.gMap(
-      {
-         markers : [
-         {
-            address : realAddress,
-            html : venueName
-         }],
-         address : realAddress,
-         zoom : 15,
-         scale : window.devicePixelRatio,
-         //maptype : 'roadmap',
-         sensor : false
-      });
-   }
-
-   address.focusout(set_coordinates);
-   city.focusout(set_coordinates);
-   state.focusout(set_coordinates);
-   country.focusout(set_coordinates);
 }));

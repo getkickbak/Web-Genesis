@@ -37,6 +37,7 @@ Ext.define('Genesis.controller.server.Redemptions',
       }
    },
    invalidAuthCodeMsg : 'Authorization Code is Invalid',
+   proceedToScanMsg : 'Proceed to scan your customer\'s Authorization Code',
    authCodeNotValidMsg : function()
    {
       return 'Authorization Code' + Genesis.constants.addCRLF() + 'is no longer valid'
@@ -211,11 +212,11 @@ Ext.define('Genesis.controller.server.Redemptions',
       Ext.device.Notification.show(
       {
          title : 'Redemption Verification',
-         message : 'Proceed to scan your customer\'s Authorization Code',
-         buttons : ['OK', 'Cancel'],
+         message : me.proceedToScanMsg,
+         buttons : ['Proceed', 'Cancel'],
          callback : function(btn)
          {
-            if (btn.toLowerCase() == 'ok')
+            if (btn.toLowerCase() == 'proceed')
             {
                console.log("Verifying Authorization Code ...");
                me.scanQRCode();

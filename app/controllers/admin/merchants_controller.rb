@@ -1,5 +1,5 @@
 module Admin
-  class MerchantsController < BaseApplicationController
+  class MerchantsController < Admin::BaseApplicationController
     before_filter :authenticate_staff!
     
     def index

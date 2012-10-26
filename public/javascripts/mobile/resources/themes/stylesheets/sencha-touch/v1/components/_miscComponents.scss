@@ -2,7 +2,7 @@
    line-height:$icon-size;
    font-size:$xlargeFontSize*1.25;
    text-align:center;
-   padding-left:$icon-size + 10px;
+   padding-left:calc-px-em($icon-size, $panelGap, $xlargeFontSize*1.25);
    position:relative;
    &:before {
       position:absolute;
@@ -14,20 +14,23 @@
       height : $icon-size;
       max-height: $icon-size;
       background-position: top;
-      background-size: contain;
+      @include background-size(contain);
       background-repeat: no-repeat;
       background-color: transparent;
    }
 }
 
-.prizephoto {
+.prizephoto, .pointsphoto {
    @extend .pointsphotobase;
+   padding-right:$list-disclosure-size + $panelGap;
+}
+
+.prizephoto {
    &:before {
       background-image: theme_image($theme-path + "/miscicons",  "prize_points" + ".png");
    }
 }
 .pointsphoto {
-   @extend .pointsphotobase;
    &:before {
       background-image: theme_image($theme-path + "/miscicons",  "points" + ".png");
    }
@@ -35,8 +38,8 @@
 
 .pointsphotodesc {
    @extend .pointsphotobase;
-   height:$icon-size+10px;
-   max-height:$icon-size+10px;
+   height:calc-px-em($icon-size, $panelTopGap, $xlargeFontSize*1.25);
+   max-height:calc-px-em($icon-size, $panelTopGap, $xlargeFontSize*1.25);
    &:before {
       background-image: theme_image($theme-path + "/miscicons",  "points" + ".png");
    }
@@ -45,12 +48,10 @@
       font-weight:bold;
       position:absolute;
       z-index:1;
-      top:$icon-size/2+3px;
+      top:calc-px-em($icon-size/2, -0.2*$panelTopGap, $smallFontSize);
       left:0;
       content : 'Rewards';
       width : $icon-size;
-      height : 1em;
-      max-height: 1em;
    }
 }
 

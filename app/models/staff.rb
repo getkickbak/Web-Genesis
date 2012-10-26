@@ -81,11 +81,11 @@ class Staff
     if !staff_info[:current_password].empty?
       self.current_password = staff_info[:current_password].strip
       if self.current_password && !valid_password?(self.current_password)
-        errors.add(:current_password, t("errors.messages.staff.incorrect_password"))
+        errors.add(:current_password, I18n.t("errors.messages.staff.incorrect_password"))
         raise DataMapper::SaveFailureError.new("", self)
       end
       if self.current_password == staff_info[:password].strip
-        errors.add(:password, t("errors.messages.staff.reuse_password"))
+        errors.add(:password, I18n.t("errors.messages.staff.reuse_password"))
         raise DataMapper::SaveFailureError.new("", self)
       end  
       self.password = staff_info[:password].strip

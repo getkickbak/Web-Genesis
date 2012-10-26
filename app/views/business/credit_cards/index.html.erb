@@ -9,18 +9,19 @@
 <div class="main">
    <div class="main-inner">
       <div class="container">
+      	<% if current_merchant.status == :pending %>
+      	<ul class="pager">
+      		<li class="previous">
+      			<%= link_to 'Continue Setup', setup_path %>
+      		</li>	
+      	</ul>
+      	<% end %>
          <div class="row">
-            <div class="span12">
+            <div class="span9">
                <div class="widget ">
                   <div class="widget-header">
                      <i class="icon-credit-card"></i>
-                     <h3>Credit Card Information
-                        <!---->
-                        <% if current_merchant.status == :pending && current_merchant.reward_model %>
-                        (<%= link_to 'Continue Setup', setup_path %>)
-                        <% end %>
-                        <!---->
-                     </h3>
+                     <h3>Credit Card Information</h3>
                   </div>
                   <!-- /widget-header -->
                   <div class="widget-content">

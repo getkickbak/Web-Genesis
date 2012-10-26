@@ -1,4 +1,4 @@
-class Api::V1::RegistrationsController < ApplicationController
+class Api::V1::RegistrationsController < Api::V1::BaseApplicationController
   skip_before_filter :verify_authenticity_token
   skip_authorization_check
   respond_to :json

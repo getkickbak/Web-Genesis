@@ -1,3 +1,10 @@
+//---------------------------------------------------------------------------------
+// Math
+//---------------------------------------------------------------------------------
+Math.radians = function(degrees)
+{
+   return (degrees * Math.PI / 180);
+}
 // **************************************************************************
 // System Functions
 // **************************************************************************
@@ -8,6 +15,26 @@ Genesis.constants =
    //host : 'http://192.168.0.52:3000',
    host : 'http://www.getkickbak.com',
    themeName : 'v1',
+   defaultFontSize : (function()
+   {
+      return Math.floor(((16 * 1.14 * Math.min(1.0, window.devicePixelRatio)) || (16 * 1.14)));
+   })(),
+   defaultIconSize : function()
+   {
+      if (Ext.os.is.iPhone)
+      {
+         return 57;
+      }
+      else
+      if (Ext.os.is.Android)
+      {
+         return ((window.devicePixelRatio < 1) ? 36 : 48);
+      }
+      else
+      {
+         return 57;
+      }
+   },
    site : 'www.getkickbak.com',
    photoSite : 'http://files.getkickbak.com',
    debugVPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
@@ -39,73 +66,27 @@ Genesis.constants =
       var me = this;
       if (!me.privKey)
       {
-         if (me.isNative())
+         Genesis.fn.readFile('resources/keys.txt', function(content)
          {
-            var failHandler = function(error)
+            if (Genesis.constants.isNative())
             {
-               var errorCode =
+               me.privKey = Ext.decode(content);
+            }
+            else
+            {
+               // Hardcoded for now ...
+               me.privKey =
                {
+                  'v1' : me.debugVPrivKey,
+                  'r1' : me.debugRPrivKey,
+                  'venue' : me.debugVenuePrivKey
                };
-               errorCode[FileError.NOT_FOUND_ERR] = 'File not found';
-               errorCode[FileError.SECURITY_ERR] = 'Security error';
-               errorCode[FileError.ABORT_ERR] = 'Abort error';
-               errorCode[FileError.NOT_READABLE_ERR] = 'Not readable';
-               errorCode[FileError.ENCODING_ERR] = 'Encoding error';
-               errorCode[FileError.NO_MODIFICATION_ALLOWED_ERR] = 'No mobification allowed';
-               errorCode[FileError.INVALID_STATE_ERR] = 'Invalid state';
-               errorCode[FileError.SYFNTAX_ERR] = 'Syntax error';
-               errorCode[FileError.INVALID_MODIFICATION_ERR] = 'Invalid modification';
-               errorCode[FileError.QUOTA_EXCEEDED_ERR] = 'Quota exceeded';
-               errorCode[FileError.TYPE_MISMATCH_ERR] = 'Type mismatch';
-               errorCode[FileError.PATH_EXISTS_ERR] = 'Path does not exist';
-               var ftErrorCode =
-               {
-               };
-               ftErrorCode[FileTransferError.FILE_NOT_FOUND_ERR] = 'File not found';
-               ftErrorCode[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
-               ftErrorCode[FileTransferError.CONNECTION_ERR] = 'Connection Error';
-
-               console.log("Reading License File Error - [" + errorCode[error.code] + "]");
-            };
-
-            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
-            {
-               var licenseKeyFile = fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/resources/keys.txt';
-               console.debug("License File - [" + licenseKeyFile + "]");
-               fileSystem.root.getFile(licenseKeyFile, null, function(fileEntry)
-               {
-                  fileEntry.file(function(file)
-                  {
-                     var reader = new FileReader();
-                     reader.onloadend = function(evt)
-                     {
-                        me.privKey = Ext.decode(evt.target.result);
-                        for (var i in me.privKey)
-                        {
-                           console.debug("Encryption Key[" + i + "] = [" + me.privKey[i] + "]");
-                        }
-                     };
-                     reader.readAsText(file);
-                  }, failHandler);
-               }, failHandler);
-            }, failHandler);
-
-            return null;
-         }
-         else
-         {
-            // Hardcoded for now ...
-            me.privKey =
-            {
-               'v1' : me.debugVPrivKey,
-               'r1' : me.debugRPrivKey,
-               'venue' : me.debugVenuePrivKey
-            };
+            }
             for (var i in me.privKey)
             {
                console.debug("Encryption Key[" + i + "] = [" + me.privKey[i] + "]");
             }
-         }
+         });
       }
       return (id) ? [me.privKey['v' + id], me.privKey['r' + id], me.privKey[id]] : me.privKey;
    }
@@ -267,7 +248,7 @@ Genesis.fb =
             Genesis.db.setLocalDBAttrib('fbExpiresIn', Date.now() + (1000 * response.authResponse['expiresIn']));
             if (me.cb)
             {
-               me.facebook_loginCallback(me.cb);
+               Ext.defer(me.facebook_loginCallback, 3 * 1000, me, [me.cb]);
                delete me.cb;
             }
          }
@@ -361,7 +342,8 @@ Genesis.fb =
       }
       // Login if connection missing
       var db = Genesis.db.getLocalDB();
-      var refreshConn = (db['currFbId'] > 0);
+      //var refreshConn = (db['currFbId'] > 0);
+      var refreshConn = true;
       // Logged into FB currently or before!
       console.debug("facebook_onLogin - FbId = [" + db['currFbId'] + "], refreshConn = " + refreshConn);
       if (refreshConn)
@@ -383,7 +365,14 @@ Genesis.fb =
                Genesis.db.setLocalDB(db);
 
                // Use Previous Login information!
-               cb(db['fbResponse'], null);
+               if (db['fbResponse'])
+               {
+                  cb(db['fbResponse'], null);
+               }
+               else
+               {
+                  me.facebook_loginCallback(cb);
+               }
             }
             else
             {
@@ -415,55 +404,54 @@ Genesis.fb =
             if (db['currFbId'] == facebook_id)
             {
                console.debug("Session information same as previous session[" + facebook_id + "]");
-               if (cb)
-               {
-                  cb(params, null);
-               }
             }
             else
             {
                console.debug("Session ID[" + facebook_id + "]");
                db['currFbId'] = facebook_id;
                db['fbAccountId'] = response.email;
-               var params = db['fbResponse'] = me.createFbResponse(response);
+               db['fbResponse'] = me.createFbResponse(response);
                Genesis.db.setLocalDB(db);
+            }
 
-               console.debug('You\`ve logged into Facebook! ' + '\n' + //
-               'Email(' + db['fbAccountId'] + ')' + '\n' + //
-               'ID(' + facebook_id + ')' + '\n');
-               me._fb_connect();
-               //me.getFriendsList();
+            console.debug('You\`ve logged into Facebook! ' + '\n' + //
+            'Email(' + db['fbAccountId'] + ')' + '\n' + //
+            'ID(' + facebook_id + ')' + '\n');
+            me._fb_connect();
+            //me.getFriendsList();
 
-               if (db['auth_code'])
+            if (db['auth_code'])
+            {
+               console.debug("Updating Facebook Login Info ...");
+               Account['setUpdateFbLoginUrl']();
+               Account.load(0,
                {
-                  console.debug("Updating Facebook Login Info ...");
-                  Account['setUpdateFbLoginUrl']();
-                  Account.load(0,
+                  jsonData :
                   {
-                     jsonData :
+                  },
+                  params :
+                  {
+                     user : Ext.encode(db['fbResponse'])
+                  },
+                  callback : function(record, operation)
+                  {
+                     if (operation.wasSuccessful())
                      {
-                     },
-                     params :
-                     {
-                        user : Ext.encode(params)
-                     },
-                     callback : function(record, operation)
-                     {
-                        if (operation.wasSuccessful())
-                        {
-                           Genesis.db.setLocalDBAttrib('enableFB', true);
-                        }
-                        if (cb)
-                        {
-                           cb(params, operation);
-                        }
+                        Genesis.db.setLocalDBAttrib('enableFB', true);
                      }
-                  });
-               }
-               else
+                     if (cb)
+                     {
+                        cb(db['fbResponse'], operation);
+                     }
+                  }
+               });
+            }
+            else
+            {
+               Genesis.db.setLocalDBAttrib('enableFB', true);
+               if (cb)
                {
-                  Genesis.db.setLocalDBAttrib('enableFB', true);
-                  cb(params, null);
+                  cb(db['fbResponse'], null);
                }
             }
          }
@@ -712,6 +700,120 @@ Genesis.fn =
    removeUnit : function(unit)
    {
       return unit.match(this._removeUnitRegex)[1];
+   },
+   calcPx : function(em, fontsize)
+   {
+      return Math.floor(((em / fontsize) * Genesis.constants.defaultFontSize));
+   },
+   calcPxEm : function(px, em, fontsize)
+   {
+      return ((px / Genesis.constants.defaultFontSize / fontsize) + (em / fontsize));
+   },
+   failFileHandler : function(error)
+   {
+      var errorCode =
+      {
+      };
+      errorCode[FileError.NOT_FOUND_ERR] = 'File not found';
+      errorCode[FileError.SECURITY_ERR] = 'Security error';
+      errorCode[FileError.ABORT_ERR] = 'Abort error';
+      errorCode[FileError.NOT_READABLE_ERR] = 'Not readable';
+      errorCode[FileError.ENCODING_ERR] = 'Encoding error';
+      errorCode[FileError.NO_MODIFICATION_ALLOWED_ERR] = 'No mobification allowed';
+      errorCode[FileError.INVALID_STATE_ERR] = 'Invalid state';
+      errorCode[FileError.SYFNTAX_ERR] = 'Syntax error';
+      errorCode[FileError.INVALID_MODIFICATION_ERR] = 'Invalid modification';
+      errorCode[FileError.QUOTA_EXCEEDED_ERR] = 'Quota exceeded';
+      errorCode[FileError.TYPE_MISMATCH_ERR] = 'Type mismatch';
+      errorCode[FileError.PATH_EXISTS_ERR] = 'Path does not exist';
+      var ftErrorCode =
+      {
+      };
+      ftErrorCode[FileTransferError.FILE_NOT_FOUND_ERR] = 'File not found';
+      ftErrorCode[FileTransferError.INVALID_URL_ERR] = 'Invalid URL Error';
+      ftErrorCode[FileTransferError.CONNECTION_ERR] = 'Connection Error';
+
+      console.log("File Error - [" + errorCode[error.code] + "]");
+   },
+   readFile : function(path, callback)
+   {
+      var me = this;
+      if (Genesis.constants.isNative())
+      {
+         var handler = function(fileEntry)
+         {
+            fileEntry.file(function(file)
+            {
+               var reader = new FileReader();
+               reader.onloadend = function(evt)
+               {
+                  callback(evt.target.result);
+               };
+               reader.readAsText(rfile);
+            }, me.failFileHandler);
+         }
+         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
+         {
+            var rfile;
+            if (Ext.os.is('iPhone'))
+            {
+               rfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
+            }
+            else
+            if (Ext.os.is('Android'))
+            {
+               wfile = (fileSystem.root.fullPath + appName) + path;
+            }
+            fileSystem.root.getFile(rfile, null, handler, me.failFileHandler);
+            console.debug("Reading from File - [" + rfile + "]");
+         }, me.failFileHandler);
+      }
+      else
+      {
+         callback();
+      }
+   },
+   writeFile : function(path, content, callback)
+   {
+      var me = this;
+      if (Genesis.constants.isNative())
+      {
+         var handler = function(fileEntry)
+         {
+            fileEntry.createWriter(function(writer)
+            {
+               writer.onwriteend = function(evt)
+               {
+                  callback();
+               };
+               writer.write(content);
+            }, me.failFileHandler);
+
+         }
+         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
+         {
+            var wfile;
+            if (Ext.os.is('iPhone'))
+            {
+               wfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
+            }
+            else
+            if (Ext.os.is('Android'))
+            {
+               wfile = (fileSystem.root.fullPath + appName) + path;
+            }
+            fileSystem.root.getFile(wfile,
+            {
+               create : true,
+               exclusive : false
+            }, handler, me.failFileHandler);
+            console.debug("Writing to File - [" + wfile + "]");
+         }, me.failFileHandler);
+      }
+      else
+      {
+         callback();
+      }
    }
 }
 
@@ -720,6 +822,7 @@ Genesis.fn =
 // **************************************************************************
 Genesis.db =
 {
+   _localDB : null,
    getLocalStorage : function()
    {
       return window.localStorage;
@@ -859,13 +962,11 @@ Genesis.db =
    //
    getLocalDB : function()
    {
-      var db = this.getLocalStorage().getItem('kickbak');
-      return ((db) ? Ext.decode(db) :
-      {
-      });
+      return (!this._localDB) ? (this._localDB = Ext.decode(this.getLocalStorage().getItem('kickbak') || "{}")) : this._localDB;
    },
    setLocalDB : function(db)
    {
+      this._localDB = db;
       console.debug("Setting KickBak DB[" + Ext.encode(db) + "]");
       this.getLocalStorage().setItem('kickbak', Ext.encode(db));
    },
@@ -879,8 +980,11 @@ Genesis.db =
    removeLocalDBAttrib : function(attrib)
    {
       var db = this.getLocalDB();
-      delete db[attrib];
-      this.setLocalDB(db);
+      if ( typeof (db[attrib]) != 'undefined')
+      {
+         delete db[attrib];
+         this.setLocalDB(db);
+      }
    },
    //
    // Referral DB
@@ -935,6 +1039,7 @@ Genesis.db =
             console.debug("Removed [" + i + "]");
          }
       }
+      this._localDB = null;
       //
       // Clean up ALL Object cache!
       //
@@ -994,6 +1099,9 @@ Ext.define('Genesis.Component',
    }
 });
 
+// **************************************************************************
+// Ext.util.Collection
+// **************************************************************************
 Ext.define('Genesis.util.Collection',
 {
    override : 'Ext.util.Collection',
@@ -1007,6 +1115,26 @@ Ext.define('Genesis.util.Collection',
    }
 });
 
+// **************************************************************************
+// Ext.util.SizeMonitor
+// **************************************************************************
+Ext.define('Genesis.util.SizeMonitor',
+{
+   override : 'Ext.util.SizeMonitor',
+   constructor : function(config)
+   {
+      if (Ext.browser.engineVersion.gtEq('534'))
+      {
+      	console.debug("Using OverflowChange SizeMonitor ...");
+         return new Ext.util.sizemonitor.OverflowChange(config);
+      }
+      else
+      {
+      	console.debug("Using Scroll SizeMonitor ...");
+         return new Ext.util.sizemonitor.Scroll(config);
+      }
+   }
+});
 //---------------------------------------------------------------------------------------------------------------------------------
 // Ext.data.reader.Json
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -1015,7 +1143,12 @@ Ext.define('Genesis.data.reader.Json',
    override : 'Ext.data.reader.Json',
    getResponseData : function(response)
    {
-      var data = this.callParent(arguments);
+      var data;
+      if (response && response.responseText)
+      {
+         //console.debug("ResponseText - \n" + response.responseText);
+      }
+      data = this.callParent(arguments);
       if (!data.metaData)
       {
          delete this.metaData;
@@ -1097,7 +1230,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   {
                      title : 'Server Error(s)',
                      message : messages,
-                     callback : function()
+                     callback : function(btn)
                      {
                         if (metaData['session_timeout'])
                         {
@@ -1123,17 +1256,10 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   {
                      title : 'Create Account',
                      message : Genesis.constants.createAccountMsg,
-                     callback : function(button)
+                     callback : function(btn)
                      {
                         viewport.setLoggedIn(false);
-                        var controller = app.getController('MainPage');
-                        app.dispatch(
-                        {
-                           action : 'onCreateAccountTap',
-                           args : [null, null, null, null],
-                           controller : controller,
-                           scope : controller
-                        });
+                        viewport.redirectTo('createAccount');
                      }
                   });
                   return;
@@ -1147,7 +1273,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                   {
                      title : 'Login Error',
                      message : messages,
-                     callback : function()
+                     callback : function(btn)
                      {
                         viewport.redirectTo('login');
                      }
@@ -1296,6 +1422,10 @@ Ext.define('Genesis.data.Connection',
       };
       var db = Genesis.db.getLocalDB();
       var method = (options.method || me.getMethod() || ((params || data) ? 'POST' : 'GET')).toUpperCase();
+      options.headers = Ext.apply(options.headers,
+      {
+         'Accept' : '*/*'
+      });
       if (db['csrf_code'] && (method == 'POST'))
       {
          options.headers = Ext.apply(options.headers,
@@ -1305,6 +1435,7 @@ Ext.define('Genesis.data.Connection',
       }
       var headers = me.callParent(arguments);
 
+      //console.debug("Remote Ajax Call Header -\n" + Ext.encode(headers));
       return headers;
    },
    /**
@@ -1416,6 +1547,57 @@ Ext.define('Genesis.dataview.element.List',
 });
 
 //---------------------------------------------------------------------------------------------------------------------------------
+// Ext.dataview.List
+//---------------------------------------------------------------------------------------------------------------------------------
+Ext.define('Genesis.dataview.List',
+{
+   override : 'Ext.dataview.List',
+
+   initialize : function()
+   {
+      var me = this;
+
+      me.callParent(arguments);
+   },
+   doRefresh : function(list)
+   {
+      var me = this;
+      if (me.getStore())
+      {
+         console.debug("List:doRefresh - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
+      }
+      return me.callParent(arguments);
+   },
+   setItemsCount : function(itemsCount)
+   {
+      var me = this;
+      if (me.getStore())
+      {
+         console.debug("List:setItemsCount - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
+      }
+      return me.callParent(arguments);
+   },
+   updateListItem : function(item, index, info)
+   {
+      var me = this;
+      if (me.getStore())
+      {
+         console.debug("List:updateListItem - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
+      }
+      return me.callParent(arguments);
+   },
+   onResize : function()
+   {
+      var me = this;
+      if (me.getStore())
+      {
+         console.debug("List:onResize - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
+      }
+      return me.callParent(arguments);
+   }
+});
+
+//---------------------------------------------------------------------------------------------------------------------------------
 // Ext.tab.Bar
 //---------------------------------------------------------------------------------------------------------------------------------
 /**
@@ -1442,12 +1624,32 @@ Ext.define('Genesis.tab.Bar',
 Ext.define('Genesis.device.connection.PhoneGap',
 {
    override : 'Ext.device.connection.PhoneGap',
-
    syncOnline : function()
    {
       var type = navigator.network.connection.type;
       this._type = type;
       this._online = (type != Connection.NONE) && (type != Connection.UNKNOWN);
+   }
+});
+
+Ext.define('Genesis.util.Geolocation',
+{
+   override : 'Ext.util.Geolocation',
+   parseOptions : function()
+   {
+      var timeout = this.getTimeout(), ret =
+      {
+         maximumAge : this.getMaximumAge(),
+         allowHighAccuracy : this.getAllowHighAccuracy(),
+         enableHighAccuracy : this.getAllowHighAccuracy()
+      };
+
+      //Google doesn't like Infinity
+      if (timeout !== Infinity)
+      {
+         ret.timeout = timeout;
+      }
+      return ret;
    }
 });
 
@@ -1509,13 +1711,6 @@ Ext.define('Genesis.plugin.PullRefresh',
    }
 });
 
-//---------------------------------------------------------------------------------
-// Math
-//---------------------------------------------------------------------------------
-Math.radians = function(degrees)
-{
-   return (degrees * Math.PI / 180);
-}
 //---------------------------------------------------------------------------------
 // Array
 //---------------------------------------------------------------------------------

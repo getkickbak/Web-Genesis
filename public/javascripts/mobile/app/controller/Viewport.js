@@ -20,6 +20,7 @@ Ext.define('Genesis.controller.Viewport',
          customer : null,
          metaData : null
       },
+      lastPosition : null,
       refs :
       {
          view : 'viewportview',
@@ -52,55 +53,59 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'onCheckinScanTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=info]' :
+         'tabbar[tag=navigationBarTop] button[tag=info]' :
          {
             tap : 'onInfoTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=home]' :
+         'tabbar[tag=navigationBarBottom] button[tag=home]' :
          {
             tap : 'onHomeButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=prizes]' :
+         'tabbar[tag=navigationBarBottom] button[tag=prizes]' :
          {
             tap : 'onPrizesButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=prizesSC]' :
+         'tabbar[tag=navigationBarBottom] button[tag=prizesSC]' :
          {
             tap : 'onRedeemPrizesSCButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=accounts]' :
+         'tabbar[tag=navigationBarBottom] button[tag=accounts]' :
          {
             tap : 'onAccountsButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=challenges]' :
+         'tabbar[tag=navigationBarBottom] button[tag=challenges]' :
          {
             tap : 'onChallengesButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=rewards]' :
+         'tabbar[tag=navigationBarBottom] button[tag=rewards]' :
          {
             tap : 'onRewardsButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=rewardsSC]' :
+         'tabbar[tag=navigationBarBottom] button[tag=rewardsSC]' :
          {
             tap : 'onRewardsSCButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=redemption]' :
+         'tabbar[tag=navigationBarBottom] button[tag=redemption]' :
          {
             tap : 'onRedemptionsButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=redemptionSC]' :
+         'tabbar[tag=navigationBarBottom] button[tag=redemptionSC]' :
          {
             tap : 'onRedeemRewardsSCButtonTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=main]' :
+         'tabbar[tag=navigationBarBottom] button[tag=main]' :
          {
             tap : 'onCheckedInAccountTap'
          },
-         'tabbar[cls=navigationBarBottom] button[tag=browse]' :
+         'tabbar[tag=navigationBarBottom] button[tag=browse]' :
          {
             tap : 'onBrowseTap'
          },
          //
+         view :
+         {
+            activate : 'onActivate'
+         },
          'viewportview dataview[tag=mainMenuSelections]' :
          {
             select : 'onButtonTap'
@@ -110,6 +115,10 @@ Ext.define('Genesis.controller.Viewport',
             select : 'onButtonTap'
          },
          'viewportview dataview[tag=challengeMenuSelections]' :
+         {
+            select : 'onButtonTap'
+         },
+         'viewportview list[tag=jackpotWinnersList]' :
          {
             select : 'onButtonTap'
          },
@@ -137,6 +146,7 @@ Ext.define('Genesis.controller.Viewport',
          'resetview' : 'resetView'
       }
    },
+   popViewInProgress : false,
    viewStack : [],
    animationFlag : 0,
    gatherCheckinInfoMsg : 'Gathering Checkin information ...',
@@ -189,6 +199,40 @@ Ext.define('Genesis.controller.Viewport',
          },
          scope : me
       });
+   },
+   onActivate : function()
+   {
+      console.log("Loading MainPage Store ...");
+      if (Genesis.constants.isNative())
+      {
+         var file = "app/store/" + ((!merchantMode) ? 'mainClientPage.json' : 'mainServerPage.json'), path = "";
+         if (Ext.os.is('iPhone'))
+         {
+         }
+         else
+         if (Ext.os.is('Android'))
+         {
+            path = "file:///android_asset/www/";
+         }
+
+         var request = new XMLHttpRequest();
+         request.open("GET", path + file, true);
+         request.onreadystatechange = function()
+         {
+            if (request.readyState == 4)
+            {
+               if (request.status == 200 || request.status == 0)
+               {
+                  Ext.StoreMgr.get('MainPageStore').setData(Ext.decode(request.responseText).data);
+               }
+            }
+         }
+         request.send();
+      }
+      else
+      {
+         Ext.StoreMgr.get('MainPageStore').load();
+      }
    },
    // --------------------------------------------------------------------------
    // Button Handlers
@@ -477,34 +521,46 @@ Ext.define('Genesis.controller.Viewport',
       var me = this;
       var actions = me.getApplication().getHistory().getActions();
 
-      if (me.viewStack.length > 0)
+      if (me.viewStack.length > 1)
       {
          var lastView = me.viewStack.pop();
          var currView = me.viewStack[me.viewStack.length - 1];
 
-         Ext.defer(function()
+         if (!me.popViewInProgress)
          {
-            actions.pop();
-            //
-            // Recreate View if the view was destroyed for DOM memory optimization
-            //
-            if (currView['view'].isDestroyed)
+            me.popViewInProgress = true;
+            //Ext.defer(function()
             {
-               currView['view'] = Ext.create(currView['view'].alias[0]);
-               //console.debug("Recreated View [" + currView['view']._itemId + "]")
+               actions.pop();
+               //
+               // Recreate View if the view was destroyed for DOM memory optimization
+               //
+               if (currView['view'].isDestroyed)
+               {
+                  currView['view'] = Ext.create(currView['view'].alias[0]);
+                  //console.debug("Recreated View [" + currView['view']._itemId + "]")
+               }
+
+               //
+               // Update URL
+               //
+               me.getApplication().getHistory().setToken(currView['url']);
+               window.location.hash = currView['url'];
+
+               me.getViewport().animateActiveItem(currView['view'], Ext.apply(lastView['animation'],
+               {
+                  reverse : true
+               }));
             }
-
-            //
-            // Update URL
-            //
-            me.getApplication().getHistory().setToken(currView['url']);
-            window.location.hash = currView['url'];
-
-            me.getViewport().animateActiveItem(currView['view'], Ext.apply(lastView['animation'],
-            {
-               reverse : true
-            }));
-         }, 1, me);
+            //, 1, me);
+         }
+      }
+      else
+      {
+         //
+         // Go back to HomePage by default
+         //
+         me.goToMain();
       }
    },
    // --------------------------------------------------------------------------
@@ -537,7 +593,10 @@ Ext.define('Genesis.controller.Viewport',
 
       if (Ext.isDefined(window.device))
       {
-         console.debug("device.platform - " + device.platform);
+         console.debug(//
+         "\n" + "device.platform - " + device.platform + //
+         "\n" + "Browser EngineVersion - " + Ext.browser.engineVersion + //
+         "");
       }
 
       //
@@ -581,27 +640,38 @@ Ext.define('Genesis.controller.Viewport',
       sound_file = sound_file.split('.')[0];
       if (Genesis.constants.isNative())
       {
-         switch (type)
+         var callback = function()
          {
-            case 'FX' :
-               LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, function()
+            switch(type)
+            {
+               case 'FX' :
                {
-                  console.debug("loaded " + sound_file);
-               }, function(err)
+                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, function()
+                  {
+                     console.debug("loaded " + sound_file);
+                  }, function(err)
+                  {
+                     console.debug("Audio Error: " + err);
+                  });
+                  break;
+               }
+               case 'Audio' :
                {
-                  console.debug("Audio Error: " + err);
-               });
-               break;
-            case 'Audio' :
-               LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, 3, function()
-               {
-                  console.debug("loaded " + sound_file);
-               }, function(err)
-               {
-                  console.debug("Audio Error: " + err);
-               });
-               break;
+                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, 3, function()
+                  {
+                     console.debug("loaded " + sound_file);
+                  }, function(err)
+                  {
+                     console.debug("Audio Error: " + err);
+                  });
+                  break;
+               }
+            }
+         }
+         switch(type)
+         {
             case 'Media' :
+            {
                sound_file = new Media('resources/audio/' + sound_file + ext, function()
                {
                   //console.log("loaded " + me.sound_files[tag].name);
@@ -611,6 +681,10 @@ Ext.define('Genesis.controller.Viewport',
                   me.sound_files[tag].successCallback();
                   console.log("Audio Error: " + err);
                });
+               break;
+            }
+            default :
+               LowLatencyAudio['unload'](sound_file, callback, callback);
                break;
          }
       }
@@ -653,6 +727,7 @@ Ext.define('Genesis.controller.Viewport',
          else
          {
             console.debug("Going to Login Page ...");
+            Genesis.db.resetStorage();
             me.redirectTo('login');
          }
       }

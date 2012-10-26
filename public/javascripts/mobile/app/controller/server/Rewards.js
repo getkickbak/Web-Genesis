@@ -134,7 +134,6 @@ Ext.define('Genesis.controller.server.Rewards',
       var container = me.getRewardsContainer();
       var animation = container.getLayout().getAnimation();
 
-      Ext.Viewport.setMasked(false);
       switch (value.config.tag)
       {
          case 'rewardsMainCalculator' :
@@ -174,17 +173,22 @@ Ext.define('Genesis.controller.server.Rewards',
          message : me.genQRCodeMsg
       });
 
+      Ext.defer(function()
+      {
+         var qrcodeMetaData = Genesis.controller.ControllerBase.genQRCodeFromParams(
+         {
+            "amount" : price,
+            "type" : 'earn_points'
+         }, 'reward', false);
+         me.getQrcode().setStyle(
+         {
+            'background-image' : 'url(' + qrcodeMetaData[0] + ')',
+            'background-size' : Genesis.fn.addUnit(qrcodeMetaData[1] * 1.25) + ' ' + Genesis.fn.addUnit(qrcodeMetaData[2] * 1.25)
+         });
+         Ext.Viewport.setMasked(false);
+      }, 1, me);
+      
       console.debug("Encrypting QRCode with Price:$" + price);
-      var qrcodeMetaData = Genesis.controller.ControllerBase.genQRCodeFromParams(
-      {
-         "amount" : price,
-         "type" : 'earn_points'
-      }, 'reward', false);
-      me.getQrcode().setStyle(
-      {
-         'background-image' : 'url(' + qrcodeMetaData[0] + ')',
-         'background-size' : Genesis.fn.addUnit(qrcodeMetaData[1] * 1.25) + ' ' + Genesis.fn.addUnit(qrcodeMetaData[2] * 1.25)
-      });
       me.getTitle().setData(
       {
          price : '$' + price

@@ -45,26 +45,34 @@ Ext.define('Genesis.view.client.Badges',
    },
    createView : function()
    {
+      var carousel = this;
+
       if (!Genesis.view.ViewBase.prototype.createView.apply(this, arguments))
       {
+         var ditems = carousel.query('dataview');
+         for (var i = 0; i < ditems.length; i++)
+         {
+            ditems[i].refresh();
+         }
          return;
       }
 
-      var carousel = this;
+      carousel.removeAll(true);
+
       var app = _application;
       var viewport = app.getController('Viewport');
       var vport = viewport.getViewport();
       var items = Ext.StoreMgr.get('BadgeStore').getRange();
       var list = Ext.Array.clone(items);
-
-      carousel.removeAll(true);
+      
       for (var i = 0; i < Math.ceil(items.length / 16); i++)
       {
          this.getPreRender().push(Ext.create('Ext.dataview.DataView',
          {
             xtype : 'dataview',
             cls : 'badgesMenuSelections',
-            scrollable : false,
+            tag : 'badgesMenuSelections',
+            scrollable : undefined,
             deferInitialRefresh : false,
             store :
             {
@@ -73,11 +81,11 @@ Ext.define('Genesis.view.client.Badges',
             },
             itemTpl : Ext.create('Ext.XTemplate',
             // @formatter:off
-               '<div class="itemWrapper">',
-                  '<div class="photo"><img src="{[this.getPhoto(values)]}" /></div>',
-                  '<div class="photoName">{[this.getName(values)]}</div>',
-               '</div>',
-               // @formatter:on
+            '<div class="itemWrapper">',
+               '<div class="photo"><img src="{[this.getPhoto(values)]}" /></div>',
+               '<div class="photoName">{[this.getName(values)]}</div>',
+            '</div>',
+            // @formatter:on
             {
                getName : function(values)
                {

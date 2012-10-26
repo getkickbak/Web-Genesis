@@ -39,9 +39,9 @@ Ext.define('Genesis.controller.client.Merchants',
          mapBtn : 'viewportview button[tag=mapBtn]',
          shareBtn : 'viewportview button[tag=shareBtn]',
          checkinBtn : 'viewportview button[tag=checkin]',
-         mainBtn : 'clientmerchantaccountview tabbar[cls=navigationBarBottom] button[tag=main]',
-         prizesBtn : 'clientmerchantaccountview tabbar[cls=navigationBarBottom] button[tag=prizes]',
-         redeemBtn : 'clientmerchantaccountview tabbar[cls=navigationBarBottom] button[tag=redemption]',
+         mainBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=main]',
+         prizesBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=prizes]',
+         redeemBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=redemption]',
          merchantTabBar : 'clientmerchantaccountview tabbar'
       },
       control :
@@ -63,8 +63,8 @@ Ext.define('Genesis.controller.client.Merchants',
          },
          'clientmerchantaccountview list' :
          {
-            select : 'onMainSelect',
-            disclose : 'onMainDisclose'
+            select : 'onMainSelect'
+            //disclose : 'onMainDisclose'
          },
          checkinBtn :
          {
@@ -249,7 +249,7 @@ Ext.define('Genesis.controller.client.Merchants',
       else
       {
          var info = viewport.getCheckinInfo();
-         
+
          console.log("Going back to Checked-In Merchant Home Account Page ...");
          me.resetView();
          me.setAnimationMode(me.self.superclass.self.animationMode['pop']);
@@ -274,6 +274,16 @@ Ext.define('Genesis.controller.client.Merchants',
       //me.getDescPanel().setData(vrecord);
       //me.getDescContainer().show();
 
+      var rstore = Ext.StoreMgr.get('MerchantRenderStore');
+      //if (rstore.getRange()[0] != vrecord)
+      {
+         rstore.setData(vrecord);
+         //
+         // Update Customer Statistics
+         // in case venue object was never updated ...
+         //
+         me.onCustomerRecordUpdate(crecord);
+      }
       //
       // Main Menu button
       //
@@ -324,30 +334,21 @@ Ext.define('Genesis.controller.client.Merchants',
          prizeBtn.setIconCls('prizes');
       }
       /*
-       else
-       {
-       var type = Ext.StoreMgr.get('BadgeStore').getById(crecord.get('badge_id')).get('type');
+      else
+      {
+      var type = Ext.StoreMgr.get('BadgeStore').getById(crecord.get('badge_id')).get('type');
 
-       prizeBtn.setIconCls('prizeicon');
-       prizeBtn.setIcon(Genesis.view.client.Badges.getPhoto(type, 'thumbnail_small_url'));
-       }
-       */
-      me.getPrizesBtn().setBadgeText(crecord.get('eligible_for_prize') ? '✔' : null);
-      me.getRedeemBtn().setBadgeText(crecord.get('eligible_for_reward') ? '✔' : null);
-
+      prizeBtn.setIconCls('prizeicon');
+      prizeBtn.setIcon(Genesis.view.client.Badges.getPhoto(type, 'thumbnail_small_url'));
+      }
+      */
       // Update TitleBar
-      activeItem.query('titlebar')[0].setTitle(' ');
+      var bar = activeItem.query('titlebar')[0];
+      bar.setTitle(' ');
       Ext.defer(function()
       {
          // Update TitleBar
-         activeItem.query('titlebar')[0].setTitle(vrecord.get('name'));
-
-         // Refresh Merchant Panel Info
-         var rstore = Ext.StoreMgr.get('MerchantRenderStore');
-         //if (rstore.getRange()[0] != vrecord)
-         {
-            rstore.setData(vrecord);
-         }
+         bar.setTitle(vrecord.get('name'));
       }, 1, me);
    },
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
@@ -409,6 +410,29 @@ Ext.define('Genesis.controller.client.Merchants',
       d.deselect([model]);
       this.onMainDisclose(d, model);
       return false;
+   },
+   onCustomerRecordUpdate : function(customer)
+   {
+      var me = this;
+      var rstore = Ext.StoreMgr.get('MerchantRenderStore');
+      if (rstore && (rstore.getCount() > 0))
+      {
+         //
+         // Udpate MerchantRenderStore when CustomerStore is updated
+         //
+         if (rstore && rstore.getRange()[0].getMerchant().getId() == customer.getMerchant().getId())
+         {
+            if (me.getPrizesBtn())
+            {
+               me.getPrizesBtn().setBadgeText(customer.get('eligible_for_prize') ? '✔' : null);
+            }
+            if (me.getRedeemBtn())
+            {
+               me.getRedeemBtn().setBadgeText(customer.get('eligible_for_reward') ? '✔' : null);
+            }
+            //rstore.fireEvent('refresh', rstore, rstore.data);
+         }
+      }
    },
    onCheckinTap : function(b, e, eOpts, eInfo)
    {
@@ -497,7 +521,7 @@ Ext.define('Genesis.controller.client.Merchants',
    backToMainPage : function(venueId, customerId, backToMain)
    {
       var viewport = this.getViewPortCntlr();
-      var cvenue = viewport.getCheckinInfo().venue;
+      //var cvenue = viewport.getCheckinInfo().venue;
       //var showFeed = (customerId > 0) || (cvenue && (cvenue.getId() == venueId));
       var showFeed = true;
       this.openMainPage(showFeed, backToMain > 0);
@@ -561,6 +585,9 @@ Ext.define('Genesis.controller.client.Merchants',
       me.showFeed = showFeed;
       if (!backToMain)
       {
+         // Refresh Merchant Panel Info
+         var viewport = me.getViewPortCntlr();
+         var venue = viewport.getVenue();
          if (me.getMainPage() == vport.getActiveItem())
          {
             me.checkInAccount();
