@@ -1,9 +1,6 @@
-var _application;
-
 Ext.define('Genesis.controller.Viewport',
 {
    extend : 'Genesis.controller.ControllerBase',
-   requires : ['Ext.util.DelayedTask'],
    statics :
    {
    },
@@ -57,7 +54,7 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'onInfoTap'
          },
-         'tabbar[tag=navigationBarBottom] button[tag=home]' :
+         'viewportview button[tag=home]' :
          {
             tap : 'onHomeButtonTap'
          },
@@ -81,7 +78,7 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'onRewardsButtonTap'
          },
-         'tabbar[tag=navigationBarBottom] button[tag=rewardsSC]' :
+         'viewportview button[tag=rewardsSC]' :
          {
             tap : 'onRewardsSCButtonTap'
          },
@@ -96,6 +93,10 @@ Ext.define('Genesis.controller.Viewport',
          'tabbar[tag=navigationBarBottom] button[tag=main]' :
          {
             tap : 'onCheckedInAccountTap'
+         },
+         'tabbar[tag=navigationBarBottom] button[tag=checkin]' :
+         {
+            tap : 'onCheckinTap'
          },
          'tabbar[tag=navigationBarBottom] button[tag=browse]' :
          {
@@ -189,7 +190,7 @@ Ext.define('Genesis.controller.Viewport',
                Ext.device.Notification.show(
                {
                   title : 'Error',
-                  message : me.missingVenueInfoMsg,
+                  message : me.missingVenueInfoMsg(operation.getError()),
                   callback : function()
                   {
                      proxy.supressErrorsPopup = false;
@@ -206,7 +207,7 @@ Ext.define('Genesis.controller.Viewport',
       if (Genesis.constants.isNative())
       {
          var file = "app/store/" + ((!merchantMode) ? 'mainClientPage.json' : 'mainServerPage.json'), path = "";
-         if (Ext.os.is('iPhone'))
+         if (Ext.os.is('iOS'))
          {
          }
          else
@@ -215,19 +216,21 @@ Ext.define('Genesis.controller.Viewport',
             path = "file:///android_asset/www/";
          }
 
+         //console.debug("Creating Request [" + path + file + "]");
          var request = new XMLHttpRequest();
-         request.open("GET", path + file, true);
          request.onreadystatechange = function()
          {
             if (request.readyState == 4)
             {
                if (request.status == 200 || request.status == 0)
                {
+                  console.log("Loaded MainPage Store ...");
                   Ext.StoreMgr.get('MainPageStore').setData(Ext.decode(request.responseText).data);
                }
             }
          }
-         request.send();
+         request.open("GET", path + file, true);
+         request.send(null);
       }
       else
       {
@@ -429,6 +432,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    onHomeButtonTap : function(b, e, eOpts, eInfo)
    {
+      this.resetView();
       this.redirectTo('main');
       console.log("Going back to HomePage ...");
    },
@@ -442,18 +446,27 @@ Ext.define('Genesis.controller.Viewport',
       this.redirectTo('exploreS');
       //this.fireEvent('openpage', 'client.Checkins', 'explore', 'coverUp');
    },
+   onCheckinTap : function(b, e, eOpts, eInfo)
+   {
+      this.redirectTo('checkin');
+      //this.fireEvent('openpage', 'client.Checkins', 'explore', 'coverUp');
+   },
    // --------------------------------------------------------------------------
    // Page Navigation Handlers
    // --------------------------------------------------------------------------
    resetView : function()
    {
       var me = this;
+      var vport = me.getViewport();
       //
       // Remove All Views
       //
       me.viewStack = [];
       me.getApplication().getHistory().setActions([]);
-
+      //
+      // Remove all internal buffered views
+      //
+      //delete vport._activeItem;
    },
    pushView : function(view, animation)
    {
@@ -560,7 +573,7 @@ Ext.define('Genesis.controller.Viewport',
          //
          // Go back to HomePage by default
          //
-         me.goToMain();
+         me.redirectTo('checkin');
       }
    },
    // --------------------------------------------------------------------------
@@ -570,7 +583,6 @@ Ext.define('Genesis.controller.Viewport',
    {
       var me = this;
       console.log("Viewport Init");
-      _application = app;
 
       me.callParent(arguments);
 
@@ -629,6 +641,7 @@ Ext.define('Genesis.controller.Viewport',
 
          for (var i = 0; i < soundList.length; i++)
          {
+            //console.debug("Preloading " + soundList[i][0] + " ...");
             this.loadSoundFile.apply(this, soundList[i]);
          }
       }, 1, me);
@@ -672,7 +685,7 @@ Ext.define('Genesis.controller.Viewport',
          {
             case 'Media' :
             {
-               sound_file = new Media('resources/audio/' + sound_file + ext, function()
+               sound_file = new Media((Ext.os.is('Android') ? '/android_asset/www/' : '') + 'resources/audio/' + sound_file + ext, function()
                {
                   //console.log("loaded " + me.sound_files[tag].name);
                   me.sound_files[tag].successCallback();
@@ -700,8 +713,6 @@ Ext.define('Genesis.controller.Viewport',
          }
       }
 
-      //console.debug("Preloading " + sound_file + " ...");
-
       me.sound_files[tag] =
       {
          name : sound_file,
@@ -711,10 +722,11 @@ Ext.define('Genesis.controller.Viewport',
    openMainPage : function()
    {
       var me = this;
-      var db = Genesis.db.getLocalDB();
-      var loggedIn = (db['auth_code']) ? true : false;
       if (!merchantMode)
       {
+         var db = Genesis.db.getLocalDB();
+         var loggedIn = (db['auth_code']) ? true : false;
+         me.resetView();
          if (loggedIn)
          {
             //var app = this.getApplication();

@@ -86,6 +86,8 @@ Ext.define('Genesis.controller.client.Prizes',
       {
          redemptions :
          {
+            createView : 'onCreateView',
+            showView :'onShowView',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
@@ -105,6 +107,7 @@ Ext.define('Genesis.controller.client.Prizes',
          },
          redeemItem :
          {
+            createView : 'onRedeemItemCreateView',
             activate : 'onRedeemItemActivate',
             deactivate : 'onRedeemItemDeactivate'
          },
@@ -358,7 +361,7 @@ Ext.define('Genesis.controller.client.Prizes',
             message : me.getBadgePrizeMsg(info['badge_prize_points'], badge),
             callback : function()
             {
-               me.redeemItem = Ext.create('Genesis.model.CustomerReward',
+               me.redeemBadgeItem = Ext.create('Genesis.model.CustomerReward',
                {
                   'title' : badge.get('type').display_value,
                   'type' :
@@ -497,9 +500,9 @@ Ext.define('Genesis.controller.client.Prizes',
       //me.setRedeemMode('redeemPrize');
       //me.pushView(me.getRedeemMainPage());
       me.redirectTo('redeemPrize');
-      
+
       //Update on Facebook
-      if (typeof(FB) != "undefined")
+      if ( typeof (FB) != "undefined")
       {
          Genesis.fb.facebook_onLogin(function(params)
          {
@@ -514,12 +517,16 @@ Ext.define('Genesis.controller.client.Prizes',
          }, false, me.updateOnFbMsg);
       }
    },
+   onBadgeDetailCreateView : function(activeItem)
+   {
+      var me = this;
+      activeItem.redeemItem = me.redeemBadgeItem;
+   },
    onBadgeDetailActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
       var tbbar = activeItem.query('titlebar')[0];
       tbbar.setTitle('Badge Promotion');
-      activeItem.redeemItem = me.redeemItem;
    },
    onBadgeDetailDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {

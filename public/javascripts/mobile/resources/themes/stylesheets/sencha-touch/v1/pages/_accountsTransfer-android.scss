@@ -1,0 +1,19 @@
+//------------------------------------------------------------------------------
+// Accounts Transfer Page
+//------------------------------------------------------------------------------
+.accountsTransferMain {
+   .transferPanel {
+      .listItemDetailsWrapper {
+         .itemTitle {
+            &.emailsender:before {
+            }
+         }
+         .itemDesc {
+         }
+      }
+   }
+   .accountsMainCalculator {
+      .x-field {
+      }
+   }
+}

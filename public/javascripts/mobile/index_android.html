@@ -4,6 +4,8 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       <meta property="fb:admins" content="725565520"/>
       <meta property="fb:app_id" content="197968780267830"/>
+      <meta name="format-detection" content="telephone=no" />
+      <meta name="format-detection" content="email=no" />
       <!-- Default Fontsize = 11px
       iPad @132dpi = 100% - iPhone @163dpi = 114% - iPhone Retina @326dpi = 228%
       -->
@@ -15,230 +17,20 @@
       <link rel="stylesheet" type="text/css" media="only screen and (-webkit-device-pixel-ratio: 1.5)" href="resources/css/android-hdpi.css">
       <link rel="stylesheet" type="text/css" media="only screen and (-webkit-min-device-pixel-ratio: 2)" href="resources/css/android-xhdpi.css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
-      <script type="text/javascript" src="http://192.168.0.52:8080/target/target-script-min.js#anonymous"></script>
+      <script src="http://debug.phonegap.com/target/target-script-min.js#web2dot0"></script>
+      <script src="http://192.168.0.52:8080/target/target-script-min.js#web2dot0"></script>
       directory and include it here -->
+      <!--
+      Phone Gap Libs
+      -->
+      <script type="text/javascript" src="lib/cordova-2.1.0.android.js"></script>
+      <script type="text/javascript" src="lib/core/PushNotification.android.js"></script>
       <!-- Debug Javascript on mobile browser -->
       <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
       <!--
       <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
       -->
-      <!--
-      Phone Gap Libs
-      -->
-      <script type="text/javascript" src="lib/cordova-2.1.0.android.js"></script>
       <script type="text/javascript">
-         var hostRoot = "";
-         //"/assets/www/";
-         var offlineDialogShown = false;
-         var phoneGapAvailable = true;
-         var debugMode = false;
-         var merchantMode = false;
-         var appName = 'GetKickBak';
-         //var pushNotifAppName = 'KickBak Development';
-         //var pushNotifAppId = '4fef50b25b2f16.74735670';
-         var pushNotifAppName = 'KickBak Production';
-         var pushNotifAppId = '4fef6fb0691c12.54726991';
-         var pushNotifType = 3;
-
-         var _appPath = hostRoot + "app";
-         var _extPath = hostRoot + 'lib/sencha-touch-2.1.0-beta3/src';
-         var _appId = "197968780267830";
-
-         var _browser = Ext.browser;
-         _browser.setFlag('WebView');
-         _browser.setFlag('PhoneGap');
-
-         // Fix for problem  with android 3.x and 4.x which is
-         // the browser has a problem with urls with ? and this
-         // bug has not been fixed by google.  See:
-         // http://code.google.com/p/android/issues/detail?id=17535 or
-         // http://www.sencha.com/forum/showthread.php?162322-Sencha-Touch-2-PhoneGap-are-not-working-on-Android-4/page3&highlight=Loader
-         //
-         Ext.Loader.setConfig(
-         {
-            disableCaching : false,
-            enabled : false,
-            paths :
-            {
-               Ext : _extPath,
-               Genesis : _appPath
-            }
-         });
-         Ext.Ajax.setDisableCaching(false);
-         // If you want to prevent dragging, uncomment this section
-         /*
-          function preventBehavior(e)
-          {
-          e.preventDefault();
-          };
-          document.addEventListener("touchmove", preventBehavior, false);
-          */
-
-         /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
-          see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
-          for more details -jm */
-         /*
-          function handleOpenURL(url)
-          {
-          // TODO: do something with the url passed in.
-          }
-          */
-         /* When this function is called, PhoneGap has been initialized and is ready to roll */
-         /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
-          see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
-          for more details -jm */
-
-         function appInit()
-         {
-            console.debug = console.debug || console.log;
-            console.warn = console.warn || console.debug;
-            console.log("appInit - start");
-            FB.init(
-            {
-               appId : _appId,
-               frictionlessRequests : true,
-               useCachedDialogs : true,
-               nativeInterface : CDV.FB,
-               status : true,
-               cookie : true,
-               xfbml : true,
-               oauth : true
-            });
-            Ext.application(
-            {
-               profiles : ['Android'],
-               views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
-               'client.AccountsTransfer', 'client.SettingsPage', //
-               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
-               // //
-               'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
-               controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
-               'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
-               launch : function()
-               {
-                  //console.log("Launching App");
-                  Ext.create('Genesis.view.Viewport');
-                  //this.redirectTo('');
-                  console.log("Launched App");
-
-                  var viewport = this.getController('Viewport');
-                  var vport = viewport.getViewport();
-                  viewport.appName = 'GetKickBak';
-
-                  //if (Ext.os.is('Android'))
-                  {
-                     // add back button listener
-                     function onBackKeyDown(e)
-                     {
-                        e.preventDefault();
-                        var activeItem = (vport) ? vport.getActiveItem() : null;
-                        if (activeItem)
-                        {
-                           var pxtype = activeItem.getXTypes();
-
-                           // Exit Application
-                           if (pxtype.match(/mainpageview|loginpageview/))
-                           {
-                              Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-                              navigator.app.exitApp();
-                           }
-                           // Back to Main Page
-                           else
-                           if (pxtype.match(/clientmerchantaccountview/))
-                           {
-                              Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-                              viewport.goToMain();
-                           }
-                           else
-                           if (!viewport.popViewInProgress)
-                           {
-                              var backButton = activeItem.query('button[tag=back]')[0];
-                              var closeButton = activeItem.query('button[tag=close]')[0];
-                              if ((backButton && !backButton.isHidden()) || //
-                              (closeButton && !closeButton.isHidden()))
-                              {
-                                 Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-                                 viewport.popView();
-                              }
-                           }
-                        }
-                        else
-                        {
-                           Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-                           navigator.app.exitApp();
-                        }
-                     }
-
-
-                     document.addEventListener("backbutton", Ext.bind(onBackKeyDown, this), false);
-                  }
-               },
-               appFolder : _appPath,
-               name : 'Genesis'
-            });
-
-            console.log("appInit - end");
-         }
-
-         function onBodyLoad()
-         {
-            Ext.triggerReady();
-            document.addEventListener("online", function()
-            {
-               if (Ext.device)
-               {
-                  console.log("Phone is Online");
-                  if (!Ext.device.Connection.isOnline())
-                  {
-                     _onGotoMain();
-                  }
-               }
-            }, false);
-
-            document.addEventListener("offline", function()
-            {
-               if (Ext.device)
-               {
-                  console.log("Phone is Offline");
-                  if (!Ext.device.Connection.isOnline())
-                  {
-                     _onGotoMain();
-                  }
-               }
-            }, false);
-            document.addEventListener("pause", function()
-            {
-               _application.getController('Viewport').persistSyncStores();
-               console.log("App is Paused");
-            }, false);
-
-            document.addEventListener("resume", function()
-            {
-               console.log("App is Resumed");
-               if (Ext.device)
-               {
-                  if (!Ext.device.Connection.isOnline())
-                  {
-                     _onGotoMain();
-                  }
-                  else
-                  {
-                     //_onGotoMainCallBackFn();
-                  }
-               }
-            }, false);
-
-            document.addEventListener("deviceready", onDeviceReady, false);
-            console.log("SystemInit");
-         }
-
-         function onDeviceReady()
-         {
-            console.log("onDeviceReady");
-            initPushwoosh();
-            appInit();
-         }
-
          function _onGotoMainCallBackFn()
          {
             Ext.Viewport.setMasked(false);
@@ -265,15 +57,248 @@
                Ext.device.Notification.show(
                {
                   title : 'Network Error',
-                  message : 'You have lost internet connectivity',
+                  message : Genesis.controller.ControllerBase.prototype.lostNetworkConenction,
                   callback : _onGotoMainCallBackFn
                });
             }
             offlineDialogShown = true;
          }
+
+         function _appLaunch()
+         {
+            if (launched == 0x11)
+            {
+               initPushwoosh();
+               FB.init(
+               {
+                  appId : _appId,
+                  frictionlessRequests : true,
+                  useCachedDialogs : true,
+                  nativeInterface : CDV.FB,
+                  status : true,
+                  cookie : true,
+                  xfbml : true,
+                  oauth : true
+               });
+
+               var viewport = _application.getController('Viewport');
+               viewport.appName = 'GetKickBak';
+
+               //console.log("Launching App");
+               Ext.create('Genesis.view.Viewport');
+               //this.redirectTo('');
+
+               console.log("Launched App");
+            }
+         }
+      </script>
+      <script type="text/javascript">
+         var backBtnCallbackListFn = [];
+         var launched = 0x00;
+         var hostRoot = "";
+         //"/assets/www/";
+         var offlineDialogShown = false;
+         var phoneGapAvailable = true;
+         var debugMode = false;
+         var merchantMode = false;
+         var appName = 'GetKickBak';
+         //var pushNotifAppName = 'KickBak Development';
+         //var pushNotifAppId = '4fef50b25b2f16.74735670';
+         var pushNotifAppName = 'KickBak Production';
+         var pushNotifAppId = '4fef6fb0691c12.54726991';
+         var pushNotifType = 3;
+
+         var _appPath = hostRoot + "app";
+         var _extPath = hostRoot + 'lib/sencha-touch-2.1.0-rc2/src';
+         var _appId = "197968780267830";
+         var _application;
+
+         // If you want to prevent dragging, uncomment this section
+         /*
+          function preventBehavior(e)
+          {
+          e.preventDefault();
+          };
+          document.addEventListener("touchmove", preventBehavior, false);
+          */
+
+         /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+          see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+          for more details -jm */
+         /*
+          function handleOpenURL(url)
+          {
+          // TODO: do something with the url passed in.
+          }
+          */
+         /* When this function is called, PhoneGap has been initialized and is ready to roll */
+         /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+          see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+          for more details -jm */
+
+         function onBodyLoad()
+         {
+            document.addEventListener("online", function()
+            {
+               if (Ext.device)
+               {
+                  console.log(Ext.device.Connection.__proto__.$className)
+                  console.log('Connection type: [' + Ext.device.Connection.getType() + ']');
+                  //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
+                  if (!Ext.device.Connection.isOnline())
+                  {
+                     _onGotoMain();
+                  }
+               }
+               console.log("Phone is Online");
+            }, false);
+
+            document.addEventListener("offline", function()
+            {
+               if (Ext.device)
+               {
+                  if (!Ext.device.Connection.isOnline())
+                  {
+                     _onGotoMain();
+                  }
+               }
+               console.log("Phone is Offline");
+            }, false);
+            document.addEventListener("pause", function()
+            {
+               if (_application)
+               {
+                  _application.getController('Viewport').persistSyncStores();
+               }
+               console.log("App is Paused");
+            }, false);
+
+            document.addEventListener("resume", function()
+            {
+               if (Ext.device)
+               {
+                  if (!Ext.device.Connection.isOnline())
+                  {
+                     _onGotoMain();
+                  }
+                  else
+                  {
+                     //_onGotoMainCallBackFn();
+                  }
+               }
+               console.log("App is Resumed");
+            }, false);
+
+            // add back button listener
+            function onBackKeyDown(e)
+            {
+               //e.preventDefault();
+
+               if (!_application)
+               {
+                  return;
+               }
+
+               var viewport = _application.getController('Viewport');
+
+               if (!viewport || viewport.popViewInProgress)
+               {
+                  return;
+               }
+
+               console.log("BackButton Pressed");
+               var vport = viewport.getViewport();
+               var activeItem = (vport) ? vport.getActiveItem() : null;
+               if (activeItem)
+               {
+                  var success = false;
+                  for (var i = 0; i < backBtnCallbackListFn.length; i++)
+                  {
+                     success = backBtnCallbackListFn[i](activeItem);
+                     if (success)
+                     {
+                        break;
+                     }
+                  }
+                  if (!success)
+                  {
+                     var backButton = activeItem.query('button[tag=back]')[0];
+                     var closeButton = activeItem.query('button[tag=close]')[0];
+                     if ((backButton && !backButton.isHidden()) || //
+                     (closeButton && !closeButton.isHidden()))
+                     {
+                        Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+                        viewport.popView();
+                     }
+                  }
+               }
+               else
+               {
+                  Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+                  navigator.app.exitApp();
+               }
+            }
+
+
+            document.addEventListener("deviceready", function()
+            {
+               console.debug = console.debug || console.log;
+               console.warn = console.warn || console.debug;
+
+               launched = 0x10;
+               console.log("PhoneGap App Launch");
+
+               document.addEventListener("backbutton", onBackKeyDown, false);
+               _appLaunch();
+            }, false);
+
+            // Fix for problem  with android 3.x and 4.x which is
+            // the browser has a problem with urls with ? and this
+            // bug has not been fixed by google.  See:
+            // http://code.google.com/p/android/issues/detail?id=17535 or
+            // http://www.sencha.com/forum/showthread.php?162322-Sencha-Touch-2-PhoneGap-are-not-working-on-Android-4/page3&highlight=Loader
+            //
+            Ext.Loader.setConfig(
+            {
+               disableCaching : false,
+               enabled : true,
+               paths :
+               {
+                  Ext : _extPath,
+                  Genesis : _appPath
+               }
+            });
+            Ext.Ajax.setDisableCaching(false);
+            Ext.application(
+            {
+               profiles : ['Android'],
+               views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
+               'client.AccountsTransfer', 'client.SettingsPage', //
+               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
+               // //
+               'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
+               controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
+               'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
+               launch : function()
+               {
+                  _application = this;
+                  if (launched > 0x00)
+                  {
+                     launched |= 0x01;
+                  }
+                  else
+                  {
+                     launched = 0x01;
+                  }
+                  console.log("Ext App Launch")
+                  _appLaunch();
+               },
+               appFolder : _appPath,
+               name : 'Genesis'
+            });
+         }
       </script>
       <script type="text/javascript" src="core.js"></script>
-      <script type="text/javascript" src="lib/core/PushNotification.android.js"></script>
       <!-- View Widgets -->
       <script type="text/javascript" src="app/profile/Android.js"></script>
       <script type="text/javascript" src="client-all.js"></script>

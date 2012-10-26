@@ -28,18 +28,19 @@
       <script type="text/javascript" src="lib/core/date.js"></script>
       <script type="text/javascript" src="lib/core/extras.js"></script>
       <!-- Debug Javascript on mobile browser -->
-      <script type="text/javascript" src="lib/sencha-touch-2.1.0-beta3/sencha-touch-all-debug.js"></script>
+      <script type="text/javascript" src="lib/sencha-touch-2.1.0-rc2/sencha-touch-all-debug.js"></script>
       <!--
       Phone Gap Libs
       -->
       <script type="text/javascript" src="lib/cordova-2.1.0.ios.js"></script>
       <script type="text/javascript">
+         var backBtnCallbackListFn = [];
          var phoneGapAvailable = false;
          var debugMode = false;
          var merchantMode = true;
          var appName = 'MerchantKickBak';
 
-         var _appPath = "app", _extPath = 'lib/sencha-touch-2.1.0-beta3/src';
+         var _appPath = "app", _extPath = 'lib/sencha-touch-2.1.0-rc2/src';
 
          var _browser = Ext.browser;
          if(!!window.isNK)

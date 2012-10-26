@@ -10,14 +10,15 @@ Ext.define('Genesis.view.client.RedeemBase',
    cleanView : function()
    {
       this.removeAll(true);
+      this.callParent(arguments);
    },
    showView : function()
    {
-      this.callParent(arguments);
       for (var i = 0; i < this.getInnerItems().length; i++)
       {
          this.getInnerItems()[i].setVisibility(true);
       }
+      this.callParent(arguments);
       console.debug("RedeemBase : showView");
    },
    _createView : function(store, renderStore, activeItemIndex)
@@ -41,12 +42,12 @@ Ext.define('Genesis.view.client.RedeemBase',
       // ------------------------------------------------------------------------
       // Redemptions
       // ------------------------------------------------------------------------
-      Ext.create('Ext.List',
       {
+         xtype : 'list',
          flex : 1,
          refreshHeightOnUpdate : false,
          variableHeights : false,
-         deferEmptyText : false,
+         //deferEmptyText : false,
          itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(Genesis.constants.defaultIconSize(), 2 * 0.65, 1), 1),
          ui : 'bottom-round',
          store : store,
@@ -121,7 +122,7 @@ Ext.define('Genesis.view.client.RedeemBase',
                xtype : 'spacer'
             }]
          }]
-      })]));
+      }]));
    },
    statics :
    {

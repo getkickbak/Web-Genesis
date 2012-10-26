@@ -14,6 +14,8 @@ Genesis.constants =
 {
    //host : 'http://192.168.0.52:3000',
    host : 'http://www.getkickbak.com',
+   clientVersion : '1.0.2',
+   serverVersion : '1.0.2',
    themeName : 'v1',
    defaultFontSize : (function()
    {
@@ -21,12 +23,12 @@ Genesis.constants =
    })(),
    defaultIconSize : function()
    {
-      if (Ext.os.is.iPhone)
+      if (Ext.os.is('iOS'))
       {
          return 57;
       }
       else
-      if (Ext.os.is.Android)
+      if (Ext.os.is('Android'))
       {
          return ((window.devicePixelRatio < 1) ? 36 : 48);
       }
@@ -43,8 +45,8 @@ Genesis.constants =
    privKey : null,
    device : null,
    redeemDBSize : 10000,
-   minDistance : 0.1 * 1000,
-   //minDistance : 100000 * 1000,
+   //minDistance : 0.1 * 1000,
+   minDistance : 100000 * 1000,
    createAccountMsg : 'Create user account using Facebook Profile information',
    isNative : function()
    {
@@ -740,6 +742,7 @@ Genesis.fn =
       var me = this;
       if (Genesis.constants.isNative())
       {
+         var rfile;
          var handler = function(fileEntry)
          {
             fileEntry.file(function(file)
@@ -754,8 +757,7 @@ Genesis.fn =
          }
          window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
          {
-            var rfile;
-            if (Ext.os.is('iPhone'))
+            if (Ext.os.is('iOS'))
             {
                rfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
             }
@@ -764,8 +766,8 @@ Genesis.fn =
             {
                wfile = (fileSystem.root.fullPath + appName) + path;
             }
-            fileSystem.root.getFile(rfile, null, handler, me.failFileHandler);
             console.debug("Reading from File - [" + rfile + "]");
+            fileSystem.root.getFile(rfile, null, handler, me.failFileHandler);
          }, me.failFileHandler);
       }
       else
@@ -793,14 +795,14 @@ Genesis.fn =
          window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
          {
             var wfile;
-            if (Ext.os.is('iPhone'))
+            if (Ext.os.is('iOS'))
             {
                wfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
             }
             else
             if (Ext.os.is('Android'))
             {
-               wfile = (fileSystem.root.fullPath + appName) + path;
+               wfile = ('file:///mnt/sdcard/' + appName) + path;
             }
             fileSystem.root.getFile(wfile,
             {
@@ -1115,26 +1117,6 @@ Ext.define('Genesis.util.Collection',
    }
 });
 
-// **************************************************************************
-// Ext.util.SizeMonitor
-// **************************************************************************
-Ext.define('Genesis.util.SizeMonitor',
-{
-   override : 'Ext.util.SizeMonitor',
-   constructor : function(config)
-   {
-      if (Ext.browser.engineVersion.gtEq('534'))
-      {
-      	console.debug("Using OverflowChange SizeMonitor ...");
-         return new Ext.util.sizemonitor.OverflowChange(config);
-      }
-      else
-      {
-      	console.debug("Using Scroll SizeMonitor ...");
-         return new Ext.util.sizemonitor.Scroll(config);
-      }
-   }
-});
 //---------------------------------------------------------------------------------------------------------------------------------
 // Ext.data.reader.Json
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -1234,7 +1216,8 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                      {
                         if (metaData['session_timeout'])
                         {
-                           viewport.redirectTo('login');
+                           viewport.resetView();
+                           viewport.redirectTo('main');
                            return;
                         }
                         else
@@ -1275,6 +1258,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                      message : messages,
                      callback : function(btn)
                      {
+                        viewport.resetView();
                         viewport.redirectTo('login');
                      }
                   });
@@ -1304,7 +1288,8 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                {
                   if (metaData['session_timeout'])
                   {
-                     viewport.redirectTo('login');
+                     viewport.resetView();
+                     viewport.redirectTo('main');
                      return;
                   }
                   else
@@ -1317,7 +1302,8 @@ Ext.define('Genesis.data.proxy.OfflineServer',
                }
             }
          }
-         console.debug("Ajax ErrorHandler called. Operation(" + operation.wasSuccessful() + ")");
+         console.debug("Ajax ErrorHandler called. Operation(" + operation.wasSuccessful() + ")" + //
+         ((messages) ? '\n' + messages : ''));
          me.fireEvent('exception', me, response, operation);
       }
       try
@@ -1362,7 +1348,21 @@ Ext.define('Genesis.data.proxy.OfflineServer',
           * @param {Object} response The response from the AJAX request
           * @param {Ext.data.Operation} operation The operation that triggered request
           */
-         me.setException(operation, response);
+         //
+         // Override Default Error Messages
+         //
+         if (messages)
+         {
+            operation.setException(operation,
+            {
+               status : null,
+               statusText : messages
+            });
+         }
+         else
+         {
+            me.setException(operation, response);
+         }
 
          errorHandler();
       }
@@ -1547,57 +1547,6 @@ Ext.define('Genesis.dataview.element.List',
 });
 
 //---------------------------------------------------------------------------------------------------------------------------------
-// Ext.dataview.List
-//---------------------------------------------------------------------------------------------------------------------------------
-Ext.define('Genesis.dataview.List',
-{
-   override : 'Ext.dataview.List',
-
-   initialize : function()
-   {
-      var me = this;
-
-      me.callParent(arguments);
-   },
-   doRefresh : function(list)
-   {
-      var me = this;
-      if (me.getStore())
-      {
-         console.debug("List:doRefresh - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
-      }
-      return me.callParent(arguments);
-   },
-   setItemsCount : function(itemsCount)
-   {
-      var me = this;
-      if (me.getStore())
-      {
-         console.debug("List:setItemsCount - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
-      }
-      return me.callParent(arguments);
-   },
-   updateListItem : function(item, index, info)
-   {
-      var me = this;
-      if (me.getStore())
-      {
-         console.debug("List:updateListItem - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
-      }
-      return me.callParent(arguments);
-   },
-   onResize : function()
-   {
-      var me = this;
-      if (me.getStore())
-      {
-         console.debug("List:onResize - tag[" + me.config.tag + "], count[" + me.getStore().getRange().length + "], listItems[" + me.listItems.length + "]");
-      }
-      return me.callParent(arguments);
-   }
-});
-
-//---------------------------------------------------------------------------------------------------------------------------------
 // Ext.tab.Bar
 //---------------------------------------------------------------------------------------------------------------------------------
 /**
@@ -1649,6 +1598,7 @@ Ext.define('Genesis.util.Geolocation',
       {
          ret.timeout = timeout;
       }
+      console.debug("Geolocation - " + Ext.encode(ret));
       return ret;
    }
 });

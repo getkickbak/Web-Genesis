@@ -18,13 +18,25 @@ Ext.define('Genesis.view.client.Badges',
             tag : 'back',
             text : 'Back'
          }]
-      })]
+      })],
+      listeners : [
+      {
+         element : 'element',
+         delegate : 'div.itemWrapper',
+         event : 'tap',
+         fn : "onItemTap"
+      }]
    },
    //disableAnimation : true,
    initialize : function()
    {
       this.setPreRender([]);
       this.callParent(arguments);
+   },
+   onItemTap : function(e, target, delegate, eOpts)
+   {
+      var data = Ext.create('Genesis.model.Badge', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
+      _application.getController('client.Badges').fireEvent('itemTap', data);
    },
    /**
     * Removes all items currently in the Container, optionally destroying them all
@@ -35,13 +47,11 @@ Ext.define('Genesis.view.client.Badges',
    cleanView : function()
    {
       this.removeAll(true);
+      return Genesis.view.ViewBase.prototype.cleanView.apply(this, arguments);
    },
    removeAll : function(destroy, everything)
    {
-      var rc = this.callParent(arguments);
-      this.setPreRender([]);
-
-      return rc;
+      return Genesis.view.ViewBase.prototype.removeAll.apply(this, arguments);
    },
    createView : function()
    {
@@ -49,11 +59,6 @@ Ext.define('Genesis.view.client.Badges',
 
       if (!Genesis.view.ViewBase.prototype.createView.apply(this, arguments))
       {
-         var ditems = carousel.query('dataview');
-         for (var i = 0; i < ditems.length; i++)
-         {
-            ditems[i].refresh();
-         }
          return;
       }
 
@@ -64,29 +69,30 @@ Ext.define('Genesis.view.client.Badges',
       var vport = viewport.getViewport();
       var items = Ext.StoreMgr.get('BadgeStore').getRange();
       var list = Ext.Array.clone(items);
-      
-      for (var i = 0; i < Math.ceil(items.length / 16); i++)
+
+      for (var i = 0; i < Math.ceil(list.length / 16); i++)
       {
-         this.getPreRender().push(Ext.create('Ext.dataview.DataView',
+         this.getPreRender().push(
          {
-            xtype : 'dataview',
+            xtype : 'component',
             cls : 'badgesMenuSelections',
             tag : 'badgesMenuSelections',
             scrollable : undefined,
-            deferInitialRefresh : false,
-            store :
-            {
-               model : 'Genesis.model.Badge',
-               data : Ext.Array.pluck(items.slice(i * 16, ((i + 1) * 16)), 'data')
-            },
-            itemTpl : Ext.create('Ext.XTemplate',
+            data : Ext.Array.pluck(list.slice(i * 16, ((i + 1) * 16)), 'data'),
+            tpl : Ext.create('Ext.XTemplate',
             // @formatter:off
-            '<div class="itemWrapper">',
-               '<div class="photo"><img src="{[this.getPhoto(values)]}" /></div>',
-               '<div class="photoName">{[this.getName(values)]}</div>',
-            '</div>',
+            '<tpl for=".">',
+               '<div class="itemWrapper" data="{[this.encodeData(values)]}">',
+                  '<div class="photo"><img src="{[this.getPhoto(values)]}" /></div>',
+                  '<div class="photoName">{[this.getName(values)]}</div>',
+               '</div>',
+            '</tpl>',
             // @formatter:on
             {
+               encodeData : function(values)
+               {
+                  return encodeURIComponent(Ext.encode(values));
+               },
                getName : function(values)
                {
                   return values['type'].display_value;
@@ -100,9 +106,8 @@ Ext.define('Genesis.view.client.Badges',
 
                   return Genesis.view.client.Badges.getPhoto((values['rank'] <= rank) ? type : 'nobadge', 'thumbnail_medium_url');
                }
-            }),
-            autoScroll : true
-         }));
+            })
+         });
       }
       console.log("Badge Icons Refreshed.");
    },
@@ -119,6 +124,7 @@ Ext.define('Genesis.view.client.Badges',
       {
          carousel.setActiveItem(0);
       }
+      return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
    },
    statics :
    {

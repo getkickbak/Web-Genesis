@@ -55,8 +55,9 @@
    .venuesList {
       .itemDistance {
          position:absolute;
-         top:calc-em(0.65em,$normalFontSize);
-         right:calc-em(-1*$list-disclosure-size,$normalFontSize);
+         top : 0;
+         //top:calc-em(0.65em,$normalFontSize);
+         right:calc-em(-1*($list-disclosure-size+$panelGap),$normalFontSize);
          font-weight:bold;
          font-size:$normalFontSize;
       }

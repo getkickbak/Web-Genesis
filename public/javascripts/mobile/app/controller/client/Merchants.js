@@ -38,7 +38,7 @@ Ext.define('Genesis.controller.client.Merchants',
          },
          mapBtn : 'viewportview button[tag=mapBtn]',
          shareBtn : 'viewportview button[tag=shareBtn]',
-         checkinBtn : 'viewportview button[tag=checkin]',
+         //checkinBtn : 'viewportview button[tag=checkin]',
          mainBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=main]',
          prizesBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=prizes]',
          redeemBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=redemption]',
@@ -48,6 +48,7 @@ Ext.define('Genesis.controller.client.Merchants',
       {
          main :
          {
+            showView : 'onMainShowView',
             activate : 'onMainActivate',
             deactivate : 'onMainDeactivate',
             jackpotWinnersTap : 'onJackpotWinnersTap',
@@ -66,10 +67,12 @@ Ext.define('Genesis.controller.client.Merchants',
             select : 'onMainSelect'
             //disclose : 'onMainDisclose'
          },
+         /*
          checkinBtn :
          {
             tap : 'onCheckinTap'
          },
+         */
          merchantTabBar :
          {
             tabchange : 'onTabBarTabChange'
@@ -79,6 +82,7 @@ Ext.define('Genesis.controller.client.Merchants',
          //
          merchantDetails :
          {
+            showView : 'onDetailsShowView',
             activate : 'onDetailsActivate',
             deactivate : 'onDetailsDeactivate'
          },
@@ -149,7 +153,20 @@ Ext.define('Genesis.controller.client.Merchants',
       //
       // Preloading Pages to memory
       //
-      me.getMainPage();
+      me.getMain();
+
+      backBtnCallbackListFn.push(function(activeItem)
+      {
+         if (activeItem == me.getMain())
+         {
+            var viewport = me.getViewPortCntlr();
+            Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+            me.redirectTo('checkin');
+            return true;
+         }
+         return false;
+      });
+
    },
    // --------------------------------------------------------------------------
    // Merchant Details Page
@@ -171,6 +188,23 @@ Ext.define('Genesis.controller.client.Merchants',
       {
          //this.onMapWidthChange(map);
          //console.debug("Cannot load Google Maps");
+      }
+   },
+   onDetailsShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android'))
+      {
+         var monitors = this.getEventDispatcher().getPublishers()['elementPaint'].monitors;
+         var map = activeItem.query('component[tag=map]')[0];
+
+         console.debug("Refreshing MerchantDetails ...");
+         activeItem.query('dataview[tag=details]')[0].refresh();
+         monitors[map.element.getId()].onElementPainted(
+         {
+            animationName : 'x-paint-monitor-helper'
+         });
+
+         //activeItem.renderView(map);
       }
    },
    onDetailsActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -256,6 +290,27 @@ Ext.define('Genesis.controller.client.Merchants',
          me.pushView(me.getMainPage());
       }
    },
+   onMainShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android'))
+      {
+         console.debug("Refreshing MerchantRenderStore ...");
+         var monitors = this.getEventDispatcher().getPublishers()['elementPaint'].monitors;
+         
+         activeItem.query('dataview[tag=tbPanel]')[0].refresh();
+         var feedPanel = activeItem.query('dataview[tag=feedPanel]')[0];
+         if (feedPanel)
+         {
+            feedPanel.refresh();
+         }
+         activeItem.query('dataview[tag=descPanel]')[0].refresh();
+
+         monitors[activeItem.element.getId()].onElementPainted(
+         {
+            animationName : 'x-paint-monitor-helper'
+         });         
+      }
+   },
    onMainActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       console.debug("Merchant Account Activate");
@@ -263,7 +318,7 @@ Ext.define('Genesis.controller.client.Merchants',
       var viewport = me.getViewPortCntlr();
       var vrecord = viewport.getVenue();
       var crecord = viewport.getCustomer();
-      var customerId = viewport.getCustomer().getId();
+      var customerId = crecord.getId();
       var venueId = vrecord.getId();
       var merchantId = vrecord.getMerchant().getId();
 
@@ -291,7 +346,7 @@ Ext.define('Genesis.controller.client.Merchants',
       //
       // CheckIn button
       //
-      activeItem.showCheckinBtn = (!checkedIn || !checkedInMatch);
+      //activeItem.showCheckinBtn = (!checkedIn || !checkedInMatch);
       //
       // Either we are checked-in or
       // customer exploring a venue they checked-in in the past ...
@@ -325,7 +380,7 @@ Ext.define('Genesis.controller.client.Merchants',
          feedContainer[activeItem.renderFeed ? 'show' : 'hide'];
       }
 
-      me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();
+      //me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();
       me.getMainBtn()[(activeItem.showMainBtn) ? 'show':'hide']();
       var prizeBtn = me.getPrizesBtn();
       //if (!Customer.isValid(crecord.getId()))
@@ -520,7 +575,8 @@ Ext.define('Genesis.controller.client.Merchants',
    },
    backToMainPage : function(venueId, customerId, backToMain)
    {
-      var viewport = this.getViewPortCntlr();
+      var me = this;
+      var viewport = me.getViewPortCntlr();
       //var cvenue = viewport.getCheckinInfo().venue;
       //var showFeed = (customerId > 0) || (cvenue && (cvenue.getId() == venueId));
       var showFeed = true;

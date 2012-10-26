@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.client.Accounts',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar'],
+   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Ext.plugin.ListPaging'],
    alias : 'widget.clientaccountsview',
    config :
    {
@@ -47,24 +47,14 @@ Ext.define('Genesis.view.client.Accounts',
     */
    cleanView : function()
    {
-      //this.removeAll(true);
-   },
-   showView : function()
-   {
+      this.removeAll(true);
       this.callParent(arguments);
-      var list = this.query('list')[0];
-      if (list)
-      {
-         list.setVisibility(true);
-      }
-      //this.setActiveItem(0);
    },
    createView : function()
    {
       var me = this;
       if (!me.callParent(arguments))
       {
-         me.query('list[tag=accountsList]')[0].refresh();
          /*
           var isEligible;
           //
@@ -199,13 +189,13 @@ Ext.define('Genesis.view.client.Accounts',
                {
                   case 'redeemPrizesProfile' :
                   case 'redeemRewardsProfile' :
+                  case 'emailtransfer' :
+                  case 'transfer' :
                   {
                      rc = 'single';
                      break;
                   }
                   case 'profile' :
-                  case 'emailtransfer' :
-                  case 'transfer' :
                   default :
                      break;
                }

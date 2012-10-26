@@ -38,7 +38,10 @@ Ext.define('Genesis.view.ViewBase',
       this.callParent(arguments);
       this.setPreRender([]);
    },
-   cleanView : Ext.emptyFn,
+   cleanView : function()
+   {
+      this.fireEvent('cleanView', this);
+   },
    /**
     * Removes all items currently in the Container, optionally destroying them all
     * @param {Boolean} destroy If true, {@link Ext.Component#destroy destroys} each removed Component
@@ -54,6 +57,7 @@ Ext.define('Genesis.view.ViewBase',
    },
    createView : function()
    {
+      this.fireEvent('createView', this);
       return (this.getPreRender().length == 0);
    },
    showView : function()
@@ -63,6 +67,7 @@ Ext.define('Genesis.view.ViewBase',
       {
          this.add(this.getPreRender());
       }
-      this.fireEvent('showView');
+      Ext.defer(this.fireEvent, 0.01 * 1000, this, ['showView', this]);
+      //this.fireEvent('showView', this);
    }
 });

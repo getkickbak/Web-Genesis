@@ -1,6 +1,29 @@
 //------------------------------------------------------------------------------
 // List CSS
 //------------------------------------------------------------------------------
+.listItemDetailsWrapper {
+   position:relative;
+   font-size:1em;
+   padding-left:calc-px-em($icon-size,$panelGap,1em);
+   //padding-right:$list-disclosure-size*1.5;
+   min-height:$icon-size;
+   .itemDistance {
+      position:absolute;
+      //top:calc-em(0.65em,$normalFontSize);
+      top : 0;
+      right:calc-em(-1*($list-disclosure-size+$panelGap),$normalFontSize);
+      font-weight:bold;
+      font-size:$normalFontSize;
+   }
+   .itemTitle {
+      font-size:$normalFontSize;
+   }
+   .itemDesc {
+      font-size:$normalFontSize;
+      word-break:break-word;
+   }
+}
+            
 .listScrollWrapper, .listScrollIndexWrapper {
    .photo {
       top:$panelTopGap;
@@ -14,12 +37,6 @@
    padding:0 !important;
 }
 .listNoScrollWrapper.separator {
-   /*
-   .x-list-item {
-      border-left: 1px solid darken($list-bg-color, 15%);
-      border-right: 1px solid darken($list-bg-color, 15%);
-   }
-   */
    .photo {
       top:$panelTopGap;
       left:$panelGap;
@@ -31,11 +48,7 @@
 .listScrollWrapper, .listNoScrollWrapper, .listScrollIndexWrapper {
    &.x-list {
       .x-list-item {
-         & > .x-dock-vertical > .x-dock-body {
-            //@if $include-border-radius { @include border-radius(0); }
-            position:relative;
-            border-width: 1px 0 0 0;
-            border-top: 1px solid darken($list-bg-color, 15%);
+         .x-dock-horizontal {
             .photo {
                position:absolute;
                height:$icon-size;
@@ -44,28 +57,8 @@
                   max-height : $icon-size;
                }
             }
-            .listItemDetailsWrapper {
-               font-size:1em;
-               padding-left:calc-px-em($icon-size,$panelGap,1em);
-               //padding-right:$list-disclosure-size*1.5;
-               min-height:$icon-size;
-               .itemDistance {
-                 position:absolute;
-                 top:calc-em(0.65em,$normalFontSize);
-                 right:calc-em(-1*$list-disclosure-size,$normalFontSize);
-                 font-weight:bold;
-                 font-size:$normalFontSize;
-               }
-               .itemTitle {
-                  font-size:$normalFontSize;
-               }
-               .itemDesc {
-                  font-size:$normalFontSize;
-                  word-break:break-word;
-               }
-            }
          }
-         &:first-child > .x-dock-vertical > .x-dock-body {
+         &:first-child .x-dock-horizontal {
             @if $include-border-radius { @include border-radius(0); }
          }
       }

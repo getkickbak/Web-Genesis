@@ -7,6 +7,13 @@ Ext.define('Genesis.view.MainPage',
    {
       layout : 'fit',
       cls : 'viewport',
+      listeners : [
+      {
+         element : 'element',
+         delegate : 'div.itemWrapper',
+         event : 'tap',
+         fn : "onItemTap"
+      }],
       scrollable : undefined,
       items : ( function()
          {
@@ -65,64 +72,6 @@ Ext.define('Genesis.view.MainPage',
                xtype : 'carousel',
                direction : 'horizontal'
             }];
-            if (!merchantMode)
-            {
-               items.push(
-               {
-                  docked : 'bottom',
-                  cls : 'navigationBarBottom',
-                  tag : 'navigationBarBottom',
-                  xtype : 'tabbar',
-                  ui : 'light',
-                  layout :
-                  {
-                     pack : 'justify',
-                     align : 'center'
-                  },
-                  /*
-                   scrollable :
-                   {
-                   direction : 'horizontal',
-                   indicators : false
-                   },
-                   */
-                  defaults :
-                  {
-                     //flex : 1,
-                     iconMask : true,
-                     iconAlign : 'top'
-                  },
-                  items : [
-                  {
-                     iconCls : 'rewards',
-                     tag : 'rewardsSC',
-                     title : 'Earn Pts'
-                  },
-                  //
-                  // Middle Button
-                  //
-                  {
-                     xtype : 'spacer'
-                  },
-                  {
-                     iconCls : 'checkin',
-                     tag : 'checkInNow',
-                     title : 'CheckIn Now!'
-                  },
-                  //
-                  // Right side Buttons
-                  //
-                  {
-                     xtype : 'spacer'
-                  },
-                  {
-                     iconCls : 'prizes',
-                     badgeCls : 'x-badge round',
-                     tag : 'prizesSC',
-                     title : 'Prizes'
-                  }]
-               });
-            }
             return items;
          }())
    },
@@ -131,6 +80,11 @@ Ext.define('Genesis.view.MainPage',
    {
       this.setPreRender([]);
       this.callParent(arguments);
+   },
+   onItemTap : function(e, target, delegate, eOpts)
+   {
+      var data = Ext.create('Genesis.model.frontend.MainPage', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
+      _application.getController('MainPage').fireEvent('itemTap', data);
    },
    /**
     * Removes all items currently in the Container, optionally destroying them all
@@ -142,13 +96,7 @@ Ext.define('Genesis.view.MainPage',
    {
       var carousel = this.query('carousel')[0];
       carousel.removeAll(true);
-   },
-   removeAll : function(destroy, everything)
-   {
-      var rc = this.callParent(arguments);
-      this.setPreRender([]);
-
-      return rc;
+      this.callParent(arguments);
    },
    createView : function()
    {
@@ -189,50 +137,65 @@ Ext.define('Genesis.view.MainPage',
          carousel.removeAll(true);
          for (var i = 0; i < Math.ceil(items.length / 6); i++)
          {
-            carousel.add(Ext.create('Ext.dataview.DataView',
+            carousel.add(
             {
-               xtype : 'dataview',
+               xtype : 'component',
                cls : 'mainMenuSelections',
                tag : 'mainMenuSelections',
                scrollable : undefined,
-               deferInitialRefresh : false,
-               store :
-               {
-                  model : 'Genesis.model.frontend.MainPage',
-                  data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data')
-               },
-               itemTpl : Ext.create('Ext.XTemplate',
+               data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data'),
+               tpl : Ext.create('Ext.XTemplate',
                // @formatter:off
-               '<div class="itemWrapper x-hasbadge">',
-                  '{[this.isEligible(values)]}',
-                  '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
-                  '<div class="photoName">{name}</div>',
-               '</div>',
+               '<tpl for=".">',
+                  '<div class="itemWrapper x-hasbadge" data="{[this.encodeData(values)]}">',
+                     '{[this.isEligible(values)]}',
+                     '<div class="photo"><img src="{[this.getPhoto(values.photo_url)]}" /></div>',
+                     '<div class="photoName">{name}</div>',
+                  '</div>',
+               '</tpl>',
                // @formatter:on
                {
+                  encodeData : function(values)
+                  {
+                     return encodeURIComponent(Ext.encode(values));
+                  },
                   getType : function()
                   {
                      return values['pageCntlr'];
                   },
-                  isEligible : function(values)
+                  isEligible : function(values, xindex)
                   {
-                     var eligible = (values['pageCntlr'] == 'client.Redemptions');
+                     var eligibleRewards = (values['pageCntlr'] == 'client.Redemptions');
+                     var eligiblePrizes = (values['pageCntlr'] == 'client.Prizes');
                      var showIcon = false;
 
-                     if (eligible)
+                     values.index = xindex - 1;
+                     if (eligibleRewards || eligiblePrizes)
                      {
                         var customers = Ext.StoreMgr.get('CustomerStore').getRange();
                         for (var i = 0; i < customers.length; i++)
                         {
                            var customer = customers[i];
-                           if (customer.get('eligible_for_reward'))
+                           if (eligiblePrizes)
                            {
-                              showIcon = true;
-                              break;
+                              if (customer.get('eligible_for_prize'))
+                              {
+                                 showIcon = true;
+                                 break;
+                              }
+                           }
+                           else
+                           if (eligibleRewards)
+                           {
+                              if (customer.get('eligible_for_reward'))
+                              {
+                                 showIcon = true;
+                                 break;
+                              }
                            }
                         }
                      }
-                     return ((eligible) ? //
+                     return ((eligibleRewards || eligiblePrizes) ? //
                      '<span data="' + values['pageCntlr'] + '" ' + //
                      'class="x-badge round ' + ((showIcon) ? '' : 'x-item-hidden') + '">' + //
                      '✔' + '</span>' : '');
@@ -241,9 +204,8 @@ Ext.define('Genesis.view.MainPage',
                   {
                      return Ext.isEmpty(photoURL) ? Ext.BLANK_IMAGE_URL : photoURL;
                   }
-               }),
-               autoScroll : true
-            }));
+               })
+            });
          }
          console.log("MainPage Icons Refreshed.");
       }
@@ -253,20 +215,40 @@ Ext.define('Genesis.view.MainPage',
          // Refresh All Badges
          //
          var customers = Ext.StoreMgr.get('CustomerStore').getRange();
-         var eligible = false;
+         var eligibleReward = false;
+         var eligiblePrize = false;
          for (var i = 0; i < customers.length; i++)
          {
             var customer = customers[i];
             if (customer.get('eligible_for_reward'))
             {
-               eligible = true;
+               eligibleReward = true;
+               break;
+            }
+            if (customer.get('eligible_for_prize'))
+            {
+               eligiblePrize = true;
                break;
             }
          }
          if (carousel.getInnerItems().length > 0)
          {
             var dom = Ext.DomQuery.select('span[data=client.Redemptions]',carousel.element.dom)[0];
-            if (eligible)
+            if (eligibleReward)
+            {
+               dom.innerHTML = count;
+               Ext.fly(dom).removeCls("x-item-hidden");
+            }
+            else
+            {
+               if (!dom.className.match(/x-item-hidden/))
+               {
+                  Ext.fly(dom).addCls("x-item-hidden");
+               }
+            }
+
+            dom = Ext.DomQuery.select('span[data=client.Prizes]',carousel.element.dom)[0];
+            if (eligiblePrize)
             {
                dom.innerHTML = count;
                Ext.fly(dom).removeCls("x-item-hidden");
@@ -282,15 +264,16 @@ Ext.define('Genesis.view.MainPage',
          console.log("MainPage Icons Not changed.");
       }
       delete carousel._listitems;
+
+      this.callParent(arguments);
    },
    showView : function()
    {
-      this.callParent(arguments);
-
       var carousel = this.query('carousel')[0];
       if (carousel.getInnerItems().length > 0)
       {
          carousel.setActiveItem(0);
       }
+      this.callParent(arguments);
    }
 });

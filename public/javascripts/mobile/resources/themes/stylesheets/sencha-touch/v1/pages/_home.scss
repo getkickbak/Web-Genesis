@@ -11,16 +11,16 @@
    .x-item-selected .photoName {
       background-color:#C3C3C4;
    }
-   .x-dataview-item, .x-data-item {
-      height:($panelTopGap*2)+($normalFontSize*1.25*1)+(1.25*4.5em);
-      width:50%;
-      float:left;
+   .x-innerhtml {
       font-size:$normalFontSize*1.25;
       color:$BlackStart;
-      position:relative; // Used for add Icon Mask to the selection
       .itemWrapper {
+         width:50%;
+         height:($panelTopGap*2)+($normalFontSize*1.25*1)+(1.25*4.5em);
          padding:$panelTopGap/2 $panelGap/2;
          text-align:center;
+         float:left;
+         position:relative;
          .photo {
             height : $icon-size*1.25;
             img {
@@ -34,8 +34,8 @@
             @if $include-border-radius { @include border-radius($panelBorderRadius); }
          }
       }
-   }
-   .x-dataview-item:nth-child(2n+1) {
-      clear:both;
+      & > div:nth-child(2n+1) {
+         clear:both;
+      }
    }
 }

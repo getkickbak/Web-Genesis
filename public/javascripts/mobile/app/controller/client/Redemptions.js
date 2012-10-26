@@ -66,6 +66,8 @@ Ext.define('Genesis.controller.client.Redemptions',
       {
          redemptions :
          {
+            createView : 'onCreateView',
+            showView : 'onShowView',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
@@ -84,6 +86,7 @@ Ext.define('Genesis.controller.client.Redemptions',
          },
          redeemItem :
          {
+            createView : 'onRedeemItemCreateView',
             activate : 'onRedeemItemActivate',
             deactivate : 'onRedeemItemDeactivate'
          },

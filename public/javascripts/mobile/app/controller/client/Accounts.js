@@ -48,6 +48,7 @@ Ext.define('Genesis.controller.client.Accounts',
             xtype : 'clientaccountstransferview'
          },
          points : 'clientaccountstransferview textfield',
+         qrcodeContainer : 'clientaccountstransferview component[tag=qrcodeContainer]',
          qrcode : 'clientaccountstransferview component[tag=qrcode]',
          title : 'clientaccountstransferview component[tag=title]',
          transferContainer : 'clientaccountstransferview'
@@ -59,6 +60,7 @@ Ext.define('Genesis.controller.client.Accounts',
          //
          accounts :
          {
+            showView : 'onShowView',
             activate : 'onActivate',
             deactivate : 'onDeactivate',
             activeitemchange : 'onItemChangeActivate'
@@ -73,10 +75,6 @@ Ext.define('Genesis.controller.client.Accounts',
             select : 'onVenueSelect'
             //disclose : 'onVenueDisclose'
          },
-         'clientaccountstransferview button[tag=transfer]' :
-         {
-            select : 'onTransferTap'
-         },
          avBB :
          {
             tap : 'onAvBBTap'
@@ -86,6 +84,7 @@ Ext.define('Genesis.controller.client.Accounts',
          //
          transferPage :
          {
+            showView : 'onTransferShowView',
             activate : 'onTransferActivate',
             deactivate : 'onTransferDeactivate'
          },
@@ -112,7 +111,8 @@ Ext.define('Genesis.controller.client.Accounts',
       },
       listeners :
       {
-         'selectMerchant' : 'onDisclose'
+         'selectMerchant' : 'onDisclose',
+         'xferItemTap' : 'onTransferTap'
       }
    },
    qrcodeRegExp : /%qrcode_image%/,
@@ -144,7 +144,7 @@ Ext.define('Genesis.controller.client.Accounts',
    init : function()
    {
       var me = this;
-      this.callParent(arguments);
+      me.callParent(arguments);
       console.log("Accounts Init");
 
       me.callBackStack =
@@ -155,6 +155,33 @@ Ext.define('Genesis.controller.client.Accounts',
       };
 
       me.getAccounts();
+
+      backBtnCallbackListFn.push(function(activeItem)
+      {
+         if ((activeItem == me.getAccounts()) && (activeItem.getActiveItem() != me.getAccountsList()))
+         {
+            var viewport = me.getViewPortCntlr();
+            Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+
+            me.onAvBBTap();
+
+            return true;
+         }
+         else
+         if (activeItem == me.getTransferPage())
+         {
+            if (activeItem.getActiveItem() == me.getQrcodeContainer())
+            {
+               activeItem.setActiveItem(1);
+            }
+            else
+            {
+               me.onTransferCompleteTap();
+            }
+            return true;
+         }
+         return false;
+      });
    },
    // --------------------------------------------------------------------------
    // Event Handlers
@@ -277,7 +304,7 @@ Ext.define('Genesis.controller.client.Accounts',
                   Ext.device.Notification.show(
                   {
                      title : 'Error',
-                     message : me.missingVenueInfoMsg,
+                     message : me.missingVenueInfoMsg(operation.getError()),
                      callback : function()
                      {
                         proxy.supressErrorsPopup = false;
@@ -291,6 +318,21 @@ Ext.define('Genesis.controller.client.Accounts',
    // --------------------------------------------------------------------------
    // Accounts Page
    // --------------------------------------------------------------------------
+   onShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android'))
+      {
+         var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
+         var list = activeItem.query('list[tag=accountsList]')[0];
+
+         console.debug("Refreshing CustomerStore ...");
+         monitors[list.container.getId()].forceRefresh();
+      }
+      else
+      {
+         activeItem.query('list[tag=accountsList]')[0].refresh();
+      }
+   },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
@@ -435,7 +477,7 @@ Ext.define('Genesis.controller.client.Accounts',
          default :
             viewport.setVenue(venue);
             var controller = me.getApplication().getController('client.Checkins');
-            controller.fireEvent('explore');
+            controller.fireEvent('checkin');
             return;
             break;
       }
@@ -515,24 +557,126 @@ Ext.define('Genesis.controller.client.Accounts',
       var container = me.getAccounts();
       var animation = container.getLayout().getAnimation();
 
-      switch (value.config.tag)
+      if (Ext.isObject(value))
       {
-         case 'accountsList' :
+         switch (value.config.tag)
          {
-            animation.setReverse(true);
-            me.getABB().show();
-            me.getAvBB().hide();
-            break;
+            case 'accountsList' :
+            {
+               animation.setReverse(true);
+               me.getABB().show();
+               me.getAvBB().hide();
+               break;
+            }
+            case 'venuesList' :
+            {
+               animation.setReverse(false);
+               me.getABB().hide();
+               me.getAvBB().show();
+               break;
+            }
          }
-         case 'venuesList' :
-         {
-            animation.setReverse(false);
-            me.getABB().hide();
-            me.getAvBB().show();
-            break;
-         }
+         console.debug("Accounts onItemChangeActivate[" + value.config.tag + "] Called.");
       }
-      console.debug("Accounts onItemChangeActivate[" + value.config.tag + "] Called.");
+   },
+   sendEmailIOS : function(qrcode, emailTpl, subject)
+   {
+      var me = this;
+      window.plugins.emailComposer.showEmailComposerWithCB(function(res)
+      {
+         // Delay is needed to not block email sending ...
+         Ext.defer(function()
+         {
+            Ext.Viewport.setMasked(false);
+            switch (res)
+            {
+               case EmailComposer.ComposeResultType.Failed:
+               case EmailComposer.ComposeResultType.NotSent:
+               case EmailComposer.ComposeResultType.Cancelled:
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Transfer Failed',
+                     message : me.transferFailedMsg,
+                     callback : function()
+                     {
+                        //me.onTransferCompleteTap();
+                     }
+                  });
+                  break;
+               }
+               case EmailComposer.ComposeResultType.Saved:
+               {
+                  me.onTransferCompleteTap();
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Trasfer Deferred',
+                     message : me.transferSavedMsg
+                  });
+                  break;
+               }
+               case EmailComposer.ComposeResultType.Sent:
+               {
+                  me.xferCodeRecv = true;
+                  me.onTransferCompleteTap();
+                  break;
+               }
+            }
+         }, 1, me);
+      }, subject, emailTpl, null, null, null, true, [qrcode]);
+   },
+   sendEmailAndroid : function(stream, emailTpl, subject)
+   {
+      var me = this;
+      var extras =
+      {
+      };
+      extras[WebIntent.EXTRA_SUBJECT] = subject;
+      extras[WebIntent.EXTRA_TEXT] = emailTpl;
+
+      console.log("Saving QRCode to temporary file ...");
+      window.plugins.base64ToPNG.saveImage(stream,
+      {
+         filename : 'qrcode.gif',
+         overwrite : true
+      }, function(result)
+      {
+         extras[WebIntent.EXTRA_STREAM] = 'file://' + result.filename;
+
+         console.log("QRCode saved to " + extras[WebIntent.EXTRA_STREAM]);
+         window.plugins.webintent.startActivity(
+         {
+            action : WebIntent.ACTION_SEND,
+            type : 'text/html',
+            extras : extras
+         }, function()
+         {
+            Ext.Viewport.setMasked(false);
+            me.xferCodeRecv = true;
+            me.onTransferCompleteTap();
+         }, function()
+         {
+            Ext.Viewport.setMasked(false);
+            Ext.device.Notification.show(
+            {
+               title : 'Transfer Failed',
+               message : me.transferFailedMsg,
+               callback : function()
+               {
+                  //me.onTransferCompleteTap();
+               }
+            });
+         });
+      }, function(error)
+      {
+      });
+      //var writer = new FileWriter('/android_asset/www/' + 'tmp_' + appName + '_' + 'qrcode.gif');
+      //writer.write(window.atob(stream), false);
+      //console.debug("Content Written to Disk");
+      //Genesis.fn.writeFile('qrcode.gif', stream, function(evt)
+      //{
+      //}
+      //);
    },
    onXferCodeRecv : function(metaData)
    {
@@ -582,53 +726,20 @@ Ext.define('Genesis.controller.client.Accounts',
             'Subject - ' + subject + '\n' //
             );
 
+            qrcode = Genesis.controller.ControllerBase.genQRCode(qrcode)[0].replace('data:image/gif;base64,', "");
             //emailTpl = emailTpl.replace(me.qrcodeRegExp, Genesis.controller.ControllerBase.genQRCodeInlineImg(qrcode));
             //console.debug('\n' + //
             //'Encoded Body - ' + emailTpl);
-            qrcode = Genesis.controller.ControllerBase.genQRCode(qrcode)[0].replace('data:image/gif;base64,', "");
 
-            window.plugins.emailComposer.showEmailComposerWithCB(function(res)
+            if (Ext.os.is('iOS'))
             {
-               // Delay is needed to not block email sending ...
-               Ext.defer(function()
-               {
-                  Ext.Viewport.setMasked(false);
-                  switch (res)
-                  {
-                     case EmailComposer.ComposeResultType.Failed:
-                     case EmailComposer.ComposeResultType.NotSent:
-                     case EmailComposer.ComposeResultType.Cancelled:
-                     {
-                        Ext.device.Notification.show(
-                        {
-                           title : 'Transfer Failed',
-                           message : me.transferFailedMsg,
-                           callback : function()
-                           {
-                              //me.onTransferCompleteTap();
-                           }
-                        });
-                        break;
-                     }
-                     case EmailComposer.ComposeResultType.Saved:
-                     {
-                        me.onTransferCompleteTap();
-                        Ext.device.Notification.show(
-                        {
-                           title : 'Trasfer Deferred',
-                           message : me.transferSavedMsg
-                        });
-                        break;
-                     }
-                     case EmailComposer.ComposeResultType.Sent:
-                     {
-                        me.xferCodeRecv = true;
-                        me.onTransferCompleteTap();
-                        break;
-                     }
-                  }
-               }, 1, me);
-            }, subject, emailTpl, null, null, null, true, [qrcode]);
+               me.sendEmailIOS(qrcode, emailTpl, subject);
+            }
+            else
+            if (Ext.os.is('Android'))
+            {
+               me.sendEmailAndroid(qrcode, emailTpl, subject);
+            }
             break;
          }
       }
@@ -638,6 +749,17 @@ Ext.define('Genesis.controller.client.Accounts',
    // --------------------------------------------------------------------------
    // Accounts Transfer Page
    // --------------------------------------------------------------------------
+   onTransferShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android'))
+      {
+         //var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
+         //var list = activeItem.query('list[tag=transferPanel]')[0];
+
+         //console.debug("Refreshing TransferPanel ...");
+         //monitors[list.container.getId()].forceRefresh();
+      }
+   },
    onTransferActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
@@ -688,21 +810,16 @@ Ext.define('Genesis.controller.client.Accounts',
          container.setActiveItem(0);
       }
    },
-   onTransferTap : function(b, e, eOpts)
-   {
-   },
-   onTransferSelect : function(list, model, eOpts)
+   onTransferTap : function(tag)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
 
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-
-      list.deselect([model]);
       delete me.merchantId;
       delete me.rec;
 
-      switch (model.get('tag'))
+      switch (tag)
       {
          //
          // Select the Merchant to generate the QRCode
@@ -843,13 +960,6 @@ Ext.define('Genesis.controller.client.Accounts',
    onTransferCompleteTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      var _exit = function()
-      {
-         //
-         // Go back to Accounts Page
-         //
-         me.popView();
-      }
 
       me.setMode('profile');
       if (me.xferCodeRecv)
@@ -858,13 +968,10 @@ Ext.define('Genesis.controller.client.Accounts',
          {
             title : 'Transfer Success!',
             message : me.transferSuccessMsg(),
-            callback : _exit
          });
       }
-      else
-      {
-         _exit();
-      }
+      me.popView();
+
       me.xferCodeRecv = false;
    },
    // --------------------------------------------------------------------------

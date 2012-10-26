@@ -29,6 +29,7 @@ Ext.define('Genesis.view.client.JackpotWinners',
    cleanView : function()
    {
       this.removeAll(true);
+      this.callParent(arguments);
    },
    createView : function()
    {
@@ -105,5 +106,6 @@ Ext.define('Genesis.view.client.JackpotWinners',
             }]
          })]));
       }
+      this.callParent(arguments);
    }
 });

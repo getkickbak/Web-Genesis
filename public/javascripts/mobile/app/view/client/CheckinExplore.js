@@ -10,26 +10,27 @@ Ext.define('Genesis.view.client.CheckinExplore',
       merchant : null,
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         title : 'Nearby Places',
+         title : ' ',
          items : [
          {
             align : 'left',
             //ui : 'back',
             ui : 'normal',
-            tag : 'back',
-            text : 'Back'
+            iconCls : 'home',
+            //text : 'Home',
+            tag : 'home'
          },
          {
-            align : 'left',
+            align : 'right',
             ui : 'normal',
-            tag : 'close',
-            text : 'Close'
+            iconCls : 'refresh',
+            tag : 'refresh'
          }]
       }),
       {
          docked : 'bottom',
-         cls : 'checkInNow',
-         tag : 'checkInNow',
+         cls : 'toolbarBottom',
+         tag : 'toolbarBottom',
          xtype : 'container',
          layout :
          {
@@ -38,22 +39,47 @@ Ext.define('Genesis.view.client.CheckinExplore',
          },
          items : [
          {
-            xtype : 'button',
-            tag : 'checkInNow',
-            text : 'CheckIn Now!'
+            xtype : 'segmentedbutton',
+            allowMultiple : false,
+            defaults :
+            {
+               iconMask : true,
+               ui : 'blue',
+               flex : 1
+            },
+            items : [
+            {
+               iconCls : 'rewards',
+               tag : 'rewardsSC',
+               text : 'Earn Pts'
+            },
+            {
+               iconCls : 'checkin',
+               tag : 'checkInNow',
+               text : 'Check-In'
+            }],
+            listeners :
+            {
+               toggle : function(container, button, pressed)
+               {
+                  //console.debug("User toggled the '" + button.getText() + "' button: " + ( pressed ? 'on' : 'off'));
+                  container.setPressedButtons([]);
+               }
+            }
          }]
       }]
    },
+   disableAnimation : true,
    createView : function()
    {
       if (!this.callParent(arguments))
       {
+         //this.query('list')[0].refresh();
          return;
       }
       this.getPreRender().push(Ext.create('Ext.List',
       {
          xtype : 'list',
-         deferEmptyText : false,
          store : 'CheckinExploreStore',
          //scrollable : 'vertical',
          plugins : [
@@ -77,6 +103,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
          deferEmptyText : false,
          itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(Genesis.constants.defaultIconSize(), 2 * 0.65, 1), 1),
          emptyText : ' ',
+         tag : 'checkInExploreList',
          cls : 'checkInExploreList',
          // @formatter:off
          itemTpl : Ext.create('Ext.XTemplate',
@@ -105,18 +132,5 @@ Ext.define('Genesis.view.client.CheckinExplore',
          }),
          onItemDisclosure : Ext.emptyFn
       }));
-   },
-   showView : function()
-   {
-      this.callParent(arguments);
-      var list = this.query('list')[0];
-      if (list)
-      {
-         list.setVisibility(true);
-      }
-
-      // Hack to fix bug in Sencha Touch API
-      var plugin = this.query('list')[0].getPlugins()[0];
-      plugin.refreshFn = plugin.getRefreshFn();
    }
 });

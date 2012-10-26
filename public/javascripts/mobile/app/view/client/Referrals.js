@@ -18,7 +18,14 @@ Ext.define('Genesis.view.client.Referrals',
             //ui : 'back',
             text : 'Back'
          }]
-      })]
+      })],
+      listeners : [
+      {
+         element : 'element',
+         delegate : 'div.listItemDetailsWrapper',
+         event : 'tap',
+         fn : "onItemTap"
+      }]
    },
    createView : function()
    {
@@ -78,10 +85,11 @@ Ext.define('Genesis.view.client.Referrals',
                }]
             },
             {
-               xtype : 'list',
-               scrollable : false,
+               xtype : 'component',
+               scrollable : undefined,
                //ui : 'bottom-round',
                cls : 'referralsPanel',
+               tag : 'referralsPanel',
                data : [
                {
                   text : 'Refer Now!',
@@ -101,14 +109,20 @@ Ext.define('Genesis.view.client.Referrals',
                   cls : 'receiver',
                   tag : 'receiver'
                }],
-               itemTpl : Ext.create('Ext.XTemplate',
+               tpl : Ext.create('Ext.XTemplate',
                // @formatter:off
-               '<div class="listItemDetailsWrapper" style="padding-right:0;">',
-                  '<div class="itemTitle {[this.getCls(values)]}">{[this.getTitle(values)]}</div>',
-                  '<div class="itemDesc {[this.getCls(values)]}">{[this.getDesc(values)]}</div>',
-               '</div>',
+               '<tpl for=".">',
+                  '<div class="listItemDetailsWrapper" data="{[this.encodeData(values)]}">',
+                     '<div class="itemTitle {[this.getCls(values)]}">{[this.getTitle(values)]}</div>',
+                     '<div class="itemDesc {[this.getCls(values)]}">{[this.getDesc(values)]}</div>',
+                  '</div>',
+               '</tpl>',
                // @formatter:on
                {
+                  encodeData : function(values)
+                  {
+                     return values['tag'];
+                  },
                   getCls : function(values)
                   {
                      return values['cls'];
@@ -122,7 +136,6 @@ Ext.define('Genesis.view.client.Referrals',
                      return values['text'];
                   }
                })
-               //,onItemDisclosure : Ext.emptyFn
             }]
          },
          // -------------------------------------------------------------------
@@ -160,6 +173,10 @@ Ext.define('Genesis.view.client.Referrals',
             }]
          }]
       }));
+   },
+   onItemTap : function(e, target, delegate, eOpts)
+   {
+      _application.getController('client.Challenges').fireEvent('referralsItemTap', e.delegatedTarget.getAttribute('data'));
    },
    statics :
    {

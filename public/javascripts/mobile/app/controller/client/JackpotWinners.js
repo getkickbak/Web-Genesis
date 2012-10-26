@@ -27,6 +27,7 @@ Ext.define('Genesis.controller.client.JackpotWinners',
       {
          main :
          {
+            showView : 'onShowView',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          }
@@ -93,6 +94,17 @@ Ext.define('Genesis.controller.client.JackpotWinners',
    // --------------------------------------------------------------------------
    // MainPage
    // --------------------------------------------------------------------------
+   onShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android'))
+      {
+      	var monitors = this.getEventDispatcher().getPublishers()['elementSize'].monitors;
+      	var list = activeItem.query('list[tag=jackpotWinnersList]')[0];
+      	
+         console.debug("Refreshing RenderStore ...");
+         monitors[list.container.getId()].forceRefresh();
+      }
+   },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       //activeItem.createView();

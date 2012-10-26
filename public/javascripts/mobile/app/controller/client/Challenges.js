@@ -58,6 +58,7 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          challengePage :
          {
+            showView : 'onShowView',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
@@ -95,6 +96,7 @@ Ext.define('Genesis.controller.client.Challenges',
          //
          referralsPage :
          {
+            showView : 'onReferralsShowView',
             activate : 'onReferralsActivate',
             deactivate : 'onReferralsDeactivate'
          },
@@ -111,7 +113,9 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          'fbphotouploadcomplete' : 'onFbPhotoUploadComplete',
          'challengecomplete' : 'onChallengeComplete',
-         'doChallenge' : 'onChallengeBtnTap'
+         'doChallenge' : 'onChallengeBtnTap',
+         'itemTap' : 'onItemTap',
+         'referralsItemTap' : 'onReferralsTap'
       }
    },
    metaData : null,
@@ -119,7 +123,7 @@ Ext.define('Genesis.controller.client.Challenges',
    referralCbFn : null,
    defaultDescText : 'Please Select a challenge to perform',
    samplePhotoURL : 'http://photos.getkickbak.com/paella9finish1.jpg',
-   noPhotoUploadedMsg : 'Failed to upload photo to server.',
+   //noPhotoUploadedMsg : 'Failed to upload photo to server.',
    fbUploadFailedMsg : 'Failed to upload the photo onto your Facebook account',
    checkinFirstMsg : 'Please Check-In before performing challenges',
    photoUploadFbReqMsg : 'Connectivity to Facebook is required to upload photos to your account',
@@ -135,7 +139,20 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       return msg + Genesis.constants.addCRLF() + 'No Photos were taken.'
    },
-   photoUploadIncompletesMsg : 'Trouble updating to server.',
+   photoUploadIncompletesMsg : function(errors)
+   {
+      var errorMsg = '';
+      if (Ext.isString(errors))
+      {
+         errorMsg = Genesis.constants.addCRLF() + errors;
+      }
+      else
+      if (Ext.isObject(errors))
+      {
+         errorMsg = Genesis.constants.addCRLF() + errors.statusText;
+      }
+      return ('Trouble updating to server.' + errorMsg);
+   },
    photoUploadFailValidationMsg : 'Please enter a comment with at least 16 characters in length',
    getPointsMsg : function(points, total)
    {
@@ -174,14 +191,21 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          if (Genesis.constants.isNative())
          {
+            var db = Genesis.db.getLocalDB();
             var options = new FileUploadOptions();
+
             options.fileKey = "image";
             // Token filename NOT be used
             options.fileName = "DummyPhoto.jpg";
             options.mimeType = "image/jpg";
             options.params =
             {
-               "auth_token" : Genesis.db.getLocalDB()['auth_code']
+               "auth_token" : db['auth_code']
+            };
+            options.headers =
+            {
+               'Accept' : '*/*',
+               'X-CSRF-Token' : db['csrf_code']
             };
             options.chunkedMode = true;
 
@@ -193,7 +217,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
             var ft = new FileTransfer();
             var res, metaData;
-            ft.upload(me.imageURI, Genesis.constants.host + '/api/v1/venues/share_photo', function(r)
+            ft.upload(me.imageURI, encodeURI(Genesis.constants.host + '/api/v1/venues/share_photo'), function(r)
             {
                try
                {
@@ -212,12 +236,12 @@ Ext.define('Genesis.controller.client.Challenges',
                   }
                   else
                   {
-                     console.log('No Data returned by the server.');
+                     console.debug('No Data returned by the server.');
                   }
                }
                catch (ex)
                {
-                  console.log('Unable to parse the JSON returned by the server: ' + ex.toString());
+                  console.debug('Unable to parse the JSON returned by the server: ' + ex.toString());
                }
 
                Ext.Viewport.setMasked(false);
@@ -227,16 +251,18 @@ Ext.define('Genesis.controller.client.Challenges',
 
                   me.redirectTo('photoUpload');
                }
+               navigator.camera.cleanup(Ext.emptyFn, Ext.emptyFn);
+               console.debug("Photo Cleanup Complete.")
                delete me.imageURI;
             }, function(error)
             {
                Ext.Viewport.setMasked(false);
-               console.log(me.noPhotoUploadedMsg(error.message + Genesis.constants.addCRLF()));
+               console.log(me.photoTakenFailMsg(error.message));
                //console.log("An error has occurred: Code = " + error.code);
                Ext.device.Notification.show(
                {
                   title : 'Error',
-                  message : me.noPhotoUploadedMsg(error.message + Genesis.constants.addCRLF())
+                  message : me.photoTakenFailMsg(error.message)
                });
                delete me.imageURI;
             }, options);
@@ -258,16 +284,15 @@ Ext.define('Genesis.controller.client.Challenges',
          }
       }
    },
-   sendReferralEmailHandler : function(qrcode, emailTpl, subject)
+   sendEmailIOS : function(qrcode, emailTpl, subject)
    {
-      var me = this;
-
       window.plugins.emailComposer.showEmailComposerWithCB(function(res)
       {
          // Delay is needed to not block email sending ...
          Ext.defer(function()
          {
             Ext.Viewport.setMasked(false);
+            me.onCompleteReferralsChallenge();
             switch (res)
             {
                case EmailComposer.ComposeResultType.Failed:
@@ -277,11 +302,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   Ext.device.Notification.show(
                   {
                      title : 'Email Error',
-                     message : me.referralFailedMsg,
-                     callback : function()
-                     {
-                        me.onCompleteReferralsChallenge();
-                     }
+                     message : me.referralFailedMsg
                   });
                   break;
                }
@@ -290,11 +311,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   Ext.device.Notification.show(
                   {
                      title : 'Email Saved',
-                     message : me.referralSavedMsg,
-                     callback : function()
-                     {
-                        me.onCompleteReferralsChallenge();
-                     }
+                     message : me.referralSavedMsg
                   });
                   break;
                }
@@ -303,11 +320,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   Ext.device.Notification.show(
                   {
                      title : 'Email Sent!',
-                     message : me.sendReferralSuccessMsg(),
-                     callback : function()
-                     {
-                        me.onCompleteReferralsChallenge();
-                     }
+                     message : me.sendReferralSuccessMsg()
                   });
                   break;
                }
@@ -315,12 +328,80 @@ Ext.define('Genesis.controller.client.Challenges',
          }, 1, me);
       }, subject, emailTpl, null, null, null, true, [qrcode]);
    },
-   referralEventHandler : function(referralsSelected)
+   sendEmailAndroid : function(stream, emailTpl, subject)
+   {
+      var me = this;
+      var extras =
+      {
+      };
+      extras[WebIntent.EXTRA_SUBJECT] = subject;
+      extras[WebIntent.EXTRA_TEXT] = emailTpl;
+
+      console.log("Saving QRCode to temporary file ...");
+      window.plugins.base64ToPNG.saveImage(stream,
+      {
+         filename : 'qrcode.gif',
+         overwrite : true
+      }, function(result)
+      {
+         extras[WebIntent.EXTRA_STREAM] = 'file://' + result.filename;
+
+         console.log("QRCode saved to " + extras[WebIntent.EXTRA_STREAM]);
+         window.plugins.webintent.startActivity(
+         {
+            action : WebIntent.ACTION_SEND,
+            type : 'text/html',
+            extras : extras
+         }, function()
+         {
+            Ext.Viewport.setMasked(false);
+            me.onCompleteReferralsChallenge();
+            Ext.device.Notification.show(
+            {
+               title : 'Email Sent!',
+               message : me.sendReferralSuccessMsg()
+            });
+         }, function()
+         {
+            Ext.Viewport.setMasked(false);
+            me.onCompleteReferralsChallenge();
+            Ext.device.Notification.show(
+            {
+               title : 'Email Error',
+               message : me.referralFailedMsg
+            });
+         });
+      }, function(error)
+      {
+      });
+      //var writer = new FileWriter('/android_asset/www/' + 'tmp_' + appName + '_' + 'qrcode.gif');
+      //writer.write(window.atob(stream), false);
+      //console.debug("Content Written to Disk");
+      //Genesis.fn.writeFile('qrcode.gif', stream, function(evt)
+      //{
+      //}
+      //);
+   },
+   sendReferralEmailHandler : function(qrcode, emailTpl, subject)
+   {
+      var me = this;
+
+      if (Ext.os.is('iOS'))
+      {
+         me.sendEmailIOS(qrcode, emailTpl, subject);
+      }
+      else
+      if (Ext.os.is('Android'))
+      {
+         me.sendEmailAndroid(qrcode, emailTpl, subject);
+      }
+
+   },
+   referralEventHandler : function(tag)
    {
       var me = this, type;
       var venue = me.getViewPortCntlr().getVenue();
       var container = me.getReferralsContainer();
-      var tag = referralsSelected.get('tag');
 
       //
       // Retrieve QRCode from Server
@@ -623,19 +704,18 @@ Ext.define('Genesis.controller.client.Challenges',
                me.persistSyncStores('CustomerStore');
 
                console.debug("Points Earned = " + metaData2['points'] + ' Pts');
+
+               me.fireEvent('updatemetadata', metaData2);
+               me.metaData = null;
+               me.popView();
+
                Ext.device.Notification.show(
                {
                   title : 'Upload Complete',
                   message : ((reward_info['points'] > 0) ? //
                   me.photoUploadSuccessMsg(reward_info['points']) : //
-                  me.getConsolationMsg(metaData2['message'])),
-                  callback : function()
-                  {
-                     me.metaData = null;
-                     me.popView();
-                  }
+                  me.getConsolationMsg(metaData2['message']))
                });
-               me.fireEvent('updatemetadata', metaData2);
             }
             else
             {
@@ -643,7 +723,7 @@ Ext.define('Genesis.controller.client.Challenges',
                Ext.device.Notification.show(
                {
                   title : 'Upload Failed!',
-                  message : me.photoUploadIncompletesMsg,
+                  message : me.photoUploadIncompletesMsg(operation.getError()),
                   buttons : ['Try Again', 'Cancel'],
                   callback : function(btn)
                   {
@@ -669,22 +749,12 @@ Ext.define('Genesis.controller.client.Challenges',
    // --------------------------------------------------------------------------
    // Challenge Page
    // --------------------------------------------------------------------------
-   onItemSelect : function(d, model, eOpts)
+   onItemTap : function(model)
    {
-      //Genesis.controller.ControllerBase.playSoundFile(this.getViewPortCntlr().sound_files['clickSound']);
+      var viewport = this.getViewPortCntlr();
 
-      var carousel = this.getChallengePage().query('carousel')[0];
-      // No need to update the Challenge Menu. Nothing changed.
-      for (var i = 0; i < carousel.getInnerItems().length; i++)
-      {
-         var list = carousel.getInnerItems()[i];
-         if (list != d)
-         {
-            list.deselectAll();
-         }
-      }
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
 
-      //d.deselect([model], false);
       var desc = this.getChallengeDescContainer();
       Ext.Anim.run(desc.element, 'fade',
       {
@@ -785,6 +855,22 @@ Ext.define('Genesis.controller.client.Challenges',
          }
       }
    },
+   onShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android'))
+      {
+         //var carousel = activeItem.query('carousel')[0];
+         //var items = carousel.getInnerItems();
+
+         console.debug("Refreshing Challenge Main Page ...");
+         /*
+          for (var i = 0; i < items.length; i++)
+          {
+          items[i].refresh();
+          }
+          */
+      }
+   },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
@@ -863,6 +949,13 @@ Ext.define('Genesis.controller.client.Challenges',
    // --------------------------------------------------------------------------
    // Referrals Challenge Page
    // --------------------------------------------------------------------------
+   onReferralsShowView : function(activeItem)
+   {
+      if (Ext.os.is('Android'))
+      {
+         //console.debug("Refreshing Referrals Page ...");
+      }
+   },
    onReferralsActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
@@ -881,7 +974,7 @@ Ext.define('Genesis.controller.client.Challenges',
       // Nothing to do but go back to Main Challenge Page
       this.popView();
    },
-   onReferralsSelect : function(list, model, eOpts)
+   onReferralsTap : function(tag)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
@@ -889,16 +982,12 @@ Ext.define('Genesis.controller.client.Challenges',
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       if (viewport.getCustomer().get('visits') > 0)
       {
-         if (list)
-         {
-            list.deselect([model]);
-         }
-         switch (model.get('tag'))
+         switch (tag)
          {
             case 'emailsender' :
             case 'sender' :
             {
-               me.referralEventHandler(model);
+               me.referralEventHandler(tag);
                break;
             }
          }
@@ -937,6 +1026,8 @@ Ext.define('Genesis.controller.client.Challenges',
          title : 'Error',
          message : me.photoTakenFailMsg(message)
       });
+      navigator.camera.cleanup(Ext.emptyFn, Ext.emptyFn);
+      console.debug("Photo Cleanup Complete.")
    },
    onPhotoBtnCommon : function(sourceType)
    {
@@ -964,12 +1055,14 @@ Ext.define('Genesis.controller.client.Challenges',
                scope : me,
                quality : 49,
                correctOrientation : true,
+               //correctOrientation : false,
                //saveToPhotoAlbum : false,
-               destination : "file",
+               destination : 'file',
                source : sourceType,
-               allowEdit : true,
+               allowEdit : false,
                encoding : "jpeg",
-               width : 960
+               width : 960,
+               height : 960
                //targetHeight : 480
             });
          }, true, me.photoUploadFbReqMsg);

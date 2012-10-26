@@ -13,6 +13,7 @@
      background: rgba(0,0,0,0.3) center center no-repeat;
      padding: $panelTopGap/2 $panelGap/2;
      textarea {
+        -webkit-text-fill-color : white;
         color: white;
         font-size:$largeFontSize;
      }
