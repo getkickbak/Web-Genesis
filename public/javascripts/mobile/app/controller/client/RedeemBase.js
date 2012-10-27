@@ -250,7 +250,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       var item = view.getInnerItems()[0];
       var store = me.getRedeemStore();
 
-      CustomerReward[me.getRedeemPointsFn()](item.getStore().first().getId());
+      CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
 
       btn.hide();
       Ext.Viewport.setMasked(
@@ -366,12 +366,16 @@ Ext.define('Genesis.controller.client.RedeemBase',
       info.hide();
 
       var photo = item.query('component[tag=itemPhoto]')[0];
-      photo.element.setStyle(
+      var img = Ext.get(Ext.DomQuery.select('img', photo.element.dom)[0]);
+      img.setStyle(
       {
-         'background-image' : 'url(' + qrcodeMeta[0] + ')',
-         'background-size' : Genesis.fn.addUnit(qrcodeMeta[1] * 1.5) + ' ' + Genesis.fn.addUnit(qrcodeMeta[2] * 1.5)
+         'width' : Genesis.fn.addUnit(qrcodeMeta[1] * 1.5),
+         'height' : Genesis.fn.addUnit(qrcodeMeta[2] * 1.5)
       });
-      photo.element.setHeight('16em');
+      img.set(
+      {
+         'src' : qrcodeMeta[0]
+      });
    },
    // --------------------------------------------------------------------------
    // Page Navigation

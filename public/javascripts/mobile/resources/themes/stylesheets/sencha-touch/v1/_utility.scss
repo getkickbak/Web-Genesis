@@ -65,3 +65,13 @@
    height:1px;
    display:none;
 }
+
+.photoVCenterHelper {
+   height: 100%;
+   text-align: center;
+}
+.photoVCenterHelper, .photoVCenterContent {
+   display: inline-block;
+   vertical-align: middle;
+   text-align: center;
+}

@@ -148,19 +148,6 @@ Ext.define('Genesis.controller.server.Redemptions',
                         title : decrypted['reward'].title
                      });
                      controller.fireEvent('authreward', reward);
-                     /*
-                      Ext.create('Genesis.model.EarnPrize',
-                      {
-                      //'id' : 1,
-                      'expiry_date' : null,
-                      'reward' : Ext.create('Genesis.model.CustomerReward',
-                      {
-                      type : decrypted['reward'].type,
-                      title : decrypted['reward'].title
-                      }),
-                      'merchant' : null
-                      });
-                      */
                      return;
                   }
                   else

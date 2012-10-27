@@ -43,7 +43,7 @@
          var _appPath = "app", _extPath = 'lib/sencha-touch-2.1.0-rc2/src';
 
          var _browser = Ext.browser;
-         if(!!window.isNK)
+         if (!!window.isNK)
          {
             _browser.setFlag('WebView');
             _browser.setFlag('Sencha');
@@ -145,22 +145,19 @@
          function appInit()
          {
             console.log("appInit - start");
-            Ext.require(['Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Connection', 'Ext.device.Notification', 'Ext.device.Orientation']);
             Ext.application(
             {
+               requires : ['Ext.device.Connection', 'Ext.device.Notification', 'Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
                profiles : ['Desktop'],
-               //models : ['Checkin', 'Customer', 'Deal', 'EarnRewardRecord', 'Merchant', 'Reward', 'CustomerReward',
-               // 'PurchaseReward',
-               //'SubDeal', 'User', 'UserProfile',
-               //'Venue'],
                views : ['Document', 'server.Rewards', 'server.Redemptions', 'MainPage', 'RedeemItemDetail', 'server.SettingsPage', 'Viewport'],
                controllers : ['Viewport', 'MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'Settings', 'server.Prizes'],
                stores : [],
                launch : function()
                {
+                  _application = this;
                   console.log("Launching App");
                   Ext.create('Genesis.view.Viewport');
-                  this.redirectTo('');
+                  //this.redirectTo('');
                   console.log("Launched App");
                },
                appFolder : _appPath,
@@ -170,39 +167,13 @@
             console.log("appInit - end");
          }
 
-         function onDeviceReady()
-         {
-            document.addEventListener("online", function()
-            {
-               console.log("Phone is Online");
-            }, false);
 
-            document.addEventListener("offline", function()
-            {
-               console.log("Phone is Offline");
-            }, false);
-            document.addEventListener("pause", function()
-            {
-               console.log("App is Paused");
-            }, false);
-
-            document.addEventListener("resume", function()
-            {
-               console.log("App is Resumed");
-            }, false);
-            console.log("onDeviceReady");
-            appInit();
-         }
-
-
-         document.addEventListener("deviceready", onDeviceReady, false);
          window.onerror = function(e, url, linenum)
          {
             console.log("Error on Line#" + linenum + "\n" + e);
          }
          console.log("SystemInit");
          appInit();
-
       </script>
       <div class="serverPhotoCache"></div>
       <p style="display:none;">

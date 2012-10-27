@@ -3,6 +3,11 @@
 //------------------------------------------------------------------------------
 .redeemItem {
    .itemPhoto {
-      @include background-size($icon-size*4 $icon-size*4); //Maximum size of QR Code as well
+      .x-innerhtml {
+         img {
+            width : $icon-size*4;
+            height :$icon-size*4;
+         }
+      }
    }
 }

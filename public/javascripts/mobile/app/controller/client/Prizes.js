@@ -113,6 +113,7 @@ Ext.define('Genesis.controller.client.Prizes',
          },
          badgeDetail :
          {
+         	createView : 'onBadgeDetailCreateView',
             activate : 'onBadgeDetailActivate',
             deactivate : 'onBadgeDetailDeactivate'
          },

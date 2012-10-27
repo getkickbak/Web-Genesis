@@ -119,15 +119,6 @@ Ext.define('Genesis.controller.server.Challenges',
                }
             });
             controller.fireEvent('authreward', reward);
-            /*
-             Ext.create('Genesis.model.EarnPrize',
-             {
-             //'id' : 1,
-             'expiry_date' : null,
-             'reward' : reward,
-             'merchant' : null
-             }));
-             */
          }
          Ext.Viewport.setMasked(false);
       }, 1, me);
