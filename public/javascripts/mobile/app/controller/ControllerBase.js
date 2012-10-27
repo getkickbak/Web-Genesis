@@ -10,6 +10,7 @@ Ext.define('Genesis.controller.ControllerBase',
    loadingScannerMsg : 'Loading Scanner ...',
    loadingMsg : 'Loading ...',
    genQRCodeMsg : 'Generating QRCode ...',
+   missingLicenseKeyMsg : 'License Key for this Device is missing. Press "Procced" to Scan the License Key into the device.',
    retrieveAuthModeMsg : 'Retrieving Authorization Code from Server ...',
    noCodeScannedMsg : 'No Authorization Code was Scanned!',
    lostNetworkConenction : 'You have lost network connectivity',
@@ -222,12 +223,31 @@ Ext.define('Genesis.controller.ControllerBase',
                break;
             }
          }
-         console.log('\n' + //
-         "Encrypted Code Length: " + encrypted.length + '\n' + //
-         'Encrypted Code [' + encrypted + ']' + '\n' + //
-         'Expiry Date: [' + date + ']');
+         if (venueId > 0)
+         {
+            console.log('\n' + //
+            "Encrypted Code Length: " + encrypted.length + '\n' + //
+            'Encrypted Code [' + encrypted + ']' + '\n' + //
+            'Expiry Date: [' + date + ']');
 
-         return (encryptOnly) ? [encrypted, 0, 0] : me.genQRCode(encrypted);
+            return (encryptOnly) ? [encrypted, 0, 0] : me.genQRCode(encrypted);
+         }
+
+         Ext.device.Notification.show(
+         {
+            title : 'Missing License Key!',
+            message : me.prototype.missingLicenseKeyMsg,
+            buttons : ['Proceed', 'Cancel'],
+            callback : function(btn)
+            {
+               if (btn.toLowerCase() == 'proceed')
+               {
+                  _application.getController('Settings').fireEvent('upgradeDevice');
+               }
+            }
+         });
+
+         return (encryptOnly) ? ['', 0, 0] : '';
       },
       genQRCode : function(text, dotsize, QRCodeVersion)
       {
@@ -979,7 +999,7 @@ Ext.define('Genesis.controller.ControllerBase',
                {
                   if (bTimeout && (i < 4))
                   {
-                  	i = 4;
+                     i = 4;
                      me.getGeoLocation(i);
                   }
                   else
