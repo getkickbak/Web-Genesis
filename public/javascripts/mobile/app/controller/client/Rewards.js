@@ -250,6 +250,26 @@ Ext.define('Genesis.controller.client.Rewards',
       me.promoteCount = 0;
       if (rc)
       {
+         switch (me.getMode())
+         {
+            //
+            // When
+            //
+            case 'rewardsSC' :
+            {
+               var app = me.getApplication();
+               var controller = app.getController('client.Checkins');
+
+               controller.onAfter('checkinPage', me.goToMerchantMain, me,
+               {
+                  single : true,
+                  buffer : 0.5 * 1000
+               });
+               break;
+            }
+            default:
+               break;
+         }
          me.promotionHandler(me.signupPageTitle, me.signupPromotionTitle, points);
          Ext.device.Notification.show(
          {
@@ -264,21 +284,26 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       var me = this;
       var info = metaData['reward_info'];
-      //
-      // Update points from the purchase or redemption
-      //
+      var points = info['points'];
+      var rc = Ext.isDefined(points) && (points > 0);
 
-      Ext.device.Notification.show(
+      //
+      // Play Scan-To-Win if you won any Reward Points
+      //
+      if (rc)
       {
-         title : 'Rewards',
-         message : me.getPointsMsg(info),
-         callback : function()
+         Ext.device.Notification.show(
          {
-            me.fireEvent('triggerCallbacksChain');
-         }
-      });
+            title : 'Rewards',
+            message : me.getPointsMsg(info),
+            callback : function()
+            {
+               me.fireEvent('triggerCallbacksChain');
+            }
+         });
+      }
 
-      return true;
+      return rc;
    },
    referralPromotionHandler : function(metaData, customer, venue, merchantId)
    {
@@ -305,6 +330,9 @@ Ext.define('Genesis.controller.client.Rewards',
    scanAndWinHandler : function(metaData, customer, venue, merchantId)
    {
       var me = this;
+      var info = metaData['reward_info'];
+      var points = info['points'];
+      var rc = Ext.isDefined(points) && (points > 0);
 
       if (me.promoteCount > 0)
       {
@@ -312,6 +340,7 @@ Ext.define('Genesis.controller.client.Rewards',
          me.silentPopView(1);
       }
       me.promoteCount = 0;
+
       if (merchantId > 0)
       {
          //
@@ -319,7 +348,19 @@ Ext.define('Genesis.controller.client.Rewards',
          //
          Genesis.db.removeReferralDBAttrib("m" + merchantId);
       }
-      me.redirectTo('scanAndWin');
+      //
+      // Can't play Scan-To-Win if you didn't win any Reward Points
+      //
+      if (rc)
+      {
+         me.redirectTo('scanAndWin');
+      }
+      else
+      {
+         var app = me.getApplication();
+         var controller = app.getController('client.Prizes');
+         controller.fireEvent('prizecheck', metaData);
+      }
 
       return false;
    },
@@ -385,22 +426,22 @@ Ext.define('Genesis.controller.client.Rewards',
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      var metaData = me.callBackStack['arguments'][0];
+      var viewport = me.getViewPortCntlr();
+      var app = me.getApplication();
+      var controller = app.getController('client.Prizes');
+      var args = me.callBackStack['arguments'][0];
+
       // cache this object before deletion.
 
       Ext.defer(function()
       {
          var container = me.getRewards();
-         var viewport = me.getViewPortCntlr();
-         var app = me.getApplication();
-         var controller = app.getController('client.Prizes');
-
          //activeItem.createView();
          me.startRouletteScreen();
          Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
          {
             console.debug("RouletteSound Done, checking for prizes ...");
-            controller.fireEvent('prizecheck', metaData);
+            controller.fireEvent('prizecheck', args);
          });
       }, 1, activeItem);
       //activeItem.createView();

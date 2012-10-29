@@ -10,6 +10,10 @@ Ext.define('Genesis.controller.MainPage',
    {
       csrfTokenRecv : false,
       models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'Customer', 'User', 'Merchant', 'CustomerReward'],
+      after :
+      {
+         'mainPage' : ''
+      },
       routes :
       {
          '' : 'openPage', //Default do nothing

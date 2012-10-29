@@ -14,6 +14,10 @@ Ext.define('Genesis.controller.ControllerBase',
    retrieveAuthModeMsg : 'Retrieving Authorization Code from Server ...',
    noCodeScannedMsg : 'No Authorization Code was Scanned!',
    lostNetworkConenction : 'You have lost network connectivity',
+   backToMerchantPageMsg : function(venue)
+   {
+      return ('Would you like to visit our Main Page?');
+   },
    geoLocationErrorMsg : function()
    {
       var rc = 'Your current location is unavailable. ';
@@ -341,6 +345,28 @@ Ext.define('Genesis.controller.ControllerBase',
       me.resetView();
       me.redirectTo('main');
       console.log("LoggedIn, Going to Main Page ...");
+   },
+   goToMerchantMain : function()
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      var venue = viewport.getCheckinInfo().venue;
+      if (venue)
+      {
+         Ext.device.Notification.show(
+         {
+            title : venue.get('name').trunc(16),
+            buttons : ['OK', 'Cancel'],
+            message : me.backToMerchantPageMsg(venue),
+            callback : function(btn)
+            {
+               if (btn.toLowerCase() == 'ok')
+               {
+                  viewport.onCheckedInAccountTap();
+               }
+            }
+         });
+      }
    },
    isOpenAllowed : function()
    {
@@ -919,6 +945,11 @@ Ext.define('Genesis.controller.ControllerBase',
                message : (viewport.getLastPosition()) ? me.geoLocationUseLastPositionMsg : me.geoLocationUnavailableMsg,
                callback : function()
                {
+                  if (viewport.getLastPosition())
+                  {
+                     me.fireEvent('locationupdate', viewport.getLastPosition());
+                     return;
+                  }
                   if (Ext.os.is('Android'))
                   {
                      navigator.app.exitApp();
@@ -965,6 +996,11 @@ Ext.define('Genesis.controller.ControllerBase',
                         if (viewport.getLastPosition())
                         {
                            me.fireEvent('locationupdate', viewport.getLastPosition());
+                           return;
+                        }
+                        if (Ext.os.is('Android'))
+                        {
+                           navigator.app.exitApp();
                         }
                      }
                   });
