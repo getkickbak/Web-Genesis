@@ -207,6 +207,7 @@ en:
         expired_code: "Authorization code no longer valid."
         invalid_code: "Authorization code is not valid."
         earn_failure: "Trouble earning points.\nPlease try again."
+        already_signed_up: "Authorization code no longer valid.  You have already signed up!"
         program_termination: "You can no longer earn points.\nRewards program is being terminated."
       users:  
         create_failure: "Trouble with sign up.\nPlease try again."
@@ -269,6 +270,8 @@ en:
       merchants:
         update_success: "Account was successfully updated."
         update_photo_success: "Account photo was successfully updated."
+        create_sign_up_code_success: "Sign up code was succesfully created."
+        create_sign_up_code_failure: "Failed to create sign up code."
       promotions:
         create_success: "Promotion was successfully created." 
         min_start_date: "Start date must be greater than or equal to today."

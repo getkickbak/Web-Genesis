@@ -2,22 +2,22 @@ require 'util/constant'
 
 class Merchant
   include DataMapper::Resource
-  
+
   Roles = %w[test merchant]
   Statuses = [:active, :pending, :suspended, :deleted]
-  
+
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
 
   devise :database_authenticatable, #:registerable, #:confirmable,
           :recoverable, :rememberable, :trackable, :timeoutable,
           :validatable, :token_authenticatable, :authentication_keys => [:email]
-          
+
   property :id, Serial
   property :name, String, :length => 24, :required => true, :default => ""
   property :description, String, :length => 512, :required => true, :default => ""
   ## Database authenticatable
-  property :email, String, :unique_index => true, :required => true, 
+  property :email, String, :unique_index => true, :required => true,
             :format => :email_address, :default => ""
   property :encrypted_password, String, :required => true, :default => ""
   ## Recoverable
@@ -33,13 +33,13 @@ class Merchant
   property :last_sign_in_ip, String
   ## Token authenticatable
   property :authentication_token, String
-  # Disable auto-validation http://j.mp/gMORhy 
+  # Disable auto-validation http://j.mp/gMORhy
   property :photo, String, :auto_validation => false
-  property :alt_photo, String, :auto_validation => false           
+  property :alt_photo, String, :auto_validation => false
   property :account_first_name, String, :required => true, :default => ""
   property :account_last_name, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
-  property :website, String, :default => "", :format => :url 
+  property :website, String, :default => "", :format => :url
   property :payment_account_id, String, :default => ""
   property :role, String, :required => true, :default => "merchant"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :pending
@@ -57,11 +57,12 @@ class Merchant
   attr_accessor :type_id, :visit_frequency_id, :current_password, :eager_load_type, :termination_date_str
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :visit_frequency_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :photo, :alt_photo, :role, :status, :will_terminate, :termination_date, 
+  attr_accessible :type_id, :visit_frequency_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :photo, :alt_photo, :role, :status, :will_terminate, :termination_date,
                   :reward_terms, :auth_code, :current_password, :password, :password_confirmation, :badges_attributes
-  
+
   has 1, :merchant_to_type, :constraint => :destroy
   has 1, :type, 'MerchantType', :through => :merchant_to_type, :via => :merchant_type
+  has 1, :sign_up_code, :constraint => :destroy
   has 1, :reward_model, :constraint => :destroy
   has 1, :merchant_to_visit_frequency_type, :constraint => :destroy
   has 1, :visit_frequency, 'VisitFrequencyType', :through => :merchant_to_visit_frequency_type, :via => :visit_frequency_type
@@ -74,16 +75,16 @@ class Merchant
   mount_uploader :alt_photo, MerchantPhotoUploader
 
   accepts_nested_attributes_for :badges, :reject_if => lambda { |b| b[:visits].blank? }
-  
+
   validates_with_method :type_id, :method => :check_type_id
   validates_with_method :visit_frequency_id, :method => :check_visit_frequency_id
-  
+
   before_save :ensure_authentication_token
 
   def self.get_cache_key(id)
-    "Merchant-#{id}"  
+    "Merchant-#{id}"
   end
-  
+
   def self.create(type, visit_frequency, merchant_info)
     now = Time.now
     merchant_name = merchant_info[:name].squeeze(' ').strip
@@ -116,26 +117,41 @@ class Merchant
     merchant.type = type
     merchant.visit_frequency = visit_frequency
     merchant.save
+
+    sign_up_auth_code = "#{merchant.id}"
+    data =  {
+      :auth_code => sign_up_auth_code
+    }.to_json
+    cipher = Gibberish::AES.new(merchant.auth_code)
+    encrypted_data = cipher.enc(data)
+    merchant.sign_up_code = SignUpCode.new
+    encrypted_code = "m#{merchant.id}$#{encrypted_data}"
+    merchant.sign_up_code[:auth_code] = sign_up_auth_code
+    merchant.sign_up_code[:qr_code] = SignUpCode.generate_qr_code(merchant.id, encrypted_code)
+    merchant.sign_up_code[:qr_code_img] = merchant.sign_up_code.generate_qr_code_image(merchant.id)
+    merchant.sign_up_code[:created_ts] = now
+    merchant.sign_up_code[:update_ts] = now
+    merchant.save
     return merchant
   end
-  
+
   def cache_key
-    "Merchant-#{self.id}"    
+    "Merchant-#{self.id}"
   end
-  
+
   def to_param
-   self.id
+    self.id
   end
 
   def password_required?
-    !self.current_password.nil? 
+    !self.current_password.nil?
   end
-  
+
   # Override Devise::mailer
   def devise_mailer
     Business::MerchantDevise::Mailer
   end
-  
+
   # Override Devise::Models::Recoverable
   #
   # Update password saving the record and clearing token. Returns true if
@@ -148,7 +164,7 @@ class Merchant
     clear_reset_password_token if valid?
     save
   end
-      
+
   def update_all(type, visit_frequency, merchant_info)
     now = Time.now
     self.type_id = type ? type.id : nil
@@ -168,9 +184,9 @@ class Merchant
         raise DataMapper::SaveFailureError.new("", self)
       end
       self.password = merchant_info[:password].strip
-      self.password_confirmation = merchant_info[:password_confirmation].strip 
+      self.password_confirmation = merchant_info[:password_confirmation].strip
     else
-      self.current_password = nil  
+      self.current_password = nil
     end
     self.account_first_name = merchant_info[:account_first_name].strip
     self.account_last_name = merchant_info[:account_last_name].strip
@@ -186,7 +202,7 @@ class Merchant
     self.visit_frequency = visit_frequency
     save
   end
-    
+
   def update_photo(merchant_info)
     if merchant_info.nil?
       errors.add(:photo, I18n.t("errors.messages.merchant.no_photo"))
@@ -197,10 +213,10 @@ class Merchant
     self.visit_frequency_id = self.visit_frequency.id
     self.current_password = nil
     self.photo = merchant_info[:photo]
-    self.update_ts = now  
+    self.update_ts = now
     save
   end
-    
+
   def update_alt_photo(merchant_info)
     if merchant_info.nil?
       errors.add(:alt_photo, I18n.t("errors.messages.merchant.no_photo"))
@@ -211,64 +227,84 @@ class Merchant
     self.visit_frequency_id = self.visit_frequency.id
     self.current_password = nil
     self.alt_photo = merchant_info[:alt_photo]
-    self.update_ts = now  
+    self.update_ts = now
     save
   end
-    
+
   def add_credit_card(credit_card)
     credit_cards.concat(Array(credit_card))
     save
     self
   end
-  
+
   def remove_credit_card(credit_card)
     merchant_credit_cards.all(:credit_card => Array(credit_card)).destroy
     reload
     self
   end
+
+  def create_sign_up_code
+    if self.sign_up_code.nil?
+      now = Time.now
+      sign_up_auth_code = "#{self.id}"
+      data =  {
+        :auth_code => sign_up_auth_code
+      }.to_json
+      cipher = Gibberish::AES.new(self.auth_code)
+      encrypted_data = cipher.enc(data)
+      self.sign_up_code = SignUpCode.new
+      encrypted_code = "m#{self.id}$#{encrypted_data}"
+      self.sign_up_code[:auth_code] = sign_up_auth_code
+      self.sign_up_code[:qr_code] = SignUpCode.generate_qr_code(self.id, encrypted_code)
+      self.sign_up_code[:qr_code_img] = self.sign_up_code.generate_qr_code_image(self.id)
+      self.sign_up_code[:created_ts] = now
+      self.sign_up_code[:update_ts] = now
+      save
+    end
+  end
   
   private
-  
+
   def convert_date(field, field_str)
     begin
       date_str = self.send(field_str)
       if date_str
         self[field] = Time.zone.parse(date_str).to_date
-      end  
+      end
       return true
     rescue ArgumentError
-      return false
+    return false
     end
   end
-  
+
   def check_type_id
     if self.type
-      return true  
+    return true
     end
     return [false, ValidationErrors.default_error_message(:blank, :type_id)]
   end
-  
+
   def check_visit_frequency_id
     if self.visit_frequency
-      return true  
+    return true
     end
     return [false, ValidationErrors.default_error_message(:blank, :visit_frequency_id)]
   end
-  
+
   def validate_date(n,v)
-    convert_date(n.to_sym, v) ? true : [false, "#{n.gsub('_',' ').capitalize} #{I18n.t('errors.messages.not_valid')}"] 
+    convert_date(n.to_sym, v) ? true : [false, "#{n.gsub('_',' ').capitalize} #{I18n.t('errors.messages.not_valid')}"]
   end
-  
+
   def validate_expiry_date
     if self.will_terminate
       valid = validate_date("termination_date", "termination_date_str")
       return valid if valid.kind_of?(Array)
-      
+
       today = Date.today
       if self.termination_date < today
         return [false, I18n.t('admin.merchants.min_termination_date')]
       end
     end
-    return true  
+    return true
   end
 end

@@ -167,7 +167,7 @@ module Business
 
       if @venue.challenges.length > 0 || @venue.purchase_rewards.length > 0 || @venue.customer_rewards.length > 0
         respond_to do |format|
-          format.html { redirect_to(:action => "index", :error => t("business.venues.destroy_failure")) }
+          format.html { redirect_to({:action => "index"}, {:error => t("business.venues.destroy_failure")}) }
         #format.xml  { head :ok }
         end
       else

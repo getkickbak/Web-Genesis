@@ -110,7 +110,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       end
     rescue StandardError => e
       logger.error("Exception: " + e.message)
-      logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), invalid authentication code")
+      logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), invalid authorization code")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.challenges.invalid_code").split('\n') } }
@@ -181,10 +181,10 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         else
           if satisfied && (not @invalid_code)
             msg = t("api.challenges.expired_code").split('\n')
-            logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), authentication code expired")
+            logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), authorization code expired")
           elsif @invalid_code
             msg = t("api.challenges.invalid_code").split('\n')
-            logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), invalid authentication code")
+            logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), invalid authorization code")
           else  
             msg = t("api.challenges.missing_requirements").split('\n')
             logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), missing requirements")
