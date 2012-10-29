@@ -65,13 +65,11 @@
                               	<!-- -->
                               	<% end %>
                               <% else %>
-                              	<% if session[:is_admin] %>
-                              		<%= link_to(update_sign_up_code_path, :class=>"btn btn-small btn-warning", :title=>"update" ) do %>
-                              	    <!-- -->
-                              		<i class="btn-icon-only icon-refresh"></i>
-                              		<!-- -->
-                              		<% end %>
-                              	<% end %>	
+                              	<%= link_to(update_sign_up_code_path, :class=>"btn btn-small btn-warning", :title=>"update" ) do %>
+                              	<!-- -->
+                              	<i class="btn-icon-only icon-refresh"></i>
+                                <!-- -->
+                              	<% end %>
                               	<!-- -->
                               	<%= link_to(::Common.generate_full_merchant_qr_code_image_file_path(current_merchant.id,current_merchant.sign_up_code.qr_code_img), :class=>"btn btn-small btn-warning", :title=>"print" ) do %>
                               	<!-- -->
