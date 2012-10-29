@@ -65,7 +65,7 @@
                               	<!-- -->
                               	<% end %>
                               <% else %>
-                              	<% if %>
+                              	<% if session[:is_admin] %>
                               		<%= link_to(update_sign_up_code_path, :class=>"btn btn-small btn-warning", :title=>"update" ) do %>
                               	    <!-- -->
                               		<i class="btn-icon-only icon-refresh"></i>
