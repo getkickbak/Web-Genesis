@@ -10,9 +10,14 @@ Ext.define('Genesis.controller.ControllerBase',
    loadingScannerMsg : 'Loading Scanner ...',
    loadingMsg : 'Loading ...',
    genQRCodeMsg : 'Generating QRCode ...',
+   missingLicenseKeyMsg : 'License Key for this Device is missing. Press "Procced" to Scan the License Key into the device.',
    retrieveAuthModeMsg : 'Retrieving Authorization Code from Server ...',
    noCodeScannedMsg : 'No Authorization Code was Scanned!',
    lostNetworkConenction : 'You have lost network connectivity',
+   backToMerchantPageMsg : function(venue)
+   {
+      return ('Would you like to visit our Main Page?');
+   },
    geoLocationErrorMsg : function()
    {
       var rc = 'Your current location is unavailable. ';
@@ -222,12 +227,31 @@ Ext.define('Genesis.controller.ControllerBase',
                break;
             }
          }
-         console.log('\n' + //
-         "Encrypted Code Length: " + encrypted.length + '\n' + //
-         'Encrypted Code [' + encrypted + ']' + '\n' + //
-         'Expiry Date: [' + date + ']');
+         if (venueId > 0)
+         {
+            console.log('\n' + //
+            "Encrypted Code Length: " + encrypted.length + '\n' + //
+            'Encrypted Code [' + encrypted + ']' + '\n' + //
+            'Expiry Date: [' + date + ']');
 
-         return (encryptOnly) ? [encrypted, 0, 0] : me.genQRCode(encrypted);
+            return (encryptOnly) ? [encrypted, 0, 0] : me.genQRCode(encrypted);
+         }
+
+         Ext.device.Notification.show(
+         {
+            title : 'Missing License Key!',
+            message : me.prototype.missingLicenseKeyMsg,
+            buttons : ['Proceed', 'Cancel'],
+            callback : function(btn)
+            {
+               if (btn.toLowerCase() == 'proceed')
+               {
+                  _application.getController('Settings').fireEvent('upgradeDevice');
+               }
+            }
+         });
+
+         return (encryptOnly) ? ['', 0, 0] : '';
       },
       genQRCode : function(text, dotsize, QRCodeVersion)
       {
@@ -321,6 +345,28 @@ Ext.define('Genesis.controller.ControllerBase',
       me.resetView();
       me.redirectTo('main');
       console.log("LoggedIn, Going to Main Page ...");
+   },
+   goToMerchantMain : function()
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      var venue = viewport.getCheckinInfo().venue;
+      if (venue)
+      {
+         Ext.device.Notification.show(
+         {
+            title : venue.get('name').trunc(16),
+            buttons : ['OK', 'Cancel'],
+            message : me.backToMerchantPageMsg(venue),
+            callback : function(btn)
+            {
+               if (btn.toLowerCase() == 'ok')
+               {
+                  viewport.onCheckedInAccountTap();
+               }
+            }
+         });
+      }
    },
    isOpenAllowed : function()
    {
@@ -899,6 +945,11 @@ Ext.define('Genesis.controller.ControllerBase',
                message : (viewport.getLastPosition()) ? me.geoLocationUseLastPositionMsg : me.geoLocationUnavailableMsg,
                callback : function()
                {
+                  if (viewport.getLastPosition())
+                  {
+                     me.fireEvent('locationupdate', viewport.getLastPosition());
+                     return;
+                  }
                   if (Ext.os.is('Android'))
                   {
                      navigator.app.exitApp();
@@ -945,6 +996,11 @@ Ext.define('Genesis.controller.ControllerBase',
                         if (viewport.getLastPosition())
                         {
                            me.fireEvent('locationupdate', viewport.getLastPosition());
+                           return;
+                        }
+                        if (Ext.os.is('Android'))
+                        {
+                           navigator.app.exitApp();
                         }
                      }
                   });
@@ -979,7 +1035,7 @@ Ext.define('Genesis.controller.ControllerBase',
                {
                   if (bTimeout && (i < 4))
                   {
-                  	i = 4;
+                     i = 4;
                      me.getGeoLocation(i);
                   }
                   else

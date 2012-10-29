@@ -40,203 +40,11 @@ Ext.define('Genesis.view.RedeemItemDetail',
    },
    cleanView : function()
    {
-      switch (this.config.tag)
-      {
-         case 'userPrizes' :
-         {
-            break;
-         }
-         case 'merchantPrizes' :
-         {
-            this.removeAll(true);
-            break;
-         }
-      }
-      
       this.callParent(arguments);
    },
    createView : function()
    {
-      switch (this.config.tag)
-      {
-         case 'userPrizes' :
-         {
-            this.onUserCreateView();
-            break;
-         }
-         case 'merchantPrizes' :
-         {
-            this.onMerchantCreateView();
-            break;
-         }
-      }
-      
       this.callParent(arguments);
-   },
-   onUserCreateView : function()
-   {
-      var view = this;
-      var prizes = Ext.StoreMgr.get('PrizeStore').getRange();
-
-      if (prizes.length == 0)
-      {
-         this.getPreRender().push(Ext.create('Ext.Component',
-         {
-            tag : 'rewardPanel',
-            cls : 'noprizes',
-            xtype : 'component',
-            scrollable : false,
-            defaultUnit : 'em',
-            margin : '0 0 0.8 0'
-         }));
-         console.log("UserPrize View - No Prizes found.");
-      }
-      else
-      {
-         // Either a carousel or a empty view
-         var container = view.getInnerItems()[0];
-         var items = [];
-         if (container && container.isXType('carousel', true))
-         {
-            //
-            // User Prizes have been loaded previously, no need to refresh!
-            //
-            console.log("UserPrize View - do not need to be updated.");
-         }
-         else
-         {
-            if (!container)
-            {
-               container = Ext.create('Ext.Carousel',
-               {
-                  xtype : 'carousel',
-                  scrollable : undefined
-               })
-               this.getPreRender().push(container);
-            }
-            for (var i = 0; i < prizes.length; i++)
-            {
-               items.push(Ext.create('Ext.dataview.DataView',
-               {
-                  tag : 'rewardPanel',
-                  xtype : 'dataview',
-                  store :
-                  {
-                     model : 'Genesis.model.EarnPrize',
-                     autoLoad : false,
-                     data : prizes[i]
-                  },
-                  maxItemCache : 0,
-                  useComponents : true,
-                  scrollable : false,
-                  defaultType : 'redeemitem',
-                  defaultUnit : 'em',
-                  margin : '0 0 0.8 0'
-               }));
-            }
-            container.add(items);
-
-            console.log("UserPrize View - Found " + prizes.length + " Prizes needed to update.");
-         }
-      }
-   },
-   onMerchantCreateView : function()
-   {
-      var view = this;
-      var viewport = _application.getController('Viewport');
-      var merchantId = (viewport.getVenue()) ? viewport.getVenue().getMerchant().getId() : 0;
-      var container;
-      var prizesList = [];
-
-      //
-      // List all the prizes won by the Customer
-      //
-      var prizes = Ext.StoreMgr.get('PrizeStore').getRange();
-      if (prizes.length > 0)
-      {
-         for (var i = 0; i < prizes.length; i++)
-         {
-            //
-            // Only show prizes that matches the currently loaded Merchant Data
-            //
-            if (prizes[i].getMerchant().getId() != merchantId)
-            {
-               continue;
-            }
-
-            prizesList.push(prizes[i]);
-         }
-      }
-
-      if (prizesList.length == 0)
-      {
-         //view.removeAll();
-         this.getPreRender().push(Ext.create('Ext.Component',
-         {
-            tag : 'rewardPanel',
-            cls : 'noprizes',
-            xtype : 'component',
-            scrollable : false,
-            defaultUnit : 'em',
-            margin : '0 0 0.8 0'
-         }));
-         console.log("MerchantPrize View - No Prizes found.");
-      }
-      else
-      {
-         // Either a carousel or a empty view
-         var container = view.getInnerItems()[0];
-         if (!container)
-         {
-            this.getPreRender().push( container = Ext.create('Ext.Carousel',
-            {
-               xtype : 'carousel',
-               scrollable : undefined
-            }));
-         }
-         if ((container && container.isXType('carousel', true) && container.query('dataview')[0] &&
-         // First item in the carousel
-         container.query('dataview')[0].getStore().first().getMerchant().getId() == merchantId))
-         {
-            //
-            // Do Not need to change anything if there are already loaded from before
-            //
-            console.log("MerchantPrize View - do not need to be updated.");
-         }
-         else
-         {
-            //
-            // Create Prizes Screen from scratch
-            //
-            //container = view.getInnerItems()[0];
-            var items = [];
-            for (var i = 0; i < prizesList.length; i++)
-            {
-               items.push(Ext.create('Ext.dataview.DataView',
-               {
-                  tag : 'rewardPanel',
-                  xtype : 'dataview',
-                  store :
-                  {
-                     model : 'Genesis.model.EarnPrize',
-                     autoLoad : false,
-                     data : prizesList[i]
-                  },
-                  maxItemCache : 0,
-                  useComponents : true,
-                  scrollable : false,
-                  defaultType : 'reedemitem',
-                  defaultUnit : 'em',
-                  margin : '0 0 0.8 0'
-               }));
-            }
-            container.add(items);
-            container.setActiveItem(0);
-            container.show();
-
-            console.log("MerchantPrize View - Found " + prizesList.length + " Prizes needed to update.");
-         }
-      }
    },
    showView : function()
    {
@@ -246,7 +54,7 @@ Ext.define('Genesis.view.RedeemItemDetail',
          carousel.setActiveItem(0);
       }
       this.getInnerItems()[0].setVisibility(true);
-      
+
       this.callParent(arguments);
    },
    statics :
@@ -344,29 +152,17 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
          //
          // Refresh RedeemItem
          //
-         this.query('dataview[tag=rewardPanel]')[0].getStore().setData(this.redeemItem);
+         this.getInnerItems()[0].updateItem(this.redeemItem);
          delete this.redeemItem;
          return;
       }
 
-      this.getPreRender().push(Ext.create('Ext.dataview.DataView',
+      this.getPreRender().push(
       {
          flex : 1,
-         tag : 'rewardPanel',
-         xtype : 'dataview',
-         store :
-         {
-            model : 'Genesis.model.CustomerReward',
-            autoLoad : false,
-            data : this.redeemItem
-         },
-         maxItemCache : 0,
-         useComponents : true,
-         scrollable : false,
-         defaultType : 'redeemitem',
-         defaultUnit : 'em',
-         margin : '0 0 0.8 0'
-      }));
+         xtype : 'redeemitem',
+         data : this.redeemItem
+      });
       delete this.redeemItem;
    }
 });

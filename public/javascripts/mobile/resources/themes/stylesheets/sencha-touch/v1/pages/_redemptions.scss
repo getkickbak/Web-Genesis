@@ -4,19 +4,25 @@
 .redeemItem {
    .title {
       //line-height:$xlargeFontSize*2 + 2*$panelTopGap;
-      display : table;
-      width : 100%;
-      padding : 0 $panelGap;
+      display:table;
+      width:100%;
+      padding:0 $panelGap;
       .x-innerhtml {
-         display : table-cell;
-         vertical-align : middle;
+         display:table-cell;
+         vertical-align:middle;
       }
    }
    .itemPhoto {
       width:100%;
-      @include background-size($icon-size*3 $icon-size*3); //Maximum size of QR Code as well
-      background-position : center center;
-      background-repeat : no-repeat;
+      height:100%;
+      .x-innerhtml {
+         height:100%;
+         text-align:center;
+         img {
+            width:$icon-size*3;
+            height:$icon-size*3;
+         }        
+      }
    }
    .itemPoints {
       position:absolute;
@@ -29,10 +35,10 @@
       padding:$panelTopGap $panelGap;
       .photo {
          position:absolute;
-         right : 0.8em;
+         right:0.8em;
          img {
-            width : $icon-size;
-            max-height : $icon-size;
+            width:$icon-size;
+            max-height:$icon-size;
          }
       }
       .infoWrapper {

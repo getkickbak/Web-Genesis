@@ -10,6 +10,10 @@ Ext.define('Genesis.controller.MainPage',
    {
       csrfTokenRecv : false,
       models : ['frontend.MainPage', 'frontend.Signin', 'frontend.Account', 'Customer', 'User', 'Merchant', 'CustomerReward'],
+      after :
+      {
+         'mainPage' : ''
+      },
       routes :
       {
          '' : 'openPage', //Default do nothing
@@ -133,7 +137,6 @@ Ext.define('Genesis.controller.MainPage',
    },
    sessionTimeoutMsg : 'Session Timeout',
    passwdResetConfirmMsg : 'Please confirm to reset your account password',
-   missingLicenseKeyMsg : 'License Key for this Device is missing. Press "Procced" to Scan the License Key into the device.',
    passwdResetSuccessMsg : function()
    {
       return ('Password Reset was Successful.' + Genesis.constants.addCRLF() + //

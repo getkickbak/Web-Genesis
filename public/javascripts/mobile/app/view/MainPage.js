@@ -107,6 +107,27 @@ Ext.define('Genesis.view.MainPage',
       var show = viewport.getCheckinInfo().venue != null;
       var items = Ext.StoreMgr.get('MainPageStore').getRange();
       var list = Ext.Array.clone(items);
+      var itemPerPage = 6;
+
+      if (Ext.os.is('iOS'))
+      {
+         if (Ext.os.is.iPhone5 || Ext.os.is.iPod5)
+         {
+            itemPerPage = 8;
+         }
+      }
+      else
+      if (Ext.os.is('Android') && (window.screen.height > 480))
+      {
+         if (window.screen.height <= 568)
+         {
+            itemPerPage = 8;
+         }
+         else
+         {
+            itemPerPage = 10;
+         }
+      }
 
       if (!carousel._listitems)
       {
@@ -135,7 +156,7 @@ Ext.define('Genesis.view.MainPage',
       {
          carousel._listitems = items;
          carousel.removeAll(true);
-         for (var i = 0; i < Math.ceil(items.length / 6); i++)
+         for (var i = 0; i < Math.ceil(items.length / itemPerPage); i++)
          {
             carousel.add(
             {
@@ -143,7 +164,7 @@ Ext.define('Genesis.view.MainPage',
                cls : 'mainMenuSelections',
                tag : 'mainMenuSelections',
                scrollable : undefined,
-               data : Ext.Array.pluck(items.slice(i * 6, ((i + 1) * 6)), 'data'),
+               data : Ext.Array.pluck(items.slice(i * itemPerPage, ((i + 1) * itemPerPage)), 'data'),
                tpl : Ext.create('Ext.XTemplate',
                // @formatter:off
                '<tpl for=".">',

@@ -87,7 +87,7 @@ Ext.define('Genesis.controller.client.Prizes',
          redemptions :
          {
             createView : 'onCreateView',
-            showView :'onShowView',
+            showView : 'onShowView',
             activate : 'onActivate',
             deactivate : 'onDeactivate'
          },
@@ -113,6 +113,7 @@ Ext.define('Genesis.controller.client.Prizes',
          },
          badgeDetail :
          {
+            createView : 'onBadgeDetailCreateView',
             activate : 'onBadgeDetailActivate',
             deactivate : 'onBadgeDetailDeactivate'
          },
@@ -203,9 +204,15 @@ Ext.define('Genesis.controller.client.Prizes',
    stopRouletteBall : function()
    {
       var scn = this.getPrizeCheckScreen();
-      var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
-      rouletteBall.removeCls('spinBack');
-      rouletteBall.addCls('spinFwd');
+      if (scn)
+      {
+         var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
+         if (rouletteBall)
+         {
+            rouletteBall.removeCls('spinBack');
+            rouletteBall.addCls('spinFwd');
+         }
+      }
    },
    stopRouletteScreen : function()
    {
@@ -392,41 +399,50 @@ Ext.define('Genesis.controller.client.Prizes',
       var viewport = me.getViewPortCntlr();
       var info = metaData['reward_info'];
       var eligible = info['eligible_prize_id'] > 0;
+      var points = info['points'];
+      var rc = Ext.isDefined(points) && (points > 0);
       var soundType, message;
 
-      var eligiblePrizeCallback = function(setFlag, viewsPopLength)
+      //
+      // Can't win PrizePoints if you didn't win any Reward Points
+      //
+      if (rc)
       {
-         if ((me.flag |= setFlag) == 0x11)
+         var eligiblePrizeCallback = function(setFlag, viewsPopLength)
          {
-            me.flag = 0;
-            me.fireEvent('triggerCallbacksChain');
+            if ((me.flag |= setFlag) == 0x11)
+            {
+               me.flag = 0;
+               me.fireEvent('triggerCallbacksChain');
+            }
          }
-      }
-      if (info['prize_points'] > me.getMinPrizePts())
-      {
-         soundType = 'winPrizeSound';
-         message = me.wonPrizeMsg(info);
+         if (info['prize_points'] > me.getMinPrizePts())
+         {
+            soundType = 'winPrizeSound';
+            message = me.wonPrizeMsg(info);
 
-         Ext.device.Notification.vibrate();
-      }
-      else
-      {
-         soundType = 'losePrizeSound';
-         message = me.gotMinPrizePtsMsg(info['prize_points']);
-      }
-      //
-      // Play the prize winning music!
-      //
-      Genesis.controller.ControllerBase.playSoundFile(//
-      viewport.sound_files[soundType], Ext.bind(eligiblePrizeCallback, me, [0x01, viewsPopLength]));
-      Ext.device.Notification.show(
-      {
-         title : me.scanPlayTitle,
-         message : message,
-         callback : Ext.bind(eligiblePrizeCallback, me, [0x10, viewsPopLength])
-      });
+            Ext.device.Notification.vibrate();
+         }
+         else
+         {
+            soundType = 'losePrizeSound';
+            message = me.gotMinPrizePtsMsg(info['prize_points']);
+         }
+         //
+         // Play the prize winning music!
+         //
+         Genesis.controller.ControllerBase.playSoundFile(//
+         viewport.sound_files[soundType], Ext.bind(eligiblePrizeCallback, me, [0x01, viewsPopLength]));
+         Ext.device.Notification.show(
+         {
+            title : me.scanPlayTitle,
+            message : message,
+            callback : Ext.bind(eligiblePrizeCallback, me, [0x10, viewsPopLength])
+         });
 
-      return true;
+      }
+
+      return rc;
    },
    // --------------------------------------------------------------------------
    // Event Handler

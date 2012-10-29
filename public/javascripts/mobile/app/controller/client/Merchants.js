@@ -444,19 +444,10 @@ Ext.define('Genesis.controller.client.Merchants',
             // To-do : Depending on what to redeem
             //
             var controller = app.getController('client.Prizes');
-            //var controller = app.getController('client.Redemptions');
             var rstore = Ext.StoreMgr.get('RedeemStore');
+            
             record = rstore.getById(record.get('reward_id'));
             controller.fireEvent('showredeemitem', record);
-            /*
-             Ext.create('Genesis.model.CustomerReward',
-             {
-             //'id' : 1,
-             'expiry_date' : null,
-             'reward' : record,
-             'merchant' : viewport.getCheckinInfo().venue.getMerchant()
-             }));
-             */
             break;
       }
    },

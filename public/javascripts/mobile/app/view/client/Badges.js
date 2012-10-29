@@ -56,6 +56,27 @@ Ext.define('Genesis.view.client.Badges',
    createView : function()
    {
       var carousel = this;
+      var itemsPerPage = 12;
+
+      if (Ext.os.is('iOS'))
+      {
+         if (Ext.os.is.iPhone5 || Ext.os.is.iPod5)
+         {
+            itemPerPage = 15;
+         }
+      }
+      else
+      if (Ext.os.is('Android') && (window.screen.height > 480))
+      {
+         if (window.screen.height <= 568)
+         {
+            itemPerPage = 15;
+         }
+         else
+         {
+            itemPerPage = 18;
+         }
+      }
 
       if (!Genesis.view.ViewBase.prototype.createView.apply(this, arguments))
       {
@@ -70,7 +91,7 @@ Ext.define('Genesis.view.client.Badges',
       var items = Ext.StoreMgr.get('BadgeStore').getRange();
       var list = Ext.Array.clone(items);
 
-      for (var i = 0; i < Math.ceil(list.length / 16); i++)
+      for (var i = 0; i < Math.ceil(list.length / itemsPerPage); i++)
       {
          this.getPreRender().push(
          {
@@ -78,7 +99,7 @@ Ext.define('Genesis.view.client.Badges',
             cls : 'badgesMenuSelections',
             tag : 'badgesMenuSelections',
             scrollable : undefined,
-            data : Ext.Array.pluck(list.slice(i * 16, ((i + 1) * 16)), 'data'),
+            data : Ext.Array.pluck(list.slice(i * itemsPerPage, ((i + 1) * itemsPerPage)), 'data'),
             tpl : Ext.create('Ext.XTemplate',
             // @formatter:off
             '<tpl for=".">',

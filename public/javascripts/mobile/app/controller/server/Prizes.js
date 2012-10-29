@@ -89,10 +89,15 @@ Ext.define('Genesis.controller.server.Prizes',
       info.hide();
 
       var photo = item.query('component[tag=itemPhoto]')[0];
-      photo.element.setStyle(
+      var img = Ext.get(Ext.DomQuery.select('img',photo.element.dom)[0]);
+      img.set(
       {
-         'background-image' : 'url(' + qrcodeMeta[0] + ')',
-         'background-size' : Genesis.fn.addUnit(qrcodeMeta[1] * 1.25) + ' ' + Genesis.fn.addUnit(qrcodeMeta[2] * 1.25)
+         'src' : qrcodeMeta[0]
+      });
+      img.setStyle(
+      {
+         'width' : Genesis.fn.addUnit(qrcodeMeta[1] * 1.25),
+         'height' : Genesis.fn.addUnit(qrcodeMeta[2] * 1.25)
       });
    },
    // --------------------------------------------------------------------------
@@ -102,7 +107,7 @@ Ext.define('Genesis.controller.server.Prizes',
    {
       var me = this;
       var view = me.getMainPage();
-      
+
       view.redeemItem = me.redeemItem;
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -127,7 +132,7 @@ Ext.define('Genesis.controller.server.Prizes',
          }
       }
       console.log("ShowPrize View - Updated ShowPrize View.");
-      
+
       //delete me.redeemItem;
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
