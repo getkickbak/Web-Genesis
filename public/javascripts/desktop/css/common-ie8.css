@@ -15,10 +15,3 @@
     behavior: url(/javascripts/desktop/lib/PIE-2.0.0b/PIE_uncompressed.htc);
     */
 }
-
-.navbar-fixed-top .navbar-inner {
-	filter :none;
-}
-.navbar-fixed-bottom .navbar-inner {
-	filter :none;
-}
