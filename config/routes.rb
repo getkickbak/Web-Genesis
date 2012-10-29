@@ -39,6 +39,7 @@ Genesis::Application.routes.draw do
       match "/reward_model/update" => 'reward_model#update', :as => :update_reward_model
       match "/marketing" => 'marketing#index', :as => :marketing
       match "/marketing/create_sign_up_code" => 'marketing#create_sign_up_code', :as => :create_sign_up_code
+      match "/marketing/update_sign_up_code" => 'marketing#update_sign_up_code', :as => :update_sign_up_code
       match "/analytics" => 'analytics#index', :as => :analytics
       match "/analytics/show_charts" => 'analytics#show_charts'
       match "/badges" => 'badges#index', :as => :badges

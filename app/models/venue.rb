@@ -217,7 +217,7 @@ class Venue
     self.check_in_code.auth_code = check_in_auth_code
     self.check_in_code.qr_code = CheckInCode.generate_qr_code(self.merchant.id, encrypted_code)
     self.check_in_code.qr_code_img = self.check_in_code.generate_qr_code_image(self.merchant.id)  
-    self.update_ts = now
+    self.check_in_code.update_ts = now
     save
   end
   

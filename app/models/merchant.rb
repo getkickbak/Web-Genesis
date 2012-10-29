@@ -263,6 +263,22 @@ class Merchant
     end
   end
   
+  def update_sign_up_code
+    now = Time.now
+    sign_up_auth_code = "#{self.id}"
+    data =  {
+      :auth_code => sign_up_auth_code
+    }.to_json
+    cipher = Gibberish::AES.new(self.auth_code)
+    encrypted_data = cipher.enc(data)
+    encrypted_code = "m#{self.id}$#{encrypted_data}"
+    self.sign_up_code.auth_code = sign_up_auth_code
+    self.sign_up_code.qr_code = SignUpCode.generate_qr_code(self.id, encrypted_code)
+    self.sign_up_code.qr_code_img = self.sign_up_code.generate_qr_code_image(self.id)
+    self.sign_up_code.update_ts = now
+    save   
+  end
+  
   private
 
   def convert_date(field, field_str)

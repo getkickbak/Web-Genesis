@@ -270,8 +270,10 @@ en:
       merchants:
         update_success: "Account was successfully updated."
         update_photo_success: "Account photo was successfully updated."
-        create_sign_up_code_success: "Sign up code was succesfully created."
+        create_sign_up_code_success: "Sign up code was successfully created."
         create_sign_up_code_failure: "Failed to create sign up code."
+        update_sign_up_code_success: "Sign up code was successfully updated."
+        update_sign_up_code_failure: "Failed to update sign up code."
       promotions:
         create_success: "Promotion was successfully created." 
         min_start_date: "Start date must be greater than or equal to today."
