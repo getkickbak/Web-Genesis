@@ -377,6 +377,7 @@ Ext.define('Genesis.controller.ControllerBase',
    // --------------------------------------------------------------------------
    onScannedQRcode : Ext.emptyFn,
    onLocationUpdate : Ext.emptyFn,
+   onCompleteRefreshCSRF : Ext.emptyFn,
    onOpenPage : function(feature, subFeature, cb, eOpts, eInfo)
    {
       if ((appName == 'GetKickBak') && !Ext.device.Connection.isOnline() && (feature != 'MainPage'))
