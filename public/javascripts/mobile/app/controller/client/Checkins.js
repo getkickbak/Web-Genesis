@@ -406,6 +406,18 @@ Ext.define('Genesis.controller.client.Checkins',
          me.popView();
       }
       else
+      if (!Genesis.db.getLocalDB()['csrf_code'])
+      {
+         var viewport = me.getViewPortCntlr();
+         viewport.on('completeRefreshCSRF', function()
+         {
+            me.onLocationUpdate(position);
+         }, viewport,
+         {
+            single : true
+         });
+      }
+      else
       {
          Venue['setFindNearestURL']();
          cestore.load(
@@ -461,10 +473,7 @@ Ext.define('Genesis.controller.client.Checkins',
           message : me.loadingPlaces
           });
           */
-         if (Genesis.db.getLocalDB()['csrf_code'])
-         {
-            me.getGeoLocation();
-         }
+         me.getGeoLocation();
       }
    },
    onExploreShowView : function(activeItem)

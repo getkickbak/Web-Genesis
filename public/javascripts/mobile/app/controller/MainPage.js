@@ -717,9 +717,11 @@ Ext.define('Genesis.controller.MainPage',
             if (operation.wasSuccessful())
             {
                var db = Genesis.db.getLocalDB();
+               var viewport = me.getViewPortCntlr();
 
                me.persistLoadStores(Ext.emptyFn);
-
+               viewport.fireEvent('completeRefreshCSRF');
+               
                // Return to previous Venue
                if (db['last_check_in'])
                {

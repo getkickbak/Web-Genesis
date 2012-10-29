@@ -16,6 +16,7 @@ body {
    background-size : 100px;
 }
 .navbar-fixed-top .navbar-inner {
+   -ms-filter : none;
    filter : none;
    background : url(http://files.getkickbak.com/v1/header.png) 0 0 repeat-x;
    background-size : 100% 100%;
@@ -24,6 +25,8 @@ body {
    position : static;
 }
 .navbar-fixed-bottom .navbar-inner {
+   -ms-filter : none;
+   filter : none;
    background : url(http://files.getkickbak.com/v1/footer.png) repeat-x;
    background-size : 100% 100%;
 }

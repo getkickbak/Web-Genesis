@@ -141,6 +141,7 @@ Ext.define('Genesis.controller.Viewport',
             buffer : 0.5 * 1000,
             fn : 'onBarAnimEnd'
          },
+         'completeRefreshCSRF' : 'onCompleteRefreshCSRF',
          'pushview' : 'pushView',
          'silentpopview' : 'silentPopView',
          'popview' : 'popView',
@@ -161,6 +162,7 @@ Ext.define('Genesis.controller.Viewport',
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
+   onCompleteRefreshCSRF : Ext.emptyFn,
    onLocationUpdate : function(position)
    {
       var me = this;
