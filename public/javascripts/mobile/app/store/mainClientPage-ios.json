@@ -1,0 +1,58 @@
+{
+   "data": [
+      {
+         "name": "Accounts",
+         "photo_url": "resources/themes/images/v1/ios/mainicons/accounts.png",
+         "desc": "Accounts",
+         "route": "accounts",
+         "pageCntlr": "client.Accounts",
+         "subFeature": "profile"
+      }, {
+         "name": "Check-ins",
+         "photo_url": "resources/themes/images/v1/ios/mainicons/checkin.png",
+         "desc": "Check-ins Menu for Merchants Nearby",
+         "route": "checkin",
+         "pageCntlr": "client.Checkins",
+         "subFeature": "checkin"
+      }, {
+         "name": "Rewards",
+         "photo_url": "resources/themes/images/v1/ios/mainicons/rewards.png",
+         "desc": "Shortcut to Redeem Rewards",
+         "pageCntlr": "client.Redemptions",
+         "route": "redeemRewardsChooseSC"
+      }, {
+         "name": "Prizes",
+         "photo_url": "resources/themes/images/v1/ios/mainicons/prizes.png",
+         "desc": "Shortcut to Redeem Prizes",
+         "pageCntlr": "client.Prizes",
+         "route": "redeemPrizesChooseSC"
+      }, {
+         "name": "Reward Pts Xfer",
+         "photo_url": "resources/themes/images/v1/ios/miscicons/points.png",
+         "desc": "Transfer Points to other KickBak users",
+         "route": "transfer",
+         "pageCntlr": "client.Accounts",
+         "subFeature": "transfer"
+      }, {
+         "name": "Meal Stop",
+         "photo_url": "resources/themes/images/v1/ios/mainicons/tocheckedinmerch.png",
+         "desc": "Go back to your last Checked-in Venue",
+         "pageCntlr": "MainPage",
+         "subFeature": "merchant",
+         "hide": "true"
+      }, {
+         "name": "Receive Referrals",
+         "photo_url": "resources/themes/images/v1/ios/mainicons/referral.png",
+         "desc": "Receive Referrals from other KickBak users",
+         "pageCntlr": "client.Challenges",
+         "subFeature": "referrals"
+      }, {
+         "name": "Settings",
+         "photo_url": "resources/themes/images/v1/ios/mainicons/settings.png",
+         "desc": "Settings",
+         "route": "clientSettings",
+         "pageCntlr": "Settings",
+         "subFeature": "client"
+      }
+   ]
+}

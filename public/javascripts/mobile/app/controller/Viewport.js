@@ -208,9 +208,28 @@ Ext.define('Genesis.controller.Viewport',
       console.log("Loading MainPage Store ...");
       if (Genesis.constants.isNative())
       {
-         var file = "app/store/" + ((!merchantMode) ? 'mainClientPage.json' : 'mainServerPage.json'), path = "";
+         var file, path;
          if (Ext.os.is('iOS'))
          {
+            file = 'ios';
+         }
+         else
+         if (Ext.os.is('Android'))
+         {
+            if ((window.devicePixelRatio) == 1 || (window.devicePixelRatio >= 2))
+            {
+               file = 'android-mxhdpi';
+            }
+            else
+            {
+               file = 'android-lhdpi';
+            }
+         }
+         file = Ext.Loader.getPath("Genesis") + "/store/" + ((!merchantMode) ? 'mainClientPage-' : 'mainServerPage-') + file + '.json';
+
+         if (Ext.os.is('iOS'))
+         {
+            path = "";
          }
          else
          if (Ext.os.is('Android'))
@@ -585,6 +604,11 @@ Ext.define('Genesis.controller.Viewport',
    {
       var me = this;
       console.log("Viewport Init");
+
+      //
+      // Initialize global constants
+      //
+      Genesis.constants.init();
 
       me.callParent(arguments);
 

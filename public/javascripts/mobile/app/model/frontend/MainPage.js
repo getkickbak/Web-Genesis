@@ -17,7 +17,27 @@ Ext.define('Genesis.model.frontend.MainPage',
          },
          type : 'ajax',
          disableCaching : false,
-         url : Ext.Loader.getPath("Genesis") + "/store/" + ((!merchantMode) ? 'mainClientPage.json' : 'mainServerPage.json')
+         url : (function()
+         {
+            var file;
+            if (Ext.os.is('iOS'))
+            {
+               file = 'ios';
+            }
+            else
+            if (Ext.os.is('Android'))
+            {
+               if ((window.devicePixelRatio) == 1 || (window.devicePixelRatio >= 2))
+               {
+                  file = 'android-mxhdpi';
+               }
+               else
+               {
+                  file = 'android-lhdpi';
+               }
+            }
+            return Ext.Loader.getPath("Genesis") + "/store/" + ((!merchantMode) ? 'mainClientPage-' : 'mainServerPage-') + file + '.json';
+         })()
       }
    }
 });

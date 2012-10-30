@@ -1,0 +1,29 @@
+{
+   "data": [
+      {
+         "name": "Rewards",
+         "photo_url": "resources/themes/images/v1/android/lhdpi/mainicons/rewards.png",
+         "desc": "Rewards",
+         "pageCntlr": "server.Rewards",
+         "subFeature": "rewards"
+      }, {
+         "name": "Redemptions",
+         "photo_url": "resources/themes/images/v1/android/lhdpi/mainicons/redeem.png",
+         "desc": "Redemptions",
+         "pageCntlr": "server.Redemptions",
+         "subFeature": "redemptions"
+      }, {
+         "name": "Challenges",
+         "photo_url": "resources/themes/images/v1/android/lhdpi/mainicons/challenges.png",
+         "desc": "Challenges",
+         "pageCntlr": "server.Challenges"
+      }, {
+         "name": "Settings",
+         "photo_url": "resources/themes/images/v1/android/lhdpi/mainicons/settings.png",
+         "desc": "Settings",
+         "route": "serverSettings",
+         "pageCntlr": "Settings",
+         "subFeature": "server"
+      }
+   ]
+}

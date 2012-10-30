@@ -44,7 +44,9 @@
       .x-list-emptytext {
          position:absolute;
          width:100%;
-         height:$screen-height;
+         top:0;
+         bottom:0;
+         right:0;
          @extend .emptyPage;
          background: theme_image($theme-path,  "noaccounts" + ".png") center no-repeat;
          &:before {

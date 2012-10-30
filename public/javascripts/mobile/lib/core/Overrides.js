@@ -17,25 +17,15 @@ Genesis.constants =
    clientVersion : '1.0.2',
    serverVersion : '1.0.2',
    themeName : 'v1',
+   _iconPath : '',
+   _iconSize : 0,
    defaultFontSize : (function()
    {
       return Math.floor(((16 * 1.14 * Math.min(1.0, window.devicePixelRatio)) || (16 * 1.14)));
    })(),
    defaultIconSize : function()
    {
-      if (Ext.os.is('iOS'))
-      {
-         return 57;
-      }
-      else
-      if (Ext.os.is('Android'))
-      {
-         return ((window.devicePixelRatio < 1) ? 36 : 48);
-      }
-      else
-      {
-         return 57;
-      }
+      return this._iconSize;
    },
    site : 'www.getkickbak.com',
    photoSite : 'http://files.getkickbak.com',
@@ -48,6 +38,33 @@ Genesis.constants =
    //minDistance : 0.1 * 1000,
    minDistance : 100000 * 1000,
    createAccountMsg : 'Create user account using Facebook Profile information',
+   init : function()
+   {
+      if (Ext.os.is('iOS'))
+      {
+         this._iconPath = '/ios';
+         this._iconSize = 57;
+      }
+      else
+      if (Ext.os.is('Android'))
+      {
+         this._iconSize = 48;
+         if ((window.devicePixelRatio) == 1 || (window.devicePixelRatio >= 2))
+         {
+            this._iconPath = '/android/mxhdpi';
+         }
+         else
+         {
+            this._iconPath = '/android/lhdpi';
+         }
+
+         if (window.devicePixelRatio < 1)
+         {
+            this._iconSize = 36;
+         }
+      }
+      this._iconPath = this.themeName + this._iconPath;
+   },
    isNative : function()
    {
       //return Ext.isDefined(cordova);
@@ -60,8 +77,8 @@ Genesis.constants =
    getIconPath : function(type, name, remote)
    {
       return ((!remote) ? //
-      'resources/themes/images/' + this.themeName : //
-      this.photoSite + '/' + this.themeName + '/' + 'icons') + '/' + type + '/' + name + '.png';
+      'resources/themes/images/' + this._iconPath : //
+      this.photoSite + '/' + this._iconPath + '/' + 'icons') + '/' + type + '/' + name + '.png';
    },
    getPrivKey : function(id)
    {

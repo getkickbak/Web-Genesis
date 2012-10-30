@@ -21,8 +21,10 @@
       }
       .x-list-emptytext {
          position:absolute;
+         top:0;
+         bottom:0;
+         right:0;
          width:100%;
-         height:$screen-height;
          @extend .emptyPage;
          background: theme_image($theme-path,  "noprizes" + ".png") center no-repeat;
          &:before {

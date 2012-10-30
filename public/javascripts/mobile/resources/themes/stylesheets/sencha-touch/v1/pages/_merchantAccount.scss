@@ -58,7 +58,6 @@
             font-size:$normalFontSize !important;
          }
          .itemDesc {
-            line-height:2.25em;
             font-style:italic;
             font-size:$normalFontSize !important;
             padding:1.05em 0;
@@ -81,9 +80,7 @@
             width:$icon-size;
          }
          .itemDesc {
-            line-height:2.25em;
             font-size:$smallFontSize !important;
-            padding:3.15em 0 1.15em 0 !important;
          }
       }
    }
@@ -155,4 +152,41 @@
 .prizeicon {
    background-color : transparent !important;
    @include background-size($tabs-bottom-icon-size);
+}
+
+
+//------------------------------------------------------------------------------
+// iOS
+//------------------------------------------------------------------------------
+.x-ios .merchantMain {
+   .prizesWonPanel, .badgeProgressPanel {
+      .prizeswonphoto, .badgephoto {
+         .itemDesc {
+            line-height:2.25em;
+         }
+      }
+      .badgephoto {
+         .itemDesc {
+            padding:3.15em 0 1.15em 0 !important;
+         }
+      }
+   }
+}
+
+//------------------------------------------------------------------------------
+// Android
+//------------------------------------------------------------------------------
+.x-android .merchantMain {
+   .prizesWonPanel, .badgeProgressPanel {
+      .prizeswonphoto, .badgephoto {
+         .itemDesc {
+            line-height:1.25em;
+         }
+      }
+      .badgephoto {
+         .itemDesc {
+            padding:1.9em 0 0.678em 0 !important;
+         }
+      }
+   }
 }
