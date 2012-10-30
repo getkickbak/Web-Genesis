@@ -4,7 +4,6 @@ Ext.define('Genesis.controller.server.Prizes',
    requires : ['Ext.data.Store', 'Ext.util.Sorter'],
    statics :
    {
-      prizes_path : '/prizes'
    },
    xtype : 'serverprizesCntlr',
    config :

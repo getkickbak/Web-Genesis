@@ -4,7 +4,6 @@ Ext.define('Genesis.controller.client.Accounts',
    requires : ['Ext.data.Store'],
    statics :
    {
-      accounts_path : '/accounts'
    },
    xtype : 'accountsCntlr',
    config :

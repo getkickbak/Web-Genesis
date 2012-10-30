@@ -4,7 +4,6 @@ Ext.define('Genesis.controller.client.Challenges',
    requires : ['Ext.Anim'],
    statics :
    {
-      challenges_path : '/clientChallenges'
    },
    xtype : 'clientChallengesCntlr',
    config :

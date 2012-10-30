@@ -4,7 +4,6 @@ Ext.define('Genesis.controller.server.Challenges',
    requires : ['Ext.data.Store'],
    statics :
    {
-      serverRedemption_path : '/serverChallenges'
    },
    xtype : 'serverChallengesCntlr',
    config :

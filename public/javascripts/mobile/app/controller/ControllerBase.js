@@ -13,7 +13,7 @@ Ext.define('Genesis.controller.ControllerBase',
    missingLicenseKeyMsg : 'License Key for this Device is missing. Press "Procced" to Scan the License Key into the device.',
    retrieveAuthModeMsg : 'Retrieving Authorization Code from Server ...',
    noCodeScannedMsg : 'No Authorization Code was Scanned!',
-   lostNetworkConenction : 'You have lost network connectivity',
+   lostNetworkConnectionMsg : 'You have lost network connectivity',
    backToMerchantPageMsg : function(venue)
    {
       return ('Would you like to visit our Main Page?');
@@ -398,7 +398,7 @@ Ext.define('Genesis.controller.ControllerBase',
          }
          console.debug("Network Error - " + feature + "," + subFeature);
          me.resetView();
-         me.redirectTo(viewport.getLoggedIn() ? 'main' : 'login');
+         me.redirectTo(viewport.getLoggedIn() ? 'checkin' : 'login');
          return;
       }
 

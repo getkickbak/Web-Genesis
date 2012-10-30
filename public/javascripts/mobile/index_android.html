@@ -40,7 +40,7 @@
                viewport.resetView();
                if (viewport.getLoggedIn())
                {
-                  viewport.redirectTo('main');
+                  viewport.redirectTo('checkin');
                }
                else
                {
@@ -57,7 +57,7 @@
                Ext.device.Notification.show(
                {
                   title : 'Network Error',
-                  message : Genesis.controller.ControllerBase.prototype.lostNetworkConenction,
+                  message : Genesis.controller.ControllerBase.prototype.lostNetworkConnectionMsg,
                   callback : _onGotoMainCallBackFn
                });
             }

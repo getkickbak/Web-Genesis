@@ -4,7 +4,6 @@ Ext.define('Genesis.controller.client.Rewards',
    requires : ['Ext.data.Store'],
    statics :
    {
-      clientRewards_path : '/clientRewards'
    },
    xtype : 'clientRewardsCntlr',
    config :

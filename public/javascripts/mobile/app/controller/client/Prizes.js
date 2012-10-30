@@ -4,8 +4,6 @@ Ext.define('Genesis.controller.client.Prizes',
    requires : ['Ext.data.Store', 'Genesis.view.client.Prizes', 'Genesis.view.client.Badges'],
    statics :
    {
-      clientRedemption_path : '/clientPrizes',
-      prizes_path : '/prizes'
    },
    xtype : 'clientPrizesCntlr',
    controllerType : 'prize',
