@@ -17,6 +17,7 @@ Genesis.constants =
    clientVersion : '1.0.2',
    serverVersion : '1.0.2',
    themeName : 'v1',
+   _thumbnailAttribPrefix : '',
    _iconPath : '',
    _iconSize : 0,
    defaultFontSize : (function()
