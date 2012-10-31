@@ -2,14 +2,14 @@
    "data": [
       {
          "name": "Accounts",
-         "photo_url": "resources/themes/images/v1/{platform_path}/mainicons/accounts.png",
+         "photo_url": "resources/themes/images/{platform_path}/mainicons/accounts.png",
          "desc": "Accounts",
          "route": "accounts",
          "pageCntlr": "client.Accounts",
          "subFeature": "profile"
       }, {
          "name": "Check-ins",
-         "photo_url": "resources/themes/images/v1/{platform_path}/mainicons/checkin.png",
+         "photo_url": "resources/themes/images/{platform_path}/mainicons/checkin.png",
          "desc": "Check-ins Menu for Merchants Nearby",
          "route": "checkin",
          "pageCntlr": "client.Checkins",
