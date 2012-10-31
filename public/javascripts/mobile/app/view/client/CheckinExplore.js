@@ -119,7 +119,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
          {
             getPhoto : function(values)
             {
-               return values.Merchant['photo']['thumbnail_ios_small'].url;
+               return values.merchant['photo'][Genesis.constants._thumbnailAttribPrefix + 'small'].url;
             },
             getAddress : function(values)
             {

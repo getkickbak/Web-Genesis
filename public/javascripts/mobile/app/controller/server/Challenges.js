@@ -99,6 +99,15 @@ Ext.define('Genesis.controller.server.Challenges',
          if (qrcode[0])
          {
             var controller = me.getApplication().getController('server.Prizes');
+            var photoUrl =
+            {
+            };
+            photoUrl[Genesis.constants._thumbnailAttribPrefix + 'large'] =
+            {
+               url : qrcode[0],
+               height : qrcode[1] * 1.25,
+               width : qrcode[2] * 1.25,
+            }
             var reward = Ext.create('Genesis.model.CustomerReward',
             {
                id : 0,
@@ -107,15 +116,7 @@ Ext.define('Genesis.controller.server.Challenges',
                {
                   value : 'earn_points'
                },
-               photo :
-               {
-                  'thumbnail_ios_medium' :
-                  {
-                     url : qrcode[0],
-                     height : qrcode[1] * 1.25,
-                     width : qrcode[2] * 1.25,
-                  }
-               }
+               photo : photoUrl
             });
             controller.fireEvent('authreward', reward);
          }

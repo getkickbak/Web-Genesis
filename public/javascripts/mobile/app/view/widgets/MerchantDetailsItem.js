@@ -19,7 +19,7 @@ Ext.define('Genesis.view.widgets.MerchantDetailsItem',
          {
             getPhoto : function(values)
             {
-               return values.Merchant['photo']['thumbnail_ios_medium'].url;
+               return values.Merchant['photo'][Genesis.constants._thumbnailAttribPrefix + 'medium'].url;
             }
          })
       },

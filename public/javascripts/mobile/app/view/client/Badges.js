@@ -125,7 +125,7 @@ Ext.define('Genesis.view.client.Badges',
                   var badge = Ext.StoreMgr.get('BadgeStore').getById(customer.get('badge_id'));
                   var rank = badge.get('rank');
 
-                  return Genesis.view.client.Badges.getPhoto((values['rank'] <= rank) ? type : 'nobadge', 'thumbnail_medium_url');
+                  return Genesis.view.client.Badges.getPhoto((values['rank'] <= rank) ? type : 'nobadge', Genesis.constants._thumbnailAttribPrefix + 'medium');
                }
             })
          });
@@ -151,29 +151,26 @@ Ext.define('Genesis.view.client.Badges',
    {
       getPhoto : function(type, size)
       {
+         Genesis.constants._thumbnailAttribPrefix + 'medium'
          var url;
          switch (type)
          {
             case 'nobadge':
             {
-               switch (size)
+               if (size.match(/small/))
                {
-                  case 'thumbnail_small_url' :
-                  {
-                     size = 'small';
-                     break;
-                  }
-                  case 'thumbnail_medium_url' :
-                  {
-                     size = 'medium';
-                     break;
-                  }
-                  case 'thumbnail_large_url' :
-                  {
-                     size = 'large';
-                     break;
-                  }
+                  size = 'small';
                }
+               else
+               if (size.match(/medium/))
+               {
+                  size = 'medium';
+               }
+               else
+               {
+                  size = 'large';
+               }
+
                url = Genesis.constants.getIconPath('badges', size + '/' + 'nobadge', false);
                break;
             }

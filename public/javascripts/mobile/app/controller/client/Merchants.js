@@ -68,11 +68,11 @@ Ext.define('Genesis.controller.client.Merchants',
             //disclose : 'onMainDisclose'
          },
          /*
-         checkinBtn :
-         {
-            tap : 'onCheckinTap'
-         },
-         */
+          checkinBtn :
+          {
+          tap : 'onCheckinTap'
+          },
+          */
          merchantTabBar :
          {
             tabchange : 'onTabBarTabChange'
@@ -295,7 +295,7 @@ Ext.define('Genesis.controller.client.Merchants',
       {
          console.debug("Refreshing MerchantRenderStore ...");
          var monitors = this.getEventDispatcher().getPublishers()['elementPaint'].monitors;
-         
+
          activeItem.query('dataview[tag=tbPanel]')[0].refresh();
          var feedPanel = activeItem.query('dataview[tag=feedPanel]')[0];
          if (feedPanel)
@@ -307,7 +307,7 @@ Ext.define('Genesis.controller.client.Merchants',
          monitors[activeItem.element.getId()].onElementPainted(
          {
             animationName : 'x-paint-monitor-helper'
-         });         
+         });
       }
    },
    onMainActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -393,7 +393,7 @@ Ext.define('Genesis.controller.client.Merchants',
       var type = Ext.StoreMgr.get('BadgeStore').getById(crecord.get('badge_id')).get('type');
 
       prizeBtn.setIconCls('prizeicon');
-      prizeBtn.setIcon(Genesis.view.client.Badges.getPhoto(type, 'thumbnail_small_url'));
+      prizeBtn.setIcon(Genesis.view.client.Badges.getPhoto(type, Genesis.constants._thumbnailAttribPrefix + 'small'));
       }
       */
       // Update TitleBar
@@ -444,7 +444,7 @@ Ext.define('Genesis.controller.client.Merchants',
             //
             var controller = app.getController('client.Prizes');
             var rstore = Ext.StoreMgr.get('RedeemStore');
-            
+
             record = rstore.getById(record.get('reward_id'));
             controller.fireEvent('showredeemitem', record);
             break;

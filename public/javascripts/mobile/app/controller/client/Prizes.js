@@ -247,7 +247,7 @@ Ext.define('Genesis.controller.client.Prizes',
             link : link,
             caption : link,
             description : desc,
-            picture : venue.getMerchant().get('photo')['thumbnail_ios_medium'].url,
+            picture : venue.getMerchant().get('photo')[Genesis.constants._thumbnailAttribPrefix + 'medium'].url,
             message : message
          }, function(response)
          {
@@ -270,7 +270,7 @@ Ext.define('Genesis.controller.client.Prizes',
    updatingBadgeOnFacebook : function(earnprize)
    {
       var me = this;
-      var badgeURL = earnprize.get('photo')['thumbnail_ios_medium'];
+      var badgeURL = earnprize.get('photo')[Genesis.constants._thumbnailAttribPrefix + 'medium'];
       try
       {
          var viewport = me.getViewPortCntlr();
@@ -366,6 +366,12 @@ Ext.define('Genesis.controller.client.Prizes',
             message : me.getBadgePrizeMsg(info['badge_prize_points'], badge),
             callback : function()
             {
+               var prefix = Genesis.constants._thumbnailAttribPrefix + 'large';
+               var photoUrl =
+               {
+               };
+               photoUrl[prefix] = Genesis.view.client.Badges.getPhoto(badge.get('type'), prefix);
+
                me.redeemBadgeItem = Ext.create('Genesis.model.CustomerReward',
                {
                   'title' : badge.get('type').display_value,
@@ -373,10 +379,7 @@ Ext.define('Genesis.controller.client.Prizes',
                   {
                      value : 'promotion'
                   },
-                  'photo' :
-                  {
-                     'thumbnail_ios_medium' : Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_large_url')
-                  },
+                  'photo' : photoUrl,
                   'points' : info['badge_prize_points'],
                   'time_limited' : false,
                   'quantity_limited' : false,

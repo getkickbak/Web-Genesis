@@ -117,11 +117,11 @@ Ext.define('Genesis.controller.Prizes',
             deactivate : 'onDeactivate'
          },
          /*
-         refreshBtn :
-         {
-            tap : 'onRefreshQRCode'
-         },
-         */
+          refreshBtn :
+          {
+          tap : 'onRefreshQRCode'
+          },
+          */
          verifyBtn :
          {
             tap : 'popView'
@@ -201,6 +201,7 @@ Ext.define('Genesis.controller.Prizes',
          var link = wsite[wsite.length - 1] || site;
          var desc = venue.get('description').trunc(256);
          var message = me.wonPrizeEmailMsg(earnprize.getCustomerReward().get('title'), venue.get('name'));
+         var photoUrl = venue.getMerchant().get('photo')[Genesis.constants._thumbnailAttribPrefix + 'medium'].url;
 
          console.log('Posting to Facebook ...' + '\n' + //
          'Name: ' + name + '\n' + //
@@ -215,7 +216,7 @@ Ext.define('Genesis.controller.Prizes',
             link : venue.get('website') || site,
             caption : link,
             description : desc,
-            picture : venue.getMerchant().get('photo')['thumbnail_ios_medium'].url,
+            picture : photoUrl,
             message : message
          }, function(response)
          {

@@ -148,6 +148,7 @@ Ext.define('Genesis.controller.Viewport',
          'resetview' : 'resetView'
       }
    },
+   mainPageStorePathToken : /\/{platform_path}/mg,
    popViewInProgress : false,
    viewStack : [],
    animationFlag : 0,
@@ -205,58 +206,40 @@ Ext.define('Genesis.controller.Viewport',
    },
    onActivate : function()
    {
-      console.log("Loading MainPage Store ...");
-      if (Genesis.constants.isNative())
+      var me = this;
+
+      //file = Ext.Loader.getPath("Genesis") + "/store/" + ((!merchantMode) ? 'mainClientPage-' : 'mainServerPage-') + file +
+      // '.json';
+      var file = Ext.Loader.getPath("Genesis") + "/store/" + ((!merchantMode) ? 'mainClientPage' : 'mainServerPage') + '.json';
+      var path = "";
+      if (Ext.os.is('iOS'))
       {
-         var file, path;
-         if (Ext.os.is('iOS'))
-         {
-            file = 'ios';
-         }
-         else
-         if (Ext.os.is('Android'))
-         {
-            if ((window.devicePixelRatio) == 1 || (window.devicePixelRatio >= 2))
-            {
-               file = 'android-mxhdpi';
-            }
-            else
-            {
-               file = 'android-lhdpi';
-            }
-         }
-         file = Ext.Loader.getPath("Genesis") + "/store/" + ((!merchantMode) ? 'mainClientPage-' : 'mainServerPage-') + file + '.json';
-
-         if (Ext.os.is('iOS'))
-         {
-            path = "";
-         }
-         else
-         if (Ext.os.is('Android'))
-         {
-            path = "file:///android_asset/www/";
-         }
-
-         //console.debug("Creating Request [" + path + file + "]");
-         var request = new XMLHttpRequest();
-         request.onreadystatechange = function()
-         {
-            if (request.readyState == 4)
-            {
-               if (request.status == 200 || request.status == 0)
-               {
-                  console.log("Loaded MainPage Store ...");
-                  Ext.StoreMgr.get('MainPageStore').setData(Ext.decode(request.responseText).data);
-               }
-            }
-         }
-         request.open("GET", path + file, true);
-         request.send(null);
+         path = "";
       }
       else
+      if (Ext.os.is('Android'))
       {
-         Ext.StoreMgr.get('MainPageStore').load();
+         path = "file:///android_asset/www/";
       }
+      file = path + file;
+
+      console.log("Loading MainPage Store ...");
+      //console.debug("Creating Request [" + path + file + "]");
+      var request = new XMLHttpRequest();
+      request.onreadystatechange = function()
+      {
+         if (request.readyState == 4)
+         {
+            if (request.status == 200 || request.status == 0)
+            {
+               console.log("Loaded MainPage Store ...");
+               request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPath)
+               Ext.StoreMgr.get('MainPageStore').setData(Ext.decode(request.responseText).data);
+            }
+         }
+      }
+      request.open("GET", file, true);
+      request.send(null);
    },
    // --------------------------------------------------------------------------
    // Button Handlers
@@ -313,6 +296,8 @@ Ext.define('Genesis.controller.Viewport',
       {
          var venue = me.getVenue();
          var merchant = venue.getMerchant();
+         var photoUrl = merchant.get('photo')[Genesis.constants._thumbnailAttribPrefix + 'medium'].url;
+
          console.log('Posting to Facebook ...');
          FB.api('/me/feed', 'post',
          {
@@ -321,7 +306,7 @@ Ext.define('Genesis.controller.Viewport',
             link : venue.get('website') || site,
             caption : venue.get('website') || site,
             description : venue.get('description'),
-            picture : merchant.get('photo')['thumbnail_ios_medium'].url,
+            picture : photoUrl,
             message : 'Check out this place!'
          }, function(response)
          {

@@ -43,6 +43,7 @@ Genesis.constants =
       if (Ext.os.is('iOS'))
       {
          this._iconPath = '/ios';
+         this._thumbnailAttribPrefix = 'thumbnail_ios_';
          this._iconSize = 57;
       }
       else
@@ -52,16 +53,24 @@ Genesis.constants =
          if ((window.devicePixelRatio) == 1 || (window.devicePixelRatio >= 2))
          {
             this._iconPath = '/android/mxhdpi';
+            this._thumbnailAttribPrefix = 'thumbnail_android_mxhdpi_';
          }
          else
          {
             this._iconPath = '/android/lhdpi';
+            this._thumbnailAttribPrefix = 'thumbnail_android_lhdpi_';
          }
 
          if (window.devicePixelRatio < 1)
          {
             this._iconSize = 36;
          }
+      }
+      else
+      {
+         this._iconPath = '/ios';
+         this._thumbnailAttribPrefix = 'thumbnail_ios_';
+         this._iconSize = 57;
       }
       this._iconPath = this.themeName + this._iconPath;
    },
