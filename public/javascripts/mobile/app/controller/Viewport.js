@@ -148,7 +148,7 @@ Ext.define('Genesis.controller.Viewport',
          'resetview' : 'resetView'
       }
    },
-   mainPageStorePathToken : /\/{platform_path}/mg,
+   mainPageStorePathToken : /\/\{platform_path\}/mg,
    popViewInProgress : false,
    viewStack : [],
    animationFlag : 0,
@@ -233,7 +233,7 @@ Ext.define('Genesis.controller.Viewport',
             if (request.status == 200 || request.status == 0)
             {
                console.log("Loaded MainPage Store ...");
-               request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPath)
+               request.responseText = request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPath);
                Ext.StoreMgr.get('MainPageStore').setData(Ext.decode(request.responseText).data);
             }
          }
