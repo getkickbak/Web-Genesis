@@ -148,7 +148,7 @@ Ext.define('Genesis.controller.Viewport',
          'resetview' : 'resetView'
       }
    },
-   mainPageStorePathToken : /\/\{platform_path\}/mg,
+   mainPageStorePathToken : /\{platform_path\}/mg,
    popViewInProgress : false,
    viewStack : [],
    animationFlag : 0,
