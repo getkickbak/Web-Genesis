@@ -233,8 +233,8 @@ Ext.define('Genesis.controller.Viewport',
             if (request.status == 200 || request.status == 0)
             {
                console.log("Loaded MainPage Store ...");
-               request.responseText = request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPath);
-               Ext.StoreMgr.get('MainPageStore').setData(Ext.decode(request.responseText).data);
+               var response = Ext.decode(request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPath));
+               Ext.StoreMgr.get('MainPageStore').setData(response.data);
             }
          }
       }
