@@ -147,7 +147,7 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
    },
    createView : function()
    {
-      if (!this.callParent(arguments))
+      if (!this.callParent(arguments) && (this.getInnerItems().length > 0))
       {
          //
          // Refresh RedeemItem
@@ -157,12 +157,12 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
          return;
       }
 
-      this.getPreRender().push(
+      this.setPreRender([
       {
          flex : 1,
          xtype : 'redeemitem',
          data : this.redeemItem
-      });
+      }]);
       delete this.redeemItem;
    }
 });
