@@ -223,7 +223,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       // Update Background Photo
       bg.setStyle(
       {
-         'background-image' : 'url(' + data.Merchant['alt_photo']['url'] + ')'
+         'background-image' : 'url(' + data.Merchant['alt_photo']['thumbnail_large_url'] + ')'
       });
 
       //
