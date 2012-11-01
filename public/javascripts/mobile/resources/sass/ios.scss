@@ -46,7 +46,6 @@ $include-toolbar-uis : false;
 // Global Vars Theme
 //------------------------------------------------------------------------------
 
-$screen-height: 480px;
 // Icon Reference size
 $icon-size: 57px;
 // Panel Gaps
@@ -62,8 +61,8 @@ $largeFontSize : 0.8em;
 $xlargeFontSize : 1.2em;
 
 // Theme Path
-$theme-path : 'v1';
-$theme-path-rel : '../themes/images/v1';
+$theme-path : 'v1/ios';
+$theme-path-rel : '../themes/images/v1/ios';
 
 // Badges Theme
 $badgePoints-bg-color: darken($GreenEnd, 10%);
@@ -81,7 +80,7 @@ $badgePoints-bg-gradient: $base-gradient;
 @include sencha-tabs;
 @include sencha-toolbar;
 //@include sencha-toolbar-forms;
-@include sencha-indexbar;
+//@include sencha-indexbar;
 @include sencha-list;
 @include sencha-list-paging;
 @include sencha-list-pullrefresh;
@@ -90,6 +89,8 @@ $badgePoints-bg-gradient: $base-gradient;
 @include sencha-form;
 //@include sencha-msgbox;
 @include sencha-loading-spinner;
+//@include sencha-draw;
+//@include sencha-charts;
 
 //------------------------------------------------------------------------------
 // Default Theme Includes and CSS Overrides
@@ -100,7 +101,7 @@ $badgePoints-bg-gradient: $base-gradient;
 {
    body {
       font-size : 114%;
-      background-image : url(/resources/startup/640x920.png) no-repeat;
+      //background-image : url(/resources/startup/640x920.png) no-repeat;
       background-size : contain;
    }
 }
@@ -109,7 +110,7 @@ $badgePoints-bg-gradient: $base-gradient;
 {
    body {
       font-size : 114%;
-      background-image : url(/resources/startup/640x920.png) no-repeat;
+      //background-image : url(/resources/startup/640x920.png) no-repeat;
       background-size : contain;
    }
 }

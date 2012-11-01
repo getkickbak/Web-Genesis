@@ -1,0 +1,15 @@
+//------------------------------------------------------------------------------
+// Default Theme CSS Classes
+//------------------------------------------------------------------------------
+.rouletteBg {
+   background-image : url($theme-path-rel-iphone5 + "/green_roulette_bg" + ".png");
+}
+
+.prizeCheck {
+   .rouletteTable {
+      background-image : url($theme-path-rel-iphone5 + "/roulette2" + ".png");
+   }
+   .rouletteBall {
+      background-image : url($theme-path-rel-iphone5 + "/ball" + ".png");
+   }
+}

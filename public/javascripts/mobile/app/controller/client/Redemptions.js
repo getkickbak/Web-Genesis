@@ -4,7 +4,6 @@ Ext.define('Genesis.controller.client.Redemptions',
    requires : ['Ext.data.Store'],
    statics :
    {
-      clientRedemption_path : '/clientRedemptions'
    },
    xtype : 'clientRedemptionsCntlr',
    controllerType : 'redemption',

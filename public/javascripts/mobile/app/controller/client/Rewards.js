@@ -4,7 +4,6 @@ Ext.define('Genesis.controller.client.Rewards',
    requires : ['Ext.data.Store'],
    statics :
    {
-      clientRewards_path : '/clientRewards'
    },
    xtype : 'clientRewardsCntlr',
    config :
@@ -217,6 +216,10 @@ Ext.define('Genesis.controller.client.Rewards',
       var me = this;
       var vport = me.getViewport();
       var page = me.getPromotion();
+      var photoUrl =
+      {
+      };
+      photoUrl[Genesis.constants._thumbnailAttribPrefix + 'large'] = Genesis.constants.getIconPath('prizewon', 'reward');
 
       me.promoteCount++;
       me.redeemItem = Ext.create('Genesis.model.CustomerReward',
@@ -226,10 +229,7 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             value : 'promotion'
          },
-         'photo' :
-         {
-            'thumbnail_ios_medium' : Genesis.constants.getIconPath('prizewon', 'reward')
-         },
+         'photo' : photoUrl,
          'points' : points,
          'time_limited' : false,
          'quantity_limited' : false,

@@ -119,7 +119,7 @@ Ext.define('Genesis.view.client.Accounts',
          refreshHeightOnUpdate : false,
          variableHeights : false,
          deferEmptyText : false,
-         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(Genesis.constants.defaultIconSize(), 2 * 0.65, 1), 1),
+         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(Genesis.constants.defaultIconSize() + 1, 2 * 0.65, 1), 1),
          loadingText : null,
          deferEmptyText : false,
          emptyText : ' ',
@@ -240,7 +240,7 @@ Ext.define('Genesis.view.client.Accounts',
             },
             getPhoto : function(values)
             {
-               return values.merchant['photo']['thumbnail_ios_small'].url;
+               return values.merchant['photo'][Genesis.constants._thumbnailAttribPrefix + 'small'].url;
             },
             showRewardPoints : function()
             {
@@ -303,7 +303,7 @@ Ext.define('Genesis.view.client.Accounts',
          refreshHeightOnUpdate : false,
          variableHeights : false,
          deferEmptyText : false,
-         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(Genesis.constants.defaultIconSize(), 2 * 0.65, 1), 1),
+         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(Genesis.constants.defaultIconSize() + 1, 2 * 0.65, 1), 1),
          cls : 'venuesList',
          deferEmptyText : false,
          emptyText : ' ',

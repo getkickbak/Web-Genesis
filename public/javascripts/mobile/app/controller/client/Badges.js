@@ -103,11 +103,11 @@ Ext.define('Genesis.controller.client.Badges',
 
          console.debug("Refreshing BadgesPage ...");
          /*
-         for (var i = 0; i < items.length; i++)
-         {
-            items[i].refresh();
-         }
-         */
+          for (var i = 0; i < items.length; i++)
+          {
+          items[i].refresh();
+          }
+          */
       }
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -139,9 +139,9 @@ Ext.define('Genesis.controller.client.Badges',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      
+
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
-      
+
       var customer = viewport.getCustomer();
       var badge = model;
       var rank = badge.get('rank');
@@ -150,6 +150,12 @@ Ext.define('Genesis.controller.client.Badges',
 
       if (rank <= crank)
       {
+         var prefix = Genesis.constants._thumbnailAttribPrefix + 'large';
+         var photoUrl =
+         {
+         };
+         photoUrl[prefix] = Genesis.view.client.Badges.getPhoto(badge.get('type'), prefix);
+
          me.redeemItem = Ext.create('Genesis.model.CustomerReward',
          {
             'title' : badge.get('type').display_value,
@@ -157,10 +163,7 @@ Ext.define('Genesis.controller.client.Badges',
             {
                value : 'promotion'
             },
-            'photo' :
-            {
-               'thumbnail_ios_medium' : Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_large_url')
-            },
+            'photo' : photoUrl,
             //'points' : info['badge_prize_points'],
             'time_limited' : false,
             'quantity_limited' : false,

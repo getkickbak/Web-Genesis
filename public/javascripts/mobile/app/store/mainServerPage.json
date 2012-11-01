@@ -2,24 +2,24 @@
    "data": [
       {
          "name": "Rewards",
-         "photo_url": "resources/themes/images/v1/mainicons/rewards.png",
+         "photo_url": "resources/themes/images/{platform_path}/mainicons/rewards.png",
          "desc": "Rewards",
          "pageCntlr": "server.Rewards",
          "subFeature": "rewards"
       }, {
          "name": "Redemptions",
-         "photo_url": "resources/themes/images/v1/mainicons/redeem.png",
+         "photo_url": "resources/themes/images/{platform_path}/mainicons/redeem.png",
          "desc": "Redemptions",
          "pageCntlr": "server.Redemptions",
          "subFeature": "redemptions"
       }, {
          "name": "Challenges",
-         "photo_url": "resources/themes/images/v1/mainicons/challenges.png",
+         "photo_url": "resources/themes/images/{platform_path}/mainicons/challenges.png",
          "desc": "Challenges",
          "pageCntlr": "server.Challenges"
       }, {
          "name": "Settings",
-         "photo_url": "resources/themes/images/v1/mainicons/settings.png",
+         "photo_url": "resources/themes/images/{platform_path}/mainicons/settings.png",
          "desc": "Settings",
          "route": "serverSettings",
          "pageCntlr": "Settings",

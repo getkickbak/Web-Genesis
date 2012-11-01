@@ -23,6 +23,7 @@
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>KickBak</title>
       <link rel="stylesheet" href="resources/css/ios.css" type="text/css">
+      <link media="screen and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="stylesheet" href="resources/css/iphone5.css" type="text/css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
       directory and include it here -->
       <!--
@@ -59,7 +60,7 @@
                viewport.resetView();
                if (viewport.getLoggedIn())
                {
-                  viewport.redirectTo('main');
+                  viewport.redirectTo('checkin');
                }
                else
                {

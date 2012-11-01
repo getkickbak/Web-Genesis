@@ -16,8 +16,7 @@ Ext.define('Genesis.model.frontend.MainPage',
             rootProperty : 'data'
          },
          type : 'ajax',
-         disableCaching : false,
-         url : Ext.Loader.getPath("Genesis") + "/store/" + ((!merchantMode) ? 'mainClientPage.json' : 'mainServerPage.json')
+         disableCaching : false
       }
    }
 });

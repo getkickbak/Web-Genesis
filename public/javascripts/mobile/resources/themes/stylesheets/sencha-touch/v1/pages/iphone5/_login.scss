@@ -1,0 +1,9 @@
+//------------------------------------------------------------------------------
+// Login Pages
+//------------------------------------------------------------------------------
+.viewport {
+   @include custom-radial-gradient($GreyStart 40%, $GreyEnd 70%, center center, url($theme-path-rel-iphone5 + '/texture.png'));
+}
+.bgImage {
+   @include custom-radial-gradient($BlueStart 50%, $BlueEnd 80%, center center, url($theme-path-rel-iphone5 + '/logohomescreen3.png'));
+}

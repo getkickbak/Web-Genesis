@@ -3,7 +3,6 @@ Ext.define('Genesis.controller.client.Checkins',
    extend : 'Genesis.controller.ControllerBase',
    statics :
    {
-      checkin_path : '/checkin'
    },
    xtype : 'clientcheckinsCntlr',
    config :

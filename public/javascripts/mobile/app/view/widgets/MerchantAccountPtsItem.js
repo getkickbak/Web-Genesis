@@ -117,9 +117,10 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             },
             getPhoto : function(values)
             {
+               var prefix = Genesis.constants._thumbnailAttribPrefix + 'medium';
                values['_badgeType'] = Ext.StoreMgr.get('BadgeStore').getById(values['_customer'].get('badge_id')).get('type');
 
-               return Genesis.view.client.Badges.getPhoto(values['_badgeType'], 'thumbnail_medium_url');
+               return Genesis.view.client.Badges.getPhoto(values['_badgeType'], prefix);
             },
             getTitle : function(values)
             {

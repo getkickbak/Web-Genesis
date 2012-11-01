@@ -542,6 +542,7 @@ Ext.define('Genesis.controller.MainPage',
          },
          params : Ext.apply(params,
          {
+            device_pixel_ratio : window.devicePixelRatio,
             device : Ext.encode(Genesis.constants.device)
          }),
          callback : function(records, operation)
@@ -709,6 +710,7 @@ Ext.define('Genesis.controller.MainPage',
          },
          params :
          {
+            device_pixel_ratio : window.devicePixelRatio,
             device : Ext.encode(Genesis.constants.device)
          },
          callback : function(record, operation)
@@ -721,7 +723,7 @@ Ext.define('Genesis.controller.MainPage',
 
                me.persistLoadStores(Ext.emptyFn);
                viewport.fireEvent('completeRefreshCSRF');
-               
+
                // Return to previous Venue
                if (db['last_check_in'])
                {
@@ -783,6 +785,7 @@ Ext.define('Genesis.controller.MainPage',
             },
             params :
             {
+               device_pixel_ratio : window.devicePixelRatio,
                user : Ext.encode(params),
                device : Ext.encode(Genesis.constants.device)
             },
@@ -811,6 +814,7 @@ Ext.define('Genesis.controller.MainPage',
       var me = this;
       var params =
       {
+         device_pixel_ratio : window.devicePixelRatio,
          device : Ext.encode(Genesis.constants.device)
       };
 
