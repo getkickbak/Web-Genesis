@@ -394,7 +394,7 @@ Ext.define('Genesis.controller.client.Merchants',
       var type = Ext.StoreMgr.get('BadgeStore').getById(crecord.get('badge_id')).get('type');
 
       prizeBtn.setIconCls('prizeicon');
-      prizeBtn.setIcon(Genesis.view.client.Badges.getPhoto(type, Genesis.constants._thumbnailAttribPrefix + 'small'));
+      prizeBtn.setIcon(Genesis.view.client.Badges.getPhoto(type, 'thumbnail_small_url'));
       }
       */
       // Update TitleBar
