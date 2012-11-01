@@ -19,7 +19,12 @@ Ext.define('Genesis.view.widgets.MerchantDetailsItem',
          {
             getPhoto : function(values)
             {
-               return values.Merchant['photo'][Genesis.constants._thumbnailAttribPrefix + 'medium'].url;
+               var os = '_ios_';
+               if (Ext.os.is('Android'))
+               {
+                  os = '_android_';
+               }
+               return values.Merchant['photo']['thumbnail' + os + 'medium'].url;
             }
          })
       },
@@ -61,12 +66,12 @@ Ext.define('Genesis.view.widgets.MerchantDetailsItem',
    },
    updateImage : function(newImage, oldImage)
    {
-      if(newImage)
+      if (newImage)
       {
          this.add(newImage);
       }
 
-      if(oldImage)
+      if (oldImage)
       {
          this.remove(oldImage);
       }
@@ -79,38 +84,38 @@ Ext.define('Genesis.view.widgets.MerchantDetailsItem',
    },
    updateAddress : function(newAddress, oldAddress)
    {
-      if(newAddress)
+      if (newAddress)
       {
          this.add(newAddress);
       }
 
-      if(oldAddress)
+      if (oldAddress)
       {
          this.remove(oldAddress);
       }
    },
    updateRecord : function(newRecord)
    {
-      if(!newRecord)
+      if (!newRecord)
       {
          return;
       }
 
       var me = this, dataview = me.config.dataview, data = dataview.prepareData(newRecord.getData(true), dataview.getStore().indexOf(newRecord), newRecord), items = me.getItems(), item = items.first(), dataMap = me.getDataMap(), componentName, component, setterMap, setterName;
 
-      if(!item)
+      if (!item)
       {
          return;
       }
-      for(componentName in dataMap)
+      for (componentName in dataMap)
       {
          setterMap = dataMap[componentName];
          component = me[componentName]();
-         if(component)
+         if (component)
          {
-            for(setterName in setterMap)
+            for (setterName in setterMap)
             {
-               if(component[setterName])
+               if (component[setterName])
                {
                   switch (setterMap[setterName])
                   {
