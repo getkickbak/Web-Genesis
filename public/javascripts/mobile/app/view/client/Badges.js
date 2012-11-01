@@ -173,7 +173,7 @@ Ext.define('Genesis.view.client.Badges',
                break;
             }
             default:
-               url = (Genesis.constants.photoSite + type[size]);
+               url = type[size];
                break;
          }
          return url;
