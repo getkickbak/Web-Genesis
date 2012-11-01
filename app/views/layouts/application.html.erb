@@ -21,10 +21,6 @@
       <link rel="stylesheet" href="/javascripts/desktop/css/common-ie8.css"/>
       <![endif]-->
       <%= yield :link %>
-      <script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-1.7.2.min.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-ui-1.8.20.custom.min.js"></script>
-      <script type="text/javascript" src="/javascripts/desktop/css/twitter-bootstrap-c52368d/bootstrap/js/bootstrap.min.js"></script>
-      <%= yield :script %>
       <%= csrf_meta_tag %>
    </head>
    <body class="homepage">
@@ -63,5 +59,12 @@
             </div>
          </div>
       </div>
+      <!-- Le javascript
+      ================================================== -->
+      <!-- Placed at the end of the document so the pages load faster -->
+      <script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-1.7.2.min.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-ui-1.8.20.custom.min.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/css/twitter-bootstrap-c52368d/bootstrap/js/bootstrap.min.js"></script>
+      <%= yield :script %>
    </body>
 </html>
