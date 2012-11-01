@@ -216,10 +216,11 @@ Ext.define('Genesis.controller.client.Rewards',
       var me = this;
       var vport = me.getViewport();
       var page = me.getPromotion();
+      var prefix = Genesis.constants._thumbnailAttribPrefix + 'large';
       var photoUrl =
       {
       };
-      photoUrl[Genesis.constants._thumbnailAttribPrefix + 'large'] = Genesis.constants.getIconPath('prizewon', 'reward');
+      photoUrl[prefix] = Genesis.constants.getIconPath('prizewon', 'reward');
 
       me.promoteCount++;
       me.redeemItem = Ext.create('Genesis.model.CustomerReward',

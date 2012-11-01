@@ -270,7 +270,7 @@ Ext.define('Genesis.controller.client.Prizes',
    updatingBadgeOnFacebook : function(earnprize)
    {
       var me = this;
-      var badgeURL = earnprize.get('photo')[Genesis.constants._thumbnailAttribPrefix + 'medium'];
+      var badgeURL = earnprize.get('photo')['thumbnail_medium_url'];
       try
       {
          var viewport = me.getViewPortCntlr();

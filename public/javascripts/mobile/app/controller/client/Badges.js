@@ -154,7 +154,7 @@ Ext.define('Genesis.controller.client.Badges',
          var photoUrl =
          {
          };
-         photoUrl[prefix] = Genesis.view.client.Badges.getPhoto(badge.get('type'), prefix);
+         photoUrl[prefix] = Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_large_url');
 
          me.redeemItem = Ext.create('Genesis.model.CustomerReward',
          {
