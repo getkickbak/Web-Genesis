@@ -99,10 +99,11 @@ Ext.define('Genesis.controller.server.Challenges',
          if (qrcode[0])
          {
             var controller = me.getApplication().getController('server.Prizes');
+            var prefix = Genesis.constants._thumbnailAttribPrefix + 'large';
             var photoUrl =
             {
             };
-            photoUrl[Genesis.constants._thumbnailAttribPrefix + 'large'] =
+            photoUrl[prefix] =
             {
                url : qrcode[0],
                height : qrcode[1] * 1.25,
