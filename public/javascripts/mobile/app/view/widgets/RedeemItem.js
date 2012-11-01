@@ -31,10 +31,10 @@ Ext.define('Genesis.view.widgets.RedeemItem',
          cls : 'itemPhoto',
          tpl : Ext.create('Ext.XTemplate',
          // @formatter:off
-            '<div class="photoVCenterHelper"></div>',
-            '<div class="photoVCenterContent"><img {[this.getPhoto(values)]} /></div>',
-            '<div class="itemPoints {[this.isVisible(values)]}">{[this.getPoints(values)]}</div>',
-            // @formatter:on
+         '<div class="photoVCenterHelper"></div>',
+         '<div class="photoVCenterContent"><img {[this.getPhoto(values)]} /></div>',
+         '<div class="itemPoints {[this.isVisible(values)]}">{[this.getPoints(values)]}</div>',
+         // @formatter:on
          {
             getPhoto : function(values)
             {
