@@ -247,7 +247,7 @@ Ext.define('Genesis.controller.client.Prizes',
             link : link,
             caption : link,
             description : desc,
-            picture : venue.getMerchant().get('photo')[Genesis.constants._thumbnailAttribPrefix + 'medium'].url,
+            picture : venue.getMerchant().get('photo')['thumbnail_medium_url'],
             message : message
          }, function(response)
          {

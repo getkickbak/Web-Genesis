@@ -110,7 +110,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
             },
             getPhoto : function(values)
             {
-               return values.getMerchant().get('photo')['thumbnail_medium_url'].url;
+               return values.getMerchant().get('photo')['thumbnail_medium_url'];
             },
             getName : function(values)
             {

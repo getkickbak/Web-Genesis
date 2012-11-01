@@ -240,7 +240,7 @@ Ext.define('Genesis.view.client.Accounts',
             },
             getPhoto : function(values)
             {
-               return values.merchant['photo']['thumbnail_medium_url'].url;
+               return values.Merchant['photo']['thumbnail_medium_url'];
             },
             showRewardPoints : function()
             {
