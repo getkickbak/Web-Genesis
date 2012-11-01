@@ -38,12 +38,8 @@ Ext.define('Genesis.view.widgets.RedeemItem',
          {
             getPhoto : function(values)
             {
-               var os = '_ios_';
-               if (Ext.os.is('Android'))
-               {
-                  os = '_android_';
-               }
-               var photo = Genesis.view.widgets.RedeemItem.getPhoto(values['type']) || values['photo']['thumbnail' + os + 'large'];
+               var prefix = Genesis.constants._thumbnailAttribPrefix + 'large';
+               var photo = Genesis.view.widgets.RedeemItem.getPhoto(values['type']) || values['photo'][prefix];
                if (Ext.isString(photo))
                {
                   return 'src="' + photo + '"';
@@ -114,12 +110,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
             },
             getPhoto : function(values)
             {
-               var os = '_ios_';
-               if (Ext.os.is('Android'))
-               {
-                  os = '_android_';
-               }
-               return values.getMerchant().get('photo')['thumbnail' + os + 'medium'].url;
+               return values.getMerchant().get('photo')['thumbnail_medium_url'].url;
             },
             getName : function(values)
             {

@@ -119,12 +119,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
          {
             getPhoto : function(values)
             {
-               var os = '_ios_';
-               if (Ext.os.is('Android'))
-               {
-                  os = '_android_';
-               }
-               return values.merchant['photo']['thumbnail' + os + 'medium'].url;
+               return values.merchant['photo']['thumbnail_medium_url'].url;
             },
             getAddress : function(values)
             {

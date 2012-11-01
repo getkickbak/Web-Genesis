@@ -19,12 +19,7 @@ Ext.define('Genesis.view.widgets.MerchantDetailsItem',
          {
             getPhoto : function(values)
             {
-               var os = '_ios_';
-               if (Ext.os.is('Android'))
-               {
-                  os = '_android_';
-               }
-               return values.Merchant['photo']['thumbnail' + os + 'medium'].url;
+               return values.Merchant['photo']['thumbnail_medium_url'].url;
             }
          })
       },
