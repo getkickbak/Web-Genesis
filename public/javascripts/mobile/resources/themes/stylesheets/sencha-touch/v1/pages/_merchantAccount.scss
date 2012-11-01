@@ -158,16 +158,18 @@
 //------------------------------------------------------------------------------
 // iOS
 //------------------------------------------------------------------------------
-.x-ios .merchantMain {
-   .prizesWonPanel, .badgeProgressPanel {
-      .prizeswonphoto, .badgephoto {
-         .itemDesc {
-            line-height:2.25em;
+.x-ios, .x-desktop {
+   .merchantMain {
+      .prizesWonPanel, .badgeProgressPanel {
+         .prizeswonphoto, .badgephoto {
+            .itemDesc {
+               line-height:2.25em;
+            }
          }
-      }
-      .badgephoto {
-         .itemDesc {
-            padding:3.15em 0 1.15em 0 !important;
+         .badgephoto {
+            .itemDesc {
+               padding:3.15em 0 1.15em 0 !important;
+            }
          }
       }
    }

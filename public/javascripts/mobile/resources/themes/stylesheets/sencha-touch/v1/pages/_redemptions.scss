@@ -141,12 +141,14 @@
 //------------------------------------------------------------------------------
 // iOS
 //-------------------------------------------------------------------------------
-.x-ios .redeemItem {
-   .itemPhoto {
-      .x-innerhtml {
-         img {
-            width : $icon-size*3;
-            height :$icon-size*3;
+.x-ios, .x-desktop {
+   .redeemItem {
+      .itemPhoto {
+         .x-innerhtml {
+            img {
+               width : $icon-size*3;
+               height :$icon-size*3;
+            }
          }
       }
    }
