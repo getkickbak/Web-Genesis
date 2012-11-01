@@ -30,7 +30,7 @@ node :thumbnail_medium_url do |u|
    	end
   end	
 end
-node :thumbnail_largel_url do |u|
+node :thumbnail_large_url do |u|
   case session[:user_agent]
   when :iphone
  	u.thumbnail_ios_large.url

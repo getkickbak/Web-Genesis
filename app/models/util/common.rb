@@ -23,11 +23,19 @@ class Common
     "users/#{user_id}/vouchers/#{filename}"
   end
 
+  def self.generate_merchant_file_path(merchant_id, filename)
+    "merchants/#{merchant_id}/#{filename}"
+  end
+  
+  def self.generate_full_merchant_file_path(merchant_id, filename)
+    get_file_host+generate_merchant_file_path(merchant_id, filename)
+  end
+  
   def self.generate_merchant_photo_file_path(merchant_id, filename)
     "merchants/#{merchant_id}/#{filename}"
   end
 
-  def self.generate_full_merchant_photo_file_path(merchant_id,filename)
+  def self.generate_full_merchant_photo_file_path(merchant_id, filename)
     get_photo_host+generate_merchant_photo_file_path(merchant_id, filename)
   end
 
@@ -158,11 +166,11 @@ class Common
         badge_types << badge.eager_load_type
       end
     end
-    populate_badge_type_images(user_agent, resolution, merchant.custom_badges, badge_types)
+    populate_badge_type_images(merchant, user_agent, resolution, merchant.custom_badges, badge_types)
     merchant.badges.sort_by { |b| b.rank }
   end
 
-  def self.populate_badge_type_images(user_agent, resolution, custom_badges, badge_types)
+  def self.populate_badge_type_images(merchant, user_agent, resolution, custom_badges, badge_types)
     type_ids = []
     badge_type_id_to_type = {}
     badge_types.each do |badge_type|
@@ -179,9 +187,9 @@ class Common
       badge_type_images = BadgeTypeImage.all(:badge_type_id => type_ids)
     end
     badge_type_images.each do |badge_type_image|
-      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_small_url = "#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:small]}/#{badge_type_image.thumbnail_url}"
-      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = "#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:medium]}/#{badge_type_image.thumbnail_url}"
-      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = "#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:large]}/#{badge_type_image.thumbnail_url}"
+      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_small_url = generate_full_merchant_file_path(merchant.id, "#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:small]}/#{badge_type_image.thumbnail_url}")
+      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = generate_full_merchant_file_path(merchant.id, "#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:medium]}/#{badge_type_image.thumbnail_url}")
+      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = generate_full_merchant_file_path(merchant.id, "#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:large]}/#{badge_type_image.thumbnail_url}")
     end
   end
 
