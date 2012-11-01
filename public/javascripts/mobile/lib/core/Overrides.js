@@ -22,7 +22,7 @@ Genesis.constants =
    _iconSize : 0,
    defaultFontSize : (function()
    {
-      return Math.floor(((16 * 1.14 * Math.min(1.0, window.devicePixelRatio)) || (16 * 1.14)));
+      return Math[(Ext.os.is('Android')) ? 'ceil' : 'floor'](((16 * 1.14 * Math.min(1.0, window.devicePixelRatio)) || (16 * 1.14)));
    })(),
    defaultIconSize : function()
    {
@@ -732,7 +732,7 @@ Genesis.fn =
    },
    calcPx : function(em, fontsize)
    {
-      return Math.ceil(((em / fontsize) * Genesis.constants.defaultFontSize));
+      return Math[(Ext.os.is('Android')) ? 'ceil' : 'floor'](((em / fontsize) * Genesis.constants.defaultFontSize));
    },
    calcPxEm : function(px, em, fontsize)
    {
