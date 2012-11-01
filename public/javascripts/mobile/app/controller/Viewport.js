@@ -296,7 +296,7 @@ Ext.define('Genesis.controller.Viewport',
       {
          var venue = me.getVenue();
          var merchant = venue.getMerchant();
-         var photoUrl = merchant.get('photo')[Genesis.constants._thumbnailAttribPrefix + 'medium'].url;
+         var photoUrl = merchant.get('photo')['thumbnail_medium_url'].url;
 
          console.log('Posting to Facebook ...');
          FB.api('/me/feed', 'post',
