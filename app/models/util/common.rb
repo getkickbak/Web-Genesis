@@ -187,9 +187,16 @@ class Common
       badge_type_images = BadgeTypeImage.all(:badge_type_id => type_ids)
     end
     badge_type_images.each do |badge_type_image|
-      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_small_url = generate_full_merchant_file_path(merchant.id, "#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:small]}/#{badge_type_image.thumbnail_url}")
-      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = generate_full_merchant_file_path(merchant.id, "#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:medium]}/#{badge_type_image.thumbnail_url}")
-      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = generate_full_merchant_file_path(merchant.id, "#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:large]}/#{badge_type_image.thumbnail_url}")
+      if customer_badges
+        # To do
+        #badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_small_url = generate_full_merchant_file_path(merchant.id, "#{MerchantBadgeTypeImage.thumbnail_url_path[user_agent][resolution][:small]}/#{badge_type_image.thumbnail_url}")
+        #badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = generate_full_merchant_file_path(merchant.id, "#{MerchantBadgeTypeImage.thumbnail_url_path[user_agent][resolution][:medium]}/#{badge_type_image.thumbnail_url}")
+        #badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = generate_full_merchant_file_path(merchant.id, "#{MerchantBadgeTypeImage.thumbnail_url_path[user_agent][resolution][:large]}/#{badge_type_image.thumbnail_url}")
+      else
+        badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_small_url = "#{get_file_host}#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:small]}/#{badge_type_image.thumbnail_url}"
+        badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = "#{get_file_host}#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:medium]}/#{badge_type_image.thumbnail_url}"
+        badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = "#{get_file_host}#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:large]}/#{badge_type_image.thumbnail_url}"
+      end
     end
   end
 
