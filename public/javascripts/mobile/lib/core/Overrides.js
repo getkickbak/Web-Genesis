@@ -732,7 +732,7 @@ Genesis.fn =
    },
    calcPx : function(em, fontsize)
    {
-      return Math.floor(((em / fontsize) * Genesis.constants.defaultFontSize));
+      return Math.ceil(((em / fontsize) * Genesis.constants.defaultFontSize));
    },
    calcPxEm : function(px, em, fontsize)
    {
