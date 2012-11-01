@@ -31,9 +31,9 @@ class Api::V1::RegistrationsController < Api::V1::BaseApplicationController
           device_info = JSON.parse(params[:device], { :symbolize_names => true })
           Common.register_user_device(@user, device_info)
         end
-        render :template => '/api/v1/tokens/create' 
         session[:user_agent] = Common.get_user_agent(request.env['HTTP_USER_AGENT'])    
         session[:resolution] = Common.get_thumbail_resolution(session[:user_agent], params[:device_pixel_ratio].to_f)
+        render :template => '/api/v1/tokens/create' 
       end
     rescue DataMapper::SaveFailureError => e
       logger.error("Exception: " + e.resource.errors.inspect)
