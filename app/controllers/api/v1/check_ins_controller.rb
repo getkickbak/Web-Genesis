@@ -68,7 +68,7 @@ class Api::V1::CheckInsController < Api::V1::BaseApplicationController
     
     Time.zone = @venue.time_zone
     
-    @badges = Common.populate_badges(@venue.merchant, request.env['HTTP_USER_AGENT'])
+    @badges = Common.populate_badges(@venue.merchant, session[:user_agent] || :iphone, session[:resolution] || :mxhdpi)
        
     begin
       CheckIn.transaction do

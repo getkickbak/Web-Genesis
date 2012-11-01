@@ -129,8 +129,9 @@ module Business
             current_merchant.add_credit_card(credit_card)
             #current_merchant.payment_account_id = result.params['rbAccountId']
             current_merchant.save
+            flash[:notice] = t('business.api.credit_cards.create_success')
             respond_to do |format|
-              format.html { redirect_to(credit_cards_path, :notice => 'Credit card was successfully added.') }
+              format.html { redirect_to(credit_cards_path) }
             end
           else
             respond_to do |format|
@@ -213,8 +214,9 @@ module Business
 =end          
           if result.success?
             @credit_card.update(:card_token => result[:trnOrderNumber])
+            flash[:notice] = t('business.api.credit_cards.update_success')
             respond_to do |format|
-              format.html { redirect_to(credit_card_path, :notice => 'Credit card was successfully added.') }
+              format.html { redirect_to(credit_card_path) }
             end
           else
             respond_to do |format|

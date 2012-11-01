@@ -249,6 +249,62 @@ namespace :db do
         APP_PROP["AMAZON_PHOTOS_BUCKET"],
         :copy_acl => true
       )
+      thumb_filenames = ["thumbnail_ios_large_thai.jpg","thumbnail_ios_large_chicken.jpg","thumbnail_ios_large_burrito.jpg","thumbnail_ios_large_salad.jpg","thumbnail_ios_large_focaccia.jpg"]
+      thumb_filename = thumb_filenames[file_idx] 
+      AWS::S3::S3Object.copy(
+        thumb_filename,
+        "merchants/#{merchant.id}/#{thumb_filename}", 
+        APP_PROP["AMAZON_PHOTOS_BUCKET"],
+        :copy_acl => true
+      )
+      thumb_filenames = ["thumbnail_android_lhdpi_small_thai.jpg","thumbnail_android_lhdpi_small_chicken.jpg","thumbnail_android_lhdpi_small_burrito.jpg","thumbnail_android_lhdpi_small_salad.jpg","thumbnail_android_lhdpi_small_focaccia.jpg"]
+      thumb_filename = thumb_filenames[file_idx] 
+      AWS::S3::S3Object.copy(
+        thumb_filename,
+        "merchants/#{merchant.id}/#{thumb_filename}", 
+        APP_PROP["AMAZON_PHOTOS_BUCKET"],
+        :copy_acl => true
+      )
+      thumb_filenames = ["thumbnail_android_lhdpi_medium_thai.jpg","thumbnail_android_lhdpi_medium_chicken.jpg","thumbnail_android_lhdpi_medium_burrito.jpg","thumbnail_android_lhdpi_medium_salad.jpg","thumbnail_android_lhdpi_medium_focaccia.jpg"]
+      thumb_filename = thumb_filenames[file_idx] 
+      AWS::S3::S3Object.copy(
+        thumb_filename,
+        "merchants/#{merchant.id}/#{thumb_filename}", 
+        APP_PROP["AMAZON_PHOTOS_BUCKET"],
+        :copy_acl => true
+      )
+      thumb_filenames = ["thumbnail_android_lhdpi_large_thai.jpg","thumbnail_android_lhdpi_large_chicken.jpg","thumbnail_android_lhdpi_large_burrito.jpg","thumbnail_android_lhdpi_large_salad.jpg","thumbnail_android_lhdpi_large_focaccia.jpg"]
+      thumb_filename = thumb_filenames[file_idx] 
+      AWS::S3::S3Object.copy(
+        thumb_filename,
+        "merchants/#{merchant.id}/#{thumb_filename}", 
+        APP_PROP["AMAZON_PHOTOS_BUCKET"],
+        :copy_acl => true
+      )
+      thumb_filenames = ["thumbnail_android_mxhdpi_small_thai.jpg","thumbnail_android_mxhdpi_small_chicken.jpg","thumbnail_android_mxhdpi_small_burrito.jpg","thumbnail_android_mxhdpi_small_salad.jpg","thumbnail_android_mxhdpi_small_focaccia.jpg"]
+      thumb_filename = thumb_filenames[file_idx] 
+      AWS::S3::S3Object.copy(
+        thumb_filename,
+        "merchants/#{merchant.id}/#{thumb_filename}", 
+        APP_PROP["AMAZON_PHOTOS_BUCKET"],
+        :copy_acl => true
+      )
+      thumb_filenames = ["thumbnail_android_mxhdpi_medium_thai.jpg","thumbnail_android_mxhdpi_medium_chicken.jpg","thumbnail_android_mxhdpi_medium_burrito.jpg","thumbnail_android_mxhdpi_medium_salad.jpg","thumbnail_android_mxhdpi_medium_focaccia.jpg"]
+      thumb_filename = thumb_filenames[file_idx] 
+      AWS::S3::S3Object.copy(
+        thumb_filename,
+        "merchants/#{merchant.id}/#{thumb_filename}", 
+        APP_PROP["AMAZON_PHOTOS_BUCKET"],
+        :copy_acl => true
+      )
+      thumb_filenames = ["thumbnail_android_mxhdpi_large_thai.jpg","thumbnail_android_mxhdpi_large_chicken.jpg","thumbnail_android_mxhdpi_large_burrito.jpg","thumbnail_android_mxhdpi_large_salad.jpg","thumbnail_android_mxhdpi_large_focaccia.jpg"]
+      thumb_filename = thumb_filenames[file_idx] 
+      AWS::S3::S3Object.copy(
+        thumb_filename,
+        "merchants/#{merchant.id}/#{thumb_filename}", 
+        APP_PROP["AMAZON_PHOTOS_BUCKET"],
+        :copy_acl => true
+      )
       DataMapper.repository(:default).adapter.execute(
           "UPDATE merchants SET photo = ?, alt_photo = ? WHERE id = ?", filename, filename, merchant.id
       )

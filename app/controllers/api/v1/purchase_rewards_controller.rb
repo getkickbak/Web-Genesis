@@ -146,7 +146,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       return
     end
 
-    @badges = Common.populate_badges(@venue.merchant, request.env['HTTP_USER_AGENT'])
+    @badges = Common.populate_badges(@venue.merchant, session[:user_agent] || :iphone, session[:resolution] || :mxhdpi)
 
     Time.zone = @venue.time_zone
     begin

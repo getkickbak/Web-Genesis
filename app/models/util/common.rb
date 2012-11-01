@@ -48,6 +48,32 @@ class Common
     return true
   end
 
+  def self.get_user_agent(user_agent)
+    case user_agent
+    when /iPhone/
+      agent = :iphone
+    when /Android/
+      agent = :android
+    else
+      agent = :iphone  
+    end  
+  end
+  
+  def self.get_thumbail_resolution(agent, device_pixel_ratio)
+    case agent
+    when :iphone
+      if device_pixel_ratio == 1 || device_pixel_ratio == 2
+        return :mxhdpi
+      end
+    when :android
+      if device_pixel_ratio < 1 || device_pixel_ratio == 1.5
+        return :lhdpi
+      elsif device_pixel_ratio == 1 || device_pixel_ratio == 2
+        return :mxhdpi
+      end
+    end
+  end
+  
   def self.register_user_device(user, device_info)
     device = UserDevice.first(:user => user)
     if device.nil?
@@ -109,7 +135,7 @@ class Common
     return reward
   end
 
-  def self.populate_badges(merchant, user_agent)
+  def self.populate_badges(merchant, user_agent, resolution)
     badges = merchant.badges
     if merchant.custom_badges
       badge_types = []
@@ -132,11 +158,11 @@ class Common
         badge_types << badge.eager_load_type
       end
     end
-    populate_badge_type_images(user_agent, merchant.custom_badges, badge_types)
+    populate_badge_type_images(user_agent, resolution, merchant.custom_badges, badge_types)
     merchant.badges.sort_by { |b| b.rank }
   end
 
-  def self.populate_badge_type_images(user_agent, custom_badges, badge_types)
+  def self.populate_badge_type_images(user_agent, resolution, custom_badges, badge_types)
     type_ids = []
     badge_type_id_to_type = {}
     badge_types.each do |badge_type|
@@ -146,23 +172,16 @@ class Common
       type_ids << badge_type.id
       badge_type_id_to_type[badge_type.id] = badge_type
     end
-    case user_agent
-    when /iPhone/
-      agent = :iphone
-    when /Android/
-      agent = :android
-    else
-      agent = :iphone
-    end
+   
     if custom_badges
-      badge_type_images = MerchantBadgeTypeImage.all(:merchant_badge_type_id => type_ids, :user_agent => agent)
+      badge_type_images = MerchantBadgeTypeImage.all(:merchant_badge_type_id => type_ids)
     else
-      badge_type_images = BadgeTypeImage.all(:badge_type_id => type_ids, :user_agent => agent)
+      badge_type_images = BadgeTypeImage.all(:badge_type_id => type_ids)
     end
     badge_type_images.each do |badge_type_image|
-      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_small_url = badge_type_image.thumbnail_small_url
-      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = badge_type_image.thumbnail_medium_url
-      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = badge_type_image.thumbnail_large_url
+      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_small_url = "#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:small]}/#{badge_type_image.thumbnail_url}"
+      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_medium_url = "#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:medium]}/#{badge_type_image.thumbnail_url}"
+      badge_type_id_to_type[badge_type_image.badge_type_id].thumbnail_large_url = "#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:large]}/#{badge_type_image.thumbnail_url}"
     end
   end
 

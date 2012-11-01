@@ -424,10 +424,10 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           @encrypted_data = "#{@venue.merchant.id}$#{cipher.enc(data)}"
           @subject = t("mailer.email_subject_referral_challenge") % [@venue.name]
           referral_challenge = ReferralChallenge.new(current_user, @venue, @challenge)
-          case request.env['HTTP_USER_AGENT']
-          when /iPhone/
+          case session[:user_agent]
+          when :iphone
             @body = referral_challenge.render_html
-          when /Android/
+          when :android
             @body = referral_challenge.render_simple_html
           end    
           render :template => '/api/v1/challenges/start'

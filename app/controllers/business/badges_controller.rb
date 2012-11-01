@@ -6,7 +6,7 @@ module Business
     def index
       authorize! :read, Badge
      
-      @badges = Common.populate_badges(current_merchant, request.env['HTTP_USER_AGENT'])  
+      @badges = Common.populate_badges(current_merchant, :iphone, :mxhdpi)  
 
       respond_to do |format|
         format.html # index.html.erb
@@ -51,14 +51,14 @@ module Business
               end
             else
               respond_to do |format|
-                format.html { redirect_to badges_path(:alert => t("business.badges.too_few_custom_badges")) }
+                format.html { redirect_to badges_path(:error => t("business.badges.too_few_custom_badges")) }
               #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
               #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
               end
             end
           else
             respond_to do |format|
-              format.html { redirect_to badges_path(:alert => t("business.badges.not_in_custom_badge_mode")) }
+              format.html { redirect_to badges_path(:error => t("business.badges.not_in_custom_badge_mode")) }
             #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
             #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
             end
@@ -66,9 +66,9 @@ module Business
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
-        flash[:alert] = t("business.badges.create_custom_badges_failure")
+        flash[:error] = t("business.badges.create_custom_badges_failure")
         @merchant = current_merchant
-        @merchant.badges = Common.populate_badges(current_merchant, request.env['HTTP_USER_AGENT'])
+        @merchant.badges = Common.populate_badges(current_merchant, :iphone, :mxhdpi)
         respond_to do |format|
           format.html { render :action => "index" }
           #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
@@ -81,7 +81,7 @@ module Business
       authorize! :update, Badge
             
       @merchant = current_merchant
-      @merchant.badges = Common.populate_badges(current_merchant, request.env['HTTP_USER_AGENT'])  
+      @merchant.badges = Common.populate_badges(current_merchant, :iphone, :mxhdpi)  
 
       respond_to do |format|
         format.html # index.html.erb
@@ -93,7 +93,7 @@ module Business
       authorize! :update, Badge
       
       @merchant = current_merchant
-      @merchant.badges = Common.populate_badges(current_merchant, request.env['HTTP_USER_AGENT'])
+      @merchant.badges = Common.populate_badges(current_merchant, :iphone, :mxhdpi)
       
       begin
         Badge.transaction do

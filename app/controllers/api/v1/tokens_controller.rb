@@ -49,6 +49,8 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
             Common.register_user_device(@user, device_info)
           end
           render :template => '/api/v1/tokens/create'
+          session[:user_agent] = Common.get_user_agent(request.env['HTTP_USER_AGENT'])
+          session[:resolution] = Common.get_thumbail_resolution(session[:user_agent], params[:devicePixelRatio])
         end
       end
     rescue DataMapper::SaveFailureError => e
@@ -128,6 +130,8 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
           Common.register_user_device(@user, device_info)
         end
         render :template => '/api/v1/tokens/create'
+        session[:user_agent] = Common::get_user_agent(request.env['HTTP_USER_AGENT'])
+        session[:resolution] = Common::get_thumbail_resolution(session[:user_agent], params[:device_pixel_ratio])
       end
     rescue DataMapper::SaveFailureError => e
       logger.error("Exception: " + e.resource.errors.inspect)

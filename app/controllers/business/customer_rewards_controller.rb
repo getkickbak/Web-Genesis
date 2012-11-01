@@ -61,7 +61,7 @@ module Business
           end
           CustomerReward.create(current_merchant, type, params[:customer_reward], venues)
           respond_to do |format|
-            format.html { redirect_to(customer_rewards_path, :notice => t("business.customer_rewards.create_success")) }
+            format.html { redirect_to({:action => "index"}, {:notice => t("business.customer_rewards.create_success")}) }
             #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
             #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
           end

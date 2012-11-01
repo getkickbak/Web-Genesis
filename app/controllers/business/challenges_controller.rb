@@ -57,6 +57,22 @@ module Business
 
       allowed = true
       type = ChallengeType.get(params[:challenge][:type_id])
+      if type.nil?    
+        flash[:error] = t("business.challenges.type_missing")
+        @challenge = Challenge.new
+        @available_challenge_types = get_available_challenge_types(nil)
+        @data = @challenge.data
+        @venue_ids = []
+        current_merchant.venues.each do |venue|
+          @venue_ids << venue.id
+        end
+        respond_to do |format|
+          format.html { render :action => "new" }
+          #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
+          #format.json { render :json => { :success => false } }
+        end
+        return
+      end
       if type.value != 'custom' && type.value != 'menu'
         challenges = Challenge.all(:merchant => current_merchant)
         challenges.each do |challenge|
@@ -73,21 +89,17 @@ module Business
 
       begin
         Challenge.transaction do
-          if type.value == 'referral'
-            params[:challenge][:data] = params[:challenge][:referral_data]  
-          end
+          (params[:challenge][:data] = params[:challenge][:referral_data]) if type.value == 'referral'  
+          (params[:challenge][:description] = ((t "challenge.type.menu.description") % [params[:challenge][:name]])) if type.value == 'menu'
           params[:challenge][:venue_ids].delete("")
           if params[:challenge][:venue_ids].length > 0
             venues = Venue.all(:conditions => ["id IN ?", params[:challenge][:venue_ids]])
           else
-            venues = []
-          end
-          if type.value == 'menu'  
-            params[:challenge][:description] = ((t "challenge.type.menu.description") % [params[:challenge][:name]])
+            venues = []  
           end
           @challenge = Challenge.create(current_merchant, type, params[:challenge], venues)
           respond_to do |format|
-            format.html { redirect_to(challenges_path, :notice => t("business.challenges.create_success")) }
+            format.html { redirect_to({:action => "index"}, {:notice => t("business.challenges.create_success")}) }
           #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
           #format.json { render :json => { :success => true, :data => @deal, :total => 1 } }
           end
@@ -140,6 +152,21 @@ module Business
 
       allowed = true
       type = ChallengeType.get(params[:challenge][:type_id])
+      if type.nil?
+        flash[:error] = t("business.challenges.type_missing")
+        @available_challenge_types = get_available_challenge_types(nil)
+        @data = @challenge.data
+        @venue_ids = []
+        current_merchant.venues.each do |venue|
+          @venue_ids << venue.id
+        end
+        respond_to do |format|
+          format.html { render :action => "edit" }
+          #format.xml  { render :xml => @order.errors, :status => :unprocessable_entity }
+          #format.json { render :json => { :success => false } }
+        end
+        return
+      end
       if type.value != 'custom'
         challenges = Challenge.all(:merchant => current_merchant)
         challenges.each do |challenge|
@@ -156,17 +183,13 @@ module Business
 
       begin
         Challenge.transaction do
-          if type.value == 'referral'
-            params[:challenge][:data] = params[:challenge][:referral_data]  
-          end
+          (params[:challenge][:data] = params[:challenge][:referral_data]) if type.value == 'referral'  
+          (params[:challenge][:description] = ((t "challenge.type.menu.description") % [params[:challenge][:name]])) if type.value == 'menu'
           params[:challenge][:venue_ids].delete("")
           if params[:challenge][:venue_ids].length > 0
             venues = Venue.all(:conditions => ["id IN ?", params[:challenge][:venue_ids]])
           else
             venues = []
-          end
-          if type.value == 'menu'  
-            params[:challenge][:description] = ((t "challenge.type.menu.description") % [params[:challenge][:name]])
           end
           @challenge.update(type, params[:challenge], venues)
           respond_to do |format|

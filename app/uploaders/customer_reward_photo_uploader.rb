@@ -12,7 +12,7 @@ class CustomerRewardPhotoUploader < CarrierWave::Uploader::Base
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
-    "merchants/#{model.merchant.id}"
+    "merchants/#{model.merchant.id}/customer_rewards"
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
@@ -22,7 +22,7 @@ class CustomerRewardPhotoUploader < CarrierWave::Uploader::Base
 
   # Process files as they are uploaded:
   process :cropper
-  process :resize_to_limit => [480,480]
+  process :resize_to_limit => [1024,1024]
 
   def cropper
     manipulate! do |img|
@@ -59,14 +59,42 @@ class CustomerRewardPhotoUploader < CarrierWave::Uploader::Base
 
   # Create different versions of your uploaded files:
   
-  version :thumbnail_ios_medium do
+  version :thumbnail_ios_large do
     process :resize_to_limit => [342, 342]
   end
   
-  version :thumbnail_ios_small, :from_version => :thumbnail_ios_medium do
+  version :thumbnail_ios_medium, :from_version => :thumbnail_ios_large do
     process :resize_to_limit => [114, 114]
   end
+  
+  version :thumbnail_ios_small, :from_version => :thumbnail_ios_medium do
+    process :resize_to_limit => [60, 60]
+  end
  
+  version :thumbnail_android_mxhdpi_large do
+    process :resize_to_limit => [384, 384]
+  end
+  
+  version :thumbnail_android_mxhdpi_medium, :from_version => :thumbnail_android_mxhdpi_large do
+    process :resize_to_limit => [96, 96]
+  end
+  
+  version :thumbnail_android_mxhdpi_small, :from_version => :thumbnail_android_mxhdpi_medium do
+    process :resize_to_limit => [60, 60]
+  end
+  
+  version :thumbnail_android_lhdpi_large do
+    process :resize_to_limit => [288, 288]
+  end
+  
+  version :thumbnail_android_lhdpi_medium, :from_version => :thumbnail_android_lhdpi_large do
+    process :resize_to_limit => [72, 72]
+  end
+  
+  version :thumbnail_android_lhdpi_small, :from_version => :thumbnail_android_lhdpi_medium do
+    process :resize_to_limit => [60, 60]
+  end
+  
   # Add a white list of extensions which are allowed to be uploaded.
   # For images you might use something like this:
   def extension_white_list

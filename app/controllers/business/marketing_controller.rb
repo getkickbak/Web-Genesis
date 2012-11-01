@@ -26,8 +26,9 @@ module Business
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
+        flash[:error] = t("business.merchants.create_sign_up_code_failure")
         respond_to do |format|
-          format.html { redirect_to({:action => "index"}, {:error => t("business.merchants.create_sign_up_code_failure")}) }
+          format.html { redirect_to({:action => "index"}) }
         #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
         end
       end
@@ -47,8 +48,9 @@ module Business
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
+        flash[:error] = t("business.merchants.update_sign_up_code_failure")
         respond_to do |format|
-          format.html { redirect_to({:action => "index"}, {:error => t("business.merchants.update_sign_up_code_failure")}) }
+          format.html { redirect_to({:action => "index"}) }
         #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
         end
       end

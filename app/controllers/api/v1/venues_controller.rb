@@ -25,7 +25,7 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
       @customer.merchant = @venue.merchant
       is_customer = false
     else
-      @badges = Common.populate_badges(@venue.merchant, request.env['HTTP_USER_AGENT'])
+      @badges = Common.populate_badges(@venue.merchant, session[:user_agent] || :iphone, session[:resolution] || :mxhdpi)
       if @customer.badge_reset_ts <= @venue.merchant.badges_update_ts
         @customer.badge, @customer.next_badge_visits = Common.find_badge(@badges.to_a, @customer.visits)
         @customer.badge_reset_ts = Time.now
@@ -50,7 +50,7 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
     @venue = Venue.find_nearest(current_user, @merchant.id, latitude, longitude, 1).first
     @customer = Customer.first(:merchant => @merchant, :user => current_user)
     @prize_jackpots = EarnPrizeRecord.count(:merchant => @merchant, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
-    @badges = Common.populate_badges(@venue.merchant, request.env['HTTP_USER_AGENT'])
+    @badges = Common.populate_badges(@venue.merchant, session[:user_agent] || :iphone, session[:resolution] || :mxhdpi)
     if @customer.badge_reset_ts <= @venue.merchant.badges_update_ts
       @customer.badge, @customer.next_badge_visits = Common.find_badge(@badges.to_a, @customer.visits)
       @customer.badge_reset_ts = Time.now

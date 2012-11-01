@@ -70,10 +70,10 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
             @subject = t("mailer.email_subject_points_transfer")
             transfer_points = TransferPoints.new(current_user, @customer.merchant, record)
-            case request.env['HTTP_USER_AGENT']
-            when /iPhone/
+            case session[:user_agent]
+            when :iphone
               @body = transfer_points.render_html
-            when /Android/
+            when :android
               @body = transfer_points.render_simple_html  
             end  
             render :template => '/api/v1/customers/transfer_points'

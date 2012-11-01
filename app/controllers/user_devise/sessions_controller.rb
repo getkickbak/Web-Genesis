@@ -1,4 +1,5 @@
 class UserDevise::SessionsController < Devise::SessionsController  
+  after_filter :clear_flash, :only => [:create, :destroy]
   # POST /resource/sign_in
   
   def create_from_facebook
@@ -51,6 +52,14 @@ class UserDevise::SessionsController < Devise::SessionsController
         text = {}.respond_to?(method) ? {}.send(method) : ""
         render :text => text, :status => :ok
       end
+    end
+  end
+  
+  protected
+  
+  def clear_flash
+    if flash.keys.include?(:notice)
+      flash.delete(:notice)
     end
   end
 end

@@ -68,19 +68,19 @@ en:
       type:
         birthday: 
           name: "Birthday"
-          description: "Get rewarded when you visit on your birthday"
+          description: "Get rewarded when you visit on your birthday."
         vip: 
           name: "VIP"
-          description: "Get rewarded when you visit %s times"
+          description: "Get rewarded when you visit %s times."
         menu: 
           name: "Special Menu Item"
-          description: "Get rewarded when you buy a %s"
+          description: "Get rewarded when you buy one %s."
         photo: 
           name: "Photo"
-          description: "Get rewarded when you share an exciting photo of this place"
+          description: "Get rewarded when you share an exciting photo of this place."
         referral: 
           name: "Referral"
-          description: "Get rewarded when you refer friends and they become customers"
+          description: "Get rewarded when you refer friends and they become customers."
         custom: 
           name: "Custom"
           description: "Whatever you want!"
@@ -258,6 +258,7 @@ en:
       challenges:
         create_success: "Challenge was successfully created."
         update_success: "Challenge was successfully updated."
+        type_missing: "Please select challenge type."
         min_referral_amount: "Referral amount must be greater than 0."
         min_referral_points: "Referral points must be greater than 0."
       credit_cards:

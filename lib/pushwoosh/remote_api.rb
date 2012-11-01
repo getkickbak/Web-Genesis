@@ -3,7 +3,7 @@ module Pushwoosh
     def initialize  
     end
     
-    def create_message(message, time, device_list)
+    def create_message(merchant_id, message, time, device_list)
       service = "createMessage"
       body ={
         "request" => {
@@ -19,9 +19,9 @@ module Pushwoosh
               },
               #"page_id" => 39,
               #"link" => "http://google.com",
-              #"data" => {
-              #  "custom" => "json data"
-              #},
+              "data" => {
+                "merchant_id" => merchant_id 
+              },
               #"wp_type" => "Tile",
               #"wp_background" => "image.png",
               #"wp_count" => 3,
@@ -69,7 +69,7 @@ module Pushwoosh
     private
     
     def call_api(service, body)
-      uri = URI.parse("https://cp.pushwoosh.com/json/1.2/#{service}")
+      uri = URI.parse("https://cp.pushwoosh.com/json/1.3/#{service}")
       https = Net::HTTP.new(uri.host,uri.port)
       https.verify_mode = OpenSSL::SSL::VERIFY_NONE #unless ssl_strict
       https.use_ssl = true

@@ -135,8 +135,9 @@ module Business
       begin
         Venue.transaction do
           @venue.update_check_in_auth_code()
+          flash[:notice] = t("business.venues.update_checkin_authcode_success")
           respond_to do |format|
-            format.html { redirect_to({:action => "show", :id => @venue.id}, {:notice => t("business.venues.update_checkin_authcode_success")}) }
+            format.html { redirect_to(marketing_url) }
           #format.xml  { head :ok }
           end
         end
@@ -144,7 +145,7 @@ module Business
         logger.error("Exception: " + e.resource.errors.inspect)
         flash[:error] = t("business.venues.update_checkin_authcode_failure")
         respond_to do |format|
-          format.html { redirect_to({:action => "show", :id => @venue.id}) }
+          format.html { redirect_to(marketing_url) }
           #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
         end
       end
@@ -166,8 +167,9 @@ module Business
       authorize! :destroy, @venue
 
       if @venue.challenges.length > 0 || @venue.purchase_rewards.length > 0 || @venue.customer_rewards.length > 0
+        flash[:error] = t("business.venues.destroy_failure")
         respond_to do |format|
-          format.html { redirect_to({:action => "index"}, {:error => t("business.venues.destroy_failure")}) }
+          format.html { redirect_to({:action => "index"}) }
         #format.xml  { head :ok }
         end
       else

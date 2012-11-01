@@ -36,7 +36,7 @@ module CreatePromotion
         end
         logger.debug("Device list: #{device_list}")
         message = "#{promotion.merchant.name} - #{promotion.message}"
-        ret = push.create_message(message, promotion.start_date, device_list)
+        ret = push.create_message(promotion.merchant.id, message, promotion.start_date, device_list)
         logger.info("Response body: #{ret.response}")
         if ret.success?
           logger.info("Completed iteration #{i+1}")
