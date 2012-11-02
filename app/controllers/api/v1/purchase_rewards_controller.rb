@@ -431,16 +431,20 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @account_info[:prize_points] = @customer.prize_points
           @account_info[:badge_id] = @customer.badge.id
           @account_info[:next_badge_id] = next_badge.id
+          logger.info("Determining rewards and prizes")
           rewards = Common.get_rewards(@venue, :reward)
           prizes = Common.get_rewards(@venue, :prize)
           eligible_prize = Common.find_eligible_reward(prizes.to_a, @customer.prize_points - previous_prize_points)
           @reward_info[:eligible_prize_id] = eligible_prize.id if !eligible_prize.nil?
+          logger.info("Find eligible prize id")
           eligible_for_reward = !Common.find_eligible_reward(rewards.to_a, @customer.points).nil?
           eligible_for_prize = !Common.find_eligible_reward(prizes.to_a, @customer.prize_points).nil?
+          logger.info("Find eligible rewards and prizes")
           @customer.eligible_for_reward = eligible_for_reward
           @customer.eligible_for_prize = eligible_for_prize
           @customer.update_ts = now
           @customer.save
+          logger.info("Just save the customer object")
           @account_info[:eligible_for_reward] = eligible_for_reward
           @account_info[:eligible_for_prize] = eligible_for_prize
           if @venue_id.nil?
