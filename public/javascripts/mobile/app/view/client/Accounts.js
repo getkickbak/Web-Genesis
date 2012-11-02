@@ -161,26 +161,26 @@ Ext.define('Genesis.view.client.Accounts',
          }],
          itemTpl : Ext.create('Ext.XTemplate',
          // @formatter:off
-            '<tpl if="this.isValidCustomer(values)">',
-               '<div class="photo x-hasbadge">',
-                  '{[this.isEligible(values)]}',
-                  '<img src="{[this.getPhoto(values)]}"/>',
-               '</div>',
-               '<div class="listItemDetailsWrapper {[this.isSingle(values)]}">',
-                  //'<div class="title">{[this.getTitle()]}</div>',
-                  '<tpl if="this.showRewardPoints()">',
-                     '<div class="points">',
-                        '{[this.getRewardPoints(values)]}',
-                     '</div>',
-                  '</tpl>',
-                  '<tpl if="this.showPrizePoints()">',
-                     '<div class="points">',
-                        '{[this.getPrizePoints(values)]}'+
-                     '</div>',
-                  '</tpl>',
-               '</div>',
-            '</tpl>',
-            // @formatter:on
+         '<tpl if="this.isValidCustomer(values)">',
+            '<div class="photo x-hasbadge">',
+               '{[this.isEligible(values)]}',
+               '<img src="{[this.getPhoto(values)]}"/>',
+            '</div>',
+            '<div class="listItemDetailsWrapper {[this.isSingle(values)]}">',
+               //'<div class="title">{[this.getTitle()]}</div>',
+               '<tpl if="this.showRewardPoints()">',
+                  '<div class="points">',
+                     '{[this.getRewardPoints(values)]}',
+                  '</div>',
+               '</tpl>',
+               '<tpl if="this.showPrizePoints()">',
+                  '<div class="points">',
+                      '{[this.getPrizePoints(values)]}'+
+                 '</div>',
+                '</tpl>',
+            '</div>',
+         '</tpl>',
+         // @formatter:on
          {
             isSingle : function(values)
             {
@@ -240,7 +240,7 @@ Ext.define('Genesis.view.client.Accounts',
             },
             getPhoto : function(values)
             {
-               return values.Merchant['photo']['thumbnail_medium_url'];
+               return values.merchant['photo']['thumbnail_medium_url'];
             },
             showRewardPoints : function()
             {
