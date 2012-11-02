@@ -379,6 +379,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             prize_trans_record.customer = @customer
             prize_trans_record.user = current_user
             prize_trans_record.save
+          else
+            previous_prize_points = 0  
           end
           if @customer.badge_reset_ts <= @venue.merchant.badges_update_ts
             @customer.badge, @customer.next_badge_visits = Common.find_badge(@badges.to_a, @customer.visits)
