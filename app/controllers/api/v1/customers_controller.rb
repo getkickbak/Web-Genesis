@@ -51,6 +51,9 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         now = Time.now
         @type = params[:type]
         points = params[:points].to_i
+        if points == 0
+          raise "Cannot transfer 0 points"
+        end
         if @customer.points >= points
           record = TransferPointsRecord.create(
             :sender_id => @customer.id,
