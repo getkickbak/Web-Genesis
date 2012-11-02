@@ -495,10 +495,10 @@ Ext.define('Genesis.controller.Settings',
       console.log("enableFB - " + enableFB);
 
       var toggle = form.query('togglefield[name=facebook]')[0];
-      toggle.originalValue = enableFB;
+      toggle.originalValue =  (enableFB) ? 1 : 0;
       form.setValues(
       {
-         facebook : (enableFB) ? 1 : 0
+         facebook : toggle.originalValue
       });
 
       me.openPage('client');
