@@ -1,2 +1,11 @@
 @import '../global';
 @import '../utility';
+
+.x-mask {
+   .x-mask-message {
+      min-width:13em;
+   }
+   .x-loading-spinner-outer {
+      min-width:13em;
+   }
+}
