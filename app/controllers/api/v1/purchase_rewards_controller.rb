@@ -234,9 +234,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
 
           reward_model = @venue.merchant.reward_model
 
-          logger.info("Test to see if this is the first visit and if we have signup_points")
           if @customer.visits == 1 && reward_model.signup_points > 0
-            logger.info("We are getting some signup_points")
             record = EarnRewardRecord.new(
               :type => :signup,
               :venue_id => @venue.id,
@@ -297,7 +295,6 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             @reward_info[:points] = points
           end
 
-          logger.info("About to grab a mutex")
           #logger.debug("Before acquiring cache mutex.")
           @venue_mutex = CacheMutex.new(@venue.cache_key, Cache.memcache)
           acquired = @venue_mutex.acquire
@@ -424,7 +421,6 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             badge_prize_trans_record.user = current_user
             badge_prize_trans_record.save
           end
-          logger.info("At the end now")
           @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
           @account_info = {}
           @account_info[:visits] = @customer.visits
@@ -433,21 +429,16 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @account_info[:prize_points] = @customer.prize_points
           @account_info[:badge_id] = @customer.badge.id
           @account_info[:next_badge_id] = next_badge.id
-          logger.info("Determining rewards and prizes")
           rewards = Common.get_rewards(@venue, :reward)
           prizes = Common.get_rewards(@venue, :prize)
-          logger.info("Previous prize points: #{previous_prize_points}, Current prize points: #{@customer.prize_points}")
           eligible_prize = Common.find_eligible_reward(prizes.to_a, @customer.prize_points - previous_prize_points)
-          logger.info("Eligible prize is nil: #{eligible_prize.nil?}")
           @reward_info[:eligible_prize_id] = eligible_prize.id if !eligible_prize.nil?
           eligible_for_reward = !Common.find_eligible_reward(rewards.to_a, @customer.points).nil?
           eligible_for_prize = !Common.find_eligible_reward(prizes.to_a, @customer.prize_points).nil?
-          logger.info("Find eligible rewards and prizes")
           @customer.eligible_for_reward = eligible_for_reward
           @customer.eligible_for_prize = eligible_for_prize
           @customer.update_ts = now
           @customer.save
-          logger.info("Just save the customer object")
           @account_info[:eligible_for_reward] = eligible_for_reward
           @account_info[:eligible_for_prize] = eligible_for_prize
           if @venue_id.nil?
