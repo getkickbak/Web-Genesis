@@ -234,7 +234,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
 
           reward_model = @venue.merchant.reward_model
 
+          logger.info("Test to see if this is the first visit and if we have signup_points")
           if @customer.visits == 1 && reward_model.signup_points > 0
+            logger.info("We are getting some signup_points")
             record = EarnRewardRecord.new(
               :type => :signup,
               :venue_id => @venue.id,
@@ -295,6 +297,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             @reward_info[:points] = points
           end
 
+          logger.info("About to grab a mutex")
           #logger.debug("Before acquiring cache mutex.")
           @venue_mutex = CacheMutex.new(@venue.cache_key, Cache.memcache)
           acquired = @venue_mutex.acquire
@@ -419,6 +422,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             badge_prize_trans_record.user = current_user
             badge_prize_trans_record.save
           end
+          logger.info("At the end now")
           @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
           @account_info = {}
           @account_info[:visits] = @customer.visits
