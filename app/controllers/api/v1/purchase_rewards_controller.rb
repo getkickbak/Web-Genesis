@@ -56,7 +56,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         end
         data = encrypted_data[1]
         #logger.debug("data: #{data}")
-        if merchant
+        if sign_up_code
           cipher = Gibberish::AES.new(merchant.auth_code)
           decrypted = cipher.dec(data)
           #logger.debug("decrypted text: #{decrypted}")
@@ -78,8 +78,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           if (decrypted_data["type"] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now)
             if EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
               amount = decrypted_data["amount"].to_f
-              #logger.debug("Set authorized to true")
-              authorized = true
+              if amount >= 1.00
+                #logger.debug("Set authorized to true")
+                authorized = true
+              else
+                raise "Amount must be >= 1.00"  
+              end
             end
           else
             invalid_code = true
