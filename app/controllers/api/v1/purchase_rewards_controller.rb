@@ -434,9 +434,10 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           logger.info("Determining rewards and prizes")
           rewards = Common.get_rewards(@venue, :reward)
           prizes = Common.get_rewards(@venue, :prize)
+          logger.info("Previous prize points: #{previous_prize_points}, Current prize points: #{@customer.prize_points}")
           eligible_prize = Common.find_eligible_reward(prizes.to_a, @customer.prize_points - previous_prize_points)
+          logger.info("Eligible prize is nil: #{eligible_prize.nil?}")
           @reward_info[:eligible_prize_id] = eligible_prize.id if !eligible_prize.nil?
-          logger.info("Find eligible prize id")
           eligible_for_reward = !Common.find_eligible_reward(rewards.to_a, @customer.points).nil?
           eligible_for_prize = !Common.find_eligible_reward(prizes.to_a, @customer.prize_points).nil?
           logger.info("Find eligible rewards and prizes")
