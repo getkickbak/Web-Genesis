@@ -138,6 +138,7 @@ Ext.define('Genesis.controller.MainPage',
    _loggingOut : false,
    _logoutflag : 0,
    sessionTimeoutMsg : 'Session Timeout',
+   reestablishConnectionMsg : 'Connecting to Server ...',
    passwdResetConfirmMsg : 'Please confirm to reset your account password',
    passwdResetSuccessMsg : function()
    {
@@ -706,6 +707,11 @@ Ext.define('Genesis.controller.MainPage',
 
       Account['setRefreshCsrfTokenUrl']();
       console.log("setRefreshCsrfTokenUrl - Refreshing CSRF Token ...");
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.reestablishConnectionMsg
+      });
       Account.load(0,
       {
          jsonData :
@@ -718,9 +724,9 @@ Ext.define('Genesis.controller.MainPage',
          },
          callback : function(record, operation)
          {
-            Ext.Viewport.setMasked(false);
             if (operation.wasSuccessful())
             {
+               //Ext.Viewport.setMasked(false);
                var db = Genesis.db.getLocalDB();
                var viewport = me.getViewPortCntlr();
 
