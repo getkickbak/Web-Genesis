@@ -34,11 +34,11 @@ module Business
       @available_challenge_types = get_available_challenge_types(type)
 
       if type
+        flash.delete(:error)
         @challenge = Challenge.new(get_challenge_info()[type])
         @challenge.type_id = params[:type_id].to_i
         @challenge.type = ChallengeType.get(@challenge.type_id)
       else
-        flash.delete(:error)
         @challenge = Challenge.new
       end
       @data = @challenge.data
