@@ -1603,7 +1603,7 @@ Ext.define('Genesis.device.connection.PhoneGap',
    override : 'Ext.device.connection.PhoneGap',
    syncOnline : function()
    {
-      var type = navigator.network.connection.type;
+      var type = navigator.connection.type;
       this._type = type;
       this._online = (type != Connection.NONE) && (type != Connection.UNKNOWN);
    }
