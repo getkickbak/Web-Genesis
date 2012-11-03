@@ -366,6 +366,10 @@ Ext.define('Genesis.controller.client.Prizes',
             message : me.getBadgePrizeMsg(info['badge_prize_points'], badge),
             callback : function()
             {
+               var photoUrl =
+               {
+               };
+               var prefix = Genesis.constants._thumbnailAttribPrefix + 'large';
                photoUrl[prefix] = Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_large_url');
 
                me.redeemBadgeItem = Ext.create('Genesis.model.CustomerReward',

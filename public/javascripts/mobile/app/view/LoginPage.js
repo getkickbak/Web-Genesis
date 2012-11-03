@@ -356,7 +356,6 @@ Ext.define('Genesis.view.CreateAccountPage',
          }]
       }),
       {
-         flex : 1,
          xtype : 'fieldset',
          title : 'Account Credentials:',
          //instructions : 'Enter Username (email address) and Password',
