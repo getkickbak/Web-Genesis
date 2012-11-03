@@ -38,6 +38,7 @@ module Business
         @challenge.type_id = params[:type_id].to_i
         @challenge.type = ChallengeType.get(@challenge.type_id)
       else
+        flash.delete(:error)
         @challenge = Challenge.new
       end
       @data = @challenge.data
