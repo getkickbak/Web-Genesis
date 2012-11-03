@@ -4,6 +4,7 @@ module Business
     before_filter :check_status
     before_filter :check_is_admin
     skip_authorization_check
+    
     def index
       @venues = current_merchant.venues
       respond_to do |format|
