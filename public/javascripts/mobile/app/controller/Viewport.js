@@ -579,7 +579,15 @@ Ext.define('Genesis.controller.Viewport',
          //
          // Go back to HomePage by default
          //
-         me.redirectTo('checkin');
+         var info = this.getViewPortCntlr().getCheckinInfo();
+         if (info.venue)
+         {
+            me.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
+         }
+         else
+         {
+            me.redirectTo('checkin');
+         }
       }
    },
    // --------------------------------------------------------------------------
