@@ -64,6 +64,8 @@ module Rails
       def destroy_session(env, sid = nil, options = {})
         sid ||= current_session_id(env)
         find_session(sid).destroy
+        env[SESSION_RECORD_KEY] = nil
+        generate_sid
       end
 
       def destroy(env)
