@@ -410,6 +410,7 @@ Ext.define('Genesis.controller.client.Checkins',
          var viewport = me.getViewPortCntlr();
          viewport.on('completeRefreshCSRF', function()
          {
+            Ext.Viewport.setMasked(false);
             me.onLocationUpdate(position);
          }, viewport,
          {
@@ -418,6 +419,7 @@ Ext.define('Genesis.controller.client.Checkins',
       }
       else
       {
+         Ext.Viewport.setMasked(false);
          Venue['setFindNearestURL']();
          cestore.load(
          {
