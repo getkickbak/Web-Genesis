@@ -52,9 +52,15 @@ Ext.define('Genesis.controller.Settings',
       },
       listeners :
       {
-         'upgradeDevice' : 'onUpgradeDevice'
+         'upgradeDevice' : 'onUpgradeDevice',
+         'toggleFB' :
+         {
+            fn : 'onToggleFB',
+            buffer : 5000
+         }
       }
    },
+   _initializing : true,
    termsLoaded : false,
    privacyLoaded : false,
    aboutUsLoaded : false,
@@ -109,16 +115,6 @@ Ext.define('Genesis.controller.Settings',
       });
       this.getMultipartDocumentPage();
       this.getDocumentPage();
-      this.on(
-      {
-         scope : this,
-         'facebookToggle' :
-         {
-            fn : this.onFacebookToggle,
-            buffer : 5000
-         }
-      });
-
    },
    initServerControl : function()
    {
@@ -164,10 +160,11 @@ Ext.define('Genesis.controller.Settings',
          });
       });
    },
-   onFacebookToggle : function(toggle, newValue)
+   onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
       var me = this;
       var db = Genesis.db.getLocalDB();
+      //var enableFB = (db['enableFB']) ? 1 : 0;
 
       if (newValue == 1)
       {
@@ -198,7 +195,7 @@ Ext.define('Genesis.controller.Settings',
          }, true);
       }
       else
-      if (db['enableFB'] != toggle.originalValue)
+      if (db['enableFB'])
       {
          console.debug("Cancelling Facebook Login ...");
          /*
@@ -227,7 +224,6 @@ Ext.define('Genesis.controller.Settings',
             {
                if (operation.wasSuccessful())
                {
-                  toggle.originalValue = 0;
                   db = Genesis.db.getLocalDB();
                   db['enableFB'] = false;
                   db['currFbId'] = 0;
@@ -245,15 +241,21 @@ Ext.define('Genesis.controller.Settings',
             }
          });
       }
+
    },
    onFacebookChange : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
 
+      if (me._initializing)
+      {
+         return;
+      }
+
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
 
-      this.fireEvent('facebookToggle', toggle, newValue);
+      me.fireEvent('toggleFB', toggle, slider, thumb, newValue, oldValue, eOpts);
    },
    // --------------------------------------------------------------------------
    // Button Handlers
@@ -495,12 +497,12 @@ Ext.define('Genesis.controller.Settings',
       console.log("enableFB - " + enableFB);
 
       var toggle = form.query('togglefield[name=facebook]')[0];
-      toggle.originalValue =  (enableFB) ? 1 : 0;
+      me._initializing = true;
       form.setValues(
       {
-         facebook : toggle.originalValue
+         facebook : (enableFB) ? 1 : 0
       });
-
+      me._initializing = false;
       me.openPage('client');
    },
    serverSettingsPage : function()

@@ -135,6 +135,8 @@ Ext.define('Genesis.controller.MainPage',
          'itemTap' : 'onItemTap'
       }
    },
+   _loggingOut : false,
+   _logoutflag : 0,
    sessionTimeoutMsg : 'Session Timeout',
    passwdResetConfirmMsg : 'Please confirm to reset your account password',
    passwdResetSuccessMsg : function()
@@ -586,20 +588,16 @@ Ext.define('Genesis.controller.MainPage',
       var me = this;
       var vport = me.getViewport();
       var viewport = me.getViewPortCntlr();
-      var flag = 0;
+
+      if (me._loggingOut)
+      {
+         return;
+      }
+      me._logoutflag = 0;
+      me._loggingOut = true;
       //
       // Logout of Facebook
       //
-      var _onLogout = function()
-      {
-         console.log("Resetting Session information ...")
-         if (Genesis.db.getLocalDB()['currFbId'] > 0)
-         {
-            Genesis.fb.facebook_onLogout(null, true);
-         }
-         me.resetView();
-         me.redirectTo('login');
-      }
       var _logout = function()
       {
          var authCode = Genesis.db.getLocalDB()['auth_code'];
@@ -615,6 +613,7 @@ Ext.define('Genesis.controller.MainPage',
                callback : function(records, operation)
                {
                   Ext.Viewport.setMasked(false);
+                  me._loggingOut = false;
                   if (operation.wasSuccessful())
                   {
                      me.persistSyncStores(null, true);
@@ -627,14 +626,19 @@ Ext.define('Genesis.controller.MainPage',
                }
             });
          }
-         _onLogout();
+         console.log("Resetting Session information ...")
+         if (Genesis.db.getLocalDB()['currFbId'] > 0)
+         {
+            Genesis.fb.facebook_onLogout(null, true);
+         }
+         me.resetView();
+         me.redirectTo('login');
       }
-
       b.parent.onAfter(
       {
          hiddenchange : function()
          {
-            if ((flag |= 0x01) == 0x11)
+            if ((me._logoutflag |= 0x01) == 0x11)
             {
                _logout();
             }
@@ -650,7 +654,7 @@ Ext.define('Genesis.controller.MainPage',
             //
             // Login as someone else?
             //
-            if ((flag |= 0x10) == 0x11)
+            if ((me._logoutflag |= 0x10) == 0x11)
             {
                _logout();
             }
@@ -659,7 +663,7 @@ Ext.define('Genesis.controller.MainPage',
       else
       {
          console.log("No Login info found from Facebook ...")
-         if ((flag |= 0x10) == 0x11)
+         if ((me._logoutflag |= 0x10) == 0x11)
          {
             _logout();
          }
@@ -685,8 +689,7 @@ Ext.define('Genesis.controller.MainPage',
    },
    onCreateAccountTap : function(b, e, eOpts, eInfo)
    {
-      this.setAnimationMode(this.self.superclass.self.animationMode['cover']);
-      this.pushView(this.getCreateAccount());
+      this.redirectTo('createAccount');
    },
    onSignInTap : function(b, e, eOpts, eInfo)
    {
@@ -1093,7 +1096,8 @@ Ext.define('Genesis.controller.MainPage',
    },
    createAccountPage : function()
    {
-      this.onCreateAccountTap();
+      this.setAnimationMode(this.self.superclass.self.animationMode['slide']);
+      this.pushView(this.getCreateAccount());
    },
 
    // --------------------------------------------------------------------------

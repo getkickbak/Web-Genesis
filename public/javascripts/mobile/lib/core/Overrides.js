@@ -445,6 +445,7 @@ Genesis.fb =
 
             console.debug('You\`ve logged into Facebook! ' + '\n' + //
             'Email(' + db['fbAccountId'] + ')' + '\n' + //
+            'auth_code(' + db['auth_code'] + ')' + '\n' + //
             'ID(' + facebook_id + ')' + '\n');
             me._fb_connect();
             //me.getFriendsList();
@@ -996,12 +997,12 @@ Genesis.db =
    setLocalDB : function(db)
    {
       this._localDB = db;
-      console.debug("Setting KickBak DB[" + Ext.encode(db) + "]");
+      //console.debug("Setting KickBak DB[" + Ext.encode(db) + "]");
       this.getLocalStorage().setItem('kickbak', Ext.encode(db));
    },
    setLocalDBAttrib : function(attrib, value)
    {
-      console.debug("Setting KickBak Attrib[" + attrib + "] to [" + value + "]");
+      //console.debug("Setting KickBak Attrib[" + attrib + "] to [" + value + "]");
       var db = this.getLocalDB();
       db[attrib] = value;
       this.setLocalDB(db);
