@@ -48,7 +48,16 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 raise "No such merchant: #{match_pattern[1]}"
               end
               sign_up_code = true
-              @venue = Venue.find_nearest(current_user, merchant.id, params[:latitude], params[:longitude], 1).first
+              if @venue_id.nil?
+                @venue = Venue.find_nearest(current_user, merchant.id, params[:latitude], params[:longitude], 1).first
+              else
+                @venue = Venue.get(@venue_id)
+                if @venue.nil?
+                  raise "No such venue: #{@venue_id}"
+                elsif @venue.merchant.id != merchant.id
+                  raise "Merchant information don't match', merchant_id:#{@venue.merchant.id}, merchant id:#{merchant.id}"  
+                end  
+              end  
             else
               raise "Invalid authorization code"
             end
