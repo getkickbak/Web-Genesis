@@ -444,8 +444,7 @@ Ext.define('Genesis.controller.Viewport',
    },
    onCheckedInAccountTap : function(b, e, eOpts, eInfo)
    {
-      var info = this.getViewPortCntlr().getCheckinInfo();
-      this.redirectTo('venue' + '/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
+      this.goToMerchantMain(true);
    },
    onBrowseTap : function(b, e, eOpts, eInfo)
    {
@@ -576,18 +575,7 @@ Ext.define('Genesis.controller.Viewport',
       }
       else
       {
-         //
-         // Go back to HomePage by default
-         //
-         var info = this.getViewPortCntlr().getCheckinInfo();
-         if (info.venue)
-         {
-            me.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
-         }
-         else
-         {
-            me.redirectTo('checkin');
-         }
+      	 me.goToMerchantMain(true);
       }
    },
    // --------------------------------------------------------------------------
