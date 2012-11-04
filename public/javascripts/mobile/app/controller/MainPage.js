@@ -1123,9 +1123,7 @@ Ext.define('Genesis.controller.MainPage',
          }
          case 'merchant' :
          {
-            me.resetView();
-            var info = me.getViewPortCntlr().getCheckinInfo();
-            me.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
+         	me.goToMerchantMain(true);
             break;
          }
          case 'login' :

@@ -133,6 +133,7 @@ Ext.define('Genesis.controller.client.Prizes',
          'refreshQRCode' : 'onRefreshQRCode'
       }
    },
+   _backToMain : false,
    checkinFirstMsg : 'Please Check-In before redeeming Prizes',
    eligibleRewardMsg : 'Check out an Eligible Prize you can redeem with your Prize Points!',
    scanPlayTitle : 'Scan and Play',
@@ -323,7 +324,15 @@ Ext.define('Genesis.controller.client.Prizes',
          console.debug("Removing Last " + viewsPopLength + " Views from History ...");
          me.silentPopView(viewsPopLength);
       }
-      me.popView();
+      if (me._backToMain)
+      {
+         me.goToMerchantMain(true);
+         me._backToMain = false;
+      }
+      else
+      {
+         me.popView();
+      }
    },
    redeemPrizeHandler : function(metaData, viewsPopLength)
    {
@@ -331,6 +340,7 @@ Ext.define('Genesis.controller.client.Prizes',
       var info = metaData['reward_info'];
       var eligible = info['eligible_prize_id'] > 0;
 
+      me._backToMain = true;
       if (eligible)
       {
          var info = metaData['reward_info'];
@@ -548,6 +558,21 @@ Ext.define('Genesis.controller.client.Prizes',
    onBadgeDetailDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {
    },
+   onDoneTap : function(b, e, eOpts, eInfo, overrideMode)
+   {
+      var me = this;
+      
+      if (me._backToMain)
+      {
+         me.goToMerchantMain(true);
+         me._backToMain = false;
+      }
+      else
+      {
+         me.callParent(arguments);
+      }     
+   },
+
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------

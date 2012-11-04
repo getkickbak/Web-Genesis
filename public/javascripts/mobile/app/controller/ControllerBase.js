@@ -346,26 +346,43 @@ Ext.define('Genesis.controller.ControllerBase',
       me.redirectTo('main');
       console.log("LoggedIn, Going to Main Page ...");
    },
-   goToMerchantMain : function()
+   goToMerchantMain : function(noprompt)
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      var venue = viewport.getCheckinInfo().venue;
-      if (venue)
+      var info = viewport.getCheckinInfo();
+      var _backToMain = function()
+      {
+         me.resetView();
+         if (info.venue)
+         {
+            me.redirectTo('venue/' + info.venue.getId() + '/' + info.customer.getId() + '/1');
+         }
+         else
+         {
+            me.redirectTo('checkin');
+         }
+      }
+      
+      if (info.venue && !noprompt)
       {
          Ext.device.Notification.show(
          {
-            title : venue.get('name').trunc(16),
+            title : info.venue.get('name').trunc(16),
             buttons : ['OK', 'Cancel'],
-            message : me.backToMerchantPageMsg(venue),
+            message : me.backToMerchantPageMsg(info.venue),
             callback : function(btn)
             {
                if (btn.toLowerCase() == 'ok')
                {
-                  viewport.onCheckedInAccountTap();
+                  _backToMain();
                }
             }
          });
+      }
+      else
+      {
+         _backToMain();
       }
    },
    isOpenAllowed : function()

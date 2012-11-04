@@ -737,7 +737,7 @@ Ext.define('Genesis.controller.client.Challenges',
                         // Go back to Checked-in Merchant Account
                         //
                         me.metaData = null;
-                        viewport.onCheckedInAccountTap();
+                        me.goToMerchantMain(true);
                      }
                   }
                });
@@ -1174,7 +1174,7 @@ Ext.define('Genesis.controller.client.Challenges',
                         // Go back to Checked-in Merchant Account
                         //
                         me.metaData = null;
-                        viewport.onCheckedInAccountTap();
+                        me.goToMerchantMain(true);
                      }
                   }
                });
