@@ -258,6 +258,7 @@ Ext.define('Genesis.controller.client.Rewards',
             //
             case 'rewardsSC' :
             {
+               /*
                var app = me.getApplication();
                var controller = app.getController('client.Checkins');
 
@@ -266,6 +267,7 @@ Ext.define('Genesis.controller.client.Rewards',
                   single : true,
                   buffer : 0.5 * 1000
                });
+               */
                break;
             }
             default:
