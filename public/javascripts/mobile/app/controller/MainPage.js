@@ -434,8 +434,7 @@ Ext.define('Genesis.controller.MainPage',
          {
             this.redirectTo(model.get('route'));
          }
-         else
-         if (model.get('subFeature'))
+         else if (model.get('subFeature'))
          {
             cntlr.openPage(model.get('subFeature'));
          }
@@ -676,17 +675,20 @@ Ext.define('Genesis.controller.MainPage',
       //
       // Forced to Login to Facebook
       //
-      Ext.Viewport.setMasked(
+      if (!Ext.Viewport.getMasked())
       {
-         xtype : 'loadmask',
-         message : me.loginWithFbMsg()
-      });
-      Genesis.db.removeLocalDBAttrib('currFbId');
-      Genesis.fb.facebook_onLogin(function(params)
-      {
-         console.log(me.loginWithFbMsg());
-         me.facebookLogin(params);
-      }, true);
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.loginWithFbMsg()
+         });
+         Genesis.db.removeLocalDBAttrib('currFbId');
+         Genesis.fb.facebook_onLogin(function(params)
+         {
+            console.log(me.loginWithFbMsg());
+            me.facebookLogin(params);
+         }, true);
+      }
    },
    onCreateAccountTap : function(b, e, eOpts, eInfo)
    {
@@ -1123,7 +1125,7 @@ Ext.define('Genesis.controller.MainPage',
          }
          case 'merchant' :
          {
-         	me.goToMerchantMain(true);
+            me.goToMerchantMain(true);
             break;
          }
          case 'login' :
