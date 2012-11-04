@@ -273,7 +273,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
          {
             if (!operation.wasSuccessful())
             {
-               Ext.Viewport.setMasked(false);
+               Ext.Viewport.setMasked(null);
                btn.show();
             }
          }
@@ -345,7 +345,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
 
          me.fireEvent('refreshQRCode', qrcode);
 
-         Ext.Viewport.setMasked(false);
+         Ext.Viewport.setMasked(null);
          Ext.device.Notification.show(
          {
             title : title,

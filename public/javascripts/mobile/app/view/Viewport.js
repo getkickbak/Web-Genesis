@@ -99,7 +99,7 @@ Ext.define('Genesis.view.Viewport',
                titlebar = activeItem.query('titlebar')[0];
                if (titlebar)
                {
-                  titlebar.setMasked(false);
+                  titlebar.setMasked(null);
                }
 
                //
@@ -115,7 +115,7 @@ Ext.define('Genesis.view.Viewport',
          }
          else
          {
-            //Ext.Viewport.setMasked(false);
+            //Ext.Viewport.setMasked(null);
          }
       }
 
@@ -152,7 +152,7 @@ Ext.define('Genesis.view.Viewport',
             titlebar = activeItem.query('titlebar')[0];
             if (titlebar)
             {
-               titlebar.setMasked(false);
+               titlebar.setMasked(null);
             }
             viewport.popViewInProgress = false;
          }, 0.1 * 1000, this);

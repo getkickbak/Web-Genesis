@@ -953,7 +953,7 @@ Ext.define('Genesis.controller.ControllerBase',
       var failCallback = function(geo, bTimeout, bPermissionDenied, bLocationUnavailable, message)
       {
          console.debug('GeoLocation Error[' + message + ']');
-         Ext.Viewport.setMasked(false);
+         Ext.Viewport.setMasked(null);
          if (bPermissionDenied)
          {
             console.debug("PERMISSION_DENIED");
@@ -1076,7 +1076,7 @@ Ext.define('Genesis.controller.ControllerBase',
       var callback = function(r)
       {
          var qrcode;
-         Ext.Viewport.setMasked(false);
+         Ext.Viewport.setMasked(null);
          if (Genesis.constants.isNative())
          {
             switch(window.plugins.qrCodeReader.scanType)
@@ -1144,7 +1144,7 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       var fail = function(message)
       {
-         Ext.Viewport.setMasked(false);
+         Ext.Viewport.setMasked(null);
          console.debug('Failed because: ' + message);
          Ext.device.Notification.beep();
          me.fireEvent('scannedqrcode', null);

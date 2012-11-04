@@ -287,7 +287,7 @@ Genesis.fb =
             Genesis.db.removeLocalDBAttrib('fbExpiresIn');
             if (!supress)
             {
-               Ext.Viewport.setMasked(false);
+               Ext.Viewport.setMasked(null);
                Ext.device.Notification.show(
                {
                   title : 'Facebook Connect',
@@ -301,7 +301,7 @@ Genesis.fb =
                      }
                      else
                      {
-                        Ext.Viewport.setMasked(false);
+                        Ext.Viewport.setMasked(null);
                         delete me.cb;
                      }
                   }
@@ -429,7 +429,7 @@ Genesis.fb =
             var db = Genesis.db.getLocalDB();
             var facebook_id = response.id;
 
-            //Ext.Viewport.setMasked(false);
+            //Ext.Viewport.setMasked(null);
             if (db['currFbId'] == facebook_id)
             {
                console.debug("Session information same as previous session[" + facebook_id + "]");
@@ -522,7 +522,7 @@ Genesis.fb =
       Genesis.db.setLocalDB(db);
 
       console.debug("facebook_onLogout");
-      Ext.Viewport.setMasked(false);
+      Ext.Viewport.setMasked(null);
       try
       {
          if (contactFB)
@@ -1216,7 +1216,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          var metaData = reader.metaData ||
          {
          };
-         Ext.Viewport.setMasked(false);
+         Ext.Viewport.setMasked(null);
 
          //this callback is the one that was passed to the 'read' or 'write' function above
          if ( typeof callback == 'function')

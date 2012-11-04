@@ -185,7 +185,7 @@ Ext.define('Genesis.controller.server.Rewards',
             'background-image' : 'url(' + qrcodeMetaData[0] + ')',
             'background-size' : Genesis.fn.addUnit(qrcodeMetaData[1] * 1.25) + ' ' + Genesis.fn.addUnit(qrcodeMetaData[2] * 1.25)
          });
-         Ext.Viewport.setMasked(false);
+         Ext.Viewport.setMasked(null);
       }, 1, me);
 
       console.debug("Encrypting QRCode with Price:$" + price);

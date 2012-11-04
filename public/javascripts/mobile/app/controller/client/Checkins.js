@@ -193,7 +193,7 @@ Ext.define('Genesis.controller.client.Checkins',
       else
       {
          console.debug(me.noCheckinCodeMsg);
-         Ext.Viewport.setMasked(false);
+         Ext.Viewport.setMasked(null);
          Ext.device.Notification.show(
          {
             title : 'Error',
@@ -351,7 +351,7 @@ Ext.define('Genesis.controller.client.Checkins',
       // Cleans up Back Buttons on Check-in
       //
       me.resetView();
-      Ext.Viewport.setMasked(false);
+      Ext.Viewport.setMasked(null);
 
       switch(mode)
       {
@@ -410,7 +410,7 @@ Ext.define('Genesis.controller.client.Checkins',
          var viewport = me.getViewPortCntlr();
          viewport.on('completeRefreshCSRF', function()
          {
-            Ext.Viewport.setMasked(false);
+            Ext.Viewport.setMasked(null);
             me.onLocationUpdate(position);
          }, viewport,
          {
@@ -419,7 +419,7 @@ Ext.define('Genesis.controller.client.Checkins',
       }
       else
       {
-         Ext.Viewport.setMasked(false);
+         Ext.Viewport.setMasked(null);
          Venue['setFindNearestURL']();
          cestore.load(
          {
@@ -430,10 +430,10 @@ Ext.define('Genesis.controller.client.Checkins',
             },
             callback : function(records, operation)
             {
-               //Ext.Viewport.setMasked(false);
+               //Ext.Viewport.setMasked(null);
                if (operation.wasSuccessful())
                {
-                  Ext.Viewport.setMasked(false);
+                  Ext.Viewport.setMasked(null);
 
                   var tbb = me.getToolbarBottom();
                   me.setPosition(position);

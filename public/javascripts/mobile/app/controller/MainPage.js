@@ -491,7 +491,7 @@ Ext.define('Genesis.controller.MainPage',
        this.getPrizesBtn().setBadgeText( showIcon ? '✔' : null);
        }
        */
-      Ext.Viewport.setMasked(false);
+      Ext.Viewport.setMasked(null);
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -612,7 +612,7 @@ Ext.define('Genesis.controller.MainPage',
                },
                callback : function(records, operation)
                {
-                  Ext.Viewport.setMasked(false);
+                  Ext.Viewport.setMasked(null);
                   me._loggingOut = false;
                   if (operation.wasSuccessful())
                   {
@@ -728,7 +728,7 @@ Ext.define('Genesis.controller.MainPage',
          {
             if (operation.wasSuccessful())
             {
-               //Ext.Viewport.setMasked(false);
+               //Ext.Viewport.setMasked(null);
                var db = Genesis.db.getLocalDB();
                var viewport = me.getViewPortCntlr();
 
@@ -926,7 +926,7 @@ Ext.define('Genesis.controller.MainPage',
                });
                me.popView();
             }
-            Ext.Viewport.setMasked(false);
+            Ext.Viewport.setMasked(null);
          }
       });
    },
@@ -1008,7 +1008,7 @@ Ext.define('Genesis.controller.MainPage',
             //
             if (operation.wasSuccessful())
             {
-               Ext.Viewport.setMasked(false);
+               Ext.Viewport.setMasked(null);
                Ext.device.Notification.show(
                {
                   title : 'Password Reset',

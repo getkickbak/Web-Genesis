@@ -198,7 +198,7 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             reader.setRootProperty('data');
             reader.buildExtractors();
-            Ext.Viewport.setMasked(false);
+            Ext.Viewport.setMasked(null);
             if (operation.wasSuccessful())
             {
                //Genesis.db.removeLocalDBAttrib('last_check_in');
