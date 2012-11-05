@@ -145,8 +145,7 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          errorMsg = Genesis.constants.addCRLF() + errors;
       }
-      else
-      if (Ext.isObject(errors))
+      else if (Ext.isObject(errors))
       {
          errorMsg = Genesis.constants.addCRLF() + errors.statusText;
       }
@@ -285,6 +284,7 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    sendEmailIOS : function(qrcode, emailTpl, subject)
    {
+      var me = this;
       window.plugins.emailComposer.showEmailComposerWithCB(function(res)
       {
          // Delay is needed to not block email sending ...
@@ -389,8 +389,7 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          me.sendEmailIOS(qrcode, emailTpl, subject);
       }
-      else
-      if (Ext.os.is('Android'))
+      else if (Ext.os.is('Android'))
       {
          me.sendEmailAndroid(qrcode, emailTpl, subject);
       }
