@@ -205,11 +205,11 @@ class Common
     promotions = Promotion.all(:merchant => venue.merchant)
     promotions.each do |promotion|
       newsfeed << News.new(
-      "",
-      0,
-      "",
-      "",
-      promotion.message
+        "",
+        0,
+        "",
+        "",
+        promotion.message
       )
     end
     return newsfeed
