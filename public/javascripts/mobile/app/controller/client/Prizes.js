@@ -166,7 +166,7 @@ Ext.define('Genesis.controller.client.Prizes',
          this.eligibleRewardMsg);
       }
 
-      return ('You\'ve been Promoted to Badge Level [' + badge.get('type').display_value + ']!');
+      return ('You\'ve been Promoted to Badge Level ' + badge.get('type').display_value + '!');
    },
    upgradeBadgeEmailMsg : function(badge)
    {
@@ -248,7 +248,7 @@ Ext.define('Genesis.controller.client.Prizes',
             link : link,
             caption : link,
             description : desc,
-            picture : venue.getMerchant().get('photo')['thumbnail_medium_url'],
+            picture : venue.getMerchant().get('photo')['thumbnail_large_url'],
             message : message
          }, function(response)
          {
@@ -268,10 +268,10 @@ Ext.define('Genesis.controller.client.Prizes',
          'Post was not published to Facebook.');
       }
    },
-   updatingBadgeOnFacebook : function(earnprize)
+   updatingBadgeOnFacebook : function(badge)
    {
       var me = this;
-      var badgeURL = earnprize.get('photo')['thumbnail_medium_url'];
+      var badgeURL = badge.get('photo')['thumbnail_large_url'];
       try
       {
          var viewport = me.getViewPortCntlr();
@@ -281,7 +281,7 @@ Ext.define('Genesis.controller.client.Prizes',
          var name = venue.get('name');
          var link = wsite[wsite.length - 1] || site;
          var desc = venue.get('description').trunc(256);
-         var message = me.upgradeBadgeEmailMsg(earnprize.get('title'), name);
+         var message = me.upgradeBadgeEmailMsg(badge.get('title'), name);
 
          console.log('Posting Badge Promotion to Facebook ...' + '\n' + //
          'Name: ' + name + '\n' + //
@@ -338,13 +338,13 @@ Ext.define('Genesis.controller.client.Prizes',
    {
       var me = this;
       var info = metaData['reward_info'];
-      var eligible = info['eligible_prize_id'] > 0;
+      var eligible = Ext.isDefined(info['eligible_prize_id']) && (info['eligible_prize_id'] > 0);
+      var prize;
 
       me._backToMain = true;
       if (eligible)
       {
-         var info = metaData['reward_info'];
-         var prize = Ext.StoreMgr.get('PrizeStore').getById(info['eligible_prize_id']);
+         prize = Ext.StoreMgr.get('PrizeStore').getById(info['eligible_prize_id']);
 
          console.debug("Eligible Prize Id[" + info['eligible_prize_id'] + "]");
          me.fireEvent('showredeemprize', prize, info, viewsPopLength);
@@ -353,6 +353,22 @@ Ext.define('Genesis.controller.client.Prizes',
       {
          console.debug("No Eligible Prize");
          me.removeViewHandler(metaData, viewsPopLength);
+      }
+
+      //Update on Facebook
+      if ( typeof (FB) != "undefined")
+      {
+         Genesis.fb.facebook_onLogin(function(params)
+         {
+            if (eligible)
+            {
+               me.updatingPrizeOnFacebook(prize);
+            }
+            if (info['badge_prize_points'] > 0)
+            {
+               me.updatingBadgeOnFacebook(me.redeemBadgeItem);
+            }
+         }, false, me.updateOnFbMsg);
       }
 
       return false;
@@ -514,9 +530,10 @@ Ext.define('Genesis.controller.client.Prizes',
    onShowRedeemPrize : function(prize, reward_info, viewsPopLength)
    {
       var me = this;
-      var redeemItem = me.redeemItem = prize;
       var info = reward_info;
+      //var redeemItem = me.redeemItem = prize;
 
+      me.redeemItem = prize
       if (viewsPopLength > 0)
       {
          console.debug("Removing Last " + viewsPopLength + " Views from History ...");
@@ -527,22 +544,6 @@ Ext.define('Genesis.controller.client.Prizes',
       //me.setRedeemMode('redeemPrize');
       //me.pushView(me.getRedeemMainPage());
       me.redirectTo('redeemPrize');
-
-      //Update on Facebook
-      if ( typeof (FB) != "undefined")
-      {
-         Genesis.fb.facebook_onLogin(function(params)
-         {
-            if ((info['eligible_prize_id']) && (info['eligible_prize_id'] > 0))
-            {
-               me.updatingPrizeOnFacebook(redeemItem);
-            }
-            if (info['badge_prize_points'] > 0)
-            {
-               me.updatingBadgeOnFacebook(redeemItem);
-            }
-         }, false, me.updateOnFbMsg);
-      }
    },
    onBadgeDetailCreateView : function(activeItem)
    {
@@ -561,7 +562,7 @@ Ext.define('Genesis.controller.client.Prizes',
    onDoneTap : function(b, e, eOpts, eInfo, overrideMode)
    {
       var me = this;
-      
+
       if (me._backToMain)
       {
          me.goToMerchantMain(true);
@@ -570,7 +571,7 @@ Ext.define('Genesis.controller.client.Prizes',
       else
       {
          me.callParent(arguments);
-      }     
+      }
    },
 
    // --------------------------------------------------------------------------

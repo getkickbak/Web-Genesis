@@ -15,7 +15,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       return ('You need ' + pointsDiff + ' more points ' + Genesis.constants.addCRLF() + 'to be eligible for this item.');
    },
    retrievingQRCodeMsg : 'Retrieving QRCode ...',
-   showQrCodeMsg : 'Show this Authorization Code to your server to redeem!',
+   showQrCodeMsg : 'Show this Authorization Code to your merchant to redeem!',
    redeemItemConfirmMsg : 'Please confim to redeem this item',
    init : function()
    {

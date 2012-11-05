@@ -61,7 +61,7 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
    checkinFirstMsg : 'Please Check-In before earning rewards',
-   authCodeReqMsg : 'Proceed to scan an Authorization Code from your server to earn Reward Pts!',
+   authCodeReqMsg : 'Proceed to scan an Authorization Code from your merchant to earn Reward Pts!',
    signupPageTitle : 'Signup Reward',
    signupPromotionTitle : 'Welcome!',
    referralPageTitle : 'Refer A Friend',
@@ -70,7 +70,7 @@ Ext.define('Genesis.controller.client.Rewards',
    earnPtsMsg : 'Updating Points Earned ...',
    signupPromotionMsg : function(points)
    {
-      return 'You\'ve earned ' + points + ' Reward Pts from Signing Up with this Merchant!';
+      return 'You\'ve earned ' + points + ' Reward Pts from Signing Up for this merchant!';
    },
    getPointsMsg : function(reward_info)
    {
