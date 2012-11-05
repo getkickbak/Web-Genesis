@@ -287,7 +287,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
     
     logger.info("Complete Referral Challenge, Merchant(#{merchant.id}), Customer(#{@customer.id}), User(#{current_user.id})")
 
-    if already_customer
+    if already_customer || (referrer_id == @customer.id)
       if ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id).nil?
         msg = t("api.challenges.already_customer").split('\n')
         logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge_id}), already a customer")

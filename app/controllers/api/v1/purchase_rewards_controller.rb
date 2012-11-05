@@ -176,6 +176,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
           referral_challenge = false
           if challenge && (referral_record = ReferralChallengeRecord.first(:referral_id => @customer.id, :status => :pending))
+            if referral_record.referrer_id == @customer.id
+              break
+            end
             referrer = Customer.get(referral_record.referrer_id)
             @referrer_mutex = CacheMutex.new(referrer.cache_key, Cache.memcache)
             acquired = @referrer_mutex.acquire
