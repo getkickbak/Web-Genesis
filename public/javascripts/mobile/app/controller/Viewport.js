@@ -152,7 +152,7 @@ Ext.define('Genesis.controller.Viewport',
    popViewInProgress : false,
    viewStack : [],
    animationFlag : 0,
-   gatherCheckinInfoMsg : 'Gathering Checkin information ...',
+   gatherCheckinInfoMsg : 'Prepare to scan Authorization Code ...',
    retrieveChallengesMsg : 'Retrieving Challenges ...',
    fbShareSuccessMsg : 'Posted on your Facebook Timeline!',
    shareReqMsg : function()

@@ -62,7 +62,7 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       return ('Error loading Venue information.' + errorMsg);
    },
-   showToServerMsg : 'Show this to your server before proceeding.',
+   showToServerMsg : 'Show this to your merchant before proceeding.',
    errProcQRCodeMsg : 'Error Processing Authentication Code',
    cameraAccessMsg : 'Accessing your Camera Phone ...',
    updatingServerMsg : 'Updating Server ...',
