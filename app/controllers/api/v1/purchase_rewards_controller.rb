@@ -398,7 +398,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           end
           next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
           if (@customer.next_badge_visits >= next_badge.visits) && (@customer.badge.id != next_badge.id)
-            adjustment_ratio = APP_PROP["BADGE_REBATE_RATE"] / (100 - APP_PROP["BADGE_REBATE_RATE"])
+            adjustment_ratio = APP_PROP["BADGE_REBATE_RATE"] / (100 - APP_PROP["BADGE_REBATE_RATE"]).to_f
             logger.info("adjustment ratio: #{adjustment_ratio}")
             logger.info("avg spend: #{reward_model.avg_spend}")
             logger.info("next badge visits: #{next_badge.visits}")
