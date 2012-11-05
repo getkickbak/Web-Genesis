@@ -399,20 +399,20 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
           if (@customer.next_badge_visits >= next_badge.visits) && (@customer.badge.id != next_badge.id)
             adjustment_ratio = APP_PROP["BADGE_REBATE_RATE"] / (100 - APP_PROP["BADGE_REBATE_RATE"]).to_f
-            logger.info("adjustment ratio: #{adjustment_ratio}")
-            logger.info("avg spend: #{reward_model.avg_spend}")
-            logger.info("next badge visits: #{next_badge.visits}")
-            logger.info("price per prize point: #{reward_model.price_per_prize_point}")
+            #logger.debug("adjustment ratio: #{adjustment_ratio}")
+            #logger.debug("avg spend: #{reward_model.avg_spend}")
+            #logger.debug("next badge visits: #{next_badge.visits}")
+            #logger.debug("price per prize point: #{reward_model.price_per_prize_point}")
             badge_prize_points_average = (reward_model.avg_spend * next_badge.visits * adjustment_ratio / reward_model.price_per_prize_point).to_i
-            logger.info("badge prize points average: #{badge_prize_points_average}")
+            #logger.debug("badge prize points average: #{badge_prize_points_average}")
             badge_prize_points_diff = badge_prize_points_average / 2
-            logger.info("badge prize points diff: #{badge_prize_points_diff}")
+            #logger.debug("badge prize points diff: #{badge_prize_points_diff}")
             min_badge_prize_points = badge_prize_points_average - badge_prize_points_diff
             max_badge_prize_points = badge_prize_points_average + badge_prize_points_diff
-            logger.info("min badge prize points: #{min_badge_prize_points}")
-            logger.info("max badge prize points: #{max_badge_prize_points}")
+            #logger.debug("min badge prize points: #{min_badge_prize_points}")
+            #logger.debug("max badge prize points: #{max_badge_prize_points}")
             badge_prize_points = Random.rand(max_badge_prize_points - min_badge_prize_points + 1) + min_badge_prize_points
-            logger.info("badge_prize_points: #{badge_prize_points}")
+            #logger.debug("badge_prize_points: #{badge_prize_points}")
             @customer.badge = next_badge
             @customer.prize_points += badge_prize_points
             @customer.next_badge_visits = 0
