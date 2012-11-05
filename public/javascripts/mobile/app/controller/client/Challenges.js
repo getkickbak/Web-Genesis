@@ -145,8 +145,7 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          errorMsg = Genesis.constants.addCRLF() + errors;
       }
-      else
-      if (Ext.isObject(errors))
+      else if (Ext.isObject(errors))
       {
          errorMsg = Genesis.constants.addCRLF() + errors.statusText;
       }
@@ -243,7 +242,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   console.debug('Unable to parse the JSON returned by the server: ' + ex.toString());
                }
 
-               Ext.Viewport.setMasked(false);
+               Ext.Viewport.setMasked(null);
                if (metaData && metaData['photo_url'] && metaData['upload_token'])
                {
                   console.log("Uploading to Facebook using upload_token[" + metaData['upload_token'] + "]...");
@@ -255,7 +254,7 @@ Ext.define('Genesis.controller.client.Challenges',
                delete me.imageURI;
             }, function(error)
             {
-               Ext.Viewport.setMasked(false);
+               Ext.Viewport.setMasked(null);
                console.log(me.photoTakenFailMsg(error.message));
                //console.log("An error has occurred: Code = " + error.code);
                Ext.device.Notification.show(
@@ -285,12 +284,13 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    sendEmailIOS : function(qrcode, emailTpl, subject)
    {
+      var me = this;
       window.plugins.emailComposer.showEmailComposerWithCB(function(res)
       {
          // Delay is needed to not block email sending ...
          Ext.defer(function()
          {
-            Ext.Viewport.setMasked(false);
+            Ext.Viewport.setMasked(null);
             me.onCompleteReferralsChallenge();
             switch (res)
             {
@@ -353,7 +353,7 @@ Ext.define('Genesis.controller.client.Challenges',
             extras : extras
          }, function()
          {
-            Ext.Viewport.setMasked(false);
+            Ext.Viewport.setMasked(null);
             me.onCompleteReferralsChallenge();
             Ext.device.Notification.show(
             {
@@ -362,7 +362,7 @@ Ext.define('Genesis.controller.client.Challenges',
             });
          }, function()
          {
-            Ext.Viewport.setMasked(false);
+            Ext.Viewport.setMasked(null);
             me.onCompleteReferralsChallenge();
             Ext.device.Notification.show(
             {
@@ -389,8 +389,7 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          me.sendEmailIOS(qrcode, emailTpl, subject);
       }
-      else
-      if (Ext.os.is('Android'))
+      else if (Ext.os.is('Android'))
       {
          me.sendEmailAndroid(qrcode, emailTpl, subject);
       }
@@ -454,7 +453,7 @@ Ext.define('Genesis.controller.client.Challenges',
             /*
              if(operation.wasSuccessful() && (!metaData['data']))
              {
-             Ext.Viewport.setMasked(false);
+             Ext.Viewport.setMasked(null);
              Ext.device.Notification.show(
              {
              title : 'Error',
@@ -488,7 +487,7 @@ Ext.define('Genesis.controller.client.Challenges',
                         });
                         container.setActiveItem(1);
                      }
-                     Ext.Viewport.setMasked(false);
+                     Ext.Viewport.setMasked(null);
                      Ext.device.Notification.show(
                      {
                         title : 'Refer A Friend',
@@ -520,7 +519,7 @@ Ext.define('Genesis.controller.client.Challenges',
             }
             else
             {
-               Ext.Viewport.setMasked(false);
+               Ext.Viewport.setMasked(null);
             }
          }
       });
@@ -687,7 +686,7 @@ Ext.define('Genesis.controller.client.Challenges',
          },
          callback : function(records, operation)
          {
-            Ext.Viewport.setMasked(false);
+            Ext.Viewport.setMasked(null);
 
             var metaData2 = proxy.getReader().metaData;
             if (operation.wasSuccessful() && metaData2)
@@ -937,7 +936,7 @@ Ext.define('Genesis.controller.client.Challenges',
          {
             var metaData = Challenge.getProxy().getReader().metaData;
             console.log('Challenge Completed(' + operation.wasSuccessful() + ')');
-            Ext.Viewport.setMasked(false);
+            Ext.Viewport.setMasked(null);
             if (operation.wasSuccessful() && metaData)
             {
                me.fireEvent('challengecomplete', type, qrcode, venueId, customerId, position);
@@ -1010,7 +1009,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
       console.debug("image URI =[" + imageURI + "]");
 
-      Ext.Viewport.setMasked(false);
+      Ext.Viewport.setMasked(null);
       me.imageURI = imageURI;
       me.getGeoLocation();
    },
@@ -1019,7 +1018,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       console.debug("onCameraErrorFn - message[" + message + "]");
 
-      Ext.Viewport.setMasked(false);
+      Ext.Viewport.setMasked(null);
       Ext.device.Notification.show(
       {
          title : 'Error',
@@ -1156,7 +1155,7 @@ Ext.define('Genesis.controller.client.Challenges',
             if (!response || response.error)
             {
                var message = (response && response.error) ? response.error.message : me.fbUploadFailedMsg;
-               Ext.Viewport.setMasked(false);
+               Ext.Viewport.setMasked(null);
                Ext.device.Notification.show(
                {
                   title : 'Upload Failed!',

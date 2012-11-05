@@ -612,7 +612,7 @@ Ext.define('Genesis.controller.Rewards',
                scope : me,
                callback : function(records, operation)
                {
-                  Ext.Viewport.setMasked(false);
+                  Ext.Viewport.setMasked(null);
                   if(operation.wasSuccessful())
                   {
                      successCallback(records, operation);

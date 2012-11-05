@@ -220,7 +220,7 @@ Ext.define('Genesis.controller.Prizes',
             message : message
          }, function(response)
          {
-            Ext.Viewport.setMasked(false);
+            Ext.Viewport.setMasked(null);
             if (!response || response.error)
             {
                console.log('Post was not published to Facebook.');
@@ -233,7 +233,7 @@ Ext.define('Genesis.controller.Prizes',
       }
       catch (e)
       {
-         Ext.Viewport.setMasked(false);
+         Ext.Viewport.setMasked(null);
          console.log('Exception [' + e + ']' + '\n' + //
          'Post was not published to Facebook.');
       }
@@ -295,7 +295,7 @@ Ext.define('Genesis.controller.Prizes',
          {
             if (!operation.wasSuccessful())
             {
-               Ext.Viewport.setMasked(false);
+               Ext.Viewport.setMasked(null);
                btn.show();
             }
          }
@@ -392,7 +392,7 @@ Ext.define('Genesis.controller.Prizes',
          },
          callback : function(records, operation)
          {
-            Ext.Viewport.setMasked(false);
+            Ext.Viewport.setMasked(null);
             if (operation.wasSuccessful())
             {
                var metaData = Venue.getProxy().getReader().metaData;
@@ -737,7 +737,7 @@ Ext.define('Genesis.controller.Prizes',
 
          me.fireEvent('refreshQRCode', qrcode);
 
-         Ext.Viewport.setMasked(false);
+         Ext.Viewport.setMasked(null);
          Ext.device.Notification.show(
          {
             title : title,

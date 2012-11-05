@@ -214,7 +214,7 @@ Ext.define('Genesis.controller.client.Accounts',
             },
             callback : function(records, operation)
             {
-               Ext.Viewport.setMasked(false);
+               Ext.Viewport.setMasked(null);
                if (operation.wasSuccessful())
                {
                   var metaData = Customer.getProxy().getReader().metaData;
@@ -237,7 +237,7 @@ Ext.define('Genesis.controller.client.Accounts',
       else
       {
          console.debug(me.noCodeScannedMsg);
-         Ext.Viewport.setMasked(false);
+         Ext.Viewport.setMasked(null);
          Ext.device.Notification.show(
          {
             title : 'Error',
@@ -267,7 +267,7 @@ Ext.define('Genesis.controller.client.Accounts',
             },
             callback : function(records, operation)
             {
-               Ext.Viewport.setMasked(false);
+               Ext.Viewport.setMasked(null);
                if (operation.wasSuccessful())
                {
                   console.debug('Found ' + records.length + ' venues matching current location ...');
@@ -533,7 +533,7 @@ Ext.define('Genesis.controller.client.Accounts',
             else
             if (!operation.wasSuccessful() && !metaData)
             {
-               Ext.Viewport.setMasked(false);
+               Ext.Viewport.setMasked(null);
                console.log(me.metaDataMissingMsg);
             }
          }
@@ -586,7 +586,7 @@ Ext.define('Genesis.controller.client.Accounts',
          // Delay is needed to not block email sending ...
          Ext.defer(function()
          {
-            Ext.Viewport.setMasked(false);
+            Ext.Viewport.setMasked(null);
             switch (res)
             {
                case EmailComposer.ComposeResultType.Failed:
@@ -650,12 +650,12 @@ Ext.define('Genesis.controller.client.Accounts',
             extras : extras
          }, function()
          {
-            Ext.Viewport.setMasked(false);
+            Ext.Viewport.setMasked(null);
             me.xferCodeRecv = true;
             me.onTransferCompleteTap();
          }, function()
          {
-            Ext.Viewport.setMasked(false);
+            Ext.Viewport.setMasked(null);
             Ext.device.Notification.show(
             {
                title : 'Transfer Failed',
@@ -710,7 +710,7 @@ Ext.define('Genesis.controller.client.Accounts',
                });
                container.setActiveItem(2);
             }
-            Ext.Viewport.setMasked(false);
+            Ext.Viewport.setMasked(null);
             break;
          }
          case 'emailtransfer' :
@@ -937,7 +937,7 @@ Ext.define('Genesis.controller.client.Accounts',
                var metaData = cstore.getProxy().getReader().metaData;
                if (operation.wasSuccessful() && (!metaData['data']))
                {
-                  Ext.Viewport.setMasked(false);
+                  Ext.Viewport.setMasked(null);
                   Ext.device.Notification.show(
                   {
                      title : 'Error',

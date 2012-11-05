@@ -177,7 +177,7 @@ Ext.define('Genesis.controller.Settings',
           */
          Genesis.fb.facebook_onLogin(function(params, operation)
          {
-            //Ext.Viewport.setMasked(false);
+            //Ext.Viewport.setMasked(null);
             if (!operation || operation.wasSuccessful())
             {
                toggle.originalValue = newValue;
@@ -461,7 +461,7 @@ Ext.define('Genesis.controller.Settings',
             callback : function(record, operation)
             {
                var metaData = Venue.getProxy().getReader().metaData;
-               Ext.Viewport.setMasked(false);
+               Ext.Viewport.setMasked(null);
 
                if (operation.wasSuccessful())
                {
@@ -473,7 +473,7 @@ Ext.define('Genesis.controller.Settings',
       else
       {
          console.debug(me.noLicenseKeyScannedMsg);
-         Ext.Viewport.setMasked(false);
+         Ext.Viewport.setMasked(null);
          Ext.device.Notification.show(
          {
             title : 'Error',

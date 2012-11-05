@@ -81,7 +81,7 @@ Ext.define('Genesis.controller.server.Challenges',
          {
             controller.fireEvent('refreshQRCode', qrcode);
          }
-         Ext.Viewport.setMasked(false);
+         Ext.Viewport.setMasked(null);
       }, 1, me);
    },
    onGenerateQRCode : function()
@@ -121,7 +121,7 @@ Ext.define('Genesis.controller.server.Challenges',
             });
             controller.fireEvent('authreward', reward);
          }
-         Ext.Viewport.setMasked(false);
+         Ext.Viewport.setMasked(null);
       }, 1, me);
    },
    // --------------------------------------------------------------------------
