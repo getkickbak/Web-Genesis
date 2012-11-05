@@ -259,15 +259,15 @@ Ext.define('Genesis.controller.client.Rewards',
             case 'rewardsSC' :
             {
                /*
-               var app = me.getApplication();
-               var controller = app.getController('client.Checkins');
+                var app = me.getApplication();
+                var controller = app.getController('client.Checkins');
 
-               controller.onAfter('checkinPage', me.goToMerchantMain, me,
-               {
-                  single : true,
-                  buffer : 0.5 * 1000
-               });
-               */
+                controller.onAfter('checkinPage', me.goToMerchantMain, me,
+                {
+                single : true,
+                buffer : 0.5 * 1000
+                });
+                */
                break;
             }
             default:
@@ -334,6 +334,7 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       var me = this;
       var info = metaData['reward_info'];
+      var ainfo = metaData['account_info'];
       var points = info['points'];
       var rc = Ext.isDefined(points) && (points > 0);
 
@@ -344,7 +345,7 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       me.promoteCount = 0;
 
-      if (merchantId > 0)
+      if ((merchantId > 0) && (ainfo['visits'] >= 2))
       {
          //
          // Clear Referral DB
