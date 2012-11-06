@@ -170,7 +170,7 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    upgradeBadgeEmailMsg : function(badge, venueName)
    {
-      return ('I\'ve been promoted to ' + badge.toUpperCase() + ' status at ' + venueName + '!');
+      return ('I\'ve been promoted to ' + badge.toUpperCase() + ' at ' + venueName + '!');
    },
    gotMinPrizePtsMsg : function(points)
    {
