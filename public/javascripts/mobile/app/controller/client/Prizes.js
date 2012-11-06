@@ -168,7 +168,7 @@ Ext.define('Genesis.controller.client.Prizes',
 
       return ('You\'ve been Promoted to Badge Level ' + badge.get('type').display_value + '!');
    },
-   upgradeBadgeEmailMsg : function(badge)
+   upgradeBadgeEmailMsg : function(badge, venueName)
    {
       return ('I\'ve been promoted to ' + badge.toUpperCase() + ' status at ' + venueName + '!');
    },
