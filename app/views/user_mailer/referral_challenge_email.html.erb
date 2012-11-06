@@ -29,7 +29,7 @@
 						<%= @sender.name %> really likes <%= @venue.name %> and wants you to give it a try!
 						<br>
 						<br>
-						To thank you for being a <%= @venue.name %> customer, you will receive <%= @challenge.data.referral_points %> reward <%= t('api.point', :count => @challenge.data.referral_points) %> on your first visit.
+						To thank you for being <%= @venue.name.prepend_a_or_an %> customer, you will receive <%= @challenge.data.referral_points %> reward <%= t('api.point', :count => @challenge.data.referral_points) %> on your first visit.
 						<br>
 						<br>
 						These points can be used to redeem fabulous rewards at <%= @venue.name %>!
