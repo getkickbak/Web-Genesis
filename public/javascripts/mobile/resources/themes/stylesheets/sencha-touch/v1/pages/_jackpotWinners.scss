@@ -33,3 +33,31 @@
       }
    }
 }
+
+.x-android {
+   .jackpotWinnersList {
+      .listItemDetailsWrapper {
+         min-height:$icon-size !important;
+      }
+      .photo {
+         height : $icon-size !important;
+         img {
+            width : $icon-size !important;
+         }
+      }
+   }
+}
+
+.x-ios {
+   .jackpotWinnersList {
+      .listItemDetailsWrapper {
+         min-height:$icon-size*0.75 !important;
+      }
+      .photo {
+         height : $icon-size*0.75 !important;
+         img {
+            width : $icon-size*0.75 !important;
+         }
+      }
+   }
+}
