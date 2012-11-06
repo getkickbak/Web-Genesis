@@ -156,8 +156,8 @@ Genesis::Application.routes.draw do
     #  match "/download" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.kickbak.android" }
     #end
     constraints :user_agent => /Android/ do
-      match "/download" => redirect {|params, req| "http://www.getkickbak.com/coming_soon" }
-      match "/d" => redirect {|params, req| "http://www.getkickbak.com/coming_soon" }
+      match "/download" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.getkickbak.kickbak" }
+      match "/d" => redirect {|params, req| "https://play.google.com/store/apps/details?id=com.getkickbak.kickbak" }
     end
     constraints :user_agent => /BlackBerry|Windows/ do
       match "/download" => redirect {|params, req| "http://www.getkickbak.com/" }
@@ -172,7 +172,8 @@ Genesis::Application.routes.draw do
     #match "/faq" => 'pages#faq'
     match "/add_business" => 'pages#add_business'
     match "/add_business/create" => 'pages#add_business_create', :via => :post, :as => :create_merchant_contact
-    match "/coming_soon" => 'pages#coming_soon'
+    match "/d", :to => 'pages#index'
+    match "/download", :to => 'pages#index'
     
     #match '/users/:id/account' => 'users#edit'
     #match '/users/:user_id/coupons' => 'orders#index', :via => :get , :as => :user_coupons
