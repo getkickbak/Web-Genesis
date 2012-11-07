@@ -47,8 +47,7 @@ Genesis.constants =
          this._thumbnailAttribPrefix = 'thumbnail_ios_';
          this._iconSize = 57;
       }
-      else
-      if (Ext.os.is('Android'))
+      else if (Ext.os.is('Android'))
       {
          this._iconSize = 48;
          if ((window.devicePixelRatio) == 1 || (window.devicePixelRatio >= 2))
@@ -146,13 +145,13 @@ Genesis.fb =
       //
       Genesis.db.removeLocalDBAttrib('fbExpiresIn');
 
-      var db = Genesis.db.getLocalDB();
-
       if ( typeof (FB) != 'undefined')
       {
          //Detect when Facebook tells us that the user's session has been returned
          FB.Event.monitor('auth.authResponseChange', function(session)
          {
+            var db = Genesis.db.getLocalDB();
+
             if (session && (session.status != 'not_authorized') && (session.status != 'notConnected'))
             {
                console.log('Got FB user\'s session: ' + session.status);
@@ -174,8 +173,7 @@ Genesis.fb =
                   me.facebook_onLogout(null, false);
                }
             }
-            else
-            if ((session === undefined) || (session && session.status == 'not_authorized'))
+            else if ((session === undefined) || (session && session.status == 'not_authorized'))
             {
                //console.debug('FB Account Session[' + session + '] was terminated or not authorized');
                if (session)
@@ -789,8 +787,7 @@ Genesis.fn =
             {
                rfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
             }
-            else
-            if (Ext.os.is('Android'))
+            else if (Ext.os.is('Android'))
             {
                wfile = (fileSystem.root.fullPath + appName) + path;
             }
@@ -827,8 +824,7 @@ Genesis.fn =
             {
                wfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
             }
-            else
-            if (Ext.os.is('Android'))
+            else if (Ext.os.is('Android'))
             {
                wfile = ('file:///mnt/sdcard/' + appName) + path;
             }
