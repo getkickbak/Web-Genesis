@@ -633,6 +633,7 @@ Ext.define('Genesis.controller.MainPage',
          console.log("Resetting Session information ...")
          if (Genesis.db.getLocalDB()['currFbId'] > 0)
          {
+            console.log("Logging out of Facebook ...")
             Genesis.fb.facebook_onLogout(null, true);
          }
          me.resetView();
@@ -652,25 +653,17 @@ Ext.define('Genesis.controller.MainPage',
       b.parent.hide();
       if (Genesis.db.getLocalDB()['currFbId'] > 0)
       {
-         console.log("Logging out of Facebook ...")
-         Genesis.fb.facebook_onLogout(function()
-         {
-            //
-            // Login as someone else?
-            //
-            if ((me._logoutflag |= 0x10) == 0x11)
-            {
-               _logout();
-            }
-         });
       }
       else
       {
          console.log("No Login info found from Facebook ...")
-         if ((me._logoutflag |= 0x10) == 0x11)
-         {
-            _logout();
-         }
+      }
+      //
+      // Login as someone else?
+      //
+      if ((me._logoutflag |= 0x10) == 0x11)
+      {
+         _logout();
       }
    },
    onFacebookTap : function(b, e, eOpts, eInfo)
