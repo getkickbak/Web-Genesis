@@ -65,21 +65,8 @@
 
          function _appLaunch()
          {
-            if (launched == 0x11)
+            if (launched == 0x111)
             {
-               initPushwoosh();
-               FB.init(
-               {
-                  appId : _appId,
-                  frictionlessRequests : true,
-                  useCachedDialogs : true,
-                  nativeInterface : CDV.FB,
-                  status : false,
-                  cookie : true,
-                  xfbml : true,
-                  oauth : true
-               });
-
                var viewport = _application.getController('Viewport');
                viewport.appName = 'GetKickBak';
 
@@ -94,7 +81,7 @@
       </script>
       <script type="text/javascript">
          var backBtnCallbackListFn = [];
-         var launched = 0x00;
+         var launched = 0x000;
          var hostRoot = "";
          //"/assets/www/";
          var offlineDialogShown = false;
@@ -246,8 +233,34 @@
                console.debug = console.debug || console.log;
                console.warn = console.warn || console.debug;
 
-               launched = 0x10;
+               launched = 0x010;
                console.log("PhoneGap App Launch");
+               initPushwoosh();
+               FB.init(
+               {
+                  appId : _appId,
+                  frictionlessRequests : true,
+                  useCachedDialogs : true,
+                  nativeInterface : CDV.FB,
+                  status : false,
+                  cookie : true,
+                  xfbml : true,
+                  oauth : true
+               });
+		         FB.getLoginStatus(function(oResponse)
+		         {
+		         	launched |= 0x100;
+		         	if (oResponse.status === 'connected')
+		         	{ 
+		                 // the session is complete, and fully initiated, 
+		                 // go ahead and call your scripts here 
+		             }
+		             else
+		             {
+		                // There was a problem, probably because the user was not logged in, 
+		                // so put a login sequence or your error handling of choice here 
+		             }
+		         });
 
                document.addEventListener("backbutton", onBackKeyDown, false);
                _appLaunch();
@@ -283,13 +296,13 @@
                launch : function()
                {
                   _application = this;
-                  if (launched > 0x00)
+                  if (launched > 0x000)
                   {
-                     launched |= 0x01;
+                     launched |= 0x001;
                   }
                   else
                   {
-                     launched = 0x01;
+                     launched = 0x001;
                   }
                   console.log("Ext App Launch")
                   _appLaunch();

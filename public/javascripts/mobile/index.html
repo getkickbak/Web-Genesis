@@ -34,7 +34,7 @@
 
       <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
       <script type="text/javascript">
-         var launched = 0x00;
+         var launched = 0x000;
          var backBtnCallbackListFn = [];
 
          var offlineDialogShown = false;
@@ -86,21 +86,8 @@
 
          function _appLaunch()
          {
-            if (launched == 0x11)
+            if (launched == 0x111)
             {
-               initPushwoosh();
-               FB.init(
-               {
-                  appId : _appId,
-                  frictionlessRequests : true,
-                  useCachedDialogs : true,
-                  nativeInterface : CDV.FB,
-                  status : false,
-                  cookie : true,
-                  xfbml : true,
-                  oauth : true
-               });
-
                var viewport = _application.getController('Viewport');
                viewport.appName = appName;
 
@@ -196,7 +183,33 @@
                console.warn = console.warn || console.debug;
 
                console.log("PhoneGap App Launch");
-               launched = 0x10;
+               launched = 0x010;
+               initPushwoosh();
+		         FB.init(
+               {
+                  appId : _appId,
+                  frictionlessRequests : true,
+                  useCachedDialogs : true,
+                  nativeInterface : CDV.FB,
+                  status : false,
+                  cookie : true,
+                  xfbml : true,
+                  oauth : true
+               });
+		         FB.getLoginStatus(function(oResponse)
+		         {
+		         	launched |= 0x100;
+		         	if (oResponse.status === 'connected')
+		         	{ 
+		                 // the session is complete, and fully initiated, 
+		                 // go ahead and call your scripts here 
+		             }
+		             else
+		             {
+		                // There was a problem, probably because the user was not logged in, 
+		                // so put a login sequence or your error handling of choice here 
+		             }
+		         });
                _appLaunch();
             }, false);
 
@@ -225,13 +238,13 @@
                launch : function()
                {
                   _application = this;
-                  if (launched > 0x00)
+                  if (launched > 0x000)
                   {
-                     launched |= 0x01;
+                     launched |= 0x001;
                   }
                   else
                   {
-                     launched = 0x01;
+                     launched = 0x001;
                   }
                   console.log("Ext App Launch")
                   _appLaunch();
