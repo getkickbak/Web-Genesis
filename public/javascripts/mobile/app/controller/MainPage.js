@@ -626,6 +626,10 @@ Ext.define('Genesis.controller.MainPage',
                }
             });
          }
+         else
+         {
+            me._loggingOut = false;
+         }
          console.log("Resetting Session information ...")
          if (Genesis.db.getLocalDB()['currFbId'] > 0)
          {
