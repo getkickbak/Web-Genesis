@@ -16,7 +16,7 @@ $PinkStart : #F8F8F8; $PinkEnd : #E7E7E7;
 // Global Vars Default Theme Override
 //------------------------------------------------------------------------------
 $base-color: $BlueStart;
-$base-gradient: 'smooth';
+$base-gradient: 'flat';
 $active-color: darken(saturate($OrangeEnd, 55%), 10%);
 
 // Highlights
@@ -33,10 +33,11 @@ $form-field-bg-color : $Grey;
 
 // Lists
 $list-bg-color: $Grey;
-$list-active-gradient: 'bevel';
+$list-active-gradient: 'recessed';
 //$list-header-bg-color: transparentize(saturate($base-color, 10%), .25);
 $list-header-bg-color: $OrangeStart;
-$list-header-gradient: 'matte';
+$list-header-gradient: 'bevel';
+
 
 // Tabs
 $tabs-dark: #111;
@@ -47,7 +48,7 @@ $include-toolbar-uis : false;
 //------------------------------------------------------------------------------
 
 // Icon Reference size
-$icon-size: 57px;
+$icon-size: 48px;
 // Panel Gaps
 $panelGap: 0.8em;
 $panelTopGap: 0.7em;
@@ -61,8 +62,8 @@ $largeFontSize : 0.8em;
 $xlargeFontSize : 1.2em;
 
 // Theme Path
-$theme-path : 'v1/ios';
-$theme-path-rel : '../themes/images/v1/ios';
+$theme-path : 'v1/android/lhdpi';
+$theme-path-rel : '../themes/images/v1/android/lhdpi';
 
 // Badges Theme
 $badgePoints-bg-color: darken($GreenEnd, 10%);
@@ -91,26 +92,17 @@ $badgePoints-bg-gradient: $base-gradient;
 @include sencha-loading-spinner;
 //@include sencha-draw;
 //@include sencha-charts;
-
 //------------------------------------------------------------------------------
 // Default Theme Includes and CSS Overrides
 //------------------------------------------------------------------------------
 @import 'sencha-touch/v1/all';
 
-@media only screen and (-webkit-device-pixel-ratio: 1)
-{
-   body {
-      font-size : 114%;
-      //background-image : url(/resources/startup/640x920.png) no-repeat;
-      background-size : contain;
-   }
+body {
+   font-size : 114%;
+   //background-image : url(/resources/startup/640x920.png) no-repeat;
+   background-size : contain;
 }
 
-@media only screen and (-webkit-min-device-pixel-ratio: 2)
-{
-   body {
-      font-size : 114%;
-      //background-image : url(/resources/startup/640x920.png) no-repeat;
-      background-size : contain;
-   }
+body.x-tablet {
+   font-size : 228%;  
 }

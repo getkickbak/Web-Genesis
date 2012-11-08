@@ -62,8 +62,8 @@ $largeFontSize : 0.8em;
 $xlargeFontSize : 1.2em;
 
 // Theme Path
-$theme-path : 'v1/android/lhdpi';
-$theme-path-rel : '../themes/images/v1/android/lhdpi';
+$theme-path : 'v1/android/mxhdpi';
+$theme-path-rel : '../themes/images/v1/android/mxhdpi';
 
 // Badges Theme
 $badgePoints-bg-color: darken($GreenEnd, 10%);
@@ -101,4 +101,8 @@ body {
    font-size : 114%;
    //background-image : url(/resources/startup/640x920.png) no-repeat;
    background-size : contain;
+}
+
+body.x-tablet {
+   font-size : 228%;  
 }

@@ -22,7 +22,13 @@ Genesis.constants =
    _iconSize : 0,
    defaultFontSize : (function()
    {
-      return Math[(Ext.os.is('Android')) ? 'ceil' : 'floor'](((16 * 1.14 * Math.min(1.0, window.devicePixelRatio)) || (16 * 1.14)));
+      var ratio = 1.14;
+      
+      if (Ext.os.is('Tablet'))
+      {
+         ratio = 2 * ratio;
+      }
+      return Math[(Ext.os.is('Android')) ? 'ceil' : 'floor'](((16 * ratio * Math.min(1.0, window.devicePixelRatio)) || (16 * ratio)));
    })(),
    defaultIconSize : function()
    {
@@ -73,6 +79,12 @@ Genesis.constants =
          this._iconSize = 57;
       }
       this._iconPath = this.themeName + this._iconPath;
+
+      if (Ext.os.is('Tablet'))
+      {
+         this._iconSize = 2 * this._iconSize;
+         // On tablets, we need to magnify the content!
+      }
    },
    isNative : function()
    {
