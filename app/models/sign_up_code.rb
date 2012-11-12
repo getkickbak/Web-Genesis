@@ -39,10 +39,10 @@ class SignUpCode
       kit = PDFKit.new(
         html, 
         :page_size => 'Letter', 
-        :margin_top=>"1.0in",
-        :margin_right=>"1.0in",
-        :margin_bottom=>"1.0in",
-        :margin_left=>"1.0in"
+        :margin_top=>"0.1in",
+        :margin_right=>"0.1in",
+        :margin_bottom=>"0.1in",
+        :margin_left=>"0.1in"
       )
       AWS::S3::S3Object.store(
         ::Common.generate_merchant_qr_code_image_file_path(merchant_id,filename), 
