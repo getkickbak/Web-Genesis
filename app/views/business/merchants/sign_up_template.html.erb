@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Untitled Document</title>
+</head>
+
+<body>
+
+<div style="position: absolute; top: 275px; left: 98px; width: 425px; color: #00AEEF; font-size: 2em; text-align: center;">DOWNLOAD CODE</div>
+
+<div style="position: absolute; top: 300px; left: 98px; width: 425px; height: 425px; background-color: none;">
+<img src="http://files.getkickbak.com/kickbakqr.png" width="425" height="425">
+</div>
+
+<div style="position: absolute; top: 1050px; left: 98px; width: 425px; color: #00AEEF; font-size: 2em; text-align: center;"><%= @merchant.name %></div>
+<div style="position: absolute; top: 1075px; left: 98px; width: 425px; color: #00AEEF; font-size: 2em; text-align: center;">SIGN UP CODE</div>
+
+<div style="position: absolute; top: 1100px; left: 98px; width: 425px; height: 425px; background-color: none;">
+<img src="<%= ::Common.generate_full_merchant_qr_code_file_path(@merchant.id,@qr_code) %>" width="425" height="425">
+</div>
+
+<div style="position: absolute; top: 1925px; left: 98px; width: 425px; color: #00AEEF; font-size: 2em; text-align: center;">DOWNLOAD CODE</div>
+
+<div style="position: absolute; top: 1950px; left: 98px; width: 425px; height: 425px; background-color: none;">
+<img src="http://files.getkickbak.com/kickbakqr.png" width="425" height="425">
+</div>
+
+<div style="position: absolute; top: 2700px; left: 98px; width: 425px; color: #00AEEF; font-size: 2em; text-align: center;"><%= @merchant.name %></div>
+<div style="position: absolute; top: 2725px; left: 98px; width: 425px; color: #00AEEF; font-size: 2em; text-align: center;">SIGN UP CODE</div>
+
+<div style="position: absolute; top: 2750px; left: 98px; width: 425px; height: 425px; background-color: none;">
+<img src="<%= ::Common.generate_full_merchant_qr_code_file_path(@merchant.id,@qr_code) %>" width="425" height="425">
+</div>
+
+<img src="http://files.getkickbak.com/inside-FIN.jpg" width="2549" height="3300" />
+</body>
+</html>
