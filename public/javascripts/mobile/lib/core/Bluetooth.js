@@ -1,6 +1,5 @@
 (function(Cordova)
 {
-
    function Bluetooth()
    {
    };
@@ -53,6 +52,14 @@
          data : data
       }]);
    };
+   Bluetooth.prototype.sendData = function(peers, data)
+   {
+      Cordova.exec(0, 0, "Bluetooth", "sendData", [
+      {
+      	peers: peers,
+         data : data
+      }]);
+   };
    //-------------------------------------------------------------------
    Cordova.addConstructor(function()
    {
@@ -65,4 +72,3 @@
       window.plugins.bluetooth = new Bluetooth();
    });
 })(window.cordova || window.Cordova || window.PhoneGap);
-
