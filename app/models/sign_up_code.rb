@@ -36,7 +36,14 @@ class SignUpCode
     filename = "#{String.random_alphanumeric(32)}.pdf"
     if APP_PROP["GENERATE_QRCODE"]
       html = @@template.result(binding)
-      kit = PDFKit.new(html, :page_size => 'Letter')
+      kit = PDFKit.new(
+        html, 
+        :page_size => 'Letter', 
+        :margin_top=>"0.0in",
+        :margin_right=>"0.0in",
+        :margin_bottom=>"0.0in",
+        :margin_left=>"0.0in"
+      )
       AWS::S3::S3Object.store(
         ::Common.generate_merchant_qr_code_image_file_path(merchant_id,filename), 
         kit.to_pdf,
