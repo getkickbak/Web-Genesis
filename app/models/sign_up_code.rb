@@ -40,8 +40,8 @@ class SignUpCode
         html, 
         :page_size => 'Letter', 
         :margin_top=>"0.2in",
-        :margin_right=>"0.2in",
-        :margin_bottom=>"0.2in",
+        :margin_right=>"0.1in",
+        :margin_bottom=>"0.1in",
         :margin_left=>"0.2in"
       )
       AWS::S3::S3Object.store(
