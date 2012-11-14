@@ -9,6 +9,7 @@ Ext.define('Genesis.controller.client.Prizes',
    controllerType : 'prize',
    config :
    {
+   	redeemInfoMsg : 'Getting the Prizes List ...',
       timeoutPeriod : 10,
       minPrizePts : 1,
       browseMode : 'redeemBrowse',
@@ -142,7 +143,7 @@ Ext.define('Genesis.controller.client.Prizes',
    loadCallback : null,
    initSound : false,
    authRewardVerifiedMsg : 'Verified',
-   updateOnFbMsg : 'Would you like to friends on Facebook about it?',
+   updateOnFbMsg : 'Would you like to tell your friends on Facebook about it?',
    wonPrizeMsg : function(reward_info)
    {
       var me = this;

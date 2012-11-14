@@ -108,8 +108,7 @@ Ext.define('Genesis.controller.server.Redemptions',
                      });
                      return;
                   }
-                  else
-                  if ((date >= Date.now()) && (date <= new Date().addHours(3 * 2)))
+                  else if ((date >= Date.now()) && (date <= new Date().addHours(3 * 2)))
                   {
                      console.log("Found QRCode type[" + decrypted['type'] + "]");
                      switch (decrypted['type'])
@@ -200,20 +199,64 @@ Ext.define('Genesis.controller.server.Redemptions',
    onRedeemVerification : function()
    {
       var me = this;
-      Ext.device.Notification.show(
+      if (Ext.os.is('iOS'))
       {
-         title : 'Redemption Verification',
-         message : me.proceedToScanMsg,
-         buttons : ['Proceed', 'Cancel'],
-         callback : function(btn)
+         Ext.Viewport.setMasked(
          {
-            if (btn.toLowerCase() == 'proceed')
+            xtype : 'loadmask',
+            message : me.proceedToScanMsg
+         })
+         var bt = window.plugins.bluetooth;
+         bt.disconnect();
+         bt.stopSession();
+         var name = Genesis.constants.getPrivKey('venue')[2];
+
+         console.log("BlueTooth : Start Session[" + name + "]");
+         bt.startSession(name, function(peers)
+         {
+            console.log("BlueTooth : availablePeerListChanged");
+            console.log('Recv[' + Ext.encode(peers) + ']');
+            for (var peerId in peers)
             {
-               console.log("Verifying Authorization Code ...");
-               me.scanQRCode();
+               console.log('ConnectTo[' + peerId + ']');
+               bt.connectTo(peerId);
+               break;
             }
-         }
-      });
+         }, function()
+         {
+            console.log("BlueTooth : connexionRequested");
+            console.log('Recv[' + Ext.encode(arguments) + ']');
+         });
+         window.plugins.bluetooth.setConnexionEvents(function()
+         {
+            console.log("BlueTooth : setConnexionEvents ...");
+            console.log('Recv[' + Ext.encode(arguments) + ']');
+         }, function(qrcode)
+         {
+            Ext.Viewport.setMasked(null);
+            console.log("BlueTooth :  recvHandler ...");
+            console.log('Recv[' + Ext.encode(qrcode) + ']');
+            me.onScannedQRcode(qrcode['qrcode']);
+         });
+         console.log("BlueTooth : Waiting for Client to connect ...");
+      }
+      else
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Redemption Verification',
+            message : me.proceedToScanMsg,
+            buttons : ['Proceed', 'Cancel'],
+            callback : function(btn)
+            {
+               if (btn.toLowerCase() == 'proceed')
+               {
+                  console.log("Verifying Authorization Code ...");
+                  me.scanQRCode();
+               }
+            }
+         });
+      }
    },
    onVerifyTap : function(b, e, eOpts)
    {

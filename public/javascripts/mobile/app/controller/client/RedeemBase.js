@@ -142,13 +142,28 @@ Ext.define('Genesis.controller.client.RedeemBase',
          {
             me.fireEvent('showredeemitem', record);
             /*
-             Ext.create('Genesis.model.EarnPrize',
+             if (Ext.os.is('iOS'))
              {
-             //'id' : 1,
-             'expiry_date' : null,
-             'reward' : record,
-             'merchant' : viewport.getCheckinInfo().venue.getMerchant()
-             }));
+             var bt = window.plugins.bluetooth;
+             bt.disconnect();
+             bt.stopSession();
+             bt.startSession(Genesis.constants.userName, function()
+             {
+             console.log("availablePeerListChanged");
+             }, function(peerId)
+             {
+             console.log("connexionRequested - AcceptConnexion PeerId[" + peerId + "]");
+             bt.acceptConnexion(peerId);
+             Ext.defer(function()
+             {
+             bt.sendData([peerId],
+             {
+             "qrcode" : "Testing 123 QRCODE"
+             });
+             }, 1 * 1000);
+             });
+             //window.plugins.bluetooth.sendDataToAll({"data" : "test"});
+             }
              */
          }
       }
@@ -314,6 +329,15 @@ Ext.define('Genesis.controller.client.RedeemBase',
       var me = this;
       var view = me.getRedeemMainPage();
 
+      if (Ext.os.is('iOS'))
+      {
+         var bt = window.plugins.bluetooth;
+         bt.disconnect();
+         bt.stopSession();
+      }
+      if (Ext.os.is('Android'))
+      {
+      }
       if (view.isPainted() && !view.isHidden())
       {
          me.popView();
@@ -325,14 +349,43 @@ Ext.define('Genesis.controller.client.RedeemBase',
    onShowItemQRCode : function(timeout, qrcode)
    {
       var me = this;
+      var _qrcode;
       var title = 'Redeem ' + me.getTitle();
 
       console.log("\n" + //
       "Encrypted Code :\n" + qrcode + "\n" + //
       "Encrypted Code Length: " + qrcode.length);
 
-      qrcode = Genesis.controller.ControllerBase.genQRCode(qrcode);
-      if (qrcode[0])
+      /*
+       if (Ext.os.is('iOS'))
+       {
+       var bt = window.plugins.bluetooth;
+       bt.disconnect();
+       bt.stopSession();
+       bt.startSession(Genesis.constants.userName, function()
+       {
+       console.log("availablePeerListChanged");
+       }, function(peerId)
+       {
+       console.log("connexionRequested - AcceptConnexion PeerId[" + peerId + "]");
+       bt.acceptConnexion(peerId);
+       Ext.defer(function()
+       {
+       bt.sendData([peerId],
+       {
+       "data" : qrcode
+       });
+       }, 1 * 1000);
+       });
+       //window.plugins.bluetooth.sendDataToAll({"data" : "test"});
+       }
+       else if (Ext.os.is('Android'))
+       {
+       }
+       */
+
+      _qrcode = Genesis.controller.ControllerBase.genQRCode(qrcode);
+      if (_qrcode[0])
       {
          var dom = Ext.DomQuery.select('div.itemPoints',me.getRedeemItem().element.dom)[0];
          me.getSRedeemBtn().hide();
@@ -343,7 +396,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
             Ext.fly(dom).addCls('x-item-hidden');
          }
 
-         me.fireEvent('refreshQRCode', qrcode);
+         me.fireEvent('refreshQRCode', _qrcode);
 
          Ext.Viewport.setMasked(null);
          Ext.device.Notification.show(

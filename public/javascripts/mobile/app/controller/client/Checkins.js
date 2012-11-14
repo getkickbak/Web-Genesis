@@ -164,8 +164,7 @@ Ext.define('Genesis.controller.client.Checkins',
             {
                me.fireEvent('checkinMerchant', mode, metaData, venueId, records[0], operation, callback);
             }
-            else
-            if (!operation.wasSuccessful() && !metaData)
+            else if (!operation.wasSuccessful() && !metaData)
             {
                console.log(me.metaDataMissingMsg);
             }
@@ -273,6 +272,8 @@ Ext.define('Genesis.controller.client.Checkins',
              */
             break;
          }
+         case 'explore' :
+         case 'redemption' :
          default :
             break;
       }
@@ -307,7 +308,7 @@ Ext.define('Genesis.controller.client.Checkins',
       var mcntlr = app.getController('client.Merchants');
       var viewport = me.getViewPortCntlr();
       var vport = me.getViewport();
-      var sync = false, checkinMode = false;
+      var sync = false, checkinMode = false, redeemmode = false;
 
       var customerId, customer, venue, points;
       customerId = record.getId();
@@ -326,6 +327,7 @@ Ext.define('Genesis.controller.client.Checkins',
       if ((new_venueId == venueId) || (venueId == null))
       {
          checkinMode = (mode == 'checkin');
+         redeemMode = (mode == 'redemption');
          //
          // Update our Database with the latest value from Server
          //
@@ -350,40 +352,43 @@ Ext.define('Genesis.controller.client.Checkins',
       //
       // Cleans up Back Buttons on Check-in
       //
-      me.resetView();
-      Ext.Viewport.setMasked(null);
-
       switch(mode)
       {
          case 'checkin' :
          case 'explore' :
          {
+            me.resetView();
+            Ext.Viewport.setMasked(null);
             me.redirectTo('venue/' + venue.getId() + '/' + customerId);
             break;
          }
+         case 'redemption' :
          default:
             break;
       }
 
       callback();
 
-      if (checkinMode)
+      if (checkinMode || redeemMode)
       {
-         // Let the screen complete the rendering process
-         Ext.defer(me.checkReferralPrompt, 0.1 * 1000, me, [
-         function()
+         if (checkinMode)
          {
-            //
-            // We are in Merchant Account screen,
-            // there's nothing to do after Successful Referral Challenge
-            //
-            //me.popView();
-            Ext.device.Notification.show(
+            // Let the screen complete the rendering process
+            Ext.defer(me.checkReferralPrompt, 0.1 * 1000, me, [
+            function()
             {
-               title : 'Successful Referral!',
-               message : me.recvReferralb4VisitMsg(customer.getMerchant().get('name'))
-            });
-         }, null]);
+               //
+               // We are in Merchant Account screen,
+               // there's nothing to do after Successful Referral Challenge
+               //
+               //me.popView();
+               Ext.device.Notification.show(
+               {
+                  title : 'Successful Referral!',
+                  message : me.recvReferralb4VisitMsg(customer.getMerchant().get('name'))
+               });
+            }, null]);
+         }
          console.debug("CheckIn - Complete");
       }
       else
@@ -404,8 +409,7 @@ Ext.define('Genesis.controller.client.Checkins',
       {
          me.popView();
       }
-      else
-      if (!Genesis.db.getLocalDB()['csrf_code'])
+      else if (!Genesis.db.getLocalDB()['csrf_code'])
       {
          var viewport = me.getViewPortCntlr();
          viewport.on('completeRefreshCSRF', function()

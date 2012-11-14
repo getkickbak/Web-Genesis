@@ -12,8 +12,10 @@ Ext.ns('Genesis.constants');
 
 Genesis.constants =
 {
-   //host : 'http://192.168.0.52:3000',
+   host : 'http://192.168.0.52:3000',
    host : 'http://www.getkickbak.com',
+   userName : 'Eric Chan',
+   appMimeType : 'application/kickbak',
    clientVersion : '1.0.2',
    serverVersion : '1.0.2',
    themeName : 'v1',

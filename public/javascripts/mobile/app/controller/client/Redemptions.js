@@ -9,6 +9,7 @@ Ext.define('Genesis.controller.client.Redemptions',
    controllerType : 'redemption',
    config :
    {
+   	redeemInfoMsg : 'Getting the Redemptions List ...',
       browseMode : 'redeemBrowse',
       redeemMode : 'redeemReward',
       renderStore : 'RedemptionRenderCStore',
@@ -24,7 +25,7 @@ Ext.define('Genesis.controller.client.Redemptions',
          'redemptions' : 'redeemBrowsePage',
          //Shortcut to choose venue to redeem rewards
          'redeemRewardsChooseSC' : 'redeemChooseSCPage',
-         //Shortcut to visit Merchant Account for the Vnue Page
+         //Shortcut to visit Merchant Account for the Venue Page
          'redeemBrowseRewardsSC' : 'redeemBrowseSCPage',
          'redeemReward' : 'redeemItemPage'
       },

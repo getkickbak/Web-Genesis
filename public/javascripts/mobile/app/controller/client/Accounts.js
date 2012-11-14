@@ -166,8 +166,7 @@ Ext.define('Genesis.controller.client.Accounts',
 
             return true;
          }
-         else
-         if (activeItem == me.getTransferPage())
+         else if (activeItem == me.getTransferPage())
          {
             if (activeItem.getActiveItem() == me.getQrcodeContainer())
             {
@@ -254,6 +253,11 @@ Ext.define('Genesis.controller.client.Accounts',
 
       if (position)
       {
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.getVenueInfoMsg
+         });
          //Venue['setGetClosestVenueURL']();
          Venue['setFindNearestURL']();
          vstore.load(
@@ -451,38 +455,38 @@ Ext.define('Genesis.controller.client.Accounts',
       var me = this;
       var venueId = venue.getId();
       var viewport = me.getViewPortCntlr();
-      var controller = me.getApplication().getController('client.Checkins');
+      var rstore, url, controller;
       var rec = me.rec;
-      var rstore, url, rcontroller;
 
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : me.getVenueInfoMsg
-      });
       switch (me.getMode())
       {
          case 'redeemPrizesProfile' :
          {
-            rcontroller = me.getApplication().getController('client.Prizes');
+            controller = me.getApplication().getController('client.Prizes');
             break;
          }
          case 'redeemRewardsProfile' :
          {
-            rcontroller = me.getApplication().getController('client.Redemptions');
+            controller = me.getApplication().getController('client.Redemptions');
             break;
          }
          case 'profile' :
          default :
             viewport.setVenue(venue);
-            var controller = me.getApplication().getController('client.Checkins');
+            controller = me.getApplication().getController('client.Checkins');
             controller.fireEvent('checkin');
             return;
             break;
       }
-      rstore = Ext.StoreMgr.get(rcontroller.getRedeemStore());
-      url = rcontroller.getRedeemUrl();
-      path = rcontroller.getRedeemPath();
+
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : controller.getRedeemInfoMsg()
+      });
+      rstore = Ext.StoreMgr.get(controller.getRedeemStore());
+      url = controller.getRedeemUrl();
+      path = controller.getRedeemPath();
       CustomerReward[url]();
       rstore.load(
       {
@@ -498,6 +502,8 @@ Ext.define('Genesis.controller.client.Accounts',
          {
             if (operation.wasSuccessful())
             {
+               Ext.Viewport.setMasked(null);
+               
                var metaData =
                {
                   'venue_id' : venueId
@@ -512,6 +518,7 @@ Ext.define('Genesis.controller.client.Accounts',
                   //records[i].setMerchant(venue.getMerchant());
                }
                viewport.setVenue(venue);
+               // We need it for checkinMerchant
                switch(me.getMode())
                {
                   /*
@@ -524,14 +531,17 @@ Ext.define('Genesis.controller.client.Accounts',
                   case 'redeemRewardsProfile' :
                   case 'redeemPrizesProfile' :
                   default:
-                     controller.fireEvent('checkinMerchant', 'redemption', metaData, venueId, rec, operation, Ext.emptyFn);
-                     me.redirectTo(path);
+                     controller = me.getApplication().getController('client.Checkins');
+                     controller.fireEvent('checkinMerchant', 'redemption', metaData, venueId, rec, operation, function()
+                     {
+                        me.redirectTo(path);
+                        Ext.device.Notification.beep();
+                     });
                      break;
                }
                delete me.rec;
             }
-            else
-            if (!operation.wasSuccessful() && !metaData)
+            else if (!operation.wasSuccessful() && !metaData)
             {
                Ext.Viewport.setMasked(null);
                console.log(me.metaDataMissingMsg);
@@ -734,8 +744,7 @@ Ext.define('Genesis.controller.client.Accounts',
             {
                me.sendEmailIOS(qrcode, emailTpl, subject);
             }
-            else
-            if (Ext.os.is('Android'))
+            else if (Ext.os.is('Android'))
             {
                me.sendEmailAndroid(qrcode, emailTpl, subject);
             }

@@ -49,8 +49,7 @@ var ndef =
     */
    record : function(tnf, type, id, payload)
    {
-      return
-      {
+      return {
          tnf : tnf,
          type : type,
          id : id,

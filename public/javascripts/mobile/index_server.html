@@ -52,11 +52,39 @@
             if (launched == 0x11)
             {
                var viewport = _application.getController('Viewport');
+               var listening = false;
                viewport.appName = appName;
 
                Ext.create('Genesis.view.Viewport');
                console.log("Launched App");
                navigator.splashscreen.hide();
+               
+               if (Ext.os.is('Android'))
+               {
+               	listening = true;
+                  nfc.addMimeTypeListener(Genesis.constants.appMimeType, function(nfcEvent)
+                  {
+                  	if (!listening)
+                  	{
+                  		console.debug("Discarded NFC message");
+                  		return;
+                  	}
+               	
+                  	var tag = nfcEvent.tag, records = tag.ndefMessage;
+                  	var result = Ext.decode(nfc.bytesToString(records[0].payload));
+                  	//
+                  	// Decrypt Message
+                  	//
+                  	console.log("Received Message [" + Ext.decode(result) + "]");
+                  }, function()
+                  {
+                  	console.log("Listening for tags with mime type "+ Genesis.constants.appMimeType);  	
+                  }, function()
+                  {
+                  	console.warn('Failed to register mime type ' + Genesis.constants.appMimeType + ' with NFC');
+                  });
+                  console.log("Added MimeType["+Genesis.constants.appMimeType+"] for NFC detection ...");
+               }
             }
          }
       </script>
