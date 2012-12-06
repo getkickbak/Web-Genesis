@@ -1,5 +1,36 @@
-<h1>New Merchant</h1>
-
-<%= render 'create_form' %>
-
-<%= link_to 'Back', merchants_path %>
+<div class="main">
+   <div class="main-inner">
+      <div class="container">
+         <div class="row">
+         	<div class="span1"></div>
+            <div class="span10">
+               <div class="widget ">
+                  <div class="widget-header">
+                     <i class="icon-money"></i>
+                     <h3>Merchant</h3>
+                  </div>
+                  <!-- /widget-header -->
+                  <div class="widget-content">
+                     <div class="tabbable">
+                        <ul class="nav nav-tabs">
+                           <li class="active"><a href="#profile" data-toggle="tab">Create</a></li>
+                        </ul>
+                        <br>
+                        <div class="tab-content">
+                           <div class="tab-pane active" id="profile">
+                              <%= render 'create_form' %>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- /widget-content -->
+               </div>
+               <!-- /widget -->
+            </div>
+         </div>
+         <!-- /row -->
+      </div>
+      <!-- /container -->
+   </div>
+   <!-- /main-inner -->
+</div>

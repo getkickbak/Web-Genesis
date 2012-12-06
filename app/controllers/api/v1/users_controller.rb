@@ -1,7 +1,7 @@
 class Api::V1::UsersController < Api::V1::BaseApplicationController
-  skip_before_filter :verify_authenticity_token, :only => [:reset_password]
-  before_filter :authenticate_user!, :except => [:reset_password]
-  skip_authorization_check :only => [:reset_password]
+  skip_before_filter :verify_authenticity_token, :only => [:reset_password, :register_tag]
+  before_filter :authenticate_user!, :except => [:reset_password, :register_tag]
+  skip_authorization_check :only => [:reset_password, :register_tag]
 
   def update
     @user = current_user
@@ -78,7 +78,7 @@ class Api::V1::UsersController < Api::V1::BaseApplicationController
         format.json { render :json => { :success => false, :message => t("api.users.update_failure").split('\n') } }
       end
     end    
-  end  
+  end
   
   def reset_password
     @user = User.first(:email => params[:email])

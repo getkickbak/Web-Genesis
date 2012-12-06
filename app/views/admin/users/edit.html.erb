@@ -1,6 +1,48 @@
-<h1>Editing user</h1>
-
-<%= render 'form' %>
-
-<%= link_to 'Show', user_path(@user) %> |
-<%= link_to 'Back', users_path %>
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/css/ui-lightness/jquery-ui-1.8.20.custom.css"/>
+<% end %>
+<% content_for :script do %>
+<script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-ui-1.8.20.custom.min.js"/>
+<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+   <p><%= flash[:notice] %></p>
+</div>
+<% end %>
+<div class="main">
+   <div class="main-inner">
+      <div class="container">
+         <div class="row">
+         	<div class="span1"></div>
+            <div class="span10">
+               <div class="widget ">
+                  <div class="widget-header">
+                     <i class="icon-user"></i>
+                     <h3>User</h3>
+                  </div>
+                  <!-- /widget-header -->
+                  <div class="widget-content">
+                     <div class="tabbable">
+                        <ul class="nav nav-tabs">
+                           <li class="active"><a href="#profile" data-toggle="tab">Info</a></li>
+                        </ul>
+                        <br>
+                        <div class="tab-content">
+                           <div class="tab-pane active" id="profile">
+                              <%= render 'form' %>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- /widget-content -->
+               </div>
+               <!-- /widget -->
+            </div>
+         </div>
+         <!-- /row -->
+      </div>
+      <!-- /container -->
+   </div>
+   <!-- /main-inner -->
+</div>

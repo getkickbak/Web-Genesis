@@ -1,17 +1,44 @@
-<h2>Sign in</h2>
-
-<%= form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f| %>
-  <p><%= f.label :email %><br />
-  <%= f.email_field :email %></p>
-
-  <p><%= f.label :password %><br />
-  <%= f.password_field :password %></p>
-
-  <% if devise_mapping.rememberable? -%>
-    <p><%= f.check_box :remember_me %> <%= f.label :remember_me %></p>
-  <% end -%>
-
-  <p><%= f.submit "Sign in" %></p>
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/homepage.css"/>
+<!--[if lt IE 9]>
+<link rel="stylesheet" href="/javascripts/desktop/css/homepage-ie8.css"/>
+<![endif]-->
+<link rel="stylesheet" href="/javascripts/desktop/css/pages/signin.css"/>
 <% end %>
-
-<%= render :partial => "user_devise/shared/links" %>
+<% content_for :script do %>
+<script type="text/javascript" src="/javascripts/desktop/src/business/signin.js"></script>
+<% end %>
+<div class="account-container">
+   <div class="content clearfix">
+      <% if flash[:alert] %>
+      <div class="alert alert-error">
+         <% flash.each do |name, msg| %>
+         <% if name != :timedout %>
+         <%= content_tag :div, msg, :id => "flash_#{name}", :style => 'margin:auto;' %>
+         <% end %>
+         <% end -%>
+      </div>
+      <% end %>
+      <%= simple_form_for resource, :html => {:class => 'form-vertical' }, :url => session_path(resource_name) do |f| %>
+      <h1>Login</h1>
+      <div class="login-fields">
+         <p>Sign in using your registered account:</p>
+         <%= f.input :email, :placeholder => "Email Address", :input_html=>{:class => "login username-field"} %>
+         <%= f.input :password, :placeholder => "Password", :input_html=>{:class => "login password-field"} %>
+      </div>
+      <div class="login-actions">
+         <% if devise_mapping.rememberable? %>
+         <span class="login-checkbox">
+            <!---->
+            <%= f.input :remember_me, :as => :boolean, :label => false, :inline_label => true %>
+            <!---->
+         </span>
+         <% end %>
+         <%= f.button :submit, "Sign In", :class => 'button btn  btn-warning btn-large' %>
+         <div style="margin-top:10px;clear:both;">
+            <%= render :partial => "business/merchant_devise/shared/links" %>
+         </div>
+      </div>
+      <% end %>
+   </div>
+</div>

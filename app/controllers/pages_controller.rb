@@ -1,7 +1,9 @@
 class PagesController < ApplicationController
   skip_authorization_check
+  before_filter :check_signed_in, :only => [:index, :add_business, :add_business_create]
 
   def index
+  
   end
   
   def how_it_works
@@ -11,6 +13,9 @@ class PagesController < ApplicationController
   def contact_us
     @contact = Contact.new
     @notice = request.filtered_parameters['notice']
+    if signed_in?
+      render :template => '/pages/alt_contact_us'
+    end
   end
 
   def contact_us_create
@@ -54,5 +59,13 @@ class PagesController < ApplicationController
   end
 
   def privacy
+  end
+  
+  private
+  
+  def check_signed_in
+    if signed_in?
+      redirect_to dashboard_path
+    end
   end
 end

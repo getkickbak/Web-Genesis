@@ -6,9 +6,48 @@
 <script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
 <script type="text/javascript" src="/javascripts/desktop/src/admin/merchant.js"></script>
 <% end %>
-<h1>Editing Merchant</h1>
-
-<%= render 'form' %>
-
-<%= link_to 'Show', merchant_path(@merchant) %> |
-<%= link_to 'Back', merchants_path %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+   <p><%= flash[:notice] %></p>
+</div>
+<% end %>
+<div class="main">
+   <div class="main-inner">
+      <div class="container">
+         <div class="row">
+         	<div class="span1"></div>
+            <div class="span10">
+               <div class="widget ">
+                  <div class="widget-header">
+                     <i class="icon-money"></i>
+                     <h3>Merchant</h3>
+                  </div>
+                  <!-- /widget-header -->
+                  <div class="widget-content">
+                     <div class="tabbable">
+                        <ul class="nav nav-tabs">
+                           <li class="active"><a href="#profile" data-toggle="tab">Info</a></li>
+                        </ul>
+                        <br>
+                        <div class="tab-content">
+                           <div class="tab-pane active" id="profile">
+                              <%= render 'form' %>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- /widget-content -->
+               </div>
+               <!-- /widget -->
+            </div>
+         </div>
+         <!-- /row -->
+      </div>
+      <!-- /container -->
+   </div>
+   <!-- /main-inner -->
+</div>
+<!-- /main -->
+<!--
+<%= link_to 'Back', account_path %>
+-->

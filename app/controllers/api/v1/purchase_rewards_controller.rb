@@ -1,14 +1,86 @@
 class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
-  before_filter :authenticate_user!
+  skip_before_filter :verify_authenticity_token, :only => [:merchant_earn, :merchant_earn_request]
+  before_filter :authenticate_user!, :except => [:merchant_earn, :merchant_earn_request]
+  skip_authorization_check :only => [:merchant_earn, :merchant_earn_request]
   
   def earn
     authorize! :update, Customer
 
+    earn_common
+  end
+  
+  def merchant_earn
+    earn_common
+  end
+
+  def merchant_earn_request
+    begin      
+      encrypted_data = params[:data].split('$')
+      if encrypted_data.length != 2
+        raise "Invalid authorization code format"
+      end
+      match_pattern = /^(\d*)$/.match(encrypted_data[0])
+      if match_pattern
+        @venue = Venue.get(encrypted_data[0])
+        if @venue.nil?
+          raise "No such venue: #{encrypted_data[0]}"
+        end
+      else
+        raise "Invalid authorization code"
+      end
+      data = encrypted_data[1]
+      #logger.debug("data: #{data}")
+      cipher = Gibberish::AES.new(@venue.auth_code)
+      decrypted = cipher.dec(data)
+      #logger.debug("decrypted text: #{decrypted}")
+      decrypted_data = JSON.parse(decrypted) 
+      now_secs = decrypted_data["expiry_ts"]/1000
+      data_expiry_ts = Time.at(now_secs)  
+      # Cache expires in 12 hrs
+      if (data_expiry_ts >= Time.now) && Cache.add(params[:data], true, 43200)        
+        Request.transaction do
+          request_info = {
+            :type => RequestType.EARN_POINTS,
+            :frequency1 => params[:frequency1],
+            :frequency2 => params[:frequency2],
+            :frequency3 => params[:frequency3],
+            :latitude => params[:latitude],
+            :longitude => params[:longitude],
+            :data => params[:data]
+          }
+          Request.create(request_info)
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => true } }
+          end
+        end
+      else
+        raise "Authorization code expired"
+      end      
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      Cache.delete(params[:data])
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.merchant_earn_request_failure").split('\n') } }
+      end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      Cache.delete(params[:data])
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.merchant_earn_request_failure").split('\n') } }
+      end
+    end
+  end
+  
+  private
+
+  def earn_common
     @venue_id = params[:venue_id]
     authorized = false
     invalid_code = false
-    sign_up_code = false
-    if APP_PROP["SIMULATOR_MODE"]
+    if signed_in? && APP_PROP["SIMULATOR_MODE"]
       if @venue_id.nil?
         @venue = Venue.first(:offset => 0, :limit => 1)
       else
@@ -20,88 +92,84 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       authorized = true
     else
       begin
-        if current_user.role == "test"
-          if @venue_id.nil?
-            @venue = Venue.first(:offset => 0, :limit => 1)
-          else
-            @venue = Venue.get(@venue_id) || not_found
+        if signed_in? && params[:data].nil?
+          request_info = {
+            :type => RequestType.EARN_POINTS,
+            :frequency1 => params[:frequency1],
+            :frequency2 => params[:frequency2],
+            :frequency3 => params[:frequency3],
+            :latitude => params[:latitude],
+            :longitude => params[:longitude]
+          }
+          request_id, data = Common.match_request(request_info)
+          if data.nil?
+            raise "No matching earn points request"
+          end 
+        else
+          data = params[:data]
+        end
+        
+        encrypted_data = data.split('$')
+        if encrypted_data.length != 2
+          raise "Invalid authorization code format"
+        end
+        match_pattern = /^(\d*)$/.match(encrypted_data[0])
+        if match_pattern
+          @venue = Venue.get(encrypted_data[0])
+          if @venue.nil?
+            raise "No such venue: #{encrypted_data[0]}"
+          end
+          if (@venue_id && (@venue.id != @venue_id.to_i))
+            raise "Venue information don't match', venue_id:#{@venue_id}, venue id:#{@venue.id}"
           end
         else
-          encrypted_data = params[:data].split('$')
-          if encrypted_data.length != 2
-            raise "Invalid authorization code format"
-          end
-          match_pattern = /^(\d*)$/.match(encrypted_data[0])
-          if match_pattern
-            @venue = Venue.get(encrypted_data[0])
-            if @venue.nil?
-              raise "No such venue: #{encrypted_data[0]}"
-            end
-            if (@venue_id && (@venue.id != @venue_id.to_i))
-              raise "Venue information don't match', venue_id:#{@venue_id}, venue id:#{@venue.id}"
-            end
-          else
-            match_pattern = /^m(\d*)$/.match(encrypted_data[0])
-            if match_pattern
-              merchant = Merchant.get(match_pattern[1])
-              if merchant.nil?
-                raise "No such merchant: #{match_pattern[1]}"
-              end
-              sign_up_code = true
-              if @venue_id.nil?
-                @venue = Venue.find_nearest(current_user, merchant.id, params[:latitude], params[:longitude], 1).first
-              else
-                @venue = Venue.get(@venue_id)
-                if @venue.nil?
-                  raise "No such venue: #{@venue_id}"
-                elsif @venue.merchant.id != merchant.id
-                  raise "Merchant information don't match', merchant_id:#{@venue.merchant.id}, merchant id:#{merchant.id}"  
-                end  
-              end  
-            else
-              raise "Invalid authorization code"
-            end
-          end  
-        end
+          raise "Invalid authorization code"
+        end        
         data = encrypted_data[1]
         #logger.debug("data: #{data}")
-        if sign_up_code
-          cipher = Gibberish::AES.new(merchant.auth_code)
-          decrypted = cipher.dec(data)
-          #logger.debug("decrypted text: #{decrypted}")
-          decrypted_data = JSON.parse(decrypted)
-          amount = 0.00
-          authorized = true
-        else
-          cipher = Gibberish::AES.new(@venue.auth_code)
-          decrypted = cipher.dec(data)
-          #logger.debug("decrypted text: #{decrypted}")
-          decrypted_data = JSON.parse(decrypted)
-          now_secs = decrypted_data["expiry_ts"]/1000
-          data_expiry_ts = Time.at(now_secs)
-          #logger.debug("decrypted type: #{decrypted_data["type"]}")
-          #logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
-          #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::EARN_POINTS}")
-          #logger.debug("Time comparison: #{data_expiry_ts >= Time.now}")
-          #logger.debug("EarnRewardRecord doesn't exists: #{EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?}")
-          if (decrypted_data["type"] == EncryptedDataType::EARN_POINTS) && (data_expiry_ts >= Time.now)
-            if EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
-              amount = decrypted_data["amount"].to_f
-              if amount >= 1.00
-                #logger.debug("Set authorized to true")
-                authorized = true
-              else
-                raise "Amount must be >= 1.00"  
-              end
-            end
-          else
-            invalid_code = true
+        cipher = Gibberish::AES.new(@venue.auth_code)
+        decrypted = cipher.dec(data)
+        #logger.debug("decrypted text: #{decrypted}")
+       
+        decrypted_data = JSON.parse(decrypted)
+        now_secs = decrypted_data["expiry_ts"]/1000
+        data_expiry_ts = Time.at(now_secs)
+        if not signed_in?
+          tag = UserTag.get(:tag_id => decrypted_data["tag_id"])
+          if tag.nil?
+            raise "No such tag: #{decrypted_data["tag_id"]}"
           end
+          user_to_tag = UserToTag.first(:fields => [:user_id], :tag_id => tag.id)
+          if user_to_tag.nil?
+            raise "No user is associated with this tag: #{decrypted_data["tag_id"]}"
+          end
+          current_user = User.get(user_to_tag.user_id)
+          if current_user.nil?
+            raise "No such user: #{user_to_tag.user_id}"
+          end
+        end
+        #logger.debug("decrypted type: #{decrypted_data["type"]}")
+        #logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
+        #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::EARN_POINTS}")
+        #logger.debug("Time comparison: #{data_expiry_ts >= Time.now}")
+        #logger.debug("EarnRewardRecord doesn't exists: #{EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?}")
+        if decrypted_data["type"] == EncryptedDataType::EARN_POINTS
+          if (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
+            amount = decrypted_data["amount"].to_f
+            if amount >= 1.00
+              #logger.debug("Set authorized to true")
+              authorized = true
+            else
+              raise "Amount must be >= 1.00"  
+            end
+          end
+        else
+          invalid_code = true
         end
       rescue StandardError => e
         logger.error("Exception: " + e.message)
-        if @venue.nil?
-          logger.info("User(#{current_user.id}) failed to earn points, invalid authorization code")
+        if @venue.nil? || current_user.nil?
+          logger.info("User failed to earn points, invalid authorization code")
         else
           logger.info("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), invalid authorization code")
         end
@@ -137,15 +205,6 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         end
         return
       end
-    elsif sign_up_code
-      if @customer.visits > 0
-        logger.info("User(#{current_user.id}) failed to earn sign up points at Merchant(#{@venue.merchant.id}), already signed up")
-        respond_to do |format|
-          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.already_signed_up").split('\n') } }
-        end
-        return
-      end
     end
 
     logger.info("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
@@ -170,7 +229,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @customer.reload
           #logger.debug("Authorized to earn points.")
           prize_points = 1
-          @reward_info = { :points => 0, :referral_points => 0, :prize_points => 0, :badge_prize_points => 0, :eligible_prize_id => 0 }
+          @reward_info = { :points => 0, :signup_points => 0, :referral_points => 0, :prize_points => 0, :badge_prize_points => 0, :eligible_prize_id => 0 }
           now = Time.now
           challenge_type_id = ChallengeType.value_to_id["referral"]
           challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
@@ -275,38 +334,36 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             @reward_info[:signup_points] = reward_model.signup_points
           end
 
-          if amount > 0.00
-            points = (amount / reward_model.price_per_point).to_i
-            record = EarnRewardRecord.new(
-              :type => :purchase,
-              :venue_id => @venue.id,
-              :data => data,
-              :data_expiry_ts => data_expiry_ts,
-              :points => points,
-              :amount => amount,
-              :created_ts => now,
-              :update_ts => now
-            )
-            record.merchant = @venue.merchant
-            record.customer = @customer
-            record.user = current_user
-            record.save
-            trans_record = TransactionRecord.new(
-              :type => :earn_points,
-              :ref_id => record.id,
-              :description => I18n.t("transaction.earn"),
-              :points => points,
-              #:fee => amount * APP_PROP["TRANS_FEE"],
-              :created_ts => now,
-              :update_ts => now
-            )
-            trans_record.merchant = @venue.merchant
-            trans_record.customer = @customer
-            trans_record.user = current_user
-            trans_record.save
-            @customer.points += points
-            @reward_info[:points] = points
-          end
+          points = (amount / reward_model.price_per_point).to_i
+          record = EarnRewardRecord.new(
+            :type => :purchase,
+            :venue_id => @venue.id,
+            :data => data,
+            :data_expiry_ts => data_expiry_ts,
+            :points => points,
+            :amount => amount,
+            :created_ts => now,
+            :update_ts => now
+          )
+          record.merchant = @venue.merchant
+          record.customer = @customer
+          record.user = current_user
+          record.save
+          trans_record = TransactionRecord.new(
+            :type => :earn_points,
+            :ref_id => record.id,
+            :description => I18n.t("transaction.earn"),
+            :points => points,
+            #:fee => amount * APP_PROP["TRANS_FEE"],
+            :created_ts => now,
+            :update_ts => now
+          )
+          trans_record.merchant = @venue.merchant
+          trans_record.customer = @customer
+          trans_record.user = current_user
+          trans_record.save
+          @customer.points += points
+          @reward_info[:points] = points
 
           #logger.debug("Before acquiring cache mutex.")
           @venue_mutex = CacheMutex.new(@venue.cache_key, Cache.memcache)
@@ -318,80 +375,77 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           reward_model.total_visits += 1
           reward_model.save
           
-          if amount > 0.00
-            prize_info = @venue.prize_info
-            if prize_info.prize_interval == 0
-              prize_interval = pick_prize_interval(reward_model, @venue)
-              prize_info.prize_interval = prize_interval
-              prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
-            else
-              prize_interval = prize_info.prize_interval
+          prize_info = @venue.prize_info
+          if prize_info.prize_interval == 0
+            prize_interval = pick_prize_interval(reward_model, @venue)
+            prize_info.prize_interval = prize_interval
+            prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
+          else
+            prize_interval = prize_info.prize_interval
+          end
+          current_point_offset = prize_info.prize_point_offset + points
+          #logger.debug("Check if Prize has been won yet.")
+          won_prize_before = EarnPrizeRecord.count(:customer => @customer, :type => :game, :points.gt => 1) > 0
+          if (prize_info.prize_point_offset < prize_info.prize_win_offset)
+            if (current_point_offset >= prize_info.prize_win_offset) || ((@customer.visits > 1) && !won_prize_before)
+              prize_points = prize_interval
             end
-            current_point_offset = prize_info.prize_point_offset + points
-            #logger.debug("Check if Prize has been won yet.")
-            won_prize_before = EarnPrizeRecord.count(:customer => @customer, :type => :game, :points.gt => 1) > 0
-            if (prize_info.prize_point_offset < prize_info.prize_win_offset)
-              if (current_point_offset >= prize_info.prize_win_offset) || ((@customer.visits > 1) && !won_prize_before)
-                prize_points = prize_interval
-              end
-              if (current_point_offset < prize_info.prize_win_offset) && ((@customer.visits > 1) && !won_prize_before)
+            if (current_point_offset < prize_info.prize_win_offset) && ((@customer.visits > 1) && !won_prize_before)
+              prize_info.prize_win_offset = current_point_offset
+            end
+          end
+          if current_point_offset >= prize_interval
+            #logger.debug("Current Point Offset >= Prize Interval.")
+            current_point_offset -= prize_interval
+            prize_interval = pick_prize_interval(reward_model, @venue)
+            prize_info.prize_interval = prize_interval
+            prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
+            if (prize_points == 1) && ((current_point_offset >= prize_info.prize_win_offset) || ((@customer.visits > 1) && !won_prize_before))
+              prize_points = prize_interval
+              if current_point_offset >= prize_info.prize_win_offset
+                prize_interval = pick_prize_interval(reward_model, @venue)
+                prize_info.prize_interval = prize_interval
+                prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
+                current_point_offset = current_point_offset % prize_interval
+              else
                 prize_info.prize_win_offset = current_point_offset
               end
+            elsif current_point_offset >= prize_info.prize_win_offset
+              current_point_offset = pick_prize_win_offset(prize_info.prize_win_offset - 1) + 1
             end
-            if current_point_offset >= prize_interval
-              #logger.debug("Current Point Offset >= Prize Interval.")
-              current_point_offset -= prize_interval
-              prize_interval = pick_prize_interval(reward_model, @venue)
-              prize_info.prize_interval = prize_interval
-              prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
-              if (prize_points == 1) && ((current_point_offset >= prize_info.prize_win_offset) || ((@customer.visits > 1) && !won_prize_before))
-                prize_points = prize_interval
-                if current_point_offset >= prize_info.prize_win_offset
-                  prize_interval = pick_prize_interval(reward_model, @venue)
-                  prize_info.prize_interval = prize_interval
-                  prize_info.prize_win_offset = pick_prize_win_offset(prize_interval) + 1
-                  current_point_offset = current_point_offset % prize_interval
-                else
-                  prize_info.prize_win_offset = current_point_offset
-                end
-              elsif current_point_offset >= prize_info.prize_win_offset
-                current_point_offset = pick_prize_win_offset(prize_info.prize_win_offset - 1) + 1
-              end
-            end
-            #logger.debug("Set Prize Point Offset = Current Point Offset.")
-            prize_info.prize_point_offset = current_point_offset
-            prize_info.save
-
-            previous_prize_points = @customer.prize_points
-            @customer.prize_points += prize_points
-            @reward_info[:prize_points] = prize_points
-
-            prize_record = EarnPrizeRecord.new(
-              :type => :game,
-              :venue_id => @venue.id,
-              :points => prize_points,
-              :created_ts => now,
-              :update_ts => now
-            )
-            prize_record.merchant = @venue.merchant
-            prize_record.customer = @customer
-            prize_record.user = current_user
-            prize_record.save
-            prize_trans_record = TransactionRecord.new(
-              :type => :earn_prize_points,
-              :ref_id => prize_record.id,
-              :description => I18n.t("transaction.earn"),
-              :points => prize_points,
-              :created_ts => now,
-              :update_ts => now
-            )
-            prize_trans_record.merchant = @venue.merchant
-            prize_trans_record.customer = @customer
-            prize_trans_record.user = current_user
-            prize_trans_record.save
-          else
-            previous_prize_points = 0  
           end
+          #logger.debug("Set Prize Point Offset = Current Point Offset.")
+          prize_info.prize_point_offset = current_point_offset
+          prize_info.save
+
+          previous_prize_points = @customer.prize_points
+          @customer.prize_points += prize_points
+          @reward_info[:prize_points] = prize_points
+
+          prize_record = EarnPrizeRecord.new(
+            :type => :game,
+            :venue_id => @venue.id,
+            :points => prize_points,
+            :created_ts => now,
+            :update_ts => now
+          )
+          prize_record.merchant = @venue.merchant
+          prize_record.customer = @customer
+          prize_record.user = current_user
+          prize_record.save
+          prize_trans_record = TransactionRecord.new(
+            :type => :earn_prize_points,
+            :ref_id => prize_record.id,
+            :description => I18n.t("transaction.earn"),
+            :points => prize_points,
+            :created_ts => now,
+            :update_ts => now
+          )
+          prize_trans_record.merchant = @venue.merchant
+          prize_trans_record.customer = @customer
+          prize_trans_record.user = current_user
+          prize_trans_record.save
+          
           if @customer.badge_reset_ts <= @venue.merchant.badges_update_ts
             @customer.badge, @customer.next_badge_visits = Common.find_badge(@badges.to_a, @customer.visits)
             @customer.badge_reset_ts = now
@@ -468,10 +522,11 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             @prizes = prizes
           end
           render :template => '/api/v1/purchase_rewards/earn'
+          Request.destroy(request_id) if request_id > 0
           if referral_challenge
             UserMailer.referral_challenge_confirm_email(referrer.user, @customer.user, @venue, referral_record).deliver
           end
-          logger.info("User(#{current_user.id}) successfully earned #{@reward_info[:points]} points, #{@reward_info[:referral_points]} referral points, #{@reward_info[:prize_points]} prize points, #{@reward_info[:badge_prize_points]} badge prize points at Venue(#{@venue.id})")
+          logger.info("User(#{current_user.id}) successfully earned #{@reward_info[:points]} points, #{@reward_info[:signup_points]} signup points, #{@reward_info[:referral_points]} referral points, #{@reward_info[:prize_points]} prize points, #{@reward_info[:badge_prize_points]} badge prize points at Venue(#{@venue.id})")
         else
           if invalid_code
             msg = t("api.purchase_rewards.invalid_code").split('\n')
@@ -504,9 +559,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       @customer_mutex.release if ((defined? @customer_mutex) && !@customer_mutex.nil?)
     end
   end
-
-  private
-
+  
   def pick_prize_interval(reward_model, venue)
     if not @pick_prize_initialized
       @prize_rewards = CustomerReward.all(:customer_reward_venues => { :venue_id => venue.id }, :mode => :prize, :order => [:points.asc])

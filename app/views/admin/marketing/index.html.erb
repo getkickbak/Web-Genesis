@@ -1,15 +1,35 @@
-<% content_for :link do %>
-<% end %>
 <div class="main">
-   <div class="row-fluid">
-      <div class="span3"></div>
-      <div class="span6">
-         <ul class="nav nav-list well">
-            <li class="nav-header"> Features </li>
-            <li><%= link_to 'Print Poster', "http://files.getkickbak.com/poster.jpg" %></li>
-            <li><%= link_to 'Print Table Topper', "http://files.getkickbak.com/check_in.pdf" %></li>
-            <li><%= link_to 'Update Table Topper', update_checkin_image_path %></li>
-         </ul>
+   <div class="main-inner">
+      <div class="container">
+         <div class="row">
+         	<div class="span1"></div>
+            <div class="span10">
+               <div class="widget widget-table action-table">
+                  <div class="widget-header">
+                     <i class="icon-picture"></i>
+                     <h3>Promotional Stuff</h3>
+                  </div>
+                  <div class="widget-content">
+                     <table class="table table-striped table-bordered">
+                        <tbody>
+                           <tr>
+                              <td>Poster</td>
+                              <td class="td-actions">
+                              <!-- -->
+                              <%= link_to("http://files.getkickbak.com/poster.jpg", :class=>"btn btn-small btn-warning", :title=>"print" ) do %>
+                              <!-- -->
+                              <i class="btn-icon-only icon-print"></i>
+                              <!-- -->
+                              <% end %>
+                              <!-- -->
+                              </td>
+                           </tr>
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+         </div>
       </div>
    </div>
 </div>

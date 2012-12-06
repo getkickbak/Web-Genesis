@@ -1,12 +1,17 @@
-<div class="content">
-	<%= simple_form_for [@user], :html => { :class => 'form-horizontal' } do |f| %>
-	<%= f.input :name %>
-	<%= f.input :email %>
-	<%= f.input :role, :collection => User::Roles %>
-	<%= f.input :status, :collection => User::Statuses %>
-	<%= f.input :current_password %>
-	<%= f.input :password %>
-	<%= f.input :password_confirmation %>
-	<%= f.button :submit, :class => 'btn-primary' %>
-	<% end %>
-</div>
+<%= simple_form_for @user, :html => { :class => 'form-horizontal' } do |f| %>
+<fieldset>
+	<%= f.input :name, :input_html=>{:class => "input-xxlarge"} %>
+	<%= f.input :email, :input_html=>{:class => "input-xxlarge"} %>
+	<%= f.input :role, :collection => User::Roles, :input_html => { :class => 'input-medium' } %>
+	<%= f.input :status, :collection => User::Statuses, :input_html => { :class => 'input-medium' } %>
+	<%= f.input :current_password, :input_html=>{:class => "input-medium"} %>
+	<%= f.input :password, :input_html=>{:class => "input-medium"} %>
+	<%= f.input :password_confirmation, :input_html=>{:class => "input-medium"} %>
+	<br />
+	<div class="form-actions">
+		<%= f.button :submit , 'Update', :class => 'btn btn-primary' %>
+		<%= link_to("Cancel", user_path(@user), :class => 'btn') %>
+	</div>
+	<!-- /form-actions -->
+</fieldset>
+<% end %>

@@ -15,7 +15,6 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
     end
     
     @customer = Customer.first(:merchant => @venue.merchant, :user => current_user)
-    is_customer = true
     if @customer.nil?
       @customer = Customer.new
       @customer.id = 0
@@ -23,7 +22,6 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
       @customer.prize_points = 0
       @customer.last_check_in = CheckIn.new
       @customer.merchant = @venue.merchant
-      is_customer = false
     else
       @badges = Common.populate_badges(@venue.merchant, session[:user_agent] || :iphone, session[:resolution] || :mxhdpi)
       if @customer.badge_reset_ts <= @venue.merchant.badges_update_ts

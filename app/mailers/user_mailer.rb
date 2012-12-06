@@ -47,6 +47,17 @@ class UserMailer < ActionMailer::Base
     mail(:to => sender.email, :subject => I18n.t("mailer.email_subject_confirm_points_transfer"))
   end
   
+  def welcome_email(user, password)
+    @user = user
+    @password = password
+    mail(:to => user.email, :subject => I18n.t("mailer.email_subject_welcome"))
+  end
+  
+  def activate_tag_email(user)
+    @user = user
+    mail(:to => user.email, :subject => I18n.t("mailer.email_subject_activate_tag"))  
+  end
+  
   def reset_password_email(user, new_password)
     @user = user
     @new_password = new_password

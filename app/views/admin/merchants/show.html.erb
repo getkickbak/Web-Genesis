@@ -1,36 +1,110 @@
-<p id="notice"> <%= notice %> </p>
-<div class="main">
-   <div class="row-fluid">
-      <div class="span3"></div>
-      <div class="span6">
-         <ul class="nav nav-list well">
-            <h3 class="alignCenter">Account Information</h3>
-            <p><b>Id:</b> <%= @merchant.id %> </p>
-
-            <p><b>Name:</b> <%= @merchant.name %> </p>
-
-            <p><b>Email:</b> <%= @merchant.email %> </p>
-
-            <p><b>Contact First Name:</b> <%= @merchant.account_first_name %> </p>
-
-            <p><b>Contact Last Name:</b> <%= @merchant.account_last_name %> </p>
-
-            <p><b>Phone:</b> <%= @merchant.phone %> </p>
-
-            <% if not @merchant.website.empty? %>
-            <p><b>Website:</b> <%= @merchant.website %> </p>
-            <% end %>
-
-            <p><b>Status:</b> <%= @merchant.status %> </p>
-
-            <div>
-               <%= link_to 'List Devices', merchant_devices_path(@merchant) %>
-            </div>
-            <div>
-               <%= button_to 'Login', merchant_session_url(:subdomain => "merchant", :auth_token => @merchant.authentication_token, :sid => @current_staff.id) %>
-            </div>
-            <%= link_to 'Edit', edit_merchant_path(@merchant) %> |
-            <%= link_to 'Back', merchants_path %>
-      </div>
-   </div>
+<% content_for :script do %>
+<script type="text/javascript">
+	$(document).ready($(function() {
+	var notice_msg=$("#notice").html();
+	if(notice_msg) {
+	Genesis.showWarningMsg(notice_msg,null,true);
+	}
+	}));
+</script>
+<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+	<p>
+		<%= flash[:notice] %>
+	</p>
 </div>
+<% end %>
+<div class="main">
+	<div class="main-inner">
+		<div class="container">
+			<div class="row">
+				<div class="span1"></div>
+				<div class="span10">
+					<div class="widget ">
+						<div class="widget-header">
+							<i class="icon-money"></i>
+							<h3>Merchant</h3>
+						</div>
+						<!-- /widget-header -->
+						<div class="widget-content">
+							<div class="tabbable">
+								<ul class="nav nav-tabs">
+									<li class="active">
+										<a href="#venue" data-toggle="tab">Info</a>
+									</li>
+								</ul>
+								<br>
+								<div class="tab-content">
+									<div class="tab-pane active" id="venue">
+										<div class="not-edit form-horizontal">
+											<div class="control-group">
+												<label class="control-label"> Name: </label>
+												<div class="controls">
+													<%= @merchant.name %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> Email: </label>
+												<div class="controls">
+													<%= @merchant.email %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> Contact First Name: </label>
+												<div class="controls">
+													<%= @merchant.account_first_name %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> Contact Last Name: </label>
+												<div class="controls">
+													<%= @merchant.account_last_name %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> Phone: </label>
+												<div class="controls">
+													<%= @merchant.phone %>
+												</div>
+											</div>
+											<% if not @merchant.website.empty? %>
+											<div class="control-group">
+												<label class="control-label"> Website: </label>
+												<div class="controls">
+													<%= @merchant.website %>
+												</div>
+											</div>
+											<% end %>
+											<div class="control-group">
+												<label class="control-label"> Status: </label>
+												<div class="controls">
+													<%= @merchant.status %>
+												</div>
+											</div>
+											<div>
+               									<%= link_to 'List Devices', merchant_devices_path(@merchant) %>
+            								</div>
+            								<div>
+               									<%= button_to 'Login', merchant_session_url(:subdomain => "merchant", :auth_token => @merchant.authentication_token, :sid => @current_staff.id) %>
+            								</div>
+											<%= link_to 'Edit', edit_merchant_path(@merchant) %> |
+        									<%= link_to 'Back', merchants_path %>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- /widget-content -->
+					</div>
+					<!-- /widget -->
+				</div>
+			</div>
+			<!-- /row -->
+		</div>
+		<!-- /container -->
+	</div>
+	<!-- /main-inner -->
+</div>
+<!-- /main -->

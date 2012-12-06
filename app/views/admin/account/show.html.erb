@@ -1,18 +1,71 @@
-<p id="notice"><%= notice %></p>
-<div class="main">
-   <div class="row-fluid">
-      <div class="span3"></div>
-      <div class="span6">
-         <ul class="nav nav-list well">
-            <li class="nav-header"> Account Information </li>
-            <p><b>Name:</b> <%= @staff.name %> </p>
-
-            <p><b>Email:</b> <%= @staff.email %> </p>
-
-            <p>
-            <%= link_to 'Edit', edit_account_path %>
-            </p>
-         </ul>
-      </div>
-   </div>
+<% content_for :script do %>
+<script type="text/javascript">
+	$(document).ready($(function() {
+	var notice_msg=$("#notice").html();
+	if(notice_msg) {
+	Genesis.showWarningMsg(notice_msg,null,true);
+	}
+	}));
+</script>
+<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+	<p>
+		<%= flash[:notice] %>
+	</p>
 </div>
+<% end %>
+<div class="main">
+	<div class="main-inner">
+		<div class="container">
+			<div class="row">
+				<div class="span1"></div>
+				<div class="span10">
+					<div class="widget ">
+						<div class="widget-header">
+							<i class="icon-user"></i>
+							<h3>Your Account</h3>
+						</div>
+						<!-- /widget-header -->
+						<div class="widget-content">
+							<div class="tabbable">
+								<ul class="nav nav-tabs">
+									<li class="active">
+										<a href="#venue" data-toggle="tab">Profile</a>
+									</li>
+								</ul>
+								<br>
+								<div class="tab-content">
+									<div class="tab-pane active" id="venue">
+										<div class="not-edit form-horizontal">
+											<div class="control-group">
+												<label class="control-label"> Name: </label>
+												<div class="controls">
+													<%= @staff.name %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> Email: </label>
+												<div class="controls">
+													<%= @staff.email %>
+												</div>
+											</div>
+											<%= link_to 'Edit', edit_account_path %>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- /widget-content -->
+					</div>
+					<!-- /widget -->
+				</div>
+			</div>
+			<!-- /row -->
+		</div>
+		<!-- /container -->
+	</div>
+	<!-- /main-inner -->
+</div>
+<!-- /main -->

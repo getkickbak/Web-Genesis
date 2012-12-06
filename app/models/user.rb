@@ -45,6 +45,8 @@ class User
   attr_accessible :name, :email, :facebook_id, :facebook_email, :role, :status, :current_password, :password, :password_confirmation
     
   has 1, :profile, 'UserProfile', :constraint => :destroy
+  has 1, :user_to_tag, :constraint => :destroy
+  has 1, :tag, 'UserTag', :through => :user_to_tag,  :via => :user_tag
   has n, :friendships, :child_key => [ :source_id ], :constraint => :destroy
   has n, :friends, self, :through => :friendships, :via => :target
   has n, :links_to_followed_users, 'Relationship', :child_key => [ :follower_id ], :constraint => :destroy
@@ -116,6 +118,16 @@ class User
     self.status = user_info[:status]
     self.update_ts = now
     save
+  end
+  
+  def register_tag(tag)
+    if not self.tag.nil?
+      return if self.tag.id == tag.id
+      self.tag.destroy
+    end
+    tag.status = :active
+    self.tag = tag
+    save  
   end
   
   def follow(others)

@@ -55,7 +55,12 @@ class Api::V1::CheckInsController < Api::V1::BaseApplicationController
     @customer = Customer.first(:merchant => @venue.merchant, :user => current_user)
     if @customer.nil?
       if (@venue.merchant.role == "merchant" && current_user.role == "user") || (@venue.merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
-        @customer = Customer.create(@venue.merchant, current_user)  
+        @customer = Customer.new
+        @customer.id = 0
+        @customer.points = 0
+        @customer.prize_points = 0
+        @customer.last_check_in = CheckIn.new
+        @customer.eager_load_merchant = @venue.merchant   
       else
         logger.info("User(#{current_user.id}) failed to check-in at Merchant(#{@venue.merchant.id}), account not compatible with merchant")
         respond_to do |format|
@@ -73,15 +78,17 @@ class Api::V1::CheckInsController < Api::V1::BaseApplicationController
     begin
       CheckIn.transaction do
         now = Time.now
-        last_check_in = CheckIn.create(@venue, current_user, @customer)
-        @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
-        if @customer.badge_reset_ts <= @venue.merchant.badges_update_ts
-          @customer.badge, @customer.next_badge_visits = Common.find_badge(@badges.to_a, @customer.visits)
-          @customer.badge_reset_ts = Time.now
-          @customer.save
+        if @customer.id > 0
+          last_check_in = CheckIn.create(@venue, current_user, @customer)
+          if @customer.badge_reset_ts <= @venue.merchant.badges_update_ts
+            @customer.badge, @customer.next_badge_visits = Common.find_badge(@badges.to_a, @customer.visits)
+            @customer.badge_reset_ts = Time.now
+            @customer.save
+          end
+          @next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
+          @account_info = { :badge_id => @customer.badge.id, :next_badge_id => @next_badge.id }
         end
-        @next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
-        @account_info = { :badge_id => @customer.badge.id, :next_badge_id => @next_badge.id }
+        @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
         @rewards = Common.get_rewards(@venue, :reward)
         @prizes = Common.get_rewards(@venue, :prize)
         @newsfeed = Common.get_news(@venue)

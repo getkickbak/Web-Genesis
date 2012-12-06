@@ -44,16 +44,20 @@ module Rails
 
       def set_session(env, sid, session_data, options = {})
         session            = find_session(sid)
-        session.data       = session_data
-        session.updated_at = DateTime.now if session.dirty?
-        session.save ? sid : false
+        if session.new? && session_data.empty?
+          true
+        else
+          session.data       = session_data
+          session.updated_at = DateTime.now if session.dirty?
+          session.save ? sid : false
+        end
       end
 
       def get_session_resource(env, sid)
         if env[ENV_SESSION_OPTIONS_KEY][:id].nil?
           env[SESSION_RECORD_KEY] = find_session(sid)
         else
-        env[SESSION_RECORD_KEY] ||= find_session(sid)
+          env[SESSION_RECORD_KEY] ||= find_session(sid)
         end
       end
 

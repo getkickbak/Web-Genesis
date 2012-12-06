@@ -1,5 +1,7 @@
 class Api::V1::ChallengesController < Api::V1::BaseApplicationController
-  before_filter :authenticate_user!
+  skip_before_filter :verify_authenticity_token, :only => [:cmoplete_request]
+  before_filter :authenticate_user!, :except => [:complete_request]
+  skip_authorization_check :only => [:complete_request]
   
   def index
     @venue = Venue.get(params[:venue_id]) || not_found
@@ -66,6 +68,54 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
     end  
   end
   
+  def complete_request
+    @venue = Venue.get(params[:venue_id]) || not_found
+    begin      
+      data = params[:data]
+      #logger.debug("data: #{data}")
+      cipher = Gibberish::AES.new(@venue.auth_code)
+      decrypted = cipher.dec(data)
+      #logger.debug("decrypted text: #{decrypted}")
+      decrypted_data = JSON.parse(decrypted)
+      data_expiry_ts = Time.at(decrypted_data["expiry_ts"]/1000)  
+      # Cache expires in 12 hrs
+      if (data_expiry_ts >= Time.now) && Cache.add(data, true, 43200) 
+        Request.transaction do
+          request_info = {
+            :type => RequestType.EARN_POINTS,
+            :frequency1 => params[:frequency1],
+            :frequency2 => params[:frequency2],
+            :frequency3 => params[:frequency3],
+            :latitude => params[:latitude],
+            :longitude => params[:longitude],
+            :data => data
+          }
+          Request.create(request_info)
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => true } }
+          end
+        end
+      else
+        raise "Authorization code expired"            
+      end  
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      Cache.delete(params[:data])
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.challenges.complete_request_failure").split('\n') } }
+      end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      Cache.delete(params[:data])
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.challenges.complete_request_failure").split('\n') } }
+      end
+    end
+  end
+  
   def complete
     @venue = Venue.get(params[:venue_id]) || not_found
     @challenge = Challenge.first(:id => params[:id], :merchant => @venue.merchant) || not_found
@@ -92,16 +142,31 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       return
     end
 
-    if APP_PROP["SIMULATOR_MODE"]
-      data = String.random_alphanumeric(32)
-    else
-      data = params[:data]
-    end
     @data_expiry_ts = nil
     satisfied = false
     authorized = false
     @invalid_code = false
     begin
+      if APP_PROP["SIMULATOR_MODE"]
+        data = String.random_alphanumeric(32)
+      else
+        if params[:data].nil?
+          request_info = {
+            :type => RequestType.EARN_POINTS,
+            :frequency1 => params[:frequency1],
+            :frequency2 => params[:frequency2],
+            :frequency3 => params[:frequency3],
+            :latitude => params[:latitude],
+            :longitude => params[:longitude]
+          }
+          request_id, data = Common.match_request(request_info)
+          if data.nil?
+            raise "No matching complete challenge request"
+          end
+        else
+          data = params[:data]
+        end  
+      end
       if is_challenge_satisfied?
         satisfied = true
         if ((!@challenge.require_verif) || (@challenge.require_verif && authenticated?(data)))
@@ -166,16 +231,19 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
               @customer.save
               @account_info[:eligible_for_reward] = eligible_for_reward
               render :template => '/api/v1/challenges/complete'
+              Request.destroy(request_id) if request_id > 0
               logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), #{@challenge.points} points awarded")
             else
               @account_info[:eligible_for_reward] = @customer.eligible_for_reward
               @msg = get_success_no_points_limit_reached_msg.split('\n')  
               render :template => '/api/v1/challenges/complete'
+              Request.destroy(request_id) if request_id > 0
               logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because limit reached")
             end
           else
             @msg = get_success_no_points_msg.split('\n')  
             render :template => '/api/v1/challenges/complete'
+            Request.destroy(request_id) if request_id > 0
             logger.info("User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because it is not eligible")
           end
         else
@@ -219,13 +287,40 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
     authorized = false
     
     begin
-      encrypted_data = params[:data].split('$')
-      if encrypted_data.length != 2
-        raise "Invalid referral code format"
-      end
-      merchant = Merchant.get(encrypted_data[0])
-      if merchant.nil?
-        raise "No such merchant: #{encrypted_data[0]}"
+      if params[:data].nil?
+        request_info = {
+          :type => RequestType.REFERRAL,
+          :frequency1 => params[:frequency1],
+          :frequency2 => params[:frequency2],
+          :frequency3 => params[:frequency3],
+          :latitude => params[:latitude],
+          :longitude => params[:longitude]
+        }
+        request_id, data = Common.match_request(request_info)
+        if data.nil?
+          raise "No matching referral request"
+        end
+        decrypted_data = JSON.parse(data)
+        merchant = Merchant.get(decrypted_data["merchant_id"])
+        if merchant.nil?
+          raise "No such merchant: #{decrypted_data["merchant_id"]}"
+        end
+      else
+        data = params[:data] 
+        encrypted_data = data.split('$')
+        if encrypted_data.length != 2
+          raise "Invalid referral code format"
+        end
+        merchant = Merchant.get(encrypted_data[0]) 
+        if merchant.nil?
+          raise "No such merchant: #{encrypted_data[0]}"
+        end
+        data = encrypted_data[1] 
+        #logger.debug("data: #{data}")
+        cipher = Gibberish::AES.new(@customer.merchant.auth_code)
+        decrypted = cipher.dec(data)
+        #logger.debug("decrypted text: #{decrypted}")
+        decrypted_data = JSON.parse(decrypted)
       end
       
       if merchant.status != :active
@@ -253,12 +348,6 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         already_customer = true
       end
       
-      data = encrypted_data[1] 
-      #logger.debug("data: #{data}")
-      cipher = Gibberish::AES.new(@customer.merchant.auth_code)
-      decrypted = cipher.dec(data)
-      #logger.debug("decrypted text: #{decrypted}")
-      decrypted_data = JSON.parse(decrypted)
       referrer_id = decrypted_data["refr_id"]
       challenge_id = decrypted_data["chg_id"]
       #logger.debug("decrypted type: #{decrypted_data["type"]}")
@@ -325,6 +414,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
             :update_ts => now
           )
           render :template => '/api/v1/challenges/complete_referral'
+          Request.destroy(request_id) if request_id > 0
           logger.info("User(#{current_user.id}) successfully completed Referral Challenge(#{@challenge.id})")
         else  
           logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{@challenge.id}), invalid referral code")
@@ -436,12 +526,24 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           data = { 
             :type => EncryptedDataType::REFERRAL_CHALLENGE_DIRECT,
             :refr_id => @customer.id,
-            :chg_id => @challenge.id
+            :chg_id => @challenge.id,
+            :merchant_id => @venue.merchant.id
           }.to_json
-          cipher = Gibberish::AES.new(@venue.merchant.auth_code)
-          @encrypted_data = "#{@venue.merchant.id}$#{cipher.enc(data)}"
-          render :template => '/api/v1/challenges/start'
+          request_info = {
+            :type => RequestType.REFERRAL,
+            :frequency1 => params[:frequency1],
+            :frequency2 => params[:frequency2],
+            :frequency3 => params[:frequency3],
+            :latitude => params[:latitude],
+            :longitude => params[:longitude],
+            :data => data
+          }
+          Request.create(request_info)
           logger.info("User(#{current_user.id}) successfully created direct referral in Customer Account(#{@customer.id})")
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => true } }
+          end
         end
       else
         logger.info("User(#{current_user.id}) failed to create referral in Customer Account(#{@customer.id}), not a customer")

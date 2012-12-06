@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <meta name="apple-itunes-app" content="app-id=537476722">
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <%= yield :meta %>
+      <title>KICKBAK</title>
+      <!--
+      <%= stylesheet_link_tag :all %>
+      <%= javascript_include_tag :defaults %>
+      -->
+      <link rel="shortcut icon" href="http://files.getkickbak.com/v1/favicon.jpg"/>
+      <!--
+      <link rel="stylesheet" href="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/css/ui-lightness/jquery-ui-1.8.20.custom.css"/>
+      -->
+      <link rel="stylesheet" href="/javascripts/desktop/css/twitter-bootstrap-c52368d/bootstrap/css/bootstrap.min.css"/>
+      <link rel="stylesheet" href="/javascripts/desktop/css/twitter-bootstrap-c52368d/bootstrap/css/bootstrap-responsive.min.css"/>
+      <!-- Base Admin Theme : start -->
+      <link href="http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,400,600" rel="stylesheet">
+      <link href="/javascripts/desktop/css/font-awesome.css" rel="stylesheet">
+      <!--[if lt IE 8]>
+      <link href="/javascripts/desktop/css/font-awesome-ie7.css" rel="stylesheet">
+      <![endif]-->
+      <link href="/javascripts/desktop/css/base-admin.css" rel="stylesheet" type="text/css">
+      <link href="/javascripts/desktop/css/base-admin-responsive.css" rel="stylesheet">
+      <!-- Base Admin Theme : end -->
+      <link rel="stylesheet" href="/javascripts/desktop/css/common.css"/>
+      <!--[if lt IE 9]>
+      <link rel="stylesheet" href="/javascripts/desktop/css/common-ie8.css"/>
+      <![endif]-->
+      <link href="/javascripts/desktop/css/pages/dashboard.css" rel="stylesheet">
+      <link rel="stylesheet" href="/javascripts/desktop/css/merchant_common.css"/>
+      <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+      <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+      <![endif]-->
+
+      <!--
+      <% if signed_in? %>
+      <link rel="stylesheet" href="/stylesheets/application.css"/>
+      <% else %>
+      <link rel="stylesheet" href="/stylesheets/application_alt.css"/>
+      <% end %>
+      -->
+      <%= yield :link %>
+      <%= csrf_meta_tag %>
+   </head>
+   <body class="homepage">
+      <div id="page-background-top">
+         <img src="http://files.getkickbak.com/v1/headerimage4.gif">
+      </div>
+      <div id="page-background-bottom">
+         <img src="http://files.getkickbak.com/v1/contentbg.png">
+      </div>
+      <div id="page-background">
+         <img src="http://files.getkickbak.com/v1/contentbg.png">
+      </div>
+      <div class="navbar navbar-fixed-top">
+         <div class="navbar-inner">
+            <div class="container">
+               <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+               <!---->
+               <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+               <!---->
+               </a>
+               <a class="brand" href="/">&#160;</a>
+               <div class="nav-collapse">
+                  <ul class="nav pull-right">
+                  	<% if signed_in? %>
+                  	<li class="dropdown">
+                        <!---->
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                           <li><a href="/account">Settings</a></li>
+                        </ul>
+                     </li>
+                     <li class=""><a href="/sign_out">Sign Out</a></li>
+                     <% end %>
+                  </ul>
+               </div>
+            </div>
+         </div>
+      </div>
+      <!--/navbar-->
+      <div class="subnavbar">
+         <% if signed_in? %>
+         <div class="subnavbar-inner">
+            <div class="container">
+               <ul class="mainnav">
+                  <li><a href="/dashboard"> <i class="icon-dashboard"></i> <span>Dashboard</span> </a></li>
+                  <li><a href="/customer_rewards"> <i class="icon-gift"></i> <span>Rewards</span> </a></li>
+               </ul>
+            </div>
+            <!-- /container -->
+         </div>
+         <!-- /subnavbar-inner -->
+         <% end %>
+      </div>
+      <!-- /subnavbar -->
+      <div name="top" class="container">
+         <div class="alert alert-warning fade hide">
+            <a class="close">x</a>
+         </div>
+         <div class="alert alert-error fade hide">
+            <a class="close">x</a>
+         </div>
+      </div>
+      <%= yield %>
+      <!-- Footer  -->
+      <% if signed_in? %>
+      <div class="navbar navbar-fixed-bottom">
+         <div class="navbar-inner">
+            <div class="container">
+               <ul class="nav pull-left">
+                  <li><a href="/">&copy; Copyright KICKBAK 2012</a></li>
+               </ul>
+               <ul class="nav pull-right">
+                  <li><a href="/privacy">Privacy</a></li>
+                  <li><a href="/terms">Terms of Use</a></li>
+                  <li><a href="/contact_us">Contact Us</a></li>
+               </ul>
+            </div>
+         </div>
+      </div>
+      <% end %>
+      <div class="modal fade" id="modalPopup">
+         <div class="modal-header">
+            <a class="close" data-dismiss="modal">&times;</a>
+            <h3>Are you sure?</h3>
+         </div>
+         <div class="modal-body">
+            <p>Test Modal</p>
+         </div>
+         <div class="modal-footer">
+            <a href="#" class="btn btn-primary modal-ok">OK</a>
+            <a href="#" class="btn modal-cancel" data-dismiss="modal">Cancel</a>
+         </div>
+      </div>
+      <!-- Le javascript
+      ================================================== -->
+      <!-- Placed at the end of the document so the pages load faster -->
+      <script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-1.7.2.min.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/jquery-ui-1.8.20.custom/js/jquery-ui-1.8.20.custom.min.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/cowboy-jquery-resize-21ae0ec/jquery.ba-resize.min.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/css/twitter-bootstrap-c52368d/bootstrap/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="http://maps.google.com/maps/api/js?libraries=places&amp;sensor=true"></script>
+      <script type="text/javascript" src="/javascripts/desktop/lib/marioestrada-jQuery-gMap-875c548/jquery.gmap.min.js"></script>
+      <script type="text/javascript" src="/javascripts/application.js"></script>
+      <script type="text/javascript" src="/javascripts/desktop/src/common.js"></script>
+      <script type="text/javascript">
+         var clientTime = new Date();
+      </script>
+      <%= yield :script %>
+   </body>
+</html>

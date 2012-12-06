@@ -184,6 +184,7 @@ en:
         missing_requirements: "Something went wrong."
         start_failure: "Trouble starting the challenge.\nPlease try again."
         complete_failure: "Trouble completing the challenge.\nPlease try again."
+        complete_request_failure: "Trouble processing request.\nPlease try again."
         complete_referral_failure: "Trouble completing referral.\nPlease try again."
         limit_reached_ok: "Thank you for completing this challenge!"
         limit_reached_invalid: "You can't do this more than %s %s a %s!"
@@ -199,18 +200,26 @@ en:
         self_transfer_failure: "Receiver account cannot be the same as sender."
         receive_points_failure: "Trouble receiving points.\nPlease try again." 
       customer_rewards:
+        expired_code: "Authorization code no longer valid."
+        invalid_code: "Authorization code is not valid."
         not_available: "Sorry, but the %s is not available at this venue!"
         insufficient_points: "Not enough points to redeem %s."
         redeem_failure: "Trouble redeeming this %s.\nPlease try again."
+        redeem_verify_request_failure: "Trouble processing request.\nPlease try again."
         no_longer_available: "Sorry, but this %s is no longer available!\nPlease choose another."
       purchase_rewards:
         expired_code: "Authorization code no longer valid."
         invalid_code: "Authorization code is not valid."
         earn_failure: "Trouble earning points.\nPlease try again."
+        merchant_earn_request_failure: "Trouble processing request.\nPlease try again."
         already_signed_up: "Authorization code no longer valid.  You have already signed up!"
         program_termination: "You can no longer earn points.\nRewards program is being terminated."
       users:  
+        invalid_code: "Authorization code is not valid."
+        register_tag_failure: "Trouble registering user tag.\nPlease try again."
+        tag_already_in_use_failure: "Trouble registering user tag.\nAlready in use."
         create_failure: "Trouble with sign up.\nPlease try again."
+        show_failure: "Trouble retrieving customer info.\nPlease try again."
         facebook_account_already_exists_failure: "Facebook account already exists."
         reset_password_invalid_info: "The email you entered is invalid.\nPlease try again."
         change_password_invalid_info: "Invalid password.\nPlease try again."
@@ -242,9 +251,6 @@ en:
         update_auth_token_success: "Authentication token successsfully updated."
   business:
       api:
-        customer_rewards:
-          expired_code: "Verification code no longer valid."
-          invalid_code: "Verification code is not valid."
         tokens:
           create_missing_info: "Missing email or password."
           create_invalid_info: "The email/password you entered is incorrect.\nPlease try again."
@@ -296,7 +302,7 @@ en:
       mailer:
         email_subject_summary: "Weekly Summary - %s"
         email_subject_invoice: "Monthly Invoice #%s"  
-        email_subject_reset_password: "Reset password instructions"
+        email_subject_reset_password: "Reset password instructions"      
   mailer:
       email_subject_referral_challenge: "Check out %s"
       email_subject_confirm_referral_challenge: "Referral confirmation"
@@ -304,3 +310,9 @@ en:
       email_subject_confirm_points_transfer: "Reward points transfer confirmation"
       email_subject_points_expiration_reminder: "Reminder - Use your points before they expire!"
       email_subject_reset_password: "Reset password instructions"
+      email_subject_welcome: "Welcome to KICKBAK"
+      email_subject_activate_tag: "Tag activation"    
+  users:
+      activate_tag_success: "Access tag was successfully activated."
+      activate_failure: "Failed to activate access tag."
+      update_success: "Account was successfully updated."

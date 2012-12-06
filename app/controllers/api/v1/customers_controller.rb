@@ -1,5 +1,7 @@
 class Api::V1::CustomersController < Api::V1::BaseApplicationController
-  before_filter :authenticate_user!
+  skip_before_filter :verify_authenticity_token, :only => [:show]
+  before_filter :authenticate_user!, :except => [:show]
+  skip_authorization_check :only => [:show]
    
   def index
     authorize! :read, Customer
@@ -8,6 +10,68 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
     max = params[:limit].to_i
     @results = Customer.find(current_user.id, start, max)
     render :template => '/api/v1/customers/index'
+  end
+  
+  def show
+    begin
+      encrypted_data = params[:data].split('$')
+      if encrypted_data.length != 2
+        raise "Invalid authorization code format"
+      end
+      @venue = Venue.get(encrypted_data[0])
+      if @venue.nil?
+        raise "No such venue: #{encrypted_data[0]}"
+      end
+      data = encrypted_data[1]
+      cipher = Gibberish::AES.new(@venue.auth_code)
+      decrypted = cipher.dec(data)
+      #logger.debug("decrypted text: #{decrypted}")
+      decrypted_data = JSON.parse(decrypted)
+      @tag = UserTag.get(:tag_id => decrypted_data["tag_id"])
+      if @tag.nil?
+        raise "No such tag: #{decrypted_data["tag_id"]}"
+      end
+      user_to_tag = UserToTag.first(:fields => [:user_id], :tag_id => @tag.id)
+      if user_to_tag.nil?
+        raise "No user is associated with this tag: #{decrypted_data["tag_id"]}"
+      end
+      current_user = User.get(user_to_tag.user_id)
+      if current_user.nil?
+        raise "No such user: #{user_to_tag.user_id}"
+      end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      if @venue.nil? || current_user.nil? || @tag.nil?
+        logger.info("User failed to register Tag, invalid authorization code")
+      else
+        logger.info("User(#{current_user.id}) failed to register Tag(#{@tag.id}) at Venue(#{@venue.id}), invalid authorization code")
+      end
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => t("api.users.invalid_code").split('\n') } }
+      end
+      return  
+    end
+    
+    begin
+      @customer = Customer.first(:merchant => @venue.merchant, :user => current_user)
+      if @customer.nil?
+        @customer = Customer.create(@venue.merchant, current_user)
+      end
+      render :template => '/api/v1/customers/show'  
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.users.show_failure").split('\n') } }
+      end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.users.show_failure").split('\n') } }
+      end
+    end
   end
   
   def show_jackpot_winners
@@ -84,12 +148,24 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
           else
             data = { 
               :type => EncryptedDataType::POINTS_TRANSFER_DIRECT,
-              :id => record.id
+              :id => record.id,
+              :merchant_id => @customer.merchant.id
             }.to_json
-            cipher = Gibberish::AES.new(@customer.merchant.auth_code)
-            @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
-            render :template => '/api/v1/customers/transfer_points'
-            logger.info("User(#{current_user.id}) successfully created direct transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
+            request_info = {
+              :type => RequestType.TRANSFER_POINTS,
+              :frequency1 => params[:frequency1],
+              :frequency2 => params[:frequency2],
+              :frequency3 => params[:frequency3],
+              :latitude => params[:latitude],
+              :longitude => params[:longitude],
+              :data => data
+            }
+            Request.create(request_info)
+            logger.info("User(#{current_user.id}) successfully created direct transfer request worth #{points} points for Customer Account(#{@customer.id})")
+            respond_to do |format|
+              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+              format.json { render :json => { :success => true } }
+            end
           end
         else
           logger.info("User(#{current_user.id}) failed to create transfer qr code worth #{points} points for Customer Account(#{@customer.id}), insufficient points")
@@ -121,15 +197,41 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
     invalid_code = false
     
     begin
-      encrypted_data = params[:data].split('$')
-      if encrypted_data.length != 2
-        raise "Invalid transfer code format"
+      if params[:data].nil?
+        request_info = {
+          :type => RequestType.TRANSFER_POINTS,
+          :frequency1 => params[:frequency1],
+          :frequency2 => params[:frequency2],
+          :frequency3 => params[:frequency3],
+          :latitude => params[:latitude],
+          :longitude => params[:longitude]
+        }
+        request_id, data = Common.match_request(request_info)
+        if data.nil?
+          raise "No matching transfer points request"
+        end
+        decrypted_data = JSON.parse(data)
+        merchant = Merchant.get(decrypted_data["merchant_id"])
+        if merchant.nil?
+          raise "No such merchant: #{decrypted_data["merchant_id"]}"
+        end
+      else
+        encrypted_data = params[:data].split('$')
+        if encrypted_data.length != 2
+          raise "Invalid transfer code format"
+        end
+        merchant = Merchant.get(encrypted_data[0])
+        if merchant.nil?
+          raise "No such merchant: #{encrypted_data[0]}"
+        end
+        data = encrypted_data[1] 
+        #logger.debug("data: #{data}")
+        cipher = Gibberish::AES.new(merchant.auth_code)
+        decrypted = cipher.dec(data)
+        #logger.debug("decrypted text: #{decrypted}")
+        decrypted_data = JSON.parse(decrypted) 
       end
-      merchant = Merchant.get(encrypted_data[0])
-      if merchant.nil?
-        raise "No such merchant: #{encrypted_data[0]}"
-      end
-      
+    
       if merchant.status != :active
         logger.info("User(#{current_user.id}) failed to receive points at Merchant(#{merchant.id}), merchant is not active")
         respond_to do |format|
@@ -138,7 +240,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         end
         return  
       end
-    
+        
       @customer = Customer.first(:user => current_user, :merchant => merchant)
       if @customer.nil?
         if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
@@ -153,12 +255,6 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         end  
       end
     
-      data = encrypted_data[1] 
-      #logger.debug("data: #{data}")
-      cipher = Gibberish::AES.new(@customer.merchant.auth_code)
-      decrypted = cipher.dec(data)
-      #logger.debug("decrypted text: #{decrypted}")
-      decrypted_data = JSON.parse(decrypted)
       transfer_id = decrypted_data["id"]
       #logger.debug("decrypted type: #{decrypted_data["type"]}")
       #logger.debug("decrypted id: #{transfer_id}")
@@ -244,6 +340,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             @record.update_ts = now
             @record.save 
             render :template => '/api/v1/customers/receive_points'
+            Request.destroy(request_id) if request_id > 0
             if decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL
               UserMailer.transfer_points_confirm_email(sender.user, current_user, merchant, @record).deliver
             end

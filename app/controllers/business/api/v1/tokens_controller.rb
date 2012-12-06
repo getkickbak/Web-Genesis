@@ -1,5 +1,6 @@
-class Business::Api::V1::TokensController < ApplicationController
+class Business::Api::V1::TokensController < Business::Api::V1::BaseApplicationController
   skip_before_filter :verify_authenticity_token
+  before_filter :authenticate_merchant!, :only => [:get_csrf_token]
   skip_authorization_check
   respond_to :json
   
@@ -42,6 +43,12 @@ class Business::Api::V1::TokensController < ApplicationController
     end
   end
 
+  def get_csrf_token    
+    session[:user_agent] = Common.get_user_agent(request.env['HTTP_USER_AGENT'])
+    session[:resolution] = Common.get_thumbail_resolution(session[:user_agent], params[:device_pixel_ratio].to_f)
+    render :template => '/api/v1/tokens/get_csrf_token'
+  end
+  
   def destroy
     @merchant = Merchant.first(:authentication_token => params[:id])
     if @merchant.nil?

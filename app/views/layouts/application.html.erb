@@ -11,7 +11,6 @@
       href="iphone.css" type="text/css" />
       <link rel="stylesheet" href="css/twitter-bootstrap-c52368d/bootstrap/css/bootstrap-responsive.min.css"/>
       -->
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>KICKBAK</title>
       <link rel="shortcut icon" href="http://files.getkickbak.com/v1/favicon.jpg"/>
       <link rel="stylesheet" href="/javascripts/desktop/css/twitter-bootstrap-c52368d/bootstrap/css/bootstrap.min.css"/>
@@ -37,14 +36,25 @@
          <div class="navbar-inner">
             <div class="container">
                <a class="brand" href="/">&#160;</a>
+               <% if not signed_in? %>
                <ul class="nav pull-right">
                   <li><a href="/add_business">KICKBAK for Business</a></li>
                </ul>
+               <% end %>
             </div>
          </div>
       </div>
+      <!--/navbar-->
+      <div name="top" class="container">
+         <div class="alert alert-warning fade hide">
+            <a class="close">x</a>
+         </div>
+         <div class="alert alert-error fade hide">
+            <a class="close">x</a>
+         </div>
+      </div>
       <%= yield %>
-      <!--/container-->
+      <!-- Footer -->
       <div class="navbar navbar-fixed-bottom">
          <div class="navbar-inner">
             <div class="container">

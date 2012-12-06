@@ -1,11 +1,20 @@
-<div class="content">
-	<%= simple_form_for [@merchant, @device], :html => { :class => 'form-horizontal' } do |f| %>
-	<%= f.input :venue_id, :collection => @merchant.venues.all(:status => :active, :order => [ :id.asc ]),
+<%= simple_form_for [@merchant, @device], :html => { :class => 'form-horizontal' } do |f| %>
+<fieldset>
+    <%= f.input :venue_id, :collection => @merchant.venues.all(:status => :active, :order => [ :id.asc ]),
 		:label_method => :name,
 		:value_method => :id,
-		:include_blank => "", :input_html=>{:class => "input-xlarge"} %>
-	<%= f.input :serial_num %>
-	<%= f.input :status, :collection => Device::Statuses %>
-	<%= f.button :submit, :class => 'btn-primary' %>
-	<% end %>
-</div>
+		:include_blank => "", :input_html=>{:class => "input-xxlarge"} %>
+	<%= f.input :serial_num, :input_html=>{:class => "input-xxlarge"} %>
+	<%= f.input :status, :collection => Device::Statuses, :input_html=>{:class => "input-medium"}%>
+   <br />
+   <div class="form-actions">
+      <%= f.button :submit , "#{f.object.new? ? 'Create' : 'Update'}", :class => 'btn btn-primary' %>
+      <% if f.object.new? %>
+      <%= link_to("Cancel", merchant_devices_path(@merchant), :class => 'btn') %>
+      <% else %>
+      <%= link_to("Cancel", merchant_device_path(@merchant,@device), :class => 'btn') %>
+      <% end %>
+   </div>
+   <!-- /form-actions -->
+</fieldset>
+<% end %>

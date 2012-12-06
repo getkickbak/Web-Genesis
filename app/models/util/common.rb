@@ -199,7 +199,30 @@ class Common
       end
     end
   end
-
+  
+  def self.match_request(request_info)
+     c = lambda {
+      return DataMapper.repository(:default).adapter.select(
+        "SELECT id, data, round( 6371000 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
+        FROM requests WHERE type = ? AND abs(frequency1 - ?) <= 10 AND abs(frequency2 - ?) <= 10 AND abs(frequency3 - ?) <= 10 AND distance <= 100 AND deleted_ts IS NULL
+        ORDER BY distance
+        ASC LIMIT 0,1", request_info[:latitude], request_info[:longitude], request_info[:latitude], request_info[:type], request_info[:frequency1], request_info[:frequency2], request_info[:frequency3]
+      )
+    }
+    
+    n = 2
+    n.times do |x|
+      request = c.call
+      if request.length > 0
+        return request[0].id, request[0].data
+      elsif x < n
+        sleep(0.1)
+      else
+        return 0, nil  
+      end
+    end      
+  end
+  
   def self.get_news(venue)
     newsfeed = []
     promotions = Promotion.all(:merchant => venue.merchant)

@@ -10,9 +10,9 @@ Genesis::Application.routes.draw do
 
       namespace :api do
         namespace :v1  do
-          resources :tokens, :only => [:create, :destroy] 
-          
-          match "customer_rewards/verify" => 'customer_rewards#verify', :via => :post  
+          resources :tokens, :only => [:create, :destroy] do
+            get "get_csrf_token", :on => :collection
+          end
         end
       end
       
@@ -103,12 +103,12 @@ Genesis::Application.routes.draw do
   end
 
   constraints Domain do
-    devise_for :users, :path => "", :skip => [:sessions,:registrations,:passwords], :controllers => {
+    devise_for :users, :path => "", :controllers => {
       :sessions => "user_devise/sessions",
       :registrations => "user_devise/registrations",
       :passwords => "user_devise/passwords",
     } do
-      #match "/facebook_sign_in" => 'user_devise/sessions#create_from_facebook'
+      match "/facebook_sign_in" => 'user_devise/sessions#create_from_facebook'
     end
     
     namespace :api do
@@ -118,13 +118,16 @@ Genesis::Application.routes.draw do
           get "get_csrf_token", :on => :collection
         end
         resources :check_ins, :only => [:create]
-        resources :customers, :only => [:index] do
+        resources :customers, :only => [:index, :show] do
           post "transfer_points", :on => :collection
           post "receive_points", :on => :collection
           get "show_jackpot_winners", :on => :collection    
         end
                 
+        match "/register_tag" => 'tags#register_tag', :via => :post
+          
         match "/sign_up" => 'registrations#create', :via => :post
+        match "/sign_up_from_merchant" => 'registrations#create_from_merchant', :via => :post
         
         match "/account/update" => 'users#update', :via => :post
         match "/account/update_facebook_info" => 'users#update_facebook_info', :via => :post
@@ -138,13 +141,19 @@ Genesis::Application.routes.draw do
 
         match '/challenges' => 'challenges#index'
         match '/challenges/:id/start' => 'challenges#start'
+        match '/challenges/:id/complete_request' => 'challenges#complete_request', :via => :post
         match '/challenges/:id/complete' => 'challenges#complete', :via => :post
         match '/challenges/complete_referral' => 'challenges#complete_referral', :via => :post
 
         match '/customer_rewards' => 'customer_rewards#index'
         match '/customer_rewards/:id/redeem' => 'customer_rewards#redeem', :via => :post
+        match '/customer_rewards/:id/merchant_redeem' => 'customer_rewards#merchant_redeem', :via => :post
+        match '/customer_rewards/:id/redeem_verify_request' => 'customer_rewards#redeem_verify_request', :via => :post
+        match '/customer_rewards/:id/merchant_redeem_verify' => 'customer_rewards#merchant_redeem_verify'
 
         match '/purchase_rewards/earn' => 'purchase_rewards#earn', :via => :post     
+        match '/purchase_rewards/merchant_earn' => 'purchase_rewards#merchant_earn', :via => :post
+        match '/purchase_rewards/merchant_earn_request' => 'purchase_rewards#merchant_earn_request', :via => :post
       end
     end
   
@@ -163,6 +172,13 @@ Genesis::Application.routes.draw do
       match "/download" => redirect {|params, req| "http://www.getkickbak.com/" }
       match "/d" => redirect {|params, req| "http://www.getkickbak.com/" }
     end
+    
+    match "/dashboard" => 'dashboard#index', :as => :dashboard
+    match "/activate_tag" => 'dashboard#activate_tag', :as => :activate_tag
+    match "/customer_rewards" => 'customer_rewards#index', :as => :customer_rewards
+    match "/account" => 'users#show', :as => :account
+    match "/account/edit" => 'users#edit', :as => :edit_account
+    match "/account/update" => 'users#update', :as => :update_account
     
     #match "/how_it_works" => 'pages#how_it_works'
     match "/privacy" => 'pages#privacy'

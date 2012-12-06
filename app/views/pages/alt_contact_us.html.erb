@@ -1,0 +1,72 @@
+<% content_for :link do %>
+<% end %>
+<% content_for :script do %>
+<!---->
+<script type="text/javascript">
+   $(document).ready($(function()
+   {
+      var msg = $("#notice").html();
+      if (msg)
+      {
+         Genesis.showWarningMsg(msg, null, true);
+      }
+   })); 
+</script>
+<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+   <p><%= flash[:notice] %></p>
+</div>
+<% end %>
+<div class="main">
+   <div class="main-inner">
+      <div class="container">
+         <div class="row">
+            <div class="span9">
+               <div class="widget">
+                  <div class="widget-header">
+                     <i class="icon-envelope"></i>
+                     <h3>Contact Us</h3>
+                  </div>
+                  <!-- /widget-header -->
+                  <div class="widget-content">
+                     <div class="tabbable">
+                        <div class="tab-content">
+                           <div class="tab-pane active">
+                              <%= simple_form_for @contact, :url => create_contact_path, :html => { :class => 'form-vertical' } do |f| %>
+                              <fieldset>
+                                 <%= f.input :name, :input_html => { :value => current_user.name, :class => "input-xlarge"} %>
+                                 <%= f.input :email, :input_html => { :value => current_user.email, :class => 'input-xlarge' } %>
+                                 <%= f.input :topic, :collection => Contact.topic_list, :input_html=>{:class => "input-large"} %>
+                                 <%= f.input :message, :as => :text, :input_html => { :rows => 10, :class => "input-xxlarge" } %>
+                              </fieldset>
+                              <br />
+                              <div class="form-actions">
+                                 <%= f.button :submit, 'Send', :disable_with => "Working...", :class =>"btn btn-primary" %>
+                              </div>
+                              <!-- /form-actions -->
+                              <% end %>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div class="span3">
+               <div class="widget">
+                  <div class="widget-header">
+                     <i class="icon-phone"></i>
+                     <h3>Contact Info</h3>
+                  </div>
+                  <!-- /widget-header -->
+                  <div class="widget-content">
+                     <p>Email: <a href="mailto:help@getkickbak.com">help@getkickbak.com</a></p>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>
+

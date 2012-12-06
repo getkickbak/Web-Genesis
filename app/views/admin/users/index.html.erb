@@ -1,32 +1,71 @@
-<% content_for :link do %>
+<% content_for :script do %>
+<script type="text/javascript">
+	$(document).ready($(function() {
+	var notice_msg=$("#notice").html();
+	if(notice_msg) {
+	Genesis.showWarningMsg(notice_msg,null,true);
+	}
+	}));
+</script>
+<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+	<p>
+		<%= flash[:notice] %>
+	</p>
+</div>
 <% end %>
 <div class="main">
-   <div class="row-fluid">
-      <div class="span3"></div>
-      <div class="span6">
-         <ul class="nav nav-list well">
-            <li class="nav-header"> Users
-               <% @users.each do |user| %> <li>
-               <!-- -->
-               <div style="position:relative;padding: 3px 15px">
-                  <!-- -->
-                  <%= link_to user.name, user_path(user) %>
-                  <%= user.email %>
-                  <%= link_to edit_user_path(user), :style=>'position:absolute;right:26px;' do %>
-                  <i class="icon-edit"></i>
-                  <!-- -->
-                  <% end %>
-                  <%= link_to user_path(user), :data => { :confirm => 'Do you want to delete this user?' }, :method => :delete, :style=>'position:absolute;right:0px;' do %>
-                  <i class="icon-remove"></i>
-                  <!-- -->
-                  <% end %>
-               </div>
-               <!-- -->
-            </li>
-            <% end %>
-            <%= will_paginate @users %>
-            <li> <%= link_to 'New User', new_user_path %> </li>
-         </ul>
-      </div>
-   </div>
+	<div class="main-inner">
+		<div class="container">
+			<div class="row">
+				<div class="span12">
+					<div class="widget widget-table action-table">
+						<div class="widget-header">
+							<i class="icon-user"></i>
+							<h3>Users Listing (<%= link_to("New User", new_user_path) %>)</h3>
+						</div>
+						<div class="widget-content">
+							<%= will_paginate @users %>
+							<table class="table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th>Name</th>
+										<th class="td-actions">Email</th>
+										<th class="td-actions">Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<% @users.each do |user| %>
+									<tr>
+										<td><%= link_to user.name, user_path(user) %></td>
+										<td class="td-actions"><%= user.email %></td>
+										<td class="td-actions"><!-- --> 
+											<%= link_to(edit_user_path(user), :class=>"btn btn-small btn-warning", :title=>"edit") do %> 
+											<!-- -->
+											<i class="btn-icon-only icon-edit"></i><!-- --> 
+											<% end %>
+											<%= link_to user_path(user), :data => { :confirm => 'Do you want to delete this user?' }, :method => :delete, :class=>"btn btn-small", :title=>"delete" do %>
+                              				<!-- -->
+                              				<i class="btn-icon-only icon-remove"></i>
+                              				<!-- -->
+                              				<% end %>
+                              			</td>
+									</tr>
+									<% end %>
+									<% if @users.length == 0 %>
+									<tr>
+										<td colspan="2" class="no-data">You have no users</td>
+									</tr>
+									<% end %>
+								</tbody>
+							</table>
+							<%= will_paginate @users %>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

@@ -1,24 +1,78 @@
-<p id="notice"><%= notice %></p>
-
-<p>
-  <b>Id:</b>
-  <%= @device.id %>
-</p>
-
-<p>
-  <b>Serial</b>
-  <%= @device.serial_num %>
-</p>
-
-<p>
-  <b>Venue</b>
-  <%= @device.merchant_venue.name %>
-</p>
-
-<p>
-  <b>Status</b>
-  <%= @device.status %>
-</p>
-
-<%= link_to 'Edit', edit_merchant_device_path(@merchant, @device) %> |
-<%= link_to 'Back', merchant_devices_path %>
+<% content_for :script do %>
+<script type="text/javascript">
+	$(document).ready($(function() {
+	var notice_msg=$("#notice").html();
+	if(notice_msg) {
+	Genesis.showWarningMsg(notice_msg,null,true);
+	}
+	}));
+</script>
+<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+	<p>
+		<%= flash[:notice] %>
+	</p>
+</div>
+<% end %>
+<div class="main">
+	<div class="main-inner">
+		<div class="container">
+			<div class="row">
+				<div class="span1"></div>
+				<div class="span10">
+					<div class="widget ">
+						<div class="widget-header">
+							<i class="icon-money"></i>
+							<h3>Merchant</h3>
+						</div>
+						<!-- /widget-header -->
+						<div class="widget-content">
+							<div class="tabbable">
+								<ul class="nav nav-tabs">
+									<li class="active">
+										<a href="#venue" data-toggle="tab">Info</a>
+									</li>
+								</ul>
+								<br>
+								<div class="tab-content">
+									<div class="tab-pane active" id="venue">
+										<div class="not-edit form-horizontal">
+											<div class="control-group">
+												<label class="control-label"> Serial: </label>
+												<div class="controls">
+													 <%= @device.serial_num %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> Venue: </label>
+												<div class="controls">
+													 <%= @device.merchant_venue.name %>
+												</div>
+											</div>
+											<div class="control-group">
+												<label class="control-label"> Status: </label>
+												<div class="controls">
+													<%= @device.status %>
+												</div>
+											</div>
+											<%= link_to 'Edit', edit_merchant_device_path(@merchant, @device) %> |
+        									<%= link_to 'Back', merchant_devices_path %>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- /widget-content -->
+					</div>
+					<!-- /widget -->
+				</div>
+			</div>
+			<!-- /row -->
+		</div>
+		<!-- /container -->
+	</div>
+	<!-- /main-inner -->
+</div>
+<!-- /main -->

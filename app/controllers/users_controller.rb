@@ -28,17 +28,13 @@ class UsersController < ApplicationController
         @user.update_all(params[:user])
         sign_in(current_user, :bypass => true)
         respond_to do |format|
-          format.html { redirect_to(account_path, :notice => 'User was successfully updated.') }
-          #format.xml  { head :ok }
-          format.json { render :json => { :success => true, :msg => [""] } }
+          format.html { redirect_to({:action => "show"}, {:notice => t("users.update_success")}) }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         @user = e.resource
         respond_to do |format|
           format.html { render :action => "edit" }
-          #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => e.resource.errors } }
         end
       end
     end
@@ -50,11 +46,29 @@ class UsersController < ApplicationController
 
     User.transaction do
       begin
-        @user.update_without_password(:facebook_id => params[:facebook_id], :facebook_email => params[:facebook_email], :update_ts => now)
-        respond_to do |format|
-          #format.xml  { head :ok }
-          format.json { render :json => { :success => true, :message => [""] } }
-        end
+        facebook_id = user_info[:facebook_id]
+        facebook_email = user_info[:facebook_email] || ""
+        existing_user = (facebook_id.to_s == "0" ? nil : User.first(:facebook_id => facebook_id))
+        if existing_user.nil? || (existing_user.id == current_user.id)
+          @user.update_without_password(:facebook_id => facebook_id, :facebook_email => facebook_email, :update_ts => now)
+          if params[:gender] && params[:birthday]
+            profile_info = {
+              :gender => params[:gender],
+              :birthday => params[:birthday]
+            }
+            @user.profile.update(profile_info)
+            @user.save
+          end
+          respond_to do |format|
+            #format.xml  { head :ok }
+            format.json { render :json => { :success => true, :message => t("users.update_facebook_info_success").split('\n') } }
+          end
+        else
+          respond_to do |format|
+            #format.xml  { head :ok }
+            format.json { render :json => { :success => true, :message => t("users.facebook_account_already_exists_failure").split('\n') } }
+          end
+        end  
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         @user = e.resource
@@ -64,5 +78,5 @@ class UsersController < ApplicationController
         end
       end
     end
-  end    
+  end 
 end

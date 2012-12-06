@@ -1,24 +1,29 @@
-<div class="content">
-	<%= simple_form_for [@merchant], :html => { :class => 'form-horizontal' } do |f| %>
-	<%= f.input :type_id, :collection => MerchantType.values[I18n.locale] %>
-	<%= f.input :name %>
-	<%= f.input :description, :as => :text, :input_html => { :rows => 10 } %>
-	<%= f.input :email %>
-	<%= f.input :account_first_name %>
-	<%= f.input :account_last_name %>
-	<%= f.input :phone %>
-	<%= f.input :website %>
-	<%= f.input :role, :collection => Merchant::Roles %>
-	<%= f.input :status, :collection => Merchant::Statuses %>
+<%= simple_form_for @merchant, :html => { :class => 'form-horizontal' } do |f| %>
+<fieldset>
+	<%= f.input :type_id, :collection => MerchantType.values[I18n.locale], :input_html => { :class => 'input-medium' } %>
+	<%= f.input :name, :input_html=>{:class => "input-xxlarge"} %>
+	<%= f.input :description, :as => :text, :input_html=>{:class => "input-xxlarge" }, :rows => 10 %>
+	<%= f.input :email, :input_html=>{:class => "input-xxlarge"} %>
+	<%= f.input :account_first_name, :input_html=>{:class => "input-xxlarge"} %>
+	<%= f.input :account_last_name, :input_html=>{:class => "input-xxlarge"} %>
+	<%= f.input :phone, :input_html=>{:class => "input-medium"} %>
+	<%= f.input :website, :input_html=>{:class => "input-xxlarge"}, :required => false %>
+	<%= f.input :role, :collection => Merchant::Roles, :input_html => { :class => 'input-medium' } %>
+	<%= f.input :status, :collection => Merchant::Statuses, :input_html => { :class => 'input-medium' } %>
 	<%= f.input :will_terminate, :as => :boolean %>
 	<% if @merchant.will_terminate %>
 	<%= f.input :termination_date, :as => :date_picker, :input_html => { :class => 'input-xlarge' }, :wrapper_html => { :id => 'merchant_termination_date_wrap' } %>
 	<% else %>
 	<%= f.input :termination_date, :as => :date_picker, :input_html => { :class => 'input-xlarge' }, :wrapper_html => { :id => 'merchant_termination_date_wrap', :style => 'display:none;' } %>
 	<% end %>
-	<%= f.input :current_password %>
-	<%= f.input :password %>
-	<%= f.input :password_confirmation %>
-	<%= f.button :submit, :class => 'btn-primary' %>
-	<% end %>
-</div>
+	<%= f.input :current_password, :input_html=>{:class => "input-medium"} %>
+	<%= f.input :password, :input_html=>{:class => "input-medium"} %>
+	<%= f.input :password_confirmation, :input_html=>{:class => "input-medium"} %>
+	<br />
+	<div class="form-actions">
+		<%= f.button :submit , 'Update', :class => 'btn btn-primary' %>
+		<%= link_to("Cancel", merchant_path(@merchant), :class => 'btn') %>
+	</div>
+	<!-- /form-actions -->
+</fieldset>
+<% end %>

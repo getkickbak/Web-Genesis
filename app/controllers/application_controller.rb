@@ -17,7 +17,11 @@ class ApplicationController < ActionController::Base
         "admin/application"
       end
     else
-      "application"
+      if (devise_controller? || signed_in?) && !request.fullpath.match(/terms|privacy/)
+        "alt_application"
+      else  
+        "application"
+      end
     end
   end
   
