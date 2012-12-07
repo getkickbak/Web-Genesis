@@ -125,9 +125,16 @@ class User
       return if self.tag.id == tag.id
       self.tag.destroy
     end
-    tag.status = :active
     self.tag = tag
     save  
+  end
+  
+  def activate_tag
+    if self.tag.status == :pending
+      self.tag.status = :active
+      save
+    end  
+    return false
   end
   
   def follow(others)

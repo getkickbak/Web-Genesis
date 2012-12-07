@@ -23,6 +23,7 @@
 								<thead>
 									<tr>
 										<th>Merchants</th>
+										<th class="td-actions">Badge</th>
 										<th class="td-actions">Points</th>
 										<th class="td-actions">Prize Points</th>
 									</tr>
@@ -31,6 +32,7 @@
 									<% @customers.each do |customer| %>
 									<tr>
 										<td><%= customer.eager_load_merchant.name %></td>
+										<td class="td-actions"><%= customer.eager_load_badge.eager_load_type.display_value %></td>
 										<td class="td-actions"><%= customer.points %></td>
 										<td class="td-actions"><%= customer.prize_points %></td>
 									</tr>

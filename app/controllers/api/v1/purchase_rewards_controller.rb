@@ -523,6 +523,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           end
           render :template => '/api/v1/purchase_rewards/earn'
           Request.destroy(request_id) if request_id > 0
+          if tag && (@reward_info[:signup_points] > 0 || @reward_info[:prize_points] > 1 || @reward_info[:badge_prize_points] > 0)
+            UserMailer.reward_notif_email(@customer, @reward_info).deliver
+          end
           if referral_challenge
             UserMailer.referral_challenge_confirm_email(referrer.user, @customer.user, @venue, referral_record).deliver
           end

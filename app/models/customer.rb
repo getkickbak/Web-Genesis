@@ -18,7 +18,7 @@ class Customer
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
     
-  attr_accessor :eager_load_merchant
+  attr_accessor :eager_load_badge, :eager_load_merchant
     
   has 1, :last_check_in, 'CheckIn', :constraint => :destroy
   has 1, :customer_to_badge, :constraint => :destroy

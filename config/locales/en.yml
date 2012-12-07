@@ -314,5 +314,7 @@ en:
       email_subject_activate_tag: "Tag activation"    
   users:
       activate_tag_success: "Access tag was successfully activated."
-      activate_failure: "Failed to activate access tag."
+      activate_tag_already_activated: "Access tag is already activated."
+      activate_tag_not_registered: "You have not registered a tag yet."
+      activate_tag_failure: "Failed to activate access tag."
       update_success: "Account was successfully updated."
