@@ -204,7 +204,7 @@ class Common
      c = lambda {
       return DataMapper.repository(:default).adapter.select(
         "SELECT id, data, round( 6371000 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
-        FROM requests WHERE type = ? AND abs(frequency1 - ?) <= 10 AND abs(frequency2 - ?) <= 10 AND abs(frequency3 - ?) <= 10 AND distance <= 100 AND deleted_ts IS NULL
+        FROM requests WHERE type = ? AND abs(frequency1 - ?) <= 3 AND abs(frequency2 - ?) <= 3 AND abs(frequency3 - ?) <= 3 AND distance <= 100 AND deleted_ts IS NULL
         ORDER BY distance
         ASC LIMIT 0,1", request_info[:latitude], request_info[:longitude], request_info[:latitude], request_info[:type], request_info[:frequency1], request_info[:frequency2], request_info[:frequency3]
       )

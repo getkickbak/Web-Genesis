@@ -161,11 +161,8 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
               :data => data
             }
             Request.create(request_info)
+            render :template => '/api/v1/customers/transfer_points'
             logger.info("User(#{current_user.id}) successfully created direct transfer request worth #{points} points for Customer Account(#{@customer.id})")
-            respond_to do |format|
-              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-              format.json { render :json => { :success => true } }
-            end
           end
         else
           logger.info("User(#{current_user.id}) failed to create transfer qr code worth #{points} points for Customer Account(#{@customer.id}), insufficient points")

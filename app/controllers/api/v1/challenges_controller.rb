@@ -539,11 +539,8 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
             :data => data
           }
           Request.create(request_info)
+          render :template => '/api/v1/challenges/start'
           logger.info("User(#{current_user.id}) successfully created direct referral in Customer Account(#{@customer.id})")
-          respond_to do |format|
-            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => true } }
-          end
         end
       else
         logger.info("User(#{current_user.id}) failed to create referral in Customer Account(#{@customer.id}), not a customer")
