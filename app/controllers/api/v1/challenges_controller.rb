@@ -156,8 +156,8 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
             :frequency1 => params[:frequency1],
             :frequency2 => params[:frequency2],
             :frequency3 => params[:frequency3],
-            :latitude => params[:latitude],
-            :longitude => params[:longitude]
+            :latitude => params[:latitude] || @venue.latitude,
+            :longitude => params[:longitude] || @venue.longitude
           }
           request_id, data = Common.match_request(request_info)
           if data.nil?

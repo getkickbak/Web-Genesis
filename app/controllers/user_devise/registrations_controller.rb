@@ -4,8 +4,8 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
     begin
       User.transaction do  
         build_resource
-        resource[:role] = "user"
-        resource[:status] = :active
+        resource.role = "user"
+        resource.status = :active
         user = User.create(resource)
         resource = user
         if resource.active_for_authentication?
@@ -20,10 +20,7 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
       end
     rescue DataMapper::SaveFailureError => e
       resource = e.resource
-      clean_up_passwords(resource)
-      respond_with resource
-    rescue StandardError => e
-      clean_up_passwords resource
+      clean_up_passwords(resource)  
       respond_with resource
     end    
   end

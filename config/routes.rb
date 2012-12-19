@@ -123,11 +123,8 @@ Genesis::Application.routes.draw do
           post "receive_points", :on => :collection
           get "show_jackpot_winners", :on => :collection    
         end
-                
-        match "/register_tag" => 'tags#register_tag', :via => :post
-          
+                          
         match "/sign_up" => 'registrations#create', :via => :post
-        match "/sign_up_from_merchant" => 'registrations#create_from_merchant', :via => :post
         
         match "/account/update" => 'users#update', :via => :post
         match "/account/update_facebook_info" => 'users#update_facebook_info', :via => :post
@@ -154,6 +151,8 @@ Genesis::Application.routes.draw do
         match '/purchase_rewards/earn' => 'purchase_rewards#earn', :via => :post     
         match '/purchase_rewards/merchant_earn' => 'purchase_rewards#merchant_earn', :via => :post
         match '/purchase_rewards/merchant_earn_request' => 'purchase_rewards#merchant_earn_request', :via => :post
+        
+        match '/devices/get_encryption_key' => 'devices#get_encryption_key'
       end
     end
   
@@ -174,7 +173,7 @@ Genesis::Application.routes.draw do
     end
     
     match "/dashboard" => 'dashboard#index', :as => :dashboard
-    match "/activate_tag" => 'dashboard#activate_tag', :as => :activate_tag
+    match "/register_tag" => 'dashboard#register_tag', :via => :post, :as => :register_tag
     match "/customer_rewards" => 'customer_rewards#index', :as => :customer_rewards
     match "/account" => 'users#show', :as => :account
     match "/account/edit" => 'users#edit', :as => :edit_account

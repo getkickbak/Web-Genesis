@@ -4,9 +4,14 @@ module Business
       begin
         Merchant.transaction do
           build_resource
-          resource[:role] = "merchant"
-          resource[:status] = :pending
-          merchant = Merchant.create(resource)
+          resource.role = "merchant"
+          resource.status = :pending
+          resource.will_terminate = false
+          resource.custom_badges = false
+          type = MerchantType.get(resource.type_id)
+          visit_frequency = VisitFrequencyType.get(resource.visit_frequency_id)
+          resource.reward_terms = I18n.t 'customer_reward.terms'
+          merchant = Merchant.create(type, visit_frequency, resource)
           resource = merchant
           if resource.active_for_authentication?
             set_flash_message :notice, :signed_up if is_navigational_format?
@@ -22,10 +27,7 @@ module Business
         resource = e.resource
         clean_up_passwords(resource)
         respond_with resource
-      rescue StandardError => e
-        clean_up_passwords(resource)
-        respond_with resource
-      end    
+      end      
     end
   end
 end

@@ -44,16 +44,29 @@ class Staff
         
   def self.create(staff_info)
     now = Time.now
-    password = staff_info[:password] ? staff_info[:password].strip : staff_info.password
-    password_confirmation  = staff_info[:password_confirmation] ? staff_info[:password_confirmation].strip : staff_info.password_confirmation
+    if (staff_info.is_a? Hash) || (staff_info.is_a? ActiveSupport::HashWithIndifferentAccess)
+      name = staff_info[:name].strip
+      email = staff_info[:email].strip
+      password = staff_info[:password].strip
+      password_confirmation = staff_info[:password_confirmation].strip
+      role = staff_info[:role]
+      status = staff_info[:status]
+    else
+      name = staff_info.name
+      email = staff_info.email
+      password = staff_info.password
+      password_confirmation = staff_info.password_confirmation
+      role = staff_info.role
+      status = staff_info.status
+    end
     staff = Staff.new(
-      :name => staff_info[:name].strip,
-      :email => staff_info[:email].strip,  
+      :name => name,
+      :email => email,  
       :current_password => password,
       :password => password,
       :password_confirmation => password_confirmation,
-      :role => staff_info[:role],
-      :status => staff_info[:status]
+      :role => role,
+      :status => status
     ) 
     staff[:created_ts] = now
     staff[:update_ts] = now

@@ -88,7 +88,9 @@
             <div class="container">
                <ul class="mainnav">
                   <li><a href="/dashboard"> <i class="icon-dashboard"></i> <span>Dashboard</span> </a></li>
+                  <% if Customer.count(:user_id => current_user.id, :status => :active) > 0 %>
                   <li><a href="/customer_rewards"> <i class="icon-gift"></i> <span>Rewards</span> </a></li>
+                  <% end %>
                </ul>
             </div>
             <!-- /container -->

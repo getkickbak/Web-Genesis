@@ -49,35 +49,4 @@ class Api::V1::RegistrationsController < Api::V1::BaseApplicationController
       end  
     end        
   end
-  
-  def create_from_merchant
-    begin
-      User.transaction do
-        user_info = JSON.parse(params[:user], { :symbolize_names => true })
-        user_info[:role] = "user"
-        user_info[:status] = :active
-        password = String.random_alphanumeric(8)
-        user_info[:password] = password
-        user_info[:password_confirmation] = password
-        @user = User.create(user_info)
-        UserMailer.account_welcome_email(@user, password).deliver
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => true } }
-        end
-      end
-    rescue DataMapper::SaveFailureError => e
-      logger.error("Exception: " + e.resource.errors.inspect)
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :metaData => { :rescode => 'signup_invalid_info' }, :message => e.resource.errors } }
-      end  
-    rescue StandardError => e
-      logger.error("Exception: " + e.message)
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.users.create_failure").split('\n') } }
-      end  
-    end
-  end
 end 

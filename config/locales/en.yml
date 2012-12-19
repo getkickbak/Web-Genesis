@@ -161,6 +161,8 @@ en:
       incompatible_merchant_user_role: "Your account is not compatible with selected merchant."
       inactive_merchant: "This merchant is not active.\nPlease try a different one."
       inactive_venue: "This venue is not active.\nPlease try a different one."
+      inactive_tag: "This key tag is not active.\nPlesae try again."
+      inactive_user: "This user is not active.\nPlease try again."
       out_of_distance: "Outside of distance.\nPlease try again."
       photo_blank: "Uploaded photo is blank."
       reward: "reward"
@@ -216,8 +218,6 @@ en:
         program_termination: "You can no longer earn points.\nRewards program is being terminated."
       users:  
         invalid_code: "Authorization code is not valid."
-        register_tag_failure: "Trouble registering user tag.\nPlease try again."
-        tag_already_in_use_failure: "Trouble registering user tag.\nAlready in use."
         create_failure: "Trouble with sign up.\nPlease try again."
         show_failure: "Trouble retrieving customer info.\nPlease try again."
         facebook_account_already_exists_failure: "Facebook account already exists."
@@ -231,6 +231,8 @@ en:
         create_failure: "Trouble with sign in.\nPlease try again."
         create_from_facebook_failure: "Trouble with facebook sign in.\nPlease try again."
         destroy_failure: "Trouble with logout.\nPlease try again."  
+      devices:
+        get_encryption_key_failure: "Trouble with device initialization.\nPlease contact support."  
   admin:
       marketing:
         update_poster_image_success: "Poster successfully updated."
@@ -310,11 +312,10 @@ en:
       email_subject_confirm_points_transfer: "Reward points transfer confirmation"
       email_subject_points_expiration_reminder: "Reminder - Use your points before they expire!"
       email_subject_reset_password: "Reset password instructions"
-      email_subject_welcome: "Welcome to KICKBAK"
-      email_subject_activate_tag: "Tag activation"    
+      email_subject_reward_notif: "You won bonus prize points from %s"
   users:
-      activate_tag_success: "Access tag was successfully activated."
-      activate_tag_already_activated: "Access tag is already activated."
-      activate_tag_not_registered: "You have not registered a tag yet."
-      activate_tag_failure: "Failed to activate access tag."
+      invalid_tag: "Key tag is not valid."
+      register_tag_failure: "Trouble registering user tag. Please try again."
+      tag_already_in_use_failure: "Trouble registering user tag. Already in use."
+      register_tag_success: "Key tag was successfully activated."
       update_success: "Account was successfully updated."

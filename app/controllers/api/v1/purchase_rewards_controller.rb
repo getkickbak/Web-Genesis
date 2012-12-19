@@ -93,13 +93,19 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
     else
       begin
         if signed_in? && params[:data].nil?
+          if @venue_id && (params[:latitude].nil? || params[:longitude].nil?)
+            venue = Venue.get(@venue_id)
+            if venue.nil?
+              raise "No such venue: #{@venue_id}"
+            end
+          end
           request_info = {
             :type => RequestType.EARN_POINTS,
             :frequency1 => params[:frequency1],
             :frequency2 => params[:frequency2],
             :frequency3 => params[:frequency3],
-            :latitude => params[:latitude],
-            :longitude => params[:longitude]
+            :latitude => params[:latitude] || venue.latitude,
+            :longitude => params[:longitude] || venue.longitude
           }
           request_id, data = Common.match_request(request_info)
           if data.nil?
@@ -139,14 +145,24 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           if tag.nil?
             raise "No such tag: #{decrypted_data["tag_id"]}"
           end
-          user_to_tag = UserToTag.first(:fields => [:user_id], :tag_id => tag.id)
-          if user_to_tag.nil?
-            raise "No user is associated with this tag: #{decrypted_data["tag_id"]}"
-          end
-          current_user = User.get(user_to_tag.user_id)
-          if current_user.nil?
-            raise "No such user: #{user_to_tag.user_id}"
-          end
+          user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
+          if user_to_tag.nil? && tag.status == :pending
+            user_info = {}
+            user_info[:name] = "KICKBAK #{String.random_alphanumeric(8)}"
+            user_info[:email] = "#{String.random_alphanumeric(16)}@getkickbak.com"
+            user_info[:role] = "user"
+            user_info[:status] = :pending
+            password = String.random_alphanumeric(8)
+            user_info[:password] = password
+            user_info[:password_confirmation] = password
+            current_user = User.create(user_info)
+            current_user.register_tag(tag)
+          else
+            current_user = User.get(user_to_tag.user_id)
+            if current_user.nil?
+              raise "No such user: #{user_to_tag.user_id}"
+            end
+          end  
         end
         #logger.debug("decrypted type: #{decrypted_data["type"]}")
         #logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
@@ -523,7 +539,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           end
           render :template => '/api/v1/purchase_rewards/earn'
           Request.destroy(request_id) if request_id > 0
-          if tag && (@reward_info[:signup_points] > 0 || @reward_info[:prize_points] > 1 || @reward_info[:badge_prize_points] > 0)
+          if tag && (@reward_info[:prize_points] > 1 || @reward_info[:badge_prize_points] > 0)
             UserMailer.reward_notif_email(@customer, @reward_info).deliver
           end
           if referral_challenge

@@ -31,7 +31,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       if @tag.nil?
         raise "No such tag: #{decrypted_data["tag_id"]}"
       end
-      user_to_tag = UserToTag.first(:fields => [:user_id], :tag_id => @tag.id)
+      user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => @tag.id)
       if user_to_tag.nil?
         raise "No user is associated with this tag: #{decrypted_data["tag_id"]}"
       end

@@ -52,9 +52,31 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       decrypted_data = JSON.parse(decrypted)
       now_secs = decrypted_data["expiry_ts"]/1000
       data_expiry_ts = Time.at(now_secs)
-      current_user = User.get(decrypted_data["user_id"])
+      tag = UserTag.get(decrypted_data["tag_id"])
+      if tag.nil?
+        raise "No such tag: #{decrypted_data["tag_id"]}"
+      end
+      if tag.status != :active
+        respond_to do |format|
+          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+          format.json { render :json => { :success => false, :message => t("api.inactive_tag").split('\n') } }
+        end
+        return
+      end
+      user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
+      if user_to_tag.nil?
+        raise "No user is associated with this tag: #{decrypted_data["tag_id"]}"
+      end
+      current_user = User.get(user_to_tag.user_id)
       if current_user.nil?
-        raise "No such user: #{decrypted_data["user_id"]}"
+        raise "No such user: #{user_to_tag.user_id}"
+      end
+      if current_user.status != :active
+        respond_to do |format|
+          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+          format.json { render :json => { :success => false, :message => t("api.inactive_user").split('\n') } }
+        end
+        return
       end
       @reward = CustomerReward.get(decrypted_data["reward_id"])
       if @reward.nil?
@@ -113,13 +135,19 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
             :type => EncryptedDataType::REDEEM_VERIFY,
             :reward_id => params[:reward_id]
         }.to_json
+        if params[:venue_id] && (params[:latitude].nil? || params[:longitude].nil?)
+          venue = Venue.get(params[:venue_id])
+          if venue.nil?
+            raise "No such venue: #{params[:venue_id]}"
+          end
+        end
         request_info = {
           :type => RequestType.REDEEM_VERIFY,
           :frequency1 => params[:frequency1],
           :frequency2 => params[:frequency2],
           :frequency3 => params[:frequency3],
-          :latitude => params[:latitude],
-          :longitude => params[:longitude],
+          :latitude => params[:latitude] || venue.latitude,
+          :longitude => params[:longitude] || venue.longitude,
           :data => data
         }
         Request.create(params)

@@ -78,6 +78,7 @@ class Merchant
 
   validates_with_method :type_id, :method => :check_type_id
   validates_with_method :visit_frequency_id, :method => :check_visit_frequency_id
+  validates_with_method :termination_date, :method => :validate_termination_date
 
   before_save :ensure_authentication_token
 
@@ -87,31 +88,63 @@ class Merchant
 
   def self.create(type, visit_frequency, merchant_info)
     now = Time.now
-    merchant_name = merchant_info[:name].squeeze(' ').strip
-    password = merchant_info[:password] ? merchant_info[:password].strip : merchant_info.password
-    password_confirmation  = merchant_info[:password_confirmation] ? merchant_info[:password_confirmation].strip : merchant_info.password_confirmation
+    if (merchant_info.is_a? Hash) || (merchant_info.is_a? ActiveSupport::HashWithIndifferentAccess)
+      merchant_name = merchant_info[:name].squeeze(' ').strip
+      description = merchant_info[:description].strip
+      email = merchant_info[:email].strip
+      password = merchant_info[:password].strip
+      password_confirmation = merchant_info[:password_confirmation].strip
+      account_first_name = merchant_info[:account_first_name].strip
+      account_last_name = merchant_info[:account_last_name].strip
+      phone = merchant_info[:phone].strip
+      website = merchant_info[:website].strip
+      role = merchant_info[:role]
+      status = merchant_info[:status]
+      will_terminate = merchant_info[:will_terminate]
+      terminate_date = merchant_info[:terminate_date]
+      custom_badges = merchant_info[:custom_badges]
+      reward_terms = merchant_info[:reward_terms]
+    else
+      merchant_name = merchant_info.name
+      description = merchant_info.description
+      email = merchant_info.email
+      account_first_name = merchant_info.account_first_name
+      account_last_name = merchant_info.account_last_name
+      password = merchant_info.password
+      password_confirmation = merchant_info.password_confirmation
+      account_first_name = merchant_info.account_first_name
+      account_last_name = merchant_info.account_last_name
+      phone = merchant_info.phone
+      website = merchant_info.website
+      role = merchant_info.role
+      status = merchant_info.status
+      will_terminate = merchant_info.will_terminate
+      terminate_date = merchant_info.terminate_date
+      custom_badges = merchant_info.custom_badges
+      reward_terms = merchant_info.reward_terms
+    end
     merchant = Merchant.new(
       :type_id => type ? type.id : nil,
       :visit_frequency_id => visit_frequency ? visit_frequency.id : nil,
       :name => merchant_name,
-      :description => merchant_info[:description].strip,
-      :email => merchant_info[:email].strip,
+      :description => description,
+      :email => email,
       :current_password => password,
       :password => password,
       :password_confirmation => password_confirmation,
-      :account_first_name => merchant_info[:account_first_name].strip,
-      :account_last_name => merchant_info[:account_last_name].strip,
-      :phone => merchant_info[:phone].strip,
-      :website => merchant_info[:website].strip,
-      :role => merchant_info[:role],
-      :status => merchant_info[:status],
-      :will_terminate => merchant_info[:will_terminate],
+      :account_first_name => account_first_name,
+      :account_last_name => account_last_name,
+      :phone => phone,
+      :website => website,
+      :role => role,
+      :status => status,
+      :will_terminate => will_terminate,
       :termination_date => now.to_date,
-      :custom_badges => merchant_info[:custom_badges],
-      :reward_terms => merchant_info[:reward_terms],
+      :custom_badges => custom_badges,
+      :reward_terms => reward_terms,
       :auth_code => String.random_alphanumeric(32)
     )
-    merchant.termination_date_str = merchant_info[:will_terminate] ? merchant_info[:termination_date] : ""
+    merchant.termination_date_str = will_terminate ? terminate_date : ""
     merchant[:created_ts] = now
     merchant[:update_ts] = now
     merchant.type = type
@@ -289,7 +322,7 @@ class Merchant
       end
       return true
     rescue ArgumentError
-    return false
+      return false
     end
   end
 
@@ -302,7 +335,7 @@ class Merchant
 
   def check_visit_frequency_id
     if self.visit_frequency
-    return true
+      return true
     end
     return [false, ValidationErrors.default_error_message(:blank, :visit_frequency_id)]
   end
@@ -311,7 +344,7 @@ class Merchant
     convert_date(n.to_sym, v) ? true : [false, "#{n.gsub('_',' ').capitalize} #{I18n.t('errors.messages.not_valid')}"]
   end
 
-  def validate_expiry_date
+  def validate_termination_date
     if self.will_terminate
       valid = validate_date("termination_date", "termination_date_str")
       return valid if valid.kind_of?(Array)

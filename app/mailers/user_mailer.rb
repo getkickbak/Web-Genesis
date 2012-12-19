@@ -46,18 +46,7 @@ class UserMailer < ActionMailer::Base
     @record = record
     mail(:to => sender.email, :subject => I18n.t("mailer.email_subject_confirm_points_transfer"))
   end
-  
-  def welcome_email(user, password)
-    @user = user
-    @password = password
-    mail(:to => user.email, :subject => I18n.t("mailer.email_subject_welcome"))
-  end
-  
-  def activate_tag_email(user)
-    @user = user
-    mail(:to => user.email, :subject => I18n.t("mailer.email_subject_activate_tag"))  
-  end
-  
+
   def reward_notif_email(customer, reward_info)
     @customer = customer
     @reward_info = reward_info

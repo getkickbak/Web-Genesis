@@ -5,6 +5,14 @@ class CustomerRewardsController < ApplicationController
   def index
     authorize! :read, CustomerReward
 
+    if Customer.count(:user_id => current_user.id, :status => :active) == 0
+      respond_to do |format|
+        format.html { redirect_to dashboard_path }
+          #format.xml  { render :xml => @merchants }
+      end
+      return
+    end
+    
     merchant_ids = []
     customers = Customer.all(:fields => [:merchant_id], :user_id => current_user.id, :status => :active, :order => [ :created_ts.desc ])
     customers.each do |customer|

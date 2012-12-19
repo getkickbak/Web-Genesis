@@ -16,6 +16,7 @@ module Business
       @reward_model = current_merchant.reward_model
       begin
         RewardModel.transaction do
+          now = Time.now
           if @reward_model.nil?
             RewardModel.create(current_merchant, params[:reward_model])
             msg = t("business.reward_model.setup_success")
@@ -31,12 +32,14 @@ module Business
             else
               reward.points = (reward.price / @reward_model.price_per_prize_point / @reward_model.prize_rebate_rate * 100 / (100 - APP_PROP["BADGE_REBATE_RATE"]) * 100).to_i
             end
+            reward.update_ts = now
             reward.save
           end
           challenges = Challenge.all(:merchant => current_merchant)
           challenges.each do |challenge|
             challenge.type_id = challenge.type.id
             challenge.points = (challenge.reward_amount / @reward_model.price_per_point / @reward_model.rebate_rate * 100).to_i
+            challenge.update_ts = now
             challenge.save
           end
           respond_to do |format|

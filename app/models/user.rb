@@ -9,7 +9,7 @@ class User
   # Include default devise modules. Others available are:
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
 
-  devise :database_authenticatable, #:registerable, #:confirmable,
+  devise :database_authenticatable, :registerable, #:confirmable,
           :recoverable, :rememberable, :trackable, #:timeoutable,
           :validatable, :token_authenticatable, :authentication_keys => [:email]
           
@@ -40,9 +40,9 @@ class User
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
     
-  attr_accessor :current_password
+  attr_accessor :current_password, :tag_id
   
-  attr_accessible :name, :email, :facebook_id, :facebook_email, :role, :status, :current_password, :password, :password_confirmation
+  attr_accessible :name, :email, :facebook_id, :facebook_email, :role, :status, :current_password, :password, :password_confirmation, :tag_id
     
   has 1, :profile, 'UserProfile', :constraint => :destroy
   has 1, :user_to_tag, :constraint => :destroy
@@ -56,33 +56,79 @@ class User
   has n, :user_credit_cards, :child_key => [ :user_id ], :constraint => :destroy
   has n, :credit_cards, :through => :user_credit_cards, :via => :credit_card
     
+  validates_with_method :tag_id, :method => :validate_tag_id
+    
   before_save :ensure_authentication_token
   
   def self.create(user_info)
     now = Time.now
-    password = user_info[:password] ? user_info[:password].strip : user_info.password
-    #password_confirmation  = user_info[:password_confirmation] ? user_info[:password_confirmation].strip : user_info.password_confirmation
-    user = User.new(
-      {
-        :name => user_info[:name].strip,
-        :email => user_info[:email].strip,   
-        :facebook_id => (user_info[:facebook_id] if (user_info.include? :facebook_id)),
-        :facebook_email => (user_info[:facebook_email] if (user_info.include? :facebook_email)),
-        :current_password => password,
-        :password => password,
-        :password_confirmation => password,
-        :role => user_info[:role],
-        :status => user_info[:status]
-      }.delete_if { |k,v| v.nil? }
-    ) 
-    user[:created_ts] = now
-    user[:update_ts] = now
-    user.profile = UserProfile.new(
-      :gender =>  user_info[:gender] || :u,
-      :birthday => user_info[:birthday] || ::Constant::MIN_DATE       
-    )
-    user.profile[:created_ts] = now
-    user.profile[:update_ts] = now
+    if (user_info.is_a? Hash) || (user_info.is_a? ActiveSupport::HashWithIndifferentAccess)
+      name = user_info[:name].strip
+      email = user_info[:email].strip
+      password = user_info[:password].strip
+      facebook_id = user_info[:facebook_id]
+      facebook_email = user_info[:facebook_email]
+      role = user_info[:role]
+      status = user_info[:status]
+      gender = user_info[:gender]
+      birthday = user_info[:birthday]
+    else
+      name = user_info.name
+      email = user_info.email
+      password = user_info.password
+      password_confirmation = user_info.password_confirmation
+      role = user_info.role
+      status = user_info.status
+      gender = :u
+      birthday = ::Constant::MIN_DATE
+      tag_id = user_info.tag_id
+    end  
+    
+    validate_user = false
+    if tag_id
+      user_to_tag = UserToTag.first(:user_tag_id => tag_id)
+      if user_to_tag.nil?
+        validate_user = true
+      else
+        if user_to_tag.user_tag.status == :pending
+          user = user_to_tag.user
+          user.name = name
+          user.email = email
+          user.password = password
+          user.passowrd_confirmation = password_confirmation
+          user.update_ts = now
+          user.tag.status = :active
+          user.tag.update_ts = now
+        else
+          validate_user = true
+        end   
+      end    
+    end
+    
+    if validate_user || tag_id.nil?
+      user = User.new(
+        {
+          :name => name,
+          :email => email,   
+          :facebook_id => facebook_id,
+          :facebook_email => facebook_email,
+          :current_password => password,
+          :password => password,
+          :password_confirmation => password_confirmation || password,
+          :role => role,
+          :status => status,
+          :tag_id => tag_id
+        }.delete_if { |k,v| v.nil? }
+      ) 
+      user[:created_ts] = now
+      user[:update_ts] = now
+      user.profile = UserProfile.new(
+        :gender => gender || :u,
+        :birthday => birthday || ::Constant::MIN_DATE       
+      )
+      user.profile[:created_ts] = now
+      user.profile[:update_ts] = now
+    end
     user.save
     return user 
   end
@@ -123,18 +169,12 @@ class User
   def register_tag(tag)
     if not self.tag.nil?
       return if self.tag.id == tag.id
-      self.tag.destroy
+      self.tag.status = :deleted
+      self.user_to_tag.destroy
     end
     self.tag = tag
+    self.tag.stats = :active
     save  
-  end
-  
-  def activate_tag
-    if self.tag.status == :pending
-      self.tag.status = :active
-      save
-    end  
-    return false
   end
   
   def follow(others)
@@ -169,5 +209,17 @@ class User
     user_credit_cards.all(:credit_card => Array(credit_card)).destroy
     reload
     self
+  end
+  
+  private
+  
+  def validate_tag_id
+    if self.tag_id
+      user_to_tag = UserToTag.first(:user_tag_id => self.tag_id)
+      if user_to_tag.nil? || user_to_tag.user_tag.status != :pending
+        return [false, I18n.t('users.invalid_tag')]        
+      end    
+    end
+    return true
   end
 end

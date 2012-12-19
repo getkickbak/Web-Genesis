@@ -21,18 +21,12 @@ class UserDevise::SessionsController < Devise::SessionsController
         user.profile.update(profile_info)      
         resource = user
         sign_in(resource_name, resource)
-        respond_to do |format|
-          format.html { redirect_to after_sign_in_path_for(resource) }
-        end
+        respond_with resource, :location => after_sign_in_path_for(resource)
       end
     rescue DataMapper::SaveFailureError => e
-      respond_to do |format|
-        format.html { redirect_to after_sign_in_path_for(resource) }
-      end  
+      respond_with resource, :location => after_sign_in_path_for(resource)  
     rescue
-      respond_to do |format|
-        format.html { redirect_to after_sign_in_path_for(resource) }
-      end
+      respond_with resource, :location => after_sign_in_path_for(resource)
     end    
   end
   

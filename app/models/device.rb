@@ -6,7 +6,8 @@ class Device
   Statuses = [:ready, :activated, :in_repair, :deactivated]
   
   property :id, Serial
-  property :serial_num, String, :required => true, :default => ""
+  property :device_id, String, :required => true, :default => ""
+  property :encryption_key, String, :required => true, :default => ""
   property :status, Enum[:ready, :activated, :in_repair, :deactivated], :required => true, :default => :ready
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -14,7 +15,7 @@ class Device
   #property :deleted, ParanoidBoolean, :default => false
   
   attr_accessor :venue_id
-  attr_accessible :venue_id, :serial_num, :status
+  attr_accessible :venue_id, :serial_num, :encryption_key, :status
    
   belongs_to :merchant
   belongs_to :merchant_venue, 'Venue'
@@ -25,7 +26,8 @@ class Device
     now = Time.now
     device = Device.new(
       :venue_id => venue ? venue.id : nil,
-      :serial_num => device_info[:serial_num].strip,
+      :device_id => device_info[:device_id].strip,
+      :encryption_key => device_info[:encryption_key].strip,
       :status => device_info[:status]
     )
     device[:created_ts] = now
@@ -39,7 +41,8 @@ class Device
   def update(venue, device_info)
     now = Time.now
     self.venue_id = venue ? venue.id : nil
-    self.serial_num = device_info[:serial_num]
+    self.serial_num = device_info[:device_id]
+    self.encryption_key = device_info[:encryption_key]
     self.status = device_info[:status]
     self.update_ts = now
     self.merchant_venue = venue
