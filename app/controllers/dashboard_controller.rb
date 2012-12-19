@@ -15,17 +15,18 @@ class DashboardController < ApplicationController
     @user = current_user
     authorize! :update, @user
 
+    tag_id = params[:user_tag][:tag_id].strip
     begin
       User.transaction do
         now = Time.now
-        @tag = UserTag.get(:tag_id => params[:user_tag][:tag_id])
+        @tag = UserTag.first(:tag_id => tag_id)
         if @tag.nil?
-          @user_tag = UserTag.new(:tag_id => params[:user_tag][:tag_id])
+          @user_tag = UserTag.new(:tag_id => tag_id)
           @user_tag.errors.add(:tag_id, t("users.invalid_tag"))
           raise DataMapper::SaveFailureError.new("", @user_tag)
         end
         if @tag.status == :active
-          @user_tag = UserTag.new(:tag_id => params[:user_tag][:tag_id])
+          @user_tag = UserTag.new(:tag_id => tag_id)
           @user_tag.errors.add(:tag_id, t("users.tag_already_in_use_failure"))
           raise DataMapper::SaveFailureError.new("", @user_tag)
         end
@@ -133,7 +134,7 @@ class DashboardController < ApplicationController
             customers.destroy
             user.destroy
           else
-            @user_tag = UserTag.new(:tag_id => params[:user_tag][:tag_id])
+            @user_tag = UserTag.new(:tag_id => tag_id)
             @user_tag.errors.add(:tag_id, t("users.tag_already_in_use_failure"))
             raise DataMapper::SaveFailureError.new("", @user_tag)
           end
@@ -146,9 +147,9 @@ class DashboardController < ApplicationController
       end
     rescue DataMapper::SaveFailureError => e
       logger.error("Exception: " + e.resource.errors.inspect)
-      @user_tag = UserTag.new(:tag_id => params[:user_tag][:tag_id]) if @user_tag.nil?
+      @user_tag = UserTag.new(:tag_id => tag_id) if @user_tag.nil?
       get_customers_info
-      flash[:error] = t("users.register_tag_failure")
+      flash[:error] = t("users.register_tag_failure") if @user_tag.errors.empty?
       respond_to do |format|
         format.html { render :action => "index" }
         #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }

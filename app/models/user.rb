@@ -73,15 +73,15 @@ class User
       gender = user_info[:gender]
       birthday = user_info[:birthday]
     else
-      name = user_info.name
-      email = user_info.email
-      password = user_info.password
-      password_confirmation = user_info.password_confirmation
+      name = user_info.name.strip
+      email = user_info.email.strip
+      password = user_info.password.strip
+      password_confirmation = user_info.password_confirmation.strip
       role = user_info.role
       status = user_info.status
       gender = :u
       birthday = ::Constant::MIN_DATE
-      tag_id = user_info.tag_id
+      tag_id = user_info.tag_id.strip
     end  
     
     validate_user = false
@@ -173,7 +173,7 @@ class User
       self.user_to_tag.destroy
     end
     self.tag = tag
-    self.tag.stats = :active
+    self.tag.status = :active
     save  
   end
   

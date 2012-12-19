@@ -27,7 +27,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       decrypted = cipher.dec(data)
       #logger.debug("decrypted text: #{decrypted}")
       decrypted_data = JSON.parse(decrypted)
-      @tag = UserTag.get(:tag_id => decrypted_data["tag_id"])
+      @tag = UserTag.first(:tag_id => decrypted_data["tag_id"])
       if @tag.nil?
         raise "No such tag: #{decrypted_data["tag_id"]}"
       end

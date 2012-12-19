@@ -141,7 +141,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         now_secs = decrypted_data["expiry_ts"]/1000
         data_expiry_ts = Time.at(now_secs)
         if not signed_in?
-          tag = UserTag.get(:tag_id => decrypted_data["tag_id"])
+          tag = UserTag.first(:tag_id => decrypted_data["tag_id"])
           if tag.nil?
             raise "No such tag: #{decrypted_data["tag_id"]}"
           end
