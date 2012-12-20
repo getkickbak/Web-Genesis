@@ -60,7 +60,7 @@ class Api::V1::CheckInsController < Api::V1::BaseApplicationController
         @customer.points = 0
         @customer.prize_points = 0
         @customer.last_check_in = CheckIn.new
-        @customer.eager_load_merchant = @venue.merchant   
+        @customer.merchant = @venue.merchant   
       else
         logger.info("User(#{current_user.id}) failed to check-in at Merchant(#{@venue.merchant.id}), account not compatible with merchant")
         respond_to do |format|
