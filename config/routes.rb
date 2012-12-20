@@ -118,10 +118,11 @@ Genesis::Application.routes.draw do
           get "get_csrf_token", :on => :collection
         end
         #resources :check_ins, :only => [:create]
-        resources :customers, :only => [:index, :show] do
+        resources :customers, :only => [:index] do
           post "transfer_points", :on => :collection
           post "receive_points", :on => :collection
-          get "show_jackpot_winners", :on => :collection    
+          get "show_jackpot_winners", :on => :collection   
+          get "show", :on => :collection 
         end
                           
         match "/sign_up" => 'registrations#create', :via => :post
