@@ -1,7 +1,7 @@
 class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
-  skip_before_filter :verify_authenticity_token, :only => [:merchant_redeem, :merchant_redeem_verify]
-  before_filter :authenticate_user!, :except => [:merchant_redeem, :merchant_redeem_verify]
-  skip_authorization_check :only => [:merchant_redeem, :merchant_redeem_verify, :redeem_verify_request]
+  skip_before_filter :verify_authenticity_token, :only => [:merchant_redeem]
+  before_filter :authenticate_user!, :except => [:merchant_redeem]
+  skip_authorization_check :only => [:merchant_redeem]
   
   def index
     @venue = Venue.get(params[:venue_id]) || not_found
@@ -24,15 +24,6 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
     render :template => '/api/v1/customer_rewards/index'
   end
   
-  def redeem
-    @venue = Venue.get(params[:venue_id]) || not_found
-    @reward = CustomerReward.first(:id => params[:id], :merchant => @venue.merchant) || not_found
-    @customer = Customer.first(:merchant => @venue.merchant, :user => current_user) || not_found
-    authorize! :update, @customer
-    
-    redeem_common(current_user)    
-  end
-  
   def merchant_redeem
     invalid_code = false
     authorized = false
@@ -52,35 +43,85 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       decrypted_data = JSON.parse(decrypted)
       now_secs = decrypted_data["expiry_ts"]/1000
       data_expiry_ts = Time.at(now_secs)
-      tag = UserTag.get(decrypted_data["tag_id"])
-      if tag.nil?
-        raise "No such tag: #{decrypted_data["tag_id"]}"
+      if params[:frequency]
+        frequency = params[:frequency]
+        request_info = {
+          :type => RequestType.REDEEM,
+          :frequency1 => frequency[0],
+          :frequency2 => frequency[1],
+          :frequency3 => frequency[2],
+          :latitude => params[:latitude] || @venue.latitude,
+          :longitude => params[:longitude] || @venue.longitude
+        }
+        request_id, data = Common.match_request(request_info)
+        if data.nil?
+          raise "No matching redeem reward request"
+        end
+        request_data = JSON.parse(data)
+        user_id = request_data["user_id"]
+        current_user = User.get(user_id)
+      else
+        tag = UserTag.get(decrypted_data["tag_id"])
+        if tag.nil?
+          logger.error("No such tag: #{decrypted_data["tag_id"]}")
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => false, :message => t("api.invalid_tag").split('\n') } }
+          end
+          return
+        end
+        if tag.status != :active
+          logger.info("Tag: #{decrypted_data["tag_id"]} is not active")
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => false, :message => t("api.inactive_tag").split('\n') } }
+          end
+          return
+        end
+        user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
+        if user_to_tag.nil?
+          logger.error("No user is associated with this tag: #{decrypted_data["tag_id"]}")
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => false, :message => t("api.invalid_tag").split('\n') } }
+          end
+          return
+        end
+        user_id = user_to_tag.user_id
+        current_user = User.get(user_id)
       end
-      if tag.status != :active
+      if current_user.nil?
+        logger.error("No such user: #{user_id}")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => false, :message => t("api.inactive_tag").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.invalid_user").split('\n') } }
         end
         return
       end
-      user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
-      if user_to_tag.nil?
-        raise "No user is associated with this tag: #{decrypted_data["tag_id"]}"
-      end
-      current_user = User.get(user_to_tag.user_id)
-      if current_user.nil?
-        raise "No such user: #{user_to_tag.user_id}"
-      end
       if current_user.status != :active
+        logger.error("User: #{current_user.id} is not active")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
           format.json { render :json => { :success => false, :message => t("api.inactive_user").split('\n') } }
         end
         return
       end
+      if request_data && decrypted_data["reward_id"] != request_data["reward_id"]
+        logger.error("Mismatch rewards,  reward id:#{decrypted_data["reward_id"]}, request reward_id:#{request_data["reward_id"]}")
+        respond_to do |format|
+          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+          format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_mismatch").split('\n') } }
+        end
+        return
+      end
       @reward = CustomerReward.get(decrypted_data["reward_id"])
       if @reward.nil?
-        raise "No such reward: #{decrypted_data["reward_id"]}"
+        logger.error("No such reward: #{decrypted_data["reward_id"]}")
+        respond_to do |format|
+          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+          format.json { render :json => { :success => false, :message => t("api.customer_rewards.invalid_reward").split('\n') } }
+        end
+        return
       end
       @customer = Customer.first(:merchant => @venue.merchant, :user => current_user)
       if @customer.nil?
@@ -104,140 +145,97 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       Cache.delete(params[:data])
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.customer_rewards.invalid_code").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
       end
       return  
     end
     
     if authorized
-      redeem_common(current_user)
+      redeem_common(current_user, request_id)
     else
       if invalid_code
         logger.info("Merchant(#{@venue.merchant.id}) failed to redeem Reward(#{@reward.id}) for User(#{current_user.id}), invalid authorization code")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => false, :message => t("api.customer_rewards.invalid_code").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
         end
       else
         logger.info("Merchant(#{@venue.merchant.id}) failed to redeem Reward(#{@reward.id}) for User(#{current_user.id}), authorization code expired")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => false, :message => t("api.customer_rewards.expired_code").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
         end 
       end 
     end
   end
   
-  def redeem_verify_request        
+  def redeem  
+    @venue = Venue.get(params[:venue_id]) || not_found
+    @reward = CustomerReward.first(:id => params[:id], :merchant => @venue.merchant) || not_found
+    @customer = Customer.first(:merchant => @venue.merchant, :user => current_user) || not_found
+    authorize! :read, @customer
+       
     begin  
       Request.transaction do
         data = { 
             :type => EncryptedDataType::REDEEM_VERIFY,
-            :reward_id => params[:reward_id]
+            :user_id => current_user.id,
+            :reward_id => @reward.id
         }.to_json
-        if params[:venue_id] && (params[:latitude].nil? || params[:longitude].nil?)
-          venue = Venue.get(params[:venue_id])
-          if venue.nil?
-            raise "No such venue: #{params[:venue_id]}"
-          end
-        end
+        frequency = params[:frequency]
         request_info = {
-          :type => RequestType.REDEEM_VERIFY,
-          :frequency1 => params[:frequency1],
-          :frequency2 => params[:frequency2],
-          :frequency3 => params[:frequency3],
-          :latitude => params[:latitude] || venue.latitude,
-          :longitude => params[:longitude] || venue.longitude,
+          :type => RequestType.REDEEM,
+          :frequency1 => frequency[0],
+          :frequency2 => frequency[1],
+          :frequency3 => frequency[2],
+          :latitude => @venue.latitude,
+          :longitude => @venue.longitude,
           :data => data
         }
-        Request.create(params)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => true } }
-        end
+        request = Request.create(params)
       end  
     rescue DataMapper::SaveFailureError => e
       logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_verify_request_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
       end
+      return
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_verify_request_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
       end
-    end
-  end
-  
-  def merchant_redeem_verify
-    @venue = Venue.get(params[:venue_id]) || not_found
-    
-    Time.zone = @venue.time_zone
-    authorized = false
-    begin
-      if params[:data].nil?
-        request_info = {
-          :type => RequestType.REDEEM_VERIFY,
-          :frequency1 => params[:frequency1],
-          :frequency2 => params[:frequency2],
-          :frequency3 => params[:frequency3],
-          :latitude => params[:latitude],
-          :longitude => params[:longitude]
-        }
-        request_id, data = Common.match_request(request_info)
-        if data.nil?
-          raise "No matching redeem verify request"
-        end
-        decrypted_data = JSON.parse(decrypted) 
-      else
-        data = params[:data]  
-        cipher = Gibberish::AES.new(@venue.auth_code)
-        decrypted = cipher.dec(data)
-        #logger.debug("decrypted text: #{decrypted}")
-        decrypted_data = JSON.parse(decrypted) 
-      end    
-      data_expiry_ts = Time.at(decrypted_data["expiry_ts"]/1000)
-      # Cache expires in 12 hrs
-      if (decrypted_data["type"] == EncryptedDataType::REDEEM_VERIFY) && (data_expiry_ts >= Time.now) && Cache.add(data, true, 43200) && (@reward = CustomerReward.get(decrypted_data["reward_id"]))
-        authorized = true
-      end
-    rescue StandardError => e
-      logger.error("Exception: " + e.message)
-      Cache.delete(data)
-      respond_to do |format|
-        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.customer_rewards.invalid_code").split('\n') } }
-      end  
       return
     end
     
-    begin
-      Customer.transaction do
-        if authorized
-          Request.destroy(request_id) if request_id > 0
-          render :template => '/api/v1/customer_rewards/merchant_redeem_verify' 
-        else
-          respond_to do |format|
-            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.customer_rewards.expired_code").split('\n') } }
-          end
-        end  
+    if Common.request_complete?(request)
+      @customer.reload
+      @account_info = {}
+      if @reward.mode == :reward
+        @account_info[:points] = @customer.points
+      else
+        @account_info[:prize_points] = @customer.prize_points
       end
-    rescue StandardError => e
-      logger.error("Exception: " + e.message)
-      Cache.delete(data)
+      @account_info[:eligible_for_reward] = @customer.eligible_for_reward
+      @account_info[:eligible_for_prize] = @customer.eligible_for_prize
+      @rewards = Common.get_rewards(@venue, :reward)
+      @prizes = Common.get_rewards(@venue, :prize)
+      render :template => '/api/v1/customer_rewards/redeem'
+      logger.info("User(#{current_user.id}) successfully completed Request(#{request.id})")
+    else
+      logger.info("User(#{current_user.id}) failed to complete Request(#{request.id})")
       respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_verify_request_failure").split('\n') } }
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
       end
-    end
+    end 
   end
   
   private
   
-  def redeem_common(current_user)
+  def redeem_common(current_user, request_id)
     logger.info("Redeem Reward(#{@reward.id}), Type(#{@reward.type.value}), Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
 
     if @venue.status != :active
@@ -311,13 +309,10 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           trans_record.customer = @customer
           trans_record.user = current_user
           trans_record.save
-          @account_info = {}
           if @reward.mode == :reward
             @customer.points -= @reward.points
-            @account_info[:points] = @customer.points
           else
             @customer.prize_points -= @reward.points
-            @account_info[:prize_points] = @customer.prize_points
           end  
           if @reward.quantity_limited
             @reward.quantity_count += 1
@@ -332,17 +327,16 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           @customer.eligible_for_prize = eligible_for_prize
           @customer.update_ts = now
           @customer.save
-          @account_info[:eligible_for_reward] = eligible_for_reward
-          @account_info[:eligible_for_prize] = eligible_for_prize
-          data = { 
-            :type => (@reward.mode == :reward ? EncryptedDataType::REDEEM_REWARD : EncryptedDataType::REDEEM_PRIZE),
-            :reward => @reward.to_redeemed,
-            :expiry_ts => (6.hour.from_now).to_i*1000
-          }.to_json
-          cipher = Gibberish::AES.new(@venue.auth_code)
-          @encrypted_data = "#{@reward.mode == :reward ? 'r' : 'p'}$#{cipher.enc(data)}"
-          render :template => '/api/v1/customer_rewards/redeem'
+          if request_id > 0
+            request = Request.get(request_id)
+            request.status = :complete
+            request.save
+          end
           logger.info("User(#{current_user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => true } }
+          end
         else
           logger.info("User(#{current_user.id}) failed to redeem Reward(#{@reward.id}), insufficient points")
           respond_to do |format|

@@ -210,7 +210,7 @@ class Common
       )
     }
     
-    n = 2
+    n = 10
     n.times do |x|
       request = c.call
       if request.length > 0
@@ -221,6 +221,26 @@ class Common
         return 0, nil  
       end
     end      
+  end
+  
+  def self.request_complete?(request)
+    c = lambda {
+      return DataMapper.repository(:default).adapter.select(
+        "SELECT status from requests WHERE id = ? AND deleted_ts IS NULL", request.id
+      )
+    }
+    
+    n = 10
+    n.times do |x|
+      request = c.call
+      if request.length > 0 && request[0].status == :complete
+        return true
+      elsif x < n
+        sleep(0.1)
+      else
+        return false  
+      end
+    end  
   end
   
   def self.get_news(venue)

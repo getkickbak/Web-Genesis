@@ -1,7 +1,7 @@
 class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
-  skip_before_filter :verify_authenticity_token, :only => [:merchant_earn, :merchant_earn_request]
-  before_filter :authenticate_user!, :except => [:merchant_earn, :merchant_earn_request]
-  skip_authorization_check :only => [:merchant_earn, :merchant_earn_request]
+  skip_before_filter :verify_authenticity_token, :only => [:merchant_earn]
+  before_filter :authenticate_user!, :except => [:merchant_earn]
+  skip_authorization_check :only => [:merchant_earn]
   
   def earn
     authorize! :update, Customer
@@ -10,10 +10,11 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
   end
   
   def merchant_earn
-    earn_common
-  end
-
-  def merchant_earn_request
+    if params[:frequency].nil?
+      earn_common
+      return  
+    end
+    
     begin      
       encrypted_data = params[:data].split('$')
       if encrypted_data.length != 2
@@ -39,20 +40,17 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       # Cache expires in 12 hrs
       if (data_expiry_ts >= Time.now) && Cache.add(params[:data], true, 43200)        
         Request.transaction do
+          frequency = params[:frequency]
           request_info = {
             :type => RequestType.EARN_POINTS,
-            :frequency1 => params[:frequency1],
-            :frequency2 => params[:frequency2],
-            :frequency3 => params[:frequency3],
+            :frequency1 => frequency[0],
+            :frequency2 => frequency[1],
+            :frequency3 => frequency[2],
             :latitude => params[:latitude],
             :longitude => params[:longitude],
             :data => params[:data]
           }
-          Request.create(request_info)
-          respond_to do |format|
-            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => true } }
-          end
+          request = Request.create(request_info)
         end
       else
         raise "Authorization code expired"
@@ -62,16 +60,32 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       Cache.delete(params[:data])
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.merchant_earn_request_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.merchant_earn_failure").split('\n') } }
       end
+      return
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       Cache.delete(params[:data])
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.merchant_earn_request_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.merchant_earn_failure").split('\n') } }
       end
+      return
     end
+    
+    if Common.request_complete?(request)
+      logger.info("Venue(#{@venue.id}) successfully completed Request(#{request.id})")
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => true } }
+      end
+    else
+      logger.info("Venue(#{@venue.id}) failed to complete Request(#{request.id})")
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.merchant_earn_failure").split('\n') } }
+      end
+    end      
   end
   
   private
@@ -99,11 +113,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
               raise "No such venue: #{@venue_id}"
             end
           end
+          frequency = params[:frequency]
           request_info = {
             :type => RequestType.EARN_POINTS,
-            :frequency1 => params[:frequency1],
-            :frequency2 => params[:frequency2],
-            :frequency3 => params[:frequency3],
+            :frequency1 => frequency[0],
+            :frequency2 => frequency[1],
+            :frequency3 => frequency[2],
             :latitude => params[:latitude] || venue.latitude,
             :longitude => params[:longitude] || venue.longitude
           }
@@ -126,7 +141,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             raise "No such venue: #{encrypted_data[0]}"
           end
           if (@venue_id && (@venue.id != @venue_id.to_i))
-            raise "Venue information don't match', venue_id:#{@venue_id}, venue id:#{@venue.id}"
+            logger.error("Mismatch venue information', venue_id:#{@venue_id}, venue id:#{@venue.id}")
+            respond_to do |format|
+              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+              format.json { render :json => { :success => false, :message => t("api.purchase_rewards.venue_mismatch").split('\n') } }
+            end
+            return
           end
         else
           raise "Invalid authorization code"
@@ -143,7 +163,20 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         if not signed_in?
           tag = UserTag.first(:tag_id => decrypted_data["tag_id"])
           if tag.nil?
-            raise "No such tag: #{decrypted_data["tag_id"]}"
+            logger.error("No such tag: #{decrypted_data["tag_id"]}")
+            respond_to do |format|
+              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+              format.json { render :json => { :success => false, :message => t("api.invalid_tag").split('\n') } }
+            end
+            return
+          end
+          if tag.status == :suspended || tag.status == :deleted
+            logger.info("Tag: #{decrypted_data["tag_id"]} is suspended or deleted ")
+            respond_to do |format|
+              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+              format.json { render :json => { :success => false, :message => t("api.invalid_tag").split('\n') } }
+            end
+            return
           end
           user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
           if user_to_tag.nil? && tag.status == :pending
@@ -158,11 +191,33 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             current_user = User.create(user_info)
             current_user.register_tag(tag)
           else
-            current_user = User.get(user_to_tag.user_id)
-            if current_user.nil?
-              raise "No such user: #{user_to_tag.user_id}"
-            end
+            if user_to_tag
+              current_user = User.get(user_to_tag.user_id)
+              if current_user.nil?
+                logger.error("No such user: #{user_to_tag.user_id}")
+                respond_to do |format|
+                  #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                  format.json { render :json => { :success => false, :message => t("api.invalid_user").split('\n') } }
+                end
+                return
+              end
+            else
+              logger.error("No user is associated with this non-pending tag: #{decrypted_data["tag_id"]}")
+              respond_to do |format|
+                #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                format.json { render :json => { :success => false, :message => t("api.invalid_tag").split('\n') } }
+              end
+              return
+            end  
           end  
+        end
+        if current_user.status != :active
+          logger.error("User: #{current_user.id} is not active")
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => false, :message => t("api.inactive_user").split('\n') } }
+          end
+          return
         end
         #logger.debug("decrypted type: #{decrypted_data["type"]}")
         #logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
@@ -184,14 +239,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         end
       rescue StandardError => e
         logger.error("Exception: " + e.message)
-        if @venue.nil? || current_user.nil?
-          logger.info("User failed to earn points, invalid authorization code")
-        else
-          logger.info("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), invalid authorization code")
-        end
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.invalid_code").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
         end
         return
       end
@@ -537,8 +587,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             @rewards = rewards
             @prizes = prizes
           end
+          if request_id > 0
+            request = Request.get(request_id)
+            request.status = :complete
+            request.save
+          end
           render :template => '/api/v1/purchase_rewards/earn'
-          Request.destroy(request_id) if request_id > 0
           if tag && (@reward_info[:prize_points] > 1 || @reward_info[:badge_prize_points] > 0)
             UserMailer.reward_notif_email(@customer, @reward_info).deliver
           end
@@ -548,15 +602,13 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           logger.info("User(#{current_user.id}) successfully earned #{@reward_info[:points]} points, #{@reward_info[:signup_points]} signup points, #{@reward_info[:referral_points]} referral points, #{@reward_info[:prize_points]} prize points, #{@reward_info[:badge_prize_points]} badge prize points at Venue(#{@venue.id})")
         else
           if invalid_code
-            msg = t("api.purchase_rewards.invalid_code").split('\n')
             logger.info("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), invalid authorization code")
           else
-            msg = t("api.purchase_rewards.expired_code").split('\n')
             logger.info("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), authorization code expired")
           end
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => msg } }
+            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
           end
         end
       end

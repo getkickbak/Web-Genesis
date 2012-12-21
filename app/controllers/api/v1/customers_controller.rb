@@ -41,14 +41,9 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       end
     rescue StandardError => e
       logger.error("Exception: " + e.message)
-      if @venue.nil? || current_user.nil? || @tag.nil?
-        logger.info("User failed to register Tag, invalid authorization code")
-      else
-        logger.info("User(#{current_user.id}) failed to register Tag(#{@tag.id}) at Venue(#{@venue.id}), invalid authorization code")
-      end
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.users.invalid_code").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.customers.show_failure").split('\n') } }
       end
       return  
     end
@@ -63,13 +58,13 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.users.show_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.customers.show_failure").split('\n') } }
       end
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.users.show_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.customers.show_failure").split('\n') } }
       end
     end
   end
@@ -145,24 +140,31 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             end  
             render :template => '/api/v1/customers/transfer_points'
             logger.info("User(#{current_user.id}) successfully created email transfer qr code worth #{points} points for Customer Account(#{@customer.id})")
+            return
           else
             data = { 
               :type => EncryptedDataType::POINTS_TRANSFER_DIRECT,
               :id => record.id,
               :merchant_id => @customer.merchant.id
             }.to_json
+            cipher = Gibberish::AES.new(@customer.merchant.auth_code)
+            @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
+=begin            
+            frequency = params[:frequency]
             request_info = {
               :type => RequestType.TRANSFER_POINTS,
-              :frequency1 => params[:frequency1],
-              :frequency2 => params[:frequency2],
-              :frequency3 => params[:frequency3],
+              :frequency1 => frequency[0],
+              :frequency2 => frequency[1],
+              :frequency3 => frequency[2],
               :latitude => params[:latitude],
               :longitude => params[:longitude],
               :data => data
             }
-            Request.create(request_info)
+            request = Request.create(request_info)
+=end            
             render :template => '/api/v1/customers/transfer_points'
             logger.info("User(#{current_user.id}) successfully created direct transfer request worth #{points} points for Customer Account(#{@customer.id})")
+            return
           end
         else
           logger.info("User(#{current_user.id}) failed to create transfer qr code worth #{points} points for Customer Account(#{@customer.id}), insufficient points")
@@ -170,6 +172,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => (t("api.customers.insufficient_transfer_points") % [points, t('api.point', :count => points)]).split('\n') } }
           end
+          return
         end
       end
     rescue DataMapper::SaveFailureError => e
@@ -178,13 +181,29 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
       end
+      return
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
       end  
+      return
     end    
+    
+    if Common.request_complete?(request)
+      logger.info("User(#{current_user.id}) successfully completed Request(#{request.id})")
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => true } }
+      end
+    else
+      logger.info("User(#{current_user.id}) failed to complete Request(#{request.id})")
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
+      end
+    end
   end
 
   def receive_points
@@ -195,11 +214,12 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
     
     begin
       if params[:data].nil?
+        frequency = params[:frequency]
         request_info = {
           :type => RequestType.TRANSFER_POINTS,
-          :frequency1 => params[:frequency1],
-          :frequency2 => params[:frequency2],
-          :frequency3 => params[:frequency3],
+          :frequency1 => frequency[0],
+          :frequency2 => frequency[1],
+          :frequency3 => frequency[2],
           :latitude => params[:latitude],
           :longitude => params[:longitude]
         }
@@ -266,12 +286,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         invalid_code = true 
       end  
     rescue StandardError => e
-      logger.error("Exception: " + e.message)
-      if merchant.nil?
-        logger.info("User(#{current_user.id}) failed to receive points, invalid transfer code")
-      else  
-        logger.info("User(#{current_user.id}) failed to receive points at Merchant(#{merchant.id}), invalid transfer code")
-      end  
+      logger.error("Exception: " + e.message)  
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.customers.invalid_transfer_code").split('\n') } }
@@ -336,8 +351,12 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             @record.status = :complete
             @record.update_ts = now
             @record.save 
+            if request_id > 0
+              request = Request.get(request_id)
+              request.status = :complete
+              request.save
+            end
             render :template => '/api/v1/customers/receive_points'
-            Request.destroy(request_id) if request_id > 0
             if decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL
               UserMailer.transfer_points_confirm_email(sender.user, current_user, merchant, @record).deliver
             end

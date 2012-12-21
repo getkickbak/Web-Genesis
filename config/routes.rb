@@ -136,22 +136,20 @@ Genesis::Application.routes.draw do
         match '/venues/find_nearest' => 'venues#find_nearest'
         match '/venues/share_photo' => 'venues#share_photo', :via => :post
         match '/venues/:id/explore' => 'venues#explore'
+        match '/venues/:id/merchant_explore' => 'venues#merchant_explore'
 
         match '/challenges' => 'challenges#index'
         match '/challenges/:id/start' => 'challenges#start'
-        match '/challenges/:id/complete_request' => 'challenges#complete_request', :via => :post
         match '/challenges/:id/complete' => 'challenges#complete', :via => :post
+        match '/challenges/:id/merchant_complete' => 'challenges#merchant_complete', :via => :post
         match '/challenges/complete_referral' => 'challenges#complete_referral', :via => :post
 
         match '/customer_rewards' => 'customer_rewards#index'
         match '/customer_rewards/:id/redeem' => 'customer_rewards#redeem', :via => :post
         match '/customer_rewards/:id/merchant_redeem' => 'customer_rewards#merchant_redeem', :via => :post
-        match '/customer_rewards/:id/redeem_verify_request' => 'customer_rewards#redeem_verify_request', :via => :post
-        match '/customer_rewards/:id/merchant_redeem_verify' => 'customer_rewards#merchant_redeem_verify'
 
         match '/purchase_rewards/earn' => 'purchase_rewards#earn', :via => :post     
         match '/purchase_rewards/merchant_earn' => 'purchase_rewards#merchant_earn', :via => :post
-        match '/purchase_rewards/merchant_earn_request' => 'purchase_rewards#merchant_earn_request', :via => :post
         
         match '/devices/get_encryption_key' => 'devices#get_encryption_key'
       end

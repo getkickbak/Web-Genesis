@@ -5,7 +5,6 @@ end
 node :metaData do
 	{
 		:account_info => @account_info,
-		:data => @encrypted_data,
 		:rewards => (
 			@rewards.map do |r|
 		 		partial('api/v1/customer_rewards/base', :object => r)
