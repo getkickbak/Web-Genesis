@@ -106,17 +106,17 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         end
         return
       end
-      if request_data && decrypted_data["reward_id"] != request_data["reward_id"]
-        logger.error("Mismatch rewards,  reward id:#{decrypted_data["reward_id"]}, request reward_id:#{request_data["reward_id"]}")
+      if request_data && params[:id] != request_data["reward_id"]
+        logger.error("Mismatch rewards,  reward id:#{params[:id]}, request reward_id:#{request_data["reward_id"]}")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
           format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_mismatch").split('\n') } }
         end
         return
       end
-      @reward = CustomerReward.get(decrypted_data["reward_id"])
+      @reward = CustomerReward.get(params[:id])
       if @reward.nil?
-        logger.error("No such reward: #{decrypted_data["reward_id"]}")
+        logger.error("No such reward: #{params[:id]}")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
           format.json { render :json => { :success => false, :message => t("api.customer_rewards.invalid_reward").split('\n') } }
