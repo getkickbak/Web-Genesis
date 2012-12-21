@@ -3,10 +3,8 @@ node :success do
 	true
 end
 node :data do
-	@device.encryption_key
-end
-node :metaData do
 	{ 
+		:id => @device.encryption_key,
 		:venue_id => @device.merchant_venue.id,
 		:venue_name => @device.merchant_venue.name
 	}
