@@ -3,7 +3,7 @@ node :success do
 	true
 end
 node :data do
-	partial('api/v1/venue/base', :object => @venue) 
+	partial('api/v1/venues/base', :object => @venue) 
 end
 node :metaData do
 	{ 
