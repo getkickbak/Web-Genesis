@@ -196,7 +196,6 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       end
     rescue StandardError => e
       logger.error("Exception: " + e.message)
-      logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id})")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.challenges.complete_failure").split('\n') } }
