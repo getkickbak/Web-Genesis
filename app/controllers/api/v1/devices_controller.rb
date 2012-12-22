@@ -4,7 +4,7 @@ class Api::V1::DevicesController < Api::V1::BaseApplicationController
   respond_to :json
   
   def get_encryption_key
-    @device = Device.first(:device_id => params[:device_id], :status => :active)
+    @device = Device.first(:device_id => params[:device_id], :status => :activated)
     if @device
       render :template => '/api/v1/devices/get_encryption_key'
     else
