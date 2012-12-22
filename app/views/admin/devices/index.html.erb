@@ -40,7 +40,7 @@
 								<tbody>
 									<% @devices.each do |device| %>
 									<tr>
-										<td><%= link_to device.serial_num, merchant_device_path(@merchant, device) %></td>
+										<td><%= link_to device.device_id, merchant_device_path(@merchant, device) %></td>
 										<td class="td-actions"><%= device.merchant_venue.name %></td>
 										<td class="td-actions"><%= device.status %></td>
 										<td class="td-actions"><!-- --> 

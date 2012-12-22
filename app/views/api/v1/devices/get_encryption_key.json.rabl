@@ -4,7 +4,7 @@ node :success do
 end
 node :data do
 	{ 
-		:id => @device.encryption_key,
+		:id => @device.merchant_venue.auth_code,
 		:venue_id => @device.merchant_venue.id,
 		:venue_name => @device.merchant_venue.name
 	}

@@ -4,7 +4,7 @@
 		:label_method => :name,
 		:value_method => :id,
 		:include_blank => "", :input_html=>{:class => "input-xxlarge"} %>
-	<%= f.input :serial_num, :input_html=>{:class => "input-xxlarge"} %>
+	<%= f.input :device_id, :label => 'Device ID', :input_html=>{:class => "input-xxlarge"} %>
 	<%= f.input :status, :collection => Device::Statuses, :input_html=>{:class => "input-medium"}%>
    <br />
    <div class="form-actions">
