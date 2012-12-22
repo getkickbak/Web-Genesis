@@ -39,7 +39,7 @@ Ext.define('Genesis.model.PurchaseReward',
    getMerchant : function()
    {
    },
-   statics :
+   inheritableStatics :
    {
       setGetRewardsURL : function()
       {
@@ -56,6 +56,14 @@ Ext.define('Genesis.model.PurchaseReward',
             read : 'POST'
          });
          this.getProxy().setUrl(Genesis.constants.host + '/api/v1/purchase_rewards/earn');
+      },
+      setMerchantEarnPointsURL : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/purchase_rewards/merchant_earn');
       },
    }
 });

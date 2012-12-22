@@ -1,11 +1,10 @@
-Ext.define('Genesis.controller.client.RedeemBase',
+Ext.define('Genesis.controller.RedeemBase',
 {
    extend : 'Genesis.controller.ControllerBase',
-   requires : ['Ext.data.Store'],
-   statics :
+   inheritableStatics :
    {
    },
-   xtype : 'clientRedemptionsBaseCntlr',
+   xtype : 'redeemBaseCntlr',
    config :
    {
       models : ['PurchaseReward', 'CustomerReward'],
@@ -52,7 +51,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       });
 
       this.callParent(arguments);
-      console.log("Client Redemptions Init");
+      console.log("RedeemBase Init");
       //
       // Prelod Page
       //
@@ -81,7 +80,11 @@ Ext.define('Genesis.controller.client.RedeemBase',
          var list = activeItem.query('list[tag='+activeItem.getListCls()+']')[0];
 
          console.debug("Refreshing RenderStore ...");
-         activeItem.query('dataview[tag=ptsEarnPanel]')[0].refresh();
+         var panel = activeItem.query('dataview[tag=ptsEarnPanel]')[0];
+         if (panel)
+         {
+            panel.refresh();
+         }
          monitors[list.container.getId()].forceRefresh();
       }
    },
@@ -115,6 +118,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
+      console.debug("ReedeemBase: onDeactivate");
    },
    onItemListSelect : function(d, model, eOpts)
    {
@@ -128,44 +132,21 @@ Ext.define('Genesis.controller.client.RedeemBase',
       var viewport = me.getViewPortCntlr();
       var _showItem = function()
       {
-         var totalPts = viewport.getCustomer().get(me.getPtsProperty());
-         var points = record.get('points');
-         if (points > totalPts)
+         if (viewport.getCustomer())
          {
-            Ext.device.Notification.show(
+            var totalPts = viewport.getCustomer().get(me.getPtsProperty());
+            var points = record.get('points');
+            if (points > totalPts)
             {
-               title : 'Oops!',
-               message : me.needPointsMsg(points - totalPts)
-            });
+               Ext.device.Notification.show(
+               {
+                  title : 'Oops!',
+                  message : me.needPointsMsg(points - totalPts)
+               });
+               return;
+            }
          }
-         else
-         {
-            me.fireEvent('showredeemitem', record);
-            /*
-             if (Ext.os.is('iOS'))
-             {
-             var bt = window.plugins.bluetooth;
-             bt.disconnect();
-             bt.stopSession();
-             bt.startSession(Genesis.constants.userName, function()
-             {
-             console.log("availablePeerListChanged");
-             }, function(peerId)
-             {
-             console.log("connexionRequested - AcceptConnexion PeerId[" + peerId + "]");
-             bt.acceptConnexion(peerId);
-             Ext.defer(function()
-             {
-             bt.sendData([peerId],
-             {
-             "qrcode" : "Testing 123 QRCODE"
-             });
-             }, 1 * 1000);
-             });
-             //window.plugins.bluetooth.sendDataToAll({"data" : "test"});
-             }
-             */
-         }
+         me.fireEvent('showredeemitem', record);
       }
 
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
@@ -201,7 +182,7 @@ Ext.define('Genesis.controller.client.RedeemBase',
       var customer = me.callParent(arguments);
 
       //
-      // Claim Reward Item by showing QRCode to server!
+      // Claim Reward Item by showing QRCode to Merchant Device!
       //
       if (metaData['data'])
       {
@@ -230,15 +211,17 @@ Ext.define('Genesis.controller.client.RedeemBase',
             venue = viewport.getVenue();
             var cvenue = viewport.getCheckinInfo().venue;
 
-            if (!bypass && (!cvenue || !venue || (venue.getId() != cvenue.getId())))
-            {
-               Ext.device.Notification.show(
-               {
-                  title : title,
-                  message : me.checkinFirstMsg
-               });
-            }
-            else
+            /*
+             if (!bypass && (!cvenue || !venue || (venue.getId() != cvenue.getId())))
+             {
+             Ext.device.Notification.show(
+             {
+             title : title,
+             message : me.checkinFirstMsg
+             });
+             }
+             else
+             */
             {
                Ext.device.Notification.show(
                {
@@ -257,42 +240,6 @@ Ext.define('Genesis.controller.client.RedeemBase',
             break;
          }
       }
-   },
-   onRedeemItem : function(btn, venue, view)
-   {
-      var me = this;
-      var venueId = (venue) ? venue.getId() : 0;
-      var item = view.getInnerItems()[0];
-      var store = me.getRedeemStore();
-
-      CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
-
-      btn.hide();
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : me.retrievingQRCodeMsg
-      });
-      Ext.StoreMgr.get(store).load(
-      {
-         addRecords : true, //Append data
-         scope : me,
-         jsonData :
-         {
-         },
-         params :
-         {
-            venue_id : venueId
-         },
-         callback : function(records, operation)
-         {
-            if (!operation.wasSuccessful())
-            {
-               Ext.Viewport.setMasked(null);
-               btn.show();
-            }
-         }
-      });
    },
    onRedeemItemCreateView : function(activeItem)
    {
@@ -323,20 +270,27 @@ Ext.define('Genesis.controller.client.RedeemBase',
    {
       var me = this;
       me.getSDoneBtn().hide();
+      if (Genesis.fn.isNative())
+      {
+         window.plugins.proximityID.stop();
+      }
+      console.log("RewardItem View - Done with RewardItem View!");
    },
+
    onDoneTap : function(b, e, eOpts, eInfo, overrideMode)
    {
       var me = this;
       var view = me.getRedeemMainPage();
 
-      if (Ext.os.is('iOS'))
+      if (Genesis.fn.isNative())
       {
-         var bt = window.plugins.bluetooth;
-         bt.disconnect();
-         bt.stopSession();
-      }
-      if (Ext.os.is('Android'))
-      {
+         if (Ext.os.is('iOS'))
+         {
+         }
+         else
+         if (Ext.os.is('Android'))
+         {
+         }
       }
       if (view.isPainted() && !view.isHidden())
       {
@@ -355,34 +309,6 @@ Ext.define('Genesis.controller.client.RedeemBase',
       console.log("\n" + //
       "Encrypted Code :\n" + qrcode + "\n" + //
       "Encrypted Code Length: " + qrcode.length);
-
-      /*
-       if (Ext.os.is('iOS'))
-       {
-       var bt = window.plugins.bluetooth;
-       bt.disconnect();
-       bt.stopSession();
-       bt.startSession(Genesis.constants.userName, function()
-       {
-       console.log("availablePeerListChanged");
-       }, function(peerId)
-       {
-       console.log("connexionRequested - AcceptConnexion PeerId[" + peerId + "]");
-       bt.acceptConnexion(peerId);
-       Ext.defer(function()
-       {
-       bt.sendData([peerId],
-       {
-       "data" : qrcode
-       });
-       }, 1 * 1000);
-       });
-       //window.plugins.bluetooth.sendDataToAll({"data" : "test"});
-       }
-       else if (Ext.os.is('Android'))
-       {
-       }
-       */
 
       _qrcode = Genesis.controller.ControllerBase.genQRCode(qrcode);
       if (_qrcode[0])
@@ -405,6 +331,10 @@ Ext.define('Genesis.controller.client.RedeemBase',
             message : me.showQrCodeMsg
          });
          Ext.device.Notification.vibrate();
+      }
+      else
+      {
+         console.debug("onShowItemQRCode - QR Code encoding Error");
       }
    },
    onRefreshQRCode : function(qrcodeMeta)
@@ -436,14 +366,20 @@ Ext.define('Genesis.controller.client.RedeemBase',
    redeemBrowsePage : function()
    {
       this.openPage('redeemBrowse');
-      this.getCloseBtn().show();
-      this.getBackBtn().hide();
+      if (this.getCloseBtn())
+      {
+         this.getCloseBtn().show();
+         this.getBackBtn().hide();
+      }
    },
    redeemBrowseSCPage : function()
    {
       this.openPage('redeemBrowseSC');
-      this.getCloseBtn().hide();
-      this.getBackBtn().show();
+      if (this.getCloseBtn())
+      {
+         this.getCloseBtn().hide();
+         this.getBackBtn().show();
+      }
    },
    // --------------------------------------------------------------------------
    // Base Class Overrides

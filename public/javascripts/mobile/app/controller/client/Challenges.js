@@ -2,7 +2,7 @@ Ext.define('Genesis.controller.client.Challenges',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.Anim'],
-   statics :
+   inheritableStatics :
    {
    },
    xtype : 'clientChallengesCntlr',
@@ -145,7 +145,8 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          errorMsg = Genesis.constants.addCRLF() + errors;
       }
-      else if (Ext.isObject(errors))
+      else
+      if (Ext.isObject(errors))
       {
          errorMsg = Genesis.constants.addCRLF() + errors.statusText;
       }
@@ -187,7 +188,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       if (me.imageURI)
       {
-         if (Genesis.constants.isNative())
+         if (Genesis.fn.isNative())
          {
             var db = Genesis.db.getLocalDB();
             var options = new FileUploadOptions();
@@ -389,7 +390,8 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          me.sendEmailIOS(qrcode, emailTpl, subject);
       }
-      else if (Ext.os.is('Android'))
+      else
+      if (Ext.os.is('Android'))
       {
          me.sendEmailAndroid(qrcode, emailTpl, subject);
       }
@@ -1035,7 +1037,7 @@ Ext.define('Genesis.controller.client.Challenges',
       photoAction.hide();
 
       console.log("Checking for Facebook Plugin ...");
-      if (Genesis.constants.isNative())
+      if (Genesis.fn.isNative())
       {
          Genesis.fb.facebook_onLogin(function(params)
          {
@@ -1073,18 +1075,18 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    onLibraryBtnTap : function(b, e, eOpts, eInfo)
    {
-      //this.onPhotoBtnCommon(Genesis.constants.isNative() ? Camera.PictureSourceType.PHOTOLIBRARY : null);
-      this.onPhotoBtnCommon(Genesis.constants.isNative() ? "library" : null);
+      //this.onPhotoBtnCommon(Genesis.fn.isNative() ? Camera.PictureSourceType.PHOTOLIBRARY : null);
+      this.onPhotoBtnCommon(Genesis.fn.isNative() ? "library" : null);
    },
    onAlbumBtnTap : function(b, e, eOpts, eInfo)
    {
-      //this.onPhotoBtnCommon(Genesis.constants.isNative() ? Camera.PictureSourceType.SAVEDPHOTOALBUM : null);
-      this.onPhotoBtnCommon(Genesis.constants.isNative() ? "album" : null);
+      //this.onPhotoBtnCommon(Genesis.fn.isNative() ? Camera.PictureSourceType.SAVEDPHOTOALBUM : null);
+      this.onPhotoBtnCommon(Genesis.fn.isNative() ? "album" : null);
    },
    onCameraBtnTap : function(b, e, eOpts, eInfo)
    {
-      //this.onPhotoBtnCommon(Genesis.constants.isNative() ? Camera.PictureSourceType.CAMERA : null);
-      this.onPhotoBtnCommon(Genesis.constants.isNative() ? "camera" : null);
+      //this.onPhotoBtnCommon(Genesis.fn.isNative() ? Camera.PictureSourceType.CAMERA : null);
+      this.onPhotoBtnCommon(Genesis.fn.isNative() ? "camera" : null);
    },
    onUploadPhotosActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
@@ -1204,12 +1206,12 @@ Ext.define('Genesis.controller.client.Challenges',
       //
       // Show Referrals Page
       //
-      me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
+      me.setAnimationMode(me.self.animationMode['cover']);
       me.pushView(me.getReferralsPage());
    },
    challengesPage : function()
    {
-      this.setAnimationMode(this.self.superclass.self.animationMode['coverUp']);
+      this.setAnimationMode(this.self.animationMode['coverUp']);
       this.pushView(this.getMainPage());
    },
    photoUploadPage : function()
@@ -1218,7 +1220,7 @@ Ext.define('Genesis.controller.client.Challenges',
       //
       // Goto PhotoUpload Page
       //
-      me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+      me.setAnimationMode(me.self.animationMode['coverUp']);
       me.pushView(me.getUploadPhotosPage());
    },
    // --------------------------------------------------------------------------
@@ -1235,7 +1237,7 @@ Ext.define('Genesis.controller.client.Challenges',
             {
                title : 'Referral Challenge',
                message : me.confirmRecvReferralsMsg,
-               buttons : ['Proceed', 'Cancel'],
+               buttons : ['Cancel', 'Proceed'],
                callback : function(btn)
                {
                   if (btn.toLowerCase() == 'proceed')

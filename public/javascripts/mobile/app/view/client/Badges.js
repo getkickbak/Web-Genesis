@@ -86,7 +86,7 @@ Ext.define('Genesis.view.client.Badges',
       carousel.removeAll(true);
 
       var app = _application;
-      var viewport = app.getController('Viewport');
+      var viewport = app.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
       var vport = viewport.getViewport();
       var items = Ext.StoreMgr.get('BadgeStore').getRange();
       var list = Ext.Array.clone(items);
@@ -121,7 +121,7 @@ Ext.define('Genesis.view.client.Badges',
                getPhoto : function(values)
                {
                   var type = values['type'];
-                  var customer = _application.getController('Viewport').getCustomer();
+                  var customer = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport').getCustomer();
                   var badge = Ext.StoreMgr.get('BadgeStore').getById(customer.get('badge_id'));
                   var rank = badge.get('rank');
                   return Genesis.view.client.Badges.getPhoto((values['rank'] <= rank) ? type : 'nobadge', 'thumbnail_medium_url');
@@ -146,7 +146,7 @@ Ext.define('Genesis.view.client.Badges',
       }
       return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
    },
-   statics :
+   inheritableStatics :
    {
       getPhoto : function(type, size)
       {

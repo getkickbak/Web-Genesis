@@ -2,7 +2,7 @@ Ext.define('Genesis.view.ViewBase',
 {
    extend : 'Ext.Container',
    xtype : 'viewbase',
-   statics :
+   inheritableStatics :
    {
       generateTitleBarConfig : function()
       {

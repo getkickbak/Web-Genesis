@@ -57,6 +57,7 @@ Ext.define('Genesis.view.server.Rewards',
             layout : 'fit',
             items : [
             {
+               height : '2.6em',
                docked : 'top',
                xtype : 'toolbar',
                centered : false,
@@ -197,7 +198,7 @@ Ext.define('Genesis.view.server.Rewards',
          }]
       }));
    },
-   statics :
+   inheritableStatics :
    {
       getPhoto : function(type)
       {

@@ -4,8 +4,9 @@ Ext.define('Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store', 'Ext.util.Geolocation'],
    config :
    {
-      animationMode : null,
+      animationMode : null
    },
+   establishConnectionMsg : 'Connecting to Server ...',
    checkinMsg : 'Checking in ...',
    loadingScannerMsg : 'Loading Scanner ...',
    loadingMsg : 'Loading ...',
@@ -14,6 +15,7 @@ Ext.define('Genesis.controller.ControllerBase',
    retrieveAuthModeMsg : 'Retrieving Authorization Code from Server ...',
    noCodeScannedMsg : 'No Authorization Code was Scanned!',
    lostNetworkConnectionMsg : 'You have lost network connectivity',
+   networkErrorMsg : 'Error Connecting to Sever',
    backToMerchantPageMsg : function(venue)
    {
       return ('Would you like to visit our Main Page?');
@@ -48,6 +50,19 @@ Ext.define('Genesis.controller.ControllerBase',
    geoLocationUseLastPositionMsg : 'We are not able to locate your current location. Using your last known GPS Coordinates ...',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
    getVenueInfoMsg : 'Retrieving Venue Information ...',
+   //
+   // Proximity ID
+   //
+   // Mobile Phone
+   proximityTimeout : 40 * 1000,
+   lookingForMerchantDeviceMsg : 'Place your device underneath the Merchant Device ...', //Send
+   detectMerchantDeviceMsg : 'Place your device underneath the Merchant Device ...', //Recv
+   // Merchant Device
+   lookingForMobileDeviceMsg : 'Place the device overtop of the Mobile Device ...', //Send
+   detectMobileDeviceMsg : 'Place the device overtop the Mobile Device ...', //Recv
+   //
+   //
+   //
    missingVenueInfoMsg : function(errors)
    {
       var errorMsg = '';
@@ -86,7 +101,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    uploadFbMsg : 'Uploading to Facebook ...',
    uploadServerMsg : 'Uploading to server ...',
-   statics :
+   inheritableStatics :
    {
       animationMode :
       {
@@ -133,7 +148,7 @@ Ext.define('Genesis.controller.ControllerBase',
       },
       playSoundFile : function(sound_file, successCallback, failCallback)
       {
-         if (Genesis.constants.isNative())
+         if (Genesis.fn.isNative())
          {
             switch (sound_file['type'])
             {
@@ -155,7 +170,7 @@ Ext.define('Genesis.controller.ControllerBase',
       },
       stopSoundFile : function(sound_file)
       {
-         if (Genesis.constants.isNative())
+         if (Genesis.fn.isNative())
          {
             LowLatencyAudio.stop(sound_file['name']);
          }
@@ -165,6 +180,39 @@ Ext.define('Genesis.controller.ControllerBase',
             sound.pause();
             sound.currentTime = 0;
          }
+      },
+      encryptFromParms : function(params)
+      {
+         GibberishAES.size(256);
+         var encrypted = null, venueId = Genesis.fn.getPrivKey('venueId'), key = Genesis.fn.getPrivKey('r' + venueId);
+         if (venueId > 0)
+         {
+            try
+            {
+               encrypted = GibberishAES.enc(Ext.encode(params), key);
+               switch (mode)
+               {
+                  case 'prize' :
+                  case 'reward' :
+                  {
+                     encrypted = venueId + '$' + encrypted;
+                     break;
+                  }
+                  default :
+                     break;
+
+               }
+            }
+            catch (e)
+            {
+            }
+            console.debug("Used key[" + key + "]");
+            console.log('\n' + //
+            "Encrypted Code Length: " + encrypted.length + '\n' + //
+            'Encrypted Code [' + encrypted + ']' + '\n');
+         }
+
+         return encrypted;
       },
       genQRCodeFromParams : function(params, mode, encryptOnly)
       {
@@ -176,59 +224,35 @@ Ext.define('Genesis.controller.ControllerBase',
          // GibberishAES.enc(string, password)
          // Defaults to 256 bit encryption
          GibberishAES.size(256);
-         var keys = Genesis.constants.getPrivKey();
-         var date, venueId;
-         for (key in keys)
-         {
-            switch (mode)
-            {
-               case 'prize' :
-               {
-                  venueId = key.split('r')[1];
-                  break;
-               }
-               case 'reward' :
-               case 'challenge' :
-               {
-                  venueId = key.split('v')[1];
-                  break;
-               }
-               default :
-                  veuneId = 0;
-                  break;
-            }
-            if (venueId > 0)
-            {
-               try
-               {
-                  date = new Date().addHours(3);
-                  encrypted = GibberishAES.enc(Ext.encode(Ext.applyIf(
-                  {
-                     "expiry_ts" : date.getTime()
-                  }, params)), keys[key]);
-
-                  switch (mode)
-                  {
-                     case 'prize' :
-                     case 'reward' :
-                     {
-                        encrypted = venueId + '$' + encrypted;
-                        break;
-                     }
-                     default :
-                        break;
-
-                  }
-               }
-               catch (e)
-               {
-               }
-               console.debug("Used key[" + keys[key] + "]");
-               break;
-            }
-         }
+         var venueId = Genesis.fn.getPrivKey('venueId');
+         var date;
          if (venueId > 0)
          {
+            try
+            {
+               date = new Date().addHours(3);
+               encrypted = GibberishAES.enc(Ext.encode(Ext.applyIf(
+               {
+                  "expiry_ts" : date.getTime()
+               }, params)), keys[key]);
+
+               switch (mode)
+               {
+                  case 'prize' :
+                  case 'reward' :
+                  {
+                     encrypted = venueId + '$' + encrypted;
+                     break;
+                  }
+                  default :
+                     break;
+
+               }
+            }
+            catch (e)
+            {
+            }
+            console.debug("Used key[" + keys[key] + "]");
             console.log('\n' + //
             "Encrypted Code Length: " + encrypted.length + '\n' + //
             'Encrypted Code [' + encrypted + ']' + '\n' + //
@@ -236,12 +260,11 @@ Ext.define('Genesis.controller.ControllerBase',
 
             return (encryptOnly) ? [encrypted, 0, 0] : me.genQRCode(encrypted);
          }
-
          Ext.device.Notification.show(
          {
             title : 'Missing License Key!',
             message : me.prototype.missingLicenseKeyMsg,
-            buttons : ['Proceed', 'Cancel'],
+            buttons : ['Cancel', 'Proceed'],
             callback : function(btn)
             {
                if (btn.toLowerCase() == 'proceed')
@@ -328,7 +351,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    getViewPortCntlr : function()
    {
-      return this.getApplication().getController('Viewport');
+      return this.getApplication().getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
    },
    getViewport : function()
    {
@@ -341,7 +364,10 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      viewport.setLoggedIn(true);
+      if (viewport.setLoggedIn)
+      {
+         viewport.setLoggedIn(true);
+      }
       me.resetView();
       me.redirectTo('main');
       console.log("LoggedIn, Going to Main Page ...");
@@ -362,8 +388,7 @@ Ext.define('Genesis.controller.ControllerBase',
          {
             me.redirectTo('checkin');
          }
-      }
-      
+      };
       if (info.venue && !noprompt)
       {
          Ext.device.Notification.show(
@@ -392,6 +417,7 @@ Ext.define('Genesis.controller.ControllerBase',
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
+   onNfc : Ext.emptyFn,
    onScannedQRcode : Ext.emptyFn,
    onLocationUpdate : Ext.emptyFn,
    onCompleteRefreshCSRF : Ext.emptyFn,
@@ -433,6 +459,51 @@ Ext.define('Genesis.controller.ControllerBase',
    // --------------------------------------------------------------------------
    // Utility Functions
    // --------------------------------------------------------------------------
+   stopRouletteTable : function(scn)
+   {
+      if (scn)
+      {
+         var rouletteTable = Ext.get(Ext.DomQuery.select('div.rouletteTable',scn.element.dom)[0]);
+         if (rouletteTable)
+         {
+            rouletteTable.removeCls('spinFwd');
+            rouletteTable.removeCls('spinBack');
+         }
+      }
+   },
+   stopRouletteBall : function(scn)
+   {
+      if (scn)
+      {
+         var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
+         if (rouletteBall)
+         {
+            rouletteBall.removeCls('spinBack');
+            rouletteBall.addCls('spinFwd');
+         }
+      }
+   },
+   startRouletteScreen : function(scn)
+   {
+      if (scn)
+      {
+         var rouletteTable = Ext.get(Ext.DomQuery.select('div.rouletteTable',scn.element.dom)[0]);
+         if (rouletteTable)
+         {
+            rouletteTable.addCls('spinFwd');
+         }
+         var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
+         if (rouletteBall)
+         {
+            rouletteBall.addCls('spinBack');
+         }
+      }
+   },
+   stopRouletteScreen : function(view)
+   {
+      this.stopRouletteTable(view);
+      this.stopRouletteBall(view);
+   },
    triggerCallbacksChain : function()
    {
       var me = this;
@@ -755,29 +826,189 @@ Ext.define('Genesis.controller.ControllerBase',
       }
    },
    /*
-   refreshBadges : function()
-   {
-   var bstore = Ext.StoreMgr.get('BadgeStore');
+    refreshBadges : function()
+    {
+    var bstore = Ext.StoreMgr.get('BadgeStore');
 
-   Badges['setGetBadgesUrl']();
-   bstore.load(
+    Badges['setGetBadgesUrl']();
+    bstore.load(
+    {
+    jsonData :
+    {
+    },
+    params :
+    {
+    },
+    callback : function(records, operation)
+    {
+    if (operation.wasSuccessful())
+    {
+    me.persistSyncStores('BadgeStore');
+    }
+    }
+    });
+    },
+    */
+   gravityThreshold : 4.0,
+   accelerometerHandler : function(vol, callback)
    {
-   jsonData :
-   {
+      var me = this;
+      //return navigator.accelerometer.watchAcceleration(function(accel)
+      navigator.accelerometer.getCurrentAcceleration(function(accel)
+      {
+         //
+         // Mobile device lay relatively flat and stationary ...
+         //
+         //console.debug('Accelerometer x=' + accel.x + ' accel.y=' + y);
+         if ((accel.z >= (9.81 - me.gravityThreshold)) && (accel.z <= (9.81 + me.gravityThreshold)))
+         {
+            if (vol != Genesis.constants.s_vol)
+            {
+               window.plugins.proximityID.setVolume(Genesis.constants.s_vol);
+               console.debug('Accelerometer new_vol=' + Genesis.constants.s_vol);
+               callback(Genesis.constants.s_vol);
+            }
+         }
+         else
+         {
+            //
+            // Restore to system default
+            //
+            if (vol != -1)
+            {
+               window.plugins.proximityID.setVolume(-1);
+               console.debug('Accelerometer new_vol=-1');
+               callback(-1);
+            }
+         }
+      },
+      {
+         frequency : 250
+      });
    },
-   params :
+   getLocalID : function(success, fail)
    {
+      var me = this;
+      var task, taskWait = false;
+
+      var scan = function()
+      {
+         taskWait = false;
+         window.plugins.proximityID.scan(function(result)
+         {
+            clearInterval(task);
+            window.plugins.proximityID.stop();
+            var identifiers = Genesis.fn.processRecvLocalID(result);
+            if (identifiers['message'])
+            {
+               Ext.device.Notification.beep();
+               success(identifiers);
+            }
+         }, function(error)
+         {
+            clearInterval(task);
+            window.plugins.proximityID.stop();
+            Ext.device.Notification.show(
+            {
+               title : 'Local Identity',
+               message : "No ID Found! ErrorCode(" + Ext.encode(error) + ")"
+            });
+            Ext.device.Notification.beep();
+            console.log('Error Code[' + Ext.encode(error) + ']');
+            fail();
+         }, Genesis.constants.numSamples, Genesis.constants.conseqMissThreshold, Genesis.constants.sigOverlapRatio);
+      }
+      //create the delayed task instance with our callback
+      task = setInterval(function()
+      {
+         if (!taskWait)
+         {
+            taskWait = true;
+            window.plugins.proximityID.stop();
+            Ext.device.Notification.show(
+            {
+               title : 'Local Identity',
+               message : "No Peers were discovered ...",
+               buttons : ['Try Again', 'Cancel'],
+               callback : function(btn)
+               {
+                  if (btn.toLowerCase() != 'try again')
+                  {
+                     clearInterval(task);
+                     fail();
+                  }
+                  else
+                  {
+                     scan();
+                  }
+               }
+            });
+         }
+      }, me.proximityTimeout);
+      scan();
+
+      return task;
    },
-   callback : function(records, operation)
+   broadcastLocalID : function(success, fail)
    {
-   if (operation.wasSuccessful())
-   {
-   me.persistSyncStores('BadgeStore');
-   }
-   }
-   });
+      var me = this;
+      me.send_vol = -1;
+      success = success || Ext.emptyFn;
+      fail = fail || Ext.emptyFn;
+
+      var task, atask;
+      var cancel = function()
+      {
+         if (me.send_vol != -1)
+         {
+            window.plugins.proximityID.setVolume(-1);
+         }
+         clearInterval(atask);
+         clearInterval(task);
+      }
+      //create the delayed task instance with our callback
+      atask = setInterval(function()
+      {
+         me.accelerometerHandler(me.send_vol, function(v)
+         {
+            //console.debug('Accelerometer vol=' + vol + ' new_vol=' + v);
+            me.send_vol = v;
+         });
+      }, 400);
+      task = window.setInterval(function()
+      {
+         cancel();
+         window.plugins.proximityID.stop();
+         Ext.device.Notification.show(
+         {
+            title : 'Local Identity',
+            message : "No Peers were discovered ...",
+            buttons : ['Try Again', 'Cancel'],
+            callback : function(btn)
+            {
+               if (btn.toLowerCase() != 'try again')
+               {
+                  fail();
+               }
+               else
+               {
+                  Ext.defer(me.broadcastLocalID, 1, me, [success, fail]);
+               }
+            }
+         });
+      }, me.proximityTimeout);
+      window.plugins.proximityID.send(function(result)
+      {
+         success(Genesis.fn.processSendLocalID(result, cancel));
+      }, function(error)
+      {
+         console.log('Error Code[' + Ext.encode(error) + ']');
+         cancel();
+         fail();
+      });
+
+      console.log("ProximityID : Broacasting Local Identity ...");
    },
-   */
    // --------------------------------------------------------------------------
    // Persistent Stores
    // --------------------------------------------------------------------------
@@ -785,7 +1016,8 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       var stores =
       {
-         'CustomerStore' : [Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'CustomerJSON']
+         'CustomerStore' : [Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'CustomerJSON'],
+         'LicenseStore' : [Ext.StoreMgr.get('Persistent' + 'LicenseStore'), 'LicenseStore', 'frontend.LicenseKeyJSON']
          //'BadgeStore' : [Ext.StoreMgr.get('Persistent' + 'BadgeStore'), 'BadgeStore', 'BadgeJSON']
          //,'PrizeStore' : [Ext.StoreMgr.get('Persistent' + 'PrizeStore'), 'PrizeStore',
          // 'CustomerRewardJSON']
@@ -807,7 +1039,9 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    persistLoadStores : function(callback)
    {
-      var stores = [[this.persistStore('CustomerStore'), 'CustomerStore', 0x01] //
+      var stores = [//
+      [this.persistStore('CustomerStore'), 'CustomerStore', 0x0001], //
+      [this.persistStore('LicenseStore'), 'LicenseStore', 0x0010] //
       //[this.persistStore('BadgeStore'), 'BadgeStore', 0x10]];
       //,[this.persistStore('PrizeStore'), 'PrizeStore', 0x10]];
       ];
@@ -823,13 +1057,13 @@ Ext.define('Genesis.controller.ControllerBase',
                var items = [];
                if (operation.wasSuccessful())
                {
-                  var cstore = Ext.StoreMgr.get(stores[i][1]);
-                  cstore.removeAll();
+                  var store = Ext.StoreMgr.get(stores[i][1]);
+                  store.removeAll();
                   for (var x = 0; x < results.length; x++)
                   {
                      items.push(results[x].get('json'));
                   }
-                  cstore.setData(items);
+                  store.setData(items);
                   console.debug("Restored " + results.length + " records to " + stores[i][1] + " ...");
                }
                else
@@ -837,7 +1071,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   console.debug("Error Restoring " + stores[i][1] + " ...");
                }
 
-               //if ((flag |= stores[i][2]) == 0x11)
+               if ((flag |= stores[i][2]) == 0x0011)
                {
                   callback();
                }
@@ -847,7 +1081,9 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    persistSyncStores : function(storeName, cleanOnly)
    {
-      var stores = [[this.persistStore('CustomerStore'), 'CustomerStore', 0x01] //
+      var stores = [//
+      [this.persistStore('CustomerStore'), 'CustomerStore', 0x0001], //
+      [this.persistStore('LicenseStore'), 'LicenseStore', 0x0010] //
       //[this.persistStore('BadgeStore'), 'BadgeStore', 0x10]];
       //, [this.persistStore('PrizeStore'), 'PrizeStore', 0x10]];
       ];
@@ -903,14 +1139,14 @@ Ext.define('Genesis.controller.ControllerBase',
       var options =
       {
          autoUpdate : false,
-         maximumAge : 30000,
-         timeout : 10000,
+         maximumAge : 60 * 1000,
+         timeout : 3 * 1000,
          allowHighAccuracy : true,
          enableHighAccuracy : true
       }
 
       console.debug('Getting GeoLocation ...');
-      if (!Genesis.constants.isNative())
+      if (!Genesis.fn.isNative())
       {
          me.fireEvent('locationupdate',
          {
@@ -953,27 +1189,30 @@ Ext.define('Genesis.controller.ControllerBase',
       var failCallback = function(geo, bTimeout, bPermissionDenied, bLocationUnavailable, message)
       {
          console.debug('GeoLocation Error[' + message + ']');
-         Ext.Viewport.setMasked(null);
          if (bPermissionDenied)
          {
             console.debug("PERMISSION_DENIED");
-            Ext.device.Notification.show(
-            {
-               title : 'Permission Error',
-               message : (viewport.getLastPosition()) ? me.geoLocationUseLastPositionMsg : me.geoLocationUnavailableMsg,
-               callback : function()
-               {
-                  if (viewport.getLastPosition())
-                  {
-                     me.fireEvent('locationupdate', viewport.getLastPosition());
-                     return;
-                  }
-                  if (Ext.os.is('Android'))
-                  {
-                     navigator.app.exitApp();
-                  }
-               }
-            });
+            viewport.setLastPosition(null);
+            me.fireEvent('locationupdate', viewport.getLastPosition());
+            /*
+             Ext.device.Notification.show(
+             {
+             title : 'Permission Error',
+             message : (viewport.getLastPosition()) ? me.geoLocationUseLastPositionMsg : me.geoLocationUnavailableMsg,
+             callback : function()
+             {
+             if (viewport.getLastPosition())
+             {
+             me.fireEvent('locationupdate', viewport.getLastPosition());
+             return;
+             }
+             if (Ext.os.is('Android'))
+             {
+             navigator.app.exitApp();
+             }
+             }
+             });
+             */
          }
          else
          if (bTimeout)
@@ -1004,22 +1243,31 @@ Ext.define('Genesis.controller.ControllerBase',
                }
                else
                {
+                  var position = viewport.getLastPosition();
+                  /*
+                   if (!position)
+                   {
+                   Ext.Viewport.setMasked(null);
+                   }
+                   */
                   console.debug("POSITION_UNAVAILABLE");
                   Ext.device.Notification.show(
                   {
                      title : 'Location Services',
-                     message : (viewport.getLastPosition()) ? me.geoLocationUseLastPositionMsg : me.geoLocationUnavailableMsg,
+                     message : (position) ? me.geoLocationUseLastPositionMsg : me.geoLocationUnavailableMsg,
                      callback : function()
                      {
-                        if (viewport.getLastPosition())
+                        if (position)
                         {
-                           me.fireEvent('locationupdate', viewport.getLastPosition());
+                           me.fireEvent('locationupdate', position);
                            return;
                         }
-                        if (Ext.os.is('Android'))
-                        {
-                           navigator.app.exitApp();
-                        }
+                        /*
+                         if (Ext.os.is('Android'))
+                         {
+                         navigator.app.exitApp();
+                         }
+                         */
                      }
                   });
                }
@@ -1027,18 +1275,22 @@ Ext.define('Genesis.controller.ControllerBase',
             else
             {
                console.debug("PERMISSION ERROR");
-               Ext.device.Notification.show(
-               {
-                  title : 'Location Services',
-                  message : me.geoLocationErrorMsg(),
-                  callback : function()
-                  {
-                     if (Ext.os.is('Android'))
-                     {
-                        navigator.app.exitApp();
-                     }
-                  }
-               });
+               viewport.setLastPosition(null);
+               me.fireEvent('locationupdate', viewport.getLastPosition());
+               /*
+                Ext.device.Notification.show(
+                {
+                title : 'Location Services',
+                message : me.geoLocationErrorMsg(),
+                callback : function()
+                {
+                if (Ext.os.is('Android'))
+                {
+                navigator.app.exitApp();
+                }
+                }
+                });
+                */
             }
          }
       }
@@ -1051,9 +1303,9 @@ Ext.define('Genesis.controller.ControllerBase',
                locationupdate : successCallback,
                locationerror : function(geo, bTimeout, bPermissionDenied, bLocationUnavailable, message)
                {
-                  if (bTimeout && (i < 4))
+                  if (bTimeout && (i < 3))
                   {
-                     i = 4;
+                     i = 3;
                      me.getGeoLocation(i);
                   }
                   else
@@ -1064,7 +1316,7 @@ Ext.define('Genesis.controller.ControllerBase',
             }
          }, options));
       }
-      me.geoLocation.updateLocation(null, null, (i >= 4) ? Ext.applyIf(
+      me.geoLocation.updateLocation(null, null, (i >= 3) ? Ext.applyIf(
       {
          allowHighAccuracy : false,
          enableHighAccuracy : false
@@ -1077,7 +1329,7 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          var qrcode;
          Ext.Viewport.setMasked(null);
-         if (Genesis.constants.isNative())
+         if (Genesis.fn.isNative())
          {
             switch(window.plugins.qrCodeReader.scanType)
             {
@@ -1151,7 +1403,7 @@ Ext.define('Genesis.controller.ControllerBase',
       }
 
       console.debug("Scanning QR Code ...")
-      if (!Genesis.constants.isNative())
+      if (!Genesis.fn.isNative())
       {
          //
          // pick the first one on the Neaby Venue in the store

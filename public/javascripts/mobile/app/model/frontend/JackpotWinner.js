@@ -32,7 +32,7 @@ Ext.define('Genesis.model.frontend.JackpotWinner',
          }
       }
    },
-   statics :
+   inheritableStatics :
    {
       setGetJackpotWinnersUrl : function()
       {

@@ -42,8 +42,16 @@ Ext.define('Genesis.model.Venue',
       },
       idProperty : 'id',
    },
-   statics :
+   inheritableStatics :
    {
+      setGetMerchantVenueExploreURL : function(venueId)
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'GET'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/venues/' + venueId + '/merchant_explore');
+      },
       setFindNearestURL : function()
       {
          this.getProxy().setActionMethods(

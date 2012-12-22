@@ -219,7 +219,7 @@ Ext.define('Genesis.view.Rewards',
       }]
 
    },
-   statics :
+   inheritableStatics :
    {
       getPhoto : function(type)
       {

@@ -2,7 +2,7 @@ Ext.define('Genesis.controller.server.Challenges',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
-   statics :
+   inheritableStatics :
    {
    },
    xtype : 'serverChallengesCntlr',
@@ -135,7 +135,7 @@ Ext.define('Genesis.controller.server.Challenges',
        {
        title : 'Authorize Challenges',
        message : me.genAuthCodeMsg,
-       buttons : ['OK', 'Cancel'],
+       buttons : ['OK','Cancel'],
        callback : function(btn)
        {
        if (btn.toLowerCase() == 'ok')

@@ -78,7 +78,7 @@ Ext.define('Genesis.model.Customer',
    {
 
    },
-   statics :
+   inheritableStatics :
    {
       isValid : function(customerId)
       {
@@ -158,6 +158,14 @@ Ext.define('Genesis.model.Customer',
             read : (!debugMode) ? 'POST' : 'GET'
          });
          this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/sign_up' : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+      },
+      setGetCustomerUrl : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'GET'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customers/show');
       },
       setVenueScanCheckinUrl : function()
       {

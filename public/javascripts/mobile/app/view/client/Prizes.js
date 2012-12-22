@@ -1,6 +1,6 @@
 Ext.define('Genesis.view.client.Prizes',
 {
-   extend : 'Genesis.view.client.RedeemBase',
+   extend : 'Genesis.view.RedeemBase',
    requires : ['Genesis.view.widgets.PrizePtsItem'],
    alias : 'widget.clientprizesview',
    config :
@@ -40,7 +40,7 @@ Ext.define('Genesis.view.client.Prizes',
       }
       this._createView('PrizeStore', 'PrizeRenderCStore', activeItemIndex);
    },
-   statics :
+   inheritableStatics :
    {
       getPhoto : function(type)
       {

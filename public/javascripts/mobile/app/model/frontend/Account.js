@@ -39,14 +39,14 @@ Ext.define('Genesis.model.frontend.Account',
          {
             'metachange' : function(proxy, metaData, eOpts)
             {
-               var viewport = _application.getController('Viewport');
+               var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
                // Let Other event handlers udpate the metaData first ...
                viewport.fireEvent('updatemetadata', metaData);
             }
          }
       }
    },
-   statics :
+   inheritableStatics :
    {
       setUpdateFbLoginUrl : function()
       {

@@ -1,7 +1,7 @@
 Ext.define('Genesis.controller.Settings',
 {
    extend : 'Genesis.controller.ControllerBase',
-   statics :
+   inheritableStatics :
    {
    },
    xtype : 'settingsCntlr',
@@ -52,7 +52,6 @@ Ext.define('Genesis.controller.Settings',
       },
       listeners :
       {
-         'upgradeDevice' : 'onUpgradeDevice',
          'toggleFB' :
          {
             fn : 'onToggleFB',
@@ -73,7 +72,7 @@ Ext.define('Genesis.controller.Settings',
    noLicenseKeyScannedMsg : 'No License Key was found!',
    licenseKeySuccessMsg : function()
    {
-      return 'License Key Updated for ' + Genesis.constants.addCRLF() + '[' + Genesis.constants.privKey['venue'] + ']';
+      return 'License Key Updated for ' + Genesis.constants.addCRLF() + '[' + Genesis.fn.getPrivKey('venue') + ']';
    },
    init : function()
    {
@@ -138,21 +137,24 @@ Ext.define('Genesis.controller.Settings',
          },
          serverSettingsPage :
          {
-            activate : 'onServerActivate'
+            activate : 'onServerActivate',
+            deactivate : 'onServerDeactivate'
          }
       });
    },
-   onUpgradeDevice : function()
+   updateLicenseKey : function()
    {
       var me = this;
-      me.scanQRCode();
-   },
-   updateLicenseKey : function(key)
-   {
-      Genesis.fn.writeFile('resources/keys.txt', Ext.encode(key), function(evt)
+      var viewport = me.getViewPortCntlr();
+
+      Ext.Viewport.setMasked(
       {
-         console.debug("Content Written to Disk");
-         Genesis.constants.privKey = key;
+         xtype : 'loadmask',
+         message : me.loadingMsg
+      });
+      viewport.refreshLicenseKey(function()
+      {
+         Ext.Viewport.setMasked(null);
          Ext.device.Notification.show(
          {
             title : 'License Key Updated!',
@@ -272,7 +274,7 @@ Ext.define('Genesis.controller.Settings',
          {
             if (btn.toLowerCase() == 'proceed')
             {
-               me.fireEvent('upgradeDevice');
+               me.updateLicenseKey();
             }
          }
       });
@@ -439,51 +441,62 @@ Ext.define('Genesis.controller.Settings',
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
-   onScannedQRcode : function(qrcode)
+   writeTag : function(nfcEvent)
    {
-      var me = this;
-      var vport = me.getViewport();
+      // ignore what's on the tag for now, just overwrite
 
-      if (qrcode)
+      var mimeType = Genesis.constants.appMimeType;
+      var payload = Ext.encode(
       {
-         console.debug("Programming License Key into Merchant Device ...");
-         Venue['setGetLicenseKeyURL']();
-         Venue.load(0,
-         {
-            jsonData :
-            {
-            },
-            params :
-            {
-               update_token : qrcode,
-               deviceId : (Genesis.constants.isNative()) ? device.uuid : null,
-            },
-            callback : function(record, operation)
-            {
-               var metaData = Venue.getProxy().getReader().metaData;
-               Ext.Viewport.setMasked(null);
-
-               if (operation.wasSuccessful())
-               {
-                  me.updateLicenseKey(metaData);
-               }
-            }
-         });
-      }
-      else
+         'tagID' : 'ABCDEDF12345'
+      });
+      var record = ndef.mimeMediaRecord(mimeType, nfc.stringToBytes(payload));
+      console.log("Writing [" + payload + "] to TAG ...");
+      nfc.write([record], function()
       {
-         console.debug(me.noLicenseKeyScannedMsg);
-         Ext.Viewport.setMasked(null);
          Ext.device.Notification.show(
          {
-            title : 'Error',
-            message : me.noLicenseKeyScannedMsg
+            title : "NFC Tag",
+            message : "Wrote data to TAG."
          });
-      }
+      }, function(reason)
+      {
+         Ext.device.Notification.show(
+         {
+            title : "NFC Tag",
+            message : "Error Writing data to TAG[" + reason + "]"
+         });
+      });
    },
    onServerActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      this.getMerchantDevice().setValue(Genesis.constants.getPrivKey()['venue']);
+      var me = this;
+      me.getMerchantDevice().setValue(Genesis.fn.getPrivKey('venue'));
+
+      if (Genesis.fn.isNative())
+      {
+         nfc.addTagDiscoveredListener(me.writeTag, function()
+         {
+            console.log("Listening for NDEF tags");
+         }, function()
+         {
+            console.log("Failed to Listen for NDEF tags");
+         });
+      }
+   },
+   onServerDeactivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+      if (Genesis.fn.isNative())
+      {
+         nfc.removeTagDiscoveredListener(me.writeTag, function()
+         {
+            console.log("Stopped Listening for NDEF tags");
+         }, function()
+         {
+            console.log("Failed to stop Listen for NDEF tags");
+         });
+      }
    },
    // --------------------------------------------------------------------------
    // Page Navigation
@@ -528,25 +541,25 @@ Ext.define('Genesis.controller.Settings',
          case 'multipartDocument' :
          {
             page = me.getMultipartDocumentPage();
-            me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
+            me.setAnimationMode(me.self.animationMode['slide']);
             break;
          }
          case 'document' :
          {
             page = me.getDocumentPage();
-            me.setAnimationMode(me.self.superclass.self.animationMode['slide']);
+            me.setAnimationMode(me.self.animationMode['slide']);
             break;
          }
          case 'client' :
          {
             page = me.getClientSettingsPage();
-            me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
+            me.setAnimationMode(me.self.animationMode['cover']);
             break;
          }
          case 'server' :
          {
             page = me.getServerSettingsPage();
-            me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
+            me.setAnimationMode(me.self.animationMode['cover']);
             break;
          }
       }

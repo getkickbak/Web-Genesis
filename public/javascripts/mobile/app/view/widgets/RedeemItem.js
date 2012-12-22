@@ -162,7 +162,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
       }
       itemPhoto.setData(reward);
    },
-   statics :
+   inheritableStatics :
    {
       getPhoto : function(type)
       {

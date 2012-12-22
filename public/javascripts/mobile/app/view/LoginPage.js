@@ -92,9 +92,9 @@ Ext.define('Genesis.view.SignInPage',
          {
             xtype : 'emailfield',
             name : 'username',
-            label : 'User Name',
+            label : 'Email Address',
             clearIcon : true,
-            placeHolder : 'Email Address'
+            placeHolder : 'johndoe@example.com'
          },
          {
             xtype : 'passwordfield',
@@ -192,9 +192,9 @@ Ext.define('Genesis.view.PasswdResetPage',
          {
             xtype : 'emailfield',
             name : 'username',
-            label : 'User Name',
+            label : 'Email Address',
             clearIcon : true,
-            placeHolder : 'Email Address'
+            placeHolder : 'johndoe@example.com'
          }]
       },
       {
@@ -375,9 +375,9 @@ Ext.define('Genesis.view.CreateAccountPage',
          {
             xtype : 'emailfield',
             name : 'username',
-            label : 'User Name',
+            label : 'Email Address',
             clearIcon : true,
-            placeHolder : 'Email Address'
+            placeHolder : 'johndoe@example.com'
          },
          {
             xtype : 'passwordfield',

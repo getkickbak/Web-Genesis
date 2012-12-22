@@ -17,7 +17,7 @@ Ext.define('Genesis.navigation.Bar',
    animationCompleteHandler : function()
    {
       //console.debug("Done Sliding ...");
-      if(this.elementGhost)
+      if (this.elementGhost)
       {
          this.elementGhost.destroy();
          delete this.elementGhost;
@@ -30,13 +30,13 @@ Ext.define('Genesis.navigation.Bar',
          this.getCallbackFn()();
          console.debug("Deleted NavigationBar Proxy");
       }
-      _application.getController('Viewport').fireEvent('baranimend');
+      _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport').fireEvent('baranimend');
    },
    initialize : function()
    {
       var anims = [['fadeAnimation', 'Fade'], ['flipAnimation', 'Flip'], ['slideAnimation', 'Slide']];
 
-      for(var i = 0; i < anims.length; i++)
+      for (var i = 0; i < anims.length; i++)
       {
          this[anims[i][0]] = new Ext.fx.layout.card[anims[i][1]];
          this[anims[i][0]].on('animationend', this.animationCompleteHandler, this);
@@ -66,7 +66,7 @@ Ext.define('Genesis.navigation.Bar',
       // Bug-fix : Add the same button back, ignore
       // This is necessary for view Regeneration logic
       //
-      if(item.pageRegenerationInProgress)
+      if (item.pageRegenerationInProgress)
       {
          return;
       }
@@ -77,11 +77,11 @@ Ext.define('Genesis.navigation.Bar',
       me.refreshNavigationBarProxy();
 
       var proxy = me.getNavigationBarProxyProperties();
-      if(proxy.title.left)
+      if (proxy.title.left)
       {
          //titleComponent.setLeft(proxy.title.left);
       }
-      if(proxy.title.width)
+      if (proxy.title.width)
       {
          titleComponent.setWidth(proxy.title.width);
       }
@@ -104,16 +104,16 @@ Ext.define('Genesis.navigation.Bar',
             break;
       }
       me.titleComponent.setTitle(me.getTitleText());
-      if(animation && animation.isAnimation && view.isPainted() && me.elementGhost)
+      if (animation && animation.isAnimation && view.isPainted() && me.elementGhost)
       {
          //if(this.backButtonStack.length > 1)
-         if(view.getInnerItems().length > 1)
+         if (view.getInnerItems().length > 1)
          {
             me.pushTbAnimated(item, me.getBackButtonText());
          }
          else
          {
-            if(me.elementGhost)
+            if (me.elementGhost)
             {
                me.elementGhost.destroy();
                delete me.elementGhost;
@@ -126,7 +126,7 @@ Ext.define('Genesis.navigation.Bar',
          //this.pushTitle(this.getTitleText());
 
          //if(this.backButtonStack.length > 1)
-         if(view.getInnerItems().length > 1)
+         if (view.getInnerItems().length > 1)
          {
             me.pushTb(item, me.getBackButtonText());
          }
@@ -152,11 +152,11 @@ Ext.define('Genesis.navigation.Bar',
 
       me.refreshNavigationBarProxy();
       var proxy = me.getNavigationBarProxyProperties();
-      if(proxy.title.left)
+      if (proxy.title.left)
       {
          //titleComponent.setLeft(proxy.title.left);
       }
-      if(proxy.title.width)
+      if (proxy.title.width)
       {
          titleComponent.setWidth(proxy.title.width);
       }
@@ -172,7 +172,7 @@ Ext.define('Genesis.navigation.Bar',
             me.setMode('slide');
             break;
       }
-      if(animation && animation.isAnimation && view.isPainted() && me.elementGhost)
+      if (animation && animation.isAnimation && view.isPainted() && me.elementGhost)
       {
          me.popTbAnimated(item, me.getBackButtonText());
       }
@@ -248,11 +248,11 @@ Ext.define('Genesis.navigation.Bar',
       var proxy = me.getNavigationBarProxyProperties();
       var backButton = me.getBackButton();
       var buttonTo = proxy.backButton;
-      if(buttonTo.left)
+      if (buttonTo.left)
       {
          backButton.setLeft(buttonTo.left);
       }
-      if(buttonTo.width)
+      if (buttonTo.width)
       {
          backButton.setWidth(buttonTo.width);
       }
@@ -273,11 +273,11 @@ Ext.define('Genesis.navigation.Bar',
 
       //animate the backButton, which always has the new title
       var buttonTo = proxy.backButton;
-      if(buttonTo.left)
+      if (buttonTo.left)
       {
          backButton.setLeft(buttonTo.left);
       }
-      if(buttonTo.width)
+      if (buttonTo.width)
       {
          backButton.setWidth(buttonTo.width);
       }
@@ -297,7 +297,7 @@ Ext.define('Genesis.navigation.Bar',
       var me = this, backButton = me.getBackButton();
       var proxy = this.getNavigationBarProxyProperties();
 
-      if(title && me.backButtonStack.length)
+      if (title && me.backButtonStack.length)
       {
          backButton.setText(this.getBackButtonText());
          backButton.show();
@@ -308,11 +308,11 @@ Ext.define('Genesis.navigation.Bar',
       }
 
       var buttonTo = proxy.backButton;
-      if(buttonTo.left)
+      if (buttonTo.left)
       {
          backButton.setLeft(buttonTo.left);
       }
-      if(buttonTo.width)
+      if (buttonTo.width)
       {
          backButton.setWidth(buttonTo.width);
       }
@@ -333,7 +333,7 @@ Ext.define('Genesis.navigation.Bar',
       var proxy = this.getNavigationBarProxyProperties();
 
       //update the back button, and make sure it is visible
-      if(title && me.backButtonStack.length)
+      if (title && me.backButtonStack.length)
       {
          backButton.setText(this.getBackButtonText());
          backButton.show();
@@ -344,7 +344,7 @@ Ext.define('Genesis.navigation.Bar',
       }
 
       var buttonTo = proxy.backButton;
-      if(buttonTo.width)
+      if (buttonTo.width)
       {
          backButton.setWidth(buttonTo.width);
       }
@@ -365,7 +365,7 @@ Ext.define('Genesis.navigation.Bar',
    {
       var proxy = this.proxy;
 
-      if(proxy)
+      if (proxy)
       {
          return;
       }
@@ -400,7 +400,7 @@ Ext.define('Genesis.navigation.Bar',
    {
       var proxy = this.proxy, renderElement = this.renderElement, backButtonStack = this.backButtonStack, title = backButtonStack[backButtonStack.length - 1], oldTitle = this.getBackButtonText();
 
-      if(!proxy)
+      if (!proxy)
       {
          this.createNavigationBarProxy();
          proxy = this.proxy;
@@ -411,7 +411,7 @@ Ext.define('Genesis.navigation.Bar',
 
       proxy.setTitle(title);
 
-      if(oldTitle)
+      if (oldTitle)
       {
          proxy.backButton.setText(oldTitle);
          proxy.backButton.show();
@@ -464,7 +464,7 @@ Ext.define('Genesis.navigation.Bar',
       var me = this;
       var element = (useParent) ? component.element.getParent() : component.element, ghost = Ext.get(element.id + '-proxy');
 
-      if(!ghost)
+      if (!ghost)
       {
          ghost = element.dom.cloneNode(true);
          ghost.id = element.id + '-proxy';
@@ -498,7 +498,7 @@ Ext.define('Genesis.navigation.Bar',
       var inAnimation = animation.getInAnimation(), outAnimation = animation.getOutAnimation();
       var inElement, outElement;
 
-      if(newItem && oldItem && oldItem.isPainted() && !newItem.pageRegenerationInProgress)
+      if (newItem && oldItem && oldItem.isPainted() && !newItem.pageRegenerationInProgress)
       {
          inElement = newItem.renderElement;
          outElement = oldItem.renderElement;
@@ -515,7 +515,7 @@ Ext.define('Genesis.navigation.Bar',
 
          outAnimation.setOnBeforeEnd(function(element, interrupted)
          {
-            if(interrupted || Ext.Animator.hasRunningAnimations(element))
+            if (interrupted || Ext.Animator.hasRunningAnimations(element))
             {
                controller.firingArguments[1] = null;
                controller.firingArguments[2] = null;
@@ -529,7 +529,7 @@ Ext.define('Genesis.navigation.Bar',
             controller.resume();
          });
          inElement.dom.style.setProperty('visibility', 'hidden', '!important');
-         if(Ext.isEmpty(view.getHideNavBar) || !view.getHideNavBar())
+         if (Ext.isEmpty(view.getHideNavBar) || !view.getHideNavBar())
          {
             newItem.show();
          }

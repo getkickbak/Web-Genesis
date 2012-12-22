@@ -29,13 +29,29 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             items : [
             {
                tag : 'prizepoints',
-               tpl : '{prize_points}',
-               cls : 'prizephotodesc'
+               tpl : Ext.create('Ext.XTemplate', '<span class="x-badge round {[this.isVisible()]}">✔</span>{prize_points}',
+               {
+                  isVisible : function()
+                  {
+                     var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
+                     var customer = viewport.getCustomer();
+                     return (customer.get('eligible_for_prize') ? '' : 'x-item-hidden');
+                  }
+               }),
+               cls : 'prizephotodesc x-hasbadge'
             },
             {
                tag : 'points',
-               tpl : '{points}',
-               cls : 'pointsphotodesc'
+               tpl : Ext.create('Ext.XTemplate', '<span class="x-badge round {[this.isVisible()]}">✔</span>{points}',
+               {
+                  isVisible : function()
+                  {
+                     var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
+                     var customer = viewport.getCustomer();
+                     return (customer.get('eligible_for_reward') ? '' : 'x-item-hidden');
+                  }
+               }),
+               cls : 'pointsphotodesc x-hasbadge'
             }],
          }]
       },
@@ -103,7 +119,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             //
             isVisible : function(values)
             {
-               var viewport = _application.getController('Viewport');
+               var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
                var customer = viewport.getCustomer();
                var valid = false;
 
@@ -176,14 +192,25 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
             setData : 'badgeProgress'
          }
       },
-      listeners :
+      listeners : [
+      {
+         element : 'element',
+         delegate : 'div.prizephotodesc',
+         event : 'tap',
+         fn : "onPrizesButtonTap"
+      },
+      {
+         element : 'element',
+         delegate : 'div.pointsphotodesc',
+         event : 'tap',
+         fn : "onRedemptionsButtonTap"
+      },
       {
          'painted' : function(c, eOpts)
          {
             //console.debug("MerchantAccountPtsItem - painted[" + c.id + "]");
          }
-      }
-
+      }]
    },
    initialize : function()
    {
@@ -210,7 +237,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
    },
    setDataBackground : function(data)
    {
-      var viewport = _application.getController('Viewport');
+      var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
       var customer = viewport.getCustomer();
       var venue = viewport.getVenue();
       var venueId = venue.getId();
@@ -286,7 +313,7 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
    },
    setDataBadgeProgress : function(data)
    {
-      var viewport = _application.getController('Viewport');
+      var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
       var badgeProgress = this.query('component[tag=badgeProgressPanel]')[0];
       var valid = Customer.isValid(viewport.getCustomer().getId());
 
@@ -346,5 +373,19 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
       }
       // Bypassing setter because sometimes we pass the same object (different properties)
       item.updateData(data);
+   },
+   onPrizesButtonTap : function()
+   {
+      var me = this;
+      var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      viewport.onPrizesButtonTap();
+   },
+   onRedemptionsButtonTap : function()
+   {
+      var me = this;
+      var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
+      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      viewport.onRedemptionsButtonTap();
    }
 });

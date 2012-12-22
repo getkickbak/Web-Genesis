@@ -1,8 +1,8 @@
-Ext.define('Genesis.view.client.RedeemBase',
+Ext.define('Genesis.view.RedeemBase',
 {
    extend : 'Genesis.view.ViewBase',
    requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar', 'Genesis.view.widgets.RedeemPtsItemBase'],
-   alias : 'widget.clientredeeembaseview',
+   alias : 'widget.redeeembaseview',
    config :
    {
    },
@@ -25,20 +25,7 @@ Ext.define('Genesis.view.client.RedeemBase',
    {
       var me = this;
 
-      // ------------------------------------------------------------------------
-      // Redeem Points Earned Panel
-      // ------------------------------------------------------------------------
-      me.setPreRender(me.getPreRender().concat([
-      {
-         //docked : 'top',
-         cls : 'ptsEarnPanel',
-         tag : 'ptsEarnPanel',
-         xtype : 'dataview',
-         useComponents : true,
-         scrollable : undefined,
-         defaultType : me.getDefaultItemType(),
-         store : renderStore
-      },
+      me.setPreRender([
       // ------------------------------------------------------------------------
       // Redemptions
       // ------------------------------------------------------------------------
@@ -91,22 +78,6 @@ Ext.define('Genesis.view.client.RedeemBase',
          // Redeem Available Panel
          // ------------------------------------------------------------------------
          items : [
-         /*{
-          docked : 'top',
-          xtype : 'toolbar',
-          ui : 'light',
-          cls : 'ptsEarnPanelHdr',
-          centered : false,
-          items : [
-          {
-          xtype : 'title',
-          title : me.getPtsEarnTitleText()
-          },
-          {
-          xtype : 'spacer'
-          }]
-          },
-          */
          {
             docked : 'top',
             xtype : 'toolbar',
@@ -122,9 +93,9 @@ Ext.define('Genesis.view.client.RedeemBase',
                xtype : 'spacer'
             }]
          }]
-      }]));
+      }]);
    },
-   statics :
+   inheritableStatics :
    {
    }
 });

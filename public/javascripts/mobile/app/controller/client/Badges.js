@@ -2,7 +2,7 @@ Ext.define('Genesis.controller.client.Badges',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
-   statics :
+   inheritableStatics :
    {
    },
    xtype : 'clientbadgesCntlr',
@@ -203,13 +203,13 @@ Ext.define('Genesis.controller.client.Badges',
       {
          case 'badgeDesc' :
          {
-            me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
+            me.setAnimationMode(me.self.animationMode['cover']);
             me.pushView(me.getBadgeDesc());
             break;
          }
          case 'main' :
          {
-            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+            me.setAnimationMode(me.self.animationMode['coverUp']);
             me.pushView(me.getMainPage());
             break;
          }
@@ -223,7 +223,7 @@ Ext.define('Genesis.controller.client.Badges',
    openMainPage : function()
    {
       var cntlr = this.getViewPortCntlr();
-      this.setAnimationMode(this.self.superclass.self.animationMode['cover']);
+      this.setAnimationMode(this.self.animationMode['cover']);
       this.pushView(this.getMainPage());
       console.log("Badges Page Opened");
    },

@@ -1,17 +1,22 @@
 Ext.define('Genesis.controller.server.Redemptions',
 {
-   extend : 'Genesis.controller.ControllerBase',
-   requires : ['Ext.data.Store'],
-   statics :
+   extend : 'Genesis.controller.RedemptionsBase',
+   inheritableStatics :
    {
-      serverRedemption_path : '/serverRedemptions'
    },
    xtype : 'serverRedemptionsCntlr',
+   controllerType : 'redemption',
    config :
    {
-      models : ['PurchaseReward', 'CustomerReward'],
+      closeBtn : null,
+      redeeemSuccessfulMsg : 'Reward selected has been successfully redeemed!',
+      redeemPointsFn : 'setMerchantRedeemPointsURL',
+      routes :
+      {
+      },
       refs :
       {
+         backBtn : 'serverredemptionsview button[tag=back]',
          //
          // Redemptions
          //
@@ -21,32 +26,18 @@ Ext.define('Genesis.controller.server.Redemptions',
             autoCreate : true,
             xtype : 'serverredemptionsview'
          },
-         verifyBtn : 'showredeemitemdetailview[tag=redeemItem] button[tag=verify]',
+         redemptionsList : 'serverredemptionsview list[tag=redemptionsList]'
       },
       control :
       {
-         redemptions :
-         {
-            createView : 'onCreateView',
-            activate : 'onActivate',
-            deactivate : 'onDeactivate'
-         },
          verifyBtn :
          {
             tap : 'onVerifyTap'
          }
+      },
+      listeners :
+      {
       }
-   },
-   invalidAuthCodeMsg : 'Authorization Code is Invalid',
-   proceedToScanMsg : 'Proceed to scan your customer\'s Authorization Code',
-   authCodeNotValidMsg : function()
-   {
-      return 'Authorization Code' + Genesis.constants.addCRLF() + 'is no longer valid'
-   },
-   init : function()
-   {
-      this.callParent(arguments);
-      console.log("Server Redemptions Init");
    },
    verifyQRCode : function(encrypted)
    {
@@ -54,7 +45,7 @@ Ext.define('Genesis.controller.server.Redemptions',
       console.debug("Decrypted content [" + encrypted + "]");
 
       var me = this;
-      var keys = Genesis.constants.getPrivKey();
+      var keys = Genesis.fn.getPrivKey();
       GibberishAES.size(256);
       var dbI = Genesis.db.getRedeemIndexDB();
 
@@ -108,7 +99,8 @@ Ext.define('Genesis.controller.server.Redemptions',
                      });
                      return;
                   }
-                  else if ((date >= Date.now()) && (date <= new Date().addHours(3 * 2)))
+                  else
+                  if ((date >= Date.now()) && (date <= new Date().addHours(3 * 2)))
                   {
                      console.log("Found QRCode type[" + decrypted['type'] + "]");
                      switch (decrypted['type'])
@@ -167,78 +159,69 @@ Ext.define('Genesis.controller.server.Redemptions',
          message : me.invalidAuthCodeMsg
       });
    },
-   // --------------------------------------------------------------------------
-   // Redemptions Page
-   // --------------------------------------------------------------------------
-   onCreateView : function(activeItem)
-   {
-   },
-   onActivate : function(activeItem, c, oldActiveItem, eOpts)
-   {
-      //activeItem.createView();
-   },
-   onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
-   {
-   },
-   onScannedQRcode : function(encrypted)
+   decodeQRCode : function()
    {
       var me = this;
-      if (!encrypted)
+
+      if (Ext.os.is('Android'))
       {
-         Ext.device.Notification.show(
-         {
-            title : 'Error!',
-            message : me.invalidAuthCodeMsg
-         });
+         //
+         // NFC
+         //
       }
       else
+      if (Ext.os.is('iOS'))
       {
-         me.verifyQRCode(encrypted);
+         //
+         // NFC
+         //
+         me.getViewPortCntlr().setActiveController(me);
       }
+
+      var task = me.getLocalID(function(identifiers)
+      {
+         me.onNfc(null,
+         {
+            'localID' : identifiers['localID']
+         });
+         //
+         // Talk to server to find a matching LocalID
+         //
+      }, function()
+      {
+         me.getViewPortCntlr().setActiveController(null);
+         Ext.Viewport.setMasked(null);
+      });
+      console.log("ProximityID : Searching for Local Identity ...");
+
+      return task;
    },
    onRedeemVerification : function()
    {
-      var me = this;
-      if (Ext.os.is('iOS'))
+      var me = this, task;
+
+      //
+      // Test code to use NFC
+      //
+      if (Genesis.fn.isNative())
       {
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
-            message : me.proceedToScanMsg
-         })
-         var bt = window.plugins.bluetooth;
-         bt.disconnect();
-         bt.stopSession();
-         var name = Genesis.constants.getPrivKey('venue')[2];
-
-         console.log("BlueTooth : Start Session[" + name + "]");
-         bt.startSession(name, function(peers)
-         {
-            console.log("BlueTooth : availablePeerListChanged");
-            console.log('Recv[' + Ext.encode(peers) + ']');
-            for (var peerId in peers)
+            message : me.detectMobileDeviceMsg,
+            listeners :
             {
-               console.log('ConnectTo[' + peerId + ']');
-               bt.connectTo(peerId);
-               break;
+               tap : function()
+               {
+                  clearInterval(task);
+                  window.plugins.proximityID.stop();
+                  me.getViewPortCntlr().setActiveController(null);
+                  Ext.Viewport.setMasked(null);
+               }
             }
-         }, function()
-         {
-            console.log("BlueTooth : connexionRequested");
-            console.log('Recv[' + Ext.encode(arguments) + ']');
          });
-         window.plugins.bluetooth.setConnexionEvents(function()
-         {
-            console.log("BlueTooth : setConnexionEvents ...");
-            console.log('Recv[' + Ext.encode(arguments) + ']');
-         }, function(qrcode)
-         {
-            Ext.Viewport.setMasked(null);
-            console.log("BlueTooth :  recvHandler ...");
-            console.log('Recv[' + Ext.encode(qrcode) + ']');
-            me.onScannedQRcode(qrcode['qrcode']);
-         });
-         console.log("BlueTooth : Waiting for Client to connect ...");
+
+         task = me.decodeQRCode();
       }
       else
       {
@@ -246,7 +229,7 @@ Ext.define('Genesis.controller.server.Redemptions',
          {
             title : 'Redemption Verification',
             message : me.proceedToScanMsg,
-            buttons : ['Proceed', 'Cancel'],
+            buttons : ['Cancel', 'Proceed'],
             callback : function(btn)
             {
                if (btn.toLowerCase() == 'proceed')
@@ -262,30 +245,221 @@ Ext.define('Genesis.controller.server.Redemptions',
    {
       this.popView();
    },
-   // --------------------------------------------------------------------------
-   // Base Class Overrides
-   // --------------------------------------------------------------------------
-   getMainPage : function()
+   onNfc : function(nfcResult)
    {
-      var page = this.getRedemptions();
-      return page;
-   },
-   openPage : function(subFeature)
-   {
-      switch(subFeature)
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      //
+      // Stop receiving data from NFC
+      //
+      viewport.setActiveController(null);
+
+      me.redeemItem(
       {
-         case 'redemptions' :
+         data : me.encryptFromParms(
          {
-            this.onRedeemVerification();
-            break;
-         }
-      }
+            'tag_id' : (nfcResult) ? nfcResult['tagID'] : null,
+            'expiry_ts' : new Date().addHours(3).getTime()
+         })
+      });
    },
-   isOpenAllowed : function()
+   onRedeemItem : function(btn, venue, view)
    {
-      return true;
+      var me = this, identifiers = null, task = null;
+      var viewport = me.getViewPortCntlr();
+      var venueId = (venue) ? venue.getId() : 0;
+      var item = view.getInnerItems()[0];
+      var store = me.getRedeemStore();
+      var params =
+      {
+         venue_id : venueId
+      }
+
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : (Genesis.fn.isNative()) ? me.lookingForMerchantDeviceMsg : me.retrievingQRCodeMsg,
+         listeners :
+         {
+            tap : function()
+            {
+               viewport.setActiveController(null);
+               if (task)
+               {
+                  clearInterval(task);
+               }
+               window.plugins.proximityID.stop();
+               Ext.Viewport.setMasked(null);
+            }
+         }
+      });
+
+      me.redeemItem = function(params)
+      {
+         //
+         // Stop receiving ProximityID
+         //
+         window.plugins.proximityID.stop();
+
+         //
+         // Update Server
+         //
+         btn.hide();
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.establishConnectionMsg
+         });
+
+         CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
+         Ext.StoreMgr.get(store).load(
+         {
+            addRecords : true, //Append data
+            scope : me,
+            jsonData :
+            {
+            },
+            params : params,
+            callback : function(records, operation)
+            {
+               Ext.Viewport.setMasked(null);
+               if (operation.wasSuccessful())
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : me.getTitle(),
+                     message : me.redeeemSuccessfulMsg
+                  });
+               }
+               else
+               {
+                  btn.show();
+               }
+            }
+         });
+      };
+
+      if (Genesis.fn.isNative())
+      {
+         task = me.getLocalID(function(idx)
+         {
+            identifiers = idx;
+            me.redeemItem(
+            {
+               'frequency' : identifiers['localID']
+            });
+         }, function()
+         {
+            viewport.setActiveController(null);
+            Ext.Viewport.setMasked(null);
+         });
+      }
+      else
+      {
+         me.redeemItem(
+         {
+         });
+      }
    }
 });
+
+/*
+Ext.define('Genesis.controller.server.Redemptions',
+{
+extend : 'Genesis.controller.RedemptionsBase',
+inheritableStatics :
+{
+},
+xtype : 'serverRedemptionsCntlr',
+config :
+{
+refs :
+{
+//
+// Redemptions
+//
+redemptions :
+{
+selector : 'serverredemptionsview',
+autoCreate : true,
+xtype : 'serverredemptionsview'
+},
+verifyBtn : 'showredeemitemdetailview[tag=redeemItem] button[tag=verify]'
+},
+control :
+{
+verifyBtn :
+{
+tap : 'onVerifyTap'
+}
+}
+},
+invalidAuthCodeMsg : 'Authorization Code is Invalid',
+proceedToScanMsg : 'Proceed to scan your customer\'s Authorization Code',
+authCodeNotValidMsg : function()
+{
+return 'Authorization Code' + Genesis.constants.addCRLF() + 'is no longer valid'
+},
+init : function()
+{
+this.callParent(arguments);
+console.log("Server Redemptions Init");
+},
+// --------------------------------------------------------------------------
+// Redemptions Page
+// --------------------------------------------------------------------------
+onCreateView : function(activeItem)
+{
+},
+onActivate : function(activeItem, c, oldActiveItem, eOpts)
+{
+//activeItem.createView();
+},
+onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
+{
+var me = this;
+},
+onScannedQRcode : function(encrypted)
+{
+var me = this;
+if (!encrypted)
+{
+Ext.device.Notification.show(
+{
+title : 'Error!',
+message : me.invalidAuthCodeMsg
+});
+}
+else
+{
+me.verifyQRCode(encrypted);
+}
+},
+// --------------------------------------------------------------------------
+// Base Class Overrides
+// --------------------------------------------------------------------------
+getMainPage : function()
+{
+var page = this.getRedemptions();
+return page;
+},
+openPage : function(subFeature)
+{
+switch(subFeature)
+{
+case 'redemptions' :
+{
+this.onRedeemVerification();
+break;
+}
+}
+},
+isOpenAllowed : function()
+{
+return true;
+}
+});
+*/
 
 //
 // Cleanup Redeem Database every 6 hours

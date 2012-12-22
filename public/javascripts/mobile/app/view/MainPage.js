@@ -84,7 +84,7 @@ Ext.define('Genesis.view.MainPage',
    onItemTap : function(e, target, delegate, eOpts)
    {
       var data = Ext.create('Genesis.model.frontend.MainPage', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
-      _application.getController('MainPage').fireEvent('itemTap', data);
+      _application.getController(((merchantMode) ? 'server' : 'client') + '.MainPage').fireEvent('itemTap', data);
    },
    /**
     * Removes all items currently in the Container, optionally destroying them all
@@ -102,9 +102,9 @@ Ext.define('Genesis.view.MainPage',
    {
       var carousel = this.query('carousel')[0];
       var app = _application;
-      var viewport = app.getController('Viewport');
+      var viewport = app.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
       var vport = viewport.getViewport();
-      var show = viewport.getCheckinInfo().venue != null;
+      var show = (!merchantMode) ? viewport.getCheckinInfo().venue != null : false;
       var items = Ext.StoreMgr.get('MainPageStore').getRange();
       var list = Ext.Array.clone(items);
       var itemPerPage = 6;
@@ -235,50 +235,54 @@ Ext.define('Genesis.view.MainPage',
          //
          // Refresh All Badges
          //
-         var customers = Ext.StoreMgr.get('CustomerStore').getRange();
-         var eligibleReward = false;
-         var eligiblePrize = false;
-         for (var i = 0; i < customers.length; i++)
+         var cstore = Ext.StoreMgr.get('CustomerStore');
+         if (cstore)
          {
-            var customer = customers[i];
-            if (customer.get('eligible_for_reward'))
+            var customers = cstore.getRange();
+            var eligibleReward = false;
+            var eligiblePrize = false;
+            for (var i = 0; i < customers.length; i++)
             {
-               eligibleReward = true;
-               break;
-            }
-            if (customer.get('eligible_for_prize'))
-            {
-               eligiblePrize = true;
-               break;
-            }
-         }
-         if (carousel.getInnerItems().length > 0)
-         {
-            var dom = Ext.DomQuery.select('span[data=client.Redemptions]',carousel.element.dom)[0];
-            if (eligibleReward)
-            {
-               dom.innerHTML = count;
-               Ext.fly(dom).removeCls("x-item-hidden");
-            }
-            else
-            {
-               if (!dom.className.match(/x-item-hidden/))
+               var customer = customers[i];
+               if (customer.get('eligible_for_reward'))
                {
-                  Ext.fly(dom).addCls("x-item-hidden");
+                  eligibleReward = true;
+                  break;
+               }
+               if (customer.get('eligible_for_prize'))
+               {
+                  eligiblePrize = true;
+                  break;
                }
             }
-
-            dom = Ext.DomQuery.select('span[data=client.Prizes]',carousel.element.dom)[0];
-            if (eligiblePrize)
+            if (carousel.getInnerItems().length > 0)
             {
-               dom.innerHTML = count;
-               Ext.fly(dom).removeCls("x-item-hidden");
-            }
-            else
-            {
-               if (!dom.className.match(/x-item-hidden/))
+               var dom = Ext.DomQuery.select('span[data=client.Redemptions]',carousel.element.dom)[0];
+               if (eligibleReward)
                {
-                  Ext.fly(dom).addCls("x-item-hidden");
+                  dom.innerHTML = count;
+                  Ext.fly(dom).removeCls("x-item-hidden");
+               }
+               else
+               {
+                  if (!dom.className.match(/x-item-hidden/))
+                  {
+                     Ext.fly(dom).addCls("x-item-hidden");
+                  }
+               }
+
+               dom = Ext.DomQuery.select('span[data=client.Prizes]',carousel.element.dom)[0];
+               if (eligiblePrize)
+               {
+                  dom.innerHTML = count;
+                  Ext.fly(dom).removeCls("x-item-hidden");
+               }
+               else
+               {
+                  if (!dom.className.match(/x-item-hidden/))
+                  {
+                     Ext.fly(dom).addCls("x-item-hidden");
+                  }
                }
             }
          }

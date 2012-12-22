@@ -51,7 +51,7 @@
          {
             if (launched == 0x11)
             {
-               var viewport = _application.getController('Viewport');
+               var viewport = _application.getController('server.Viewport');
                var listening = false;
                viewport.appName = appName;
 
@@ -61,7 +61,7 @@
                
                if (Ext.os.is('Android'))
                {
-               	listening = true;
+               	  listening = true;
                   nfc.addMimeTypeListener(Genesis.constants.appMimeType, function(nfcEvent)
                   {
                   	if (!listening)
@@ -200,7 +200,7 @@
             {
                profiles : ['Iphone'],
                views : ['Document', 'server.Rewards', 'server.Redemptions', 'MainPage', 'RedeemItemDetail', 'server.SettingsPage', 'Viewport'],
-               controllers : ['Viewport', 'MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'Settings', 'server.Prizes'],
+               controllers : ['server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'Settings', 'server.Prizes'],
                launch : function()
                {
                   _application = this;

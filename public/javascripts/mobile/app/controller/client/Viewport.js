@@ -1,12 +1,11 @@
-Ext.define('Genesis.controller.Viewport',
+Ext.define('Genesis.controller.client.Viewport',
 {
-   extend : 'Genesis.controller.ControllerBase',
-   statics :
+   extend : 'Genesis.controller.ViewportBase',
+   inheritableStatics :
    {
    },
    config :
    {
-      sound_files : null,
       loggedIn : false,
       customer : null,
       venue : null,
@@ -20,9 +19,6 @@ Ext.define('Genesis.controller.Viewport',
       lastPosition : null,
       refs :
       {
-         view : 'viewportview',
-         backButton : 'button[tag=back]',
-         closeButton : 'button[tag=close]',
          shareBtn : 'button[tag=shareBtn]',
          emailShareBtn : 'actionsheet button[tag=emailShareBtn]',
          fbShareBtn : 'actionsheet button[tag=fbShareBtn]',
@@ -37,14 +33,6 @@ Ext.define('Genesis.controller.Viewport',
          emailShareBtn :
          {
             tap : 'onShareEmailTap'
-         },
-         backButton :
-         {
-            tap : 'onBackButtonTap'
-         },
-         closeButton :
-         {
-            tap : 'onBackButtonTap'
          },
          checkInNowBtn :
          {
@@ -102,11 +90,6 @@ Ext.define('Genesis.controller.Viewport',
          {
             tap : 'onBrowseTap'
          },
-         //
-         view :
-         {
-            activate : 'onActivate'
-         },
          'viewportview dataview[tag=mainMenuSelections]' :
          {
             select : 'onButtonTap'
@@ -123,11 +106,6 @@ Ext.define('Genesis.controller.Viewport',
          {
             select : 'onButtonTap'
          },
-         //
-         'viewportview button' :
-         {
-            tap : 'onButtonTap'
-         },
          'actionsheet button' :
          {
             tap : 'onButtonTap'
@@ -135,25 +113,9 @@ Ext.define('Genesis.controller.Viewport',
       },
       listeners :
       {
-         'viewanimend' : 'onViewAnimEnd',
-         'baranimend' :
-         {
-            buffer : 0.5 * 1000,
-            fn : 'onBarAnimEnd'
-         },
-         'completeRefreshCSRF' : 'onCompleteRefreshCSRF',
-         'pushview' : 'pushView',
-         'silentpopview' : 'silentPopView',
-         'popview' : 'popView',
-         'resetview' : 'resetView'
+         'completeRefreshCSRF' : 'onCompleteRefreshCSRF'
       }
    },
-   mainPageStorePathToken : /\{platform_path\}/mg,
-   popViewInProgress : false,
-   viewStack : [],
-   animationFlag : 0,
-   gatherCheckinInfoMsg : 'Prepare to scan Check-in Code ...',
-   retrieveChallengesMsg : 'Retrieving Challenges ...',
    fbShareSuccessMsg : 'Posted on your Facebook Timeline!',
    shareReqMsg : function()
    {
@@ -163,7 +125,6 @@ Ext.define('Genesis.controller.Viewport',
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
-   onCompleteRefreshCSRF : Ext.emptyFn,
    onLocationUpdate : function(position)
    {
       var me = this;
@@ -204,54 +165,9 @@ Ext.define('Genesis.controller.Viewport',
          scope : me
       });
    },
-   onActivate : function()
-   {
-      var me = this;
-
-      //file = Ext.Loader.getPath("Genesis") + "/store/" + ((!merchantMode) ? 'mainClientPage-' : 'mainServerPage-') + file +
-      // '.json';
-      var file = Ext.Loader.getPath("Genesis") + "/store/" + ((!merchantMode) ? 'mainClientPage' : 'mainServerPage') + '.json';
-      var path = "";
-      if (Ext.os.is('iOS'))
-      {
-         path = "";
-      }
-      else
-      if (Ext.os.is('Android'))
-      {
-         path = "file:///android_asset/www/";
-      }
-      file = path + file;
-
-      console.log("Loading MainPage Store ...");
-      //console.debug("Creating Request [" + path + file + "]");
-      var request = new XMLHttpRequest();
-      request.onreadystatechange = function()
-      {
-         if (request.readyState == 4)
-         {
-            if (request.status == 200 || request.status == 0)
-            {
-               console.log("Loaded MainPage Store ...");
-               var response = Ext.decode(request.responseText.replace(me.mainPageStorePathToken, Genesis.constants._iconPath));
-               Ext.StoreMgr.get('MainPageStore').setData(response.data);
-            }
-         }
-      }
-      request.open("GET", file, true);
-      request.send(null);
-   },
    // --------------------------------------------------------------------------
    // Button Handlers
    // --------------------------------------------------------------------------
-   onButtonTap : function(b, e, eOpts)
-   {
-      Genesis.controller.ControllerBase.playSoundFile(this.sound_files['clickSound']);
-   },
-   onBackButtonTap : function(b, e, eOpts)
-   {
-      this.popView();
-   },
    onShareEmailTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
@@ -330,7 +246,7 @@ Ext.define('Genesis.controller.Viewport',
    onInfoTap : function(b, e, eOpts, eInfo)
    {
       // Open Info ActiveSheet
-      //this.getApplication().getController('Viewport').pushView(vp.getInfo());
+      // this.application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport').pushView(vp.getInfo());
    },
    onCheckinScanTap : function(b, e, eOpts, einfo)
    {
@@ -459,164 +375,20 @@ Ext.define('Genesis.controller.Viewport',
    // --------------------------------------------------------------------------
    // Page Navigation Handlers
    // --------------------------------------------------------------------------
-   resetView : function()
-   {
-      var me = this;
-      var vport = me.getViewport();
-      //
-      // Remove All Views
-      //
-      me.viewStack = [];
-      me.getApplication().getHistory().setActions([]);
-      //
-      // Remove all internal buffered views
-      //
-      //delete vport._activeItem;
-   },
-   pushView : function(view, animation)
-   {
-      var me = this;
-      animation = Ext.apply(animation,
-      {
-         reverse : false
-      });
-      var lastView = (me.viewStack.length > 1) ? me.viewStack[me.viewStack.length - 2] : null;
-
-      //
-      // Refresh view
-      //
-      if ((me.viewStack.length > 0) && (view == me.viewStack[me.viewStack.length - 1]['view']))
-      {
-      }
-      //
-      // Pop view
-      //
-      else
-      if (lastView && (lastView['view'] == view))
-      {
-         me.popView();
-      }
-      //
-      // Push view
-      //
-      else
-      {
-         //
-         // Remember what animation we used to render this view
-         //
-         var actions = me.getApplication().getHistory().getActions();
-         me.viewStack.push(
-         {
-            view : view,
-            animation : animation,
-            url : actions[actions.length - 1].getUrl()
-         });
-         me.getViewport().animateActiveItem(view, animation);
-      }
-   },
-   silentPopView : function(num)
-   {
-      var me = this;
-      num = Math.min(me.viewStack.length, num);
-      var actions = me.getApplication().getHistory().getActions();
-
-      if ((me.viewStack.length > 0) && (num > 0))
-      {
-         while (num-- > 0)
-         {
-            var lastView = me.viewStack.pop();
-            actions.pop();
-            //
-            // Viewport will automatically detect not to delete current view
-            // until is no longer the activeItem
-            //
-            //me.getViewport().remove(lastView['view']);
-         }
-      }
-   },
-   popView : function()
-   {
-      var me = this;
-      var actions = me.getApplication().getHistory().getActions();
-
-      if (me.viewStack.length > 1)
-      {
-         var lastView = me.viewStack.pop();
-         var currView = me.viewStack[me.viewStack.length - 1];
-
-         if (!me.popViewInProgress)
-         {
-            me.popViewInProgress = true;
-            //Ext.defer(function()
-            {
-               actions.pop();
-               //
-               // Recreate View if the view was destroyed for DOM memory optimization
-               //
-               if (currView['view'].isDestroyed)
-               {
-                  currView['view'] = Ext.create(currView['view'].alias[0]);
-                  //console.debug("Recreated View [" + currView['view']._itemId + "]")
-               }
-
-               //
-               // Update URL
-               //
-               me.getApplication().getHistory().setToken(currView['url']);
-               window.location.hash = currView['url'];
-
-               me.getViewport().animateActiveItem(currView['view'], Ext.apply(lastView['animation'],
-               {
-                  reverse : true
-               }));
-            }
-            //, 1, me);
-         }
-      }
-      else
-      {
-      	 me.goToMerchantMain(true);
-      }
-   },
    // --------------------------------------------------------------------------
    // Functions
    // --------------------------------------------------------------------------
    init : function(app)
    {
       var me = this;
-      console.log("Viewport Init");
-
-      //
-      // Initialize global constants
-      //
-      Genesis.constants.init();
 
       me.callParent(arguments);
 
-      if (merchantMode)
-      {
-         console.log("Loading License Keys ...");
-         Genesis.constants.getPrivKey();
-      }
-
-      QRCodeReader.prototype.scanType = "Default";
-      console.debug("QRCode Scanner Mode[" + QRCodeReader.prototype.scanType + "]")
-
+      console.log("Client Viewport Init");
       //
       // Initialize Facebook
       //
-      if (!merchantMode)
-      {
-         Genesis.fb.initFb();
-      }
-
-      if (Ext.isDefined(window.device))
-      {
-         console.debug(//
-         "\n" + "device.platform - " + device.platform + //
-         "\n" + "Browser EngineVersion - " + Ext.browser.engineVersion + //
-         "");
-      }
+      Genesis.fb.initFb();
 
       //
       // Initialize Sound Files, make it non-blocking
@@ -626,25 +398,14 @@ Ext.define('Genesis.controller.Viewport',
          this.sound_files =
          {
          };
-         var soundList;
-         if (merchantMode)
-         {
-            soundList = [//
-            ['clickSound', 'click_sound', 'FX'], //
-            //['refreshListSound', 'refresh_list_sound', 'FX'], //
-            ['beepSound', 'beep.wav', 'FX']];
-         }
-         else
-         {
-            soundList = [//
-            ['rouletteSpinSound', 'roulette_spin_sound', 'Media'], //
-            ['winPrizeSound', 'win_prize_sound', 'Media'], //
-            ['losePrizeSound', 'lose_prize_sound', 'Media'], //
-            ['promoteSound', 'promote_sound', 'FX'], //
-            ['clickSound', 'click_sound', 'FX'], //
-            //['refreshListSound', 'refresh_list_sound', 'FX'], //
-            ['beepSound', 'beep.wav', 'FX']];
-         }
+         var soundList = [//
+         ['rouletteSpinSound', 'roulette_spin_sound', 'Media'], //
+         ['winPrizeSound', 'win_prize_sound', 'Media'], //
+         ['losePrizeSound', 'lose_prize_sound', 'Media'], //
+         ['promoteSound', 'promote_sound', 'FX'], //
+         ['clickSound', 'click_sound', 'FX'], //
+         //['refreshListSound', 'refresh_list_sound', 'FX'], //
+         ['beepSound', 'beep.wav', 'FX']];
 
          for (var i = 0; i < soundList.length; i++)
          {
@@ -652,103 +413,60 @@ Ext.define('Genesis.controller.Viewport',
             this.loadSoundFile.apply(this, soundList[i]);
          }
       }, 1, me);
-   },
-   loadSoundFile : function(tag, sound_file, type)
-   {
-      var me = this;
-      var ext = '.' + (sound_file.split('.')[1] || 'mp3');
-      sound_file = sound_file.split('.')[0];
-      if (Genesis.constants.isNative())
-      {
-         var callback = function()
-         {
-            switch(type)
-            {
-               case 'FX' :
-               {
-                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, function()
-                  {
-                     console.debug("loaded " + sound_file);
-                  }, function(err)
-                  {
-                     console.debug("Audio Error: " + err);
-                  });
-                  break;
-               }
-               case 'Audio' :
-               {
-                  LowLatencyAudio['preload'+type](sound_file, 'resources/audio/' + sound_file + ext, 3, function()
-                  {
-                     console.debug("loaded " + sound_file);
-                  }, function(err)
-                  {
-                     console.debug("Audio Error: " + err);
-                  });
-                  break;
-               }
-            }
-         }
-         switch(type)
-         {
-            case 'Media' :
-            {
-               sound_file = new Media((Ext.os.is('Android') ? '/android_asset/www/' : '') + 'resources/audio/' + sound_file + ext, function()
-               {
-                  //console.log("loaded " + me.sound_files[tag].name);
-                  me.sound_files[tag].successCallback();
-               }, function(err)
-               {
-                  me.sound_files[tag].successCallback();
-                  console.log("Audio Error: " + err);
-               });
-               break;
-            }
-            default :
-               LowLatencyAudio['unload'](sound_file, callback, callback);
-               break;
-         }
-      }
-      else
-      {
-         var elem = Ext.get(sound_file);
-         if (elem)
-         {
-            elem.dom.addEventListener('ended', function()
-            {
-               me.sound_files[tag].successCallback();
-            }, false);
-         }
-      }
 
-      me.sound_files[tag] =
+      if (Genesis.fn.isNative())
       {
-         name : sound_file,
-         type : type
-      };
+         //
+         // Sender/Receiver Volume Settings
+         // ===============================
+         // - For Mobile Phones
+         //
+         var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
+         if (Ext.os.is('iOS'))
+         {
+            s_vol_ratio = 1.0;
+            r_vol_ratio = 0.8;
+            c.conseqMissThreshold = ((4 * 2) - 1);
+            // More samples for better accuracy
+            c.numSamples = 16 * 1024;
+            //Default Volume laying flat on a surface
+            c.s_vol = 80;
+         }
+         if (Ext.os.is('Android'))
+         {
+            s_vol_ratio = 0.4;
+            r_vol_ratio = 0.5;
+            c.conseqMissThreshold = 2;
+            c.numSamples = 4 * 1024;
+            //Default Volume laying flat on a surface
+            c.s_vol = 65;
+         }
+         //Default Overlap of FFT signal analysis over previous samples
+         c.sigOverlapRatio = 0.25;
+         Genesis.fn.printProximityConfig();
+         window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
+      }
    },
    openMainPage : function()
    {
       var me = this;
-      if (!merchantMode)
+      var db = Genesis.db.getLocalDB();
+      var loggedIn = (db['auth_code']) ? true : false;
+      me.resetView();
+      if (loggedIn)
       {
-         var db = Genesis.db.getLocalDB();
-         var loggedIn = (db['auth_code']) ? true : false;
-         me.resetView();
-         if (loggedIn)
-         {
-            //var app = this.getApplication();
-            //var controller = app.getController('MainPage');
+         //var app = this.getApplication();
+         //var controller = app.getController(()(merchantMode) ? 'server': 'client') + '.MainPage');
 
-            me.setLoggedIn(loggedIn);
-            console.debug("Going to SignIn Page ...");
-            me.redirectTo('signIn');
-         }
-         else
-         {
-            console.debug("Going to Login Page ...");
-            Genesis.db.resetStorage();
-            me.redirectTo('login');
-         }
+         me.setLoggedIn(loggedIn);
+         console.debug("Going to SignIn Page ...");
+         me.redirectTo('signIn');
+      }
+      else
+      {
+         console.debug("Going to Login Page ...");
+         Genesis.db.resetStorage();
+         me.redirectTo('login');
       }
    }
 });

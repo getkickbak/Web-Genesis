@@ -1,15 +1,38 @@
 Ext.define('Genesis.view.server.Redemptions',
 {
-   extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.dataview.List', 'Ext.XTemplate', 'Ext.Toolbar'],
+   extend : 'Genesis.view.RedeemBase',
+   requires : ['Genesis.view.widgets.RewardPtsItem'],
    alias : 'widget.serverredemptionsview',
    config :
    {
-      scrollable : 'vertical',
-      cls : 'redemptionsMain',
-      layout : 'vbox'
+      defaultItemType : 'rewardptsitem',
+      redeemTitleText : 'Rewards available to redeem (Select an item below)',
+      listCls : 'redemptionsList',
+      //scrollable : 'vertical',
+      scrollable : undefined,
+      cls : 'redemptionsMain viewport',
+      layout : 'vbox',
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
+      {
+         title : 'Redemptions',
+         items : [
+         {
+            align : 'left',
+            tag : 'back',
+            ui : 'normal',
+            text : 'Back'
+         }]
+      })]
    },
-   statics :
+   createView : function(activeItemIndex)
+   {
+      if (!this.callParent(arguments))
+      {
+         return;
+      }
+      this._createView('RedeemStore', 'RedemptionRenderCStore', activeItemIndex);
+   },
+   inheritableStatics :
    {
       getPhoto : function(type)
       {
@@ -17,7 +40,7 @@ Ext.define('Genesis.view.server.Redemptions',
          switch (type.value)
          {
             default :
-               photo_url = Genesis.constants.getIconPath('prizewon', type.value);
+               photo_url = Genesis.constants.getIconPath('fooditems', type.value);
                //console.debug("Icon Path [" + photo_url + "]");
                break;
          }

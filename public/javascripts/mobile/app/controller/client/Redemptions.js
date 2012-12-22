@@ -1,34 +1,15 @@
 Ext.define('Genesis.controller.client.Redemptions',
 {
-   extend : 'Genesis.controller.client.RedeemBase',
-   requires : ['Ext.data.Store'],
-   statics :
+   extend : 'Genesis.controller.RedemptionsBase',
+   inheritableStatics :
    {
    },
    xtype : 'clientRedemptionsCntlr',
    controllerType : 'redemption',
    config :
    {
-   	redeemInfoMsg : 'Getting the Redemptions List ...',
-      browseMode : 'redeemBrowse',
-      redeemMode : 'redeemReward',
-      renderStore : 'RedemptionRenderCStore',
-      redeemStore : 'RedeemStore',
+      redeeemSuccessfulMsg : 'Reward selected has been successfully redeemed!',
       redeemPointsFn : 'setRedeemPointsURL',
-      redeemUrl : 'setGetRewardsURL',
-      redeemPath : 'redeemBrowseRewardsSC',
-      ptsProperty : 'points',
-      title : 'Rewards',
-      routes :
-      {
-         // Browse Redemption Page
-         'redemptions' : 'redeemBrowsePage',
-         //Shortcut to choose venue to redeem rewards
-         'redeemRewardsChooseSC' : 'redeemChooseSCPage',
-         //Shortcut to visit Merchant Account for the Venue Page
-         'redeemBrowseRewardsSC' : 'redeemBrowseSCPage',
-         'redeemReward' : 'redeemItemPage'
-      },
       refs :
       {
          backBtn : 'clientredemptionsview button[tag=back]',
@@ -44,92 +25,102 @@ Ext.define('Genesis.controller.client.Redemptions',
          },
          redemptionsList : 'clientredemptionsview list[tag=redemptionsList]',
          redemptionsPts : 'clientredemptionsview component[tag=points]',
-         redemptionsPtsEarnPanel : 'clientredemptionsview dataview[tag=ptsEarnPanel]',
-         //
-         // Redeem Rewards
-         //
-         sCloseBB : 'showredeemitemdetailview[tag=redeemReward] button[tag=close]',
-         //sBB : 'showredeemitemdetailview[tag=redeemReward] button[tag=back]',
-         sDoneBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=done]',
-         sRedeemBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=redeem]',
-         refreshBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=refresh]',
-         verifyBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=verify]',
-         redeemItem :
-         {
-            selector : 'showredeemitemdetailview[tag=redeemReward]',
-            autoCreate : true,
-            tag : 'redeemReward',
-            xtype : 'showredeemitemdetailview'
-         }
-      },
-      control :
-      {
-         redemptions :
-         {
-            createView : 'onCreateView',
-            showView : 'onShowView',
-            activate : 'onActivate',
-            deactivate : 'onDeactivate'
-         },
-         redemptionsList :
-         {
-            select : 'onItemListSelect'
-            //disclose : 'onItemListDisclose'
-         },
-         sDoneBtn :
-         {
-            tap : 'onDoneTap'
-         },
-         sRedeemBtn :
-         {
-            tap : 'onRedeemItemTap'
-         },
-         redeemItem :
-         {
-            createView : 'onRedeemItemCreateView',
-            activate : 'onRedeemItemActivate',
-            deactivate : 'onRedeemItemDeactivate'
-         },
-         verifyBtn :
-         {
-            tap : 'popView'
-         }
+         redemptionsPtsEarnPanel : 'clientredemptionsview dataview[tag=ptsEarnPanel]'
       },
       listeners :
       {
-         //
-         // Redeem Rewards
-         //
-         'redeemitem' : 'onRedeemItem',
-         'showredeemitem' : 'onShowRedeemItem',
-         'showQRCode' : 'onShowItemQRCode',
-         'refreshQRCode' : 'onRefreshQRCode'
       }
    },
-   checkinFirstMsg : 'Please Check-In before redeeming Rewards',
-   // --------------------------------------------------------------------------
-   // Redemption Page
-   // --------------------------------------------------------------------------
-   onShowRedeemItem : function(redeemItem)
+   onRedeemItem : function(btn, venue, view)
    {
-      var me = this;
+      var me = this, identifiers = null;
+      var venueId = (venue) ? venue.getId() : 0;
+      var item = view.getInnerItems()[0];
+      var store = me.getRedeemStore();
+      var params =
+      {
+         venue_id : venueId
+      };
+      me.redeemItem = function(params)
+      {
+         //
+         // Updating Server ...
+         //
+         btn.hide();
+         //Ext.Viewport.getMasked().setMessage(me.establishConnectionMsg);
 
-      //
-      // Show prize on redeemItem Container
-      //
-      me.redeemItem = redeemItem;
-      me.redirectTo('redeemReward');
-   },
-   // --------------------------------------------------------------------------
-   // Page Navigation
-   // --------------------------------------------------------------------------
-   redeemChooseSCPage : function()
-   {
-      var controller = this.getApplication().getController('client.Accounts');
-      controller.redeemRewardsChooseSCPage();
-   },
-   redeemItemPage : function()
-   {
-      this.openPage('redeemReward');
-   },
+         CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
+         Ext.StoreMgr.get(store).load(
+         {
+            addRecords : true, //Append data
+            scope : me,
+            jsonData :
+            {
+            },
+            params : params,
+            callback : function(records, operation)
+            {
+               //
+               // Stop broadcasting now ...
+               //
+               if (identifiers)
+               {
+                  identifiers['cancelFn']();
+               }
+               window.plugins.proximityID.stop();
+               Ext.Viewport.setMasked(null);
+
+               if (operation.wasSuccessful())
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : me.getTitle(),
+                     message : me.redeeemSuccessfulMsg
+                  });
+                  Ext.device.Notification.beep();
+               }
+               else
+               {
+                  btn.show();
+               }
+            }
+         });
+      };
+
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : (Genesis.fn.isNative()) ? me.lookingForMerchantDeviceMsg : me.retrievingQRCodeMsg,
+         listeners :
+         {
+            tap : function()
+            {
+               if (identifiers)
+               {
+                  identifiers['cancelFn']();
+               }
+               window.plugins.proximityID.stop();
+               Ext.Viewport.setMasked(null);
+            }
+         }
+      });
+      if (Genesis.fn.isNative())
+      {
+         me.broadcastLocalID(function(ids)
+         {
+            identifiers = ids;
+            me.redeemItem(Ext.apply(params,
+            {
+               'frequency' : identifiers['localID']
+            }));
+         }, function()
+         {
+            Ext.Viewport.setMasked(null);
+         });
+      }
+      else
+      {
+         me.redeemItem(params);
+      }
+   }
 });

@@ -56,6 +56,9 @@ Ext.define('Genesis.view.client.MerchantAccount',
             iconAlign : 'top'
          },
          items : [
+         {
+            xtype : 'spacer'
+         },
          //
          // Left side Buttons
          //
@@ -64,14 +67,16 @@ Ext.define('Genesis.view.client.MerchantAccount',
             tag : 'home',
             title : 'Home'
          },
-         {
-            //iconCls : 'prizes',
-            //icon : '',
-            tag : 'prizes',
-            iconMask : false,
-            badgeCls : 'x-badge round',
-            title : 'Prizes'
-         },
+         /*
+          {
+          //iconCls : 'prizes',
+          //icon : '',
+          tag : 'prizes',
+          iconMask : false,
+          badgeCls : 'x-badge round',
+          title : 'Prizes'
+          },
+          */
          {
             iconCls : 'rewards',
             tag : 'rewards',
@@ -80,26 +85,31 @@ Ext.define('Genesis.view.client.MerchantAccount',
          //
          // Middle Button
          //
-         {
-            xtype : 'spacer'
-         },
+         /*
+          {
+          xtype : 'spacer'
+          },
+          */
          {
             iconCls : 'challenges',
             tag : 'challenges',
             title : 'Challenges'
          },
-         //
-         // Right side Buttons
-         //
-         {
-            xtype : 'spacer'
-         },
-         {
-            iconCls : 'redeem',
-            badgeCls : 'x-badge round',
-            tag : 'redemption',
-            title : 'Rewards'
-         },
+         /*
+          //
+          // Right side Buttons
+          //
+          {
+          xtype : 'spacer'
+          },
+          {
+          iconCls : 'redeem',
+          badgeCls : 'x-badge round',
+          iconMask : false,
+          tag : 'redemption',
+          title : 'Rewards'
+          },
+          */
          {
             iconCls : 'tocheckedinmerch',
             tag : 'main',
@@ -116,6 +126,9 @@ Ext.define('Genesis.view.client.MerchantAccount',
             iconCls : 'checkin',
             tag : 'checkin',
             title : 'Check-ins'
+         },
+         {
+            xtype : 'spacer'
          }]
       }],
       listeners : [
@@ -128,6 +141,12 @@ Ext.define('Genesis.view.client.MerchantAccount',
       {
          element : 'element',
          delegate : "div.prizeswonphoto",
+         event : "tap",
+         fn : "onJackpotWinnersTap"
+      },
+      {
+         element : 'element',
+         delegate : "div.prizesWonPanel div.x-list-disclosure",
          event : "tap",
          fn : "onJackpotWinnersTap"
       }]
@@ -320,17 +339,17 @@ Ext.define('Genesis.view.client.MerchantAccount',
    },
    onBadgeTap : function(b, e, eOpts)
    {
-      var viewport = _application.getController('Viewport');
+      var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       this.fireEvent('badgeTap');
    },
    onJackpotWinnersTap : function(b, e, eOpts)
    {
-      var viewport = _application.getController('Viewport');
+      var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
       Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
       this.fireEvent('jackpotWinnersTap');
    },
-   statics :
+   inheritableStatics :
    {
       getPhoto : function(type)
       {

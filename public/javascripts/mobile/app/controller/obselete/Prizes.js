@@ -2,10 +2,6 @@ Ext.define('Genesis.controller.Prizes',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store', 'Ext.util.Sorter'],
-   statics :
-   {
-      prizes_path : '/prizes'
-   },
    xtype : 'prizesCntlr',
    config :
    {
@@ -165,29 +161,6 @@ Ext.define('Genesis.controller.Prizes',
    // --------------------------------------------------------------------------
    // Utility Functions
    // --------------------------------------------------------------------------
-   stopRouletteTable : function()
-   {
-      var scn = this.getPrizeCheckScreen();
-      var rouletteTable = Ext.get(Ext.DomQuery.select('div.rouletteTable',scn.element.dom)[0]);
-      rouletteTable.removeCls('spinFwd');
-      rouletteTable.removeCls('spinBack');
-   },
-   stopRouletteBall : function()
-   {
-      var scn = this.getPrizeCheckScreen();
-      var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
-      rouletteBall.removeCls('spinBack');
-      rouletteBall.addCls('spinFwd');
-      // Match the speed of Roulette Table to make it look like it stopped
-   },
-   stopRouletteScreen : function()
-   {
-      this.stopRouletteTable();
-      var scn = this.getPrizeCheckScreen();
-      var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
-      rouletteBall.removeCls('spinBack');
-      rouletteBall.removeCls('spinFwd');
-   },
    updatingPrizeOnFacebook : function(earnprize)
    {
       var me = this;
@@ -899,13 +872,13 @@ Ext.define('Genesis.controller.Prizes',
       {
          case 'userPrizes' :
          {
-            me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
+            me.setAnimationMode(me.self.animationMode['cover']);
             page = me.getUserPrizes();
             break;
          }
          case 'merchantPrizes' :
          {
-            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+            me.setAnimationMode(me.self.animationMode['coverUp']);
             page = me.getMerchantPrizes();
             break;
          }
@@ -913,7 +886,7 @@ Ext.define('Genesis.controller.Prizes',
          case 'reward' :
          case 'authReward' :
          {
-            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+            me.setAnimationMode(me.self.animationMode['coverUp']);
             page = me.getShowPrize();
             break;
          }

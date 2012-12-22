@@ -178,7 +178,7 @@ Ext.define('Genesis.view.client.Referrals',
    {
       _application.getController('client.Challenges').fireEvent('referralsItemTap', e.delegatedTarget.getAttribute('data'));
    },
-   statics :
+   inheritableStatics :
    {
    }
 });

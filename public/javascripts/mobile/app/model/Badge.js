@@ -19,7 +19,7 @@ Ext.define('Genesis.model.Badge',
          }
       }
    },
-   statics :
+   inheritableStatics :
    {
       setGetBadgesUrl : function()
       {

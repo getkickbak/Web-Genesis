@@ -90,7 +90,7 @@ Ext.define('Genesis.model.EarnPrize',
    getUser : function()
    {
    },
-   statics :
+   inheritableStatics :
    {
       setEarnPrizeURL : function()
       {

@@ -2,10 +2,6 @@ Ext.define('Genesis.controller.Rewards',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
-   statics :
-   {
-      rewards_path : '/rewards'
-   },
    xtype : 'rewardsCntlr',
    models : ['PurchaseReward', 'CustomerReward'],
    config :
@@ -582,7 +578,7 @@ Ext.define('Genesis.controller.Rewards',
       {
          case 'rewards':
          {
-            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+            me.setAnimationMode(me.self.animationMode['coverUp']);
             page = me.getRewards();
             list = me.getRewardsList();
             store = Ext.StoreMgr.get('RewardsStore');

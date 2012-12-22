@@ -52,12 +52,14 @@ Ext.define('Genesis.view.client.CheckinExplore',
                iconCls : 'rewards',
                tag : 'rewardsSC',
                text : 'Earn Pts'
-            },
+            }
+            /*,
             {
                iconCls : 'checkin',
                tag : 'checkInNow',
                text : 'Check-In'
-            }],
+            }
+            */],
             listeners :
             {
                toggle : function(container, button, pressed)

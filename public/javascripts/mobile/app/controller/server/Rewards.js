@@ -2,10 +2,6 @@ Ext.define('Genesis.controller.server.Rewards',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
-   statics :
-   {
-      serverRewards_path : '/serverRewards'
-   },
    xtype : 'serverRewardsCntlr',
    config :
    {
@@ -73,42 +69,6 @@ Ext.define('Genesis.controller.server.Rewards',
       var precision = num.split('.');
       return ((precision.length > 1) ? precision[1].length : 0);
    },
-   availablePeerListChanged : function(clientList)
-   {
-      var clientId, clientInfo;
-      this.clientNames = [];
-      for (clientId in clientList)
-      {
-         clientInfo =
-         {
-         };
-         clientInfo[clientList[clientId]] = clientId;
-         this.clientNames.push(clientInfo);
-      }
-      console.log("availablePeerListChanged -\n" + Ext.encode(this.clientNames));
-   },
-   connexionRequested : function(clientId)
-   {
-      console.log("connexionRequested ClientId[" + clientId + "]");
-      window.plugins.bluetooth.acceptConnexion(clientId);
-      window.plugins.bluetooth.sendDataToAll(Ext.encode(
-      {
-         message : "This is a test!"
-      }));
-      Ext.defer(function()
-      {
-         window.plugins.bluetooth.stopSession();
-      }, 1000);
-   },
-   connectedListChanged : function()
-   {
-      console.log("connectedListChanged - Disconnect");
-      window.plugins.bluetooth.disconnect();
-   },
-   receiveData : function(result)
-   {
-      console.log("receiveData -\n" + result);
-   },
    // --------------------------------------------------------------------------
    // Rewards Page
    // --------------------------------------------------------------------------
@@ -126,7 +86,15 @@ Ext.define('Genesis.controller.server.Rewards',
    {
       var me = this;
       var priceField = me.getPrice();
-      priceField.setValue(null);
+      if (priceField)
+      {
+         priceField.setValue(null);
+      }
+      if (Genesis.fn.isNative())
+      {
+         window.plugins.proximityID.stop();
+      }
+      me.getViewPortCntlr().setActiveController(null);
    },
    onContainerActivate : function(c, value, oldValue, eOpts)
    {
@@ -141,6 +109,11 @@ Ext.define('Genesis.controller.server.Rewards',
             var priceField = me.getPrice();
             priceField.setValue(null);
             animation.setReverse(true);
+            if (Genesis.fn.isNative())
+            {
+               window.plugins.proximityID.stop();
+            }
+            me.getViewPortCntlr().setActiveController(null);
             break;
          }
          case 'qrcodeContainer' :
@@ -153,9 +126,8 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    onShowQrCodeTap : function(b, e, eOpts, eInfo)
    {
-      var me = this;
-      var container = me.getRewardsContainer();
-
+      var me = this, identifiers = null;
+      var viewport = me.getViewPortCntlr();
       var price = me.getPrice().getValue();
       var precision = this.getPricePrecision(price);
       if (precision < 2)
@@ -167,12 +139,100 @@ Ext.define('Genesis.controller.server.Rewards',
          });
          return;
       }
+
+      me.rewardItem = function(params)
+      {
+         params = Ext.merge(params,
+         {
+            'venue_id' : Genesis.fn.getPrivKey('venueId'),
+            data :
+            {
+               "amount" : price,
+               "type" : 'earn_points',
+               'expiry_ts' : new Date().addHours(3).getTime()
+            }
+         });
+         params['data'] = me.encryptFromParms(params['data']);
+         //
+         // Updating Server ...
+         //
+         PurchaseReward['setMerchantEarnPointsURL']();
+         PurchaseReward.load(1,
+         {
+            addRecords : true, //Append data
+            scope : me,
+            jsonData :
+            {
+            },
+            params : params,
+            callback : function(records, operation)
+            {
+               //
+               // Stop broadcasting now ...
+               //
+               if (identifiers)
+               {
+                  identifiers['cancelFn']();
+               }
+               window.plugins.proximityID.stop();
+               Ext.Viewport.setMasked(null);
+
+               if (operation.wasSuccessful())
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : me.getTitle(),
+                     message : me.rewardSuccessfulMsg
+                  });
+                  Ext.device.Notification.beep();
+               }
+            }
+         });
+      };
+
       Ext.Viewport.setMasked(
       {
          xtype : 'loadmask',
-         message : me.genQRCodeMsg
+         message : (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg : me.genQRCodeMsg,
+         listeners :
+         {
+            tap : function()
+            {
+               if (identifiers)
+               {
+                  identifiers['cancelFn']();
+               }
+               window.plugins.proximityID.stop();
+               Ext.Viewport.setMasked(null);
+            }
+         }
       });
 
+      if (Genesis.fn.isNative())
+      {
+         viewport.setActiveController(me);
+         me.broadcastLocalID(function(ids)
+         {
+            identifiers = ids;
+            me.rewardItem(
+            {
+               data :
+               {
+               },
+               'frequency' : identifiers['localID']
+            });
+         }, function()
+         {
+            viewport.setActiveController(null);
+            Ext.Viewport.setMasked(null);
+         });
+      }
+      else
+      {
+         me.rewardItem(params);
+      }
+
+      var container = me.getRewardsContainer();
       Ext.defer(function()
       {
          var qrcodeMetaData = Genesis.controller.ControllerBase.genQRCodeFromParams(
@@ -185,9 +245,11 @@ Ext.define('Genesis.controller.server.Rewards',
             'background-image' : 'url(' + qrcodeMetaData[0] + ')',
             'background-size' : Genesis.fn.addUnit(qrcodeMetaData[1] * 1.25) + ' ' + Genesis.fn.addUnit(qrcodeMetaData[2] * 1.25)
          });
-         Ext.Viewport.setMasked(null);
+         if (Genesis.fn.isNative())
+         {
+            Ext.Viewport.setMasked(null);
+         }
       }, 1, me);
-
       console.debug("Encrypting QRCode with Price:$" + price);
       me.getTitle().setData(
       {
@@ -247,6 +309,24 @@ Ext.define('Genesis.controller.server.Rewards',
       var container = me.getRewardsContainer();
       container.setActiveItem(0);
    },
+   onNfc : function(nfcResult)
+   {
+      var me = this;
+      var viewport = me.getViewPortCntlr();
+      //
+      // Stop receiving data from NFC / ProximityID
+      //
+      viewport.setActiveController(null);
+      Ext.Viewport.getMasked().setMessage(me.establishConnectionMsg);
+
+      me.rewardItem(
+      {
+         data :
+         {
+            'tag_id' : (nfcResult) ? nfcResult['tagID'] : null
+         }
+      });
+   },
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------
@@ -254,7 +334,7 @@ Ext.define('Genesis.controller.server.Rewards',
    {
       var me = this;
       var page = me.getRewards();
-      me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
+      me.setAnimationMode(me.self.animationMode['cover']);
       me.pushView(page);
    },
    // --------------------------------------------------------------------------
@@ -282,3 +362,4 @@ Ext.define('Genesis.controller.server.Rewards',
       return true;
    }
 });
+

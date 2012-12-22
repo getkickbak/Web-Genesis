@@ -2,7 +2,7 @@ Ext.define('Genesis.controller.client.Accounts',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
-   statics :
+   inheritableStatics :
    {
    },
    xtype : 'accountsCntlr',
@@ -66,13 +66,13 @@ Ext.define('Genesis.controller.client.Accounts',
          },
          accountsList :
          {
-            select : 'onSelect'
-            //disclose : 'onDisclose'
+            select : 'onSelect',
+            disclose : 'onDisclose'
          },
          venuesList :
          {
-            select : 'onVenueSelect'
-            //disclose : 'onVenueDisclose'
+            select : 'onVenueSelect',
+            disclose : 'onVenueDisclose'
          },
          avBB :
          {
@@ -166,7 +166,8 @@ Ext.define('Genesis.controller.client.Accounts',
 
             return true;
          }
-         else if (activeItem == me.getTransferPage())
+         else
+         if (activeItem == me.getTransferPage())
          {
             if (activeItem.getActiveItem() == me.getQrcodeContainer())
             {
@@ -503,7 +504,7 @@ Ext.define('Genesis.controller.client.Accounts',
             if (operation.wasSuccessful())
             {
                Ext.Viewport.setMasked(null);
-               
+
                var metaData =
                {
                   'venue_id' : venueId
@@ -535,13 +536,14 @@ Ext.define('Genesis.controller.client.Accounts',
                      controller.fireEvent('checkinMerchant', 'redemption', metaData, venueId, rec, operation, function()
                      {
                         me.redirectTo(path);
-                        Ext.device.Notification.beep();
+                        //Ext.device.Notification.beep();
                      });
                      break;
                }
                delete me.rec;
             }
-            else if (!operation.wasSuccessful() && !metaData)
+            else
+            if (!operation.wasSuccessful() && !metaData)
             {
                Ext.Viewport.setMasked(null);
                console.log(me.metaDataMissingMsg);
@@ -744,7 +746,8 @@ Ext.define('Genesis.controller.client.Accounts',
             {
                me.sendEmailIOS(qrcode, emailTpl, subject);
             }
-            else if (Ext.os.is('Android'))
+            else
+            if (Ext.os.is('Android'))
             {
                me.sendEmailAndroid(qrcode, emailTpl, subject);
             }
@@ -854,7 +857,7 @@ Ext.define('Genesis.controller.client.Accounts',
             {
                title : 'Start Transfer',
                message : me.startTransferMsg,
-               buttons : ['Proceed', 'Cancel'],
+               buttons : ['Cancel', 'Proceed'],
                callback : function(btn)
                {
                   if (btn.toLowerCase() == 'proceed')
@@ -1010,7 +1013,7 @@ Ext.define('Genesis.controller.client.Accounts',
       //
       container.setActiveItem(1);
 
-      me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+      me.setAnimationMode(me.self.animationMode['coverUp']);
       me.pushView(me.getTransferPage());
    },
    redeemRewardsChooseSCPage : function()
@@ -1028,7 +1031,7 @@ Ext.define('Genesis.controller.client.Accounts',
    {
       var me = this, page;
 
-      me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
+      me.setAnimationMode(me.self.animationMode['cover']);
       switch (subFeature)
       {
          case 'emailtransfer' :

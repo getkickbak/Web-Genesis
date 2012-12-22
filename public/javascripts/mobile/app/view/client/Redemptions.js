@@ -1,6 +1,6 @@
 Ext.define('Genesis.view.client.Redemptions',
 {
-   extend : 'Genesis.view.client.RedeemBase',
+   extend : 'Genesis.view.RedeemBase',
    requires : ['Genesis.view.widgets.RewardPtsItem'],
    alias : 'widget.clientredemptionsview',
    config :
@@ -32,6 +32,26 @@ Ext.define('Genesis.view.client.Redemptions',
          }]
       })]
    },
+   _createView : function(store, renderStore, activeItemIndex)
+   {
+      var me = this;
+
+      me.callParent(arguments);
+      // ------------------------------------------------------------------------
+      // Redeem Points Earned Panel
+      // ------------------------------------------------------------------------
+      me.setPreRender([
+      {
+         //docked : 'top',
+         cls : 'ptsEarnPanel',
+         tag : 'ptsEarnPanel',
+         xtype : 'dataview',
+         useComponents : true,
+         scrollable : undefined,
+         defaultType : me.getDefaultItemType(),
+         store : renderStore
+      }].concat(me.getPreRender()));
+   },
    createView : function(activeItemIndex)
    {
       if (!this.callParent(arguments))
@@ -40,7 +60,7 @@ Ext.define('Genesis.view.client.Redemptions',
       }
       this._createView('RedeemStore', 'RedemptionRenderCStore', activeItemIndex);
    },
-   statics :
+   inheritableStatics :
    {
       getPhoto : function(type)
       {

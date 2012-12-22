@@ -2,7 +2,7 @@ Ext.define('Genesis.controller.client.Rewards',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
-   statics :
+   inheritableStatics :
    {
    },
    xtype : 'clientRewardsCntlr',
@@ -59,6 +59,7 @@ Ext.define('Genesis.controller.client.Rewards',
          }
       }
    },
+   identifiers : null,
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
    checkinFirstMsg : 'Please Check-In before earning rewards',
    authCodeReqMsg : 'Proceed to scan an Authorization Code from your merchant to earn Reward Pts!',
@@ -158,55 +159,10 @@ Ext.define('Genesis.controller.client.Rewards',
    onLocationUpdate : function(position)
    {
       var me = this;
-      var viewport = me.getViewPortCntlr();
-      var venueId = (!position) ? null : viewport.getVenue().getId();
-      var reader = PurchaseReward.getProxy().getReader();
-      var params =
+      if (position && me.identifiers)
       {
-         'data' : me.qrcode,
-         latitude : (position) ? position.coords.getLatitude() : 0,
-         longitude : (position) ? position.coords.getLongitude() : 0
+         me.rewardItem();
       }
-
-      if (venueId)
-      {
-         params = Ext.apply(params,
-         {
-            venue_id : venueId
-         });
-      }
-      //
-      // Triggers PrizeCheck and MetaDataChange
-      // - subject CustomerReward also needs to be reset to ensure property processing of objects
-      //
-      //console.debug("qrcode =[" + me.qrcode + ']');
-      PurchaseReward['setEarnPointsURL']();
-      reader.setRootProperty('');
-      reader.buildExtractors();
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : me.earnPtsMsg
-      });
-      PurchaseReward.load(1,
-      {
-         jsonData :
-         {
-         },
-         params : params,
-         callback : function(record, operation)
-         {
-            reader.setRootProperty('data');
-            reader.buildExtractors();
-            Ext.Viewport.setMasked(null);
-            if (operation.wasSuccessful())
-            {
-               //Genesis.db.removeLocalDBAttrib('last_check_in');
-               me.fireEvent('triggerCallbacksChain');
-            }
-         }
-      });
-      delete me.qrcode;
    },
    // --------------------------------------------------------------------------
    // Rewards Page
@@ -368,30 +324,126 @@ Ext.define('Genesis.controller.client.Rewards',
 
       return false;
    },
-   startRouletteScreen : function()
+   onEarnPtsSC : function(notUseGeolocation)
    {
-      var scn = this.getRewards();
-      var rouletteTable = Ext.get(Ext.DomQuery.select('div.rouletteTable',scn.element.dom)[0]);
-      rouletteTable.addCls('spinFwd');
-      var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
-      rouletteBall.addCls('spinBack');
-   },
-   onEarnPtsSC : function()
-   {
-      var me = this;
-      Ext.device.Notification.show(
+      var me = this, task;
+      var viewport = me.getViewPortCntlr();
+
+      me.rewardItem = function()
       {
-         title : 'Rewards',
-         message : me.authCodeReqMsg,
-         buttons : ['OK', 'Cancel'],
-         callback : function(btn)
+         var identifiers = me.identifiers, position = viewport.getLastPosition(), localID = identifiers['localID'];
+         /*
+          Ext.device.Notification.show(
+          {
+          title : 'Local Identity',
+          message : identifiers['message']
+          });
+          */
+         var venueId = (notUseGeolocation) ? viewport.getVenue().getId() : null;
+         var reader = PurchaseReward.getProxy().getReader();
+         var params =
          {
-            if (btn.toLowerCase() == 'ok')
-            {
-               me.scanQRCode();
-            }
+            'frequency' : localID
          }
-      });
+         //
+         // With or without Geolocation support
+         //
+         if (!venueId)
+         {
+            params = Ext.apply(params,
+            {
+               //'data' : me.qrcode,
+               'latitude' : position.coords.getLatitude(),
+               'longitude' : position.coords.getLongitude()
+            });
+         }
+         else
+         {
+            params = Ext.apply(params,
+            {
+               venue_id : venueId
+            });
+         }
+
+         //
+         // Stop receiving ProximityID
+         //
+         window.plugins.proximityID.stop();
+         
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.earnPtsMsg
+         });
+         //
+         // Triggers PrizeCheck and MetaDataChange
+         // - subject CustomerReward also needs to be reset to ensure property processing of objects
+         //
+         PurchaseReward['setEarnPointsURL']();
+         reader.setRootProperty('');
+         reader.buildExtractors();
+         PurchaseReward.load(1,
+         {
+            jsonData :
+            {
+            },
+            params : params,
+            callback : function(record, operation)
+            {
+               reader.setRootProperty('data');
+               reader.buildExtractors();
+               Ext.Viewport.setMasked(null);
+               if (operation.wasSuccessful())
+               {
+                  //Genesis.db.removeLocalDBAttrib('last_check_in');
+                  me.fireEvent('triggerCallbacksChain');
+               }
+            }
+         });
+         delete me.qrcode;
+      };
+
+      if (Genesis.fn.isNative())
+      {
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.detectMerchantDeviceMsg,
+            listeners :
+            {
+               tap : function()
+               {
+                  if (task)
+                  {
+                     clearInterval(task);
+                  }
+                  window.plugins.proximityID.stop();
+                  Ext.Viewport.setMasked(null);
+               }
+            }
+         });
+         viewport.setLastPosition(null);
+         me.identifiers = null;
+         //
+         // Get GeoLocation and frequency markers
+         //
+         if (!notUseGeolocation)
+         {
+            me.getGeoLocation();
+         }
+         task = me.getLocalID(function(identifiers)
+         {
+            me.identifiers = identifiers;
+            if (notUseGeolocation || viewport.getLocationPosition())
+            {
+               me.rewardItem();
+            }
+         });
+      }
+      else
+      {
+         me.scanQRCode();
+      }
    },
    onEarnPts : function()
    {
@@ -408,8 +460,9 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         var earnPts = Ext.bind(me.onEarnPtsSC, me);
-         me.checkReferralPrompt(earnPts, earnPts);
+         //var earnPts = Ext.bind(me.onEarnPtsSC, me);
+         //me.checkReferralPrompt(earnPts, earnPts);
+         me.onEarnPtsSC(true);
       }
    },
    updateMetaDataInfo : function(metaData)
@@ -435,19 +488,33 @@ Ext.define('Genesis.controller.client.Rewards',
       var controller = app.getController('client.Prizes');
       var args = me.callBackStack['arguments'][0];
 
-      // cache this object before deletion.
+      //
+      // Make sure the sound stops after MAX delay is reached
+      //
+      var task = Ext.create('Ext.util.DelayedTask', function()
+      {
+         task.dead = true;
+         me.stopRouletteScreen(me.getRewards());
 
+         console.debug("RouletteSound Done, checking for prizes ...");
+         controller.fireEvent('prizecheck', args);
+      });
       Ext.defer(function()
       {
          var container = me.getRewards();
          //activeItem.createView();
-         me.startRouletteScreen();
+         me.startRouletteScreen(me.getRewards());
          Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
          {
-            console.debug("RouletteSound Done, checking for prizes ...");
-            controller.fireEvent('prizecheck', args);
+            task.cancel();
+            if (!task.dead)
+            {
+               console.debug("RouletteSound Done, checking for prizes ...");
+               controller.fireEvent('prizecheck', args);
+            }
          });
       }, 1, activeItem);
+      task.delay(10 * 1000);
       //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -509,7 +576,7 @@ Ext.define('Genesis.controller.client.Rewards',
             //
             // Go back to Main Reward Screen
             //
-            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+            me.setAnimationMode(me.self.animationMode['coverUp']);
             me.pushView(me.getRewards());
             break;
          }
@@ -529,7 +596,7 @@ Ext.define('Genesis.controller.client.Rewards',
             if (vport.getActiveItem() == page)
             {
                var controller = vport.getEventDispatcher().controller;
-               var anim = new Ext.fx.layout.Card(me.self.superclass.self.animationMode['fade']);
+               var anim = new Ext.fx.layout.Card(me.self.animationMode['fade']);
                anim.on('animationend', function()
                {
                   console.debug("Animation Complete");
@@ -547,7 +614,7 @@ Ext.define('Genesis.controller.client.Rewards',
             }
             else
             {
-               me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+               me.setAnimationMode(me.self.animationMode['coverUp']);
                me.pushView(me.getPromotion());
             }
             break;

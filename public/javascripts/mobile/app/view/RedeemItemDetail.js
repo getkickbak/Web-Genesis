@@ -57,7 +57,7 @@ Ext.define('Genesis.view.RedeemItemDetail',
 
       this.callParent(arguments);
    },
-   statics :
+   inheritableStatics :
    {
       getPhoto : function(type)
       {

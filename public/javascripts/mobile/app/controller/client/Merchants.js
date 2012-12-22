@@ -2,7 +2,7 @@ Ext.define('Genesis.controller.client.Merchants',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
-   statics :
+   inheritableStatics :
    {
       googleMapStaticUrl : 'http://maps.googleapis.com/maps/api/staticmap'
    },
@@ -40,8 +40,12 @@ Ext.define('Genesis.controller.client.Merchants',
          shareBtn : 'viewportview button[tag=shareBtn]',
          //checkinBtn : 'viewportview button[tag=checkin]',
          mainBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=main]',
-         prizesBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=prizes]',
-         redeemBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=redemption]',
+         /*
+          prizesBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=prizes]',
+          redeemBtn : 'clientmerchantaccountview tabbar[tag=navigationBarBottom] button[tag=redemption]',
+          */
+         prizesBtn : 'merchantaccountptsitem component[tag=prizepoints]',
+         redeemBtn : 'merchantaccountptsitem component[tag=points]',
          merchantTabBar : 'clientmerchantaccountview tabbar'
       },
       control :
@@ -64,8 +68,8 @@ Ext.define('Genesis.controller.client.Merchants',
          },
          'clientmerchantaccountview list' :
          {
-            select : 'onMainSelect'
-            //disclose : 'onMainDisclose'
+            select : 'onMainSelect',
+            disclose : 'onMainDisclose'
          },
          /*
           checkinBtn :
@@ -94,7 +98,7 @@ Ext.define('Genesis.controller.client.Merchants',
          {
             // Goto CheckinMerchant.js for "painted" support
             //painted : 'onMapPainted'
-         },
+         }
       },
       listeners :
       {
@@ -148,7 +152,7 @@ Ext.define('Genesis.controller.client.Merchants',
 
       me.callParent(arguments);
 
-      console.log("Merchants Init");
+      console.log("Merchants Client Init");
 
       //
       // Preloading Pages to memory
@@ -166,7 +170,6 @@ Ext.define('Genesis.controller.client.Merchants',
          }
          return false;
       });
-
    },
    // --------------------------------------------------------------------------
    // Merchant Details Page
@@ -261,7 +264,7 @@ Ext.define('Genesis.controller.client.Merchants',
       if (me.getMainPage() == vport.getActiveItem())
       {
          var controller = vport.getEventDispatcher().controller;
-         var anim = new Ext.fx.layout.Card(me.self.superclass.self.animationMode['fade']);
+         var anim = new Ext.fx.layout.Card(me.self.animationMode['fade']);
          anim.on('animationend', function()
          {
             console.debug("Animation Complete");
@@ -291,6 +294,7 @@ Ext.define('Genesis.controller.client.Merchants',
    },
    onMainShowView : function(activeItem)
    {
+      var me = this;
       if (Ext.os.is('Android'))
       {
          console.debug("Refreshing MerchantRenderStore ...");
@@ -381,12 +385,14 @@ Ext.define('Genesis.controller.client.Merchants',
 
       //me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();
       me.getMainBtn()[(activeItem.showMainBtn) ? 'show':'hide']();
+      /*
       var prizeBtn = me.getPrizesBtn();
       //if (!Customer.isValid(crecord.getId()))
       {
-         prizeBtn.setIcon('');
-         prizeBtn.setIconCls('prizes');
+      prizeBtn.setIcon('');
+      prizeBtn.setIconCls('prizes');
       }
+      */
       /*
       else
       {
@@ -467,13 +473,19 @@ Ext.define('Genesis.controller.client.Merchants',
          //
          if (rstore && rstore.getRange()[0].getMerchant().getId() == customer.getMerchant().getId())
          {
-            if (me.getPrizesBtn())
+            var prize = me.getPrizesBtn(), redeem = me.getRedeemBtn();
+            var dom;
+            if (prize)
             {
-               me.getPrizesBtn().setBadgeText(customer.get('eligible_for_prize') ? '✔' : null);
+               //me.getPrizesBtn().setBadgeText(customer.get('eligible_for_prize') ? '✔' : null);
+               dom = Ext.DomQuery.select('span', prize.element.dom)[0];
+               Ext.fly(dom)[customer.get('eligible_for_prize') ? 'removeCls' : 'addCls']("x-item-hidden");
             }
-            if (me.getRedeemBtn())
+            if (redeem)
             {
-               me.getRedeemBtn().setBadgeText(customer.get('eligible_for_reward') ? '✔' : null);
+               //me.getRedeemBtn().setBadgeText(customer.get('eligible_for_reward') ? '✔' : null);
+               dom = Ext.DomQuery.select('span', redeem.element.dom)[0];
+               Ext.fly(dom)[customer.get('eligible_for_reward') ? 'removeCls' : 'addCls']("x-item-hidden");
             }
             //rstore.fireEvent('refresh', rstore, rstore.data);
          }
@@ -609,7 +621,7 @@ Ext.define('Genesis.controller.client.Merchants',
          //console.debug("Cannot Retrieve Google Map Information.");
       }
 
-      me.setAnimationMode(me.self.superclass.self.animationMode['cover']);
+      me.setAnimationMode(me.self.animationMode['cover']);
       me.pushView(me.getMerchantDetails());
    },
    // --------------------------------------------------------------------------
@@ -640,7 +652,7 @@ Ext.define('Genesis.controller.client.Merchants',
          }
          else
          {
-            me.setAnimationMode(me.self.superclass.self.animationMode['pop']);
+            me.setAnimationMode(me.self.animationMode['pop']);
             me.pushView(me.getMainPage());
          }
       }

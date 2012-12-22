@@ -2,7 +2,7 @@ Ext.define('Genesis.controller.client.JackpotWinners',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
-   statics :
+   inheritableStatics :
    {
    },
    xtype : 'clientJackpotWinnersCntlr',
@@ -131,7 +131,7 @@ Ext.define('Genesis.controller.client.JackpotWinners',
          case 'main' :
          {
             me.merchantId = merchantId;
-            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+            me.setAnimationMode(me.self.animationMode['coverUp']);
             me.pushView(me.getMainPage());
             me.onReload();
             break;
@@ -146,7 +146,7 @@ Ext.define('Genesis.controller.client.JackpotWinners',
    openMainPage : function()
    {
       var me = this;
-      me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+      me.setAnimationMode(me.self.animationMode['coverUp']);
       me.pushView(me.getMainPage());
       console.log("Jackpot Winners Page Opened");
    },

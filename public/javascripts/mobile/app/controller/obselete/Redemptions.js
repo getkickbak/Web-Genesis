@@ -2,10 +2,6 @@ Ext.define('Genesis.controller.Redemptions',
 {
    extend : 'Genesis.controller.ControllerBase',
    requires : ['Ext.data.Store'],
-   statics :
-   {
-      redemption_path : '/redemption'
-   },
    xtype : 'redemptionsCntlr',
    models : ['PurchaseReward', 'CustomerReward'],
    config :
@@ -205,7 +201,7 @@ Ext.define('Genesis.controller.Redemptions',
       {
          case 'redemptions':
          {
-            me.setAnimationMode(me.self.superclass.self.animationMode['coverUp']);
+            me.setAnimationMode(me.self.animationMode['coverUp']);
             page = me.getRedemptions();
             list = me.getRedemptionsList();
             store = Ext.StoreMgr.get('RedeemStore');

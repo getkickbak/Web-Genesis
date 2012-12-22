@@ -35,7 +35,7 @@ Ext.define('Genesis.view.client.SettingsPage',
             xtype : 'togglefield',
             name : 'facebook',
             label : 'Facebook',
-            labelWidth : (!Genesis.constants.isNative()) ? '65%' : '57.5%',
+            labelWidth : (!Genesis.fn.isNative()) ? '65%' : '57.5%',
             value : 0
          },
          /*

@@ -3,6 +3,7 @@
    <head>
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-touch-fullscreen" content="yes" />
       <meta property="fb:admins" content="725565520"/>
       <meta property="fb:app_id" content="197968780267830"/>
       <meta name="format-detection" content="telephone=no" />
@@ -54,7 +55,7 @@
          function _onGotoMainCallBackFn()
          {
             Ext.Viewport.setMasked(null);
-            var viewport = _application.getController('Viewport');
+            var viewport = _application.getController('client.Viewport');
             if (viewport)
             {
                viewport.resetView();
@@ -88,7 +89,7 @@
          {
             if (launched == 0x111)
             {
-               var viewport = _application.getController('Viewport');
+               var viewport = _application.getController('client.Viewport');
                viewport.appName = appName;
 
                //console.log("Launching App");
@@ -155,7 +156,7 @@
             {
                if (_application)
                {
-                  _application.getController('Viewport').persistSyncStores();
+                  _application.getController('client.Viewport').persistSyncStores();
                }
                console.log("App is Paused");
             }, false);
@@ -223,7 +224,8 @@
                paths :
                {
                   Ext : _extPath,
-                  Genesis : _appPath
+                  Genesis : _appPath,
+                  "Ext.ux" : _appPath
                }
             });
             Ext.application(
@@ -235,7 +237,7 @@
                // //
                'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
                controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
-               'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
+               'client.Viewport', 'client.MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
                launch : function()
                {
                   _application = this;

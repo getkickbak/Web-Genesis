@@ -13,7 +13,8 @@ Ext.ns('Genesis.constants');
 Genesis.constants =
 {
    host : 'http://192.168.0.52:3000',
-   host : 'http://www.getkickbak.com',
+   //host : 'http://www.getkickbak.com',
+   isNfcEnabled : false,
    userName : 'Eric Chan',
    appMimeType : 'application/kickbak',
    clientVersion : '2.0.0',
@@ -25,7 +26,7 @@ Genesis.constants =
    defaultFontSize : (function()
    {
       var ratio = 1.14;
-      
+
       if (Ext.os.is('Tablet'))
       {
          ratio = 2 * ratio;
@@ -42,6 +43,15 @@ Genesis.constants =
    debugRPrivKey : 'oSG8JclEHvRy5ngkb6ehWbb6TTRFXd8t',
    debugVenuePrivKey : 'Debug Venue',
    privKey : null,
+   //
+   // Constants for Proximity Identifier
+   //
+   lastLocalID : null,
+   numSamples : -1,
+   conseqMissThreshold : -1,
+   sigOverlapRatio : -1,
+   s_vol : -1,
+   //
    device : null,
    redeemDBSize : 10000,
    //minDistance : 0.1 * 1000,
@@ -55,7 +65,8 @@ Genesis.constants =
          this._thumbnailAttribPrefix = 'thumbnail_ios_';
          this._iconSize = 57;
       }
-      else if (Ext.os.is('Android'))
+      else
+      if (Ext.os.is('Android'))
       {
          this._iconSize = 48;
          if ((window.devicePixelRatio) == 1 || (window.devicePixelRatio >= 2))
@@ -73,6 +84,17 @@ Genesis.constants =
          {
             this._iconSize = 36;
          }
+
+         if (merchantMode)
+         {
+            nfc.isEnabled(function(enabled)
+            {
+               if (enabled)
+               {
+                  addMimeTypeListener('');
+               }
+            });
+         }
       }
       else
       {
@@ -88,49 +110,15 @@ Genesis.constants =
          // On tablets, we need to magnify the content!
       }
    },
-   isNative : function()
-   {
-      //return Ext.isDefined(cordova);
-      return phoneGapAvailable;
-   },
    addCRLF : function()
    {
-      return ((!this.isNative()) ? '<br/>' : '\n');
+      return ((!Genesis.fn.isNative()) ? '<br/>' : '\n');
    },
    getIconPath : function(type, name, remote)
    {
       return ((!remote) ? //
       'resources/themes/images/' + this._iconPath : //
       this.photoSite + '/' + this._iconPath + '/' + 'icons') + '/' + type + '/' + name + '.png';
-   },
-   getPrivKey : function(id)
-   {
-      var me = this;
-      if (!me.privKey)
-      {
-         Genesis.fn.readFile('resources/keys.txt', function(content)
-         {
-            if (Genesis.constants.isNative())
-            {
-               me.privKey = Ext.decode(content);
-            }
-            else
-            {
-               // Hardcoded for now ...
-               me.privKey =
-               {
-                  'v1' : me.debugVPrivKey,
-                  'r1' : me.debugRPrivKey,
-                  'venue' : me.debugVenuePrivKey
-               };
-            }
-            for (var i in me.privKey)
-            {
-               console.debug("Encryption Key[" + i + "] = [" + me.privKey[i] + "]");
-            }
-         });
-      }
-      return (id) ? [me.privKey['v' + id], me.privKey['r' + id], me.privKey[id]] : me.privKey;
    }
 }
 
@@ -187,7 +175,8 @@ Genesis.fb =
                   me.facebook_onLogout(null, false);
                }
             }
-            else if ((session === undefined) || (session && session.status == 'not_authorized'))
+            else
+            if ((session === undefined) || (session && session.status == 'not_authorized'))
             {
                //console.debug('FB Account Session[' + session + '] was terminated or not authorized');
                if (session)
@@ -240,7 +229,7 @@ Genesis.fb =
             {
                title : 'Facebook Connect',
                message : me.friendsRetrieveErrorMsg,
-               buttons : ['Relogin', 'Cancel'],
+               buttons : ['Cancel', 'Relogin'],
                callback : function(button)
                {
                   if (button == "Relogin")
@@ -339,7 +328,7 @@ Genesis.fb =
                {
                   title : 'Facebook Connect',
                   message : message || me.fbConnectReconnectMsg,
-                  buttons : ['Confirm', 'Cancel'],
+                  buttons : ['Cancel', 'Confirm'],
                   callback : function(btn)
                   {
                      if (btn.toLowerCase() == 'confirm')
@@ -575,6 +564,11 @@ Genesis.fn =
    // **************************************************************************
    // Date Time
    // **************************************************************************
+   isNative : function()
+   {
+      //return Ext.isDefined(cordova);
+      return phoneGapAvailable;
+   },
    convertDateCommon : function(v, dateFormat, noConvert)
    {
       var date;
@@ -586,7 +580,7 @@ Genesis.fn =
          {
             //v = (jQuery.browser.msie) ? v.split(/Z$/)[0] : v.split('.')[0];
             //v = (Ext.os.deviceType.toLowerCase() != 'desktop') ? v : v.split('.')[0];
-            //v = (Genesis.constants.isNative()) ? v : v.split('.')[0];
+            //v = (Genesis.fn.isNative()) ? v : v.split('.')[0];
          }
 
          if (Ext.isEmpty(v))
@@ -779,10 +773,14 @@ Genesis.fn =
    },
    readFile : function(path, callback)
    {
-      var me = this;
-      if (Genesis.constants.isNative())
+      var me = this, rfile;
+      var failFileHandler = function(error)
       {
-         var rfile;
+         me.failFileHandler(error);
+         callback(null);
+      }
+      if (Genesis.fn.isNative())
+      {
          var handler = function(fileEntry)
          {
             fileEntry.file(function(file)
@@ -793,7 +791,7 @@ Genesis.fn =
                   callback(evt.target.result);
                };
                reader.readAsText(rfile);
-            }, me.failFileHandler);
+            }, failFileHandler);
          }
          window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
          {
@@ -801,59 +799,153 @@ Genesis.fn =
             {
                rfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
             }
-            else if (Ext.os.is('Android'))
+            else
+            if (Ext.os.is('Android'))
             {
-               wfile = (fileSystem.root.fullPath + appName) + path;
+               //rfile = ('file:///mnt/sdcard/' + appName + '/') + path;
+               rfile = (appName + '/') + path;
             }
             console.debug("Reading from File - [" + rfile + "]");
-            fileSystem.root.getFile(rfile, null, handler, me.failFileHandler);
-         }, me.failFileHandler);
+            fileSystem.root.getFile(rfile, null, handler, failFileHandler);
+         }, failFileHandler);
+      }
+      else
+      {
+         callback(true);
+      }
+   },
+   writeFile : function(path, content, callback)
+   {
+      var me = this, wfile;
+      var failFileHandler = function(error)
+      {
+         me.failFileHandler(error);
+         callback(false);
+      }
+      if (Genesis.fn.isNative())
+      {
+         var handler = function(fileEntry)
+         {
+            console.debug("Created File - [" + wfile + "]");
+            fileEntry.createWriter(function(writer)
+            {
+               console.debug("Writing to File - [" + wfile + "], Content - [" + content + "]");
+               writer.onwrite = function(evt)
+               {
+                  console.debug("Write End Callback - [" + Ext.encode(evt) + "]");
+                  callback(true);
+               };
+               writer.write(content);
+            }, failFileHandler);
+         }
+         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
+         {
+            if (Ext.os.is('iOS'))
+            {
+               wfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
+            }
+            else
+            if (Ext.os.is('Android'))
+            {
+               //wfile = ('file:///mnt/sdcard/' + appName + '/') + path;
+               wfile = (appName + '/') + path;
+            }
+            fileSystem.root.getDirectory(wfile.substring(0, wfile.lastIndexOf('/')),
+            {
+               create : true
+            });
+            fileSystem.root.getFile(wfile,
+            {
+               create : true,
+               exclusive : false
+            }, handler, failFileHandler);
+         }, failFileHandler);
       }
       else
       {
          callback();
       }
    },
-   writeFile : function(path, content, callback)
+   getPrivKey : function(id, callback)
    {
       var me = this;
-      if (Genesis.constants.isNative())
+      callback = callback || Ext.emptyFn;
+      if (!me.privKey)
       {
-         var handler = function(fileEntry)
+         if (!Genesis.fn.isNative())
          {
-            fileEntry.createWriter(function(writer)
+            // Hardcoded for now ...
+            me.privKey =
             {
-               writer.onwriteend = function(evt)
-               {
-                  callback();
-               };
-               writer.write(content);
-            }, me.failFileHandler);
-
+               'v1' : me.debugVPrivKey,
+               'r1' : me.debugRPrivKey,
+               'venue' : me.debugVenuePrivKey,
+               'venueId' : venueId
+            }
          }
-         window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function(fileSystem)
+         else
          {
-            var wfile;
-            if (Ext.os.is('iOS'))
+            me.privKey =
             {
-               wfile = (fileSystem.root.fullPath + '/../' + appName + '.app' + '/www/') + path;
-            }
-            else if (Ext.os.is('Android'))
-            {
-               wfile = ('file:///mnt/sdcard/' + appName) + path;
-            }
-            fileSystem.root.getFile(wfile,
-            {
-               create : true,
-               exclusive : false
-            }, handler, me.failFileHandler);
-            console.debug("Writing to File - [" + wfile + "]");
-         }, me.failFileHandler);
+            };
+         }
+      }
+
+      return ((id) ? me.privKey[id] : me.privKey);
+   },
+   printProximityConfig : function()
+   {
+      var c = Genesis.constants;
+      console.debug("ProximityID Configuration");
+      console.debug("=========================");
+      console.debug("\n" + //
+      "Signal Samples[" + c.numSamples + "]\n" + //
+      "Missed Threshold[" + c.conseqMissThreshold + "]\n" + //
+      "Signal Overlap Ratio[" + c.sigOverlapRatio + "]\n" + //
+      "Default Volume[" + c.s_vol + "%]\n" //
+      );
+   },
+   processSendLocalID : function(result, cancelFn)
+   {
+      var localID, identifiers = null;
+
+      if (result.freqs)
+      {
+         Genesis.constants.lastLocalID = result.freqs;
+      }
+
+      localID = Genesis.constants.lastLocalID;
+      if (localID)
+      {
+         identifiers = 'LocalID=[' + localID[0] + ', ' + localID[1] + ', ' + localID[2] + ']';
+         console.log('Sending out ' + identifiers);
+      }
+      return (
+         {
+            'message' : identifiers,
+            'localID' : localID,
+            'cancelFn' : cancelFn
+         });
+   },
+   processRecvLocalID : function(result)
+   {
+      var identifiers = null;
+      var localID = result.freqs;
+      if (localID)
+      {
+         identifiers = 'LocalID=[' + localID[0] + ', ' + localID[1] + ', ' + localID[2] + ']';
+         console.log('Recv\'d ' + identifiers);
       }
       else
       {
-         callback();
+         console.log('Already listening for LocalID ...');
       }
+
+      return (
+         {
+            message : identifiers,
+            localID : localID
+         });
    }
 }
 
@@ -1120,6 +1212,15 @@ Ext.define('Genesis.dom.Element',
       }
       this.dom.style.padding = padding;
    },
+   replaceCls : function(oldName, newName, prefix, suffix)
+   {
+      // If nothing has changed, why are we removing all classes and readding them causing a repaint?
+      if (Ext.isArray(oldName) && Ext.isArray(newName) && oldName.join() === newName.join())
+      {
+         return;
+      }
+      return this.removeCls(oldName, prefix, suffix).addCls(newName, prefix, suffix);
+   }
 });
 
 // **************************************************************************
@@ -1155,6 +1256,30 @@ Ext.define('Genesis.util.Collection',
    }
 });
 
+Ext.define('Genesis.Mask',
+{
+   override : 'Ext.Mask',
+   onEvent : function(e)
+   {
+      var controller = arguments[arguments.length - 1];
+
+      if (controller.info.eventName === 'tap')
+      {
+         this.fireEvent('tap', this, e);
+         return false;
+      }
+
+      // Propagate the event
+      /*
+       if (e && e.stopEvent)
+       {
+       e.stopEvent();
+       }
+       */
+
+      return false;
+   }
+});
 //---------------------------------------------------------------------------------------------------------------------------------
 // Ext.data.reader.Json
 //---------------------------------------------------------------------------------------------------------------------------------
@@ -1195,7 +1320,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          {
             title : 'Server Timeout',
             message : "Error Contacting Server",
-            buttons : ['Try Again', 'Cancel'],
+            buttons : ['Cancel', 'Try Again'],
             callback : function(btn)
             {
                if (btn.toLowerCase() == 'try again')
@@ -1220,9 +1345,10 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          return;
       }
 
+      var messages;
       var errorHandler = function()
       {
-         var messages = ((resultSet && Ext.isDefined(resultSet.getMessage)) ? (Ext.isArray(resultSet.getMessage()) ? resultSet.getMessage().join(Genesis.constants.addCRLF()) : resultSet.getMessage()) : 'Error Connecting to Server');
+         messages = ((resultSet && Ext.isDefined(resultSet.getMessage)) ? (Ext.isArray(resultSet.getMessage()) ? resultSet.getMessage().join(Genesis.constants.addCRLF()) : resultSet.getMessage()) : 'Error Connecting to Server');
          var metaData = reader.metaData ||
          {
          };
@@ -1360,7 +1486,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          errorHandler();
          return;
       }
-      if ((success === true) || (!request.aborted && (Genesis.constants.isNative() === true)))
+      if ((success === true) || (!request.aborted && (Genesis.fn.isNative() === true)))
       {
          if (operation.process(action, resultSet, request, response) === false)
          {
@@ -1488,7 +1614,7 @@ Ext.define('Genesis.data.Connection',
 
       var success = (status >= 200 && status < 300) || status == 304, isException = false;
 
-      if (Genesis.constants.isNative() && (status === 0))
+      if (Genesis.fn.isNative() && (status === 0))
       {
          success = true;
       }

@@ -16,7 +16,7 @@
       color:$BlackStart;
       .itemWrapper {
          width:50%;
-         height:($panelTopGap*2)+($normalFontSize*1.25*1)+(1.25*4.5em);
+         height:calc-px-em((1.25*$icon-size), (($panelTopGap*2)+($normalFontSize*1.25*1)), ($normalFontSize*1.25));
          padding:$panelTopGap/2 $panelGap/2;
          text-align:center;
          float:left;

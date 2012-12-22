@@ -30,7 +30,7 @@ Ext.define('Genesis.model.Challenge',
    {
 
    },
-   statics :
+   inheritableStatics :
    {
       setGetChallengesURL : function()
       {

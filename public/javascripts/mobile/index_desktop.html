@@ -3,6 +3,7 @@
    <head>
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-touch-fullscreen" content="yes" />
       <meta property="fb:admins" content="725565520"/>
       <meta property="fb:app_id" content="197968780267830"/>
       <!--
@@ -36,7 +37,7 @@
       <!--
       Phone Gap Libs
       -->
-      <script type="text/javascript" src="lib/cordova-2.2.0.ios.js"></script>
+      <script type="text/javascript" src="lib/cordova-2.2.0.android.js"></script>
       <script type="text/javascript">
          var backBtnCallbackListFn = [];
          var phoneGapAvailable = false;
@@ -75,6 +76,7 @@
           */
       </script>
       <script type="text/javascript" src="lib/core/base64Binary.js"></script>
+      <script type="text/javascript" src="lib/core/ssc.js"></script>
       <script type="text/javascript" src="lib/core/barcodescanner.js"></script>
       <script type="text/javascript" src="lib/core/EmailComposer.js"></script>
       <script type="text/javascript" src="lib/core/QRCodeReader.js"></script>
@@ -121,6 +123,7 @@
       <script type="text/javascript" src="app/view/client/ChallengePage.js"></script>
       <script type="text/javascript" src="app/view/MainPage.js"></script>
       <script type="text/javascript" src="app/view/LoginPage.js"></script>
+      <script type="text/javascript" src="app/view/RedeemBase.js"></script>
       <script type="text/javascript" src="app/view/RedeemItemDetail.js"></script>
       <script type="text/javascript" src="app/view/client/Badges.js"></script>
       <script type="text/javascript" src="app/view/client/JackpotWinners.js"></script>
@@ -132,21 +135,23 @@
       <script type="text/javascript" src="app/view/client/UploadPhotosPage.js"></script>
       <script type="text/javascript" src="app/view/client/Referrals.js"></script>
       <script type="text/javascript" src="app/view/client/Rewards.js"></script>
-      <script type="text/javascript" src="app/view/client/RedeemBase.js"></script>
       <script type="text/javascript" src="app/view/client/Redemptions.js"></script>
       <script type="text/javascript" src="app/view/client/Prizes.js"></script>
       <!-- Controllers -->
       <script type="text/javascript" src="app/controller/ControllerBase.js"></script>
-      <script type="text/javascript" src="app/controller/Viewport.js"></script>
+      <script type="text/javascript" src="app/controller/ViewportBase.js"></script>
+      <script type="text/javascript" src="app/controller/RedeemBase.js"></script>
+      <script type="text/javascript" src="app/controller/RedemptionsBase.js"></script>
+      <script type="text/javascript" src="app/controller/MainPageBase.js"></script>
       <script type="text/javascript" src="app/controller/Settings.js"></script>
-      <script type="text/javascript" src="app/controller/MainPage.js"></script>
+      <script type="text/javascript" src="app/controller/client/MainPage.js"></script>
+      <script type="text/javascript" src="app/controller/client/Viewport.js"></script>
       <script type="text/javascript" src="app/controller/client/Checkins.js"></script>
       <script type="text/javascript" src="app/controller/client/Challenges.js"></script>
       <script type="text/javascript" src="app/controller/client/Merchants.js"></script>
       <script type="text/javascript" src="app/controller/client/Badges.js"></script>
       <script type="text/javascript" src="app/controller/client/JackpotWinners.js"></script>
       <script type="text/javascript" src="app/controller/client/Rewards.js"></script>
-      <script type="text/javascript" src="app/controller/client/RedeemBase.js"></script>
       <script type="text/javascript" src="app/controller/client/Redemptions.js"></script>
       <script type="text/javascript" src="app/controller/client/Accounts.js"></script>
       <script type="text/javascript" src="app/controller/client/Prizes.js"></script>
@@ -197,13 +202,12 @@
                // //
                'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
                controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //
-               'Viewport', 'MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
+               'client.Viewport', 'client.MainPage', 'client.Badges', 'client.Merchants', 'client.Accounts', 'Settings', 'client.Checkins', 'client.JackpotWinners', 'client.Prizes'],
                launch : function()
                {
                   _application = this;
-                  //console.log("Launching App");
-                  Ext.create('Genesis.view.Viewport');
                   //this.redirectTo('');
+                  Ext.create('Genesis.view.Viewport');
                   console.log("Launched App");
                },
                appFolder : _appPath,

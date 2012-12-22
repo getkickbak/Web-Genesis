@@ -28,7 +28,7 @@ Ext.define('Genesis.view.client.Rewards',
           // @formatter:on
       }]
    },
-   statics :
+   inheritableStatics :
    {
       getPhoto : function(type)
       {

@@ -1,15 +1,16 @@
 Ext.define('Genesis.controller.client.Prizes',
 {
-   extend : 'Genesis.controller.client.RedeemBase',
+   extend : 'Genesis.controller.RedeemBase',
    requires : ['Ext.data.Store', 'Genesis.view.client.Prizes', 'Genesis.view.client.Badges'],
-   statics :
+   inheritableStatics :
    {
    },
    xtype : 'clientPrizesCntlr',
    controllerType : 'prize',
    config :
    {
-   	redeemInfoMsg : 'Getting the Prizes List ...',
+      redeemInfoMsg : 'Getting the Prizes List ...',
+      redeeemSuccessfulMsg : 'Prize selected has been successfully redeemed!',
       timeoutPeriod : 10,
       minPrizePts : 1,
       browseMode : 'redeemBrowse',
@@ -92,8 +93,8 @@ Ext.define('Genesis.controller.client.Prizes',
          },
          redemptionsList :
          {
-            select : 'onItemListSelect'
-            //disclose : 'onItemListDisclose'
+            select : 'onItemListSelect',
+            disclose : 'onItemListDisclose'
 
          },
          sDoneBtn :
@@ -127,7 +128,7 @@ Ext.define('Genesis.controller.client.Prizes',
          //
          // Redeem Prize
          //
-         'redeemitem' : 'onRedeemItem',
+         'redeemitem' : 'onClientRedeemItem',
          'showredeemitem' : 'onShowRedeemItem',
          'showredeemprize' : 'onShowRedeemPrize', //Redeem Prize broadcast to Social Media
          'showQRCode' : 'onShowItemQRCode',
@@ -189,39 +190,11 @@ Ext.define('Genesis.controller.client.Prizes',
          startIndex : 0
       };
 
-      console.log("Prizes Init");
+      console.log("Prizes Client Init");
    },
    // --------------------------------------------------------------------------
    // Utility Functions
    // --------------------------------------------------------------------------
-   stopRouletteTable : function()
-   {
-      var scn = this.getPrizeCheckScreen();
-      var rouletteTable = Ext.get(Ext.DomQuery.select('div.rouletteTable',scn.element.dom)[0]);
-      rouletteTable.removeCls('spinFwd');
-      rouletteTable.removeCls('spinBack');
-   },
-   stopRouletteBall : function()
-   {
-      var scn = this.getPrizeCheckScreen();
-      if (scn)
-      {
-         var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
-         if (rouletteBall)
-         {
-            rouletteBall.removeCls('spinBack');
-            rouletteBall.addCls('spinFwd');
-         }
-      }
-   },
-   stopRouletteScreen : function()
-   {
-      this.stopRouletteTable();
-      var scn = this.getPrizeCheckScreen();
-      var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
-      rouletteBall.removeCls('spinBack');
-      rouletteBall.removeCls('spinFwd');
-   },
    updatingPrizeOnFacebook : function(earnprize)
    {
       var me = this;
@@ -482,7 +455,7 @@ Ext.define('Genesis.controller.client.Prizes',
       var info = metaData['reward_info'];
       var ainfo = metaData['account_info'];
 
-      me.stopRouletteBall();
+      me.stopRouletteBall(me.getPrizeCheckScreen());
 
       //
       // Minimum Prize Points
@@ -541,7 +514,7 @@ Ext.define('Genesis.controller.client.Prizes',
          me.silentPopView(viewsPopLength);
       }
 
-      me.stopRouletteScreen();
+      me.stopRouletteScreen(me.getPrizeCheckScreen());
       //me.setRedeemMode('redeemPrize');
       //me.pushView(me.getRedeemMainPage());
       me.redirectTo('redeemPrize');

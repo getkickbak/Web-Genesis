@@ -53,6 +53,11 @@
       content : 'Rewards';
       width : $icon-size;
    }
+   .x-innerhtml {
+      border : 1px solid; // Use inherited border color
+      line-height : calc-px-em($icon-size, $panelTopGap, $xlargeFontSize*1.25);
+      @if $include-border-radius { @include border-radius($panelBorderRadius); }
+   }
 }
 
 .visitsphotodesc {

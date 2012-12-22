@@ -56,7 +56,7 @@ Ext.define('Genesis.view.Viewport',
       var layout = this.getLayout(), defaultAnimation = (layout.getAnimation) ? layout.getAnimation() : null;
       var oldActiveItem = this.getActiveItem();
       var disableAnimation = (activeItem.disableAnimation || ((oldActiveItem) ? oldActiveItem.disableAnimation : false));
-      var titlebar, viewport = _application.getController('Viewport');
+      var titlebar, viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
 
       if (this.activeItemAnimation)
       {
@@ -71,7 +71,7 @@ Ext.define('Genesis.view.Viewport',
          animation.setLayout(layout);
          if (defaultAnimation)
          {
-            var controller = _application.getController('Viewport').getEventDispatcher().controller;
+            var controller = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport').getEventDispatcher().controller;
 
             defaultAnimation.disable();
             controller.pause();

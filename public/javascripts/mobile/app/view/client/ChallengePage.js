@@ -227,7 +227,7 @@ Ext.define('Genesis.view.client.ChallengePage',
    createView : function()
    {
       var carousel = this.query('carousel')[0];
-      var record = _application.getController('Viewport').getVenue();
+      var record = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport').getVenue();
       var venueId = record.getId();
       var items = record.challenges().getRange();
       var element = Ext.DomQuery.select('div.itemWrapper',carousel.element.dom)[0];
@@ -254,7 +254,7 @@ Ext.define('Genesis.view.client.ChallengePage',
       this.callParent(arguments);
       //return Genesis.view.ViewBase.prototype.showView.apply(this, arguments);
    },
-   statics :
+   inheritableStatics :
    {
       getPhoto : function(type)
       {

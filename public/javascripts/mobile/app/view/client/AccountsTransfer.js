@@ -297,7 +297,7 @@ Ext.define('Genesis.view.client.AccountsTransfer',
       }
       this.callParent(arguments);
    },
-   statics :
+   inheritableStatics :
    {
    }
 });
