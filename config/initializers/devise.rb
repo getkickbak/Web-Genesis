@@ -233,6 +233,9 @@ Devise.setup do |config|
     manager.failure_app   = DeviseFailure
   #   manager.intercept_401 = false
   #   manager.default_strategies(:scope => :user).unshift :some_external_strategy
+    manager.default_strategies(:scope => :user).unshift :user_check_status
+    manager.default_strategies(:scope => :staff).unshift :staff_check_status
+    manager.default_strategies(:scope => :merchant).unshift :merchant_check_status
   end
 
   # ==> Mountable engine configurations
