@@ -79,7 +79,7 @@ class Api::V1::CheckInsController < Api::V1::BaseApplicationController
       CheckIn.transaction do
         now = Time.now
         if @customer.id > 0
-          last_check_in = CheckIn.create(@venue, current_user, @customer)
+          #last_check_in = CheckIn.create(@venue, current_user, @customer)
           if @customer.badge_reset_ts <= @venue.merchant.badges_update_ts
             @customer.badge, @customer.next_badge_visits = Common.find_badge(@badges.to_a, @customer.visits)
             @customer.badge_reset_ts = Time.now

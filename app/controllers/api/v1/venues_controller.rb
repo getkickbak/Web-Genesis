@@ -88,8 +88,8 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
     if merchant_id
       Merchant.get(merchant_id) || not_found
     end
-    latitude = params[:latitude].to_f
-    longitude = params[:longitude].to_f
+    latitude = params[:latitude] ? params[:latitude].to_f : nil
+    longitude = params[:longitude] ? params[:longitude].to_f : nil
     max = params[:limit].to_i
     @venues = Venue.find_nearest(current_user, merchant_id, latitude, longitude, max)
     render :template => '/api/v1/venues/find_nearest'
