@@ -369,7 +369,7 @@ Ext.define('Genesis.controller.client.Rewards',
          // Stop receiving ProximityID
          //
          window.plugins.proximityID.stop();
-         
+
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
@@ -438,6 +438,9 @@ Ext.define('Genesis.controller.client.Rewards',
             {
                me.rewardItem();
             }
+         }, function()
+         {
+            Ext.Viewport.setMasked(null);
          });
       }
       else
