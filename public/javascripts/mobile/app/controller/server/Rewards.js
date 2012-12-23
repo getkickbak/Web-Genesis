@@ -152,10 +152,11 @@ Ext.define('Genesis.controller.server.Rewards',
                'expiry_ts' : new Date().addHours(3).getTime()
             }
          });
-         params['data'] = me.encryptFromParms(params['data']);
+         params['data'] = me.self.encryptFromParams(params['data']);
          //
          // Updating Server ...
          //
+         console.log("Updating Server with EarnPoints information ...");
          PurchaseReward['setMerchantEarnPointsURL']();
          PurchaseReward.load(1,
          {
@@ -219,8 +220,8 @@ Ext.define('Genesis.controller.server.Rewards',
                data :
                {
                },
-               'frequency' : identifiers['localID']
-            });
+               'frequency' : Ext.encode(identifiers['localID'])
+            }, 'reward');
          }, function()
          {
             viewport.setActiveController(null);
@@ -235,7 +236,7 @@ Ext.define('Genesis.controller.server.Rewards',
       var container = me.getRewardsContainer();
       Ext.defer(function()
       {
-         var qrcodeMetaData = Genesis.controller.ControllerBase.genQRCodeFromParams(
+         var qrcodeMetaData = me.self.genQRCodeFromParams(
          {
             "amount" : price,
             "type" : 'earn_points'
@@ -245,10 +246,6 @@ Ext.define('Genesis.controller.server.Rewards',
             'background-image' : 'url(' + qrcodeMetaData[0] + ')',
             'background-size' : Genesis.fn.addUnit(qrcodeMetaData[1] * 1.25) + ' ' + Genesis.fn.addUnit(qrcodeMetaData[2] * 1.25)
          });
-         if (Genesis.fn.isNative())
-         {
-            Ext.Viewport.setMasked(null);
-         }
       }, 1, me);
       console.debug("Encrypting QRCode with Price:$" + price);
       me.getTitle().setData(

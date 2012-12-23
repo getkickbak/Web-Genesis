@@ -71,7 +71,7 @@ Ext.define('Genesis.controller.MainPageBase',
          if (match)
          {
             var viewport = me.getViewPortCntlr();
-            Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+            me.self.playSoundFile(viewport.sound_files['clickSound']);
             if (Ext.os.is('Android'))
             {
                navigator.app.exitApp();
@@ -91,7 +91,7 @@ Ext.define('Genesis.controller.MainPageBase',
    {
       var viewport = this.getViewPortCntlr();
 
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      this.self.playSoundFile(viewport.sound_files['clickSound']);
 
       console.log("Controller=[" + model.get('pageCntlr') + "]");
       var cntlr = this.getApplication().getController(model.get('pageCntlr'));

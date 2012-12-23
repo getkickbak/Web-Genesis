@@ -149,7 +149,7 @@ Ext.define('Genesis.controller.RedeemBase',
          me.fireEvent('showredeemitem', record);
       }
 
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
       switch (me.getBrowseMode())
       {
          case 'redeemBrowse' :

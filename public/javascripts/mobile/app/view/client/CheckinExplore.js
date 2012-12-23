@@ -29,6 +29,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
       }),
       {
          docked : 'bottom',
+         hidden : true,
          cls : 'toolbarBottom',
          tag : 'toolbarBottom',
          xtype : 'container',
@@ -52,14 +53,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
                iconCls : 'rewards',
                tag : 'rewardsSC',
                text : 'Earn Pts'
-            }
-            /*,
-            {
-               iconCls : 'checkin',
-               tag : 'checkInNow',
-               text : 'Check-In'
-            }
-            */],
+            }],
             listeners :
             {
                toggle : function(container, button, pressed)
@@ -129,7 +123,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
             },
             getDistance : function(values)
             {
-               return values['distance'].toFixed(1) + 'km';
+               return ((values['distance'] > 0) ? values['distance'].toFixed(1) + 'km' : '');
             }
          }),
          onItemDisclosure : Ext.emptyFn

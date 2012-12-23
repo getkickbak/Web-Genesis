@@ -378,14 +378,14 @@ Ext.define('Genesis.view.widgets.MerchantAccountPtsItem',
    {
       var me = this;
       var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      viewport.self.playSoundFile(viewport.sound_files['clickSound']);
       viewport.onPrizesButtonTap();
    },
    onRedemptionsButtonTap : function()
    {
       var me = this;
       var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      viewport.self.playSoundFile(viewport.sound_files['clickSound']);
       viewport.onRedemptionsButtonTap();
    }
 });

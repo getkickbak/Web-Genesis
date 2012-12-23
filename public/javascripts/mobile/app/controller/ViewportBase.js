@@ -84,7 +84,7 @@ Ext.define('Genesis.controller.ViewportBase',
    // --------------------------------------------------------------------------
    onButtonTap : function(b, e, eOpts)
    {
-      Genesis.controller.ControllerBase.playSoundFile(this.sound_files['clickSound']);
+      this.self.playSoundFile(this.sound_files['clickSound']);
    },
    onBackButtonTap : function(b, e, eOpts)
    {
@@ -269,7 +269,7 @@ Ext.define('Genesis.controller.ViewportBase',
          model : 'Genesis.model.frontend.LicenseKey',
          autoLoad : false,
       });
-      
+
       console.log("ViewportBase Init");
    },
    loadSoundFile : function(tag, sound_file, type)

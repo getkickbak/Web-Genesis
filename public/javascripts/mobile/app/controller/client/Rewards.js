@@ -343,7 +343,7 @@ Ext.define('Genesis.controller.client.Rewards',
          var reader = PurchaseReward.getProxy().getReader();
          var params =
          {
-            'frequency' : localID
+            'frequency' : Ext.encode(localID)
          }
          //
          // With or without Geolocation support
@@ -369,7 +369,7 @@ Ext.define('Genesis.controller.client.Rewards',
          // Stop receiving ProximityID
          //
          window.plugins.proximityID.stop();
-         
+
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
@@ -438,6 +438,9 @@ Ext.define('Genesis.controller.client.Rewards',
             {
                me.rewardItem();
             }
+         }, function()
+         {
+            Ext.Viewport.setMasked(null);
          });
       }
       else
@@ -504,7 +507,7 @@ Ext.define('Genesis.controller.client.Rewards',
          var container = me.getRewards();
          //activeItem.createView();
          me.startRouletteScreen(me.getRewards());
-         Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
+         me.self.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
          {
             task.cancel();
             if (!task.dead)

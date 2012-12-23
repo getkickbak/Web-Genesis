@@ -111,7 +111,7 @@ Ext.define('Genesis.controller.client.Redemptions',
             identifiers = ids;
             me.redeemItem(Ext.apply(params,
             {
-               'frequency' : identifiers['localID']
+               'frequency' : Ext.encode(identifiers['localID'])
             }));
          }, function()
          {

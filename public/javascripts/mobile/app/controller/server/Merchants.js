@@ -60,7 +60,7 @@ Ext.define('Genesis.controller.server.Merchants',
          if (activeItem == me.getMain())
          {
             var viewport = me.getViewPortCntlr();
-            Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+            me.self.playSoundFile(viewport.sound_files['clickSound']);
             me.redirectTo('main');
             return true;
          }
@@ -106,10 +106,10 @@ Ext.define('Genesis.controller.server.Merchants',
 
       var params =
       {
-         data : me.encryptFromParms(
+         data : me.self.encryptFromParams(
          {
             'tag_id' : nfcResult['tagID']
-         })
+         }, 'reward')
       }
       //
       // Retrieve Venue / Customer information for Merchant Account display
@@ -218,17 +218,17 @@ Ext.define('Genesis.controller.server.Merchants',
    {
       var me = this;
       var viewport = me.getViewPortCntlr();
-      
+
       //
       // Disable NFC Capability
       //
       viewport.setActiveController(null);
       /*
-       for (var i = 0; i < activeItem.getInnerItems().length; i++)
-       {
-       activeItem.getInnerItems()[i].setVisibility(false);
-       }
-       */
+      for (var i = 0; i < activeItem.getInnerItems().length; i++)
+      {
+      activeItem.getInnerItems()[i].setVisibility(false);
+      }
+      */
       //
       // Remove Customer information
       //
