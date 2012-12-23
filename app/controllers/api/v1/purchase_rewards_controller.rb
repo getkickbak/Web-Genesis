@@ -42,7 +42,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         Request.transaction do
           frequency = params[:frequency]
           request_info = {
-            :type => RequestType.EARN_POINTS,
+            :type => RequestType::EARN_POINTS,
             :frequency1 => frequency[0],
             :frequency2 => frequency[1],
             :frequency3 => frequency[2],
@@ -115,7 +115,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           end
           frequency = params[:frequency]
           request_info = {
-            :type => RequestType.EARN_POINTS,
+            :type => RequestType::EARN_POINTS,
             :frequency1 => frequency[0],
             :frequency2 => frequency[1],
             :frequency3 => frequency[2],

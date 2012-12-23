@@ -44,7 +44,7 @@ module Rails
 
       def set_session(env, sid, session_data, options = {})
         session            = find_session(sid)
-        if session.new? && session_data.empty?
+        if session_data.empty?
           true
         else
           session.data       = session_data
