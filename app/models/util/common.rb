@@ -210,13 +210,13 @@ class Common
       )
     }
     
-    n = 10
+    n = 50
     n.times do |x|
       request = c.call
       if request.length > 0
         return request[0].id, request[0].data
       elsif x < n
-        sleep(0.1)
+        sleep(0.2)
       else
         return 0, nil  
       end
@@ -230,13 +230,13 @@ class Common
       )
     }
     
-    n = 10
+    n = 50
     n.times do |x|
       request = c.call
       if request.length > 0 && request[0].status == :complete
         return true
       elsif x < n
-        sleep(0.1)
+        sleep(0.2)
       else
         return false  
       end
