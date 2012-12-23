@@ -46,8 +46,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             :frequency1 => frequency[0],
             :frequency2 => frequency[1],
             :frequency3 => frequency[2],
-            :latitude => params[:latitude],
-            :longitude => params[:longitude],
+            :latitude => venue.latitude,
+            :longitude => venue.longitude,
             :data => params[:data]
           }
           request = Request.create(request_info)
@@ -113,7 +113,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
               raise "No such venue: #{@venue_id}"
             end
           end
-          frequency = params[:frequency]
+          frequency = JSON.parse(params[:frequency])
           request_info = {
             :type => RequestType::EARN_POINTS,
             :frequency1 => frequency[0],

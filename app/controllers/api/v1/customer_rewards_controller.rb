@@ -44,7 +44,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       now_secs = decrypted_data["expiry_ts"]/1000
       data_expiry_ts = Time.at(now_secs)
       if params[:frequency]
-        frequency = params[:frequency]
+        frequency = JSON.parse(params[:frequency])
         request_info = {
           :type => RequestType::REDEEM,
           :frequency1 => frequency[0],
@@ -182,7 +182,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
             :user_id => current_user.id,
             :reward_id => @reward.id
         }.to_json
-        frequency = params[:frequency]
+        frequency = JSON.parse(params[:frequency])
         request_info = {
           :type => RequestType::REDEEM,
           :frequency1 => frequency[0],
