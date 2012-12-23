@@ -256,11 +256,11 @@ Ext.define('Genesis.controller.server.Redemptions',
 
       me.redeemItem(
       {
-         data : me.encryptFromParms(
+         data : me.self.encryptFromParams(
          {
             'tag_id' : (nfcResult) ? nfcResult['tagID'] : null,
             'expiry_ts' : new Date().addHours(3).getTime()
-         })
+         }, 'reward')
       });
    },
    onRedeemItem : function(btn, venue, view)
@@ -346,7 +346,7 @@ Ext.define('Genesis.controller.server.Redemptions',
             identifiers = idx;
             me.redeemItem(
             {
-               'frequency' : identifiers['localID']
+               'frequency' : Ext.encode(identifiers['localID'])
             });
          }, function()
          {

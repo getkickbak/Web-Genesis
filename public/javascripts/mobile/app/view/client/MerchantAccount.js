@@ -340,13 +340,13 @@ Ext.define('Genesis.view.client.MerchantAccount',
    onBadgeTap : function(b, e, eOpts)
    {
       var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      viewport.self.playSoundFile(viewport.sound_files['clickSound']);
       this.fireEvent('badgeTap');
    },
    onJackpotWinnersTap : function(b, e, eOpts)
    {
       var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      viewport.self.playSoundFile(viewport.sound_files['clickSound']);
       this.fireEvent('jackpotWinnersTap');
    },
    inheritableStatics :

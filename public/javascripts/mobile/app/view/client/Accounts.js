@@ -322,7 +322,7 @@ Ext.define('Genesis.view.client.Accounts',
             },
             getDistance : function(values)
             {
-               return values['distance'].toFixed(1) + 'km';
+               return ((values['distance'] > 0) ? values['distance'].toFixed(1) + 'km' : '');
             }
          }),
          onItemDisclosure : Ext.emptyFn

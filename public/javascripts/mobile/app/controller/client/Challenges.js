@@ -183,9 +183,10 @@ Ext.define('Genesis.controller.client.Challenges',
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
-   photoEventHandler : function(position)
+   photoEventHandler : function()
    {
       var me = this;
+
       if (me.imageURI)
       {
          if (Genesis.fn.isNative())
@@ -215,7 +216,7 @@ Ext.define('Genesis.controller.client.Challenges',
             });
 
             var ft = new FileTransfer();
-            var res, metaData;
+            var res, metaData = me.metaData;
             ft.upload(me.imageURI, encodeURI(Genesis.constants.host + '/api/v1/venues/share_photo'), function(r)
             {
                try
@@ -230,8 +231,9 @@ Ext.define('Genesis.controller.client.Challenges',
                      //
                      // Set MetaData from PhotoUpload here
                      //
-                     metaData = me.metaData = res.metaData || null;
-                     metaData['position'] = position;
+                     metaData = me.metaData = Ext.applyIf(me.metaData, res.metaData ||
+                     {
+                     });
                   }
                   else
                   {
@@ -533,6 +535,16 @@ Ext.define('Genesis.controller.client.Challenges',
    onLocationUpdate : function(position)
    {
       var me = this;
+
+      if (!position)
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Location Services',
+            message : me.geoLocationErrorMsg()
+         });
+         return;
+      }
       //
       // Either we are in PhotoUpload mode, or we are in Challenge Authorization Mode
       //
@@ -540,7 +552,11 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          case 'photo' :
          {
-            me.photoEventHandler(position);
+            me.getChallengePage().takePhoto();
+            me.metaData =
+            {
+               'position' : position
+            };
             break;
          }
          case 'vip' :
@@ -753,7 +769,7 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       var viewport = this.getViewPortCntlr();
 
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      this.self.playSoundFile(viewport.sound_files['clickSound']);
 
       var desc = this.getChallengeDescContainer();
       Ext.Anim.run(desc.element, 'fade',
@@ -819,16 +835,12 @@ Ext.define('Genesis.controller.client.Challenges',
 
          switch (selectedItem.get('type').value)
          {
-            case 'photo' :
-            {
-               me.getChallengePage().takePhoto();
-               break;
-            }
             case 'referral' :
             {
                me.redirectTo('referrals');
                break;
             }
+            case 'photo' :
             case 'menu' :
             case 'birthday' :
             case 'vip' :
@@ -979,7 +991,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
       if (viewport.getCustomer().get('visits') > 0)
       {
          switch (tag)
@@ -1013,7 +1025,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
       Ext.Viewport.setMasked(null);
       me.imageURI = imageURI;
-      me.getGeoLocation();
+      me.photoEventHandler();
    },
    onCameraErrorFn : function(message)
    {

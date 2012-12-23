@@ -43,6 +43,13 @@ Ext.define('Genesis.controller.server.Viewport',
    {
       var me = this;
       callback = callback || Ext.emptyFn;
+
+      if (!Genesis.fn.isNative())
+      {
+         Genesis.fn.getPrivKey();
+         me.initializeConsole(callback);
+         return;
+      }
       me.persistLoadStores(function()
       {
          var lstore = Ext.StoreMgr.get('LicenseStore');

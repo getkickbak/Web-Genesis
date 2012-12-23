@@ -19,7 +19,7 @@ Ext.define('Genesis.device.notification.Simulator',
    beep : function(times)
    {
       var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['beepSound']);
+      viewport.self.playSoundFile(viewport.sound_files['beepSound']);
       console.log("Beep " + times + " times.")
    }
 });
@@ -33,7 +33,7 @@ Ext.define('Genesis.device.notification.Desktop',
    beep : function(times)
    {
       var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['beepSound']);
+      viewport.self.playSoundFile(viewport.sound_files['beepSound']);
       console.log("Beep " + times + " times.")
    }
 });

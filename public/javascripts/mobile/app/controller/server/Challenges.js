@@ -46,7 +46,7 @@ Ext.define('Genesis.controller.server.Challenges',
    },
    generateQRCode : function()
    {
-      return Genesis.controller.ControllerBase.genQRCodeFromParams(
+      return this.self.genQRCodeFromParams(
       {
          "type" : 'earn_points'
       }, 'challenge', false);

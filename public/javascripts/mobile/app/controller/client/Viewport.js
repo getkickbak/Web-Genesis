@@ -21,8 +21,7 @@ Ext.define('Genesis.controller.client.Viewport',
       {
          shareBtn : 'button[tag=shareBtn]',
          emailShareBtn : 'actionsheet button[tag=emailShareBtn]',
-         fbShareBtn : 'actionsheet button[tag=fbShareBtn]',
-         checkInNowBtn : 'button[tag=checkInNow]' //All CheckInNow Buttons
+         fbShareBtn : 'actionsheet button[tag=fbShareBtn]'
       },
       control :
       {
@@ -33,10 +32,6 @@ Ext.define('Genesis.controller.client.Viewport',
          emailShareBtn :
          {
             tap : 'onShareEmailTap'
-         },
-         checkInNowBtn :
-         {
-            tap : 'onCheckinScanTap'
          },
          'tabbar[tag=navigationBarTop] button[tag=info]' :
          {
@@ -248,17 +243,6 @@ Ext.define('Genesis.controller.client.Viewport',
       // Open Info ActiveSheet
       // this.application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport').pushView(vp.getInfo());
    },
-   onCheckinScanTap : function(b, e, eOpts, einfo)
-   {
-      var me = this;
-
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : me.gatherCheckinInfoMsg
-      });
-      me.getGeoLocation();
-   },
    onAccountsButtonTap : function(b, e, eOpts, eInfo)
    {
       this.redirect('accounts');
@@ -425,12 +409,12 @@ Ext.define('Genesis.controller.client.Viewport',
          if (Ext.os.is('iOS'))
          {
             s_vol_ratio = 1.0;
-            r_vol_ratio = 0.8;
+            r_vol_ratio = 1.0;
             c.conseqMissThreshold = ((4 * 2) - 1);
             // More samples for better accuracy
             c.numSamples = 16 * 1024;
             //Default Volume laying flat on a surface
-            c.s_vol = 80;
+            c.s_vol = 100;
          }
          if (Ext.os.is('Android'))
          {

@@ -40,7 +40,7 @@ Ext.define('Genesis.model.Venue',
             rootProperty : 'data'
          }
       },
-      idProperty : 'id',
+      idProperty : 'id'
    },
    inheritableStatics :
    {

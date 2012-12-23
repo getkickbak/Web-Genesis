@@ -58,7 +58,7 @@ Ext.define('Genesis.controller.client.Checkins',
          'checkinMerchant' : 'onCheckinHandler',
          'setupCheckinInfo' : 'onSetupCheckinInfo'
       },
-      position : null,
+      position : null
    },
    metaDataMissingMsg : 'Missing Checkin MetaData information.',
    noCheckinCodeMsg : 'No Checkin Code found!',
@@ -102,7 +102,7 @@ Ext.define('Genesis.controller.client.Checkins',
          if (activeItem == me.getExplore())
          {
             var viewport = me.getViewPortCntlr();
-            Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+            me.self.playSoundFile(viewport.sound_files['clickSound']);
             viewport.goToMain();
             return true;
          }
@@ -404,15 +404,11 @@ Ext.define('Genesis.controller.client.Checkins',
    // --------------------------------------------------------------------------
    onLocationUpdate : function(position)
    {
-      var me = this;
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-      var proxy = cestore.getProxy();
-
-      if (!position)
+      var me = this, tbb = me.getToolbarBottom(), params =
       {
-         me.popView();
-      }
-      else
+      };
+      var cestore = Ext.StoreMgr.get('CheckinExploreStore'), proxy = cestore.getProxy();
+
       if (!Genesis.db.getLocalDB()['csrf_code'])
       {
          var viewport = me.getViewPortCntlr();
@@ -428,14 +424,20 @@ Ext.define('Genesis.controller.client.Checkins',
       else
       {
          Ext.Viewport.setMasked(null);
-         Venue['setFindNearestURL']();
-         cestore.load(
+         if (position)
          {
-            params :
+            params = Ext.apply(params,
             {
                latitude : position.coords.getLatitude(),
                longitude : position.coords.getLongitude()
-            },
+            });
+         }
+         tbb[(position) ? 'show' : 'hide']();
+
+         Venue['setFindNearestURL']();
+         cestore.load(
+         {
+            params : params,
             callback : function(records, operation)
             {
                //Ext.Viewport.setMasked(null);
@@ -443,9 +445,8 @@ Ext.define('Genesis.controller.client.Checkins',
                {
                   Ext.Viewport.setMasked(null);
 
-                  var tbb = me.getToolbarBottom();
-                  me.setPosition(position);
                   tbb.setDisabled(false);
+                  me.setPosition(position);
                }
                else
                {
@@ -475,13 +476,6 @@ Ext.define('Genesis.controller.client.Checkins',
       //
       if ((cestore.getCount() == 0) || forceReload)
       {
-         /*
-          Ext.Viewport.setMasked(
-          {
-          xtype : 'loadmask',
-          message : me.loadingPlaces
-          });
-          */
          me.getGeoLocation();
       }
    },
@@ -555,7 +549,7 @@ Ext.define('Genesis.controller.client.Checkins',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
       viewport.setVenue(record);
       switch (this.mode)
       {

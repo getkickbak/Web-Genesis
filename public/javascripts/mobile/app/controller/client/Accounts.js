@@ -160,7 +160,7 @@ Ext.define('Genesis.controller.client.Accounts',
          if ((activeItem == me.getAccounts()) && (activeItem.getActiveItem() != me.getAccountsList()))
          {
             var viewport = me.getViewPortCntlr();
-            Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+            me.self.playSoundFile(viewport.sound_files['clickSound']);
 
             me.onAvBBTap();
 
@@ -251,73 +251,81 @@ Ext.define('Genesis.controller.client.Accounts',
       var merchantId = me.merchantId;
       var vstore = Ext.StoreMgr.get('VenueStore');
       var proxy = vstore.getProxy();
+      var params =
+      {
+         'merchant_id' : merchantId
+      }
 
+		//
+		// GeoLocation is optional
+		//
       if (position)
       {
-         Ext.Viewport.setMasked(
+         params = Ext.apply(params,
          {
-            xtype : 'loadmask',
-            message : me.getVenueInfoMsg
+            latitude : position.coords.getLatitude(),
+            longitude : position.coords.getLongitude()
          });
-         //Venue['setGetClosestVenueURL']();
-         Venue['setFindNearestURL']();
-         vstore.load(
-         {
-            scope : me,
-            params :
-            {
-               'merchant_id' : merchantId,
-               latitude : position.coords.getLatitude(),
-               longitude : position.coords.getLongitude()
-            },
-            callback : function(records, operation)
-            {
-               Ext.Viewport.setMasked(null);
-               if (operation.wasSuccessful())
-               {
-                  console.debug('Found ' + records.length + ' venues matching current location ...');
-                  if (records.length > 1)
-                  {
-                     var view = me.getAccounts();
-                     if (!view.isPainted() || view.isHidden())
-                     {
-                        console.debug('Opening Accounts Page ...');
-                        view.on('showView', function()
-                        {
-                           this.setActiveItem(1);
-                        }, view,
-                        {
-                           single : true
-                        });
-                        me.redirectTo('accounts');
-                     }
-                     else
-                     {
-                        view.setActiveItem(1);
-                     }
+      }
 
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.getVenueInfoMsg
+      });
+      //Venue['setGetClosestVenueURL']();
+      Venue['setFindNearestURL']();
+      vstore.load(
+      {
+         scope : me,
+         params : params,
+         callback : function(records, operation)
+         {
+            Ext.Viewport.setMasked(null);
+            if (operation.wasSuccessful())
+            {
+               console.debug('Found ' + records.length + ' venues matching current location ...');
+               if (records.length > 1)
+               {
+                  var view = me.getAccounts();
+                  if (!view.isPainted() || view.isHidden())
+                  {
+                     console.debug('Opening Accounts Page ...');
+                     view.on('showView', function()
+                     {
+                        this.setActiveItem(1);
+                     }, view,
+                     {
+                        single : true
+                     });
+                     me.redirectTo('accounts');
                   }
                   else
                   {
-                     me.getVenueMetaData(records[0]);
+                     view.setActiveItem(1);
                   }
+
                }
                else
                {
-                  proxy.supressErrorsPopup = true;
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Error',
-                     message : me.missingVenueInfoMsg(operation.getError()),
-                     callback : function()
-                     {
-                        proxy.supressErrorsPopup = false;
-                     }
-                  });
+                  me.getVenueMetaData(records[0]);
                }
             }
-         });
-      }
+            else
+            {
+               proxy.supressErrorsPopup = true;
+               Ext.device.Notification.show(
+               {
+                  title : 'Error',
+                  message : me.missingVenueInfoMsg(operation.getError()),
+                  callback : function()
+                  {
+                     proxy.supressErrorsPopup = false;
+                  }
+               });
+            }
+         }
+      });
    },
    // --------------------------------------------------------------------------
    // Accounts Page
@@ -403,7 +411,7 @@ Ext.define('Genesis.controller.client.Accounts',
       //var merchantName = record.getMerchant().get('name');
       var vport = me.getViewport();
 
-      Genesis.controller.ControllerBase.playSoundFile(me.getViewPortCntlr().sound_files['clickSound']);
+      me.self.playSoundFile(me.getViewPortCntlr().sound_files['clickSound']);
       me.merchantId = record.getMerchant().getId();
       me.rec = record;
 
@@ -556,7 +564,7 @@ Ext.define('Genesis.controller.client.Accounts',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
       //
       // Setup minimum customer information require for explore
       //
@@ -826,7 +834,7 @@ Ext.define('Genesis.controller.client.Accounts',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
       delete me.merchantId;
       delete me.rec;
 
@@ -876,7 +884,7 @@ Ext.define('Genesis.controller.client.Accounts',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      //me.self..playSoundFile(viewport.sound_files['clickSound']);
 
       var value = b.getText();
       var pointsField = me.getPoints();

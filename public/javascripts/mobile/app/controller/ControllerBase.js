@@ -22,7 +22,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    geoLocationErrorMsg : function()
    {
-      var rc = 'Your current location is unavailable. ';
+      var rc = 'This feature must require your GeoLocation to proceed.';
       if (Ext.os.is('Android'))
       {
          rc += // ((Ext.os.version.isLessThan('4.1')) ? //
@@ -45,7 +45,7 @@ Ext.define('Genesis.controller.ControllerBase',
       return rc;
    },
    geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
-   geoLocationPermissionErrorMsg : 'No permission to location current location. Please enable permission to do so!',
+   geoLocationPermissionErrorMsg : 'No permission to locate current location. Please enable permission to do so!',
    geoLocationUnavailableMsg : 'We are not able to locate your GPS coordinates',
    geoLocationUseLastPositionMsg : 'We are not able to locate your current location. Using your last known GPS Coordinates ...',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
@@ -181,27 +181,30 @@ Ext.define('Genesis.controller.ControllerBase',
             sound.currentTime = 0;
          }
       },
-      encryptFromParms : function(params)
+      encryptFromParams : function(params, mode)
       {
          GibberishAES.size(256);
-         var encrypted = null, venueId = Genesis.fn.getPrivKey('venueId'), key = Genesis.fn.getPrivKey('r' + venueId);
+         var encrypted = null, venueId = Genesis.fn.getPrivKey('venueId'), key = null;
          if (venueId > 0)
          {
             try
             {
-               encrypted = GibberishAES.enc(Ext.encode(params), key);
                switch (mode)
                {
                   case 'prize' :
+                  {
+                     key = Genesis.fn.getPrivKey('p' + venueId);
+                  }
                   case 'reward' :
                   {
-                     encrypted = venueId + '$' + encrypted;
+                     key = Genesis.fn.getPrivKey('r' + venueId);
                      break;
                   }
                   default :
+                     key = Genesis.fn.getPrivKey('r' + venueId);
                      break;
-
                }
+               encrypted = venueId + '$' + GibberishAES.enc(Ext.encode(params), key);
             }
             catch (e)
             {
@@ -225,6 +228,22 @@ Ext.define('Genesis.controller.ControllerBase',
          // Defaults to 256 bit encryption
          GibberishAES.size(256);
          var venueId = Genesis.fn.getPrivKey('venueId');
+         var key = "";
+         switch (mode)
+         {
+            case 'prize' :
+            {
+               key = Genesis.fn.getPrivKey('p' + venueId);
+               break;
+            }
+            case 'reward' :
+            {
+               key = Genesis.fn.getPrivKey('r' + venueId);
+               break;
+            }
+            default :
+               break;
+         }
          var date;
          if (venueId > 0)
          {
@@ -234,29 +253,18 @@ Ext.define('Genesis.controller.ControllerBase',
                encrypted = GibberishAES.enc(Ext.encode(Ext.applyIf(
                {
                   "expiry_ts" : date.getTime()
-               }, params)), keys[key]);
+               }, params)), key);
+               encrypted = venueId + '$' + encrypted;
 
-               switch (mode)
-               {
-                  case 'prize' :
-                  case 'reward' :
-                  {
-                     encrypted = venueId + '$' + encrypted;
-                     break;
-                  }
-                  default :
-                     break;
-
-               }
+               console.debug("Used key[" + key + "]");
+               console.log('\n' + //
+               "Encrypted Code Length: " + encrypted.length + '\n' + //
+               'Encrypted Code [' + encrypted + ']' + '\n' + //
+               'Expiry Date: [' + date + ']');
             }
             catch (e)
             {
             }
-            console.debug("Used key[" + keys[key] + "]");
-            console.log('\n' + //
-            "Encrypted Code Length: " + encrypted.length + '\n' + //
-            'Encrypted Code [' + encrypted + ']' + '\n' + //
-            'Expiry Date: [' + date + ']');
 
             return (encryptOnly) ? [encrypted, 0, 0] : me.genQRCode(encrypted);
          }
@@ -1131,16 +1139,15 @@ Ext.define('Genesis.controller.ControllerBase',
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
+   geoRetryAttempts : 3,
    getGeoLocation : function(iter)
    {
-      var me = this;
-      var i = iter || 0;
-      var viewport = me.getViewPortCntlr();
+      var me = this, i = iter || 0, viewport = me.getViewPortCntlr(), position = viewport.getLastPosition();
       var options =
       {
          autoUpdate : false,
          maximumAge : 60 * 1000,
-         timeout : 3 * 1000,
+         timeout : 2 * 1000,
          allowHighAccuracy : true,
          enableHighAccuracy : true
       }
@@ -1189,109 +1196,61 @@ Ext.define('Genesis.controller.ControllerBase',
       var failCallback = function(geo, bTimeout, bPermissionDenied, bLocationUnavailable, message)
       {
          console.debug('GeoLocation Error[' + message + ']');
-         if (bPermissionDenied)
-         {
-            console.debug("PERMISSION_DENIED");
-            viewport.setLastPosition(null);
-            me.fireEvent('locationupdate', viewport.getLastPosition());
-            /*
-             Ext.device.Notification.show(
-             {
-             title : 'Permission Error',
-             message : (viewport.getLastPosition()) ? me.geoLocationUseLastPositionMsg : me.geoLocationUnavailableMsg,
-             callback : function()
-             {
-             if (viewport.getLastPosition())
-             {
-             me.fireEvent('locationupdate', viewport.getLastPosition());
-             return;
-             }
-             if (Ext.os.is('Android'))
-             {
-             navigator.app.exitApp();
-             }
-             }
-             });
-             */
-         }
-         else
          if (bTimeout)
          {
             console.debug("TIMEOUT");
-            Ext.device.Notification.show(
+            if (!position)
             {
-               title : 'Timeout Error',
-               message : (viewport.getLastPosition()) ? me.geoLocationUseLastPositionMsg : me.geoLocationTimeoutErrorMsg,
-               callback : function()
+               Ext.device.Notification.show(
                {
-                  if (viewport.getLastPosition())
+                  title : 'Timeout Error',
+                  message : me.geoLocationTimeoutErrorMsg,
+                  callback : function()
                   {
-                     me.fireEvent('locationupdate', viewport.getLastPosition());
+                     me.fireEvent('locationupdate', position);
                   }
-               }
-            });
-         }
-         else
-         {
-            if (bLocationUnavailable)
-            {
-               if (i < 3)
-               {
-                  console.debug("Retry #" + i);
-                  Ext.defer(me.getGeoLocation, 1 * 1000, me, [++i]);
-                  //console.debug("Retry getting current location(" + i + ") ...");
-               }
-               else
-               {
-                  var position = viewport.getLastPosition();
-                  /*
-                   if (!position)
-                   {
-                   Ext.Viewport.setMasked(null);
-                   }
-                   */
-                  console.debug("POSITION_UNAVAILABLE");
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Location Services',
-                     message : (position) ? me.geoLocationUseLastPositionMsg : me.geoLocationUnavailableMsg,
-                     callback : function()
-                     {
-                        if (position)
-                        {
-                           me.fireEvent('locationupdate', position);
-                           return;
-                        }
-                        /*
-                         if (Ext.os.is('Android'))
-                         {
-                         navigator.app.exitApp();
-                         }
-                         */
-                     }
-                  });
-               }
+               });
             }
             else
             {
-               console.debug("PERMISSION ERROR");
-               viewport.setLastPosition(null);
-               me.fireEvent('locationupdate', viewport.getLastPosition());
-               /*
-                Ext.device.Notification.show(
-                {
-                title : 'Location Services',
-                message : me.geoLocationErrorMsg(),
-                callback : function()
-                {
-                if (Ext.os.is('Android'))
-                {
-                navigator.app.exitApp();
-                }
-                }
-                });
-                */
+               me.fireEvent('locationupdate', position);
             }
+         }
+         else
+         if (bLocationUnavailable)
+         {
+            if (i < me.geoRetryAttempts)
+            {
+               console.debug("Retry #" + i);
+               Ext.defer(me.getGeoLocation, 0.25 * 1000, me, [++i]);
+            }
+            else
+            {
+               console.debug("POSITION_UNAVAILABLE");
+               if (!position)
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Location Services',
+                     message : me.geoLocationUnavailableMsg,
+                     callback : function()
+                     {
+                        me.fireEvent('locationupdate', position);
+                     }
+                  });
+               }
+               else
+               {
+                  me.fireEvent('locationupdate', position);
+               }
+            }
+         }
+         else
+         //if (bPermissionDenied)
+         {
+            console.debug("PERMISSION_DENIED");
+            viewport.setLastPosition(null);
+            me.fireEvent('locationupdate', null);
          }
       }
       if (!me.geoLocation)
@@ -1303,9 +1262,9 @@ Ext.define('Genesis.controller.ControllerBase',
                locationupdate : successCallback,
                locationerror : function(geo, bTimeout, bPermissionDenied, bLocationUnavailable, message)
                {
-                  if (bTimeout && (i < 3))
+                  if (bTimeout && (i < me.geoRetryAttempts))
                   {
-                     i = 3;
+                     i = me.geoRetryAttemptsme;
                      me.getGeoLocation(i);
                   }
                   else
@@ -1316,7 +1275,7 @@ Ext.define('Genesis.controller.ControllerBase',
             }
          }, options));
       }
-      me.geoLocation.updateLocation(null, null, (i >= 3) ? Ext.applyIf(
+      me.geoLocation.updateLocation(null, null, (i >= me.geoRetryAttempts) ? Ext.applyIf(
       {
          allowHighAccuracy : false,
          enableHighAccuracy : false

@@ -255,7 +255,7 @@ Ext.define('Genesis.controller.Settings',
          return;
       }
 
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
 
       me.fireEvent('toggleFB', toggle, slider, thumb, newValue, oldValue, eOpts);
    },
@@ -287,7 +287,7 @@ Ext.define('Genesis.controller.Settings',
       var page = me.getMultipartDocumentPage();
 
       page.query('title')[0].setTitle(me.getTermsOfServiceTitle());
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
       if (!me.termsLoaded)
       {
          var _exit = function()
@@ -367,7 +367,7 @@ Ext.define('Genesis.controller.Settings',
       var page = me.getDocumentPage();
 
       page.query('title')[0].setTitle(me.getPrivacyTitle());
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
       if (!me.privacyLoaded)
       {
          Ext.Ajax.request(
@@ -402,7 +402,7 @@ Ext.define('Genesis.controller.Settings',
       var page = me.getDocumentPage();
 
       page.query('title')[0].setTitle(me.getAboutUsTitle());
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
       if (me.aboutUsLoaded)
       {
          Ext.Ajax.request(
@@ -435,7 +435,7 @@ Ext.define('Genesis.controller.Settings',
       var me = this;
       var viewport = me.getViewPortCntlr();
 
-      Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
       me.redirectTo('password_change');
    },
    // --------------------------------------------------------------------------

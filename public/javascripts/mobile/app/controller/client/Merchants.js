@@ -164,7 +164,7 @@ Ext.define('Genesis.controller.client.Merchants',
          if (activeItem == me.getMain())
          {
             var viewport = me.getViewPortCntlr();
-            Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+            me.self.playSoundFile(viewport.sound_files['clickSound']);
             me.redirectTo('checkin');
             return true;
          }
@@ -240,14 +240,6 @@ Ext.define('Genesis.controller.client.Merchants',
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
-   onLocationUpdate : function(position)
-   {
-      var me = this;
-      var app = me.getApplication();
-      var controller = app.getController('client.Checkins');
-      controller.setPosition(position);
-      controller.fireEvent('checkin');
-   },
    // --------------------------------------------------------------------------
    // Merchant Account Page
    // --------------------------------------------------------------------------
@@ -427,7 +419,7 @@ Ext.define('Genesis.controller.client.Merchants',
       var cvenue = viewport.getCheckinInfo().venue;
       var venue = viewport.getVenue();
 
-      //Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+      //me.self.playSoundFile(viewport.sound_files['clickSound']);
       if (!cvenue || !venue || (venue.getId() != cvenue.getId()))
       {
          Ext.device.Notification.show(
@@ -494,7 +486,10 @@ Ext.define('Genesis.controller.client.Merchants',
    onCheckinTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      me.getGeoLocation();
+      var app = me.getApplication();
+      var controller = app.getController('client.Checkins');
+      //controller.setPosition(position);
+      controller.fireEvent('checkin');
    },
    onBackToCheckIn : function()
    {

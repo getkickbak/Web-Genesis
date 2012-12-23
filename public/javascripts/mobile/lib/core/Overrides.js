@@ -84,17 +84,6 @@ Genesis.constants =
          {
             this._iconSize = 36;
          }
-
-         if (merchantMode)
-         {
-            nfc.isEnabled(function(enabled)
-            {
-               if (enabled)
-               {
-                  addMimeTypeListener('');
-               }
-            });
-         }
       }
       else
       {
@@ -880,7 +869,7 @@ Genesis.fn =
                'v1' : me.debugVPrivKey,
                'r1' : me.debugRPrivKey,
                'venue' : me.debugVenuePrivKey,
-               'venueId' : venueId
+               'venueId' : 1
             }
          }
          else
@@ -1472,6 +1461,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
       }
       try
       {
+         //console.debug("Response [" + response.responseText + "]");
          resultSet = reader.process(response);
       }
       catch(e)

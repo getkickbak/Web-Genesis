@@ -386,7 +386,7 @@ Ext.define('Genesis.controller.client.Prizes',
                   'merchant' : null
                });
 
-               Genesis.controller.ControllerBase.playSoundFile(me.getViewPortCntlr().sound_files['promoteSound']);
+               me.self.playSoundFile(me.getViewPortCntlr().sound_files['promoteSound']);
                me.redirectTo('badgeDetail');
             }
          });
@@ -432,7 +432,7 @@ Ext.define('Genesis.controller.client.Prizes',
          //
          // Play the prize winning music!
          //
-         Genesis.controller.ControllerBase.playSoundFile(//
+         me.self.playSoundFile(//
          viewport.sound_files[soundType], Ext.bind(eligiblePrizeCallback, me, [0x01, viewsPopLength]));
          Ext.device.Notification.show(
          {
