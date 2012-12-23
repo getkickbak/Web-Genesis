@@ -69,13 +69,13 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
     
     if @request
       if Common.request_complete?(@request)
-        logger.info("User(#{current_user.id}) successfully completed Request(#{request.id})")
+        logger.info("User(#{current_user.id}) successfully completed Request(#{@request.id})")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
           format.json { render :json => { :success => true } }
         end
       else
-        logger.info("User(#{current_user.id}) failed to complete Request(#{request.id})")
+        logger.info("User(#{current_user.id}) failed to complete Request(#{@request.id})")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
           format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
@@ -107,7 +107,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
             :longitude => @venue.longitude,
             :data => data
           }
-          request = Request.create(request_info)
+          @request = Request.create(request_info)
         end
       else
         raise "Authorization code expired"            
@@ -130,14 +130,14 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       return
     end
     
-    if Common.request_complete?(request)
-      logger.info("Venue(#{@venue.id}) successfully completed Request(#{request.id})")
+    if Common.request_complete?(@request)
+      logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => true } }
       end
     else
-      logger.info("Venue(#{@venue.id}) failed to complete Request(#{request.id})")
+      logger.info("Venue(#{@venue.id}) failed to complete Request(#{@request.id})")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.challenges.complete_request_failure").split('\n') } }
