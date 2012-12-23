@@ -232,8 +232,8 @@ class Common
     
     n = 50
     n.times do |x|
-      request = c.call
-      if request.length > 0 && request[0].status == :complete
+      r = c.call
+      if r.length > 0 && r[0].status == :complete
         return true
       elsif x < n
         sleep(0.2)
