@@ -50,7 +50,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             :longitude => @venue.longitude,
             :data => params[:data]
           }
-          request = Request.create(request_info)
+          @request = Request.create(request_info)
         end
       else
         raise "Authorization code expired"
@@ -73,14 +73,14 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       return
     end
     
-    if Common.request_complete?(request)
-      logger.info("Venue(#{@venue.id}) successfully completed Request(#{request.id})")
+    if Common.request_complete?(@request)
+      logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => true } }
       end
     else
-      logger.info("Venue(#{@venue.id}) failed to complete Request(#{request.id})")
+      logger.info("Venue(#{@venue.id}) failed to complete Request(#{@request.id})")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.purchase_rewards.merchant_earn_failure").split('\n') } }
@@ -588,9 +588,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             @prizes = prizes
           end
           if request_id > 0
-            request = Request.get(request_id)
-            request.status = :complete
-            request.save
+            @request = Request.get(request_id)
+            @request.status = :complete
+            @request.save
           end
           render :template => '/api/v1/purchase_rewards/earn'
           if tag && (@reward_info[:prize_points] > 1 || @reward_info[:badge_prize_points] > 0)

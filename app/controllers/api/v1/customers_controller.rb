@@ -160,7 +160,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
               :longitude => params[:longitude],
               :data => data
             }
-            request = Request.create(request_info)
+            @request = Request.create(request_info)
 =end            
             render :template => '/api/v1/customers/transfer_points'
             logger.info("User(#{current_user.id}) successfully created direct transfer request worth #{points} points for Customer Account(#{@customer.id})")
@@ -191,14 +191,14 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       return
     end    
     
-    if Common.request_complete?(request)
-      logger.info("User(#{current_user.id}) successfully completed Request(#{request.id})")
+    if Common.request_complete?(@request)
+      logger.info("User(#{current_user.id}) successfully completed Request(#{@request.id})")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => true } }
       end
     else
-      logger.info("User(#{current_user.id}) failed to complete Request(#{request.id})")
+      logger.info("User(#{current_user.id}) failed to complete Request(#{@request.id})")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }

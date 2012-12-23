@@ -192,7 +192,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           :longitude => @venue.longitude,
           :data => data
         }
-        request = Request.create(params)
+        @request = Request.create(params)
       end  
     rescue DataMapper::SaveFailureError => e
       logger.error("Exception: " + e.resource.errors.inspect)
@@ -223,9 +223,9 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       @rewards = Common.get_rewards(@venue, :reward)
       @prizes = Common.get_rewards(@venue, :prize)
       render :template => '/api/v1/customer_rewards/redeem'
-      logger.info("User(#{current_user.id}) successfully completed Request(#{request.id})")
+      logger.info("User(#{current_user.id}) successfully completed Request(#{@request.id})")
     else
-      logger.info("User(#{current_user.id}) failed to complete Request(#{request.id})")
+      logger.info("User(#{current_user.id}) failed to complete Request(#{@request.id})")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
