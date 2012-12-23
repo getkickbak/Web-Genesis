@@ -213,7 +213,7 @@ class Common
     else  
       c = lambda {
         return DataMapper.repository(:default).adapter.select(
-          "SELECT id, 0 AS distance
+          "SELECT id, data, 0 AS distance
           FROM requests WHERE type = ? AND abs(frequency1 - ?) <= 3 AND abs(frequency2 - ?) <= 3 AND abs(frequency3 - ?) <= 3 AND deleted_ts IS NULL
           ORDER BY id
           DESC LIMIT 0,1", request_info[:type], request_info[:frequency1], request_info[:frequency2], request_info[:frequency3]
