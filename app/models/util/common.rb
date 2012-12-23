@@ -201,14 +201,23 @@ class Common
   end
   
   def self.match_request(request_info)
-     c = lambda {
+    if APP_PROP["SIMULATOR_MODE"]
       return DataMapper.repository(:default).adapter.select(
-        "SELECT id, data, round( 6371000 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
-        FROM requests WHERE type = ? AND abs(frequency1 - ?) <= 3 AND abs(frequency2 - ?) <= 3 AND abs(frequency3 - ?) <= 3 AND distance <= 100 AND deleted_ts IS NULL
-        ORDER BY distance
-        ASC LIMIT 0,1", request_info[:latitude], request_info[:longitude], request_info[:latitude], request_info[:type], request_info[:frequency1], request_info[:frequency2], request_info[:frequency3]
-      )
-    }
+          "SELECT id, 0 AS distance
+          FROM requests WHERE type = ? AND abs(frequency1 - ?) <= 3 AND abs(frequency2 - ?) <= 3 AND abs(frequency3 - ?) <= 3 AND deleted_ts IS NULL
+          ORDER BY id
+          DESC LIMIT 0,1", request_info[:type], request_info[:frequency1], request_info[:frequency2], request_info[:frequency3]
+        )  
+    else
+      c = lambda {
+        return DataMapper.repository(:default).adapter.select(
+          "SELECT id, data, round( 6371000 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
+          FROM requests WHERE type = ? AND abs(frequency1 - ?) <= 3 AND abs(frequency2 - ?) <= 3 AND abs(frequency3 - ?) <= 3 AND distance <= 100 AND deleted_ts IS NULL
+          ORDER BY distance
+          ASC LIMIT 0,1", request_info[:latitude], request_info[:longitude], request_info[:latitude], request_info[:type], request_info[:frequency1], request_info[:frequency2], request_info[:frequency3]
+        )
+      }
+    end
     
     n = 50 - 1
     n.times do |x|
