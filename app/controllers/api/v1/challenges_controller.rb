@@ -99,7 +99,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         Request.transaction do
           frequency = params[:frequency]
           request_info = {
-            :type => RequestType.EARN_POINTS,
+            :type => RequestType::EARN_POINTS,
             :frequency1 => frequency[0],
             :frequency2 => frequency[1],
             :frequency3 => frequency[2],
@@ -173,7 +173,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         if params[:data].nil?
           frequency = params[:frequency]
           request_info = {
-            :type => RequestType.EARN_POINTS,
+            :type => RequestType::EARN_POINTS,
             :frequency1 => frequency[0],
             :frequency2 => frequency[1],
             :frequency3 => frequency[2],
@@ -311,7 +311,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       if params[:data].nil?
         frequency = params[:frequency]
         request_info = {
-          :type => RequestType.REFERRAL,
+          :type => RequestType::REFERRAL,
           :frequency1 => frequency[0],
           :frequency2 => frequency[1],
           :frequency3 => frequency[2],
@@ -555,7 +555,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
 =begin          
           frequency = params[:frequency]
           request_info = {
-            :type => RequestType.REFERRAL,
+            :type => RequestType::REFERRAL,
             :frequency1 => frequency[0],
             :frequency2 => frequency[1],
             :frequency3 => frequency[2],

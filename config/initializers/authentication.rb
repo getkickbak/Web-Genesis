@@ -1,8 +1,8 @@
 Warden::Strategies.add(:user_check_status) do 
   def valid? 
     # code here to check whether to try and authenticate using this strategy; 
-    if params[:user]
-      return params[:user][:email] || params[:user][:password] 
+    if request.subdomain == 'www' && params[:user]
+      return params[:user][:email]
     end
     return false
   end 
@@ -30,14 +30,14 @@ end
 Warden::Strategies.add(:staff_check_status) do 
   def valid? 
     # code here to check whether to try and authenticate using this strategy; 
-    if params[:staff]
-      return params[:staff][:email] || params[:staff][:password] 
+    if request.subdomain == 'manage' && params[:staff]
+      return params[:staff][:email]
     end
     return false
   end 
 
   def authenticate!  
-    resource = User.first(:email => params[:staff][:email])
+    resource = Staff.first(:email => params[:staff][:email])
     if resource.nil?
       fail!(I18n.t("devise.failure.invalid"))
     else
@@ -59,14 +59,14 @@ end
 Warden::Strategies.add(:merchant_check_status) do 
   def valid? 
     # code here to check whether to try and authenticate using this strategy; 
-    if params[:merchant]
-      return params[:merchant][:email] || params[:merchant][:password] 
+    if request.subdomain == 'merchant' && params[:merchant]
+      return params[:merchant][:email]
     end
     return false
   end 
 
   def authenticate!
-    resource = User.first(:email => params[:merchant][:email])
+    resource = Merchant.first(:email => params[:merchant][:email])
     if resource.nil?
       fail!(I18n.t("devise.failure.invalid"))
     else

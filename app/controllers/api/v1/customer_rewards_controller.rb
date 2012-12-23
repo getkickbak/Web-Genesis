@@ -46,7 +46,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       if params[:frequency]
         frequency = params[:frequency]
         request_info = {
-          :type => RequestType.REDEEM,
+          :type => RequestType::REDEEM,
           :frequency1 => frequency[0],
           :frequency2 => frequency[1],
           :frequency3 => frequency[2],
@@ -184,7 +184,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         }.to_json
         frequency = params[:frequency]
         request_info = {
-          :type => RequestType.REDEEM,
+          :type => RequestType::REDEEM,
           :frequency1 => frequency[0],
           :frequency2 => frequency[1],
           :frequency3 => frequency[2],

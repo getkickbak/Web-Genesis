@@ -152,7 +152,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
 =begin            
             frequency = params[:frequency]
             request_info = {
-              :type => RequestType.TRANSFER_POINTS,
+              :type => RequestType::TRANSFER_POINTS,
               :frequency1 => frequency[0],
               :frequency2 => frequency[1],
               :frequency3 => frequency[2],
@@ -216,7 +216,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       if params[:data].nil?
         frequency = params[:frequency]
         request_info = {
-          :type => RequestType.TRANSFER_POINTS,
+          :type => RequestType::TRANSFER_POINTS,
           :frequency1 => frequency[0],
           :frequency2 => frequency[1],
           :frequency3 => frequency[2],
