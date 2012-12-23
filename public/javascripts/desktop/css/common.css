@@ -87,3 +87,8 @@ input[type="file"] {
 	font-size : 1.7em;
 	height : 500px;
 }
+
+.paginate {
+	text-align: right;
+	margin-right: 10px;
+}
