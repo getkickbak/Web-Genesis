@@ -216,11 +216,10 @@ class Common
       if request.length > 0
         return request[0].id, request[0].data
       elsif x < n
-        sleep(0.2)
-      else
-        return 0, nil  
+        sleep(0.2) 
       end
-    end      
+    end  
+    return 0, nil    
   end
   
   def self.request_complete?(request)
@@ -237,10 +236,9 @@ class Common
         return true
       elsif x < n
         sleep(0.2)
-      else
-        return false  
       end
     end  
+    return false 
   end
   
   def self.get_news(venue)
