@@ -46,8 +46,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             :frequency1 => frequency[0],
             :frequency2 => frequency[1],
             :frequency3 => frequency[2],
-            :latitude => venue.latitude,
-            :longitude => venue.longitude,
+            :latitude => @venue.latitude,
+            :longitude => @venue.longitude,
             :data => params[:data]
           }
           request = Request.create(request_info)
