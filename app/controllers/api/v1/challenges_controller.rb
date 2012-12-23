@@ -97,14 +97,14 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       # Cache expires in 12 hrs
       if (data_expiry_ts >= Time.now) && Cache.add(data, true, 43200) 
         Request.transaction do
-          frequency = params[:frequency]
+          frequency = JSON.parse(params[:frequency])
           request_info = {
             :type => RequestType::EARN_POINTS,
             :frequency1 => frequency[0],
             :frequency2 => frequency[1],
             :frequency3 => frequency[2],
-            :latitude => params[:latitude],
-            :longitude => params[:longitude],
+            :latitude => @venue.latitude,
+            :longitude => @venue.longitude,
             :data => data
           }
           request = Request.create(request_info)
@@ -171,7 +171,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         data = String.random_alphanumeric(32)
       else
         if params[:data].nil?
-          frequency = params[:frequency]
+          frequency = JSON.parse(params[:frequency])
           request_info = {
             :type => RequestType::EARN_POINTS,
             :frequency1 => frequency[0],
@@ -309,7 +309,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
     
     begin
       if params[:data].nil?
-        frequency = params[:frequency]
+        frequency = JSON.parse(params[:frequency])
         request_info = {
           :type => RequestType::REFERRAL,
           :frequency1 => frequency[0],
@@ -553,7 +553,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           cipher = Gibberish::AES.new(@venue.merchant.auth_code)
           @encrypted_data = "#{@venue.merchant.id}$#{cipher.enc(data)}"
 =begin          
-          frequency = params[:frequency]
+          frequency = JSON.parse(params[:frequency])
           request_info = {
             :type => RequestType::REFERRAL,
             :frequency1 => frequency[0],

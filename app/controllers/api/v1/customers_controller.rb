@@ -150,7 +150,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             cipher = Gibberish::AES.new(@customer.merchant.auth_code)
             @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
 =begin            
-            frequency = params[:frequency]
+            frequency = JSON.parse(params[:frequency])
             request_info = {
               :type => RequestType::TRANSFER_POINTS,
               :frequency1 => frequency[0],
@@ -214,7 +214,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
     
     begin
       if params[:data].nil?
-        frequency = params[:frequency]
+        frequency = JSON.parse(params[:frequency])
         request_info = {
           :type => RequestType::TRANSFER_POINTS,
           :frequency1 => frequency[0],
