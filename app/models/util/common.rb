@@ -210,7 +210,7 @@ class Common
       )
     }
     
-    n = 50
+    n = 50 - 1
     n.times do |x|
       request = c.call
       if request.length > 0
@@ -230,7 +230,7 @@ class Common
       )
     }
     
-    n = 50
+    n = 50 - 1
     n.times do |x|
       r = c.call
       if r.length > 0 && r[0] == :complete
