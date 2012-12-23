@@ -40,7 +40,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       # Cache expires in 12 hrs
       if (data_expiry_ts >= Time.now) && Cache.add(params[:data], true, 43200)        
         Request.transaction do
-          frequency = params[:frequency]
+          frequency = JSON.parse(params[:frequency])
           request_info = {
             :type => RequestType::EARN_POINTS,
             :frequency1 => frequency[0],
