@@ -26,7 +26,7 @@ class Request
       :frequency3 => request_info[:frequency3],
       :latitude => request_info[:latitude],
       :longitude => request_info[:longitude],
-      :data => data
+      :data => request_info[:data]
     )
     request[:created_ts] = now
     request[:update_ts] = now
