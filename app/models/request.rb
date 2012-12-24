@@ -3,6 +3,8 @@ require 'util/constant'
 class Request
   include DataMapper::Resource
     
+  Statuses = [:pending, :complete]
+    
   property :id, Serial
   property :type, String, :required => true, :default => ""
   property :frequency1, Integer, :required => true, :default => 0

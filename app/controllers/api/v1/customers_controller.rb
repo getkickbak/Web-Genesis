@@ -35,8 +35,8 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       if user_to_tag.nil?
         raise "No user is associated with this tag: #{decrypted_data["tag_id"]}"
       end
-      current_user = User.get(user_to_tag.user_id)
-      if current_user.nil?
+      user = User.get(user_to_tag.user_id)
+      if user.nil?
         raise "No such user: #{user_to_tag.user_id}"
       end
     rescue StandardError => e
@@ -49,9 +49,9 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
     end
     
     begin
-      @customer = Customer.first(:merchant => @venue.merchant, :user => current_user)
+      @customer = Customer.first(:merchant => @venue.merchant, :user => user)
       if @customer.nil?
-        @customer = Customer.create(@venue.merchant, current_user)
+        @customer = Customer.create(@venue.merchant, user)
       end
       render :template => '/api/v1/customers/show'  
     rescue DataMapper::SaveFailureError => e
