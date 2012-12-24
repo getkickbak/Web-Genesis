@@ -243,7 +243,7 @@ class Common
     n = 50 - 1
     n.times do |x|
       r = c.call
-      if r.length > 0 && r[0] == :complete
+      if r.length > 0 && r[0] == Request::Statuses.index(:complete)+1
         return true
       elsif x < n
         sleep(0.2)
