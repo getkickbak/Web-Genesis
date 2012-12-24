@@ -188,12 +188,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             password = String.random_alphanumeric(8)
             user_info[:password] = password
             user_info[:password_confirmation] = password
-            current_user = User.create(user_info)
-            current_user.register_tag(tag)
+            @current_user = User.create(user_info)
+            @current_user.register_tag(tag)
           else
             if user_to_tag
-              current_user = User.get(user_to_tag.user_id)
-              if current_user.nil?
+              @current_user = User.get(user_to_tag.user_id)
+              if @current_user.nil?
                 logger.error("No such user: #{user_to_tag.user_id}")
                 respond_to do |format|
                   #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -210,9 +210,11 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
               return
             end  
           end  
+        else
+          @current_user = current_user  
         end
-        if current_user.status != :active
-          logger.error("User: #{current_user.id} is not active")
+        if @current_user.status != :active
+          logger.error("User: #{@current_user.id} is not active")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.inactive_user").split('\n') } }
@@ -248,7 +250,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
     end
 
     if @venue.status != :active
-      logger.info("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), venue is not active")
+      logger.info("User(#{@current_user.id}) failed to earn points at Venue(#{@venue.id}), venue is not active")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
@@ -259,12 +261,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       @venue.eager_load_type = @venue.type
       @venue.merchant.eager_load_type = @venue.merchant.type
     end
-    @customer = Customer.first(:merchant => @venue.merchant, :user => current_user)
+    @customer = Customer.first(:merchant => @venue.merchant, :user => @current_user)
     if @customer.nil?
-      if (@venue.merchant.role == "merchant" && current_user.role == "user") || (@venue.merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
-        @customer = Customer.create(@venue.merchant, current_user)
+      if (@venue.merchant.role == "merchant" && @current_user.role == "user") || (@venue.merchant.role == "test" && @current_user.role == "test") || @current_user.role = "admin"
+        @customer = Customer.create(@venue.merchant, @current_user)
       else
-        logger.info("User(#{current_user.id}) failed to earn points at Merchant(#{@venue.merchant.id}), account not compatible with merchant")
+        logger.info("User(#{@current_user.id}) failed to earn points at Merchant(#{@venue.merchant.id}), account not compatible with merchant")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }
@@ -273,10 +275,10 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       end
     end
 
-    logger.info("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{current_user.id})")
+    logger.info("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{@current_user.id})")
 
     if @venue.merchant.will_terminate && (Date.today > (@venue.merchant.terminate_date - 30))
-      logger.info("User(#{current_user.id}) failed to earn points at Merchant(#{@venue.merchant.id}), program is being terminated")
+      logger.info("User(#{@current_user.id}) failed to earn points at Merchant(#{@venue.merchant.id}), program is being terminated")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
         format.json { render :json => { :success => false, :message => t("api.purchase_rewards.program_termination").split('\n') } }
@@ -343,7 +345,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             )
             referral_reward_record.merchant = @venue.merchant
             referral_reward_record.customer = @customer
-            referral_reward_record.user = current_user
+            referral_reward_record.user = @current_user
             referral_reward_record.save
             referral_trans_record = TransactionRecord.new(
               :type => :earn_points,
@@ -355,7 +357,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             )
             referral_trans_record.merchant = @venue.merchant
             referral_trans_record.customer = @customer
-            referral_trans_record.user = current_user
+            referral_trans_record.user = @current_user
             referral_trans_record.save
             referrer.points += challenge.points
             referrer.update_ts = now
@@ -382,7 +384,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             )
             record.merchant = @venue.merchant
             record.customer = @customer
-            record.user = current_user
+            record.user = @current_user
             record.save
             trans_record = TransactionRecord.new(
               :type => :signup_points,
@@ -394,7 +396,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             )
             trans_record.merchant = @venue.merchant
             trans_record.customer = @customer
-            trans_record.user = current_user
+            trans_record.user = @current_user
             trans_record.save
             @customer.points += reward_model.signup_points
             @reward_info[:signup_points] = reward_model.signup_points
@@ -413,7 +415,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           )
           record.merchant = @venue.merchant
           record.customer = @customer
-          record.user = current_user
+          record.user = @current_user
           record.save
           trans_record = TransactionRecord.new(
             :type => :earn_points,
@@ -426,7 +428,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           )
           trans_record.merchant = @venue.merchant
           trans_record.customer = @customer
-          trans_record.user = current_user
+          trans_record.user = @current_user
           trans_record.save
           @customer.points += points
           @reward_info[:points] = points
@@ -497,7 +499,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           )
           prize_record.merchant = @venue.merchant
           prize_record.customer = @customer
-          prize_record.user = current_user
+          prize_record.user = @current_user
           prize_record.save
           prize_trans_record = TransactionRecord.new(
             :type => :earn_prize_points,
@@ -509,7 +511,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           )
           prize_trans_record.merchant = @venue.merchant
           prize_trans_record.customer = @customer
-          prize_trans_record.user = current_user
+          prize_trans_record.user = @current_user
           prize_trans_record.save
           
           if @customer.badge_reset_ts <= @venue.merchant.badges_update_ts
@@ -548,7 +550,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             )
             badge_prize_record.merchant = @venue.merchant
             badge_prize_record.customer = @customer
-            badge_prize_record.user = current_user
+            badge_prize_record.user = @current_user
             badge_prize_record.save
             badge_prize_trans_record = TransactionRecord.new(
               :type => :earn_prize_points,
@@ -560,7 +562,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             )
             badge_prize_trans_record.merchant = @venue.merchant
             badge_prize_trans_record.customer = @customer
-            badge_prize_trans_record.user = current_user
+            badge_prize_trans_record.user = @current_user
             badge_prize_trans_record.save
           end
           @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
@@ -599,12 +601,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           if referral_challenge
             UserMailer.referral_challenge_confirm_email(referrer.user, @customer.user, @venue, referral_record).deliver
           end
-          logger.info("User(#{current_user.id}) successfully earned #{@reward_info[:points]} points, #{@reward_info[:signup_points]} signup points, #{@reward_info[:referral_points]} referral points, #{@reward_info[:prize_points]} prize points, #{@reward_info[:badge_prize_points]} badge prize points at Venue(#{@venue.id})")
+          logger.info("User(#{@current_user.id}) successfully earned #{@reward_info[:points]} points, #{@reward_info[:signup_points]} signup points, #{@reward_info[:referral_points]} referral points, #{@reward_info[:prize_points]} prize points, #{@reward_info[:badge_prize_points]} badge prize points at Venue(#{@venue.id})")
         else
           if invalid_code
-            logger.info("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), invalid authorization code")
+            logger.info("User(#{@current_user.id}) failed to earn points at Venue(#{@venue.id}), invalid authorization code")
           else
-            logger.info("User(#{current_user.id}) failed to earn points at Venue(#{@venue.id}), authorization code expired")
+            logger.info("User(#{@current_user.id}) failed to earn points at Venue(#{@venue.id}), authorization code expired")
           end
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
