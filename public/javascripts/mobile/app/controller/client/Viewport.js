@@ -408,22 +408,22 @@ Ext.define('Genesis.controller.client.Viewport',
          var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
          if (Ext.os.is('iOS'))
          {
-            s_vol_ratio = 1.0;
-            r_vol_ratio = 1.0;
+            s_vol_ratio = 1.0; //(tx)
+            r_vol_ratio = 0.5; //(rx)
             c.conseqMissThreshold = ((4 * 2) - 1);
             // More samples for better accuracy
             c.numSamples = 16 * 1024;
-            //Default Volume laying flat on a surface
+            //Default Volume laying flat on a surface (tx)
             c.s_vol = 100;
          }
          if (Ext.os.is('Android'))
          {
-            s_vol_ratio = 0.4;
-            r_vol_ratio = 0.5;
+            s_vol_ratio = 0.4; //(tx)
+            r_vol_ratio = 0.5; //(rx)
             c.conseqMissThreshold = 2;
             c.numSamples = 4 * 1024;
-            //Default Volume laying flat on a surface
-            c.s_vol = 65;
+            //Default Volume laying flat on a surface (tx)
+            c.s_vol = 75;
          }
          //Default Overlap of FFT signal analysis over previous samples
          c.sigOverlapRatio = 0.25;

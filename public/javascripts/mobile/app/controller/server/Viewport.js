@@ -250,12 +250,12 @@ Ext.define('Genesis.controller.server.Viewport',
          if (Ext.os.is('iOS'))
          {
             s_vol_ratio = 1.0;
-            r_vol_ratio = 0.8;
+            r_vol_ratio = 0.5;
             c.conseqMissThreshold = ((4 * 2) - 1);
             // More samples for better accuracy
             c.numSamples = 16 * 1024;
             //Default Volume laying flat on a surface
-            c.s_vol = 80;
+            c.s_vol = 100;
          }
          if (Ext.os.is('Android'))
          {
@@ -264,7 +264,7 @@ Ext.define('Genesis.controller.server.Viewport',
             c.conseqMissThreshold = 2;
             c.numSamples = 4 * 1024;
             //Default Volume laying flat on a surface
-            c.s_vol = 65;
+            c.s_vol = 75;
          }
          //Default Overlap of FFT signal analysis over previous samples
          c.sigOverlapRatio = 0.25;
