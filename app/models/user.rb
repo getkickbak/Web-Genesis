@@ -72,6 +72,7 @@ class User
       status = user_info[:status]
       gender = user_info[:gender]
       birthday = user_info[:birthday]
+      tag_id = user_info[:tag_id]
     else
       name = user_info.name.strip
       email = user_info.email.strip
@@ -86,23 +87,28 @@ class User
     
     validate_user = false
     if tag_id
-      user_to_tag = UserToTag.first(:user_tag_id => tag_id)
-      if user_to_tag.nil?
+      user_tag = UserTag.first(:tag_id => tag_id)
+      if user_tag.nil?
         validate_user = true
       else
-        if user_to_tag.user_tag.status == :pending
-          user = user_to_tag.user
-          user.name = name
-          user.email = email
-          user.password = password
-          user.passowrd_confirmation = password_confirmation
-          user.update_ts = now
-          user.tag.status = :active
-          user.tag.update_ts = now
-        else
+        user_to_tag = UserToTag.first(:user_tag_id => user_tag.id)
+        if user_to_tag.nil?
           validate_user = true
-        end   
-      end    
+        else
+          if user_to_tag.user_tag.status == :pending
+            user = user_to_tag.user
+            user.name = name
+            user.email = email
+            user.password = password
+            user.passowrd_confirmation = password_confirmation
+            user.update_ts = now
+            user.tag.status = :active
+            user.tag.update_ts = now
+          else
+            validate_user = true
+          end   
+        end  
+      end  
     end
     
     if validate_user || tag_id.nil?
@@ -215,7 +221,9 @@ class User
   
   def validate_tag_id
     if self.tag_id
-      user_to_tag = UserToTag.first(:user_tag_id => self.tag_id)
+      return [false, I18n.t('users.invalid_tag')] if (user_tag = UserTag.first(:tag_id => self.tag_id)).nil?
+      tag_id = user_tag.id
+      user_to_tag = UserToTag.first(:user_tag_id => tag_id)
       if user_to_tag.nil? || user_to_tag.user_tag.status != :pending
         return [false, I18n.t('users.invalid_tag')]        
       end    

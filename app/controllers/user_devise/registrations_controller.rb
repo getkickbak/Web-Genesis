@@ -1,13 +1,17 @@
 class UserDevise::RegistrationsController < Devise::RegistrationsController
   
+  # GET /resource/sign_up
+  def new
+    @user = build_resource({})
+    respond_with @user
+  end
+  
   def create
     begin
       User.transaction do  
-        build_resource
-        resource.role = "user"
-        resource.status = :active
-        user = User.create(resource)
-        resource = user
+        params[:user][:role] = "user"
+        params[:user][:status] = :active
+        resource = User.create(params[:user])
         if resource.active_for_authentication?
           set_flash_message :notice, :signed_up if is_navigational_format?
           sign_in(resource_name, resource)
@@ -19,9 +23,9 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
         end    
       end
     rescue DataMapper::SaveFailureError => e
-      resource = e.resource
-      clean_up_passwords(resource)  
-      respond_with resource
+      @user = e.resource
+      clean_up_passwords(@user)  
+      respond_with @user
     end    
   end
 end 

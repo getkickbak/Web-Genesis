@@ -61,7 +61,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         user_id = request_data["user_id"]
         user = User.get(user_id)
       else
-        tag = UserTag.get(decrypted_data["tag_id"])
+        tag = UserTag.first(:tag_id => decrypted_data["tag_id"])
         if tag.nil?
           logger.error("No such tag: #{decrypted_data["tag_id"]}")
           respond_to do |format|
