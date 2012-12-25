@@ -72,6 +72,7 @@ class User
       status = user_info[:status]
       gender = user_info[:gender]
       birthday = user_info[:birthday]
+      tag_id = user_info[:tag_id]
     else
       name = user_info.name.strip
       email = user_info.email.strip
