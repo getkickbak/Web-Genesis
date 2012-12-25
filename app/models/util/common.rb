@@ -240,7 +240,7 @@ class Common
       )
     }
     
-    n = 50 - 1
+    n = 100 - 1
     n.times do |x|
       r = c.call
       if r.length > 0 && r[0] == Request::Statuses.index(:complete)+1
