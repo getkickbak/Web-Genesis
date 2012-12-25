@@ -589,7 +589,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             @rewards = rewards
             @prizes = prizes
           end
-          if request_id > 0
+          if (defined? request_id) && request_id > 0
             @request = Request.get(request_id)
             @request.status = :complete
             @request.save
