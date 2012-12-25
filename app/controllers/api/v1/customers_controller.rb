@@ -1,7 +1,7 @@
 class Api::V1::CustomersController < Api::V1::BaseApplicationController
-  skip_before_filter :verify_authenticity_token, :only => [:show]
-  before_filter :authenticate_user!, :except => [:show]
-  skip_authorization_check :only => [:show]
+  skip_before_filter :verify_authenticity_token, :only => [:show_account]
+  before_filter :authenticate_user!, :except => [:show_account]
+  skip_authorization_check :only => [:show_account]
    
   def index
     authorize! :read, Customer
@@ -12,7 +12,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
     render :template => '/api/v1/customers/index'
   end
   
-  def show
+  def show_account
     begin
       encrypted_data = params[:data].split('$')
       if encrypted_data.length != 2
@@ -53,7 +53,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       if @customer.nil?
         @customer = Customer.create(@venue.merchant, user)
       end
-      render :template => '/api/v1/customers/show'  
+      render :template => '/api/v1/customers/show_account'  
     rescue DataMapper::SaveFailureError => e
       logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
