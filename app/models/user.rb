@@ -87,7 +87,7 @@ class User
     
     validate_user = false
     if tag_id
-      user_tag = UserTag.get(tag_id)
+      user_tag = UserTag.first(:tag_id => tag_id)
       if user_tag.nil?
         validate_user = true
       else
@@ -221,7 +221,7 @@ class User
   
   def validate_tag_id
     if self.tag_id
-      return false if (user_tag = UserTag.get(self.tag_id)).nil?
+      return [false, I18n.t('users.invalid_tag')] if (user_tag = UserTag.first(:tag_id => self.tag_id)).nil?
       tag_id = user_tag.id
       user_to_tag = UserToTag.first(:user_tag_id => tag_id)
       if user_to_tag.nil? || user_to_tag.user_tag.status != :pending
