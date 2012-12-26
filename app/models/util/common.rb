@@ -257,7 +257,7 @@ class Common
   def self.delete_request(request_info)
     now = Time.now
     c = lambda {
-      return DataMapper.repository(:default).adapter.exeute(
+      return DataMapper.repository(:default).adapter.execute(
         "UPDATE requests 
         SET deleted_ts = ?
         WHERE type = ? AND frequency1 = ? AND frequency2 = ? AND frequency3 = ? AND latitude = ? And longitude = ? AND deleted_ts IS NULL", 
