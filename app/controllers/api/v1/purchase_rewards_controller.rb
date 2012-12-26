@@ -13,7 +13,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
     if params[:is_tag]
       venue = Venue.get(params[:venue_id])
       if venue.nil?
-        raise "No such venue: #{params[:venue_id]}"
+        logger.error("No such venue: #{params[:venue_id]}")
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.merchant_earn_failure").split('\n') } }
+        end
+        return
       end
       frequency = JSON.parse(params[:frequency])
       request_info = {
