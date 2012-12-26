@@ -258,7 +258,8 @@ class Common
       return DataMapper.repository(:default).adapter.exeute(
         "UPDATE requests 
         SET deleted_ts = ?
-        WHERE type = ? AND frequency1 = ? AND frequency2 = ? AND frequency3 = ? AND latitude = ? And longitude = ? AND deleted_ts IS NULL", now, request_info[:type], request_info[:frequency1], request_info[:frequency2], 
+        WHERE type = ? AND frequency1 = ? AND frequency2 = ? AND frequency3 = ? AND latitude = ? And longitude = ? AND deleted_ts IS NULL", 
+        now, request_info[:type], request_info[:frequency1], request_info[:frequency2], 
         request_info[:frequency3], request_info[:latitude], request_info[:longitude]
       )
     }  
