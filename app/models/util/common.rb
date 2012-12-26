@@ -252,6 +252,28 @@ class Common
     return false 
   end
   
+  def self.delete_request(request_info)
+    now = Time.now
+    c = lambda {
+      return DataMapper.repository(:default).adapter.exeute(
+        "UPDATE requests 
+        SET deleted_ts = ?
+        WHERE type = ? AND frequency1 = ? AND frequency2 = ? AND frequency3 = ? AND latitude = ? And longitude = ? AND deleted_ts IS NULL", now, request_info[:type], request_info[:frequency1], request_info[:frequency2], 
+        request_info[:frequency3], request_info[:latitude], request_info[:longitude]
+      )
+    }  
+    n = 5 - 1
+    n.times do |x|
+      r = c.call
+      if r > 0
+        return
+      elsif x < n
+        sleep(0.2)
+      end
+    end
+    return
+  end
+  
   def self.get_news(venue)
     newsfeed = []
     promotions = Promotion.all(:merchant => venue.merchant)
