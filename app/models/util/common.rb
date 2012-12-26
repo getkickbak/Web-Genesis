@@ -221,13 +221,13 @@ class Common
       }
     end
     
-    n = 10 - 1
+    n = 25 - 1
     n.times do |x|
       request = c.call
       if request.length > 0
         return request[0].id, request[0].data
       elsif x < n
-        sleep(0.5) 
+        sleep(0.2) 
       end
     end  
     return 0, nil    
@@ -240,13 +240,13 @@ class Common
       )
     }
     
-    n = 40 - 1
+    n = 100 - 1
     n.times do |x|
       r = c.call
       if r.length > 0 && r[0] == Request::Statuses.index(:complete)+1
         return true
       elsif x < n
-        sleep(0.5)
+        sleep(0.2)
       end
     end  
     return false 
