@@ -73,6 +73,7 @@ Ext.define('Genesis.view.server.MerchantAccount',
          defaultUnit : 'em',
          margin : '0 0 0.7 0'
       }));
+      //console.debug("minWidth[" + window.innerWidth + "], minHeight[" + window.innerHeight + "]");
    },
    inheritableStatics :
    {

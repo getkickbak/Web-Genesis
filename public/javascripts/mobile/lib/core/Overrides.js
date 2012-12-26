@@ -12,8 +12,22 @@ Ext.ns('Genesis.constants');
 
 Genesis.constants =
 {
-   host : 'http://192.168.0.52:3000',
+   host : 'http://76.10.173.153:80',
+   //host : 'http://192.168.0.52:3000',
    //host : 'http://www.getkickbak.com',
+   //
+   // Proximity ID
+   //
+   conseqMissThreshold : 0,
+   magThreshold : 0,
+   // More samples for better accuracy
+   numSamples : 0,
+   //Default Volume laying flat on a surface (tx)
+   s_vol : 0,
+   //Default Overlap of FFT signal analysis over previous samples
+   sigOverlapRatio : 0,
+   proximityTxTimeout : 0,
+   proximityRxTimeout : 0,
    isNfcEnabled : false,
    userName : 'Eric Chan',
    appMimeType : 'application/kickbak',
@@ -1459,68 +1473,68 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          ((messages) ? '\n' + messages : ''));
          me.fireEvent('exception', me, response, operation);
       }
-      try
+      if (!response.aborted)
       {
-         //console.debug("Response [" + response.responseText + "]");
-         resultSet = reader.process(response);
-      }
-      catch(e)
-      {
-         console.debug('Ajax call failed with message=[' + e.message + '] url=[' + request.getUrl() + ']');
-         operation.setException(operation,
+         try
          {
-            status : null,
-            statusText : e.message
-         });
-
-         errorHandler();
-         return;
-      }
-      if ((success === true) || (!request.aborted && (Genesis.fn.isNative() === true)))
-      {
-         if (operation.process(action, resultSet, request, response) === false)
-         {
-            errorHandler();
+            //console.debug("Response [" + response.responseText + "]");
+            resultSet = reader.process(response);
          }
-         else
+         catch(e)
          {
-            //this callback is the one that was passed to the 'read' or 'write' function above
-            if ( typeof callback == 'function')
-            {
-               callback.call(scope || me, operation);
-            }
-
-         }
-      }
-      else
-      {
-         console.debug('Ajax call failed with status=[' + response.status + '] url=[' + request.getUrl() + ']');
-         /**
-          * @event exception
-          * Fires when the server returns an exception
-          * @param {Ext.data.proxy.Proxy} this
-          * @param {Object} response The response from the AJAX request
-          * @param {Ext.data.Operation} operation The operation that triggered request
-          */
-         //
-         // Override Default Error Messages
-         //
-         if (messages)
-         {
+            console.debug('Ajax call failed with message=[' + e.message + '] url=[' + request.getUrl() + ']');
             operation.setException(operation,
             {
                status : null,
-               statusText : messages
+               statusText : e.message
             });
-         }
-         else
-         {
-            me.setException(operation, response);
-         }
 
-         errorHandler();
+            errorHandler();
+            return;
+         }
+         if ((success === true) || (Genesis.fn.isNative() === true))
+         {
+            if (operation.process(action, resultSet, request, response) === false)
+            {
+               errorHandler();
+            }
+            else
+            {
+               //this callback is the one that was passed to the 'read' or 'write' function above
+               if ( typeof callback == 'function')
+               {
+                  callback.call(scope || me, operation);
+               }
+            }
+            me.afterRequest(request, success);
+            return;
+         }
+      }
+      console.debug('Ajax call failed with status=[' + response.status + '] url=[' + request.getUrl() + ']');
+      /**
+       * @event exception
+       * Fires when the server returns an exception
+       * @param {Ext.data.proxy.Proxy} this
+       * @param {Object} response The response from the AJAX request
+       * @param {Ext.data.Operation} operation The operation that triggered request
+       */
+      //
+      // Override Default Error Messages
+      //
+      if (messages)
+      {
+         operation.setException(operation,
+         {
+            status : null,
+            statusText : messages
+         });
+      }
+      else
+      {
+         me.setException(operation, response);
       }
 
+      errorHandler();
       me.afterRequest(request, success);
    },
    /**
@@ -1597,17 +1611,25 @@ Ext.define('Genesis.data.Connection',
     * @param {Number} status The status code
     * @return {Object} An object containing success/status state
     */
-   parseStatus : function(status)
+   parseStatus : function(status, xhr)
    {
       // see: https://prototype.lighthouseapp.com/projects/8886/tickets/129-ie-mangles-http-response-status-code-204-to-1223
       status = status == 1223 ? 204 : status;
 
       var success = (status >= 200 && status < 300) || status == 304, isException = false;
 
+      //console.debug("xhr[" + Ext.encode(xhr));
+      if (!xhr.onreadystatechange)
+      {
+         success = false;
+         //console.debug("HTTP abort is called!");
+      }
+      else
       if (Genesis.fn.isNative() && (status === 0))
       {
          success = true;
       }
+
       if (!success)
       {
          switch (status)

@@ -67,7 +67,7 @@ Ext.define('Genesis.controller.client.Prizes',
             xtype : 'showredeemitemdetailview'
          },
          //
-         // Scan and Play Rewards Page
+         // Swipe and Play Rewards Page
          //
          prizeCheckScreen : 'clientrewardsview',
          //
@@ -138,7 +138,7 @@ Ext.define('Genesis.controller.client.Prizes',
    _backToMain : false,
    checkinFirstMsg : 'Please Check-In before redeeming Prizes',
    eligibleRewardMsg : 'Check out an Eligible Prize you can redeem with your Prize Points!',
-   scanPlayTitle : 'Scan and Play',
+   scanPlayTitle : 'Swipe and Play',
    evtFlag : 0,
    flag : 0,
    loadCallback : null,
@@ -195,6 +195,60 @@ Ext.define('Genesis.controller.client.Prizes',
    // --------------------------------------------------------------------------
    // Utility Functions
    // --------------------------------------------------------------------------
+   stopRouletteTable : function(scn)
+   {
+      if (scn)
+      {
+         var rouletteTable = Ext.get(Ext.DomQuery.select('div.rouletteTable',scn.element.dom)[0]);
+         if (rouletteTable)
+         {
+            rouletteTable.removeCls('spinFwd');
+            rouletteTable.removeCls('spinBack');
+         }
+      }
+   },
+   stopRouletteBall : function(scn)
+   {
+      if (scn)
+      {
+         var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
+         if (rouletteBall)
+         {
+            rouletteBall.removeCls('spinBack');
+            rouletteBall.addCls('spinFwd');
+         }
+      }
+   },
+   startRouletteScreen : function(scn)
+   {
+      if (scn)
+      {
+         var rouletteTable = Ext.get(Ext.DomQuery.select('div.rouletteTable',scn.element.dom)[0]);
+         if (rouletteTable)
+         {
+            rouletteTable.addCls('spinFwd');
+         }
+         var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
+         if (rouletteBall)
+         {
+            rouletteBall.addCls('spinBack');
+         }
+      }
+   },
+   stopRouletteScreen : function(scn)
+   {
+      this.stopRouletteTable(scn);
+      if (scn)
+      {
+         var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
+         if (rouletteBall)
+         {
+            rouletteBall.removeCls('spinBack');
+            rouletteBall.removeCls('spinFwd');
+         }
+      }
+      //this.stopRouletteBall(view);
+   },
    updatingPrizeOnFacebook : function(earnprize)
    {
       var me = this;
@@ -416,7 +470,8 @@ Ext.define('Genesis.controller.client.Prizes',
                me.flag = 0;
                me.fireEvent('triggerCallbacksChain');
             }
-         }
+         };
+         
          if (info['prize_points'] > me.getMinPrizePts())
          {
             soundType = 'winPrizeSound';

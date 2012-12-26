@@ -334,6 +334,7 @@ Ext.define('Genesis.controller.client.Merchants',
          //
          me.onCustomerRecordUpdate(crecord);
       }
+      console.debug("Updated Merchant Account Info");
       //
       // Main Menu button
       //
@@ -471,13 +472,19 @@ Ext.define('Genesis.controller.client.Merchants',
             {
                //me.getPrizesBtn().setBadgeText(customer.get('eligible_for_prize') ? '✔' : null);
                dom = Ext.DomQuery.select('span', prize.element.dom)[0];
-               Ext.fly(dom)[customer.get('eligible_for_prize') ? 'removeCls' : 'addCls']("x-item-hidden");
+               if (dom)
+               {
+                  Ext.fly(dom)[customer.get('eligible_for_prize') ? 'removeCls' : 'addCls']("x-item-hidden");
+               }
             }
             if (redeem)
             {
                //me.getRedeemBtn().setBadgeText(customer.get('eligible_for_reward') ? '✔' : null);
                dom = Ext.DomQuery.select('span', redeem.element.dom)[0];
-               Ext.fly(dom)[customer.get('eligible_for_reward') ? 'removeCls' : 'addCls']("x-item-hidden");
+               if (dom)
+               {
+                  Ext.fly(dom)[customer.get('eligible_for_reward') ? 'removeCls' : 'addCls']("x-item-hidden");
+               }
             }
             //rstore.fireEvent('refresh', rstore, rstore.data);
          }

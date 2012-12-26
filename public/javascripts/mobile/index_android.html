@@ -73,22 +73,20 @@
             if (launched == 0x111)
             {
                var viewport = _application.getController('client.Viewport');
-               viewport.appName = 'GetKickBak';
+               viewport.appName = appName;
 
                //console.log("Launching App");
                Ext.create('Genesis.view.Viewport');
                //this.redirectTo('');
-
                console.log("Launched App");
                navigator.splashscreen.hide();
             }
          }
       </script>
       <script type="text/javascript">
-         var backBtnCallbackListFn = [];
          var launched = 0x000;
-         var hostRoot = "";
-         //"/assets/www/";
+         var backBtnCallbackListFn = [];
+         
          var offlineDialogShown = false;
          var phoneGapAvailable = true;
          var debugMode = false;
@@ -100,8 +98,9 @@
          var pushNotifAppId = '4fef6fb0691c12.54726991';
          var pushNotifType = 3;
 
-         var _appPath = hostRoot + "app";
-         var _extPath = hostRoot + 'lib/sencha-touch-2.1.0-commercial/src';
+         var hostRoot = "";
+         //"/assets/www/";
+         var _appPath = hostRoot + "app", _extPath = hostRoot + 'lib/sencha-touch-2.1.0-commercial/src';
          var _appId = "197968780267830";
          var _application;
 
@@ -150,12 +149,12 @@
             {
                if (Ext.device)
                {
-                  console.log("Phone is Offline");
                   if (!Ext.device.Connection.isOnline())
                   {
                      _onGotoMain();
                   }
                }
+               console.log("Phone is Offline");
             }, false);
             document.addEventListener("pause", function()
             {
@@ -232,15 +231,14 @@
                }
             }
 
-
             document.addEventListener("deviceready", function()
             {
                //navigator.splashscreen.show();
                console.debug = console.debug || console.log;
                console.warn = console.warn || console.debug;
 
-               launched = 0x010;
                console.log("PhoneGap App Launch");
+               launched = 0x010;
                initPushwoosh();
                FB.init(
                {

@@ -22,7 +22,9 @@ Ext.define('Genesis.controller.server.Merchants',
             xtype : 'servermerchantaccountview'
          },
          merchantMain : 'servermerchantaccountview container[tag=merchantMain]',
-         tbPanel : 'servermerchantaccountview dataview[tag=tbPanel]'
+         tbPanel : 'servermerchantaccountview dataview[tag=tbPanel]',
+         prizesBtn : 'merchantaccountptsitem component[tag=prizepoints]',
+         redeemBtn : 'merchantaccountptsitem component[tag=points]'
       },
       control :
       {
@@ -72,7 +74,7 @@ Ext.define('Genesis.controller.server.Merchants',
    // --------------------------------------------------------------------------
    onNfc : function(nfcResult)
    {
-      var me = this;
+      var me = this, venueId = Genesis.fn.getPrivKey('venueId'), viewport = me.getViewPortCntlr();
       /*
        var masked = Ext.Viewport.getMasked();
        if (nfcResult)
@@ -102,10 +104,11 @@ Ext.define('Genesis.controller.server.Merchants',
       {
          'tagID' : null
       };
-      console.log("Retrieving Customer Account for tagID[" + nfcResult['tagID'] + ']');
+      console.log("Retrieving Customer Account for tagID[" + nfcResult['tagID'] + '], venueId[' + venueId + ']');
 
       var params =
       {
+         device_pixel_ratio : window.devicePixelRatio,
          data : me.self.encryptFromParams(
          {
             'tag_id' : nfcResult['tagID']
@@ -114,6 +117,11 @@ Ext.define('Genesis.controller.server.Merchants',
       //
       // Retrieve Venue / Customer information for Merchant Account display
       //
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.establishConnectionMsg
+      });
       Customer['setGetCustomerUrl']();
       Customer.load(venueId,
       {
@@ -128,6 +136,8 @@ Ext.define('Genesis.controller.server.Merchants',
             Ext.Viewport.setMasked(null);
             if (operation.wasSuccessful())
             {
+               //console.log("Customer[" + Ext.encode(record) + "]");
+               Ext.StoreMgr.get('CustomerStore').setData(record);
                viewport.setCustomer(record);
                var info = viewport.getCheckinInfo();
                info.customer = viewport.getCustomer();
@@ -187,9 +197,11 @@ Ext.define('Genesis.controller.server.Merchants',
    onMainActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       console.debug("Merchant Account Activate");
-      var me = this;
+      var me = this, viewport = me.getViewPortCntlr();
+      var vrecord = viewport.getVenue();
+      var crecord = viewport.getCustomer();
 
-      me.getViewPortCntlr().setActiveController(me);
+      viewport.setActiveController(me);
       var rstore = Ext.StoreMgr.get('MerchantRenderStore');
       //if (rstore.getRange()[0] != vrecord)
       {
@@ -233,6 +245,7 @@ Ext.define('Genesis.controller.server.Merchants',
       // Remove Customer information
       //
       viewport.setCustomer(null);
+      Ext.StoreMgr.get('CustomerStore').removeAll(true);
    },
    onCustomerRecordUpdate : function(customer)
    {

@@ -154,7 +154,7 @@ Ext.define('Genesis.view.server.Rewards',
                xtype : 'button',
                cls : 'separator',
                tag : 'showQrCode',
-               text : 'Show QRCode',
+               text : 'GO!',
                ui : 'orange-large'
             }]
          },
@@ -181,20 +181,20 @@ Ext.define('Genesis.view.server.Rewards',
                      return values['price'];
                   }
                })
-            },
-            {
-               xtype : 'component',
-               tag : 'qrcode',
-               cls : 'qrcode'
-            },
-            {
-               docked : 'bottom',
-               xtype : 'button',
-               cls : 'separator done',
-               tag : 'done',
-               text : 'Done',
-               ui : 'orange-large'
-            }]
+            }/*,
+             {
+             xtype : 'component',
+             tag : 'qrcode',
+             cls : 'qrcode'
+             },
+             {
+             docked : 'bottom',
+             xtype : 'button',
+             cls : 'separator done',
+             tag : 'done',
+             text : 'Done',
+             ui : 'orange-large'
+             }*/]
          }]
       }));
    },
