@@ -11,15 +11,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
   
   def merchant_earn
     if params[:is_tag]
-      venue = Venue.get(params[:venue_id])
-      if venue.nil?
-        logger.error("No such venue: #{params[:venue_id]}")
-        respond_to do |format|
-          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.merchant_earn_failure").split('\n') } }
-        end
-        return
-      end
+      venue = Venue.get(params[:venue_id]) || not_found
       frequency = JSON.parse(params[:frequency])
       request_info = {
         :type => RequestType::EARN_POINTS,
