@@ -19,9 +19,9 @@
       {
          cordova.exec(win, fail, "ProximityIDPlugin", "sendIdentity", []);
       },
-      scan : function(win, fail, samples, missedThreshold, overlapRatio)
+      scan : function(win, fail, samples, missedThreshold, magThreshold, overlapRatio)
       {
-         cordova.exec(win, fail, "ProximityIDPlugin", "scanIdentity", [samples, missedThreshold, overlapRatio]);
+         cordova.exec(win, fail, "ProximityIDPlugin", "scanIdentity", [samples, missedThreshold, magThreshold, overlapRatio]);
       },
       stop : function()
       {

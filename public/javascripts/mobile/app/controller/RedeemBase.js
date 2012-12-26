@@ -9,6 +9,8 @@ Ext.define('Genesis.controller.RedeemBase',
    {
       models : ['PurchaseReward', 'CustomerReward'],
    },
+   redeemSuccessfulMsg : 'Transaction Complete',
+   redeemFailedMsg : 'Transaction Failed',
    needPointsMsg : function(pointsDiff)
    {
       return ('You need ' + pointsDiff + ' more points ' + Genesis.constants.addCRLF() + 'to be eligible for this item.');
@@ -306,10 +308,11 @@ Ext.define('Genesis.controller.RedeemBase',
       var _qrcode;
       var title = 'Redeem ' + me.getTitle();
 
-      console.log("\n" + //
-      "Encrypted Code :\n" + qrcode + "\n" + //
-      "Encrypted Code Length: " + qrcode.length);
-
+      /*
+       console.log("\n" + //
+       "Encrypted Code :\n" + qrcode + "\n" + //
+       "Encrypted Code Length: " + qrcode.length);
+       */
       _qrcode = Genesis.controller.ControllerBase.genQRCode(qrcode);
       if (_qrcode[0])
       {

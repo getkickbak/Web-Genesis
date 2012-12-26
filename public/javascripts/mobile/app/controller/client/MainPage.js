@@ -117,6 +117,7 @@ Ext.define('Genesis.controller.client.MainPage',
    },
    _loggingOut : false,
    _logoutflag : 0,
+   creatingAccountMsg : 'Creating Your Account ...',
    sessionTimeoutMsg : 'Session Timeout',
    passwdResetConfirmMsg : 'Please confirm to reset your account password',
    passwdResetSuccessMsg : function()
@@ -641,6 +642,11 @@ Ext.define('Genesis.controller.client.MainPage',
          {
             params = Ext.apply(params, response);
          }
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            messasge : me.creatingAccountMsg,
+         });
 
          Customer['setCreateAccountUrl']();
          Ext.StoreMgr.get('CustomerStore').load(
@@ -714,6 +720,7 @@ Ext.define('Genesis.controller.client.MainPage',
                me.persistSyncStores('CustomerStore');
                me.fireEvent('updatemetadata', Customer.getProxy().getReader().metaData);
             }
+            Ext.Viewport.setMasked(null);
          }
       });
    },

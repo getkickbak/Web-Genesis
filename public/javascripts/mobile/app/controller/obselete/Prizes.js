@@ -660,10 +660,11 @@ Ext.define('Genesis.controller.Prizes',
       var me = this;
       var title = null;
 
-      console.log("\n" + //
-      "Encrypted Code :\n" + qrcode + "\n" + //
-      "Encrypted Code Length: " + qrcode.length);
-
+      /*
+       console.log("\n" + //
+       "Encrypted Code :\n" + qrcode + "\n" + //
+       "Encrypted Code Length: " + qrcode.length);
+       */
       qrcode = Genesis.controller.ControllerBase.genQRCode(qrcode);
       if (qrcode[0])
       {

@@ -269,7 +269,8 @@ Ext.define('Genesis.controller.server.Redemptions',
       var viewport = me.getViewPortCntlr();
       var venueId = (venue) ? venue.getId() : 0;
       var item = view.getInnerItems()[0];
-      var store = me.getRedeemStore();
+      var storeName = me.getRedeemStore();
+      var store = Ext.StoreMgr.get(store);
       var params =
       {
          venue_id : venueId
@@ -290,6 +291,7 @@ Ext.define('Genesis.controller.server.Redemptions',
                }
                window.plugins.proximityID.stop();
                Ext.Viewport.setMasked(null);
+               me.onDoneTap();
             }
          }
       });
@@ -312,7 +314,7 @@ Ext.define('Genesis.controller.server.Redemptions',
          });
 
          CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
-         Ext.StoreMgr.get(store).load(
+         store.load(
          {
             addRecords : true, //Append data
             scope : me,
@@ -327,13 +329,26 @@ Ext.define('Genesis.controller.server.Redemptions',
                {
                   Ext.device.Notification.show(
                   {
-                     title : me.getTitle(),
-                     message : me.redeeemSuccessfulMsg
+                     title : 'Redemptions',
+                     message : me.redeemSuccessfulMsg,
+                     callback : function()
+                     {
+                        me.onDoneTap();
+                     }
                   });
                }
                else
                {
                   btn.show();
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Redemptions',
+                     message : me.redeemFailedMsg,
+                     callback : function()
+                     {
+                        me.onDoneTap();
+                     }
+                  });
                }
             }
          });

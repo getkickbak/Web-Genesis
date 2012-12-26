@@ -35,23 +35,6 @@
 
       <script type="text/javascript" src="lib/sencha-touch-all.js"></script>
       <script type="text/javascript">
-         var launched = 0x000;
-         var backBtnCallbackListFn = [];
-
-         var offlineDialogShown = false;
-         var phoneGapAvailable = true;
-         var debugMode = false;
-         var merchantMode = false;
-         var appName = 'GetKickBak';
-         //var pushNotifAppName = 'KickBak Development';
-         //var pushNotifAppId = '4fef50b25b2f16.74735670';
-         var pushNotifAppName = 'KickBak Production';
-         var pushNotifAppId = '4fef6fb0691c12.54726991';
-         var pushNotifType = 1;
-
-         var _appPath = "app", _extPath = 'lib/sencha-touch-2.1.0-commercial/src';
-         var _appId = "197968780267830";
-
          function _onGotoMainCallBackFn()
          {
             Ext.Viewport.setMasked(null);
@@ -101,6 +84,24 @@
          }
       </script>
       <script type="text/javascript">
+         var launched = 0x000;
+         var backBtnCallbackListFn = [];
+
+         var offlineDialogShown = false;
+         var phoneGapAvailable = true;
+         var debugMode = false;
+         var merchantMode = false;
+         var appName = 'GetKickBak';
+         //var pushNotifAppName = 'KickBak Development';
+         //var pushNotifAppId = '4fef50b25b2f16.74735670';
+         var pushNotifAppName = 'KickBak Production';
+         var pushNotifAppId = '4fef6fb0691c12.54726991';
+         var pushNotifType = 1;
+
+         var _appPath = "app", _extPath = 'lib/sencha-touch-2.1.0-commercial/src';
+         var _appId = "197968780267830";
+         var _application;
+
          // If you want to prevent dragging, uncomment this section
          /*
           function preventBehavior(e)
@@ -130,15 +131,16 @@
             {
                if (Ext.device)
                {
-                  console.log(Ext.device.Connection.__proto__.$className);
-                  console.log('Connection type: [' + Ext.device.Connection.getType() + ']');
+                  console.log("Phone is Online" + ", "+ //
+                  Ext.device.Connection.__proto__.$className + ", " + //
+                  "devicePixelRatio - " + window.devicePixelRatio + ", " + //
+                  'Connection type: [' + Ext.device.Connection.getType() + ']');
                   //console.debug('Checking for Network Conncetivity for [' + location.origin + ']');
                   if (!Ext.device.Connection.isOnline())
                   {
                      _onGotoMain();
                   }
                }
-               console.log("Phone is Online");
             }, false);
 
             document.addEventListener("offline", function()
@@ -258,12 +260,12 @@
 
          }
       </script>
-      <script type="text/javascript" src="app/profile/Iphone.js"></script>
       <!--
       <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
       -->
       <script type="text/javascript" src="core.js"></script>
       <!-- View Widgets -->
+      <script type="text/javascript" src="app/profile/Iphone.js"></script>
       <script type="text/javascript" src="client-all.js"></script>
    </head>
    <body onload="onBodyLoad()">

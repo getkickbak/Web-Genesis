@@ -50,14 +50,11 @@ Ext.define('Genesis.controller.ControllerBase',
    geoLocationUseLastPositionMsg : 'We are not able to locate your current location. Using your last known GPS Coordinates ...',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
    getVenueInfoMsg : 'Retrieving Venue Information ...',
-   //
-   // Proximity ID
-   //
-   // Mobile Phone
-   proximityTimeout : 40 * 1000,
+   prepareToSendMerchantDeviceMsg : 'Prepare to send data across to Merchant Device ...',
    lookingForMerchantDeviceMsg : 'Place your device underneath the Merchant Device ...', //Send
    detectMerchantDeviceMsg : 'Place your device underneath the Merchant Device ...', //Recv
    // Merchant Device
+   prepareToSendMobileDeviceMsg : 'Prepare to send data across to Mobile Device ...',
    lookingForMobileDeviceMsg : 'Place the device overtop of the Mobile Device ...', //Send
    detectMobileDeviceMsg : 'Place the device overtop the Mobile Device ...', //Recv
    //
@@ -172,7 +169,16 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          if (Genesis.fn.isNative())
          {
-            LowLatencyAudio.stop(sound_file['name']);
+            switch (sound_file['type'])
+            {
+               case 'FX' :
+               case 'Audio' :
+                  LowLatencyAudio.stop(sound_file['name']);
+                  break;
+               case 'Media' :
+                  sound_file['name'].stop();
+                  break;
+            }
          }
          else
          {
@@ -209,10 +215,12 @@ Ext.define('Genesis.controller.ControllerBase',
             catch (e)
             {
             }
-            console.debug("Used key[" + key + "]");
-            console.log('\n' + //
-            "Encrypted Code Length: " + encrypted.length + '\n' + //
-            'Encrypted Code [' + encrypted + ']' + '\n');
+            /*
+             console.debug("Used key[" + key + "]");
+             console.log('\n' + //
+             "Encrypted Code Length: " + encrypted.length + '\n' + //
+             'Encrypted Code [' + encrypted + ']' + '\n');
+             */
          }
 
          return encrypted;
@@ -467,51 +475,6 @@ Ext.define('Genesis.controller.ControllerBase',
    // --------------------------------------------------------------------------
    // Utility Functions
    // --------------------------------------------------------------------------
-   stopRouletteTable : function(scn)
-   {
-      if (scn)
-      {
-         var rouletteTable = Ext.get(Ext.DomQuery.select('div.rouletteTable',scn.element.dom)[0]);
-         if (rouletteTable)
-         {
-            rouletteTable.removeCls('spinFwd');
-            rouletteTable.removeCls('spinBack');
-         }
-      }
-   },
-   stopRouletteBall : function(scn)
-   {
-      if (scn)
-      {
-         var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
-         if (rouletteBall)
-         {
-            rouletteBall.removeCls('spinBack');
-            rouletteBall.addCls('spinFwd');
-         }
-      }
-   },
-   startRouletteScreen : function(scn)
-   {
-      if (scn)
-      {
-         var rouletteTable = Ext.get(Ext.DomQuery.select('div.rouletteTable',scn.element.dom)[0]);
-         if (rouletteTable)
-         {
-            rouletteTable.addCls('spinFwd');
-         }
-         var rouletteBall = Ext.get(Ext.DomQuery.select('div.rouletteBall',scn.element.dom)[0]);
-         if (rouletteBall)
-         {
-            rouletteBall.addCls('spinBack');
-         }
-      }
-   },
-   stopRouletteScreen : function(view)
-   {
-      this.stopRouletteTable(view);
-      this.stopRouletteBall(view);
-   },
    triggerCallbacksChain : function()
    {
       var me = this;
@@ -896,7 +859,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    getLocalID : function(success, fail)
    {
-      var me = this;
+      var me = this, c = Genesis.constants;
       var task, taskWait = false;
 
       var scan = function()
@@ -924,7 +887,7 @@ Ext.define('Genesis.controller.ControllerBase',
             Ext.device.Notification.beep();
             console.log('Error Code[' + Ext.encode(error) + ']');
             fail();
-         }, Genesis.constants.numSamples, Genesis.constants.conseqMissThreshold, Genesis.constants.sigOverlapRatio);
+         }, c.numSamples, c.conseqMissThreshold, c.magThreshold, c.sigOverlapRatio);
       }
       //create the delayed task instance with our callback
       task = setInterval(function()
@@ -952,14 +915,14 @@ Ext.define('Genesis.controller.ControllerBase',
                }
             });
          }
-      }, me.proximityTimeout);
+      }, c.proximityRxTimeout);
       scan();
 
       return task;
    },
    broadcastLocalID : function(success, fail)
    {
-      var me = this;
+      var me = this, c = Genesis.constants;
       me.send_vol = -1;
       success = success || Ext.emptyFn;
       fail = fail || Ext.emptyFn;
@@ -971,11 +934,12 @@ Ext.define('Genesis.controller.ControllerBase',
          {
             window.plugins.proximityID.setVolume(-1);
          }
+         window.plugins.proximityID.stop();
          clearInterval(atask);
          clearInterval(task);
       }
       //create the delayed task instance with our callback
-      atask = setInterval(function()
+      atask = window.setInterval(function()
       {
          me.accelerometerHandler(me.send_vol, function(v)
          {
@@ -986,7 +950,6 @@ Ext.define('Genesis.controller.ControllerBase',
       task = window.setInterval(function()
       {
          cancel();
-         window.plugins.proximityID.stop();
          Ext.device.Notification.show(
          {
             title : 'Local Identity',
@@ -1004,7 +967,7 @@ Ext.define('Genesis.controller.ControllerBase',
                }
             }
          });
-      }, me.proximityTimeout);
+      }, c.proximityTxTimeout);
       window.plugins.proximityID.send(function(result)
       {
          success(Genesis.fn.processSendLocalID(result, cancel));

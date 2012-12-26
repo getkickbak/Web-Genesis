@@ -68,7 +68,6 @@ Ext.define('Genesis.controller.client.Rewards',
    referralPageTitle : 'Refer A Friend',
    referralPromotionTitle : 'Referral Award',
    prizeCheckMsg : 'Play our Instant Win Game to find out how many Prize Pts you won!',
-   earnPtsMsg : 'Updating Points Earned ...',
    signupPromotionMsg : function(points)
    {
       return 'You\'ve earned ' + points + ' Reward Pts from Signing Up for this merchant!';
@@ -373,7 +372,7 @@ Ext.define('Genesis.controller.client.Rewards',
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
-            message : me.earnPtsMsg
+            message : me.establishConnectionMsg
          });
          //
          // Triggers PrizeCheck and MetaDataChange
@@ -485,39 +484,41 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-      var app = me.getApplication();
-      var controller = app.getController('client.Prizes');
+      var me = this, viewport = me.getViewPortCntlr(), task;
+      var app = me.getApplication(), controller = app.getController('client.Prizes');
       var args = me.callBackStack['arguments'][0];
-
       //
       // Make sure the sound stops after MAX delay is reached
       //
-      var task = Ext.create('Ext.util.DelayedTask', function()
+      var stopRouletteSpin = function()
       {
-         task.dead = true;
-         me.stopRouletteScreen(me.getRewards());
-
-         console.debug("RouletteSound Done, checking for prizes ...");
-         controller.fireEvent('prizecheck', args);
-      });
+         if (!task.dead)
+         {
+            task.dead = true;
+            task.cancel();
+            me.self.stopSoundFile(viewport.sound_files['rouletteSpinSound']);
+            console.debug("Foced RouletteSound Done, checking for prizes ...");
+            controller.fireEvent('prizecheck', args);
+         }
+      };
+      task = Ext.create('Ext.util.DelayedTask', stopRouletteSpin);
       Ext.defer(function()
       {
-         var container = me.getRewards();
          //activeItem.createView();
-         me.startRouletteScreen(me.getRewards());
+         controller.startRouletteScreen(me.getRewards());
          me.self.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
          {
-            task.cancel();
             if (!task.dead)
             {
+               task.dead = true;
+               task.cancel();
                console.debug("RouletteSound Done, checking for prizes ...");
                controller.fireEvent('prizecheck', args);
             }
          });
+         me.getRewards().query('component[tag=prizeCheck]')[0].element.on('tap', stopRouletteSpin);
       }, 1, activeItem);
-      task.delay(10 * 1000);
+      task.delay(15 * 1000);
       //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)

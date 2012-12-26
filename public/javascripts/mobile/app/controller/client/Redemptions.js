@@ -36,7 +36,8 @@ Ext.define('Genesis.controller.client.Redemptions',
       var me = this, identifiers = null;
       var venueId = (venue) ? venue.getId() : 0;
       var item = view.getInnerItems()[0];
-      var store = me.getRedeemStore();
+      var storeName = me.getRedeemStore();
+      var store = Ext.StoreMgr.get(storeName);
       var params =
       {
          venue_id : venueId
@@ -50,7 +51,7 @@ Ext.define('Genesis.controller.client.Redemptions',
          //Ext.Viewport.getMasked().setMessage(me.establishConnectionMsg);
 
          CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
-         Ext.StoreMgr.get(store).load(
+         store.load(
          {
             addRecords : true, //Append data
             scope : me,
@@ -67,21 +68,33 @@ Ext.define('Genesis.controller.client.Redemptions',
                {
                   identifiers['cancelFn']();
                }
-               window.plugins.proximityID.stop();
                Ext.Viewport.setMasked(null);
+               Ext.device.Notification.beep();
 
                if (operation.wasSuccessful())
                {
                   Ext.device.Notification.show(
                   {
-                     title : me.getTitle(),
-                     message : me.redeeemSuccessfulMsg
+                     title : 'Redemptions',
+                     message : me.redeemSuccessfulMsg,
+                     callback : function()
+                     {
+                        me.onDoneTap();
+                     }
                   });
-                  Ext.device.Notification.beep();
                }
                else
                {
                   btn.show();
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Redemptions',
+                     message : me.redeemFailedMsg,
+                     callback : function()
+                     {
+                        me.onDoneTap();
+                     }
+                  });
                }
             }
          });
@@ -90,17 +103,18 @@ Ext.define('Genesis.controller.client.Redemptions',
       Ext.Viewport.setMasked(
       {
          xtype : 'loadmask',
-         message : (Genesis.fn.isNative()) ? me.lookingForMerchantDeviceMsg : me.retrievingQRCodeMsg,
+         message : (Genesis.fn.isNative()) ? me.prepareToSendMerchantDeviceMsg : me.retrievingQRCodeMsg,
          listeners :
          {
             tap : function()
             {
+               Ext.Ajax.abort();
                if (identifiers)
                {
                   identifiers['cancelFn']();
                }
-               window.plugins.proximityID.stop();
                Ext.Viewport.setMasked(null);
+               me.onDoneTap();
             }
          }
       });
@@ -113,6 +127,7 @@ Ext.define('Genesis.controller.client.Redemptions',
             {
                'frequency' : Ext.encode(identifiers['localID'])
             }));
+            Ext.Viewport.getMasked().setMessage(me.lookingForMerchantDeviceMsg);
          }, function()
          {
             Ext.Viewport.setMasked(null);
