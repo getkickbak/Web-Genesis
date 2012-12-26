@@ -11,14 +11,18 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
   
   def merchant_earn
     if params[:is_tag]
+      venue = Venue.get(params[:venue_id])
+      if venue.nil?
+        raise "No such venue: #{params[:venue_id]}"
+      end
       frequency = JSON.parse(params[:frequency])
       request_info = {
         :type => RequestType::EARN_POINTS,
         :frequency1 => frequency[0],
         :frequency2 => frequency[1],
         :frequency3 => frequency[2],
-        :latitude => @venue.latitude,
-        :longitude => @venue.longitude
+        :latitude => venue.latitude,
+        :longitude => venue.longitude
       }
       Common.delete_request(request_info)      
       earn_common
