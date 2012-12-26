@@ -49,6 +49,8 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
     end
     
     begin
+      session[:user_agent] = Common.get_user_agent(request.env['HTTP_USER_AGENT'])
+      session[:resolution] = Common.get_thumbail_resolution(session[:user_agent], params[:device_pixel_ratio].to_f)
       @customer = Customer.first(:merchant => @venue.merchant, :user => user)
       if @customer.nil?
         @customer = Customer.create(@venue.merchant, user)
