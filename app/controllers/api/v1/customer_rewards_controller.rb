@@ -327,7 +327,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           @customer.eligible_for_prize = eligible_for_prize
           @customer.update_ts = now
           @customer.save
-          if request_id > 0
+          if (defined? request_id) && request_id > 0
             request = Request.get(request_id)
             request.status = :complete
             request.save

@@ -353,7 +353,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             @record.status = :complete
             @record.update_ts = now
             @record.save 
-            if request_id > 0
+            if (defined? request_id) && request_id > 0
               request = Request.get(request_id)
               request.status = :complete
               request.save

@@ -260,7 +260,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
             @msg = get_success_no_points_msg.split('\n')  
             log_msg = "User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because it is not eligible"
           end
-          if request_id > 0
+          if (defined? request_id) && request_id > 0
             request = Request.get(request_id)
             request.status = :complete
             request.save
@@ -430,7 +430,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
             :created_ts => now,
             :update_ts => now
           )
-          if request_id > 0
+          if (defined? request_id) && request_id > 0
             request = Request.get(request_id)
             request.status = :complete
             request.save
