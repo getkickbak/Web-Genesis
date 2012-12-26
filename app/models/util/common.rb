@@ -74,7 +74,7 @@ class Common
         return :mxhdpi
       end
     when :android
-      if device_pixel_ratio < 1 || device_pixel_ratio == 1.5
+      if device_pixel_ratio < 1 || (device_pixel_ratio > 1 && device_pixel_ratio < 2)
         return :lhdpi
       elsif device_pixel_ratio == 1 || device_pixel_ratio == 2
         return :mxhdpi
