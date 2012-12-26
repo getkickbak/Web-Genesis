@@ -245,6 +245,8 @@ class Common
       r = c.call
       if r.length > 0 && r[0] == Request::Statuses.index(:complete)+1
         return true
+      elsif r.length == 0
+        return false  
       elsif x < n
         sleep(0.2)
       end
@@ -266,7 +268,7 @@ class Common
     n = 5 - 1
     n.times do |x|
       r = c.call
-      if r > 0
+      if r == 1
         return
       elsif x < n
         sleep(0.2)
