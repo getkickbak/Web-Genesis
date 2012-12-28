@@ -129,6 +129,7 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
       },
       {
          docked : 'bottom',
+         hidden : true,
          xtype : 'button',
          margin : '0 0.7 0.8 0.7',
          defaultUnit : 'em',
@@ -138,12 +139,13 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
       },
       {
          docked : 'bottom',
+         hidden : true,
          margin : '0 0.7 0.8 0.7',
          defaultUnit : 'em',
          xtype : 'button',
          cls : 'separator',
-         tag : 'verify',
-         text : 'Verified!',
+         tag : 'merchantRedeem',
+         text : 'Redeem!',
          ui : 'orange-large'
       }]
    },

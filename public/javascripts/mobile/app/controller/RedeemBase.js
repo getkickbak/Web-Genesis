@@ -7,7 +7,7 @@ Ext.define('Genesis.controller.RedeemBase',
    xtype : 'redeemBaseCntlr',
    config :
    {
-      models : ['PurchaseReward', 'CustomerReward'],
+      models : ['PurchaseReward', 'CustomerReward']
    },
    redeemSuccessfulMsg : 'Transaction Complete',
    redeemFailedMsg : 'Transaction Failed',
@@ -196,6 +196,251 @@ Ext.define('Genesis.controller.RedeemBase',
    // --------------------------------------------------------------------------
    // Handler Functions
    // --------------------------------------------------------------------------
+   onClientRedeemItem : function(btn, venue, view)
+   {
+      var me = this, identifiers = null;
+      var venueId = (venue) ? venue.getId() : 0;
+      var item = view.getInnerItems()[0];
+      var storeName = me.getRedeemStore();
+      var store = Ext.StoreMgr.get(storeName);
+      var params =
+      {
+         venue_id : venueId
+      };
+      me.redeemItemFn = function(params)
+      {
+         //
+         // Updating Server ...
+         //
+         btn.hide();
+         //Ext.Viewport.getMasked().setMessage(me.establishConnectionMsg);
+
+         CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
+         store.load(
+         {
+            addRecords : true, //Append data
+            scope : me,
+            jsonData :
+            {
+            },
+            params : params,
+            callback : function(records, operation)
+            {
+               //
+               // Stop broadcasting now ...
+               //
+               if (identifiers)
+               {
+                  identifiers['cancelFn']();
+               }
+               Ext.Viewport.setMasked(null);
+               Ext.device.Notification.beep();
+
+               if (operation.wasSuccessful())
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Redemptions',
+                     message : me.redeemSuccessfulMsg,
+                     callback : function()
+                     {
+                        me.onDoneTap();
+                     }
+                  });
+               }
+               else
+               {
+                  btn.show();
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Redemptions',
+                     message : me.redeemFailedMsg,
+                     callback : function()
+                     {
+                        me.onDoneTap();
+                     }
+                  });
+               }
+            }
+         });
+      };
+
+      if (Genesis.fn.isNative())
+      {
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.prepareToSendMerchantDeviceMsg
+         });
+         me.broadcastLocalID(function(ids)
+         {
+            identifiers = ids;
+            Ext.Viewport.setMasked(null);
+            Ext.Viewport.setMasked(
+            {
+               xtype : 'loadmask',
+               message : me.lookingForMerchantDeviceMsg,
+               listeners :
+               {
+                  tap : function()
+                  {
+                     Ext.Ajax.abort();
+                     if (identifiers)
+                     {
+                        identifiers['cancelFn']();
+                     }
+                     Ext.Viewport.setMasked(null);
+                     me.onDoneTap();
+                  }
+               }
+            });
+            me.redeemItemFn(Ext.apply(params,
+            {
+               'frequency' : Ext.encode(identifiers['localID'])
+            }));
+         }, function()
+         {
+            Ext.Viewport.setMasked(null);
+         });
+      }
+      else
+      {
+         me.redeemItemFn(params);
+      }
+   },
+   onServerRedeemItem : function(btn, venue, view)
+   {
+      var me = this, identifiers = null, task = null;
+      var viewport = me.getViewPortCntlr();
+      var venueId = (venue) ? venue.getId() : 0;
+      var item = view.getInnerItems()[0];
+      var storeName = me.getRedeemStore();
+      var store = Ext.StoreMgr.get(storeName);
+      var params =
+      {
+         venue_id : venueId
+      }
+      var message = (Genesis.fn.isNative()) ? //
+      ((!merchantMode) ? me.lookingForMerchantDeviceMsg : me.lookingForMobileDeviceMsg) : me.retrievingQRCodeMsg;
+
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : message,
+         listeners :
+         {
+            tap : function()
+            {
+               viewport.setActiveController(null);
+               if (task)
+               {
+                  clearInterval(task);
+               }
+               //
+               // Stop receiving ProximityID
+               //
+               if (Genesis.fn.isNative())
+               {
+                  window.plugins.proximityID.stop();
+               }
+               Ext.Viewport.setMasked(null);
+               me.onDoneTap();
+            }
+         }
+      });
+
+      me.redeemItemFn = function(params)
+      {
+         //
+         // Stop receiving data from NFC
+         //
+         viewport.setActiveController(null);
+         if (task)
+         {
+            clearInterval(task);
+         }
+         //
+         // Stop receiving ProximityID
+         //
+         if (Genesis.fn.isNative())
+         {
+            window.plugins.proximityID.stop();
+         }
+
+         //
+         // Update Server
+         //
+         btn.hide();
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.establishConnectionMsg
+         });
+
+         CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
+         store.load(
+         {
+            addRecords : true, //Append data
+            scope : me,
+            jsonData :
+            {
+            },
+            params : params,
+            callback : function(records, operation)
+            {
+               Ext.Viewport.setMasked(null);
+               if (operation.wasSuccessful())
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Redemptions',
+                     message : me.redeemSuccessfulMsg,
+                     callback : function()
+                     {
+                        me.onDoneTap();
+                     }
+                  });
+               }
+               else
+               {
+                  btn.show();
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Redemptions',
+                     message : me.redeemFailedMsg,
+                     callback : function()
+                     {
+                        me.onDoneTap();
+                     }
+                  });
+               }
+            }
+         });
+      };
+
+      if (Genesis.fn.isNative())
+      {
+         task = me.getLocalID(function(idx)
+         {
+            identifiers = idx;
+            task = null;
+            me.redeemItemFn(
+            {
+               'frequency' : Ext.encode(identifiers['localID'])
+            });
+         }, function()
+         {
+            viewport.setActiveController(null);
+            Ext.Viewport.setMasked(null);
+            me.onDoneTap();
+         });
+         viewport.setActiveController(me);
+      }
+      else
+      {
+         me.redeemItemFn(params);
+      }
+   },
    onRedeemItemTap : function(b, e, eOpts, eInfo)
    {
       var me = this, venue = null;
@@ -263,7 +508,7 @@ Ext.define('Genesis.controller.RedeemBase',
       tbbar.setTitle(me.getTitle());
       tbbar.removeCls('kbTitle');
       me.getRefreshBtn()['hide']();
-      me.getVerifyBtn()['hide']();
+      //me.getVerifyBtn()['hide']();
       me.getSRedeemBtn().show();
 
       console.log("RewardItem View - Updated RewardItem View.");
@@ -271,12 +516,15 @@ Ext.define('Genesis.controller.RedeemBase',
    onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
-      me.getSDoneBtn().hide();
+      if (me.getSDoneBtn)
+      {
+         me.getSDoneBtn().hide();
+      }
       if (Genesis.fn.isNative())
       {
          window.plugins.proximityID.stop();
       }
-      console.log("RewardItem View - Done with RewardItem View!");
+      console.log("onRedeemItemDeactivate - Done with RewardItem View!");
    },
 
    onDoneTap : function(b, e, eOpts, eInfo, overrideMode)
@@ -318,7 +566,10 @@ Ext.define('Genesis.controller.RedeemBase',
       {
          var dom = Ext.DomQuery.select('div.itemPoints',me.getRedeemItem().element.dom)[0];
          me.getSRedeemBtn().hide();
-         me.getSDoneBtn().show();
+         if (me.getSDoneBtn)
+         {
+            me.getSDoneBtn().show();
+         }
          me.getSCloseBB().hide();
          if (dom)
          {
@@ -339,29 +590,6 @@ Ext.define('Genesis.controller.RedeemBase',
       {
          console.debug("onShowItemQRCode - QR Code encoding Error");
       }
-   },
-   onRefreshQRCode : function(qrcodeMeta)
-   {
-      var me = this;
-
-      var view = me.getRedeemMainPage();
-      var carousel = view.query('carousel')[0];
-      var item = carousel ? carousel.getActiveItem() : view.getInnerItems()[0];
-
-      var info = item.query('component[tag=info]')[0];
-      info.hide();
-
-      var photo = item.query('component[tag=itemPhoto]')[0];
-      var img = Ext.get(Ext.DomQuery.select('img', photo.element.dom)[0]);
-      img.setStyle(
-      {
-         'width' : Genesis.fn.addUnit(qrcodeMeta[1] * 1.5),
-         'height' : Genesis.fn.addUnit(qrcodeMeta[2] * 1.5)
-      });
-      img.set(
-      {
-         'src' : qrcodeMeta[0]
-      });
    },
    // --------------------------------------------------------------------------
    // Page Navigation
@@ -393,7 +621,7 @@ Ext.define('Genesis.controller.RedeemBase',
       var page = null;
       switch (me.getRedeemMode())
       {
-      	case 'authReward' :
+         case 'authReward' :
          case 'redeemPrize' :
          case 'redeemReward' :
          {

@@ -472,31 +472,34 @@ Ext.define('Genesis.controller.Settings',
    {
       var me = this;
       me.getMerchantDevice().setValue(Genesis.fn.getPrivKey('venue'));
-
-      if (Genesis.fn.isNative())
-      {
-         nfc.addTagDiscoveredListener(me.writeTag, function()
-         {
-            console.log("Listening for NDEF tags");
-         }, function()
-         {
-            console.log("Failed to Listen for NDEF tags");
-         });
-      }
+      /*
+       if (Genesis.fn.isNative())
+       {
+       nfc.addTagDiscoveredListener(me.writeTag, function()
+       {
+       console.log("Listening for NDEF tags");
+       }, function()
+       {
+       console.log("Failed to Listen for NDEF tags");
+       });
+       }
+       */
    },
    onServerDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      if (Genesis.fn.isNative())
-      {
-         nfc.removeTagDiscoveredListener(me.writeTag, function()
-         {
-            console.log("Stopped Listening for NDEF tags");
-         }, function()
-         {
-            console.log("Failed to stop Listen for NDEF tags");
-         });
-      }
+      /*
+       if (Genesis.fn.isNative())
+       {
+       nfc.removeTagDiscoveredListener(me.writeTag, function()
+       {
+       console.log("Stopped Listening for NDEF tags");
+       }, function()
+       {
+       console.log("Failed to stop Listen for NDEF tags");
+       });
+       }
+       */
    },
    // --------------------------------------------------------------------------
    // Page Navigation

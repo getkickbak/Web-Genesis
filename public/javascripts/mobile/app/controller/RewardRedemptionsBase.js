@@ -1,11 +1,15 @@
-Ext.define('Genesis.controller.RedemptionsBase',
+Ext.define('Genesis.controller.RewardRedemptionsBase',
 {
    extend : 'Genesis.controller.RedeemBase',
+   requires : ['Ext.data.Store'],
    inheritableStatics :
    {
    },
+   xtype : 'rewardRedemptionsBaseCntlr',
+   controllerType : 'redemption',
    config :
    {
+      redeeemSuccessfulMsg : 'Reward selected has been successfully redeemed!',
       redeemInfoMsg : 'Getting the Redemptions List ...',
       browseMode : 'redeemBrowse',
       redeemMode : 'redeemReward',
@@ -35,7 +39,7 @@ Ext.define('Genesis.controller.RedemptionsBase',
          sDoneBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=done]',
          sRedeemBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=redeem]',
          refreshBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=refresh]',
-         verifyBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=verify]',
+         //verifyBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=verify]',
          redeemItem :
          {
             selector : 'showredeemitemdetailview[tag=redeemReward]',
@@ -71,11 +75,12 @@ Ext.define('Genesis.controller.RedemptionsBase',
             createView : 'onRedeemItemCreateView',
             activate : 'onRedeemItemActivate',
             deactivate : 'onRedeemItemDeactivate'
-         },
-         verifyBtn :
-         {
-            tap : 'popView'
-         }
+         }/*,
+          verifyBtn :
+          {
+          tap : 'popView'
+          }
+          */
       }
    },
    xtype : 'redemptionsBaseCntlr',
@@ -90,10 +95,37 @@ Ext.define('Genesis.controller.RedemptionsBase',
       //
       me.on(
       {
-         'redeemitem' : 'onRedeemItem',
          'showredeemitem' : 'onShowRedeemItem',
          'showQRCode' : 'onShowItemQRCode',
          'refreshQRCode' : 'onRefreshQRCode'
+      });
+      console.log("RewardRedemptionsBase Init");
+   },
+   // --------------------------------------------------------------------------
+   // Event Handler
+   // --------------------------------------------------------------------------
+   onRedeemItem : Ext.emptyFn,
+   onRefreshQRCode : function(qrcodeMeta)
+   {
+      var me = this;
+
+      var view = me.getRedeemMainPage();
+      var carousel = view.query('carousel')[0];
+      var item = carousel ? carousel.getActiveItem() : view.getInnerItems()[0];
+
+      var info = item.query('component[tag=info]')[0];
+      info.hide();
+
+      var photo = item.query('component[tag=itemPhoto]')[0];
+      var img = Ext.get(Ext.DomQuery.select('img', photo.element.dom)[0]);
+      img.setStyle(
+      {
+         'width' : Genesis.fn.addUnit(qrcodeMeta[1] * 1.5),
+         'height' : Genesis.fn.addUnit(qrcodeMeta[2] * 1.5)
+      });
+      img.set(
+      {
+         'src' : qrcodeMeta[0]
       });
    },
    // --------------------------------------------------------------------------

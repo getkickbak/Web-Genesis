@@ -51,6 +51,10 @@ Ext.define('Genesis.controller.server.Rewards',
           tap : 'onDoneTap'
           }
           */
+      },
+      listeners :
+      {
+         'rewarditem' : 'onRewardItem'
       }
    },
    maxValue : 1000.00,
@@ -122,23 +126,11 @@ Ext.define('Genesis.controller.server.Rewards',
       }
       console.debug("Rewards ContainerActivate Called.");
    },
-   onShowQrCodeTap : function(b, e, eOpts, eInfo)
+   onRewardItem : function()
    {
-      var me = this, task = null, identifiers = null;
-      var viewport = me.getViewPortCntlr();
-      var price = me.getPrice().getValue();
-      var precision = this.getPricePrecision(price);
-      if (precision < 2)
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Validation Error',
-            message : me.invalidPriceMsg
-         });
-         return;
-      }
+      var me = this, task = null, identifiers = null, viewport = me.getViewPortCntlr();
 
-      me.rewardItem = function(params)
+      me.rewardItemFn = function(params)
       {
          params = Ext.merge(params,
          {
@@ -247,7 +239,7 @@ Ext.define('Genesis.controller.server.Rewards',
          {
             identifiers = ids;
             task = null;
-            me.rewardItem(
+            me.rewardItemFn(
             {
                data :
                {
@@ -264,9 +256,25 @@ Ext.define('Genesis.controller.server.Rewards',
       }
       else
       {
-         me.rewardItem(
+         me.rewardItemFn(
          {
          });
+      }
+   },
+   onShowQrCodeTap : function(b, e, eOpts, eInfo)
+   {
+      var me = this, task = null, identifiers = null;
+      var viewport = me.getViewPortCntlr();
+      var price = me.getPrice().getValue();
+      var precision = this.getPricePrecision(price);
+      if (precision < 2)
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Validation Error',
+            message : me.invalidPriceMsg
+         });
+         return;
       }
 
       var container = me.getRewardsContainer();
@@ -291,6 +299,8 @@ Ext.define('Genesis.controller.server.Rewards',
          price : '$' + price
       });
       container.setActiveItem(1);
+
+      me.fireEvent('rewarditem');
    },
    onCalcBtnTap : function(b, e, eOpts, eInfo)
    {
@@ -347,7 +357,7 @@ Ext.define('Genesis.controller.server.Rewards',
    onNfc : function(nfcResult)
    {
       var me = this;
-      me.rewardItem(
+      me.rewardItemFn(
       {
          data :
          {
