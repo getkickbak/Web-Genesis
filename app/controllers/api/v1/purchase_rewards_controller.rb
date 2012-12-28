@@ -105,13 +105,13 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       end    
      
       if Common.request_status_set?(@request, :complete)
-        logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
+        logger.info("Venue(#{venue.id}) successfully completed Request(#{@request.id})")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
           format.json { render :json => { :success => true } }
         end  
       else
-        logger.info("Venue(#{@venue.id}) failed to complete Request(#{@request.id})")
+        logger.info("Venue(#{venue.id}) failed to complete Request(#{@request.id})")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
