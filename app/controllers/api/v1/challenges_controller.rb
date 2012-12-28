@@ -52,12 +52,6 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
             format.json { render :json => { :success => false, :message => t("api.challenges.start_failure").split('\n') } }
           end  
         end
-      end    
-    rescue DataMapper::SaveFailureError => e
-      logger.error("Exception: " + e.resource.errors.inspect)
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.challenges.start_failure").split('\n') } }
       end
     rescue StandardError => e
       logger.error("Exception: " + e.message)
@@ -67,8 +61,8 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       end  
     end
     
-    if @request
-      if Common.request_complete?(@request)
+    if defined? @request
+      if Common.request_status_set?(@request, :complete)
         logger.info("User(#{current_user.id}) successfully completed Request(#{@request.id})")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -96,30 +90,20 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       data_expiry_ts = Time.at(decrypted_data["expiry_ts"]/1000)  
       # Cache expires in 12 hrs
       if (data_expiry_ts >= Time.now) && Cache.add(data, true, 43200) 
-        Request.transaction do
-          frequency = JSON.parse(params[:frequency])
-          request_info = {
-            :type => RequestType::EARN_POINTS,
-            :frequency1 => frequency[0],
-            :frequency2 => frequency[1],
-            :frequency3 => frequency[2],
-            :latitude => @venue.latitude,
-            :longitude => @venue.longitude,
-            :data => data
-          }
-          @request = Request.create(request_info)
-        end
+        frequency = JSON.parse(params[:frequency])
+        request_info = {
+          :type => RequestType::EARN_POINTS,
+          :frequency1 => frequency[0],
+          :frequency2 => frequency[1],
+          :frequency3 => frequency[2],
+          :latitude => @venue.latitude,
+          :longitude => @venue.longitude,
+          :data => data
+        }
+        @request = Request.create(request_info)
       else
         raise "Authorization code expired"            
       end  
-    rescue DataMapper::SaveFailureError => e
-      logger.error("Exception: " + e.resource.errors.inspect)
-      Cache.delete(params[:data])
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.challenges.complete_request_failure").split('\n') } }
-      end
-      return
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       Cache.delete(params[:data])
@@ -130,7 +114,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       return
     end
     
-    if Common.request_complete?(@request)
+    if Common.request_status_set?(@request, :complete)
       logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -170,22 +154,23 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       if APP_PROP["SIMULATOR_MODE"]
         data = String.random_alphanumeric(32)
       else
-        if params[:data].nil?
+        if params[:frequency].nil?
           frequency = JSON.parse(params[:frequency])
           request_info = {
             :type => RequestType::EARN_POINTS,
             :frequency1 => frequency[0],
             :frequency2 => frequency[1],
             :frequency3 => frequency[2],
-            :latitude => params[:latitude] || @venue.latitude,
-            :longitude => params[:longitude] || @venue.longitude
-          }
-          request_id, data = Common.match_request(request_info)
-          if data.nil?
-            raise "No matching complete challenge request"
+            :latitude => @venue.latitude,
+            :longitude => @venue.longitude
+          }  
+          @request = Common.match_request(request_info)
+          if @request.nil?
+            raise "No matching challenge complete request"
           end
+          data = @request.data
         else
-          data = params[:data]
+          data = params[:data] 
         end  
       end
       if is_challenge_satisfied?
@@ -260,14 +245,11 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
             @msg = get_success_no_points_msg.split('\n')  
             log_msg = "User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because it is not eligible"
           end
-          if (defined? request_id) && request_id > 0
-            request = Request.get(request_id)
-            request.status = :complete
-            request.save
-          end
+          set_request_status(@request, :complete)
           render :template => '/api/v1/challenges/complete'
           logger.info(log_msg)
         else
+          set_request_status(@request, :failed)
           if satisfied && (not @invalid_code)
             msg = t("api.challenges.expired_code").split('\n')
             logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), authorization code expired")
@@ -284,13 +266,8 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           end 
         end
       end
-    rescue DataMapper::SaveFailureError => e
-      logger.error("Exception: " + e.resource.errors.inspect)
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.challenges.complete_failure").split('\n') } }
-      end
     rescue StandardError => e
+      set_request_status(@request, :failed)
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -318,11 +295,11 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           :latitude => params[:latitude],
           :longitude => params[:longitude]
         }
-        request_id, data = Common.match_request(request_info)
-        if data.nil?
+        @request = Common.match_request(request_info)
+        if @request.nil?
           raise "No matching referral request"
         end
-        decrypted_data = JSON.parse(data)
+        decrypted_data = JSON.parse(@request.data)
         merchant = Merchant.get(decrypted_data["merchant_id"])
         if merchant.nil?
           raise "No such merchant: #{decrypted_data["merchant_id"]}"
@@ -346,6 +323,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       end
       
       if merchant.status != :active
+        set_request_status(@request, :failed)
         logger.info("User(#{current_user.id}) failed to complete referral challenge at Merchant(#{merchant.id}), merchant is not active")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -359,6 +337,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
           @customer = Customer.create(merchant, current_user)
         else
+          set_request_status(@request, :failed)
           logger.info("User(#{current_user.id}) failed to complete referral challenge at Merchant(#{merchant.id}), account not compatible with merchant")
           respond_to do |format|
             #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -383,6 +362,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         authorized = true  
       end  
     rescue StandardError => e
+      set_request_status(@request, :failed)
       logger.error("Exception: " + e.message) 
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -394,6 +374,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
     logger.info("Complete Referral Challenge, Merchant(#{merchant.id}), Customer(#{@customer.id}), User(#{current_user.id})")
 
     if already_customer || (referrer_id == @customer.id)
+      set_request_status(@request, :failed)
       if ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id).nil?
         msg = t("api.challenges.already_customer").split('\n')
         logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge_id}), already a customer")
@@ -408,6 +389,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       return
     else
       if ReferralChallengeRecord.first(:referral_id => @customer.id)
+        set_request_status(@request, :failed)
         msg = t("api.challenges.already_referred").split('\n')
         logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge_id}), already referred")
         respond_to do |format|
@@ -430,14 +412,11 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
             :created_ts => now,
             :update_ts => now
           )
-          if (defined? request_id) && request_id > 0
-            request = Request.get(request_id)
-            request.status = :complete
-            request.save
-          end
+          set_request_status(@request, :complete)
           render :template => '/api/v1/challenges/complete_referral'
           logger.info("User(#{current_user.id}) successfully completed Referral Challenge(#{@challenge.id})")
         else  
+          set_request_status(@request, :failed)
           logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{@challenge.id}), invalid referral code")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -445,13 +424,8 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           end      
         end      
       end
-    rescue DataMapper::SaveFailureError => e
-      logger.error("Exception: " + e.resource.errors.inspect)
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.challenges.complete_referral_failure").split('\n') } }
-      end
     rescue StandardError => e
+      set_request_status(@request, :failed)
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }

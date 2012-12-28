@@ -3,7 +3,7 @@ require 'util/constant'
 class Request
   include DataMapper::Resource
     
-  Statuses = [:pending, :complete]
+  Statuses = [:pending, :failed, :complete]
     
   property :id, Serial
   property :type, String, :required => true, :default => ""
@@ -12,8 +12,8 @@ class Request
   property :frequency3, Integer, :required => true, :default => 0
   property :latitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :longitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
-  property :data, String, :required => true, :default => ""
-  property :status, Enum[:pending, :complete], :default => :pending
+  property :data, String, :default => ""
+  property :status, Enum[:pending, :failed, :complete], :default => :pending
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
   property :deleted_ts, ParanoidDateTime
@@ -28,7 +28,7 @@ class Request
       :frequency3 => request_info[:frequency3],
       :latitude => request_info[:latitude],
       :longitude => request_info[:longitude],
-      :data => request_info[:data]
+      :data => request_info[:data] || ""
     )
     request[:created_ts] = now
     request[:update_ts] = now

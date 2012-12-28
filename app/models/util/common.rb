@@ -204,7 +204,7 @@ class Common
     if Rails.env == 'production'
       c = lambda {
         return DataMapper.repository(:default).adapter.select(
-          "SELECT id, data, round( 6371000 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
+          "SELECT id, round( 6371000 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
           FROM requests WHERE type = ? AND abs(frequency1 - ?) <= 10 AND abs(frequency2 - ?) <= 10 AND abs(frequency3 - ?) <= 10 AND distance <= 100 AND deleted_ts IS NULL
           ORDER BY distance
           ASC LIMIT 0,1", request_info[:latitude], request_info[:longitude], request_info[:latitude], request_info[:type], request_info[:frequency1], request_info[:frequency2], request_info[:frequency3]
@@ -213,7 +213,7 @@ class Common
     else  
       c = lambda {
         return DataMapper.repository(:default).adapter.select(
-          "SELECT id, data, 0 AS distance
+          "SELECT id, 0 AS distance
           FROM requests WHERE type = ? AND abs(frequency1 - ?) <= 10 AND abs(frequency2 - ?) <= 10 AND abs(frequency3 - ?) <= 10 AND deleted_ts IS NULL
           ORDER BY id
           DESC LIMIT 0,1", request_info[:type], request_info[:frequency1], request_info[:frequency2], request_info[:frequency3]
@@ -221,32 +221,32 @@ class Common
       }
     end
     
-    n = 25 - 1
+    n = 50 - 1
     n.times do |x|
       request = c.call
       if request.length > 0
-        return request[0].id, request[0].data
+        return Request.get(request[0].id)
       elsif x < n
         sleep(0.2) 
       end
     end  
-    return 0, nil    
+    return nil    
   end
   
-  def self.request_complete?(request)
+  def self.request_status_set?(request, status)
     c = lambda {
       return DataMapper.repository(:default).adapter.select(
         "SELECT status from requests WHERE id = ? AND deleted_ts IS NULL", request.id
       )
     }
     
-    n = 100 - 1
+    n = 10 - 1
     n.times do |x|
       r = c.call
-      if r.length > 0 && r[0] == Request::Statuses.index(:complete)+1
-        return true
-      elsif r.length == 0
-        return false  
+      if r.length > 0 && r[0] != Request::Statuses.index(:pending)+1 
+        if r[0] == Request::Statuses.index(status)+1
+          return true
+        end    
       elsif x < n
         sleep(0.2)
       end
@@ -254,27 +254,11 @@ class Common
     return false 
   end
   
-  def self.delete_request(request_info)
-    now = Time.now
-    c = lambda {
-      return DataMapper.repository(:default).adapter.execute(
-        "UPDATE requests 
-        SET deleted_ts = ?
-        WHERE type = ? AND frequency1 = ? AND frequency2 = ? AND frequency3 = ? AND latitude = ? And longitude = ? AND deleted_ts IS NULL", 
-        now, request_info[:type], request_info[:frequency1], request_info[:frequency2], 
-        request_info[:frequency3], request_info[:latitude], request_info[:longitude]
-      )
-    }  
-    n = 5 - 1
-    n.times do |x|
-      r = c.call
-      if r == 1
-        return
-      elsif x < n
-        sleep(0.2)
-      end
-    end
-    return
+  def self.set_request_status(request, status)
+    if defined? request && request
+      request.status = :status
+      request.save
+    end  
   end
   
   def self.get_news(venue)

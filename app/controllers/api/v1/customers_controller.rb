@@ -53,15 +53,14 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       session[:resolution] = Common.get_thumbail_resolution(session[:user_agent], params[:device_pixel_ratio].to_f)
       @customer = Customer.first(:merchant => @venue.merchant, :user => user)
       if @customer.nil?
-        @customer = Customer.create(@venue.merchant, user)
+        logger.error("User(#{user.id}) is not a customer of Merchant(#{@venue.merchant})")
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => t("api.customers.invalid_customer").split('\n') } }
+        end
+        return
       end
-      render :template => '/api/v1/customers/show_account'  
-    rescue DataMapper::SaveFailureError => e
-      logger.error("Exception: " + e.resource.errors.inspect)
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.customers.show_failure").split('\n') } }
-      end
+      render :template => '/api/v1/customers/show_account'
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
@@ -177,13 +176,6 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
           return
         end
       end
-    rescue DataMapper::SaveFailureError => e
-      logger.error("Exception: " + e.resource.errors.inspect)
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
-      end
-      return
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
@@ -193,7 +185,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       return
     end    
     
-    if Common.request_complete?(@request)
+    if Common.request_status_set?(@request, :complete)
       logger.info("User(#{current_user.id}) successfully completed Request(#{@request.id})")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -215,7 +207,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
     invalid_code = false
     
     begin
-      if params[:data].nil?
+      if params[:frequency]
         frequency = JSON.parse(params[:frequency])
         request_info = {
           :type => RequestType::TRANSFER_POINTS,
@@ -225,11 +217,11 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
           :latitude => params[:latitude],
           :longitude => params[:longitude]
         }
-        request_id, data = Common.match_request(request_info)
-        if data.nil?
+        @request = Common.match_request(request_info)
+        if @request.nil?
           raise "No matching transfer points request"
         end
-        decrypted_data = JSON.parse(data)
+        decrypted_data = JSON.parse(@request.data)
         merchant = Merchant.get(decrypted_data["merchant_id"])
         if merchant.nil?
           raise "No such merchant: #{decrypted_data["merchant_id"]}"
@@ -252,6 +244,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       end
     
       if merchant.status != :active
+        set_request_status(@request, :failed)
         logger.info("User(#{current_user.id}) failed to receive points at Merchant(#{merchant.id}), merchant is not active")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -265,6 +258,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
           @customer = Customer.create(merchant, current_user)
         else
+          set_request_status(@request, :failed)
           logger.info("User(#{current_user.id}) failed to receive points at Merchant(#{merchant.id}), account not compatible with merchant")
           respond_to do |format|
             #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -288,6 +282,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         invalid_code = true 
       end  
     rescue StandardError => e
+      set_request_status(@request, :failed)
       logger.error("Exception: " + e.message)  
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -303,6 +298,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         if authorized
           sender = Customer.get(@record.sender_id)
           if sender.id == @customer.id
+            set_request_status(@request, :failed)
             logger.info("Customer(#{@customer.id}) failed to receive points from Customer(#{sender.id}), self transfer")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -353,17 +349,14 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             @record.status = :complete
             @record.update_ts = now
             @record.save 
-            if (defined? request_id) && request_id > 0
-              request = Request.get(request_id)
-              request.status = :complete
-              request.save
-            end
+            set_request_status(@request, :complete)
             render :template => '/api/v1/customers/receive_points'
             if decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL
               UserMailer.transfer_points_confirm_email(sender.user, current_user, merchant, @record).deliver
             end
             logger.info("Customer(#{@record.sender_id}) successfully received #{@record.points} points from Customer(#{@record.recipient_id})") 
           else
+            set_request_status(@request, :failed)
             logger.info("Customer(#{@customer.id}) failed to receive points, insufficient points")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -371,6 +364,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             end  
           end
         else
+          set_request_status(@request, :failed)
           if invalid_code
             msg = t("api.customers.invalid_transfer_code").split('\n')
             logger.info("Customer(#{@customer.id}) failed to receive points, invalid transfer code")
@@ -384,13 +378,8 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
           end
         end
       end
-    rescue DataMapper::SaveFailureError => e
-      logger.error("Exception: " + e.resource.errors.inspect)
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.customers.receive_points_failure").split('\n') } }
-      end
     rescue StandardError => e
+      set_request_status(@request, :failed)
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }

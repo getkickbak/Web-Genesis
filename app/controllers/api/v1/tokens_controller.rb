@@ -53,12 +53,6 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
           render :template => '/api/v1/tokens/create'
         end
       end
-    rescue DataMapper::SaveFailureError => e
-      logger.error("Exception: " + e.resource.errors.inspect)
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.tokens.create_failure").split('\n') } }
-      end
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
@@ -132,12 +126,6 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
         session[:user_agent] = Common.get_user_agent(request.env['HTTP_USER_AGENT'])
         session[:resolution] = Common.get_thumbail_resolution(session[:user_agent], params[:device_pixel_ratio].to_f)
         render :template => '/api/v1/tokens/create'
-      end
-    rescue DataMapper::SaveFailureError => e
-      logger.error("Exception: " + e.resource.errors.inspect)
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => t("api.tokens.create_from_facebook_failure").split('\n') } }
       end
     rescue StandardError => e
       logger.error("Exception: " + e.message)

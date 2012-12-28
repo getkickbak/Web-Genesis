@@ -94,12 +94,6 @@ class Api::V1::CheckInsController < Api::V1::BaseApplicationController
         @newsfeed = Common.get_news(@venue)
         render :template => '/api/v1/check_ins/create'
       end
-    rescue DataMapper::SaveFailureError => e
-      logger.error("Exception: " + e.resource.errors.inspect)
-      respond_to do |format|
-        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.check_ins.create_failure").split('\n') } }
-      end
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
