@@ -91,7 +91,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         end
         return  
       end 
-      if Common.request_status_set?(@request, :complete)
+      if @request.is_status?(:complete)
         render :template => '/api/v1/customer_rewards/merchant_redeem'  
         logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
       else
@@ -182,7 +182,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         :latitude => params[:latitude] || @venue.latitude,
         :longitude => params[:longitude] || @venue.longitude
       }
-      @request = Common.match_request(request_info)
+      @request = Request.match(request_info)
       if @request.nil?
         logger.info("No matching redeem reward request")
         respond_to do |format|
@@ -193,7 +193,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       else 
         request_data = JSON.parse(@request.data)
         if params[:id] != request_data["reward_id"]
-          Common.set_request_status(@request, :failed)
+          Request.set_status(@request, :failed)
           logger.error("Mismatch rewards,  reward id:#{params[:id]}, request reward_id:#{request_data["reward_id"]}")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -220,7 +220,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
     logger.info("Redeem Reward(#{@reward.id}), Type(#{@reward.type.value}), Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{user.id})")
 
     if user.status != :active
-      Common.set_request_status(@request, :failed)
+      Request.set_status(@request, :failed)
       logger.error("User: #{@current_user.id} is not active")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -230,7 +230,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
     end
                   
     if @venue.status != :active
-      Common.set_request_status(@request, :failed)
+      Request.set_status(@request, :failed)
       logger.info("User(#{user.id}) failed to redeem Reward(#{@reward.id}), venue is not active")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -241,7 +241,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
     
     reward_venue = CustomerRewardVenue.first(:customer_reward_id => @reward.id, :venue_id => @venue.id)
     if reward_venue.nil?
-      Common.set_request_status(@request, :failed)
+      Request.set_status(@request, :failed)
       logger.info("User(#{user.id}) failed to redeem Reward(#{@reward.id}), not available at venue")
       respond_to do |format|
         #format.html { redirect_to default_deal_path(:notice => 'Referral was successfully created.') }
@@ -259,7 +259,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         @customer.reload
         
         if @reward.time_limited && (@reward.expiry_date < Date.today)
-          Common.set_request_status(@request, :failed)
+          Request.set_status(@request, :failed)
           logger.info("User(#{user.id}) failed to redeem Reward(#{@reward.id}), time limited")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -268,7 +268,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           return
         end
         if @reward.quantity_limited && (@reward.quantity_count >= @reward.quantity)
-          Common.set_request_status(@request, :failed)
+          Request.set_status(@request, :failed)
           logger.info("User(#{user.id}) failed to redeem Reward(#{@reward.id}), quantity limited")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -322,11 +322,11 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           @customer.eligible_for_prize = eligible_for_prize
           @customer.update_ts = now
           @customer.save
-          Common.set_request_status(@request, :complete)
+          Request.set_status(@request, :complete)
           render :template => '/api/v1/customer_rewards/redeem'
           logger.info("User(#{user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")
         else
-          Common.set_request_status(@request, :failed)
+          Request.set_status(@request, :failed)
           logger.info("User(#{user.id}) failed to redeem Reward(#{@reward.id}), insufficient points")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -335,7 +335,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         end
       end
     rescue StandardError => e
-      Common.set_request_status(@request, :failed)
+      Request.set_status(@request, :failed)
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
