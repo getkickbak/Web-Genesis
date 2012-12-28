@@ -13,6 +13,7 @@ class Request
   property :latitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :longitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :data, String, :default => ""
+  property :channel, String, :defauilt => ""
   property :status, Enum[:pending, :failed, :complete], :default => :pending
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -34,5 +35,66 @@ class Request
     request[:update_ts] = now
     request.save
     return request
+  end
+  
+  def self.match_request(request_info)
+    if Rails.env == 'production'
+      c = lambda {
+        return DataMapper.repository(:default).adapter.select(
+          "SELECT id, round( 6371000 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
+          FROM requests WHERE type = ? AND abs(frequency1 - ?) <= 10 AND abs(frequency2 - ?) <= 10 AND abs(frequency3 - ?) <= 10 AND distance <= 100 AND deleted_ts IS NULL
+          ORDER BY distance
+          ASC LIMIT 0,1", request_info[:latitude], request_info[:longitude], request_info[:latitude], request_info[:type], request_info[:frequency1], request_info[:frequency2], request_info[:frequency3]
+        )
+      }
+    else  
+      c = lambda {
+        return DataMapper.repository(:default).adapter.select(
+          "SELECT id, 0 AS distance
+          FROM requests WHERE type = ? AND abs(frequency1 - ?) <= 10 AND abs(frequency2 - ?) <= 10 AND abs(frequency3 - ?) <= 10 AND deleted_ts IS NULL
+          ORDER BY id
+          DESC LIMIT 0,1", request_info[:type], request_info[:frequency1], request_info[:frequency2], request_info[:frequency3]
+        )  
+      }
+    end
+    
+    n = 50 - 1
+    n.times do |x|
+      request = c.call
+      if request.length > 0
+        return Request.get(request[0].id)
+      elsif x < n
+        sleep(0.2) 
+      end
+    end  
+    return nil    
+  end
+  
+  def self.set_status(request, status)
+    if defined? request && request
+      request.status = status
+      request.save
+    end  
+  end
+  
+  def is_status?(status)
+    c = lambda {
+      return DataMapper.repository(:default).adapter.select(
+        "SELECT status from requests WHERE id = ? AND deleted_ts IS NULL", self.id
+      )
+    }
+    
+    n = 10 - 1
+    n.times do |x|
+      r = c.call
+      if r.length > 0 && r[0] != Request::Statuses.index(:pending)+1 
+        if r[0] == Request::Statuses.index(status)+1
+          return true
+        end    
+      elsif x < n
+        sleep(0.2)
+      end
+    end  
+    return false 
   end
 end
