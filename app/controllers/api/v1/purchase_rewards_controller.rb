@@ -57,7 +57,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       end
       data = encrypted_data[1]
       #logger.debug("data: #{data}")
-      cipher = Gibberish::AES.new(@venue.auth_code)
+      cipher = Gibberish::AES.new(venue.auth_code)
       decrypted = cipher.dec(data)
       #logger.debug("decrypted text: #{decrypted}")
       decrypted_data = JSON.parse(decrypted) 
