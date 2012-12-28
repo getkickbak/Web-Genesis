@@ -405,42 +405,43 @@ Ext.define('Genesis.controller.client.Viewport',
          // ===============================
          // - For Mobile Phones
          //
+         // Client Device always transmits
+         //
          var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
          if (Ext.os.is('iOS'))
          {
-            s_vol_ratio = 0.4;
             //(tx)
-            r_vol_ratio = 1.0;
-            //(rx)
-            c.conseqMissThreshold = 4;
-            c.magThreshold = 400000 * 4;
-            // More samples for better accuracy
-            c.numSamples = 16 * 1024;
+            s_vol_ratio = 0.75;
             //Default Volume laying flat on a surface (tx)
-            c.s_vol = 100;
+            c.s_vol = 75;
+
+            r_vol_ratio = 0.9;
+            //(rx)
+            c.conseqMissThreshold = 16;
+            c.magThreshold = 0.25 * (400000);
+            // More samples for better accuracy
+            c.numSamples = 1 * (4 * 1024);
             //Default Overlap of FFT signal analysis over previous samples
             c.sigOverlapRatio = 0.25;
-
-            c.proximityTxTimeout = 40 * 1000;
-            c.proximityRxTimeout = 5 * 1000;
          }
          if (Ext.os.is('Android'))
          {
-            s_vol_ratio = 0.4;
             //(tx)
-            r_vol_ratio = 0.5;
+            s_vol_ratio = 0.75;
+            //Default Volume laying flat on a surface (tx)
+            c.s_vol = 75;
+
             //(rx)
+            r_vol_ratio = 0.5;
             c.conseqMissThreshold = 2;
             c.magThreshold = 400000;
             c.numSamples = 4 * 1024;
-            //Default Volume laying flat on a surface (tx)
-            c.s_vol = 80;
             //Default Overlap of FFT signal analysis over previous samples
             c.sigOverlapRatio = 0.25;
 
-            c.proximityTxTimeout = 40 * 1000;
-            c.proximityRxTimeout = 5 * 1000;
          }
+         c.proximityTxTimeout = 20 * 1000;
+         c.proximityRxTimeout = 40 * 1000;
          Genesis.fn.printProximityConfig();
          window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
       }

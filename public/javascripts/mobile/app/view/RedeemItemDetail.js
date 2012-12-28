@@ -109,6 +109,13 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
             text : 'Close'
          },
          {
+            hidden : true,
+            align : 'left',
+            tag : 'back',
+            ui : 'normal',
+            text : 'Back'
+         },
+         {
             align : 'right',
             tag : 'redeem',
             text : 'Redeem'
@@ -123,15 +130,15 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
       {
          docked : 'bottom',
          xtype : 'button',
-         margin : '0.8 0.7',
+         margin : '0 0.7 0.8 0.7',
          defaultUnit : 'em',
          tag : 'refresh',
-         text : 'Refresh',
+         text : 'Authorize another!',
          ui : 'orange-large'
       },
       {
          docked : 'bottom',
-         margin : '0.8 0.7',
+         margin : '0 0.7 0.8 0.7',
          defaultUnit : 'em',
          xtype : 'button',
          cls : 'separator',

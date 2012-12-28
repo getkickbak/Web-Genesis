@@ -51,12 +51,12 @@ Ext.define('Genesis.controller.ControllerBase',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
    getVenueInfoMsg : 'Retrieving Venue Information ...',
    prepareToSendMerchantDeviceMsg : 'Prepare to send data across to Merchant Device ...',
-   lookingForMerchantDeviceMsg : 'Place your device underneath the Merchant Device ...', //Send
-   detectMerchantDeviceMsg : 'Place your device underneath the Merchant Device ...', //Recv
+   lookingForMerchantDeviceMsg : 'Place your phone overtop the Merchant Device ...', //Send
+   detectMerchantDeviceMsg : 'Place your phone overtop the Merchant Device ...', //Recv
    // Merchant Device
    prepareToSendMobileDeviceMsg : 'Prepare to send data across to Mobile Device ...',
-   lookingForMobileDeviceMsg : 'Place the device overtop of the Mobile Device ...', //Send
-   detectMobileDeviceMsg : 'Place the device overtop the Mobile Device ...', //Recv
+   lookingForMobileDeviceMsg : 'Place the tablet under the Mobile Device ...', //Send
+   detectMobileDeviceMsg : 'Place the tablet under the Mobile Device ...', //Recv
    //
    //
    //
@@ -74,7 +74,7 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       return ('Error loading Venue information.' + errorMsg);
    },
-   showToServerMsg : 'Show this to your merchant before proceeding.',
+   showToServerMsg : 'Have your server bring out the Merchant Device before proceeding',
    errProcQRCodeMsg : 'Error Processing Authentication Code',
    cameraAccessMsg : 'Accessing your Camera Phone ...',
    updatingServerMsg : 'Updating Server ...',
@@ -250,6 +250,7 @@ Ext.define('Genesis.controller.ControllerBase',
                break;
             }
             default :
+               key = Genesis.fn.getPrivKey('r' + venueId);
                break;
          }
          var date;
@@ -930,46 +931,50 @@ Ext.define('Genesis.controller.ControllerBase',
       var task, atask;
       var cancel = function()
       {
+         Ext.Ajax.abort();
          if (me.send_vol != -1)
          {
             window.plugins.proximityID.setVolume(-1);
          }
          window.plugins.proximityID.stop();
-         clearInterval(atask);
+         //clearInterval(atask);
          clearInterval(task);
       }
       //create the delayed task instance with our callback
-      atask = window.setInterval(function()
-      {
-         me.accelerometerHandler(me.send_vol, function(v)
-         {
-            //console.debug('Accelerometer vol=' + vol + ' new_vol=' + v);
-            me.send_vol = v;
-         });
-      }, 400);
-      task = window.setInterval(function()
-      {
-         cancel();
-         Ext.device.Notification.show(
-         {
-            title : 'Local Identity',
-            message : "No Peers were discovered ...",
-            buttons : ['Try Again', 'Cancel'],
-            callback : function(btn)
-            {
-               if (btn.toLowerCase() != 'try again')
-               {
-                  fail();
-               }
-               else
-               {
-                  Ext.defer(me.broadcastLocalID, 1, me, [success, fail]);
-               }
-            }
-         });
-      }, c.proximityTxTimeout);
+      /*
+       atask = window.setInterval(function()
+       {
+       me.accelerometerHandler(me.send_vol, function(v)
+       {
+       //console.debug('Accelerometer vol=' + vol + ' new_vol=' + v);
+       me.send_vol = v;
+       });
+       }, 400);
+       */
       window.plugins.proximityID.send(function(result)
       {
+         task = window.setInterval(function()
+         {
+            cancel();
+            Ext.device.Notification.show(
+            {
+               title : 'Local Identity',
+               message : "No Peers were discovered ...",
+               buttons : ['Try Again', 'Cancel'],
+               callback : function(btn)
+               {
+                  if (btn.toLowerCase() != 'try again')
+                  {
+                     fail();
+                  }
+                  else
+                  {
+                     Ext.defer(me.broadcastLocalID, 1, me, [success, fail]);
+                  }
+               }
+            });
+         }, c.proximityTxTimeout);
+         console.log("ProximityID : Broacasting Local Identity ...");
          success(Genesis.fn.processSendLocalID(result, cancel));
       }, function(error)
       {
@@ -977,8 +982,6 @@ Ext.define('Genesis.controller.ControllerBase',
          cancel();
          fail();
       });
-
-      console.log("ProximityID : Broacasting Local Identity ...");
    },
    // --------------------------------------------------------------------------
    // Persistent Stores
