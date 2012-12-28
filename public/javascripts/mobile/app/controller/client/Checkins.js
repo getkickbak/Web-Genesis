@@ -62,7 +62,6 @@ Ext.define('Genesis.controller.client.Checkins',
    },
    metaDataMissingMsg : 'Missing Checkin MetaData information.',
    noCheckinCodeMsg : 'No Checkin Code found!',
-   loadingPlaces : 'Loading ...',
    init : function()
    {
       var me = this;
@@ -409,12 +408,12 @@ Ext.define('Genesis.controller.client.Checkins',
       };
       var cestore = Ext.StoreMgr.get('CheckinExploreStore'), proxy = cestore.getProxy();
 
+      Ext.Viewport.setMasked(null);
       if (!Genesis.db.getLocalDB()['csrf_code'])
       {
          var viewport = me.getViewPortCntlr();
          viewport.on('completeRefreshCSRF', function()
          {
-            Ext.Viewport.setMasked(null);
             me.onLocationUpdate(position);
          }, viewport,
          {
@@ -423,7 +422,11 @@ Ext.define('Genesis.controller.client.Checkins',
       }
       else
       {
-         Ext.Viewport.setMasked(null);
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.getVenueInfoMsg
+         });
          if (position)
          {
             params = Ext.apply(params,
@@ -447,6 +450,7 @@ Ext.define('Genesis.controller.client.Checkins',
 
                   tbb.setDisabled(false);
                   me.setPosition(position);
+                  console.debug("Found " + records.length + " venues.");
                }
                else
                {

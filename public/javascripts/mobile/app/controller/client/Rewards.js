@@ -59,7 +59,7 @@ Ext.define('Genesis.controller.client.Rewards',
          }
       }
    },
-   identifiers : null,
+   cannotDetermineLocationMsg : 'Cannot determine current location. Visit one of our venues to continue!',
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
    checkinFirstMsg : 'Please Check-In before earning rewards',
    authCodeReqMsg : 'Proceed to scan an Authorization Code from your merchant to earn Reward Pts!',
@@ -158,10 +158,7 @@ Ext.define('Genesis.controller.client.Rewards',
    onLocationUpdate : function(position)
    {
       var me = this;
-      if (position && me.identifiers)
-      {
-         me.rewardItem();
-      }
+      me.rewardItem();
    },
    // --------------------------------------------------------------------------
    // Rewards Page
@@ -325,19 +322,19 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    onEarnPtsSC : function(notUseGeolocation)
    {
-      var me = this, task;
-      var viewport = me.getViewPortCntlr();
+      var me = this, task, viewport = me.getViewPortCntlr(), identifiers = null;
 
       me.rewardItem = function()
       {
-         var identifiers = me.identifiers, position = viewport.getLastPosition(), localID = identifiers['localID'];
-         /*
-          Ext.device.Notification.show(
-          {
-          title : 'Local Identity',
-          message : identifiers['message']
-          });
-          */
+         //
+         // Not ready to process data
+         //
+         if (identifiers == null)
+         {
+            return;
+         }
+
+         var position = viewport.getLastPosition(), localID = identifiers['localID'];
          var venueId = (notUseGeolocation) ? viewport.getVenue().getId() : null;
          var reader = PurchaseReward.getProxy().getReader();
          var params =
@@ -349,6 +346,27 @@ Ext.define('Genesis.controller.client.Rewards',
          //
          if (!venueId)
          {
+            //
+            // We cannot use short cut method unless we have either GeoLocation or VenueId
+            //
+            if (!position)
+            {
+               //
+               // Stop broadcasting now ...
+               //
+               if (identifiers)
+               {
+                  identifiers['cancelFn']();
+               }
+               Ext.Viewport.setMasked(null);
+               Ext.device.Notification.show(
+               {
+                  title : 'Rewards',
+                  message : me.cannotDetermineLocationMsg
+               });
+               return;
+            }
+
             params = Ext.apply(params,
             {
                //'data' : me.qrcode,
@@ -363,17 +381,6 @@ Ext.define('Genesis.controller.client.Rewards',
                venue_id : venueId
             });
          }
-
-         //
-         // Stop receiving ProximityID
-         //
-         window.plugins.proximityID.stop();
-
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : me.establishConnectionMsg
-         });
          //
          // Triggers PrizeCheck and MetaDataChange
          // - subject CustomerReward also needs to be reset to ensure property processing of objects
@@ -391,7 +398,16 @@ Ext.define('Genesis.controller.client.Rewards',
             {
                reader.setRootProperty('data');
                reader.buildExtractors();
+               //
+               // Stop broadcasting now ...
+               //
+               if (identifiers)
+               {
+                  identifiers['cancelFn']();
+               }
                Ext.Viewport.setMasked(null);
+               Ext.device.Notification.beep();
+
                if (operation.wasSuccessful())
                {
                   //Genesis.db.removeLocalDBAttrib('last_check_in');
@@ -407,22 +423,9 @@ Ext.define('Genesis.controller.client.Rewards',
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
-            message : me.detectMerchantDeviceMsg,
-            listeners :
-            {
-               tap : function()
-               {
-                  if (task)
-                  {
-                     clearInterval(task);
-                  }
-                  window.plugins.proximityID.stop();
-                  Ext.Viewport.setMasked(null);
-               }
-            }
+            message : me.prepareToSendMerchantDeviceMsg
          });
          viewport.setLastPosition(null);
-         me.identifiers = null;
          //
          // Get GeoLocation and frequency markers
          //
@@ -430,9 +433,28 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             me.getGeoLocation();
          }
-         task = me.getLocalID(function(identifiers)
+         me.broadcastLocalID(function(idx)
          {
-            me.identifiers = identifiers;
+            identifiers = idx;
+            Ext.Viewport.setMasked(null);
+            Ext.Viewport.setMasked(
+            {
+               xtype : 'loadmask',
+               message : me.lookingForMerchantDeviceMsg,
+               listeners :
+               {
+                  tap : function()
+                  {
+                     Ext.Ajax.abort();
+                     if (identifiers)
+                     {
+                        identifiers['cancelFn']();
+                     }
+                     Ext.Viewport.setMasked(null);
+                  }
+               }
+            });
+            console.log("Broadcast underway ...");
             if (notUseGeolocation || viewport.getLocationPosition())
             {
                me.rewardItem();

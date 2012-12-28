@@ -61,7 +61,7 @@
          .itemDesc {
             font-style:italic;
             font-size:$normalFontSize !important;
-            padding:1.05em 0;
+            padding:0.8em 0;
          }
       }
       .badgephoto {
@@ -169,7 +169,8 @@
          }
          .badgephoto {
             .itemDesc {
-               padding:3.15em 0 1.15em 0 !important;
+               padding:2.25em 0 1.25em 0 !important;
+               //padding:3.15em 0 1.15em 0 !important;
             }
          }
       }

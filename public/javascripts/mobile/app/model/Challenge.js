@@ -38,7 +38,7 @@ Ext.define('Genesis.model.Challenge',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/challenges' : Ext.Loader.getPath("Genesis") + "/store/" + 'challenges.json');
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/challenges');
       },
       setCompleteChallengeURL : function(id)
       {
@@ -47,6 +47,14 @@ Ext.define('Genesis.model.Challenge',
             read : 'POST'
          });
          this.getProxy().setUrl(Genesis.constants.host + '/api/v1/challenges/' + id + '/complete');
+      },
+      setCompleteMerchantChallengeURL : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/challenges/merchant_complete');
       },
       setCompleteReferralChallengeURL : function()
       {

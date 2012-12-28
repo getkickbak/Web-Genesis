@@ -393,6 +393,7 @@ Ext.define('Genesis.controller.RedeemBase',
       var page = null;
       switch (me.getRedeemMode())
       {
+      	case 'authReward' :
          case 'redeemPrize' :
          case 'redeemReward' :
          {

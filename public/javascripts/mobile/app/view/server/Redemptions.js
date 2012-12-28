@@ -14,7 +14,7 @@ Ext.define('Genesis.view.server.Redemptions',
       layout : 'vbox',
       items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         title : 'Redemptions',
+         title : 'Rewards',
          items : [
          {
             align : 'left',

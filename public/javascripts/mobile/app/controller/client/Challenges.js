@@ -577,7 +577,8 @@ Ext.define('Genesis.controller.client.Challenges',
             {
                'position' : position
             };
-            me.scanQRCode();
+            me.completeChallenge(null, position);
+            //me.scanQRCode();
             break;
       }
    },
@@ -852,9 +853,13 @@ Ext.define('Genesis.controller.client.Challenges',
                   {
                      title : me.selectedItem.get('name') + ' Challenge',
                      message : me.showToServerMsg,
-                     callback : function()
+                     buttons : ['Proceed', 'Cancel'],
+                     callback : function(btn)
                      {
-                        me.getGeoLocation();
+                        if (btn.toLowerCase() == 'proceed')
+                        {
+                           me.getGeoLocation();
+                        }
                      }
                   });
                }
@@ -908,55 +913,158 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    completeChallenge : function(qrcode, position, eOpts, eInfo)
    {
-      var me = this;
-      var id, type, params;
-      if (!position)
-      {
-         type = 'referral';
-         id = me.reservedReferralId;
-         // Used for Receiving Referrals
-         params =
-         {
-         }
-         Challenge['setCompleteReferralChallengeURL']();
-      }
-      else
-      {
-         var viewport = me.getViewPortCntlr();
-         var venueId = viewport.getVenue().getId();
-         var customerId = viewport.getCustomer().getId();
-         id = me.selectedItem.getId();
-         type = me.selectedItem.get('type').value;
-         params =
-         {
-            venue_id : venueId,
-            latitude : position.coords.getLatitude(),
-            longitude : position.coords.getLongitude(),
-         }
-         Challenge['setCompleteChallengeURL'](id);
-      }
+      var me = this, task, viewport = me.getViewPortCntlr(), identifiers = null, id, type, params;
+      var venueId = viewport.getVenue().getId();
+      var customerId = viewport.getCustomer().getId();
 
-      console.log("Completing Challenge ID(" + id + ")");
-      Challenge.load(id,
+      me.challengeItem = function()
       {
-         jsonData :
+         //
+         // With or without Geolocation support
+         //
+         if (!venueId)
          {
-         },
-         params : Ext.apply(params,
-         {
-            'data' : qrcode
-         }),
-         callback : function(record, operation)
-         {
-            var metaData = Challenge.getProxy().getReader().metaData;
-            console.log('Challenge Completed(' + operation.wasSuccessful() + ')');
-            Ext.Viewport.setMasked(null);
-            if (operation.wasSuccessful() && metaData)
+            //
+            // We cannot use short cut method unless we have either GeoLocation or VenueId
+            //
+            /*
+             if (!position)
+             {
+             //
+             // Stop broadcasting now ...
+             //
+             if (identifiers)
+             {
+             identifiers['cancelFn']();
+             }
+             Ext.Viewport.setMasked(null);
+             Ext.device.Notification.show(
+             {
+             title : 'Rewards',
+             message : me.cannotDetermineLocationMsg
+             });
+             return;
+             }
+             */
+            params = Ext.apply(params,
             {
-               me.fireEvent('challengecomplete', type, qrcode, venueId, customerId, position);
-            }
+               //'data' : me.qrcode,
+               'latitude' : position.coords.getLatitude(),
+               'longitude' : position.coords.getLongitude()
+            });
          }
-      });
+         else
+         {
+            params = Ext.apply(params,
+            {
+               venue_id : venueId
+            });
+         }
+
+         if (qrcode)
+         {
+            params = Ext.apply(params,
+            {
+               'data' : qrcode
+            });
+         }
+         else
+         {
+            var localID = identifiers['localID'];
+            params = Ext.apply(params,
+            {
+               'frequency' : Ext.encode(localID)
+            });
+         }
+
+         console.log("Completing Challenge ID(" + id + ")");
+         Challenge.load(id,
+         {
+            jsonData :
+            {
+            },
+            params : params,
+            callback : function(record, operation)
+            {
+               var metaData = Challenge.getProxy().getReader().metaData;
+               console.log('Challenge Completed(' + operation.wasSuccessful() + ')');
+               //
+               // Stop broadcasting now ...
+               //
+               if (identifiers)
+               {
+                  identifiers['cancelFn']();
+               }
+               Ext.Viewport.setMasked(null);
+               Ext.device.Notification.beep();
+
+               if (operation.wasSuccessful() && metaData)
+               {
+                  me.fireEvent('challengecomplete', type, qrcode, venueId, customerId, position);
+               }
+            }
+         });
+      };
+
+      if (Genesis.fn.isNative())
+      {
+         if (!position)
+         {
+            id = me.reservedReferralId;
+            type = 'referral';
+            // Used for Receiving Referrals
+            params =
+            {
+            }
+            Challenge['setCompleteReferralChallengeURL']();
+            me.challengeItem();
+         }
+         else
+         {
+            id = me.selectedItem.getId();
+            type = me.selectedItem.get('type').value;
+            params =
+            {
+               venue_id : venueId,
+               latitude : position.coords.getLatitude(),
+               longitude : position.coords.getLongitude(),
+            }
+            Challenge['setCompleteChallengeURL'](id);
+
+            Ext.Viewport.setMasked(
+            {
+               xtype : 'loadmask',
+               message : me.prepareToSendMerchantDeviceMsg
+            });
+            me.broadcastLocalID(function(idx)
+            {
+               identifiers = idx;
+               Ext.Viewport.setMasked(null);
+               Ext.Viewport.setMasked(
+               {
+                  xtype : 'loadmask',
+                  message : me.lookingForMerchantDeviceMsg,
+                  listeners :
+                  {
+                     tap : function()
+                     {
+                        Ext.Ajax.abort();
+                        if (identifiers)
+                        {
+                           identifiers['cancelFn']();
+                        }
+                        Ext.Viewport.setMasked(null);
+                     }
+                  }
+               });
+               console.log("Broadcast underway ...");
+               me.challengeItem();
+            }, function()
+            {
+               Ext.Viewport.setMasked(null);
+            });
+         }
+      }
    },
    // --------------------------------------------------------------------------
    // Referrals Challenge Page

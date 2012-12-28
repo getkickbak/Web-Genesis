@@ -1534,7 +1534,10 @@ Ext.define('Genesis.data.proxy.OfflineServer',
          me.setException(operation, response);
       }
 
-      errorHandler();
+      if (!response.aborted)
+      {
+         errorHandler();
+      }
       me.afterRequest(request, success);
    },
    /**

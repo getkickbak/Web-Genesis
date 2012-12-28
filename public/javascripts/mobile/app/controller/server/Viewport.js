@@ -249,22 +249,21 @@ Ext.define('Genesis.controller.server.Viewport',
          // - For Merchant Devices
          if (Ext.os.is('iOS'))
          {
-            s_vol_ratio = 0.4;
-            //(tx)
-            r_vol_ratio = 1.0;
-            //(rx)
-            c.conseqMissThreshold = 4;
-            c.magThreshold = 4 * (400000);
-            // More samples for better accuracy
-            c.numSamples = 4 * (4 * 1024);
-            //Default Volume laying flat on a surface
-            c.s_vol = 100;
-            //Default Overlap of FFT signal analysis over previous samples
-            c.sigOverlapRatio = 0.25;
-
-            c.proximityTxTimeout = 40 * 1000;
-            c.proximityRxTimeout = 5 * 1000;
+            Ext.device.Notification.show(
+            {
+               title : 'System Setup',
+               message : 'This platform is not supported.',
+               callback : function(btn)
+               {
+                  return;
+               }
+            });
+            return;
          }
+         //
+         // Merchant Device always receives
+         //
+         else
          if (Ext.os.is('Android'))
          {
             s_vol_ratio = 0.4;
@@ -277,8 +276,8 @@ Ext.define('Genesis.controller.server.Viewport',
             //Default Overlap of FFT signal analysis over previous samples
             c.sigOverlapRatio = 0.25;
 
-            c.proximityTxTimeout = 40 * 1000;
-            c.proximityRxTimeout = 5 * 1000;
+            c.proximityTxTimeout = 20 * 1000;
+            c.proximityRxTimeout = 40 * 1000;
          }
          Genesis.fn.printProximityConfig();
          window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);

@@ -131,17 +131,17 @@ Ext.define('Genesis.model.Customer',
       {
          this.getProxy().setActionMethods(
          {
-            read : (!debugMode) ? 'POST' : 'GET'
+            read : 'POST'
          });
-         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/tokens/create_from_facebook' : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/tokens/create_from_facebook');
       },
       setLoginUrl : function()
       {
          this.getProxy().setActionMethods(
          {
-            read : (!debugMode) ? 'POST' : 'GET'
+            read : 'POST'
          });
-         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/tokens' : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/tokens');
       },
       setLogoutUrl : function(auth_code)
       {
@@ -155,9 +155,9 @@ Ext.define('Genesis.model.Customer',
       {
          this.getProxy().setActionMethods(
          {
-            read : (!debugMode) ? 'POST' : 'GET'
+            read : 'POST'
          });
-         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/sign_up' : Ext.Loader.getPath("Genesis") + "/store/" + 'customers.json');
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/sign_up');
       },
       setGetCustomerUrl : function()
       {
@@ -175,9 +175,9 @@ Ext.define('Genesis.model.Customer',
       {
          this.getProxy().setActionMethods(
          {
-            read : (!debugMode) ? 'POST' : 'GET'
+            read : 'POST'
          });
-         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/check_ins' : Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/check_ins');
       },
       setVenueExploreUrl : function(venueId)
       {
@@ -185,7 +185,7 @@ Ext.define('Genesis.model.Customer',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/venues/' + venueId + '/explore' : Ext.Loader.getPath("Genesis") + "/store/" + 'customerCheckin.json');
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/venues/' + venueId + '/explore');
       },
       setSendPtsXferUrl : function()
       {

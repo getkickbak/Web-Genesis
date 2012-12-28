@@ -47,7 +47,7 @@ Ext.define('Genesis.model.PurchaseReward',
          {
             read : 'GET'
          });
-         this.getProxy().setUrl((!debugMode) ? Genesis.constants.host + '/api/v1/purchase_rewards' : Ext.Loader.getPath("Genesis") + "/store/" + 'rewards.json');
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/purchase_rewards');
       },
       setEarnPointsURL : function()
       {

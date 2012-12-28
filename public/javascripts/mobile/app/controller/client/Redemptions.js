@@ -100,34 +100,39 @@ Ext.define('Genesis.controller.client.Redemptions',
          });
       };
 
-      Ext.Viewport.setMasked(
+      if (Genessis.fn.isNative())
       {
-         xtype : 'loadmask',
-         message : (Genesis.fn.isNative()) ? me.prepareToSendMerchantDeviceMsg : me.retrievingQRCodeMsg,
-         listeners :
+         Ext.Viewport.setMasked(
          {
-            tap : function()
-            {
-               Ext.Ajax.abort();
-               if (identifiers)
-               {
-                  identifiers['cancelFn']();
-               }
-               Ext.Viewport.setMasked(null);
-               me.onDoneTap();
-            }
-         }
-      });
-      if (Genesis.fn.isNative())
-      {
+            xtype : 'loadmask',
+            message : me.prepareToSendMerchantDeviceMsg
+         });
          me.broadcastLocalID(function(ids)
          {
             identifiers = ids;
+            Ext.Viewport.setMasked(null);
+            Ext.Viewport.setMasked(
+            {
+               xtype : 'loadmask',
+               message : me.lookingForMerchantDeviceMsg,
+               listeners :
+               {
+                  tap : function()
+                  {
+                     Ext.Ajax.abort();
+                     if (identifiers)
+                     {
+                        identifiers['cancelFn']();
+                     }
+                     Ext.Viewport.setMasked(null);
+                     me.onDoneTap();
+                  }
+               }
+            });
             me.redeemItem(Ext.apply(params,
             {
                'frequency' : Ext.encode(identifiers['localID'])
             }));
-            Ext.Viewport.getMasked().setMessage(me.lookingForMerchantDeviceMsg);
          }, function()
          {
             Ext.Viewport.setMasked(null);

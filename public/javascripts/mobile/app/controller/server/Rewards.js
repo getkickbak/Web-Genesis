@@ -124,7 +124,7 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    onShowQrCodeTap : function(b, e, eOpts, eInfo)
    {
-      var me = this;
+      var me = this, task = null, identifiers = null;
       var viewport = me.getViewPortCntlr();
       var price = me.getPrice().getValue();
       var precision = this.getPricePrecision(price);
@@ -137,9 +137,8 @@ Ext.define('Genesis.controller.server.Rewards',
          });
          return;
       }
-      me.identifiers = null;
 
-      me.rewardItem = function(params, isTag)
+      me.rewardItem = function(params)
       {
          params = Ext.merge(params,
          {
@@ -149,13 +148,33 @@ Ext.define('Genesis.controller.server.Rewards',
                "amount" : price,
                "type" : 'earn_points',
                'expiry_ts' : new Date().addHours(3).getTime()
-            },
-            'is_tag' : isTag
+            }
          });
          params['data'] = me.self.encryptFromParams(params['data']);
+
+         //
+         // Stop receiving data from NFC
+         //
+         viewport.setActiveController(null);
+         if (task)
+         {
+            clearInterval(task);
+         }
+         //
+         // Stop receiving ProximityID
+         //
+         if (Genesis.fn.isNative())
+         {
+            window.plugins.proximityID.stop();
+         }
          //
          // Updating Server ...
          //
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.establishConnectionMsg
+         });
          console.log("Updating Server with EarnPoints information ...");
          PurchaseReward['setMerchantEarnPointsURL']();
          PurchaseReward.load(1,
@@ -168,17 +187,7 @@ Ext.define('Genesis.controller.server.Rewards',
             params : params,
             callback : function(record, operation)
             {
-               //
-               // Stop broadcasting now ...
-               //
-               if (me.identifiers)
-               {
-                  me.identifiers['cancelFn']();
-               }
-               viewport.setActiveController(null);
                Ext.Viewport.setMasked(null);
-               Ext.device.Notification.beep();
-
                if (operation.wasSuccessful())
                {
                   Ext.device.Notification.show(
@@ -210,17 +219,23 @@ Ext.define('Genesis.controller.server.Rewards',
       Ext.Viewport.setMasked(
       {
          xtype : 'loadmask',
-         message : (Genesis.fn.isNative()) ? me.prepareToSendMobileDeviceMsg : me.genQRCodeMsg,
+         message : (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg : me.genQRCodeMsg,
          listeners :
          {
             tap : function()
             {
-               Ext.Ajax.abort();
-               if (me.identifiers)
-               {
-                  me.identifiers['cancelFn']();
-               }
                viewport.setActiveController(null);
+               if (task)
+               {
+                  clearInterval(task);
+               }
+               //
+               // Stop receiving ProximityID
+               //
+               if (Genesis.fn.isNative())
+               {
+                  window.plugins.proximityID.stop();
+               }
                Ext.Viewport.setMasked(null);
                me.onDoneTap();
             }
@@ -228,27 +243,30 @@ Ext.define('Genesis.controller.server.Rewards',
       });
       if (Genesis.fn.isNative())
       {
-         me.broadcastLocalID(function(ids)
+         task = me.getLocalID(function(ids)
          {
-            viewport.setActiveController(me);
-            me.identifiers = ids;
+            identifiers = ids;
+            task = null;
             me.rewardItem(
             {
                data :
                {
                },
-               'frequency' : Ext.encode(me.identifiers['localID'])
-            }, false);
-            Ext.Viewport.getMasked().setMessage(me.lookingForMobileDeviceMsg);
+               'frequency' : Ext.encode(identifiers['localID'])
+            });
          }, function()
          {
             viewport.setActiveController(null);
             Ext.Viewport.setMasked(null);
+            me.onDoneTap();
          });
+         viewport.setActiveController(me);
       }
       else
       {
-         me.rewardItem(params, false);
+         me.rewardItem(
+         {
+         });
       }
 
       var container = me.getRewardsContainer();
@@ -329,25 +347,13 @@ Ext.define('Genesis.controller.server.Rewards',
    onNfc : function(nfcResult)
    {
       var me = this;
-      var viewport = me.getViewPortCntlr();
-      //
-      // Stop receiving data from NFC / ProximityID
-      //
-      if (me.identifiers)
-      {
-         me.identifiers['cancelFn']();
-      }
-      viewport.setActiveController(null);
-      Ext.Viewport.getMasked().setMessage(me.establishConnectionMsg);
-
       me.rewardItem(
       {
          data :
          {
             'tag_id' : (nfcResult) ? nfcResult['tagID'] : null
-         },
-         'frequency' : Ext.encode(me.identifiers['localID'])
-      }, true);
+         }
+      });
    },
    // --------------------------------------------------------------------------
    // Page Navigation
