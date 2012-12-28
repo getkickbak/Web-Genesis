@@ -157,7 +157,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             raise "No such venue: #{encrypted_data[0]}"
           end
           if @venue_id && (@venue.id != @venue_id.to_i)
-            set_request_status(@request, :failed)
+            Common.set_request_status(@request, :failed)
             logger.error("Mismatch venue information', venue_id:#{@venue_id}, venue id:#{@venue.id}")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -231,7 +231,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @current_user = current_user  
         end
         if @current_user.status != :active
-          set_request_status(@request, :failed)
+          Common.set_request_status(@request, :failed)
           logger.error("User: #{@current_user.id} is not active")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -258,7 +258,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           invalid_code = true
         end
       rescue StandardError => e
-        set_request_status(@request, :failed)
+        Common.set_request_status(@request, :failed)
         logger.error("Exception: " + e.message)
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -269,7 +269,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
     end
 
     if @venue.status != :active
-      set_request_status(@request, :failed)
+      Common.set_request_status(@request, :failed)
       logger.info("User(#{@current_user.id}) failed to earn points at Venue(#{@venue.id}), venue is not active")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -286,7 +286,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       if (@venue.merchant.role == "merchant" && @current_user.role == "user") || (@venue.merchant.role == "test" && @current_user.role == "test") || @current_user.role = "admin"
         @customer = Customer.create(@venue.merchant, @current_user)
       else
-        set_request_status(@request, :failed)
+        Common.set_request_status(@request, :failed)
         logger.info("User(#{@current_user.id}) failed to earn points at Merchant(#{@venue.merchant.id}), account not compatible with merchant")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -299,7 +299,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
     logger.info("Earn Points at Venue(#{@venue.id}), Customer(#{@customer.id}), User(#{@current_user.id})")
 
     if @venue.merchant.will_terminate && (Date.today > (@venue.merchant.terminate_date - 30))
-      set_request_status(@request, :failed)
+      Common.set_request_status(@request, :failed)
       logger.info("User(#{@current_user.id}) failed to earn points at Merchant(#{@venue.merchant.id}), program is being terminated")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -611,7 +611,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             @rewards = rewards
             @prizes = prizes
           end
-          set_request_status(@request, :complete)
+          Common.set_request_status(@request, :complete)
           render :template => '/api/v1/purchase_rewards/earn'
           if tag && (@reward_info[:prize_points] > 1 || @reward_info[:badge_prize_points] > 0)
             UserMailer.reward_notif_email(@customer, @reward_info).deliver
@@ -621,7 +621,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           end
           logger.info("User(#{@current_user.id}) successfully earned #{@reward_info[:points]} points, #{@reward_info[:signup_points]} signup points, #{@reward_info[:referral_points]} referral points, #{@reward_info[:prize_points]} prize points, #{@reward_info[:badge_prize_points]} badge prize points at Venue(#{@venue.id})")
         else
-          set_request_status(@request, :failed)
+          Common.set_request_status(@request, :failed)
           if invalid_code
             logger.info("User(#{@current_user.id}) failed to earn points at Venue(#{@venue.id}), invalid authorization code")
           else
@@ -634,7 +634,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         end
       end
     rescue StandardError => e
-      set_request_status(@request, :failed)
+      Common.set_request_status(@request, :failed)
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }

@@ -244,7 +244,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       end
     
       if merchant.status != :active
-        set_request_status(@request, :failed)
+        Common.set_request_status(@request, :failed)
         logger.info("User(#{current_user.id}) failed to receive points at Merchant(#{merchant.id}), merchant is not active")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -258,7 +258,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
           @customer = Customer.create(merchant, current_user)
         else
-          set_request_status(@request, :failed)
+          Common.set_request_status(@request, :failed)
           logger.info("User(#{current_user.id}) failed to receive points at Merchant(#{merchant.id}), account not compatible with merchant")
           respond_to do |format|
             #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -282,7 +282,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         invalid_code = true 
       end  
     rescue StandardError => e
-      set_request_status(@request, :failed)
+      Common.set_request_status(@request, :failed)
       logger.error("Exception: " + e.message)  
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -298,7 +298,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         if authorized
           sender = Customer.get(@record.sender_id)
           if sender.id == @customer.id
-            set_request_status(@request, :failed)
+            Common.set_request_status(@request, :failed)
             logger.info("Customer(#{@customer.id}) failed to receive points from Customer(#{sender.id}), self transfer")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -349,14 +349,14 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             @record.status = :complete
             @record.update_ts = now
             @record.save 
-            set_request_status(@request, :complete)
+            Common.set_request_status(@request, :complete)
             render :template => '/api/v1/customers/receive_points'
             if decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL
               UserMailer.transfer_points_confirm_email(sender.user, current_user, merchant, @record).deliver
             end
             logger.info("Customer(#{@record.sender_id}) successfully received #{@record.points} points from Customer(#{@record.recipient_id})") 
           else
-            set_request_status(@request, :failed)
+            Common.set_request_status(@request, :failed)
             logger.info("Customer(#{@customer.id}) failed to receive points, insufficient points")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -364,7 +364,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             end  
           end
         else
-          set_request_status(@request, :failed)
+          Common.set_request_status(@request, :failed)
           if invalid_code
             msg = t("api.customers.invalid_transfer_code").split('\n')
             logger.info("Customer(#{@customer.id}) failed to receive points, invalid transfer code")
@@ -379,7 +379,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         end
       end
     rescue StandardError => e
-      set_request_status(@request, :failed)
+      Common.set_request_status(@request, :failed)
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
