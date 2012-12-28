@@ -256,7 +256,7 @@ class Common
   
   def self.set_request_status(request, status)
     if defined? request && request
-      request.status = :status
+      request.status = status
       request.save
     end  
   end
