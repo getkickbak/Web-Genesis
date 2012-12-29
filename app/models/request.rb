@@ -76,7 +76,7 @@ class Request
       request.status = status
       request.save
       c = File.open(request.channel, "w+")
-      c.puts status.to_str
+      c.puts status.to_s
       c.flush
     end  
   end
@@ -85,7 +85,7 @@ class Request
     begin
       timer = Timer.new("one_time",  2) {
         c = File.open(self.channel, "w+")
-        c.puts :failed.to_str
+        c.puts :failed.to_s
         c.flush
       }
       c = File.open(self.channel, "r+")
