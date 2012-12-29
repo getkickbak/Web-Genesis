@@ -166,8 +166,6 @@ Ext.define('Genesis.controller.server.Viewport',
             var metaData = Venue.getProxy().getReader().metaData;
             if (operation.wasSuccessful() && metaData)
             {
-               Ext.Viewport.setMasked(null);
-
                viewport.setVenue(record);
                viewport.setMetaData(metaData);
                info.venue = viewport.getVenue();
@@ -177,6 +175,7 @@ Ext.define('Genesis.controller.server.Viewport',
                //console.debug("Record[" + Ext.encode(record) + "]");
                //console.debug("MetaData[" + Ext.encode(metaData) + "]");
                callback();
+               Ext.Viewport.setMasked(null);
                return;
             }
             else

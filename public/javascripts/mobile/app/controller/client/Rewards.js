@@ -488,9 +488,21 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         //var earnPts = Ext.bind(me.onEarnPtsSC, me);
-         //me.checkReferralPrompt(earnPts, earnPts);
-         me.fireEvent('rewarditem', true);
+         Ext.device.Notification.show(
+         {
+            title : 'Earn Reward Points',
+            message : me.showToServerMsg,
+            buttons : ['Proceed', 'Cancel'],
+            callback : function(btn)
+            {
+               if (btn.toLowerCase() == 'proceed')
+               {
+                  //var earnPts = Ext.bind(me.onEarnPtsSC, me);
+                  //me.checkReferralPrompt(earnPts, earnPts);
+                  me.fireEvent('rewarditem', true);
+               }
+            }
+         });
       }
    },
    updateMetaDataInfo : function(metaData)
@@ -611,10 +623,6 @@ Ext.define('Genesis.controller.client.Rewards',
             break;
          }
          case 'rewardsSC':
-         {
-         	me.fireEvent('rewarditem');
-            break;
-         }
          case 'rewards':
          {
             me.onEarnPts();
