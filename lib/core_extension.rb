@@ -1,6 +1,3 @@
-require 'syscall'
-require 'sys/stat'
-
 class String
   def self.random_alphanumeric(size=16)
     s = ""
@@ -29,10 +26,4 @@ end
 
 class BigDecimal
   def as_json(options = nil) self end
-end
-
-class File
-  def self.mkfifo(path, mode = 0666)
-    Syscall.mknod(path, Stat::IFIFO|mode, 0)
-  end
 end

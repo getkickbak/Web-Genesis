@@ -7,7 +7,7 @@ class Channel
   end
   
   def self.add(channel)
-    File.mkfifo(channel)
+    system("mkfifo #{channel}")
     free_channels = @@memcache.get("FREE_CHANNELS")    
     free_channels[channel] = channel
   end
