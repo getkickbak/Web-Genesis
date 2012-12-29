@@ -1,5 +1,5 @@
 class Timer
-  def initialiize(mode, interval, &block)
+  def initialize(mode, interval, &block)
     if mode == "one_time"
       @thread = Thread.new {
         Rails.logger.info("About to sleep")
