@@ -118,6 +118,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
         end
       end
+      @request.destroy
     else
       earn_common
     end      
