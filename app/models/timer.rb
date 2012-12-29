@@ -16,6 +16,6 @@ class Timer
   end
 
   def cancel
-    Thread.exit(@thread)
+    @thread.exit
   end
 end
