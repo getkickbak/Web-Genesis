@@ -16,15 +16,18 @@ class Channel
     reserve_channels = @@memcache.get("RESERVE_CHANNELS")
     free_channels = @@memcache.get("FREE_CHANNELS")
     channel = free_channels.shift
-    reserve_channels[channel[0]] = channel[1]
-    channel[0]
+    if channel
+      reserve_channels[channel[0]] = channel[1]
+    else
+      raise "Cannot reserve channel"
+    end    
   end
   
   def self.free(channel)
     free_channels = @@memcache.get("FREE_CHANNELS")  
     reserve_channels = @@memcache.get("RESERVE_CHANNELS")
-    reserve_channels.delete(channel)
-    free_channels[channel] = channel
+    free_channel = reserve_channels.delete(channel)
+    (free_channels[free_channel] = free_channel) if not free_channel.nil?
   end
   
   def self.memcache=(memcache)
