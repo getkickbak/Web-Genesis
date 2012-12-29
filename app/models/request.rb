@@ -83,23 +83,16 @@ class Request
   
   def is_status?(status)
     begin
-      Rails.logger.info("Creating timer")
       timer = Timer.new("one_time",  2) {
-        Rails.logger.info("Inside timer callback")
         c = File.open(self.channel, "w+")
         c.puts :failed.to_s
         c.flush
-        Rails.logger.info("Timer expired")
       }
-      Rails.logger.info("After create timer")
       c = File.open(self.channel, "r+")
       r = c.gets 
-      Rails.logger.info("Got results back")
       timer.cancel
     ensure
-      Rails.logger.info("Freeing channel")
       Channel.free(self.channel)
-      Rails.logger.info("After freeing channel")
       if (defined? r) && r
         r.to_sym == status ? true : false
       else
