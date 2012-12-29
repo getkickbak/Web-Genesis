@@ -98,7 +98,8 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           :frequency3 => frequency[2],
           :latitude => @venue.latitude,
           :longitude => @venue.longitude,
-          :data => data
+          :data => data,
+          :channel => Channel.reserve
         }
         @request = Request.create(request_info)
       else
@@ -535,7 +536,8 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
             :frequency3 => frequency[2],
             :latitude => params[:latitude],
             :longitude => params[:longitude],
-            :data => data
+            :data => data,
+            :channel => Channel.reserve
           }
           @request = Request.create(request_info)
 =end          

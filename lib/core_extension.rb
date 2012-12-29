@@ -1,3 +1,6 @@
+require 'syscall'
+require 'sys/stat'
+
 class String
   def self.random_alphanumeric(size=16)
     s = ""
@@ -16,7 +19,7 @@ class String
     if options && options[:caps]
       params[:a] = "A"
       params[:an] = "An"
-    else  
+    else
       params[:a] = "a"
       params[:an] = "an"
     end
@@ -26,4 +29,10 @@ end
 
 class BigDecimal
   def as_json(options = nil) self end
+end
+
+class File
+  def self.mkfifo(path, mode = 0666)
+    Syscall.mknod(path, Stat::IFIFO|mode, 0)
+  end
 end

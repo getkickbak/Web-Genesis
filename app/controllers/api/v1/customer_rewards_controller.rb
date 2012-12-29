@@ -80,7 +80,8 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           :frequency3 => frequency[2],
           :latitude => @venue.latitude,
           :longitude => @venue.longitude,
-          :data => data
+          :data => data,
+          :channel => Channel.reserve
         }
         @request = Request.create(request_info)
       rescue StandardError => e
