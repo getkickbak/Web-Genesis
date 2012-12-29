@@ -129,6 +129,7 @@ Ext.define('Genesis.controller.server.Rewards',
    onRewardItem : function()
    {
       var me = this, task = null, identifiers = null, viewport = me.getViewPortCntlr();
+      var price = me.getPrice().getValue();
 
       me.rewardItemFn = function(params)
       {

@@ -581,6 +581,7 @@ Ext.define('Genesis.controller.client.MainPage',
          },
          callback : function(record, operation)
          {
+            console.debug("CSRF callback - " + operation.wasSuccessful());
             if (operation.wasSuccessful())
             {
                //Ext.Viewport.setMasked(null);

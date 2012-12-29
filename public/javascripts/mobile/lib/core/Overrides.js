@@ -1317,7 +1317,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
       var app = _application;
       var viewport = app.getController('Viewport');
 
-      if (response.timedout)
+      if (response.timedout || (response.status == 0) && (!request.aborted))
       {
          Ext.device.Notification.show(
          {
@@ -1492,7 +1492,8 @@ Ext.define('Genesis.data.proxy.OfflineServer',
             errorHandler();
             return;
          }
-         if ((success === true) || (Genesis.fn.isNative() === true))
+         //if ((success === true) || (Genesis.fn.isNative() === true))
+         if (success === true)
          {
             if (operation.process(action, resultSet, request, response) === false)
             {
@@ -1625,13 +1626,14 @@ Ext.define('Genesis.data.Connection',
       if (!xhr.onreadystatechange)
       {
          success = false;
-         //console.debug("HTTP abort is called!");
       }
-      else
-      if (Genesis.fn.isNative() && (status === 0))
-      {
-         success = true;
-      }
+      /*
+       else
+       if (Genesis.fn.isNative() && (status === 0))
+       {
+       success = true;
+       }
+       */
 
       if (!success)
       {
