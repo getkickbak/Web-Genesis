@@ -38,7 +38,7 @@ class Request
     return request
   end
   
-  def self.match_request(request_info)
+  def self.match(request_info)
     if Rails.env == 'production'
       c = lambda {
         return DataMapper.repository(:default).adapter.select(
