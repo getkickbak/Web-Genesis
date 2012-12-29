@@ -57,6 +57,10 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             tap : 'onPromotionDoneTap'
          }
+      },
+      listeners :
+      {
+         'rewarditem' : 'onRewardItem'
       }
    },
    cannotDetermineLocationMsg : 'Cannot determine current location. Visit one of our venues to continue!',
@@ -158,7 +162,7 @@ Ext.define('Genesis.controller.client.Rewards',
    onLocationUpdate : function(position)
    {
       var me = this;
-      me.rewardItem();
+      me.rewardItemFn();
    },
    // --------------------------------------------------------------------------
    // Rewards Page
@@ -320,11 +324,11 @@ Ext.define('Genesis.controller.client.Rewards',
 
       return false;
    },
-   onEarnPtsSC : function(notUseGeolocation)
+   onRewardItem : function(notUseGeolocation)
    {
       var me = this, task, viewport = me.getViewPortCntlr(), identifiers = null;
 
-      me.rewardItem = function()
+      me.rewardItemFn = function()
       {
          //
          // Not ready to process data
@@ -457,7 +461,7 @@ Ext.define('Genesis.controller.client.Rewards',
             console.log("Broadcast underway ...");
             if (notUseGeolocation || viewport.getLocationPosition())
             {
-               me.rewardItem();
+               me.rewardItemFn();
             }
          }, function()
          {
@@ -486,7 +490,7 @@ Ext.define('Genesis.controller.client.Rewards',
       {
          //var earnPts = Ext.bind(me.onEarnPtsSC, me);
          //me.checkReferralPrompt(earnPts, earnPts);
-         me.onEarnPtsSC(true);
+         me.fireEvent('rewarditem', true);
       }
    },
    updateMetaDataInfo : function(metaData)
@@ -608,7 +612,7 @@ Ext.define('Genesis.controller.client.Rewards',
          }
          case 'rewardsSC':
          {
-            me.onEarnPtsSC();
+         	me.fireEvent('rewarditem');
             break;
          }
          case 'rewards':

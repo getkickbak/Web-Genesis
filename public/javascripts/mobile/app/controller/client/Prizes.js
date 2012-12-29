@@ -1,37 +1,20 @@
 Ext.define('Genesis.controller.client.Prizes',
 {
-   extend : 'Genesis.controller.RedeemBase',
+   extend : 'Genesis.controller.PrizeRedemptionsBase',
    requires : ['Ext.data.Store', 'Genesis.view.client.Prizes', 'Genesis.view.client.Badges'],
    inheritableStatics :
    {
    },
    xtype : 'clientPrizesCntlr',
-   controllerType : 'prize',
    config :
    {
-      redeemInfoMsg : 'Getting the Prizes List ...',
-      redeeemSuccessfulMsg : 'Prize selected has been successfully redeemed!',
-      timeoutPeriod : 10,
-      minPrizePts : 1,
-      browseMode : 'redeemBrowse',
-      redeemMode : 'redeemPrize',
-      renderStore : 'PrizeRenderCStore',
-      redeemStore : 'PrizeStore',
-      redeemPointsFn : 'setRedeemPrizePointsURL',
-      redeemUrl : 'setGetPrizesURL',
       redeemPath : 'redeemBrowsePrizesSC',
-      ptsProperty : 'prize_points',
-      title : 'Prizes',
       routes :
       {
-         // Browse Prizes Page
-         'prizes' : 'redeemBrowsePage',
          //Shortcut to choose venue to redeem prizes
          'redeemPrizesChooseSC' : 'redeemChooseSCPage',
          //Shortcut to visit Merchant Account for the Vnue Page
          'redeemBrowsePrizesSC' : 'redeemBrowseSCPage',
-         //'prize' : 'prizePage',
-         'redeemPrize' : 'redeemItemPage',
          'badgeDetail' : 'badgeDetailPage'
       },
       refs :
@@ -50,22 +33,6 @@ Ext.define('Genesis.controller.client.Prizes',
          redemptionsList : 'clientprizesview list[tag=prizesList]',
          redemptionsPts : 'clientprizesview component[tag=points]',
          redemptionsPtsEarnPanel : 'clientprizesview dataview[tag=ptsEarnPanel]',
-         //
-         // Reward Prize
-         //
-         sCloseBB : 'showredeemitemdetailview[tag=redeemPrize] button[tag=close]',
-         //sBB : 'showredeemitemdetailview[tag=redeemPrize] button[tag=back]',
-         sDoneBtn : 'showredeemitemdetailview[tag=redeemPrize] button[tag=done]',
-         sRedeemBtn : 'showredeemitemdetailview[tag=redeemPrize] button[tag=redeem]',
-         refreshBtn : 'showredeemitemdetailview[tag=redeemPrize] button[tag=refresh]',
-         verifyBtn : 'showredeemitemdetailview[tag=redeemPrize] button[tag=verify]',
-         redeemItem :
-         {
-            selector : 'showredeemitemdetailview[tag=redeemPrize]',
-            autoCreate : true,
-            tag : 'redeemPrize',
-            xtype : 'showredeemitemdetailview'
-         },
          //
          // Swipe and Play Rewards Page
          //
@@ -105,12 +72,6 @@ Ext.define('Genesis.controller.client.Prizes',
          {
             tap : 'onRedeemItemTap'
          },
-         redeemItem :
-         {
-            createView : 'onRedeemItemCreateView',
-            activate : 'onRedeemItemActivate',
-            deactivate : 'onRedeemItemDeactivate'
-         },
          badgeDetail :
          {
             createView : 'onBadgeDetailCreateView',
@@ -128,22 +89,14 @@ Ext.define('Genesis.controller.client.Prizes',
          //
          // Redeem Prize
          //
-         'redeemitem' : 'onClientRedeemItem',
-         'showredeemitem' : 'onShowRedeemItem',
-         'showredeemprize' : 'onShowRedeemPrize', //Redeem Prize broadcast to Social Media
-         'showQRCode' : 'onShowItemQRCode',
-         'refreshQRCode' : 'onRefreshQRCode'
+         'refreshQRCode' : 'onRefreshQRCode',
+         'redeemitem' : 'onClientRedeemItem'
       }
    },
    _backToMain : false,
    checkinFirstMsg : 'Please Check-In before redeeming Prizes',
    eligibleRewardMsg : 'Check out an Eligible Prize you can redeem with your Prize Points!',
-   scanPlayTitle : 'Swipe and Play',
-   evtFlag : 0,
    flag : 0,
-   loadCallback : null,
-   initSound : false,
-   authRewardVerifiedMsg : 'Verified',
    updateOnFbMsg : 'Would you like to tell your friends on Facebook about it?',
    wonPrizeMsg : function(reward_info)
    {
@@ -471,7 +424,7 @@ Ext.define('Genesis.controller.client.Prizes',
                me.fireEvent('triggerCallbacksChain');
             }
          };
-         
+
          if (info['prize_points'] > me.getMinPrizePts())
          {
             soundType = 'winPrizeSound';
@@ -541,38 +494,11 @@ Ext.define('Genesis.controller.client.Prizes',
    // --------------------------------------------------------------------------
    // Prizes Page
    // --------------------------------------------------------------------------
-   onShowRedeemItem : function(redeemItem)
-   {
-      var me = this;
-
-      //
-      // Show prize on redeemItem Container
-      //
-      me.redeemItem = redeemItem;
-      /*
-       var store = Ext.StoreMgr.get('PrizeStore');
-       store.add(redeemItem);
-       me.persistSyncStores('PrizeStore');
-       */
-      me.redirectTo('redeemPrize');
-   },
    onShowRedeemPrize : function(prize, reward_info, viewsPopLength)
    {
       var me = this;
-      var info = reward_info;
-      //var redeemItem = me.redeemItem = prize;
-
-      me.redeemItem = prize
-      if (viewsPopLength > 0)
-      {
-         console.debug("Removing Last " + viewsPopLength + " Views from History ...");
-         me.silentPopView(viewsPopLength);
-      }
-
+      me.callParent(arguments);
       me.stopRouletteScreen(me.getPrizeCheckScreen());
-      //me.setRedeemMode('redeemPrize');
-      //me.pushView(me.getRedeemMainPage());
-      me.redirectTo('redeemPrize');
    },
    onBadgeDetailCreateView : function(activeItem)
    {
@@ -611,10 +537,6 @@ Ext.define('Genesis.controller.client.Prizes',
       var controller = this.getApplication().getController('client.Accounts');
       controller.redeemPrizesChooseSCPage();
    },
-   redeemItemPage : function()
-   {
-      this.openPage('redeemPrize');
-   },
    badgeDetailPage : function()
    {
       this.openPage('badgeDetail');
@@ -641,9 +563,5 @@ Ext.define('Genesis.controller.client.Prizes',
       }
 
       return page;
-   },
-   isOpenAllowed : function()
-   {
-      return true;
    }
 });
