@@ -2,9 +2,7 @@ class Timer
   def initialize(mode, interval, &block)
     if mode == "one_time"
       @thread = Thread.new {
-        Rails.logger.info("About to sleep")
         sleep interval
-        Rails.logger.info("Before calling callback")
         yield
      }
     else
@@ -18,6 +16,6 @@ class Timer
   end
 
   def cancel
-    @thread.exit
+    @thread.exit if not @thread.nil?
   end
 end
