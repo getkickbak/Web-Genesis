@@ -83,7 +83,7 @@ class Request
   
   def is_status?(status)
     begin
-      timer = Timer.new("one_time",  2) {
+      timer = Timer.new("one_time", 2) {
         c = File.open(self.channel, "w+")
         c.puts :failed.to_s
         c.flush
