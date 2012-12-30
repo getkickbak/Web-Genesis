@@ -315,7 +315,7 @@ Genesis.fb =
          }
 
          console.debug("Logged into Facebook!");
-         Genesis.db.setLocalDBAttrib('fbExpiresIn', Date.parse(response['expirationDate']).getTime());
+         Genesis.db.setLocalDBAttrib('fbExpiresIn', (new Date(response['expirationDate'])).getTime());
          if (me.cb)
          {
             Ext.defer(me.facebook_loginCallback, 3 * 1000, me, [me.cb]);
@@ -459,6 +459,7 @@ Genesis.fb =
             }
             else
             {
+               //console.debug("facebookConnect.login/me:[" + Ext.encode(response) + "]");
                console.debug("Session ID[" + facebook_id + "]");
                db['currFbId'] = facebook_id;
                db['fbAccountId'] = response.email;
@@ -1335,7 +1336,7 @@ Ext.define('Genesis.data.proxy.OfflineServer',
    {
       var me = this, action = operation.getAction(), reader = me.getReader(), resultSet;
       var app = _application;
-      var viewport = app.getController('Viewport');
+      var viewport = app.getController(((!merchantMode) ? 'client' : 'server') + '.Viewport');
 
       if (response.timedout || (response.status == 0) && (!request.aborted))
       {

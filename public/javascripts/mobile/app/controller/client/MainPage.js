@@ -18,7 +18,7 @@ Ext.define('Genesis.controller.client.MainPage',
          'signin' : 'signInPage',
          'password_reset' : 'signInResetPage',
          'password_change' : 'signInChangePage',
-         'createAccount' : 'createAccountPage',
+         'createAccount' : 'createAccountPage'
       },
       refs :
       {
@@ -415,7 +415,7 @@ Ext.define('Genesis.controller.client.MainPage',
                //
                // If we are already in Login Page, reset all values
                //
-               Genesis.db.resetStorage();
+               //Genesis.db.resetStorage();
             }
             else
             {
@@ -908,6 +908,7 @@ Ext.define('Genesis.controller.client.MainPage',
    onCreateActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var response = Genesis.db.getLocalDB()['fbResponse'] || null;
+      console.debug("onCreateActivate - fbResponse[" + Ext.encode(response) + "]");
       if (response)
       {
          var form = this.getCreateAccount();
