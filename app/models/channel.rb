@@ -18,7 +18,7 @@ class Channel
       system("mkfifo #{channel}")
       channels = @@free_list[group]
       if channels.nil?
-        @free_list[group] = {}
+        @@free_list[group] = {}
       else
         @@free_list[group][channel] = channel
       end
