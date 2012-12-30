@@ -201,6 +201,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
       end
     end
+    @request.destroy
   end
 
   def receive_points

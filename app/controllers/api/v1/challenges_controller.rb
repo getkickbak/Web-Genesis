@@ -75,6 +75,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
         end
       end 
+      @request.destroy
     end
   end
   
@@ -130,6 +131,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         format.json { render :json => { :success => false, :message => t("api.challenges.complete_request_failure").split('\n') } }
       end
     end
+    @request.destroy
   end
   
   def complete

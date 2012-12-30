@@ -75,12 +75,12 @@ class Request
   
   def self.set_status(request, status)
     if defined? request && request
-      request.status = status
-      request.deleted_ts = DateTime.now
-      request.save
       c = File.open(request.channel, "w+")
       c.puts status.to_s
       c.flush
+      request.status = status
+      request.update_ts = Time.now
+      request.save
     end  
   end
   
