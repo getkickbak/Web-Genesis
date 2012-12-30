@@ -45,7 +45,8 @@ Ext.define('Genesis.controller.client.Rewards',
          rewards :
          {
             activate : 'onActivate',
-            deactivate : 'onDeactivate'
+            deactivate : 'onDeactivate',
+            rouletteTap : 'onRouletteTap'
          },
          promotion :
          {
@@ -488,9 +489,21 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         //var earnPts = Ext.bind(me.onEarnPtsSC, me);
-         //me.checkReferralPrompt(earnPts, earnPts);
-         me.fireEvent('rewarditem', true);
+         Ext.device.Notification.show(
+         {
+            title : 'Earn Reward Points',
+            message : me.showToServerMsg,
+            buttons : ['Proceed', 'Cancel'],
+            callback : function(btn)
+            {
+               if (btn.toLowerCase() == 'proceed')
+               {
+                  //var earnPts = Ext.bind(me.onEarnPtsSC, me);
+                  //me.checkReferralPrompt(earnPts, earnPts);
+                  me.fireEvent('rewarditem', true);
+               }
+            }
+         });
       }
    },
    updateMetaDataInfo : function(metaData)
@@ -502,49 +515,50 @@ Ext.define('Genesis.controller.client.Rewards',
       var merchantId = metaData['merchant_id'] || venue.getMerchant().getId();
 
       me.callBackStack['arguments'] = [metaData, customer, venue, merchantId];
+      //console.debug("updateMetaDataInfo - metaData[" + Ext.encode(metaData) + "]");
       if (metaData['data'])
       {
          var controller = me.getApplication().getController('client.Prizes');
          controller.fireEvent('showQRCode', 0, metaData['data']);
       }
    },
+   onRouletteTap : function(metaData)
+   {
+      var me = this, viewport = me.getViewPortCntlr();
+      var app = me.getApplication(), controller = app.getController('client.Prizes');
+      if (me.task)
+      {
+         try
+         {
+            me.task.cancel();
+            me.task = null;
+         }
+         catch(e)
+         {
+         }
+         me.self.stopSoundFile(viewport.sound_files['rouletteSpinSound']);
+         console.debug("Stopped RouletteSound, checking for prizes ...");
+         controller.fireEvent('prizecheck', metaData);
+      }
+   },
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var me = this, viewport = me.getViewPortCntlr(), task;
+      var me = this, viewport = me.getViewPortCntlr();
       var app = me.getApplication(), controller = app.getController('client.Prizes');
-      var args = me.callBackStack['arguments'][0];
-      //
-      // Make sure the sound stops after MAX delay is reached
-      //
-      var stopRouletteSpin = function()
-      {
-         if (!task.dead)
-         {
-            task.dead = true;
-            task.cancel();
-            me.self.stopSoundFile(viewport.sound_files['rouletteSpinSound']);
-            console.debug("Foced RouletteSound Done, checking for prizes ...");
-            controller.fireEvent('prizecheck', args);
-         }
-      };
-      task = Ext.create('Ext.util.DelayedTask', stopRouletteSpin);
+      var metaData = me.callBackStack['arguments'][0];
+      var rouletteTap = Ext.bind(me.onRouletteTap, me, [metaData]);
+
+      // Safe guard in case the music doesn't stop
+      me.task = Ext.create('Ext.util.DelayedTask', rouletteTap);
+      me.task.delay(15 * 1000);
+
+      me.self.playSoundFile(viewport.sound_files['rouletteSpinSound'], rouletteTap);
+      controller.startRouletteScreen(me.getRewards());
+      activeItem.metaData  = metaData;
       Ext.defer(function()
       {
          //activeItem.createView();
-         controller.startRouletteScreen(me.getRewards());
-         me.self.playSoundFile(viewport.sound_files['rouletteSpinSound'], function()
-         {
-            if (!task.dead)
-            {
-               task.dead = true;
-               task.cancel();
-               console.debug("RouletteSound Done, checking for prizes ...");
-               controller.fireEvent('prizecheck', args);
-            }
-         });
-         me.getRewards().query('component[tag=prizeCheck]')[0].element.on('tap', stopRouletteSpin);
       }, 1, activeItem);
-      task.delay(15 * 1000);
       //activeItem.createView();
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
@@ -611,10 +625,6 @@ Ext.define('Genesis.controller.client.Rewards',
             break;
          }
          case 'rewardsSC':
-         {
-         	me.fireEvent('rewarditem');
-            break;
-         }
          case 'rewards':
          {
             me.onEarnPts();

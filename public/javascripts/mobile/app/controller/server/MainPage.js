@@ -52,7 +52,6 @@ Ext.define('Genesis.controller.server.MainPage',
       var me = this;
       me.getInfoBtn()['hide']();
       me.getViewPortCntlr().setActiveController(me);
-      Ext.Viewport.setMasked(null);
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {

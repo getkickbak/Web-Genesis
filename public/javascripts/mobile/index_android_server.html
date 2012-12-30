@@ -175,7 +175,10 @@
             {
                //e.preventDefault();
 
-               if (!_application)
+               //
+               // Disable BackKey if something is in progress or application is not instantiated
+               //
+               if (!_application || Ext.Viewport.getMasked())
                {
                   return;
                }

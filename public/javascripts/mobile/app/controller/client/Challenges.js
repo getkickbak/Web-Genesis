@@ -1244,6 +1244,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
       var viewport = me.getViewPortCntlr();
       var venue = viewport.getVenue();
+      var FB = window.plugins.facebookConnect;
 
       if ( typeof (FB) != 'undefined')
       {
@@ -1252,7 +1253,7 @@ Ext.define('Genesis.controller.client.Challenges',
             xtype : 'loadmask',
             message : me.completingChallengeMsg
          });
-         FB.api('/me/photos', 'post',
+         FB.requestWithGraphPath('/me/photos',
          {
             'message' : desc,
             'url' : me.metaData['photo_url'],
@@ -1272,10 +1273,12 @@ Ext.define('Genesis.controller.client.Challenges',
              }
              }
              */
-         }, function(response)
+         }, 'POST', function(response)
          {
             if (!response || response.error)
             {
+               console.log("FacebookConnect.requestWithGraphPath:" + JSON.stringify(response));
+
                var message = (response && response.error) ? response.error.message : me.fbUploadFailedMsg;
                Ext.Viewport.setMasked(null);
                Ext.device.Notification.show(

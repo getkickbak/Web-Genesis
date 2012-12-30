@@ -24,9 +24,22 @@ Ext.define('Genesis.view.client.Rewards',
          tpl :
          // @formatter:off
          '<div class="rouletteTable"></div>'+
-         '<div class="rouletteBall"></div>',
+         '<div class="rouletteBall"></div>'
           // @formatter:on
+      }],
+      listeners : [
+      {
+         element : 'element',
+         delegate : "div.prizeCheck",
+         event : "tap",
+         fn : "onRouletteTap"
       }]
+   },
+   onRouletteTap : function(b, e, eOpts)
+   {
+      var viewport = _application.getController('client' + '.Viewport');
+      viewport.self.playSoundFile(viewport.sound_files['clickSound']);
+      this.fireEvent('rouletteTap', this.metaData);
    },
    inheritableStatics :
    {

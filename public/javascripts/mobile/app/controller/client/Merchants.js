@@ -657,11 +657,11 @@ Ext.define('Genesis.controller.client.Merchants',
             me.setAnimationMode(me.self.animationMode['pop']);
             me.pushView(me.getMainPage());
          }
+         console.log("Merchant Account Opened");
       }
       else
       {
          me.fireEvent('backToMain');
       }
-      console.log("Merchant Account Opened");
    }
 });
