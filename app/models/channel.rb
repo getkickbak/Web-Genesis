@@ -3,7 +3,7 @@ class Channel
   @@reserve_list = {}
   @groups = ["ChannelGroup-1"]
   @@count = 0
-  @@group_size = 10
+  @@group_size = 5
   
   def self.get_group
     @group[Random.rand(@@groups.length)]
@@ -11,7 +11,7 @@ class Channel
   
   def self.add
     begin
-      group = get_group
+      group = @@groups.last
       mutex = CacheMutex.new(group, Cache.memcache)
       acquired = mutex.acquire
       channel = "/tmp/channel_#{@@count+1}"
