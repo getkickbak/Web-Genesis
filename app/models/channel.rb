@@ -31,7 +31,7 @@ class Channel
       end
       @@free_list.each do |item|
         Rails.logger.info("show free-list group: #{item}")
-        Rails.logger.info("channels in free-list group: #{@@free_list[item]}")
+        Rails.logger.info("channels in this group: #{@@free_list[item[0]]}")
       end
     ensure
       mutex.release if ((defined? mutex) && !mutex.nil?)
@@ -46,7 +46,7 @@ class Channel
       @@free_list.each do |item|
         Rails.logger.info("show free-list group: #{item}")
       end
-      Rails.logger.info("channels in free-list group: #{@@free_list[group]}")
+      Rails.logger.info("channels in group(#{group}): #{@@free_list[group]}")
       channel = @@free_list[group].shift
       if channel
         @@reserve_list[group][channel[0]] = channel[1]
