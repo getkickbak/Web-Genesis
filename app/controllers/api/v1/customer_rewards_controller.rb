@@ -104,7 +104,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
         end
       end
-      @request.destroy
+      @request.destroy if Rails.env == "production"
     else
       if authorized
         tag = UserTag.first(:tag_id => decrypted_data["tag_id"])
