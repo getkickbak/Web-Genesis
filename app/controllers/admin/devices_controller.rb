@@ -53,7 +53,9 @@ module Admin
         Device.transaction do
           venue = Venue.get(params[:device][:venue_id])
           @device = Device.create(@merchant, venue, params[:device])
-          Channel.add
+          Channel.group_size.times do |x|
+            Channel.add
+          end
           respond_to do |format|
             format.html { redirect_to(merchant_device_path(@merchant, @device), :notice => t("admin.devices.create_success")) }
           #format.xml  { render :xml => @merchant, :status => :created, :location => @merchant }

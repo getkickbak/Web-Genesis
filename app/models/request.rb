@@ -13,7 +13,7 @@ class Request
   property :latitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :longitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :data, String, :required => true, :default => ""
-  property :channel_group, String, :default => ""
+  property :channel_group, String, :required => true, :default => ""
   property :channel, String, :required => true, :default => ""
   property :status, Enum[:pending, :failed, :complete], :default => :pending
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
