@@ -39,7 +39,7 @@ Ext.define('Genesis.controller.server.Viewport',
          console.debug("updateMetaDataInfo Exception - " + e);
       }
    },
-   refreshLicenseKey : function(callback)
+   refreshLicenseKey : function(callback, forceRefresh)
    {
       var me = this;
       callback = callback || Ext.emptyFn;
@@ -53,8 +53,9 @@ Ext.define('Genesis.controller.server.Viewport',
       me.persistLoadStores(function()
       {
          var lstore = Ext.StoreMgr.get('LicenseStore');
-         if (lstore.getRange().length < 1)
+         if ((lstore.getRange().length < 1) || (forceRefresh))
          {
+         	lstore.removeAll();
             LicenseKey['setGetLicenseKeyURL']();
             lstore.load(
             {
