@@ -186,7 +186,10 @@
             {
                //e.preventDefault();
 
-               if (!_application)
+               //
+               // Disable BackKey if something is in progress or application is not instantiated
+               //
+               if (!_application || Ext.Viewport.getMasked())
                {
                   return;
                }
@@ -238,35 +241,8 @@
                console.warn = console.warn || console.debug;
 
                console.log("PhoneGap App Launch");
-               launched = 0x010;
+               launched = 0x110;
                initPushwoosh();
-               FB.init(
-               {
-                  appId : _appId,
-                  frictionlessRequests : true,
-                  useCachedDialogs : true,
-                  nativeInterface : CDV.FB,
-                  status : false,
-                  cookie : true,
-                  xfbml : true,
-                  oauth : true
-               });
-		         FB.getLoginStatus(function(oResponse)
-		         {
-		         	launched |= 0x100;
-		         	if (oResponse.status === 'connected')
-		         	{ 
-		                 // the session is complete, and fully initiated, 
-		                 // go ahead and call your scripts here 
-		             }
-		             else
-		             {
-		                // There was a problem, probably because the user was not logged in, 
-		                // so put a login sequence or your error handling of choice here 
-		             }
-                   _appLaunch();
-		         });
-
                document.addEventListener("backbutton", onBackKeyDown, false);
                _appLaunch();
             }, false);
@@ -323,9 +299,12 @@
       <script type="text/javascript" src="client-all.js"></script>
    </head>
    <body onload="onBodyLoad()">
+      <!--
       <div id="fb-root"></div>
       <script type="text/javascript" src="lib/core/cdv-plugin-fb-connect.js"></script>
       <script type="text/javascript" src="lib/core/facebook_js_sdk.js"></script>
+      -->
+      <script type="text/javascript" src="lib/core/FacebookConnect.js"></script>
       <script type="text/javascript">
          window.onerror = function(msg, url, linenum)
          {

@@ -200,7 +200,7 @@ Ext.define('Genesis.controller.client.Viewport',
    },
    onShareMerchantTap : function(b, e, eOpts, eInfo)
    {
-      var me = this;
+      var me = this, FB = window.plugins.facebookConnect;
       var site = Genesis.constants.site;
       //var db = Genesis.db.getLocaDB();
       Genesis.fb.facebook_onLogin(function(params)
@@ -210,7 +210,7 @@ Ext.define('Genesis.controller.client.Viewport',
          var photoUrl = merchant.get('photo')['thumbnail_large_url'];
 
          console.log('Posting to Facebook ...');
-         FB.api('/me/feed', 'post',
+         FB.requestWithGraphPath('/me/feed',
          {
             name : venue.get('name'),
             //link : href,
@@ -219,7 +219,7 @@ Ext.define('Genesis.controller.client.Viewport',
             description : venue.get('description'),
             picture : photoUrl,
             message : 'Check out this place!'
-         }, function(response)
+         }, 'POST', function(response)
          {
             Ext.Viewport.setMasked(null);
             if (!response || response.error)

@@ -531,7 +531,7 @@ Ext.define('Genesis.controller.client.Checkins',
       {
          //me.getExploreList().setVisibility(false);
       }
-      me.fireEvent('exploreLoad');
+      me.fireEvent('exploreLoad', false);
    },
    onExploreDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {

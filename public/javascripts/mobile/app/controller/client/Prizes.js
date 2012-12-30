@@ -204,7 +204,7 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    updatingPrizeOnFacebook : function(earnprize)
    {
-      var me = this;
+      var me = this, FB = window.plugins.facebookConnect;
       try
       {
          var viewport = me.getViewPortCntlr();
@@ -222,7 +222,7 @@ Ext.define('Genesis.controller.client.Prizes',
          'Description: ' + desc + '\n' + //
          'Message : ' + message + '\n' //
          );
-         FB.api('/me/feed', 'post',
+         FB.requestWithGraphPath('/me/feed',
          {
             name : name,
             //link : href,
@@ -231,7 +231,7 @@ Ext.define('Genesis.controller.client.Prizes',
             description : desc,
             picture : venue.getMerchant().get('photo')['thumbnail_large_url'],
             message : message
-         }, function(response)
+         }, 'POST', function(response)
          {
             if (!response || response.error)
             {
@@ -251,13 +251,11 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    updatingBadgeOnFacebook : function(badge)
    {
-      var me = this;
+      var me = this, FB = window.plugins.facebookConnect;
       var badgeURL = badge.get('photo')[Genesis.constants._thumbnailAttribPrefix + 'large'];
       try
       {
-         var viewport = me.getViewPortCntlr();
-         var venue = viewport.getVenue();
-         var site = Genesis.constants.site;
+         var viewport = me.getViewPortCntlr(), venue = viewport.getVenue(), site = Genesis.constants.site;
          var wsite = venue.get('website') ? venue.get('website').split(/http[s]*:\/\//) : [null];
          var name = venue.get('name');
          var link = wsite[wsite.length - 1] || site;
@@ -270,7 +268,7 @@ Ext.define('Genesis.controller.client.Prizes',
          'Description: ' + desc + '\n' + //
          'Message : ' + message + '\n' //
          );
-         FB.api('/me/feed', 'post',
+         FB.requestWithGrapthPath('/me/feed',
          {
             name : name,
             //link : href,
@@ -279,7 +277,7 @@ Ext.define('Genesis.controller.client.Prizes',
             description : desc,
             picture : badgeURL,
             message : message
-         }, function(response)
+         }, 'POST', function(response)
          {
             if (!response || response.error)
             {
@@ -317,7 +315,7 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    redeemPrizeHandler : function(metaData, viewsPopLength)
    {
-      var me = this;
+      var me = this, FB = window.plugins.facebookConnect;
       var info = metaData['reward_info'];
       var eligible = Ext.isDefined(info['eligible_prize_id']) && (info['eligible_prize_id'] > 0);
       var prize;
@@ -470,16 +468,16 @@ Ext.define('Genesis.controller.client.Prizes',
       //
       if (!Ext.isDefined(info['eligible_prize_id']) || (info['eligible_prize_id'] == 0))
       {
-         console.log("No Prize to Show.");
          viewsPopLength = ((info['badge_prize_points'] > 0) || (ainfo['visits'] == 1)) ? 1 : 0;
+         console.log("No Prize to Show. viewsPopLength =" + viewsPopLength);
       }
       //
       // LumpSum Prize Points
       // Either Prize Points or Badge Prize Points
       else
       {
-         console.log("WON LumpSum Prize Points.");
          viewsPopLength = ((info['badge_prize_points'] > 0) || (ainfo['visits'] == 1)) ? 2 : 1;
+         console.log("WON LumpSum Prize Points. viewsPopLength =" + viewsPopLength);
       }
 
       me.callBackStack['arguments'] = [metaData, viewsPopLength];
