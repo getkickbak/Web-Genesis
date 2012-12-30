@@ -73,6 +73,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
             :reward_id => @reward.id
         }.to_json
         frequency = JSON.parse(params[:frequency])
+        channel_group = Channel.get_group
         request_info = {
           :type => RequestType::REDEEM,
           :frequency1 => frequency[0],
@@ -81,7 +82,8 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           :latitude => @venue.latitude,
           :longitude => @venue.longitude,
           :data => data,
-          :channel => Channel.reserve
+          :channel_group => channel_group,
+          :channel => Channel.reserve(channel_group)
         }
         @request = Request.create(request_info)
       rescue StandardError => e
@@ -102,7 +104,6 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_failure").split('\n') } }
         end
       end
-      @request.destroy
     else
       if authorized
         tag = UserTag.first(:tag_id => decrypted_data["tag_id"])

@@ -152,6 +152,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
 =begin            
             frequency = JSON.parse(params[:frequency])
+            channel_group = Channel.get_group
             request_info = {
               :type => RequestType::TRANSFER_POINTS,
               :frequency1 => frequency[0],
@@ -160,7 +161,8 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
               :latitude => params[:latitude],
               :longitude => params[:longitude],
               :data => data,
-              :channel => Channel.reserve
+              :channel_group => channel_group,
+              :channel => Channel.reserve(channel_group)
             }
             @request = Request.create(request_info)
 =end            
@@ -199,7 +201,6 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
       end
     end
-    @request.destroy
   end
 
   def receive_points

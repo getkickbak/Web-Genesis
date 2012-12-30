@@ -75,7 +75,6 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
         end
       end 
-      @request.destroy 
     end
   end
   
@@ -92,6 +91,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       # Cache expires in 12 hrs
       if (data_expiry_ts >= Time.now) && Cache.add(data, true, 43200) 
         frequency = JSON.parse(params[:frequency])
+        channel_group = Channel.get_group
         request_info = {
           :type => RequestType::EARN_POINTS,
           :frequency1 => frequency[0],
@@ -100,7 +100,8 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           :latitude => @venue.latitude,
           :longitude => @venue.longitude,
           :data => data,
-          :channel => Channel.reserve
+          :channel_group => channel_group,
+          :channel => Channel.reserve(channel_group)
         }
         @request = Request.create(request_info)
       else
@@ -129,7 +130,6 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         format.json { render :json => { :success => false, :message => t("api.challenges.complete_request_failure").split('\n') } }
       end
     end
-    @request.destroy
   end
   
   def complete
@@ -531,6 +531,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           @encrypted_data = "#{@venue.merchant.id}$#{cipher.enc(data)}"
 =begin          
           frequency = JSON.parse(params[:frequency])
+          channel_group = Channel.get_group
           request_info = {
             :type => RequestType::REFERRAL,
             :frequency1 => frequency[0],
@@ -539,7 +540,8 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
             :latitude => params[:latitude],
             :longitude => params[:longitude],
             :data => data,
-            :channel => Channel.reserve
+            :channel_group => channel_group,
+            :channel => Channel.reserve(channel_group)
           }
           @request = Request.create(request_info)
 =end          

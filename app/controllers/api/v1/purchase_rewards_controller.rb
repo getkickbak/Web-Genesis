@@ -85,6 +85,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       begin
         venue = Venue.get(params[:venue_id])
         frequency = JSON.parse(params[:frequency])
+        channel_group = Channel.get_group
         request_info = {
           :type => RequestType::EARN_POINTS,
           :frequency1 => frequency[0],
@@ -93,7 +94,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           :latitude => venue.latitude,
           :longitude => venue.longitude,
           :data => params[:data],
-          :channel => Channel.reserve
+          :channel_group => channel_group,
+          :channel => Channel.reserve(channel_group)
         }
         @request = Request.create(request_info) 
       rescue StandardError => e  
@@ -118,7 +120,6 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
         end
       end
-      @request.destroy
     else
       earn_common
     end      
@@ -138,7 +139,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       end
       data = String.random_alphanumeric(32)
       data_expiry_ts = Time.now
-      amount = rand(100)+1
+      amount = Random.rand(100)+1
       authorized = true
     else
       begin

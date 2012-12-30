@@ -1,23 +1,66 @@
 class Channel
   @@free_list = {}
   @@reserve_list = {}
+  @groups = ["ChannelGroup-1"]
+  @@count = 0
+  @@group_size = 10
   
-  def self.add(channel)
-    system("mkfifo #{channel}")
-    @@free_list[channel] = channel
+  def self.get_group
+    @group[Random.rand(@@groups.length)]
   end
   
-  def self.reserve
-    channel = @@free_list.shift
-    if channel
-      @@reserve_list[channel[0]] = channel[1]
-    else
-      raise "Cannot reserve channel"
-    end    
+  def self.add
+    begin
+      group = get_group
+      mutex = CacheMutex.new(group, Cache.memcache)
+      acquired = mutex.acquire
+      channel = "/tmp/channel_#{@@count+1}"
+      system("mkfifo #{channel}")
+      channels = @@free_list[group]
+      if channels.nil?
+        @free_list[group] = {}
+      else
+        @@free_list[group][channel] = channel
+      end
+      @@count = @@count + 1
+      group = @@count / @@group_size
+      if group > @@groups.length
+        @@groups << "ChannelGroup-#{group}"
+      elsif @@count == @@group_size
+        @@groups << "ChannelGroup-#{group+1}"  
+      end
+    ensure
+      mutex.release if ((defined? mutex) && !mutex.nil?)
+    end
   end
   
-  def self.free(channel)
-    free_channel = @@reserve_list.delete(channel)
-    (@@free_list[free_channel] = free_channel) if not free_channel.nil?
+  def self.reserve(group)
+    begin
+      mutex = CacheMutex.new(group, Cache.memcache)
+      acquired = mutex.acquire
+      channel = @@free_list[group].shift
+      if channel
+        @@reserve_list[group][channel[0]] = channel[1]
+      else
+        raise "Cannot reserve channel"
+      end 
+    ensure
+      mutex.release if ((defined? mutex) && !mutex.nil?)
+    end   
+  end
+  
+  def self.free(group, channel)
+    begin
+      mutex = CacheMutex.new(group, Cache.memcache)
+      acquired = mutex.acquire
+      free_channel = @@reserve_list[group].delete(channel)
+      (@@free_list[group][free_channel] = free_channel) if not free_channel.nil?
+    ensure
+      mutex.release if ((defined? mutex) && !mutex.nil?)
+    end
+  end
+  
+  def self.count
+    @@count
   end
 end

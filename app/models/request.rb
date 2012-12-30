@@ -13,6 +13,7 @@ class Request
   property :latitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :longitude, Decimal, :precision => 20, :scale => 15, :required => true, :default => 0
   property :data, String, :required => true, :default => ""
+  property :channel_group, String, :required => true, :default => ""
   property :channel, String, :required => true, :default => ""
   property :status, Enum[:pending, :failed, :complete], :default => :pending
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -30,6 +31,7 @@ class Request
       :latitude => request_info[:latitude],
       :longitude => request_info[:longitude],
       :data => request_info[:data],
+      :channel_group => request_info[:channel_group],
       :channel => request_info[:channel]
     )
     request[:created_ts] = now
@@ -74,6 +76,7 @@ class Request
   def self.set_status(request, status)
     if defined? request && request
       request.status = status
+      request.deleted_ts = DateTime.now
       request.save
       c = File.open(request.channel, "w+")
       c.puts status.to_s
@@ -92,7 +95,7 @@ class Request
       r = c.gets 
       timer.cancel
     ensure
-      Channel.free(self.channel)
+      Channel.free(self.channel_group, self.channel)
       if (defined? r) && r
         r.to_sym == status ? true : false
       else
