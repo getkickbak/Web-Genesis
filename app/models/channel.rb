@@ -38,6 +38,9 @@ class Channel
     begin
       mutex = CacheMutex.new(group, Cache.memcache)
       acquired = mutex.acquire
+      @@free_list.each do |item|
+        Rails.logger.info("free-list item:#{item}")
+      end
       channel = @@free_list[group].shift
       if channel
         @@reserve_list[group][channel[0]] = channel[1]
