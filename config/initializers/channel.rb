@@ -1,3 +1,4 @@
+DataMapper.setup(:default, hash[Rails.env])
 exists = DataMapper.repository(:default).adapter.storage_exists?('venues')
 if exists
   venues_info = Venues.all(:fields => [:id])
