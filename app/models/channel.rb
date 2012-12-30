@@ -6,7 +6,7 @@ class Channel
   @@group_size = 5
   
   def self.get_group
-    @groups[Random.rand(@@groups.length)]
+    @@groups[Random.rand(@@groups.length)]
   end
   
   def self.add
