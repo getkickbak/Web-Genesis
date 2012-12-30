@@ -1,7 +1,7 @@
 class Channel
   @@free_list = {}
   @@reserve_list = {}
-  @groups = ["ChannelGroup-1"]
+  @@groups = ["ChannelGroup-1"]
   @@count = 0
   @@group_size = 5
   
