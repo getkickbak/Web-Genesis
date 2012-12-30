@@ -3,7 +3,7 @@ class Channel
   @@reserve_list = {}
   @groups = ["ChannelGroup-1"]
   @@count = 0
-  @@group_size = 5
+  @@group_size = 10
   
   def self.get_group
     @group[Random.rand(@@groups.length)]
