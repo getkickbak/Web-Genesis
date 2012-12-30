@@ -29,6 +29,10 @@ class Channel
       elsif @@count == @@group_size
         @@groups << "ChannelGroup-#{group+1}"  
       end
+      @@free_list.each do |item|
+        Rails.logger.info("show free-list group: #{item}")
+        Rails.logger.info("channels in free-list group: #{@@free_list[item]}")
+      end
     ensure
       mutex.release if ((defined? mutex) && !mutex.nil?)
     end
@@ -40,9 +44,9 @@ class Channel
       acquired = mutex.acquire
       Rails.logger.info("reserving group: #{group}")
       @@free_list.each do |item|
-        Rails.logger.info("free-list item:#{item}")
+        Rails.logger.info("show free-list group: #{item}")
       end
-      Rails.logger.info("free-list group: #{@@free_list[group]}")
+      Rails.logger.info("channels in free-list group: #{@@free_list[group]}")
       channel = @@free_list[group].shift
       if channel
         @@reserve_list[group][channel[0]] = channel[1]
