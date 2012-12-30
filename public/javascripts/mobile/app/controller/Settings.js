@@ -160,7 +160,7 @@ Ext.define('Genesis.controller.Settings',
             title : 'License Key Updated!',
             message : me.licenseKeySuccessMsg()
          });
-      });
+      }, true);
    },
    onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
