@@ -4,16 +4,9 @@ class Channel
   @@groups = ["ChannelGroup-1"]
   @@count = 0
   @@group_size = 5
-  @@groups_mutex_name = "ChannelGroups"
   
   def self.get_group
-    begin
-      mutex = CacheMutex.new(@@groups_mutex_name, Cache.memcache)
-      acquired = mutex.acquire
-      @@groups[Random.rand(@@groups.length)]
-    ensure
-      mutex.release if ((defined? mutex) && !mutex.nil?)
-    end
+    @@groups[Random.rand(@@groups.length)]
   end
   
   def self.add
@@ -24,14 +17,9 @@ class Channel
       @@count = @@count + 1
       group_count = @@count / @@group_size
       if group_count > @@groups.length
-        groups_mutex = CacheMutex.new(@@groups_mutex_name, Cache.memcache)
-        acquired = groups_mutex.acquire
         @@groups << "ChannelGroup-#{group_count}"
       elsif @@count == (@@group_size + 1) 
-        group_count = group_count + 1
-        groups_mutex = CacheMutex.new(@@groups_mutex_name, Cache.memcache)
-        acquired = groups_mutex.acquire
-        @@groups << "ChannelGroup-#{group_count}"
+        @@groups << "ChannelGroup-#{group_count+1}"
       end
       channel = "/tmp/channel_#{@@count}"
       system("mkfifo #{channel}")
@@ -46,7 +34,6 @@ class Channel
         Rails.logger.info("channels in this group: #{@@free_list[item[0]]}")
       end
     ensure
-      groups_mutex.release if ((defined? groups_mutex) && !groups_mutex.nil?)
       group_mutex.release if ((defined? group_mutex) && !group_mutex.nil?)
     end
   end
