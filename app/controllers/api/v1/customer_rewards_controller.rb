@@ -91,8 +91,11 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         return  
       end 
       if @request.is_status?(:complete)
-        render :template => '/api/v1/customer_rewards/merchant_redeem'  
         logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
+        respond_to do |format|
+          #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => true } }
+        end
       else
         logger.info("Venue(#{@venue.id}) failed to complete Request(#{@request.id})")
         respond_to do |format|
@@ -307,10 +310,13 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           trans_record.customer = @customer
           trans_record.user = user
           trans_record.save
+          @account_info = {}
           if @reward.mode == :reward
             @customer.points -= @reward.points
+            @account_info[:points] = @customer.points
           else
             @customer.prize_points -= @reward.points
+            @account_info[:prize_points] = @customer.prize_points
           end  
           if @reward.quantity_limited
             @reward.quantity_count += 1
@@ -325,8 +331,10 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           @customer.eligible_for_prize = eligible_for_prize
           @customer.update_ts = now
           @customer.save
+          @account_info[:eligible_for_reward] = eligible_for_reward
+          @account_info[:eligible_for_prize] = eligible_for_prize
           Request.set_status(@request, :complete)
-          render :template => '/api/v1/customer_rewards/redeem'
+          render :template => '/api/v1/customer_rewards/redeem' 
           logger.info("User(#{user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")
         else
           Request.set_status(@request, :failed)
