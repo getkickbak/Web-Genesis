@@ -80,9 +80,16 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
   end
   
   def merchant_complete
-    @venue = Venue.get(params[:venue_id]) || not_found
     begin      
-      data = params[:data]
+      encrypted_data = params[:data].split('$')
+      if encrypted_data.length != 2
+        raise "Invalid authorization code format"
+      end
+      @venue = Venue.get(encrypted_data[0])
+      if @venue.nil?
+        raise "No such venue: #{encrypted_data[0]}"
+      end
+      data = encrypted_data[1]
       #logger.debug("data: #{data}")
       cipher = Gibberish::AES.new(@venue.auth_code)
       decrypted = cipher.dec(data)
@@ -90,7 +97,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       decrypted_data = JSON.parse(decrypted)
       data_expiry_ts = Time.at(decrypted_data["expiry_ts"]/1000)  
       # Cache expires in 12 hrs
-      if (data_expiry_ts >= Time.now) && Cache.add(data, true, 43200) 
+      if (data_expiry_ts >= Time.now) && Cache.add(params[:data], true, 43200) 
         frequency = JSON.parse(params[:frequency])
         channel_group = Channel.get_group
         request_info = {
