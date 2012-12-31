@@ -95,10 +95,9 @@ class Request
       r = c.gets 
       timer.cancel
       if (defined? r) && r
-        r.to_sym == status ? true : false
-      else
-        return false
+        return (r.to_sym == status ? true : false)
       end
+      return false
     ensure
       Channel.free(self.channel_group, self.channel)    
     end  
