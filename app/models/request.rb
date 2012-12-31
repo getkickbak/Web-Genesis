@@ -74,7 +74,7 @@ class Request
   end
   
   def self.set_status(request, status)
-    if defined? request && request
+    if (defined? request) && request
       c = File.open(request.channel, "w+")
       c.puts status.to_s
       c.flush
