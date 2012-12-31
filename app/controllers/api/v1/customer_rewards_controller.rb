@@ -195,9 +195,13 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         return
       else 
         request_data = JSON.parse(@request.data)
-        if params[:id] != request_data["reward_id"].to_i
+        if params[:id] != request_data["reward_id"]
           Request.set_status(@request, :failed)
-          logger.error("Mismatch rewards, reward_id:#{params[:id]}, request reward_id:#{request_data["reward_id"].to_i}")
+          logger.info("params[:id] is an integer: #{params[:id].is_a? Integer}")
+          logger.info("params[:id] is a string #{params[:id].is_a? String}")
+          logger.info("request_data['reward_id'] is an integer: #{request_data["reward_id"].is_a? Integer}")
+          logger.info("request_data['reward_id''] is a string #{request_data["reward_id"].is_a? String}")
+          logger.error("Mismatch rewards, reward_id:#{params[:id]}, request reward_id:#{request_data["reward_id"]}")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_mismatch").split('\n') } }
