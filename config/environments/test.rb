@@ -58,6 +58,7 @@ Genesis::Application.configure do
     }
   end
   
+  config.log_level = :info
 =begin  
   ActiveMerchant::Billing::Base.mode = :test
     ::BILLING_GATEWAY = ActiveMerchant::Billing::BeanstreamGateway.new(
