@@ -197,7 +197,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         request_data = JSON.parse(@request.data)
         if params[:id] != request_data["reward_id"]
           Request.set_status(@request, :failed)
-          logger.error("Mismatch rewards,  reward id:#{params[:id]}, request reward_id:#{request_data["reward_id"]}")
+          logger.error("Mismatch rewards, reward id:#{params[:id]}, request reward_id:#{request_data["reward_id"]}")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.customer_rewards.redeem_mismatch").split('\n') } }
