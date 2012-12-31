@@ -94,13 +94,12 @@ class Request
       c = File.open(self.channel, "r+")
       r = c.gets 
       timer.cancel
-    ensure
-      Channel.free(self.channel_group, self.channel)
       if (defined? r) && r
-        r.to_sym == status ? true : false
-      else
-        return false
-      end    
+        return (r.to_sym == status ? true : false)
+      end
+      return false
+    ensure
+      Channel.free(self.channel_group, self.channel)    
     end  
   end
   
