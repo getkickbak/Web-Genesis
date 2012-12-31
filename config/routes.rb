@@ -141,7 +141,7 @@ Genesis::Application.routes.draw do
         match '/challenges' => 'challenges#index'
         match '/challenges/:id/start' => 'challenges#start'
         match '/challenges/:id/complete' => 'challenges#complete', :via => :post
-        match '/challenges/:id/merchant_complete' => 'challenges#merchant_complete', :via => :post
+        match '/challenges/merchant_complete' => 'challenges#merchant_complete', :via => :post
         match '/challenges/complete_referral' => 'challenges#complete_referral', :via => :post
 
         match '/customer_rewards' => 'customer_rewards#index'
