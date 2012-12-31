@@ -18,9 +18,9 @@ class Channel
       system("mkfifo #{channel}")
       channels = @@free_list[group]
       if channels.nil?
-        @@free_list[group] = {}
+        channels = @@free_list[group] = {}
       end
-      @@free_list[group][channel] = channel
+      channels[channel] = channel
       @@count = @@count + 1
       group = @@count / @@group_size
       if group > @@groups.length
@@ -48,7 +48,11 @@ class Channel
       Rails.logger.info("channels in group(#{group}): #{@@free_list[group]}")
       channel = @@free_list[group].shift
       if channel
-        @@reserve_list[group][channel[0]] = channel[1]
+        channels = @@reserve_list[group]
+        if channels.nil?
+          channels = @@reserve_list[group] = {}
+        end  
+        channels[channel[0]] = channel[1]
       else
         raise "Cannot reserve channel"
       end 
