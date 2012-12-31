@@ -29,10 +29,6 @@ class Channel
         channels = @@free_list[group] = {}
       end
       channels[channel] = channel
-      @@free_list.each do |item|
-        Rails.logger.info("show free-list group: #{item}")
-        Rails.logger.info("channels in this group: #{@@free_list[item[0]]}")
-      end
     ensure
       group_mutex.release if ((defined? group_mutex) && !group_mutex.nil?)
     end
@@ -42,11 +38,6 @@ class Channel
     begin
       mutex = CacheMutex.new(group, Cache.memcache)
       acquired = mutex.acquire
-      Rails.logger.info("reserving group: #{group}")
-      @@free_list.each do |item|
-        Rails.logger.info("show free-list group: #{item}")
-      end
-      Rails.logger.info("channels in group(#{group}): #{@@free_list[group]}")
       channel = @@free_list[group].shift
       if channel
         channels = @@reserve_list[group]
