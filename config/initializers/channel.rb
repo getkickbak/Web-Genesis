@@ -6,7 +6,9 @@ if exists
   venues.each do |venue|
     device_count = Device.count(:merchant_venue => venue)
     device_count.times do |x|
-      Channel.add
+      Channel.group_size.times do |n|
+        Channel.add
+      end
     end
   end
-end  
+end
