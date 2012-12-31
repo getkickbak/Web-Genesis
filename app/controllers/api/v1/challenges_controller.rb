@@ -159,7 +159,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       if APP_PROP["SIMULATOR_MODE"]
         data = String.random_alphanumeric(32)
       else
-        if params[:frequency].nil?
+        if params[:frequency]
           frequency = JSON.parse(params[:frequency])
           request_info = {
             :type => RequestType::EARN_POINTS,
