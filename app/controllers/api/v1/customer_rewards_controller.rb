@@ -178,13 +178,17 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
     authorize! :read, @customer
        
     begin  
+      frequency = JSON.parse(params[:frequency])
+      channel_group = Channel.get_group
       request_info = {
         :type => RequestType::REDEEM,
         :frequency1 => frequency[0],
         :frequency2 => frequency[1],
         :frequency3 => frequency[2],
         :latitude => params[:latitude] || @venue.latitude,
-        :longitude => params[:longitude] || @venue.longitude
+        :longitude => params[:longitude] || @venue.longitude,
+        :channel_group => channel_group,
+        :channel => Channel.reserve(channel_group)
       }
       @request = Request.match(request_info)
       if @request.nil?
