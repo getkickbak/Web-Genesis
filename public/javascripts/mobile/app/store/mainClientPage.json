@@ -8,9 +8,9 @@
          "pageCntlr": "client.Accounts",
          "subFeature": "profile"
       }, {
-         "name": "Check-ins",
-         "photo_url": "resources/themes/images/{platform_path}/mainicons/checkin.png",
-         "desc": "Check-ins Menu for Merchants Nearby",
+         "name": "Explore",
+         "photo_url": "resources/themes/images/{platform_path}/mainicons/explore.png",
+         "desc": "Explore Nearby Merchants",
          "route": "checkin",
          "pageCntlr": "client.Checkins",
          "subFeature": "checkin"

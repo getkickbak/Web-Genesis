@@ -309,7 +309,7 @@ Ext.define('Genesis.view.client.Accounts',
          emptyText : ' ',
          itemTpl : Ext.create('Ext.XTemplate',
          // @formatter:off
-         '<div class="merchantDetailsWrapper">',
+         '<div class="listItemDetailsWrapper" style="padding-left:0;">',
             '<div class="itemDistance">{[this.getDistance(values)]}</div>' +
             '<div class="itemTitle">{name}</div>',
             '<div class="itemDesc">{[this.getAddress(values)]}</div>',

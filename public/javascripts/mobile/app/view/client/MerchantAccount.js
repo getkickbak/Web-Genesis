@@ -123,9 +123,9 @@ Ext.define('Genesis.view.client.MerchantAccount',
           }
           */
          {
-            iconCls : 'checkin',
+            iconCls : 'explore',
             tag : 'checkin',
-            title : 'Check-ins'
+            title : 'Explore'
          },
          {
             xtype : 'spacer'
