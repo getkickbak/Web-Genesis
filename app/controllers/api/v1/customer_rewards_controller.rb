@@ -43,16 +43,11 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       decrypted_data = JSON.parse(decrypted)
       now_secs = decrypted_data["expiry_ts"]/1000
       data_expiry_ts = Time.at(now_secs)
-      #logger.debug("decrypted type: #{decrypted_data["type"]}")
       #logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
-      #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::REDEEM_REWARD}")
-      #logger.debug("Type comparison: #{decrypted_data["type"] == EncryptedDataType::REDEEM_PRIZE}")
       #logger.debug("Time comparison: #{data_expiry_ts >= Time.now}")
-      if decrypted_data["type"] == EncryptedDataType::REDEEM_REWARD || decrypted_data["type"] == EncryptedDataType::REDEEM_PRIZE
-        # Cache expires in 12 hrs
-        if (data_expiry_ts >= Time.now) && Cache.add(params[:data], true, 43200)
-          authorized = true
-        end
+      #Cache expires in 12 hrs
+      if (data_expiry_ts >= Time.now) && Cache.add(params[:data], true, 43200)
+        authorized = true
       else
         invalid_code = true
       end
