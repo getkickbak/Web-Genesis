@@ -37,9 +37,9 @@
 										<% if @reward_info[:prize_points] > 1 %>
 										<br>
 										<br>
-										Also, you are promoted to <%= "#{@cusotmer.badge.type.display_value}" %> 
+										Also, you are promoted to <%= "#{@customer.badge.type.display_value}" %> 
 										<% else %>
-										You just got promoted to <%= "#{@cusotmer.badge.type.display_value}" %> at
+										You just got promoted to <%= "#{@customer.badge.type.display_value}" %> at
 										<a rel="nofollow" target="_blank" href="<%= "#{@customer.merchant.name}" %>"><%= "#{@customer.merchant.name}" %></a>
 										<% end %>
 										and are rewarded with extra <b><%= "#{@reward_info[:badge_prize_points]} prize points</b>" %>
