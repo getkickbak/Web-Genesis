@@ -96,7 +96,9 @@ class Request
       r = c.gets 
       timer.cancel
       if (defined? r) && r
-        return (r.to_sym == status ? true : false)
+        received_status = r.gsub(/\x0A/, '')
+        Rails.logger.info("r: #{received_status.to_sym}, status: #{status}")
+        return (received_status.to_sym == status ? true : false)
       end
       return false
     ensure
