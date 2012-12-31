@@ -211,6 +211,7 @@ en:
         not_available: "Sorry, but the %s is not available at this venue!"
         insufficient_points: "Not enough points to redeem %s."
         redeem_failure: "Trouble redeeming this %s.\nPlease try again."
+        redeem_item_failure: "Trouble redeeming this item.\nPlease try again."
         no_longer_available: "Sorry, but this %s is no longer available!\nPlease choose another."
         redeem_mismatch: "Customer is redeeming a different reward than the one selected."
         invalid_reward: "The chosen reward/prize is not valid."
