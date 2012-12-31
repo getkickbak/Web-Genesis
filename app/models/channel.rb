@@ -19,9 +19,8 @@ class Channel
       channels = @@free_list[group]
       if channels.nil?
         @@free_list[group] = {}
-      else
-        @@free_list[group][channel] = channel
       end
+      @@free_list[group][channel] = channel
       @@count = @@count + 1
       group = @@count / @@group_size
       if group > @@groups.length
