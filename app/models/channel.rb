@@ -14,20 +14,21 @@ class Channel
       group = @@groups.last
       mutex = CacheMutex.new(group, Cache.memcache)
       acquired = mutex.acquire
-      channel = "/tmp/channel_#{@@count+1}"
+      @@count = @@count + 1
+      group = @@count / @@group_size
+      if group > @@groups.length
+        @@groups << "ChannelGroup-#{group}"
+      elsif @@count == (@@group_size + 1) 
+        group = group + 1
+        @@groups << "ChannelGroup-#{group}"
+      end
+      channel = "/tmp/channel_#{@@count}"
       system("mkfifo #{channel}")
       channels = @@free_list[group]
       if channels.nil?
         channels = @@free_list[group] = {}
       end
       channels[channel] = channel
-      @@count = @@count + 1
-      group = @@count / @@group_size
-      if group > @@groups.length
-        @@groups << "ChannelGroup-#{group}"
-      elsif @@count == @@group_size
-        @@groups << "ChannelGroup-#{group+1}"  
-      end
       @@free_list.each do |item|
         Rails.logger.info("show free-list group: #{item}")
         Rails.logger.info("channels in this group: #{@@free_list[item[0]]}")
