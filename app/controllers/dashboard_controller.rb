@@ -1,8 +1,9 @@
 class DashboardController < ApplicationController
   before_filter :authenticate_user!
-  skip_authorization_check
   
   def index
+    authorize! :read, current_user
+    
     @user_tag = UserTag.new
     get_customers_info
     respond_to do |format|
@@ -12,8 +13,7 @@ class DashboardController < ApplicationController
   end
 
   def register_tag
-    @user = current_user
-    authorize! :update, @user
+    authorize! :update, current_user
 
     tag_id = params[:user_tag][:tag_id].strip
     begin
@@ -156,6 +156,31 @@ class DashboardController < ApplicationController
       end
     end
   end 
+  
+  def deregister_tag
+    @tag = UserTag.get(params[:id]) || not_found
+    authorize! :update, current_user
+
+    begin
+      User.transaction do
+        current_user.deregister_tag(@tag)
+
+        respond_to do |format|
+          format.html { redirect_to(dashboard_url) }
+          #format.xml  { head :ok }
+        end
+      end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      @user_tag = UserTag.new
+      get_customers_info
+      flash[:error] = t("users.deregister_tag_failure")
+      respond_to do |format|
+        format.html { render :action => "index" }
+        #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+      end
+    end
+  end
   
   private
   

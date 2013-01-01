@@ -29,6 +29,13 @@
 					</div>
 				</div>
 				<div class="span9">
+					<div class="widget">
+						<div class="widget-content">
+							<p class="lead">
+								You have <b><%= @customer.points %> points</b> at <%= @merchant.name %></h3>
+							</p>
+						</div>
+					</div>
 					<% rewards = @customer_rewards.all(:mode => :reward, :order => [:points.asc]) %>
 					<% prizes = @customer_rewards.all(:mode => :prize, :order => [:points.asc]) %>
 					<% rtitle = "Rewards for " + @merchant.name %>

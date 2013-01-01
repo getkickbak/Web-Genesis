@@ -32,14 +32,17 @@
 		<div class="container">
 			<div class="row">
 				<div class="span9">
-					<% if current_user.tag %>
-					<div class="widget">
-						<div class="widget-content">
-							<div>
-								Tag ID: <%= current_user.tag.tag_id %> (<%= current_user.tag.status.upcase %>)
+					<% if not current_user.tags.empty? %>
+						<% current_user.tags.each do |tag| %>
+						<div class="widget">
+							<div class="widget-content">
+								<div>
+									Tag ID: <%= tag.tag_id %> (<%= tag.status.upcase %>) 
+									<%= link_to "x", deregister_tag_path(:id => tag.id), :data => { :confirm => 'Do you want to delete this tag' }, :method => :delete, :class=>"close", :title=>"remove" %>
+								</div>
 							</div>
 						</div>
-					</div>
+						<% end %>
 					<% end %>
 					<div class="widget">
 						<div class="widget-header">

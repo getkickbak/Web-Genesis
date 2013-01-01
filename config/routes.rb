@@ -173,6 +173,7 @@ Genesis::Application.routes.draw do
     
     match "/dashboard" => 'dashboard#index', :as => :dashboard
     match "/register_tag" => 'dashboard#register_tag', :via => :post, :as => :register_tag
+    match "/deregister_tag" => 'dashboard#deregister_tag', :via => :delete, :as => :deregister_tag
     match "/customer_rewards" => 'customer_rewards#index', :as => :customer_rewards
     match "/account" => 'users#show', :as => :account
     match "/account/edit" => 'users#edit', :as => :edit_account
