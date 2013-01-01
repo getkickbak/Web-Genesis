@@ -45,7 +45,7 @@ Genesis.constants =
       {
          ratio = 2 * ratio;
       }
-      return Math[(Ext.os.is('Android')) ? 'ceil' : 'floor'](((16 * ratio * Math.min(1.0, window.devicePixelRatio)) || (16 * ratio)));
+      return Math.floor(((16 * ratio * Math.min(1.0, window.devicePixelRatio)) || (16 * ratio)));
    })(),
    defaultIconSize : function()
    {
@@ -82,7 +82,7 @@ Genesis.constants =
       else
       if (Ext.os.is('Android'))
       {
-         this._iconSize = 48;
+         this._iconSize = 48 * 1.2;
          if ((window.devicePixelRatio) == 1 || (window.devicePixelRatio >= 2))
          {
             this._iconPath = '/android/mxhdpi';
@@ -90,13 +90,9 @@ Genesis.constants =
          }
          else
          {
+            this._iconSize = 36 * 1.5;
             this._iconPath = '/android/lhdpi';
             this._thumbnailAttribPrefix = 'thumbnail_android_lhdpi_';
-         }
-
-         if (window.devicePixelRatio < 1)
-         {
-            this._iconSize = 36;
          }
       }
       else
@@ -763,7 +759,7 @@ Genesis.fn =
    },
    calcPx : function(em, fontsize)
    {
-      return Math[(Ext.os.is('Android')) ? 'ceil' : 'floor'](((em / fontsize) * Genesis.constants.defaultFontSize));
+      return Math.floor(((em / fontsize) * Genesis.constants.defaultFontSize));
    },
    calcPxEm : function(px, em, fontsize)
    {

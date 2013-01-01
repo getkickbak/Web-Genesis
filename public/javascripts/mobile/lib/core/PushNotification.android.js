@@ -88,7 +88,7 @@
       ev.initEvent('push-notification', true, true, arguments);
       document.dispatchEvent(ev);
    };
-   //-------------------------------------------------------------------
+
    cordova.addConstructor(function()
    {
       if (!window.plugins)

@@ -13,10 +13,10 @@
          width:33%;
          height:($panelTopGap*2)+($normalFontSize*1.25*2)+(1.25*5em);
          .photo {
-            height : $icon-size;
+            height : $icon-size*$icon-multiplier;
             img {
-               width : $icon-size;
-               max-height : $icon-size;
+               width : $icon-size*$icon-multiplier;
+               max-height : $icon-size*$icon-multiplier;
             }
          }
       }

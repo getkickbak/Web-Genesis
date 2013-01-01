@@ -14,10 +14,10 @@
          height:auto;
          width:33%;
          .photo {
-            height : $icon-size;
+            height : $icon-size*$icon-multiplier;
             img {
-               width : $icon-size;
-               max-height : $icon-size;
+               width : $icon-size*$icon-multiplier;
+               max-height : $icon-size*$icon-multiplier;
             }
          }
       }

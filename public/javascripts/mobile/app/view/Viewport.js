@@ -19,7 +19,6 @@ Ext.define('Genesis.view.Viewport',
       },
       fullscreen : true
    },
-   loadingMsg : 'Loading ...',
    // @private
    initialize : function()
    {

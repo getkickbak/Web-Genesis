@@ -2,6 +2,9 @@
 //------------------------------------------------------------------------------
 // Merchant Account Page and Merchant Prize Page
 //------------------------------------------------------------------------------
+$itemDescHeightNorm : calc-px-em($icon-size*$icon-multiplier, 0em, $normalFontSize) - 1em - 1em + ($panelTopGap/$normalFontSize*1em);
+$itemDescHeightSmall : calc-px-em($icon-size*$icon-multiplier,0em, $smallFontSize) - (1em*$normalFontSize/$smallFontSize) - (2*1.1em) + ($panelTopGap/$smallFontSize*1em);
+@debug "$itemDescHeightNorm is:[" $itemDescHeightNorm "] $itemDescHeightSmall is:[" $itemDescHeightSmall "]";
 .merchantMain {
    .tbPanel {
       background-position: center;
@@ -21,7 +24,7 @@
       //border:1px solid $GreyNoEntry;
       position:relative;
       margin: $panelTopGap $panelGap 0 $panelGap;
-      min-height : $icon-size;
+      min-height : $icon-size*$icon-multiplier;
       .x-innerhtml {
          @extend .pointsphotobase;
          @if $include-border-radius { @include border-radius($panelBorderRadius); }
@@ -32,36 +35,36 @@
          &:before {
             @if $include-border-radius { @include border-left-radius($panelBorderRadius); }
             @include custom-linear-gradient($BlueStart 10%, $BlueEnd 85%, top);
-            width:calc-px-em($icon-size, 2*$panelGap, 1em);
-            height:calc-px-em($icon-size, 2*$panelTopGap, 1em);
-            max-height:calc-px-em($icon-size, 2*$panelTopGap, 1em);
+            width:calc-px-em($icon-size*$icon-multiplier, 2*$panelGap, 1em);
+            height:calc-px-em($icon-size*$icon-multiplier, 2*$panelTopGap, 1em);
+            max-height:calc-px-em($icon-size*$icon-multiplier, 2*$panelTopGap, 1em);
             font-size:1em;
          }
       }
       .x-list-disclosure {
         position : absolute;
         top : 0;
-        margin-top : calc-px-em($icon-size/2, $normalFontSize + ($panelTopGap*0.5) + (-1*(0.5*$list-disclosure-size)), 1em);
+        margin-top : calc-px-em($icon-size*$icon-multiplier/2, $panelTopGap - (0.5*$list-disclosure-size), 1em);
         right : 0;
       }
       .prizeswonphoto, .badgephoto {
          @extend .pointsphotobase;
          text-align:left;
          background-color: transparent;
-         padding-left:calc-px-em($icon-size, 2*$panelGap, 1em);
+         padding-left:calc-px-em($icon-size*$icon-multiplier, 2*$panelGap, 1em);
          font-size:1em;
+         line-height:$normalFontSize;
          &:before {
            @include custom-linear-gradient($BlueStart 10%, $BlueEnd 85%, top, url($theme-path-rel + "/miscicons/" + "prizeswon" + ".png"));
          }
          .itemTitle {
             font-weight:bold;
-            line-height:1em;
             font-size:$normalFontSize !important;
          }
          .itemDesc {
             font-style:italic;
             font-size:$normalFontSize !important;
-            padding:0.8em 0;
+            padding:(($itemDescHeightNorm/2) - 0.7em) 0 ($itemDescHeightNorm/2 - ($panelTopGap/$normalFontSize*1em)) 0;
          }
       }
       .badgephoto {
@@ -78,7 +81,7 @@
             left: $panelGap;
             display:inline;
             z-index:10000;
-            width:$icon-size;
+            width:$icon-size*$icon-multiplier;
          }
          .itemDesc {
             font-size:$smallFontSize !important;
@@ -125,26 +128,27 @@
       }
       .itemWrapper {
          position:relative;
-         min-height:$icon-size;
+         min-height:$icon-size*$icon-multiplier;
          .photo {
             top:0;
             left:0;
             position:absolute;
-            height:$icon-size;
+            height:$icon-size*$icon-multiplier;
             img {
-                width : $icon-size;
-              max-height : $icon-size;
+               width : $icon-size*$icon-multiplier;
+               max-height : $icon-size*$icon-multiplier;
             }
          }
          .itemTitle {
-            padding-left:calc-px-em($icon-size, $panelGap, $largeFontSize);
+            padding-left:calc-px-em($icon-size*$icon-multiplier, $panelGap, $largeFontSize);
             font-weight:bold;
             font-size:$largeFontSize !important;
             padding-top:$panelTopGap/2;
          }
          .itemDesc {
-            padding-left:calc-px-em($icon-size, $panelGap, $normalFontSize);
+            padding-left:calc-px-em($icon-size*$icon-multiplier, $panelGap, $normalFontSize);
             font-size:$normalFontSize !important;
+            line-height:1em;
          }   
       }
    }
@@ -155,22 +159,15 @@
    @include background-size($tabs-bottom-icon-size);
 }
 
-
 //------------------------------------------------------------------------------
 // iOS
 //------------------------------------------------------------------------------
-.x-ios, .x-desktop {
+.x-ios {
    .merchantMain {
       .prizesWonPanel, .badgeProgressPanel {
-         .prizeswonphoto, .badgephoto {
-            .itemDesc {
-               line-height:2.25em;
-            }
-         }
          .badgephoto {
             .itemDesc {
-               padding:2.25em 0 1.25em 0 !important;
-               //padding:3.15em 0 1.15em 0 !important;
+               padding:(($itemDescHeightSmall/2) - 0.7em) 0 ($itemDescHeightSmall/2 - ($panelTopGap/$smallFontSize*1em)) 0;
             }
          }
       }
@@ -180,16 +177,13 @@
 //------------------------------------------------------------------------------
 // Android
 //------------------------------------------------------------------------------
-.x-android .merchantMain {
-   .prizesWonPanel, .badgeProgressPanel {
-      .prizeswonphoto, .badgephoto {
-         .itemDesc {
-            line-height:1.25em;
-         }
-      }
-      .badgephoto {
-         .itemDesc {
-            padding:1.9em 0 0.678em 0 !important;
+.x-android {
+   .merchantMain {
+      .prizesWonPanel, .badgeProgressPanel {
+         .badgephoto {
+            .itemDesc {
+               padding:(($itemDescHeightSmall/2) - 0.7em - 0.2em) 0 ($itemDescHeightSmall/2 - ($panelTopGap/$smallFontSize*1em) - 0.2em) 0;
+            }
          }
       }
    }

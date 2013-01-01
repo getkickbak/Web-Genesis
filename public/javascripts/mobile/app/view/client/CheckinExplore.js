@@ -73,10 +73,12 @@ Ext.define('Genesis.view.client.CheckinExplore',
          //this.query('list')[0].refresh();
          return;
       }
+      var itemHeight = 1 + Math.max(Genesis.constants.defaultIconSize(), Genesis.fn.calcPx(0.75, 1) * 4 + Genesis.fn.calcPx(0.7 * 0.6, 1));
       this.getPreRender().push(Ext.create('Ext.List',
       {
          xtype : 'list',
          store : 'CheckinExploreStore',
+         loadingText : null,
          //scrollable : 'vertical',
          plugins : [
          {
@@ -97,7 +99,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
          refreshHeightOnUpdate : false,
          variableHeights : false,
          deferEmptyText : false,
-         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(Genesis.constants.defaultIconSize() + 2, (2 * 0.65), 1), 1),
+         itemHeight : Genesis.fn.calcPx(Genesis.fn.calcPxEm(itemHeight, (2 * 0.65), 1), 1),
          emptyText : ' ',
          tag : 'checkInExploreList',
          cls : 'checkInExploreList',
