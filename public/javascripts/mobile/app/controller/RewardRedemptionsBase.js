@@ -39,7 +39,7 @@ Ext.define('Genesis.controller.RewardRedemptionsBase',
          sDoneBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=done]',
          sRedeemBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=redeem]',
          refreshBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=refresh]',
-         //verifyBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=verify]',
+         mRedeemBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=merchantRedeem]',
          redeemItem :
          {
             selector : 'showredeemitemdetailview[tag=redeemReward]',
@@ -73,8 +73,10 @@ Ext.define('Genesis.controller.RewardRedemptionsBase',
          redeemItem :
          {
             createView : 'onRedeemItemCreateView',
+            showView : 'onRedeemItemShowView',
             activate : 'onRedeemItemActivate',
-            deactivate : 'onRedeemItemDeactivate'
+            deactivate : 'onRedeemItemDeactivate',
+            redeemItemTap : 'onRedeemItemTap'
          }/*,
           verifyBtn :
           {
@@ -104,7 +106,6 @@ Ext.define('Genesis.controller.RewardRedemptionsBase',
    // --------------------------------------------------------------------------
    // Event Handler
    // --------------------------------------------------------------------------
-   onRedeemItem : Ext.emptyFn,
    onRefreshQRCode : function(qrcodeMeta)
    {
       var me = this;
@@ -141,6 +142,7 @@ Ext.define('Genesis.controller.RewardRedemptionsBase',
       me.redeemItem = redeemItem;
       me.redirectTo('redeemReward');
    },
+   onRedeemItemShowView : Ext.emptyFn,
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------

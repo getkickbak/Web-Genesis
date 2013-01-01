@@ -63,7 +63,8 @@ Ext.define('Genesis.controller.PrizeRedemptionsBase',
             createView : 'onRedeemItemCreateView',
             showView : 'onRedeemItemShowView',
             activate : 'onRedeemItemActivate',
-            deactivate : 'onRedeemItemDeactivate'
+            deactivate : 'onRedeemItemDeactivate',
+            redeemItemTap : 'onRedeemItemTap'
          }
       },
       listeners :

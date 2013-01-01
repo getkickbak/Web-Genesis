@@ -15,6 +15,10 @@
             console.log("Failed to initialize the ProximityIDPlugin! Reason[" + reason + "]");
          }, "ProximityIDPlugin", "init", [s_vol_ratio + "", r_vol_ratio + ""]);
       },
+      preLoadSend : function(win, fail)
+      {
+         cordova.exec(win, fail, "ProximityIDPlugin", "preLoadIdentity", []);
+      },
       send : function(win, fail)
       {
          cordova.exec(win, fail, "ProximityIDPlugin", "sendIdentity", []);

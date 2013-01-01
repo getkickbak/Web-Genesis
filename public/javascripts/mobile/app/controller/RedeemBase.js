@@ -349,7 +349,7 @@ Ext.define('Genesis.controller.RedeemBase',
          }
       });
 
-      me.redeemItemFn = function(params)
+      me.redeemItemFn = function(p)
       {
          //
          // Stop receiving data from NFC
@@ -385,7 +385,7 @@ Ext.define('Genesis.controller.RedeemBase',
             jsonData :
             {
             },
-            params : params,
+            params : Ext.apply(params, p),
             callback : function(records, operation)
             {
                Ext.Viewport.setMasked(null);
@@ -426,7 +426,11 @@ Ext.define('Genesis.controller.RedeemBase',
             task = null;
             me.redeemItemFn(
             {
-               'frequency' : Ext.encode(identifiers['localID'])
+               'frequency' : Ext.encode(identifiers['localID']),
+               data : me.self.encryptFromParams(
+               {
+                  'expiry_ts' : new Date().addHours(3).getTime()
+               }, 'reward')
             });
          }, function()
          {
@@ -470,6 +474,13 @@ Ext.define('Genesis.controller.RedeemBase',
              else
              */
             {
+               if (!merchantMode)
+               {
+                  if (Genesis.fn.isNative())
+                  {
+                     window.plugins.proximityID.preLoadSend();
+                  }
+               }
                Ext.device.Notification.show(
                {
                   title : title,
@@ -507,11 +518,6 @@ Ext.define('Genesis.controller.RedeemBase',
       //me.getSBB().hide();
       tbbar.setTitle(me.getTitle());
       tbbar.removeCls('kbTitle');
-      me.getRefreshBtn()['hide']();
-      //me.getVerifyBtn()['hide']();
-      me.getSRedeemBtn().show();
-
-      console.log("RewardItem View - Updated RewardItem View.");
    },
    onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
