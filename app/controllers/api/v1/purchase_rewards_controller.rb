@@ -85,7 +85,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       begin
         venue = Venue.get(params[:venue_id])
         frequency = JSON.parse(params[:frequency])
-        channel_group = Channel.get_group
+        channel_group = Channel.get_group(params[:venue_id])
         request_info = {
           :type => RequestType::EARN_POINTS,
           :frequency1 => frequency[0],

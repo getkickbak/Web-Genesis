@@ -103,27 +103,4 @@ class Request
       Channel.free(self.channel_group, self.channel)    
     end  
   end
-  
-=begin  
-  def is_status?(status)
-    c = lambda {
-      return DataMapper.repository(:default).adapter.select(
-        "SELECT status from requests WHERE id = ? AND deleted_ts IS NULL", self.id
-      )
-    }
-    
-    n = 10 - 1
-    n.times do |x|
-      r = c.call
-      if r.length > 0 && r[0] != Request::Statuses.index(:pending)+1 
-        if r[0] == Request::Statuses.index(status)+1
-          return true
-        end    
-      elsif x < n
-        sleep(0.2)
-      end
-    end
-    return false 
-  end
-=end  
 end

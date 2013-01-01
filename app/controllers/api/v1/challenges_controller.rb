@@ -60,23 +60,6 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         format.json { render :json => { :success => false, :message => t("api.challenges.start_failure").split('\n') } }
       end  
     end
-    
-    if defined? @request
-      if @request.is_status?(:complete)
-        logger.info("User(#{current_user.id}) successfully completed Request(#{@request.id})")
-        respond_to do |format|
-          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => true } }
-        end
-      else
-        logger.info("User(#{current_user.id}) failed to complete Request(#{@request.id})")
-        respond_to do |format|
-          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
-        end
-      end 
-      @request.destroy if Rails.env == "production"
-    end
   end
   
   def merchant_complete
@@ -99,7 +82,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       # Cache expires in 12 hrs
       if (data_expiry_ts >= Time.now) && Cache.add(params[:data], true, 43200) 
         frequency = JSON.parse(params[:frequency])
-        channel_group = Channel.get_group
+        channel_group = Channel.get_group(encrypted_data[0])
         request_info = {
           :type => RequestType::EARN_POINTS,
           :frequency1 => frequency[0],
@@ -537,23 +520,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
             :merchant_id => @venue.merchant.id
           }.to_json
           cipher = Gibberish::AES.new(@venue.merchant.auth_code)
-          @encrypted_data = "#{@venue.merchant.id}$#{cipher.enc(data)}"
-=begin          
-          frequency = JSON.parse(params[:frequency])
-          channel_group = Channel.get_group
-          request_info = {
-            :type => RequestType::REFERRAL,
-            :frequency1 => frequency[0],
-            :frequency2 => frequency[1],
-            :frequency3 => frequency[2],
-            :latitude => params[:latitude],
-            :longitude => params[:longitude],
-            :data => data,
-            :channel_group => channel_group,
-            :channel => Channel.reserve(channel_group)
-          }
-          @request = Request.create(request_info)
-=end          
+          @encrypted_data = "#{@venue.merchant.id}$#{cipher.enc(data)}"    
           render :template => '/api/v1/challenges/start'
           logger.info("User(#{current_user.id}) successfully created direct referral in Customer Account(#{@customer.id})")
         end

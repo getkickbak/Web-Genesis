@@ -69,7 +69,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
             :reward_id => @reward.id
         }.to_json
         frequency = JSON.parse(params[:frequency])
-        channel_group = Channel.get_group
+        channel_group = Channel.get_group(encrypted_data[0])
         request_info = {
           :type => RequestType::REDEEM,
           :frequency1 => frequency[0],
@@ -177,7 +177,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
        
     begin  
       frequency = JSON.parse(params[:frequency])
-      channel_group = Channel.get_group
+      channel_group = Channel.get_group(params[:venue_id])
       request_info = {
         :type => RequestType::REDEEM,
         :frequency1 => frequency[0],
