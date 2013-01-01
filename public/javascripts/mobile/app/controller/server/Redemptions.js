@@ -51,6 +51,34 @@ Ext.define('Genesis.controller.server.Redemptions',
             'expiry_ts' : new Date().addHours(3).getTime()
          }, 'reward')
       });
+   },
+   onRedeemItemShowView : function(activeItem)
+   {
+      //
+      // Hide the Merchant Info
+      //
+      var me = this;
+      var info = activeItem.query('component[tag=info]')[0];
+      info.hide();
+      //
+      // In Prize Mode
+      //
+      me.getMRedeemBtn()[(me.getRedeemMode() != 'authReward') ? 'show' : 'hide']();
+      //
+      // In Challendge
+      //
+      me.getRefreshBtn()[(me.getRedeemMode() == 'authReward') ? 'show' : 'hide']();
+   },
+   onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+      me.callParent(arguments);
+
+      me.getRefreshBtn()['hide']();
+      me.getMRedeemBtn()['show']();
+      me.getSRedeemBtn()['hide']();
+
+      console.log("RewardItem View - Updated RewardItem View.");
    }
 });
 

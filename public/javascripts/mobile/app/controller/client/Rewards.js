@@ -325,6 +325,14 @@ Ext.define('Genesis.controller.client.Rewards',
 
       return false;
    },
+   onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+      me.callParent(arguments);
+
+      me.getRefreshBtn()['hide']();
+      me.getSRedeemBtn()['show']();
+   },
    onRewardItem : function(notUseGeolocation)
    {
       var me = this, task, viewport = me.getViewPortCntlr(), identifiers = null;
@@ -489,6 +497,10 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
+         if (Genesis.fn.isNative())
+         {
+            window.plugins.proximityID.preLoadSend();
+         }
          Ext.device.Notification.show(
          {
             title : 'Earn Reward Points',
@@ -528,6 +540,7 @@ Ext.define('Genesis.controller.client.Rewards',
       var app = me.getApplication(), controller = app.getController('client.Prizes');
       if (me.task)
       {
+         viewport.self.playSoundFile(viewport.sound_files['clickSound']);
          try
          {
             me.task.cancel();
@@ -554,7 +567,7 @@ Ext.define('Genesis.controller.client.Rewards',
 
       me.self.playSoundFile(viewport.sound_files['rouletteSpinSound'], rouletteTap);
       controller.startRouletteScreen(me.getRewards());
-      activeItem.metaData  = metaData;
+      activeItem.metaData = metaData;
       Ext.defer(function()
       {
          //activeItem.createView();

@@ -161,6 +161,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
          title.hide();
       }
       itemPhoto.setData(reward);
+      this.setData(data);
    },
    inheritableStatics :
    {

@@ -492,6 +492,14 @@ Ext.define('Genesis.controller.client.Prizes',
    // --------------------------------------------------------------------------
    // Prizes Page
    // --------------------------------------------------------------------------
+   onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+      me.callParent(arguments);
+
+      me.getRefreshBtn()['hide']();
+      me.getSRedeemBtn()['show']();
+   },
    onShowRedeemPrize : function(prize, reward_info, viewsPopLength)
    {
       var me = this;

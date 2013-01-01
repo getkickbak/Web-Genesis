@@ -1,80 +1,3 @@
-Ext.define('Genesis.view.RedeemItemDetail',
-{
-   extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.XTemplate', 'Ext.Carousel', 'Genesis.view.widgets.RedeemItem'],
-   alias : 'widget.redeemitemdetailview',
-   config :
-   {
-      scrollable : undefined,
-      cls : 'redeemItemMain viewport',
-      layout : 'fit',
-      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
-      {
-         title : 'Prizes',
-         items : [
-         {
-            align : 'left',
-            tag : 'close',
-            ui : 'normal',
-            text : 'Close'
-         },
-         {
-            align : 'left',
-            tag : 'back',
-            //ui : 'back',
-            ui : 'normal',
-            text : 'Back'
-         },
-         {
-            align : 'right',
-            tag : 'redeem',
-            text : 'Redeem'
-         },
-         {
-            align : 'right',
-            hidden : true,
-            tag : 'done',
-            text : 'Done'
-         }]
-      })]
-   },
-   cleanView : function()
-   {
-      this.callParent(arguments);
-   },
-   createView : function()
-   {
-      this.callParent(arguments);
-   },
-   showView : function()
-   {
-      var carousel = this.query('carousel')[0];
-      if (carousel)
-      {
-         carousel.setActiveItem(0);
-      }
-      this.getInnerItems()[0].setVisibility(true);
-
-      this.callParent(arguments);
-   },
-   inheritableStatics :
-   {
-      getPhoto : function(type)
-      {
-         var photo_url = null;
-         switch (type.value)
-         {
-            case 'earn_points':
-               break;
-            default :
-               photo_url = Genesis.constants.getIconPath('prizewon', type.value);
-               break;
-         }
-         return photo_url;
-      }
-   }
-});
-
 Ext.define('Genesis.view.ShowRedeemItemDetail',
 {
    extend : 'Genesis.view.ViewBase',
@@ -147,7 +70,20 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
          tag : 'merchantRedeem',
          text : 'Redeem!',
          ui : 'orange-large'
+      }],
+      listeners : [
+      {
+         element : 'element',
+         delegate : "div.itemPhoto",
+         event : "tap",
+         fn : "onRedeemItemTap"
       }]
+   },
+   onRedeemItemTap : function(b, e, eOpts)
+   {
+      var me = this, viewport = _application.getController(((!merchantMode) ? 'client' : 'server') + '.Viewport');
+      viewport.self.playSoundFile(viewport.sound_files['clickSound']);
+      me.fireEvent('redeemItemTap');
    },
    cleanView : function()
    {

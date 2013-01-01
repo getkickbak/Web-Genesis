@@ -29,7 +29,7 @@ Ext.define('Genesis.model.PurchaseReward',
          {
             'metachange' : function(proxy, metaData, eOpts)
             {
-               var controller = _application.getController('client.Rewards');
+               var controller = _application.getController(((!merchantMode) ? 'client' : 'server') + '.Rewards');
                controller.fireEvent('updatemetadata', metaData);
             }
          }

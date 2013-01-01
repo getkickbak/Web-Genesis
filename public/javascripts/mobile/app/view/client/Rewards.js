@@ -37,8 +37,6 @@ Ext.define('Genesis.view.client.Rewards',
    },
    onRouletteTap : function(b, e, eOpts)
    {
-      var viewport = _application.getController('client' + '.Viewport');
-      viewport.self.playSoundFile(viewport.sound_files['clickSound']);
       this.fireEvent('rouletteTap', this.metaData);
    },
    inheritableStatics :
