@@ -39,21 +39,14 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
   end
   
   def merchant_earn
-    invalid_code = false
-    authorized = false
     begin      
       encrypted_data = params[:data].split('$')
       if encrypted_data.length != 2
         raise "Invalid authorization code format"
       end
-      match_pattern = /^(\d*)$/.match(encrypted_data[0])
-      if match_pattern
-        venue = Venue.get(encrypted_data[0])
-        if venue.nil?
-          raise "No such venue: #{encrypted_data[0]}"
-        end
-      else
-        raise "Invalid authorization code"
+      venue = Venue.get(encrypted_data[0])
+      if venue.nil?
+        raise "No such venue: #{encrypted_data[0]}"
       end
       data = encrypted_data[1]
       #logger.debug("data: #{data}")
@@ -66,10 +59,27 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       if decrypted_data["type"] == EncryptedDataType::EARN_POINTS
         # Cache expires in 12 hrs
         if (data_expiry_ts >= Time.now) && Cache.add(params[:data], true, 43200)    
-          authorized = true
+          if params[:frequency]
+            frequency = JSON.parse(params[:frequency])
+            channel_group = Channel.get_group(params[:venue_id])
+            request_info = {
+              :type => RequestType::EARN_POINTS,
+              :frequency1 => frequency[0],
+              :frequency2 => frequency[1],
+              :frequency3 => frequency[2],
+              :latitude => venue.latitude,
+              :longitude => venue.longitude,
+              :data => params[:data],
+              :channel_group => channel_group,
+              :channel => Channel.reserve(channel_group)
+            }
+            @request = Request.create(request_info)
+          end
+        else
+          raise "Authorization code expired"  
         end  
       else
-        invalid_code = true
+        raise "Authorization code not valid"
       end
     rescue StandardError => e
       logger.error("Exception: " + e.message)
@@ -82,31 +92,6 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
     end
     
     if params[:frequency]
-      begin
-        venue = Venue.get(params[:venue_id])
-        frequency = JSON.parse(params[:frequency])
-        channel_group = Channel.get_group(params[:venue_id])
-        request_info = {
-          :type => RequestType::EARN_POINTS,
-          :frequency1 => frequency[0],
-          :frequency2 => frequency[1],
-          :frequency3 => frequency[2],
-          :latitude => venue.latitude,
-          :longitude => venue.longitude,
-          :data => params[:data],
-          :channel_group => channel_group,
-          :channel => Channel.reserve(channel_group)
-        }
-        @request = Request.create(request_info) 
-      rescue StandardError => e  
-        logger.error("Exception: " + e.message)
-        respond_to do |format|
-          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
-        end
-        return
-      end    
-     
       if @request.is_status?(:complete)
         logger.info("Venue(#{venue.id}) successfully completed Request(#{@request.id})")
         respond_to do |format|
@@ -154,24 +139,19 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         if encrypted_data.length != 2
           raise "Invalid authorization code format"
         end
-        match_pattern = /^(\d*)$/.match(encrypted_data[0])
-        if match_pattern
-          @venue = Venue.get(encrypted_data[0])
-          if @venue.nil?
-            raise "No such venue: #{encrypted_data[0]}"
+        @venue = Venue.get(encrypted_data[0])
+        if @venue.nil?
+          raise "No such venue: #{encrypted_data[0]}"
+        end
+        if @venue_id && (@venue.id != @venue_id.to_i)
+          Request.set_status(@request, :failed)
+          logger.error("Mismatch venue information', venue_id:#{@venue_id}, venue id:#{@venue.id}")
+          respond_to do |format|
+            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.venue_mismatch").split('\n') } }
           end
-          if @venue_id && (@venue.id != @venue_id.to_i)
-            Request.set_status(@request, :failed)
-            logger.error("Mismatch venue information', venue_id:#{@venue_id}, venue id:#{@venue.id}")
-            respond_to do |format|
-              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-              format.json { render :json => { :success => false, :message => t("api.purchase_rewards.venue_mismatch").split('\n') } }
-            end
-            return
-          end
-        else
-          raise "Invalid authorization code"
-        end        
+          return
+        end       
         data = encrypted_data[1]
         #logger.debug("data: #{data}")
         cipher = Gibberish::AES.new(@venue.auth_code)

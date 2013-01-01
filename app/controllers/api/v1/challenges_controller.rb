@@ -80,24 +80,28 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       decrypted_data = JSON.parse(decrypted)
       data_expiry_ts = Time.at(decrypted_data["expiry_ts"]/1000)  
       # Cache expires in 12 hrs
-      if (data_expiry_ts >= Time.now) && Cache.add(params[:data], true, 43200) 
-        frequency = JSON.parse(params[:frequency])
-        channel_group = Channel.get_group(encrypted_data[0])
-        request_info = {
-          :type => RequestType::EARN_POINTS,
-          :frequency1 => frequency[0],
-          :frequency2 => frequency[1],
-          :frequency3 => frequency[2],
-          :latitude => @venue.latitude,
-          :longitude => @venue.longitude,
-          :data => data,
-          :channel_group => channel_group,
-          :channel => Channel.reserve(channel_group)
-        }
-        @request = Request.create(request_info)
+      if decrypted_data["type"] == EncryptedDataType::EARN_POINTS 
+        if (data_expiry_ts >= Time.now) && Cache.add(params[:data], true, 43200) 
+          frequency = JSON.parse(params[:frequency])
+          channel_group = Channel.get_group(encrypted_data[0])
+          request_info = {
+            :type => RequestType::EARN_POINTS,
+            :frequency1 => frequency[0],
+            :frequency2 => frequency[1],
+            :frequency3 => frequency[2],
+            :latitude => @venue.latitude,
+            :longitude => @venue.longitude,
+            :data => data,
+            :channel_group => channel_group,
+            :channel => Channel.reserve(channel_group)
+          }
+          @request = Request.create(request_info)
+        else
+          raise "Authorization code expired"            
+        end
       else
-        raise "Authorization code expired"            
-      end  
+        raise "Authorization code not valid"
+      end    
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       Cache.delete(params[:data])
