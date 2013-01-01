@@ -45,8 +45,8 @@ class User
   attr_accessible :name, :email, :facebook_id, :facebook_email, :role, :status, :current_password, :password, :password_confirmation, :tag_id
     
   has 1, :profile, 'UserProfile', :constraint => :destroy
-  has 1, :user_to_tag, :constraint => :destroy
-  has 1, :tag, 'UserTag', :through => :user_to_tag,  :via => :user_tag
+  has n, :user_to_tags, :constraint => :destroy
+  has n, :tags, 'UserTag', :through => :user_to_tags,  :via => :user_tag
   has n, :friendships, :child_key => [ :source_id ], :constraint => :destroy
   has n, :friends, self, :through => :friendships, :via => :target
   has n, :links_to_followed_users, 'Relationship', :child_key => [ :follower_id ], :constraint => :destroy
@@ -102,8 +102,10 @@ class User
             user.password = password
             user.passowrd_confirmation = password_confirmation
             user.update_ts = now
-            user.tag.status = :active
-            user.tag.update_ts = now
+            user_tag = user_to_tag.user_tag
+            user_tag.status = :active
+            user_tag.update_ts = now
+            user_tag.save
           else
             validate_user = true
           end   
@@ -173,26 +175,29 @@ class User
   end
   
   def register_tag(tag)
-    if not self.tag.nil?
-      return if self.tag.id == tag.id
-      self.tag.status = :deleted
-      self.user_to_tag.destroy
-    end
-    self.tag = tag
-    self.tag.status = :active
+    tag.status = :active
+    tag.update_ts = Time.now
+    tag.save
+    self.tags.concat(Array(tag))
     save  
+  end
+  
+  def deregister_tag(tag)
+    tag.status = :deleted
+    tag.update_ts = Time.now
+    tag.save
+    self.user_to_tags.all(:user_tag => Array(tag)).destroy
+    reload
   end
   
   def follow(others)
     self.followed_users.concat(Array(others))
     save
-    self
   end
   
   def unfollow(others)
     self.links_to_followed_users.all(:followed => Array(others)).destroy
     reload
-    self
   end
   
   def add_friend(friend)
@@ -202,19 +207,16 @@ class User
   def remove_friend(friend)
     self.friendships.all(:target => Array(friend)).destroy
     reload
-    self
   end
     
   def add_credit_card(credit_card)
-    credit_cards.concat(Array(credit_card))
+    self.credit_cards.concat(Array(credit_card))
     save
-    self
   end
   
   def remove_credit_card(credit_card)
-    user_credit_cards.all(:credit_card => Array(credit_card)).destroy
+    self.user_credit_cards.all(:credit_card => Array(credit_card)).destroy
     reload
-    self
   end
   
   private

@@ -20,6 +20,7 @@ class CustomerRewardsController < ApplicationController
     end
     @merchants = Merchant.all(:id => merchant_ids) 
     @merchant = Merchant.get(params[:merchant_id]) || @merchants.first
+    @customer = Customer.first(:user_id => current_user.id, :merchant => @merchant) || not_found
     @customer_rewards = CustomerReward.all(:merchant => @merchant)
 
     respond_to do |format|

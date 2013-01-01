@@ -149,23 +149,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
               :merchant_id => @customer.merchant.id
             }.to_json
             cipher = Gibberish::AES.new(@customer.merchant.auth_code)
-            @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"
-=begin            
-            frequency = JSON.parse(params[:frequency])
-            channel_group = Channel.get_group
-            request_info = {
-              :type => RequestType::TRANSFER_POINTS,
-              :frequency1 => frequency[0],
-              :frequency2 => frequency[1],
-              :frequency3 => frequency[2],
-              :latitude => params[:latitude],
-              :longitude => params[:longitude],
-              :data => data,
-              :channel_group => channel_group,
-              :channel => Channel.reserve(channel_group)
-            }
-            @request = Request.create(request_info)
-=end            
+            @encrypted_data = "#{@customer.merchant.id}$#{cipher.enc(data)}"     
             render :template => '/api/v1/customers/transfer_points'
             logger.info("User(#{current_user.id}) successfully created direct transfer request worth #{points} points for Customer Account(#{@customer.id})")
             return
@@ -186,22 +170,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
       end  
       return
-    end    
-    
-    if @request.is_status?(:complete)
-      logger.info("User(#{current_user.id}) successfully completed Request(#{@request.id})")
-      respond_to do |format|
-        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => true } }
-      end
-    else
-      logger.info("User(#{current_user.id}) failed to complete Request(#{@request.id})")
-      respond_to do |format|
-        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
-      end
     end
-    @request.destroy if Rails.env == "production"
   end
 
   def receive_points
@@ -211,44 +180,22 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
     invalid_code = false
     
     begin
-      if params[:frequency]
-        frequency = JSON.parse(params[:frequency])
-        request_info = {
-          :type => RequestType::TRANSFER_POINTS,
-          :frequency1 => frequency[0],
-          :frequency2 => frequency[1],
-          :frequency3 => frequency[2],
-          :latitude => params[:latitude],
-          :longitude => params[:longitude]
-        }
-        @request = Request.match(request_info)
-        if @request.nil?
-          raise "No matching transfer points request"
-        end
-        decrypted_data = JSON.parse(@request.data)
-        merchant = Merchant.get(decrypted_data["merchant_id"])
-        if merchant.nil?
-          raise "No such merchant: #{decrypted_data["merchant_id"]}"
-        end
-      else
-        encrypted_data = params[:data].split('$')
-        if encrypted_data.length != 2
-          raise "Invalid transfer code format"
-        end
-        merchant = Merchant.get(encrypted_data[0])
-        if merchant.nil?
-          raise "No such merchant: #{encrypted_data[0]}"
-        end
-        data = encrypted_data[1] 
-        #logger.debug("data: #{data}")
-        cipher = Gibberish::AES.new(merchant.auth_code)
-        decrypted = cipher.dec(data)
-        #logger.debug("decrypted text: #{decrypted}")
-        decrypted_data = JSON.parse(decrypted) 
+      encrypted_data = params[:data].split('$')
+      if encrypted_data.length != 2
+        raise "Invalid transfer code format"
       end
+      merchant = Merchant.get(encrypted_data[0])
+      if merchant.nil?
+        raise "No such merchant: #{encrypted_data[0]}"
+      end
+      data = encrypted_data[1] 
+      #logger.debug("data: #{data}")
+      cipher = Gibberish::AES.new(merchant.auth_code)
+      decrypted = cipher.dec(data)
+      #logger.debug("decrypted text: #{decrypted}")
+      decrypted_data = JSON.parse(decrypted) 
     
       if merchant.status != :active
-        Request.set_status(@request, :failed)
         logger.info("User(#{current_user.id}) failed to receive points at Merchant(#{merchant.id}), merchant is not active")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -262,7 +209,6 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
           @customer = Customer.create(merchant, current_user)
         else
-          Request.set_status(@request, :failed)
           logger.info("User(#{current_user.id}) failed to receive points at Merchant(#{merchant.id}), account not compatible with merchant")
           respond_to do |format|
             #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -286,7 +232,6 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         invalid_code = true 
       end  
     rescue StandardError => e
-      Request.set_status(@request, :failed)
       logger.error("Exception: " + e.message)  
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -302,7 +247,6 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         if authorized
           sender = Customer.get(@record.sender_id)
           if sender.id == @customer.id
-            Request.set_status(@request, :failed)
             logger.info("Customer(#{@customer.id}) failed to receive points from Customer(#{sender.id}), self transfer")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -353,14 +297,12 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             @record.status = :complete
             @record.update_ts = now
             @record.save 
-            Request.set_status(@request, :complete)
             render :template => '/api/v1/customers/receive_points'
             if decrypted_data["type"] == EncryptedDataType::POINTS_TRANSFER_EMAIL
               UserMailer.transfer_points_confirm_email(sender.user, current_user, merchant, @record).deliver
             end
             logger.info("Customer(#{@record.sender_id}) successfully received #{@record.points} points from Customer(#{@record.recipient_id})") 
           else
-            Request.set_status(@request, :failed)
             logger.info("Customer(#{@customer.id}) failed to receive points, insufficient points")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -368,7 +310,6 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             end  
           end
         else
-          Request.set_status(@request, :failed)
           if invalid_code
             msg = t("api.customers.invalid_transfer_code").split('\n')
             logger.info("Customer(#{@customer.id}) failed to receive points, invalid transfer code")
@@ -383,7 +324,6 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         end
       end
     rescue StandardError => e
-      Request.set_status(@request, :failed)
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
