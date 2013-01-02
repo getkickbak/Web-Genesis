@@ -79,6 +79,14 @@ Ext.define('Genesis.model.frontend.Account',
             read : 'GET'
          });
          this.getProxy().setUrl(Genesis.constants.host + '/api/v1/tokens/get_csrf_token');
+      },
+      setUpdateRegUserDeviceUrl : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/account/register_user_device');
       }
    }
 });
