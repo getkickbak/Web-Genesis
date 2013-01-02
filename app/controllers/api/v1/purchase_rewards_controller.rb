@@ -70,7 +70,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           if amount >= 1.00
             if params[:frequency]
               request_data = { 
-                :amount_id => amount,
+                :amount => amount,
                 :data => params[:data]
               }.to_json
               frequency = JSON.parse(params[:frequency])
