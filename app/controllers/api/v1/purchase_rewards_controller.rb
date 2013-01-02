@@ -143,6 +143,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       begin
         if signed_in?
           decrypted_data = JSON.parse(@request.data)
+          data = decrypted_data["data"]
           amount = decrypted_data["amount"].to_f
         else
           data = params[:data]
