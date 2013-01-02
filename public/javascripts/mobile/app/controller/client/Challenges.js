@@ -536,17 +536,6 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       var me = this;
 
-      if (!position)
-      {
-         /*
-          Ext.device.Notification.show(
-          {
-          title : 'Location Services',
-          message : me.geoLocationErrorMsg()
-          });
-          return;
-          */
-      }
       me.metaData =
       {
          'position' : position
@@ -559,6 +548,15 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          case 'photo' :
          {
+            if (!position)
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Location Services',
+                  message : me.geoLocationErrorMsg()
+               });
+               return;
+            }
             me.getChallengePage().takePhoto();
             break;
          }
@@ -861,16 +859,28 @@ Ext.define('Genesis.controller.client.Challenges',
                      {
                         if (btn.toLowerCase() == 'proceed')
                         {
-                           me.onLocationUpdate(null);
-                           //me.getGeoLocation();
+                           if (selectedItem.get('type').value == 'photo')
+                           {
+                              me.getGeoLocation();
+                           }
+                           else
+                           {
+                              me.onLocationUpdate(null);
+                           }
                         }
                      }
                   });
                }
                else
                {
-                  me.onLocationUpdate(null);
-                  // me.getGeoLocation();
+                  if (selectedItem.get('type').value == 'photo')
+                  {
+                     me.getGeoLocation();
+                  }
+                  else
+                  {
+                     me.onLocationUpdate(null);
+                  }
                }
                break;
             }
@@ -951,12 +961,6 @@ Ext.define('Genesis.controller.client.Challenges',
              return;
              }
              */
-            params = Ext.apply(params,
-            {
-               //'data' : me.qrcode,
-               'latitude' : position.coords.getLatitude(),
-               'longitude' : position.coords.getLongitude()
-            });
          }
          else
          {
@@ -1030,9 +1034,15 @@ Ext.define('Genesis.controller.client.Challenges',
             type = me.selectedItem.get('type').value;
             params =
             {
-               venue_id : venueId,
-               latitude : position.coords.getLatitude(),
-               longitude : position.coords.getLongitude(),
+               venue_id : venueId
+            }
+            if (position)
+            {
+               params = Ext.apply(params,
+               {
+                  latitude : position.coords.getLatitude(),
+                  longitude : position.coords.getLongitude()
+               });
             }
             Challenge['setCompleteChallengeURL'](id);
 
