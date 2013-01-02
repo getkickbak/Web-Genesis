@@ -83,7 +83,7 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
    {
       var me = this, viewport = _application.getController(((!merchantMode) ? 'client' : 'server') + '.Viewport');
       viewport.self.playSoundFile(viewport.sound_files['clickSound']);
-      me.fireEvent('redeemItemTap');
+      me.fireEvent('redeemItemTap', null);
    },
    cleanView : function()
    {

@@ -307,11 +307,23 @@ Genesis.fb =
                   }
                });
             }
+            else
+            {
+               Ext.Viewport.setMasked(null);
+            }
             return;
          }
 
-         console.debug("Logged into Facebook with Expiry Date [" + Date.parse(response['expirationDate']) + "]");
-         Genesis.db.setLocalDBAttrib('fbExpiresIn', (Date.parse(response['expirationDate'])).getTime());
+         try
+         {
+            console.debug("Logged into Facebook with Expiry Date [" + Date.parse(response['expirationDate']) + "]");
+            Genesis.db.setLocalDBAttrib('fbExpiresIn', (Date.parse(response['expirationDate'])).getTime());
+         }
+         catch(e)
+         {
+            console.debug("Logged into Facebook with Expiry Date [" + Date(response['expirationDate']) + "]");
+            Genesis.db.setLocalDBAttrib('fbExpiresIn', parseInt(response['expirationDate']));
+         }
          if (me.cb)
          {
             Ext.defer(me.facebook_loginCallback, 3 * 1000, me, [me.cb]);

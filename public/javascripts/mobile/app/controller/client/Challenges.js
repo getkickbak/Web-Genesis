@@ -536,15 +536,11 @@ Ext.define('Genesis.controller.client.Challenges',
    {
       var me = this;
 
-      if (!position)
+      me.metaData =
       {
-         Ext.device.Notification.show(
-         {
-            title : 'Location Services',
-            message : me.geoLocationErrorMsg()
-         });
-         return;
-      }
+         'position' : position
+      };
+
       //
       // Either we are in PhotoUpload mode, or we are in Challenge Authorization Mode
       //
@@ -552,11 +548,16 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          case 'photo' :
          {
-            me.getChallengePage().takePhoto();
-            me.metaData =
+            if (!position)
             {
-               'position' : position
-            };
+               Ext.device.Notification.show(
+               {
+                  title : 'Location Services',
+                  message : me.geoLocationErrorMsg()
+               });
+               return;
+            }
+            me.getChallengePage().takePhoto();
             break;
          }
          case 'vip' :
@@ -573,10 +574,6 @@ Ext.define('Genesis.controller.client.Challenges',
          case 'birthday' :
          case 'custom' :
          default:
-            me.metaData =
-            {
-               'position' : position
-            };
             me.completeChallenge(null, position);
             //me.scanQRCode();
             break;
@@ -588,7 +585,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
       if (qrcode != null)
       {
-         me.completeChallenge(qrcode, (me.metaData) ? me.metaData['position'] : null);
+         me.completeChallenge(qrcode, me.metaData['position']);
       }
       else
       {
@@ -849,6 +846,10 @@ Ext.define('Genesis.controller.client.Challenges',
             {
                if (selectedItem.get('require_verif'))
                {
+                  if (Genesis.fn.isNative())
+                  {
+                     window.plugins.proximityID.preLoadSend();
+                  }
                   Ext.device.Notification.show(
                   {
                      title : me.selectedItem.get('name') + ' Challenge',
@@ -858,14 +859,28 @@ Ext.define('Genesis.controller.client.Challenges',
                      {
                         if (btn.toLowerCase() == 'proceed')
                         {
-                           me.getGeoLocation();
+                           if (selectedItem.get('type').value == 'photo')
+                           {
+                              me.getGeoLocation();
+                           }
+                           else
+                           {
+                              me.onLocationUpdate(null);
+                           }
                         }
                      }
                   });
                }
                else
                {
-                  me.getGeoLocation();
+                  if (selectedItem.get('type').value == 'photo')
+                  {
+                     me.getGeoLocation();
+                  }
+                  else
+                  {
+                     me.onLocationUpdate(null);
+                  }
                }
                break;
             }
@@ -917,7 +932,7 @@ Ext.define('Genesis.controller.client.Challenges',
       var venueId = viewport.getVenue().getId();
       var customerId = viewport.getCustomer().getId();
 
-      me.challengeItem = function()
+      me.challengeItemFn = function()
       {
          //
          // With or without Geolocation support
@@ -946,12 +961,6 @@ Ext.define('Genesis.controller.client.Challenges',
              return;
              }
              */
-            params = Ext.apply(params,
-            {
-               //'data' : me.qrcode,
-               'latitude' : position.coords.getLatitude(),
-               'longitude' : position.coords.getLongitude()
-            });
          }
          else
          {
@@ -1008,7 +1017,7 @@ Ext.define('Genesis.controller.client.Challenges',
 
       if (Genesis.fn.isNative())
       {
-         if (!position)
+         if (!me.selectedItem)
          {
             id = me.reservedReferralId;
             type = 'referral';
@@ -1017,7 +1026,7 @@ Ext.define('Genesis.controller.client.Challenges',
             {
             }
             Challenge['setCompleteReferralChallengeURL']();
-            me.challengeItem();
+            me.challengeItemFn();
          }
          else
          {
@@ -1025,9 +1034,15 @@ Ext.define('Genesis.controller.client.Challenges',
             type = me.selectedItem.get('type').value;
             params =
             {
-               venue_id : venueId,
-               latitude : position.coords.getLatitude(),
-               longitude : position.coords.getLongitude(),
+               venue_id : venueId
+            }
+            if (position)
+            {
+               params = Ext.apply(params,
+               {
+                  latitude : position.coords.getLatitude(),
+                  longitude : position.coords.getLongitude()
+               });
             }
             Challenge['setCompleteChallengeURL'](id);
 
@@ -1058,7 +1073,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   }
                });
                console.log("Broadcast underway ...");
-               me.challengeItem();
+               me.challengeItemFn();
             }, function()
             {
                Ext.Viewport.setMasked(null);
@@ -1106,6 +1121,7 @@ Ext.define('Genesis.controller.client.Challenges',
          {
             case 'emailsender' :
             case 'sender' :
+            case 'receiver' :
             {
                me.referralEventHandler(tag);
                break;
@@ -1360,7 +1376,7 @@ Ext.define('Genesis.controller.client.Challenges',
             {
                title : 'Referral Challenge',
                message : me.confirmRecvReferralsMsg,
-               buttons : ['Cancel', 'Proceed'],
+               buttons : ['Proceed', 'Cancel'],
                callback : function(btn)
                {
                   if (btn.toLowerCase() == 'proceed')
@@ -1370,7 +1386,10 @@ Ext.define('Genesis.controller.client.Challenges',
                         me.referralCbFn = cb;
                      }
                      delete me.selectedItem;
-                     me.metaData = null;
+                     me.metaData =
+                     {
+                        position : null
+                     };
                      me.scanQRCode();
                   }
                }
