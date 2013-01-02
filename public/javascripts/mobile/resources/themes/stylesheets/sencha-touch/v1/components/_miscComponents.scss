@@ -1,8 +1,9 @@
 .pointsphotobase {
-   line-height:$icon-size;
+   line-height:$icon-size*$icon-multiplier;
    font-size:$xlargeFontSize*1.25;
    text-align:center;
-   padding-left:calc-px-em($icon-size, $panelGap, $xlargeFontSize*1.25);
+   padding-left:calc-px-em($icon-size*$icon-multiplier, 0.2em, $xlargeFontSize*1.25);
+   padding-right: 0.2em;
    position:relative;
    &:before {
       position:absolute;
@@ -10,9 +11,9 @@
       top:0;
       left:0;
       content : ' ';
-      width : $icon-size;
-      height : $icon-size;
-      max-height: $icon-size;
+      width : $icon-size*$icon-multiplier;
+      height : $icon-size*$icon-multiplier;
+      max-height: $icon-size*$icon-multiplier;
       background-position: top;
       @include background-size(contain);
       background-repeat: no-repeat;
@@ -38,8 +39,8 @@
 
 .pointsphotodesc {
    @extend .pointsphotobase;
-   height:calc-px-em($icon-size, $panelTopGap, $xlargeFontSize*1.25);
-   max-height:calc-px-em($icon-size, $panelTopGap, $xlargeFontSize*1.25);
+   height:calc-px-em($icon-size*$icon-multiplier, $panelTopGap, $xlargeFontSize*1.25);
+   max-height:calc-px-em($icon-size*$icon-multiplier, $panelTopGap, $xlargeFontSize*1.25);
    &:before {
       background-image: theme_image($theme-path + "/miscicons",  "points" + ".png");
    }
@@ -48,14 +49,14 @@
       font-weight:bold;
       position:absolute;
       z-index:1;
-      top:calc-px-em($icon-size/2, -0.2*$panelTopGap, $smallFontSize);
+      top:calc-px-em($icon-size*$icon-multiplier/2, -0.2*$panelTopGap, $smallFontSize);
       left:0;
       content : 'Rewards';
-      width : $icon-size;
+      width : $icon-size*$icon-multiplier;
    }
    .x-innerhtml {
       border : 1px solid; // Use inherited border color
-      line-height : calc-px-em($icon-size, $panelTopGap, $xlargeFontSize*1.25);
+      line-height : calc-px-em($icon-size*$icon-multiplier, $panelTopGap, $xlargeFontSize*1.25);
       @if $include-border-radius { @include border-radius($panelBorderRadius); }
    }
 }

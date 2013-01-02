@@ -50,4 +50,7 @@
    .x-list-header {
       line-height:$list-disclosure-size;
    }
+   &.x-list-grouped .x-list-header-wrap .x-dock-horizontal {
+      padding-top: calc-px-em(2*1px, (1.7em + 0.2em)*0.8, 1em);
+   }
 }

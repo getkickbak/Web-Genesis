@@ -16,16 +16,16 @@
       color:$BlackStart;
       .itemWrapper {
          width:50%;
-         height:calc-px-em((1.25*$icon-size), (($panelTopGap*2)+($normalFontSize*1.25*1)), ($normalFontSize*1.25));
+         height:calc-px-em((1.25*$icon-size*$icon-multiplier), (($panelTopGap*2)+($normalFontSize*1.25*1)), ($normalFontSize*1.25));
          padding:$panelTopGap/2 $panelGap/2;
          text-align:center;
          float:left;
          position:relative;
          .photo {
-            height : $icon-size*1.25;
+            height : $icon-size*$icon-multiplier*1.25;
             img {
-               width : $icon-size*1.25;
-               max-height : $icon-size*1.25;
+               width : $icon-size*$icon-multiplier*1.25;
+               max-height : $icon-size*$icon-multiplier*1.25;
             }
          }
          .photoName {

@@ -85,7 +85,7 @@
       }
       .x-inner {
         padding:0 !important;
-        height:$icon-size;
+        height:$icon-size*$icon-multiplier;
       }
       .pointsphotobase {
          font-size:$xlargeFontSize*1.25;
@@ -94,7 +94,7 @@
          .x-innerhtml {
             font-size:$xlargeFontSize;
             font-weight:bold;
-            line-height:$icon-size;
+            line-height:$icon-size*$icon-multiplier;
          }
       }
    }
@@ -120,7 +120,7 @@
          .listItemDetailsWrapper {
             display:table;
             width:100%;
-            height : $icon-size;
+            height : $icon-size*$icon-multiplier;
             .itemTitle {
                display:table-cell;
                vertical-align:middle;

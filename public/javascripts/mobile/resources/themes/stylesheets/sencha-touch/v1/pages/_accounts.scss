@@ -11,10 +11,10 @@
          padding-left:0 !important;
          &.single {
             .points {
-               padding-top : $icon-size/4; 
-               padding-bottom : $icon-size/4; 
+               padding-top : calc-em((1.3em + (0.7em/2))/2, $xlargeFontSize); 
+               padding-bottom : calc-em((1.3em + (0.7em/2))/2, $xlargeFontSize); 
                img {
-                  top : $icon-size/4;
+                  top : calc-em((1.3em + (0.7em/2))/2, $xlargeFontSize);
                }
             }
          }
@@ -24,20 +24,20 @@
             text-align:left;
             font-size:$largeFontSize;
             font-weight:normal;
-            line-height:$icon-size/2;
+            line-height:calc-em(1.4em + (0.7em/4), $xlargeFontSize);
          }
          .points {
             position:relative;
             text-align:right;
             font-size:$xlargeFontSize;
             font-weight:bold;
-            line-height:$icon-size/2;
+            line-height:calc-em(1.4em + (0.7em/4), $xlargeFontSize);
             padding-right:calc-px-em($icon-size/2, $panelGap, $xlargeFontSize);
             img {
                position:absolute;
                right:0;
                top:0;
-               width:$icon-size/2;
+               width:calc-em(1.5em, $xlargeFontSize);
             }
          }
       }

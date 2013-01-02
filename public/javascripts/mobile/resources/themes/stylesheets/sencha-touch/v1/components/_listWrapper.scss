@@ -4,9 +4,9 @@
 .listItemDetailsWrapper {
    position:relative;
    font-size:1em;
-   padding-left:calc-px-em($icon-size,$panelGap,1em);
+   padding-left:calc-px-em($icon-size*$icon-multiplier,$panelGap,1em);
    //padding-right:$list-disclosure-size*1.5;
-   min-height:$icon-size;
+   min-height:$icon-size*$icon-multiplier;
    line-height:0.75em;
    .itemDistance {
       position:absolute;
@@ -52,10 +52,10 @@
          .x-dock-horizontal {
             .photo {
                position:absolute;
-               height:$icon-size;
+               height:$icon-size*$icon-multiplier;
                img {
-                  width : $icon-size;
-                  max-height : $icon-size;
+                  width : $icon-size*$icon-multiplier;
+                  max-height : $icon-size*$icon-multiplier;
                }
             }
          }
