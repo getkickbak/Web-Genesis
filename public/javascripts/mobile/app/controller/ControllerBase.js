@@ -51,12 +51,12 @@ Ext.define('Genesis.controller.ControllerBase',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
    getVenueInfoMsg : 'Retrieving Venue Information ...',
    prepareToSendMerchantDeviceMsg : 'Prepare to send data across to Merchant Device ...',
-   lookingForMerchantDeviceMsg : 'Place your phone overtop the Merchant Device ...', //Send
-   detectMerchantDeviceMsg : 'Place your phone overtop the Merchant Device ...', //Recv
+   lookingForMerchantDeviceMsg : 'Place your phone under the Merchant Device ...', //Send
+   detectMerchantDeviceMsg : 'Place your phone under the Merchant Device ...', //Recv
    // Merchant Device
    prepareToSendMobileDeviceMsg : 'Prepare to send data across to Mobile Device ...',
-   lookingForMobileDeviceMsg : 'Place the tablet under the Mobile Device ...', //Send
-   detectMobileDeviceMsg : 'Place the tablet under the Mobile Device ...', //Recv
+   lookingForMobileDeviceMsg : 'Place the Tag or Mobile Device underneath the Merchant Device ...', //Send
+   detectMobileDeviceMsg : 'Place the Tag or Mobile Device underneath the Merchant Device ...', //Send
    //
    //
    //

@@ -62,14 +62,6 @@ Ext.define('Genesis.controller.RewardRedemptionsBase',
             select : 'onItemListSelect',
             disclose : 'onItemListDisclose'
          },
-         sDoneBtn :
-         {
-            tap : 'onDoneTap'
-         },
-         sRedeemBtn :
-         {
-            tap : 'onRedeemItemTap'
-         },
          redeemItem :
          {
             createView : 'onRedeemItemCreateView',
@@ -77,12 +69,7 @@ Ext.define('Genesis.controller.RewardRedemptionsBase',
             activate : 'onRedeemItemActivate',
             deactivate : 'onRedeemItemDeactivate',
             redeemItemTap : 'onRedeemItemTap'
-         }/*,
-          verifyBtn :
-          {
-          tap : 'popView'
-          }
-          */
+         }
       }
    },
    xtype : 'redemptionsBaseCntlr',
@@ -146,11 +133,6 @@ Ext.define('Genesis.controller.RewardRedemptionsBase',
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------
-   redeemChooseSCPage : function()
-   {
-      var controller = this.getApplication().getController('client.Accounts');
-      controller.redeemRewardsChooseSCPage();
-   },
    redeemItemPage : function()
    {
       this.openPage('redeemReward');

@@ -9,7 +9,10 @@ Ext.define('Ext.device.notification.PhoneGap', {
         var config = this.callParent(arguments),
             buttons = (config.buttons) ? config.buttons.join(',') : null,
             onShowCallback = function(index) {
-            	 index = Math.max(1,index);
+            	if (!index || (index < 1))
+            	{
+            		index = (config.buttons) ? config.buttons.length : 0;
+            	}
                 if (config.callback) {
                     config.callback.apply(config.scope, (config.buttons) ? [config.buttons[index - 1].toLowerCase()] : []);
                 }

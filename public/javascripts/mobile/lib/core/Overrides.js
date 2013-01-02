@@ -310,8 +310,8 @@ Genesis.fb =
             return;
          }
 
-         console.debug("Logged into Facebook!");
-         Genesis.db.setLocalDBAttrib('fbExpiresIn', (new Date(response['expirationDate'])).getTime());
+         console.debug("Logged into Facebook with Expiry Date [" + Date.parse(response['expirationDate']) + "]");
+         Genesis.db.setLocalDBAttrib('fbExpiresIn', (Date.parse(response['expirationDate'])).getTime());
          if (me.cb)
          {
             Ext.defer(me.facebook_loginCallback, 3 * 1000, me, [me.cb]);
@@ -377,7 +377,7 @@ Genesis.fb =
       }
       var db = Genesis.db.getLocalDB();
       var refreshConn = (!(db['currFbId'] > 0) || //
-      (db['currFbId'] > 0) && (new Date(db['fbExpiresIn']).getTime() <= (new Date()).getTime()));
+      (db['currFbId'] > 0) && (db['fbExpiresIn'] <= (new Date()).getTime()));
 
       if (refreshConn)
       {
@@ -385,7 +385,7 @@ Genesis.fb =
       }
       else
       {
-         console.debug('FB ExpiryDate TimeStamp = ' + Date(new Date(db['fbExpiresIn']).getTime()));
+         console.debug('FB ExpiryDate TimeStamp = ' + Date(db['fbExpiresIn']));
          cb(db['fbResponse'], null);
       }
       /*

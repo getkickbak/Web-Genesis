@@ -50,13 +50,17 @@ Ext.define('Genesis.controller.PrizeRedemptionsBase',
       },
       control :
       {
-         mRedeemBtn :
+         redemptions :
          {
-            tap : 'onRedeemItemTap'
+            createView : 'onCreateView',
+            showView : 'onShowView',
+            activate : 'onActivate',
+            deactivate : 'onDeactivate'
          },
-         sRedeemBtn :
+         redemptionsList :
          {
-            tap : 'onRedeemItemTap'
+            select : 'onItemListSelect',
+            disclose : 'onItemListDisclose'
          },
          redeemItem :
          {
