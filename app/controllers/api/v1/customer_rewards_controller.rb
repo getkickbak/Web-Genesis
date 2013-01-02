@@ -44,35 +44,31 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       #logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
       #logger.debug("Time comparison: #{data_expiry_ts >= Time.now}")
       #Cache expires in 12 hrs
-      if decrypted_data["type"] == EncryptedDataType::REDEEM_REWARD || decrypted_data["type"] == EncryptedDataType::REDEEM_PRIZE
-        if (data_expiry_ts >= Time.now) && Cache.add(params[:data], true, 43200)
-          @reward = CustomerReward.first(:id => params[:id], :merchant => @venue.merchant)
-          raise "Reward(#{params[:id]}) not found" if @reward.nil?
-          if params[:frequency]
-            data = { 
-              :reward_id => @reward.id
-            }.to_json
-            frequency = JSON.parse(params[:frequency])
-            channel_group = Channel.get_group(encrypted_data[0])
-            request_info = {
-              :type => RequestType::REDEEM,
-              :frequency1 => frequency[0],
-              :frequency2 => frequency[1],
-              :frequency3 => frequency[2],
-              :latitude => @venue.latitude,
-              :longitude => @venue.longitude,
-              :data => data,
-              :channel_group => channel_group,
-              :channel => Channel.reserve(channel_group)
-            }
-            @request = Request.create(request_info)
-          end
-        else
-          raise "Authorization code expired"
+      if (data_expiry_ts >= Time.now) && Cache.add(params[:data], true, 43200)
+        @reward = CustomerReward.first(:id => params[:id], :merchant => @venue.merchant)
+        raise "Reward(#{params[:id]}) not found" if @reward.nil?
+        if params[:frequency]
+          data = { 
+            :reward_id => @reward.id
+          }.to_json
+          frequency = JSON.parse(params[:frequency])
+          channel_group = Channel.get_group(encrypted_data[0])
+          request_info = {
+            :type => RequestType::REDEEM,
+            :frequency1 => frequency[0],
+            :frequency2 => frequency[1],
+            :frequency3 => frequency[2],
+            :latitude => @venue.latitude,
+            :longitude => @venue.longitude,
+            :data => data,
+            :channel_group => channel_group,
+            :channel => Channel.reserve(channel_group)
+          }
+          @request = Request.create(request_info)
         end
       else
-        raise "Authorization code not valid"
-      end  
+        raise "Authorization code expired"
+      end
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       Cache.delete(params[:data])
@@ -155,16 +151,13 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
        
     begin  
       frequency = JSON.parse(params[:frequency])
-      channel_group = Channel.get_group(params[:venue_id])
       request_info = {
         :type => RequestType::REDEEM,
         :frequency1 => frequency[0],
         :frequency2 => frequency[1],
         :frequency3 => frequency[2],
         :latitude => params[:latitude] || @venue.latitude,
-        :longitude => params[:longitude] || @venue.longitude,
-        :channel_group => channel_group,
-        :channel => Channel.reserve(channel_group)
+        :longitude => params[:longitude] || @venue.longitude
       }
       @request = Request.match(request_info)
       if @request.nil?
