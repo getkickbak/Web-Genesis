@@ -117,4 +117,23 @@ class Api::V1::UsersController < Api::V1::BaseApplicationController
     @user.reset_authentication_token!
     render :template => '/api/v1/account/change_password'
   end  
+  
+  def register_user_device
+    @user = current_user
+    authorize! :update, @user
+    
+    if params[:device] && (params[:device] != "null")
+      device_info = JSON.parse(params[:device], { :symbolize_names => true })
+      Common.register_user_device(@user, device_info)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => true } }
+      end
+    else
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false } }
+      end    
+    end
+  end
 end

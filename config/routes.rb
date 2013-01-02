@@ -131,6 +131,7 @@ Genesis::Application.routes.draw do
         match "/account/update_facebook_info" => 'users#update_facebook_info', :via => :post
         match "/account/reset_password" => 'users#reset_password', :via => :post
         match "/account/change_password" => 'users#change_password', :via => :post
+        match "/account/register_user_device" => "users#register_user_device", :via => :post
     
         match '/venues/find_closest' => 'venues#find_closest'
         match '/venues/find_nearest' => 'venues#find_nearest'
