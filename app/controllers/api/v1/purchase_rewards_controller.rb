@@ -69,6 +69,10 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           amount = @decrypted_data["amount"].to_f
           if amount >= 1.00
             if params[:frequency]
+              request_data = { 
+                :amount_id => amount,
+                :data => params[:data]
+              }.to_json
               frequency = JSON.parse(params[:frequency])
               channel_group = Channel.get_group(params[:venue_id])
               request_info = {
@@ -78,7 +82,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 :frequency3 => frequency[2],
                 :latitude => @venue.latitude,
                 :longitude => @venue.longitude,
-                :data => params[:data],
+                :data => request_data,
                 :channel_group => channel_group,
                 :channel => Channel.reserve(channel_group)
               }
@@ -138,9 +142,11 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
     else
       begin
         if signed_in?
-          data = @request.data
+          decrypted_data = JSON.parse(@request.data)
+          amount = decrypted_data["amount"].to_f
         else
           data = params[:data]
+          amount = @decrypted_data["amount"].to_f
         end
 
         encrypted_data = data.split('$')
