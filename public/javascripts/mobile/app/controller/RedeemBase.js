@@ -212,9 +212,7 @@ Ext.define('Genesis.controller.RedeemBase',
          //
          // Updating Server ...
          //
-         btn.hide();
-         //Ext.Viewport.getMasked().setMessage(me.establishConnectionMsg);
-
+         me.getSRedeemBtn()['hide']();
          CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
          store.load(
          {
@@ -250,7 +248,7 @@ Ext.define('Genesis.controller.RedeemBase',
                }
                else
                {
-                  btn.show();
+                  me.getSRedeemBtn()['show']();
                   Ext.device.Notification.show(
                   {
                      title : 'Redemptions',
@@ -370,7 +368,10 @@ Ext.define('Genesis.controller.RedeemBase',
          //
          // Update Server
          //
-         btn.hide();
+         if (btn)
+         {
+            btn.hide();
+         }
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
@@ -403,7 +404,10 @@ Ext.define('Genesis.controller.RedeemBase',
                }
                else
                {
-                  btn.show();
+                  if (btn)
+                  {
+                     btn.show();
+                  }
                   Ext.device.Notification.show(
                   {
                      title : 'Redemptions',
@@ -452,17 +456,18 @@ Ext.define('Genesis.controller.RedeemBase',
       var title = view.query('titlebar')[0].getTitle();
       var btn = b;
 
+      //console.debug("onRedeemItemTap - Mode[" + me.getRedeemMode() + "]");
       switch (me.getRedeemMode())
       {
          case 'redeemPrize' :
          case 'redeemReward' :
          {
-            var bypass = me.getBrowseMode() == 'redeemBrowseSC';
             var viewport = me.getViewPortCntlr();
             venue = viewport.getVenue();
             var cvenue = viewport.getCheckinInfo().venue;
 
             /*
+             var bypass = me.getBrowseMode() == 'redeemBrowseSC';
              if (!bypass && (!cvenue || !venue || (venue.getId() != cvenue.getId())))
              {
              Ext.device.Notification.show(

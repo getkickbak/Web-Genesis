@@ -1,6 +1,7 @@
 Ext.define('Genesis.controller.server.Redemptions',
 {
    extend : 'Genesis.controller.RewardRedemptionsBase',
+   requires : ['Ext.data.Store', 'Genesis.view.server.Redemptions'],
    inheritableStatics :
    {
    },
@@ -8,7 +9,7 @@ Ext.define('Genesis.controller.server.Redemptions',
    controllerType : 'redemption',
    config :
    {
-   	closeBtn : null,
+      closeBtn : null,
       redeemPointsFn : 'setMerchantRedeemPointsURL',
       routes :
       {
@@ -29,9 +30,17 @@ Ext.define('Genesis.controller.server.Redemptions',
       },
       control :
       {
-         verifyBtn :
+         mRedeemBtn :
          {
-            tap : 'onVerifyTap'
+            tap : 'onRedeemItemTap'
+         },
+         sRedeemBtn :
+         {
+            tap : 'onRedeemItemTap'
+         },
+         sDoneBtn :
+         {
+            tap : 'onDoneTap'
          }
       },
       listeners :
@@ -61,7 +70,7 @@ Ext.define('Genesis.controller.server.Redemptions',
       var info = activeItem.query('component[tag=info]')[0];
       info.hide();
       //
-      // In Prize Mode
+      // In Redeem Mode
       //
       me.getMRedeemBtn()[(me.getRedeemMode() != 'authReward') ? 'show' : 'hide']();
       //

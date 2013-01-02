@@ -51,19 +51,6 @@ Ext.define('Genesis.controller.client.Prizes',
       },
       control :
       {
-         redemptions :
-         {
-            createView : 'onCreateView',
-            showView : 'onShowView',
-            activate : 'onActivate',
-            deactivate : 'onDeactivate'
-         },
-         redemptionsList :
-         {
-            select : 'onItemListSelect',
-            disclose : 'onItemListDisclose'
-
-         },
          sDoneBtn :
          {
             tap : 'onDoneTap'

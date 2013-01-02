@@ -6,17 +6,14 @@ Ext.define('Genesis.controller.server.Prizes',
    {
    },
    xtype : 'serverPrizesCntlr',
+   controllerType : 'redemption',
    config :
    {
-   	closeBtn : null,
+      closeBtn : null,
       redeemPointsFn : 'setMerchantRedeemPointsURL',
       routes :
       {
-         'authReward' : 'authRewardPage',
-         // Browse Prizes Page
-         'prizes' : 'redeemBrowsePage',
-         //'prize' : 'prizePage',
-         'redeemPrize' : 'redeemItemPage'
+         'authReward' : 'authRewardPage'
       },
       refs :
       {
@@ -34,18 +31,13 @@ Ext.define('Genesis.controller.server.Prizes',
       },
       control :
       {
-         redemptions :
+         mRedeemBtn :
          {
-            createView : 'onCreateView',
-            showView : 'onShowView',
-            activate : 'onActivate',
-            deactivate : 'onDeactivate'
+            tap : 'onRedeemItemTap'
          },
-         redemptionsList :
+         sRedeemBtn :
          {
-            select : 'onItemListSelect',
-            disclose : 'onItemListDisclose'
-
+            tap : 'onRedeemItemTap'
          }
       },
       listeners :
@@ -121,7 +113,7 @@ Ext.define('Genesis.controller.server.Prizes',
       var info = activeItem.query('component[tag=info]')[0];
       info.hide();
       //
-      // In Prize Mode
+      // In Redeem Mode
       //
       me.getMRedeemBtn()[(me.getRedeemMode() != 'authReward') ? 'show' : 'hide']();
       //
