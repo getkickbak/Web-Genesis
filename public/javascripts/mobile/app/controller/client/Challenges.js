@@ -849,6 +849,10 @@ Ext.define('Genesis.controller.client.Challenges',
             {
                if (selectedItem.get('require_verif'))
                {
+                  if (Genesis.fn.isNative())
+                  {
+                     window.plugins.proximityID.preLoadSend();
+                  }
                   Ext.device.Notification.show(
                   {
                      title : me.selectedItem.get('name') + ' Challenge',
