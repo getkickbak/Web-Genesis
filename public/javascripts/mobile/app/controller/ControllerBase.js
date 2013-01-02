@@ -653,18 +653,20 @@ Ext.define('Genesis.controller.ControllerBase',
             db['auth_code'] = authCode;
             db['csrf_code'] = csrfCode;
             Genesis.db.setLocalDB(db);
+
+            console.debug('\n' + //
+            "auth_code [" + authCode + "]" + "\n" + //
+            "csrf_code [" + csrfCode + "]" + "\n" + //
+            "currFbId [" + db['currFbId'] + "]");
+
          }
-         console.debug('\n' + //
-         "auth_code [" + authCode + "]" + "\n" + //
-         "csrf_code [" + csrfCode + "]" + "\n" + //
-         "currFbId [" + db['currFbId'] + "]");
 
          // No Venue Checked-In from previous session
          if (!db['last_check_in'])
          {
             me.redirectTo('checkin');
          }
-
+         
          rc = true;
       }
 

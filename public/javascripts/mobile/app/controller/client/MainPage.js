@@ -570,6 +570,8 @@ Ext.define('Genesis.controller.client.MainPage',
          xtype : 'loadmask',
          message : me.establishConnectionMsg
       });
+
+      me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
       Account.load(0,
       {
          jsonData :
