@@ -212,6 +212,7 @@ Ext.define('Genesis.controller.RedeemBase',
          //
          // Updating Server ...
          //
+         console.debug("Updating Server ...");
          me.getSRedeemBtn()['hide']();
          CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
          store.load(
@@ -368,6 +369,7 @@ Ext.define('Genesis.controller.RedeemBase',
          //
          // Update Server
          //
+         console.debug("Updating Server ...");
          if (btn)
          {
             btn.hide();
