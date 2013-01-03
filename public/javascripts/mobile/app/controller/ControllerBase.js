@@ -862,7 +862,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    getLocalID : function(success, fail)
    {
-      var me = this, c = Genesis.constants;
+      var me = this, c = Genesis.constants, viewport = me.getViewPortCntlr();
       var task, taskWait = false;
 
       var scan = function()
@@ -875,7 +875,7 @@ Ext.define('Genesis.controller.ControllerBase',
             var identifiers = Genesis.fn.processRecvLocalID(result);
             if (identifiers['message'])
             {
-               Ext.device.Notification.beep();
+               me.self.playSoundFile(viewport.sound_files['nfcEnd']);
                success(identifiers);
             }
          }, function(error)
@@ -887,7 +887,7 @@ Ext.define('Genesis.controller.ControllerBase',
                title : 'Local Identity',
                message : "No ID Found! ErrorCode(" + Ext.encode(error) + ")"
             });
-            Ext.device.Notification.beep();
+            me.self.playSoundFile(viewport.sound_files['nfcError']);
             console.log('Error Code[' + Ext.encode(error) + ']');
             fail();
          }, c.numSamples, c.conseqMissThreshold, c.magThreshold, c.sigOverlapRatio);
@@ -898,6 +898,7 @@ Ext.define('Genesis.controller.ControllerBase',
          if (!taskWait)
          {
             taskWait = true;
+            me.self.playSoundFile(viewport.sound_files['nfcError']);
             window.plugins.proximityID.stop();
             Ext.device.Notification.show(
             {

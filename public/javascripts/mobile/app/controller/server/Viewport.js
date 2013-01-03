@@ -230,6 +230,8 @@ Ext.define('Genesis.controller.server.Viewport',
          };
          var soundList = [//
          ['clickSound', 'click_sound', 'FX'], //
+         ['nfcEnd', 'nfc_end', 'FX'], //
+         ['nfcError', 'nfc_error', 'FX'], //
          //['refreshListSound', 'refresh_list_sound', 'FX'], //
          ['beepSound', 'beep.wav', 'FX']];
 
