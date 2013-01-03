@@ -138,10 +138,6 @@ Ext.define('Genesis.controller.client.MainPage',
    {
       return msg + Genesis.constants.addCRLF() + 'Please retype the passwords';
    },
-   loginWithFbMsg : function(msg)
-   {
-      return 'Logging in ...';
-   },
    initCallback : function()
    {
       var me = this;
@@ -390,43 +386,6 @@ Ext.define('Genesis.controller.client.MainPage',
    // --------------------------------------------------------------------------
    // Login Page
    // --------------------------------------------------------------------------
-   facebookLogin : function(params)
-   {
-      var me = this;
-      Customer['setFbLoginUrl']();
-      console.log("setFbLoginUrl - Logging in ...");
-      Ext.StoreMgr.get('CustomerStore').load(
-      {
-         jsonData :
-         {
-         },
-         params : Ext.apply(params,
-         {
-            device_pixel_ratio : window.devicePixelRatio,
-            device : Ext.encode(Genesis.constants.device)
-         }),
-         callback : function(records, operation)
-         {
-            //
-            // Login Error, let the user login again
-            //
-            if (!operation.wasSuccessful())
-            {
-               //
-               // If we are already in Login Page, reset all values
-               //
-               //Genesis.db.resetStorage();
-            }
-            else
-            {
-               Ext.Viewport.setMasked(null);
-               Genesis.db.setLocalDBAttrib('enableFB', true);
-               me.persistSyncStores('CustomerStore');
-               me.fireEvent('updatemetadata', Customer.getProxy().getReader().metaData);
-            }
-         }
-      });
-   },
    onLoginActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var viewport = this.getViewPortCntlr();
@@ -531,29 +490,48 @@ Ext.define('Genesis.controller.client.MainPage',
       //
       // Forced to Login to Facebook
       //
-      if (!Ext.Viewport.getMasked())
+      if (Ext.Viewport.getMasked())
       {
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : me.loginWithFbMsg()
-         });
-         Genesis.db.removeLocalDBAttrib('currFbId');
-         Genesis.fb.facebook_onLogin(function(params)
-         {
-            if (!params)
-            {
-               Ext.device.Notification.show(
-               {
-                  title : 'Facebook Connect',
-                  message : Genesis.fb.fbConnectFailMsg
-               });
-               return;
-            }
-            console.log(me.loginWithFbMsg());
-            me.facebookLogin(params);
-         }, true);
+         return;
       }
+      Genesis.db.removeLocalDBAttrib('currFbId');
+      Genesis.fb.facebook_onLogin(function(params)
+      {
+         Customer['setFbLoginUrl']();
+         console.log("setFbLoginUrl - Logging in ...");
+         me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
+         Ext.StoreMgr.get('CustomerStore').load(
+         {
+            jsonData :
+            {
+            },
+            params : Ext.apply(params,
+            {
+               device_pixel_ratio : window.devicePixelRatio,
+               device : Ext.encode(Genesis.constants.device)
+            }),
+            callback : function(records, operation)
+            {
+               //
+               // Login Error, let the user login again
+               //
+               if (!operation.wasSuccessful())
+               {
+                  //
+                  // If we are already in Login Page, reset all values
+                  //
+                  //Genesis.db.resetStorage();
+               }
+               else
+               {
+                  Ext.Viewport.setMasked(null);
+                  Genesis.db.setLocalDBAttrib('enableFB', true);
+                  me.persistSyncStores('CustomerStore');
+                  me.fireEvent('updatemetadata', Customer.getProxy().getReader().metaData);
+               }
+            }
+         });
+      }, true);
    },
    onCreateAccountTap : function(b, e, eOpts, eInfo)
    {
@@ -662,6 +640,7 @@ Ext.define('Genesis.controller.client.MainPage',
          });
 
          Customer['setCreateAccountUrl']();
+         me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
          Ext.StoreMgr.get('CustomerStore').load(
          {
             jsonData :
@@ -712,6 +691,7 @@ Ext.define('Genesis.controller.client.MainPage',
       }
       Customer['setLoginUrl']();
       console.log("setLoginUrl - Logging in ...");
+      me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
       Ext.StoreMgr.get('CustomerStore').load(
       {
          params : params,

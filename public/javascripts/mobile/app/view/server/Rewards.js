@@ -150,12 +150,25 @@ Ext.define('Genesis.view.server.Rewards',
                }]
             },
             {
-               docked : 'bottom',
-               xtype : 'button',
                cls : 'separator',
-               tag : 'showQrCode',
-               text : 'GO!',
-               ui : 'orange-large'
+               docked : 'bottom',
+               layout : 'hbox',
+               defaults :
+               {
+                  xtype : 'button',
+                  flex : 1
+               },
+               items : [
+               {
+                  tag : 'tagit',
+                  text : 'Tag it',
+                  ui : 'orange-large'
+               },
+               {
+                  tag : 'showQrCode',
+                  text : 'SWIPE',
+                  ui : 'orange-large'
+               }]
             }]
          },
          // -------------------------------------------------------------------

@@ -105,7 +105,6 @@
                   "devicePixelRatio - " + window.devicePixelRatio + ", " + //
                   'Connection type: [' + Ext.device.Connection.getType() + ']');
                }
-               //Genesis.db.redeemDBCleanup();
             }, false);
 
             document.addEventListener("offline", function()
@@ -117,7 +116,6 @@
             }, false);
             document.addEventListener("pause", function()
             {
-               //Genesis.db.redeemDBSync();
                console.log("App is Paused");
             }, false);
 
@@ -125,7 +123,6 @@
             {
                if (Ext.device)
                {
-                  //Genesis.db.redeemDBCleanup();
                }
                console.log("App is Resumed");
             }, false);
@@ -141,7 +138,6 @@
                   Ext.device.Notification.vibrate();
 
                }
-               Genesis.db.redeemDBSync();
             }, false);
             window.addEventListener("batterycritical", function(info)
             {
@@ -156,7 +152,6 @@
                   Ext.device.Notification.vibrate();
                   Ext.device.Notification.beep();
                }
-               Genesis.db.redeemDBSync();
             }, false);
 
             document.addEventListener("deviceready", function()
@@ -238,7 +233,7 @@
             {
                profiles : ['Android'],
                views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MerchantAccount', 'MainPage', 'ShowRedeemItemDetail', 'server.SettingsPage', 'Viewport'],
-               controllers : ['server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'server.Merchants', 'Settings', 'server.Prizes'],
+               controllers : ['server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'server.Merchants', 'server.Settings', 'server.Prizes'],
                launch : function()
                {
                   _application = this;

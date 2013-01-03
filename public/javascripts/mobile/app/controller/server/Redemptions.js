@@ -90,17 +90,3 @@ Ext.define('Genesis.controller.server.Redemptions',
       console.log("RewardItem View - Updated RewardItem View.");
    }
 });
-
-//
-// Cleanup Redeem Database every 6 hours
-//
-var _dbCleanup = function()
-{
-   Ext.defer(function()
-   {
-      Genesis.db.redeemDBCleanup();
-      _dbCleanup();
-   }, 1000 * 60 * 60 * 3);
-};
-
-_dbCleanup();
