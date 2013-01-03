@@ -183,7 +183,7 @@ Ext.define('Genesis.controller.client.Settings',
       });
       me._initializing = false;
       me.openPage('settings');
-   },
+   }
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------

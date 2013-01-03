@@ -8,7 +8,7 @@ Genesis =
 Genesis.constants =
 {
    host : 'http://192.168.0.52:3000',
-   host : 'http://76.10.173.153:80',
+   //host : 'http://76.10.173.153:80',
    //host : 'http://www.getkickbak.com',
    //
    // Proximity ID
