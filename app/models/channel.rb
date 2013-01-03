@@ -1,7 +1,7 @@
 class Channel
   @@memcache = nil
   @@count_mutex_name = "ChannelCountMutex"
-  @cache_cache_name = "ChannelCount"
+  @count_cache_name = "ChannelCount"
   
   def self.get_group(venue_id)
     "ChannelGroup-#{venue_id}"  
