@@ -52,7 +52,8 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             createView : 'onPromotionCreateView',
             activate : 'onPromotionActivate',
-            deactivate : 'onPromotionDeactivate'
+            deactivate : 'onPromotionDeactivate',
+            promoteItemTap : 'onPromoteItemTap'
          },
          pDoneBtn :
          {
@@ -164,6 +165,10 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       var me = this;
       me.rewardItemFn();
+   },
+   onPromoteItemTap : function(b, e, eOpts, eInfo)
+   {
+      this.onPromotionDoneTap();
    },
    // --------------------------------------------------------------------------
    // Rewards Page

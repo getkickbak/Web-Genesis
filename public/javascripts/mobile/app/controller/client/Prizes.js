@@ -51,10 +51,6 @@ Ext.define('Genesis.controller.client.Prizes',
       },
       control :
       {
-         sDoneBtn :
-         {
-            tap : 'onDoneTap'
-         },
          sRedeemBtn :
          {
             tap : 'onRedeemItemTap'
@@ -63,7 +59,8 @@ Ext.define('Genesis.controller.client.Prizes',
          {
             createView : 'onBadgeDetailCreateView',
             activate : 'onBadgeDetailActivate',
-            deactivate : 'onBadgeDetailDeactivate'
+            deactivate : 'onBadgeDetailDeactivate',
+            promoteItemTap : 'onPromoteItemTap'
          },
          bDoneBtn :
          {
@@ -322,17 +319,20 @@ Ext.define('Genesis.controller.client.Prizes',
       }
 
       //Update on Facebook
-      if ( typeof (FB) != "undefined")
+      if (( typeof (FB) != "undefined") && ((eligible) || (info['badge_prize_points'] > 0)))
       {
          Genesis.fb.facebook_onLogin(function(params)
          {
-            if (eligible)
+            if (params)
             {
-               me.updatingPrizeOnFacebook(prize);
-            }
-            if (info['badge_prize_points'] > 0)
-            {
-               me.updatingBadgeOnFacebook(me.redeemBadgeItem);
+               if (eligible)
+               {
+                  me.updatingPrizeOnFacebook(prize);
+               }
+               if (info['badge_prize_points'] > 0)
+               {
+                  me.updatingBadgeOnFacebook(me.redeemBadgeItem);
+               }
             }
          }, false, me.updateOnFbMsg);
       }
@@ -441,6 +441,10 @@ Ext.define('Genesis.controller.client.Prizes',
    // --------------------------------------------------------------------------
    // Event Handler
    // --------------------------------------------------------------------------
+   onPromoteItemTap : function(b, e, eOpts, eInfo)
+   {
+      this.onBadgeDetailDoneTap();
+   },
    onPrizeCheck : function(metaData)
    {
       var me = this;
@@ -507,21 +511,6 @@ Ext.define('Genesis.controller.client.Prizes',
    onBadgeDetailDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {
    },
-   onDoneTap : function(b, e, eOpts, eInfo, overrideMode)
-   {
-      var me = this;
-
-      if (me._backToMain)
-      {
-         me.goToMerchantMain(true);
-         me._backToMain = false;
-      }
-      else
-      {
-         me.callParent(arguments);
-      }
-   },
-
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------

@@ -666,7 +666,7 @@ Ext.define('Genesis.controller.ControllerBase',
          {
             me.redirectTo('checkin');
          }
-         
+
          rc = true;
       }
 
@@ -958,6 +958,7 @@ Ext.define('Genesis.controller.ControllerBase',
          task = window.setInterval(function()
          {
             cancel();
+            window.plugins.proximityID.preLoadSend();
             Ext.device.Notification.show(
             {
                title : 'Local Identity',
