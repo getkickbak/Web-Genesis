@@ -649,7 +649,10 @@ Genesis.db =
    //
    resetStorage : function()
    {
-      Genesis.fb.facebook_onLogout(null, false);
+      if (Genesis.fn.isNative())
+      {
+         Genesis.fb.facebook_onLogout(null, false);
+      }
       var db = this.getLocalStorage(), i;
       for (i in db)
       {

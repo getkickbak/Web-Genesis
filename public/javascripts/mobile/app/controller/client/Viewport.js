@@ -372,7 +372,10 @@ Ext.define('Genesis.controller.client.Viewport',
       //
       // Initialize Facebook
       //
-      Genesis.fb.initFb();
+      if (Genesis.fn.isNative())
+      {
+         Genesis.fb.initFb();
+      }
 
       //
       // Initialize Sound Files, make it non-blocking

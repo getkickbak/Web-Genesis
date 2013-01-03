@@ -449,7 +449,7 @@ Ext.define('Genesis.controller.client.MainPage',
             me._loggingOut = false;
          }
          console.log("Resetting Session information ...")
-         if (Genesis.db.getLocalDB()['currFbId'] > 0)
+         if ((Genesis.db.getLocalDB()['currFbId'] > 0) && (Genesis.fn.isNative()))
          {
             console.log("Logging out of Facebook ...")
             Genesis.fb.facebook_onLogout(null, true);
@@ -672,8 +672,10 @@ Ext.define('Genesis.controller.client.MainPage',
    onSignIn : function(username, password)
    {
       //Cleanup any outstanding registrations
-      Genesis.fb.facebook_onLogout(null, Genesis.db.getLocalDB()['currFbId'] > 0);
-
+      if (Genesis.fn.isNative())
+      {
+         Genesis.fb.facebook_onLogout(null, Genesis.db.getLocalDB()['currFbId'] > 0);
+      }
       var me = this;
       var params =
       {

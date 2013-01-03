@@ -175,7 +175,7 @@ Genesis.fb =
       var message = function(num)
       {
          return 'We found ' + num + ' Friends from your social network!';
-      }
+      };
 
       FB.api('/me/friends&fields=' + nameField + ',' + uidField, function(response)
       {
@@ -248,7 +248,7 @@ Genesis.fb =
    facebook_onLogin : function(callback, supress, message)
    {
       var me = this, FB = window.plugins.facebookConnect, db = Genesis.db.getLocalDB();
-      var refreshConn = (!(db['currFbId'] > 0) || //
+      var refreshConn = (!(db['currFbId'] > 0) || !parseInt(db['fbExpiresIn']) || //
       ((db['currFbId'] > 0) && (db['fbExpiresIn'] > 0) && (parseInt(db['fbExpiresIn']) <= (new Date().addHours(2)).getTime())));
 
       me.cb =
