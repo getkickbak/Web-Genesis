@@ -541,6 +541,15 @@ Ext.define('Genesis.controller.client.MainPage',
          Genesis.db.removeLocalDBAttrib('currFbId');
          Genesis.fb.facebook_onLogin(function(params)
          {
+            if (!params)
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Facebook Connect',
+                  message : Genesis.fb.fbConnectFailMsg
+               });
+               return;
+            }
             console.log(me.loginWithFbMsg());
             me.facebookLogin(params);
          }, true);

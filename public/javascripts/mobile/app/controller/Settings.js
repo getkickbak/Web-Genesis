@@ -179,8 +179,20 @@ Ext.define('Genesis.controller.Settings',
           */
          Genesis.fb.facebook_onLogin(function(params, operation)
          {
+            if (!params || ((operation && !operation.wasSuccessful())))
+            {
+               if (me.getClientSettingsPage().isVisible())
+               {
+                  toggle.toggle();
+               }
+               Ext.device.Notification.show(
+               {
+                  title : 'Facebook Connect',
+                  message : Genesis.fb.fbConnectFailMsg
+               });
+            }
             //Ext.Viewport.setMasked(null);
-            if (!operation || operation.wasSuccessful())
+            else
             {
                toggle.originalValue = newValue;
                Ext.device.Notification.show(
@@ -188,11 +200,6 @@ Ext.define('Genesis.controller.Settings',
                   title : 'Facebook Connect',
                   message : me.fbLoggedInIdentityMsg(params['email'])
                });
-            }
-            else
-            if (me.getClientSettingsPage().isVisible())
-            {
-               toggle.toggle();
             }
          }, true);
       }

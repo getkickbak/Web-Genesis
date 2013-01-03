@@ -253,7 +253,8 @@ Ext.define('Genesis.controller.client.Challenges',
                   me.redirectTo('photoUpload');
                }
                navigator.camera.cleanup(Ext.emptyFn, Ext.emptyFn);
-               console.debug("Photo Cleanup Complete.")
+               console.debug("Photo Cleanup Complete.");
+               
                delete me.imageURI;
             }, function(error)
             {
@@ -1177,6 +1178,16 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          Genesis.fb.facebook_onLogin(function(params)
          {
+            if (!params)
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Facebook Connect',
+                  message : Genesis.fb.fbConnectFailMsg
+               });
+               return;
+            }
+            
             console.log("Accessing Camera Plugin ...");
             Ext.Viewport.setMasked(
             {

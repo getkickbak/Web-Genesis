@@ -205,6 +205,15 @@ Ext.define('Genesis.controller.client.Viewport',
       //var db = Genesis.db.getLocaDB();
       Genesis.fb.facebook_onLogin(function(params)
       {
+         if (!params)
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Facebook Connect',
+               message : Genesis.fb.fbConnectFailMsg
+            });
+            return;
+         }
          var venue = me.getVenue();
          var merchant = venue.getMerchant();
          var photoUrl = merchant.get('photo')['thumbnail_large_url'];

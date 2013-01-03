@@ -36,7 +36,7 @@ Ext.define('Genesis.view.client.Badges',
    onItemTap : function(e, target, delegate, eOpts)
    {
       var data = Ext.create('Genesis.model.Badge', Ext.decode(decodeURIComponent(e.delegatedTarget.getAttribute('data'))));
-      _application.getController('client.Badges').fireEvent('itemTap', data);
+      this.fireEvent('itemTap', data);
    },
    /**
     * Removes all items currently in the Container, optionally destroying them all

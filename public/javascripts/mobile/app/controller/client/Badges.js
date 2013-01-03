@@ -41,18 +41,16 @@ Ext.define('Genesis.controller.client.Badges',
          {
             showView : 'onShowView',
             activate : 'onActivate',
-            deactivate : 'onDeactivate'
+            deactivate : 'onDeactivate',
+            itemTap : 'onItemTap'
          },
          badgeDesc :
          {
             createView : 'onBadgeDescCreateView',
             activate : 'onBadgeDescActivate',
-            deactivate : 'onBadgeDescDeactivate'
+            deactivate : 'onBadgeDescDeactivate',
+            promoteItemTap : 'onPromoteItemTap'
          }
-      },
-      listeners :
-      {
-         'itemTap' : 'onItemTap'
       }
    },
    badgeLevelNotAchievedMsg : 'You have achieved this badge level yet!',
@@ -91,6 +89,9 @@ Ext.define('Genesis.controller.client.Badges',
    // --------------------------------------------------------------------------
    // EVent Handlers
    // --------------------------------------------------------------------------
+   onPromoteItemTap : function(b, e, eOpts, eInfo)
+   {
+   },
    // --------------------------------------------------------------------------
    // MainPage
    // --------------------------------------------------------------------------

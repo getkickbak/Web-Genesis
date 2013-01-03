@@ -61,7 +61,8 @@ function initPushwoosh()
             'device_id' : deviceToken
          };
 
-         if (!_application.getController('client' + '.MainPage').updatedDeviceToken)
+         var mainPage = _application.getController('client' + '.MainPage'), viewport = _application.getController('client' + '.Viewport');
+         if (viewport.getLoggedIn() && !mainPage.updatedDeviceToken)
          {
             Account['setUpdateRegUserDeviceUrl']();
             console.log("setUpdateRegUserDeviceUrl - Refreshing Device Token ...");
@@ -109,6 +110,7 @@ function initPushwoosh()
             console.warn('push notifcation - Null Notification');
          }
       });
-   }
+   };
+
    pushNotification.unregisterDevice(callback, callback);
 }

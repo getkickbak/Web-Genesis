@@ -146,5 +146,9 @@ Ext.define('Genesis.view.PromotionItem',
             text : 'Done'
          }]
       }]
+   },
+   onRedeemItemTap : function(b, e, eOpts)
+   {
+      me.fireEvent('promoteItemTap', null);
    }
 });
