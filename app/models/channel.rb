@@ -40,6 +40,7 @@ class Channel
         reserve_channels = @@memcache.get(group_reserve_list) || {} 
         reserve_channels[channel[0]] = channel[1]
         @@memcache.set(group_reserve_list, reserve_channels)
+        return channel[0]
       else
         raise "Cannot reserve channel"
       end 
