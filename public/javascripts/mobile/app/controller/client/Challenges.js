@@ -1178,16 +1178,6 @@ Ext.define('Genesis.controller.client.Challenges',
       {
          Genesis.fb.facebook_onLogin(function(params)
          {
-            if (!params)
-            {
-               Ext.device.Notification.show(
-               {
-                  title : 'Facebook Connect',
-                  message : Genesis.fb.fbConnectFailMsg
-               });
-               return;
-            }
-            
             console.log("Accessing Camera Plugin ...");
             Ext.Viewport.setMasked(
             {
@@ -1212,7 +1202,7 @@ Ext.define('Genesis.controller.client.Challenges',
                height : 960
                //targetHeight : 480
             });
-         }, true, me.photoUploadFbReqMsg);
+         }, false, me.photoUploadFbReqMsg);
       }
       else
       {

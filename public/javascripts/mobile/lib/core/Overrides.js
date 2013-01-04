@@ -8,7 +8,7 @@ Genesis =
 Genesis.constants =
 {
    host : 'http://192.168.0.52:3000',
-   host : 'http://76.10.173.153:80',
+   //host : 'http://76.10.173.153:80',
    //host : 'http://www.getkickbak.com',
    //
    // Proximity ID
@@ -62,7 +62,6 @@ Genesis.constants =
    s_vol : -1,
    //
    device : null,
-   redeemDBSize : 10000,
    //minDistance : 0.1 * 1000,
    minDistance : 100000 * 1000,
    createAccountMsg : 'Create user account using Facebook Profile information',
@@ -584,78 +583,6 @@ Genesis.db =
       }
       return ( index ? this.kickbakRedeemSorted[index] : this.kickbakRedeemSorted);
    },
-   addRedeemSortedDB : function(key)
-   {
-      var dbS = this.getRedeemSortedDB();
-
-      if (dbS.length >= this.redeemDBSize)
-      {
-         // Remove the oldest Entry
-         console.debug("Database Entry is full, discarded oldest Entry with timestamp (" + Date(dbS[0][1]) + ")");
-         dbS = dbS.splice(0, 1);
-      }
-      else
-      {
-         dbS['currCount'] = (Ext.isDefined(dbS['currCount'])) ? (dbS['currCount'] + 1) : 0;
-      }
-      dbS.push(key);
-      dbS = Ext.Array.sort(dbS, function(a, b)
-      {
-         // Compare TimeStamps
-         return (a[1] - b[1]);
-      });
-      this.setRedeemSortedDB(dbS);
-   },
-   setRedeemSortedDB : function(db)
-   {
-      //console.debug("Setting KickBak Redeem DB[" + Ext.encode(db) + "]");
-      //this.getLocalStorage().setItem('kickbakRedeemSorted', Ext.encode(db));
-   },
-   redeemDBSync : function()
-   {
-      var local = this.getLocalStorage();
-      local.setItem('kickbakRedeemSorted', Ext.encode(this.kickbakRedeemSorted));
-      local.setItem('kickbakRedeemIndex', Ext.encode(this.kickbakRedeemIndex));
-   },
-   redeemDBCleanup : function()
-   {
-      console.log("================================");
-      console.log("Redeem Database has been Started");
-      console.log("================================");
-
-      var now = Date.now();
-      var dbI = this.getRedeemIndexDB();
-      var dbS = this.getRedeemSortedDB();
-      var total = 0;
-      var currCount = dbS['currCount'] || -1;
-      console.debug('currCount = ' + currCount);
-
-      while ((currCount >= 0) && (dbS.length > 0))
-      {
-         if (dbS[0][1] > now)
-         {
-            total++;
-            currCount--;
-
-            // Sorted array size is reduced by 1
-            delete dbI[dbS[0]];
-            dbS = dbS.splice(0, 1);
-
-            dbS['currCount'] = currCount;
-         }
-         else
-         {
-            // Cleanup done!
-            break;
-         }
-      }
-      Genesis.db.redeemDBSync();
-
-      console.debug('currCount = ' + dbS['currCount'] + ', total = ' + total)
-      console.log("=================================");
-      console.log("Redeem Database has been resetted");
-      console.log("=================================");
-   },
    //
    // LocalDB
    //
@@ -722,7 +649,10 @@ Genesis.db =
    //
    resetStorage : function()
    {
-      Genesis.fb.facebook_onLogout(null, false);
+      if (Genesis.fn.isNative())
+      {
+         Genesis.fb.facebook_onLogout(null, false);
+      }
       var db = this.getLocalStorage(), i;
       for (i in db)
       {

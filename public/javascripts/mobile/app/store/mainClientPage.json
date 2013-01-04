@@ -50,9 +50,9 @@
          "name": "Settings",
          "photo_url": "resources/themes/images/{platform_path}/mainicons/settings.png",
          "desc": "Settings",
-         "route": "clientSettings",
-         "pageCntlr": "Settings",
-         "subFeature": "client"
+         "route": "settings",
+         "pageCntlr": "client.Settings",
+         "subFeature": "settings"
       }
    ]
 }

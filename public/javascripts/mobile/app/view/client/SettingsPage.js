@@ -28,6 +28,18 @@ Ext.define('Genesis.view.client.SettingsPage',
       }),
       {
          xtype : 'fieldset',
+         title : 'Mobile TAG ID',
+         //instructions : 'Tell us all about yourself',
+         items : [
+         {
+            xtype : 'textfield',
+            name : 'tagid',
+            value : "0",
+            readOnly : true
+         }]
+      },
+      {
+         xtype : 'fieldset',
          title : 'Login Profile',
          //instructions : 'Tell us all about yourself',
          items : [
@@ -59,7 +71,7 @@ Ext.define('Genesis.view.client.SettingsPage',
          items : [
          {
             xtype : 'textfield',
-            value : 'Version '+ Genesis.constants.clientVersion,
+            value : 'Version ' + Genesis.constants.clientVersion,
             readOnly : true
          },
          {

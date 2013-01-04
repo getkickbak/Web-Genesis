@@ -641,7 +641,7 @@ Ext.define('Genesis.controller.ControllerBase',
          nstore.setData(news);
       }
    },
-   updateAuthCode : function(authCode, csrfCode)
+   updateAuthCode : function(authCode, csrfCode, vtagId)
    {
       var me = this, rc = false;
 
@@ -652,11 +652,13 @@ Ext.define('Genesis.controller.ControllerBase',
          {
             db['auth_code'] = authCode;
             db['csrf_code'] = csrfCode;
+            db['vtagId'] = vtagId;
             Genesis.db.setLocalDB(db);
 
             console.debug('\n' + //
             "auth_code [" + authCode + "]" + "\n" + //
             "csrf_code [" + csrfCode + "]" + "\n" + //
+            "vtagId [" + vtagId + "]" + "\n" + //
             "currFbId [" + db['currFbId'] + "]");
 
          }
@@ -684,7 +686,7 @@ Ext.define('Genesis.controller.ControllerBase',
          //
          // Update Authentication Token
          //
-         if (me.updateAuthCode(metaData['auth_token'], metaData['csrf_token']))
+         if (me.updateAuthCode(metaData['auth_token'], metaData['csrf_token'], metaData['virtual_tag_id']))
          {
             return;
          }

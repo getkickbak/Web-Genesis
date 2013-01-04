@@ -323,16 +323,13 @@ Ext.define('Genesis.controller.client.Prizes',
       {
          Genesis.fb.facebook_onLogin(function(params)
          {
-            if (params)
+            if (eligible)
             {
-               if (eligible)
-               {
-                  me.updatingPrizeOnFacebook(prize);
-               }
-               if (info['badge_prize_points'] > 0)
-               {
-                  me.updatingBadgeOnFacebook(me.redeemBadgeItem);
-               }
+               me.updatingPrizeOnFacebook(prize);
+            }
+            if (info['badge_prize_points'] > 0)
+            {
+               me.updatingBadgeOnFacebook(me.redeemBadgeItem);
             }
          }, false, me.updateOnFbMsg);
       }
