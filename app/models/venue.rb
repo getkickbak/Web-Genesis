@@ -190,6 +190,10 @@ class Venue
     "Venue-#{self.id}"    
   end
   
+  def cache_mutex_key
+    "VenueMutex-#{self.id}"   
+  end
+  
   def display_name
     "#{self.name} - #{self.address}"  
   end
