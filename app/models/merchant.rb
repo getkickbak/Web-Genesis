@@ -168,7 +168,7 @@ class Merchant
     "Merchant-#{self.id}"
   end
 
-  def cache_mutex_key
+  def mutex_key
     "MerchantMutex-#{self.id}"
   end
   

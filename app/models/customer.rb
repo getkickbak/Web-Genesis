@@ -79,7 +79,7 @@ class Customer
     "Customer-#{self.id}"    
   end
   
-  def cache_mutex_key
+  def mutex_key
     "CustomerMutex-#{self.id}"  
   end
   

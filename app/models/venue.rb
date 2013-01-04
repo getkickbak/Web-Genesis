@@ -190,7 +190,7 @@ class Venue
     "Venue-#{self.id}"    
   end
   
-  def cache_mutex_key
+  def mutex_key
     "VenueMutex-#{self.id}"   
   end
   
