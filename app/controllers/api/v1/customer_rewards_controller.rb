@@ -104,7 +104,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         end
         return
       end
-      if tag.status != :active
+      if tag.status != :active || tag.status != :virtual
         logger.info("Tag: #{decrypted_data["tag_id"]} is not active")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }

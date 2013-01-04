@@ -32,17 +32,26 @@
 		<div class="container">
 			<div class="row">
 				<div class="span9">
-					<% if not current_user.tags.empty? %>
-						<% current_user.tags.each do |tag| %>
-						<div class="widget">
-							<div class="widget-content">
-								<div>
-									Tag ID: <%= tag.tag_id %> (<%= tag.status.upcase %>) 
-									<%= link_to "x", deregister_tag_path(:id => tag.id), :data => { :confirm => 'Do you want to delete this tag' }, :method => :delete, :class=>"close", :title=>"remove" %>
-								</div>
+					<div class="widget">
+						<div class="widget-content">
+							<div>
+								Mobile Tag ID: <%= current_user.virtual_tag.tag_id %>
 							</div>
 						</div>
-						<% end %>
+					</div>
+					<% if not current_user.tags.empty? %>
+					<% current_user.tags.each do |tag| %>
+					<% if tag.status != :virtual %>
+					<div class="widget">
+						<div class="widget-content">
+							<div>
+								Tag ID: <%= tag.tag_id %> (<%= tag.status.upcase %>)
+								<%= link_to "x", deregister_tag_path(:id => tag.id), :data => { :confirm => 'Do you want to delete this tag' }, :method => :delete, :class=>"close", :title=>"remove" %>
+							</div>
+						</div>
+					</div>
+					<% end %>
+					<% end %>
 					<% end %>
 					<div class="widget">
 						<div class="widget-header">

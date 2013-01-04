@@ -10,7 +10,8 @@ end
 node :metaData do
 	{ 
 		:csrf_token => form_authenticity_token,
-		:auth_token => @user.authentication_token
+		:auth_token => @user.authentication_token,
+		:virutal_tag_id => @user.virtual_tag.tag_id
 	}
 end	
 node :total do 
