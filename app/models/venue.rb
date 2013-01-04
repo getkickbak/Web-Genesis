@@ -186,6 +186,30 @@ class Venue
     return venues
   end
   
+  def self.cache_key(id)
+    "Venue-#{id}"    
+  end
+  
+  def self.get(id)
+    key = Venue.cache_key(id)
+    obj = Cache.get_obj(Venue, key)
+    if obj.nil?
+      obj = super(id)
+      Cache.add_obj(key, obj) if obj
+    end
+    return obj
+  end
+  
+  def save
+    super
+    Cache.add_obj(Venue.cache_key(self.id), self)  
+  end
+  
+  def save!
+    super
+    Cache.add_obj(Venue.cache_key(self.id), self)  
+  end
+  
   def cache_key
     "Venue-#{self.id}"    
   end
