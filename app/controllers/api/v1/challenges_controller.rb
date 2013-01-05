@@ -1,5 +1,5 @@
 class Api::V1::ChallengesController < Api::V1::BaseApplicationController
-  skip_before_filter :verify_authenticity_token, :only => [:merchant_cmoplete]
+  skip_before_filter :verify_authenticity_token, :only => [:merchant_complete]
   before_filter :authenticate_user!, :except => [:merchant_complete]
   skip_authorization_check :only => [:merchant_complete]
   
