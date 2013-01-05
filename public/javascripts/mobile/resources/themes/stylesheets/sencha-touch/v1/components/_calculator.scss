@@ -1,18 +1,21 @@
 .calculator {
    background : black;
-   .x-field.x-field-text {
-      .x-component-outer {
-         margin: $panelGap $panelGap*2;
-         outline: darken($Grey, 10%) inset $panelGap;
-         input.x-input-el {
-            &::-webkit-input-placeholder {
-               direction:rtl;
-           }
-            background : $Grey;
-            padding: $panelTopGap/4;
-            font-size:$xlargeFontSize*1.75;
-            min-height: 1.0em + $panelGap/2;
-            text-align:right;
+   .x-field {
+      background : black;     
+      &.x-field-text {
+         .x-component-outer {
+            margin: $panelGap $panelGap*2;
+            outline: darken($Grey, 10%) inset $panelGap;
+            input.x-input-el {
+               &::-webkit-input-placeholder {
+                  direction:rtl;
+              }
+               background : $Grey;
+               padding: $panelTopGap/4;
+               font-size:$xlargeFontSize*1.75;
+               min-height: 1.0em + $panelGap/2;
+               text-align:right;
+            }
          }
       }
    }
@@ -21,16 +24,13 @@
           margin-top:$panelTopGap;
       }
       .x-button {
-          margin-left:$panelGap;
-          .x-button-label {
-             font-size:$xlargeFontSize;
-          }
+         margin-left:$panelGap;
+         .x-button-label {
+            font-size:$xlargeFontSize;
+         }
+         &:last-child {
+            margin-right:$panelGap;        
+         }
       }
-      .x-button:last-child {
-          margin-right:$panelGap;        
-      }
-   }
-   .x-button.separator {
-      margin-top :$panelTopGap;
    }
 }

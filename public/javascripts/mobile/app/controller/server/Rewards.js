@@ -22,10 +22,10 @@ Ext.define('Genesis.controller.server.Rewards',
             xtype : 'serverrewardsview'
          },
          rewardsContainer : 'serverrewardsview container[tag=rewards]',
-         price : 'serverrewardsview textfield',
+         amount : 'serverrewardsview calculator[tag=amount] textfield',
+         tagId : 'serverrewardsview calculator[tag=tagId] textfield',
          //qrcode : 'serverrewardsview component[tag=qrcode]',
-         title : 'serverrewardsview component[tag=title]',
-         infoBtn : 'viewportview button[tag=info]'
+         title : 'serverrewardsview container[tag=qrcodeContainer] component[tag=title]'
       },
       control :
       {
@@ -38,19 +38,26 @@ Ext.define('Genesis.controller.server.Rewards',
          {
             activeitemchange : 'onContainerActivate'
          },
-         'serverrewardsview container[tag=dialpad] button' :
+         'serverrewardsview calculator[tag=amount] container[tag=dialpad] button' :
          {
             tap : 'onCalcBtnTap'
          },
-         'serverrewardsview container[tag=rewardsMainCalculator] button[tag=showQrCode]' :
+         'serverrewardsview calculator[tag=amount] container[tag=bottomButtons] button[tag=earnPtsTag]' :
          {
-            tap : 'onShowQrCodeTap'
-         }/*,
-          'serverrewardsview container[tag=qrcodeContainer] button[tag=done]' :
-          {
-          tap : 'onDoneTap'
-          }
-          */
+            tap : 'onEnterTagIdTap'
+         },
+         'serverrewardsview calculator[tag=amount] container[tag=bottomButtons] button[tag=earnPts]' :
+         {
+            tap : 'onEarnPtsTap'
+         },
+         'serverrewardsview calculator[tag=tagId] container[tag=dialpad] button' :
+         {
+            tap : 'onTagIdBtnTap'
+         },
+         'serverrewardsview calculator[tag=tagId] container[tag=bottomButtons] button[tag=earnTagId]' :
+         {
+            tap : 'onTagItTap'
+         }
       },
       listeners :
       {
@@ -58,10 +65,11 @@ Ext.define('Genesis.controller.server.Rewards',
       }
    },
    maxValue : 1000.00,
-   clientNames : null,
+   tagIdMaxLength : 10,
    rewardSuccessfulMsg : 'Transaction Complete',
    rewardFailedMsg : 'Transaction Failed',
-   invalidPriceMsg : 'Please enter a valid price (eg. 5.00), upto $1000',
+   invalidAmountMsg : 'Please enter a valid amount (eg. 5.00), upto $1000',
+   earnPtsConfirmMsg : 'Please confirm to submit',
    init : function()
    {
       this.callParent(arguments);
@@ -71,10 +79,26 @@ Ext.define('Genesis.controller.server.Rewards',
       //
       this.getRewards();
    },
-   getPricePrecision : function(num)
+   getAmountPrecision : function(num)
    {
       var precision = num.split('.');
       return ((precision.length > 1) ? precision[1].length : 0);
+   },
+   validateAmount : function()
+   {
+      var me = this, amount = me.getAmount().getValue(), precision = me.getAmountPrecision(amount);
+
+      if (precision < 2)
+      {
+         Ext.device.Notification.show(
+         {
+            title : 'Validation Error',
+            message : me.invalidAmountMsg
+         });
+         amount = -1;
+      }
+
+      return amount;
    },
    // --------------------------------------------------------------------------
    // Rewards Page
@@ -92,10 +116,10 @@ Ext.define('Genesis.controller.server.Rewards',
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
-      var priceField = me.getPrice();
-      if (priceField)
+      var amountField = me.getAmount();
+      if (amountField)
       {
-         priceField.setValue(null);
+         amountField.setValue(null);
       }
       if (Genesis.fn.isNative())
       {
@@ -111,10 +135,15 @@ Ext.define('Genesis.controller.server.Rewards',
 
       switch (value.config.tag)
       {
-         case 'rewardsMainCalculator' :
+         case 'amount' :
          {
-            var priceField = me.getPrice();
-            priceField.setValue(null);
+            //me.getAmount().setValue(null);
+            animation.setReverse(true);
+            break;
+         }
+         case 'tagId' :
+         {
+            me.getTagId().setValue(null);
             animation.setReverse(true);
             break;
          }
@@ -126,10 +155,10 @@ Ext.define('Genesis.controller.server.Rewards',
       }
       console.debug("Rewards ContainerActivate Called.");
    },
-   onRewardItem : function()
+   onRewardItem : function(automatic)
    {
       var me = this, task = null, identifiers = null, viewport = me.getViewPortCntlr();
-      var price = me.getPrice().getValue();
+      var amount = me.getAmount().getValue();
 
       me.rewardItemFn = function(params)
       {
@@ -138,7 +167,7 @@ Ext.define('Genesis.controller.server.Rewards',
             'venue_id' : Genesis.fn.getPrivKey('venueId'),
             data :
             {
-               "amount" : price,
+               "amount" : amount,
                "type" : 'earn_points',
                'expiry_ts' : new Date().addHours(3).getTime()
             }
@@ -209,6 +238,10 @@ Ext.define('Genesis.controller.server.Rewards',
          });
       };
 
+      if (!automatic)
+      {
+         return;
+      }
       Ext.Viewport.setMasked(
       {
          xtype : 'loadmask',
@@ -262,29 +295,35 @@ Ext.define('Genesis.controller.server.Rewards',
          });
       }
    },
-   onShowQrCodeTap : function(b, e, eOpts, eInfo)
+   // --------------------------------------------------------------------------
+   // Amount Tab
+   // --------------------------------------------------------------------------
+   onEnterTagIdTap : function(b, e, eOpts, eInfo)
    {
-      var me = this, task = null, identifiers = null;
-      var viewport = me.getViewPortCntlr();
-      var price = me.getPrice().getValue();
-      var precision = this.getPricePrecision(price);
-      if (precision < 2)
+      var me = this, amount = me.validateAmount(), container = me.getRewardsContainer();
+
+      if (amount < 0)
       {
-         Ext.device.Notification.show(
-         {
-            title : 'Validation Error',
-            message : me.invalidPriceMsg
-         });
          return;
       }
 
-      var container = me.getRewardsContainer();
+      container.setActiveItem(1);
+   },
+   onEarnPtsTap : function(b, e, eOpts, eInfo)
+   {
+      var me = this, container = me.getRewardsContainer(), amount = me.validateAmount();
+
+      if (amount < 0)
+      {
+         return;
+      }
+
       /*
        Ext.defer(function()
        {
        var qrcodeMetaData = me.self.genQRCodeFromParams(
        {
-       "amount" : price,
+       "amount" : amount,
        "type" : 'earn_points'
        }, 'reward', false);
        me.getQrcode().setStyle(
@@ -293,62 +332,131 @@ Ext.define('Genesis.controller.server.Rewards',
        'background-size' : Genesis.fn.addUnit(qrcodeMetaData[1] * 1.25) + ' ' + Genesis.fn.addUnit(qrcodeMetaData[2] * 1.25)
        });
        }, 1, me);
-       console.debug("Encrypting QRCode with Price:$" + price);
+       console.debug("Encrypting QRCode with Price:$" + amount);
        */
+
       me.getTitle().setData(
       {
-         price : '$' + price
+         price : '$' + amount
       });
-      container.setActiveItem(1);
+      container.setActiveItem(2);
 
-      me.fireEvent('rewarditem');
+      me.fireEvent('rewarditem', b);
    },
    onCalcBtnTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
       var value = b.getText();
-      var priceField = me.getPrice();
-      var priceFieldLength = priceField.getValue().length;
-      var price = Number(priceField.getValue() || 0);
+      var amountField = me.getAmount();
+      var amountFieldLength = amountField.getValue().length;
+      var amount = Number(amountField.getValue() || 0);
       switch (value)
       {
          case 'AC' :
          {
-            price = null;
+            amount = null;
             break;
          }
          default :
-            if (priceFieldLength < 2)
+            if (amountFieldLength < 2)
             {
-               if ((price == 0) && (priceFieldLength > 0))
+               if ((amount == 0) && (amountFieldLength > 0))
                {
-                  price += value;
+                  amount += value;
                }
                else
                {
-                  price = (10 * price) + Number(value);
+                  amount = (10 * amount) + Number(value);
                }
             }
             else
             {
-               if (priceFieldLength == 2)
+               if (amountFieldLength == 2)
                {
-                  price = (price + value) / 100;
+                  amount = (amount + value) / 100;
                }
                else
                {
-                  price = (10 * price) + (Number(value) / 100);
+                  amount = (10 * amount) + (Number(value) / 100);
                }
-               price = price.toFixed(2);
+               amount = amount.toFixed(2);
             }
             break;
       }
       // Max value
-      if (price <= me.maxValue)
+      if (amount <= me.maxValue)
       {
-         priceField.setValue(price);
+         amountField.setValue(amount);
       }
    },
+   // --------------------------------------------------------------------------
+   // TAG ID Tab
+   // --------------------------------------------------------------------------
+   onTagIdBtnTap : function(b, e, eOpts, eInfo)
+   {
+      var me = this, value = b.getText();
+      var tagIdField = me.getTagId(), tagId = tagIdField.getValue(), tagIdFieldLength = tagId.length;
+
+      if (tagIdFieldLength < me.tagIdMaxLength)
+      {
+         switch (value)
+         {
+            case 'AC' :
+            {
+               tagId = null;
+               break;
+            }
+            default :
+               tagId += value;
+               break;
+         }
+         tagIdField.setValue(tagId);
+      }
+   },
+   onTagItTap : function()
+   {
+      var me = this, viewport = me.getViewPortCntlr();
+      var tagIdField = me.getTagId(), tagId = tagIdField.getValue(), tagIdFieldLength = tagId.length;
+
+      if (tagIdFieldLength == me.tagIdMaxLength)
+      {
+         me.self.playSoundFile(viewport.sound_files['nfcEnd']);
+         me.onEarnPtsTap(null);
+
+         Ext.device.Notification.show(
+         {
+            title : 'TAG ID',
+            message : me.earnPtsConfirmMsg,
+            buttons : ['Confirm', 'Cancel'],
+            callback : function(btn)
+            {
+               if (btn.toLowerCase() == 'confirm')
+               {
+                  me.onNfc(
+                  {
+                     'tagID' : tagId
+                  });
+               }
+               else
+               {
+                  me.onDoneTap();
+               }
+            }
+         });
+      }
+      else
+      {
+         me.self.playSoundFile(viewport.sound_files['nfcError']);
+         Ext.device.Notification.show(
+         {
+            title : 'TAG ID',
+            message : me.invalidTagIdFormatMsg
+         });
+      }
+   },
+   // --------------------------------------------------------------------------
+   // Misc Event Funcs
+   // --------------------------------------------------------------------------
    onDoneTap : function(b, e, eOpts, eInfo)
    {
       var me = this;

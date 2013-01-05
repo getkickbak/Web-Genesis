@@ -33,7 +33,6 @@ Ext.define('Genesis.view.server.Rewards',
       {
          xtype : 'container',
          tag : 'rewards',
-         cls : 'rewardsServerMain',
          layout :
          {
             type : 'card',
@@ -51,124 +50,35 @@ Ext.define('Genesis.view.server.Rewards',
          // Reward Calculator
          // -------------------------------------------------------------------
          {
-            xtype : 'container',
-            tag : 'rewardsMainCalculator',
-            cls : 'rewardsMainCalculator',
-            layout : 'fit',
-            items : [
+            xtype : 'calculator',
+            tag : 'amount',
+            title : 'Amount Spent',
+            placeHolder : '0.00',
+            bottomButtons : [
             {
-               height : '2.6em',
-               docked : 'top',
-               xtype : 'toolbar',
-               centered : false,
-               defaults :
-               {
-                  iconMask : true
-               },
-               items : [
-               {
-                  xtype : 'title',
-                  title : 'Amount Spent'
-               },
-               {
-                  xtype : 'spacer',
-                  align : 'right'
-               }]
+               tag : 'earnPtsTag',
+               text : 'TAG it',
+               ui : 'orange-large'
             },
             {
-               docked : 'top',
-               xtype : 'textfield',
-               name : 'price',
-               clearIcon : false,
-               placeHolder : '0',
-               readOnly : true,
-               required : true,
-               cls : 'rewardsCalculator'
-            },
+               tag : 'earnPts',
+               text : 'Swipe!',
+               ui : 'orange-large'
+            }]
+         },
+         // -------------------------------------------------------------------
+         // Reward TAG ID Entry
+         // -------------------------------------------------------------------
+         {
+            xtype : 'calculator',
+            tag : 'tagId',
+            title : 'Enter TAG ID',
+            placeHolder : '1234567890',
+            bottomButtons : [
             {
-               xtype : 'container',
-               layout : 'vbox',
-               tag : 'dialpad',
-               cls : 'dialpad',
-               defaults :
-               {
-                  xtype : 'container',
-                  layout : 'hbox',
-                  flex : 1,
-                  defaults :
-                  {
-                     xtype : 'button',
-                     flex : 1
-                  }
-               },
-               items : [
-               {
-                  items : [
-                  {
-                     text : '1'
-                  },
-                  {
-                     text : '2'
-                  },
-                  {
-                     text : '3'
-                  }]
-               },
-               {
-                  items : [
-                  {
-                     text : '4'
-                  },
-                  {
-                     text : '5'
-                  },
-                  {
-                     text : '6'
-                  }]
-               },
-               {
-                  items : [
-                  {
-                     text : '7'
-                  },
-                  {
-                     text : '8'
-                  },
-                  {
-                     text : '9'
-                  }]
-               },
-               {
-                  items : [
-                  {
-                     text : 'AC'
-                  },
-                  {
-                     flex : 2,
-                     text : '0'
-                  }]
-               }]
-            },
-            {
-               cls : 'separator',
-               docked : 'bottom',
-               layout : 'hbox',
-               defaults :
-               {
-                  xtype : 'button',
-                  flex : 1
-               },
-               items : [
-               {
-                  tag : 'tagit',
-                  text : 'Tag it',
-                  ui : 'orange-large'
-               },
-               {
-                  tag : 'showQrCode',
-                  text : 'SWIPE',
-                  ui : 'orange-large'
-               }]
+               tag : 'earnTagId',
+               text : 'Submit',
+               ui : 'orange-large'
             }]
          },
          // -------------------------------------------------------------------

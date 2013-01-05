@@ -75,3 +75,17 @@
    vertical-align: middle;
    text-align: center;
 }
+
+.bottomButtons {
+   height : 2.7em;
+   margin :$panelTopGap 0;
+   .x-button {
+       margin-left:$panelGap;
+       .x-button-label {
+          font-size:$xlargeFontSize;
+       }
+       &:last-child {
+          margin-right:$panelGap;        
+       }
+   }
+}

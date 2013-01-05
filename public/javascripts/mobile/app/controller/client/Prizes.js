@@ -47,7 +47,22 @@ Ext.define('Genesis.controller.client.Prizes',
             tag : 'badgeDetail',
             xtype : 'promotionalitemview'
          },
-         bDoneBtn : 'promotionalitemview[tag=badgeDetail] button[tag=done]'
+         bDoneBtn : 'promotionalitemview[tag=badgeDetail] button[tag=done]',
+         //
+         // Reward Prize
+         //
+         sBackBB : 'clientredeemitemdetailview[tag=redeemPrize] button[tag=back]',
+         sCloseBB : 'clientredeemitemdetailview[tag=redeemPrize] button[tag=close]',
+         //sBB : 'clientredeemitemdetailview[tag=redeemPrize] button[tag=back]',
+         //sDoneBtn : 'clientredeemitemdetailview[tag=redeemPrize] button[tag=done]',
+         sRedeemBtn : 'clientredeemitemdetailview[tag=redeemPrize] button[tag=redeem]',
+         redeemItem :
+         {
+            selector : 'clientredeemitemdetailview[tag=redeemPrize]',
+            autoCreate : true,
+            tag : 'redeemPrize',
+            xtype : 'clientredeemitemdetailview'
+         }
       },
       control :
       {
@@ -485,7 +500,6 @@ Ext.define('Genesis.controller.client.Prizes',
       var me = this;
       me.callParent(arguments);
 
-      me.getRefreshBtn()['hide']();
       me.getSRedeemBtn()['show']();
    },
    onShowRedeemPrize : function(prize, reward_info, viewsPopLength)

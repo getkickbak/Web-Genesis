@@ -27,7 +27,6 @@ Ext.define('Genesis.controller.client.Rewards',
             autoCreate : true,
             xtype : 'clientrewardsview'
          },
-         price : 'clientrewardsview textfield',
          //
          // SignUp - Referral Promotion
          //

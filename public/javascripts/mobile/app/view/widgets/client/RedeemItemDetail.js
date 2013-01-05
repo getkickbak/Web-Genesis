@@ -1,8 +1,8 @@
-Ext.define('Genesis.view.ShowRedeemItemDetail',
+Ext.define('Genesis.view.widgets.client.RedeemItemDetail',
 {
    extend : 'Genesis.view.ViewBase',
    requires : ['Ext.XTemplate', 'Genesis.view.widgets.RedeemItem'],
-   alias : 'widget.showredeemitemdetailview',
+   alias : 'widget.clientredeemitemdetailview',
    config :
    {
       scrollable : undefined,
@@ -13,17 +13,9 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
          pack : 'center',
          align : 'stretch'
       },
-      items : [
+      items : [Ext.apply(Genesis.view.ViewBase.generateTitleBarConfig(),
       {
-         xtype : 'titlebar',
-         docked : 'top',
-         tag : 'navigationBarTop',
-         cls : 'navigationBarTop',
          title : 'Prizes',
-         defaults :
-         {
-            iconMask : true
-         },
          items : [
          {
             align : 'left',
@@ -49,28 +41,7 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
             tag : 'done',
             text : 'Done'
          }]
-      },
-      {
-         docked : 'bottom',
-         hidden : true,
-         xtype : 'button',
-         margin : '0 0.7 0.8 0.7',
-         defaultUnit : 'em',
-         tag : 'refresh',
-         text : 'Authorize another!',
-         ui : 'orange-large'
-      },
-      {
-         docked : 'bottom',
-         hidden : true,
-         margin : '0 0.7 0.8 0.7',
-         defaultUnit : 'em',
-         xtype : 'button',
-         cls : 'separator',
-         tag : 'merchantRedeem',
-         text : 'Redeem!',
-         ui : 'orange-large'
-      }],
+      })],
       listeners : [
       {
          element : 'element',
@@ -87,7 +58,6 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
    },
    cleanView : function()
    {
-      //this.removeAll(true);
       this.callParent(arguments);
    },
    createView : function()
@@ -106,16 +76,17 @@ Ext.define('Genesis.view.ShowRedeemItemDetail',
       {
          flex : 1,
          xtype : 'redeemitem',
+         hideMerchant : false,
          data : this.redeemItem
       }]);
       delete this.redeemItem;
    }
 });
 
-Ext.define('Genesis.view.PromotionItem',
+Ext.define('Genesis.view.widgets.client.PromotionItem',
 {
-   extend : 'Genesis.view.ShowRedeemItemDetail',
-   alias : 'widget.promotionalitemview',
+   extend : 'Genesis.view.widgets.client.RedeemItemDetail',
+   alias : 'widget.client.promotionalitemview',
    config :
    {
       scrollable : undefined,

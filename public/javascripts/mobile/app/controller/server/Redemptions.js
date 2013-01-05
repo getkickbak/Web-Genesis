@@ -1,6 +1,7 @@
 Ext.define('Genesis.controller.server.Redemptions',
 {
    extend : 'Genesis.controller.RewardRedemptionsBase',
+   mixins : ['Genesis.controller.server.mixin.RedeemServerBase'],
    requires : ['Ext.data.Store', 'Genesis.view.server.Redemptions'],
    inheritableStatics :
    {
@@ -9,7 +10,6 @@ Ext.define('Genesis.controller.server.Redemptions',
    controllerType : 'redemption',
    config :
    {
-      closeBtn : null,
       redeemPointsFn : 'setMerchantRedeemPointsURL',
       routes :
       {
@@ -26,7 +26,26 @@ Ext.define('Genesis.controller.server.Redemptions',
             autoCreate : true,
             xtype : 'serverredemptionsview'
          },
-         redemptionsList : 'serverredemptionsview list[tag=redemptionsList]'
+         redemptionsList : 'serverredemptionsview list[tag=redemptionsList]',
+         redeemItemCardContainer : 'serverredeemitemdetailview[tag=redeemReward] container[tag=redeemItemCardContainer]',
+         redeemItemButtonsContainer : 'serverredeemitemdetailview[tag=redeemReward] container[tag=bottomButtons]',
+         tagId : 'serverredeemitemdetailview[tag=redeemReward] calculator[tag=tagId] textfield',
+         mRedeemBtn : 'serverredeemitemdetailview[tag=redeemReward] button[tag=merchantRedeem]',
+         //
+         // Redeem Rewards
+         //
+         sBackBB : 'serverredeemitemdetailview[tag=redeemReward] button[tag=back]',
+         sCloseBB : 'serverredeemitemdetailview[tag=redeemReward] button[tag=close]',
+         //sDoneBtn : 'serverredeemitemdetailview[tag=redeemReward] button[tag=done]',
+         //sRedeemBtn : 'serverredeemitemdetailview[tag=redeemReward] button[tag=redeem]',
+         refreshBtn : 'serverredeemitemdetailview[tag=redeemReward] button[tag=refresh]',
+         redeemItem :
+         {
+            selector : 'serverredeemitemdetailview[tag=redeemReward]',
+            autoCreate : true,
+            tag : 'redeemReward',
+            xtype : 'serverredeemitemdetailview'
+         }
       },
       control :
       {
@@ -34,59 +53,41 @@ Ext.define('Genesis.controller.server.Redemptions',
          {
             tap : 'onRedeemItemTap'
          },
+         /*
          sRedeemBtn :
          {
             tap : 'onRedeemItemTap'
          },
-         sDoneBtn :
+         */
+         redeemItemCardContainer :
          {
-            tap : 'onDoneTap'
+            activeitemchange : 'onRedeemItemCardContainerActivate'
+         },
+         'serverredeemitemdetailview[tag=redeemReward] container[tag=bottomButtons] button[tag=redeemPtsTag]' :
+         {
+            tap : 'onEnterTagIdTap'
+         },
+         'serverredeemitemdetailview[tag=redeemReward] calculator[tag=tagId] container[tag=dialpad] button' :
+         {
+            tap : 'onTagIdBtnTap'
+         },
+         'serverredeemitemdetailview[tag=redeemReward] calculator[tag=tagId] container[tag=bottomButtons] button[tag=redeemTagId]' :
+         {
+            tap : 'onTagItTap'
          }
       },
       listeners :
       {
          'redeemitem' : 'onServerRedeemItem'
       }
-   },
-   onNfc : function(nfcResult)
-   {
-      var me = this;
-
-      me.redeemItemFn(
-      {
-         data : me.self.encryptFromParams(
-         {
-            'tag_id' : (nfcResult) ? nfcResult['tagID'] : null,
-            'expiry_ts' : new Date().addHours(3).getTime()
-         }, 'reward')
-      });
-   },
-   onRedeemItemShowView : function(activeItem)
-   {
-      //
-      // Hide the Merchant Info
-      //
-      var me = this;
-      var info = activeItem.query('component[tag=info]')[0];
-      info.hide();
-      //
-      // In Redeem Mode
-      //
-      me.getMRedeemBtn()[(me.getRedeemMode() != 'authReward') ? 'show' : 'hide']();
-      //
-      // In Challendge
-      //
-      me.getRefreshBtn()[(me.getRedeemMode() == 'authReward') ? 'show' : 'hide']();
-   },
-   onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
-   {
-      var me = this;
-      me.callParent(arguments);
-
-      me.getRefreshBtn()['hide']();
-      me.getMRedeemBtn()['show']();
-      me.getSRedeemBtn()['hide']();
-
-      console.log("RewardItem View - Updated RewardItem View.");
    }
+   // --------------------------------------------------------------------------
+   // Utility Functions
+   // --------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
+   // Event Handler
+   // --------------------------------------------------------------------------
+   // --------------------------------------------------------------------------
+   // Redemption Page
+   // --------------------------------------------------------------------------
 });
