@@ -146,6 +146,10 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
   end
 
   def get_csrf_token    
+    if current_user.virtual_tag.nil?
+      current_user.virtual_tag = UserTag.create(:virtual)
+      current_user.register_tag(current_user.virtual_tag)
+    end
     session[:user_agent] = Common.get_user_agent(request.env['HTTP_USER_AGENT'])
     session[:resolution] = Common.get_thumbail_resolution(session[:user_agent], params[:device_pixel_ratio].to_f)
     render :template => '/api/v1/tokens/get_csrf_token'

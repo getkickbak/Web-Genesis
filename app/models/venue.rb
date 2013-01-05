@@ -192,22 +192,19 @@ class Venue
   
   def self.get(id)
     key = Venue.cache_key(id)
-    obj = Cache.get_obj(Venue, key)
-    if obj.nil?
-      obj = super(id)
-      Cache.add_obj(key, obj) if obj
+    Rails.cache.fetch(key) do
+      super(id)
     end
-    return obj
   end
   
   def save
     super
-    Cache.add_obj(Venue.cache_key(self.id), self)  
+    Rails.cache.write(Venue.cache_key(self.id), self)  
   end
   
   def save!
     super
-    Cache.add_obj(Venue.cache_key(self.id), self)  
+    Rails.cache.write(Venue.cache_key(self.id), self)  
   end
   
   def cache_key

@@ -12,7 +12,7 @@ Genesis::Application.configure do
 
   # Show full error reports and disable caching
   config.consider_all_requests_local       = false
-  config.action_controller.perform_caching = false
+  config.action_controller.perform_caching = true
 
   # Raise exceptions instead of rendering exception templates
   config.action_dispatch.show_exceptions = false
@@ -59,6 +59,9 @@ Genesis::Application.configure do
   end
   
   config.log_level = :info
+  
+  config.cache_store = :dalli_store
+  
 =begin  
   ActiveMerchant::Billing::Base.mode = :test
     ::BILLING_GATEWAY = ActiveMerchant::Billing::BeanstreamGateway.new(

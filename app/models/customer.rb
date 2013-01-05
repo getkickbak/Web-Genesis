@@ -75,10 +75,6 @@ class Customer
     return result 
   end
   
-  def cache_key
-    "Customer-#{self.id}"    
-  end
-  
   def mutex_key
     "CustomerMutex-#{self.id}"  
   end

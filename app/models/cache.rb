@@ -1,22 +1,6 @@
 class Cache
   @@memcache = nil
   
-  def self.set_obj(key, value, exptime = 0)
-    @@memcache.set(key, HashWithIndifferentAccess[value.attributes], exptime)
-  end
-  
-  def self.get_obj(obj_class, key)
-    as_hash = @@memcache.get(key)
-    if as_hash
-      return obj_class.load([as_hash], obj_class.all.query).first
-    end  
-    return nil
-  end
-  
-  def self.add_obj(key, value, exptime = 0)
-    @@memcache.add(key, HashWithIndifferentAccess[value.attributes], exptime)  
-  end
-  
   def self.set(key, value, exptime = 0)
     @@memcache.set(key, value, exptime)
   end
