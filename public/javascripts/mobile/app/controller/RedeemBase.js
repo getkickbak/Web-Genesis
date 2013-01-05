@@ -213,7 +213,10 @@ Ext.define('Genesis.controller.RedeemBase',
          // Updating Server ...
          //
          console.debug("Updating Server ...");
-         me.getSRedeemBtn()['hide']();
+         if (me.getSRedeemBtn())
+         {
+            me.getSRedeemBtn()['hide']();
+         }
          CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
          store.load(
          {
@@ -249,7 +252,10 @@ Ext.define('Genesis.controller.RedeemBase',
                }
                else
                {
-                  me.getSRedeemBtn()['show']();
+                  if (me.getSRedeemBtn())
+                  {
+                     me.getSRedeemBtn()['show']();
+                  }
                   Ext.device.Notification.show(
                   {
                      title : 'Redemptions',
@@ -307,150 +313,6 @@ Ext.define('Genesis.controller.RedeemBase',
          me.redeemItemFn(params);
       }
    },
-   onServerRedeemItem : function(btn, venue, view)
-   {
-      var me = this, identifiers = null, task = null;
-      var viewport = me.getViewPortCntlr();
-      var venueId = (venue) ? venue.getId() : 0;
-      var item = view.getInnerItems()[0];
-      var storeName = me.getRedeemStore();
-      var store = Ext.StoreMgr.get(storeName);
-      var params =
-      {
-         venue_id : venueId
-      }
-      var message = (Genesis.fn.isNative()) ? //
-      ((!merchantMode) ? me.lookingForMerchantDeviceMsg : me.lookingForMobileDeviceMsg) : me.retrievingQRCodeMsg;
-
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : message,
-         listeners :
-         {
-            tap : function()
-            {
-               viewport.setActiveController(null);
-               if (task)
-               {
-                  clearInterval(task);
-               }
-               //
-               // Stop receiving ProximityID
-               //
-               if (Genesis.fn.isNative())
-               {
-                  window.plugins.proximityID.stop();
-               }
-               Ext.Viewport.setMasked(null);
-               me.onDoneTap();
-            }
-         }
-      });
-
-      me.redeemItemFn = function(p)
-      {
-         //
-         // Stop receiving data from NFC
-         //
-         viewport.setActiveController(null);
-         if (task)
-         {
-            clearInterval(task);
-         }
-         //
-         // Stop receiving ProximityID
-         //
-         if (Genesis.fn.isNative())
-         {
-            window.plugins.proximityID.stop();
-         }
-
-         //
-         // Update Server
-         //
-         console.debug("Updating Server ...");
-         if (btn)
-         {
-            btn.hide();
-         }
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : me.establishConnectionMsg
-         });
-
-         CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
-         store.load(
-         {
-            addRecords : true, //Append data
-            scope : me,
-            jsonData :
-            {
-            },
-            params : Ext.apply(params, p),
-            callback : function(records, operation)
-            {
-               Ext.Viewport.setMasked(null);
-               if (operation.wasSuccessful())
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Redemptions',
-                     message : me.redeemSuccessfulMsg,
-                     callback : function()
-                     {
-                        me.onDoneTap();
-                     }
-                  });
-               }
-               else
-               {
-                  if (btn)
-                  {
-                     btn.show();
-                  }
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Redemptions',
-                     message : me.redeemFailedMsg,
-                     callback : function()
-                     {
-                        me.onDoneTap();
-                     }
-                  });
-               }
-            }
-         });
-      };
-
-      if (Genesis.fn.isNative())
-      {
-         task = me.getLocalID(function(idx)
-         {
-            identifiers = idx;
-            task = null;
-            me.redeemItemFn(
-            {
-               'frequency' : Ext.encode(identifiers['localID']),
-               data : me.self.encryptFromParams(
-               {
-                  'expiry_ts' : new Date().addHours(3).getTime()
-               }, 'reward')
-            });
-         }, function()
-         {
-            viewport.setActiveController(null);
-            Ext.Viewport.setMasked(null);
-            me.onDoneTap();
-         });
-         viewport.setActiveController(me);
-      }
-      else
-      {
-         me.redeemItemFn(params);
-      }
-   },
    onRedeemItemTap : function(b, e, eOpts, eInfo)
    {
       var me = this, venue = null;
@@ -468,25 +330,11 @@ Ext.define('Genesis.controller.RedeemBase',
             venue = viewport.getVenue();
             var cvenue = viewport.getCheckinInfo().venue;
 
-            /*
-             var bypass = me.getBrowseMode() == 'redeemBrowseSC';
-             if (!bypass && (!cvenue || !venue || (venue.getId() != cvenue.getId())))
-             {
-             Ext.device.Notification.show(
-             {
-             title : title,
-             message : me.checkinFirstMsg
-             });
-             }
-             else
-             */
+            if (!merchantMode)
             {
-               if (!merchantMode)
+               if (Genesis.fn.isNative())
                {
-                  if (Genesis.fn.isNative())
-                  {
-                     window.plugins.proximityID.preLoadSend();
-                  }
+                  window.plugins.proximityID.preLoadSend();
                }
                Ext.device.Notification.show(
                {
@@ -502,6 +350,10 @@ Ext.define('Genesis.controller.RedeemBase',
                   }
                });
             }
+            else
+            {
+               me.fireEvent('redeemitem', btn, venue, view);
+            }
             break;
          }
       }
@@ -515,23 +367,21 @@ Ext.define('Genesis.controller.RedeemBase',
    },
    onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-
-      var tbbar = activeItem.query('titlebar')[0];
-      var photo = me.redeemItem.get('photo');
+      var me = this, tbbar = activeItem.query('titlebar')[0];
 
       me.getSCloseBB().show();
       //me.getSBB().hide();
       tbbar.setTitle(me.getTitle());
       tbbar.removeCls('kbTitle');
+
+      console.log("Base onRedeemItemActivate - Updated RewardItem View!");
    },
    onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
-      if (me.getSDoneBtn)
+      if (me.getSDoneBtn())
       {
-         me.getSDoneBtn().hide();
+         me.getSDoneBtn()['hide']();
       }
       if (Genesis.fn.isNative())
       {
@@ -578,10 +428,13 @@ Ext.define('Genesis.controller.RedeemBase',
       if (_qrcode[0])
       {
          var dom = Ext.DomQuery.select('div.itemPoints',me.getRedeemItem().element.dom)[0];
-         me.getSRedeemBtn().hide();
-         if (me.getSDoneBtn)
+         if (me.getSRedeemBtn())
          {
-            me.getSDoneBtn().show();
+            me.getSRedeemBtn().hide();
+         }
+         if (me.getSDoneBtn())
+         {
+            me.getSDoneBtn()['show']();
          }
          me.getSCloseBB().hide();
          if (dom)

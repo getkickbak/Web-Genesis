@@ -65,7 +65,6 @@
             }
          });
       </script>
-      <script type="text/javascript" src="lib/core/ssc.js"></script>
       <script type="text/javascript" src="lib/core/barcodescanner.js"></script>
       <script type="text/javascript" src="lib/core/QRCodeReader.js"></script>
       <!--
@@ -85,6 +84,7 @@
       <script type="text/javascript" src="app/view/widgets/RedeemItem.js"></script>
       <script type="text/javascript" src="app/view/widgets/MerchantAccountPtsItem.js"></script>
       <script type="text/javascript" src="app/view/widgets/RedeemPtsItem.js"></script>
+      <script type="text/javascript" src="app/view/widgets/Calculator.js"></script>
       <!-- Models -->
       <script type="text/javascript" src="app/model/frontend/LicenseServerKey.js"></script>
       <script type="text/javascript" src="app/model/frontend/MainPage.js"></script>
@@ -105,14 +105,15 @@
       <script type="text/javascript" src="app/view/Viewport.js"></script>
       <script type="text/javascript" src="app/view/MainPage.js"></script>
       <script type="text/javascript" src="app/view/RedeemBase.js"></script>
-      <script type="text/javascript" src="app/view/RedeemItemDetail.js"></script>
       <script type="text/javascript" src="app/view/server/SettingsPage.js"></script>
       <script type="text/javascript" src="app/view/server/Rewards.js"></script>
       <script type="text/javascript" src="app/view/server/Redemptions.js"></script>
       <script type="text/javascript" src="app/view/server/Prizes.js"></script>
       <script type="text/javascript" src="app/view/server/MerchantAccount.js"></script>
+      <script type="text/javascript" src="app/view/widgets/server/RedeemItemDetail.js"></script>
 
       <!-- Controllers -->
+      <script type="text/javascript" src="app/controller/server/mixin/RedeemServerBase.js"></script>
       <script type="text/javascript" src="app/controller/ControllerBase.js"></script>
       <script type="text/javascript" src="app/controller/ViewportBase.js"></script>
       <script type="text/javascript" src="app/controller/RedeemBase.js"></script>
@@ -163,7 +164,7 @@
             {
                requires : ['Ext.device.Connection', 'Ext.device.Notification', 'Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
                profiles : ['Desktop'],
-               views : ['Document', 'server.Rewards', 'server.Redemptions', 'MainPage', 'ShowRedeemItemDetail', 'server.SettingsPage', 'Viewport'],
+               views : ['Document', 'server.Rewards', 'server.Redemptions', 'MainPage', 'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'Viewport'],
                controllers : ['server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'server.Settings', 'server.Prizes'],
                stores : [],
                launch : function()
@@ -192,6 +193,12 @@
       <p style="display:none;">
          <audio id="click_sound" preload="auto" autobuffer>
             <source src="resources/audio/click_sound.mp3" type="audio/mp3" />
+         </audio>
+         <audio id="nfc_end" preload="auto" autobuffer>
+            <source src="resources/audio/nfc_end.mp3" type="audio/mp3" />
+         </audio>
+         <audio id="nfc_error" preload="auto" autobuffer>
+            <source src="resources/audio/nfc_error.mp3" type="audio/mp3" />
          </audio>
          <audio id="beep" preload="auto" autobuffer>
             <source src="resources/audio/beep.wav" type="audio/wav" />

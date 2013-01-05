@@ -16,6 +16,7 @@ Ext.define('Genesis.controller.ControllerBase',
    noCodeScannedMsg : 'No Authorization Code was Scanned!',
    lostNetworkConnectionMsg : 'You have lost network connectivity',
    networkErrorMsg : 'Error Connecting to Sever',
+   invalidTagIdFormatMsg : 'Invalid 10-digit Tag ID format (eg. 1234567890)',
    backToMerchantPageMsg : function(venue)
    {
       return ('Would you like to visit our Main Page?');

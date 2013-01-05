@@ -30,23 +30,6 @@ Ext.define('Genesis.controller.PrizeRedemptionsBase',
       },
       refs :
       {
-         //
-         // Reward Prize
-         //
-         sBackBB : 'showredeemitemdetailview[tag=redeemPrize] button[tag=back]',
-         sCloseBB : 'showredeemitemdetailview[tag=redeemPrize] button[tag=close]',
-         //sBB : 'showredeemitemdetailview[tag=redeemPrize] button[tag=back]',
-         //sDoneBtn : 'showredeemitemdetailview[tag=redeemPrize] button[tag=done]',
-         sRedeemBtn : 'showredeemitemdetailview[tag=redeemPrize] button[tag=redeem]',
-         refreshBtn : 'showredeemitemdetailview[tag=redeemPrize] button[tag=refresh]',
-         mRedeemBtn : 'showredeemitemdetailview[tag=redeemPrize] button[tag=merchantRedeem]',
-         redeemItem :
-         {
-            selector : 'showredeemitemdetailview[tag=redeemPrize]',
-            autoCreate : true,
-            tag : 'redeemPrize',
-            xtype : 'showredeemitemdetailview'
-         }
       },
       control :
       {
@@ -129,11 +112,7 @@ Ext.define('Genesis.controller.PrizeRedemptionsBase',
    },
    onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-
-      var tbbar = activeItem.query('titlebar')[0];
-      var photo = me.redeemItem.get('photo');
+      var me = this, tbbar = activeItem.query('titlebar')[0];
 
       me.getSCloseBB()[(me.getRedeemMode() != 'authReward') ? 'show' : 'hide']();
       me.getSBackBB()[(me.getRedeemMode() == 'authReward') ? 'show' : 'hide']();
@@ -143,11 +122,13 @@ Ext.define('Genesis.controller.PrizeRedemptionsBase',
       //
       // Show redeem button on Toolbar
       //
-      me.getSRedeemBtn()[(!merchantMode) ? 'show' : 'hide']();
-
-      console.log("onRedeemItemActivate - Updated RewardItem View.");
+      if (me.getSRedeemBtn())
+      {
+         me.getSRedeemBtn()['show']();
+      }
+      console.log("Base onRedeemItemActivate - Updated RewardItem View.");
    },
-   onRedeemItemShowView : Ext.emptyFn,
+   //onRedeemItemShowView : Ext.emptyFn,
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------

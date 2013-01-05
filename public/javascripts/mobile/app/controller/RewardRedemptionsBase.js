@@ -31,22 +31,6 @@ Ext.define('Genesis.controller.RewardRedemptionsBase',
       },
       refs :
       {
-         //
-         // Redeem Rewards
-         //
-         sCloseBB : 'showredeemitemdetailview[tag=redeemReward] button[tag=close]',
-         //sBB : 'showredeemitemdetailview[tag=redeemReward] button[tag=back]',
-         sDoneBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=done]',
-         sRedeemBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=redeem]',
-         refreshBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=refresh]',
-         mRedeemBtn : 'showredeemitemdetailview[tag=redeemReward] button[tag=merchantRedeem]',
-         redeemItem :
-         {
-            selector : 'showredeemitemdetailview[tag=redeemReward]',
-            autoCreate : true,
-            tag : 'redeemReward',
-            xtype : 'showredeemitemdetailview'
-         }
       },
       control :
       {
@@ -129,7 +113,7 @@ Ext.define('Genesis.controller.RewardRedemptionsBase',
       me.redeemItem = redeemItem;
       me.redirectTo('redeemReward');
    },
-   onRedeemItemShowView : Ext.emptyFn,
+   //onRedeemItemShowView : Ext.emptyFn,
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------

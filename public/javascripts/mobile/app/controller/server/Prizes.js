@@ -1,6 +1,7 @@
 Ext.define('Genesis.controller.server.Prizes',
 {
    extend : 'Genesis.controller.PrizeRedemptionsBase',
+   mixins : ['Genesis.controller.server.mixin.RedeemServerBase'],
    requires : ['Ext.data.Store', 'Genesis.view.server.Prizes'],
    inheritableStatics :
    {
@@ -9,7 +10,6 @@ Ext.define('Genesis.controller.server.Prizes',
    controllerType : 'redemption',
    config :
    {
-      closeBtn : null,
       redeemPointsFn : 'setMerchantRedeemPointsURL',
       routes :
       {
@@ -27,7 +27,26 @@ Ext.define('Genesis.controller.server.Prizes',
             autoCreate : true,
             xtype : 'serverprizesview'
          },
-         redemptionsList : 'serverprizesview list[tag=prizesList]'
+         redemptionsList : 'serverprizesview list[tag=prizesList]',
+         redeemItemCardContainer : 'serverredeemitemdetailview[tag=redeemPrize] container[tag=redeemItemCardContainer]',
+         redeemItemButtonsContainer : 'serverredeemitemdetailview[tag=redeemPrize] container[tag=bottomButtons]',
+         tagId : 'serverredeemitemdetailview[tag=redeemPrize] calculator[tag=tagId] textfield',
+         mRedeemBtn : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=merchantRedeem]',
+         //
+         // Reward Prize
+         //
+         sBackBB : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=back]',
+         sCloseBB : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=close]',
+         //sDoneBtn : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=done]',
+         //sRedeemBtn : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=redeem]',
+         refreshBtn : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=refresh]',
+         redeemItem :
+         {
+            selector : 'serverredeemitemdetailview[tag=redeemPrize]',
+            autoCreate : true,
+            tag : 'redeemPrize',
+            xtype : 'serverredeemitemdetailview'
+         }
       },
       control :
       {
@@ -35,9 +54,27 @@ Ext.define('Genesis.controller.server.Prizes',
          {
             tap : 'onRedeemItemTap'
          },
+         /*
          sRedeemBtn :
          {
             tap : 'onRedeemItemTap'
+         },
+         */
+         redeemItemCardContainer :
+         {
+            activeitemchange : 'onRedeemItemCardContainerActivate'
+         },
+         'serverredeemitemdetailview[tag=redeemPrize] container[tag=bottomButtons] button[tag=redeemPtsTag]' :
+         {
+            tap : 'onEnterTagIdTap'
+         },
+         'serverredeemitemdetailview[tag=redeemPrize] calculator[tag=tagId] container[tag=dialpad] button' :
+         {
+            tap : 'onTagIdBtnTap'
+         },
+         'serverredeemitemdetailview[tag=redeemPrize] calculator[tag=tagId] container[tag=bottomButtons] button[tag=redeemTagId]' :
+         {
+            tap : 'onTagItTap'
          }
       },
       listeners :
@@ -50,7 +87,7 @@ Ext.define('Genesis.controller.server.Prizes',
          'redeemitem' : 'onServerRedeemItem'
       }
    },
-   scanPlayTitle : 'Swipe and Play',
+   redeemPtsConfirmMsg : 'Please confirm to submit',
    init : function()
    {
       var me = this;
@@ -77,25 +114,6 @@ Ext.define('Genesis.controller.server.Prizes',
          }, 'reward')
       });
    },
-   onRefreshQRCode : function(qrcodeMeta)
-   {
-      var me = this;
-
-      var view = me.getRedeemItem();
-      var item = view.getInnerItems()[0];
-
-      var photo = item.query('component[tag=itemPhoto]')[0];
-      var img = Ext.get(Ext.DomQuery.select('img',photo.element.dom)[0]);
-      img.set(
-      {
-         'src' : qrcodeMeta[0]
-      });
-      img.setStyle(
-      {
-         'width' : Genesis.fn.addUnit(qrcodeMeta[1] * 1.25),
-         'height' : Genesis.fn.addUnit(qrcodeMeta[2] * 1.25)
-      });
-   },
    onAuthReward : function(redeemItem)
    {
       this.redeemItem = redeemItem;
@@ -104,23 +122,6 @@ Ext.define('Genesis.controller.server.Prizes',
    // --------------------------------------------------------------------------
    // Prizes Page
    // --------------------------------------------------------------------------
-   onRedeemItemShowView : function(activeItem)
-   {
-      //
-      // Hide the Merchant Info
-      //
-      var me = this;
-      var info = activeItem.query('component[tag=info]')[0];
-      info.hide();
-      //
-      // In Redeem Mode
-      //
-      me.getMRedeemBtn()[(me.getRedeemMode() != 'authReward') ? 'show' : 'hide']();
-      //
-      // In Challendge
-      //
-      me.getRefreshBtn()[(me.getRedeemMode() == 'authReward') ? 'show' : 'hide']();
-   },
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------

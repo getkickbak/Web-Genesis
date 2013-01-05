@@ -32,17 +32,6 @@ Ext.define('Genesis.view.server.Prizes',
       }
       this._createView('PrizeStore', 'PrizeRenderCStore', activeItemIndex);
    },
-   onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
-   {
-      var me = this;
-      me.callParent(arguments);
-
-      me.getRefreshBtn()['hide']();
-      me.getMRedeemBtn()['show']();
-      me.getSRedeemBtn()['hide']();
-
-      console.log("RewardItem View - Updated RewardItem View.");
-   },
    inheritableStatics :
    {
       getPhoto : function(type)

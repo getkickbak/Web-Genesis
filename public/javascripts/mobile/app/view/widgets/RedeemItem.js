@@ -6,6 +6,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
    alias : 'widget.redeemitem',
    config :
    {
+      hideMerchant : false,
       // Backgrond Image
       cls : 'redeemItem',
       tag : 'redeemItem',
@@ -136,7 +137,7 @@ Ext.define('Genesis.view.widgets.RedeemItem',
       //
       // Hide Merchant Information if it's missing
       //
-      if (reward['merchant'])
+      if (reward['merchant'] && !this.getHideMerchant())
       {
          info.setData(data);
          info.show();

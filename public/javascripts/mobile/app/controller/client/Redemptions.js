@@ -23,7 +23,21 @@ Ext.define('Genesis.controller.client.Redemptions',
          },
          redemptionsList : 'clientredemptionsview list[tag=redemptionsList]',
          redemptionsPts : 'clientredemptionsview component[tag=points]',
-         redemptionsPtsEarnPanel : 'clientredemptionsview dataview[tag=ptsEarnPanel]'
+         redemptionsPtsEarnPanel : 'clientredemptionsview dataview[tag=ptsEarnPanel]',
+         //
+         // Redeem Rewards
+         //
+         sCloseBB : 'clientredeemitemdetailview[tag=redeemReward] button[tag=close]',
+         //sBB : 'clientredeemitemdetailview[tag=redeemReward] button[tag=back]',
+         sDoneBtn : 'clientredeemitemdetailview[tag=redeemReward] button[tag=done]',
+         sRedeemBtn : 'clientredeemitemdetailview[tag=redeemReward] button[tag=redeem]',
+         redeemItem :
+         {
+            selector : 'clientredeemitemdetailview[tag=redeemReward]',
+            autoCreate : true,
+            tag : 'redeemReward',
+            xtype : 'clientredeemitemdetailview'
+         }
       },
       control :
       {
@@ -40,6 +54,15 @@ Ext.define('Genesis.controller.client.Redemptions',
       {
          'redeemitem' : 'onClientRedeemItem'
       }
+   },
+   onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+      me.callParent(arguments);
+
+      me.getSRedeemBtn()['show']();
+
+      console.log("RewardItem View - Updated RewardItem View.");
    },
    redeemChooseSCPage : function()
    {
