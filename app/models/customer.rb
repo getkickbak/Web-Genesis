@@ -79,6 +79,10 @@ class Customer
     "Customer-#{self.id}"    
   end
   
+  def mutex_key
+    "CustomerMutex-#{self.id}"  
+  end
+  
   def update_qr_code
     now = Time.now
     new_auth_code = String.random_alphanumeric

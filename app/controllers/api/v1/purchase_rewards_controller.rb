@@ -292,7 +292,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
     Time.zone = @venue.time_zone
     begin
       Customer.transaction do
-        @customer_mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
+        @customer_mutex = CacheMutex.new(@customer.mutex_key, Cache.memcache)
         acquired = @customer_mutex.acquire
         @customer.reload
         #logger.debug("Authorized to earn points.")
@@ -304,7 +304,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         referral_challenge = false
         if challenge && (referral_record = ReferralChallengeRecord.first(:referral_id => @customer.id, :status => :pending)) && (referral_record.referrer_id != @customer.id)
           referrer = Customer.get(referral_record.referrer_id)
-          @referrer_mutex = CacheMutex.new(referrer.cache_key, Cache.memcache)
+          @referrer_mutex = CacheMutex.new(referrer.mutex_key, Cache.memcache)
           acquired = @referrer_mutex.acquire
           referrer.reload
           referrer_reward_record = EarnRewardRecord.new(
@@ -434,7 +434,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         @reward_info[:points] = points
 
         #logger.debug("Before acquiring cache mutex.")
-        @venue_mutex = CacheMutex.new(@venue.cache_key, Cache.memcache)
+        @venue_mutex = CacheMutex.new(@venue.mutex_key, Cache.memcache)
         acquired = @venue_mutex.acquire
         #logger.debug("Cache mutex acquired(#{acquired}).")
         @pick_prize_initialized = false

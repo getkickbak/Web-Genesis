@@ -32,6 +32,10 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
 
     begin
       User.transaction do
+        if @user.virtual_tag.nil?
+          @user.virtual_tag = UserTag.create(:virtual)
+          @user.register_tag(@user.virtual_tag)
+        end
         @user.ensure_authentication_token!
         @user.save!
         if auth_token.nil? && (not @user.valid_password?(password))
@@ -103,6 +107,11 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
     
     begin
       User.transaction do
+        if @user.virtual_tag.nil?
+          @user.virtual_tag = UserTag.create(:virtual)
+          @user.save!
+          @user.register_tag(@user.virtual_tag)
+        end
         if facebook_id
           @user.update_without_password(:facebook_id => facebook_id, :facebook_email => params[:facebook_email] || "", :update_ts => Time.now)
           if params[:gender] && params[:birthday]

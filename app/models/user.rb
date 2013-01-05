@@ -45,6 +45,8 @@ class User
   attr_accessible :name, :email, :facebook_id, :facebook_email, :role, :status, :current_password, :password, :password_confirmation, :tag_id
     
   has 1, :profile, 'UserProfile', :constraint => :destroy
+  has 1, :user_to_virtual_tag, :constraint => :destroy
+  has 1, :virtual_tag, 'UserTag', :through => :user_to_virtual_tag,  :via => :user_tag
   has n, :user_to_tags, :constraint => :destroy
   has n, :tags, 'UserTag', :through => :user_to_tags,  :via => :user_tag
   has n, :friendships, :child_key => [ :source_id ], :constraint => :destroy
@@ -137,6 +139,7 @@ class User
       user.profile[:created_ts] = now
       user.profile[:update_ts] = now
     end
+    user.virtual_tag = UserTag.create(:virtual)
     user.save
     return user 
   end
@@ -175,19 +178,23 @@ class User
   end
   
   def register_tag(tag)
-    tag.status = :active
-    tag.update_ts = Time.now
-    tag.save
+    if tag.status != :virtual
+      tag.status = :active
+      tag.update_ts = Time.now
+      tag.save
+    end
     self.tags.concat(Array(tag))
     save  
   end
   
   def deregister_tag(tag)
-    tag.status = :deleted
-    tag.update_ts = Time.now
-    tag.save
-    self.user_to_tags.all(:user_tag => Array(tag)).destroy
-    reload
+    if tag.status != :virtual
+      tag.status = :deleted
+      tag.update_ts = Time.now
+      tag.save
+      self.user_to_tags.all(:user_tag => Array(tag)).destroy
+      reload
+    end
   end
   
   def follow(others)

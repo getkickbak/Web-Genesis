@@ -87,7 +87,7 @@ module ExpireUserPoints
           if expired_points > 0
             begin
               Customer.transaction do
-                @customer_mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
+                @customer_mutex = CacheMutex.new(@customer.mutex_key, Cache.memcache)
                 acquired = @customer_mutex.acquire
                 customer.points -= expired_points
                 customer.update_ts = now

@@ -104,7 +104,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         end
         return
       end
-      if tag.status != :active
+      if tag.status != :active || tag.status != :virtual
         logger.info("Tag: #{decrypted_data["tag_id"]} is not active")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -231,7 +231,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
     Time.zone = @venue.time_zone
     begin
       Customer.transaction do
-        @mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
+        @mutex = CacheMutex.new(@customer.mutex_key, Cache.memcache)
         acquired = @mutex.acquire
         @customer.reload
         

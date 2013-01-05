@@ -184,7 +184,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
     begin     
       Customer.transaction do
         if satisfied
-          @mutex = CacheMutex.new(@customer.cache_key, Cache.memcache)
+          @mutex = CacheMutex.new(@customer.mutex_key, Cache.memcache)
           acquired = @mutex.acquire
           @customer.reload
           @account_info = { :points => @customer.points }

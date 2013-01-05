@@ -82,10 +82,6 @@ class Merchant
 
   before_save :ensure_authentication_token
 
-  def self.get_cache_key(id)
-    "Merchant-#{id}"
-  end
-
   def self.create(type, visit_frequency, merchant_info)
     now = Time.now
     if (merchant_info.is_a? Hash) || (merchant_info.is_a? ActiveSupport::HashWithIndifferentAccess)
@@ -168,10 +164,38 @@ class Merchant
     return merchant
   end
 
+  def self.cache_key(id)
+    "Merchant-#{id}"    
+  end
+  
+  def self.get(id)
+    key = Merchant.cache_key(id)
+    obj = Cache.get_obj(Merchant, key)
+    if obj.nil?
+      obj = super(id)
+      Cache.add_obj(key, obj) if obj
+    end
+    return obj
+  end
+  
+  def save
+    super
+    Cache.add_obj(Merchant.cache_key(self.id), self)  
+  end
+  
+  def save!
+    super
+    Cache.add_obj(Merchant.cache_key(self.id), self)  
+  end
+  
   def cache_key
     "Merchant-#{self.id}"
   end
 
+  def mutex_key
+    "MerchantMutex-#{self.id}"
+  end
+  
   def to_param
     self.id
   end
