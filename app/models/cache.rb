@@ -6,7 +6,11 @@ class Cache
   end
   
   def self.get_obj(obj_class, key)
-    obj_class.load([@@memcache.get(key)], obj_class.all.query).first
+    as_hash = @@memcache.get(key)
+    if as_hash
+      return obj_class.load([as_hash], obj_class.all.query).first
+    end  
+    return nil
   end
   
   def self.add_obj(key, value, exptime = 0)
