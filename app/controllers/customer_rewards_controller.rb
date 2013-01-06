@@ -5,7 +5,7 @@ class CustomerRewardsController < ApplicationController
   def index
     authorize! :read, CustomerReward
 
-    if Customer.count(:user_id => current_user.id, :status => :active) == 0
+    if Customer.count(:user => current_user, :status => :active) == 0
       respond_to do |format|
         format.html { redirect_to dashboard_path }
           #format.xml  { render :xml => @merchants }
@@ -14,13 +14,13 @@ class CustomerRewardsController < ApplicationController
     end
     
     merchant_ids = []
-    customers = Customer.all(:fields => [:merchant_id], :user_id => current_user.id, :status => :active, :order => [ :created_ts.desc ])
+    customers = Customer.all(:fields => [:merchant_id], :user => current_user, :status => :active, :order => [ :created_ts.desc ])
     customers.each do |customer|
       merchant_ids << customer.merchant_id
     end
     @merchants = Merchant.all(:id => merchant_ids) 
     @merchant = Merchant.get(params[:merchant_id]) || @merchants.first
-    @customer = Customer.first(:user_id => current_user.id, :merchant => @merchant) || not_found
+    @customer = Customer.first(:user => current_user, :merchant => @merchant) || not_found
     @customer_rewards = CustomerReward.all(:merchant => @merchant)
 
     respond_to do |format|
