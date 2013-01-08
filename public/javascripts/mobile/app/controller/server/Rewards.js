@@ -93,7 +93,8 @@ Ext.define('Genesis.controller.server.Rewards',
          Ext.device.Notification.show(
          {
             title : 'Validation Error',
-            message : me.invalidAmountMsg
+            message : me.invalidAmountMsg,
+            buttons : ['Dismiss']
          });
          amount = -1;
       }
@@ -116,11 +117,9 @@ Ext.define('Genesis.controller.server.Rewards',
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
       var me = this;
-      var amountField = me.getAmount();
-      if (amountField)
-      {
-         amountField.setValue(null);
-      }
+
+      me.getAmount().reset();
+      me.getAmount().getValue();
       if (Genesis.fn.isNative())
       {
          window.plugins.proximityID.stop();
@@ -137,13 +136,15 @@ Ext.define('Genesis.controller.server.Rewards',
       {
          case 'amount' :
          {
-            //me.getAmount().setValue(null);
+            me.getAmount().reset();
+            me.getAmount().blur();
             animation.setReverse(true);
             break;
          }
          case 'tagId' :
          {
-            me.getTagId().setValue(null);
+            me.getTagId().reset();
+            me.getTagId().blur();
             animation.setReverse(true);
             break;
          }
@@ -157,11 +158,17 @@ Ext.define('Genesis.controller.server.Rewards',
    },
    onRewardItem : function(automatic)
    {
-      var me = this, task = null, identifiers = null, viewport = me.getViewPortCntlr();
-      var amount = me.getAmount().getValue();
+      var me = this, task = null, identifiers = null, viewport = me.getViewPortCntlr(), dismissDialog = false;
+      var amount = me.getAmount().getValue(), proxy = PurchaseReward.getProxy();
 
       me.rewardItemFn = function(params)
       {
+         Ext.device.Notification.dismiss();
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.establishConnectionMsg
+         });
          params = Ext.merge(params,
          {
             'venue_id' : Genesis.fn.getPrivKey('venueId'),
@@ -173,31 +180,10 @@ Ext.define('Genesis.controller.server.Rewards',
             }
          });
          params['data'] = me.self.encryptFromParams(params['data']);
-
          //
-         // Stop receiving data from NFC
+         // Update Server
          //
-         viewport.setActiveController(null);
-         if (task)
-         {
-            clearInterval(task);
-         }
-         //
-         // Stop receiving ProximityID
-         //
-         if (Genesis.fn.isNative())
-         {
-            window.plugins.proximityID.stop();
-         }
-         //
-         // Updating Server ...
-         //
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : me.establishConnectionMsg
-         });
-         console.log("Updating Server with EarnPoints information ...");
+         console.log("Updating Server with Reward information ... dismissDialog(" + dismissDialog + ")");
          PurchaseReward['setMerchantEarnPointsURL']();
          PurchaseReward.load(1,
          {
@@ -214,8 +200,9 @@ Ext.define('Genesis.controller.server.Rewards',
                {
                   Ext.device.Notification.show(
                   {
-                     title : 'Rewards',
+                     title : 'Earn Reward Points',
                      message : me.rewardSuccessfulMsg,
+                     buttons : ['OK'],
                      callback : function()
                      {
                         me.onDoneTap();
@@ -224,12 +211,15 @@ Ext.define('Genesis.controller.server.Rewards',
                }
                else
                {
+                  proxy.supressErrorsPopup = true;
                   Ext.device.Notification.show(
                   {
-                     title : 'Rewards',
+                     title : 'Earn Reward Points',
                      message : me.rewardFailedMsg,
+                     buttons : ['Dismiss'],
                      callback : function()
                      {
+                        proxy.supressErrorsPopup = false;
                         me.onDoneTap();
                      }
                   });
@@ -242,35 +232,51 @@ Ext.define('Genesis.controller.server.Rewards',
       {
          return;
       }
-      Ext.Viewport.setMasked(
+      var callback = function(b)
       {
-         xtype : 'loadmask',
-         message : (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg : me.genQRCodeMsg,
-         listeners :
+         viewport.setActiveController(null);
+         if (task)
          {
-            tap : function()
-            {
-               viewport.setActiveController(null);
-               if (task)
-               {
-                  clearInterval(task);
-               }
-               //
-               // Stop receiving ProximityID
-               //
-               if (Genesis.fn.isNative())
-               {
-                  window.plugins.proximityID.stop();
-               }
-               Ext.Viewport.setMasked(null);
-               me.onDoneTap();
-            }
+            clearInterval(task);
          }
+         //
+         // Stop receiving ProximityID
+         //
+         if (Genesis.fn.isNative())
+         {
+            window.plugins.proximityID.stop();
+         }
+
+         if (b && (b.toLowerCase() == 'enter tag id'))
+         {
+            Ext.Viewport.setMasked(null);
+            me.onEnterTagIdTap();
+         }
+         else
+         if (!dismissDialog)
+         {
+            Ext.Viewport.setMasked(null);
+            me.onDoneTap();
+         }
+      };
+
+      Ext.device.Notification.show(
+      {
+         title : 'Earn Reward Points',
+         message : (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg : me.genQRCodeMsg,
+         buttons : [
+         {
+            text : 'Enter TAG ID',
+            ignoreOnHide : true,
+            itemId : 'enter tag id'
+         }],
+         callback : callback
       });
       if (Genesis.fn.isNative())
       {
          task = me.getLocalID(function(ids)
          {
+            dismissDialog = true;
             identifiers = ids;
             task = null;
             me.rewardItemFn(
@@ -282,10 +288,8 @@ Ext.define('Genesis.controller.server.Rewards',
             });
          }, function()
          {
-            viewport.setActiveController(null);
-            Ext.Viewport.setMasked(null);
-            me.onDoneTap();
-         });
+            Ext.device.Notification.dismiss();
+         }, Ext.bind(me.onRewardItem, me, arguments));
          viewport.setActiveController(me);
       }
       else
@@ -346,18 +350,18 @@ Ext.define('Genesis.controller.server.Rewards',
    onCalcBtnTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      var value = b.getText();
       var amountField = me.getAmount();
-      var amountFieldLength = amountField.getValue().length;
-      var amount = Number(amountField.getValue() || 0);
       switch (value)
       {
          case 'AC' :
          {
-            amount = null;
+            amountField.reset();
             break;
          }
          default :
+            var value = b.getText();
+            var amountFieldLength = amountField.getValue().length, amount = Number(amountField.getValue() || 0);
+
             if (amountFieldLength < 2)
             {
                if ((amount == 0) && (amountFieldLength > 0))
@@ -381,12 +385,13 @@ Ext.define('Genesis.controller.server.Rewards',
                }
                amount = amount.toFixed(2);
             }
+
+            // Max value
+            if (amount <= me.maxValue)
+            {
+               amountField.setValue(amount);
+            }
             break;
-      }
-      // Max value
-      if (amount <= me.maxValue)
-      {
-         amountField.setValue(amount);
       }
    },
    // --------------------------------------------------------------------------
@@ -403,14 +408,14 @@ Ext.define('Genesis.controller.server.Rewards',
          {
             case 'AC' :
             {
-               tagId = null;
+               tagIdField.reset();
                break;
             }
             default :
                tagId += value;
+               tagIdField.setValue(tagId);
                break;
          }
-         tagIdField.setValue(tagId);
       }
    },
    onTagItTap : function()
@@ -450,7 +455,8 @@ Ext.define('Genesis.controller.server.Rewards',
          Ext.device.Notification.show(
          {
             title : 'TAG ID',
-            message : me.invalidTagIdFormatMsg
+            message : me.invalidTagIdFormatMsg,
+            buttons : ['Dismiss']
          });
       }
    },

@@ -91,7 +91,7 @@ Ext.define('Genesis.controller.server.Challenges',
    },
    onGenerateQRCode : function(refresh)
    {
-      var me = this, task = null, identifiers = null, viewport = me.getViewPortCntlr();
+      var me = this, task = null, identifiers = null, viewport = me.getViewPortCntlr(), proxy = Challenge.getProxy();
 
       if (!refresh)
       {
@@ -189,43 +189,49 @@ Ext.define('Genesis.controller.server.Challenges',
                   Ext.device.Notification.show(
                   {
                      title : 'Challenge',
-                     message : me.challengeSuccessfulMsg
+                     message : me.challengeSuccessfulMsg,
+                     buttons : ['OK']
                   });
                }
                else
                {
+                  proxy.supressErrorsPopup = true;
                   Ext.device.Notification.show(
                   {
                      title : 'Challenge',
-                     message : me.challengeFailedMsg
+                     message : me.challengeFailedMsg,
+                     buttons : ['Dismiss'],
+                     callback : function()
+                     {
+                        proxy.supressErrorsPopup = false;
+                     }
                   });
                }
             }
          });
       };
 
-      Ext.Viewport.setMasked(
+      Ext.device.Notification.show(
       {
-         xtype : 'loadmask',
+         title : 'Challenges',
          message : (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg : me.genQRCodeMsg,
-         listeners :
+         buttons : ['Cancel'],
+         callback : function()
          {
-            tap : function()
+            viewport.setActiveController(null);
+            if (task)
             {
-               viewport.setActiveController(null);
-               if (task)
-               {
-                  clearInterval(task);
-               }
-               //
-               // Stop receiving ProximityID
-               //
-               if (Genesis.fn.isNative())
-               {
-                  window.plugins.proximityID.stop();
-               }
-               Ext.Viewport.setMasked(null);
+               clearInterval(task);
             }
+            //
+            // Stop receiving ProximityID
+            //
+            if (Genesis.fn.isNative())
+            {
+               window.plugins.proximityID.stop();
+            }
+            Ext.Viewport.setMasked(null);
+            me.popView();
          }
       });
       if (Genesis.fn.isNative())
@@ -245,7 +251,7 @@ Ext.define('Genesis.controller.server.Challenges',
          {
             viewport.setActiveController(null);
             Ext.Viewport.setMasked(null);
-         });
+         }, Ext.bind(me.onGenerateQRCode, me, arguments));
          viewport.setActiveController(me);
       }
       else

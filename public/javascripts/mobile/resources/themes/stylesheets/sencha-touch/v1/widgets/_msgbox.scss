@@ -1,0 +1,9 @@
+.x-msgbox {
+   @if $include-border-radius { @include border-radius($panel-border-radius*4); }
+   .x-msgbox-inner, .x-dock, .x-dock-body {
+      height : auto;
+   }
+}
+
+.x-tablet .x-msgbox {
+}

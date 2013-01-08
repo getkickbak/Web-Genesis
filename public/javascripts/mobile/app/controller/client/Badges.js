@@ -177,7 +177,8 @@ Ext.define('Genesis.controller.client.Badges',
          Ext.device.Notification.show(
          {
             title : 'Badges',
-            message : me.badgeLevelNotAchievedMsg
+            message : me.badgeLevelNotAchievedMsg,
+            buttons : ['Dismiss']
          });
       }
       return false;

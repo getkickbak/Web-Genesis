@@ -10,6 +10,7 @@ Ext.define('Genesis.controller.PrizeRedemptionsBase',
    config :
    {
       redeemInfoMsg : 'Getting the Prizes List ...',
+      redeemPopupTitle : 'Redeem Prizes',
       redeeemSuccessfulMsg : 'Prize selected has been successfully redeemed!',
       timeoutPeriod : 10,
       minPrizePts : 1,
@@ -136,12 +137,8 @@ Ext.define('Genesis.controller.PrizeRedemptionsBase',
    {
       this.setTitle('Prizes');
       this.openPage('redeemPrize');
-   },
+   }
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
-   isOpenAllowed : function()
-   {
-      return true;
-   }
 });

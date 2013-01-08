@@ -8,7 +8,7 @@ Genesis =
 Genesis.constants =
 {
    host : 'http://192.168.0.52:3000',
-   //host : 'http://76.10.173.153:80',
+   host : 'http://76.10.173.153:80',
    //host : 'http://www.getkickbak.com',
    //
    // Proximity ID
@@ -877,6 +877,7 @@ Ext.define('Genesis.data.proxy.Server',
                   {
                      title : 'Server Error(s)',
                      message : messages,
+                     buttons : ['Dismiss'],
                      callback : function(btn)
                      {
                         if (metaData['session_timeout'])
@@ -904,6 +905,7 @@ Ext.define('Genesis.data.proxy.Server',
                   {
                      title : 'Create Account',
                      message : Genesis.constants.createAccountMsg,
+                     buttons : ['OK'],
                      callback : function(btn)
                      {
                         viewport.setLoggedIn(false);
@@ -921,6 +923,7 @@ Ext.define('Genesis.data.proxy.Server',
                   {
                      title : 'Login Error',
                      message : messages,
+                     buttons : ['Dismiss'],
                      callback : function(btn)
                      {
                         viewport.resetView();
@@ -936,7 +939,8 @@ Ext.define('Genesis.data.proxy.Server',
                      Ext.device.Notification.show(
                      {
                         title : 'Error',
-                        message : messages
+                        message : messages,
+                        buttons : ['Dismiss']
                      });
                   }
                   break;
@@ -1257,6 +1261,246 @@ Ext.define('Genesis.device.connection.PhoneGap',
       var type = navigator.connection.type;
       this._type = type;
       this._online = (type != Connection.NONE) && (type != Connection.UNKNOWN);
+   }
+});
+
+// **************************************************************************
+// Ext.MessageBox
+// **************************************************************************
+Ext.define('Genesis.MessageBox',
+{
+   override : 'Ext.MessageBox',
+   /**
+    * Adds the new {@link Ext.Toolbar} instance into this container.
+    * @private
+    */
+   updateButtons : function(newButtons)
+   {
+      var me = this;
+
+      if (newButtons)
+      {
+         if (me.buttonsToolbar)
+         {
+            me.buttonsToolbar.removeAll();
+            me.buttonsToolbar.setItems(newButtons);
+         }
+         else
+         {
+            me.buttonsToolbar = Ext.create('Ext.Toolbar',
+            {
+               docked : 'bottom',
+               height : "2.6em",
+               defaultType : 'button',
+               layout :
+               {
+                  type : 'hbox',
+                  pack : 'center'
+               },
+               ui : me.getUi(),
+               cls : me.getBaseCls() + '-buttons',
+               items : newButtons
+            });
+
+            me.add(me.buttonsToolbar);
+         }
+      }
+   }
+});
+// **************************************************************************
+// Ext.device.notification.Abstract
+// **************************************************************************
+Ext.define('Ext.device.notification.Abstract',
+{
+   /**
+    * A simple way to show a notification.
+    *
+    *     Ext.device.Notification.show({
+    *        title: 'Verification',
+    *        message: 'Is your email address is: test@sencha.com',
+    *        buttons: Ext.MessageBox.OKCANCEL,
+    *        callback: function(button) {
+    *            if (button == "ok") {
+    *                console.log('Verified');
+    *            } else {
+    *                console.log('Nope.');
+    *            }
+    *        }
+    *     });
+    *
+    * @param {Object} config An object which contains the following config options:
+    *
+    * @param {String} config.title The title of the notification
+    *
+    * @param {String} config.message The message to be displayed on the notification
+    *
+    * @param {String/String[]} [config.buttons="OK"]
+    * The buttons to be displayed on the notification. It can be a string, which is the title of the button, or an array of multiple
+    * strings.
+    * Please not that you should not use more than 2 buttons, as they may not be displayed correct on all devices.
+    *
+    * @param {Function} config.callback
+    * A callback function which is called when the notification is dismissed by clicking on the configured buttons.
+    * @param {String} config.callback.buttonId The id of the button pressed, one of: 'ok', 'yes', 'no', 'cancel'.
+    *
+    * @param {Object} config.scope The scope of the callback function
+    */
+   show : function(config)
+   {
+      if (!config.message)
+      {
+         throw ('[Ext.device.Notification#show] You passed no message');
+      }
+
+      if (config.buttons)
+      {
+         if (!Ext.isArray(config.buttons))
+         {
+            config.buttons = [config.buttons];
+         }
+      }
+      else
+      {
+         config.buttons = null;
+      }
+
+      if (!config.scope)
+      {
+         config.scope = this;
+      }
+
+      return config;
+   },
+   /**
+    * Vibrates the device.
+    */
+   vibrate : Ext.emptyFn
+});
+
+// **************************************************************************
+// Ext.device.notification.PhoneGap
+// **************************************************************************
+/*
+ Ext.define('Ext.device.notification.PhoneGap',
+ {
+ extend : 'Ext.device.notification.Abstract',
+ requires : ['Ext.device.Communicator'],
+ show : function(config)
+ {
+ config = this.callParent(arguments)
+ var buttons = (config.buttons) ? config.buttons.join(',') : null;
+
+ var ln = (buttons) ? buttons.length : 0;
+ var onShowCallback = function(index)
+ {
+ if (index > ln)
+ {
+ if (config.callback)
+ {
+ config.callback.apply(config.scope, [index]);
+ }
+ return;
+ }
+
+ if (!index || (index < 1))
+ {
+ index = (config.buttons) ? config.buttons.length : 1;
+ }
+ if (config.callback)
+ {
+ config.callback.apply(config.scope, (config.buttons) ? [config.buttons[index - 1].toLowerCase()] : []);
+ }
+ };
+
+ // change Ext.MessageBox buttons into normal arrays
+ if ((ln > 0) && typeof buttons[0] != "string")
+ {
+ var newButtons = [], i;
+
+ for ( i = 0; i < ln; i++)
+ {
+ newButtons.push(buttons[i].text);
+ }
+
+ buttons = newButtons;
+ }
+
+ navigator.notification.confirm(config.message, // message
+ onShowCallback, // callback
+ config.title, // title
+ buttons // array of button names
+ );
+ },
+ */
+Ext.define('Ext.device.notification.PhoneGap',
+{
+   extend : 'Ext.device.notification.Abstract',
+   requires : ['Ext.MessageBox'],
+
+   // @private
+   msg : null,
+
+   show : function()
+   {
+      var config = this.callParent(arguments), buttons = [], ln = config.buttons.length, button, i, callback, msg;
+
+      //buttons
+      for ( i = 0; i < ln; i++)
+      {
+         button = config.buttons[i];
+         if (Ext.isString(button))
+         {
+            button =
+            {
+               text : config.buttons[i],
+               itemId : config.buttons[i].toLowerCase()
+            };
+         }
+
+         buttons.push(button);
+      }
+
+      if (this.msg)
+      {
+         this.msg.destroy();
+      }
+      this.msg = Ext.create('Ext.MessageBox');
+
+      msg = this.msg;
+      msg.setHideOnMaskTap(true);
+      callback = function(itemId)
+      {
+         if (config.callback)
+         {
+            config.callback.apply(config.scope, [itemId]);
+         }
+      };
+      msg.getModal().on('hide', function()
+      {
+         var button = buttons[buttons.length - 1];
+         callback((!button.ignoreOnHide) ? button.itemId : null);
+      }, this);
+
+      msg.show(
+      {
+         title : config.title,
+         message : config.message,
+         scope : msg,
+         buttons : buttons,
+         fn : callback
+      });
+   },
+   vibrate : function()
+   {
+      navigator.notification.vibrate(2000);
+   },
+   dismiss : function()
+   {
+      if (this.msg)
+      {
+         this.msg.hide();
+      }
+      //navigator.notification.dismiss();
    }
 });
 

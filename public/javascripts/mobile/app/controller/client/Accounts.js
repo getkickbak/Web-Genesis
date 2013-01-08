@@ -222,6 +222,7 @@ Ext.define('Genesis.controller.client.Accounts',
                   {
                      title : 'Transfer Received',
                      message : me.recvTransferMsg(metaData['points'], records[0].getMerchant().get('name')),
+                     buttons : ['OK'],
                      callback : function(btn)
                      {
                         me.resetView();
@@ -241,7 +242,8 @@ Ext.define('Genesis.controller.client.Accounts',
          Ext.device.Notification.show(
          {
             title : 'Error',
-            message : me.noCodeScannedMsg
+            message : me.noCodeScannedMsg,
+            buttons : ['Dismiss']
          });
       }
    },
@@ -256,9 +258,9 @@ Ext.define('Genesis.controller.client.Accounts',
          'merchant_id' : merchantId
       }
 
-		//
-		// GeoLocation is optional
-		//
+      //
+      // GeoLocation is optional
+      //
       if (position)
       {
          params = Ext.apply(params,
@@ -318,6 +320,7 @@ Ext.define('Genesis.controller.client.Accounts',
                {
                   title : 'Error',
                   message : me.missingVenueInfoMsg(operation.getError()),
+                  buttons : ['Dismiss'],
                   callback : function()
                   {
                      proxy.supressErrorsPopup = false;
@@ -438,6 +441,7 @@ Ext.define('Genesis.controller.client.Accounts',
                {
                   title : 'Points Required',
                   message : me.pointsReqMsg,
+                  buttons : ['Dismiss']
                });
                return;
             }
@@ -617,6 +621,7 @@ Ext.define('Genesis.controller.client.Accounts',
                   {
                      title : 'Transfer Failed',
                      message : me.transferFailedMsg,
+                     buttons : ['Dismiss'],
                      callback : function()
                      {
                         //me.onTransferCompleteTap();
@@ -630,7 +635,8 @@ Ext.define('Genesis.controller.client.Accounts',
                   Ext.device.Notification.show(
                   {
                      title : 'Trasfer Deferred',
-                     message : me.transferSavedMsg
+                     message : me.transferSavedMsg,
+                     buttons : ['Dismiss']
                   });
                   break;
                }
@@ -680,6 +686,7 @@ Ext.define('Genesis.controller.client.Accounts',
             {
                title : 'Transfer Failed',
                message : me.transferFailedMsg,
+               buttons : ['Dismiss'],
                callback : function()
                {
                   //me.onTransferCompleteTap();
@@ -865,7 +872,7 @@ Ext.define('Genesis.controller.client.Accounts',
             {
                title : 'Start Transfer',
                message : me.startTransferMsg,
-               buttons : ['Cancel', 'Proceed'],
+               buttons : ['Proceed', 'Cancel'],
                callback : function(btn)
                {
                   if (btn.toLowerCase() == 'proceed')
@@ -961,7 +968,8 @@ Ext.define('Genesis.controller.client.Accounts',
                   Ext.device.Notification.show(
                   {
                      title : 'Error',
-                     message : me.noPtsXferMsg()
+                     message : me.noPtsXferMsg(),
+                     buttons : ['Dismiss']
                   });
                }
             }
@@ -972,7 +980,8 @@ Ext.define('Genesis.controller.client.Accounts',
          Ext.device.Notification.show(
          {
             title : 'Error',
-            message : me.xferWithinRangeMsg(1, me.rec.get('points'))
+            message : me.xferWithinRangeMsg(1, me.rec.get('points')),
+            buttons : ['Dismiss']
          });
       }
    },
@@ -987,6 +996,7 @@ Ext.define('Genesis.controller.client.Accounts',
          {
             title : 'Transfer Success!',
             message : me.transferSuccessMsg(),
+            buttons : ['OK']
          });
       }
       me.popView();

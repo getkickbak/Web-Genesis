@@ -11,6 +11,7 @@ Ext.define('Genesis.controller.RewardRedemptionsBase',
    {
       redeeemSuccessfulMsg : 'Reward selected has been successfully redeemed!',
       redeemInfoMsg : 'Getting the Redemptions List ...',
+      redeemPopupTitle : 'Redeem Rewards',
       browseMode : 'redeemBrowse',
       redeemMode : 'redeemReward',
       renderStore : 'RedemptionRenderCStore',

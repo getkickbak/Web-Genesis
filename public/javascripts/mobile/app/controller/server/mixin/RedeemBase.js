@@ -1,10 +1,9 @@
-Ext.define('Genesis.controller.server.mixin.RedeemServerBase',
+Ext.define('Genesis.controller.server.mixin.RedeemBase',
 {
    extend : 'Ext.mixin.Mixin',
    inheritableStatics :
    {
    },
-   controllerType : 'redemption',
    config :
    {
       closeBtn : null,
@@ -35,14 +34,14 @@ Ext.define('Genesis.controller.server.mixin.RedeemServerBase',
          {
             case 'AC' :
             {
-               tagId = null;
+               tagIdField.reset();
                break;
             }
             default :
                tagId += value;
+               tagIdField.setValue(tagId);
                break;
          }
-         tagIdField.setValue(tagId);
       }
    },
    onTagItTap : function()
@@ -82,7 +81,8 @@ Ext.define('Genesis.controller.server.mixin.RedeemServerBase',
          Ext.device.Notification.show(
          {
             title : 'TAG ID',
-            message : me.invalidTagIdFormatMsg
+            message : me.invalidTagIdFormatMsg,
+            buttons : ['Dismiss']
          });
       }
    },
@@ -121,54 +121,40 @@ Ext.define('Genesis.controller.server.mixin.RedeemServerBase',
          'height' : Genesis.fn.addUnit(qrcodeMeta[2] * 1.25)
       });
    },
-   onServerRedeemItem : function(btn, venue, view)
+   onRedeemItem : function(btn, venue, view)
    {
-      var me = this, identifiers = null, task = null;
-      var viewport = me.getViewPortCntlr();
+      var me = this, identifiers = null, task = null, dismissDialog = false;
+      var viewport = me.getViewPortCntlr(), item = view.getInnerItems()[0];
       var venueId = (venue) ? venue.getId() : 0;
-      var item = view.getInnerItems()[0];
-      var storeName = me.getRedeemStore();
-      var store = Ext.StoreMgr.get(storeName);
+      var storeName = me.getRedeemStore(), store = Ext.StoreMgr.get(storeName);
       var params =
       {
          venue_id : venueId
       }
       var message = (Genesis.fn.isNative()) ? //
       ((!merchantMode) ? me.lookingForMerchantDeviceMsg : me.lookingForMobileDeviceMsg) : me.retrievingQRCodeMsg;
+      var proxy = store.getProxy();
 
       me.redeemItemFn = function(p)
       {
-         //
-         // Stop receiving data from NFC
-         //
-         viewport.setActiveController(null);
-         if (task)
-         {
-            clearInterval(task);
-         }
-         //
-         // Stop receiving ProximityID
-         //
-         if (Genesis.fn.isNative())
-         {
-            window.plugins.proximityID.stop();
-         }
-
-         //
-         // Update Server
-         //
-         console.debug("Updating Server ...");
          if (btn)
          {
             btn.hide();
          }
+
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
             message : me.establishConnectionMsg
          });
+         Ext.device.Notification.dismiss();
+         //
+         // Update Server
+         //
+         console.log("Updating Server with Redeem information ... dismissDialog(" + dismissDialog + ")");
 
          CustomerReward[me.getRedeemPointsFn()](item.getData().getId());
+
          store.load(
          {
             addRecords : true, //Append data
@@ -184,8 +170,9 @@ Ext.define('Genesis.controller.server.mixin.RedeemServerBase',
                {
                   Ext.device.Notification.show(
                   {
-                     title : 'Redemptions',
+                     title : me.getRedeemPopupTitle(),
                      message : me.redeemSuccessfulMsg,
+                     buttons : ['OK'],
                      callback : function()
                      {
                         me.onDoneTap();
@@ -198,12 +185,15 @@ Ext.define('Genesis.controller.server.mixin.RedeemServerBase',
                   {
                      btn.show();
                   }
+                  proxy.supressErrorsPopup = true;
                   Ext.device.Notification.show(
                   {
-                     title : 'Redemptions',
+                     title : me.getRedeemPopupTitle(),
                      message : me.redeemFailedMsg,
+                     buttons : ['Dismiss'],
                      callback : function()
                      {
+                        proxy.supressErrorsPopup = false;
                         me.onDoneTap();
                      }
                   });
@@ -214,35 +204,51 @@ Ext.define('Genesis.controller.server.mixin.RedeemServerBase',
 
       if (btn)
       {
-         Ext.Viewport.setMasked(
+         var callback = function(b)
          {
-            xtype : 'loadmask',
-            message : message,
-            listeners :
+            viewport.setActiveController(null);
+            if (task)
             {
-               tap : function()
-               {
-                  viewport.setActiveController(null);
-                  if (task)
-                  {
-                     clearInterval(task);
-                  }
-                  //
-                  // Stop receiving ProximityID
-                  //
-                  if (Genesis.fn.isNative())
-                  {
-                     window.plugins.proximityID.stop();
-                  }
-                  Ext.Viewport.setMasked(null);
-                  me.onDoneTap();
-               }
+               clearInterval(task);
             }
+            //
+            // Stop receiving ProximityID
+            //
+            if (Genesis.fn.isNative())
+            {
+               window.plugins.proximityID.stop();
+            }
+
+            if (b && (b.toLowerCase() == 'enter tag id'))
+            {
+               Ext.Viewport.setMasked(null);
+               me.onEnterTagIdTap();
+            }
+            else
+            if (!dismissDialog)
+            {
+               Ext.Viewport.setMasked(null);
+               me.onDoneTap();
+            }
+         };
+
+         Ext.device.Notification.show(
+         {
+            title : me.getRedeemPopupTitle(),
+            message : message,
+            buttons : [
+            {
+               text : 'Enter TAG ID',
+               ignoreOnHide : true,
+               itemId : 'enter tag id'
+            }],
+            callback : callback
          });
          if (Genesis.fn.isNative())
          {
             task = me.getLocalID(function(idx)
             {
+               dismissDialog = true;
                identifiers = idx;
                task = null;
                me.redeemItemFn(
@@ -255,15 +261,29 @@ Ext.define('Genesis.controller.server.mixin.RedeemServerBase',
                });
             }, function()
             {
-               viewport.setActiveController(null);
-               Ext.Viewport.setMasked(null);
-               me.onDoneTap();
-            });
+               Ext.device.Notification.dismiss();
+            }, Ext.bind(me.onRedeemItem, me, arguments));
             viewport.setActiveController(me);
          }
          else
          {
             me.redeemItemFn(params);
+         }
+      }
+   },
+   onRedeemItemTap : function(b, e, eOpts, eInfo)
+   {
+      var me = this, btn = b, viewport = me.getViewPortCntlr(), venue = viewport.getVenue();
+      var view = me.getRedeemMainPage(), title = view.query('titlebar')[0].getTitle();
+
+      //console.debug("onRedeemItemTap - Mode[" + me.getRedeemMode() + "]");
+      switch (me.getRedeemMode())
+      {
+         case 'redeemPrize' :
+         case 'redeemReward' :
+         {
+            me.fireEvent('redeemitem', btn, venue, view);
+            break;
          }
       }
    },
@@ -291,7 +311,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemServerBase',
          }
          case 'tagId' :
          {
-            me.getTagId().setValue(null);
+            me.getTagId().reset();
             animation.setReverse(true);
             break;
          }

@@ -160,7 +160,8 @@ function initPushwoosh()
       Ext.device.Notification.show(
       {
          title : 'Push Notification Alert',
-         message : notification.aps.alert
+         message : notification.aps.alert,
+         buttons : ['OK']
       });
       //navigator.notification.alert(notification.aps.alert);
       pushNotification.setApplicationIconBadgeNumber(0);

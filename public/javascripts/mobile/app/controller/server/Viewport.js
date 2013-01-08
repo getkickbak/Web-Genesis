@@ -55,7 +55,7 @@ Ext.define('Genesis.controller.server.Viewport',
          var lstore = Ext.StoreMgr.get('LicenseStore');
          if ((lstore.getRange().length < 1) || (forceRefresh))
          {
-         	lstore.removeAll();
+            lstore.removeAll();
             LicenseKey['setGetLicenseKeyURL']();
             lstore.load(
             {
@@ -113,9 +113,9 @@ Ext.define('Genesis.controller.server.Viewport',
       Ext.Viewport.setMasked(null);
       Ext.device.Notification.show(
       {
-         xtype : 'loadmask',
          title : me.setupTitle,
          message : msg,
+         buttons : ['Dismiss'],
          callback : function()
          {
             //
@@ -255,6 +255,7 @@ Ext.define('Genesis.controller.server.Viewport',
             {
                title : 'System Setup',
                message : 'This platform is not supported.',
+               buttons : ['Dismiss'],
                callback : function(btn)
                {
                   return;
@@ -271,7 +272,7 @@ Ext.define('Genesis.controller.server.Viewport',
             s_vol_ratio = 0.4;
             //Default Volume laying flat on a surface
             c.s_vol = 80;
-            
+
             r_vol_ratio = 0.5;
             // Read fresh data as soon as there's a miss
             c.conseqMissThreshold = 1;

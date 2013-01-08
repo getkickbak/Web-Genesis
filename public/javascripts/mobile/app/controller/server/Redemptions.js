@@ -1,13 +1,12 @@
 Ext.define('Genesis.controller.server.Redemptions',
 {
    extend : 'Genesis.controller.RewardRedemptionsBase',
-   mixins : ['Genesis.controller.server.mixin.RedeemServerBase'],
+   mixins : ['Genesis.controller.server.mixin.RedeemBase'],
    requires : ['Ext.data.Store', 'Genesis.view.server.Redemptions'],
    inheritableStatics :
    {
    },
    xtype : 'serverRedemptionsCntlr',
-   controllerType : 'redemption',
    config :
    {
       redeemPointsFn : 'setMerchantRedeemPointsURL',
@@ -36,8 +35,6 @@ Ext.define('Genesis.controller.server.Redemptions',
          //
          sBackBB : 'serverredeemitemdetailview[tag=redeemReward] button[tag=back]',
          sCloseBB : 'serverredeemitemdetailview[tag=redeemReward] button[tag=close]',
-         //sDoneBtn : 'serverredeemitemdetailview[tag=redeemReward] button[tag=done]',
-         //sRedeemBtn : 'serverredeemitemdetailview[tag=redeemReward] button[tag=redeem]',
          refreshBtn : 'serverredeemitemdetailview[tag=redeemReward] button[tag=refresh]',
          redeemItem :
          {
@@ -53,12 +50,6 @@ Ext.define('Genesis.controller.server.Redemptions',
          {
             tap : 'onRedeemItemTap'
          },
-         /*
-         sRedeemBtn :
-         {
-            tap : 'onRedeemItemTap'
-         },
-         */
          redeemItemCardContainer :
          {
             activeitemchange : 'onRedeemItemCardContainerActivate'
@@ -78,7 +69,7 @@ Ext.define('Genesis.controller.server.Redemptions',
       },
       listeners :
       {
-         'redeemitem' : 'onServerRedeemItem'
+         'redeemitem' : 'onRedeemItem'
       }
    }
    // --------------------------------------------------------------------------

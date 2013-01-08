@@ -71,7 +71,8 @@ Ext.define('Genesis.controller.server.Settings',
          Ext.device.Notification.show(
          {
             title : 'License Key Updated!',
-            message : me.licenseKeySuccessMsg()
+            message : me.licenseKeySuccessMsg(),
+            buttons : ['OK']
          });
       }, true);
    },
@@ -114,14 +115,16 @@ Ext.define('Genesis.controller.server.Settings',
          Ext.device.Notification.show(
          {
             title : "NFC Tag",
-            message : "Wrote data to TAG."
+            message : "Wrote data to TAG.",
+            buttons : ['OK']
          });
       }, function(reason)
       {
          Ext.device.Notification.show(
          {
             title : "NFC Tag",
-            message : "Error Writing data to TAG[" + reason + "]"
+            message : "Error Writing data to TAG[" + reason + "]",
+            buttons : ['Dismiss']
          });
       });
    },

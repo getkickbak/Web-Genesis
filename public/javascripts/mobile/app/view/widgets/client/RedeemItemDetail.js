@@ -52,13 +52,9 @@ Ext.define('Genesis.view.widgets.client.RedeemItemDetail',
    },
    onRedeemItemTap : function(b, e, eOpts)
    {
-      var me = this, viewport = _application.getController(((!merchantMode) ? 'client' : 'server') + '.Viewport');
+      var me = this, viewport = _application.getController('client' + '.Viewport');
       viewport.self.playSoundFile(viewport.sound_files['clickSound']);
       me.fireEvent('redeemItemTap', null);
-   },
-   cleanView : function()
-   {
-      this.callParent(arguments);
    },
    createView : function()
    {
@@ -68,17 +64,17 @@ Ext.define('Genesis.view.widgets.client.RedeemItemDetail',
          // Refresh RedeemItem
          //
          this.getInnerItems()[0].updateItem(this.redeemItem);
-         delete this.redeemItem;
-         return;
       }
-
-      this.setPreRender([
+      else
       {
-         flex : 1,
-         xtype : 'redeemitem',
-         hideMerchant : false,
-         data : this.redeemItem
-      }]);
+         this.setPreRender([
+         {
+            flex : 1,
+            xtype : 'redeemitem',
+            hideMerchant : false,
+            data : this.redeemItem
+         }]);
+      }
       delete this.redeemItem;
    }
 });
@@ -120,6 +116,8 @@ Ext.define('Genesis.view.widgets.client.PromotionItem',
    },
    onRedeemItemTap : function(b, e, eOpts)
    {
+      var me = this, viewport = _application.getController('client' + '.Viewport');
+      viewport.self.playSoundFile(viewport.sound_files['clickSound']);
       me.fireEvent('promoteItemTap', null);
    }
 });

@@ -1,13 +1,12 @@
 Ext.define('Genesis.controller.server.Prizes',
 {
    extend : 'Genesis.controller.PrizeRedemptionsBase',
-   mixins : ['Genesis.controller.server.mixin.RedeemServerBase'],
+   mixins : ['Genesis.controller.server.mixin.RedeemBase'],
    requires : ['Ext.data.Store', 'Genesis.view.server.Prizes'],
    inheritableStatics :
    {
    },
    xtype : 'serverPrizesCntlr',
-   controllerType : 'redemption',
    config :
    {
       redeemPointsFn : 'setMerchantRedeemPointsURL',
@@ -37,8 +36,6 @@ Ext.define('Genesis.controller.server.Prizes',
          //
          sBackBB : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=back]',
          sCloseBB : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=close]',
-         //sDoneBtn : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=done]',
-         //sRedeemBtn : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=redeem]',
          refreshBtn : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=refresh]',
          redeemItem :
          {
@@ -54,12 +51,6 @@ Ext.define('Genesis.controller.server.Prizes',
          {
             tap : 'onRedeemItemTap'
          },
-         /*
-         sRedeemBtn :
-         {
-            tap : 'onRedeemItemTap'
-         },
-         */
          redeemItemCardContainer :
          {
             activeitemchange : 'onRedeemItemCardContainerActivate'
@@ -84,7 +75,7 @@ Ext.define('Genesis.controller.server.Prizes',
          //
          'authreward' : 'onAuthReward',
          'refreshQRCode' : 'onRefreshQRCode',
-         'redeemitem' : 'onServerRedeemItem'
+         'redeemitem' : 'onRedeemItem'
       }
    },
    redeemPtsConfirmMsg : 'Please confirm to submit',
