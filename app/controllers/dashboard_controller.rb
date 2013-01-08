@@ -36,7 +36,7 @@ class DashboardController < ApplicationController
           if user && user.status == :pending
             current_merchant_ids = []
             merchant_id_to_customer_id = {}
-            current_customers_info = Customer.all(:fields => [:id, :merchant_id], :user_id => current_user.id, :status => :active)
+            current_customers_info = Customer.all(:fields => [:id, :merchant_id], :user => current_user, :status => :active)
             current_customers_info.each do |current_customer_info|
               current_merchant_ids << current_customer_info.merchant_id
               merchant_id_to_customer_id[customer_info.merchant_id] = current_customer_info.id
@@ -46,13 +46,13 @@ class DashboardController < ApplicationController
             current_merchants.each do |current_merchant|
               customer_id_to_merchant[merchant_id_to_customer_id[current_merchant.id]] = current_merchant
             end
-            current_customers = Customer.all(:user_id => current_user.id, :status => :active)
+            current_customers = Customer.all(:user => current_user, :status => :active)
             merchant_id_to_current_customer = {}
             current_merchant_ids = []
             current_customers.each do |current_customer|
               merchant_id_to_current_customer[customer_id_to_merchant[current_customer.id].id] = current_customer
             end
-            customers_info = Customer.all(:fields => [:id, :merchant_id], :user_id => user.id, :status => :active)
+            customers_info = Customer.all(:fields => [:id, :merchant_id], :user=> user, :status => :active)
             merchant_ids = []
             customers_info.each do |customer_info|
               merchant_ids << customer_info.merchant_id
@@ -62,7 +62,7 @@ class DashboardController < ApplicationController
             merchants.each do |merchant|
               customer_id_to_merchant[merchant_id_to_customer_id[merchant.id]] = merchant
             end
-            customers = Customer.all(:user_id => user.id, :status => :active)
+            customers = Customer.all(:user => user, :status => :active)
             merge_customers = customers.all(:merchant_id => current_merchant_ids)
             merge_customers.each do |merge_customer|
               customer = merchant_id_to_current_customer[customer_id_to_merchant[merge_customer.id].id]
@@ -185,7 +185,7 @@ class DashboardController < ApplicationController
   private
   
   def get_customers_info
-    customers_info = Customer.all(:fields => [:id, :merchant_id], :user_id => current_user.id, :status => :active, :order => [:update_ts.desc])
+    customers_info = Customer.all(:fields => [:id, :merchant_id], :user => current_user, :status => :active, :order => [:update_ts.desc])
     customer_ids = []
     merchant_ids = []
     merchant_id_to_customer_id = {}

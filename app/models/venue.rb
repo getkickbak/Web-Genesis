@@ -190,21 +190,21 @@ class Venue
     "Venue-#{id}"    
   end
   
-  def self.get(id)
-    key = Venue.cache_key(id)
-    Rails.cache.fetch(key) do
-      super(id)
+  def self.get(key)
+    c_key = cache_key(key)
+    Rails.cache.fetch(c_key) do
+      super(key)
     end
   end
   
-  def save
+  def save(context = :default)
     super
-    Rails.cache.write(Venue.cache_key(self.id), self)  
+    Rails.cache.write(cache_key, self)  
   end
   
-  def save!
+  def save!(context = :default)
     super
-    Rails.cache.write(Venue.cache_key(self.id), self)  
+    Rails.cache.write(cache_key, self)  
   end
   
   def cache_key
