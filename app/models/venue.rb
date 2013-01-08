@@ -186,6 +186,7 @@ class Venue
     return venues
   end
   
+=begin
   def self.cache_key(id)
     "Venue-#{id}"    
   end
@@ -197,12 +198,12 @@ class Venue
     end
   end
   
-  def save(context = :default)
+  def save
     super
     Rails.cache.write(cache_key, self)  
   end
   
-  def save!(context = :default)
+  def save!
     super
     Rails.cache.write(cache_key, self)  
   end
@@ -210,7 +211,8 @@ class Venue
   def cache_key
     "Venue-#{self.id}"    
   end
-  
+=end
+
   def mutex_key
     "VenueMutex-#{self.id}"   
   end
