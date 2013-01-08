@@ -196,7 +196,9 @@ Ext.define('Genesis.controller.client.Checkins',
          Ext.device.Notification.show(
          {
             title : 'Error',
-            message : me.noCheckinCodeMsg
+            message : me.noCheckinCodeMsg,
+            buttons : ['Dismiss']
+
          });
       }
    },
@@ -386,7 +388,8 @@ Ext.define('Genesis.controller.client.Checkins',
           Ext.device.Notification.show(
           {
           title : 'Successful Referral!',
-          message : me.recvReferralb4VisitMsg(customer.getMerchant().get('name'))
+          message : me.recvReferralb4VisitMsg(customer.getMerchant().get('name')),
+          buttons : ['Dismiss']
           });
           }, null]);
           }
@@ -459,6 +462,7 @@ Ext.define('Genesis.controller.client.Checkins',
                   {
                      title : 'Warning',
                      message : me.missingVenueInfoMsg(operation.getError()),
+                     buttons : ['Dismiss'],
                      callback : function()
                      {
                         proxy.supressErrorsPopup = false;

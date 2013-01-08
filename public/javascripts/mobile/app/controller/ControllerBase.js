@@ -52,12 +52,12 @@ Ext.define('Genesis.controller.ControllerBase',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
    getVenueInfoMsg : 'Retrieving Venue Information ...',
    prepareToSendMerchantDeviceMsg : 'Prepare to send data across to Merchant Device ...',
-   lookingForMerchantDeviceMsg : 'Place your phone under the Merchant Device ...', //Send
-   detectMerchantDeviceMsg : 'Place your phone under the Merchant Device ...', //Recv
+   lookingForMerchantDeviceMsg : 'Lean the back of your phone against the back of the Merchant Device ...', //Send
+   detectMerchantDeviceMsg : 'Lean the back of your phone against the back of the Merchant Device ...', //Recv
    // Merchant Device
    prepareToSendMobileDeviceMsg : 'Prepare to send data across to Mobile Device ...',
-   lookingForMobileDeviceMsg : 'Place the Tag or Mobile Device underneath the Merchant Device ...', //Send
-   detectMobileDeviceMsg : 'Place the Tag or Mobile Device underneath the Merchant Device ...', //Send
+   lookingForMobileDeviceMsg : 'Place the Tag or Mobile Device against the back of the Merchant Device ...', //Send
+   detectMobileDeviceMsg : 'Place the Tag or Mobile Device against the back of the Merchant Device ...', //Recv
    //
    //
    //
@@ -282,7 +282,7 @@ Ext.define('Genesis.controller.ControllerBase',
          {
             title : 'Missing License Key!',
             message : me.prototype.missingLicenseKeyMsg,
-            buttons : ['Cancel', 'Proceed'],
+            buttons : ['Proceed', 'Cancel'],
             callback : function(btn)
             {
                if (btn.toLowerCase() == 'proceed')
@@ -412,8 +412,8 @@ Ext.define('Genesis.controller.ControllerBase',
          Ext.device.Notification.show(
          {
             title : info.venue.get('name').trunc(16),
-            buttons : ['OK', 'Cancel'],
             message : me.backToMerchantPageMsg(info.venue),
+            buttons : ['OK', 'Cancel'],
             callback : function(btn)
             {
                if (btn.toLowerCase() == 'ok')
@@ -450,6 +450,7 @@ Ext.define('Genesis.controller.ControllerBase',
             {
                title : 'Network Error',
                message : me.lostNetworkConnectionMsg,
+               buttons : ['Dismiss'],
                callback : function()
                {
                   offlineDialogShown = false;
@@ -863,7 +864,7 @@ Ext.define('Genesis.controller.ControllerBase',
          frequency : 250
       });
    },
-   getLocalID : function(success, fail)
+   getLocalID : function(success, fail, retryFn)
    {
       var me = this, c = Genesis.constants, viewport = me.getViewPortCntlr();
       var task, taskWait = false;
@@ -888,7 +889,8 @@ Ext.define('Genesis.controller.ControllerBase',
             Ext.device.Notification.show(
             {
                title : 'Local Identity',
-               message : "No ID Found! ErrorCode(" + Ext.encode(error) + ")"
+               message : "No ID Found! ErrorCode(" + Ext.encode(error) + ")",
+               buttons : ['Dismiss']
             });
             me.self.playSoundFile(viewport.sound_files['nfcError']);
             console.log('Error Code[' + Ext.encode(error) + ']');
@@ -917,7 +919,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   }
                   else
                   {
-                     scan();
+                     Ext.defer(retryFn, 1);
                   }
                }
             });
@@ -944,7 +946,10 @@ Ext.define('Genesis.controller.ControllerBase',
          }
          window.plugins.proximityID.stop();
          //clearInterval(atask);
-         clearInterval(task);
+         if (task)
+         {
+            clearInterval(task);
+         }
       }
       //create the delayed task instance with our callback
       /*
@@ -959,28 +964,30 @@ Ext.define('Genesis.controller.ControllerBase',
        */
       window.plugins.proximityID.send(function(result)
       {
-         task = window.setInterval(function()
-         {
-            cancel();
-            window.plugins.proximityID.preLoadSend();
-            Ext.device.Notification.show(
-            {
-               title : 'Local Identity',
-               message : "No Peers were discovered ...",
-               buttons : ['Try Again', 'Cancel'],
-               callback : function(btn)
-               {
-                  if (btn.toLowerCase() != 'try again')
-                  {
-                     fail();
-                  }
-                  else
-                  {
-                     Ext.defer(me.broadcastLocalID, 1, me, [success, fail]);
-                  }
-               }
-            });
-         }, c.proximityTxTimeout);
+         /*
+          task = window.setInterval(function()
+          {
+          cancel();
+          window.plugins.proximityID.preLoadSend();
+          Ext.device.Notification.show(
+          {
+          title : 'Local Identity',
+          message : "No Peers were discovered ...",
+          buttons : ['Try Again', 'Cancel'],
+          callback : function(btn)
+          {
+          if (btn.toLowerCase() != 'try again')
+          {
+          fail();
+          }
+          else
+          {
+          Ext.defer(me.broadcastLocalID, 1, me, [success, fail]);
+          }
+          }
+          });
+          }, c.proximityTxTimeout);
+          */
          console.log("ProximityID : Broacasting Local Identity ...");
          success(Genesis.fn.processSendLocalID(result, cancel));
       }, function(error)
@@ -1178,6 +1185,7 @@ Ext.define('Genesis.controller.ControllerBase',
                {
                   title : 'Timeout Error',
                   message : me.geoLocationTimeoutErrorMsg,
+                  buttons : ['Dismiss'],
                   callback : function()
                   {
                      me.fireEvent('locationupdate', position);
@@ -1206,6 +1214,7 @@ Ext.define('Genesis.controller.ControllerBase',
                   {
                      title : 'Location Services',
                      message : me.geoLocationUnavailableMsg,
+                     buttons : ['Dismiss'],
                      callback : function()
                      {
                         me.fireEvent('locationupdate', position);

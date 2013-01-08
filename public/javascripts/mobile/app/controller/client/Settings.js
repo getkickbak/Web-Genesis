@@ -85,7 +85,8 @@ Ext.define('Genesis.controller.client.Settings',
                Ext.device.Notification.show(
                {
                   title : 'Facebook Connect',
-                  message : me.fbLoggedInIdentityMsg(params['email'])
+                  message : me.fbLoggedInIdentityMsg(params['email']),
+                  buttons : ['OK']
                });
             }
          }, true);

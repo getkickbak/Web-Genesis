@@ -100,7 +100,8 @@ function initPushwoosh()
                Ext.device.Notification.show(
                {
                   title : 'Push Notification Alert',
-                  message : title
+                  message : title,
+                  buttons : ['OK']
                });
                console.warn('push notifcation - userData [' + JSON.stringify(userData) + ']');
             }

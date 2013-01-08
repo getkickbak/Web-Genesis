@@ -426,7 +426,8 @@ Ext.define('Genesis.controller.client.Merchants',
          Ext.device.Notification.show(
          {
             title : 'Rewards',
-            message : me.checkinFirstMsg
+            message : me.checkinFirstMsg,
+            buttons : ['Dismiss']
          });
          return;
       }

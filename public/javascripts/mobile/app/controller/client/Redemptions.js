@@ -1,6 +1,8 @@
 Ext.define('Genesis.controller.client.Redemptions',
 {
    extend : 'Genesis.controller.RewardRedemptionsBase',
+   mixins : ['Genesis.controller.client.mixin.RedeemBase'],
+   requires : ['Ext.data.Store', 'Genesis.view.client.Redemptions'],
    inheritableStatics :
    {
    },

@@ -254,7 +254,6 @@ Ext.define('Genesis.controller.client.Challenges',
                }
                navigator.camera.cleanup(Ext.emptyFn, Ext.emptyFn);
                console.debug("Photo Cleanup Complete.");
-               
                delete me.imageURI;
             }, function(error)
             {
@@ -264,7 +263,9 @@ Ext.define('Genesis.controller.client.Challenges',
                Ext.device.Notification.show(
                {
                   title : 'Error',
-                  message : me.photoTakenFailMsg(error.message)
+                  message : me.photoTakenFailMsg(error.message),
+                  buttons : ['Dismiss']
+
                });
                delete me.imageURI;
             }, options);
@@ -280,7 +281,8 @@ Ext.define('Genesis.controller.client.Challenges',
              Ext.device.Notification.show(
              {
              title : 'Error',
-             message : "Cannot upload photo in Non-Native Mode"
+             message : "Cannot upload photo in Non-Native Mode",
+             buttons : ['Dismiss']
              });
              */
          }
@@ -305,7 +307,8 @@ Ext.define('Genesis.controller.client.Challenges',
                   Ext.device.Notification.show(
                   {
                      title : 'Email Error',
-                     message : me.referralFailedMsg
+                     message : me.referralFailedMsg,
+                     buttons : ['Dismiss']
                   });
                   break;
                }
@@ -314,7 +317,8 @@ Ext.define('Genesis.controller.client.Challenges',
                   Ext.device.Notification.show(
                   {
                      title : 'Email Saved',
-                     message : me.referralSavedMsg
+                     message : me.referralSavedMsg,
+                     buttons : ['Dismiss']
                   });
                   break;
                }
@@ -323,7 +327,8 @@ Ext.define('Genesis.controller.client.Challenges',
                   Ext.device.Notification.show(
                   {
                      title : 'Email Sent!',
-                     message : me.sendReferralSuccessMsg()
+                     message : me.sendReferralSuccessMsg(),
+                     buttons : ['OK']
                   });
                   break;
                }
@@ -362,7 +367,8 @@ Ext.define('Genesis.controller.client.Challenges',
             Ext.device.Notification.show(
             {
                title : 'Email Sent!',
-               message : me.sendReferralSuccessMsg()
+               message : me.sendReferralSuccessMsg(),
+               buttons : ['OK']
             });
          }, function()
          {
@@ -371,7 +377,8 @@ Ext.define('Genesis.controller.client.Challenges',
             Ext.device.Notification.show(
             {
                title : 'Email Error',
-               message : me.referralFailedMsg
+               message : me.referralFailedMsg,
+               buttons : ['Dismiss']
             });
          });
       }, function(error)
@@ -462,7 +469,8 @@ Ext.define('Genesis.controller.client.Challenges',
              Ext.device.Notification.show(
              {
              title : 'Error',
-             message : me.noPtsXferMsg()
+             message : me.noPtsXferMsg(),
+             buttons : ['Dismiss']
              });
              }
              */
@@ -496,7 +504,8 @@ Ext.define('Genesis.controller.client.Challenges',
                      Ext.device.Notification.show(
                      {
                         title : 'Refer A Friend',
-                        message : me.referralInstructionMsg
+                        message : me.referralInstructionMsg,
+                        buttons : ['OK']
                      });
                      break;
                   }
@@ -554,7 +563,8 @@ Ext.define('Genesis.controller.client.Challenges',
                Ext.device.Notification.show(
                {
                   title : 'Location Services',
-                  message : me.geoLocationErrorMsg()
+                  message : me.geoLocationErrorMsg(),
+                  buttons : ['Dismiss']
                });
                return;
             }
@@ -594,7 +604,8 @@ Ext.define('Genesis.controller.client.Challenges',
          Ext.device.Notification.show(
          {
             title : 'Error',
-            message : me.noCodeScannedMsg
+            message : me.noCodeScannedMsg,
+            buttons : ['Dismiss']
          });
          me.referralCbFn = null;
       }
@@ -638,6 +649,7 @@ Ext.define('Genesis.controller.client.Challenges',
                {
                   title : 'Successful Referral!',
                   message : me.recvReferralb4VisitMsg(customer.getMerchant().get('name')),
+                  buttons : ['OK'],
                   callback : function()
                   {
                      console.debug("Opening Merchant Account ...");
@@ -655,7 +667,8 @@ Ext.define('Genesis.controller.client.Challenges',
             Ext.device.Notification.show(
             {
                title : 'VIP Challenge',
-               message : me.getConsolationMsg(metaData['message'])
+               message : me.getConsolationMsg(metaData['message']),
+               buttons : ['OK']
             });
             me.fireEvent('updatemetadata', metaData);
             break;
@@ -668,7 +681,8 @@ Ext.define('Genesis.controller.client.Challenges',
                title : 'Completed Challenge!',
                message : ((reward_info['points'] > 0) ? //
                me.getPointsMsg(reward_info['points'], account_info['points']) : //
-               me.getConsolationMsg(metaData['message']))
+               me.getConsolationMsg(metaData['message'])),
+               buttons : ['OK']
             });
 
             me.fireEvent('updatemetadata', metaData);
@@ -729,7 +743,8 @@ Ext.define('Genesis.controller.client.Challenges',
                   title : 'Upload Complete',
                   message : ((reward_info['points'] > 0) ? //
                   me.photoUploadSuccessMsg(reward_info['points']) : //
-                  me.getConsolationMsg(metaData2['message']))
+                  me.getConsolationMsg(metaData2['message'])),
+                  buttons : ['OK']
                });
             }
             else
@@ -812,7 +827,8 @@ Ext.define('Genesis.controller.client.Challenges',
                   Ext.device.Notification.show(
                   {
                      title : 'Refer A Friend',
-                     message : me.customerFirstMsg
+                     message : me.customerFirstMsg,
+                     buttons : ['Dismiss']
                   });
                   return;
                }
@@ -825,7 +841,8 @@ Ext.define('Genesis.controller.client.Challenges',
                   Ext.device.Notification.show(
                   {
                      title : 'Error',
-                     message : me.checkinFirstMsg
+                     message : me.checkinFirstMsg,
+                     buttons : ['Dismiss']
                   });
                   return;
                }
@@ -957,7 +974,8 @@ Ext.define('Genesis.controller.client.Challenges',
              Ext.device.Notification.show(
              {
              title : 'Rewards',
-             message : me.cannotDetermineLocationMsg
+             message : me.cannotDetermineLocationMsg,
+             buttons : ['Dismiss']
              });
              return;
              }
@@ -1059,19 +1077,20 @@ Ext.define('Genesis.controller.client.Challenges',
                Ext.Viewport.setMasked(
                {
                   xtype : 'loadmask',
-                  message : me.lookingForMerchantDeviceMsg,
-                  listeners :
-                  {
-                     tap : function()
-                     {
-                        Ext.Ajax.abort();
-                        if (identifiers)
-                        {
-                           identifiers['cancelFn']();
-                        }
-                        Ext.Viewport.setMasked(null);
-                     }
-                  }
+                  message : me.lookingForMerchantDeviceMsg
+                  /*,listeners :
+                   {
+                   tap : function()
+                   {
+                   Ext.Ajax.abort();
+                   if (identifiers)
+                   {
+                   identifiers['cancelFn']();
+                   }
+                   Ext.Viewport.setMasked(null);
+                   }
+                   }
+                   */
                });
                console.log("Broadcast underway ...");
                me.challengeItemFn();
@@ -1134,7 +1153,8 @@ Ext.define('Genesis.controller.client.Challenges',
          Ext.device.Notification.show(
          {
             title : 'Referral Challenge',
-            message : me.visitFirstMsg
+            message : me.visitFirstMsg,
+            buttons : ['OK']
          });
       }
       return false;
@@ -1161,7 +1181,8 @@ Ext.define('Genesis.controller.client.Challenges',
       Ext.device.Notification.show(
       {
          title : 'Error',
-         message : me.photoTakenFailMsg(message)
+         message : me.photoTakenFailMsg(message),
+         buttons : ['Dismiss']
       });
       navigator.camera.cleanup(Ext.emptyFn, Ext.emptyFn);
       console.debug("Photo Cleanup Complete.")
@@ -1251,6 +1272,7 @@ Ext.define('Genesis.controller.client.Challenges',
          {
             title : 'Error',
             message : me.photoUploadFailValidationMsg,
+            buttons : ['Dismiss'],
             callback : function()
             {
                textareafield.focus();

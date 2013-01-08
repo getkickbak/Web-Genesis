@@ -150,6 +150,7 @@ Ext.define('Genesis.controller.client.Viewport',
                {
                   title : 'Error',
                   message : me.missingVenueInfoMsg(operation.getError()),
+                  buttons : ['Dismiss'],
                   callback : function()
                   {
                      proxy.supressErrorsPopup = false;
@@ -232,7 +233,8 @@ Ext.define('Genesis.controller.client.Viewport',
                Ext.device.Notification.show(
                {
                   title : 'Facebook Connect',
-                  message : me.fbShareSuccessMsg
+                  message : me.fbShareSuccessMsg,
+                  buttons : ['OK']
                });
             }
          });

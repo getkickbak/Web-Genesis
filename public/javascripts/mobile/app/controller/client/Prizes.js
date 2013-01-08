@@ -1,6 +1,7 @@
 Ext.define('Genesis.controller.client.Prizes',
 {
    extend : 'Genesis.controller.PrizeRedemptionsBase',
+   mixins : ['Genesis.controller.client.mixin.RedeemBase'],
    requires : ['Ext.data.Store', 'Genesis.view.client.Prizes', 'Genesis.view.client.Badges'],
    inheritableStatics :
    {
@@ -368,6 +369,7 @@ Ext.define('Genesis.controller.client.Prizes',
          {
             title : 'Badge Promotion Alert!',
             message : me.getBadgePrizeMsg(info['badge_prize_points'], badge),
+            buttons : ['OK'],
             callback : function()
             {
                var photoUrl =
@@ -443,6 +445,7 @@ Ext.define('Genesis.controller.client.Prizes',
          {
             title : me.scanPlayTitle,
             message : message,
+            buttons : ['OK'],
             callback : Ext.bind(eligiblePrizeCallback, me, [0x10, viewsPopLength])
          });
 

@@ -103,6 +103,7 @@ Ext.define('Genesis.controller.client.Rewards',
       {
          title : 'VIP Challenge',
          message : this.getVipMsg(points),
+         buttons : ['OK'],
          callback : callback
       });
    },
@@ -153,6 +154,7 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             title : 'Error',
             message : me.missingEarnPtsCodeMsg,
+            buttons : ['Dismiss'],
             callback : function()
             {
                //me.popView();
@@ -238,7 +240,8 @@ Ext.define('Genesis.controller.client.Rewards',
          Ext.device.Notification.show(
          {
             title : 'Signup Promotion Alert!',
-            message : me.signupPromotionMsg(points)
+            message : me.signupPromotionMsg(points),
+            buttons : ['OK']
          });
       }
 
@@ -260,6 +263,7 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             title : 'Rewards',
             message : me.getPointsMsg(info),
+            buttons : ['OK'],
             callback : function()
             {
                me.fireEvent('triggerCallbacksChain');
@@ -285,7 +289,8 @@ Ext.define('Genesis.controller.client.Rewards',
          Ext.device.Notification.show(
          {
             title : 'Referral Challenge',
-            message : me.getReferralMsg(points)
+            message : me.getReferralMsg(points),
+            buttons : ['OK']
          });
       }
 
@@ -379,7 +384,8 @@ Ext.define('Genesis.controller.client.Rewards',
                Ext.device.Notification.show(
                {
                   title : 'Rewards',
-                  message : me.cannotDetermineLocationMsg
+                  message : me.cannotDetermineLocationMsg,
+                  buttons : ['Dismiss']
                });
                return;
             }
@@ -457,19 +463,20 @@ Ext.define('Genesis.controller.client.Rewards',
             Ext.Viewport.setMasked(
             {
                xtype : 'loadmask',
-               message : me.lookingForMerchantDeviceMsg,
-               listeners :
-               {
-                  tap : function()
-                  {
-                     Ext.Ajax.abort();
-                     if (identifiers)
-                     {
-                        identifiers['cancelFn']();
-                     }
-                     Ext.Viewport.setMasked(null);
-                  }
-               }
+               message : me.lookingForMerchantDeviceMsg
+               /*,listeners :
+                {
+                tap : function()
+                {
+                Ext.Ajax.abort();
+                if (identifiers)
+                {
+                identifiers['cancelFn']();
+                }
+                Ext.Viewport.setMasked(null);
+                }
+                }
+                */
             });
             console.log("Broadcast underway ...");
             if (notUseGeolocation || viewport.getLocationPosition())
@@ -495,7 +502,8 @@ Ext.define('Genesis.controller.client.Rewards',
          Ext.device.Notification.show(
          {
             title : 'Error',
-            message : allowedMsg
+            message : allowedMsg,
+            buttons : ['Dismiss']
          });
          return;
       }

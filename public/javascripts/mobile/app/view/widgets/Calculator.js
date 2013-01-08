@@ -37,11 +37,11 @@ Ext.define('Genesis.view.widgets.Calculator',
          docked : 'top',
          xtype : 'textfield',
          name : 'amount',
-         //cls : 'rewardsCalculator',
+         value : '',
          clearIcon : false,
          placeHolder : ' ',
          readOnly : true,
-         required : true,
+         required : true
       },
       {
          xtype : 'container',

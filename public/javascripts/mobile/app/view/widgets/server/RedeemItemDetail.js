@@ -83,14 +83,15 @@ Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
                   flex : 1
                },
                items : [
-               {
+               /*{
                   tag : 'redeemPtsTag',
                   text : 'TAG it',
                   ui : 'orange-large'
                },
+               */
                {
                   tag : 'merchantRedeem',
-                  text : 'Swipe!',
+                  text : 'GO!',
                   ui : 'orange-large'
                }]
             }]
@@ -111,17 +112,20 @@ Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
 
             }]
          }]
+      }],
+      listeners : [
+      {
+         element : 'element',
+         delegate : "div.itemPhoto",
+         event : "tap",
+         fn : "onRedeemItemTap"
       }]
    },
    onRedeemItemTap : function(b, e, eOpts)
    {
-      var me = this, viewport = _application.getController(((!merchantMode) ? 'client' : 'server') + '.Viewport');
+      var me = this, viewport = _application.getController('server' + '.Viewport');
       viewport.self.playSoundFile(viewport.sound_files['clickSound']);
       me.fireEvent('redeemItemTap', null);
-   },
-   cleanView : function()
-   {
-      this.callParent(arguments);
    },
    showView : function()
    {

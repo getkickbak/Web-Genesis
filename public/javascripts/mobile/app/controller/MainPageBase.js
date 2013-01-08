@@ -117,7 +117,8 @@ Ext.define('Genesis.controller.MainPageBase',
          Ext.device.Notification.show(
          {
             title : 'Error',
-            message : msg
+            message : msg,
+            buttons : ['Dismiss']
          });
       }
       return false;

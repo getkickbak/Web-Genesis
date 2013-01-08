@@ -616,7 +616,8 @@ Ext.define('Genesis.controller.client.MainPage',
          Ext.device.Notification.show(
          {
             title : 'Oops',
-            message : message
+            message : message,
+            buttons : ['Dismiss']
          });
       }
       else
@@ -737,7 +738,8 @@ Ext.define('Genesis.controller.client.MainPage',
          Ext.device.Notification.show(
          {
             title : 'Oops',
-            message : this.signInFailMsg(label + ' ' + field.getMessage())
+            message : this.signInFailMsg(label + ' ' + field.getMessage()),
+            buttons : ['Dismiss']
          });
       }
       else
@@ -778,7 +780,8 @@ Ext.define('Genesis.controller.client.MainPage',
                Ext.device.Notification.show(
                {
                   title : 'Password Reset',
-                  message : me.passwdResetSuccessMsg()
+                  message : me.passwdResetSuccessMsg(),
+                  buttons : ['OK']
                });
                me.popView();
             }
@@ -807,7 +810,8 @@ Ext.define('Genesis.controller.client.MainPage',
                   Ext.device.Notification.show(
                   {
                      title : 'Oops',
-                     message : me.passwdResetFailMsg(label + ' ' + field.getMessage())
+                     message : me.passwdResetFailMsg(label + ' ' + field.getMessage()),
+                     buttons : ['Dismiss']
                   });
                   resetPassword = false;
                }
@@ -868,7 +872,8 @@ Ext.define('Genesis.controller.client.MainPage',
                Ext.device.Notification.show(
                {
                   title : 'Password Reset',
-                  message : me.passwdChangeSuccessMsg
+                  message : me.passwdChangeSuccessMsg,
+                  buttons : ['OK']
                });
             }
          }
@@ -890,7 +895,8 @@ Ext.define('Genesis.controller.client.MainPage',
          Ext.device.Notification.show(
          {
             title : 'Oops',
-            message : message
+            message : message,
+            buttons : ['Dismiss']
          });
       }
       else
