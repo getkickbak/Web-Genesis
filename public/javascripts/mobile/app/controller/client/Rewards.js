@@ -689,12 +689,15 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    isOpenAllowed : function()
    {
-      var viewport = this.getViewPortCntlr();
-      var cvenue = viewport.getCheckinInfo().venue;
-      var venue = viewport.getVenue();
+      return true;
+      /*
+       var viewport = this.getViewPortCntlr();
+       var cvenue = viewport.getCheckinInfo().venue;
+       var venue = viewport.getVenue();
 
-      // VenueId can be found after the User checks into a venue
-      //return ((this.getViewPortCntlr().getVenue()) ? true : this.checkinFirstMsg);
-      return ((cvenue && venue && (cvenue.getId() == venue.getId())) ? true : this.checkinFirstMsg);
+       // VenueId can be found after the User checks into a venue
+       //return ((this.getViewPortCntlr().getVenue()) ? true : this.checkinFirstMsg);
+       return ((cvenue && venue && (cvenue.getId() == venue.getId())) ? true : this.checkinFirstMsg);
+       */
    }
 });
