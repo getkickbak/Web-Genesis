@@ -164,6 +164,7 @@ class Merchant
     return merchant
   end
 
+=begin
   def self.cache_key(id)
     "Merchant-#{id}"    
   end
@@ -175,12 +176,12 @@ class Merchant
     end
   end
   
-  def save(context = :default)
+  def save(options=nil)
     super  
     Rails.cache.write(cache_key, self)
   end
   
-  def save!(context = :default)
+  def save!
     super
     Rails.cache.write(cache_key, self)  
   end
@@ -188,6 +189,7 @@ class Merchant
   def cache_key
     "Merchant-#{self.id}"
   end
+=end
 
   def mutex_key
     "MerchantMutex-#{self.id}"
