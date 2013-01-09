@@ -22,6 +22,15 @@ Ext.define('Genesis.controller.client.MainPage',
       },
       refs :
       {
+         // Main Page
+         main :
+         {
+            selector : 'clientmainpageview',
+            autoCreate : true,
+            xtype : 'clientmainpageview'
+         },
+         mainCarousel : 'clientmainpageview',
+         infoBtn : 'button[tag=info]',
          // Login Page
          login :
          {
@@ -53,9 +62,9 @@ Ext.define('Genesis.controller.client.MainPage',
             autoCreate : true,
             xtype : 'createaccountpageview'
          },
-         mainCarousel : 'mainpageview',
-         shortcutTabBar : 'mainpageview tabbar[tag=navigationBarBottom]',
-         prizesBtn : 'mainpageview tabbar[tag=navigationBarBottom] button[tag=prizesSC]'
+         mainCarousel : 'clientmainpageview',
+         shortcutTabBar : 'clientmainpageview tabbar[tag=navigationBarBottom]',
+         prizesBtn : 'clientmainpageview tabbar[tag=navigationBarBottom] button[tag=prizesSC]'
       },
       control :
       {

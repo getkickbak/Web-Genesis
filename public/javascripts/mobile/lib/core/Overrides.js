@@ -36,7 +36,7 @@ Genesis.constants =
    {
       var ratio = 1.14;
 
-      if (Ext.os.is('Tablet'))
+      if (merchantMode && Ext.os.is('Tablet'))
       {
          ratio = 2 * ratio;
       }
@@ -97,7 +97,7 @@ Genesis.constants =
       }
       this._iconPath = this.themeName + this._iconPath;
 
-      if (Ext.os.is('Tablet'))
+      if (merchantMode && Ext.os.is('Tablet'))
       {
          this._iconSize = 2 * this._iconSize;
          // On tablets, we need to magnify the content!

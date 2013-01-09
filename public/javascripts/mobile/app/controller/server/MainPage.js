@@ -4,7 +4,18 @@ Ext.define('Genesis.controller.server.MainPage',
    xtype : 'mainPageCntlr',
    config :
    {
-      models : ['frontend.MainPage', 'CustomerReward']
+      models : ['frontend.MainPage', 'CustomerReward'],
+      refs :
+      {
+         // Main Page
+         main :
+         {
+            selector : 'servermainpageview',
+            autoCreate : true,
+            xtype : 'servermainpageview'
+         },
+         mainCarousel : 'servermainpageview'
+      }
    },
    initCallback : function()
    {
@@ -50,7 +61,6 @@ Ext.define('Genesis.controller.server.MainPage',
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      me.getInfoBtn()['hide']();
       me.getViewPortCntlr().setActiveController(me);
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)

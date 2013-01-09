@@ -25,6 +25,7 @@
       href="resources/css/android-mdpi.css">
       -->
       <link rel="stylesheet" href="resources/css/iphone.css" type="text/css">
+      <link media="screen and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="stylesheet" href="resources/css/iphone5.css" type="text/css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
       directory and include it here -->
       <script type="text/javascript" src="lib/core/qrcode.js"></script>
@@ -37,7 +38,7 @@
       <!--
       Phone Gap Libs
       -->
-      <script type="text/javascript" src="lib/cordova-2.2.0.android.js"></script>
+      <script type="text/javascript" src="lib/cordova-2.2.0.ios.js"></script>
       <script type="text/javascript">
          var backBtnCallbackListFn = [];
          var phoneGapAvailable = false;
@@ -121,9 +122,10 @@
       <script type="text/javascript" src="app/view/client/CheckinExplore.js"></script>
       <script type="text/javascript" src="app/view/Viewport.js"></script>
       <script type="text/javascript" src="app/view/client/ChallengePage.js"></script>
-      <script type="text/javascript" src="app/view/MainPage.js"></script>
+      <script type="text/javascript" src="app/view/MainPageBase.js"></script>
       <script type="text/javascript" src="app/view/LoginPage.js"></script>
       <script type="text/javascript" src="app/view/RedeemBase.js"></script>
+      <script type="text/javascript" src="app/view/client/MainPage.js"></script>
       <script type="text/javascript" src="app/view/client/Badges.js"></script>
       <script type="text/javascript" src="app/view/client/JackpotWinners.js"></script>
       <script type="text/javascript" src="app/view/client/MerchantAccount.js"></script>
@@ -200,7 +202,7 @@
                profiles : ['Desktop'],
                views : ['Document', 'client.UploadPhotosPage', 'client.ChallengePage', 'client.Rewards', 'client.Redemptions', //
                'client.AccountsTransfer', 'client.SettingsPage', //
-               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
+               'client.CheckinExplore', 'LoginPage', 'SignInPage', 'client.MainPage', 'widgets.client.RedeemItemDetail', 'client.Badges', 'client.JackpotWinners', 'client.MerchantAccount',
                // //
                'client.MerchantDetails', 'client.Accounts', 'client.Prizes', 'Viewport'],
                controllers : ['client.Challenges', 'client.Rewards', 'client.Redemptions', //

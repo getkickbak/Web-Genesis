@@ -1,11 +1,9 @@
 @import '../global';
 @import '../utility';
 
+//------------------------------------------------------------------------------
+// Mask
+//------------------------------------------------------------------------------
 .x-mask {
-   .x-mask-message {
-      min-width:13em;
-   }
-   .x-loading-spinner-outer {
-      min-width:13em;
-   }
+   background:rgba($BlueMask, 0.4) center center no-repeat;
 }

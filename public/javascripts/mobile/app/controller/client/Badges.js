@@ -117,7 +117,6 @@ Ext.define('Genesis.controller.client.Badges',
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      //this.getInfoBtn().hide();
    },
    onBadgeDescCreateView : function(activeItem)
    {

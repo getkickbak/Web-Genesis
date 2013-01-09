@@ -17,15 +17,6 @@ Ext.define('Genesis.controller.MainPageBase',
       },
       refs :
       {
-         // Main Page
-         main :
-         {
-            selector : 'mainpageview',
-            autoCreate : true,
-            xtype : 'mainpageview'
-         },
-         mainCarousel : 'mainpageview',
-         infoBtn : 'button[tag=info]'
       },
       control :
       {
