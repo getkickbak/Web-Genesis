@@ -162,6 +162,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
             jsonData :
             {
             },
+            doNotRetryAttempt : true,
             params : Ext.apply(params, p),
             callback : function(records, operation)
             {

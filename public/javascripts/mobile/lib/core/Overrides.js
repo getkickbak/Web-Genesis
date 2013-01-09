@@ -815,7 +815,7 @@ Ext.define('Genesis.data.proxy.Server',
       var app = _application;
       var viewport = app.getController(((!merchantMode) ? 'client' : 'server') + '.Viewport');
 
-      if (response.timedout || (response.status == 0) && (!request.aborted))
+      if (response.timedout || ((response.status == 0) && (!request.aborted) && (!request.options.doNotRetryAttempt)))
       {
          Ext.device.Notification.show(
          {

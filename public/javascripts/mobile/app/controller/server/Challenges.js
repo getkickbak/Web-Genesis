@@ -180,6 +180,7 @@ Ext.define('Genesis.controller.server.Challenges',
             jsonData :
             {
             },
+            doNotRetryAttempt : true,
             params : params,
             callback : function(record, operation)
             {

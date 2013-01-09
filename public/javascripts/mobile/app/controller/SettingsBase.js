@@ -72,7 +72,7 @@ Ext.define('Genesis.controller.SettingsBase',
             url : Ext.Loader.getPath("Genesis") + '/../' + 'term_of_service.htm',
             callback : function(option, success, response)
             {
-               if (success)
+               if (success || (response.status == 0))
                {
                   responses[0] = response;
                   response.cardConfig =
@@ -99,7 +99,7 @@ Ext.define('Genesis.controller.SettingsBase',
             url : Ext.Loader.getPath("Genesis") + '/../' + 'program_rules.htm',
             callback : function(option, success, response)
             {
-               if (success)
+               if (success || (response.status == 0))
                {
                   responses[1] = response;
                   response.cardConfig =
@@ -141,7 +141,7 @@ Ext.define('Genesis.controller.SettingsBase',
             url : Ext.Loader.getPath("Genesis") + '/../' + 'privacy.htm',
             callback : function(option, success, response)
             {
-               if (success)
+               if (success || (response.status == 0))
                {
                   page.setHtml(response.responseText);
                   me.redirectTo('privacy');
@@ -176,7 +176,7 @@ Ext.define('Genesis.controller.SettingsBase',
             url : Ext.Loader.getPath("Genesis") + '/../' + 'about_us.htm',
             callback : function(option, success, response)
             {
-               if (success)
+               if (success || (response.status == 0))
                {
                   page.setHtml(response.responseText);
                   me.redirectTo('aboutUs');

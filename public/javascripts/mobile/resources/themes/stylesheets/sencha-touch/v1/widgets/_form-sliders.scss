@@ -17,6 +17,8 @@
       @include background-gradient($GreyStart, 'recessed');
    }
    .x-toggle {
+      position:absolute;
+      right : $panelGap;
       width: $form-thumb-size * 2.5;
       border: 1px solid darken($GreyEnd, 15%);
       @include background-gradient($GreyStart, 'recessed');

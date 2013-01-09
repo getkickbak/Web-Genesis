@@ -416,6 +416,7 @@ Ext.define('Genesis.controller.client.Rewards',
             jsonData :
             {
             },
+            doNotRetryAttempt : true,
             params : params,
             callback : function(record, operation)
             {
