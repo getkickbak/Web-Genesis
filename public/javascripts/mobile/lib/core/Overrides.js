@@ -8,7 +8,7 @@ Genesis =
 Genesis.constants =
 {
    host : 'http://192.168.0.52:3000',
-   host : 'http://76.10.173.153:80',
+   //host : 'http://76.10.173.153:80',
    //host : 'http://www.getkickbak.com',
    //
    // Proximity ID
@@ -105,7 +105,8 @@ Genesis.constants =
    },
    addCRLF : function()
    {
-      return ((!Genesis.fn.isNative()) ? '<br/>' : '\n');
+      //return ((!Genesis.fn.isNative()) ? '<br/>' : '\n');
+      return ('<br/>');
    },
    getIconPath : function(type, name, remote)
    {
@@ -1159,6 +1160,16 @@ Ext.define('Genesis.data.Connection',
    }
 });
 
+Ext.define('Genesis.field.Text',
+{
+   override : 'Ext.field.Text',
+   updateReadOnly : function(newReadOnly)
+   {
+      this[(newReadOnly)?'addCls' : 'removeCls']('readOnly');
+      this.callParent(arguments);
+   }
+});
+
 // **************************************************************************
 // Ext.field.Select
 // **************************************************************************
@@ -1305,6 +1316,18 @@ Ext.define('Genesis.MessageBox',
             me.add(me.buttonsToolbar);
          }
       }
+   },
+   // @private
+   // pass `fn` config to show method instead
+   onClick : function(button)
+   {
+      if (button && this._hideCallbackFn)
+      {
+         this.getModal().un('hide', this._hideCallbackFn, Ext.device.Notification);
+         delete this._hideCallbackFn;
+      }
+
+      this.callParent(arguments);
    }
 });
 // **************************************************************************
@@ -1475,11 +1498,13 @@ Ext.define('Ext.device.notification.PhoneGap',
             config.callback.apply(config.scope, [itemId]);
          }
       };
-      msg.getModal().on('hide', function()
+      msg._hideCallbackFn = function()
       {
          var button = buttons[buttons.length - 1];
          callback((!button.ignoreOnHide) ? button.itemId : null);
-      }, this);
+      }
+
+      msg.getModal().on('hide', msg._hideCallbackFn, this);
 
       msg.show(
       {

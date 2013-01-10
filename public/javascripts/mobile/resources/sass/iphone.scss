@@ -77,7 +77,7 @@ $badgePoints-bg-gradient: $base-gradient;
 @include sencha-panel;
 @include sencha-buttons;
 @include sencha-sheet;
-//@include sencha-picker;
+@include sencha-picker;
 @include sencha-tabs;
 @include sencha-toolbar;
 //@include sencha-toolbar-forms;

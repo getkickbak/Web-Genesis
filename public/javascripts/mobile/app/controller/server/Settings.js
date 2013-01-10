@@ -50,6 +50,7 @@ Ext.define('Genesis.controller.server.Settings',
       }
    },
    _initializing : true,
+   writeTagEnabled : true,
    proceedToUpdateLicenseMsg : 'Please confirm to proceed with License Update',
    noLicenseKeyScannedMsg : 'No License Key was found!',
    licenseKeySuccessMsg : function()
@@ -131,35 +132,31 @@ Ext.define('Genesis.controller.server.Settings',
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      me.getMerchantDevice().setValue(Genesis.fn.getPrivKey('venue'));
-      /*
-       if (Genesis.fn.isNative())
-       {
-       nfc.addTagDiscoveredListener(me.writeTag, function()
-       {
-       console.log("Listening for NDEF tags");
-       }, function()
-       {
-       console.log("Failed to Listen for NDEF tags");
-       });
-       }
-       */
+      me.getMerchantDevice().setLabel(Genesis.fn.getPrivKey('venue'));
+      if (Genesis.fn.isNative() && me.writeTagEnabled)
+      {
+         nfc.addTagDiscoveredListener(me.writeTag, function()
+         {
+            console.log("Listening for NDEF tags");
+         }, function()
+         {
+            console.log("Failed to Listen for NDEF tags");
+         });
+      }
    },
    onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      /*
-       if (Genesis.fn.isNative())
-       {
-       nfc.removeTagDiscoveredListener(me.writeTag, function()
-       {
-       console.log("Stopped Listening for NDEF tags");
-       }, function()
-       {
-       console.log("Failed to stop Listen for NDEF tags");
-       });
-       }
-       */
+      if (Genesis.fn.isNative() && me.writeTagEnabled)
+      {
+         nfc.removeTagDiscoveredListener(me.writeTag, function()
+         {
+            console.log("Stopped Listening for NDEF tags");
+         }, function()
+         {
+            console.log("Failed to stop Listen for NDEF tags");
+         });
+      }
    },
    // --------------------------------------------------------------------------
    // Page Navigation

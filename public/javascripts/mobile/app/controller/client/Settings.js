@@ -37,6 +37,10 @@ Ext.define('Genesis.controller.client.Settings',
          'clientsettingspageview listfield[name=changepassword]' :
          {
             clearicontap : 'onPasswordChangeTap'
+         },
+         'clientsettingspageview button[tag=accountUpdate]' :
+         {
+            tap : 'onAccountUpdateTap'
          }
       },
       listeners :
@@ -49,6 +53,12 @@ Ext.define('Genesis.controller.client.Settings',
       }
    },
    _initializing : true,
+   accountUpdateSuccessMsg : 'Update Successful',
+   accountUpdateFailedMsg : 'Update Failed',
+   accountValidateFailedMsg : function(msg)
+   {
+      return msg + Genesis.constants.addCRLF() + 'Please with correct syntax.';
+   },
    fbLoggedInIdentityMsg : function(email)
    {
       return 'You\'re logged into Facebook as ' + Genesis.constants.addCRLF() + email;
@@ -180,13 +190,123 @@ Ext.define('Genesis.controller.client.Settings',
 
       console.log("enableFB - " + db['enableFB']);
       me._initializing = true;
+
+      var birthday = ' ', name;
+      var fields = [
+      {
+         field : form.query('datepickerfield[name=birthday]')[0],
+         attr : 'birthday',
+         fn : function(field)
+         {
+            birthday = new Date.parse(db['account'][field.attr]);
+         },
+         fbFn : function(field)
+         {
+            birthday = new Date.parse(db['fbResponse'][field.attr]);
+         }
+      },
+      {
+         field : form.query('textfield[name=name]')[0],
+         attr : 'name',
+         fn : function(field)
+         {
+            name = db['account'][field.attr];
+         },
+         fbFn : function(field)
+         {
+            name = db['fbResponse'][field.attr];
+         }
+      }];
+
+      for (var i = 0; i < fields.length; i++)
+      {
+         var f = fields[i];
+         f.field.setReadOnly(false);
+         if (db['account'][f.attr])
+         {
+            f.fn(f);
+         }
+         else
+         if (db['fbResponse'])
+         {
+            f.fbFn(f);
+            f.field.setReadOnly(true);
+         }
+      }
+
       form.setValues(
       {
+         name : name,
+         birthday : (!birthday || !( birthday instanceof Date)) ? ' ' : birthday,
+         phone : db['account'].phone || null,
          tagid : db['vtagId'] || 'None',
          facebook : (db['enableFB']) ? 1 : 0
       });
       me._initializing = false;
       me.openPage('settings');
+   },
+   onAccountUpdateTap : function(b, e, eOpts)
+   {
+      var me = this, form = me.getSettingsPage();
+      var values = form.getValues(true);
+      var account = Ext.create('Genesis.model.frontend.Account', values);
+      var validateErrors = account.validate();
+
+      if (!validateErrors.isValid())
+      {
+         var field = validateErrors.first();
+         var label = Ext.ComponentQuery.query('field[name='+field.getField()+']')[0].getLabel();
+         var message = me.accountValidateFailedMsg(label + ' ' + field.getMessage());
+         console.log(message);
+         Ext.device.Notification.show(
+         {
+            title : 'Oops',
+            message : message,
+            buttons : ['Dismiss']
+         });
+      }
+      else
+      {
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.establishConnectionMsg
+         });
+         Account['setUpdateAccountUrl']();
+         account.save(
+         {
+            jsonData :
+            {
+            },
+            callback : function(record, operation)
+            {
+               Ext.Viewport.setMasked(null);
+               if (operation.wasSuccessful())
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Account Settings',
+                     message : me.accountUpdateSuccessMsg,
+                     buttons : ['Dismiss']
+                  });
+               }
+               else
+               {
+                  proxy.supressErrorsPopup = true;
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Account Settings',
+                     message : me.accountUpdateFailedMsg,
+                     buttons : ['Dismiss'],
+                     callback : function()
+                     {
+                        proxy.supressErrorsPopup = false;
+                     }
+                  });
+               }
+            }
+         });
+      }
    }
    // --------------------------------------------------------------------------
    // Base Class Overrides

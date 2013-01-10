@@ -50,14 +50,17 @@ Ext.define('Genesis.controller.ViewportBase',
 
       var file = Ext.Loader.getPath("Genesis") + "/store/" + ((!merchantMode) ? 'mainClientPage' : 'mainServerPage') + '.json';
       var path = "";
-      if (Ext.os.is('iOS'))
+      if (( typeof (device) != 'undefined') && device.uuid)
       {
-         path = "";
-      }
-      else
-      if (Ext.os.is('Android'))
-      {
-         path = "file:///android_asset/www/";
+         if (Ext.os.is('iOS'))
+         {
+            path = "";
+         }
+         else
+         if (Ext.os.is('Android'))
+         {
+            path = "file:///android_asset/www/";
+         }
       }
       file = path + file;
 

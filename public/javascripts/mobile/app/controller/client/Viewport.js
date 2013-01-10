@@ -104,6 +104,10 @@ Ext.define('Genesis.controller.client.Viewport',
          'actionsheet button' :
          {
             tap : 'onButtonTap'
+         },
+         'datepicker button' :
+         {
+            tap : 'onButtonTap'
          }
       },
       listeners :

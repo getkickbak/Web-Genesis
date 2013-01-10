@@ -7,7 +7,7 @@
 // Ext.field.Select
 .x-listmark-base {
    & {
-      @include insertion(2em, 2em, $panelTopGap, auto);
+      @include insertion(2em, 2em, (($form-field-height/2)+$panelTopGap)-(2em/2), auto);
       right: ($form-spacing + .1em);
       background: theme_image($theme-path + "/miscicons", "disclose" + ".png") no-repeat center center;
       @include background-size(2em);
@@ -17,7 +17,7 @@
    }
    &.facebook {
       right: ($form-spacing + .5em);
-      @include insertion(1.3em, 1.3em, $panelTopGap, auto);
+      @include insertion(1.3em, 1.3em, (($form-field-height/2)+$panelTopGap)-(1.3em/2), auto);
       background: theme_image($theme-path + "/toolbar", "facebook" + ".png") no-repeat 50% 50%;
       @include background-size(1.3em);
       margin-top: 0;
@@ -59,9 +59,6 @@
 .x-form-fieldset .x-form-label {
   border : none;
 }
-.x-field {
-   background : $Grey;
-}
 .x-label-align-top .x-form-label {
    @include custom-linear-gradient($BlueStart 10%, $BlueEnd 85%, top);
    text-shadow: #000 0 1px 1px;
@@ -75,7 +72,34 @@
    min-height : $form-field-height;
    line-height : $form-field-height;
    span {
-      font-size: inherit;
+      //font-size: inherit;
       font-weight: normal;
+   }
+}
+
+//------------------------------------------------------------------------------
+// Form Field CSS
+//------------------------------------------------------------------------------
+.x-field {
+   background : $Grey;
+   &.x-label-align-left .x-input-el {
+      &, &::-webkit-input-placeholder {
+         text-align:right;
+      }
+   }
+   &.x-field-clearable .x-input-el {
+      padding-right:0;
+   }
+   .x-input-el {
+      &, &::-webkit-input-placeholder {
+         line-height: $form-field-height;
+         padding-right:$form-thumb-size;
+      }
+   }
+}
+
+.readOnly, .x-field:not(.x-field-select) {
+   &:not(.x-field-clearable) .x-component-outer:after {
+     background-color:transparent;
    }
 }

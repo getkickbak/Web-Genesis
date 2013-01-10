@@ -47,7 +47,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    geoLocationTimeoutErrorMsg : 'Cannot locate your current location. Try again or enable permission to do so!',
    geoLocationPermissionErrorMsg : 'No permission to locate current location. Please enable permission to do so!',
-   geoLocationUnavailableMsg : 'We are not able to locate your GPS coordinates',
+   geoLocationUnavailableMsg : 'To better serve you, please turn on your Location Services',
    geoLocationUseLastPositionMsg : 'We are not able to locate your current location. Using your last known GPS Coordinates ...',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
    getVenueInfoMsg : 'Retrieving Venue Information ...',
@@ -643,35 +643,38 @@ Ext.define('Genesis.controller.ControllerBase',
          nstore.setData(news);
       }
    },
-   updateAuthCode : function(authCode, csrfCode, vtagId)
+   updateAuthCode : function(metaData)
    {
-      var me = this, rc = false;
+      var me = this, rc = false, db = Genesis.db.getLocalDB();
+      var authCode = metaData['auth_token'], csrfCode = metaData['csrf_token'], vtagId = metaData['virtual_tag_id'], account = metaData['account'];
 
-      if (authCode)
+      if (!authCode)
+         return rc;
+
+      rc = true;
+
+      if ((authCode != db['auth_code']) || (csrfCode != db['csrf_code']))
       {
-         var db = Genesis.db.getLocalDB();
-         if ((authCode != db['auth_code']) || (csrfCode != db['csrf_code']))
+         db['auth_code'] = authCode;
+         db['csrf_code'] = csrfCode;
+         db['vtagId'] = vtagId;
+         db['account'] = account ||
          {
-            db['auth_code'] = authCode;
-            db['csrf_code'] = csrfCode;
-            db['vtagId'] = vtagId;
-            Genesis.db.setLocalDB(db);
+         };
+         Genesis.db.setLocalDB(db);
 
-            console.debug('\n' + //
-            "auth_code [" + authCode + "]" + "\n" + //
-            "csrf_code [" + csrfCode + "]" + "\n" + //
-            "vtagId [" + vtagId + "]" + "\n" + //
-            "currFbId [" + db['currFbId'] + "]");
+         console.debug('\n' + //
+         "auth_code [" + authCode + "]" + "\n" + //
+         "csrf_code [" + csrfCode + "]" + "\n" + //
+         "vtagId [" + vtagId + "]" + "\n" + //
+         "account [" + Ext.encode(account) + "]" + "\n" + //
+         "currFbId [" + db['currFbId'] + "]");
+      }
 
-         }
-
-         // No Venue Checked-In from previous session
-         if (!db['last_check_in'])
-         {
-            me.redirectTo('checkin');
-         }
-
-         rc = true;
+      // No Venue Checked-In from previous session
+      if (!db['last_check_in'])
+      {
+         me.redirectTo('checkin');
       }
 
       return rc;
@@ -688,7 +691,7 @@ Ext.define('Genesis.controller.ControllerBase',
          //
          // Update Authentication Token
          //
-         if (me.updateAuthCode(metaData['auth_token'], metaData['csrf_token'], metaData['virtual_tag_id']))
+         if (me.updateAuthCode(metaData))
          {
             return;
          }

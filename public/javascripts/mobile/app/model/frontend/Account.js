@@ -5,16 +5,22 @@ Ext.define('Genesis.model.frontend.Account',
    id : 'Account',
    config :
    {
-      fields : ['name', 'username', 'password'],
+      fields : ['name', 'gender', 'birthday', 'phone', 'username', 'password'],
       validations : [
       {
          type : 'format',
          field : 'name',
          matcher : /^([a-zA-Z'-]+\s+){1,4}[a-zA-z'-]+$/
+         //matcher : /[\w]+([\s]+[\w]+){1}+/
       },
       {
          type : 'email',
          field : 'username'
+      },
+      {
+         type : 'format',
+         field : 'phone',
+         matcher : /(?:(?:\+?1\s*(?:[.-]\s*)?)?(?:(\s*([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]‌​)\s*)|([2-9]1[02-9]|[2-9][02-8]1|[2-9][02-8][02-9]))\s*(?:[.-]\s*)?)([2-9]1[02-9]‌​|[2-9][02-9]1|[2-9][02-9]{2})\s*(?:[.-]\s*)?([0-9]{4})/
       },
       {
          type : 'length',
@@ -27,7 +33,9 @@ Ext.define('Genesis.model.frontend.Account',
          disableCaching : false,
          writer :
          {
-            type : 'json'
+            type : 'json',
+            messageProperty : 'message',
+            rootProperty : 'data'
          },
          reader :
          {
@@ -87,6 +95,14 @@ Ext.define('Genesis.model.frontend.Account',
             read : 'POST'
          });
          this.getProxy().setUrl(Genesis.constants.host + '/api/v1/account/register_user_device');
+      },
+      setUpdateAccountUrl : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'POST'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/account/update_account');
       }
    }
 });

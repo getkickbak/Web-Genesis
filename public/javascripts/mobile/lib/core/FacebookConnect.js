@@ -281,11 +281,6 @@ Genesis.fb =
          var fbConnect = function()
          {
             Ext.Viewport.setMasked(null);
-            Ext.Viewport.setMasked(
-            {
-               xtype : 'loadmask',
-               message : me.connectingToFBMsg
-            });
             FB.login(
             {
                permissions : me.fbScope,
@@ -383,6 +378,11 @@ Genesis.fb =
          return;
       }
 
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.connectingToFBMsg
+      });
       try
       {
          date = Date.parse(res['expirationDate']);

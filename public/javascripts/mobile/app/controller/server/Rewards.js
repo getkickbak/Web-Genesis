@@ -90,6 +90,7 @@ Ext.define('Genesis.controller.server.Rewards',
 
       if (precision < 2)
       {
+         console.debug("Ammount = [" + amount + "]");
          Ext.device.Notification.show(
          {
             title : 'Validation Error',
@@ -119,12 +120,12 @@ Ext.define('Genesis.controller.server.Rewards',
       var me = this;
 
       me.getAmount().reset();
-      me.getAmount().getValue();
       if (Genesis.fn.isNative())
       {
          window.plugins.proximityID.stop();
       }
       me.getViewPortCntlr().setActiveController(null);
+      console.debug("Rewards onDeactivate Called. Reset Amount ...");
    },
    onContainerActivate : function(c, value, oldValue, eOpts)
    {
@@ -137,24 +138,24 @@ Ext.define('Genesis.controller.server.Rewards',
          case 'amount' :
          {
             me.getAmount().reset();
-            me.getAmount().blur();
             animation.setReverse(true);
+            console.debug("Rewards ContainerActivate Called. Reset Amount ...");
             break;
          }
          case 'tagId' :
          {
             me.getTagId().reset();
-            me.getTagId().blur();
             animation.setReverse(true);
+            console.debug("Rewards ContainerActivate Called. Reset TagID ...");
             break;
          }
          case 'qrcodeContainer' :
          {
             animation.setReverse(false);
+            console.debug("Rewards ContainerActivate Called.");
             break;
          }
       }
-      console.debug("Rewards ContainerActivate Called.");
    },
    onRewardItem : function(automatic)
    {
@@ -353,6 +354,7 @@ Ext.define('Genesis.controller.server.Rewards',
    {
       var me = this;
       var amountField = me.getAmount();
+      var value = b.getText();
       switch (value)
       {
          case 'AC' :
@@ -361,7 +363,6 @@ Ext.define('Genesis.controller.server.Rewards',
             break;
          }
          default :
-            var value = b.getText();
             var amountFieldLength = amountField.getValue().length, amount = Number(amountField.getValue() || 0);
 
             if (amountFieldLength < 2)
@@ -470,6 +471,7 @@ Ext.define('Genesis.controller.server.Rewards',
       var me = this;
       var container = me.getRewardsContainer();
       container.setActiveItem(0);
+      console.debug("Rewards onDoneTap Called ...");
    },
    onNfc : function(nfcResult)
    {

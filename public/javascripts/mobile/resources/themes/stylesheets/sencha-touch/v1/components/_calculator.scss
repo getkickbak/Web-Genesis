@@ -1,3 +1,4 @@
+$input_font_size_factor : $xlargeFontSize*1.75/1em;
 .calculator {
    background : black;
    .x-field {
@@ -11,10 +12,11 @@
                   direction:rtl;
               }
                background : $Grey;
-               padding: $panelTopGap/4;
-               font-size:$xlargeFontSize*1.75;
-               min-height: 1.0em + $panelGap/2;
+               padding: $panelTopGap/(4*$input_font_size_factor);
+               font-size:$input_font_size_factor*1em;
+               min-height: 1.0em + $panelGap/(2*$input_font_size_factor);
                text-align:right;
+               line-height:1em;
             }
          }
       }

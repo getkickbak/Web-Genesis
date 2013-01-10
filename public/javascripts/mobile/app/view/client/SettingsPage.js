@@ -28,21 +28,104 @@ Ext.define('Genesis.view.client.SettingsPage',
       }),
       {
          xtype : 'fieldset',
-         title : 'Mobile TAG ID',
+         title : 'Account Profile',
          //instructions : 'Tell us all about yourself',
+         defaults :
+         {
+            labelWidth : '50%'
+         },
          items : [
          {
             xtype : 'textfield',
             name : 'tagid',
-            value : "0",
+            clearIcon : false,
+            label : "Tag ID",
+            value : ' ',
             readOnly : true
-         }]
-      },
-      {
-         xtype : 'fieldset',
-         title : 'Login Profile',
-         //instructions : 'Tell us all about yourself',
-         items : [
+         },
+         {
+            xtype : 'textfield',
+            name : 'name',
+            label : "Name",
+            placeHolder : 'John Smith'
+         },
+         {
+            xtype : 'datepickerfield',
+            label : 'Birthday',
+            name : 'birthday',
+            required : false,
+            picker :
+            {
+               yearFrom : 1913,
+               doneButton :
+               {
+                  ui : 'normal'
+               }
+            },
+            value : 0
+         },
+         {
+            xtype : 'textfield',
+            label : 'Phone#',
+            labelWidth : '40%',
+            name : 'phone',
+            minLength : 12,
+            maxLength : 12,
+            placeHolder : '800-555-1234',
+            required : false,
+            listeners :
+            {
+               keyup : function(f, e, eOpts)
+               {
+                  var keyCode = e.browserEvent.keyCode;
+                  var key = String.fromCharCode(keyCode);
+                  var value = f.getValue();
+                  if ((keyCode >= 48 && keyCode <= 90) || //
+                  (keyCode >= 106 && keyCode <= 111) || //
+                  (keyCode >= 186 && keyCode <= 192) || //
+                  (keyCode >= 219 && keyCode <= 222))
+                  {
+                     if (key.match(/[0-9]/) && (!e.browserEvent.shiftKey && !e.browserEvent.ctrlKey && !e.browserEvent.metaKey))
+                     {
+                        if ((value.length == 3) || (value.length == 7))
+                        {
+                           f.setValue(value + "-");
+                        }
+                        else
+                        if ((value.length == 4) || (value.length == 8))
+                        {
+                           var match = value.match(/-/);
+                           if (!match)
+                           {
+                              f.setValue(value.slice(0, value.length - 1) + "-" + value[value.length - 1]);
+                           }
+                           else
+                           {
+                              switch (match.length)
+                              {
+                                 case 1:
+                                 {
+                                    if (value.length > 4)
+                                    {
+                                       f.setValue(value.slice(0, value.length - 1) + "-" + value[value.length - 1]);
+                                    }
+                                    break;
+                                 }
+                                 default:
+                                    break;
+                              }
+                           }
+                        }
+                     }
+                     else
+                     {
+                        f.setValue(value.slice(0, value.length - 1));
+                     }
+                  }
+                  //console.debug("Phone#[" + f.getValue() + "]");
+               }
+            }
+         },
          {
             xtype : 'togglefield',
             name : 'facebook',
@@ -52,34 +135,49 @@ Ext.define('Genesis.view.client.SettingsPage',
          {
             xtype : 'listfield',
             name : 'changepassword',
-            value : 'Change Password'
+            label : 'Change Password',
+            value : ' '
          }]
       },
       {
          xtype : 'fieldset',
          title : 'About Kickbak',
+         defaults :
+         {
+            labelWidth : '50%'
+         },
          //instructions : 'Tell us all about yourself',
          items : [
          {
             xtype : 'textfield',
-            value : 'Version ' + Genesis.constants.clientVersion,
+            label : 'Version ' + Genesis.constants.clientVersion,
+            clearIcon : false,
             readOnly : true
          },
          {
             xtype : 'listfield',
             name : 'terms',
-            value : 'Terms of Use'
+            label : 'Terms of Use',
+            value : ' '
          },
          {
             xtype : 'listfield',
             name : 'privacy',
-            value : 'Privacy'
+            label : 'Privacy',
+            value : ' '
          }/*,
           {
           xtype : 'listfield',
           name : 'aboutus',
-          value : 'About Us'
+          label : 'About Us'
+          value : ' '
           }*/]
+      },
+      {
+         tag : 'accountUpdate',
+         xtype : 'button',
+         ui : 'orange-large',
+         text : 'Submit'
       }]
    },
    initialize : function()

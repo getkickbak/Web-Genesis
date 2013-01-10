@@ -29,33 +29,43 @@ Ext.define('Genesis.view.server.SettingsPage',
       {
          xtype : 'fieldset',
          title : 'About Kickbak',
+         defaults :
+         {
+            labelWidth : '50%'
+         },
          //instructions : 'Tell us all about yourself',
          items : [
          {
             xtype : 'textfield',
-            value : 'Version ' + Genesis.constants.serverVersion,
+            clearIcon : false,
+            label : 'Version ' + Genesis.constants.serverVersion,
+            value : ' ',
             readOnly : true
          },
          {
             xtype : 'listfield',
             name : 'license',
-            value : 'Refresh License Key'
+            label : 'Refresh License',
+            value : ' '
          }
          /*,
           {
           xtype : 'listfield',
           name : 'terms',
-          value : 'Terms & Conditions'
+          label : 'Terms & Conditions',
+          value : ' '
           },
           {
           xtype : 'listfield',
           name : 'privacy',
-          value : 'Privacy'
+          label : 'Privacy'
+          value : ' '
           },
           {
           xtype : 'listfield',
           name : 'aboutus',
-          value : 'About Us'
+          label : 'About Us',
+          value : ' '
           }
           */]
       },
@@ -65,7 +75,9 @@ Ext.define('Genesis.view.server.SettingsPage',
          items : [
          {
             xtype : 'textfield',
+            labelWidth : '90%',
             tag : 'merchantDevice',
+            clearIcon : false,
             readOnly : true
          }]
       }]
