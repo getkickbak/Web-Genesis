@@ -17,7 +17,10 @@
       },
       preLoadSend : function(win, fail)
       {
-         cordova.exec(win, fail, "ProximityIDPlugin", "preLoadIdentity", []);
+         Ext.defer(function()
+         {
+            cordova.exec(win, fail, "ProximityIDPlugin", "preLoadIdentity", []);
+         }, 0.3 * 1000, this);
       },
       send : function(win, fail)
       {

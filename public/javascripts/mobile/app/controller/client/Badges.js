@@ -29,10 +29,10 @@ Ext.define('Genesis.controller.client.Badges',
          //
          badgeDesc :
          {
-            selector : 'promotionalitemview[tag=badgeDesc]',
+            selector : 'clientpromotionalitemview[tag=badgeDesc]',
             autoCreate : true,
             tag : 'badgeDesc',
-            xtype : 'promotionalitemview'
+            xtype : 'clientpromotionalitemview'
          }
       },
       control :

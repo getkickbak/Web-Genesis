@@ -864,30 +864,47 @@ Ext.define('Genesis.controller.client.Challenges',
             {
                if (selectedItem.get('require_verif'))
                {
-                  if (Genesis.fn.isNative())
+                  var send = function()
                   {
-                     window.plugins.proximityID.preLoadSend();
-                  }
-                  Ext.device.Notification.show(
-                  {
-                     title : me.selectedItem.get('name') + ' Challenge',
-                     message : me.showToServerMsg,
-                     buttons : ['Proceed', 'Cancel'],
-                     callback : function(btn)
+                     Ext.device.Notification.show(
                      {
-                        if (btn.toLowerCase() == 'proceed')
+                        title : me.selectedItem.get('name') + ' Challenge',
+                        message : me.showToServerMsg,
+                        buttons : ['Proceed', 'Cancel'],
+                        callback : function(btn)
                         {
-                           if (selectedItem.get('type').value == 'photo')
+                           if (btn.toLowerCase() == 'proceed')
                            {
-                              me.getGeoLocation();
-                           }
-                           else
-                           {
-                              me.onLocationUpdate(null);
+                              if (selectedItem.get('type').value == 'photo')
+                              {
+                                 me.getGeoLocation();
+                              }
+                              else
+                              {
+                                 me.onLocationUpdate(null);
+                              }
                            }
                         }
-                     }
-                  });
+                     });
+                  };
+
+                  if (Genesis.fn.isNative())
+                  {
+                     Ext.Viewport.setMasked(
+                     {
+                        xtype : 'loadmask',
+                        message : me.prepareToSendMerchantDeviceMsg
+                     });
+                     window.plugins.proximityID.preLoadSend(function()
+                     {
+                        Ext.Viewport.setMasked(null);
+                        send();
+                     });
+                  }
+                  else
+                  {
+                     send();
+                  }
                }
                else
                {

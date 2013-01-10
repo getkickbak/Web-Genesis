@@ -32,12 +32,12 @@ Ext.define('Genesis.controller.client.Rewards',
          //
          promotion :
          {
-            selector : 'promotionalitemview[tag=promotion]',
+            selector : 'clientpromotionalitemview[tag=promotion]',
             autoCreate : true,
             tag : 'promotion',
-            xtype : 'promotionalitemview'
+            xtype : 'clientpromotionalitemview'
          },
-         pDoneBtn : 'promotionalitemview[tag=promotion] button[tag=done]'
+         pDoneBtn : 'clientpromotionalitemview[tag=promotion] button[tag=done]'
       },
       control :
       {
@@ -444,11 +444,6 @@ Ext.define('Genesis.controller.client.Rewards',
 
       if (Genesis.fn.isNative())
       {
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : me.prepareToSendMerchantDeviceMsg
-         });
          viewport.setLastPosition(null);
          //
          // Get GeoLocation and frequency markers
@@ -510,25 +505,42 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
+         var send = function()
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Earn Reward Points',
+               message : me.showToServerMsg,
+               buttons : ['Proceed', 'Cancel'],
+               callback : function(btn)
+               {
+                  if (btn.toLowerCase() == 'proceed')
+                  {
+                     //var earnPts = Ext.bind(me.onEarnPtsSC, me);
+                     //me.checkReferralPrompt(earnPts, earnPts);
+                     me.fireEvent('rewarditem', true);
+                  }
+               }
+            });
+         };
+
          if (Genesis.fn.isNative())
          {
-            window.plugins.proximityID.preLoadSend();
-         }
-         Ext.device.Notification.show(
-         {
-            title : 'Earn Reward Points',
-            message : me.showToServerMsg,
-            buttons : ['Proceed', 'Cancel'],
-            callback : function(btn)
+            Ext.Viewport.setMasked(
             {
-               if (btn.toLowerCase() == 'proceed')
-               {
-                  //var earnPts = Ext.bind(me.onEarnPtsSC, me);
-                  //me.checkReferralPrompt(earnPts, earnPts);
-                  me.fireEvent('rewarditem', true);
-               }
-            }
-         });
+               xtype : 'loadmask',
+               message : me.prepareToSendMerchantDeviceMsg
+            });
+            window.plugins.proximityID.preLoadSend(function()
+            {
+               Ext.Viewport.setMasked(null);
+               send();
+            });
+         }
+         else
+         {
+            send();
+         }
       }
    },
    updateMetaDataInfo : function(metaData)

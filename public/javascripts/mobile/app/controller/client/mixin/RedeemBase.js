@@ -168,23 +168,40 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
          case 'redeemPrize' :
          case 'redeemReward' :
          {
+            var send = function()
+            {
+               Ext.device.Notification.show(
+               {
+                  title : title,
+                  message : me.redeemItemConfirmMsg,
+                  buttons : ['Confirm', 'Cancel'],
+                  callback : function(b)
+                  {
+                     if (b.toLowerCase() == 'confirm')
+                     {
+                        me.fireEvent('redeemitem', btn, venue, view);
+                     }
+                  }
+               });
+            };
+
             if (Genesis.fn.isNative())
             {
-               window.plugins.proximityID.preLoadSend();
-            }
-            Ext.device.Notification.show(
-            {
-               title : title,
-               message : me.redeemItemConfirmMsg,
-               buttons : ['Confirm', 'Cancel'],
-               callback : function(b)
+               Ext.Viewport.setMasked(
                {
-                  if (b.toLowerCase() == 'confirm')
-                  {
-                     me.fireEvent('redeemitem', btn, venue, view);
-                  }
-               }
-            });
+                  xtype : 'loadmask',
+                  message : me.prepareToSendMerchantDeviceMsg
+               });
+               window.plugins.proximityID.preLoadSend(function()
+               {
+                  Ext.Viewport.setMasked(null);
+                  send();
+               });
+            }
+            else
+            {
+               send();
+            }
             break;
          }
       }

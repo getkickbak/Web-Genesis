@@ -43,19 +43,19 @@ Ext.define('Genesis.controller.client.Prizes',
          //
          badgeDetail :
          {
-            selector : 'promotionalitemview[tag=badgeDetail]',
+            selector : 'clientpromotionalitemview[tag=badgeDetail]',
             autoCreate : true,
             tag : 'badgeDetail',
-            xtype : 'promotionalitemview'
+            xtype : 'clientpromotionalitemview'
          },
-         bDoneBtn : 'promotionalitemview[tag=badgeDetail] button[tag=done]',
+         bDoneBtn : 'clientpromotionalitemview[tag=badgeDetail] button[tag=done]',
          //
          // Reward Prize
          //
          sBackBB : 'clientredeemitemdetailview[tag=redeemPrize] button[tag=back]',
          sCloseBB : 'clientredeemitemdetailview[tag=redeemPrize] button[tag=close]',
          //sBB : 'clientredeemitemdetailview[tag=redeemPrize] button[tag=back]',
-         //sDoneBtn : 'clientredeemitemdetailview[tag=redeemPrize] button[tag=done]',
+         sDoneBtn : 'clientredeemitemdetailview[tag=redeemPrize] button[tag=done]',
          sRedeemBtn : 'clientredeemitemdetailview[tag=redeemPrize] button[tag=redeem]',
          redeemItem :
          {

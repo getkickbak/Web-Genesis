@@ -82,7 +82,7 @@ Ext.define('Genesis.view.widgets.client.RedeemItemDetail',
 Ext.define('Genesis.view.widgets.client.PromotionItem',
 {
    extend : 'Genesis.view.widgets.client.RedeemItemDetail',
-   alias : 'widget.client.promotionalitemview',
+   alias : 'widget.clientpromotionalitemview',
    config :
    {
       scrollable : undefined,
