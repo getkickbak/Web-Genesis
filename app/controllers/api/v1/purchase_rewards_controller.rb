@@ -197,6 +197,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             user_info = {}
             user_info[:name] = "KICKBAK #{String.random_alphanumeric(8)}"
             user_info[:email] = "#{String.random_alphanumeric(16)}@getkickbak.com"
+            user_info[:phone] = ""
             user_info[:role] = "user"
             user_info[:status] = :pending
             password = String.random_alphanumeric(8)
@@ -297,7 +298,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         @customer.reload
         #logger.debug("Authorized to earn points.")
         prize_points = 1
-        @reward_info = { :points => 0, :signup_points => 0, :referral_points => 0, :prize_points => 0, :badge_prize_points => 0, :eligible_prize_id => 0 }
+        @reward_info = { :points => 0, :signup_points => 0, :referral_points => 0, :birthday_points => 0, :prize_points => 0, :badge_prize_points => 0, :eligible_prize_id => 0 }
         now = Time.now
         challenge_type_id = ChallengeType.value_to_id["referral"]
         challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
@@ -368,6 +369,42 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           referral_record.save
           referral_challenge = true
           @reward_info[:referral_points] = challenge.data.referral_points
+        end
+        birthday = @current_user.profile.birthday
+        today = now.to_date
+        if (birthday.mon == today.mon) && (birthday.day == today.day)
+          challenge_type_id = ChallengeType.value_to_id["birthday"]
+          challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
+          if challenge && (EarnRewardRecord.count(:type => :challenge, :ref_id => challenge.id, :merchant => challenge.merchant, :user => @current_user, :created_ts.gte => 11.month.ago.to_time) > 0)
+            birthday_reward_record = EarnRewardRecord.new(
+              :type => :challenge,
+              :ref_id => challenge.id,
+              :venue_id => @venue.id,
+              :data => "",
+              :data_expiry_ts => ::Constant::MIN_TIME,
+              :points => challenge.points,
+              :created_ts => now,
+              :update_ts => now
+            )
+            birthday_reward_record.merchant = @venue.merchant
+            birthday_reward_record.customer = @customer
+            birthday_reward_record.user = @current_user
+            birthday_reward_record.save
+            birthday_trans_record = TransactionRecord.new(
+              :type => :earn_points,
+              :ref_id => birthday_reward_record.id,
+              :description => challenge.name,
+              :points => challenge.points,
+              :created_ts => now,
+              :update_ts => now
+            )
+            birthday_trans_record.merchant = @venue.merchant
+            birthday_trans_record.customer = @customer
+            birthday_trans_record.user = @current_user
+            birthday_trans_record.save
+            @customer.points += challenge.points
+            @reward_info[:birthday_points] = challenge_points
+          end
         end
         @customer.visits += 1
         @customer.next_badge_visits += 1
@@ -565,7 +602,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           badge_prize_trans_record.user = @current_user
           badge_prize_trans_record.save
         end
-        @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+        @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => today.at_beginning_of_month.to_time)
         @account_info = {}
         @account_info[:visits] = @customer.visits
         @account_info[:next_badge_visits] = @customer.next_badge_visits
@@ -597,7 +634,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         if referral_challenge
           UserMailer.referral_challenge_confirm_email(referrer.user, @customer.user, @venue, referral_record).deliver
         end
-        logger.info("User(#{@current_user.id}) successfully earned #{@reward_info[:points]} points, #{@reward_info[:signup_points]} signup points, #{@reward_info[:referral_points]} referral points, #{@reward_info[:prize_points]} prize points, #{@reward_info[:badge_prize_points]} badge prize points at Venue(#{@venue.id})")
+        logger.info(
+          "User(#{@current_user.id}) successfully earned #{@reward_info[:points]} points, #{@reward_info[:signup_points]} signup points, #{@reward_info[:referral_points]} referral points, #{@reward_info[:birthday_points]} birthday points, #{@reward_info[:prize_points]} prize points, #{@reward_info[:badge_prize_points]} badge prize points at Venue(#{@venue.id})"
+        )
       end
     rescue StandardError => e
       Request.set_status(@request, :failed)

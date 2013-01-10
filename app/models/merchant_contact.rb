@@ -24,7 +24,7 @@ class MerchantContact
   validates :address, :presence => true
   validates :city, :presence => true
   validates :province, :presence => true
-  validates :phone, :presence => true
+  validates :phone, :presence => true, :phone_format => true
   
   def self.states
     @@states

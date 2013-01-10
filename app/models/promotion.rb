@@ -30,7 +30,7 @@ class Promotion
     )
     promotion.start_date_str = promotion_info[:start_date]
     # End date set to start date for now
-    promotion.end_date_str = promotion_info[:start_date]
+    promotion.end_date_str = promotion_info[:end_date]
     promotion[:created_ts] = now
     promotion[:update_ts] = now
     promotion.merchant = merchant

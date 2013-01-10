@@ -11,7 +11,8 @@ node :metaData do
 	{ 
 		:csrf_token => form_authenticity_token,
 		:auth_token => @user.authentication_token,
-		:virutal_tag_id => @user.virtual_tag.tag_id
+		:virtual_tag_id => @user.virtual_tag.tag_id,
+		:account => partial('api/v1/account/base', :object => @user)
 	}
 end	
 node :total do 

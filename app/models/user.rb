@@ -17,6 +17,7 @@ class User
   property :name, String, :required => true, :default => ""
   ## Database authenticatable
   property :email, String, :unique_index => true, :required => true, :format => :email_address, :default => ""
+  property :phone, String, :unique_index => true, :default => ""
   property :encrypted_password, String, :required => true, :default => ""
   ## Recoverable
   property :reset_password_token, String
@@ -58,6 +59,7 @@ class User
   has n, :user_credit_cards, :child_key => [ :user_id ], :constraint => :destroy
   has n, :credit_cards, :through => :user_credit_cards, :via => :credit_card
     
+  validates_with_method :phone, :method => :validate_phone  
   validates_with_method :tag_id, :method => :validate_tag_id
     
   before_save :ensure_authentication_token
@@ -67,6 +69,7 @@ class User
     if (user_info.is_a? Hash) || (user_info.is_a? ActiveSupport::HashWithIndifferentAccess)
       name = user_info[:name].strip
       email = user_info[:email].strip
+      phone = user_info[:phone].strip
       password = user_info[:password].strip
       facebook_id = user_info[:facebook_id]
       facebook_email = user_info[:facebook_email]
@@ -78,6 +81,7 @@ class User
     else
       name = user_info.name.strip
       email = user_info.email.strip
+      phone = user_info.phone.strip
       password = user_info.password.strip
       password_confirmation = user_info.password_confirmation.strip
       role = user_info.role
@@ -102,7 +106,7 @@ class User
             user.name = name
             user.email = email
             user.password = password
-            user.passowrd_confirmation = password_confirmation
+            user.password_confirmation = password_confirmation
             user.update_ts = now
             user_tag = user_to_tag.user_tag
             user_tag.status = :active
@@ -120,6 +124,7 @@ class User
         {
           :name => name,
           :email => email,   
+          :phone => phone,
           :facebook_id => facebook_id,
           :facebook_email => facebook_email,
           :current_password => password,
@@ -156,6 +161,7 @@ class User
     now = Time.now
     self.name = user_info[:name].strip
     self.email = user_info[:email].strip
+    self.phone = user_info[:phone].strip
     if !user_info[:current_password].empty?
       self.current_password = user_info[:current_password].strip
       if self.current_password && !valid_password?(self.current_password)
@@ -236,6 +242,15 @@ class User
       if user_to_tag.nil? || user_to_tag.user_tag.status != :pending
         return [false, I18n.t('users.invalid_tag')]        
       end    
+    end
+    return true
+  end
+  
+  def validate_phone
+    if not self.phone.empty?
+      if not self.phone.match(/^[\d]+$/)
+        return [false, I18n.t('errors.messages.phone_format', :attribute => I18n.t('activemodel.attributes.contact.phone'))]
+      end
     end
     return true
   end

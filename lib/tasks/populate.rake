@@ -10,6 +10,7 @@ namespace :db do
     user1 = User.create(
       :name => "John Smith",
       :email => "test.user1@getkickbak.com",
+      :phone => "4169876543",
       :password => "getkickbak",
       :password_confirmation => "getkickbak",
       :role => "test",
@@ -19,6 +20,7 @@ namespace :db do
     user2 = User.create(
       :name => "David Best",
       :email => "test.user2@getkickbak.com",
+      :phone => "9059872134",
       :password => "getkickbak",
       :password_confirmation => "getkickbak",
       :role => "test",
@@ -61,7 +63,7 @@ namespace :db do
         :country => "Canada",
         :zipcode => "M5C 3C5",
         :time_zone => "Eastern Time (US & Canada)",
-        :phone => "(416) 849-1808",
+        :phone => "4168491808",
         :website => "http://www.cavacchio.ca",
         :latitude => 43.649647,
         :longitude => -79.377036
@@ -75,7 +77,7 @@ namespace :db do
         :country => "Canada",
         :zipcode => "M56 1E4",
         :time_zone => "Eastern Time (US & Canada)",
-        :phone => "(416) 703-3377",
+        :phone => "4167033377",
         :website => "http://www.marios.ca",
         :latitude => 43.647224,
         :longitude => -79.406068
@@ -89,7 +91,7 @@ namespace :db do
         :country => "Canada",
         :zipcode => "M6S 1R2",
         :time_zone => "Eastern Time (US & Canada)",
-        :phone => "(416) 763-2222",
+        :phone => "4167632222",
         :website => "http://www.angelospizza.ca",
         :latitude => 43.649274,
         :longitude => -79.485183
@@ -103,7 +105,7 @@ namespace :db do
         :country => "Canada",
         :zipcode => "M4W 2L2",
         :time_zone => "Eastern Time (US & Canada)",
-        :phone => "(416) 551-9890",
+        :phone => "4165519890",
         :website => "http://www.dynasty.ca",
         :latitude => 43.678705,
         :longitude => -79.38976
@@ -117,7 +119,7 @@ namespace :db do
         :country => "Canada",
         :zipcode => "M5V 3T4",
         :time_zone => "Eastern Time (US & Canada)",
-        :phone => "(416) 935-0400",
+        :phone => "4169350400",
         :website => "http://www.littlejerusalem.ca",
         :latitude => 43.645159,
         :longitude => -79.391949
@@ -131,7 +133,7 @@ namespace :db do
         :country => "Canada",
         :zipcode => "M5E 1C7",
         :time_zone => "Eastern Time (US & Canada)",
-        :phone => "(416) 504-9990",
+        :phone => "4165049990",
         :website => "http://www.koreanhouse.ca",
         :latitude => 43.648824,
         :longitude => -79.375105
@@ -145,7 +147,7 @@ namespace :db do
         :country => "Canada",
         :zipcode => "M4Y 2H6",
         :time_zone => "Eastern Time (US & Canada)",
-        :phone => "(647) 348-6520",
+        :phone => "6473486520",
         :website => "http://www.namasaki.ca",
         :latitude => 43.66767,
         :longitude => -79.378903
@@ -159,7 +161,7 @@ namespace :db do
         :country => "Canada",
         :zipcode => "M5E 1M2",
         :time_zone => "Eastern Time (US & Canada)",
-        :phone => "(416) 504-9463",
+        :phone => "4165049463",
         :website => "http://www.clintonsbarngrill.ca",
         :latitude => 43.648156,
         :longitude => -79.373517
@@ -173,7 +175,7 @@ namespace :db do
         :country => "Canada",
         :zipcode => "M5T 2M2",
         :time_zone => "Eastern Time (US & Canada)",
-        :phone => "(647) 343-1932",
+        :phone => "6473431932",
         :website => "http://www.nataRajh.ca",
         :latitude => 43.656975,
         :longitude => -79.402678
@@ -187,7 +189,7 @@ namespace :db do
         :country => "Canada",
         :zipcode => "M5A 1E1",
         :time_zone => "Eastern Time (US & Canada)",
-        :phone => "(416) 363-8370",
+        :phone => "4163638370",
         :website => "http://www.quesadilla.ca",
         :latitude => 43.650221,
         :longitude => -79.370642

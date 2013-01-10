@@ -7,13 +7,15 @@ en:
       contact:
           name: "Full name"
           email: "Email address"
+          phone: "Phone number"
           topic: "Reason"
           message: "How can we help you?"    
   errors:
       blank: "%{attribute} is required"
       messages:
         blank: "%{attribute} is required"
-        email_format: "%{attribute} is not formatted properly"
+        email_format: "%{attribute} is not valid"
+        phone_format: "%{attribute} is not valid (digits only)"
         not_a_number: "%{attribute} is not a number"
         not_an_integer: "%{attribute} must be an integer"
         not_valid: "is not valid"
@@ -52,6 +54,7 @@ en:
         messages:
           blank: "%{attribute} is required"
           email_format: "%{attribute} is not formatted properly"
+          phone_format: "%{attribute} is not formatted properly (digits only)"
   merchant:
       type:
         food: "Food"

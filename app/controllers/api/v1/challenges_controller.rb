@@ -427,8 +427,8 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       end
       logger.info("Invalid photo upload token: Real(#{session[:photo_upload_token]}), Passed(#{params[:upload_token]})")
       return false
-    elsif @challenge.type.value == "referral"
-      return false  
+    elsif @challenge.type.value == "referral" || @challenge.type.value == "birthday"
+      return false
     end
     return true
   end
@@ -439,9 +439,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
   
   def challenge_limit_reached?
     if @challenge.type.value == "photo"
-      return EarnRewardRecord.count(:type => :challenge, :ref_id => @challenge.id, :merchant => @challenge.merchant, :user => current_user, :created_ts.gte => Date.today.to_time) > 0
-    elsif @challenge.type.value == "birthday"
-      return EarnRewardRecord.count(:type => :challenge, :ref_id => @challenge.id, :merchant => @challenge.merchant, :user => current_user, :created_ts.gte => 11.month.ago.to_time) > 0  
+      return EarnRewardRecord.count(:type => :challenge, :ref_id => @challenge.id, :merchant => @challenge.merchant, :user => current_user, :created_ts.gte => Date.today.to_time) > 0  
     end
     return false  
   end

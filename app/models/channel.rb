@@ -76,6 +76,10 @@ class Channel
     @@memcache
   end
   
+  def self.count_cache_key
+    @@count_cache_key  
+  end
+  
   private
   
   def self.get_free_list_cache_key(group)

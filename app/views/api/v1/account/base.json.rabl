@@ -1,2 +1,4 @@
-object @user
-attributes :name, :email, :facebook_id, :facebook_email
+object @account
+attributes :name, :email, :phone
+node( :gender ) { |m| m.profile.gender }
+node( :birthday ) { |m| m.profile.birthday }

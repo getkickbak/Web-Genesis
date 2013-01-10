@@ -46,13 +46,20 @@
 													<%= @user.name %>
 												</div>
 											</div>
-
 											<div class="control-group">
 												<label class="control-label">Email:</label>
 												<div class="controls">
 													<%= @user.email %>
 												</div>
 											</div>
+											<% if not @user.phone.empty? %>
+											<div class="control-group">
+												<label class="control-label">Phone:</label>
+												<div class="controls">
+													<%= number_to_phone(@user.phone) %>
+												</div>
+											</div>
+											<% end %>
 											<%= link_to 'Edit', edit_account_path %>
 										</div>
 									</div>

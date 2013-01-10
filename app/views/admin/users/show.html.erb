@@ -51,6 +51,14 @@
 													<%= @user.email %>
 												</div>
 											</div>
+											<% if not @user.phone.empty? %>
+											<div class="control-group">
+												<label class="control-label"> Phone: </label>
+												<div class="controls">
+													<%= number_to_phone(@user.phone) %>
+												</div>
+											</div>
+											<% end %>
 											<div class="control-group">
 												<label class="control-label"> Status: </label>
 												<div class="controls">
@@ -59,6 +67,9 @@
 											</div>
 											<div>
                									<%= button_to 'Update Auth Token', update_auth_token_user_path(@user) %>
+            								</div>
+            								<div>
+               									<%= button_to 'Login', user_session_url(:auth_token => @user.authentication_token, :sid => @current_staff.id) %>
             								</div>
 											<%= link_to 'Edit', edit_user_path(@user) %> |
 											<%= link_to 'Back', users_path %>

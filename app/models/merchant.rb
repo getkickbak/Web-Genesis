@@ -79,6 +79,7 @@ class Merchant
   validates_with_method :type_id, :method => :check_type_id
   validates_with_method :visit_frequency_id, :method => :check_visit_frequency_id
   validates_with_method :termination_date, :method => :validate_termination_date
+  validates_with_method :phone, :method => :validate_phone  
 
   before_save :ensure_authentication_token
 
@@ -376,6 +377,13 @@ class Merchant
       if self.termination_date < today
         return [false, I18n.t('admin.merchants.min_termination_date')]
       end
+    end
+    return true
+  end
+  
+  def validate_phone
+    if not self.phone.match(/^[\d]+$/)
+      return [false, I18n.t('errors.messages.phone_format', :attribute => I18n.t('activemodel.attributes.contact.phone'))]
     end
     return true
   end
