@@ -9,7 +9,7 @@ class Api::V1::UsersController < Api::V1::BaseApplicationController
 
     begin
       User.transaction do
-        user_info = JSON.parse(params[:user], { :symbolize_names => true })
+        user_info = params[:user]
         user_info[:role] = @user.role
         user_info[:status] = @user.status
         @user.update_all(user_info)
