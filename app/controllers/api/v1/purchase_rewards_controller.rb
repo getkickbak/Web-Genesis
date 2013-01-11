@@ -61,8 +61,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       decrypted = cipher.dec(data)
       #logger.debug("decrypted text: #{decrypted}")
       @decrypted_data = JSON.parse(decrypted) 
-      now_secs = @decrypted_data["expiry_ts"]/1000
-      data_expiry_ts = Time.at(now_secs)  
+      expiry_ts_secs = @decrypted_data["expiry_ts"]/1000
+      data_expiry_ts = Time.at(expiry_ts_secs)  
       if @decrypted_data["type"] == EncryptedDataType::EARN_POINTS
         # Cache expires in 12 hrs
         if (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?

@@ -60,6 +60,22 @@
 												</div>
 											</div>
 											<% end %>
+											<% if @user.profile.gender != :u %>
+											<div class="control-group">
+												<label class="control-label">Gender:</label>
+												<div class="controls">
+													<%= @user.profile.gender == :m ? "Male" : "Female" %>
+												</div>
+											</div>
+											<% end %>
+											<% if @user.profile.birthday != ::Constant::MIN_DATE %>
+											<div class="control-group">
+												<label class="control-label">Birthday:</label>
+												<div class="controls">
+													<%= @user.profile.birthday.strftime("%B %d, %y") %>
+												</div>
+											</div>
+											<% end %>
 											<%= link_to 'Edit', edit_account_path %>
 										</div>
 									</div>

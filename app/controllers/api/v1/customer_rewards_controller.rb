@@ -39,8 +39,8 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       decrypted = cipher.dec(data)
       #logger.debug("decrypted text: #{decrypted}")
       decrypted_data = JSON.parse(decrypted)
-      now_secs = decrypted_data["expiry_ts"]/1000
-      data_expiry_ts = Time.at(now_secs)
+      expiry_ts_secs = decrypted_data["expiry_ts"]/1000
+      data_expiry_ts = Time.at(expiry_ts_secs)
       #logger.debug("decrypted expiry_ts: #{data_expiry_ts}")
       #logger.debug("Time comparison: #{data_expiry_ts >= Time.now}")
       #Cache expires in 12 hrs
