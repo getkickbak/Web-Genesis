@@ -182,7 +182,8 @@ class User
     self.update_ts = now
     if user_info.include? :user_profile
       self.profile.gender = user_info[:user_profile][:gender]
-      self.profile.birthday_str = user_info[:user_profile][:birthday]
+      date_str = "#{user_info[:user_profile]['birthday(1i)']}-#{user_info[:user_profile]['birthday(2i)']}-#{user_info[:user_profile]['birthday(3i)']}"
+      self.profile.birthday_str = date_str
       self.profile.update_ts = now
     elsif (user_info.include? :gender) || (user_info.include? :birthday)
       self.profile.gender = user_info[:gender]
