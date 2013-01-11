@@ -159,10 +159,10 @@ class User
   
   def update_all(user_info)
     now = Time.now
-    self.name = user_info[:name].strip
-    self.email = user_info[:email].strip
-    self.phone = user_info[:phone].strip
-    if !user_info[:current_password].empty?
+    self.name = user_info[:name].strip if user_info.include? :name
+    self.email = user_info[:email].strip if user_info.include? :email
+    self.phone = user_info[:phone].strip if user_info.include? :phone
+    if (user_info.include? :current_password) && !user_info[:current_password].empty?
       self.current_password = user_info[:current_password].strip
       if self.current_password && !valid_password?(self.current_password)
         errors.add(:current_password, I18n.t("errors.messages.user.incorrect_password"))
