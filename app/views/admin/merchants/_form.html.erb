@@ -16,9 +16,9 @@
 	<% else %>
 	<%= f.input :termination_date, :as => :date_picker, :input_html => { :class => 'input-xlarge' }, :wrapper_html => { :id => 'merchant_termination_date_wrap', :style => 'display:none;' } %>
 	<% end %>
-	<%= f.input :current_password, :input_html=>{:class => "input-medium"} %>
-	<%= f.input :password, :input_html=>{:class => "input-medium"} %>
-	<%= f.input :password_confirmation, :input_html=>{:class => "input-medium"} %>
+	<%= f.input :current_password, :required => false, :input_html=>{:class => "input-medium"} %>
+	<%= f.input :password, :label => "New password", :required => false, :input_html=>{:class => "input-medium"} %>
+	<%= f.input :password_confirmation, :required => false, :input_html=>{:class => "input-medium"} %>
 	<br />
 	<div class="form-actions">
 		<%= f.button :submit , 'Update', :class => 'btn btn-primary' %>
