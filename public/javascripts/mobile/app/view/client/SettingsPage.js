@@ -39,15 +39,19 @@ Ext.define('Genesis.view.client.SettingsPage',
             xtype : 'textfield',
             name : 'tagid',
             clearIcon : false,
-            label : "Tag ID",
+            label : "Mobile Tag ID",
             value : ' ',
             readOnly : true
          },
          {
             xtype : 'textfield',
-            name : 'name',
-            label : "Name",
-            placeHolder : 'John Smith'
+            cls : 'halfHeight',
+            labelWidth : '100%',
+            name : 'user',
+            label : "John Smith" + "<br/>" + "<label>johnsmith@example.com</label>",
+            value : ' ',
+            required : false,
+            readOnly : true
          },
          {
             xtype : 'datepickerfield',
@@ -140,6 +144,12 @@ Ext.define('Genesis.view.client.SettingsPage',
          }]
       },
       {
+         tag : 'accountUpdate',
+         xtype : 'button',
+         ui : 'orange-large',
+         text : 'Submit'
+      },
+      {
          xtype : 'fieldset',
          title : 'About Kickbak',
          defaults :
@@ -172,12 +182,6 @@ Ext.define('Genesis.view.client.SettingsPage',
           label : 'About Us'
           value : ' '
           }*/]
-      },
-      {
-         tag : 'accountUpdate',
-         xtype : 'button',
-         ui : 'orange-large',
-         text : 'Submit'
       }]
    },
    initialize : function()

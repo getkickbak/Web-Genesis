@@ -17,10 +17,13 @@
       },
       preLoadSend : function(win, fail)
       {
+      	//
+      	// To give loading mask a chance to render
+      	//
          Ext.defer(function()
          {
             cordova.exec(win, fail, "ProximityIDPlugin", "preLoadIdentity", []);
-         }, 0.3 * 1000, this);
+         }, 0.25 * 1000, this);
       },
       send : function(win, fail)
       {
