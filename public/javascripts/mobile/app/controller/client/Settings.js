@@ -18,18 +18,6 @@ Ext.define('Genesis.controller.client.Settings',
       },
       control :
       {
-         'clientsettingspageview listfield[name=terms]' :
-         {
-            clearicontap : 'onTermsTap'
-         },
-         'clientsettingspageview listfield[name=privacy]' :
-         {
-            clearicontap : 'onPrivacyTap'
-         },
-         'clientsettingspageview listfield[name=aboutus]' :
-         {
-            clearicontap : 'onAboutUsTap'
-         },
          'clientsettingspageview togglefield[name=facebook]' :
          {
             change : 'onFacebookChange'
@@ -41,6 +29,21 @@ Ext.define('Genesis.controller.client.Settings',
          'clientsettingspageview button[tag=accountUpdate]' :
          {
             tap : 'onAccountUpdateTap'
+         },
+         //
+         // Terms & Conditions
+         //
+         'clientsettingspageview listfield[name=terms]' :
+         {
+            clearicontap : 'onTermsTap'
+         },
+         'clientsettingspageview listfield[name=privacy]' :
+         {
+            clearicontap : 'onPrivacyTap'
+         },
+         'clientsettingspageview listfield[name=aboutus]' :
+         {
+            clearicontap : 'onAboutUsTap'
          }
       },
       listeners :
@@ -52,7 +55,7 @@ Ext.define('Genesis.controller.client.Settings',
          }
       }
    },
-   _initializing : true,
+   initializing : true,
    accountUpdateSuccessMsg : 'Update Successful',
    accountUpdateFailedMsg : 'Update Failed',
    accountValidateFailedMsg : function(msg)
@@ -64,21 +67,187 @@ Ext.define('Genesis.controller.client.Settings',
       return 'You\'re logged into Facebook as ' + Genesis.constants.addCRLF() + email;
    },
    updatingFbLoginMsg : 'Updating Facebok Login Credentials',
-   onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
+   // --------------------------------------------------------------------------
+   // Misc Utilities
+   // --------------------------------------------------------------------------
+   getAccountFields : function()
+   {
+      var me = this, db = Genesis.db.getLocalDB(), form = me.getSettingsPage();
+      return (
+         {
+            'birthday' :
+            {
+               preLoadFn : function(field)
+               {
+                  field.setReadOnly(false);
+               },
+               field : form.query('datepickerfield[name=birthday]')[0],
+               fn : function(field)
+               {
+                  var birthday = new Date.parse(db['account']['birthday']);
+                  return (!birthday || !( birthday instanceof Date)) ? ' ' : birthday;
+               },
+               fbFn : function(field)
+               {
+                  var birthday = new Date.parse(db['fbResponse']['birthday']);
+                  return (!birthday || !( birthday instanceof Date)) ? ' ' : birthday;
+               }
+            }
+         });
+   },
+   updateAccountInfo : function()
+   {
+      var i, f, me = this, db = Genesis.db.getLocalDB(), fields = me.getAccountFields();
+
+      for (i in fields)
+      {
+         f = fields[i];
+         f.preLoadFn(f.field);
+         if (db['account'][i])
+         {
+            f[i] = f.fn(f);
+         }
+         else
+         if (db['fbResponse'])
+         {
+            f.fbFn(f);
+         }
+      }
+
+      console.log("enableFB - " + db['enableFB']);
+      me.initializing = true;
+      var form = me.getSettingsPage();
+      form.setValues(
+      {
+         birthday : fields['birthday'].birthday,
+         phone : db['account'].phone || null,
+         tagid : db['account'].virtual_tag_id || 'None',
+         facebook : (db['enableFB']) ? 1 : 0
+      });
+      form.query('textfield[name=user]')[0].setLabel(db['account'].name + '<br/>' + '<label>' + db['account'].email + "</label>");
+      me.initializing = false;
+   },
+   // --------------------------------------------------------------------------
+   // Button Handlers
+   // --------------------------------------------------------------------------
+   onPasswordChangeTap : function(b, e)
    {
       var me = this;
-      var db = Genesis.db.getLocalDB();
-      //var enableFB = (db['enableFB']) ? 1 : 0;
+      var viewport = me.getViewPortCntlr();
+
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
+      me.redirectTo('password_change');
+   },
+   onFacebookChange : function(toggle, slider, thumb, newValue, oldValue, eOpts)
+   {
+      var me = this, viewport = me.getViewPortCntlr();
+
+      if (me.initializing)
+      {
+         return;
+      }
+
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
+
+      me.fireEvent('toggleFB', toggle, slider, thumb, newValue, oldValue, eOpts);
+   },
+   onAccountUpdateTap : function(b, e, eOpts)
+   {
+      var me = this, form = me.getSettingsPage(), values = form.getValues(true), proxy = Account.getProxy();
+      var account = Ext.create('Genesis.model.frontend.Account', values), validateErrors = account.validate();
+
+      if (!validateErrors.isValid())
+      {
+         var field, fieldCmp, valid;
+         do
+         {
+            valid = false;
+            field = validateErrors.first();
+            if (field)
+            {
+               fieldCmp = Ext.ComponentQuery.query('field[name='+field.getField()+']')[0];
+               if (!fieldCmp || !fieldCmp.getRequired() || (field.getField() == 'password'))
+               {
+                  if (!fieldCmp || !fieldCmp.getValue() || (fieldCmp.getValue() == '') || (fieldCmp.getValue() == ' '))
+                  {
+                     validateErrors.remove(field);
+                     valid = true;
+                  }
+               }
+            }
+            else
+            {
+               fieldCmp = null;
+            }
+         } while(valid);
+
+         if (fieldCmp)
+         {
+            var label = fieldCmp.getLabel();
+            var message = me.accountValidateFailedMsg(label + ' ' + field.getMessage());
+            console.log(message);
+            Ext.device.Notification.show(
+            {
+               title : 'Oops',
+               message : message,
+               buttons : ['Dismiss']
+            });
+            return;
+         }
+      }
+      //
+      // Upate Account
+      //
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.establishConnectionMsg
+      });
+      Account['setUpdateAccountUrl']();
+      account.save(
+      {
+         action : 'read',
+         jsonData :
+         {
+         },
+         callback : function(record, operation)
+         {
+            Ext.Viewport.setMasked(null);
+            if (operation.wasSuccessful())
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Account Settings',
+                  message : me.accountUpdateSuccessMsg,
+                  buttons : ['OK']
+               });
+            }
+            else
+            {
+               proxy.supressErrorsPopup = true;
+               Ext.device.Notification.show(
+               {
+                  title : 'Account Settings',
+                  message : me.accountUpdateFailedMsg,
+                  buttons : ['Dismiss'],
+                  callback : function()
+                  {
+                     proxy.supressErrorsPopup = false;
+                  }
+               });
+            }
+         }
+      });
+   },
+   // --------------------------------------------------------------------------
+   // Event Handlers
+   // --------------------------------------------------------------------------
+   onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
+   {
+      var me = this, db = Genesis.db.getLocalDB();
 
       if (newValue == 1)
       {
-         /*
-          Ext.Viewport.setMasked(
-          {
-          xtype : 'loadmask',
-          message : Genesis.fb.connectingToFBMsg
-          });
-          */
          Genesis.fb.facebook_onLogin(function(params, operation)
          {
             if (!params || ((operation && !operation.wasSuccessful())))
@@ -88,7 +257,6 @@ Ext.define('Genesis.controller.client.Settings',
                   toggle.toggle();
                }
             }
-            //Ext.Viewport.setMasked(null);
             else
             {
                toggle.originalValue = newValue;
@@ -98,6 +266,7 @@ Ext.define('Genesis.controller.client.Settings',
                   message : me.fbLoggedInIdentityMsg(params['email']),
                   buttons : ['OK']
                });
+               me.updateAccountInfo();
             }
          }, true);
       }
@@ -105,13 +274,6 @@ Ext.define('Genesis.controller.client.Settings',
       if (db['enableFB'])
       {
          console.debug("Cancelling Facebook Login ...");
-         /*
-          Ext.Viewport.setMasked(
-          {
-          xtype : 'loadmask',
-          message : Genesis.fb.connectingToFBMsg
-          });
-          */
          var params =
          {
             facebook_id : 0
@@ -151,162 +313,15 @@ Ext.define('Genesis.controller.client.Settings',
             }
          });
       }
-
    },
-   onFacebookChange : function(toggle, slider, thumb, newValue, oldValue, eOpts)
-   {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-
-      if (me._initializing)
-      {
-         return;
-      }
-
-      me.self.playSoundFile(viewport.sound_files['clickSound']);
-
-      me.fireEvent('toggleFB', toggle, slider, thumb, newValue, oldValue, eOpts);
-   },
-   // --------------------------------------------------------------------------
-   // Button Handlers
-   // --------------------------------------------------------------------------
-   onPasswordChangeTap : function(b, e)
-   {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-
-      me.self.playSoundFile(viewport.sound_files['clickSound']);
-      me.redirectTo('password_change');
-   },
-   // --------------------------------------------------------------------------
-   // Event Handlers
-   // --------------------------------------------------------------------------
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------
    openSettingsPage : function()
    {
-      var me = this, db = Genesis.db.getLocalDB(), form = me.getSettingsPage(), toggle = form.query('togglefield[name=facebook]')[0];
-
-      console.log("enableFB - " + db['enableFB']);
-      me._initializing = true;
-
-      var birthday = ' ', name;
-      var fields = [
-      {
-         field : form.query('datepickerfield[name=birthday]')[0],
-         attr : 'birthday',
-         fn : function(field)
-         {
-            birthday = new Date.parse(db['account'][field.attr]);
-         },
-         fbFn : function(field)
-         {
-            birthday = new Date.parse(db['fbResponse'][field.attr]);
-         }
-      },
-      {
-         field : form.query('textfield[name=name]')[0],
-         attr : 'name',
-         fn : function(field)
-         {
-            name = db['account'][field.attr];
-         },
-         fbFn : function(field)
-         {
-            name = db['fbResponse'][field.attr];
-         }
-      }];
-
-      for (var i = 0; i < fields.length; i++)
-      {
-         var f = fields[i];
-         f.field.setReadOnly(false);
-         if (db['account'][f.attr])
-         {
-            f.fn(f);
-         }
-         else
-         if (db['fbResponse'])
-         {
-            f.fbFn(f);
-            f.field.setReadOnly(true);
-         }
-      }
-
-      form.setValues(
-      {
-         name : name,
-         birthday : (!birthday || !( birthday instanceof Date)) ? ' ' : birthday,
-         phone : db['account'].phone || null,
-         tagid : db['vtagId'] || 'None',
-         facebook : (db['enableFB']) ? 1 : 0
-      });
-      me._initializing = false;
+      var me = this;
+      me.updateAccountInfo();
       me.openPage('settings');
-   },
-   onAccountUpdateTap : function(b, e, eOpts)
-   {
-      var me = this, form = me.getSettingsPage();
-      var values = form.getValues(true);
-      var account = Ext.create('Genesis.model.frontend.Account', values);
-      var validateErrors = account.validate();
-
-      if (!validateErrors.isValid())
-      {
-         var field = validateErrors.first();
-         var label = Ext.ComponentQuery.query('field[name='+field.getField()+']')[0].getLabel();
-         var message = me.accountValidateFailedMsg(label + ' ' + field.getMessage());
-         console.log(message);
-         Ext.device.Notification.show(
-         {
-            title : 'Oops',
-            message : message,
-            buttons : ['Dismiss']
-         });
-      }
-      else
-      {
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : me.establishConnectionMsg
-         });
-         Account['setUpdateAccountUrl']();
-         account.save(
-         {
-            jsonData :
-            {
-            },
-            callback : function(record, operation)
-            {
-               Ext.Viewport.setMasked(null);
-               if (operation.wasSuccessful())
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Account Settings',
-                     message : me.accountUpdateSuccessMsg,
-                     buttons : ['Dismiss']
-                  });
-               }
-               else
-               {
-                  proxy.supressErrorsPopup = true;
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Account Settings',
-                     message : me.accountUpdateFailedMsg,
-                     buttons : ['Dismiss'],
-                     callback : function()
-                     {
-                        proxy.supressErrorsPopup = false;
-                     }
-                  });
-               }
-            }
-         });
-      }
    }
    // --------------------------------------------------------------------------
    // Base Class Overrides

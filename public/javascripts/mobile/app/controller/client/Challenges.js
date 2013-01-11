@@ -129,6 +129,7 @@ Ext.define('Genesis.controller.client.Challenges',
    completingChallengeMsg : 'Completing Challenge ...',
    referralInstructionMsg : 'Get your friend to scan this code using their KickBak App on their mobile phone!',
    customerFirstMsg : 'Before you can make referrals, your must be one of our paying customers! ;-)',
+   updateAccountInfoMsg : 'Your Birthday information is missing. Update your Account Settings to continue.',
    photoUploadSuccessMsg : function(points)
    {
       return 'We\'ve added earned ' + points + ' points' + Genesis.constants.addCRLF() + //
@@ -807,7 +808,7 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    onChallengeBtnTap : function(b, e, eOpts, eInfo)
    {
-      var me = this;
+      var me = this, db = Genesis.db.getLocalDB();
       var viewport = me.getViewPortCntlr();
       var cvenue = viewport.getCheckinInfo().venue;
       var venue = viewport.getVenue();
@@ -856,9 +857,28 @@ Ext.define('Genesis.controller.client.Challenges',
                me.redirectTo('referrals');
                break;
             }
+            case 'birthday' :
+            {
+               if (!db['account'].birthday)
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : me.selectedItem.get('name') + ' Challenge',
+                     message : me.updateAccountInfoMsg,
+                     buttons : ['OK', 'Cancel'],
+                     callback : function(btn)
+                     {
+                        if (btn.toLowerCase() == 'ok')
+                        {
+                           me.redirectTo('settings');
+                        }
+                     }
+                  });
+                  break;
+               }
+            }
             case 'photo' :
             case 'menu' :
-            case 'birthday' :
             case 'vip' :
             case 'custom' :
             {

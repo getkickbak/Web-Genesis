@@ -49,7 +49,6 @@ Ext.define('Genesis.controller.server.Settings',
       {
       }
    },
-   _initializing : true,
    writeTagEnabled : true,
    proceedToUpdateLicenseMsg : 'Please confirm to proceed with License Update',
    noLicenseKeyScannedMsg : 'No License Key was found!',

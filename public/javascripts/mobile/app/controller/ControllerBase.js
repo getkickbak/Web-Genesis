@@ -646,7 +646,7 @@ Ext.define('Genesis.controller.ControllerBase',
    updateAuthCode : function(metaData)
    {
       var me = this, rc = false, db = Genesis.db.getLocalDB();
-      var authCode = metaData['auth_token'], csrfCode = metaData['csrf_token'], vtagId = metaData['virtual_tag_id'], account = metaData['account'];
+      var authCode = metaData['auth_token'], csrfCode = metaData['csrf_token'], account = metaData['account'];
 
       if (!authCode)
          return rc;
@@ -657,7 +657,6 @@ Ext.define('Genesis.controller.ControllerBase',
       {
          db['auth_code'] = authCode;
          db['csrf_code'] = csrfCode;
-         db['vtagId'] = vtagId;
          db['account'] = account ||
          {
          };
@@ -666,7 +665,6 @@ Ext.define('Genesis.controller.ControllerBase',
          console.debug('\n' + //
          "auth_code [" + authCode + "]" + "\n" + //
          "csrf_code [" + csrfCode + "]" + "\n" + //
-         "vtagId [" + vtagId + "]" + "\n" + //
          "account [" + Ext.encode(account) + "]" + "\n" + //
          "currFbId [" + db['currFbId'] + "]");
       }
