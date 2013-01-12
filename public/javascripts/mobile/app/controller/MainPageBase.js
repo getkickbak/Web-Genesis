@@ -118,11 +118,11 @@ Ext.define('Genesis.controller.MainPageBase',
    {
       if (Ext.os.is('Android'))
       {
-         var carousel = activeItem.query('carousel')[0];
-         var items = carousel.getInnerItems();
-
-         console.debug("Refreshing MainPage ...");
          /*
+          var carousel = activeItem.query('carousel')[0];
+          var items = carousel.getInnerItems();
+
+          console.debug("Refreshing MainPage ...");
           for (var i = 0; i < items.length; i++)
           {
           items[i].refresh();

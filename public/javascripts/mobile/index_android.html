@@ -78,7 +78,7 @@
          }
       </script>
       <script type="text/javascript">
-         var launched = 0x000;
+         var launched = 0x000, pausedDisabled = true;
          var backBtnCallbackListFn = [];
          
          var offlineDialogShown = false;
@@ -86,10 +86,12 @@
          var debugMode = false;
          var merchantMode = false;
          var appName = 'GetKickBak';
-         //var pushNotifAppName = 'KickBak Development';
-         //var pushNotifAppId = '4fef50b25b2f16.74735670';
+         /*
          var pushNotifAppName = 'KickBak Production';
          var pushNotifAppId = '4fef6fb0691c12.54726991';
+         */
+         var pushNotifAppName = 'KickBak Development';
+         var pushNotifAppId = '4fef50b25b2f16.74735670';
          var pushNotifType = 3;
 
          var hostRoot = "";
@@ -152,27 +154,30 @@
             }, false);
             document.addEventListener("pause", function()
             {
-               if (_application)
+               if (_application && (launched == 0x111) && !pausedDisabled)
                {
                   _application.getController('client.Viewport').persistSyncStores();
+                  console.log("App is Paused");
                }
-               console.log("App is Paused");
             }, false);
 
             document.addEventListener("resume", function()
             {
-               if (Ext.device)
+               if (!pausedDisabled)
                {
-                  if (!Ext.device.Connection.isOnline())
+                  if (Ext.device)
                   {
-                     _onGotoMain();
+                     if (!Ext.device.Connection.isOnline())
+                     {
+                        _onGotoMain();
+                     }
+                     else
+                     {
+                        //_onGotoMainCallBackFn();
+                     }
                   }
-                  else
-                  {
-                     //_onGotoMainCallBackFn();
-                  }
-               }
-               console.log("App is Resumed");
+                  console.log("App is Resumed");
+              }
             }, false);
 
             // add back button listener

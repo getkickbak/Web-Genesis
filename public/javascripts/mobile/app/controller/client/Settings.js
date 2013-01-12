@@ -90,7 +90,15 @@ Ext.define('Genesis.controller.client.Settings',
                fbFn : function(field)
                {
                   var birthday = new Date.parse(db['fbResponse']['birthday']);
-                  return (!birthday || !( birthday instanceof Date)) ? ' ' : birthday;
+                  if (!birthday || !( birthday instanceof Date))
+                  {
+                     birthday = ' ';
+                  }
+                  if ( birthday instanceof Date)
+                  {
+                     field.setReadOnly(true);
+                  }
+                  return birthday;
                }
             }
          });
@@ -103,14 +111,14 @@ Ext.define('Genesis.controller.client.Settings',
       {
          f = fields[i];
          f.preLoadFn(f.field);
-         if (db['account'][i])
-         {
-            f[i] = f.fn(f);
-         }
-         else
          if (db['fbResponse'])
          {
-            f.fbFn(f);
+            f[i] = f.fbFn(f.field);
+         }
+         else
+         if (db['account'][i])
+         {
+            f[i] = f.fn(f.field);
          }
       }
 

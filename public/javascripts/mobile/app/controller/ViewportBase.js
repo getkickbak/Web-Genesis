@@ -42,6 +42,264 @@ Ext.define('Genesis.controller.ViewportBase',
    gatherCheckinInfoMsg : 'Prepare to scan Check-in Code ...',
    retrieveChallengesMsg : 'Retrieving Challenges ...',
    // --------------------------------------------------------------------------
+   // MetaData Handlers
+   // --------------------------------------------------------------------------
+   updateBadges : function(badges)
+   {
+      var me = this;
+      var bstore = Ext.StoreMgr.get('BadgeStore');
+      if (badges)
+      {
+         // Update All Badges
+         //console.debug('badges - [' + Ext.encode(badges) + ']');
+         bstore.setData(badges);
+         //me.persistSyncStores('BadgeStore');
+      }
+   },
+   updateAccountInfo : function(metaData, info)
+   {
+      var me = this;
+      var updateBadge = false;
+      var viewport = me.getViewPortCntlr();
+      var bstore = Ext.StoreMgr.get('BadgeStore');
+      var cstore = Ext.StoreMgr.get('CustomerStore');
+      var customer = viewport.getCustomer();
+      var customerId = metaData['customer_id'] || ((customer) ? customer.getId() : 0);
+      if (customerId > 0)
+      {
+         console.debug("updateAccountInfo - customerId[" + customerId + "]");
+
+         customer = cstore.getById(customerId);
+         if (customer)
+         {
+            customer.beginEdit();
+            if (info)
+            {
+               if (Ext.isDefined(info['points']))
+               {
+                  customer.set('points', info['points']);
+               }
+               if (Ext.isDefined(info['prize_points']))
+               {
+                  customer.set('prize_points', info['prize_points']);
+               }
+               if (Ext.isDefined(info['visits']))
+               {
+                  customer.set('visits', info['visits']);
+               }
+               if (Ext.isDefined(info['next_badge_visits']))
+               {
+                  customer.set('next_badge_visits', info['next_badge_visits']);
+               }
+               //
+               // Badge Status
+               //
+               var badges = [
+               {
+                  id : info['badge_id'],
+                  prefix : "Customer's Current Badge is - [",
+                  badgeId : 'badge_id'
+               }, //
+               {
+                  id : info['next_badge_id'],
+                  prefix : "Customer's Next Badge is - [",
+                  badgeId : 'next_badge_id'
+               }];
+               for (var i = 0; i < badges.length; i++)
+               {
+                  if (Ext.isDefined(badges[i].id))
+                  {
+                     var badge = bstore.getById(badges[i].id);
+                     console.debug(badges[i].prefix + //
+                     badge.get('type').display_value + "/" + badge.get('visits') + "]");
+
+                     customer.set(badges[i].badgeId, badges[i].id);
+                  }
+               }
+               var eligible_reward = info['eligible_for_reward'];
+               if (Ext.isDefined(eligible_reward))
+               {
+                  customer.set('eligible_for_reward', eligible_reward);
+               }
+               var eligible_prize = info['eligible_for_prize'];
+               if (Ext.isDefined(eligible_prize))
+               {
+                  customer.set('eligible_for_prize', eligible_prize);
+               }
+            }
+            customer.endEdit();
+            me.persistSyncStores('CustomerStore');
+         }
+      }
+      /*
+       if (updateBadge)
+       {
+       Ext.defer(me.refreshBadges, 0.1 * 1000, me);
+       }
+       */
+
+      return customer;
+   },
+   updateRewards : function(rewards)
+   {
+      if (rewards && (rewards.length > 0))
+      {
+         var me = this;
+         var viewport = me.getViewPortCntlr();
+         var merchant = viewport.getVenue().getMerchant();
+
+         console.debug("Total Redemption Rewards - " + rewards.length);
+         for (var i = 0; i < rewards.length; i++)
+         {
+            rewards[i]['merchant'] = merchant;
+         }
+         var rstore = Ext.StoreMgr.get('RedeemStore');
+         rstore.setData(rewards);
+      }
+   },
+   updatePrizes : function(prizes)
+   {
+      if (prizes && (prizes.length > 0))
+      {
+         var me = this;
+         var viewport = me.getViewPortCntlr();
+         var merchant = viewport.getVenue().getMerchant();
+
+         console.debug("Total Redemption Prizes - " + prizes.length);
+         for (var i = 0; i < prizes.length; i++)
+         {
+            prizes[i]['merchant'] = merchant;
+         }
+         var pstore = Ext.StoreMgr.get('PrizeStore');
+         pstore.setData(prizes);
+      }
+   },
+   updateNews : function(news)
+   {
+      if (news && (news.length > 0))
+      {
+         console.debug("Total News Items - " + news.length);
+         var nstore = Ext.StoreMgr.get('NewsStore');
+         nstore.setData(news);
+      }
+   },
+   updateAuthCode : function(metaData)
+   {
+      var me = this, rc = false, db = Genesis.db.getLocalDB();
+      var authCode = metaData['auth_token'], csrfCode = metaData['csrf_token'], account = metaData['account'];
+
+      if (!authCode)
+         return rc;
+
+      rc = true;
+
+      if ((authCode != db['auth_code']) || (csrfCode != db['csrf_code']))
+      {
+         db['auth_code'] = authCode;
+         db['csrf_code'] = csrfCode;
+         db['account'] = account ||
+         {
+         };
+         Genesis.db.setLocalDB(db);
+
+         console.debug('\n' + //
+         "auth_code [" + authCode + "]" + "\n" + //
+         "csrf_code [" + csrfCode + "]" + "\n" + //
+         "account [" + Ext.encode(account) + "]" + "\n" + //
+         "currFbId [" + db['currFbId'] + "]");
+      }
+
+      // No Venue Checked-In from previous session
+      if (!db['last_check_in'])
+      {
+         me.redirectTo('checkin');
+      }
+
+      return rc;
+   },
+   updateMetaDataInfo : function(metaData)
+   {
+      var me = this, customer = null, viewport = me.getViewPortCntlr(), cestore = Ext.StoreMgr.get('CheckinExploreStore');
+      try
+      {
+         //
+         // Update Authentication Token
+         //
+         if (me.updateAuthCode(metaData))
+         {
+            return;
+         }
+
+         //
+         // Update points from the purchase or redemption
+         // Update Customer info
+         //
+         me.updateBadges(metaData['badges']);
+
+         customer = me.updateAccountInfo(metaData, metaData['account_info']);
+         //
+         // Short Cut to earn points, customer object wil be given by server
+         //
+         // Find venueId from metaData or from DataStore
+         var new_venueId = metaData['venue_id'] || ((cestore.first()) ? cestore.first().getId() : 0);
+         // Find venue from DataStore or current venue info
+         venue = cestore.getById(new_venueId) || viewport.getVenue();
+
+         if (Ext.isDefined(metaData['venue']))
+         {
+            venue = Ext.create('Genesis.model.Venue', metaData['venue']);
+            var controller = me.getApplication().getController('client' + '.Checkins');
+            //
+            // Winners' Circle'
+            //
+            var prizeJackpotsCount = metaData['prize_jackpots'];
+            if (prizeJackpotsCount >= 0)
+            {
+               console.debug("Prize Jackpots won by customers at this merchant this month - [" + prizeJackpotsCount + "]");
+               venue.set('prize_jackpots', prizeJackpotsCount);
+            }
+
+            console.debug("customer_id - " + customer.getId() + '\n' + //
+            "merchant_id - " + venue.getMerchant().getId() + '\n' + //
+            //"venue - " + Ext.encode(metaData['venue']));
+            '');
+            controller.fireEvent('setupCheckinInfo', 'checkin', venue, customer, metaData);
+         }
+         else
+         {
+            //
+            // Winners' Circle'
+            //
+            var prizeJackpotsCount = metaData['prize_jackpots'];
+            if (prizeJackpotsCount >= 0)
+            {
+               console.debug("Prize Jackpots won by customers at this merchant this month - [" + prizeJackpotsCount + "]");
+               venue.set('prize_jackpots', prizeJackpotsCount);
+            }
+         }
+
+         //
+         // Update Customer Rewards (Rewards Redemptions)
+         //
+         me.updateRewards(metaData['rewards']);
+         //
+         // Update Customer Rewards (Prizes Redemptions)
+         //
+         me.updatePrizes(metaData['prizes']);
+         //
+         // Update News
+         // (Make sure we are after Redemption because we may depend on it for rendering purposes)
+         //
+         me.updateNews(metaData['newsfeed']);
+      }
+      catch(e)
+      {
+         console.debug("updateMetaDataInfo Exception - " + e);
+      }
+
+      return customer;
+   },
+   // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
    onActivate : function()
@@ -277,8 +535,7 @@ Ext.define('Genesis.controller.ViewportBase',
    },
    loadSoundFile : function(tag, sound_file, type)
    {
-      var me = this;
-      var ext = '.' + (sound_file.split('.')[1] || 'mp3');
+      var me = this, ext = '.' + (sound_file.split('.')[1] || 'mp3');
       sound_file = sound_file.split('.')[0];
       if (Genesis.fn.isNative())
       {

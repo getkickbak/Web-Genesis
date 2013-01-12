@@ -220,18 +220,6 @@ Ext.define('Genesis.controller.client.MainPage',
                   controller.callBackStack['arguments'] = [metaData];
                   controller.fireEvent('triggerCallbacksChain');
                }
-               //
-               // Update PrizeStore
-               //
-               /*
-                var prizes = metaData['prizes'];
-                if (prizes)
-                {
-                console.debug("Total Prizes - " + prizes.length);
-                Ext.StoreMgr.get('rizeStore').setData(prizes);
-                me.persistSyncStores('PrizeStore');
-                }
-                */
             }
          },
          grouper :
@@ -336,25 +324,7 @@ Ext.define('Genesis.controller.client.MainPage',
    {
       //activeItem.createView();
       this.getInfoBtn()[(merchantMode) ? 'hide' : 'show']();
-      /*
-       if (!merchantMode)
-       {
-       var showIcon = false;
-       var customers = Ext.StoreMgr.get('CustomerStore').getRange();
-
-       for (var i = 0; i < customers.length; i++)
-       {
-       var customer = customers[i];
-       if (customer.get('eligible_for_prize'))
-       {
-       showIcon = true;
-       break;
-       }
-       }
-       this.getPrizesBtn().setBadgeText( showIcon ? '✔' : null);
-       }
-       */
-      Ext.Viewport.setMasked(null);
+      //Ext.Viewport.setMasked(null);
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -499,7 +469,7 @@ Ext.define('Genesis.controller.client.MainPage',
       //
       // Forced to Login to Facebook
       //
-      if (Ext.Viewport.getMasked())
+      if (Ext.Viewport.getMasked() || me._loggingOut)
       {
          return;
       }
@@ -556,8 +526,7 @@ Ext.define('Genesis.controller.client.MainPage',
    // --------------------------------------------------------------------------
    onRefreshCSRF : function()
    {
-      var me = this;
-      var proxy = Account.getProxy();
+      var me = this, viewport = me.getViewPortCntlr(), proxy = Account.getProxy(), db = Genesis.db.getLocalDB();
 
       Account['setRefreshCsrfTokenUrl']();
       console.log("setRefreshCsrfTokenUrl - Refreshing CSRF Token ...");
@@ -583,12 +552,8 @@ Ext.define('Genesis.controller.client.MainPage',
             //console.debug("CSRF callback - " + operation.wasSuccessful());
             if (operation.wasSuccessful())
             {
-               //Ext.Viewport.setMasked(null);
-               var db = Genesis.db.getLocalDB();
-               var viewport = me.getViewPortCntlr();
-
-               me.persistLoadStores(Ext.emptyFn);
                viewport.fireEvent('completeRefreshCSRF');
+               me.persistLoadStores(Ext.emptyFn);
 
                // Return to previous Venue
                if (db['last_check_in'])
@@ -681,6 +646,20 @@ Ext.define('Genesis.controller.client.MainPage',
    },
    onSignIn : function(username, password)
    {
+      var me = this;
+      //
+      // Forced to Login
+      //
+      if (Ext.Viewport.getMasked() || me._loggingOut)
+      {
+         return;
+      }
+
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.loginMsg
+      });
       //Cleanup any outstanding registrations
       if (Genesis.fn.isNative())
       {

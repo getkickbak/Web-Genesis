@@ -133,7 +133,9 @@ Ext.define('Genesis.view.client.SettingsPage',
          {
             xtype : 'togglefield',
             name : 'facebook',
-            label : 'Facebook',
+            label : '<img src="' + //
+            'resources/themes/images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png" ' + //
+            'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;"/>',
             value : 0
          },
          {
