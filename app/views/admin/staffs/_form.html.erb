@@ -4,9 +4,9 @@
 	<%= f.input :email, :input_html=>{:class => "input-xxlarge"} %>
 	<%= f.input :role, :collection => Staff::Roles, :input_html => { :class => 'input-medium' } %>
 	<%= f.input :status, :collection => Staff::Statuses, :input_html => { :class => 'input-medium' } %>
-	<%= f.input :current_password, :input_html=>{:class => "input-medium"} %>
-	<%= f.input :password, :input_html=>{:class => "input-medium"} %>
-	<%= f.input :password_confirmation, :input_html=>{:class => "input-medium"} %>
+	<%= f.input :current_password, :required => false, :input_html=>{:class => "input-medium"} %>
+	<%= f.input :password, :label => "New password", :required => false, :input_html=>{:class => "input-medium"} %>
+	<%= f.input :password_confirmation, :required => false, :input_html=>{:class => "input-medium"} %>
 	<br />
 	<div class="form-actions">
 		<%= f.button :submit , 'Update', :class => 'btn btn-primary' %>

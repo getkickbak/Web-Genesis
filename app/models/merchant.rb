@@ -147,21 +147,6 @@ class Merchant
     merchant.type = type
     merchant.visit_frequency = visit_frequency
     merchant.save
-
-    sign_up_auth_code = "#{merchant.id}"
-    data =  {
-      :auth_code => sign_up_auth_code
-    }.to_json
-    cipher = Gibberish::AES.new(merchant.auth_code)
-    encrypted_data = cipher.enc(data)
-    merchant.sign_up_code = SignUpCode.new
-    encrypted_code = "m#{merchant.id}$#{encrypted_data}"
-    merchant.sign_up_code[:auth_code] = sign_up_auth_code
-    merchant.sign_up_code[:qr_code] = SignUpCode.generate_qr_code(merchant.id, encrypted_code)
-    merchant.sign_up_code[:qr_code_img] = merchant.sign_up_code.generate_qr_code_image(merchant.id)
-    merchant.sign_up_code[:created_ts] = now
-    merchant.sign_up_code[:update_ts] = now
-    merchant.save
     return merchant
   end
 

@@ -9,9 +9,9 @@
    <%= f.simple_fields_for @user.profile do |builder| %>
    <%= render "profile", :f => builder %>
    <% end %>
-   <%= f.input :current_password, :input_html=>{:class => "input-medium"} %>
-   <%= f.input :password, :input_html=>{:class => "input-medium"} %>
-   <%= f.input :password_confirmation, :input_html=>{:class => "input-medium"} %>
+   <%= f.input :current_password, :required => false, :input_html=>{:class => "input-medium"} %>
+   <%= f.input :password, :label => "New password", :required => false, :input_html=>{:class => "input-medium"} %>
+   <%= f.input :password_confirmation, :required => false, :input_html=>{:class => "input-medium"} %>
    <br />
    <div class="form-actions">
       <%= f.button :submit , "Update", :class => 'btn btn-primary' %>
