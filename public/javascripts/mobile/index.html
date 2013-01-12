@@ -84,7 +84,7 @@
          }
       </script>
       <script type="text/javascript">
-         var launched = 0x000;
+         var launched = 0x000, pausedDisabled = true;
          var backBtnCallbackListFn = [];
 
          var offlineDialogShown = false;
@@ -92,10 +92,12 @@
          var debugMode = false;
          var merchantMode = false;
          var appName = 'GetKickBak';
-         //var pushNotifAppName = 'KickBak Development';
-         //var pushNotifAppId = '4fef50b25b2f16.74735670';
+         /*
          var pushNotifAppName = 'KickBak Production';
          var pushNotifAppId = '4fef6fb0691c12.54726991';
+         */
+         var pushNotifAppName = 'KickBak Development';
+         var pushNotifAppId = '4fef50b25b2f16.74735670';
          var pushNotifType = 1;
 
          var _appPath = "app", _extPath = 'lib/sencha-touch-2.1.0-commercial/src';
@@ -156,7 +158,7 @@
             }, false);
             document.addEventListener("pause", function()
             {
-               if (_application)
+               if (_application && (launched == 0x111))
                {
                   _application.getController('client.Viewport').persistSyncStores();
                }

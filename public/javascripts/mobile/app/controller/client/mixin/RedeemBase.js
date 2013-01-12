@@ -19,8 +19,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
    // --------------------------------------------------------------------------
    updateMetaDataInfo : function(metaData)
    {
-      var me = this;
-      var customer = me.callParent(arguments);
+      var me = this, customer = me.callParent(arguments);
 
       //
       // Claim Reward Item by showing QRCode to Merchant Device!

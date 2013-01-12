@@ -7,6 +7,7 @@ Ext.define('Genesis.controller.ControllerBase',
       animationMode : null
    },
    establishConnectionMsg : 'Connecting to Server ...',
+   loginMsg : 'Logging in ...',
    checkinMsg : 'Checking in ...',
    loadingScannerMsg : 'Loading Scanner ...',
    loadingMsg : 'Loading ...',
@@ -504,264 +505,10 @@ Ext.define('Genesis.controller.ControllerBase',
          me.callBackStack['arguments'] = [];
       }
    },
-   updateBadges : function(badges)
-   {
-      var me = this;
-      var bstore = Ext.StoreMgr.get('BadgeStore');
-      if (badges)
-      {
-         // Update All Badges
-         //console.debug('badges - [' + Ext.encode(badges) + ']');
-         bstore.setData(badges);
-         //me.persistSyncStores('BadgeStore');
-      }
-   },
-   updateAccountInfo : function(metaData, info)
-   {
-      var me = this;
-      var updateBadge = false;
-      var viewport = me.getViewPortCntlr();
-      var bstore = Ext.StoreMgr.get('BadgeStore');
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var customer = viewport.getCustomer();
-      var customerId = metaData['customer_id'] || ((customer) ? customer.getId() : 0);
-      if (customerId > 0)
-      {
-         console.debug("updateAccountInfo - customerId[" + customerId + "]");
-
-         customer = cstore.getById(customerId);
-         if (customer)
-         {
-            customer.beginEdit();
-            if (info)
-            {
-               if (Ext.isDefined(info['points']))
-               {
-                  customer.set('points', info['points']);
-               }
-               if (Ext.isDefined(info['prize_points']))
-               {
-                  customer.set('prize_points', info['prize_points']);
-               }
-               if (Ext.isDefined(info['visits']))
-               {
-                  customer.set('visits', info['visits']);
-               }
-               if (Ext.isDefined(info['next_badge_visits']))
-               {
-                  customer.set('next_badge_visits', info['next_badge_visits']);
-               }
-               //
-               // Badge Status
-               //
-               var badges = [
-               {
-                  id : info['badge_id'],
-                  prefix : "Customer's Current Badge is - [",
-                  badgeId : 'badge_id'
-               }, //
-               {
-                  id : info['next_badge_id'],
-                  prefix : "Customer's Next Badge is - [",
-                  badgeId : 'next_badge_id'
-               }];
-               for (var i = 0; i < badges.length; i++)
-               {
-                  if (Ext.isDefined(badges[i].id))
-                  {
-                     var badge = bstore.getById(badges[i].id);
-                     console.debug(badges[i].prefix + //
-                     badge.get('type').display_value + "/" + badge.get('visits') + "]");
-
-                     customer.set(badges[i].badgeId, badges[i].id);
-                  }
-               }
-               var eligible_reward = info['eligible_for_reward'];
-               if (Ext.isDefined(eligible_reward))
-               {
-                  customer.set('eligible_for_reward', eligible_reward);
-               }
-               var eligible_prize = info['eligible_for_prize'];
-               if (Ext.isDefined(eligible_prize))
-               {
-                  customer.set('eligible_for_prize', eligible_prize);
-               }
-            }
-            customer.endEdit();
-            me.persistSyncStores('CustomerStore');
-         }
-      }
-      /*
-       if (updateBadge)
-       {
-       Ext.defer(me.refreshBadges, 0.1 * 1000, me);
-       }
-       */
-
-      return customer;
-   },
-   updateRewards : function(rewards)
-   {
-      if (rewards && (rewards.length > 0))
-      {
-         var me = this;
-         var viewport = me.getViewPortCntlr();
-         var merchant = viewport.getVenue().getMerchant();
-
-         console.debug("Total Redemption Rewards - " + rewards.length);
-         for (var i = 0; i < rewards.length; i++)
-         {
-            rewards[i]['merchant'] = merchant;
-         }
-         var rstore = Ext.StoreMgr.get('RedeemStore');
-         rstore.setData(rewards);
-      }
-   },
-   updatePrizes : function(prizes)
-   {
-      if (prizes && (prizes.length > 0))
-      {
-         var me = this;
-         var viewport = me.getViewPortCntlr();
-         var merchant = viewport.getVenue().getMerchant();
-
-         console.debug("Total Redemption Prizes - " + prizes.length);
-         for (var i = 0; i < prizes.length; i++)
-         {
-            prizes[i]['merchant'] = merchant;
-         }
-         var pstore = Ext.StoreMgr.get('PrizeStore');
-         pstore.setData(prizes);
-      }
-   },
-   updateNews : function(news)
-   {
-      if (news && (news.length > 0))
-      {
-         console.debug("Total News Items - " + news.length);
-         var nstore = Ext.StoreMgr.get('NewsStore');
-         nstore.setData(news);
-      }
-   },
-   updateAuthCode : function(metaData)
-   {
-      var me = this, rc = false, db = Genesis.db.getLocalDB();
-      var authCode = metaData['auth_token'], csrfCode = metaData['csrf_token'], account = metaData['account'];
-
-      if (!authCode)
-         return rc;
-
-      rc = true;
-
-      if ((authCode != db['auth_code']) || (csrfCode != db['csrf_code']))
-      {
-         db['auth_code'] = authCode;
-         db['csrf_code'] = csrfCode;
-         db['account'] = account ||
-         {
-         };
-         Genesis.db.setLocalDB(db);
-
-         console.debug('\n' + //
-         "auth_code [" + authCode + "]" + "\n" + //
-         "csrf_code [" + csrfCode + "]" + "\n" + //
-         "account [" + Ext.encode(account) + "]" + "\n" + //
-         "currFbId [" + db['currFbId'] + "]");
-      }
-
-      // No Venue Checked-In from previous session
-      if (!db['last_check_in'])
-      {
-         me.redirectTo('checkin');
-      }
-
-      return rc;
-   },
    updateMetaDataInfo : function(metaData)
    {
-      var me = this;
-      var customer = null;
-      var viewport = me.getViewPortCntlr();
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-
-      try
-      {
-         //
-         // Update Authentication Token
-         //
-         if (me.updateAuthCode(metaData))
-         {
-            return;
-         }
-
-         //
-         // Update points from the purchase or redemption
-         // Update Customer info
-         //
-         me.updateBadges(metaData['badges']);
-
-         customer = me.updateAccountInfo(metaData, metaData['account_info']);
-         //
-         // Short Cut to earn points, customer object wil be given by server
-         //
-         // Find venueId from metaData or from DataStore
-         var new_venueId = metaData['venue_id'] || ((cestore.first()) ? cestore.first().getId() : 0);
-         // Find venue from DataStore or current venue info
-         venue = cestore.getById(new_venueId) || viewport.getVenue();
-
-         if (Ext.isDefined(metaData['venue']))
-         {
-            venue = Ext.create('Genesis.model.Venue', metaData['venue']);
-            var controller = me.getApplication().getController('client.Checkins');
-            //
-            // Winners' Circle'
-            //
-            var prizeJackpotsCount = metaData['prize_jackpots'];
-            if (prizeJackpotsCount >= 0)
-            {
-               console.debug("Prize Jackpots won by customers at this merchant this month - [" + prizeJackpotsCount + "]");
-               venue.set('prize_jackpots', prizeJackpotsCount);
-            }
-
-            console.debug("customer_id - " + customer.getId() + '\n' + //
-            "merchant_id - " + venue.getMerchant().getId() + '\n' + //
-            //"venue - " + Ext.encode(metaData['venue']));
-            '');
-            controller.fireEvent('setupCheckinInfo', 'checkin', venue, customer, metaData);
-         }
-         else
-         {
-            //
-            // Winners' Circle'
-            //
-            var prizeJackpotsCount = metaData['prize_jackpots'];
-            if (prizeJackpotsCount >= 0)
-            {
-               console.debug("Prize Jackpots won by customers at this merchant this month - [" + prizeJackpotsCount + "]");
-               venue.set('prize_jackpots', prizeJackpotsCount);
-            }
-         }
-
-         //
-         // Update Customer Rewards (Rewards Redemptions)
-         //
-         me.updateRewards(metaData['rewards']);
-         //
-         // Update Customer Rewards (Prizes Redemptions)
-         //
-         me.updatePrizes(metaData['prizes']);
-         //
-         // Update News
-         // (Make sure we are after Redemption because we may depend on it for rendering purposes)
-         //
-         me.updateNews(metaData['newsfeed']);
-      }
-      catch(e)
-      {
-         console.debug("updateMetaDataInfo Exception - " + e);
-      }
-
-      return customer;
+      var me = this, viewport = me.getViewPortCntlr();
+      viewport.updateMetaDataInfo(metaData);
    },
    checkReferralPrompt : function(cbOnSuccess, cbOnFail)
    {
@@ -1003,7 +750,7 @@ Ext.define('Genesis.controller.ControllerBase',
    // --------------------------------------------------------------------------
    persistStore : function(storeName)
    {
-      var stores =
+      var i, stores =
       {
          'CustomerStore' : [Ext.StoreMgr.get('Persistent' + 'CustomerStore'), 'CustomerStore', 'CustomerJSON'],
          'LicenseStore' : [Ext.StoreMgr.get('Persistent' + 'LicenseStore'), 'LicenseStore', 'frontend.LicenseKeyJSON']
@@ -1011,16 +758,25 @@ Ext.define('Genesis.controller.ControllerBase',
          //,'PrizeStore' : [Ext.StoreMgr.get('Persistent' + 'PrizeStore'), 'PrizeStore',
          // 'CustomerRewardJSON']
       };
-      for (var i in stores)
+      console.debug("Looking for " + storeName);
+      for (i in stores)
       {
          if (!stores[i][0])
          {
             Ext.regStore('Persistent' + stores[i][1],
             {
                model : 'Genesis.model.' + stores[i][2],
+               syncRemovedRecords : true,
                autoLoad : false
             });
             stores[i][0] = Ext.StoreMgr.get('Persistent' + stores[i][1]);
+            //console.debug("Created [" + 'Persistent' + stores[i][1] + "]");
+         }
+         else
+         if (stores[i][0].getStoreId() == ('Persistent' + storeName))
+         {
+            //console.debug("Store[" + stores[i][0].getStoreId() + "] found!");
+            return stores[i][0];
          }
       }
 
@@ -1028,73 +784,88 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    persistLoadStores : function(callback)
    {
-      var stores = [//
+      var store, i, x, flag = 0x0, stores = [//
       [this.persistStore('CustomerStore'), 'CustomerStore', 0x0001], //
       [this.persistStore('LicenseStore'), 'LicenseStore', 0x0010] //
       //[this.persistStore('BadgeStore'), 'BadgeStore', 0x10]];
       //,[this.persistStore('PrizeStore'), 'PrizeStore', 0x10]];
       ];
-      var flag = 0x0;
 
       callback = callback || Ext.emptyFn;
-      for (var i = 0; i < stores.length; i++)
+      for ( i = 0; i < stores.length; i++)
       {
-         stores[i][0].load(
+         store = Ext.StoreMgr.get(stores[i][1]);
+         if (!store)
          {
-            callback : function(results, operation)
+            console.debug("Cannot find Store[" + stores[i][1] + "] to be restored!");
+         }
+         try
+         {
+            //var ids = stores[i][0].getProxy().getIds();
+            //console.debug("Ids found are [" + ids + "]");
+            stores[i][0].load(
             {
-               var items = [];
-               if (operation.wasSuccessful())
+               callback : function(results, operation)
                {
-                  var store = Ext.StoreMgr.get(stores[i][1]);
-                  store.removeAll();
-                  for (var x = 0; x < results.length; x++)
+                  var items = [];
+                  if (operation.wasSuccessful())
                   {
-                     items.push(results[x].get('json'));
+                     store.removeAll();
+                     for ( x = 0; x < results.length; x++)
+                     {
+                        var data = results[x].get('json');
+                        items.push(data);
+                     }
+                     store.setData(items);
+                     console.debug("Restored " + results.length + " records to " + stores[i][1]);
                   }
-                  store.setData(items);
-                  console.debug("Restored " + results.length + " records to " + stores[i][1] + " ...");
-               }
-               else
-               {
-                  console.debug("Error Restoring " + stores[i][1] + " ...");
-               }
+                  else
+                  {
+                     console.debug("Error Restoring " + stores[i][1] + " ...");
+                  }
 
-               if ((flag |= stores[i][2]) == 0x0011)
-               {
-                  callback();
+                  if ((flag |= stores[i][2]) == 0x0011)
+                  {
+                     callback();
+                  }
                }
-            }
-         });
+            });
+         }
+         catch(e)
+         {
+            console.log("Stack Trace - [" + e.stack + "]");
+         }
       }
    },
    persistSyncStores : function(storeName, cleanOnly)
    {
-      var stores = [//
+      var i, x, items, json, stores = [//
       [this.persistStore('CustomerStore'), 'CustomerStore', 0x0001], //
       [this.persistStore('LicenseStore'), 'LicenseStore', 0x0010] //
       //[this.persistStore('BadgeStore'), 'BadgeStore', 0x10]];
       //, [this.persistStore('PrizeStore'), 'PrizeStore', 0x10]];
       ];
-      for (var i = 0; i < stores.length; i++)
+      //console.debug('persistSyncStores called storeName=[' + storeName + ']');
+      for ( i = 0; i < stores.length; i++)
       {
          if (!storeName || (stores[i][1] == storeName))
          {
             stores[i][0].removeAll();
+            stores[i][0].getProxy().clear();
             if (!cleanOnly)
             {
-               var items = Ext.StoreMgr.get(stores[i][1]).getRange();
-               for (var x = 0; x < items.length; x++)
+               items = Ext.StoreMgr.get(stores[i][1]).getRange();
+               for ( x = 0; x < items.length; x++)
                {
-                  var json = items[x].getData(true);
-                  stores[i][0].add(
+                  json = items[x].getData(true);
+                  stores[i][0].add(Ext.create('Genesis.model.CustomerJSON',
                   {
                      json : json
-                  });
+                  }));
                }
+               console.debug("Found " + items.length + " records in [" + stores[i][1] + "] ...");
             }
             stores[i][0].sync();
-            console.debug("Synced " + stores[i][1] + " ... ");
          }
       }
    },

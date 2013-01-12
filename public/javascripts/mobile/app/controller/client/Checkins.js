@@ -406,15 +406,13 @@ Ext.define('Genesis.controller.client.Checkins',
    // --------------------------------------------------------------------------
    onLocationUpdate : function(position)
    {
-      var me = this, tbb = me.getToolbarBottom(), params =
+      var me = this, tbb = me.getToolbarBottom(), viewport = me.getViewPortCntlr(), params =
       {
-      };
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore'), proxy = cestore.getProxy();
+      }, cestore = Ext.StoreMgr.get('CheckinExploreStore'), proxy = cestore.getProxy();
 
       Ext.Viewport.setMasked(null);
       if (!Genesis.db.getLocalDB()['csrf_code'])
       {
-         var viewport = me.getViewPortCntlr();
          viewport.on('completeRefreshCSRF', function()
          {
             me.onLocationUpdate(position);
@@ -425,6 +423,7 @@ Ext.define('Genesis.controller.client.Checkins',
       }
       else
       {
+         pausedDisabled = false;
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',

@@ -884,7 +884,7 @@ Ext.define('Genesis.data.proxy.Server',
                         if (metaData['session_timeout'])
                         {
                            viewport.resetView();
-                           viewport.redirectTo('main');
+                           viewport.redirectTo('login');
                            return;
                         }
                         else
