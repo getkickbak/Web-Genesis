@@ -638,6 +638,14 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           "User(#{@current_user.id}) successfully earned #{@reward_info[:points]} points, #{@reward_info[:signup_points]} signup points, #{@reward_info[:referral_points]} referral points, #{@reward_info[:birthday_points]} birthday points, #{@reward_info[:prize_points]} prize points, #{@reward_info[:badge_prize_points]} badge prize points at Venue(#{@venue.id})"
         )
       end
+    rescue DataMapper::SaveFailureError => e
+      Request.set_status(@request, :failed)
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
+      end
+    end    
     rescue StandardError => e
       Request.set_status(@request, :failed)
       logger.error("Exception: " + e.message)

@@ -4,7 +4,6 @@ class MerchantAbility
   def initialize(merchant)
     @merchant = merchant
     can :manage, Merchant, :id => @merchant.id
-    can [:read, :update], [Coupon], :order => { :deal => { :merchant => {:id => @merchant.id } } }
     can :read, Invoice, :merchant => { :id => @merchant.id }
     can [:read, :update, :create], Badge, :merchant => { :id => @merchant.id }
     can :manage, CreditCard

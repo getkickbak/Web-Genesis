@@ -1,7 +1,7 @@
 module Business
   class ChallengesController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
-    before_filter :check_is_admin
+    before_filter :check_is_admin, :only => [:new, :create]
     
     def index
       authorize! :read, Challenge

@@ -12,7 +12,6 @@ class StaffAbility
   
   def sales
     staff
-    can :manage, Deal
     can [:read,:create,:update], Merchant
   end
 

@@ -18,18 +18,6 @@ class UserMailer < ActionMailer::Base
     @records = records
     mail(:to => user.email, :subject => I18n.t("mailer.email_subject_points_expiration"))
   end
-  
-  def prize_expiration_reminder_email(user, prizes)
-    @user = user
-    @prizes = prizes
-    mail(:to => user.email, :subject => I18n.t("mailer.email_subject_prize_expiration"))
-  end
-      
-  def voucher_expiration_reminder_email(user, coupons)
-    @user = user
-    @coupons = coupons
-    mail(:to => user.email, :subject => "Reminder - Use your vouchers before they expire!")
-  end
 
   def referral_challenge_confirm_email(referrer, referral, venue, record)
     @referrer = referrer

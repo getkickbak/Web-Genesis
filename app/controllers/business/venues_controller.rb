@@ -1,7 +1,7 @@
 module Business
   class VenuesController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
-    before_filter :check_is_admin
+    before_filter :check_is_admin, :only => [:new, :create]
     #load_and_authorize_resource
     
     def index

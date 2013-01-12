@@ -15,7 +15,7 @@ class Promotion
   
   attr_accessor :start_date_str, :end_date_str
   attr_accessible :message, :start_date, :end_date   
-  
+    
   validates_with_method :start_date, :method => :validate_start_date
   validates_with_method :end_date, :method => :validate_end_date
   

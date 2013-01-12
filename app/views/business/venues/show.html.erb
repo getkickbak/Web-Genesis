@@ -112,6 +112,7 @@
 												</div>
 											</div>
 											<% end %>
+											<% if session[:is_admin] %>
 											<div class="control-group">
 												<label class="control-label"> Longitude: </label>
 												<div class="controls">
@@ -130,7 +131,8 @@
 													<%= @venue.auth_code %>
 												</div>
 											</div>
-											<%= link_to 'Edit', edit_venue_path(@venue) %> | <%= link_to 'Update Authorization Code', update_auth_code_venue_path(@venue) %>
+											<% end %>
+											<%= link_to 'Edit', edit_venue_path(@venue) %><% if session[:is_admin] %> | <%= link_to 'Update Authorization Code', update_auth_code_venue_path(@venue) %><% end %>
 										</div>
 									</div>
 								</div>
@@ -142,22 +144,6 @@
 				</div>
 				<!-- /span9 -->
 				<div class="span3">
-					<div class="widget widget-box">
-						<div class="widget-header">
-							<i class="icon-question-sign"></i>
-							<h3>Extra Info</h3>
-						</div>
-						<!-- /widget-header -->
-						<div class="widget-content">
-							<p>
-								Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-							</p>
-							<p>
-								Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-							</p>
-						</div>
-						<!-- /widget-content -->
-					</div>
 					<!-- /widget-box -->
 					<div class="widget widget-box">
 						<div class="widget-header">
