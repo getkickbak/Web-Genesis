@@ -645,7 +645,6 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
         format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
       end
-    end    
     rescue StandardError => e
       Request.set_status(@request, :failed)
       logger.error("Exception: " + e.message)
