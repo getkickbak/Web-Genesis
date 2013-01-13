@@ -100,7 +100,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
             'tag_id' : (nfcResult) ? nfcResult['tagID'] : null,
             'expiry_ts' : new Date().addHours(3).getTime()
          }, 'reward')
-      });
+      }, true);
    },
    onRefreshQRCode : function(qrcodeMeta)
    {
@@ -135,8 +135,9 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       ((!merchantMode) ? me.lookingForMerchantDeviceMsg : me.lookingForMobileDeviceMsg) : me.retrievingQRCodeMsg;
       var proxy = store.getProxy();
 
-      me.redeemItemFn = function(p)
+      me.redeemItemFn = function(p, closeDialog)
       {
+         dismissDialog = closeDialog;
          if (btn)
          {
             btn.hide();
@@ -249,7 +250,6 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          {
             task = me.getLocalID(function(idx)
             {
-               dismissDialog = true;
                identifiers = idx;
                task = null;
                me.redeemItemFn(
@@ -259,7 +259,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
                   {
                      'expiry_ts' : new Date().addHours(3).getTime()
                   }, 'reward')
-               });
+               }, true);
             }, function()
             {
                Ext.device.Notification.dismiss();
@@ -269,7 +269,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          }
          else
          {
-            me.redeemItemFn(params);
+            me.redeemItemFn(params, false);
          }
       }
    },
