@@ -46,8 +46,7 @@ Ext.define('Genesis.controller.ViewportBase',
    // --------------------------------------------------------------------------
    updateBadges : function(badges)
    {
-      var me = this;
-      var bstore = Ext.StoreMgr.get('BadgeStore');
+      var me = this, bstore = Ext.StoreMgr.get('BadgeStore');
       if (badges)
       {
          // Update All Badges
@@ -58,13 +57,9 @@ Ext.define('Genesis.controller.ViewportBase',
    },
    updateAccountInfo : function(metaData, info)
    {
-      var me = this;
-      var updateBadge = false;
-      var viewport = me.getViewPortCntlr();
-      var bstore = Ext.StoreMgr.get('BadgeStore');
-      var cstore = Ext.StoreMgr.get('CustomerStore');
-      var customer = viewport.getCustomer();
-      var customerId = metaData['customer_id'] || ((customer) ? customer.getId() : 0);
+      var me = this, updateBadge = false, viewport = me.getViewPortCntlr();
+      var bstore = Ext.StoreMgr.get('BadgeStore'), cstore = Ext.StoreMgr.get('CustomerStore');
+      var customer = viewport.getCustomer(), customerId = metaData['customer_id'] || ((customer) ? customer.getId() : 0);
       if (customerId > 0)
       {
          console.debug("updateAccountInfo - customerId[" + customerId + "]");
@@ -94,7 +89,7 @@ Ext.define('Genesis.controller.ViewportBase',
                //
                // Badge Status
                //
-               var badges = [
+               var i, badges = [
                {
                   id : info['badge_id'],
                   prefix : "Customer's Current Badge is - [",
@@ -105,7 +100,7 @@ Ext.define('Genesis.controller.ViewportBase',
                   prefix : "Customer's Next Badge is - [",
                   badgeId : 'next_badge_id'
                }];
-               for (var i = 0; i < badges.length; i++)
+               for ( i = 0; i < badges.length; i++)
                {
                   if (Ext.isDefined(badges[i].id))
                   {
@@ -131,12 +126,6 @@ Ext.define('Genesis.controller.ViewportBase',
             me.persistSyncStores('CustomerStore');
          }
       }
-      /*
-       if (updateBadge)
-       {
-       Ext.defer(me.refreshBadges, 0.1 * 1000, me);
-       }
-       */
 
       return customer;
    },
@@ -144,34 +133,28 @@ Ext.define('Genesis.controller.ViewportBase',
    {
       if (rewards && (rewards.length > 0))
       {
-         var me = this;
-         var viewport = me.getViewPortCntlr();
-         var merchant = viewport.getVenue().getMerchant();
+         var i, me = this, viewport = me.getViewPortCntlr(), merchant = viewport.getVenue().getMerchant();
 
          console.debug("Total Redemption Rewards - " + rewards.length);
-         for (var i = 0; i < rewards.length; i++)
+         for ( i = 0; i < rewards.length; i++)
          {
             rewards[i]['merchant'] = merchant;
          }
-         var rstore = Ext.StoreMgr.get('RedeemStore');
-         rstore.setData(rewards);
+         Ext.StoreMgr.get('RedeemStore').setData(rewards);
       }
    },
    updatePrizes : function(prizes)
    {
       if (prizes && (prizes.length > 0))
       {
-         var me = this;
-         var viewport = me.getViewPortCntlr();
-         var merchant = viewport.getVenue().getMerchant();
+         var i, me = this, viewport = me.getViewPortCntlr(), merchant = viewport.getVenue().getMerchant();
 
          console.debug("Total Redemption Prizes - " + prizes.length);
-         for (var i = 0; i < prizes.length; i++)
+         for ( i = 0; i < prizes.length; i++)
          {
             prizes[i]['merchant'] = merchant;
          }
-         var pstore = Ext.StoreMgr.get('PrizeStore');
-         pstore.setData(prizes);
+         Ext.StoreMgr.get('PrizeStore').setData(prizes);
       }
    },
    updateNews : function(news)
@@ -179,8 +162,7 @@ Ext.define('Genesis.controller.ViewportBase',
       if (news && (news.length > 0))
       {
          console.debug("Total News Items - " + news.length);
-         var nstore = Ext.StoreMgr.get('NewsStore');
-         nstore.setData(news);
+         Ext.StoreMgr.get('NewsStore').setData(news);
       }
    },
    updateAuthCode : function(metaData)

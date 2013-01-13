@@ -395,6 +395,7 @@ Ext.define('Genesis.controller.client.Viewport',
          ['rouletteSpinSound', 'roulette_spin_sound', 'Media'], //
          ['winPrizeSound', 'win_prize_sound', 'Media'], //
          ['losePrizeSound', 'lose_prize_sound', 'Media'], //
+         ['birthdaySound', 'birthday_surprise', 'Media'], //
          ['promoteSound', 'promote_sound', 'FX'], //
          ['clickSound', 'click_sound', 'FX'], //
          //['refreshListSound', 'refresh_list_sound', 'FX'], //

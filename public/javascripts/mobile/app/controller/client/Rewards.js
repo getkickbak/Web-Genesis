@@ -68,6 +68,8 @@ Ext.define('Genesis.controller.client.Rewards',
    missingEarnPtsCodeMsg : 'No Authorization Code was found.',
    checkinFirstMsg : 'Please Check-In before earning rewards',
    authCodeReqMsg : 'Proceed to scan an Authorization Code from your merchant to earn Reward Pts!',
+   birthdayPageTitle : 'Birthday Reward',
+   birthdayTitle : 'Happy Brithday!',
    signupPageTitle : 'Signup Reward',
    signupPromotionTitle : 'Welcome!',
    referralPageTitle : 'Refer A Friend',
@@ -76,6 +78,10 @@ Ext.define('Genesis.controller.client.Rewards',
    signupPromotionMsg : function(points)
    {
       return 'You\'ve earned ' + points + ' Reward Pts from Signing Up for this merchant!';
+   },
+   birthdayMsg : function(points)
+   {
+      return 'You\'ve earned ' + points + 'Bonus Reward Pts!';
    },
    getPointsMsg : function(reward_info)
    {
@@ -114,7 +120,7 @@ Ext.define('Genesis.controller.client.Rewards',
 
       this.callBackStack =
       {
-         callbacks : ['signupPromotionHandler', 'earnPtsHandler', 'referralPromotionHandler', 'scanAndWinHandler'],
+         callbacks : ['birthdayHandler', 'signupPromotionHandler', 'earnPtsHandler', 'referralPromotionHandler', 'scanAndWinHandler'],
          arguments : [],
          startIndex : 0
       };
@@ -174,16 +180,14 @@ Ext.define('Genesis.controller.client.Rewards',
    // --------------------------------------------------------------------------
    // Rewards Page
    // --------------------------------------------------------------------------
-   promotionHandler : function(pageTitle, title, points)
+   promotionHandler : function(pageTitle, title, points, photoType, title, message, callback)
    {
-      var me = this;
-      var vport = me.getViewport();
-      var page = me.getPromotion();
+      var me = this, vport = me.getViewport(), page = me.getPromotion();
       var prefix = Genesis.constants._thumbnailAttribPrefix + 'large';
       var photoUrl =
       {
       };
-      photoUrl[prefix] = Genesis.constants.getIconPath('prizewon', 'reward');
+      photoUrl[prefix] = Genesis.constants.getIconPath(photoType, 'reward');
 
       me.promoteCount++;
       me.redeemItem = Ext.create('Genesis.model.CustomerReward',
@@ -202,56 +206,46 @@ Ext.define('Genesis.controller.client.Rewards',
       var tbbar = page.query('titlebar')[0];
       tbbar.setTitle(pageTitle);
       me.redirectTo('promotion');
+      Ext.device.Notification.show(
+      {
+         title : title,
+         message : message,
+         buttons : ['OK'],
+         callback : callback || Ext.emptyFn
+      });
    },
-   signupPromotionHandler : function(metaData, customer, venue, merchantId)
+   birthdayHandler : function(metaData, customer, venue, merchantId)
    {
-      var me = this;
-      var info = metaData['reward_info'];
-      var vport = me.getViewport();
-      var points = info['signup_points'];
+      var me = this, info = metaData['reward_info'], vport = me.getViewport(), points = info['birthday_points'];
       var rc = Ext.isDefined(points) && (points > 0);
 
       me.promoteCount = 0;
       if (rc)
       {
-         switch (me.getMode())
+         me.promotionHandler(me.birthdayPageTitle, me.birthdayTitle, points, 'prizewon', 'Happy Birthday!', me.birthdayMsg(points), function()
          {
-            //
-            // When
-            //
-            case 'rewardsSC' :
-            {
-               /*
-                var app = me.getApplication();
-                var controller = app.getController('client.Checkins');
-
-                controller.onAfter('checkinPage', me.goToMerchantMain, me,
-                {
-                single : true,
-                buffer : 0.5 * 1000
-                });
-                */
-               break;
-            }
-            default:
-               break;
-         }
-         me.promotionHandler(me.signupPageTitle, me.signupPromotionTitle, points);
-         Ext.device.Notification.show(
-         {
-            title : 'Signup Promotion Alert!',
-            message : me.signupPromotionMsg(points),
-            buttons : ['OK']
+            me.self.stopSoundFile(me.getViewPortCntlr().sound_files['birthdaySound']);
          });
+         me.self.playSoundFile(me.getViewPortCntlr().sound_files['birthdaySound']);
+      }
+
+      return rc;
+   },
+   signupPromotionHandler : function(metaData, customer, venue, merchantId)
+   {
+      var me = this, info = metaData['reward_info'], vport = me.getViewport(), points = info['signup_points'];
+
+      var rc = Ext.isDefined(points) && (points > 0);
+      if (rc)
+      {
+         me.promotionHandler(me.signupPageTitle, me.signupPromotionTitle, points, 'prizewon', 'Signup Promotion Alert!', me.signupPromotionMsg(points));
       }
 
       return rc;
    },
    earnPtsHandler : function(metaData, customer, venue, merchantId)
    {
-      var me = this;
-      var info = metaData['reward_info'];
-      var points = info['points'];
+      var me = this, info = metaData['reward_info'], points = info['points'];
       var rc = Ext.isDefined(points) && (points > 0);
 
       //
@@ -275,33 +269,19 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    referralPromotionHandler : function(metaData, customer, venue, merchantId)
    {
-      var me = this;
-      var info = metaData['reward_info'];
-      //
-      // Update points from the purchase or redemption
-      //
-      var points = info['referral_points'];
-      var rc = Ext.isDefined(points) && (points > 0);
+      var me = this, info = metaData['reward_info'], points = info['referral_points'];
 
+      var rc = Ext.isDefined(points) && (points > 0);
       if (rc)
       {
-         me.promotionHandler(me.referralPageTitle, me.referralPromotionTitle, points);
-         Ext.device.Notification.show(
-         {
-            title : 'Referral Challenge',
-            message : me.getReferralMsg(points),
-            buttons : ['OK']
-         });
+         me.promotionHandler(me.referralPageTitle, me.referralPromotionTitle, points, 'prizewon', 'Referral Challenge', me.getReferralMsg(points));
       }
 
       return rc;
    },
    scanAndWinHandler : function(metaData, customer, venue, merchantId)
    {
-      var me = this;
-      var info = metaData['reward_info'];
-      var ainfo = metaData['account_info'];
-      var points = info['points'];
+      var me = this, info = metaData['reward_info'], ainfo = metaData['account_info'], points = info['points'];
       var rc = Ext.isDefined(points) && (points > 0);
 
       if (me.promoteCount > 0)
@@ -327,8 +307,7 @@ Ext.define('Genesis.controller.client.Rewards',
       }
       else
       {
-         var app = me.getApplication();
-         var controller = app.getController('client.Prizes');
+         var app = me.getApplication(), controller = app.getController('client.Prizes');
          controller.fireEvent('prizecheck', metaData);
       }
 
@@ -430,10 +409,10 @@ Ext.define('Genesis.controller.client.Rewards',
                   identifiers['cancelFn']();
                }
                Ext.Viewport.setMasked(null);
-               Ext.device.Notification.beep();
 
                if (operation.wasSuccessful())
                {
+                  Ext.device.Notification.beep();
                   //Genesis.db.removeLocalDBAttrib('last_check_in');
                   me.fireEvent('triggerCallbacksChain');
                }
@@ -455,7 +434,6 @@ Ext.define('Genesis.controller.client.Rewards',
          me.broadcastLocalID(function(idx)
          {
             identifiers = idx;
-            Ext.Viewport.setMasked(null);
             Ext.Viewport.setMasked(
             {
                xtype : 'loadmask',
@@ -534,7 +512,7 @@ Ext.define('Genesis.controller.client.Rewards',
             window.plugins.proximityID.preLoadSend(function()
             {
                Ext.Viewport.setMasked(null);
-               send();
+               Ext.defer(send, 0.25 * 1000, me);
             });
          }
          else
@@ -545,11 +523,8 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    updateMetaDataInfo : function(metaData)
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-      var customer = me.callParent(arguments);
-      var venue = viewport.getVenue();
-      var merchantId = metaData['merchant_id'] || venue.getMerchant().getId();
+      var me = this, viewport = me.getViewPortCntlr(), customer = me.callParent(arguments);
+      var venue = viewport.getVenue(), merchantId = metaData['merchant_id'] || venue.getMerchant().getId();
 
       me.callBackStack['arguments'] = [metaData, customer, venue, merchantId];
       //console.debug("updateMetaDataInfo - metaData[" + Ext.encode(metaData) + "]");
@@ -565,16 +540,16 @@ Ext.define('Genesis.controller.client.Rewards',
       var app = me.getApplication(), controller = app.getController('client.Prizes');
       if (me.task)
       {
-         viewport.self.playSoundFile(viewport.sound_files['clickSound']);
          try
          {
             me.task.cancel();
             me.task = null;
+            viewport.self.playSoundFile(viewport.sound_files['clickSound']);
+            me.self.stopSoundFile(viewport.sound_files['rouletteSpinSound']);
          }
          catch(e)
          {
          }
-         me.self.stopSoundFile(viewport.sound_files['rouletteSpinSound']);
          console.debug("Stopped RouletteSound, checking for prizes ...");
          controller.fireEvent('prizecheck', metaData);
       }
@@ -583,21 +558,23 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       var me = this, viewport = me.getViewPortCntlr();
       var app = me.getApplication(), controller = app.getController('client.Prizes');
-      var metaData = me.callBackStack['arguments'][0];
-      var rouletteTap = Ext.bind(me.onRouletteTap, me, [metaData]);
+      var metaData = me.callBackStack['arguments'][0], rouletteTap = Ext.bind(me.onRouletteTap, me, [metaData]);
 
       // Safe guard in case the music doesn't stop
+      activeItem.metaData = metaData;
       me.task = Ext.create('Ext.util.DelayedTask', rouletteTap);
       me.task.delay(15 * 1000);
 
-      me.self.playSoundFile(viewport.sound_files['rouletteSpinSound'], rouletteTap);
       controller.startRouletteScreen(me.getRewards());
-      activeItem.metaData = metaData;
-      Ext.defer(function()
-      {
-         //activeItem.createView();
-      }, 1, activeItem);
-      //activeItem.createView();
+
+      me.self.playSoundFile(viewport.sound_files['rouletteSpinSound'], rouletteTap);
+      /*
+       Ext.defer(function()
+       {
+       //activeItem.createView();
+       }, 1, activeItem);
+       //activeItem.createView();
+       */
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
@@ -620,7 +597,6 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    onPromotionDoneTap : function(b, e, eOpts)
    {
-      console.debug("Closing Promotional Page");
       var me = this;
       me.fireEvent('triggerCallbacksChain');
    },
@@ -647,8 +623,7 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    openPage : function(subFeature)
    {
-      var me = this;
-      var vport = me.getViewport();
+      var me = this, vport = me.getViewport();
 
       me.setMode(subFeature);
       switch (subFeature)
@@ -673,8 +648,7 @@ Ext.define('Genesis.controller.client.Rewards',
             var page = me.getPromotion();
             if (vport.getActiveItem() == page)
             {
-               var controller = vport.getEventDispatcher().controller;
-               var anim = new Ext.fx.layout.Card(me.self.animationMode['fade']);
+               var controller = vport.getEventDispatcher().controller, anim = new Ext.fx.layout.Card(me.self.animationMode['fade']);
                anim.on('animationend', function()
                {
                   console.debug("Animation Complete");
