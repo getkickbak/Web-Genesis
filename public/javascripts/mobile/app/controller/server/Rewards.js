@@ -162,8 +162,9 @@ Ext.define('Genesis.controller.server.Rewards',
       var me = this, task = null, identifiers = null, viewport = me.getViewPortCntlr(), dismissDialog = false;
       var amount = me.getAmount().getValue(), proxy = PurchaseReward.getProxy();
 
-      me.rewardItemFn = function(params)
+      me.rewardItemFn = function(params, closeDialog)
       {
+      	dismissDialog = closeDialog;
          Ext.device.Notification.dismiss();
          Ext.Viewport.setMasked(
          {
@@ -278,7 +279,6 @@ Ext.define('Genesis.controller.server.Rewards',
       {
          task = me.getLocalID(function(ids)
          {
-            dismissDialog = true;
             identifiers = ids;
             task = null;
             me.rewardItemFn(
@@ -287,7 +287,7 @@ Ext.define('Genesis.controller.server.Rewards',
                {
                },
                'frequency' : Ext.encode(identifiers['localID'])
-            });
+            }, true);
          }, function()
          {
             Ext.device.Notification.dismiss();
@@ -299,7 +299,7 @@ Ext.define('Genesis.controller.server.Rewards',
       {
          me.rewardItemFn(
          {
-         });
+         }, false);
       }
    },
    // --------------------------------------------------------------------------
@@ -482,7 +482,7 @@ Ext.define('Genesis.controller.server.Rewards',
          {
             'tag_id' : (nfcResult) ? nfcResult['tagID'] : null
          }
-      });
+      }, true);
    },
    // --------------------------------------------------------------------------
    // Page Navigation
