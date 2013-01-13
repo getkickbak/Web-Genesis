@@ -8,7 +8,7 @@ Genesis =
 Genesis.constants =
 {
    host : 'http://192.168.0.52:3000',
-   //host : 'http://76.10.173.153:80',
+   host : 'http://76.10.173.153:80',
    //host : 'http://www.getkickbak.com',
    //
    // Proximity ID
@@ -812,11 +812,11 @@ Ext.define('Genesis.data.proxy.Server',
    override : 'Ext.data.proxy.Server',
    processResponse : function(success, operation, request, response, callback, scope)
    {
-      var me = this, action = operation.getAction(), reader = me.getReader(), resultSet;
-      var app = _application;
-      var viewport = app.getController(((!merchantMode) ? 'client' : 'server') + '.Viewport');
+      var me = this, action = operation.getAction(), reader = me.getReader(), resultSet, app = _application;
+      var viewport = app.getController(((!merchantMode) ? 'client' : 'server') + '.Viewport'), messages, metaData;
 
-      if (response.timedout || ((response.status == 0) && (!request.aborted) && (!request.options.doNotRetryAttempt)))
+      //console.debug("request = [" + Ext.encode(operation.initialConfig) + "]");
+      if (response.timedout || ((response.status == 0) && (!request.aborted) && (!operation.initialConfig.doNotRetryAttempt)))
       {
          Ext.device.Notification.show(
          {
@@ -847,11 +847,10 @@ Ext.define('Genesis.data.proxy.Server',
          return;
       }
 
-      var messages;
       var errorHandler = function()
       {
          messages = ((resultSet && Ext.isDefined(resultSet.getMessage)) ? (Ext.isArray(resultSet.getMessage()) ? resultSet.getMessage().join(Genesis.constants.addCRLF()) : resultSet.getMessage()) : 'Error Connecting to Server');
-         var metaData = reader.metaData ||
+         metaData = reader.metaData ||
          {
          };
          Ext.Viewport.setMasked(null);
@@ -944,6 +943,16 @@ Ext.define('Genesis.data.proxy.Server',
                         buttons : ['Dismiss']
                      });
                   }
+                  else
+                  if (operation.initialConfig.doNotRetryAttempt)
+                  {
+                     Ext.device.Notification.show(
+                     {
+                        title : 'Network Error',
+                        message : "Error Contacting Server",
+                        buttons : ['Dismiss']
+                     });
+                  }
                   break;
             }
          }
@@ -959,7 +968,7 @@ Ext.define('Genesis.data.proxy.Server',
                   if (metaData['session_timeout'])
                   {
                      viewport.resetView();
-                     viewport.redirectTo('main');
+                     viewport.redirectTo('login');
                      return;
                   }
                   else

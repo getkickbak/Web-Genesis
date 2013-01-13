@@ -142,6 +142,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                 }
                 */
             });
+            console.log("Broadcast underway ...");
             me.redeemItemFn(Ext.apply(params,
             {
                'frequency' : Ext.encode(identifiers['localID'])
