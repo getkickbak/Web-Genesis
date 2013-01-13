@@ -402,21 +402,24 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    eligibleForPrizeHandler : function(metaData, viewsPopLength)
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-      var info = metaData['reward_info'];
-      var eligible = info['eligible_prize_id'] > 0;
+      var me = this, viewport = me.getViewPortCntlr(), soundType, message;
+      var info = metaData['reward_info'], eligible = info['eligible_prize_id'] > 0;
       var points = info['points'];
-      var rc = Ext.isDefined(points) && (points > 0);
-      var soundType, message;
 
       //
       // Can't win PrizePoints if you didn't win any Reward Points
       //
+      me.flag = 0;
+      var rc = Ext.isDefined(points) && (points > 0);
       if (rc)
       {
          var eligiblePrizeCallback = function(setFlag, viewsPopLength)
          {
+            if (me.task && (setflag == 0x01))
+            {
+               me.task.cancel();
+               me.task = null;
+            }
             if ((me.flag |= setFlag) == 0x11)
             {
                me.flag = 0;
@@ -430,6 +433,19 @@ Ext.define('Genesis.controller.client.Prizes',
             message = me.wonPrizeMsg(info);
 
             Ext.device.Notification.vibrate();
+            me.task = Ext.create('Ext.util.DelayedTask', function()
+            {
+               try
+               {
+                  me.self.stopSoundFile(viewport.sound_files[soundType]);
+                  eligiblePrizeCallback(0x01, viewsPopLength);
+               }
+               catch(e)
+               {
+               }
+
+            });
+            me.task.delay(10 * 1000);
          }
          else
          {
