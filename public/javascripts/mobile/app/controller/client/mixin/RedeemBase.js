@@ -74,10 +74,10 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                   identifiers['cancelFn']();
                }
                Ext.Viewport.setMasked(null);
-               Ext.device.Notification.beep();
 
                if (operation.wasSuccessful())
                {
+                  Ext.device.Notification.beep();
                   Ext.device.Notification.show(
                   {
                      title : 'Redemptions',
@@ -114,15 +114,9 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
 
       if (Genesis.fn.isNative())
       {
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : me.prepareToSendMerchantDeviceMsg
-         });
          me.broadcastLocalID(function(ids)
          {
             identifiers = ids;
-            Ext.Viewport.setMasked(null);
             Ext.Viewport.setMasked(
             {
                xtype : 'loadmask',
@@ -195,7 +189,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                window.plugins.proximityID.preLoadSend(function()
                {
                   Ext.Viewport.setMasked(null);
-                  send();
+                  Ext.defer(send, 0.25 * 1000, me);
                });
             }
             else

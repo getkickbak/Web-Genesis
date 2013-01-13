@@ -430,10 +430,10 @@ Ext.define('Genesis.controller.client.Rewards',
                   identifiers['cancelFn']();
                }
                Ext.Viewport.setMasked(null);
-               Ext.device.Notification.beep();
 
                if (operation.wasSuccessful())
                {
+                  Ext.device.Notification.beep();
                   //Genesis.db.removeLocalDBAttrib('last_check_in');
                   me.fireEvent('triggerCallbacksChain');
                }
@@ -455,7 +455,6 @@ Ext.define('Genesis.controller.client.Rewards',
          me.broadcastLocalID(function(idx)
          {
             identifiers = idx;
-            Ext.Viewport.setMasked(null);
             Ext.Viewport.setMasked(
             {
                xtype : 'loadmask',
@@ -534,7 +533,7 @@ Ext.define('Genesis.controller.client.Rewards',
             window.plugins.proximityID.preLoadSend(function()
             {
                Ext.Viewport.setMasked(null);
-               send();
+               Ext.defer(send, 0.25 * 1000, me);
             });
          }
          else
@@ -565,16 +564,16 @@ Ext.define('Genesis.controller.client.Rewards',
       var app = me.getApplication(), controller = app.getController('client.Prizes');
       if (me.task)
       {
-         viewport.self.playSoundFile(viewport.sound_files['clickSound']);
          try
          {
             me.task.cancel();
             me.task = null;
+            viewport.self.playSoundFile(viewport.sound_files['clickSound']);
+            me.self.stopSoundFile(viewport.sound_files['rouletteSpinSound']);
          }
          catch(e)
          {
          }
-         me.self.stopSoundFile(viewport.sound_files['rouletteSpinSound']);
          console.debug("Stopped RouletteSound, checking for prizes ...");
          controller.fireEvent('prizecheck', metaData);
       }
@@ -583,21 +582,23 @@ Ext.define('Genesis.controller.client.Rewards',
    {
       var me = this, viewport = me.getViewPortCntlr();
       var app = me.getApplication(), controller = app.getController('client.Prizes');
-      var metaData = me.callBackStack['arguments'][0];
-      var rouletteTap = Ext.bind(me.onRouletteTap, me, [metaData]);
+      var metaData = me.callBackStack['arguments'][0], rouletteTap = Ext.bind(me.onRouletteTap, me, [metaData]);
 
       // Safe guard in case the music doesn't stop
+      activeItem.metaData = metaData;
       me.task = Ext.create('Ext.util.DelayedTask', rouletteTap);
       me.task.delay(15 * 1000);
 
-      me.self.playSoundFile(viewport.sound_files['rouletteSpinSound'], rouletteTap);
       controller.startRouletteScreen(me.getRewards());
-      activeItem.metaData = metaData;
-      Ext.defer(function()
-      {
-         //activeItem.createView();
-      }, 1, activeItem);
-      //activeItem.createView();
+
+      me.self.playSoundFile(viewport.sound_files['rouletteSpinSound'], rouletteTap);
+      /*
+       Ext.defer(function()
+       {
+       //activeItem.createView();
+       }, 1, activeItem);
+       //activeItem.createView();
+       */
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
