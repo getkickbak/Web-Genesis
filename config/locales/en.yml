@@ -140,13 +140,13 @@ en:
       type:
         newbie: "Newbie"
         enthusiast: "Enthusiast"
+        admirer: "Admirer"
         fan: "Fan"
         follower: "Follower"
         groupie: "Groupie"
         nut: "Nut"
         junkie: "Junkie"
         addict: "Addict"
-        fanatic: "Fanatic"
         lifer: "Lifer"
         boss: "Boss"    
   visit_frequency:
