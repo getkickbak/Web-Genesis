@@ -70,13 +70,13 @@ INSERT INTO merchant_challenge_types VALUES (1,5);
 
 INSERT INTO badge_types VALUES (1,1,'newbie',1);
 INSERT INTO badge_types VALUES (2,1,'enthusiast',10);
-INSERT INTO badge_types VALUES (3,1,'fanatic',80);
-INSERT INTO badge_types VALUES (4,1,'fan',20);
-INSERT INTO badge_types VALUES (5,1,'follower',30);
-INSERT INTO badge_types VALUES (6,1,'groupie',40);
-INSERT INTO badge_types VALUES (7,1,'nut',50);
-INSERT INTO badge_types VALUES (8,1,'junkie',60);
-INSERT INTO badge_types VALUES (9,1,'addict',70);
+INSERT INTO badge_types VALUES (3,1,'admirer',20);
+INSERT INTO badge_types VALUES (4,1,'fan',30);
+INSERT INTO badge_types VALUES (5,1,'follower',40);
+INSERT INTO badge_types VALUES (6,1,'groupie',50);
+INSERT INTO badge_types VALUES (7,1,'nut',60);
+INSERT INTO badge_types VALUES (8,1,'junkie',70);
+INSERT INTO badge_types VALUES (9,1,'addict',80);
 INSERT INTO badge_types VALUES (10,1,'lifer',90);
 INSERT INTO badge_types VALUES (11,1,'boss',100);
 
