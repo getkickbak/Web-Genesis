@@ -782,28 +782,54 @@ Ext.define('Genesis.controller.client.Challenges',
    // --------------------------------------------------------------------------
    onItemTap : function(model)
    {
-      var viewport = this.getViewPortCntlr();
+      var me = this, viewport = me.getViewPortCntlr(), db = Genesis.db.getLocalDB();
 
-      this.self.playSoundFile(viewport.sound_files['clickSound']);
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
 
-      var desc = this.getChallengeDescContainer();
+      var desc = me.getChallengeDescContainer();
       Ext.Anim.run(desc.element, 'fade',
       {
          //direction : 'right',
          duration : 600,
          out : false,
          autoClear : true,
-         scope : this,
+         scope : me,
          before : function()
          {
             for (var i = 0; i < desc.getItems().length; i++)
             {
                desc.getItems().getAt(i).updateData(model.getData());
             }
-            this.selectedItem = model;
+            me.selectedItem = model;
          }
       });
-      this.getChallengeContainer().show();
+      switch (model.get('type').value)
+      {
+         case 'birthday' :
+         {
+            me.getChallengeContainer()['hide']();
+            if (!db['account'].birthday)
+            {
+               Ext.device.Notification.show(
+               {
+                  title : me.selectedItem.get('name') + ' Challenge',
+                  message : me.updateAccountInfoMsg,
+                  buttons : ['OK', 'Cancel'],
+                  callback : function(btn)
+                  {
+                     if (btn.toLowerCase() == 'ok')
+                     {
+                        me.redirectTo('settings');
+                     }
+                  }
+               });
+            }
+            break;
+         }
+         default :
+            me.getChallengeContainer()['show']();
+            break;
+      }
       return true;
    },
    onChallengeBtnTap : function(b, e, eOpts, eInfo)
@@ -859,23 +885,7 @@ Ext.define('Genesis.controller.client.Challenges',
             }
             case 'birthday' :
             {
-               if (!db['account'].birthday)
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : me.selectedItem.get('name') + ' Challenge',
-                     message : me.updateAccountInfoMsg,
-                     buttons : ['OK', 'Cancel'],
-                     callback : function(btn)
-                     {
-                        if (btn.toLowerCase() == 'ok')
-                        {
-                           me.redirectTo('settings');
-                        }
-                     }
-                  });
-                  break;
-               }
+               break;
             }
             case 'photo' :
             case 'menu' :
