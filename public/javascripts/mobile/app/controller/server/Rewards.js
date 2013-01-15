@@ -164,7 +164,7 @@ Ext.define('Genesis.controller.server.Rewards',
 
       me.rewardItemFn = function(params, closeDialog)
       {
-      	dismissDialog = closeDialog;
+         dismissDialog = closeDialog;
          Ext.device.Notification.dismiss();
          Ext.Viewport.setMasked(
          {
@@ -267,11 +267,15 @@ Ext.define('Genesis.controller.server.Rewards',
       {
          title : 'Earn Reward Points',
          message : (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg : me.genQRCodeMsg,
+         ignoreOnHide : true,
          buttons : [
          {
             text : 'Enter TAG ID',
-            ignoreOnHide : true,
             itemId : 'enter tag id'
+         },
+         {
+            text : 'Cancel',
+            itemId : 'cancel'
          }],
          callback : callback
       });

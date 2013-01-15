@@ -237,11 +237,15 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          {
             title : me.getRedeemPopupTitle(),
             message : message,
+            ignoreOnHide : true,
             buttons : [
             {
                text : 'Enter TAG ID',
-               ignoreOnHide : true,
                itemId : 'enter tag id'
+            },
+            {
+               text : 'Cancel',
+               itemId : 'cancel'
             }],
             callback : callback
          });

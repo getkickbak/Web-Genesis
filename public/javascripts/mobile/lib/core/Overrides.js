@@ -1499,7 +1499,7 @@ Ext.define('Ext.device.notification.PhoneGap',
       this.msg = Ext.create('Ext.MessageBox');
 
       msg = this.msg;
-      msg.setHideOnMaskTap(true);
+      msg.setHideOnMaskTap((!config.ignoreOnHide) ? true : false);
       callback = function(itemId)
       {
          if (config.callback)
@@ -1507,12 +1507,7 @@ Ext.define('Ext.device.notification.PhoneGap',
             config.callback.apply(config.scope, [itemId]);
          }
       };
-      msg._hideCallbackFn = function()
-      {
-         var button = buttons[buttons.length - 1];
-         callback((!button.ignoreOnHide) ? button.itemId : null);
-      }
-
+      msg._hideCallbackFn = Ext.bind(callback, this, [buttons[buttons.length - 1].itemId]);
       msg.getModal().on('hide', msg._hideCallbackFn, this);
 
       msg.show(
