@@ -1123,8 +1123,9 @@ Ext.define('Genesis.controller.client.Challenges',
                Ext.Viewport.setMasked(null);
                Ext.Viewport.setMasked(
                {
-                  xtype : 'loadmask',
-                  message : me.lookingForMerchantDeviceMsg
+                  xtype : 'mask',
+                  cls : 'transmit-mask',
+                  html : me.lookForMerchantDeviceMsg()
                   /*,listeners :
                    {
                    tap : function()

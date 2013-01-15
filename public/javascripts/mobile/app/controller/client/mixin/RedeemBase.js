@@ -6,6 +6,10 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
    },
    config :
    {
+      listeners :
+      {
+         'redeemitem' : 'onRedeemItem'
+      }
    },
    needPointsMsg : function(pointsDiff)
    {
@@ -13,7 +17,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
    },
    retrievingQRCodeMsg : 'Retrieving QRCode ...',
    showQrCodeMsg : 'Show this Authorization Code to your merchant to redeem!',
-   redeemItemConfirmMsg : 'Please confim to redeem this item',
+   redeemItemConfirmMsg : 'Please confirm to redeem this item',
    // --------------------------------------------------------------------------
    // Redemptions Page
    // --------------------------------------------------------------------------
@@ -80,7 +84,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                   Ext.device.Notification.beep();
                   Ext.device.Notification.show(
                   {
-                     title : 'Redemptions',
+                     title : me.getRedeemPopupTitle(),
                      message : me.redeemSuccessfulMsg,
                      buttons : ['OK'],
                      callback : function()
@@ -98,7 +102,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                   proxy.supressErrorsPopup = true;
                   Ext.device.Notification.show(
                   {
-                     title : 'Redemptions',
+                     title : me.getRedeemPopupTitle(),
                      message : me.redeemFailedMsg,
                      buttons : ['Dismiss'],
                      callback : function()
@@ -119,8 +123,9 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
             identifiers = ids;
             Ext.Viewport.setMasked(
             {
-               xtype : 'loadmask',
-               message : me.lookingForMerchantDeviceMsg
+               xtype : 'mask',
+               cls : 'transmit-mask',
+               html : me.lookingForMerchantDeviceMsg()
                /*,listeners :
                 {
                 tap : function()
@@ -200,7 +205,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
          }
       }
    },
-
+   onRedeemItemShowView : Ext.emptyFn,
    // --------------------------------------------------------------------------
    // Utility Functions
    // --------------------------------------------------------------------------

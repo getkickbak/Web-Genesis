@@ -89,8 +89,7 @@ Ext.define('Genesis.controller.client.Prizes',
          //
          // Redeem Prize
          //
-         'refreshQRCode' : 'onRefreshQRCode',
-         'redeemitem' : 'onClientRedeemItem'
+         'refreshQRCode' : 'onRefreshQRCode'
       }
    },
    _backToMain : false,

@@ -54,7 +54,7 @@ Ext.define('Genesis.controller.client.Redemptions',
       },
       listeners :
       {
-         'redeemitem' : 'onClientRedeemItem'
+         'redeemitem' : 'onRedeemItem'
       }
    },
    onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)

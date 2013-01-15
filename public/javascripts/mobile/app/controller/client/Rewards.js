@@ -436,8 +436,9 @@ Ext.define('Genesis.controller.client.Rewards',
             identifiers = idx;
             Ext.Viewport.setMasked(
             {
-               xtype : 'loadmask',
-               message : me.lookingForMerchantDeviceMsg
+               xtype : 'mask',
+               cls : 'transmit-mask',
+               html : me.lookingForMerchantDeviceMsg()
                /*,listeners :
                 {
                 tap : function()

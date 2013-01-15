@@ -53,8 +53,11 @@ Ext.define('Genesis.controller.ControllerBase',
    getMerchantInfoMsg : 'Retrieving Merchant Information ...',
    getVenueInfoMsg : 'Retrieving Venue Information ...',
    prepareToSendMerchantDeviceMsg : 'Prepare to send data across to Merchant Device ...',
-   lookingForMerchantDeviceMsg : 'Lean the back of your phone against the back of the Merchant Device ...', //Send
-   detectMerchantDeviceMsg : 'Lean the back of your phone against the back of the Merchant Device ...', //Recv
+   lookingForMerchantDeviceMsg : function()//Send
+   {
+      return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'Merchant Device'
+   },
+   detectMerchantDeviceMsg : 'Tap your Phone against the Merchant Device', //Recv
    // Merchant Device
    prepareToSendMobileDeviceMsg : 'Prepare to send data across to Mobile Device ...',
    lookingForMobileDeviceMsg : 'Place the Tag or Mobile Device against the back of the Merchant Device ...', //Send

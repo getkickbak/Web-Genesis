@@ -5,7 +5,7 @@
    .jackpotWinnersList {
       @extend .listScrollWrapper;
       .listItemDetailsWrapper {
-         min-height:$icon-size/2 !important;
+         min-height:$icon-size*$icon-multiplier/2 !important;
          .itemTitle {
             font-weight: bold;
             line-height: 1em;
@@ -14,9 +14,9 @@
          }
       }
       .photo {
-         height : $icon-size/2 !important;
+         height : $icon-size*$icon-multiplier/2 !important;
          img {
-            width : $icon-size/2 !important;
+            width : $icon-size*$icon-multiplier/2 !important;
          }
       }
       .x-list-emptytext {
@@ -37,12 +37,12 @@
 .x-android {
    .jackpotWinnersList {
       .listItemDetailsWrapper {
-         min-height:$icon-size !important;
+         min-height:$icon-size*$icon-multiplier !important;
       }
       .photo {
-         height : $icon-size !important;
+         height : $icon-size*$icon-multiplier !important;
          img {
-            width : $icon-size !important;
+            width : $icon-size*$icon-multiplier !important;
          }
       }
    }
@@ -51,12 +51,12 @@
 .x-ios {
    .jackpotWinnersList {
       .listItemDetailsWrapper {
-         min-height:$icon-size*0.75 !important;
+         min-height:$icon-size*$icon-multiplier*0.75 !important;
       }
       .photo {
-         height : $icon-size*0.75 !important;
+         height : $icon-size*$icon-multiplier*0.75 !important;
          img {
-            width : $icon-size*0.75 !important;
+            width : $icon-size*$icon-multiplier*0.75 !important;
          }
       }
    }
