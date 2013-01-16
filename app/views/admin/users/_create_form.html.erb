@@ -4,7 +4,6 @@
 	<%= f.input :email, :input_html=>{:class => "input-xxlarge"} %>
 	<%= f.input :phone, :required => false, :input_html=>{:class => "input-xxlarge"} %>
 	<%= f.input :password, :input_html=>{:class => "input-medium"} %>
-	<%= f.input :password_confirmation, :input_html=>{:class => "input-medium"} %>
 	<%= f.input :role, :collection => User::Roles, :input_html => { :class => 'input-medium' } %>
 	<br />
 	<div class="form-actions">
