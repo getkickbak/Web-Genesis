@@ -125,21 +125,26 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
             {
                xtype : 'mask',
                cls : 'transmit-mask',
-               html : me.lookingForMerchantDeviceMsg()
-               /*,listeners :
-                {
-                tap : function()
-                {
-                Ext.Ajax.abort();
-                if (identifiers)
-                {
-                identifiers['cancelFn']();
-                }
-                Ext.Viewport.setMasked(null);
-                me.onDoneTap();
-                }
-                }
-                */
+               html : me.lookingForMerchantDeviceMsg(),
+               listeners :
+               {
+                  element : 'element',
+                  delegate : 'div.x-innerhtml',
+                  event : 'tap',
+                  fn : function()
+                  {
+                     //
+                     // Stop broadcasting now ...
+                     //
+                     Ext.Ajax.abort();
+                     if (me.identifiers)
+                     {
+                        me.identifiers['cancelFn']();
+                     }
+                     Ext.Viewport.setMasked(null);
+                     me.onDoneTap();
+                  }
+               }
             });
             console.log("Broadcast underway ...");
             me.redeemItemFn(Ext.apply(params,

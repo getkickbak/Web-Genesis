@@ -440,20 +440,25 @@ Ext.define('Genesis.controller.client.Rewards',
             {
                xtype : 'mask',
                cls : 'transmit-mask',
-               html : me.lookingForMerchantDeviceMsg()
-               /*,listeners :
-                {
-                tap : function()
-                {
-                Ext.Ajax.abort();
-                if (me.identifiers)
-                {
-                me.identifiers['cancelFn']();
-                }
-                Ext.Viewport.setMasked(null);
-                }
-                }
-                */
+               html : me.lookingForMerchantDeviceMsg(),
+               listeners :
+               {
+                  element : 'element',
+                  delegate : 'div.x-innerhtml',
+                  event : 'tap',
+                  fn : function()
+                  {
+                     //
+                     // Stop broadcasting now ...
+                     //
+                     Ext.Ajax.abort();
+                     if (me.identifiers)
+                     {
+                        me.identifiers['cancelFn']();
+                     }
+                     Ext.Viewport.setMasked(null);
+                  }
+               }
             });
             console.log("Broadcast underway ...");
             if (notUseGeolocation || viewport.getLastPosition())

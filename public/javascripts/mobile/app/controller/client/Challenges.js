@@ -1071,10 +1071,10 @@ Ext.define('Genesis.controller.client.Challenges',
                   identifiers['cancelFn']();
                }
                Ext.Viewport.setMasked(null);
-               Ext.device.Notification.beep();
 
                if (operation.wasSuccessful() && metaData)
                {
+                  Ext.device.Notification.beep();
                   me.fireEvent('challengecomplete', type, qrcode, venueId, customerId, position);
                }
             }
@@ -1125,20 +1125,26 @@ Ext.define('Genesis.controller.client.Challenges',
                {
                   xtype : 'mask',
                   cls : 'transmit-mask',
-                  html : me.lookForMerchantDeviceMsg()
-                  /*,listeners :
-                   {
-                   tap : function()
-                   {
-                   Ext.Ajax.abort();
-                   if (identifiers)
-                   {
-                   identifiers['cancelFn']();
-                   }
-                   Ext.Viewport.setMasked(null);
-                   }
-                   }
-                   */
+                  html : me.lookForMerchantDeviceMsg(),
+                  listeners :
+                  {
+                     element : 'element',
+                     delegate : 'div.x-innerhtml',
+                     event : 'tap',
+                     fn : function()
+                     {
+                        //
+                        // Stop broadcasting now ...
+                        //
+                        Ext.Ajax.abort();
+                        if (me.identifiers)
+                        {
+                           me.identifiers['cancelFn']();
+                        }
+                        Ext.Viewport.setMasked(null);
+                        me.onDoneTap();
+                     }
+                  }
                });
                console.log("Broadcast underway ...");
                me.challengeItemFn();
