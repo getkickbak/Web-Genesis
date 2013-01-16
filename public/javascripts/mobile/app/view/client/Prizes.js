@@ -32,6 +32,26 @@ Ext.define('Genesis.view.client.Prizes',
          }]
       })]
    },
+   _createView : function(store, renderStore, activeItemIndex)
+   {
+      var me = this;
+
+      me.callParent(arguments);
+      // ------------------------------------------------------------------------
+      // Redeem Points Earned Panel
+      // ------------------------------------------------------------------------
+      me.setPreRender([
+      {
+         //docked : 'top',
+         cls : 'ptsEarnPanel',
+         tag : 'ptsEarnPanel',
+         xtype : 'dataview',
+         useComponents : true,
+         scrollable : undefined,
+         defaultType : me.getDefaultItemType(),
+         store : renderStore
+      }].concat(me.getPreRender()));
+   },
    createView : function(activeItemIndex)
    {
       if (!this.callParent(arguments))
