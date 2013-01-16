@@ -448,7 +448,11 @@ Ext.define('Genesis.controller.client.Rewards',
                      //
                      // Stop broadcasting now ...
                      //
-                     if (e.target.className.match('x-innerhtml'))
+                     if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
+                     {
+                        x : e.browserEvent.clientX,
+                        y : e.browserEvent.clientY
+                     }))
                      {
                         Ext.Ajax.abort();
                         if (me.identifiers)
@@ -456,6 +460,12 @@ Ext.define('Genesis.controller.client.Rewards',
                            me.identifiers['cancelFn']();
                         }
                         Ext.Viewport.setMasked(null);
+                        Ext.device.Notification.show(
+                        {
+                           title : 'Rewards',
+                           message : me.transactionCancelledMsg,
+                           buttons : ['Dismiss']
+                        });
                      }
                   }
                }

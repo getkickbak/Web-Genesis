@@ -27,6 +27,67 @@ Ext.define('Genesis.view.ViewBase',
       {
          xtype : 'mask',
          transparent : true
+      },
+      phoneField : function()
+      {
+         return (
+            {
+               xtype : 'textfield',
+               minLength : 12,
+               maxLength : 12,
+               placeHolder : '800-555-1234',
+               listeners :
+               {
+                  keyup : function(f, e, eOpts)
+                  {
+                     var keyCode = e.browserEvent.keyCode, key = String.fromCharCode(keyCode), value = f.getValue();
+                     
+                     if ((keyCode >= 48 && keyCode <= 90) || //
+                     (keyCode >= 106 && keyCode <= 111) || //
+                     (keyCode >= 186 && keyCode <= 192) || //
+                     (keyCode >= 219 && keyCode <= 222))
+                     {
+                        if (key.match(/[0-9]/) && (!e.browserEvent.shiftKey && !e.browserEvent.ctrlKey && !e.browserEvent.metaKey))
+                        {
+                           if ((value.length == 3) || (value.length == 7))
+                           {
+                              f.setValue(value + "-");
+                           }
+                           else
+                           if ((value.length == 4) || (value.length == 8))
+                           {
+                              var match = value.match(/-/);
+                              if (!match)
+                              {
+                                 f.setValue(value.slice(0, value.length - 1) + "-" + value[value.length - 1]);
+                              }
+                              else
+                              {
+                                 switch (match.length)
+                                 {
+                                    case 1:
+                                    {
+                                       if (value.length > 4)
+                                       {
+                                          f.setValue(value.slice(0, value.length - 1) + "-" + value[value.length - 1]);
+                                       }
+                                       break;
+                                    }
+                                    default:
+                                       break;
+                                 }
+                              }
+                           }
+                        }
+                        else
+                        {
+                           f.setValue(value.slice(0, value.length - 1));
+                        }
+                     }
+                     //console.debug("Phone#[" + f.getValue() + "]");
+                  }
+               }
+            });
       }
    },
    config :

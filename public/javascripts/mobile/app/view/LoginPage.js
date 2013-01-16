@@ -86,21 +86,20 @@ Ext.define('Genesis.view.SignInPage',
          defaults :
          {
             required : true,
-            labelAlign : 'top'
+            labelAlign : 'top',
+            clearIcon : true
          },
          items : [
          {
             xtype : 'emailfield',
             name : 'username',
             label : 'Email Address',
-            clearIcon : true,
             placeHolder : 'johndoe@example.com'
          },
          {
             xtype : 'passwordfield',
             name : 'password',
-            label : 'Password',
-            clearIcon : true
+            label : 'Password'
          }]
       },
       {
@@ -361,6 +360,7 @@ Ext.define('Genesis.view.CreateAccountPage',
          //instructions : 'Enter Username (email address) and Password',
          defaults :
          {
+            clearIcon : true,
             required : true,
             labelAlign : 'top'
          },
@@ -369,22 +369,23 @@ Ext.define('Genesis.view.CreateAccountPage',
             xtype : 'textfield',
             name : 'name',
             label : 'Full Name',
-            clearIcon : true,
             placeHolder : 'John Smith'
          },
          {
             xtype : 'emailfield',
             name : 'username',
             label : 'Email Address',
-            clearIcon : true,
             placeHolder : 'johndoe@example.com'
          },
          {
             xtype : 'passwordfield',
             name : 'password',
             label : 'Password',
-            clearIcon : true
-         }]
+         }, Ext.apply(Genesis.view.ViewBase.phoneField(),
+         {
+            label : 'Phone Number',
+            name : 'phone'
+         })]
       },
       {
          xtype : 'button',

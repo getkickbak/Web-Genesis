@@ -169,6 +169,11 @@ Ext.define('Genesis.controller.client.Settings',
       console.log("enableFB - " + db['enableFB']);
       me.initializing = true;
       var form = me.getSettingsPage();
+      var phone = (db['account'].phone) ? db['account'].phone.match(Account.phoneRegex) : null;
+      if (phone)
+      {
+         phone = phone[1] + '-' + phone[2] + '-' + phone[3];
+      }
       form.setValues(
       {
          birthday : fields['birthday'].birthday,
