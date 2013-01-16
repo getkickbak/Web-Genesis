@@ -271,6 +271,7 @@ Ext.define('Genesis.controller.client.Settings',
       {
          Genesis.fb.facebook_onLogin(function(params, operation)
          {
+            Ext.Viewport.setMasked(null);
             if (!params || ((operation && !operation.wasSuccessful())))
             {
                if (me.getSettingsPage().isVisible())

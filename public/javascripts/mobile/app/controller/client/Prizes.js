@@ -96,7 +96,6 @@ Ext.define('Genesis.controller.client.Prizes',
    checkinFirstMsg : 'Please Check-In before redeeming Prizes',
    eligibleRewardMsg : 'Check out an Eligible Prize you can redeem with your Prize Points!',
    flag : 0,
-   updateOnFbMsg : 'Would you like to tell your friends on Facebook about it?',
    wonPrizeMsg : function(reward_info)
    {
       var me = this;
@@ -338,6 +337,7 @@ Ext.define('Genesis.controller.client.Prizes',
       {
          Genesis.fb.facebook_onLogin(function(params)
          {
+            Ext.Viewport.setMasked(null);
             if (eligible)
             {
                me.updatingPrizeOnFacebook(prize);

@@ -1264,6 +1264,7 @@ Ext.define('Genesis.controller.client.Challenges',
          Genesis.fb.facebook_onLogin(function(params)
          {
             console.log("Accessing Camera Plugin ...");
+            Ext.Viewport.setMasked(null);
             Ext.Viewport.setMasked(
             {
                xtype : 'loadmask',

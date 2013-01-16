@@ -18,6 +18,54 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
    retrievingQRCodeMsg : 'Retrieving QRCode ...',
    showQrCodeMsg : 'Show this Authorization Code to your merchant to redeem!',
    redeemItemConfirmMsg : 'Please confirm to redeem this item',
+   updateOnFbMsg : 'Would you like to tell your friends on Facebook about it?',
+   redeemItemEmailMsg : function(redemptionName, venueName)
+   {
+      return ('I\'ve just redeemed "' + redemptionName + '" for eating out at ' + venueName + '!');
+   },
+   updatingRedemptionOnFacebook : function(earnprize)
+   {
+      var me = this, FB = window.plugins.facebookConnect;
+      try
+      {
+         var viewport = me.getViewPortCntlr(), venue = viewport.getVenue(), site = Genesis.constants.site;
+         var wsite = venue.get('website') ? venue.get('website').split(/http[s]*:\/\//) : [null];
+         var name = venue.get('name'), link = wsite[wsite.length - 1] || site, desc = venue.get('description').trunc(256);
+         var message = me.redeemItemEmailMsg(earnprize.get('title'), venue.get('name'));
+
+         console.log('Posting Redemption to Facebook ...' + '\n' + //
+         'Name: ' + name + '\n' + //
+         'Caption: ' + link + '\n' + //
+         'Description: ' + desc + '\n' + //
+         'Message : ' + message + '\n' //
+         );
+         FB.requestWithGraphPath('/me/feed',
+         {
+            name : name,
+            //link : href,
+            link : link,
+            caption : link,
+            description : desc,
+            picture : venue.getMerchant().get('photo')['thumbnail_large_url'],
+            message : message
+         }, 'POST', function(response)
+         {
+            if (!response || response.error)
+            {
+               console.log('Post was not published to Facebook.');
+            }
+            else
+            {
+               console.log('Posted to your Facebook Newsfeed.');
+            }
+         });
+      }
+      catch (e)
+      {
+         console.log('Exception [' + e + ']' + '\n' + //
+         'Post was not published to Facebook.');
+      }
+   },
    // --------------------------------------------------------------------------
    // Redemptions Page
    // --------------------------------------------------------------------------
@@ -40,8 +88,8 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
    // --------------------------------------------------------------------------
    onRedeemItem : function(btn, venue, view)
    {
-      var me = this, identifiers = null, proxy = CustomerReward.getProxy();
-      var venueId = (venue) ? venue.getId() : 0, item = view.getInnerItems()[0];
+      var me = this, FB = window.plugins.facebookConnect, identifiers = null, proxy = CustomerReward.getProxy();
+      var venueId = (venue) ? venue.getId() : 0, item = view.getInnerItems()[0], db = Genesis.db.getLocalDB();
       var storeName = me.getRedeemStore(), store = Ext.StoreMgr.get(storeName);
       var params =
       {
@@ -82,6 +130,18 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                if (operation.wasSuccessful())
                {
                   Ext.device.Notification.beep();
+
+                  //Update on Facebook
+                  if ((db['currFbId'] > 0) && ( typeof (FB) != "undefined"))
+                  {
+                     Genesis.fb.facebook_onLogin(function(params)
+                     {
+                        var redeemItem = store.getById(item.getData().getId());
+                        Ext.Viewport.setMasked(null);
+                        me.updatingRedemptionOnFacebook(redeemItem);
+                     }, false, me.updateOnFbMsg);
+                  }
+
                   Ext.device.Notification.show(
                   {
                      title : me.getRedeemPopupTitle(),
