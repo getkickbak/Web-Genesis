@@ -215,7 +215,7 @@ class Merchant
     self.name = merchant_name
     self.description = merchant_info[:description].strip
     self.email = merchant_info[:email].strip
-    if !merchant_info[:current_password].empty?
+    if !merchant_info[:current_password].empty? || !merchant_info[:password].empty? || !merchant_info[:password_confirmation].empty?
       self.current_password = merchant_info[:current_password].strip
       if self.current_password && !valid_password?(self.current_password)
         errors.add(:current_password, I18n.t("errors.messages.merchant.incorrect_password"))

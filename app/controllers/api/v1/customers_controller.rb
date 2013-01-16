@@ -163,6 +163,13 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
           return
         end
       end
+    rescue DataMapper::SaveFailureError => e  
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
+      end  
+      return  
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
@@ -231,6 +238,13 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       else
         invalid_code = true 
       end  
+    rescue DataMapper::SaveFailureError => e  
+      logger.error("Exception: " + e.resource.errors.inspect)  
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => t("api.customers.invalid_transfer_code").split('\n') } }
+      end  
+      return
     rescue StandardError => e
       logger.error("Exception: " + e.message)  
       respond_to do |format|
@@ -323,6 +337,12 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
           end
         end
       end
+    rescue DataMapper::SaveFailureError => e  
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.customers.receive_points_failure").split('\n') } }
+      end  
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|

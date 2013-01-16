@@ -69,6 +69,14 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       else
         raise "Authorization code expired"
       end
+    rescue DataMapper::SaveFailureError => e  
+      logger.error("Exception: " + e.resource.errors.inspect)
+      Cache.delete(params[:data])
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message =>  t("api.customer_rewards.redeem_item_failure").split('\n') } }
+      end
+      return
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       Cache.delete(params[:data])
@@ -179,6 +187,13 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           return
         end  
       end
+    rescue DataMapper::SaveFailureError => e  
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message =>  (t("api.customer_rewards.redeem_failure") % [@reward.mode == :reward ? t("api.reward") : t("api.prize")]).split('\n') } }
+      end
+      return
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
@@ -315,6 +330,13 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
             format.json { render :json => { :success => false, :message => t("api.customer_rewards.insufficient_points").split('\n') } }
           end  
         end
+      end
+    rescue DataMapper::SaveFailureError => e  
+      Request.set_status(@request, :failed)
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => (t("api.customer_rewards.redeem_failure") % [@reward.mode == :reward ? t("api.reward") : t("api.prize")]).split('\n') } }
       end
     rescue StandardError => e
       Request.set_status(@request, :failed)

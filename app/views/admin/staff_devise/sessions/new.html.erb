@@ -23,8 +23,8 @@
       <h1>Staff Login</h1>
       <div class="login-fields">
          <p>Sign in using your registered account:</p>
-         <%= f.input :email, :placeholder => "Email Address", :input_html=>{:class => "login username-field"} %>
-         <%= f.input :password, :placeholder => "Password", :input_html=>{:class => "login password-field"} %>
+         <%= f.input :email, :placeholder => "Email Address" %>
+         <%= f.input :password, :placeholder => "Password" %>
       </div>
       <div class="login-actions">
          <% if devise_mapping.rememberable? %>
