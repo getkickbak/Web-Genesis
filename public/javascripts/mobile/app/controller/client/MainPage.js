@@ -574,27 +574,10 @@ Ext.define('Genesis.controller.client.MainPage',
    },
    onCreateAccountSubmit : function(b, e, eOpts, eInfo)
    {
-      var me = this;
-      var account = me.getCreateAccount();
-      var values = account.getValues();
-      var user = Ext.create('Genesis.model.frontend.Account', values);
-      var validateErrors = user.validate();
-      var response = Genesis.db.getLocalDB()['fbResponse'] || null;
+      var me = this, account = me.getCreateAccount(), response = Genesis.db.getLocalDB()['fbResponse'] || null, values = account.getValues();
+      var user = me.getApplication().getController('client.Settings').self.accountValidate(account, values);
 
-      if (!validateErrors.isValid())
-      {
-         var field = validateErrors.first();
-         var label = Ext.ComponentQuery.query('field[name='+field.getField()+']')[0].getLabel();
-         var message = label + ' ' + field.getMessage() + Genesis.constants.addCRLF() + 'Please Try Again';
-         console.log(message);
-         Ext.device.Notification.show(
-         {
-            title : 'Oops',
-            message : message,
-            buttons : ['Dismiss']
-         });
-      }
-      else
+      if (user)
       {
          console.debug("Creating Account ...");
          var params =
