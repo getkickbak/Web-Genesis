@@ -46,4 +46,10 @@ class UserMailer < ActionMailer::Base
     @new_password = new_password
     mail(:to => user.email, :subject => I18n.t("mailer.email_subject_reset_password"))
   end
+  
+  def promotion_email(user, promotion)
+    @user = user
+    @promotion = promotion
+    mail(:to => user.email, :subject => "#{promotion.merchant.name} - #{promotion.subject}")
+  end
 end
