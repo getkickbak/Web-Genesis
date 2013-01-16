@@ -456,7 +456,7 @@ Ext.define('Genesis.controller.client.Rewards',
                 */
             });
             console.log("Broadcast underway ...");
-            if (notUseGeolocation || viewport.getLocationPosition())
+            if (notUseGeolocation || viewport.getLastPosition())
             {
                me.rewardItemFn();
             }
@@ -470,7 +470,7 @@ Ext.define('Genesis.controller.client.Rewards',
          me.scanQRCode();
       }
    },
-   onEarnPts : function()
+   onEarnPts : function(notUseGeolocation)
    {
       var me = this;
       var allowedMsg = me.isOpenAllowed();
@@ -499,7 +499,7 @@ Ext.define('Genesis.controller.client.Rewards',
                   {
                      //var earnPts = Ext.bind(me.onEarnPtsSC, me);
                      //me.checkReferralPrompt(earnPts, earnPts);
-                     me.fireEvent('rewarditem', true);
+                     me.fireEvent('rewarditem', notUseGeolocation);
                   }
                }
             });
@@ -641,9 +641,13 @@ Ext.define('Genesis.controller.client.Rewards',
             break;
          }
          case 'rewardsSC':
+         {
+            me.onEarnPts(false);
+            break;
+         }
          case 'rewards':
          {
-            me.onEarnPts();
+            me.onEarnPts(true);
             break;
          }
          case 'promotion' :
