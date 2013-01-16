@@ -17,7 +17,7 @@ class User
   property :name, String, :required => true, :default => ""
   ## Database authenticatable
   property :email, String, :unique_index => true, :required => true, :format => :email_address, :default => ""
-  property :phone, String, :unique_index => true, :required => true, :default => ""
+  property :phone, String, :unique_index => true, :default => ""
   property :encrypted_password, String, :required => true, :default => ""
   ## Recoverable
   property :reset_password_token, String
@@ -59,6 +59,7 @@ class User
   has n, :user_credit_cards, :child_key => [ :user_id ], :constraint => :destroy
   has n, :credit_cards, :through => :user_credit_cards, :via => :credit_card
     
+  validates_presence_of :phone, :if => lambda { |t| t.new? }
   validates_with_method :phone, :method => :validate_phone  
   validates_with_method :tag_id, :method => :validate_tag_id
     
@@ -159,9 +160,9 @@ class User
   
   def update_all(user_info)
     now = Time.now
-    self.name = user_info[:name].strip if user_info.include? :name
-    self.email = user_info[:email].strip if user_info.include? :email
-    self.phone = user_info[:phone].strip if user_info.include? :phone
+    (self.name = user_info[:name].strip) if user_info.include? :name
+    (self.email = user_info[:email].strip) if user_info.include? :email
+    (self.phone = user_info[:phone].strip) if user_info.include? :phone
     if ((user_info.include? :current_password) && !user_info[:current_password].empty?) || !user_info[:password].empty? || !user_info[:password_confirmation].empty?
       self.current_password = user_info[:current_password].strip
       if self.current_password && !valid_password?(self.current_password)
@@ -259,6 +260,7 @@ class User
   
   def validate_phone
     if not self.phone.empty?
+      self.phone = self.phone.gsub!(/-/, "")
       if not self.phone.match(/^[\d]+$/)
         return [false, I18n.t('errors.messages.phone_format', :attribute => I18n.t('activemodel.attributes.contact.phone'))]
       end

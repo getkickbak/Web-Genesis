@@ -46,16 +46,18 @@ module CreatePromotion
           logger.info("Create Promotion failed to send message for Promotion(#{promotion.id}), Error Code(#{ret.response[:status_code]}) at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
           return
         end
-      end  
-      Promotion.transaction do
-        promotion.status = :delivered
-        promotion.save
       end
-    rescue DataMapper::SaveFailureError => e
-      now = Time.now
-      logger.error("Exception: " + e.resource.errors.inspect)
-      logger.info("Create Promotion failed to update status for Promotion(#{promotion.id}) at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
-      return
+      begin  
+        Promotion.transaction do
+          promotion.status = :delivered
+          promotion.save
+        end
+      rescue DataMapper::SaveFailureError => e
+        now = Time.now
+        logger.error("Exception: " + e.resource.errors.inspect)
+        logger.info("Create Promotion failed to update status for Promotion(#{promotion.id}) at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
+        return
+      end  
     rescue StandardError => e
       now = Time.now
       logger.error("Exception: " + e.message)

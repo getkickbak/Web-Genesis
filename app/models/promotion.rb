@@ -4,7 +4,8 @@ class Promotion
   include DataMapper::Resource
     
   property :id, Serial
-  property :message, String, :length => 256, :required => true, :default => ""
+  property :subject, String, :length => 128, :required => true, :default => ""
+  property :message, String, :required => true, :default => ""
   property :start_date, Date, :default => ::Constant::MIN_DATE
   property :end_date, Date, :default => ::Constant::MIN_DATE
   property :status, Enum[:pending, :delivered], :default => :pending
@@ -14,7 +15,7 @@ class Promotion
   #property :deleted, ParanoidBoolean, :default => false
   
   attr_accessor :start_date_str, :end_date_str
-  attr_accessible :message, :start_date, :end_date   
+  attr_accessible :subject, :message, :start_date, :end_date   
     
   validates_with_method :start_date, :method => :validate_start_date
   validates_with_method :end_date, :method => :validate_end_date
@@ -24,6 +25,7 @@ class Promotion
   def self.create(merchant, promotion_info)
     now = Time.now
     promotion = Promotion.new(
+      :subject => promotion_info[:subject].strip,
       :message => promotion_info[:message].strip,
       :start_date => now.to_date,
       :end_date => now.to_date
