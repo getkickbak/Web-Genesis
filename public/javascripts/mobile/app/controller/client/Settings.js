@@ -3,6 +3,54 @@ Ext.define('Genesis.controller.client.Settings',
    extend : 'Genesis.controller.SettingsBase',
    inheritableStatics :
    {
+      accountValidateFailedMsg : function(msg)
+      {
+         return msg + Genesis.constants.addCRLF() + 'Please with correct syntax.';
+      },
+      accountValidate : function(page, values)
+      {
+         var me = this, account = Ext.create('Genesis.model.frontend.Account', values), validateErrors = account.validate(), field, fieldCmp, valid, label, message;
+
+         if (!validateErrors.isValid())
+         {
+            do
+            {
+               valid = false;
+               field = validateErrors.first();
+               if (field)
+               {
+                  fieldCmp = page.query('field[name='+field.getField()+']')[0];
+                  if (!fieldCmp || !fieldCmp.getRequired() || (field.getField() == 'password'))
+                  {
+                     if (!fieldCmp || !fieldCmp.getValue() || (fieldCmp.getValue() == '') || (fieldCmp.getValue() == ' '))
+                     {
+                        validateErrors.remove(field);
+                        valid = true;
+                     }
+                  }
+               }
+               else
+               {
+                  fieldCmp = null;
+               }
+            } while(valid);
+
+            if (fieldCmp)
+            {
+               label = fieldCmp.getLabel();
+               message = me.accountValidateFailedMsg(label + ' ' + field.getMessage());
+               console.log(message);
+               Ext.device.Notification.show(
+               {
+                  title : 'Oops',
+                  message : message,
+                  buttons : ['Dismiss']
+               });
+               return null;
+            }
+         }
+         return account;
+      }
    },
    xtype : 'clientSettingsCntlr',
    config :
@@ -58,10 +106,6 @@ Ext.define('Genesis.controller.client.Settings',
    initializing : true,
    accountUpdateSuccessMsg : 'Update Successful',
    accountUpdateFailedMsg : 'Update Failed',
-   accountValidateFailedMsg : function(msg)
-   {
-      return msg + Genesis.constants.addCRLF() + 'Please with correct syntax.';
-   },
    fbLoggedInIdentityMsg : function(email)
    {
       return 'You\'re logged into Facebook as ' + Genesis.constants.addCRLF() + email;
@@ -162,90 +206,54 @@ Ext.define('Genesis.controller.client.Settings',
    onAccountUpdateTap : function(b, e, eOpts)
    {
       var me = this, form = me.getSettingsPage(), values = form.getValues(true), proxy = Account.getProxy();
-      var account = Ext.create('Genesis.model.frontend.Account', values), validateErrors = account.validate();
+      var account = me.self.accountValidate(form, values);
 
-      if (!validateErrors.isValid())
+      if (account)
       {
-         var field, fieldCmp, valid;
-         do
+         //
+         // Upate Account
+         //
+         Ext.Viewport.setMasked(
          {
-            valid = false;
-            field = validateErrors.first();
-            if (field)
+            xtype : 'loadmask',
+            message : me.establishConnectionMsg
+         });
+         Account['setUpdateAccountUrl']();
+         account.save(
+         {
+            action : 'read',
+            jsonData :
             {
-               fieldCmp = Ext.ComponentQuery.query('field[name='+field.getField()+']')[0];
-               if (!fieldCmp || !fieldCmp.getRequired() || (field.getField() == 'password'))
+            },
+            callback : function(record, operation)
+            {
+               Ext.Viewport.setMasked(null);
+               if (operation.wasSuccessful())
                {
-                  if (!fieldCmp || !fieldCmp.getValue() || (fieldCmp.getValue() == '') || (fieldCmp.getValue() == ' '))
+                  Ext.device.Notification.show(
                   {
-                     validateErrors.remove(field);
-                     valid = true;
-                  }
+                     title : 'Account Settings',
+                     message : me.accountUpdateSuccessMsg,
+                     buttons : ['OK']
+                  });
+               }
+               else
+               {
+                  proxy.supressErrorsPopup = true;
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Account Settings',
+                     message : me.accountUpdateFailedMsg,
+                     buttons : ['Dismiss'],
+                     callback : function()
+                     {
+                        proxy.supressErrorsPopup = false;
+                     }
+                  });
                }
             }
-            else
-            {
-               fieldCmp = null;
-            }
-         } while(valid);
-
-         if (fieldCmp)
-         {
-            var label = fieldCmp.getLabel();
-            var message = me.accountValidateFailedMsg(label + ' ' + field.getMessage());
-            console.log(message);
-            Ext.device.Notification.show(
-            {
-               title : 'Oops',
-               message : message,
-               buttons : ['Dismiss']
-            });
-            return;
-         }
+         });
       }
-      //
-      // Upate Account
-      //
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : me.establishConnectionMsg
-      });
-      Account['setUpdateAccountUrl']();
-      account.save(
-      {
-         action : 'read',
-         jsonData :
-         {
-         },
-         callback : function(record, operation)
-         {
-            Ext.Viewport.setMasked(null);
-            if (operation.wasSuccessful())
-            {
-               Ext.device.Notification.show(
-               {
-                  title : 'Account Settings',
-                  message : me.accountUpdateSuccessMsg,
-                  buttons : ['OK']
-               });
-            }
-            else
-            {
-               proxy.supressErrorsPopup = true;
-               Ext.device.Notification.show(
-               {
-                  title : 'Account Settings',
-                  message : me.accountUpdateFailedMsg,
-                  buttons : ['Dismiss'],
-                  callback : function()
-                  {
-                     proxy.supressErrorsPopup = false;
-                  }
-               });
-            }
-         }
-      });
    },
    // --------------------------------------------------------------------------
    // Event Handlers

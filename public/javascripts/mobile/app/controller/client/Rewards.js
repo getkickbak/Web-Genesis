@@ -443,20 +443,20 @@ Ext.define('Genesis.controller.client.Rewards',
                html : me.lookingForMerchantDeviceMsg(),
                listeners :
                {
-                  element : 'element',
-                  delegate : 'div.x-innerhtml',
-                  event : 'tap',
-                  fn : function()
+                  'tap' : function(b, e, eOpts)
                   {
                      //
                      // Stop broadcasting now ...
                      //
-                     Ext.Ajax.abort();
-                     if (me.identifiers)
+                     if (e.target.className.match('x-innerhtml'))
                      {
-                        me.identifiers['cancelFn']();
+                        Ext.Ajax.abort();
+                        if (me.identifiers)
+                        {
+                           me.identifiers['cancelFn']();
+                        }
+                        Ext.Viewport.setMasked(null);
                      }
-                     Ext.Viewport.setMasked(null);
                   }
                }
             });
