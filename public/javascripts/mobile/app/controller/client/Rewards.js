@@ -113,6 +113,7 @@ Ext.define('Genesis.controller.client.Rewards',
          callback : callback
       });
    },
+   identifiers : null,
    init : function()
    {
       this.callParent(arguments);
@@ -323,19 +324,20 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    onRewardItem : function(notUseGeolocation)
    {
-      var me = this, task, viewport = me.getViewPortCntlr(), identifiers = null;
+      var me = this, task, viewport = me.getViewPortCntlr();
 
+      me.identifiers = null;
       me.rewardItemFn = function()
       {
          //
          // Not ready to process data
          //
-         if (identifiers == null)
+         if (me.identifiers == null)
          {
             return;
          }
 
-         var position = viewport.getLastPosition(), localID = identifiers['localID'];
+         var position = viewport.getLastPosition(), localID = me.identifiers['localID'];
          var venueId = (notUseGeolocation) ? viewport.getVenue().getId() : null;
          var reader = PurchaseReward.getProxy().getReader();
          var params =
@@ -355,9 +357,9 @@ Ext.define('Genesis.controller.client.Rewards',
                //
                // Stop broadcasting now ...
                //
-               if (identifiers)
+               if (me.identifiers)
                {
-                  identifiers['cancelFn']();
+                  me.identifiers['cancelFn']();
                }
                Ext.Viewport.setMasked(null);
                Ext.device.Notification.show(
@@ -404,9 +406,9 @@ Ext.define('Genesis.controller.client.Rewards',
                //
                // Stop broadcasting now ...
                //
-               if (identifiers)
+               if (me.identifiers)
                {
-                  identifiers['cancelFn']();
+                  me.identifiers['cancelFn']();
                }
                Ext.Viewport.setMasked(null);
 
@@ -433,7 +435,7 @@ Ext.define('Genesis.controller.client.Rewards',
          }
          me.broadcastLocalID(function(idx)
          {
-            identifiers = idx;
+            me.identifiers = idx;
             Ext.Viewport.setMasked(
             {
                xtype : 'mask',
@@ -444,9 +446,9 @@ Ext.define('Genesis.controller.client.Rewards',
                 tap : function()
                 {
                 Ext.Ajax.abort();
-                if (identifiers)
+                if (me.identifiers)
                 {
-                identifiers['cancelFn']();
+                me.identifiers['cancelFn']();
                 }
                 Ext.Viewport.setMasked(null);
                 }
