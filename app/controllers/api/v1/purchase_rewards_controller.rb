@@ -237,6 +237,14 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           end
           return
         end
+      rescue DataMapper::SaveFailureError => e  
+        Request.set_status(@request, :failed)
+        logger.error("Exception: " + e.resource.errors.inspect)  
+        respond_to do |format|
+          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
+        end
+        return
       rescue StandardError => e
         Request.set_status(@request, :failed)
         logger.error("Exception: " + e.message)

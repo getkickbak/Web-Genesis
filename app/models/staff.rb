@@ -79,7 +79,7 @@ class Staff
   end
   
    def password_required?
-    !self.current_password.nil? 
+    !self.current_password.nil?
   end
   
   # Override Devise::mailer
@@ -91,7 +91,7 @@ class Staff
     now = Time.now
     self.name = staff_info[:name].strip
     self.email = staff_info[:email].strip
-    if !staff_info[:current_password].empty?
+    if !staff_info[:current_password].empty? || !staff_info[:password].empty? || !staff_info[:password_confirmation].empty?
       self.current_password = staff_info[:current_password].strip
       if self.current_password && !valid_password?(self.current_password)
         errors.add(:current_password, I18n.t("errors.messages.staff.incorrect_password"))

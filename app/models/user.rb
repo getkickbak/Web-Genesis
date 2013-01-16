@@ -17,7 +17,7 @@ class User
   property :name, String, :required => true, :default => ""
   ## Database authenticatable
   property :email, String, :unique_index => true, :required => true, :format => :email_address, :default => ""
-  property :phone, String, :unique_index => true, :default => ""
+  property :phone, String, :unique_index => true, :required => true, :default => ""
   property :encrypted_password, String, :required => true, :default => ""
   ## Recoverable
   property :reset_password_token, String
@@ -43,10 +43,10 @@ class User
     
   attr_accessor :current_password, :tag_id
   
-  attr_accessible :name, :email, :facebook_id, :facebook_email, :role, :status, :current_password, :password, :password_confirmation, :tag_id
+  attr_accessible :name, :email, :phone, :facebook_id, :facebook_email, :role, :status, :current_password, :password, :password_confirmation, :tag_id
     
   has 1, :profile, 'UserProfile', :constraint => :destroy
-  has 1, :user_to_virtual_tag, :constraint => :destroy
+  has 1, :user_to_virtual_tag, :constraint => :destroy      
   has 1, :virtual_tag, 'UserTag', :through => :user_to_virtual_tag,  :via => :user_tag
   has n, :user_to_tags, :constraint => :destroy
   has n, :tags, 'UserTag', :through => :user_to_tags,  :via => :user_tag
@@ -83,7 +83,6 @@ class User
       email = user_info.email.strip
       phone = user_info.phone.strip
       password = user_info.password.strip
-      password_confirmation = user_info.password_confirmation.strip
       role = user_info.role
       status = user_info.status
       gender = :u
@@ -105,8 +104,9 @@ class User
             user = user_to_tag.user
             user.name = name
             user.email = email
+            user.phone = phone
             user.password = password
-            user.password_confirmation = password_confirmation
+            user.password_confirmation = password
             user.update_ts = now
             user_tag = user_to_tag.user_tag
             user_tag.status = :active
@@ -120,7 +120,7 @@ class User
     end
     
     if validate_user || tag_id.nil?
-      user = User.new(
+      user =  User.new(
         {
           :name => name,
           :email => email,   
@@ -129,7 +129,7 @@ class User
           :facebook_email => facebook_email,
           :current_password => password,
           :password => password,
-          :password_confirmation => password_confirmation || password,
+          :password_confirmation => password,
           :role => role,
           :status => status,
           :tag_id => tag_id
@@ -154,7 +154,7 @@ class User
   end
   
   def password_required?
-    !self.current_password.nil? 
+    !self.current_password.nil?
   end
   
   def update_all(user_info)
@@ -162,7 +162,7 @@ class User
     self.name = user_info[:name].strip if user_info.include? :name
     self.email = user_info[:email].strip if user_info.include? :email
     self.phone = user_info[:phone].strip if user_info.include? :phone
-    if (user_info.include? :current_password) && !user_info[:current_password].empty?
+    if ((user_info.include? :current_password) && !user_info[:current_password].empty?) || !user_info[:password].empty? || !user_info[:password_confirmation].empty?
       self.current_password = user_info[:current_password].strip
       if self.current_password && !valid_password?(self.current_password)
         errors.add(:current_password, I18n.t("errors.messages.user.incorrect_password"))

@@ -57,6 +57,12 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
           render :template => '/api/v1/tokens/create'
         end
       end
+    rescue DataMapper::SaveFailureError => e  
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => t("api.tokens.create_failure").split('\n') } }
+      end
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
@@ -109,7 +115,6 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
       User.transaction do
         if @user.virtual_tag.nil?
           @user.virtual_tag = UserTag.create(:virtual)
-          @user.save!
           @user.register_tag(@user.virtual_tag)
         end
         if facebook_id
@@ -136,6 +141,12 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
         session[:resolution] = Common.get_thumbail_resolution(session[:user_agent], params[:device_pixel_ratio].to_f)
         render :template => '/api/v1/tokens/create'
       end
+    rescue DataMapper::SaveFailureError => e  
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :metaData => { :rescode => 'server_error' }, :message => t("api.tokens.create_from_facebook_failure").split('\n') } }
+      end  
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
@@ -145,7 +156,7 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
     end      
   end
 
-  def get_csrf_token    
+  def get_csrf_token
     if current_user.virtual_tag.nil?
       current_user.virtual_tag = UserTag.create(:virtual)
       current_user.register_tag(current_user.virtual_tag)
