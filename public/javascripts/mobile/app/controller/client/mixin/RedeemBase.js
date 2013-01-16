@@ -6,6 +6,10 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
    },
    config :
    {
+      listeners :
+      {
+         'redeemitem' : 'onRedeemItem'
+      }
    },
    needPointsMsg : function(pointsDiff)
    {
@@ -13,7 +17,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
    },
    retrievingQRCodeMsg : 'Retrieving QRCode ...',
    showQrCodeMsg : 'Show this Authorization Code to your merchant to redeem!',
-   redeemItemConfirmMsg : 'Please confim to redeem this item',
+   redeemItemConfirmMsg : 'Please confirm to redeem this item',
    // --------------------------------------------------------------------------
    // Redemptions Page
    // --------------------------------------------------------------------------
@@ -80,7 +84,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                   Ext.device.Notification.beep();
                   Ext.device.Notification.show(
                   {
-                     title : 'Redemptions',
+                     title : me.getRedeemPopupTitle(),
                      message : me.redeemSuccessfulMsg,
                      buttons : ['OK'],
                      callback : function()
@@ -98,7 +102,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                   proxy.supressErrorsPopup = true;
                   Ext.device.Notification.show(
                   {
-                     title : 'Redemptions',
+                     title : me.getRedeemPopupTitle(),
                      message : me.redeemFailedMsg,
                      buttons : ['Dismiss'],
                      callback : function()
@@ -119,22 +123,28 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
             identifiers = ids;
             Ext.Viewport.setMasked(
             {
-               xtype : 'loadmask',
-               message : me.lookingForMerchantDeviceMsg
-               /*,listeners :
-                {
-                tap : function()
-                {
-                Ext.Ajax.abort();
-                if (identifiers)
-                {
-                identifiers['cancelFn']();
-                }
-                Ext.Viewport.setMasked(null);
-                me.onDoneTap();
-                }
-                }
-                */
+               xtype : 'mask',
+               cls : 'transmit-mask',
+               html : me.lookingForMerchantDeviceMsg(),
+               listeners :
+               {
+                  element : 'element',
+                  delegate : 'div.x-innerhtml',
+                  event : 'tap',
+                  fn : function()
+                  {
+                     //
+                     // Stop broadcasting now ...
+                     //
+                     Ext.Ajax.abort();
+                     if (me.identifiers)
+                     {
+                        me.identifiers['cancelFn']();
+                     }
+                     Ext.Viewport.setMasked(null);
+                     me.onDoneTap();
+                  }
+               }
             });
             console.log("Broadcast underway ...");
             me.redeemItemFn(Ext.apply(params,
@@ -200,7 +210,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
          }
       }
    },
-
+   onRedeemItemShowView : Ext.emptyFn,
    // --------------------------------------------------------------------------
    // Utility Functions
    // --------------------------------------------------------------------------

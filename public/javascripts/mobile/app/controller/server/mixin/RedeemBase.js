@@ -131,8 +131,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       {
          venue_id : venueId
       }
-      var message = (Genesis.fn.isNative()) ? //
-      ((!merchantMode) ? me.lookingForMerchantDeviceMsg : me.lookingForMobileDeviceMsg) : me.retrievingQRCodeMsg;
+      var message = (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg : me.retrievingQRCodeMsg;
       var proxy = store.getProxy();
 
       me.redeemItemFn = function(p, closeDialog)
@@ -238,11 +237,15 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          {
             title : me.getRedeemPopupTitle(),
             message : message,
+            ignoreOnHide : true,
             buttons : [
             {
                text : 'Enter TAG ID',
-               ignoreOnHide : true,
                itemId : 'enter tag id'
+            },
+            {
+               text : 'Cancel',
+               itemId : 'cancel'
             }],
             callback : callback
          });

@@ -18,10 +18,6 @@
       .x-innerhtml {
          height:100%;
          text-align:center;
-         img {
-            width:$icon-size*3;
-            height:$icon-size*3;
-         }        
       }
    }
    .itemPoints {
@@ -37,15 +33,15 @@
          position:absolute;
          right:0.8em;
          img {
-            width:$icon-size;
-            max-height:$icon-size;
+            width:$icon-size*$icon-multiplier;
+            max-height:$icon-size*$icon-multiplier;
          }
       }
       .infoWrapper {
          font-size:1em;
-         padding-right:calc-px-em($icon-size, $panelGap, 1em);
+         padding-right:calc-px-em($icon-size*$icon-multiplier, $panelGap, 1em);
          width:16em;
-         min-height:$icon-size;
+         min-height:$icon-size*$icon-multiplier;
          .name {
             font-size:$normalFontSize;
             font-weight:bold;

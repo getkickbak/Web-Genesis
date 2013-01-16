@@ -114,7 +114,6 @@ Ext.define('Genesis.controller.RewardRedemptionsBase',
       me.redeemItem = redeemItem;
       me.redirectTo('redeemReward');
    },
-   //onRedeemItemShowView : Ext.emptyFn,
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------

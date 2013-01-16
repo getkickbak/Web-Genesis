@@ -129,7 +129,6 @@ Ext.define('Genesis.controller.PrizeRedemptionsBase',
       }
       console.log("Base onRedeemItemActivate - Updated RewardItem View.");
    },
-   //onRedeemItemShowView : Ext.emptyFn,
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------

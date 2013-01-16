@@ -113,6 +113,7 @@ Ext.define('Genesis.controller.client.Rewards',
          callback : callback
       });
    },
+   identifiers : null,
    init : function()
    {
       this.callParent(arguments);
@@ -323,19 +324,20 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    onRewardItem : function(notUseGeolocation)
    {
-      var me = this, task, viewport = me.getViewPortCntlr(), identifiers = null;
+      var me = this, task, viewport = me.getViewPortCntlr();
 
+      me.identifiers = null;
       me.rewardItemFn = function()
       {
          //
          // Not ready to process data
          //
-         if (identifiers == null)
+         if (me.identifiers == null)
          {
             return;
          }
 
-         var position = viewport.getLastPosition(), localID = identifiers['localID'];
+         var position = viewport.getLastPosition(), localID = me.identifiers['localID'];
          var venueId = (notUseGeolocation) ? viewport.getVenue().getId() : null;
          var reader = PurchaseReward.getProxy().getReader();
          var params =
@@ -355,9 +357,9 @@ Ext.define('Genesis.controller.client.Rewards',
                //
                // Stop broadcasting now ...
                //
-               if (identifiers)
+               if (me.identifiers)
                {
-                  identifiers['cancelFn']();
+                  me.identifiers['cancelFn']();
                }
                Ext.Viewport.setMasked(null);
                Ext.device.Notification.show(
@@ -404,9 +406,9 @@ Ext.define('Genesis.controller.client.Rewards',
                //
                // Stop broadcasting now ...
                //
-               if (identifiers)
+               if (me.identifiers)
                {
-                  identifiers['cancelFn']();
+                  me.identifiers['cancelFn']();
                }
                Ext.Viewport.setMasked(null);
 
@@ -433,27 +435,33 @@ Ext.define('Genesis.controller.client.Rewards',
          }
          me.broadcastLocalID(function(idx)
          {
-            identifiers = idx;
+            me.identifiers = idx;
             Ext.Viewport.setMasked(
             {
-               xtype : 'loadmask',
-               message : me.lookingForMerchantDeviceMsg
-               /*,listeners :
-                {
-                tap : function()
-                {
-                Ext.Ajax.abort();
-                if (identifiers)
-                {
-                identifiers['cancelFn']();
-                }
-                Ext.Viewport.setMasked(null);
-                }
-                }
-                */
+               xtype : 'mask',
+               cls : 'transmit-mask',
+               html : me.lookingForMerchantDeviceMsg(),
+               listeners :
+               {
+                  element : 'element',
+                  delegate : 'div.x-innerhtml',
+                  event : 'tap',
+                  fn : function()
+                  {
+                     //
+                     // Stop broadcasting now ...
+                     //
+                     Ext.Ajax.abort();
+                     if (me.identifiers)
+                     {
+                        me.identifiers['cancelFn']();
+                     }
+                     Ext.Viewport.setMasked(null);
+                  }
+               }
             });
             console.log("Broadcast underway ...");
-            if (notUseGeolocation || viewport.getLocationPosition())
+            if (notUseGeolocation || viewport.getLastPosition())
             {
                me.rewardItemFn();
             }
@@ -467,7 +475,7 @@ Ext.define('Genesis.controller.client.Rewards',
          me.scanQRCode();
       }
    },
-   onEarnPts : function()
+   onEarnPts : function(notUseGeolocation)
    {
       var me = this;
       var allowedMsg = me.isOpenAllowed();
@@ -496,7 +504,7 @@ Ext.define('Genesis.controller.client.Rewards',
                   {
                      //var earnPts = Ext.bind(me.onEarnPtsSC, me);
                      //me.checkReferralPrompt(earnPts, earnPts);
-                     me.fireEvent('rewarditem', true);
+                     me.fireEvent('rewarditem', notUseGeolocation);
                   }
                }
             });
@@ -638,9 +646,13 @@ Ext.define('Genesis.controller.client.Rewards',
             break;
          }
          case 'rewardsSC':
+         {
+            me.onEarnPts(false);
+            break;
+         }
          case 'rewards':
          {
-            me.onEarnPts();
+            me.onEarnPts(true);
             break;
          }
          case 'promotion' :
