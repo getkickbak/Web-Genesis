@@ -133,7 +133,11 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                      //
                      // Stop broadcasting now ...
                      //
-                     if (e.target.className.match('x-innerhtml'))
+                     if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
+                     {
+                        x : e.browserEvent.clientX,
+                        y : e.browserEvent.clientY
+                     }))
                      {
                         Ext.Ajax.abort();
                         if (me.identifiers)
@@ -142,6 +146,12 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                         }
                         Ext.Viewport.setMasked(null);
                         me.onDoneTap();
+                        Ext.device.Notification.show(
+                        {
+                           title : me.getRedeemPopupTitle(),
+                           message : me.transactionCancelledMsg,
+                           buttons : ['Dismiss']
+                        });
                      }
                   }
                }
