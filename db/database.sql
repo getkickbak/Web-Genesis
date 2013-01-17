@@ -141,3 +141,7 @@ INSERT INTO badge_type_images VALUES (8,'junkie.png');
 INSERT INTO badge_type_images VALUES (9,'addict.png');
 INSERT INTO badge_type_images VALUES (10,'lifer.png');
 INSERT INTO badge_type_images VALUES (11,'boss.png');
+
+INSERT INTO reward_model_types VALUES (1,'amount_spend');
+INSERT INTO reward_model_types VALUES (2,'items_purchased');
+INSERT INTO reward_model_types VALUES (3,'visits');

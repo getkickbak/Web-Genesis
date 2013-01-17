@@ -6,6 +6,16 @@ module Business
     
     def index
       @reward_model = current_merchant.reward_model || RewardModel.new
+      type = RewardModelType.id_to_type[params[:type_id].to_i]
+      if type
+        @reward_model.type_id = params[:type_id].to_i
+        @reward_model.type = type
+      elsif @reward_model.type
+        @reward_model.type_id = @reward_model.type.id
+      else
+        @reward_model.type = RewardModelType.value_to_type["amount_spend"]  
+        @reward_model.type_id = @reward_model.type.id 
+      end
       respond_to do |format|
         format.html # index.html.erb
         #format.xml  { render :xml => @merchants }
@@ -16,12 +26,13 @@ module Business
       @reward_model = current_merchant.reward_model
       begin
         RewardModel.transaction do
+          type = RewardModelType.id_to_type[params[:reward_model][:type_id].to_i]
           now = Time.now
           if @reward_model.nil?
-            RewardModel.create(current_merchant, params[:reward_model])
+            RewardModel.create(current_merchant, type, params[:reward_model])
             msg = t("business.reward_model.setup_success")
           else
-            @reward_model.update(params[:reward_model])
+            @reward_model.update(type, params[:reward_model])
             msg = t("business.reward_model.update_success")
           end
           rewards = CustomerReward.all(:merchant => current_merchant)

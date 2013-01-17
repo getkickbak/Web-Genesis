@@ -8,8 +8,8 @@ module Business
           resource.status = :pending
           resource.will_terminate = false
           resource.custom_badges = false
-          type = MerchantType.get(resource.type_id)
-          visit_frequency = VisitFrequencyType.get(resource.visit_frequency_id)
+          type = MerchantType.id_to_type[resource.type_id]
+          visit_frequency = VisitFrequencyType.id_to_type[resource.visit_frequency_id]
           resource.reward_terms = I18n.t 'customer_reward.terms'
           merchant = Merchant.create(type, visit_frequency, resource)
           resource = merchant
