@@ -177,7 +177,7 @@ Ext.define('Genesis.controller.client.Settings',
       form.setValues(
       {
          birthday : fields['birthday'].birthday,
-         phone : db['account'].phone || null,
+         phone : phone,
          tagid : db['account'].virtual_tag_id || 'None',
          facebook : (db['enableFB']) ? 1 : 0
       });
