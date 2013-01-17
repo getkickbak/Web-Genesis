@@ -804,6 +804,20 @@ Ext.define('Genesis.data.reader.Json',
    }
 });
 
+Ext.define('Genesis.data.writer.Writer',
+{
+   override : 'Ext.data.writer.Writer',
+   writeDate : function(field, date)
+   {
+      if (dete)
+      {
+         return this.callParent(arguments);
+      }
+      
+      return null;
+   }
+});
+
 // **************************************************************************
 // Ext.data.proxy.Server
 // **************************************************************************
