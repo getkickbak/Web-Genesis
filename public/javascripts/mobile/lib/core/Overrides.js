@@ -809,7 +809,7 @@ Ext.define('Genesis.data.writer.Writer',
    override : 'Ext.data.writer.Writer',
    writeDate : function(field, date)
    {
-      if (dete)
+      if (date)
       {
          return this.callParent(arguments);
       }
