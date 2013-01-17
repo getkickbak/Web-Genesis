@@ -585,7 +585,7 @@ Ext.define('Genesis.controller.client.MainPage',
             name : values.name,
             email : values.username,
             password : values.password,
-            phone : values.phone.replace('-', '')
+            phone : values.phone.replace(/-/g, '')
          };
 
          if (response)
