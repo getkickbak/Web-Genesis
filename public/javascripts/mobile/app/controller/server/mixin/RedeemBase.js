@@ -124,7 +124,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
    onRedeemItem : function(btn, venue, view)
    {
       var me = this, identifiers = null, task = null, dismissDialog = false;
-      var viewport = me.getViewPortCntlr(), item = view.getInnerItems()[0];
+      var viewport = me.getViewPortCntlr(), item = view.query("container[tag=redeemItemContainer]")[0].getInnerItems()[0];
       var venueId = (venue) ? venue.getId() : 0;
       var storeName = me.getRedeemStore(), store = Ext.StoreMgr.get(storeName);
       var params =

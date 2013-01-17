@@ -26,7 +26,9 @@ Ext.define('Genesis.controller.client.Checkins',
          },
          toolbarBottom : 'clientcheckinexploreview container[tag=toolbarBottom]',
          shareBtn : 'viewportview button[tag=shareBtn]',
-         refreshBtn : 'clientcheckinexploreview button[tag=refresh]'
+         refreshBtn : 'clientcheckinexploreview button[tag=refresh]',
+         // Login Page
+         login : 'loginpageview'
       },
       control :
       {
@@ -47,6 +49,10 @@ Ext.define('Genesis.controller.client.Checkins',
          {
             select : 'onExploreSelect',
             disclose : 'onExploreDisclose'
+         },
+         login :
+         {
+            activate : 'onLoginActivate'
          }
       },
       listeners :
@@ -400,6 +406,15 @@ Ext.define('Genesis.controller.client.Checkins',
       {
          console.debug("CheckInExplore - Complete");
       }
+   },
+   // --------------------------------------------------------------------------
+   // Login Page
+   // --------------------------------------------------------------------------
+   onLoginActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
+      cestore.removeAll();
    },
    // --------------------------------------------------------------------------
    // CheckinExplore Page
