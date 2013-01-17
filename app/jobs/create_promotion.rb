@@ -13,7 +13,7 @@ module CreatePromotion
       promotion = Promotion.get(id)
       push = Pushwoosh::RemoteApi.new
       count = Customer.count(:merchant => promotion.merchant)
-      max = 1000
+      max = 500
       n = 1
       if count == max
         n = count/max
@@ -24,17 +24,20 @@ module CreatePromotion
       for i in 0..n-1
         logger.info("Sending iteration #{i+1}")
         start = i*max
-        customers = Customer.all(:merchant => promotion.merchant, :offset => start, :limit => max)
+        customers = Customer.all(:fields => [:user_id], :merchant => promotion.merchant, :offset => start, :limit => max)
         user_list = []
         customers.each do |customer|
-          user_list << customer.user.id 
+          user_list << customer.user_id 
         end
-        devices = UserDevice.all(:user_id => user_list)
+        devices = UserDevice.all(:fields => [:device_id, :user_id], :user_id => user_list)
         device_list = []
+        device_user_list = []
         devices.each do |device|
           device_list << device.device_id
+          device_user_list << device.user_id
         end
-        logger.debug("Device list: #{device_list}")
+        #logger.debug("Device list: #{device_list}")
+        logger.info("Sending mobile notifications")
         message = "#{promotion.merchant.name} - #{promotion.message}"
         ret = push.create_message(promotion.merchant.id, message, promotion.start_date, device_list)
         logger.info("Response body: #{ret.response}")
@@ -44,8 +47,15 @@ module CreatePromotion
           now = Time.now
           logger.info("Failed to complete iteration #{i+1}")
           logger.info("Create Promotion failed to send message for Promotion(#{promotion.id}), Error Code(#{ret.response[:status_code]}) at #{now.strftime("%a %m/%d/%y %H:%M %Z")}")
-          return
         end
+        logger.info("Sending mobile notifications - complete")
+        logger.info("Sending emails")
+        email_user_list = user_list - device_list
+        email_users = User.all(:fields => [:name], :id => email_user_list)
+        email_users.each do |user|
+          UserMailer.promotion_email(user, promotion).deliver
+        end
+        logger.inf("Sending emails - complete")
       end
       begin  
         Promotion.transaction do

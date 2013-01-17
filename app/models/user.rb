@@ -59,7 +59,7 @@ class User
   has n, :user_credit_cards, :child_key => [ :user_id ], :constraint => :destroy
   has n, :credit_cards, :through => :user_credit_cards, :via => :credit_card
     
-  validates_presence_of :phone, :if => lambda { |t| t.new? }
+  validates_presence_of :phone, :if => lambda { |t| t.new? && t.status == :active }
   validates_with_method :phone, :method => :validate_phone  
   validates_with_method :tag_id, :method => :validate_tag_id
     
