@@ -69,6 +69,15 @@ Ext.define('Genesis.model.Customer',
             type : 'json',
             messageProperty : 'message',
             rootProperty : 'data'
+         },
+         listeners :
+         {
+            'metachange' : function(proxy, metaData, eOpts)
+            {
+               var viewport = _application.getController(((merchantMode) ? 'server' : 'client') + '.Viewport');
+               // Let Other event handlers udpate the metaData first ...
+               viewport.fireEvent('updatemetadata', metaData);
+            }
          }
       },
       fields : ['id', 'points', 'prize_points', 'visits', 'next_badge_visits', 'eligible_for_reward', 'eligible_for_prize', 'badge_id', 'next_badge_id'],

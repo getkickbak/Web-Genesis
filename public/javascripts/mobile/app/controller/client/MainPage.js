@@ -506,7 +506,6 @@ Ext.define('Genesis.controller.client.MainPage',
                   Ext.Viewport.setMasked(null);
                   Genesis.db.setLocalDBAttrib('enableFB', true);
                   me.persistSyncStores('CustomerStore');
-                  me.fireEvent('updatemetadata', Customer.getProxy().getReader().metaData);
                }
             }
          });
@@ -595,7 +594,7 @@ Ext.define('Genesis.controller.client.MainPage',
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
-            messasge : me.creatingAccountMsg,
+            message : me.creatingAccountMsg,
          });
 
          Customer['setCreateAccountUrl']();
@@ -622,8 +621,8 @@ Ext.define('Genesis.controller.client.MainPage',
                else
                {
                   me.persistSyncStores();
-                  me.fireEvent('updatemetadata', Customer.getProxy().getReader().metaData);
                }
+               Ext.Viewport.setMasked(null);
             }
          });
       }
@@ -686,7 +685,6 @@ Ext.define('Genesis.controller.client.MainPage',
             else
             {
                me.persistSyncStores('CustomerStore');
-               me.fireEvent('updatemetadata', Customer.getProxy().getReader().metaData);
             }
             Ext.Viewport.setMasked(null);
          }

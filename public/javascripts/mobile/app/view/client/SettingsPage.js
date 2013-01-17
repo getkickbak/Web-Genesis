@@ -85,6 +85,7 @@ Ext.define('Genesis.view.client.SettingsPage',
          tag : 'accountUpdate',
          xtype : 'button',
          ui : 'orange-large',
+         style : 'margin-bottom:1.5em',
          text : 'Update'
       },
       {
