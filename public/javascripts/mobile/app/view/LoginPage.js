@@ -376,16 +376,16 @@ Ext.define('Genesis.view.CreateAccountPage',
             name : 'username',
             label : 'Email Address',
             placeHolder : 'johndoe@example.com'
-         },
-         {
-            xtype : 'passwordfield',
-            name : 'password',
-            label : 'Password',
          }, Ext.apply(Genesis.view.ViewBase.phoneField(),
          {
             label : 'Phone Number',
             name : 'phone'
-         })]
+         }),
+         {
+            xtype : 'passwordfield',
+            name : 'password',
+            label : 'Password',
+         }]
       },
       {
          xtype : 'button',
