@@ -49,9 +49,9 @@ Genesis::Application.configure do
     }
   end
 
-  config.log_level = :info
+  #config.log_level = :info
   
-  config.cache_store = :dalli_store
+  #config.cache_store = :dalli_store
   
 =begin
   ActiveMerchant::Billing::Base.mode = :test

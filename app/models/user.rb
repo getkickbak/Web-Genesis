@@ -163,7 +163,7 @@ class User
     (self.name = user_info[:name].strip) if user_info.include? :name
     (self.email = user_info[:email].strip) if user_info.include? :email
     (self.phone = user_info[:phone].strip) if user_info.include? :phone
-    if ((user_info.include? :current_password) && !user_info[:current_password].empty?) || !user_info[:password].empty? || !user_info[:password_confirmation].empty?
+    if ((user_info.include? :current_password) && !user_info[:current_password].empty?) || ((user_info.include? :password) && !user_info[:password].empty?) || ((user_info.include? :password_confirmation) && !user_info[:password_confirmation].empty?)
       self.current_password = user_info[:current_password].strip
       if self.current_password && !valid_password?(self.current_password)
         errors.add(:current_password, I18n.t("errors.messages.user.incorrect_password"))
@@ -186,8 +186,9 @@ class User
       date_str = "#{user_info[:user_profile]['birthday(1i)']}-#{user_info[:user_profile]['birthday(2i)']}-#{user_info[:user_profile]['birthday(3i)']}"
       self.profile.birthday_str = date_str
       self.profile.update_ts = now
-    elsif (user_info.include? :gender) || (user_info.include? :birthday)
-      self.profile.gender = user_info[:gender]
+    end  
+    (self.profile.gender = user_info[:gender]) if user_info.include? :gender
+    if user_info.include? :birthday && user_info[:birthday]
       birthday_secs = user_info[:birthday]/1000
       self.profile.birthday = Time.at(birthday_secs).to_date
       self.profile.update_ts = now
@@ -260,7 +261,7 @@ class User
   
   def validate_phone
     if not self.phone.empty?
-      self.phone = self.phone.gsub!(/-/, "")
+      self.phone.gsub!(/\-/, "")
       if not self.phone.match(/^[\d]+$/)
         return [false, I18n.t('errors.messages.phone_format', :attribute => I18n.t('activemodel.attributes.contact.phone'))]
       end

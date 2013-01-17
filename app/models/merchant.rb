@@ -337,7 +337,7 @@ class Merchant
 
   def check_type_id
     if self.type
-    return true
+      return true
     end
     return [false, ValidationErrors.default_error_message(:blank, :type_id)]
   end
@@ -367,7 +367,7 @@ class Merchant
   end
   
   def validate_phone
-    self.phone = self.phone.gsub!(/-/, "")
+    self.phone.gsub!(/\-/, "")
     if not self.phone.match(/^[\d]+$/)
       return [false, I18n.t('errors.messages.phone_format', :attribute => I18n.t('activemodel.attributes.contact.phone'))]
     end
