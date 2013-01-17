@@ -75,14 +75,6 @@ Ext.define('Genesis.view.client.SettingsPage',
             required : false
          }),
          {
-            xtype : 'togglefield',
-            name : 'facebook',
-            label : '<img src="' + //
-            'resources/themes/images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png" ' + //
-            'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;"/>',
-            value : 0
-         },
-         {
             xtype : 'listfield',
             name : 'changepassword',
             label : 'Change Password',
@@ -94,6 +86,24 @@ Ext.define('Genesis.view.client.SettingsPage',
          xtype : 'button',
          ui : 'orange-large',
          text : 'Update'
+      },
+      {
+         xtype : 'fieldset',
+         title : 'Social Settings',
+         //instructions : 'Tell us all about yourself',
+         defaults :
+         {
+            labelWidth : '60%'
+         },
+         items : [
+         {
+            xtype : 'togglefield',
+            name : 'facebook',
+            label : '<img src="' + //
+            'resources/themes/images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png" ' + //
+            'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Facebook',
+            value : 0
+         }]
       },
       {
          xtype : 'fieldset',
