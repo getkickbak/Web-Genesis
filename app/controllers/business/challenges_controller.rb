@@ -30,14 +30,14 @@ module Business
     def new
       authorize! :create, Challenge
 
-      type = ChallengeType.id_to_value[params[:type_id].to_i]
+      type = ChallengeType.id_to_type[params[:type_id].to_i]
       @available_challenge_types = get_available_challenge_types(type)
 
       if type
         flash.delete(:error)
         @challenge = Challenge.new(get_challenge_info()[type])
         @challenge.type_id = params[:type_id].to_i
-        @challenge.type = ChallengeType.get(@challenge.type_id)
+        @challenge.type = ChallengeType.id_to_type[@challenge.type_id]
       else
         @challenge = Challenge.new
       end
@@ -57,7 +57,7 @@ module Business
       authorize! :create, Challenge
 
       allowed = true
-      type = ChallengeType.get(params[:challenge][:type_id])
+      type = ChallengeType.id_to_type[params[:challenge][:type_id].to_i]
       if type.nil?    
         flash[:error] = t("business.challenges.type_missing")
         @challenge = Challenge.new
@@ -128,12 +128,12 @@ module Business
 
       @available_challenge_types = get_available_challenge_types(@challenge.type.value)
 
-      type = ChallengeType.id_to_value[params[:type_id].to_i]
+      type = ChallengeType.id_to_type[params[:type_id].to_i]
       if type
         challenge_info = get_challenge_info()[type]
         @challenge.update_without_save(challenge_info)
         @challenge.type_id = params[:type_id].to_i
-        @challenge.type = ChallengeType.get(@challenge.type_id)
+        @challenge.type = ChallengeType.id_to_type[@challenge.type_id]
         if type == 'menu'
           @challenge.description = @challenge.description % [@challenge.name]
         end
@@ -152,7 +152,7 @@ module Business
       authorize! :update, @challenge
 
       allowed = true
-      type = ChallengeType.get(params[:challenge][:type_id])
+      type = ChallengeType.id_to_type[params[:challenge][:type_id].to_i]
       if type.nil?
         flash[:error] = t("business.challenges.type_missing")
         @available_challenge_types = get_available_challenge_types(nil)

@@ -4,7 +4,7 @@ class RewardModel
   include DataMapper::Resource
   
   property :id, Serial
-  property :signup_amount, Decimal, :required => true, :scale => 2, :min => 1.00
+  property :signup_amount, Decimal, :scale => 2, :min => 1.00, :default => 1.00
   property :signup_points, Integer, :required => true, :min => 1
   property :rebate_rate, Integer, :required => true, :min => 1
   property :prize_rebate_rate, Integer, :required => true, :min => 1
@@ -17,13 +17,21 @@ class RewardModel
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false  
   
-  attr_accessible :signup_amount, :signup_points, :rebate_rate, :prize_rebate_rate, :price_per_point, :price_per_prize_point
+  attr_accessor :type_id
+  
+  attr_accessible :type_id, :signup_amount, :signup_points, :rebate_rate, :prize_rebate_rate, :price_per_point, :price_per_prize_point
   
   belongs_to :merchant
+  has 1, :reward_model_to_type, :constraint => :destroy
+  has 1, :type, 'RewardModelType', :through => :reward_model_to_type, :via => :reward_model_type
   
-  def self.create(merchant, reward_model_info)
+  validates_presence_of :signup_amount, :if => lambda { |t| !t.type_id.nil? && RewardModelType.id_to_value[t.type_id] == "amount_spend"  }
+  validates_with_method :type_id, :method => :check_type_id
+  
+  def self.create(merchant, type, reward_model_info)
     now = Time.now
     reward_model = RewardModel.new(
+      :type_id => type ? type.id : nil,
       :signup_amount => reward_model_info[:signup_amount],
       :signup_points => reward_model_info[:signup_points],
       :rebate_rate => reward_model_info[:rebate_rate],
@@ -34,12 +42,14 @@ class RewardModel
     reward_model[:created_ts] = now
     reward_model[:update_ts] = now
     reward_model.merchant = merchant
+    reward_model.type = type
     reward_model.save
     return reward_model
   end
   
-  def update(reward_model_info)
+  def update(type, reward_model_info)
     now = Time.now
+    self.type_id = type ? type.id : nil
     self.signup_amount = reward_model_info[:signup_amount]
     self.signup_points = reward_model_info[:signup_points]
     self.rebate_rate = reward_model_info[:rebate_rate]
@@ -47,6 +57,16 @@ class RewardModel
     #self.price_per_point = reward_model_info[:price_per_point]
     #self.price_per_prize_point = reward_model_info[:price_per_prize_point]
     self.update_ts = now
+    self.type = type
     save
+  end
+  
+  private
+  
+  def check_type_id
+    if self.type
+      return true  
+    end
+    return [false, ValidationErrors.default_error_message(:blank, :type_id)]
   end
 end

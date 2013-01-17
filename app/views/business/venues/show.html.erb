@@ -101,7 +101,7 @@
 											<div class="control-group">
 												<label class="control-label"> Phone: </label>
 												<div class="controls">
-													<%= @venue.phone %>
+													<%= number_to_phone(@venue.phone) %>
 												</div>
 											</div>
 											<% if not @venue.website.empty? %>

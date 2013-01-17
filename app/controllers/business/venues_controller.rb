@@ -49,7 +49,7 @@ module Business
 
       begin
         Venue.transaction do
-          type = VenueType.get(params[:venue][:type_id])
+          type = VenueType.id_to_type[params[:venue][:type_id].to_i]
           @venue = Venue.create(current_merchant, type, params[:venue])
           rewards = CustomerReward.all(:merchant => current_merchant)
           rewards.each do |reward|
@@ -87,7 +87,7 @@ module Business
 
       begin
         Venue.transaction do
-          type = VenueType.get(params[:venue][:type_id])
+          type = VenueType.id_to_type[params[:venue][:type_id].to_i]
           @venue.update(type, params[:venue])
           respond_to do |format|
             format.html { redirect_to({:action => "show", :id => @venue.id}, {:notice => t("business.venues.update_success")}) }

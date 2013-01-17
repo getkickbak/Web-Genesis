@@ -67,6 +67,11 @@ en:
         dessert_place: "Dessert Place"
         ice_cream_shop: "Ice Cream Shop"    
         restaurant: "Restaurant"  
+  reward_model:
+      type:
+        amount_spend: "Amount Spend"
+        items_purchased: "Items Purchased"
+        visits: "Visits"      
   challenge:
       type:
         birthday: 

@@ -41,6 +41,7 @@ class Venue
   has n, :customer_rewards, :through => :customer_reward_venues
   
   validates_with_method :type_id, :method => :check_type_id
+  validates_with_method :phone, :method => :validate_phone
 
   def self.create(merchant, type, venue_info)
     now = Time.now
@@ -271,5 +272,13 @@ class Venue
       return true  
     end
     return [false, ValidationErrors.default_error_message(:blank, :type_id)]
+  end
+  
+  def validate_phone
+    self.phone.gsub!(/\-/, "")
+    if not self.phone.match(/^[\d]+$/)
+      return [false, I18n.t('errors.messages.phone_format', :attribute => I18n.t('activemodel.attributes.contact.phone'))]
+    end
+    return true
   end
 end

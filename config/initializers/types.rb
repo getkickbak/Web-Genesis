@@ -24,6 +24,28 @@ if exists
       merchant_type_value_to_name[type.value][locale] = name
     end
   end
+  reward_model_types = RewardModelType.all
+  reward_model_type_values = {}
+  reward_model_type_id_to_value = {}
+  reward_model_type_id_to_type = {}
+  reward_model_type_value_to_name = {}
+  reward_model_type_value_to_type = {}
+  reward_model_types.each do |type|
+    reward_model_type_id_to_type[type.id] = type
+    reward_model_type_id_to_value[type.id] = type.value
+    reward_model_type_value_to_type[type.value] = type
+    I18n.available_locales.each do |locale|
+      name = I18n.t "reward_model.type.#{type.value}", :locale => locale
+      if !reward_model_type_values.include? locale
+        reward_model_type_values[locale] = []
+      end
+      reward_model_type_values[locale] << [name, type.id]
+      if !reward_model_type_value_to_name.include? type.value
+        reward_model_type_value_to_name[type.value] = {}
+      end
+      reward_model_type_value_to_name[type.value][locale] = name
+    end
+  end
   venue_types = VenueType.all
   venue_type_values = {}
   venue_type_value_to_name = {}
@@ -178,6 +200,11 @@ if exists
   MerchantType.values = merchant_type_values
   MerchantType.value_to_name = merchant_type_value_to_name
   MerchantType.id_to_type = merchant_type_id_to_type
+  RewardModelType.values = reward_model_type_values
+  RewardModelType.id_to_value = reward_model_type_id_to_value
+  RewardModelType.value_to_name = reward_model_type_value_to_name
+  RewardModelType.id_to_type = reward_model_type_id_to_type
+  RewardModelType.value_to_type = reward_model_type_value_to_type
   VenueType.values = venue_type_values
   VenueType.value_to_name = venue_type_value_to_name
   VenueType.id_to_type = venue_type_id_to_type

@@ -3,7 +3,7 @@
     <%= f.input :venue_id, :collection => @merchant.venues.all(:status => :active, :order => [ :id.asc ]),
 		:label_method => :name,
 		:value_method => :id,
-		:include_blank => "", :input_html=>{:class => "input-xxlarge"} %>
+		:include_blank => false, :input_html=>{:class => "input-xxlarge"} %>
 	<%= f.input :device_id, :label => 'Device ID', :input_html=>{:class => "input-xxlarge"} %>
 	<%= f.input :status, :collection => Device::Statuses, :input_html=>{:class => "input-medium"}%>
    <br />

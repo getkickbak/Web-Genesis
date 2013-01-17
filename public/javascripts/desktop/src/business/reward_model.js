@@ -1,5 +1,9 @@
 $(document).ready($(function() {
 	
+	$("#reward_model_type_id").change(function() {
+		location.href = location.origin + location.pathname + "?type_id=" +$(this).val();
+	});
+	
 	function set_fields() {
 		var signup_amount = parseFloat($("#reward_model_signup_amount").val());
 		var rebate_rate = parseFloat($("#reward_model_rebate_rate").val());

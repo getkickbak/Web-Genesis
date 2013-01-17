@@ -52,8 +52,8 @@ module Admin
           params[:merchant][:status] = :pending
           params[:merchant][:will_terminate] = false
           params[:merchant][:custom_badges] = false
-          type = MerchantType.get(params[:merchant][:type_id])
-          visit_frequency = VisitFrequencyType.get(params[:merchant][:visit_frequency_id])
+          type = MerchantType.id_to_type[params[:merchant][:type_id].to_i]
+          visit_frequency = VisitFrequencyType.id_to_type[params[:merchant][:visit_frequency_id].to_i]
           params[:merchant][:reward_terms] = I18n.t 'customer_reward.terms'
           @merchant = Merchant.create(type, visit_frequency, params[:merchant])
           if !@merchant.custom_badges
@@ -94,7 +94,7 @@ module Admin
         Merchant.transaction do
           previous_status = @merchant.status
           params[:merchant][:custom_badges] = false
-          type = MerchantType.get(params[:merchant][:type_id])
+          type = MerchantType.id_to_type[params[:merchant][:type_id].to_i]
           @merchant.update_all(type, @merchant.visit_frequency, params[:merchant])
           if @merchant.status != previous_status && previous_status == :active
             new_password = String.random_alphanumeric(8)
