@@ -93,7 +93,7 @@ Ext.define('Genesis.view.client.SettingsPage',
          tag : 'accountUpdate',
          xtype : 'button',
          ui : 'orange-large',
-         text : 'Submit'
+         text : 'Update'
       },
       {
          xtype : 'fieldset',
