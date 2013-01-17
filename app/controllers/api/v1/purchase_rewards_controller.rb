@@ -175,56 +175,68 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         data = encrypted_data[1]
 
         if not signed_in?
-          tag = UserTag.first(:tag_id => @decrypted_data["tag_id"])
-          if tag.nil?
-            logger.error("No such tag: #{@decrypted_data["tag_id"]}")
-            respond_to do |format|
-              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-              format.json { render :json => { :success => false, :message => t("api.invalid_tag").split('\n') } }
-            end
-            return
-          end
-          if tag.status == :suspended || tag.status == :deleted
-            logger.info("Tag: #{tag.tag_id} is suspended or deleted ")
-            respond_to do |format|
-              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-              format.json { render :json => { :success => false, :message => t("api.invalid_tag").split('\n') } }
-            end
-            return
-          end
-          user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
-          if user_to_tag.nil? && tag.status == :pending
-            user_info = {}
-            user_info[:name] = "KICKBAK #{String.random_alphanumeric(8)}"
-            user_info[:email] = "#{String.random_alphanumeric(16)}@getkickbak.com"
-            user_info[:phone] = ""
-            user_info[:role] = "user"
-            user_info[:status] = :pending
-            password = String.random_alphanumeric(8)
-            user_info[:password] = password
-            user_info[:password_confirmation] = password
-            @current_user = User.create(user_info)
-            @current_user.register_tag(tag)
-          else
-            if user_to_tag
-              @current_user = User.get(user_to_tag.user_id)
-              if @current_user.nil?
-                logger.error("No such user: #{user_to_tag.user_id}")
-                respond_to do |format|
-                  #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-                  format.json { render :json => { :success => false, :message => t("api.invalid_user").split('\n') } }
-                end
-                return
-              end
-            else
-              logger.error("No user is associated with this non-pending tag: #{tag.tag_id}")
+          if @decrypted_data["tag_id"]
+            tag = UserTag.first(:tag_id => @decrypted_data["tag_id"])
+            if tag.nil?
+              logger.error("No such tag: #{@decrypted_data["tag_id"]}")
               respond_to do |format|
                 #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                 format.json { render :json => { :success => false, :message => t("api.invalid_tag").split('\n') } }
               end
               return
+            end
+            if tag.status == :suspended || tag.status == :deleted
+              logger.info("Tag: #{tag.tag_id} is suspended or deleted ")
+              respond_to do |format|
+                #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                format.json { render :json => { :success => false, :message => t("api.invalid_tag").split('\n') } }
+              end
+              return
+            end
+            user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
+            if user_to_tag.nil? && tag.status == :pending
+              user_info = {}
+              user_info[:name] = "KICKBAK #{String.random_alphanumeric(8)}"
+              user_info[:email] = "#{String.random_alphanumeric(16)}@getkickbak.com"
+              user_info[:phone] = ""
+              user_info[:role] = "user"
+              user_info[:status] = :pending
+              password = String.random_alphanumeric(8)
+              user_info[:password] = password
+              user_info[:password_confirmation] = password
+              @current_user = User.create(user_info)
+              @current_user.register_tag(tag)
+            else
+              if user_to_tag
+                @current_user = User.get(user_to_tag.user_id)
+                if @current_user.nil?
+                  logger.error("No such user: #{user_to_tag.user_id}")
+                  respond_to do |format|
+                    #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                    format.json { render :json => { :success => false, :message => t("api.invalid_user").split('\n') } }
+                  end
+                  return
+                end
+              else
+                logger.error("No user is associated with this non-pending tag: #{tag.tag_id}")
+                respond_to do |format|
+                  #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                  format.json { render :json => { :success => false, :message => t("api.invalid_tag").split('\n') } }
+                end
+                return
+              end  
             end  
-          end  
+          else
+            @current_user = User.first(:phone => @decripted_data["phone"])
+            if @current_user.nil?
+              logger.error("No such user: #{@decripted_data["phone"]}")
+              respond_to do |format|
+                #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                format.json { render :json => { :success => false, :message => t("api.invalid_user").split('\n') } }
+              end
+              return
+            end
+          end
         else
           @current_user = current_user  
         end
