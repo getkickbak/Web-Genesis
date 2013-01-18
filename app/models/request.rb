@@ -75,24 +75,24 @@ class Request
   
   def self.set_status(request, status)
     if (defined? request) && request
-      request.status = status
-      request.update_ts = Time.now
-      request.save
       c = File.open(request.channel, "w+")
       c.puts status.to_s
       c.flush
+      request.status = status
+      request.update_ts = Time.now
+      request.save
     end  
   end
   
   def is_status?(status)
     begin
       timer = Timer.new("one_time", 10) {
-        self.status = :failed
-        self.update_ts = Time.now
-        self.save
         c = File.open(self.channel, "w+")
         c.puts :failed.to_s
         c.flush
+        self.status = :failed
+        self.update_ts = Time.now
+        self.save
       }
       c = File.open(self.channel, "r+")
       r = c.gets 
