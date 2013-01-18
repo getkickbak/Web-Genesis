@@ -51,10 +51,6 @@ Ext.define('Genesis.controller.client.Redemptions',
          {
             tap : 'onDoneTap'
          }
-      },
-      listeners :
-      {
-         'redeemitem' : 'onRedeemItem'
       }
    },
    onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)

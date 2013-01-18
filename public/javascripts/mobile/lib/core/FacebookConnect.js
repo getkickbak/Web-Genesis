@@ -255,14 +255,6 @@ Genesis.fb =
       {
          callback : (callback) ? Ext.bind(function(params, operation, cb)
          {
-            if (!me.cb['supress'])
-            {
-               Ext.device.Notification.show(
-               {
-                  title : 'Facebook Connect',
-                  message : me.fbConnectFailMsg
-               });
-            }
             //
             // Even if the UpdateFbLogin failed (!operation.wasSuccessful()),
             // we should still allow them to do Facebook related activities ...
@@ -270,6 +262,15 @@ Genesis.fb =
             if (params)
             {
                cb(params, operation);
+            }
+            else
+            if (!me.cb['supress'])
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Facebook Connect',
+                  message : me.fbConnectFailMsg
+               });
             }
          }, me, [callback], true) : Ext.emptyFn,
          supress : supress,

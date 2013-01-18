@@ -6,10 +6,6 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
    },
    config :
    {
-      listeners :
-      {
-         'redeemitem' : 'onRedeemItem'
-      }
    },
    needPointsMsg : function(pointsDiff)
    {
@@ -21,7 +17,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
    updateOnFbMsg : 'Would you like to tell your friends on Facebook about it?',
    redeemItemEmailMsg : function(redemptionName, venueName)
    {
-      return ('I\'ve just redeemed "' + redemptionName + '" for eating out at ' + venueName + '!');
+      return ('I just got a FREE ' + redemptionName + ' for eating out at ' + venueName + '!');
    },
    updatingRedemptionOnFacebook : function(earnprize)
    {

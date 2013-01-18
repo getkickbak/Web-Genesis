@@ -108,7 +108,7 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    wonPrizeEmailMsg : function(prizeName, venueName)
    {
-      return ('I\'ve just won enough Prize Points to redeem "' + prizeName + '" for eating out at ' + venueName + '!');
+      return ('I just won enough Prize Points to redeem ' + prizeName + ' for eating out at ' + venueName + '!');
    },
    getBadgePrizeMsg : function(points, badge)
    {
@@ -123,7 +123,7 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    upgradeBadgeEmailMsg : function(badge, venueName)
    {
-      return ('I\'ve been promoted to ' + badge.toUpperCase() + ' at ' + venueName + '!');
+      return ('I\'ve just been promoted to ' + badge.toUpperCase() + ' at ' + venueName + '!');
    },
    gotMinPrizePtsMsg : function(points)
    {

@@ -167,16 +167,6 @@ Ext.define('Genesis.controller.client.MainPage',
       me.callParent(arguments);
 
       //
-      // Load all the info into Stores
-      // Normally we do this in the Login screen
-      //
-      Ext.regStore('UserStore',
-      {
-         model : 'Genesis.model.User',
-         autoLoad : false
-      });
-
-      //
       // Customer Accounts for an user
       //
       me.initCustomerStore();
@@ -367,9 +357,12 @@ Ext.define('Genesis.controller.client.MainPage',
    // --------------------------------------------------------------------------
    onLoginActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
-      var viewport = this.getViewPortCntlr();
+      var me = this, viewport = me.getViewPortCntlr();
 
       Genesis.db.resetStorage();
+      Ext.StoreMgr.get('CustomerStore').removeAll();
+      Ext.StoreMgr.get('VenueStore').removeAll();
+      me.persistSyncStores(null, true);
       viewport.setLoggedIn(false);
 
       //this.getInfoBtn().hide();
@@ -380,69 +373,64 @@ Ext.define('Genesis.controller.client.MainPage',
       var me = this;
       //oldActiveItem.removeAll(true);
    },
+   _logout : function()
+   {
+      var me = this, authCode = Genesis.db.getLocalDB()['auth_code'];
+      if (authCode)
+      {
+         console.log("Logging out ...")
+         Customer['setLogoutUrl'](authCode);
+         Ext.StoreMgr.get('CustomerStore').load(
+         {
+            jsonData :
+            {
+            },
+            callback : function(records, operation)
+            {
+               Ext.Viewport.setMasked(null);
+               me._loggingOut = false;
+               if (operation.wasSuccessful())
+               {
+                  console.log("Logout Successful!")
+               }
+               else
+               {
+                  console.log("Logout Failed!")
+               }
+            }
+         });
+      }
+      else
+      {
+         me._loggingOut = false;
+      }
+      console.log("Resetting Session information ...")
+      if ((Genesis.db.getLocalDB()['currFbId'] > 0) && (Genesis.fn.isNative()))
+      {
+         console.log("Logging out of Facebook ...")
+         Genesis.fb.facebook_onLogout(null, true);
+      }
+      me.resetView();
+      me.redirectTo('login');
+   },
    onLogoutTap : function(b, e, eOpts, eInfo)
    {
-      var me = this;
-      var vport = me.getViewport();
-      var viewport = me.getViewPortCntlr();
+      var me = this, vport = me.getViewport(), viewport = me.getViewPortCntlr();
 
       if (me._loggingOut)
       {
          return;
       }
+
       me._logoutflag = 0;
       me._loggingOut = true;
-      //
-      // Logout of Facebook
-      //
-      var _logout = function()
-      {
-         var authCode = Genesis.db.getLocalDB()['auth_code'];
-         if (authCode)
-         {
-            console.log("Logging out ...")
-            Customer['setLogoutUrl'](authCode);
-            Ext.StoreMgr.get('CustomerStore').load(
-            {
-               jsonData :
-               {
-               },
-               callback : function(records, operation)
-               {
-                  Ext.Viewport.setMasked(null);
-                  me._loggingOut = false;
-                  if (operation.wasSuccessful())
-                  {
-                     me.persistSyncStores(null, true);
-                     console.log("Logout Successful!")
-                  }
-                  else
-                  {
-                     console.log("Logout Failed!")
-                  }
-               }
-            });
-         }
-         else
-         {
-            me._loggingOut = false;
-         }
-         console.log("Resetting Session information ...")
-         if ((Genesis.db.getLocalDB()['currFbId'] > 0) && (Genesis.fn.isNative()))
-         {
-            console.log("Logging out of Facebook ...")
-            Genesis.fb.facebook_onLogout(null, true);
-         }
-         me.resetView();
-         me.redirectTo('login');
-      }
       b.parent.onAfter(
       {
          hiddenchange : function()
          {
             if ((me._logoutflag |= 0x01) == 0x11)
             {
-               _logout();
+               me._logout();
             }
          },
          single : true
@@ -460,7 +448,7 @@ Ext.define('Genesis.controller.client.MainPage',
       //
       if ((me._logoutflag |= 0x10) == 0x11)
       {
-         _logout();
+         me._logout();
       }
    },
    onFacebookTap : function(b, e, eOpts, eInfo)
