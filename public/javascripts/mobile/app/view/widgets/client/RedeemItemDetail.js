@@ -58,24 +58,26 @@ Ext.define('Genesis.view.widgets.client.RedeemItemDetail',
    },
    createView : function()
    {
-      if (!this.callParent(arguments) && (this.getInnerItems().length > 0))
+      var me = this;
+      if (!me.callParent(arguments) && (me.getInnerItems().length > 0))
       {
          //
          // Refresh RedeemItem
          //
-         this.getInnerItems()[0].updateItem(this.redeemItem);
+         me.getInnerItems()[0].setData(me.redeemItem);
+         //this.getInnerItems()[0].updateItem(this.redeemItem);
       }
       else
       {
-         this.setPreRender([
+         me.setPreRender([
          {
             flex : 1,
             xtype : 'redeemitem',
             hideMerchant : false,
-            data : this.redeemItem
+            data : me.redeemItem
          }]);
       }
-      delete this.redeemItem;
+      delete me.redeemItem;
    }
 });
 

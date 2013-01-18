@@ -137,11 +137,6 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       me.redeemItemFn = function(p, closeDialog)
       {
          dismissDialog = closeDialog;
-         if (btn)
-         {
-            btn.hide();
-         }
-
          Ext.Viewport.setMasked(
          {
             xtype : 'loadmask',
@@ -182,10 +177,6 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
                }
                else
                {
-                  if (btn)
-                  {
-                     btn.show();
-                  }
                   proxy.supressErrorsPopup = true;
                   Ext.device.Notification.show(
                   {
@@ -334,6 +325,8 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       // In Challendge
       //
       me.getRefreshBtn()[(me.getRedeemMode() == 'authReward') ? 'show' : 'hide']();
+      
+      console.log("onRedeemItemShowView - RedeemMode[" + me.getRedeemMode() + "]");
    },
    onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
    {

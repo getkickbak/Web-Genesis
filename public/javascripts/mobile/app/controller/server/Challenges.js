@@ -91,7 +91,7 @@ Ext.define('Genesis.controller.server.Challenges',
    },
    onGenerateQRCode : function(refresh)
    {
-      var me = this, task = null, identifiers = null, viewport = me.getViewPortCntlr(), proxy = Challenge.getProxy();
+      var me = this, task = null, identifiers = null, viewport = me.getViewPortCntlr(), proxy = Challenge.getProxy(), dismissDialog = false;
 
       if (!refresh)
       {
@@ -135,8 +135,16 @@ Ext.define('Genesis.controller.server.Challenges',
          }, 100, me);
       }
 
-      me.challengeItem = function(params)
+      me.challengeItemFn = function(params, closeDialog)
       {
+         dismissDialog = closeDialog;
+         Ext.Viewport.setMasked(
+         {
+            xtype : 'loadmask',
+            message : me.establishConnectionMsg
+         });
+         Ext.device.Notification.dismiss();
+
          params = Ext.merge(params,
          {
             'venue_id' : Genesis.fn.getPrivKey('venueId'),
@@ -149,29 +157,9 @@ Ext.define('Genesis.controller.server.Challenges',
          params['data'] = me.self.encryptFromParams(params['data']);
 
          //
-         // Stop receiving data from NFC
-         //
-         viewport.setActiveController(null);
-         if (task)
-         {
-            clearInterval(task);
-         }
-         //
-         // Stop receiving ProximityID
-         //
-         if (Genesis.fn.isNative())
-         {
-            window.plugins.proximityID.stop();
-         }
-         //
          // Updating Server ...
          //
-         Ext.Viewport.setMasked(
-         {
-            xtype : 'loadmask',
-            message : me.establishConnectionMsg
-         });
-         console.log("Updating Server with EarnPoints information ...");
+         console.log("Updating Server with EarnPoints information ... dismissDialog(" + dismissDialog + ")");
          Challenge['setCompleteMerchantChallengeURL']();
          Challenge.load(1,
          {
@@ -215,6 +203,7 @@ Ext.define('Genesis.controller.server.Challenges',
       Ext.device.Notification.show(
       {
          title : 'Challenges',
+         ignoreOnHide : true,
          message : (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg : me.genQRCodeMsg,
          buttons : ['Cancel'],
          callback : function()
@@ -231,8 +220,12 @@ Ext.define('Genesis.controller.server.Challenges',
             {
                window.plugins.proximityID.stop();
             }
-            Ext.Viewport.setMasked(null);
-            me.popView();
+            else
+            if (!dismissDialog)
+            {
+               Ext.Viewport.setMasked(null);
+               me.popView();
+            }
          }
       });
       if (Genesis.fn.isNative())
@@ -241,13 +234,13 @@ Ext.define('Genesis.controller.server.Challenges',
          {
             identifiers = ids;
             task = null;
-            me.challengeItem(
+            me.challengeItemFn(
             {
                data :
                {
                },
                'frequency' : Ext.encode(identifiers['localID'])
-            });
+            }, true);
          }, function()
          {
             viewport.setActiveController(null);
@@ -257,9 +250,9 @@ Ext.define('Genesis.controller.server.Challenges',
       }
       else
       {
-         me.challengeItem(
+         me.challengeItemFn(
          {
-         });
+         }, false);
       }
    },
    // --------------------------------------------------------------------------

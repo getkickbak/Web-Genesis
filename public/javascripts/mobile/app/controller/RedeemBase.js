@@ -7,7 +7,11 @@ Ext.define('Genesis.controller.RedeemBase',
    xtype : 'redeemBaseCntlr',
    config :
    {
-      models : ['PurchaseReward', 'CustomerReward']
+      models : ['PurchaseReward', 'CustomerReward'],
+      listeners :
+      {
+         'redeemitem' : 'onRedeemItem'
+      }
    },
    controllerType : 'redemption',
    redeemSuccessfulMsg : 'Transaction Complete',

@@ -69,7 +69,6 @@ Ext.define('Genesis.controller.server.Redemptions',
       },
       listeners :
       {
-         'redeemitem' : 'onRedeemItem'
       }
    }
    // --------------------------------------------------------------------------

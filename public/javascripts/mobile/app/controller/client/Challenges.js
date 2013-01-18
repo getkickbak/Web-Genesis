@@ -812,7 +812,7 @@ Ext.define('Genesis.controller.client.Challenges',
             {
                Ext.device.Notification.show(
                {
-                  title : me.selectedItem.get('name') + ' Challenge',
+                  title : me.selectedItem.get('name').capitalize() + ' Challenge',
                   message : me.updateAccountInfoMsg,
                   buttons : ['OK', 'Cancel'],
                   callback : function(btn)
@@ -898,7 +898,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   {
                      Ext.device.Notification.show(
                      {
-                        title : me.selectedItem.get('name') + ' Challenge',
+                        title : selectedItem.get('name') + ' Challenge',
                         message : me.showToServerMsg,
                         buttons : ['Proceed', 'Cancel'],
                         callback : function(btn)
@@ -1112,20 +1112,14 @@ Ext.define('Genesis.controller.client.Challenges',
             }
             Challenge['setCompleteChallengeURL'](id);
 
-            Ext.Viewport.setMasked(
-            {
-               xtype : 'loadmask',
-               message : me.prepareToSendMerchantDeviceMsg
-            });
             me.broadcastLocalID(function(idx)
             {
                identifiers = idx;
-               Ext.Viewport.setMasked(null);
                Ext.Viewport.setMasked(
                {
                   xtype : 'mask',
                   cls : 'transmit-mask',
-                  html : me.lookForMerchantDeviceMsg(),
+                  html : me.lookingForMerchantDeviceMsg(),
                   listeners :
                   {
                      'tap' : function(b, e, eOpts)
@@ -1148,7 +1142,7 @@ Ext.define('Genesis.controller.client.Challenges',
                            me.onDoneTap();
                            Ext.device.Notification.show(
                            {
-                              title : me.selectedItem.get('name') + ' Challenge',
+                              title : me.selectedItem.get('name').capitalize() + ' Challenge',
                               message : me.transactionCancelledMsg,
                               buttons : ['Dismiss']
                            });

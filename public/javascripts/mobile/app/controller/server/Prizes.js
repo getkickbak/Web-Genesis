@@ -74,8 +74,7 @@ Ext.define('Genesis.controller.server.Prizes',
          // Redeem Prize
          //
          'authreward' : 'onAuthReward',
-         'refreshQRCode' : 'onRefreshQRCode',
-         'redeemitem' : 'onRedeemItem'
+         'refreshQRCode' : 'onRefreshQRCode'
       }
    },
    redeemPtsConfirmMsg : 'Please confirm to submit',

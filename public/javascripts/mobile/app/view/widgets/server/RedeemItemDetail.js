@@ -148,7 +148,8 @@ Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
          //
          // Refresh RedeemItem
          //
-         redeemItemContainer.getInnerItems()[0].updateItem(me.redeemItem);
+         redeemItemContainer.getInnerItems()[0].setData(me.redeemItem)
+         //redeemItemContainer.getInnerItems()[0].updateItem(me.redeemItem);
       }
       else
       {
