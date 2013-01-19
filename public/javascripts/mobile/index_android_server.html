@@ -162,19 +162,14 @@
             // add back button listener
             function onBackKeyDown(e)
             {
+               var viewport = _application.getController('server.Viewport');
+
                //e.preventDefault();
 
                //
                // Disable BackKey if something is in progress or application is not instantiated
                //
-               if (!_application || Ext.Viewport.getMasked())
-               {
-                  return;
-               }
-
-               var viewport = _application.getController('server.Viewport');
-
-               if (!viewport || viewport.popViewInProgress)
+               if (!_application || Ext.Viewport.getMasked() || !viewport || viewport.popViewInProgress)
                {
                   return;
                }
@@ -207,14 +202,14 @@
                      if ((backButton && !backButton.isHidden()) || //
                      (closeButton && !closeButton.isHidden()))
                      {
-                        Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+                        viewport.self.playSoundFile(viewport.sound_files['clickSound']);
                         viewport.popView();
                      }
                   }
                }
                else
                {
-                  Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+                  viewport.self.playSoundFile(viewport.sound_files['clickSound']);
                   navigator.app.exitApp();
                }
             }
@@ -233,7 +228,7 @@
             Ext.application(
             {
                profiles : ['Android'],
-               views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MerchantAccount', 'server.MainPage', 'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'Viewport'],
+               views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MerchantAccount', 'server.MainPage', 'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'server.TagCreatePage', 'Viewport'],
                controllers : ['server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'server.Merchants', 'server.Settings', 'server.Prizes'],
                launch : function()
                {

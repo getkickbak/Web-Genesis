@@ -13,16 +13,34 @@ Ext.define('Genesis.controller.server.Settings',
       },
       refs :
       {
+         //
+         // Settings Page
+         //
          settingsPage :
          {
             selector : 'serversettingspageview',
             autoCreate : true,
             xtype : 'serversettingspageview'
          },
-         merchantDevice : 'serversettingspageview fieldset textfield[tag=merchantDevice]'
+         utilitiesContainer : 'serversettingspageview fieldset[tag=utilities]',
+         merchantDevice : 'serversettingspageview fieldset textfield[tag=merchantDevice]',
+         //
+         // Create Tag Page
+         //
+         createTagId : 'servertagcreatepageview calculator[tag=createTagId] textfield[name=amount]',
+         createTagBtn : 'servertagcreatepageview container[tag=bottomButtons] button[tag=createTagId]',
+         createTagPage :
+         {
+            selector : 'servertagcreatepageview',
+            autoCreate : true,
+            xtype : 'servertagcreatepageview'
+         }
       },
       control :
       {
+         //
+         // Settings Page
+         //
          'serversettingspageview listfield[name=license]' :
          {
             clearicontap : 'onRefreshLicenseTap'
@@ -43,15 +61,45 @@ Ext.define('Genesis.controller.server.Settings',
          {
             activate : 'onActivate',
             deactivate : 'onDeactivate'
+         },
+         'serversettingspageview listfield[tag=createTag]' :
+         {
+            clearicontap : 'onCreateTagPageTap'
+         },
+         //
+         // Create Tag Page
+         //
+         'servertagcreatepageview calculator[tag=createTagId] container[tag=dialpad] button' :
+         {
+            tap : 'onTagIdBtnTap'
+         },
+         createTagBtn :
+         {
+            tap : 'onCreateTagTap'
+         },
+         createTagPage :
+         {
+            activate : 'onCreateTagActivate',
+            deactivate : 'onCreateTagDeactivate'
          }
       },
       listeners :
       {
       }
    },
+   tagIdLength : 9,
    writeTagEnabled : true,
    proceedToUpdateLicenseMsg : 'Please confirm to proceed with License Update',
    noLicenseKeyScannedMsg : 'No License Key was found!',
+   createTagMsg : function()
+   {
+      return 'To program the TAG ID,' + Genesis.constants.addCRLF() + 'Please swipe tag.';
+   },
+   invalidTagMsg : function()
+   {
+      var me = this;
+      return "TagID must be of a valid length[" + me.tagIdLength + "]";
+   },
    licenseKeySuccessMsg : function()
    {
       return 'License Key Updated for ' + Genesis.constants.addCRLF() + '[' + Genesis.fn.getPrivKey('venue') + ']';
@@ -79,7 +127,7 @@ Ext.define('Genesis.controller.server.Settings',
    // --------------------------------------------------------------------------
    // Button Handlers
    // --------------------------------------------------------------------------
-   onRefreshLicenseTap : function(b, e)
+   onRefreshLicenseTap : function(b, e, eOpts)
    {
       var me = this;
       Ext.device.Notification.show(
@@ -96,58 +144,86 @@ Ext.define('Genesis.controller.server.Settings',
          }
       });
    },
+   onCreateTagPageTap : function(b, e, eOpts)
+   {
+      var me = this, viewport = me.getViewPortCntlr();
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
+      me.openPage('createTag');
+   },
+   // --------------------------------------------------------------------------
+   // TAG ID Page
+   // --------------------------------------------------------------------------
+   onTagIdBtnTap : function(b, e, eOpts, eInfo)
+   {
+      var me = this, value = b.getText();
+      var tagIdField = me.getCreateTagId(), tagId = tagIdField.getValue(), tagIdFieldLength = tagId.length;
+
+      if (tagIdFieldLength < me.tagIdLength)
+      {
+         switch (value)
+         {
+            case 'AC' :
+            {
+               tagIdField.reset();
+               break;
+            }
+            default :
+               tagId += value;
+               tagIdField.setValue(tagId);
+               break;
+         }
+      }
+   },
+   onCreateTagTap : function(b, e, eOpts)
+   {
+      var me = this, tagId = me.getCreateTagId().getValue();
+      if (Genesis.fn.isNative())
+      {
+         if (tagId.length != me.tagIdLength)
+         {
+            Ext.device.Notification.show(
+            {
+               title : "Create Tag",
+               message : me.invalidTagMsg(),
+               buttons : ['Dismiss']
+            });
+         }
+         else
+         {
+            me.getViewPortCntlr().setActiveController(me);
+            nfc.addTagDiscoveredListener(me.writeTag, function()
+            {
+               console.log("Listening for NDEF tags");
+            }, function()
+            {
+               console.log("Failed to Listen for NDEF tags");
+            });
+
+            Ext.device.Notification.show(
+            {
+               title : "Create Tag",
+               message : me.createTagMsg(),
+               buttons : ['Cancel']
+            });
+         }
+      }
+   },
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
+   onNfc : function(result)
+   {
+      this.writeTag(null);
+   },
    writeTag : function(nfcEvent)
    {
       // ignore what's on the tag for now, just overwrite
 
-      var mimeType = Genesis.constants.appMimeType;
-      var payload = Ext.encode(
+      var me = this, mimeType = Genesis.constants.appMimeType, tagId = me.getCreateTagId().getValue();
+
+      var callback = function()
       {
-         'tagID' : 'ABCDEDF12345'
-      });
-      var record = ndef.mimeMediaRecord(mimeType, nfc.stringToBytes(payload));
-      console.log("Writing [" + payload + "] to TAG ...");
-      nfc.write([record], function()
-      {
-         Ext.device.Notification.show(
-         {
-            title : "NFC Tag",
-            message : "Wrote data to TAG.",
-            buttons : ['OK']
-         });
-      }, function(reason)
-      {
-         Ext.device.Notification.show(
-         {
-            title : "NFC Tag",
-            message : "Error Writing data to TAG[" + reason + "]",
-            buttons : ['Dismiss']
-         });
-      });
-   },
-   onActivate : function(activeItem, c, oldActiveItem, eOpts)
-   {
-      var me = this;
-      me.getMerchantDevice().setLabel(Genesis.fn.getPrivKey('venue'));
-      if (Genesis.fn.isNative() && me.writeTagEnabled)
-      {
-         nfc.addTagDiscoveredListener(me.writeTag, function()
-         {
-            console.log("Listening for NDEF tags");
-         }, function()
-         {
-            console.log("Failed to Listen for NDEF tags");
-         });
-      }
-   },
-   onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
-   {
-      var me = this;
-      if (Genesis.fn.isNative() && me.writeTagEnabled)
-      {
+         me.getViewPortCntlr().setActiveController(null);
          nfc.removeTagDiscoveredListener(me.writeTag, function()
          {
             console.log("Stopped Listening for NDEF tags");
@@ -155,7 +231,53 @@ Ext.define('Genesis.controller.server.Settings',
          {
             console.log("Failed to stop Listen for NDEF tags");
          });
-      }
+      };
+
+      var payload = Ext.encode(
+      {
+         'tagID' : tagId
+      }), record = ndef.mimeMediaRecord(mimeType, nfc.stringToBytes(payload));
+
+      console.log("Writing [" + payload + "] to TAG ...");
+      nfc.write([record], function()
+      {
+         Ext.device.Notification.show(
+         {
+            title : "Create Tag",
+            message : "Wrote data to TAG.",
+            buttons : ['OK']
+         });
+         me.getCreateTagId().reset();
+         callback();
+      }, function(reason)
+      {
+         Ext.device.Notification.show(
+         {
+            title : "Create Tag",
+            message : "Error Writing data to TAG[" + reason + "]",
+            buttons : ['Dismiss']
+         });
+         callback();
+      });
+   },
+   onActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+      me.getMerchantDevice().setLabel(Genesis.fn.getPrivKey('venue'));
+      me.getUtilitiesContainer()[me.writeTagEnabled ? 'show' : 'hide']();
+   },
+   onDeactivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+   },
+   onCreateTagActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+      me.getCreateTagId().reset();
+   },
+   onCreateTagDeactivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
    },
    // --------------------------------------------------------------------------
    // Page Navigation
@@ -163,8 +285,25 @@ Ext.define('Genesis.controller.server.Settings',
    openSettingsPage : function()
    {
       this.openPage('settings');
-   }
+   },
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
+   openPage : function(subFeature)
+   {
+      var me = this, page;
+      switch(subFeature)
+      {
+         case 'createTag' :
+         {
+            page = me.getCreateTagPage();
+            me.setAnimationMode(me.self.animationMode['cover']);
+            me.pushView(page);
+            return;
+            break;
+         }
+      }
+
+      me.callParent(arguments);
+   }
 });

@@ -183,30 +183,26 @@
             // add back button listener
             function onBackKeyDown(e)
             {
+               var viewport = _application.getController('client.Viewport');
+
                //e.preventDefault();
 
                //
                // Disable BackKey if something is in progress or application is not instantiated
                //
-               if (!_application || Ext.Viewport.getMasked())
+               if (!_application || Ext.Viewport.getMasked() || !viewport || viewport.popViewInProgress)
                {
                   return;
                }
 
-               var viewport = _application.getController('client.Viewport');
-
-               if (!viewport || viewport.popViewInProgress)
-               {
-                  return;
-               }
-
+               console.log("BackButton Pressed");
+               
                if (Ext.device.Notification.msg && !Ext.device.Notification.msg.isHidden())
                {
                   Ext.device.Notification.dismiss();
                   return;
                }
                
-               console.log("BackButton Pressed");
                var vport = viewport.getViewport();
                var activeItem = (vport) ? vport.getActiveItem() : null;
                if (activeItem)
@@ -227,14 +223,14 @@
                      if ((backButton && !backButton.isHidden()) || //
                      (closeButton && !closeButton.isHidden()))
                      {
-                        Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+                        viewport.self.playSoundFile(viewport.sound_files['clickSound']);
                         viewport.popView();
                      }
                   }
                }
                else
                {
-                  Genesis.controller.ControllerBase.playSoundFile(viewport.sound_files['clickSound']);
+                  viewport.self.playSoundFile(viewport.sound_files['clickSound']);
                   navigator.app.exitApp();
                }
             }
