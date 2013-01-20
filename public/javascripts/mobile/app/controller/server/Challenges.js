@@ -184,17 +184,19 @@ Ext.define('Genesis.controller.server.Challenges',
                }
                else
                {
-                  proxy.supressErrorsPopup = true;
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Challenge',
-                     message : me.challengeFailedMsg,
-                     buttons : ['Dismiss'],
-                     callback : function()
-                     {
-                        proxy.supressErrorsPopup = false;
-                     }
-                  });
+                  /*
+                   proxy.supressErrorsPopup = true;
+                   Ext.device.Notification.show(
+                   {
+                   title : 'Challenge',
+                   message : me.challengeFailedMsg,
+                   buttons : ['Dismiss'],
+                   callback : function()
+                   {
+                   proxy.supressErrorsPopup = false;
+                   }
+                   });
+                   */
                }
             }
          });

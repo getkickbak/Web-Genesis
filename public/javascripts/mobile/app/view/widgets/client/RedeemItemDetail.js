@@ -61,11 +61,12 @@ Ext.define('Genesis.view.widgets.client.RedeemItemDetail',
       var me = this;
       if (!me.callParent(arguments) && (me.getInnerItems().length > 0))
       {
+         var item = me.getInnerItems()[0];
          //
          // Refresh RedeemItem
          //
-         me.getInnerItems()[0].setData(me.redeemItem);
-         //this.getInnerItems()[0].updateItem(this.redeemItem);
+         item.setData(me.redeemItem);
+         item.updateItem(me.redeemItem);
       }
       else
       {

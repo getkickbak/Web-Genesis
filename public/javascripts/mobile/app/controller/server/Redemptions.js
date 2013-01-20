@@ -1,7 +1,10 @@
 Ext.define('Genesis.controller.server.Redemptions',
 {
    extend : 'Genesis.controller.RewardRedemptionsBase',
-   mixins : ['Genesis.controller.server.mixin.RedeemBase'],
+   mixins :
+   {
+      redeemBase : 'Genesis.controller.server.mixin.RedeemBase'
+   },
    requires : ['Ext.data.Store', 'Genesis.view.server.Redemptions'],
    inheritableStatics :
    {
@@ -70,13 +73,19 @@ Ext.define('Genesis.controller.server.Redemptions',
       listeners :
       {
       }
-   }
+   },
    // --------------------------------------------------------------------------
    // Utility Functions
    // --------------------------------------------------------------------------
    // --------------------------------------------------------------------------
    // Event Handler
    // --------------------------------------------------------------------------
+   onNfc : function(nfcResult)
+   {
+      var me = this;
+
+      me.mixins.redeemBase.onNfc.apply(me, arguments);
+   }
    // --------------------------------------------------------------------------
    // Redemption Page
    // --------------------------------------------------------------------------

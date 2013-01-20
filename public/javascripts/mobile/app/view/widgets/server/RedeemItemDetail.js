@@ -84,11 +84,11 @@ Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
                },
                items : [
                /*{
-                  tag : 'redeemPtsTag',
-                  text : 'TAG it',
-                  ui : 'orange-large'
-               },
-               */
+                tag : 'redeemPtsTag',
+                text : 'TAG it',
+                ui : 'orange-large'
+                },
+                */
                {
                   tag : 'merchantRedeem',
                   text : 'GO!',
@@ -145,11 +145,12 @@ Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
       var me = this, redeemItemContainer = me.query("container[tag=redeemItemContainer]")[0];
       if (!this.callParent(arguments) && redeemItemContainer && (redeemItemContainer.getInnerItems().length > 0))
       {
+         var item = redeemItemContainer.getInnerItems()[0];
          //
          // Refresh RedeemItem
          //
-         redeemItemContainer.getInnerItems()[0].setData(me.redeemItem)
-         //redeemItemContainer.getInnerItems()[0].updateItem(me.redeemItem);
+         item.setData(me.redeemItem)
+         item.updateItem(me.redeemItem);
       }
       else
       {

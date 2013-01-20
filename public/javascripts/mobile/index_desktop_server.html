@@ -113,6 +113,7 @@
       <script type="text/javascript" src="app/view/RedeemBase.js"></script>
       <script type="text/javascript" src="app/view/server/MainPage.js"></script>
       <script type="text/javascript" src="app/view/server/SettingsPage.js"></script>
+      <script type="text/javascript" src="app/view/server/TagCreatePage.js"></script>
       <script type="text/javascript" src="app/view/server/Rewards.js"></script>
       <script type="text/javascript" src="app/view/server/Redemptions.js"></script>
       <script type="text/javascript" src="app/view/server/Prizes.js"></script>
@@ -171,7 +172,7 @@
             {
                requires : ['Ext.device.Connection', 'Ext.device.Notification', 'Ext.device.Camera', 'Ext.device.Communicator', 'Ext.device.Geolocation', 'Ext.device.Orientation'],
                profiles : ['Desktop'],
-               views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MainPage', 'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'Viewport'],
+               views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MainPage', 'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'server.TagCreatePage', 'Viewport'],
                controllers : ['server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'server.Settings', 'server.Prizes'],
                stores : [],
                launch : function()

@@ -562,7 +562,7 @@ Ext.define('Genesis.controller.client.Rewards',
          {
             me.task.cancel();
             me.task = null;
-            viewport.self.playSoundFile(viewport.sound_files['clickSound']);
+            me.self.playSoundFile(viewport.sound_files['clickSound']);
             me.self.stopSoundFile(viewport.sound_files['rouletteSpinSound']);
          }
          catch(e)
@@ -583,9 +583,8 @@ Ext.define('Genesis.controller.client.Rewards',
       me.task = Ext.create('Ext.util.DelayedTask', rouletteTap);
       me.task.delay(15 * 1000);
 
-      controller.startRouletteScreen(me.getRewards());
-
       me.self.playSoundFile(viewport.sound_files['rouletteSpinSound'], rouletteTap);
+      controller.startRouletteScreen(me.getRewards());
       /*
        Ext.defer(function()
        {

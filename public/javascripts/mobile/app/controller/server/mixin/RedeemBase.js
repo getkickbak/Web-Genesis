@@ -177,18 +177,21 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
                }
                else
                {
-                  proxy.supressErrorsPopup = true;
-                  Ext.device.Notification.show(
-                  {
-                     title : me.getRedeemPopupTitle(),
-                     message : me.redeemFailedMsg,
-                     buttons : ['Dismiss'],
-                     callback : function()
-                     {
-                        proxy.supressErrorsPopup = false;
-                        me.onDoneTap();
-                     }
-                  });
+                  proxy._errorCallback = Ext.bind(me.onDoneTap, me);
+                  /*
+                   proxy.supressErrorsPopup = true;
+                   Ext.device.Notification.show(
+                   {
+                   title : me.getRedeemPopupTitle(),
+                   message : me.redeemFailedMsg,
+                   buttons : ['Dismiss'],
+                   callback : function()
+                   {
+                   proxy.supressErrorsPopup = false;
+                   me.onDoneTap();
+                   }
+                   });
+                   */
                }
             }
          });
@@ -325,7 +328,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       // In Challendge
       //
       me.getRefreshBtn()[(me.getRedeemMode() == 'authReward') ? 'show' : 'hide']();
-      
+
       console.log("onRedeemItemShowView - RedeemMode[" + me.getRedeemMode() + "]");
    },
    onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)

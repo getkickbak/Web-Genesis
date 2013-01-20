@@ -80,6 +80,23 @@ Ext.define('Genesis.view.server.SettingsPage',
             clearIcon : false,
             readOnly : true
          }]
+      },
+      {
+         xtype : 'fieldset',
+         hidden : true,
+         tag : 'utilities',
+         title : 'Utilities',
+         defaults :
+         {
+            labelWidth : '50%'
+         },
+         items : [
+         {
+            xtype : 'listfield',
+            tag : 'createTag',
+            label : 'Create TAG',
+            value : ' '
+         }]
       }]
    },
    initialize : function()
