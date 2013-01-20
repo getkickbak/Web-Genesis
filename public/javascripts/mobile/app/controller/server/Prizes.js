@@ -1,7 +1,10 @@
 Ext.define('Genesis.controller.server.Prizes',
 {
    extend : 'Genesis.controller.PrizeRedemptionsBase',
-   mixins : ['Genesis.controller.server.mixin.RedeemBase'],
+   mixins :
+   {
+      redeemBase : 'Genesis.controller.server.mixin.RedeemBase'
+   },
    requires : ['Ext.data.Store', 'Genesis.view.server.Prizes'],
    inheritableStatics :
    {
@@ -95,14 +98,7 @@ Ext.define('Genesis.controller.server.Prizes',
    {
       var me = this;
 
-      me.redeemItemFn(
-      {
-         data : me.self.encryptFromParams(
-         {
-            'tag_id' : (nfcResult) ? nfcResult['tagID'] : null,
-            'expiry_ts' : new Date().addHours(3).getTime()
-         }, 'reward')
-      });
+      me.mixins.redeemBase.onNfc.apply(me, arguments);
    },
    onAuthReward : function(redeemItem)
    {

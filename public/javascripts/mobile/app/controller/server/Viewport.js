@@ -189,6 +189,49 @@ Ext.define('Genesis.controller.server.Viewport',
          }
       });
    },
+   applyActiveController : function(controller)
+   {
+      var me = this;
+      nfc.removeMimeTypeListener(Genesis.constants.appMimeType);
+      if (controller)
+      {
+         nfc.addMimeTypeListener(Genesis.constants.appMimeType, function(nfcEvent)
+         {
+            console.log("MimeType Message received");
+            try
+            {
+               var tag = nfcEvent.tag, records = tag.ndefMessage, result = Ext.decode(nfc.bytesToString(records[0].payload)), cntlr = me.getActiveController();
+
+               //
+               // Decrypt Message
+               //
+               me.printNfcTag(nfcEvent);
+               if (cntlr)
+               {
+                  console.log("Received Message [" + Ext.encode(result) + "]");
+                  cntlr.onNfc(result);
+               }
+               else
+               {
+                  console.log("Ignored Received Message [" + Ext.encode(result) + "]");
+               }
+            }
+            catch (e)
+            {
+               console.log("Exception Thrown while processing NFC Tag[" + e + "]");
+            }
+         }, function()
+         {
+            console.log("Listening for tags with mime type " + Genesis.constants.appMimeType);
+         }, function()
+         {
+            console.warn('Failed to register mime type ' + Genesis.constants.appMimeType + ' with NFC');
+         });
+         console.log("Added MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
+      }
+
+      return controller;
+   },
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
@@ -286,41 +329,6 @@ Ext.define('Genesis.controller.server.Viewport',
          }
          Genesis.fn.printProximityConfig();
          window.plugins.proximityID.init(s_vol_ratio, r_vol_ratio);
-
-         nfc.addMimeTypeListener(Genesis.constants.appMimeType, function(nfcEvent)
-         {
-            console.log("MimeType Message received");
-            var tag = nfcEvent.tag, records = tag.ndefMessage;
-            try
-            {
-               var result = Ext.decode(nfc.bytesToString(records[0].payload));
-
-               me.printNfcTag(nfcEvent);
-               //
-               // Decrypt Message
-               //
-               if (me.getActiveController())
-               {
-                  console.log("Received Message [" + Ext.encode(result) + "]");
-                  me.getActiveController().onNfc(result);
-               }
-               else
-               {
-                  console.log("Ignored Received Message [" + Ext.encode(result) + "]");
-               }
-            }
-            catch (e)
-            {
-               console.log("Exception Thrown while processing NFC Tag[" + e + "]");
-            }
-         }, function()
-         {
-            console.log("Listening for tags with mime type " + Genesis.constants.appMimeType);
-         }, function()
-         {
-            console.warn('Failed to register mime type ' + Genesis.constants.appMimeType + ' with NFC');
-         });
-         console.log("Added MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
       }
    },
    tnfToString : function(tnf)

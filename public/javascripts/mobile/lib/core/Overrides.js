@@ -813,7 +813,7 @@ Ext.define('Genesis.data.writer.Writer',
       {
          return this.callParent(arguments);
       }
-      
+
       return null;
    }
 });
@@ -954,7 +954,15 @@ Ext.define('Genesis.data.proxy.Server',
                      {
                         title : 'Error',
                         message : messages,
-                        buttons : ['Dismiss']
+                        buttons : ['Dismiss'],
+                        callback : function()
+                        {
+                           if (me._errorCallback)
+                           {
+                              me._errorCallback();
+                              delete me._errorCallback;
+                           }
+                        }
                      });
                   }
                   else
@@ -964,7 +972,15 @@ Ext.define('Genesis.data.proxy.Server',
                      {
                         title : 'Network Error',
                         message : "Error Contacting Server",
-                        buttons : ['Dismiss']
+                        buttons : ['Dismiss'],
+                        callback : function()
+                        {
+                           if (me._errorCallback)
+                           {
+                              me._errorCallback();
+                              delete me._errorCallback;
+                           }
+                        }
                      });
                   }
                   break;
@@ -1539,9 +1555,14 @@ Ext.define('Ext.device.notification.PhoneGap',
    },
    dismiss : function()
    {
-      if (this.msg)
+      var msg = this.msg
+      if (msg)
       {
-         this.msg.hide();
+         if (msg._hideCallbackFn)
+         {
+            msg._hideCallbackFn();
+         }
+         msg.hide();
       }
       //navigator.notification.dismiss();
    }

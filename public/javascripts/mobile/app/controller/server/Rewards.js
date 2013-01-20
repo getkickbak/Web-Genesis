@@ -214,18 +214,21 @@ Ext.define('Genesis.controller.server.Rewards',
                }
                else
                {
-                  proxy.supressErrorsPopup = true;
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Earn Reward Points',
-                     message : me.rewardFailedMsg,
-                     buttons : ['Dismiss'],
-                     callback : function()
-                     {
-                        proxy.supressErrorsPopup = false;
-                        me.onDoneTap();
-                     }
-                  });
+                  proxy._errorCallback = Ext.bind(me.onDoneTap, me);
+                  /*
+                   proxy.supressErrorsPopup = true;
+                   Ext.device.Notification.show(
+                   {
+                   title : 'Earn Reward Points',
+                   message : me.rewardFailedMsg,
+                   buttons : ['Dismiss'],
+                   callback : function()
+                   {
+                   proxy.supressErrorsPopup = false;
+                   me.onDoneTap();
+                   }
+                   });
+                   */
                }
             }
          });
