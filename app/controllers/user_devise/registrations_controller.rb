@@ -11,6 +11,11 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
       User.transaction do  
         params[:user][:role] = "user"
         params[:user][:status] = :active
+        if session["devise.facebook_data"]
+          data = session["devise.facebook_data"] && session["devise.facebook_data"]["extra"]["raw_info"]
+          params[:user][:gender] = (data["gender"] == "male" ? :m : :f) if data["gender"]
+          params[:user][:birthday] = Date.strptime(data["birthday"], '%m/%d/%Y') if data["birthday"]
+        end
         resource = User.create(params[:user])
         if resource.active_for_authentication?
           set_flash_message :notice, :signed_up if is_navigational_format?

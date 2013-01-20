@@ -112,7 +112,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         end
         return
       end
-      if tag.status != :active || tag.status != :virtual
+      if tag.status != :active && tag.status != :virtual
         logger.info("Tag: #{decrypted_data["tag_id"]} is not active")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -320,6 +320,22 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           @account_info[:eligible_for_reward] = eligible_for_reward
           @account_info[:eligible_for_prize] = eligible_for_prize
           Request.set_status(@request, :complete)
+=begin          
+          posts = [
+            FacebookPost.new(
+              {
+                :type => "share",
+                :message => (t("facebook_post.message.redeem_reward") % [@reward.title, @venue.name]),
+                :picture => @venue.merchant.photo.url,
+                :link_name => @venue.name,
+                :link => @venue.website,
+                :caption => @venue.website,
+                :description => t("facebook_post.description.text")
+              }
+            )
+          ]
+          Resque.enqueue(ShareOnFacebook, user.id, posts.to_json)
+=end          
           render :template => '/api/v1/customer_rewards/redeem' 
           logger.info("User(#{user.id}) successfully redeemed Reward(#{@reward.id}), worth #{@reward.points} points")
         else

@@ -13,10 +13,11 @@
       <%= simple_form_for @user, :html => {:class => 'form-vertical'}, :url => registration_path(User) do |f| %>
       <h1>Create Account</h1>
       <div class="login-fields">
+      	 <p><%= link_to "Sign in with Facebook", user_omniauth_authorize_path(:facebook) %></p>
          <p>Please provide the following info:</p>
          <%= f.input :name, :placeholder => "Full Name" %>
          <%= f.input :email, :placeholder => "Email Address" %>
-         <%= f.input :phone, :placeholder => "Phone # (For alternate access)" %>
+         <%= f.input :phone, :placeholder => "Phone #" %>
          <%= f.input :tag_id, :placeholder => "Tag ID" %>
          <%= f.input :password, :placeholder => "Password" %>
       </div>

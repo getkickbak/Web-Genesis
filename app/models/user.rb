@@ -10,7 +10,7 @@ class User
   # :token_authenticatable, :encryptable, :confirmable, :lockable, :timeoutable and :omniauthable
 
   devise :database_authenticatable, :registerable, #:confirmable,
-          :recoverable, :rememberable, :trackable, #:timeoutable,
+          :recoverable, :rememberable, :trackable, :omniauthable, #:timeoutable,
           :validatable, :token_authenticatable, :authentication_keys => [:email]
           
   property :id, Serial
@@ -32,8 +32,9 @@ class User
   property :last_sign_in_ip, String
   ## Token authenticatable
   property :authentication_token, String
-  property :facebook_id, String, :default => ""     
-  property :facebook_email, String, :default => ""
+  property :provider, String, :default => ""
+  property :uid, String, :default => ""
+  property :token, String, :default => ""
   property :role, String, :required => true, :default => "anonymous"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :active
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -43,7 +44,7 @@ class User
     
   attr_accessor :current_password, :tag_id
   
-  attr_accessible :name, :email, :phone, :facebook_id, :facebook_email, :role, :status, :current_password, :password, :password_confirmation, :tag_id
+  attr_accessible :name, :email, :phone, :provider, :uid, :token, :role, :status, :current_password, :password, :password_confirmation, :tag_id
     
   has 1, :profile, 'UserProfile', :constraint => :destroy
   has 1, :user_to_virtual_tag, :constraint => :destroy      
@@ -65,6 +66,18 @@ class User
     
   before_save :ensure_authentication_token
   
+  def self.new_with_session(params, session)
+    super.tap do |user|
+      if data = session["devise.facebook_data"] && session["devise.facebook_data"]["extra"]["raw_info"]
+        user.name = data["name"]
+        user.email = data["email"] if user.email.blank?
+        user.provider = session["devise.facebook_data"]["provider"]
+        user.uid = data["id"]
+        user.token = session["devise.facebook_data"]["credentials"]["token"]
+      end
+    end
+  end
+  
   def self.create(user_info)
     now = Time.now
     if (user_info.is_a? Hash) || (user_info.is_a? ActiveSupport::HashWithIndifferentAccess)
@@ -72,8 +85,9 @@ class User
       email = user_info[:email].strip
       phone = user_info[:phone].strip
       password = user_info[:password].strip
-      facebook_id = user_info[:facebook_id]
-      facebook_email = user_info[:facebook_email]
+      provider = user_info[:provider]
+      uid = user_info[:uid]
+      token = user_info[:token]
       role = user_info[:role]
       status = user_info[:status]
       gender = user_info[:gender]
@@ -126,8 +140,9 @@ class User
           :name => name,
           :email => email,   
           :phone => phone,
-          :facebook_id => facebook_id,
-          :facebook_email => facebook_email,
+          :provider => provider,
+          :uid => uid,
+          :token => toke,
           :current_password => password,
           :password => password,
           :password_confirmation => password,
@@ -149,7 +164,7 @@ class User
     user.save
     return user 
   end
-    
+  
   def to_param
     self.id
   end

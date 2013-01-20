@@ -66,6 +66,9 @@ gem 'gibberish'
 gem 'faye'
 gem 'thin'
 #gem 'gsl'
+gem 'omniauth'
+gem 'omniauth-facebook'
+gem "koala"
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION

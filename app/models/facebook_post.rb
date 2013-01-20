@@ -1,5 +1,5 @@
-class News
-  attr_accessor :type, :item_id, :item_type, :title, :text
+class FacebookPost
+  attr_accessor :type, :message, :picture, :link_name, :link, :caption, :description
   
   def initialize(hash)
     hash.keys.each do |key|

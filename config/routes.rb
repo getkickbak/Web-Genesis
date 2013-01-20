@@ -107,8 +107,10 @@ Genesis::Application.routes.draw do
       :sessions => "user_devise/sessions",
       :registrations => "user_devise/registrations",
       :passwords => "user_devise/passwords",
+      :omniauth_callbacks => "user_devise/omniauth_callbacks"
     } do
       match "/facebook_sign_in" => 'user_devise/sessions#create_from_facebook'
+      get '/users/auth/:provider' => 'user_devise/omniauth_callbacks#passthru'
     end
     
     namespace :api do

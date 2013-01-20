@@ -146,6 +146,8 @@ GEM
     excon (0.14.3)
     faker (1.0.1)
       i18n (~> 0.4)
+    faraday (0.8.4)
+      multipart-post (~> 1.1)
     fastercsv (1.5.5)
     faye (0.8.2)
       cookiejar (>= 0.3.0)
@@ -168,8 +170,10 @@ GEM
       ruby-hmac
     formatador (0.2.3)
     gibberish (1.2.0)
+    hashie (1.2.0)
     hike (1.2.1)
     http_parser.rb (0.5.3)
+    httpauth (0.2.0)
     i18n (0.6.0)
     journey (1.0.4)
     jquery-rails (2.0.2)
@@ -177,6 +181,11 @@ GEM
       thor (~> 0.14)
     json (1.6.7)
     json_pure (1.6.7)
+    jwt (0.1.5)
+      multi_json (>= 1.0)
+    koala (1.1.0)
+      multi_json (~> 1.0)
+      multipart-post (~> 1.0)
     linecache19 (0.5.12)
       ruby_core_source (>= 0.1.4)
     mail (2.4.4)
@@ -190,11 +199,26 @@ GEM
       i18n (~> 0.4)
       json
     multi_json (1.0.4)
+    multipart-post (1.1.5)
     mysql2 (0.3.11)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
     net-ssh (2.5.2)
     nokogiri (1.5.5)
+    oauth2 (0.8.0)
+      faraday (~> 0.8)
+      httpauth (~> 0.1)
+      jwt (~> 0.1.4)
+      multi_json (~> 1.0)
+      rack (~> 1.2)
+    omniauth (1.1.1)
+      hashie (~> 1.2)
+      rack
+    omniauth-facebook (1.4.1)
+      omniauth-oauth2 (~> 1.1.0)
+    omniauth-oauth2 (1.1.1)
+      oauth2 (~> 0.8.0)
+      omniauth (~> 1.0)
     orm_adapter (0.4.0)
     pdfkit (0.5.2)
     polyglot (0.3.3)
@@ -334,8 +358,11 @@ DEPENDENCIES
   fog
   gibberish
   jquery-rails
+  koala
   mini_magick
   mysql2
+  omniauth
+  omniauth-facebook
   pdfkit
   rabl (~> 0.7.0)
   railties (~> 3.2.0)

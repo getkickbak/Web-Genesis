@@ -205,16 +205,28 @@ class Common
     promotions = Promotion.all(:merchant => venue.merchant, :end_date.gte => Date.today)
     promotions.each do |promotion|
       newsfeed << News.new(
-        "",
-        0,
-        "",
-        "",
-        promotion.message
+        {
+          :type => "",
+          :item_id => 0,
+          :item_type => "",
+          :title => "",
+          :text => promotion.message
+        }
       )
     end
     return newsfeed
   end
 
+  def connect_to_facebook(user, posts)
+    @graph = Koala::Facebook::API.new(user.token)
+    @graph.batch do |batch_api|
+      posts.each do |post|
+        #batch_api.put_connections("me", "namespace:action", :object => object_url) if post.type == "checkin"
+        batch_api.put_wall_post(post.message, {:picture => post.picture, :name => post.link_name, :link => post.link, :caption => post.caption, :description => post.description}) if post.type == "share"
+      end 
+    end
+  end 
+    
   private
 
   def self.get_photo_host_bucket

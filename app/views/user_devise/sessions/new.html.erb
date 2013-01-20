@@ -22,6 +22,7 @@
       <%= simple_form_for resource, :html => {:class => 'form-vertical' }, :url => session_path(resource_name) do |f| %>
       <h1>Login</h1>
       <div class="login-fields">
+      	 <p><%= link_to "Sign in with Facebook", user_omniauth_authorize_path(:facebook) %></p>
          <p>Sign in using your registered account:</p>
          <%= f.input :email, :placeholder => "Email Address" %>
          <%= f.input :password, :placeholder => "Password" %>
@@ -36,7 +37,7 @@
          <% end %>
          <%= f.button :submit, "Sign In", :class => 'button btn  btn-warning btn-large' %>
          <div style="margin-top:10px;clear:both;">
-            <%= render :partial => "business/merchant_devise/shared/links" %>
+            <%= render :partial => "user_devise/shared/links" %>
          </div>
       </div>
       <% end %>

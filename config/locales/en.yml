@@ -169,7 +169,7 @@ en:
       incompatible_merchant_user_role: "Your account is not compatible with selected merchant."
       inactive_merchant: "This merchant is not active.\nPlease try a different one."
       inactive_venue: "This venue is not active.\nPlease try a different one."
-      inactive_tag: "This key tag is not active.\nPlesae try again."
+      inactive_tag: "Sorry, this key tag needs to be registered first."
       inactive_user: "This user is not active.\nPlease try again."
       invalid_tag: "This key tag is not valid."
       invalid_user: "Problem with this user account.\nPlease contact support."
@@ -332,3 +332,8 @@ en:
       tag_already_in_use_failure: "Key tag is already in use."
       register_tag_success: "Key tag was successfully activated."
       update_success: "Account was successfully updated."
+  facebook_post:
+      message:
+        redeem_reward: "Got a %s from %s just now!"
+      description:
+        text: "Sign up with KICKBAK to earn reward points at your favorite locations."        
