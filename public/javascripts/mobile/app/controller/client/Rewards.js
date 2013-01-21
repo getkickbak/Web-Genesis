@@ -450,8 +450,8 @@ Ext.define('Genesis.controller.client.Rewards',
                      //
                      if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
                      {
-                        x : e.browserEvent.clientX,
-                        y : e.browserEvent.clientY
+                        x : e.pageX,
+                        y : e.pageY
                      }))
                      {
                         Ext.Ajax.abort();
@@ -584,7 +584,7 @@ Ext.define('Genesis.controller.client.Rewards',
       me.task.delay(15 * 1000);
 
       me.self.playSoundFile(viewport.sound_files['rouletteSpinSound'], rouletteTap);
-      
+
       Ext.defer(controller.startRouletteScreen, 1 * 1000, controller, [me.getRewards()]);
       /*
        Ext.defer(function()

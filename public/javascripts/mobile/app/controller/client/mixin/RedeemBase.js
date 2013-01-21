@@ -191,8 +191,8 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                      //
                      if (!Ext.get(Ext.DomQuery.select('.x-innerhtml',b.element.dom)[0]).getPageBox(true).isOutOfBound(
                      {
-                        x : e.browserEvent.clientX,
-                        y : e.browserEvent.clientY
+                        x : e.pageX,
+                        y : e.pageY
                      }))
                      {
                         Ext.Ajax.abort();
