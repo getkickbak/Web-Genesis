@@ -41,6 +41,12 @@ Ext.define('Genesis.controller.server.Challenges',
    refreshAuthCodeMsg : 'Refresing ...',
    challengeSuccessfulMsg : 'Challenge Completed!',
    challengeFailedMsg : 'Failed to Complete Challenge!',
+   lookingForMobileDeviceMsg : function()//Send
+   {
+      return 'Have the customer\'s ' + Genesis.constants.addCRLF() + //
+      'Mobile Device ' + Genesis.constants.addCRLF() + //
+      'tap against the Terminal'
+   },
    init : function()
    {
       this.callParent(arguments);
@@ -206,7 +212,7 @@ Ext.define('Genesis.controller.server.Challenges',
       {
          title : 'Challenges',
          ignoreOnHide : true,
-         message : (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg : me.genQRCodeMsg,
+         message : (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg() : me.genQRCodeMsg,
          buttons : ['Cancel'],
          callback : function()
          {

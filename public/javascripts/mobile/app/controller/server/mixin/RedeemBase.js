@@ -131,7 +131,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       {
          venue_id : venueId
       }
-      var message = (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg : me.retrievingQRCodeMsg;
+      var message = (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg() : me.retrievingQRCodeMsg;
       var proxy = store.getProxy();
 
       me.redeemItemFn = function(p, closeDialog)

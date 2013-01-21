@@ -269,7 +269,7 @@ Ext.define('Genesis.controller.server.Rewards',
       Ext.device.Notification.show(
       {
          title : 'Earn Reward Points',
-         message : (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg : me.genQRCodeMsg,
+         message : (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg() : me.genQRCodeMsg,
          ignoreOnHide : true,
          buttons : [
          {
