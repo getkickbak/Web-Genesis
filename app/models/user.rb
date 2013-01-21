@@ -160,9 +160,11 @@ class User
     end
     if provider && uid
       user.facebook_auth = ThirdPartyAuth.create(
-        :provider => provider,
-        :uid => uid,
-        :token => token || "",
+        {
+          :provider => provider,
+          :uid => uid,
+          :token => token || "",
+        }
       )
     end
     user.virtual_tag = UserTag.create(:virtual)
