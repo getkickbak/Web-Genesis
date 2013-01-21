@@ -86,14 +86,15 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
         end  
         return
       end
-      @user = User.first(:facebook_id => facebook_id, :status => :active)
+      facebook_auth = ThirdPartyAuth.first(:provider => "facebook", :uid => facebook_id)
+      @user = facebook_auth ? facebook_auth.user : nil
       if @user.nil?
         @user = User.first(:email => params[:email], :status => :active)
       end
     else
       @user = User.first(:authentication_token => auth_token, :status => :active)  
       if @user.nil?
-        if facebook_id && User.first(:facebook_id => facebook_id, :status => :active)
+        if facebook_id && ThirdPartyAuth.first(:provider => "facebook", :uid => facebook_id)
           respond_to do |format|
             #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
             format.json { render :json => { :success => false, :metaData => { :rescode => 'login_invalid_info' }, :message => t("api.tokens.create_invalid_info").split('\n') } }
@@ -118,7 +119,7 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
           @user.register_tag(@user.virtual_tag)
         end
         if facebook_id
-          @user.update_without_password(:facebook_id => facebook_id, :facebook_email => params[:facebook_email] || "", :update_ts => Time.now)
+          @user.update_facebook_auth(:provider => "facebook", :uid => facebook_id)
           if params[:gender] && params[:birthday]
             profile_info = {
               :gender => params[:gender],

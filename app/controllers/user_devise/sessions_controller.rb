@@ -17,10 +17,11 @@ class UserDevise::SessionsController < Devise::SessionsController
   def create_from_facebook
     begin
       User.transaction do
-        user = User.first(:facebook_id => params[:facebook_id])
-        if user.nil?
+        facebook_auth = ThirdPartyAuth.first(:provider => "facebook", :uid => params[:facebook_id])
+        if facebook_auth.nil?
           raise Exception.new
         end
+        user = facebook_auth.user
         account_info = {
           :name => params[:name],
           :email => params[:email]

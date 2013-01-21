@@ -32,9 +32,7 @@ class User
   property :last_sign_in_ip, String
   ## Token authenticatable
   property :authentication_token, String
-  property :provider, String, :default => ""
-  property :uid, String, :default => ""
-  property :token, String, :default => ""
+  property :facebook_id, String, :default => ""
   property :role, String, :required => true, :default => "anonymous"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :active
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -44,13 +42,16 @@ class User
     
   attr_accessor :current_password, :tag_id
   
-  attr_accessible :name, :email, :phone, :provider, :uid, :token, :role, :status, :current_password, :password, :password_confirmation, :tag_id
+  attr_accessible :name, :email, :phone, :role, :status, :current_password, :password, :password_confirmation, :tag_id
     
   has 1, :profile, 'UserProfile', :constraint => :destroy
+  has 1, :subscription, :constraint => :destroy
   has 1, :user_to_virtual_tag, :constraint => :destroy      
   has 1, :virtual_tag, 'UserTag', :through => :user_to_virtual_tag,  :via => :user_tag
+  has 1, :user_to_facebook_auth, :constraint => :destroy
+  has 1, :facebook_auth, 'ThirdPartyAuth', :through => :user_to_facebook_auth, :via => :third_party_auth
   has n, :user_to_tags, :constraint => :destroy
-  has n, :tags, 'UserTag', :through => :user_to_tags,  :via => :user_tag
+  has n, :tags, 'UserTag', :through => :user_to_tags, :via => :user_tag
   has n, :friendships, :child_key => [ :source_id ], :constraint => :destroy
   has n, :friends, self, :through => :friendships, :via => :target
   has n, :links_to_followed_users, 'Relationship', :child_key => [ :follower_id ], :constraint => :destroy
@@ -140,9 +141,6 @@ class User
           :name => name,
           :email => email,   
           :phone => phone,
-          :provider => provider,
-          :uid => uid,
-          :token => toke,
           :current_password => password,
           :password => password,
           :password_confirmation => password,
@@ -160,7 +158,15 @@ class User
       user.profile[:created_ts] = now
       user.profile[:update_ts] = now
     end
+    if provider && uid
+      user.facebook_auth = ThirdPartyAuth.create(
+        :provider => provider,
+        :uid => uid,
+        :token => token || "",
+      )
+    end
     user.virtual_tag = UserTag.create(:virtual)
+    user.subscription = Subscription.create
     user.save
     return user 
   end
@@ -208,6 +214,24 @@ class User
       self.profile.birthday = Time.at(birthday_secs).to_date
       self.profile.update_ts = now
     end
+    save
+  end
+  
+  def update_facebook_auth(facebook_auth_info)
+    if self.facebook_auth.nil?
+      self.facebook_auth = ThirdPartyAuth.create(facebook_auth_info)
+    end
+    self.facebook_auth.provider = facebook_auth_info[:provider]
+    self.facebook_auth.uid = facebook_auth_info[:uid]
+    self.facebook_auth.token = facebook_auth_info[:token] || ""
+    save
+  end 
+    
+  def update_subscription(subscription_info)
+    if self.subscription.nil?
+      self.subscription = Subscription.create
+    end
+    self.subscription.email_notif = subscription_info[:email_notif] if subscription_info[:email_notif]
     save
   end
   

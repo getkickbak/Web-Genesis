@@ -47,10 +47,13 @@ class UsersController < ApplicationController
     User.transaction do
       begin
         facebook_id = user_info[:facebook_id]
-        facebook_email = user_info[:facebook_email] || ""
-        existing_user = (facebook_id.to_s == "0" ? nil : User.first(:facebook_id => facebook_id))
+        existing_user = nil
+        if facebook_id.to_s != "0"
+          facebook_auth = ThirdPartyAuth.first(:provider => "facebook", :uid_id => facebook_id)
+          existing_user = facebook_auth ? facebook_auth.user : existing_user
+        end  
         if existing_user.nil? || (existing_user.id == current_user.id)
-          @user.update_without_password(:facebook_id => facebook_id, :facebook_email => facebook_email, :update_ts => now)
+          @user.update_facebook_info(:provider => "facebook", :uid_id => facebook_id)
           if params[:gender] && params[:birthday]
             profile_info = {
               :gender => params[:gender],

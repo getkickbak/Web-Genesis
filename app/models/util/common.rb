@@ -205,13 +205,11 @@ class Common
     promotions = Promotion.all(:merchant => venue.merchant, :end_date.gte => Date.today)
     promotions.each do |promotion|
       newsfeed << News.new(
-        {
-          :type => "",
-          :item_id => 0,
-          :item_type => "",
-          :title => "",
-          :text => promotion.message
-        }
+        :type => "",
+        :item_id => 0,
+        :item_type => "",
+        :title => "",
+        :text => promotion.message
       )
     end
     return newsfeed

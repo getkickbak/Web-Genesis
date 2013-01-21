@@ -323,15 +323,13 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
 =begin          
           posts = [
             FacebookPost.new(
-              {
-                :type => "share",
-                :message => (t("facebook_post.message.redeem_reward") % [@reward.title, @venue.name]),
-                :picture => @venue.merchant.photo.url,
-                :link_name => @venue.name,
-                :link => @venue.website,
-                :caption => @venue.website,
-                :description => t("facebook_post.description.text")
-              }
+              :type => "share",
+              :message => (t("facebook_post.message.redeem_reward") % [@reward.title, @venue.name]),
+              :picture => @venue.merchant.photo.url,
+              :link_name => @venue.name,
+              :link => @venue.website,
+              :caption => @venue.website,
+              :description => t("facebook_post.description.text")
             )
           ]
           Resque.enqueue(ShareOnFacebook, user.id, posts.to_json)
