@@ -124,19 +124,5 @@ Ext.define('Genesis.view.server.Rewards',
    },
    inheritableStatics :
    {
-      getPhoto : function(type)
-      {
-         var photo_url = null;
-         switch (type.value)
-         {
-            case 'vip' :
-               photo_url = Genesis.constants.getIconPath('miscicons', type.value);
-               break;
-            default :
-               photo_url = Genesis.constants.getIconPath('prizewon', type.value);
-               break;
-         }
-         return photo_url;
-      }
    }
 });

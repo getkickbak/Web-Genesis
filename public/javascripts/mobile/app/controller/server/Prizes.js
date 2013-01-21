@@ -39,7 +39,7 @@ Ext.define('Genesis.controller.server.Prizes',
          //
          sBackBB : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=back]',
          sCloseBB : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=close]',
-         refreshBtn : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=refresh]',
+         authText : 'serverredeemitemdetailview[tag=redeemPrize] component[tag=authText]',
          redeemItem :
          {
             selector : 'serverredeemitemdetailview[tag=redeemPrize]',
@@ -108,6 +108,22 @@ Ext.define('Genesis.controller.server.Prizes',
    // --------------------------------------------------------------------------
    // Prizes Page
    // --------------------------------------------------------------------------
+   onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+
+      me.callParent(arguments);
+      me.mixins.redeemBase.onRedeemItemActivate.apply(me, arguments);
+   },
+   onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
+   {
+      var me = this;
+      if (me.getRedeemMode() == 'authReward')
+      {
+         me.getApplication().getController('server' + '.Challenges').onRedeemItemDeactivate(oldActiveItem, c, newActiveItem, eOpts);
+      }
+      me.callParent(arguments);
+   },
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------

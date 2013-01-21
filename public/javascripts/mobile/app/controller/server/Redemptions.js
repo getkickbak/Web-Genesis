@@ -38,7 +38,7 @@ Ext.define('Genesis.controller.server.Redemptions',
          //
          sBackBB : 'serverredeemitemdetailview[tag=redeemReward] button[tag=back]',
          sCloseBB : 'serverredeemitemdetailview[tag=redeemReward] button[tag=close]',
-         refreshBtn : 'serverredeemitemdetailview[tag=redeemReward] button[tag=refresh]',
+         authText : 'serverredeemitemdetailview[tag=redeemReward] component[tag=authText]',
          redeemItem :
          {
             selector : 'serverredeemitemdetailview[tag=redeemReward]',
@@ -73,6 +73,13 @@ Ext.define('Genesis.controller.server.Redemptions',
       listeners :
       {
       }
+   },
+   onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+
+      me.callParent(arguments);
+      me.mixins.redeemBase.onRedeemItemActivate.apply(me, arguments);
    },
    // --------------------------------------------------------------------------
    // Utility Functions

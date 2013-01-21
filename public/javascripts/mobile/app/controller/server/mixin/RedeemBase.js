@@ -320,6 +320,12 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
    onRedeemItemShowView : function(activeItem)
    {
       var me = this;
+      console.log("onRedeemItemShowView - RedeemMode[" + me.getRedeemMode() + "]");
+   },
+   onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
+      var me = this;
+      
       //
       // In Redeem Mode
       //
@@ -327,16 +333,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       //
       // In Challendge
       //
-      me.getRefreshBtn()[(me.getRedeemMode() == 'authReward') ? 'show' : 'hide']();
-
-      console.log("onRedeemItemShowView - RedeemMode[" + me.getRedeemMode() + "]");
-   },
-   onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
-   {
-      var me = this;
-      me.callParent(arguments);
-
-      me.getRefreshBtn()['hide']();
+      me.getAuthText()[(me.getRedeemMode() == 'authReward') ? 'show' : 'hide']();
 
       console.log("RewardItem View - Updated RewardItem View.");
    },

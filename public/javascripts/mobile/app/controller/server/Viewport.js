@@ -193,6 +193,10 @@ Ext.define('Genesis.controller.server.Viewport',
    {
       var me = this;
 
+      if (Genesis.fn.isNative())
+      {
+         return;
+      }
       if (me._mimeTypeCallback)
       {
          nfc.removeMimeTypeListener(Genesis.constants.appMimeType, me._mimeTypeCallback, function()

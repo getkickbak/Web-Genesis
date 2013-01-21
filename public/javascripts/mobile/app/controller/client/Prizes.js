@@ -414,7 +414,7 @@ Ext.define('Genesis.controller.client.Prizes',
       {
          var eligiblePrizeCallback = function(setFlag, viewsPopLength)
          {
-            if (me.task && (setflag == 0x01))
+            if (me.task && (setFlag == 0x01))
             {
                me.task.cancel();
                me.task = null;
