@@ -62,12 +62,17 @@ Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
             {
                hidden : true,
                docked : 'bottom',
-               xtype : 'button',
+               xtype : 'component',
+               tag : 'authText',
                margin : '0 0.7 0.8 0.7',
+               style : 'text-align:center;',
                defaultUnit : 'em',
-               tag : 'refresh',
-               text : 'Authorize another!',
-               ui : 'orange-large'
+               html : (function()//Send
+               {
+                  return 'Have the Mobile Device' + Genesis.constants.addCRLF() + //
+                  'Tap against the Terminal'
+               })()
+               //,ui : 'orange-large'
             },
             {
                hidden : true,

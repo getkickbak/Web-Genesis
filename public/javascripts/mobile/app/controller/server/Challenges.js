@@ -14,25 +14,17 @@ Ext.define('Genesis.controller.server.Challenges',
          //
          // Challenges
          //
-         challenges :
-         {
-            selector : 'serverchallengesview',
-            autoCreate : true,
-            xtype : 'serverchallengesview'
-         },
-         refreshBtn : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=refresh]'
+         challenges : 'serverredeemitemdetailview[tag=redeemPrize]',
+         authText : 'serverredeemitemdetailview[tag=redeemPrize] component[tag=authText]'
       },
       control :
       {
-         challenges :
-         {
-            activate : 'onActivate',
-            deactivate : 'onDeactivate'
-         },
-         refreshBtn :
-         {
-            tap : 'onRefreshTap'
-         }
+         /*,
+          refreshBtn :
+          {
+          tap : 'onRefreshTap'
+          }
+          */
       }
    },
    invalidAuthCodeMsg : 'Authorization Code is Invalid',
@@ -56,42 +48,44 @@ Ext.define('Genesis.controller.server.Challenges',
    // --------------------------------------------------------------------------
    // Server Challenges Page
    // --------------------------------------------------------------------------
-   onActivate : function(activeItem, c, oldActiveItem, eOpts)
+   onRedeemItemDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
-      //Ext.defer(activeItem.createView, 1, activeItem);
-      //activeItem.createView();
-   },
-   onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
-   {
-      var me = this;
-      oldActiveItem.removeAll(true);
-   },
-   onRefreshTap : function(b, e, eOpts)
-   {
-      var me = this;
-      /*
-       Ext.Viewport.setMasked(
-       {
-       xtype : 'loadmask',
-       message : me.refreshAuthCodeMsg
-       });
-       */
-      var app = me.getApplication();
-      var controller = app.getController('server.Prizes');
-      Ext.defer(function()
+      var me = this, viewport = me.getViewPortCntlr();
+
+      //oldActiveItem.removeAll(true);
+      viewport.setActiveController(null);
+      if (me.task)
       {
-         var qrcode = me.generateQRCode();
-         if (qrcode[0])
-         {
-            controller.fireEvent('refreshQRCode', qrcode);
-         }
-         //Ext.Viewport.setMasked(null);
-      }, 100, me);
-      me.onGenerateQRCode(true);
+         clearInterval(me.task);
+         delete me.task;
+      }
    },
+   /*
+    onRefreshTap : function(b, e, eOpts)
+    {
+    var me = this;
+    //Ext.Viewport.setMasked(
+    //{
+    //xtype : 'loadmask',
+    //message : me.refreshAuthCodeMsg
+    //});
+    var app = me.getApplication();
+    var controller = app.getController('server.Prizes');
+    Ext.defer(function()
+    {
+    var qrcode = me.generateQRCode();
+    if (qrcode[0])
+    {
+    controller.fireEvent('refreshQRCode', qrcode);
+    }
+    //Ext.Viewport.setMasked(null);
+    }, 100, me);
+    me.onGenerateQRCode(true);
+    },
+    */
    onGenerateQRCode : function(refresh)
    {
-      var me = this, task = null, identifiers = null, viewport = me.getViewPortCntlr(), proxy = Challenge.getProxy(), dismissDialog = false;
+      var me = this, identifiers = null, viewport = me.getViewPortCntlr(), proxy = Challenge.getProxy(), dismissDialog = false;
 
       if (!refresh)
       {
@@ -104,29 +98,42 @@ Ext.define('Genesis.controller.server.Challenges',
           */
          Ext.defer(function()
          {
-            var qrcode = me.generateQRCode();
-            if (qrcode[0])
+            /*
+             var qrcode = me.generateQRCode();
+             if (qrcode[0])
+             {
+             console.debug("Rendering QRCode ...");
+             */
             {
-               console.debug("Rendering QRCode ...");
                var controller = me.getApplication().getController('server.Prizes');
                var prefix = Genesis.constants._thumbnailAttribPrefix + 'large';
                var photoUrl =
                {
                };
+               /*
+                photoUrl[prefix] =
+                {
+                url : qrcode[0],
+                height : qrcode[1] * 1.25,
+                width : qrcode[2] * 1.25,
+                }
+                */
                photoUrl[prefix] =
                {
-                  url : qrcode[0],
-                  height : qrcode[1] * 1.25,
-                  width : qrcode[2] * 1.25,
+                  url : me.self.getPhoto(
+                  {
+                     value : 'transmit'
+                  })
                }
                var reward = Ext.create('Genesis.model.CustomerReward',
                {
                   id : 0,
-                  title : 'Completing Challenge',
+                  title : 'Authorization',
                   type :
                   {
                      value : 'earn_points'
                   },
+                  //photo : photoUrl
                   photo : photoUrl
                });
                controller.fireEvent('authreward', reward);
@@ -179,11 +186,16 @@ Ext.define('Genesis.controller.server.Challenges',
                   {
                      title : 'Challenge',
                      message : me.challengeSuccessfulMsg,
-                     buttons : ['OK']
+                     buttons : ['OK'],
+                     callback : function()
+                     {
+                        me.popView();
+                     }
                   });
                }
                else
                {
+                  proxy._errorCallback = Ext.bind(me.popView, me);
                   /*
                    proxy.supressErrorsPopup = true;
                    Ext.device.Notification.show(
@@ -202,40 +214,12 @@ Ext.define('Genesis.controller.server.Challenges',
          });
       };
 
-      Ext.device.Notification.show(
-      {
-         title : 'Challenges',
-         ignoreOnHide : true,
-         message : (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg : me.genQRCodeMsg,
-         buttons : ['Cancel'],
-         callback : function()
-         {
-            viewport.setActiveController(null);
-            if (task)
-            {
-               clearInterval(task);
-            }
-            //
-            // Stop receiving ProximityID
-            //
-            if (Genesis.fn.isNative())
-            {
-               window.plugins.proximityID.stop();
-            }
-            else
-            if (!dismissDialog)
-            {
-               Ext.Viewport.setMasked(null);
-               me.popView();
-            }
-         }
-      });
       if (Genesis.fn.isNative())
       {
-         task = me.getLocalID(function(ids)
+         me.task = me.getLocalID(function(ids)
          {
             identifiers = ids;
-            task = null;
+            me.task = null;
             me.challengeItemFn(
             {
                data :
@@ -247,6 +231,7 @@ Ext.define('Genesis.controller.server.Challenges',
          {
             viewport.setActiveController(null);
             Ext.Viewport.setMasked(null);
+            me.popView();
          }, Ext.bind(me.onGenerateQRCode, me, arguments));
          viewport.setActiveController(me);
       }
@@ -268,5 +253,19 @@ Ext.define('Genesis.controller.server.Challenges',
    isOpenAllowed : function()
    {
       return true;
+   },
+   inheritableStatics :
+   {
+      getPhoto : function(type)
+      {
+         var photo_url = null;
+         switch (type.value)
+         {
+            case 'transmit' :
+               photo_url = Genesis.constants.getIconPath('prizewon', type.value);
+               break;
+         }
+         return photo_url;
+      }
    }
 });

@@ -58,11 +58,24 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'Merchant Device'
    },
-   detectMerchantDeviceMsg : 'Tap your Phone against the Merchant Device', //Recv
+   detectMerchantDeviceMsg : function()//Recv
+   {
+      return 'Tap your Phone against the ' + Genesis.constants.addCRLF() + 'Merchant Device'
+   },
    // Merchant Device
    prepareToSendMobileDeviceMsg : 'Prepare to send data across to Mobile Device ...',
-   lookingForMobileDeviceMsg : 'Place the Tag or Mobile Device against the back of the Merchant Device ...', //Send
-   detectMobileDeviceMsg : 'Place the Tag or Mobile Device against the back of the Merchant Device ...', //Recv
+   lookingForMobileDeviceMsg : function()//Send
+   {
+      return 'Have the customer\'s ' + Genesis.constants.addCRLF() + //
+      'TAG or Mobile Device' + Genesis.constants.addCRLF() + //
+      'tap against the Terminal';
+   },
+   detectMobileDeviceMsg : function()//Recv
+   {
+      return 'Have the customer\'s ' + Genesis.constants.addCRLF() + //
+      'TAG or Mobile Device' + Genesis.constants.addCRLF() + //
+      'tap against the Terminal';
+   },
    //
    //
    //

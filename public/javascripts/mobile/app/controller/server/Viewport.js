@@ -192,10 +192,22 @@ Ext.define('Genesis.controller.server.Viewport',
    applyActiveController : function(controller)
    {
       var me = this;
-      nfc.removeMimeTypeListener(Genesis.constants.appMimeType);
+
+      if (Genesis.fn.isNative())
+      {
+         return;
+      }
+      if (me._mimeTypeCallback)
+      {
+         nfc.removeMimeTypeListener(Genesis.constants.appMimeType, me._mimeTypeCallback, function()
+         {
+            console.log("Removed MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
+         });
+         delete me._mimeTypeCallback;
+      }
       if (controller)
       {
-         nfc.addMimeTypeListener(Genesis.constants.appMimeType, function(nfcEvent)
+         me._mimeTypeCallback = function(nfcEvent)
          {
             console.log("MimeType Message received");
             try
@@ -220,7 +232,9 @@ Ext.define('Genesis.controller.server.Viewport',
             {
                console.log("Exception Thrown while processing NFC Tag[" + e + "]");
             }
-         }, function()
+         };
+
+         nfc.addMimeTypeListener(Genesis.constants.appMimeType, me._mimeTypeCallback, function()
          {
             console.log("Listening for tags with mime type " + Genesis.constants.appMimeType);
          }, function()
