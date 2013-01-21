@@ -119,7 +119,7 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
           @user.register_tag(@user.virtual_tag)
         end
         if facebook_id
-          @user.update_facebook_auth(:provider => "facebook", :uid => facebook_id)
+          @user.update_facebook_auth({:provider => "facebook", :uid => facebook_id})
           if params[:gender] && params[:birthday]
             profile_info = {
               :gender => params[:gender],

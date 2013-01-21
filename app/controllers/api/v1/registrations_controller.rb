@@ -12,7 +12,7 @@ class Api::V1::RegistrationsController < Api::V1::BaseApplicationController
         start = params[:start].to_i
         max = params[:limit].to_i
         if user_info.include? :facebook_id
-          if ThirdPartyAuth.first(:provider => "facebook", :uid => user_info[:facebook_id])
+          if ThirdPartyAuth.first({:provider => "facebook", :uid => user_info[:facebook_id]})
             respond_to do |format|
               #format.xml  { head :ok }
               format.json { render :json => { :success => false, :message => t("api.users.facebook_account_already_exists_failure").split('\n') } }
