@@ -193,7 +193,7 @@ Ext.define('Genesis.controller.server.Viewport',
    {
       var me = this;
 
-      if (Genesis.fn.isNative())
+      if (!Genesis.fn.isNative())
       {
          return;
       }

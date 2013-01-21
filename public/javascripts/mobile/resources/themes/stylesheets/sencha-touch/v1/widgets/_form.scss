@@ -85,6 +85,7 @@
    &.x-label-align-left .x-input-el {
       &, &::-webkit-input-placeholder {
          text-align:right;
+         direction:rtl;
       }
    }
    &.x-field-clearable .x-input-el {

@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.client.AccountsTransfer',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.Toolbar', 'Ext.field.Text'],
+   requires : ['Ext.Toolbar', 'Ext.field.Text', 'Genesis.view.widgets.Calculator'],
    alias : 'widget.clientaccountstransferview',
    config :
    {
@@ -142,114 +142,19 @@ Ext.define('Genesis.view.client.AccountsTransfer',
       // -------------------------------------------------------------------
       // Accounts Calculator (1)
       // -------------------------------------------------------------------
-      Ext.create('Ext.Container',
       {
-         xtype : 'container',
+         xtype : 'calculator',
          tag : 'accountsMainCalculator',
          cls : 'accountsMainCalculator',
-         layout : 'fit',
-         items : [
+         title : 'Points to Send',
+         placeHolder : '0',
+         bottomButtons : [
          {
-            docked : 'top',
-            xtype : 'toolbar',
-            centered : false,
-            defaults :
-            {
-               iconMask : true
-            },
-            items : [
-            {
-               xtype : 'title',
-               title : 'Points to Send'
-            },
-            {
-               xtype : 'spacer',
-               align : 'right'
-            }]
-         },
-         {
-            docked : 'top',
-            xtype : 'textfield',
-            name : 'price',
-            clearIcon : false,
-            placeHolder : '0',
-            readOnly : true,
-            required : true,
-            cls : 'accountsCalculator'
-         },
-         {
-            xtype : 'container',
-            layout : 'vbox',
-            tag : 'dialpad',
-            cls : 'dialpad',
-            defaults :
-            {
-               xtype : 'container',
-               layout : 'hbox',
-               flex : 1,
-               defaults :
-               {
-                  xtype : 'button',
-                  flex : 1
-               }
-            },
-            items : [
-            {
-               items : [
-               {
-                  text : '1'
-               },
-               {
-                  text : '2'
-               },
-               {
-                  text : '3'
-               }]
-            },
-            {
-               items : [
-               {
-                  text : '4'
-               },
-               {
-                  text : '5'
-               },
-               {
-                  text : '6'
-               }]
-            },
-            {
-               items : [
-               {
-                  text : '7'
-               },
-               {
-                  text : '8'
-               },
-               {
-                  text : '9'
-               }]
-            },
-            {
-               items : [
-               {
-                  text : 'AC'
-               },
-               {
-                  flex : 2,
-                  text : '0'
-               }]
-            }]
-         },
-         {
-            docked : 'bottom',
-            xtype : 'button',
-            cls : 'separator',
             tag : 'showQrCode',
             text : 'Transfer Points!',
             ui : 'orange-large'
          }]
-      }),
+      },
       // -------------------------------------------------------------------
       // Show for QRCode Screen (2)
       // -------------------------------------------------------------------

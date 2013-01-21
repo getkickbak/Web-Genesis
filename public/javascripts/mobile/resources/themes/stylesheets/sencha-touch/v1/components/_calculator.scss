@@ -1,4 +1,5 @@
 $input_font_size_factor : $xlargeFontSize*1.75/1em;
+$panelHeight : 1.0em + $panelGap/(2*$input_font_size_factor);
 .calculator {
    background : black;
    .x-field {
@@ -8,15 +9,15 @@ $input_font_size_factor : $xlargeFontSize*1.75/1em;
             margin: $panelGap $panelGap*2;
             outline: darken($Grey, 10%) inset $panelGap;
             input.x-input-el {
-               &::-webkit-input-placeholder {
+               &, &::-webkit-input-placeholder {
+                  padding: $panelTopGap/(4*$input_font_size_factor);
+                  text-align:right;
                   direction:rtl;
-              }
+                  line-height: $panelHeight;
+               }
                background : $Grey;
-               padding: $panelTopGap/(4*$input_font_size_factor);
                font-size:$input_font_size_factor*1em;
-               min-height: 1.0em + $panelGap/(2*$input_font_size_factor);
-               text-align:right;
-               line-height:1em;
+               min-height:$panelHeight;
             }
          }
       }

@@ -126,7 +126,7 @@ Ext.define('Genesis.controller.client.Accounts',
    },
    xferWithinRangeMsg : function(min, max)
    {
-      return 'Please enter a value between ' + min + ' and ' + max;
+      return 'Please enter a value between ' + Genesis.constants.addCRLF() + min + ' and ' + max;
    },
    noPtsXferMsg : function()
    {
@@ -136,8 +136,8 @@ Ext.define('Genesis.controller.client.Accounts',
    recvTransferMsg : function(points, merchantName)
    {
       return 'We have added ' + points + ' points ' + Genesis.constants.addCRLF() + //
-      'towards your account at ' + //
-      Genesis.constants.addCRLF() + merchantName + '!';
+      'towards your account at ' + Genesis.constants.addCRLF() + //
+      merchantName + '!';
    },
    xferCodeRecv : false,
    init : function()

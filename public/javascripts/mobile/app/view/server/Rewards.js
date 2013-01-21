@@ -1,7 +1,7 @@
 Ext.define('Genesis.view.server.Rewards',
 {
    extend : 'Genesis.view.ViewBase',
-   requires : ['Ext.Toolbar', 'Ext.field.Text'],
+   requires : ['Ext.Toolbar', 'Ext.field.Text', 'Genesis.view.widgets.Calculator'],
    alias : 'widget.serverrewardsview',
    config :
    {
@@ -56,11 +56,11 @@ Ext.define('Genesis.view.server.Rewards',
             placeHolder : '0.00',
             bottomButtons : [
             /*{
-               tag : 'earnPtsTag',
-               text : 'TAG it',
-               ui : 'orange-large'
-            },
-            */
+             tag : 'earnPtsTag',
+             text : 'TAG it',
+             ui : 'orange-large'
+             },
+             */
             {
                tag : 'earnPts',
                text : 'GO!',
