@@ -25,7 +25,7 @@ class ThirdPartyAuth
     )
     third_party_auth[:created_ts] = now
     third_party_auth[:update_ts] = now
-    third_party.user = user
+    third_party_auth.user = user
     third_party_auth.save
     return third_party_auth
   end  
