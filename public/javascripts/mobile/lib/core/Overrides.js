@@ -5,6 +5,10 @@ Genesis =
 {
 };
 
+window.plugins = window.plugins ||
+{
+};
+
 Genesis.constants =
 {
    host : 'http://192.168.0.52:3000',

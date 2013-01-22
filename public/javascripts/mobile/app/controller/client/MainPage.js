@@ -626,11 +626,6 @@ Ext.define('Genesis.controller.client.MainPage',
          return;
       }
 
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : me.loginMsg
-      });
       //Cleanup any outstanding registrations
       if (Genesis.fn.isNative())
       {
@@ -653,6 +648,11 @@ Ext.define('Genesis.controller.client.MainPage',
       }
       Customer['setLoginUrl']();
       console.log("setLoginUrl - Logging in ...");
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.loginMsg
+      });
       me.updatedDeviceToken = (Genesis.constants.device) ? true : false;
       Ext.StoreMgr.get('CustomerStore').load(
       {

@@ -46,7 +46,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
             message : message
          }, 'POST', function(response)
          {
-            if (!response || response.error)
+            if (!response || response.error || Ext.isString(response))
             {
                console.log('Post was not published to Facebook.');
             }
