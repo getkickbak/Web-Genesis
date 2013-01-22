@@ -160,6 +160,7 @@ class User
     end
     if provider && uid
       user.facebook_auth = ThirdPartyAuth.create(
+        user,
         {
           :provider => provider,
           :uid => uid,
@@ -221,7 +222,7 @@ class User
   
   def update_facebook_auth(facebook_auth_info)
     if self.facebook_auth.nil?
-      self.facebook_auth = ThirdPartyAuth.create(facebook_auth_info)
+      self.facebook_auth = ThirdPartyAuth.create(self, facebook_auth_info)
     end
     self.facebook_auth.provider = facebook_auth_info[:provider]
     self.facebook_auth.uid = facebook_auth_info[:uid]
