@@ -44,7 +44,7 @@ class Api::V1::UsersController < Api::V1::BaseApplicationController
         facebook_id = user_info[:facebook_id]
         existing_user = nil
         if facebook_id.to_s != "0"
-          facebook_auth = ThirdPartyAuth.first(:provider => "facebook", :u_id => facebook_id)
+          facebook_auth = ThirdPartyAuth.first(:provider => "facebook", :uid => facebook_id)
           existing_user = facebook_auth ? facebook_auth.user : existing_user
         end
         if existing_user.nil? || (existing_user.id == current_user.id)
