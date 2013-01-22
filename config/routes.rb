@@ -181,6 +181,10 @@ Genesis::Application.routes.draw do
     match "/account" => 'users#show', :as => :account
     match "/account/edit" => 'users#edit', :as => :edit_account
     match "/account/update" => 'users#update', :as => :update_account
+    match "/account/subscriptions" => 'users#subscriptions', :as => :subscriptions
+    match "/account/subscriptions/update_email_notif" => 'users#update_email_notif', :via => :post, :as => :update_email_notif
+    match "/account/facebook_settings" => 'users#facebook_settings', :as => :facebook_settings
+    match "/account/facebook_settings/update" => 'users#update_facebook_settings', :via => :post, :as => :update_facebook_settings
     
     #match "/how_it_works" => 'pages#how_it_works'
     match "/privacy" => 'pages#privacy'

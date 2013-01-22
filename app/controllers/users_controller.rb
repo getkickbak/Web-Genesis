@@ -1,14 +1,13 @@
 class UsersController < ApplicationController
   before_filter :authenticate_user!
   #load_and_authorize_resource
-
   def show
     @user = current_user
     authorize! :read, @user
 
     respond_to do |format|
       format.html # show.html.erb
-      #format.xml  { render :xml => @user }
+    #format.xml  { render :xml => @user }
     end
   end
 
@@ -39,7 +38,17 @@ class UsersController < ApplicationController
       end
     end
   end
-  
+
+  def facebook_settings
+    @user = current_user
+    authorize! :read, @user
+
+    respond_to do |format|
+      format.html # show.html.erb
+    #format.xml  { render :xml => @user }
+    end
+  end
+
   def update_facebook_info
     @user = current_user
     authorize! :update, @user
@@ -50,8 +59,8 @@ class UsersController < ApplicationController
         existing_user = nil
         if facebook_id.to_s != "0"
           facebook_auth = ThirdPartyAuth.first(:provider => "facebook", :uid_id => facebook_id)
-          existing_user = facebook_auth ? facebook_auth.user : existing_user
-        end  
+        existing_user = facebook_auth ? facebook_auth.user : existing_user
+        end
         if existing_user.nil? || (existing_user.id == current_user.id)
           @user.update_facebook_info(:provider => "facebook", :uid_id => facebook_id)
           if params[:gender] && params[:birthday]
@@ -59,27 +68,69 @@ class UsersController < ApplicationController
               :gender => params[:gender],
               :birthday => params[:birthday]
             }
-            @user.profile.update(profile_info)
-            @user.save
+          @user.profile.update(profile_info)
+          @user.save
           end
           respond_to do |format|
-            #format.xml  { head :ok }
+          #format.xml  { head :ok }
             format.json { render :json => { :success => true, :message => t("users.update_facebook_info_success").split('\n') } }
           end
         else
           respond_to do |format|
-            #format.xml  { head :ok }
+          #format.xml  { head :ok }
             format.json { render :json => { :success => true, :message => t("users.facebook_account_already_exists_failure").split('\n') } }
           end
-        end  
+        end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
         @user = e.resource
         respond_to do |format|
-          #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
+        #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => false, :message => e.resource.errors } }
         end
       end
     end
-  end 
+  end
+
+  def subscriptions
+    @user = current_user
+    authorize! :read, @user
+
+    User.transaction do
+      begin
+        if @user.subscription.nil?
+          Subscription.create(@user)
+        end
+        respond_to do |format|
+          format.html # show.html.erb
+          #format.xml  { render :xml => @user }
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        raise e 
+      end
+    end
+  end
+
+  def update_email_notif
+    @user = current_user
+    authorize! :update, @user
+
+    User.transaction do
+      begin
+        @user.subscription.email_notif = !params[:value].to_bool
+        @user.save
+        respond_to do |format|
+        #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => true, :message => "Kewl" } }
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        respond_to do |format|
+        #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
+          format.json { render :json => { :success => false, :message => e.resource.errors } }
+        end 
+      end
+    end
+  end
 end

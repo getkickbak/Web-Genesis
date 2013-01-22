@@ -169,7 +169,7 @@ class User
       )
     end
     user.virtual_tag = UserTag.create(:virtual)
-    user.subscription = Subscription.create
+    user.subscription = Subscription.create(user)
     user.save
     return user 
   end
@@ -232,7 +232,7 @@ class User
     
   def update_subscription(subscription_info)
     if self.subscription.nil?
-      self.subscription = Subscription.create
+      self.subscription = Subscription.create(self)
     end
     self.subscription.email_notif = subscription_info[:email_notif] if subscription_info[:email_notif]
     save

@@ -1,0 +1,57 @@
+<% content_for :link do %>
+<% end %>
+<% content_for :script do %>
+<script type="text/javascript">
+	$(document).ready($(function() {
+	var msg=$("#notice").html();
+	if(msg) {
+	Genesis.showWarningMsg(msg,null,true);
+	}
+	}));
+</script>
+<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/src/subscription.js"></script>
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+	<p>
+		<%= flash[:notice] %>
+	</p>
+</div>
+<% end %>
+<div class="main">
+	<div class="main-inner">
+		<div class="container">
+			<div class="row">
+				<div class="span3">
+					<div class="widget">
+						<div class="widget-content">
+							<%= render 'menu' %>
+						</div>
+					</div>
+				</div>
+				<div class="span9">
+					<div class="widget">
+						<div class="widget-content">
+							<table>
+								<tr>
+									<td> 
+										<%= check_box_tag 'email_notif', "", !current_user.subscription.email_notif %> 
+									</td>
+									<td> Unsubscribe from all emails </td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- /row -->
+		</div>
+		<!-- /container -->
+	</div>
+	<!-- /main-inner -->
+</div>
+<!-- /main -->
+<!--
+<%= link_to 'Back', account_path %>
+-->

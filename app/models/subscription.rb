@@ -14,11 +14,12 @@ class Subscription
   
   belongs_to :user
   
-  def self.create
+  def self.create(user)
     now = Time.now
     subscription = Subscription.new
     subscription[:created_ts] = now
     subscription[:update_ts] = now
+    subscription.user = user
     subscription.save
     return subscription
   end  
