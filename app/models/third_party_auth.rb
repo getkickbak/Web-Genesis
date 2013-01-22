@@ -16,7 +16,7 @@ class ThirdPartyAuth
   
   belongs_to :user
   
-  def create(user, third_party_auth_info)
+  def self.create(user, third_party_auth_info)
     now = Time.now
     third_party_auth = ThirdPartyAuth.new(
       :provider => third_party_auth_info[:provider],

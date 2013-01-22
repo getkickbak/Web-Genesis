@@ -14,7 +14,7 @@ class Subscription
   
   belongs_to :user
   
-  def create
+  def self.create
     now = Time.now
     subscription = Subscription.new
     subscription[:created_ts] = now
