@@ -506,7 +506,7 @@ Ext.define('Genesis.controller.client.Rewards',
             Ext.device.Notification.show(
             {
                title : 'Earn Reward Points',
-               message : me.showToServerMsg,
+               message : me.showToServerMsg(),
                buttons : ['Proceed', 'Cancel'],
                callback : function(btn)
                {

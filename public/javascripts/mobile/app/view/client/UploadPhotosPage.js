@@ -21,6 +21,7 @@ Ext.define('Genesis.view.client.UploadPhotosPage',
       // Display Comment
       {
          xtype : 'textareafield',
+         labelAlign : 'top',
          bottom : 0,
          left : 0,
          right : 0,

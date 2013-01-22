@@ -93,7 +93,12 @@ Ext.define('Genesis.controller.ControllerBase',
       }
       return ('Error loading Venue information.' + errorMsg);
    },
-   showToServerMsg : 'Have your server bring out the Merchant Device before proceeding',
+   showToServerMsg : function()
+   {
+      return 'Press \'Proceed\' before tapping ' + Genesis.constants.addCRLF() + //
+      'your device against the ' + Genesis.constants.addCRLF() + //
+      'Merchant Device';
+   },
    errProcQRCodeMsg : 'Error Processing Authentication Code',
    cameraAccessMsg : 'Accessing your Camera Phone ...',
    updatingServerMsg : 'Updating Server ...',

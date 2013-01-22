@@ -231,7 +231,7 @@ Ext.define('Genesis.controller.client.Prizes',
             message : message
          }, 'POST', function(response)
          {
-            if (!response || response.error)
+            if (!response || response.error || Ext.isString(response))
             {
                console.log('Post was not published to Facebook.');
             }

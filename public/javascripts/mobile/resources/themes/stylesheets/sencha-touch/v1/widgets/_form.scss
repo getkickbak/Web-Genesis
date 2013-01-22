@@ -85,6 +85,8 @@
    &.x-label-align-left .x-input-el {
       &, &::-webkit-input-placeholder {
          text-align:right;
+      }
+      &::-webkit-input-placeholder {
          direction:rtl;
       }
    }
@@ -94,8 +96,8 @@
    .x-input-el {
       &, &::-webkit-input-placeholder {
          line-height: $form-field-height;
-         padding-right:$form-thumb-size;
       }
+      padding-right:$form-thumb-size;
    }
 }
 

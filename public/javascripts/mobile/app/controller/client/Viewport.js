@@ -227,7 +227,7 @@ Ext.define('Genesis.controller.client.Viewport',
          }, 'POST', function(response)
          {
             Ext.Viewport.setMasked(null);
-            if (!response || response.error)
+            if (!response || response.error || Ext.isString(response))
             {
                console.log('Post was not published to Facebook.');
             }

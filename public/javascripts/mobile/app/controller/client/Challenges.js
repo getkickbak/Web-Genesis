@@ -899,7 +899,7 @@ Ext.define('Genesis.controller.client.Challenges',
                      Ext.device.Notification.show(
                      {
                         title : selectedItem.get('name') + ' Challenge',
-                        message : me.showToServerMsg,
+                        message : me.showToServerMsg(),
                         buttons : ['Proceed', 'Cancel'],
                         callback : function(btn)
                         {
@@ -1320,10 +1320,7 @@ Ext.define('Genesis.controller.client.Challenges',
    },
    onUploadPhotosTap : function(b, e, eOpts, eInfo)
    {
-      var me = this;
-      var page = me.getUploadPhotosPage();
-      var textareafield = me.getPhotoTextarea();
-      var desc = textareafield.getValue();
+      var me = this, page = me.getUploadPhotosPage(), textareafield = me.getPhotoTextarea(), desc = textareafield.getValue();
 
       if ((desc.length > textareafield.getMaxLength()) || (desc.length < 16))
       {
@@ -1340,9 +1337,7 @@ Ext.define('Genesis.controller.client.Challenges',
          return;
       }
 
-      var viewport = me.getViewPortCntlr();
-      var venue = viewport.getVenue();
-      var FB = window.plugins.facebookConnect;
+      var viewport = me.getViewPortCntlr(), venue = viewport.getVenue(), FB = window.plugins.facebookConnect, db = Genesis.db.getLocalDB();
 
       if ( typeof (FB) != 'undefined')
       {
@@ -1351,11 +1346,12 @@ Ext.define('Genesis.controller.client.Challenges',
             xtype : 'loadmask',
             message : me.completingChallengeMsg
          });
+         console.debug("photoURL[" + me.metaData['photo_url'] + "], message[" + desc + "], accessToken[" + db['fbResponse'].accessToken + "]");
          FB.requestWithGraphPath('/me/photos',
          {
             'message' : desc,
             'url' : me.metaData['photo_url'],
-            'access_token' : FB.getAccessToken()
+            'access_token' : db['fbResponse'].accessToken
             /*
              ,"place" :
              {
@@ -1373,7 +1369,7 @@ Ext.define('Genesis.controller.client.Challenges',
              */
          }, 'POST', function(response)
          {
-            if (!response || response.error)
+            if (!response || response.error || Ext.isString(response))
             {
                console.log("FacebookConnect.requestWithGraphPath:" + JSON.stringify(response));
 
@@ -1403,7 +1399,7 @@ Ext.define('Genesis.controller.client.Challenges',
             }
             else
             {
-               console.debug('Facebook Post ID - ' + response.id);
+               console.log("FacebookConnect.requestWithGraphPath: Post ID - " + JSON.stringify(response));
                me.fireEvent('fbphotouploadcomplete');
             }
          });

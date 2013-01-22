@@ -237,7 +237,8 @@ Genesis.fb =
          facebook_uid : response.username,
          gender : (response.gender == "male") ? "m" : "f",
          birthday : birthday,
-         photoURL : 'http://graph.facebook.com/' + response.id + '/picture?type=square'
+         photoURL : 'http://graph.facebook.com/' + response.id + '/picture?type=square',
+         accessToken : response.accessToken
       }
 
       return params;
@@ -414,7 +415,6 @@ Genesis.fb =
                db['currFbId'] = facebook_id;
                db['fbAccountId'] = response.email;
                db['fbResponse'] = me.createFbResponse(response);
-               Genesis.db.setLocalDB(db);
 
                console.debug('You\`ve logged into Facebook! ' + '\n' + //
                'Email(' + db['fbAccountId'] + ')' + '\n' + //
@@ -442,6 +442,7 @@ Genesis.fb =
                         {
                            Ext.Viewport.setMasked(null);
                            Genesis.db.setLocalDBAttrib('enableFB', true);
+                           Genesis.db.setLocalDB(db);
                         }
                         me.cb['callback'](db['fbResponse'], operation);
                      }
@@ -450,6 +451,7 @@ Genesis.fb =
                else
                {
                   Genesis.db.setLocalDBAttrib('enableFB', true);
+                  Genesis.db.setLocalDB(db);
                   me.cb['callback'](db['fbResponse'], null);
                   delete me.cb;
                }

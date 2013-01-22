@@ -12,8 +12,10 @@ $panelHeight : 1.0em + $panelGap/(2*$input_font_size_factor);
                &, &::-webkit-input-placeholder {
                   padding: $panelTopGap/(4*$input_font_size_factor);
                   text-align:right;
-                  direction:rtl;
                   line-height: $panelHeight;
+               }
+               &::-webkit-input-placeholder {
+                  direction:rtl;
                }
                background : $Grey;
                font-size:$input_font_size_factor*1em;
