@@ -50,10 +50,12 @@ module CreatePromotion
         end
         logger.info("Sending mobile notifications - complete")
         logger.info("Sending emails")
-        email_user_list = user_list - device_list
+        email_user_list = user_list - device_user_list
         email_users = User.all(:fields => [:name], :id => email_user_list)
         email_users.each do |user|
-          UserMailer.promotion_email(user, promotion).deliver
+          if user.subscription.email_notif
+            UserMailer.promotion_email(user, promotion).deliver
+          end  
         end
         logger.inf("Sending emails - complete")
       end
