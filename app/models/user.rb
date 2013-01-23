@@ -40,9 +40,9 @@ class User
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
     
-  attr_accessor :current_password, :tag_id
+  attr_accessor :current_password, :tag_id, :provider, :uid, :token
   
-  attr_accessible :name, :email, :phone, :role, :status, :current_password, :password, :password_confirmation, :tag_id
+  attr_accessible :name, :email, :phone, :role, :status, :current_password, :password, :password_confirmation, :tag_id, :provider, :uid, :token
     
   has 1, :profile, 'UserProfile', :constraint => :destroy
   has 1, :subscription, :constraint => :destroy

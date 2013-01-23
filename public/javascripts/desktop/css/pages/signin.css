@@ -137,7 +137,7 @@ span.login-checkbox > input[type='checkbox']:checked + label {
 }
 
 
-.account-container h1 {
+.account-container h2 {
 	margin-bottom: .4em;
 	
 	color: #f90;

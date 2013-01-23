@@ -11,9 +11,16 @@
 <div class="account-container">
    <div class="content clearfix">
       <%= simple_form_for @user, :html => {:class => 'form-vertical'}, :url => registration_path(User) do |f| %>
-      <h1>Create Account</h1>
+      <% if session["devise.facebook_data"].nil? %>
+      <h2>Create Account</h2>
+      <% else %>
+      <h2>Complete Account Creation</h2>
+      <% end %>
       <div class="login-fields">
+      	 <% if session["devise.facebook_data"].nil? %>
       	 <p><%= link_to "Sign in with Facebook", user_omniauth_authorize_path(:facebook) %></p>
+      	 <p>or</p>
+      	 <% end %>
          <p>Please provide the following info:</p>
          <%= f.input :name, :placeholder => "Full Name" %>
          <%= f.input :email, :placeholder => "Email Address" %>
