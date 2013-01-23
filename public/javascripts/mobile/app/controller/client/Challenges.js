@@ -569,6 +569,27 @@ Ext.define('Genesis.controller.client.Challenges',
                });
                return;
             }
+            else
+            {
+               var viewport = me.getViewPortCntlr(), db = Genesis.db.getLocalDB(), venue = viewport.getVenue();
+               var latitude_1 = position.coords.getLatitude(), longitude_1 = position.coords.getLongitude();
+               var latitude_2 = venue.get('latitude'), longitude_2 = venue.get('longitude');
+               var distance = 6371000 * Math.acos(Math.cos(Math.radians(latitude_1)) * Math.cos(Math.radians(latitude_2)) * Math.cos(Math.radians(longitude_2) - Math.radians(longitude_1)) + Math.sin(Math.radians(latitude_1)) * Math.sin(Math.radians(latitude_2)));
+
+               //
+               // In proximity of the last_check_in location
+               //
+               if (distance > Genesis.constants.minDistance)
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Location Services',
+                     message : me.notAtVenuePremise,
+                     buttons : ['Dismiss']
+                  });
+                  return;
+               }
+            }
             me.getChallengePage().takePhoto();
             break;
          }
