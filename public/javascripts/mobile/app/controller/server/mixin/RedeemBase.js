@@ -10,7 +10,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       sDoneBtn : null,
       sRedeemBtn : null
    },
-   tagIdMaxLength : 10,
+   tagIdMaxLength : 8,
    redeemPtsConfirmMsg : 'Please confirm to submit',
    // --------------------------------------------------------------------------
    // Utility Functions
@@ -49,7 +49,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       var me = this, viewport = me.getViewPortCntlr(), container = me.getRedeemItemCardContainer();
       var tagIdField = me.getTagId(), tagId = tagIdField.getValue(), tagIdFieldLength = tagId.length;
 
-      if (tagIdFieldLength == me.tagIdMaxLength)
+      if (tagIdFieldLength <= me.tagIdMaxLength)
       {
          me.self.playSoundFile(viewport.sound_files['nfcEnd']);
          me.onRedeemItemTap(null);
@@ -57,7 +57,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          Ext.device.Notification.show(
          {
             title : 'TAG ID',
-            message : me.redeemPtsConfirmMsg,
+            message : me.redeemPtsConfirmMsg(me.tagIdMaxLength),
             buttons : ['Confirm', 'Cancel'],
             callback : function(btn)
             {
@@ -81,7 +81,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          Ext.device.Notification.show(
          {
             title : 'TAG ID',
-            message : me.invalidTagIdFormatMsg,
+            message : me.invalidTagIdFormatMsg(),
             buttons : ['Dismiss']
          });
       }

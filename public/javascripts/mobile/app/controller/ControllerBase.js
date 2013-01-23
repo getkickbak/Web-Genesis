@@ -17,7 +17,14 @@ Ext.define('Genesis.controller.ControllerBase',
    noCodeScannedMsg : 'No Authorization Code was Scanned!',
    lostNetworkConnectionMsg : 'You have lost network connectivity',
    networkErrorMsg : 'Error Connecting to Sever',
-   invalidTagIdFormatMsg : 'Invalid 9-digit Tag ID format (eg. 123456789)',
+   invalidTagIdFormatMsg : function(length)
+   {
+      return 'Invalid ' + length + '-digit Tag ID format (eg. 12345678)';
+   },
+   invalidTagIdFormatMsg : function(length)
+   {
+      return 'Invalid ' + length + '-digit Tag ID format (eg. 12345678)';
+   },
    transactionCancelledMsg : 'This transaction is cancelled',
    backToMerchantPageMsg : function(venue)
    {

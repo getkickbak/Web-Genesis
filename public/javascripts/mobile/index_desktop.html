@@ -18,10 +18,24 @@
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>KickBak</title>
-      <link rel="stylesheet" type="text/css" media="only screen and (max-width:360px) and (-webkit-max-device-pixel-ratio: 0.75)" href="resources/css/android-phone-lhdpi.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (max-width:640px) and (-webkit-max-device-pixel-ratio: 1.0)" href="resources/css/android-phone-mxhdpi.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:360px) and (-webkit-max-device-pixel-ratio: 1.5)" href="resources/css/android-phone-lhdpi.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:640px) and (-webkit-min-device-pixel-ratio: 2.0)" href="resources/css/android-phone-mxhdpi.css">
+      <!--
+      min-width: 320px  // smartphones, iPhone, portrait 480x320 phones
+      min-width: 481px  // portrait e-readers (Nook/Kindle), smaller tablets @ 600 or @ 640 wide.
+      min-width: 641px  // portrait tablets, portrait iPad, landscape e-readers, landscape 800x480 and 854x480 phones
+      min-width: 961px  // tablet, landscape iPad, lo-res laptops ands desktops
+      min-width: 1025px // big landscape tablets, laptops, and desktops
+      min-width: 1281px // hi-res laptops and desktops
+      -->
+      <link rel="stylesheet" type="text/css" media="only screen and (min-width:320px) and (max-width:480px) and (-webkit-max-device-pixel-ratio: 0.99)" href="resources/css/android-phone-lhdpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (min-width:320px) and (max-width:480px) and (-webkit-device-pixel-ratio: 1.0)" href="resources/css/android-phone-mxhdpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (min-width:320px) and (max-width:480px) and (-webkit-max-device-pixel-ratio: 1.99)" href="resources/css/android-phone-lhdpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (min-width:320px) and (max-width:480px) and (-webkit-min-device-pixel-ratio: 2.0)" href="resources/css/android-phone-mxhdpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (min-width:320px) and (max-width:480px)" href="resources/css/android-phone-lhdpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (min-width:481px) and (max-width:640px)" href="resources/css/android-phone-lhdpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (min-width:641px) and (max-width:960px)" href="resources/css/android-phone-lhdpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (min-width:961px) and (max-width:1024px)" href="resources/css/android-phone-lhdpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (min-width:1025px) and (max-width:1280px)" href="resources/css/android-phone-lhdpi.css">
+      <link rel="stylesheet" type="text/css" media="only screen and (min-width:1281px)" href="resources/css/android-phone-lhdpi.css">
       <!--
       <link rel="stylesheet" href="resources/css/iphone.css" type="text/css">
       <link media="screen and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" rel="stylesheet" href="resources/css/iphone5.css" type="text/css">

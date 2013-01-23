@@ -55,6 +55,7 @@ Ext.define('Genesis.view.client.SettingsPage',
          },
          {
             xtype : 'datepickerfield',
+            labelWidth : '30%',
             label : 'Birthday',
             name : 'birthday',
             required : false,
@@ -69,7 +70,7 @@ Ext.define('Genesis.view.client.SettingsPage',
             value : 0
          }, Ext.apply(Genesis.view.ViewBase.phoneField(),
          {
-            labelWidth : '40%',
+            labelWidth : '30%',
             label : 'Phone#',
             name : 'phone',
             required : false

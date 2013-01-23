@@ -23,8 +23,9 @@ Ext.define('Genesis.view.RedeemBase',
    },
    _createView : function(store, renderStore, activeItemIndex)
    {
-      var me = this;
+      var me = this, itemHeight = 1 + Genesis.constants.defaultIconSize() + 2 * Genesis.fn.calcPx(0.65, 1);
 
+      console.debug("itemHeight=" + itemHeight);
       me.setPreRender([
       // ------------------------------------------------------------------------
       // Redemptions
@@ -35,7 +36,7 @@ Ext.define('Genesis.view.RedeemBase',
          refreshHeightOnUpdate : false,
          variableHeights : false,
          //deferEmptyText : false,
-         itemHeight : 1 + Genesis.constants.defaultIconSize() + 2*Genesis.fn.calcPx(0.65, 1),
+         itemHeight : itemHeight,
          ui : 'bottom-round',
          store : store,
          cls : me.getListCls() + ' separator_pad',

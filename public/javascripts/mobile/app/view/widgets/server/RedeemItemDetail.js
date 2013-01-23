@@ -108,7 +108,7 @@ Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
             xtype : 'calculator',
             tag : 'tagId',
             title : 'Enter TAG ID',
-            placeHolder : '123456789',
+            placeHolder : '12345678',
             bottomButtons : [
             {
                tag : 'redeemTagId',

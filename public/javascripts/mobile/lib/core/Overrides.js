@@ -40,7 +40,7 @@ Genesis.constants =
    {
       var ratio = 1.14;
 
-      if (merchantMode && Ext.os.is('Tablet'))
+      if (Ext.os.is('Tablet'))
       {
          ratio = 2 * ratio;
       }
@@ -80,15 +80,15 @@ Genesis.constants =
       else
       if (Ext.os.is('Android'))
       {
-         this._iconSize = 48 * 1.2;
-         if ((window.devicePixelRatio) == 1 || (window.devicePixelRatio >= 2))
+         if ((window.devicePixelRatio == 1) || (window.devicePixelRatio >= 2))
          {
+            this._iconSize = 48 * ((Ext.os.is('Tablet')) ? 3.0 : 1.2);
             this._iconPath = '/android/mxhdpi';
             this._thumbnailAttribPrefix = 'thumbnail_android_mxhdpi_';
          }
          else
          {
-            this._iconSize = 36 * 1.5;
+            this._iconSize = 36 * ((Ext.os.is('Tablet')) ? 3.0 : 1.5);
             this._iconPath = '/android/lhdpi';
             this._thumbnailAttribPrefix = 'thumbnail_android_lhdpi_';
          }
@@ -101,11 +101,7 @@ Genesis.constants =
       }
       this._iconPath = this.themeName + this._iconPath;
 
-      if (merchantMode && Ext.os.is('Tablet'))
-      {
-         this._iconSize = 2 * this._iconSize;
-         // On tablets, we need to magnify the content!
-      }
+      console.debug("IconSize = " + this._iconSize + "px");
    },
    addCRLF : function()
    {

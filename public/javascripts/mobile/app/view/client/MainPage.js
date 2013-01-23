@@ -121,15 +121,26 @@ Ext.define('Genesis.view.client.MainPage',
          }
       }
       else
-      if (Ext.os.is('Android') && (window.screen.height > 480))
+      if (Ext.os.is('Android'))
       {
-         if (window.screen.height <= 568)
+         console.debug("Screen Height[" + window.innerHeight + "], Width[" + window.innerWidth + "]");
+         if (!Ext.os.is('Tablet'))
          {
-            me.setItemPerPage(8);
+            if (window.innerHeight <= 568)
+            {
+               me.setItemPerPage(8);
+            }
+            else
+            {
+               me.setItemPerPage(10);
+            }
          }
          else
          {
-            me.setItemPerPage(10);
+            if (window.innerHeight > 1024)
+            {
+               me.setItemPerPage(8);
+            }
          }
       }
 
