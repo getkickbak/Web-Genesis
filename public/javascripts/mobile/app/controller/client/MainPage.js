@@ -273,14 +273,9 @@ Ext.define('Genesis.controller.client.MainPage',
    // --------------------------------------------------------------------------
    onLocationUpdate : function(position)
    {
-      var me = this;
-      var viewport = me.getViewPortCntlr();
-      var latitude_1 = position.coords.getLatitude();
-      var longitude_1 = position.coords.getLongitude();
-      var db = Genesis.db.getLocalDB();
-      var venue = Ext.create('Genesis.model.Venue', db['last_check_in'].venue);
-      var latitude_2 = venue.get('latitude');
-      var longitude_2 = venue.get('longitude');
+      var me = this, viewport = me.getViewPortCntlr(), db = Genesis.db.getLocalDB(), venue = Ext.create('Genesis.model.Venue', db['last_check_in'].venue);
+      var latitude_1 = position.coords.getLatitude(), longitude_1 = position.coords.getLongitude();
+      var latitude_2 = venue.get('latitude'), longitude_2 = venue.get('longitude');
 
       var distance = 6371000 * Math.acos(Math.cos(Math.radians(latitude_1)) * Math.cos(Math.radians(latitude_2)) * Math.cos(Math.radians(longitude_2) - Math.radians(longitude_1)) + Math.sin(Math.radians(latitude_1)) * Math.sin(Math.radians(latitude_2)));
 
@@ -289,10 +284,8 @@ Ext.define('Genesis.controller.client.MainPage',
       //
       if (distance <= Genesis.constants.minDistance)
       {
-         var app = me.getApplication();
-         var controller = app.getController('client.Checkins');
-         var customer = Ext.StoreMgr.get('CustomerStore').getById(db['last_check_in'].customerId);
-         var metaData = db['last_check_in'].metaData;
+         var app = me.getApplication(), controller = app.getController('client.Checkins');
+         var customer = Ext.StoreMgr.get('CustomerStore').getById(db['last_check_in'].customerId), metaData = db['last_check_in'].metaData;
 
          console.log("Restoring Previous Venue Location ...");
          controller.fireEvent('setupCheckinInfo', 'explore', venue, customer, metaData)
