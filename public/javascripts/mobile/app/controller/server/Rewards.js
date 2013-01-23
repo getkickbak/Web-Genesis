@@ -433,7 +433,7 @@ Ext.define('Genesis.controller.server.Rewards',
       var me = this, viewport = me.getViewPortCntlr();
       var tagIdField = me.getTagId(), tagId = tagIdField.getValue(), tagIdFieldLength = tagId.length;
 
-      if (tagIdFieldLength == me.tagIdMaxLength)
+      //if (tagIdFieldLength <= me.tagIdMaxLength)
       {
          me.self.playSoundFile(viewport.sound_files['nfcEnd']);
          me.onEarnPtsTap(null);
@@ -459,16 +459,18 @@ Ext.define('Genesis.controller.server.Rewards',
             }
          });
       }
+      /*
       else
       {
          me.self.playSoundFile(viewport.sound_files['nfcError']);
          Ext.device.Notification.show(
          {
             title : 'TAG ID',
-            message : me.invalidTagIdFormatMsg,
+            message : me.invalidTagIdFormatMsg(me.tagIdMaxLength),
             buttons : ['Dismiss']
          });
       }
+      */
    },
    // --------------------------------------------------------------------------
    // Misc Event Funcs

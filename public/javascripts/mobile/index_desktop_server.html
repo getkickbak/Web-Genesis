@@ -2,30 +2,13 @@
 <html>
    <head>
       <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-      <meta name="apple-mobile-web-app-capable" content="yes" />
       <!-- Default Fontsize = 11px
-      iPad @132dpi = 100% - iPhone @163dpi = 114% - iPhone Retina @326dpi = 228%
       -->
-      <!-- iPad/iPhone specific css below, add after your main css >
-      <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />
-      <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />
-      -->
-      <!--
-      <link rel="apple-touch-startup-image" media="screen and (resolution: 326dpi)" href="resources/img/startup_640.jpg" />
-      <link rel="apple-touch-startup-image" media="screen and (resolution: 163dpi)" href="resources/img/startup.jpg" />
-      <link rel="apple-touch-icon-precomposed" href="resouces/img/icon_57.png">
-      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="resources/img/icon_72.png"/>
-      <link rel="apple-touch-icon-precomposed" sizes="114x114" href="resources/img/icon_114.png"/>
-      -->
-      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <title>KickBak</title>
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:271px) and (-webkit-max-device-pixel-ratio: .75)" href="resources/css/android-tablet-lhdpi.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:641px) and (-webkit-max-device-pixel-ratio: 1.0)" href="resources/css/android-tablet-mxhdpi.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:541px) and (-webkit-max-device-pixel-ratio: 1.5)" href="resources/css/android-tablet-lhdpi.css">
-      <link rel="stylesheet" type="text/css" media="only screen and (min-width:1281px) and (-webkit-min-device-pixel-ratio: 2.0)" href="resources/css/android-tablet-mxhdpi.css">
+      <link rel="stylesheet" type="text/css" href="resources/css/android-tablet-lhdpi.css">
       <!--
-      <link rel="stylesheet" href="resources/css/iphone.css" type="text/css">
+      <link rel="stylesheet" type="text/css" href="resources/css/android-phone-lhdpi.css">
       -->
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
       directory and include it here -->
@@ -38,7 +21,7 @@
       <!--
       Phone Gap Libs
       -->
-      <script type="text/javascript" src="lib/cordova-2.3.0.ios.js"></script>
+      <script type="text/javascript" src="lib/cordova-2.3.0.android.js"></script>
       <script type="text/javascript">
          var backBtnCallbackListFn = [];
          var phoneGapAvailable = false;

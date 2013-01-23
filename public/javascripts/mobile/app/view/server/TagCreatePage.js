@@ -28,7 +28,7 @@ Ext.define('Genesis.view.server.TagCreatePage',
          xtype : 'calculator',
          tag : 'createTagId',
          title : 'Enter TAG ID',
-         placeHolder : '123456789',
+         placeHolder : '12345678',
          bottomButtons : [
          {
             tag : 'createTagId',
