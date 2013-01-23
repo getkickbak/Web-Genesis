@@ -310,7 +310,8 @@ namespace :db do
       DataMapper.repository(:default).adapter.execute(
           "UPDATE merchants SET photo = ?, alt_photo = ? WHERE id = ?", filename, filename, merchant.id
       )
-      RewardModel.create(merchant,
+      type = RewardModelType.value_to_type["amount_spend"]
+      RewardModel.create(merchant, type,
       {
         :signup_amount => 10.00,
         :signup_points => 10.00 / 10 * 100,
@@ -576,6 +577,7 @@ namespace :db do
       10.times do |i|
         promotion = Promotion.create(merchant, 
         {
+          :subject => "Hello",
           :message => "This is a test #{i}",
           :start_date => now.to_date.to_s,
           :end_date => now.to_date.to_s

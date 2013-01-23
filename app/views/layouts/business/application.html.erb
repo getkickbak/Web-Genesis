@@ -71,13 +71,13 @@
                         <!---->
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                           <li><a href="/account">Settings</a></li>
+                           <li><a href="<%= account_path %>">Basic Info</a></li>
+                           <li><a href="<%= account_password_path %>">Update Password</a></li>
                            <% if session[:is_admin] %>
-                           <li class="divider"></li>
-                           <li><a href="/billings">Billings</a></li>
+                           <li><a href="<%= billings_path %>">Billings</a></li>
                            <% end %>
                         </ul></li>
-                     <li class=""><a href="/sign_out">Sign Out</a></li>
+                     <li class=""><a href="<%= destroy_merchant_session_path %>">Sign Out</a></li>
                      <% end %>
                   </ul>
                </div>
@@ -91,12 +91,12 @@
             <div class="container">
                <ul class="mainnav">
                   <% if current_merchant.status == :active %>
-                  <li><a href="/dashboard"> <i class="icon-dashboard"></i> <span>Dashboard</span> </a></li>
+                  <li><a href="<%= dashboard_path %>"> <i class="icon-dashboard"></i> <span>Dashboard</span> </a></li>
                   <!--<% if session[:is_admin] %><li><a href="/marketing"> <i class="icon-rss"></i> <span>Marketing</span> </a></li><% end %>-->
-                  <li><a href="/analytics" class="dropdown-toggle"> <i class="icon-th-large"></i> <span>Analytics</span> </a></li>
-                  <li><a href="/customer_rewards"> <i class="icon-gift"></i> <span>Rewards</span> </a></li>
-                  <li><a href="/challenges"> <i class="icon-trophy"></i> <span>Challenges</span> </a></li>
-                  <li><a href="/venues"> <i class="icon-map-marker"></i> <span>Venues</span> </a></li>
+                  <li><a href="<%= analytics_path %>" class="dropdown-toggle"> <i class="icon-th-large"></i> <span>Analytics</span> </a></li>
+                  <li><a href="<%= customer_rewards_path %>"> <i class="icon-gift"></i> <span>Rewards</span> </a></li>
+                  <li><a href="<%= challenges_path %>"> <i class="icon-trophy"></i> <span>Challenges</span> </a></li>
+                  <li><a href="<%= venues_path %>"> <i class="icon-map-marker"></i> <span>Venues</span> </a></li>
                   <% end %>
                </ul>
             </div>

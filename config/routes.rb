@@ -49,6 +49,8 @@ Genesis::Application.routes.draw do
       match "/account" => 'merchants#show', :as => :account
       match "/account/edit" => 'merchants#edit', :as => :edit_account
       match "/account/update" => 'merchants#update', :as => :update_account
+      match "/account/password" => 'merchants#password', :as => :account_password
+      match "/account/password/update" => 'merchants#update_password', :as => :update_account_password
       match "/billings" => 'credit_cards#index', :as => :credit_cards
       match "/billings/create" => 'credit_cards#create', :via => :post, :as => :create_credit_card
       match "/billings/update" => 'credit_cards#update', :as => :update_credit_card
@@ -91,6 +93,8 @@ Genesis::Application.routes.draw do
       match "/account" => 'account#show', :as => :account
       match "/account/edit" => 'account#edit', :as => :edit_account
       match "/account/update" => 'account#update', :as => :update_account
+      match "/account/password" => 'account#password', :as => :account_password
+      match "/account/password/update" => 'account#update_password', :as => :update_account_password
 
       constraints CanAccessResque do
         mount Resque::Server, at: '/resque'
@@ -181,6 +185,8 @@ Genesis::Application.routes.draw do
     match "/account" => 'users#show', :as => :account
     match "/account/edit" => 'users#edit', :as => :edit_account
     match "/account/update" => 'users#update', :as => :update_account
+    match "/account/password" => 'users#password', :as => :account_password
+    match "/account/password/update" => 'users#update_password', :as => :update_account_password
     match "/account/subscriptions" => 'users#subscriptions', :as => :subscriptions
     match "/account/subscriptions/update_email_notif" => 'users#update_email_notif', :via => :post, :as => :update_email_notif
     match "/account/facebook_settings" => 'users#facebook_settings', :as => :facebook_settings
@@ -193,7 +199,7 @@ Genesis::Application.routes.draw do
     match "/contact_us/create" => 'pages#contact_us_create', :via => :post, :as => :create_contact
     #match "/faq" => 'pages#faq'
     match "/add_business" => 'pages#add_business'
-    match "/add_business/create" => 'pages#add_business_create', :via => :post, :as => :create_merchant_contact
+    match "/add_business/create" => 'pages#add_business_create', :via => :post, :as => :create_add_merchant_contact
     match "/d", :to => 'pages#index'
     match "/download", :to => 'pages#index'
     

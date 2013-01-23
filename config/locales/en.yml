@@ -260,6 +260,7 @@ en:
       staffs:
         create_success: "Staff was successfully created."
         update_success: "Staff was successfully updated."
+        update_password_success: "Password was successfully updated."
       users:   
         create_success: "Account was successfully created."
         update_success: "Account was successfully updated."  
@@ -291,6 +292,7 @@ en:
         min_expiry_date: "Expiry date must be greater than or equal to today."
       merchants:
         update_success: "Account was successfully updated."
+        update_password_success: "Password was successfully updated."
         update_photo_success: "Account photo was successfully updated."
         create_sign_up_code_success: "Sign up code was successfully created."
         create_sign_up_code_failure: "Failed to create sign up code."
@@ -333,6 +335,7 @@ en:
       tag_already_in_use_failure: "Key tag is already in use."
       register_tag_success: "Key tag was successfully activated."
       update_success: "Account was successfully updated."
+      update_password_success: "Password was successfully updated."
   facebook_post:
       message:
         redeem_reward: "Got a %s from %s just now!"

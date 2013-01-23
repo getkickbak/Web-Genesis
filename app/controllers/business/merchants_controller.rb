@@ -6,7 +6,7 @@ module Business
     
     def show
       @merchant = current_merchant
-      authorize! :read, @merchant  
+      authorize! :update, @merchant  
       
       respond_to do |format|
         format.html # index.html.erb
@@ -16,7 +16,7 @@ module Business
     
     def edit
       @merchant = current_merchant
-      authorize! :read, @merchant
+      authorize! :update, @merchant
     end
     
     def update
@@ -30,7 +30,6 @@ module Business
           params[:merchant][:will_terminate] = @merchant.will_terminate
           params[:merchant][:custom_badges] = @merchant.custom_badges
           @merchant.update_all(@merchant.type, @merchant.visit_frequency, params[:merchant])
-          sign_in(current_merchant, :bypass => true)
           respond_to do |format|
             format.html { redirect_to({:action => "show"}, {:notice => t("business.merchants.update_success")}) }
           #format.xml  { head :ok }
@@ -46,9 +45,37 @@ module Business
       end    
     end
     
+    def password  
+      @merchant = current_merchant
+      authorize! :update, @merchant
+    end
+    
+    def update_password
+      @merchant = current_merchant
+      authorize! :update, @merchant
+
+      begin
+        Merchant.transaction do
+          @merchant.update_password(params[:merchant])
+          sign_in(current_merchant, :bypass => true)
+          respond_to do |format|
+            format.html { redirect_to({:action => "password"}, {:notice => t("business.merchants.update_password_success")}) }
+          #format.xml  { head :ok }
+          end
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @merchant = e.resource
+        respond_to do |format|
+          format.html { render :action => "password" }
+          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+        end
+      end
+    end
+    
     def photo
       @merchant = current_merchant  
-      authorize! :read, @merchant  
+      authorize! :update, @merchant  
       
       respond_to do |format|
         format.html # index.html.erb

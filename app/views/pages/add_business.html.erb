@@ -39,7 +39,7 @@
          <img class="createSlogan" src="http://files.getkickbak.com/v1/create.png"/>
       </div>
       <div class="span8 createForm">
-         <%= simple_form_for @merchant_contact, :url => create_merchant_contact_path do |f| %>
+         <%= simple_form_for @merchant_contact, :url => create_add_merchant_contact_path do |f| %>
          <%= f.input :name, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
          <%= f.input :email, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>
          <%= f.input :business_name, :input_html => { :style => 'width:260px;' }, :wrapper_html => { :class => 'span_field' } %>

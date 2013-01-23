@@ -3,7 +3,7 @@ class UsersController < ApplicationController
   #load_and_authorize_resource
   def show
     @user = current_user
-    authorize! :read, @user
+    authorize! :update, @user
 
     respond_to do |format|
       format.html # show.html.erb
@@ -25,7 +25,6 @@ class UsersController < ApplicationController
         params[:user][:role] = @user.role
         params[:user][:status] = @user.status
         @user.update_all(params[:user])
-        sign_in(current_user, :bypass => true)
         respond_to do |format|
           format.html { redirect_to({:action => "show"}, {:notice => t("users.update_success")}) }
         end
@@ -39,6 +38,32 @@ class UsersController < ApplicationController
     end
   end
 
+  def password
+    @user = current_user
+    authorize! :update, @user  
+  end
+  
+  def update_password
+    @user = current_user
+    authorize! :update, @user
+
+    User.transaction do
+      begin
+        @user.update_password(params[:user])
+        sign_in(current_user, :bypass => true)
+        respond_to do |format|
+          format.html { redirect_to({:action => "password"}, {:notice => t("users.update_password_success")}) }
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @user = e.resource
+        respond_to do |format|
+          format.html { render :action => "password" }
+        end
+      end
+    end
+  end
+  
   def facebook_settings
     @user = current_user
     authorize! :read, @user
@@ -68,8 +93,8 @@ class UsersController < ApplicationController
               :gender => params[:gender],
               :birthday => params[:birthday]
             }
-          @user.profile.update(profile_info)
-          @user.save
+            @user.profile.update(profile_info)
+            @user.save
           end
           respond_to do |format|
           #format.xml  { head :ok }
@@ -94,7 +119,7 @@ class UsersController < ApplicationController
 
   def subscriptions
     @user = current_user
-    authorize! :read, @user
+    authorize! :update, @user
 
     User.transaction do
       begin
@@ -122,7 +147,7 @@ class UsersController < ApplicationController
         @user.save
         respond_to do |format|
         #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => true, :message => "Kewl" } }
+          format.json { render :json => { :success => true } }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)

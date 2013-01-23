@@ -71,10 +71,11 @@
                         <!---->
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                           <li><a href="/account">Settings</a></li>
+                           <li><a href="<%= account_path %>">Basic Info</a></li>
+                           <li><a href="<%= account_password_path %>">Update Password</a></li>
                         </ul>
                      </li>
-                     <li class=""><a href="/sign_out">Sign Out</a></li>
+                     <li class=""><a href="<%= destroy_staff_session_path %>">Sign Out</a></li>
                      <% end %>
                   </ul>
                </div>
@@ -87,12 +88,12 @@
          <div class="subnavbar-inner">
             <div class="container">
                <ul class="mainnav">
-                  <li><a href="/marketing"><i class="icon-rss"></i><span>Marketing</span></a></li>
-                  <li><a href="/merchants"><i class="icon-money"></i><span>Merchants</span></a></li>
+                  <li><a href="<%= marketing_path %>"><i class="icon-rss"></i><span>Marketing</span></a></li>
+                  <li><a href="<%= merchants_path %>"><i class="icon-money"></i><span>Merchants</span></a></li>
                   <% if current_staff.role == 'admin' || current_staff.role == 'super_admin' %>
-                  <li><a href="/users"><i class="icon-user"></i><span>Users</span></a></li>
-                  <li><a href="/staffs"><i class="icon-user-md"></i><span>Staffs</span></a></li>
-                  <li><a href="/resque"><i class="icon-reorder"></i> <span>Resque</span></a></li>
+                  <li><a href="<%= users_path %>"><i class="icon-user"></i><span>Users</span></a></li>
+                  <li><a href="<%= staffs_path %>"><i class="icon-user-md"></i><span>Staffs</span></a></li>
+                  <li><a href="<%= resque_server_path %>"><i class="icon-reorder"></i> <span>Resque</span></a></li>
                   <% end %>
                </ul>
             </div>

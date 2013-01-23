@@ -215,9 +215,9 @@ class Merchant
     self.name = merchant_name
     self.description = merchant_info[:description].strip
     self.email = merchant_info[:email].strip
-    if !merchant_info[:current_password].empty? || !merchant_info[:password].empty? || !merchant_info[:password_confirmation].empty?
+    if ((merchant_info.include? :current_password) && !merchant_info[:current_password].empty?) || ((merchant_info.include? :password) && !merchant_info[:password].empty?) || ((merchant_info.include? :password_confirmation) && !merchant_info[:password_confirmation].empty?)
       self.current_password = merchant_info[:current_password].strip
-      if self.current_password && !valid_password?(self.current_password)
+      if !valid_password?(self.current_password)
         errors.add(:current_password, I18n.t("errors.messages.merchant.incorrect_password"))
         raise DataMapper::SaveFailureError.new("", self)
       end
@@ -245,6 +245,23 @@ class Merchant
     save
   end
 
+  def update_password(merchant_info)
+    now = Time.now
+    self.current_password = merchant_info[:current_password].strip
+    if !valid_password?(self.current_password)
+      errors.add(:current_password, I18n.t("errors.messages.merchant.incorrect_password"))
+      raise DataMapper::SaveFailureError.new("", self)
+    end
+    if self.current_password == merchant_info[:password].strip
+      errors.add(:password, I18n.t("errors.messages.merchant.reuse_password"))
+      raise DataMapper::SaveFailureError.new("", self)
+    end
+    self.password = merchant_info[:password].strip
+    self.password_confirmation = merchant_info[:password_confirmation].strip 
+    self.update_ts = now
+    save 
+  end
+  
   def update_photo(merchant_info)
     if merchant_info.nil?
       errors.add(:photo, I18n.t("errors.messages.merchant.no_photo"))

@@ -5,7 +5,7 @@ module Admin
     
     def show
       @staff = current_staff
-      authorize! :read, @staff
+      authorize! :update, @staff
 
       respond_to do |format|
         format.html # show.html.erb
@@ -27,9 +27,8 @@ module Admin
           params[:staff][:role] = @staff.role
           params[:staff][:status] = @staff.status
           @staff.update_all(params[:staff])
-          sign_in(current_staff, :bypass => true)
           respond_to do |format|
-            format.html { redirect_to(account_path, :notice => 'Account successfully updated.') }
+            format.html { redirect_to({:action => "show"}, {:notice => t("admin.staffs.update_success")}) }
           #format.xml  { head :ok }
           #format.json { render :json => { :success => true, :data => @staff, :total => 1 } }
           end
@@ -43,6 +42,36 @@ module Admin
           #format.json { render :json => { :success => false } }
         end
       end    
+    end
+    
+    def password
+      @staff = current_staff
+      authorize! :update, @staff
+    end
+    
+    def update_password
+      @staff = current_staff
+      authorize! :update, @staff
+
+      begin
+        Staff.transaction do
+          @staff.update_password(params[:staff])
+          sign_in(current_staff, :bypass => true)
+          respond_to do |format|
+            format.html { redirect_to({:action => "show"}, {:notice => t("admin.staffs.update_password_success")}) }
+          #format.xml  { head :ok }
+          #format.json { render :json => { :success => true, :data => @staff, :total => 1 } }
+          end
+        end
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        @staff = e.resource
+        respond_to do |format|
+          format.html { render :action => "password" }
+          #format.xml  { render :xml => @staff.errors, :status => :unprocessable_entity }
+          #format.json { render :json => { :success => false } }
+        end
+      end
     end
   end
 end

@@ -26,8 +26,12 @@ class PagesController < ApplicationController
         format.html { redirect_to(:action => 'contact_us', :notice => 'Email was successfully sent.') }
       end
     else
-      respond_to do |format|
-        format.html { render :action => 'contact_us' }
+      if signed_in?
+        render :template => '/pages/alt_contact_us'
+      else
+        respond_to do |format|
+          format.html { render :action => 'contact_us' }
+        end
       end
     end
   end

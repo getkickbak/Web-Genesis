@@ -1,37 +1,27 @@
 <div class="main">
-   <div class="main-inner">
-      <div class="container">
-         <div class="row">
-            <div class="span9">
-               <div class="widget ">
-                  <div class="widget-header">
-                     <i class="icon-user"></i>
-                     <h3>Your Account</h3>
-                  </div>
-                  <!-- /widget-header -->
-                  <div class="widget-content">
-                     <div class="tabbable">
-                        <ul class="nav nav-tabs">
-                           <li class="active"><a href="#settings" data-toggle="tab">Settings</a></li>
-                        </ul>
-                        <br>
-                        <div class="tab-content">
-                           <div class="tab-pane active" id="settings">
-                              <%= render 'form' %>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <!-- /widget-content -->
-               </div>
-               <!-- /widget -->
-            </div>
-         </div>
-         <!-- /row -->
-      </div>
-      <!-- /container -->
-   </div>
-   <!-- /main-inner -->
+	<div class="main-inner">
+		<div class="container">
+			<div class="row">
+				<div class="span3">
+					<div class="widget">
+						<div class="widget-content">
+							<%= render 'menu' %>
+						</div>
+					</div>
+				</div>
+				<div class="span9">
+					<div class="widget">
+						<div class="widget-content">
+							<%= render 'form' %>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- /row -->
+		</div>
+		<!-- /container -->
+	</div>
+	<!-- /main-inner -->
 </div>
 <!-- /main -->
 <!--

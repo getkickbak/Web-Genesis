@@ -189,7 +189,7 @@ class User
     (self.phone = user_info[:phone].strip) if user_info.include? :phone
     if ((user_info.include? :current_password) && !user_info[:current_password].empty?) || ((user_info.include? :password) && !user_info[:password].empty?) || ((user_info.include? :password_confirmation) && !user_info[:password_confirmation].empty?)
       self.current_password = user_info[:current_password].strip
-      if self.current_password && !valid_password?(self.current_password)
+      if !valid_password?(self.current_password)
         errors.add(:current_password, I18n.t("errors.messages.user.incorrect_password"))
         raise DataMapper::SaveFailureError.new("", self)
       end
@@ -217,6 +217,23 @@ class User
       self.profile.birthday = Time.at(birthday_secs).to_date
       self.profile.update_ts = now
     end
+    save
+  end
+  
+  def update_password(user_info)
+    now = Time.now
+    self.current_password = user_info[:current_password].strip
+    if !valid_password?(self.current_password)
+      errors.add(:current_password, I18n.t("errors.messages.user.incorrect_password"))
+      raise DataMapper::SaveFailureError.new("", self)
+    end
+    if self.current_password == user_info[:password].strip
+      errors.add(:password, I18n.t("errors.messages.user.reuse_password"))
+      raise DataMapper::SaveFailureError.new("", self)
+    end
+    self.password = user_info[:password].strip
+    self.password_confirmation = user_info[:password_confirmation].strip
+    self.update_ts = now
     save
   end
   

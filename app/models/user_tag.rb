@@ -22,8 +22,8 @@ class UserTag
     user_tag[:created_ts] = now
     user_tag[:update_ts] = now
     user_tag.save!
-    n1 = (now.to_i / 60) + user_tag.id
-    user_tag.tag_id = "1#{n1}"
+    n1 = (now.to_i / 100) + user_tag.id
+    user_tag.tag_id = "#{n1}"
     user_tag.save
     return user_tag
   end

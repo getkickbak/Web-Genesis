@@ -10,9 +10,6 @@
    <%= f.input :account_last_name, :input_html=>{:class => "input-xxlarge"} %>
    <%= f.input :phone, :input_html=>{:class => "input-medium"} %>
    <%= f.input :website, :input_html=>{:class => "input-xxlarge"}, :required => false %>
-   <%= f.input :current_password, :required => false, :input_html=>{:class => "input-medium"} %>
-   <%= f.input :password, :label => "New password", :required => false, :input_html=>{:class => "input-medium"} %>
-   <%= f.input :password_confirmation, :required => false, :input_html=>{:class => "input-medium"} %>
    <br />
    <div class="form-actions">
       <%= f.button :submit , "Update", :class => 'btn btn-primary' %>

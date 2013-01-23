@@ -71,10 +71,13 @@
                         <!---->
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account <b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                           <li><a href="/account">Settings</a></li>
+                           <li><a href="<%= account_path %>">Basic Info</a></li>
+                           <li><a href="<%= account_password_path %>">Update Password</a></li>
+                           <li><a href="<%= subscriptions_path %>">Email Notifications</a></li>
+                           <li><a href="<%= facebook_settings_path %>">Facebook Settings</a></li>
                         </ul>
                      </li>
-                     <li class=""><a href="/sign_out">Sign Out</a></li>
+                     <li class=""><a href="<%= destroy_user_session_path %>">Sign Out</a></li>
                      <% end %>
                   </ul>
                </div>
@@ -87,9 +90,9 @@
          <div class="subnavbar-inner">
             <div class="container">
                <ul class="mainnav">
-                  <li><a href="/dashboard"> <i class="icon-dashboard"></i> <span>Dashboard</span> </a></li>
+                  <li><a href="<%= dashboard_path %>"> <i class="icon-dashboard"></i> <span>Dashboard</span> </a></li>
                   <% if Customer.count(:user_id => current_user.id, :status => :active) > 0 %>
-                  <li><a href="/customer_rewards"> <i class="icon-gift"></i> <span>Rewards</span> </a></li>
+                  <li><a href="<%= customer_rewards_path %>"> <i class="icon-gift"></i> <span>Rewards</span> </a></li>
                   <% end %>
                </ul>
             </div>
