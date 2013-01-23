@@ -159,17 +159,18 @@ class User
       user.profile[:update_ts] = now
     end
     if provider && uid
-      user.facebook_auth = ThirdPartyAuth.create(
-        user,
-        {
-          :provider => provider,
-          :uid => uid,
-          :token => token || "",
-        }
+      user.facebook_auth = ThirdPartyAuth.new(
+        :provider => provider,
+        :uid => uid,
+        :token => token || ""
       )
+      user.facebook_auth[:created_ts] = now
+      user.facebook_auth[:update_ts] = now
     end
     user.virtual_tag = UserTag.create(:virtual)
-    user.subscription = Subscription.create(user)
+    user.subscription = Subscription.new
+    user.subscription[:created_ts] = now
+    user.subscription[:update_ts] = now
     user.save
     return user 
   end
@@ -239,7 +240,8 @@ class User
   
   def update_facebook_auth(facebook_auth_info)
     if self.facebook_auth.nil?
-      self.facebook_auth = ThirdPartyAuth.create(self, facebook_auth_info)
+      ThirdPartyAuth.create(self, facebook_auth_info)
+      return true
     end
     self.facebook_auth.provider = facebook_auth_info[:provider]
     self.facebook_auth.uid = facebook_auth_info[:uid]
@@ -249,7 +251,8 @@ class User
     
   def update_subscription(subscription_info)
     if self.subscription.nil?
-      self.subscription = Subscription.create(self)
+      Subscription.create(self)
+      return true
     end
     self.subscription.email_notif = subscription_info[:email_notif] if subscription_info[:email_notif]
     save
