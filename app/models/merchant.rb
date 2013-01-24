@@ -385,8 +385,8 @@ class Merchant
   
   def validate_phone
     self.phone.gsub!(/\-/, "")
-    if not self.phone.match(/^[\d]+$/)
-      return [false, I18n.t('errors.messages.phone_format', :attribute => I18n.t('activemodel.attributes.contact.phone'))]
+    if !self.phone.match(/^[\d]+$/) || self.phone.length != 10
+      return [false, I18n.t('errors.messages.phone_format', :attribute => I18n.t('activemodel.attributes.contact.phone')) % [10]]
     end
     return true
   end

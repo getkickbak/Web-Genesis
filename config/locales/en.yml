@@ -15,7 +15,7 @@ en:
       messages:
         blank: "%{attribute} is required"
         email_format: "%{attribute} is not valid"
-        phone_format: "%{attribute} is not valid (digits only)"
+        phone_format: "%{attribute} must be %s digits"
         not_a_number: "%{attribute} is not a number"
         not_an_integer: "%{attribute} must be an integer"
         not_valid: "is not valid"

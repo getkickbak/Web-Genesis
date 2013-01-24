@@ -1,2 +1,6 @@
+<%= f.input :address %>
+<%= f.input :city %>
+<%= f.input :state %>
+<%= f.input :zipcode %>
 <%= f.input :gender, :required => false, :collection => [["", 'u'], ["Male", 'm'], ["Female", 'f']], :include_blank => false, :input_html => {:class=>"input-medium"} %>
 <%= f.input :birthday, :as => :date, :required => false, :use_short_month => true, :start_year => Date.today.year - 90, :end_year => Date.today.year - 12, :order => [:month, :day, :year], :input_html => {:class=>"input-small"} %>

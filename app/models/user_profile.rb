@@ -4,6 +4,11 @@ class UserProfile
   include DataMapper::Resource
   
   property :id, Serial
+  property :address, String, :default => ""
+  property :city, String, :default => ""
+  property :state, String, :required => true, :default => ""
+  property :zipcode, String, :required => true, :default => ""
+  property :country, String, :required => true, :default => ""
   property :gender, Enum[:m, :f, :u], :default => :u
   property :birthday, Date, :default => ::Constant::MIN_DATE
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
@@ -12,7 +17,7 @@ class UserProfile
   #property :deleted, ParanoidBoolean, :default => false
   
   attr_accessor :birthday_str
-  attr_accessible :gender, :birthday
+  attr_accessible :address, :city, :state, :zipcode, :country, :gender, :birthday
   
   belongs_to :user
   

@@ -211,7 +211,12 @@ class User
       date_str = "#{user_info[:user_profile]['birthday(1i)']}-#{user_info[:user_profile]['birthday(2i)']}-#{user_info[:user_profile]['birthday(3i)']}"
       self.profile.birthday_str = date_str
       self.profile.update_ts = now
-    end  
+    end 
+    (self.profile.address = user_info[:address]) if user_info.include? :address
+    (self.profile.city = user_info[:city]) if user_info.include? :city
+    (self.profile.state = user_info[:state]) if user_info.include? :state
+    (self.profile.zipcode = user_info[:zipcode]) if user_info.include? :zipcode   
+    (self.profile.country = user_info[:country]) if user_info.include? :country
     (self.profile.gender = user_info[:gender]) if user_info.include? :gender
     if user_info.include? :birthday && user_info[:birthday]
       birthday_secs = user_info[:birthday]/1000
@@ -312,11 +317,7 @@ class User
   def validate_tag_id
     if self.tag_id
       return [false, I18n.t('users.invalid_tag')] if (user_tag = UserTag.first(:tag_id => self.tag_id)).nil?
-      tag_id = user_tag.id
-      user_to_tag = UserToTag.first(:user_tag_id => tag_id)
-      if user_to_tag.nil? || user_to_tag.user_tag.status != :pending
-        return [false, I18n.t('users.invalid_tag')]        
-      end    
+      return [false, I18n.t('users.invalid_tag')] if user_tag.status != :pending   
     end
     return true
   end
@@ -324,8 +325,8 @@ class User
   def validate_phone
     if not self.phone.empty?
       self.phone.gsub!(/\-/, "")
-      if not self.phone.match(/^[\d]+$/)
-        return [false, I18n.t('errors.messages.phone_format', :attribute => I18n.t('activemodel.attributes.contact.phone'))]
+      if !self.phone.match(/^[\d]+$/) || self.phone.length != 10
+        return [false, I18n.t('errors.messages.phone_format', :attribute => I18n.t('activemodel.attributes.contact.phone')) % [10]]  
       end
     end
     return true

@@ -1,11 +1,10 @@
 $(function(){
     $("#email_notif").click(function() {
-        $.ajax({
-        	type: 'POST',
-            url: "/account/subscriptions/update_email_notif",
-            dataType: 'json',
-            data: "value="+this.checked, 
-            success: function() { alert('Bye') }
+    	Genesis.ajax(true, "/update_email_notif", 'POST', "value="+this.checked, 'json', function(response)
+        {
+         	if(!response.success) {
+               Genesis.showErrMsg(response.message);
+            }
         });
     });
 });
