@@ -1,4 +1,5 @@
 <% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/pages/subscriptions.css"/>
 <% end %>
 <% content_for :script do %>
 <script type="text/javascript">
@@ -34,14 +35,17 @@
 					<div class="widget">
 						<div class="widget-content">
 							<h3>Email Notifications</h3>
-							<table>
-								<tr>
-									<td> 
-										<%= check_box_tag 'email_notif', "", !current_user.subscription.email_notif %> 
-									</td>
-									<td> Unsubscribe from all emails </td>
-								</tr>
-							</table>
+							<div style="margin:20px 0 10px 0;">
+								<table id="email_notifications">
+									<th align="left" colspan="2">
+										<h5>Merchant Emails</h5>
+									</th>
+									<tr>
+										<td> <%= check_box_tag 'email_notif', "", !current_user.subscription.email_notif %> </td>
+										<td> Unsubscribe from all emails </td>
+									</tr>
+								</table>
+							</div>
 						</div>
 					</div>
 				</div>
