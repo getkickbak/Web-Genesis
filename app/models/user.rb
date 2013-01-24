@@ -107,6 +107,7 @@ class User
     end  
     
     validate_user = false
+    user_tag = nil
     if tag_id
       user_tag = UserTag.first(:tag_id => tag_id)
       if user_tag.nil?
@@ -167,7 +168,9 @@ class User
       user.facebook_auth[:created_ts] = now
       user.facebook_auth[:update_ts] = now
     end
-    user.virtual_tag = UserTag.create(:virtual)
+    if user.virtual_tag.nil?
+      user.virtual_tag = UserTag.create(:virtual)
+    end
     user.subscription = Subscription.new
     user.subscription[:created_ts] = now
     user.subscription[:update_ts] = now
@@ -317,7 +320,7 @@ class User
   def validate_tag_id
     if self.tag_id
       return [false, I18n.t('users.invalid_tag')] if (user_tag = UserTag.first(:tag_id => self.tag_id)).nil?
-      return [false, I18n.t('users.invalid_tag')] if user_tag.status != :pending   
+      return [false, I18n.t('users.invalid_tag')] if user_tag.status != :pending
     end
     return true
   end

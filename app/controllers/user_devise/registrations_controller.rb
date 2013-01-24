@@ -17,6 +17,8 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
           params[:user][:birthday] = Date.strptime(data["birthday"], '%m/%d/%Y') if data["birthday"]
         end
         resource = User.create(params[:user])
+        user_tag = UserTag.first(:tag_id => params[:user][:tag_id])
+        resource.register_tag(user_tag)
         if resource.active_for_authentication?
           set_flash_message :notice, :signed_up if is_navigational_format?
           sign_in(resource_name, resource)
