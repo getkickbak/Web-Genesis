@@ -151,7 +151,8 @@
 // **************************************************************************
 Genesis.fb =
 {
-   fbScope : ['email', 'user_birthday', 'publish_stream', 'read_friendlists', 'publish_actions', 'offline_access'],
+   //fbScope : ['email', 'user_birthday', 'publish_stream', 'read_friendlists', 'publish_actions', 'offline_access'],
+   fbScope : ['email', 'user_birthday', 'read_friendlists', 'publish_actions'],
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
    fbConnectRequestMsg : 'Would you like to update your Facebook Timeline?',
    fbConnectReconnectMsg : 'Please confirm to Reconnect to Facebook',
@@ -283,11 +284,13 @@ Genesis.fb =
          var fbConnect = function()
          {
             Ext.Viewport.setMasked(null);
+            /*
             Ext.Viewport.setMasked(
             {
                xtype : 'loadmask',
                message : me.connectingToFBMsg
             });
+            */
             FB.login(
             {
                permissions : me.fbScope,
@@ -363,6 +366,12 @@ Genesis.fb =
                }
             });
          }
+         else if (!res || res.cancelled || me.cb['iter'] >= 3)
+         {
+            Ext.Viewport.setMasked(null);
+            me.cb['callback'](null, null);
+            delete me.cb;
+         }
          else
          if (me.cb['iter'] < 3)
          {
@@ -375,12 +384,6 @@ Genesis.fb =
                   appId : "" + _appId
                }, Ext.bind(me.facebook_loginCallback, me));
             }, 2 * me.cb['iter'] * 1000, me);
-         }
-         else
-         {
-            Ext.Viewport.setMasked(null);
-            me.cb['callback'](null, null);
-            delete me.cb;
          }
          return;
       }

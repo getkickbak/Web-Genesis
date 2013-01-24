@@ -87,7 +87,7 @@ Ext.define('Genesis.controller.server.Settings',
       {
       }
    },
-   tagIdLength : 9,
+   tagIdLength : 8,
    writeTagEnabled : true,
    proceedToUpdateLicenseMsg : 'Please confirm to proceed with License Update',
    noLicenseKeyScannedMsg : 'No License Key was found!',
@@ -191,19 +191,25 @@ Ext.define('Genesis.controller.server.Settings',
          else
          {
             me.getViewPortCntlr().setActiveController(me);
-            nfc.addTagDiscoveredListener(me.writeTag, function()
-            {
-               console.log("Listening for NDEF tags");
-            }, function()
-            {
-               console.log("Failed to Listen for NDEF tags");
-            });
+            /*
+             nfc.addTagDiscoveredListener(me.writeTag, function()
+             {
+             console.log("Listening for NDEF tags");
+             }, function()
+             {
+             console.log("Failed to Listen for NDEF tags");
+             });
+             */
 
             Ext.device.Notification.show(
             {
                title : "Create Tag",
                message : me.createTagMsg(),
-               buttons : ['Cancel']
+               buttons : ['Cancel'],
+               callback : function()
+               {
+                  me.getViewPortCntlr().setActiveController(null);
+               }
             });
          }
       }
@@ -224,19 +230,22 @@ Ext.define('Genesis.controller.server.Settings',
       var callback = function()
       {
          me.getViewPortCntlr().setActiveController(null);
-         nfc.removeTagDiscoveredListener(me.writeTag, function()
-         {
-            console.log("Stopped Listening for NDEF tags");
-         }, function()
-         {
-            console.log("Failed to stop Listen for NDEF tags");
-         });
+         /*
+          nfc.removeTagDiscoveredListener(me.writeTag, function()
+          {
+          console.log("Stopped Listening for NDEF tags");
+          }, function()
+          {
+          console.log("Failed to stop Listen for NDEF tags");
+          });
+          */
       };
 
       var payload = Ext.encode(
       {
          'tagID' : tagId
-      }), record = ndef.mimeMediaRecord(mimeType, nfc.stringToBytes(payload));
+      }), //record = ndef.mimeMediaRecord(mimeType, nfc.stringToBytes(payload));
+      record = ndef.textRecord(payload);
 
       console.log("Writing [" + payload + "] to TAG ...");
       nfc.write([record], function()
