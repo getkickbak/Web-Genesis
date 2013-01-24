@@ -17,7 +17,7 @@ class User
   property :name, String, :required => true, :default => ""
   ## Database authenticatable
   property :email, String, :unique_index => true, :required => true, :format => :email_address, :default => ""
-  property :phone, String, :unique_index => true, :default => ""
+  property :phone, String, :unique => true, :unique_index => true, :default => ""
   property :encrypted_password, String, :required => true, :default => ""
   ## Recoverable
   property :reset_password_token, String
@@ -318,7 +318,7 @@ class User
   private
   
   def validate_tag_id
-    if self.tag_id
+    if self.tag_id && self.new?
       return [false, I18n.t('users.invalid_tag')] if (user_tag = UserTag.first(:tag_id => self.tag_id)).nil?
       return [false, I18n.t('users.invalid_tag')] if user_tag.status != :pending
     end

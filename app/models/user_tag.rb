@@ -6,7 +6,7 @@ class UserTag
   Statuses = [:active, :pending, :virtual, :suspended, :deleted]
   
   property :id, Serial
-  property :tag_id, String, :required => true, :default => ""
+  property :tag_id, String, :unique_index => true, :required => true, :default => ""
   property :status, Enum[:active, :pending, :virtual, :suspended, :deleted], :required => true, :default => :pending
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
   property :update_ts, DateTime, :default => ::Constant::MIN_TIME
