@@ -199,9 +199,11 @@ Ext.define('Genesis.controller.server.Viewport',
       }
       if (me._mimeTypeCallback)
       {
-         nfc.removeMimeTypeListener(Genesis.constants.appMimeType, me._mimeTypeCallback, function()
+         nfc.removeNdefListener(me._mimeTypeCallback, function()
+         //nfc.removeMimeTypeListener(Genesis.constants.appMimeType, me._mimeTypeCallback, function()
          {
-            console.log("Removed MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
+            console.log("Removed NDEF Listener for NFC detection ...");
+            //console.log("Removed MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
          });
          delete me._mimeTypeCallback;
       }
@@ -212,12 +214,15 @@ Ext.define('Genesis.controller.server.Viewport',
             console.log("MimeType Message received");
             try
             {
-               var tag = nfcEvent.tag, records = tag.ndefMessage, result = Ext.decode(nfc.bytesToString(records[0].payload)), cntlr = me.getActiveController();
+               var cntlr = me.getActiveController(), tag = nfcEvent.tag, records = tag.ndefMessage;
+               var langCodeLength = records[0].payload[0], text = records[0].payload.slice((1 + langCodeLength), records[0].payload.length);
+               var result = Ext.decode(nfc.bytesToString(text));
 
                //
                // Decrypt Message
                //
                me.printNfcTag(nfcEvent);
+
                if (cntlr)
                {
                   console.log("Received Message [" + Ext.encode(result) + "]");
@@ -234,14 +239,17 @@ Ext.define('Genesis.controller.server.Viewport',
             }
          };
 
-         nfc.addMimeTypeListener(Genesis.constants.appMimeType, me._mimeTypeCallback, function()
+         nfc.addNdefListener(me._mimeTypeCallback, function()
+         //nfc.addMimeTypeListener(Genesis.constants.appMimeType, me._mimeTypeCallback, function()
          {
-            console.log("Listening for tags with mime type " + Genesis.constants.appMimeType);
+            console.log("Listening for tags with NDEF type");
+            //console.log("Listening for tags with mime type " + Genesis.constants.appMimeType);
          }, function()
          {
             console.warn('Failed to register mime type ' + Genesis.constants.appMimeType + ' with NFC');
          });
-         console.log("Added MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
+         console.log("Added NDEF Tags for NFC detection ...");
+         //console.log("Added MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
       }
 
       return controller;
@@ -270,7 +278,7 @@ Ext.define('Genesis.controller.server.Viewport',
    // --------------------------------------------------------------------------
    init : function(app)
    {
-      var me = this;
+      var i, me = this, s_vol_ratio, r_vol_ratio, c = Genesis.constants;
 
       me.callParent(arguments);
 
@@ -292,7 +300,7 @@ Ext.define('Genesis.controller.server.Viewport',
          //['refreshListSound', 'refresh_list_sound', 'FX'], //
          ['beepSound', 'beep.wav', 'FX']];
 
-         for (var i = 0; i < soundList.length; i++)
+         for ( i = 0; i < soundList.length; i++)
          {
             //console.debug("Preloading " + soundList[i][0] + " ...");
             this.loadSoundFile.apply(this, soundList[i]);
@@ -301,7 +309,6 @@ Ext.define('Genesis.controller.server.Viewport',
 
       if (Genesis.fn.isNative())
       {
-         var s_vol_ratio, r_vol_ratio, c = Genesis.constants;
          //
          // Sender/Receiver Volume Settings
          // ===============================

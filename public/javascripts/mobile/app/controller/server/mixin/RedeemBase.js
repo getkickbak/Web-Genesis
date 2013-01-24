@@ -214,12 +214,14 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
                window.plugins.proximityID.stop();
             }
 
-            if (b && (b.toLowerCase() == 'enter tag id'))
-            {
-               Ext.Viewport.setMasked(null);
-               me.onEnterTagIdTap();
-            }
-            else
+            /*
+             if (b && (b.toLowerCase() == 'enter tag id'))
+             {
+             Ext.Viewport.setMasked(null);
+             me.onEnterTagIdTap();
+             }
+             else
+             */
             if (!dismissDialog)
             {
                Ext.Viewport.setMasked(null);
@@ -233,10 +235,12 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
             message : message,
             ignoreOnHide : true,
             buttons : [
-            {
-               text : 'Enter TAG ID',
-               itemId : 'enter tag id'
-            },
+            /*
+             {
+             text : 'Enter TAG ID',
+             itemId : 'enter tag id'
+             },
+             */
             {
                text : 'Cancel',
                itemId : 'cancel'
@@ -325,7 +329,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
    onRedeemItemActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this;
-      
+
       //
       // In Redeem Mode
       //

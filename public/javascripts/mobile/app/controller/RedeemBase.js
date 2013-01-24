@@ -140,7 +140,7 @@ Ext.define('Genesis.controller.RedeemBase',
             {
                Ext.device.Notification.show(
                {
-                  title : 'Oops!',
+                  title : 'Redeem' + me.getTitle(),
                   message : me.needPointsMsg(points - totalPts),
                   buttons : ['Dismiss']
                });

@@ -124,6 +124,7 @@ Ext.define('Genesis.controller.client.MainPage',
          'refreshCSRF' : 'onRefreshCSRF'
       }
    },
+   _loggingIn : false,
    _loggingOut : false,
    _logoutflag : 0,
    creatingAccountMsg : 'Creating Your Account ...',
@@ -357,6 +358,7 @@ Ext.define('Genesis.controller.client.MainPage',
       Ext.StoreMgr.get('VenueStore').removeAll();
       me.persistSyncStores(null, true);
       viewport.setLoggedIn(false);
+      me.loggingIn = false;
 
       //this.getInfoBtn().hide();
       //activeItem.createView();
@@ -380,8 +382,8 @@ Ext.define('Genesis.controller.client.MainPage',
             },
             callback : function(records, operation)
             {
-               Ext.Viewport.setMasked(null);
                me._loggingOut = false;
+               Ext.Viewport.setMasked(null);
                if (operation.wasSuccessful())
                {
                   console.log("Logout Successful!")
@@ -450,10 +452,11 @@ Ext.define('Genesis.controller.client.MainPage',
       //
       // Forced to Login to Facebook
       //
-      if (Ext.Viewport.getMasked() || me._loggingOut)
+      if (Ext.Viewport.getMasked() || me._loggingOut || me._logginIn)
       {
          return;
       }
+      me._loggingIn = true;
       Genesis.db.removeLocalDBAttrib('currFbId');
       Genesis.fb.facebook_onLogin(function(params)
       {
@@ -472,6 +475,7 @@ Ext.define('Genesis.controller.client.MainPage',
             }),
             callback : function(records, operation)
             {
+               me._loggingIn = false;
                //
                // Login Error, let the user login again
                //
@@ -494,12 +498,20 @@ Ext.define('Genesis.controller.client.MainPage',
    },
    onCreateAccountTap : function(b, e, eOpts, eInfo)
    {
-      this.redirectTo('createAccount');
+      var me = this;
+      //if (!me._loggingIn)
+      {
+         me.redirectTo('createAccount');
+      }
    },
    onSignInTap : function(b, e, eOpts, eInfo)
    {
-      //this.resetView();
-      this.redirectTo('signin');
+      var me = this;
+      //if (!me._loggingIn)
+      {
+         //this.resetView();
+         me.redirectTo('signin');
+      }
    },
    // --------------------------------------------------------------------------
    // SignIn and CreateAccount Page
@@ -614,7 +626,7 @@ Ext.define('Genesis.controller.client.MainPage',
       //
       // Forced to Login
       //
-      if (Ext.Viewport.getMasked() || me._loggingOut)
+      if (Ext.Viewport.getMasked() || me._loggingOut || me._loggingIn)
       {
          return;
       }
@@ -655,6 +667,7 @@ Ext.define('Genesis.controller.client.MainPage',
          },
          callback : function(records, operation)
          {
+            me._loggingIn = false;
             //
             // Login Error, redo login
             //
@@ -688,7 +701,7 @@ Ext.define('Genesis.controller.client.MainPage',
          var label = Ext.ComponentQuery.query('field[name='+field.getField()+']')[0].getLabel();
          Ext.device.Notification.show(
          {
-            title : 'Oops',
+            title : 'Sign In',
             message : this.signInFailMsg(label + ' ' + field.getMessage()),
             buttons : ['Dismiss']
          });
@@ -760,7 +773,7 @@ Ext.define('Genesis.controller.client.MainPage',
                   var label = reset.query('field[name=username]')[0].getLabel();
                   Ext.device.Notification.show(
                   {
-                     title : 'Oops',
+                     title : 'Password Reset',
                      message : me.passwdResetFailMsg(label + ' ' + field.getMessage()),
                      buttons : ['Dismiss']
                   });
@@ -845,7 +858,7 @@ Ext.define('Genesis.controller.client.MainPage',
          console.log(message);
          Ext.device.Notification.show(
          {
-            title : 'Oops',
+            title : 'Password Change',
             message : message,
             buttons : ['Dismiss']
          });

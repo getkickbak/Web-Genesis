@@ -57,10 +57,12 @@ Ext.define('Genesis.controller.server.Redemptions',
          {
             activeitemchange : 'onRedeemItemCardContainerActivate'
          },
+         /*
          'serverredeemitemdetailview[tag=redeemReward] container[tag=bottomButtons] button[tag=redeemPtsTag]' :
          {
             tap : 'onEnterTagIdTap'
          },
+         */
          'serverredeemitemdetailview[tag=redeemReward] calculator[tag=tagId] container[tag=dialpad] button' :
          {
             tap : 'onTagIdBtnTap'

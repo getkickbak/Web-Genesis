@@ -42,7 +42,7 @@ Ext.define('Genesis.controller.client.Settings',
                console.log(message);
                Ext.device.Notification.show(
                {
-                  title : 'Oops',
+                  title : 'Account Settings',
                   message : message,
                   buttons : ['Dismiss']
                });

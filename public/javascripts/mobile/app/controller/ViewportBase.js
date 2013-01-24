@@ -174,7 +174,6 @@ Ext.define('Genesis.controller.ViewportBase',
          return rc;
 
       rc = true;
-
       if ((authCode != db['auth_code']) || (csrfCode != db['csrf_code']))
       {
          db['auth_code'] = authCode;
@@ -191,17 +190,11 @@ Ext.define('Genesis.controller.ViewportBase',
          "currFbId [" + db['currFbId'] + "]");
       }
 
-      // No Venue Checked-In from previous session
-      if (!db['last_check_in'])
-      {
-         me.redirectTo('checkin');
-      }
-
       return rc;
    },
    updateMetaDataInfo : function(metaData)
    {
-      var me = this, customer = null, viewport = me.getViewPortCntlr(), cestore = Ext.StoreMgr.get('CheckinExploreStore');
+      var me = this, customer = null, viewport = me.getViewPortCntlr(), db = Genesis.db.getLocalDB(), cestore = Ext.StoreMgr.get('CheckinExploreStore');
       try
       {
          //
@@ -209,6 +202,12 @@ Ext.define('Genesis.controller.ViewportBase',
          //
          if (me.updateAuthCode(metaData))
          {
+            // No Venue Checked-In from previous session
+            if (!db['last_check_in'])
+            {
+               me.redirectTo('checkin');
+            }
+
             return;
          }
 
