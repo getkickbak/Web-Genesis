@@ -9,7 +9,7 @@
 @include sencha-button-ui('blue', darken(saturate(blue, 55%), 10%));
 @include sencha-button-ui('black', darken(saturate(black, 55%), 10%));
 */
-@include sencha-button-ui('fbBlue', desaturate(darken(#3B5998, 10%), 5%));
+@include sencha-button-ui('fbBlue', #5f78ab, 'glossy');
 @include sencha-button-ui('action', $active-color);
 @include sencha-button-ui('cancel', $BlackStart);
 @include sencha-button-ui('blue', lighten($BlueEnd, 15%), 'glossy');

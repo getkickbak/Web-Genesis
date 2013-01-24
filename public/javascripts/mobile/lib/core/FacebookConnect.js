@@ -284,13 +284,18 @@ Genesis.fb =
          var fbConnect = function()
          {
             Ext.Viewport.setMasked(null);
-            /*
             Ext.Viewport.setMasked(
             {
                xtype : 'loadmask',
-               message : me.connectingToFBMsg
+               message : me.connectingToFBMsg,
+               listeners :
+               {
+                  'tap' : function()
+                  {
+                     Ext.Viewport.setMasked(null);
+                  }
+               }
             });
-            */
             FB.login(
             {
                permissions : me.fbScope,
@@ -366,7 +371,8 @@ Genesis.fb =
                }
             });
          }
-         else if (!res || res.cancelled || me.cb['iter'] >= 3)
+         else
+         if (!res || res.cancelled || me.cb['iter'] >= 3)
          {
             Ext.Viewport.setMasked(null);
             me.cb['callback'](null, null);

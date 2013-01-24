@@ -499,13 +499,19 @@ Ext.define('Genesis.controller.client.MainPage',
    onCreateAccountTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      me.redirectTo('createAccount');
+      //if (!me._loggingIn)
+      {
+         me.redirectTo('createAccount');
+      }
    },
    onSignInTap : function(b, e, eOpts, eInfo)
    {
       var me = this;
-      //this.resetView();
-      me.redirectTo('signin');
+      //if (!me._loggingIn)
+      {
+         //this.resetView();
+         me.redirectTo('signin');
+      }
    },
    // --------------------------------------------------------------------------
    // SignIn and CreateAccount Page
