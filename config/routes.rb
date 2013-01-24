@@ -46,8 +46,7 @@ Genesis::Application.routes.draw do
       match "/badges/edit" => 'badges#edit', :as => :edit_badges
       match "/badges/update_badges" => 'badges#update_badges', :as => :update_badges
       match "/badges/create_custom_badges" => 'badges#create_custom_badges', :via => :post, :as => :create_custom_badges
-      match "/account" => 'merchants#show', :as => :account
-      match "/account/edit" => 'merchants#edit', :as => :edit_account
+      match "/account" => 'merchants#edit', :as => :account
       match "/account/update" => 'merchants#update', :as => :update_account
       match "/account/password" => 'merchants#password', :as => :account_password
       match "/account/password/update" => 'merchants#update_password', :as => :update_account_password
@@ -90,8 +89,7 @@ Genesis::Application.routes.draw do
       match "/marketing" => 'marketing#index', :as => :marketing
       match "/marketing/update_poster" => 'marekting#update_poster_image', :as => :update_poster_image
       match "/marketing/update_table_topper" => 'marketing#update_checkin_image', :as => :update_checkin_image
-      match "/account" => 'account#show', :as => :account
-      match "/account/edit" => 'account#edit', :as => :edit_account
+      match "/account" => 'account#edit', :as => :account
       match "/account/update" => 'account#update', :as => :update_account
       match "/account/password" => 'account#password', :as => :account_password
       match "/account/password/update" => 'account#update_password', :as => :update_account_password
@@ -182,8 +180,7 @@ Genesis::Application.routes.draw do
     match "/register_tag" => 'dashboard#register_tag', :via => :post, :as => :register_tag
     match "/deregister_tag" => 'dashboard#deregister_tag', :via => :delete, :as => :deregister_tag
     match "/customer_rewards" => 'customer_rewards#index', :as => :customer_rewards
-    match "/account" => 'users#show', :as => :account
-    match "/account/edit" => 'users#edit', :as => :edit_account
+    match "/account" => 'users#edit', :as => :account
     match "/account/update" => 'users#update', :as => :update_account
     match "/account/password" => 'users#password', :as => :account_password
     match "/account/password/update" => 'users#update_password', :as => :update_account_password

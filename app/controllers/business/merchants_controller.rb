@@ -4,16 +4,6 @@ module Business
     before_filter :check_is_admin, :only => [:photo, :update_photo, :update_alt_photo] 
     #load_and_authorize_resource
     
-    def show
-      @merchant = current_merchant
-      authorize! :update, @merchant  
-      
-      respond_to do |format|
-        format.html # index.html.erb
-      #format.xml  { render :xml => @merchants }
-      end
-    end
-    
     def edit
       @merchant = current_merchant
       authorize! :update, @merchant
@@ -31,7 +21,7 @@ module Business
           params[:merchant][:custom_badges] = @merchant.custom_badges
           @merchant.update_all(@merchant.type, @merchant.visit_frequency, params[:merchant])
           respond_to do |format|
-            format.html { redirect_to({:action => "show"}, {:notice => t("business.merchants.update_success")}) }
+            format.html { redirect_to({:action => "edit"}, {:notice => t("business.merchants.update_success")}) }
           #format.xml  { head :ok }
           end
         end

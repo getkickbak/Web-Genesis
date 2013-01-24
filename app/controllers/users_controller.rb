@@ -1,15 +1,6 @@
 class UsersController < ApplicationController
   before_filter :authenticate_user!
   #load_and_authorize_resource
-  def show
-    @user = current_user
-    authorize! :update, @user
-
-    respond_to do |format|
-      format.html # show.html.erb
-    #format.xml  { render :xml => @user }
-    end
-  end
 
   def edit
     @user = current_user
@@ -26,7 +17,7 @@ class UsersController < ApplicationController
         params[:user][:status] = @user.status
         @user.update_all(params[:user])
         respond_to do |format|
-          format.html { redirect_to({:action => "show"}, {:notice => t("users.update_success")}) }
+          format.html { redirect_to({:action => "edit"}, {:notice => t("users.update_success")}) }
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)

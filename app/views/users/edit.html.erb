@@ -1,3 +1,23 @@
+<% content_for :link do %>
+<% end %>
+<% content_for :script do %>
+<script type="text/javascript">
+	$(document).ready($(function() {
+	var msg=$("#notice").html();
+	if(msg) {
+	Genesis.showWarningMsg(msg,null,true);
+	}
+	}));
+</script>
+<script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+	<p>
+		<%= flash[:notice] %>
+	</p>
+</div>
+<% end %>
 <div class="main">
 	<div class="main-inner">
 		<div class="container">
@@ -12,7 +32,7 @@
 				<div class="span9">
 					<div class="widget">
 						<div class="widget-content">
-							<h3>Edit Basic Info</h3>
+							<h3>Basic Info</h3>
 							<%= render 'form' %>
 						</div>
 					</div>

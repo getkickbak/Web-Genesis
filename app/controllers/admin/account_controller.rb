@@ -3,17 +3,7 @@ module Admin
     before_filter :authenticate_staff!
     #load_and_authorize_resource
     
-    def show
-      @staff = current_staff
-      authorize! :update, @staff
-
-      respond_to do |format|
-        format.html # show.html.erb
-      #format.xml  { render :xml => @staff }
-      end
-    end
-
-    def edit
+    def edit 
       @staff = current_staff
       authorize! :update, @staff
     end
@@ -28,7 +18,7 @@ module Admin
           params[:staff][:status] = @staff.status
           @staff.update_all(params[:staff])
           respond_to do |format|
-            format.html { redirect_to({:action => "show"}, {:notice => t("admin.staffs.update_success")}) }
+            format.html { redirect_to({:action => "edit"}, {:notice => t("admin.account.update_success")}) }
           #format.xml  { head :ok }
           #format.json { render :json => { :success => true, :data => @staff, :total => 1 } }
           end
@@ -58,7 +48,7 @@ module Admin
           @staff.update_password(params[:staff])
           sign_in(current_staff, :bypass => true)
           respond_to do |format|
-            format.html { redirect_to({:action => "show"}, {:notice => t("admin.staffs.update_password_success")}) }
+            format.html { redirect_to({:action => "show"}, {:notice => t("admin.account.update_password_success")}) }
           #format.xml  { head :ok }
           #format.json { render :json => { :success => true, :data => @staff, :total => 1 } }
           end
