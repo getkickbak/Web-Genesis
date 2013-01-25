@@ -55,7 +55,7 @@
 		<div id="page-background">
 			<img src="http://files.getkickbak.com/v1/contentbg.png">
 		</div>
-		<div class="navbar navbar-fixed-top">
+		<div class="navbar navbar-fixed-top" style="margin-bottom: 2.5em;">
 			<div class="navbar-inner">
 				<div class="container">
 					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <!----> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <!----> </a>
@@ -63,6 +63,9 @@
 					<div class="nav-collapse">
 						<ul class="nav pull-right">
 							<% if signed_in? %>
+							<li class="">
+								<a href="/">Home</a>
+							</li>
 							<li class="dropdown">
 								<!---->
 								<a href="#" class="dropdown-toggle" data-toggle="dropdown"><%= current_user.name %> <b class="caret"></b></a>
@@ -90,28 +93,6 @@
 				</div>
 			</div>
 		</div>
-		<!--/navbar-->
-		<div class="subnavbar">
-			<% if signed_in? %>
-			<div class="subnavbar-inner">
-				<div class="container">
-					<ul class="mainnav">
-						<li>
-							<a href="<%= dashboard_path %>"> <i class="icon-dashboard"></i> <span>Dashboard</span> </a>
-						</li>
-						<% if Customer.count(:user_id => current_user.id, :status => :active) > 0 %>
-						<li>
-							<a href="<%= customer_rewards_path %>"> <i class="icon-gift"></i> <span>Rewards</span> </a>
-						</li>
-						<% end %>
-					</ul>
-				</div>
-				<!-- /container -->
-			</div>
-			<!-- /subnavbar-inner -->
-			<% end %>
-		</div>
-		<!-- /subnavbar -->
 		<div name="top" class="container">
 			<div class="alert alert-warning fade hide">
 				<a class="close">x</a>

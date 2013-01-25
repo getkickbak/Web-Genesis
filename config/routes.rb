@@ -159,7 +159,7 @@ Genesis::Application.routes.draw do
         match '/devices/get_encryption_key' => 'devices#get_encryption_key'
       end
     end
-  
+      
     constraints :user_agent => /iPhone/ do
       match "/download" => redirect {|params, req| "http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8" }
       match "/d" => redirect {|params, req| "http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8" }
@@ -177,9 +177,9 @@ Genesis::Application.routes.draw do
     end
     
     match "/dashboard" => 'dashboard#index', :as => :dashboard
+    match "/business/profile/:id" => "venues#show", :as => :business_profile
     match "/register_tag" => 'dashboard#register_tag', :via => :post, :as => :register_tag
     match "/deregister_tag" => 'dashboard#deregister_tag', :via => :delete, :as => :deregister_tag
-    match "/customer_rewards" => 'customer_rewards#index', :as => :customer_rewards
     match "/account" => 'users#edit', :as => :account
     match "/account/update" => 'users#update', :as => :update_account
     match "/account/password" => 'users#password', :as => :account_password

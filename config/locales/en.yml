@@ -170,7 +170,7 @@ en:
       inactive_merchant: "This merchant is not active.\nPlease try a different one."
       inactive_venue: "This venue is not active.\nPlease try a different one."
       inactive_tag: "Sorry, this key tag needs to be registered first."
-      inactive_user: "This user is not active.\nPlease try again."
+      inactive_user: "User account is not active.\nPlease try again."
       invalid_tag: "This key tag is not valid."
       invalid_user: "Problem with this user account.\nPlease contact support."
       invalid_tag_or_phone: "This key tag or phone number is not valid."
