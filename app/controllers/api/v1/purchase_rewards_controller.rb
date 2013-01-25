@@ -238,9 +238,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @current_user = current_user  
         end
         
-        if @current_user.status != :active
+        if @current_user.status != :active || @current_user.status != :pending
           Request.set_status(@request, :failed)
-          logger.error("User: #{@current_user.id} is not active")
+          logger.error("User: #{@current_user.id} is not active or pending")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.inactive_user").split('\n') } }
