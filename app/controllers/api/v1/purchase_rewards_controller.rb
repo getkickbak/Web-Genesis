@@ -238,7 +238,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @current_user = current_user  
         end
         
-        if @current_user.status != :active || @current_user.status != :pending
+        if @current_user.status != :active && @current_user.status != :pending
           Request.set_status(@request, :failed)
           logger.error("User: #{@current_user.id} is not active or pending")
           respond_to do |format|
