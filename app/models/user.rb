@@ -266,9 +266,9 @@ class User
     save
   end
   
-  def register_tag(tag)
+  def register_tag(tag, status = :active)
     if tag.status != :virtual
-      tag.status = :active
+      tag.status = status
       tag.update_ts = Time.now
       tag.save
     end

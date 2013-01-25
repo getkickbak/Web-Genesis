@@ -199,7 +199,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 user_info[:password] = password
                 user_info[:password_confirmation] = password
                 @current_user = User.create(user_info)
-                @current_user.register_tag(tag)
+                @current_user.register_tag(tag, tag.status)
               else
                 if user_to_tag
                   @current_user = User.get(user_to_tag.user_id)
