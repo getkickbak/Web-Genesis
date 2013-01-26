@@ -17,7 +17,7 @@ class User
   property :name, String, :required => true, :default => ""
   ## Database authenticatable
   property :email, String, :unique_index => true, :required => true, :format => :email_address, :default => ""
-  property :phone, String, :unique => true, :unique_index => true, :default => ""
+  property :phone, String, :unique => true, :default => ""
   property :encrypted_password, String, :required => true, :default => ""
   ## Recoverable
   property :reset_password_token, String
