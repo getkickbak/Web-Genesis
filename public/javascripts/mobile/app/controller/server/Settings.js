@@ -120,7 +120,14 @@ Ext.define('Genesis.controller.server.Settings',
          {
             title : 'License Key Updated!',
             message : me.licenseKeySuccessMsg(),
-            buttons : ['OK']
+            buttons : ['Exit App'],
+            callback : function()
+            {
+               //
+               // Exit App, because we can't continue without Console Setup data
+               //
+               navigator.app.exitApp();
+            }
          });
       }, true);
    },

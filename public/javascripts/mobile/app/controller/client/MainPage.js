@@ -582,7 +582,6 @@ Ext.define('Genesis.controller.client.MainPage',
 
          if (response)
          {
-         	params['birthday'] = new Date.parse(response['birthday']).getTime();
             params = Ext.applyIf(params, response);
          }
          Ext.Viewport.setMasked(

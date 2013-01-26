@@ -233,9 +233,9 @@ Ext.define('Genesis.controller.server.Viewport',
             //console.log("Listening for tags with mime type " + Genesis.constants.appMimeType);
          }, function()
          {
-            console.warn('Failed to register mime type ' + Genesis.constants.appMimeType + ' with NFC');
+            console.warn('Failed to register NDEF type with NFC');
          });
-         console.log("Added NDEF Tags for NFC detection ...");
+         //console.log("Added NDEF Tags for NFC detection ...");
          //console.log("Added MimeType[" + Genesis.constants.appMimeType + "] for NFC detection ...");
       }
 

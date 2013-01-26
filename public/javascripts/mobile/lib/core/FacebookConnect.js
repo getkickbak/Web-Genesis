@@ -232,7 +232,7 @@ Genesis.fb =
       {
          name : response.name,
          email : response.email,
-         facebook_email : response.email,
+         //facebook_email : response.email,
          facebook_id : response.id,
          facebook_uid : response.username,
          gender : (response.gender == "male") ? "m" : "f",
