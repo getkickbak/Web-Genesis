@@ -187,16 +187,16 @@ class DashboardController < ApplicationController
     customers_info = Customer.all(:fields => [:id, :merchant_id], :user => current_user, :status => :active, :order => [:update_ts.desc])
     customer_ids = []
     merchant_ids = []
-    merchant_id_to_customer_id = {}
+    customer_id_to_merchant_id = {}
     customers_info.each do |customer_info|
       customer_ids << customer_info.id
       merchant_ids << customer_info.merchant_id
-      merchant_id_to_customer_id[customer_info.merchant_id] = customer_info.id
+      customer_id_to_merchant_id[customer_info.id] = customer_info.merchant_id
     end
     merchants = Merchant.all(:id => merchant_ids)
-    customer_id_to_merchant = {}
+    merchant_id_to_merchant = {}
     merchants.each do |merchant|
-      customer_id_to_merchant[merchant_id_to_customer_id[merchant.id]] = merchant
+      merchant_id_to_merchant[merchant.id] = merchant
     end
     customer_to_badges = CustomerToBadge.all(:fields => [:customer_id, :badge_id], :customer_id => customer_ids)
     badge_ids = []
@@ -217,7 +217,7 @@ class DashboardController < ApplicationController
     end
     @customers = Customer.all(:user_id => current_user.id, :status => :active, :order => [:update_ts.desc]).paginate(:page => params[:page])
     @customers.each do |customer|
-      customer.eager_load_merchant = customer_id_to_merchant[customer.id]
+      customer.eager_load_merchant = merchant_id_to_merchant[customer_id_to_merchant_id[customer.id]]
       badge = badge_id_to_badge[customer_id_to_badge_id[customer.id]]
       customer.eager_load_badge = badge
       customer.eager_load_badge.eager_load_type = BadgeType.id_to_type[badge_id_to_type_id[badge.id]]
