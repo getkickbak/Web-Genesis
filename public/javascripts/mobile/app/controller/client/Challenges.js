@@ -754,7 +754,7 @@ Ext.define('Genesis.controller.client.Challenges',
                customer.set('points', account_info['points']);
                me.persistSyncStores('CustomerStore');
 
-               console.debug("Points Earned = " + metaData2['points'] + ' Pts');
+               console.debug("Points Earned = " + reward_info['points'] + ' Pts');
 
                me.fireEvent('updatemetadata', metaData2);
                me.metaData = null;

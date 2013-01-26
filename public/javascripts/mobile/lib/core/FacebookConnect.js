@@ -151,8 +151,7 @@
 // **************************************************************************
 Genesis.fb =
 {
-   //fbScope : ['email', 'user_birthday', 'publish_stream', 'read_friendlists', 'publish_actions', 'offline_access'],
-   fbScope : ['email', 'user_birthday', 'read_friendlists', 'publish_actions'],
+   fbScope : ['email', 'user_birthday', 'publish_stream', 'read_friendlists', 'publish_actions'],
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
    fbConnectRequestMsg : 'Would you like to update your Facebook Timeline?',
    fbConnectReconnectMsg : 'Please confirm to Reconnect to Facebook',
@@ -233,7 +232,7 @@ Genesis.fb =
       {
          name : response.name,
          email : response.email,
-         facebook_email : response.email,
+         //facebook_email : response.email,
          facebook_id : response.id,
          facebook_uid : response.username,
          gender : (response.gender == "male") ? "m" : "f",

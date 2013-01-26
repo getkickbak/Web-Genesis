@@ -28,14 +28,41 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
          var wsite = venue.get('website') ? venue.get('website').split(/http[s]*:\/\//) : [null];
          var name = venue.get('name'), link = wsite[wsite.length - 1] || site, desc = venue.get('description').trunc(256);
          var message = me.redeemItemEmailMsg(earnprize.get('title'), venue.get('name'));
-
+         var params =
+         {
+         }
          console.log('Posting Redemption to Facebook ...' + '\n' + //
          'Name: ' + name + '\n' + //
          'Caption: ' + link + '\n' + //
          'Description: ' + desc + '\n' + //
          'Message : ' + message + '\n' //
          );
-         FB.requestWithGraphPath('/me/feed',
+         /*,params1 = Ext.urlEncode({
+          og_url : encodeURIComponent(link),
+          og_type : getkickbak:rewards,
+          og_title : 'KICKBAK Rewards',
+          og_image : encodeURIComponent(venue.getMerchant().get('photo')['thumbnail_large_url']),
+          og_description : desc,
+          body : message
+          });
+          switch (me.getTitle().toLowerCase())
+          {
+          case 'rewards' :
+          {
+          params['rewards'] = Genesis.constants.host + "/opengraph?" + params1;
+          break;
+          }
+          case 'prizes' :
+          {
+          params['prizes'] = Genesis.constants.host + "/opengraph?" + params1;
+          break;
+          }
+          }
+          */
+         FB.requestWithGraphPath(//
+         '/me/feed',
+         //'/me/getkickbak:got',
+         Ext.apply(params,
          {
             name : name,
             //link : href,
@@ -44,7 +71,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
             description : desc,
             picture : venue.getMerchant().get('photo')['thumbnail_large_url'],
             message : message
-         }, 'POST', function(response)
+         }), 'POST', function(response)
          {
             if (!response || response.error || Ext.isString(response))
             {

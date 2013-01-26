@@ -466,6 +466,30 @@ Ext.define('Genesis.controller.ControllerBase',
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
+   onBeforeNfc : function(nfcEvent)
+   {
+      var me = this, result = null;
+
+      console.log("NDEF Message received");
+      try
+      {
+         var tag = nfcEvent.tag, records = tag.ndefMessage || [];
+         var langCodeLength = records[0].payload[0], text = records[0].payload.slice((1 + langCodeLength), records[0].payload.length);
+
+         console.debug("NFC ndefMessage[" + nfc.bytesToString(text) + "]")
+         result = Ext.decode(nfc.bytesToString(text));
+         //
+         // Decrypt Message
+         //
+         me.printNfcTag(nfcEvent);
+      }
+      catch (e)
+      {
+         console.log("Exception Thrown while processing NFC Tag[" + e + "]");
+      }
+
+      return result;
+   },
    onNfc : Ext.emptyFn,
    onScannedQRcode : Ext.emptyFn,
    onLocationUpdate : Ext.emptyFn,
@@ -1171,6 +1195,97 @@ Ext.define('Genesis.controller.ControllerBase',
          });
 
          window.plugins.qrCodeReader.getCode(callback, fail);
+      }
+   },
+   tnfToString : function(tnf)
+   {
+      var value = tnf;
+
+      switch (tnf)
+      {
+         case ndef.TNF_EMPTY:
+            value = "Empty";
+            break;
+         case ndef.TNF_WELL_KNOWN:
+            value = "Well Known";
+            break;
+         case ndef.TNF_MIME_MEDIA:
+            value = "Mime Media";
+            break;
+         case ndef.TNF_ABSOLUTE_URI:
+            value = "Absolute URI";
+            break;
+         case ndef.TNF_EXTERNAL_TYPE:
+            value = "External";
+            break;
+         case ndef.TNF_UNKNOWN:
+            value = "Unknown";
+            break;
+         case ndef.TNF_UNCHANGED:
+            value = "Unchanged";
+            break;
+         case ndef.TNF_RESERVED:
+            value = "Reserved";
+            break;
+      }
+      return value;
+   },
+   showProperty : function(name, value)
+   {
+      console.log("Name[" + name + "] Value[" + value + "]");
+   },
+   printNfcTag : function(nfcEvent)
+   {
+      var me = this;
+      function template(record)
+      {
+         var id = "", tnf = me.tnfToString(record.tnf), recordType = nfc.bytesToString(record.type), payload;
+
+         if (record.id && (record.id.length > 0))
+         {
+            id = "Record Id: " + record.id + "\n";
+         }
+
+         switch(recordType)
+         {
+            case 'T' :
+            {
+               var langCodeLength = record.payload[0], text = record.payload.slice((1 + langCodeLength), record.payload.length);
+               payload = nfc.bytesToString(text);
+               break;
+            }
+            case 'U' :
+            {
+               var url = nfc.bytesToString(record.payload);
+               payload = "URL[" + url + "]";
+               break;
+            }
+            default:
+               // attempt display as a string
+               payload = nfc.bytesToString(record.payload);
+               break;
+         }
+
+         return (id + "TNF: " + tnf + "\n" + "Record Type: " + recordType + "\n" + payload);
+      }
+
+      var tag = nfcEvent.tag, records = tag.ndefMessage || [];
+      console.log("Scanned an NDEF tag with " + records.length + " record" + ((records.length === 1) ? "" : "s"));
+
+      // Display Tag Info
+      if (tag.id)
+      {
+         me.showProperty("Id", nfc.bytesToHexString(tag.id));
+      }
+      me.showProperty("Tag Type", tag.type);
+      me.showProperty("Max Size", tag.maxSize + " bytes");
+      me.showProperty("Is Writable", tag.isWritable);
+      me.showProperty("Can Make Read Only", tag.canMakeReadOnly);
+
+      // Display Record Info
+      for (var i = 0; i < records.length; i++)
+      {
+         console.log(template(records[i]));
       }
    }
 });
