@@ -17,7 +17,7 @@ class User
   property :name, String, :required => true, :default => ""
   ## Database authenticatable
   property :email, String, :unique_index => true, :required => true, :format => :email_address, :default => ""
-  property :phone, String, :unique => true, :default => ""
+  property :phone, String, :default => ""
   property :encrypted_password, String, :required => true, :default => ""
   ## Recoverable
   property :reset_password_token, String
@@ -62,6 +62,7 @@ class User
   has n, :credit_cards, :through => :user_credit_cards, :via => :credit_card
     
   validates_presence_of :phone, :if => lambda { |t| t.new? && t.status == :active }
+  validates_uniqueness_of :phone, :if => lambda { |t| t.new? && t.status == :active }
   validates_with_method :phone, :method => :validate_phone  
   validates_with_method :tag_id, :method => :validate_tag_id
     
