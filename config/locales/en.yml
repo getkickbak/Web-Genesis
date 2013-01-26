@@ -337,7 +337,9 @@ en:
       register_tag_failure: "Trouble registering user tag. Please try again."
       deregister_tag_failure: "Trouble deregistering user tag. Please try again."
       tag_already_in_use_failure: "Key tag is already in use."
-      register_tag_success: "Key tag was successfully activated."         
+      register_tag_success: "Key tag was successfully activated." 
+      update_facebook_info_success: "Facebook info successfully updated."
+      update_facebook_info_failure: "Failed to update facebook info."        
   facebook_post:
       message:
         redeem_reward: "Got a %s from %s just now!"

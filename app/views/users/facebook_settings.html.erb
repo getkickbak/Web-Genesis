@@ -7,6 +7,10 @@
 	if(msg) {
 	Genesis.showWarningMsg(msg,null,true);
 	}
+	var error_msg=$("#error").html();
+	if(error_msg) {
+	Genesis.showErrMsg(error_msg,null,true);
+	}
 	}));
 </script>
 <script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
@@ -15,6 +19,13 @@
 <div style="display:none;" id="notice">
 	<p>
 		<%= flash[:notice] %>
+	</p>
+</div>
+<% end %>
+<% if flash[:error] %>
+<div style="display:none;" id="error">
+	<p>
+		<%= flash[:error] %>
 	</p>
 </div>
 <% end %>

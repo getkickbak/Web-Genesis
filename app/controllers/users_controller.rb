@@ -38,19 +38,19 @@ class UsersController < ApplicationController
     @user = current_user
     authorize! :update, @user
 
-    User.transaction do
-      begin
+    begin
+      User.transaction do
         @user.update_password(params[:user])
         sign_in(current_user, :bypass => true)
         respond_to do |format|
           format.html { redirect_to({:action => "password"}, {:notice => t("users.update_password_success")}) }
         end
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        @user = e.resource
-        respond_to do |format|
-          format.html { render :action => "password" }
-        end
+      end  
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      @user = e.resource
+      respond_to do |format|
+        format.html { render :action => "password" }
       end
     end
   end
@@ -59,18 +59,43 @@ class UsersController < ApplicationController
     @user = current_user
     authorize! :read, @user
 
+    if session["devise.facebook_data"]
+      begin
+        User.transaction do
+          data = session["devise.facebook_data"] && session["devise.facebook_data"]["extra"]["raw_info"]
+          gender = (data["gender"] == "male" ? :m : :f) if data["gender"]
+          birthday = Date.strptime(data["birthday"], '%m/%d/%Y') if data["birthday"]
+          profile_info = {
+            :gender => gender,
+            :birthday => birthday
+          }
+          @user.profile.update(profile_info)
+          @user.save
+          session.delete "devise.facebook_data"
+          flash[:notice] = t("users.update_facebook_info_success")
+        end    
+      rescue DataMapper::SaveFailureError => e
+        logger.error("Exception: " + e.resource.errors.inspect)
+        flash[:error] = t("users.update_facebook_info_failure")
+        respond_to do |format|
+          format.html { render :action => "facebook_settings" }
+        end
+        return
+      end
+    end
     respond_to do |format|
       format.html # show.html.erb
-    #format.xml  { render :xml => @user }
+      #format.xml  { render :xml => @user }
     end
   end
 
+  # This is used in case we decide to support ajax Facebook update in the future
   def update_facebook_info
     @user = current_user
     authorize! :update, @user
 
-    User.transaction do
-      begin
+    begin
+      User.transaction do
         facebook_id = user_info[:facebook_id]
         existing_user = nil
         if facebook_id.to_s != "0"
@@ -97,13 +122,13 @@ class UsersController < ApplicationController
             format.json { render :json => { :success => true, :message => t("users.facebook_account_already_exists_failure").split('\n') } }
           end
         end
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        @user = e.resource
-        respond_to do |format|
+      end  
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      @user = e.resource
+      respond_to do |format|
         #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => e.resource.errors } }
-        end
+        format.json { render :json => { :success => false, :message => e.resource.errors } }
       end
     end
   end
@@ -112,8 +137,8 @@ class UsersController < ApplicationController
     @user = current_user
     authorize! :update, @user
 
-    User.transaction do
-      begin
+    begin
+      User.transaction do
         if @user.subscription.nil?
           Subscription.create(@user)
         end
@@ -121,10 +146,10 @@ class UsersController < ApplicationController
           format.html # show.html.erb
           #format.xml  { render :xml => @user }
         end
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        raise e 
-      end
+      end    
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      raise e 
     end
   end
 
@@ -132,21 +157,21 @@ class UsersController < ApplicationController
     @user = current_user
     authorize! :update, @user
 
-    User.transaction do
-      begin
+    begin
+      User.transaction do
         @user.subscription.email_notif = !params[:value].to_bool
         @user.save
         respond_to do |format|
         #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
           format.json { render :json => { :success => true } }
         end
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        respond_to do |format|
-        #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => e.resource.errors } }
-        end 
       end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      respond_to do |format|
+        #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
+        format.json { render :json => { :success => false, :message => e.resource.errors } }
+      end 
     end
   end
 end

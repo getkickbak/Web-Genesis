@@ -5,7 +5,6 @@ class UserDevise::OmniauthCallbacksController < Devise::OmniauthCallbacksControl
       # You need to implement the method below in your model (e.g. app/models/user.rb)
       third_party_auth = ThirdPartyAuth.first(:provider => request.env["omniauth.auth"].provider, :uid => request.env["omniauth.auth"].uid)
       @user = (third_party_auth ? third_party_auth.user : nil)
-
       if @user
         sign_in_and_redirect @user, :event => :authentication #this will throw if @user is not activated
         set_flash_message(:notice, :success, :kind => "Facebook") if is_navigational_format?
@@ -14,6 +13,7 @@ class UserDevise::OmniauthCallbacksController < Devise::OmniauthCallbacksControl
         redirect_to new_user_registration_url
       end  
     else
+      (session["devise.facebook_data"] = request.env["omniauth.auth"]) if request.env["omniauth.auth"].provider == "facebook"
       redirect_to origin_path
     end
   end
