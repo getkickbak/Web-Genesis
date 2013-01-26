@@ -582,7 +582,8 @@ Ext.define('Genesis.controller.client.MainPage',
 
          if (response)
          {
-            params = Ext.apply(params, response);
+         	params['birthday'] = new Date.parse(response['birthday']).getTime();
+            params = Ext.applyIf(params, response);
          }
          Ext.Viewport.setMasked(
          {
@@ -613,6 +614,10 @@ Ext.define('Genesis.controller.client.MainPage',
                }
                else
                {
+                  if (response)
+                  {
+                     Genesis.db.setLocalDBAttrib('enableFB', true);
+                  }
                   me.persistSyncStores();
                }
                Ext.Viewport.setMasked(null);

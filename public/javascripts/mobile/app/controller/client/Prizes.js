@@ -213,14 +213,42 @@ Ext.define('Genesis.controller.client.Prizes',
          var link = wsite[wsite.length - 1] || site;
          var desc = venue.get('description').trunc(256);
          var message = me.wonPrizeEmailMsg(earnprize.get('title'), venue.get('name'));
+         var params =
+         {
+         };
 
+         /*,params1 = Ext.urlEncode({
+          og_url : encodeURIComponent(link),
+          og_type : getkickbak:rewards,
+          og_title : 'KICKBAK Prizes',
+          og_image : encodeURIComponent(venue.getMerchant().get('photo')['thumbnail_large_url']),
+          og_description : desc,
+          body : message
+          });
+          switch (me.getTitle().toLowerCase())
+          {
+          case 'rewards' :
+          {
+          params['rewards'] = Genesis.constants.host + "/opengraph?" + params1;
+          break;
+          }
+          case 'prizes' :
+          {
+          params['prizes'] = Genesis.constants.host + "/opengraph?" + params1;
+          break;
+          }
+          }
+          */
          console.log('Posting Prize Win to Facebook ...' + '\n' + //
          'Name: ' + name + '\n' + //
          'Caption: ' + link + '\n' + //
          'Description: ' + desc + '\n' + //
          'Message : ' + message + '\n' //
          );
-         FB.requestWithGraphPath('/me/feed',
+         FB.requestWithGraphPath(//
+         '/me/feed',
+         //'/me/getkickbak:got',
+         Ext.apply(params,
          {
             name : name,
             //link : href,
@@ -229,7 +257,7 @@ Ext.define('Genesis.controller.client.Prizes',
             description : desc,
             picture : venue.getMerchant().get('photo')['thumbnail_large_url'],
             message : message
-         }, 'POST', function(response)
+         }), 'POST', function(response)
          {
             if (!response || response.error || Ext.isString(response))
             {
@@ -250,15 +278,27 @@ Ext.define('Genesis.controller.client.Prizes',
    updatingBadgeOnFacebook : function(badge)
    {
       var me = this, FB = window.plugins.facebookConnect;
-      var badgeURL = badge.get('photo')[Genesis.constants._thumbnailAttribPrefix + 'large'];
       try
       {
          var viewport = me.getViewPortCntlr(), venue = viewport.getVenue(), site = Genesis.constants.site;
          var wsite = venue.get('website') ? venue.get('website').split(/http[s]*:\/\//) : [null];
-         var name = venue.get('name');
-         var link = wsite[wsite.length - 1] || site;
+         var name = venue.get('name'), link = wsite[wsite.length - 1] || site;
+         var badgeURL = badge.get('photo')[Genesis.constants._thumbnailAttribPrefix + 'large'];
          var desc = venue.get('description').trunc(256);
          var message = me.upgradeBadgeEmailMsg(badge.get('title'), name);
+         var params =
+         {
+         };
+         /*,params1 = Ext.urlEncode({
+          og_url : encodeURIComponent(link),
+          og_type : getkickbak:promotions,
+          og_title : 'KICKBAK Badge Promotion',
+          og_image : encodeURIComponent(badgeURL),
+          og_description : desc,
+          body : message
+          });
+          params['promotions'] = Genesis.constants.host + "/opengraph?" + params1;
+          */
 
          console.log('Posting Badge Promotion to Facebook ...' + '\n' + //
          'Name: ' + name + '\n' + //
@@ -266,7 +306,10 @@ Ext.define('Genesis.controller.client.Prizes',
          'Description: ' + desc + '\n' + //
          'Message : ' + message + '\n' //
          );
-         FB.requestWithGrapthPath('/me/feed',
+         FB.requestWithGrapthPath(//
+         '/me/feed',
+         //'/me/getkickbak:promote',
+         Ext.apply(params,
          {
             name : name,
             //link : href,
@@ -275,7 +318,7 @@ Ext.define('Genesis.controller.client.Prizes',
             description : desc,
             picture : badgeURL,
             message : message
-         }, 'POST', function(response)
+         }), 'POST', function(response)
          {
             if (!response || response.error)
             {

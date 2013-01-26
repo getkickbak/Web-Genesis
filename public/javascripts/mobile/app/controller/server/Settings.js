@@ -217,9 +217,11 @@ Ext.define('Genesis.controller.server.Settings',
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
-   onNfc : function(result)
+   onBeforeNfc : function(nfcEvent)
    {
       this.writeTag(null);
+
+      return null;
    },
    writeTag : function(nfcEvent)
    {
