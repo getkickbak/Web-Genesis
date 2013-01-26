@@ -48,7 +48,6 @@ class DashboardController < ApplicationController
             end
             current_customers = Customer.all(:user => current_user, :status => :active)
             merchant_id_to_current_customer = {}
-            current_merchant_ids = []
             current_customers.each do |current_customer|
               merchant_id_to_current_customer[customer_id_to_merchant[current_customer.id].id] = current_customer
             end
