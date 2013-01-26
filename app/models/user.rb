@@ -69,12 +69,12 @@ class User
   
   def self.new_with_session(params, session)
     super.tap do |user|
-      if data = session["devise.facebook_data"] && session["devise.facebook_data"]["extra"]["raw_info"]
-        user.name = data["name"]
-        user.email = data["email"] if user.email.blank?
-        user.provider = session["devise.facebook_data"]["provider"]
-        user.uid = data["id"]
-        user.token = session["devise.facebook_data"]["credentials"]["token"]
+      if data = session["devise.facebook_data"] && session["devise.facebook_data"].extra.raw_info
+        user.name = data.name
+        user.email = data.email if user.email.blank?
+        user.provider = session["devise.facebook_data"].provider
+        user.uid = data.id
+        user.token = session["devise.facebook_data"].credentials.token
       end
     end
   end
@@ -160,13 +160,13 @@ class User
       user.profile[:update_ts] = now
     end
     if provider && uid
-      user.facebook_auth = ThirdPartyAuth.new(
-        :provider => provider,
-        :uid => uid,
-        :token => token || ""
+      user.facebook_auth = ThirdPartyAuth.create(user,
+        {
+          :provider => provider,
+          :uid => uid,
+          :token => token || ""
+        }
       )
-      user.facebook_auth[:created_ts] = now
-      user.facebook_auth[:update_ts] = now
     end
     if user.virtual_tag.nil?
       user.virtual_tag = UserTag.create(:virtual)
@@ -248,12 +248,12 @@ class User
   
   def update_facebook_auth(facebook_auth_info)
     if self.facebook_auth.nil?
-      ThirdPartyAuth.create(self, facebook_auth_info)
-      return true
+      self.facebook_auth = ThirdPartyAuth.create(self, facebook_auth_info)
+    else
+      self.facebook_auth.provider = facebook_auth_info[:provider]
+      self.facebook_auth.uid = facebook_auth_info[:uid]
+      self.facebook_auth.token = facebook_auth_info[:token] || ""
     end
-    self.facebook_auth.provider = facebook_auth_info[:provider]
-    self.facebook_auth.uid = facebook_auth_info[:uid]
-    self.facebook_auth.token = facebook_auth_info[:token] || ""
     save
   end 
     

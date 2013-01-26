@@ -6,14 +6,15 @@ class UserDevise::OmniauthCallbacksController < Devise::OmniauthCallbacksControl
       third_party_auth = ThirdPartyAuth.first(:provider => request.env["omniauth.auth"].provider, :uid => request.env["omniauth.auth"].uid)
       @user = (third_party_auth ? third_party_auth.user : nil)
       if @user
+        @user.update_facebook_auth({:provider => request.env["omniauth.auth"].provider, :uid => request.env["omniauth.auth"].uid, :token => request.env["omniauth.auth"].credentials.token})
         sign_in_and_redirect @user, :event => :authentication #this will throw if @user is not activated
         set_flash_message(:notice, :success, :kind => "Facebook") if is_navigational_format?
       else
-        (session["devise.facebook_data"] = request.env["omniauth.auth"]) if request.env["omniauth.auth"].provider == "facebook"
+        (session["devise.facebook_data"] = request.env["omniauth.auth"])
         redirect_to new_user_registration_url
       end  
     else
-      (session["devise.facebook_data"] = request.env["omniauth.auth"]) if request.env["omniauth.auth"].provider == "facebook"
+      (session["devise.facebook_data"] = request.env["omniauth.auth"])
       redirect_to origin_path
     end
   end

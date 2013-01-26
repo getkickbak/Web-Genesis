@@ -187,6 +187,7 @@ Genesis::Application.routes.draw do
     match "/account/subscriptions" => 'users#subscriptions', :as => :account_subscriptions
     match "/account/subscriptions/update_email_notif" => 'users#update_email_notif', :via => :post, :as => :update_email_notif
     match "/account/facebook_settings" => 'users#facebook_settings', :as => :facebook_settings
+    match "/account/facebook_settings/disconnect" => 'users#facebook_disconnect', :via => :post, :as => :facebook_disconnect
     match "/account/facebook_settings/update" => 'users#update_facebook_settings', :via => :post, :as => :update_facebook_settings
     
     #match "/how_it_works" => 'pages#how_it_works'

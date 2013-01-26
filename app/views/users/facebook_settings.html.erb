@@ -1,4 +1,5 @@
 <% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/pages/facebook_settings.css"/>
 <% end %>
 <% content_for :script do %>
 <script type="text/javascript">
@@ -45,9 +46,18 @@
 						<div class="widget-content">
 							<h3>Connect with Facebook</h3>
 							<div style="margin:20px 0 10px 0;">
+								<% if current_user.facebook_auth.nil? %>
 								<p>
 									<%= link_to "Sign in with Facebook", user_omniauth_authorize_path(:facebook) %>
 								</p>
+								<% else %>
+								<div class="account_sharing">
+									<img class="" src="http://files.getkickbak.com/v1/facebook.png"/>
+									<p>
+										<%= link_to 'disconnect', facebook_disconnect_path, :method => :post %>
+									</p>
+								</div>
+								<% end %>
 							</div>
 						</div>
 					</div>

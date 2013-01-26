@@ -1,0 +1,9 @@
+.account_sharing img {
+	float: left;
+	margin-right: 10px;
+}
+
+.account_sharing p {
+	float: left;
+	line-height: 32px;
+}

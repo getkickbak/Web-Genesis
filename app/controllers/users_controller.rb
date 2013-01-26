@@ -62,9 +62,10 @@ class UsersController < ApplicationController
     if session["devise.facebook_data"]
       begin
         User.transaction do
-          data = session["devise.facebook_data"] && session["devise.facebook_data"]["extra"]["raw_info"]
-          gender = (data["gender"] == "male" ? :m : :f) if data["gender"]
-          birthday = Date.strptime(data["birthday"], '%m/%d/%Y') if data["birthday"]
+          data = session["devise.facebook_data"] && session["devise.facebook_data"].extra.raw_info
+          @user.update_facebook_auth({:provider => "facebook", :uid => data.id, :token => session["devise.facebook_data"].credentials.token})
+          gender = (data.gender == "male" ? :m : :f) if data.gender
+          birthday = Date.strptime(data.birthday, '%m/%d/%Y') if data.birthday
           profile_info = {
             :gender => gender,
             :birthday => birthday
@@ -72,7 +73,6 @@ class UsersController < ApplicationController
           @user.profile.update(profile_info)
           @user.save
           session.delete "devise.facebook_data"
-          flash[:notice] = t("users.update_facebook_info_success")
         end    
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
@@ -133,6 +133,26 @@ class UsersController < ApplicationController
     end
   end
 
+  def facebook_disconnect
+    @user = current_user
+    authorize! :read, @user
+
+    begin
+      User.transaction do
+        @user.facebook_auth.destroy
+        respond_to do |format|
+          format.html { redirect_to({:action => "facebook_settings"}, {:notice => t("users.facebook_disconnect_success")}) }
+        end  
+      end  
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      flash[:error] = t("errors.messages.exception.http_500")
+      respond_to do |format|
+        format.html { render :action => "facebook_settings" }
+      end
+    end
+  end
+  
   def subscriptions
     @user = current_user
     authorize! :update, @user
@@ -170,7 +190,7 @@ class UsersController < ApplicationController
       logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @user.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => e.resource.errors } }
+        format.json { render :json => { :success => false, :message => t("users.update_email_notif_failure") } }
       end 
     end
   end

@@ -339,7 +339,9 @@ en:
       tag_already_in_use_failure: "Key tag is already in use."
       register_tag_success: "Key tag was successfully activated." 
       update_facebook_info_success: "Facebook info successfully updated."
-      update_facebook_info_failure: "Failed to update facebook info."        
+      update_facebook_info_failure: "Failed to update facebook info."    
+      update_email_notif_failure: "Failed to update email notification setting."  
+      facebook_disconnect_success: "Your account is no longer connected to facebook."  
   facebook_post:
       message:
         redeem_reward: "Got a %s from %s just now!"
