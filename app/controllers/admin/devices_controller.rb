@@ -100,7 +100,7 @@ module Admin
       @device.destroy
 
       respond_to do |format|
-        format.html { redirect_to(devices_url) }
+        format.html { redirect_to(merchant_devices_url) }
       #format.xml  { head :ok }
       end
     end
