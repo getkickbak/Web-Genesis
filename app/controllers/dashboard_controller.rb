@@ -200,6 +200,7 @@ class DashboardController < ApplicationController
     end
     customer_to_badges = CustomerToBadge.all(:fields => [:customer_id, :badge_id], :customer_id => customer_ids)
     badge_ids = []
+    customer_id_to_badge_id = {}
     customer_to_badges.each do |customer_to_badge|
       badge_ids << customer_to_badge.badge_id
       customer_id_to_badge_id[customer_to_badge.customer_id] = customer_to_badge.badge_id 
