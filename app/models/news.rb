@@ -4,7 +4,7 @@ class News
   def initialize(hash)
     hash.keys.each do |key|
       m = "#{key}="
-      obj.send( m, hash[key] ) if obj.respond_to?( m )
+      self.send( m, hash[key] ) if self.respond_to?( m )
     end
   end
 end
