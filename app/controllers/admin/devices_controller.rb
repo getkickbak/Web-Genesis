@@ -6,7 +6,7 @@ module Admin
       authorize! :read, Device
 
       @merchant = Merchant.get(params[:merchant_id]) || not_found
-      @devices = Device.all(:order => [:created_ts.desc]).paginate(:page => params[:page])
+      @devices = Device.all(:merchant => @merchant, :order => [:created_ts.desc]).paginate(:page => params[:page])
 
       respond_to do |format|
         format.html # index.html.erb
