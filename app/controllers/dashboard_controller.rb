@@ -218,7 +218,7 @@ class DashboardController < ApplicationController
     @customers = Customer.all(:user_id => current_user.id, :status => :active, :order => [:update_ts.desc]).paginate(:page => params[:page])
     @customers.each do |customer|
       customer.eager_load_merchant = customer_id_to_merchant[customer.id]
-      badge = badge_id_to_bagde[customer_id_to_badge_id[customer.id]]
+      badge = badge_id_to_badge[customer_id_to_badge_id[customer.id]]
       customer.eager_load_badge = badge
       customer.eager_load_badge.eager_load_type = BadgeType.id_to_type[badge_id_to_type_id[badge.id]]
     end
