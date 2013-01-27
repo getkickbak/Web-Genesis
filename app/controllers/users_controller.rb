@@ -144,8 +144,8 @@ class UsersController < ApplicationController
           format.html { redirect_to({:action => "facebook_settings"}, {:notice => t("users.facebook_disconnect_success")}) }
         end  
       end  
-    rescue DataMapper::SaveFailureError => e
-      logger.error("Exception: " + e.resource.errors.inspect)
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
       flash[:error] = t("errors.messages.exception.http_500")
       respond_to do |format|
         format.html { render :action => "facebook_settings" }

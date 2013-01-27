@@ -56,7 +56,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         logger.error("User(#{user.id}) is not a customer of Merchant(#{@venue.merchant})")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.customers.invalid_customer").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.invalid_customer").split('\n') } }
         end
         return
       end

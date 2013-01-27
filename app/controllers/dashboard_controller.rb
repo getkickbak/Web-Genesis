@@ -139,10 +139,6 @@ class DashboardController < ApplicationController
           end
         end
         current_user.register_tag(@tag)
-        respond_to do |format|
-          format.html { redirect_to({:action => "index"}, {:notice => t("users.register_tag_success")}) }
-          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
-        end
       end
     rescue DataMapper::SaveFailureError => e
       logger.error("Exception: " + e.resource.errors.inspect)
@@ -153,10 +149,20 @@ class DashboardController < ApplicationController
         format.html { render :action => "index" }
         #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
       end
-    ensure
+      return
+    end
+    
+    begin
       customers.destroy if customers
       user.destroy if user
-    end
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      logger.info("Failed to clean up zombie customer and/or user accounts")
+    end  
+    respond_to do |format|
+      format.html { redirect_to({:action => "index"}, {:notice => t("users.register_tag_success")}) }
+      #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+    end   
   end 
   
   def deregister_tag
