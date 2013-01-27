@@ -54,7 +54,7 @@ class Api::V1::CheckInsController < Api::V1::BaseApplicationController
     
     @customer = Customer.first(:merchant => @venue.merchant, :user => current_user)
     if @customer.nil?
-      if (@venue.merchant.role == "merchant" && current_user.role == "user") || (@venue.merchant.role == "test" && current_user.role == "test") || current_user.role == "admin"
+      if (@venue.merchant.role == "merchant" && current_user.role == "user") || (@venue.merchant.role == "test" && current_user.role == "test") || current_user.role == "admin" || current_user.role == "anonymous"
         @customer = Customer.new
         @customer.id = 0
         @customer.points = 0

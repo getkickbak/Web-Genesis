@@ -125,6 +125,8 @@ class User
             user.phone = phone
             user.password = password
             user.password_confirmation = password
+            user.role = role
+            user.status = status
             user.update_ts = now
             user_tag = user_to_tag.user_tag
             user_tag.status = :active

@@ -193,7 +193,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 user_info[:name] = "KICKBAK #{String.random_alphanumeric(8)}"
                 user_info[:email] = "#{String.random_alphanumeric(16)}@getkickbak.com"
                 user_info[:phone] = ""
-                user_info[:role] = "user"
+                user_info[:role] = "anonymous"
                 user_info[:status] = :pending
                 password = String.random_alphanumeric(8)
                 user_info[:password] = password
@@ -281,7 +281,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
     end
     @customer = Customer.first(:merchant => @venue.merchant, :user => @current_user)
     if @customer.nil?
-      if (@venue.merchant.role == "merchant" && @current_user.role == "user") || (@venue.merchant.role == "test" && @current_user.role == "test") || @current_user.role == "admin"
+      if (@venue.merchant.role == "merchant" && @current_user.role == "user") || (@venue.merchant.role == "test" && @current_user.role == "test") || @current_user.role == "admin" || @current_user.role == "anonymous"
         @customer = Customer.create(@venue.merchant, @current_user)
       else
         Request.set_status(@request, :failed)

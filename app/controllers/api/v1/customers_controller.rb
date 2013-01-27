@@ -213,7 +213,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         
       @customer = Customer.first(:user => current_user, :merchant => merchant)
       if @customer.nil?
-        if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role == "admin"
+        if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role == "admin" || current_user.role == "anonymous"
           @customer = Customer.create(merchant, current_user)
         else
           logger.info("User(#{current_user.id}) failed to receive points at Merchant(#{merchant.id}), account not compatible with merchant")
