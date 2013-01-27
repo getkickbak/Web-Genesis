@@ -330,7 +330,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
     
       @customer = Customer.first(:user => current_user, :merchant => merchant)
       if @customer.nil?
-        if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role = "admin"
+        if (merchant.role == "merchant" && current_user.role == "user") || (merchant.role == "test" && current_user.role == "test") || current_user.role == "admin"
           @customer = Customer.create(merchant, current_user)
         else
           Request.set_status(@request, :failed)

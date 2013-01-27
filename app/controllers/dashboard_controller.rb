@@ -67,7 +67,8 @@ class DashboardController < ApplicationController
             merge_customers = customers.all(:merchant_id => current_merchant_ids)
             merge_customers.each do |merge_customer|
               customer = merchant_id_to_current_customer[customer_id_to_merchant[merge_customer.id].id]
-              customer.points += merge_customer.points
+              signup_points = customer_id_to_merchant[merge_customer.id].reward_model.signup_points
+              customer.points += (merge_customer.points - signup_points)
               customer.prize_points += merge_customer.prize_points
               customer.visits += merge_customer.visits
               badges = customer_id_to_merchant[customer.id].badges
@@ -100,14 +101,16 @@ class DashboardController < ApplicationController
             end
             add_customers = customers - merge_customers
             add_customers.each do |add_customer|
+              logger.info("Creating new customer account for Merchant(#{customer_id_to_merchant[add_customer.id].id})")
               customer = Customer.create(customer_id_to_merchant[add_customer.id], current_user)
+              logger.info("Created new Customer(#{customer.id})")
               customer.points = add_customer.points
               customer.prize_points = add_customer.prize_points
               customer.visits = add_customer.visits
-              badges = customer.merchant.badges
+              badges = customer_id_to_merchant[add_customer.id].badges
               customer.badge, customer.next_badge_visits = Common.find_badge(badges.to_a, customer.visits)
               customer.badge_reset_ts = now
-              customer_rewards = CustomerReward.all(:merchant => customer.merchant)
+              customer_rewards = CustomerReward.all(:merchant => customer_id_to_merchant[add_customer.id])
               rewards = customer_rewards.all(:mode => :reward)
               prizes = customer_rewards.all(:mode => :prize)
               eligible_for_reward = !Common.find_eligible_reward(rewards.to_a, customer.points).nil?
@@ -131,6 +134,7 @@ class DashboardController < ApplicationController
                 SET user_id = ?, customer_id = ?
                 WHERE user_id = ? AND customer_id = ?", current_user.id, customer.id, user.id, add_customer.id
               )
+              logger.info("Finished update for Customer(#{customer.id})")
             end
           else
             @user_tag = UserTag.new(:tag_id => tag_id)

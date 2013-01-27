@@ -281,7 +281,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
     end
     @customer = Customer.first(:merchant => @venue.merchant, :user => @current_user)
     if @customer.nil?
-      if (@venue.merchant.role == "merchant" && @current_user.role == "user") || (@venue.merchant.role == "test" && @current_user.role == "test") || @current_user.role = "admin"
+      if (@venue.merchant.role == "merchant" && @current_user.role == "user") || (@venue.merchant.role == "test" && @current_user.role == "test") || @current_user.role == "admin"
         @customer = Customer.create(@venue.merchant, @current_user)
       else
         Request.set_status(@request, :failed)

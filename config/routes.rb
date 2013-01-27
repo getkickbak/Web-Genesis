@@ -177,7 +177,7 @@ Genesis::Application.routes.draw do
     end
     
     match "/dashboard" => 'dashboard#index', :as => :dashboard
-    match "/business/profile/:id" => "venues#show", :as => :business_profile
+    match "/business/:id" => "merchants#show", :as => :business_profile
     match "/register_tag" => 'dashboard#register_tag', :via => :post, :as => :register_tag
     match "/deregister_tag" => 'dashboard#deregister_tag', :via => :delete, :as => :deregister_tag
     match "/account" => 'users#edit', :as => :account

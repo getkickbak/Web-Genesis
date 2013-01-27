@@ -16,6 +16,7 @@ class Ability
     can :manage, CreditCard
     can :read, CustomerReward
     can :read, Challenge 
+    can :read, Merchant
     can :read, Venue
   end
   

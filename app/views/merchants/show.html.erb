@@ -12,45 +12,13 @@
 					<div class="widget">
 						<div class="widget-content">
 							<div>
-								<h4><%= @venue.name %></h4>
+								<h4><%= @merchant.name %></h4>
 								<div>
-									<%= image_tag @venue.merchant.photo.url %>
+									<%= image_tag @merchant.photo.url %>
 								</div>
 								<div>
-									<div>
-										<%= @venue.address %>
-									</div>
-									<div>
-										<%= "#{@venue.city}, #{@venue.state}" %>
-									</div>
-									<div>
-										<%= @venue.zipcode %>
-									</div>
-								</div>
-								<div>
-									<div style="display:none">
-										<div id="venue_name">
-											<%= @venue.name %>
-										</div>
-										<div id="venue_address">
-											<%= @venue.address %>
-										</div>
-										<div id="venue_city">
-											<%= @venue.city %>
-										</div>
-										<div id="venue_state">
-											<%= @venue.state %>
-										</div>
-										<div id="venue_country">
-											<%= @venue.country %>
-										</div>
-									</div>
-									<div id="gmap" class="" style="height:235px;width:100%;"></div>
-								</div>
-								<div>
-									<h5>Other Locations</h5>
-									<% @venue.merchant.venues.each do |venue| %>
-									<% if venue.id != @venue.id %>
+									<h5>Locations</h5>
+									<% @merchant.venues.each do |venue| %>
 									<div>
 										<div>
 											<%= venue.name %>
@@ -66,7 +34,6 @@
 										</div>
 									</div>
 									<% end %>
-									<% end %>
 								</div>
 							</div>
 						</div>
@@ -77,7 +44,7 @@
 						<div class="widget-content">
 							<h5>About Us</h5>
 							<p>
-								<%= @venue.description %>
+								<%= @merchant.description %>
 							</p>
 						</div>
 					</div>
