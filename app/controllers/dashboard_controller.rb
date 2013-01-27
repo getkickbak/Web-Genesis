@@ -16,6 +16,8 @@ class DashboardController < ApplicationController
     authorize! :update, current_user
 
     tag_id = params[:user_tag][:tag_id].strip
+    customers = nil
+    user = nil
     begin
       User.transaction do
         now = Time.now
@@ -130,8 +132,6 @@ class DashboardController < ApplicationController
                 WHERE user_id = ? AND customer_id = ?", current_user.id, customer.id, user.id, add_customer.id
               )
             end
-            customers.destroy
-            user.destroy
           else
             @user_tag = UserTag.new(:tag_id => tag_id)
             @user_tag.errors.add(:tag_id, t("users.tag_already_in_use_failure"))
@@ -153,6 +153,9 @@ class DashboardController < ApplicationController
         format.html { render :action => "index" }
         #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
       end
+    ensure
+      customers.destroy if customers
+      user.destroy if user
     end
   end 
   
