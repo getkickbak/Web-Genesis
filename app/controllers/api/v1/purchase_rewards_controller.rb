@@ -652,7 +652,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           UserMailer.reward_notif_email(@customer, @reward_info).deliver
         end
         if referral_challenge
-          UserMailer.referral_challenge_confirm_email(referrer.user, @customer.user, @venue, referral_record).deliver
+          UserMailer.referral_challenge_confirm_email(referrer.user, @current_user, @venue, referral_record).deliver
         end
         render :template => '/api/v1/purchase_rewards/earn'
         logger.info(

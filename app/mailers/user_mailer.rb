@@ -38,7 +38,7 @@ class UserMailer < ActionMailer::Base
   def reward_notif_email(customer, reward_info)
     @customer = customer
     @reward_info = reward_info
-    mail(:to => customer.user.email, :subject => I18n.t("mailer.email_subject_reward_notif"))
+    mail(:to => customer.user.email, :subject => (I18n.t("mailer.email_subject_reward_notif") % [customer.merchant.name]))
   end
   
   def reset_password_email(user, new_password)
