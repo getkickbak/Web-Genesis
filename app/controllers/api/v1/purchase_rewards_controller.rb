@@ -421,7 +421,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             birthday_trans_record.user = @current_user
             birthday_trans_record.save
             @customer.points += challenge.points
-            @reward_info[:birthday_points] = challenge_points
+            @reward_info[:birthday_points] = challenge.points
           end
         end
         @customer.visits += 1
