@@ -62,8 +62,11 @@ class DashboardController < ApplicationController
               customer_id_to_merchant[merchant_id_to_customer_id[merchant.id]] = merchant
             end
             customers = Customer.all(:user => user, :status => :active)
+            logger.info("All Customers: #{customers.length}")
             merge_customers = Customer.all(:merchant_id => current_merchant_ids)
+            logger.info("Merge Customers: #{merge_customers.length}")
             merge_customers.each do |merge_customer|
+              logger.info("Merge Customer(#{merge_customer.id})")
               customer = merchant_id_to_current_customer[customer_id_to_merchant[merge_customer.id].id]
               signup_points = customer_id_to_merchant[merge_customer.id].reward_model.signup_points
               customer.points += (merge_customer.points - signup_points)
@@ -98,7 +101,9 @@ class DashboardController < ApplicationController
               )
             end
             add_customers = customers - merge_customers
+            logger.info("Add Customers: #{add_customers.length}")
             add_customers.each do |add_customer|
+              logger.info("Add Customer(#{add_customer.id})")
               add_customer.user = current_user
               add_customer.save
               DataMapper.repository(:default).adapter.execute(
