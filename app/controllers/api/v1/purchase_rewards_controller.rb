@@ -590,7 +590,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           #logger.debug("max badge prize points: #{max_badge_prize_points}")
           badge_prize_points = Random.rand(max_badge_prize_points - min_badge_prize_points + 1) + min_badge_prize_points
           #logger.debug("badge_prize_points: #{badge_prize_points}")
-          previous_customer_to_badge = CustomerToBadge.first(:customer_id => @customer.id)
+          CustomerToBadge.first(:customer => @customer, :badge => @customer.badge).destroy
           @customer.badge = next_badge
           @customer.prize_points += badge_prize_points
           @customer.next_badge_visits = 0
@@ -620,7 +620,6 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           badge_prize_trans_record.customer = @customer
           badge_prize_trans_record.user = @current_user
           badge_prize_trans_record.save
-          previous_customer_to_badge.destroy
         end
         @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => today.at_beginning_of_month.to_time)
         @account_info = {}
