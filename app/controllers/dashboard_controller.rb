@@ -33,8 +33,10 @@ class DashboardController < ApplicationController
         end
         user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => @tag.id)
         if not user_to_tag.nil?
+          logger.info("Tag(#{@tag.id}) is associated with a user")
           user = User.get(user_to_tag.user_id)
           if user && user.status == :pending
+            logger.info("Migration process begins for User(#{user.id})")
             current_merchant_ids = []
             merchant_id_to_customer_id = {}
             current_customers_info = Customer.all(:fields => [:id, :merchant_id], :user => current_user, :status => :active)
