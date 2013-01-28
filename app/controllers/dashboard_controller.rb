@@ -72,7 +72,11 @@ class DashboardController < ApplicationController
               customer.prize_points += merge_customer.prize_points
               customer.visits += merge_customer.visits
               badges = customer_id_to_merchant[customer.id].badges
-              customer.badge, customer.next_badge_visits = Common.find_badge(badges.to_a, customer.visits)
+              badge, customer.next_badge_visits = Common.find_badge(badges.to_a, customer.visits)
+              if badge.id != customer.badge.id
+                customer.badge.destroy
+                customer.badge = badge
+              end
               customer.badge_reset_ts = now
               customer_rewards = CustomerReward.all(:merchant => customer_id_to_merchant[customer.id])
               rewards = customer_rewards.all(:mode => :reward)
