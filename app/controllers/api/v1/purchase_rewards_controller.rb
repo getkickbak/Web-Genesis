@@ -590,6 +590,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           #logger.debug("max badge prize points: #{max_badge_prize_points}")
           badge_prize_points = Random.rand(max_badge_prize_points - min_badge_prize_points + 1) + min_badge_prize_points
           #logger.debug("badge_prize_points: #{badge_prize_points}")
+          @customer.badge.destroy
           @customer.badge = next_badge
           @customer.prize_points += badge_prize_points
           @customer.next_badge_visits = 0
