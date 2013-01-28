@@ -148,7 +148,7 @@ class DashboardController < ApplicationController
     end  
     
     begin
-      user.destroy
+      user.destroy if user
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       logger.info("Failed to clean up User(#{user.id})")  
