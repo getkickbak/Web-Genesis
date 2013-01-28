@@ -393,7 +393,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         if (birthday.mon == today.mon) && (birthday.day == today.day)
           challenge_type_id = ChallengeType.value_to_id["birthday"]
           challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
-          if challenge && (EarnRewardRecord.count(:type => :challenge, :ref_id => challenge.id, :merchant => challenge.merchant, :user => @current_user, :created_ts.gte => 11.month.ago.to_time) > 0)
+          if challenge && (EarnRewardRecord.count(:type => :challenge, :ref_id => challenge.id, :merchant => challenge.merchant, :user => @current_user, :created_ts.gte => 11.month.ago.to_time) == 0)
             birthday_reward_record = EarnRewardRecord.new(
               :type => :challenge,
               :ref_id => challenge.id,
