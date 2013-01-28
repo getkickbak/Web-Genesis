@@ -16,7 +16,6 @@ class DashboardController < ApplicationController
     authorize! :update, current_user
 
     tag_id = params[:user_tag][:tag_id].strip
-    user = nil
     begin
       Customer.transaction do
         now = Time.now
@@ -33,10 +32,8 @@ class DashboardController < ApplicationController
         end
         user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => @tag.id)
         if not user_to_tag.nil?
-          logger.info("Tag(#{@tag.id}) is associated with a user")
           user = User.get(user_to_tag.user_id)
           if user && user.status == :pending
-            logger.info("Migration process begins for User(#{user.id})")
             current_merchant_ids = []
             merchant_id_to_customer_id = {}
             current_customers_info = Customer.all(:fields => [:id, :merchant_id], :user => current_user, :status => :active)
@@ -65,11 +62,8 @@ class DashboardController < ApplicationController
               customer_id_to_merchant[merchant_id_to_customer_id[merchant.id]] = merchant
             end
             customers = Customer.all(:user => user, :status => :active)
-            logger.info("All customers: #{customers.length}")
-            merge_customers = customers.all(:merchant_id => current_merchant_ids)
-            logger.info("Merge customers: #{merge_customers.length}")
+            merge_customers = Customer.all(:merchant_id => current_merchant_ids)
             merge_customers.each do |merge_customer|
-              logger.info("Updating Customer(#{merge_customer.id}) info")
               customer = merchant_id_to_current_customer[customer_id_to_merchant[merge_customer.id].id]
               signup_points = customer_id_to_merchant[merge_customer.id].reward_model.signup_points
               customer.points += (merge_customer.points - signup_points)
@@ -104,9 +98,7 @@ class DashboardController < ApplicationController
               )
             end
             add_customers = customers - merge_customers
-            logger.info("Add customers: #{add_customers.length}")
             add_customers.each do |add_customer|
-              logger.info("Updating Customer(#{add_customer.id}) to User(#{current_user.id})")
               add_customer.user = current_user
               add_customer.save
               DataMapper.repository(:default).adapter.execute(
@@ -125,6 +117,7 @@ class DashboardController < ApplicationController
                 WHERE user_id = ?", current_user.id, user.id
               )
             end
+            user.destroy
           else
             @user_tag = UserTag.new(:tag_id => tag_id)
             @user_tag.errors.add(:tag_id, t("users.tag_already_in_use_failure"))
@@ -132,6 +125,10 @@ class DashboardController < ApplicationController
           end
         end
         current_user.register_tag(@tag)
+        respond_to do |format|
+          format.html { redirect_to({:action => "index"}, {:notice => t("users.register_tag_success")}) }
+          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+        end
       end
     rescue DataMapper::SaveFailureError => e
       logger.error("Exception: " + e.resource.errors.inspect)
@@ -142,7 +139,6 @@ class DashboardController < ApplicationController
         format.html { render :action => "index" }
         #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
       end
-      return
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       @user_tag = UserTag.new(:tag_id => tag_id) if @user_tag.nil?
@@ -151,20 +147,7 @@ class DashboardController < ApplicationController
       respond_to do |format|
         format.html { render :action => "index" }
         #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
-      end    
-      return
-    end  
-    
-    begin
-      user.destroy if user
-    rescue StandardError => e
-      logger.error("Exception: " + e.message)
-      logger.info("Failed to clean up User(#{user.id})")  
-    end
-    
-    respond_to do |format|
-      format.html { redirect_to({:action => "index"}, {:notice => t("users.register_tag_success")}) }
-      #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+      end
     end 
   end 
   
