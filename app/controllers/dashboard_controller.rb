@@ -74,7 +74,7 @@ class DashboardController < ApplicationController
               badges = customer_id_to_merchant[customer.id].badges
               badge, customer.next_badge_visits = Common.find_badge(badges.to_a, customer.visits)
               if badge.id != customer.badge.id
-                customer.badge.destroy
+                CustomerToBadge.first(:customer => customer, :badge => customer.badge).destroy
                 customer.badge = badge
               end
               customer.badge_reset_ts = now
