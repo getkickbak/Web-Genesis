@@ -17,7 +17,7 @@ class DashboardController < ApplicationController
 
     tag_id = params[:user_tag][:tag_id].strip
     begin
-      User.transaction do
+      Customer.transaction do
         now = Time.now
         @tag = UserTag.first(:tag_id => tag_id)
         if @tag.nil?
@@ -117,7 +117,6 @@ class DashboardController < ApplicationController
                 WHERE user_id = ?", current_user.id, user.id
               )
             end
-            user.destroy
           else
             @user_tag = UserTag.new(:tag_id => tag_id)
             @user_tag.errors.add(:tag_id, t("users.tag_already_in_use_failure"))
@@ -125,10 +124,6 @@ class DashboardController < ApplicationController
           end
         end
         current_user.register_tag(@tag)
-        respond_to do |format|
-          format.html { redirect_to({:action => "index"}, {:notice => t("users.register_tag_success")}) }
-          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
-        end 
       end
     rescue DataMapper::SaveFailureError => e
       logger.error("Exception: " + e.resource.errors.inspect)
@@ -139,6 +134,7 @@ class DashboardController < ApplicationController
         format.html { render :action => "index" }
         #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
       end
+      return
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       @user_tag = UserTag.new(:tag_id => tag_id) if @user_tag.nil?
@@ -148,7 +144,20 @@ class DashboardController < ApplicationController
         format.html { render :action => "index" }
         #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
       end    
+      return
     end  
+    
+    begin
+      user.destroy
+    rescue StandardError => e
+      logger.error("Exception: " + e.message)
+      logger.info("Failed to clean up User(#{user.id})")  
+    end
+    
+    respond_to do |format|
+      format.html { redirect_to({:action => "index"}, {:notice => t("users.register_tag_success")}) }
+      #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+    end 
   end 
   
   def deregister_tag
