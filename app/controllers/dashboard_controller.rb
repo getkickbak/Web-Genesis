@@ -16,8 +16,6 @@ class DashboardController < ApplicationController
     authorize! :update, current_user
 
     tag_id = params[:user_tag][:tag_id].strip
-    customers = nil
-    user = nil
     begin
       User.transaction do
         now = Time.now
@@ -107,41 +105,26 @@ class DashboardController < ApplicationController
             add_customers = customers - merge_customers
             logger.info("Add customers: #{add_customers.length}")
             add_customers.each do |add_customer|
-              logger.info("Creating new customer account for Merchant(#{customer_id_to_merchant[add_customer.id].id})")
-              customer = Customer.create(customer_id_to_merchant[add_customer.id], current_user)
-              logger.info("Created new Customer(#{customer.id})")
-              customer.points = add_customer.points
-              customer.prize_points = add_customer.prize_points
-              customer.visits = add_customer.visits
-              badges = customer_id_to_merchant[add_customer.id].badges
-              customer.badge, customer.next_badge_visits = Common.find_badge(badges.to_a, customer.visits)
-              customer.badge_reset_ts = now
-              customer_rewards = CustomerReward.all(:merchant => customer_id_to_merchant[add_customer.id])
-              rewards = customer_rewards.all(:mode => :reward)
-              prizes = customer_rewards.all(:mode => :prize)
-              eligible_for_reward = !Common.find_eligible_reward(rewards.to_a, customer.points).nil?
-              eligible_for_prize = !Common.find_eligible_reward(prizes.to_a, customer.prize_points).nil?
-              customer.eligible_for_reward = eligible_for_reward
-              customer.eligible_for_prize = eligible_for_prize
-              customer.update_ts = now
-              customer.save
+              logger.info("Migrating Customer(#{add_customer.id}) to User(#{current_user})")
+              add_customer.user = current_user
+              add_customer.save
               DataMapper.repository(:default).adapter.execute(
                 "UPDATE earn_reward_records 
-                SET user_id = ?, customer_id = ?
-                WHERE user_id = ? AND customer_id = ?", current_user.id, customer.id, user.id, add_customer.id
+                SET user_id = ?
+                WHERE user_id = ?", current_user.id, user.id
               )
               DataMapper.repository(:default).adapter.execute(
                 "UPDATE earn_prize_records 
-                SET user_id = ?, customer_id = ?
-                WHERE user_id = ? AND customer_id = ?", current_user.id, customer.id, user.id, add_customer.id
+                SET user_id = ?
+                WHERE user_id = ?", current_user.id, user.id
               )
               DataMapper.repository(:default).adapter.execute(
                 "UPDATE transaction_records 
-                SET user_id = ?, customer_id = ?
-                WHERE user_id = ? AND customer_id = ?", current_user.id, customer.id, user.id, add_customer.id
+                SET user_id = ?
+                WHERE user_id = ?", current_user.id, user.id
               )
-              logger.info("Finished update for Customer(#{customer.id})")
             end
+            user.destroy
           else
             @user_tag = UserTag.new(:tag_id => tag_id)
             @user_tag.errors.add(:tag_id, t("users.tag_already_in_use_failure"))
@@ -149,6 +132,10 @@ class DashboardController < ApplicationController
           end
         end
         current_user.register_tag(@tag)
+        respond_to do |format|
+          format.html { redirect_to({:action => "index"}, {:notice => t("users.register_tag_success")}) }
+          #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+        end 
       end
     rescue DataMapper::SaveFailureError => e
       logger.error("Exception: " + e.resource.errors.inspect)
@@ -159,20 +146,16 @@ class DashboardController < ApplicationController
         format.html { render :action => "index" }
         #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
       end
-      return
-    end
-    
-    begin
-      customers.destroy if customers
-      user.destroy if user
     rescue StandardError => e
       logger.error("Exception: " + e.message)
-      logger.info("Failed to clean up zombie customer and/or user accounts")
+      @user_tag = UserTag.new(:tag_id => tag_id) if @user_tag.nil?
+      get_customers_info
+      flash[:error] = t("users.register_tag_failure")
+      respond_to do |format|
+        format.html { render :action => "index" }
+        #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
+      end    
     end  
-    respond_to do |format|
-      format.html { redirect_to({:action => "index"}, {:notice => t("users.register_tag_success")}) }
-      #format.xml  { render :xml => @merchant.errors, :status => :unprocessable_entity }
-    end   
   end 
   
   def deregister_tag
