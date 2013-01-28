@@ -468,11 +468,11 @@ Ext.define('Genesis.controller.client.MainPage',
             jsonData :
             {
             },
-            params : Ext.apply(params,
+            params : Ext.apply(
             {
                device_pixel_ratio : window.devicePixelRatio,
                device : Ext.encode(Genesis.constants.device)
-            }),
+            }, params),
             callback : function(records, operation)
             {
                me._loggingIn = false;
