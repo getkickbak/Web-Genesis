@@ -176,6 +176,14 @@ Ext.define('Genesis.model.Customer',
          });
          this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customers/show_account');
       },
+      setGetCustomersUrl : function()
+      {
+         this.getProxy().setActionMethods(
+         {
+            read : 'GET'
+         });
+         this.getProxy().setUrl(Genesis.constants.host + '/api/v1/customers');
+      },
       setVenueScanCheckinUrl : function()
       {
          this.setVenueCheckinUrl();

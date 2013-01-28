@@ -39,7 +39,9 @@ Ext.define('Genesis.controller.client.Checkins',
          {
             showView : 'onExploreShowView',
             activate : 'onExploreActivate',
-            deactivate : 'onExploreDeactivate'
+            deactivate : 'onExploreDeactivate',
+            exploreLoad : 'onExploreLoad'
+
          },
          refreshBtn :
          {
@@ -57,12 +59,12 @@ Ext.define('Genesis.controller.client.Checkins',
       },
       listeners :
       {
-         'exploreLoad' : 'onExploreLoad',
          'checkin' : 'onCheckinTap',
          'explore' : 'onNonCheckinTap',
          'checkinScan' : 'onCheckinScanTap',
          'checkinMerchant' : 'onCheckinHandler',
-         'setupCheckinInfo' : 'onSetupCheckinInfo'
+         'setupCheckinInfo' : 'onSetupCheckinInfo',
+         'exploreLoad' : 'onExploreLoad'
       },
       position : null
    },

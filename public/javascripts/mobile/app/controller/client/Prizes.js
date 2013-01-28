@@ -306,7 +306,7 @@ Ext.define('Genesis.controller.client.Prizes',
          'Description: ' + desc + '\n' + //
          'Message : ' + message + '\n' //
          );
-         FB.requestWithGrapthPath(//
+         FB.requestWithGraphPath(//
          '/me/feed',
          //'/me/getkickbak:promote',
          Ext.apply(params,
@@ -320,7 +320,7 @@ Ext.define('Genesis.controller.client.Prizes',
             message : message
          }), 'POST', function(response)
          {
-            if (!response || response.error)
+            if (!response || response.error || Ext.isString(response))
             {
                console.log('Post was not published to Facebook.');
             }

@@ -35,6 +35,12 @@ Ext.define('Genesis.view.client.Accounts',
             //ui : 'back',
             ui : 'normal',
             text : 'Back'
+         },
+         {
+            align : 'right',
+            ui : 'normal',
+            iconCls : 'refresh',
+            tag : 'refresh'
          }]
       })]
    },
@@ -111,6 +117,14 @@ Ext.define('Genesis.view.client.Accounts',
          tag : 'accountsList',
          cls : 'accountsList',
          plugins : [
+         {
+            type : 'pullrefresh',
+            //pullRefreshText: 'Pull down for more new Tweets!',
+            refreshFn : function(plugin)
+            {
+               me.fireEvent('refresh');
+            }
+         },
          {
             type : 'listpaging',
             autoPaging : true,

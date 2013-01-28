@@ -34,6 +34,7 @@ Ext.define('Genesis.controller.client.Accounts',
          accountsList : 'clientaccountsview list[tag=accountsList]',
          venuesList : 'clientaccountsview list[tag=venuesList]',
          transferHdr : 'clientaccountsview toolbar[tag=transferHdr]',
+         refreshBtn : 'clientaccountsview button[tag=refresh]',
          //
          // Account Transfers
          //
@@ -62,7 +63,12 @@ Ext.define('Genesis.controller.client.Accounts',
             showView : 'onShowView',
             activate : 'onActivate',
             deactivate : 'onDeactivate',
-            activeitemchange : 'onItemChangeActivate'
+            activeitemchange : 'onItemChangeActivate',
+            refresh : 'onRefresh'
+         },
+         refreshBtn :
+         {
+            tap : 'onRefresh'
          },
          accountsList :
          {
@@ -327,6 +333,33 @@ Ext.define('Genesis.controller.client.Accounts',
                   }
                });
             }
+         }
+      });
+   },
+   onRefresh : function()
+   {
+      var me = this;
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.establishConnectionMsg
+      });
+      Customer['setGetCustomersUrl']();
+      Ext.StoreMgr.get('CustomerStore').load(
+      {
+         jsonData :
+         {
+         },
+         callback : function(records, operation)
+         {
+            if (operation.wasSuccessful())
+            {
+               // Remove all previous view from viewStack
+               var controller = me.getApplication().getController('client.' + 'Checkins');
+               controller.fireEvent('setupCheckinInfo', 'checkin', null, null, null);
+               me.persistSyncStores('CustomerStore');
+            }
+            Ext.Viewport.setMasked(null);
          }
       });
    },

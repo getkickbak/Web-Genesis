@@ -68,13 +68,14 @@ Ext.define('Genesis.view.client.CheckinExplore',
    disableAnimation : true,
    createView : function()
    {
-      if (!this.callParent(arguments))
+      var me = this;
+      if (!me.callParent(arguments))
       {
          //this.query('list')[0].refresh();
          return;
       }
       var itemHeight = 1 + Math.max(Genesis.constants.defaultIconSize(), Genesis.fn.calcPx(0.75, 1) * 4 + Genesis.fn.calcPx(0.7 * 0.6, 1));
-      this.getPreRender().push(Ext.create('Ext.List',
+      me.getPreRender().push(Ext.create('Ext.List',
       {
          xtype : 'list',
          store : 'CheckinExploreStore',
@@ -86,8 +87,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
             //pullRefreshText: 'Pull down for more new Tweets!',
             refreshFn : function(plugin)
             {
-               var controller = _application.getController('client.Checkins');
-               controller.fireEvent('exploreLoad', true);
+               me.fireEvent('exploreLoad', true);
             }
          },
          {
