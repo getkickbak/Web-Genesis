@@ -32,11 +32,8 @@ class DashboardController < ApplicationController
         end
         user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => @tag.id)
         if not user_to_tag.nil?
-          logger.info("User exists for Tag(#{@tag.id})")
           user = User.get(user_to_tag.user_id)
-          logger.info("User status is: #{user.status}")
           if user && user.status == :pending
-            logger.info("Starting merge and add process")
             current_merchant_ids = []
             merchant_id_to_customer_id = {}
             current_customers_info = Customer.all(:fields => [:id, :merchant_id], :user => current_user, :status => :active)
@@ -65,9 +62,7 @@ class DashboardController < ApplicationController
               customer_id_to_merchant[merchant_id_to_customer_id[merchant.id]] = merchant
             end
             customers = Customer.all(:user => user, :status => :active)
-            logger.info("Tag customers: #{customers.length}")
             merge_customers = customers.all(:merchant_id => current_merchant_ids)
-            logger.info("Merge customers: #{merge_customers.length}")
             merge_customers.each do |merge_customer|
               customer = merchant_id_to_current_customer[customer_id_to_merchant[merge_customer.id].id]
               signup_points = customer_id_to_merchant[merge_customer.id].reward_model.signup_points
@@ -103,9 +98,7 @@ class DashboardController < ApplicationController
               )
             end
             add_customers = customers - merge_customers
-            logger.info("Add customers: #{add_customers.length}")
             add_customers.each do |add_customer|
-              logger.info("Migrating Customer(#{add_customer.id}) to User(#{current_user})")
               add_customer.user = current_user
               add_customer.save
               DataMapper.repository(:default).adapter.execute(
