@@ -16,6 +16,7 @@ class DashboardController < ApplicationController
     authorize! :update, current_user
 
     tag_id = params[:user_tag][:tag_id].strip
+    user = nil
     begin
       Customer.transaction do
         now = Time.now
