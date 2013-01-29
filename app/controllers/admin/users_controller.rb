@@ -76,7 +76,7 @@ module Admin
             @user.reset_password!(new_password, new_password)
             @user.reset_authentication_token!
             DataMapper.repository(:default).adapter.execute(
-              "UPDATE customers SET status = ? WHERE user_id = ? ", User::Statuses.index(@user.status)+1, @user.id
+              "UPDATE customers SET status = ?, update_ts = ? WHERE user_id = ? ", User::Statuses.index(@user.status)+1, Time.now, @user.id
             )
           end
           respond_to do |format|

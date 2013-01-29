@@ -648,7 +648,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         Request.set_status(@request, :complete)
         #posts = []
         #Resque.enqueue(ShareOnFacebook, @current_user.id, posts.to_json)
-        if tag && (@reward_info[:prize_points] > 1 || @reward_info[:badge_prize_points] > 0)
+        if tag && current_user.status != :pending && (@reward_info[:prize_points] > 1 || @reward_info[:badge_prize_points] > 0)
           UserMailer.reward_notif_email(@customer, @reward_info).deliver
         end
         if referral_challenge

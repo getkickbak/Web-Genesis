@@ -44,30 +44,34 @@ class Customer
   end
   
   def self.find(user_id, start, max)
-    count = Customer.count(:user_id => user_id)
-    customers_info = Customer.all(:fields => [:id, :merchant_id], :user_id => user_id, :status => :active, :order => [ :created_ts.desc ], :offset => start, :limit => max)
-    merchant_ids = []
-    merchant_id_to_customer_id = {}
-    customers_info.each do |customer_info|
-      merchant_ids << customer_info.merchant_id
-      merchant_id_to_customer_id[customer_info.merchant_id] = customer_info.id
-    end
-    merchants = Merchant.all(:id => merchant_ids)
-    customer_id_to_merchant = {}
-    merchants.each do |merchant|
-      customer_id_to_merchant[merchant_id_to_customer_id[merchant.id]] = merchant
-    end
-    customers = Customer.all(:user_id => user_id, :status => :active, :order => [ :created_ts.desc ], :offset => start, :limit => max)
-    customers.each do |customer|
-      customer.eager_load_merchant = customer_id_to_merchant[customer.id]
-    end
-    merchant_id_to_type_id = {}
-    merchant_to_types = MerchantToType.all(:fields => [:merchant_id, :merchant_type_id], :merchant_id => merchant_ids)
-    merchant_to_types.each do |merchant_to_type|
-      merchant_id_to_type_id[merchant_to_type.merchant_id] = merchant_to_type.merchant_type_id
-    end
-    customers.each do |customer|
-      customer.eager_load_merchant.eager_load_type = MerchantType.id_to_type[merchant_id_to_type_id[customer.eager_load_merchant.id]]
+    count = Customer.count(:user_id => user_id, :status => :active)
+    if count > 0
+      customers_info = Customer.all(:fields => [:id, :merchant_id], :user_id => user_id, :status => :active, :order => [ :created_ts.desc ], :offset => start, :limit => max)
+      merchant_ids = []
+      merchant_id_to_customer_id = {}
+      customers_info.each do |customer_info|
+        merchant_ids << customer_info.merchant_id
+        merchant_id_to_customer_id[customer_info.merchant_id] = customer_info.id
+      end
+      merchants = Merchant.all(:id => merchant_ids)
+      customer_id_to_merchant = {}
+      merchants.each do |merchant|
+        customer_id_to_merchant[merchant_id_to_customer_id[merchant.id]] = merchant
+      end
+      merchant_id_to_type_id = {}
+      merchant_to_types = MerchantToType.all(:fields => [:merchant_id, :merchant_type_id], :merchant_id => merchant_ids)
+      merchant_to_types.each do |merchant_to_type|
+        merchant_id_to_type_id[merchant_to_type.merchant_id] = merchant_to_type.merchant_type_id
+      end
+      customers = Customer.all(:user_id => user_id, :status => :active, :order => [ :created_ts.desc ], :offset => start, :limit => max)
+      customers.each do |customer|
+        customer.eager_load_merchant = customer_id_to_merchant[customer.id]
+      end
+      customers.each do |customer|
+        customer.eager_load_merchant.eager_load_type = MerchantType.id_to_type[merchant_id_to_type_id[customer.eager_load_merchant.id]]
+      end
+    else
+      customers = []  
     end
     result = {}
     result[:total] = count
