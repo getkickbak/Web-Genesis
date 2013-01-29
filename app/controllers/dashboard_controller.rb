@@ -133,6 +133,7 @@ class DashboardController < ApplicationController
                 WHERE user_id = ?", current_user.id, now, user.id
               )
             end
+            merge_customers.destroy
             user.destroy
           else
             @user_tag = UserTag.new(:tag_id => tag_id)
