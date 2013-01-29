@@ -190,7 +190,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
               user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
               if user_to_tag.nil? && tag.status == :pending
                 user_info = {}
-                user_info[:name] = "KICKBAK #{String.random_alphanumeric(8)}"
+                user_info[:name] = "User #{String.random_alphanumeric(8)}"
                 user_info[:email] = "#{String.random_alphanumeric(16)}@getkickbak.com"
                 user_info[:phone] = ""
                 user_info[:role] = "anonymous"

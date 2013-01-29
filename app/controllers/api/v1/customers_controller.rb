@@ -73,7 +73,8 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
   def show_jackpot_winners
     authorize! :read, Venue
     
-    winner_records = EarnPrizeRecord.all(:fields => [:user_id, :points, :created_ts], :merchant_id => params[:merchant_id], :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+    @jackpot_winners = []
+    winner_records = EarnPrizeRecord.all(:fields => [:user_id, :points, :created_ts], :merchant_id => params[:merchant_id], :type => :game, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     if winner_records.length > 0
       winner_ids = []
       winner_records.each do |winner_record|
@@ -84,11 +85,10 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       users.each do |user|
         user_id_to_user[user.id] = user
       end
-    end
-    @jackpot_winners = []
-    winner_records.each do |winner_record|
-      user = user_id_to_user[winner_record[:user_id]]
-      @jackpot_winners << { :name => user.name, :facebook_id => user.facebook_auth ? user.facebook_auth.uid : "", :points => winner_record[:points], :time => winner_record[:created_ts].to_i*1000 }
+      winner_records.each do |winner_record|
+        user = user_id_to_user[winner_record[:user_id]]
+        @jackpot_winners << { :name => user.name, :facebook_id => user.facebook_auth ? user.facebook_auth.uid : "", :points => winner_record[:points], :time => winner_record[:created_ts].to_i*1000 }
+      end
     end
     render :template => '/api/v1/customers/show_jackpot_winners'  
   end
