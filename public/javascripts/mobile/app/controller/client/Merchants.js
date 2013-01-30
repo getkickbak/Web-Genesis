@@ -373,7 +373,7 @@ Ext.define('Genesis.controller.client.Merchants',
       var feedContainer = me.getFeedContainer();
       if (feedContainer)
       {
-         feedContainer[activeItem.renderFeed ? 'show' : 'hide'];
+         feedContainer[(activeItem.renderFeed && (Ext.StoreMgr.get('NewsStore').getCount() > 0)) ? 'show' : 'hide'];
       }
 
       //me.getCheckinBtn()[(activeItem.showCheckinBtn) ? 'show':'hide']();

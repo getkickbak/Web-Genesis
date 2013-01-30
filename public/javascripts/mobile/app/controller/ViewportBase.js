@@ -32,7 +32,7 @@ Ext.define('Genesis.controller.ViewportBase',
          'viewportview button' :
          {
             tap : 'onButtonTap'
-         },
+         }
       }
    },
    mainPageStorePathToken : /\{platform_path\}/mg,
@@ -159,10 +159,16 @@ Ext.define('Genesis.controller.ViewportBase',
    },
    updateNews : function(news)
    {
+      var nstore = Ext.StoreMgr.get('NewsStore');
       if (news && (news.length > 0))
       {
          console.debug("Total News Items - " + news.length);
-         Ext.StoreMgr.get('NewsStore').setData(news);
+         nstore.setData(news);
+      }
+      else
+      {
+         console.debug("No News Items");
+         nstore.removeAll();
       }
    },
    updateAuthCode : function(metaData)
@@ -202,6 +208,9 @@ Ext.define('Genesis.controller.ViewportBase',
          //
          if (me.updateAuthCode(metaData))
          {
+            viewport.setLoggedIn(true);
+            viewport.fireEvent('updateDeviceToken');
+            
             // No Venue Checked-In from previous session
             if (!db['last_check_in'])
             {
@@ -283,6 +292,8 @@ Ext.define('Genesis.controller.ViewportBase',
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
+   onCompleteRefreshCSRF : Ext.emptyFn,
+   onUpdateDeviceToken : Ext.emptyFn,
    onActivate : function()
    {
       var me = this;
@@ -451,7 +462,14 @@ Ext.define('Genesis.controller.ViewportBase',
       }
       else
       {
-         me.goToMerchantMain(true);
+         if (!me.getLoggedIn || me.getLoggedIn())
+         {
+            me.goToMerchantMain(true);
+         }
+         else
+         {
+            me.redirectTo('login');
+         }
       }
    },
    // --------------------------------------------------------------------------

@@ -74,7 +74,7 @@ Ext.define('Genesis.controller.client.Rewards',
    signupPromotionTitle : 'Welcome!',
    referralPageTitle : 'Refer A Friend',
    referralPromotionTitle : 'Referral Award',
-   prizeCheckMsg : 'Play our Instant Win Game to find out how many Prize Pts you won!',
+   prizeCheckMsg : 'Play our Instant Win Game to win Bonus Prize Points!',
    signupPromotionMsg : function(points)
    {
       return 'You\'ve earned ' + points + ' Reward Pts from Signing Up for this merchant!';
@@ -416,7 +416,15 @@ Ext.define('Genesis.controller.client.Rewards',
                {
                   Ext.device.Notification.beep();
                   //Genesis.db.removeLocalDBAttrib('last_check_in');
+
+                  //
+                  // Refresh screen on first visit
+                  //
                   me.fireEvent('triggerCallbacksChain');
+                  if (viewport.getCustomer().get('visits') == 0)
+                  {
+                     me.getRewards().cleanView(me.getApplication().getController('client' + '.Checkins').getExplore());
+                  }
                }
             }
          });

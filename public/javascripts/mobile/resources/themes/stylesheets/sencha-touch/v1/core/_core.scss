@@ -5,6 +5,7 @@
 // Mask
 //------------------------------------------------------------------------------
 .x-mask {
+   $min-width: 8.5em;
    //background:rgba($BlueMask, 0.4) center center no-repeat;
    &.transmit-mask {
       @include custom-linear-gradient($GreyStart 40%, $GreyEnd 70%, top);
@@ -28,6 +29,14 @@
          color:white;
          font-weight:bold;
       }
+   }
+   .x-mask-message {
+      padding-left:$panelGap*3;
+      padding-right:$panelGap*3;
+      bottom: 1.7em * (0.95em / $largeFontSize);
+      font-size:$largeFontSize;
+      max-width: 13em * (0.95em / $largeFontSize);
+      min-width: $min-width * (0.95em / $largeFontSize);
    }
 }
 

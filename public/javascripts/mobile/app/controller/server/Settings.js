@@ -139,7 +139,7 @@ Ext.define('Genesis.controller.server.Settings',
       var me = this;
       Ext.device.Notification.show(
       {
-         title : 'Confirmation Required',
+         title : 'Licence Key Refresh',
          message : me.proceedToUpdateLicenseMsg,
          buttons : ['Proceed', 'Cancel'],
          callback : function(btn)

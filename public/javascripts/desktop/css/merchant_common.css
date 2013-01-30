@@ -57,3 +57,7 @@ body {
 .disabled {
    color : #999;
 }
+
+.widget-header h3 {
+	width:70%;
+}

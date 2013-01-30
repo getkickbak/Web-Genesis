@@ -59,7 +59,7 @@ Ext.define('Genesis.controller.PrizeRedemptionsBase',
       {
       }
    },
-   scanPlayTitle : 'Swipe and Play',
+   scanPlayTitle : 'Spin and Play',
    init : function()
    {
       var me = this;

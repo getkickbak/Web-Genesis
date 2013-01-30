@@ -116,7 +116,7 @@ function initPushwoosh()
       appname : pushNotifAppName
    }, function(status)
    {
-      var deviceToken = status['deviceToken'];
+      var deviceToken = status['deviceToken'], viewport;
       console.debug('registerDevice: ' + deviceToken);
       Genesis.constants.device =
       {
@@ -124,26 +124,9 @@ function initPushwoosh()
          'device_id' : deviceToken
       };
 
-      var mainPage = _application.getController('client' + '.MainPage'), viewport = _application.getController('client' + '.Viewport');
-      if (viewport.getLoggedIn() && !mainPage.updatedDeviceToken)
+      if (_application && (( viewport = _application.getController('client' + '.Viewport')) != null))
       {
-         Account['setUpdateRegUserDeviceUrl']();
-         console.log("setUpdateRegUserDeviceUrl - Refreshing Device Token ...");
-         Account.getProxy().supressErrorsPopup = true;
-         Account.load(0,
-         {
-            jsonData :
-            {
-            },
-            params :
-            {
-               device : Ext.encode(Genesis.constants.device)
-            },
-            callback : function(record, operation)
-            {
-               Account.getProxy().supressErrorsPopup = false;
-            }
-         });
+      	viewport.fireEvent('updateDeviceToken');
       }
    }, function(status)
    {
@@ -152,18 +135,31 @@ function initPushwoosh()
       //navigator.notification.alert(JSON.stringify(['failed to register ', status]));
    });
 
-   pushNotification.setApplicationIconBadgeNumber(0);
+   //pushNotification.setApplicationIconBadgeNumber(0);
 
    document.addEventListener('push-notification', function(event)
    {
-      var notification = event.notification;
-      Ext.device.Notification.show(
+      if (event.notification)
       {
-         title : 'Push Notification Alert',
-         message : notification.aps.alert,
-         buttons : ['OK']
-      });
-      //navigator.notification.alert(notification.aps.alert);
-      pushNotification.setApplicationIconBadgeNumber(0);
+         var notification = event.notification, userData = notification.u;
+         //if ( typeof (userData) != "undefined")
+         console.debug('push notifcation - [' + JSON.stringify(event.notification) + ']');
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'KICKBAK Notification',
+               message : notification.aps.alert,
+               buttons : ['View Details', 'Cancel'],
+               callback : function(btn)
+               {
+                  if (btn.toLowerCase() == 'view details')
+                  {
+                  }
+               }
+            });
+            //navigator.notification.alert(notification.aps.alert);
+            //pushNotification.setApplicationIconBadgeNumber(0)
+         }
+      }
    });
 }

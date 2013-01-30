@@ -35,7 +35,7 @@ Ext.define('Genesis.controller.client.Prizes',
          redemptionsPts : 'clientprizesview component[tag=points]',
          redemptionsPtsEarnPanel : 'clientprizesview dataview[tag=ptsEarnPanel]',
          //
-         // Swipe and Play Rewards Page
+         // Spin and Play Rewards Page
          //
          prizeCheckScreen : 'clientrewardsview',
          //
@@ -108,7 +108,7 @@ Ext.define('Genesis.controller.client.Prizes',
    },
    wonPrizeEmailMsg : function(prizeName, venueName)
    {
-      return ('I just won enough Prize Points to redeem ' + prizeName + ' for eating out at ' + venueName + '!');
+      return ('I just won enough Prize Points to redeem "' + prizeName + '" from ' + venueName + '!');
    },
    getBadgePrizeMsg : function(points, badge)
    {
@@ -211,7 +211,7 @@ Ext.define('Genesis.controller.client.Prizes',
          var wsite = venue.get('website') ? venue.get('website').split(/http[s]*:\/\//) : [null];
          var name = venue.get('name');
          var link = wsite[wsite.length - 1] || site;
-         var desc = venue.get('description').trunc(256);
+         var desc = me.redeemFbMsg;//venue.get('description').trunc(256);
          var message = me.wonPrizeEmailMsg(earnprize.get('title'), venue.get('name'));
          var params =
          {
@@ -383,7 +383,7 @@ Ext.define('Genesis.controller.client.Prizes',
             Ext.Viewport.setMasked(null);
             if (eligible)
             {
-               me.updatingPrizeOnFacebook(prize);
+               //me.updatingPrizeOnFacebook(prize);
             }
             if (info['badge_prize_points'] > 0)
             {

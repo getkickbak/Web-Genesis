@@ -207,7 +207,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
       // -----------------------------------------------------------------------
       // What can I get ?
       // -----------------------------------------------------------------------
-      if (this.renderFeed && (Ext.StoreMgr.get('NewsStore').getCount() > 0))
+      if (this.renderFeed)// && (Ext.StoreMgr.get('NewsStore').getCount() > 0))
       {
          this.getPreRender().push(Ext.create('Ext.Container',
          {
@@ -236,7 +236,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
                   items : [
                   {
                      xtype : 'title',
-                     title : 'Latest Deals'
+                     title : 'Latest News'
                   },
                   {
                      xtype : 'spacer'

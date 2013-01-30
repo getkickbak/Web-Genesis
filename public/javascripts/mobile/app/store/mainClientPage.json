@@ -34,13 +34,6 @@
          "pageCntlr": "client.Accounts",
          "subFeature": "transfer"
       }, {
-         "name": "Meal Stop",
-         "photo_url": "resources/themes/images/{platform_path}/mainicons/tocheckedinmerch.png",
-         "desc": "Go back to your last Checked-in Venue",
-         "pageCntlr": "client.MainPage",
-         "subFeature": "merchant",
-         "hide": "true"
-      }, {
          "name": "Receive Referrals",
          "photo_url": "resources/themes/images/{platform_path}/mainicons/referral.png",
          "desc": "Receive Referrals from other KickBak users",

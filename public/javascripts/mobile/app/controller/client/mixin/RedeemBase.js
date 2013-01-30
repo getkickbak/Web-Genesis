@@ -7,6 +7,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
    config :
    {
    },
+   redeemFbMsg : 'Use your KICKBAK card or mobile app to earn rewards in your local area',
    needPointsMsg : function(pointsDiff)
    {
       return ('You need ' + pointsDiff + ' more points ' + Genesis.constants.addCRLF() + 'to be eligible for this item.');
@@ -17,7 +18,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
    updateOnFbMsg : 'Would you like to tell your friends on Facebook about it?',
    redeemItemEmailMsg : function(redemptionName, venueName)
    {
-      return ('I just got a FREE ' + redemptionName + ' for eating out at ' + venueName + '!');
+      return ('I just got "' + redemptionName + '" from ' + venueName + '!');
    },
    updatingRedemptionOnFacebook : function(earnprize)
    {
@@ -26,7 +27,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
       {
          var viewport = me.getViewPortCntlr(), venue = viewport.getVenue(), site = Genesis.constants.site;
          var wsite = venue.get('website') ? venue.get('website').split(/http[s]*:\/\//) : [null];
-         var name = venue.get('name'), link = wsite[wsite.length - 1] || site, desc = venue.get('description').trunc(256);
+         var name = venue.get('name'), link = wsite[wsite.length - 1] || site, desc = me.redeemFbMsg;//venue.get('description').trunc(256);
          var message = me.redeemItemEmailMsg(earnprize.get('title'), venue.get('name'));
          var params =
          {

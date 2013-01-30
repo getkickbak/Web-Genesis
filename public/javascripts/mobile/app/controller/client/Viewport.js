@@ -112,7 +112,8 @@ Ext.define('Genesis.controller.client.Viewport',
       },
       listeners :
       {
-         'completeRefreshCSRF' : 'onCompleteRefreshCSRF'
+         'completeRefreshCSRF' : 'onCompleteRefreshCSRF',
+         'updateDeviceToken' : 'onUpdateDeviceToken'
       }
    },
    fbShareSuccessMsg : 'Posted on your Facebook Timeline!',
@@ -164,6 +165,35 @@ Ext.define('Genesis.controller.client.Viewport',
          },
          scope : me
       });
+   },
+   onUpdateDeviceToken : function()
+   {
+      var me = this, mainPage = me.getApplication().getController('client' + '.MainPage');
+
+      if (me.getLoggedIn() && Genesis.constants.device && mainPage && !mainPage.updatedDeviceToken)
+      {
+         Account['setUpdateRegUserDeviceUrl']();
+         console.log("setUpdateRegUserDeviceUrl - Refreshing Device Token ...");
+         Account.getProxy().supressErrorsPopup = true;
+         Account.load(0,
+         {
+            jsonData :
+            {
+            },
+            params :
+            {
+               device : Ext.encode(Genesis.constants.device)
+            },
+            callback : function(record, operation)
+            {
+               Account.getProxy().supressErrorsPopup = false;
+               if (operation.wasSuccessful())
+               {
+                  mainPage.updatedDeviceToken = true;
+               }
+            }
+         });
+      }
    },
    // --------------------------------------------------------------------------
    // Button Handlers
