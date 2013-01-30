@@ -18,7 +18,7 @@
 						<td height="10"></td><td></td>
 					</tr>
 					<tr>
-						<td style="padding:10px 15px">
+						<td style="border-top:1px solid #ccc;padding:10px 15px">
 						<table width="100%" border="0" cellspacing="0" cellpadding="0">
 							<tbody>
 								<tr valign="middle">
@@ -35,22 +35,22 @@
 									<table width="100%" border="0" cellspacing="0" cellpadding="0">
 										<tbody>
 										<tr>
-											<td colspan="2" style="padding-bottom: 5px;">
+											<td colspan="2" style="padding-bottom: 10px;">
 											Thank you for your recent visit to <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@customer.merchant) %>"><%= "#{@customer.merchant.name}" %></a>.
 											</td>
 										</tr>
 										<% if @reward_info[:birthday_points] > 0 %>
 										<tr>
-											<td>
-											Happy Birthday! To celebrate your big day, you are given <b><%= "#{@reward_info[:birthday_points]}" %> bonus points</b>!
+											<td style="padding:5px;background-color:#faf9e4;">
+											Happy Birthday! To celebrate your big day, you are given <b style="color:#e65407;"><%= "#{@reward_info[:birthday_points]}" %> bonus points</b>!
 											</td>
-											<td style="padding-left:10px;">
+											<td style="padding:5px;background-color:#faf9e4;">
 												<img style="width:40px;" src="http://files.getkickbak.com/v1/icons/miscicons/birthday.png">
 											</td>
 										<tr>
 										<% if @reward_info[:prize_points] > 1 || @reward_info[:badge_prize_points] > 0 %>
 										<tr>
-											<td colspan="2" style="padding: 5px 0 5px 0;">
+											<td colspan="2" style="padding: 10px 0 10px 0;">
 											Plus ...
 											</td>
 										</tr>	
@@ -58,13 +58,13 @@
 										<% end %>		
 										<% if @reward_info[:prize_points] > 1 %>
 										<tr>
-											<td>
+											<td style="padding:5px;background-color:#faf9e4;">
 											<% if @reward_info[:birthday_points] == 0 %>
 												Congrats! 
 											<% end %>
-												You just won a jackpot of <b><%= "#{@reward_info[:prize_points]}" %> prize points</b>! Someone is lucky today.
+												You just won a jackpot of <b style="color:#e65407;"><%= "#{@reward_info[:prize_points]}" %> prize points</b>! Someone is lucky today.
 											</td>
-											<td style="padding-left:10px;">
+											<td style="padding:5px;background-color:#faf9e4;">
 												<img style="width:40px;" src="http://files.getkickbak.com/v1/icons/miscicons/prizes.png">
 											</td>
 										</tr>
@@ -72,28 +72,29 @@
 										<% if @reward_info[:badge_prize_points] > 0 %>
 										<% Common.populate_badge(@customer.badge, :iphone, :mxhdpi) %>
 										<tr>
-											<td>
+											<td style="padding:5px;background-color:#faf9e4;">
 											<% if @reward_info[:prize_points] > 1 %>
-												You are also promoted to <b><%= "#{@customer.badge.type.display_value}" %></b>
+												You are also promoted to <b style="color:#c41200;"><%= "#{@customer.badge.type.display_value}" %></b>
 											<% else %>
-												You just got promoted to <b><%= "#{@customer.badge.type.display_value}" %></b>
+												You just got promoted to <b style="color:#c41200;"><%= "#{@customer.badge.type.display_value}" %></b>
 											<% end %>
-												and rewarded with extra <b><%= "#{@reward_info[:badge_prize_points]}" %> prize points</b>.
+												and rewarded with extra <b style="color:#e65407;"><%= "#{@reward_info[:badge_prize_points]}" %> prize points</b>.
 											</td>
-											<td style="padding-left:10px;">
+											<td style="padding:5px;background-color:#faf9e4;">
 												<img style="width:40px;" src="<%= @customer.badge.custom ? @customer.badge.custom_type.thumbnail_medium_url : @customer.badge.type.thumbnail_medium_url %>">
 											</td>
 										</tr>
 										<% end %>
 										<tr>
-											<td colspan="2" style="padding-top: 5px;">
-												That's what we called customer love. <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@customer.merchant) %>">Find out what you can redeem now!</a>
+											<td colspan="2" style="padding-top: 10px;">
+												That's what we call customer love. <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@customer.merchant) %>">Find out what you can redeem now!</a>
 												<br>
 												<br>
 											</td>
 										</tr>
 										</tbody>
 									</table>
+									<br>
 									</td>
 								</tr>
 							</tbody>
@@ -110,7 +111,7 @@
 									<br>
 									<br>
 										<div style="font-size:10px;">
-											If you would like to modify your email notifications,
+											If you would like to change your email notification settings,
 											<a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= account_subscriptions_url %>">click here</a>
 										</div>	
 									<br>
