@@ -26,7 +26,7 @@
 										<%= link_to image_tag(@promotion.merchant.photo.thumbnail_ios_small.url), business_profile_url(@promotion.merchant) %>
 									</td>
 									<td>
-									<b><a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@promotion.merchant) %>"><%= "#{@customer.merchant.name}" %></a></b>	
+									<b><a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@promotion.merchant) %>"><%= "#{@promotion.merchant.name}" %></a></b>	
 									<br>
 									<br>
 									<%= @promotion.message %>
