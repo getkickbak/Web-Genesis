@@ -10,6 +10,7 @@ module Pushwoosh
           "application" => APP_PROP["PUSHWOOSH_APP_CODE"],
           "username" => APP_PROP["PUSHWOOSH_LOGIN"],
           "password" => APP_PROP["PUSHWOOSH_PASSWORD"],
+          "auth" => APP_PROP["PUSHWOOSH_APP_TOKEN"],
           "notifications" => [
             {
               #"send_date" => time || "now",
@@ -22,6 +23,7 @@ module Pushwoosh
               "data" => {
                 "merchant_id" => merchant_id 
               },
+              "platforms" => [1,3], # 1 - iOS; 2 - BB; 3 - Android; 4 - Nokia; 5 - Windows Phone; 7 - OS X              
               #"wp_type" => "Tile",
               #"wp_background" => "image.png",
               #"wp_count" => 3,
@@ -33,7 +35,7 @@ module Pushwoosh
           ]
         }
       }.to_json
-      #Rails.logger.debug("Body: #{body}")
+      #Rails.logger.info("Body: #{body}")
       call_api(service, body)
     end
     
