@@ -30,8 +30,8 @@
 									<br>
 									Congrats! 
 									<% if @reward_info[:prize_points] > 1 %>
-										You just won our jackpot of <b><%= "#{@reward_info[:prize_points]} prize points" %></b> at 
-										<a rel="nofollow" target="_blank" href="<%= "#{@customer.merchant.name}" %>"><%= "#{@customer.merchant.name}" %></a>
+										You just won a jackpot of <b><%= "#{@reward_info[:prize_points]} prize points" %></b> at 
+										<a rel="nofollow" target="_blank" href="<%=  business_profile_url(@customer.merchant) %>"><%= "#{@customer.merchant.name}" %></a>.
 									<% end %>
 									<% if @reward_info[:badge_prize_points] > 0 %>
 										<% if @reward_info[:prize_points] > 1 %>
@@ -40,13 +40,13 @@
 										Also, you are promoted to <%= "#{@customer.badge.type.display_value}" %> 
 										<% else %>
 										You just got promoted to <%= "#{@customer.badge.type.display_value}" %> at
-										<a rel="nofollow" target="_blank" href="<%= "#{@customer.merchant.name}" %>"><%= "#{@customer.merchant.name}" %></a>
+										<a rel="nofollow" target="_blank" href="<%=  business_profile_url(@customer.merchant) %>"><%= "#{@customer.merchant.name}" %></a>
 										<% end %>
-										and are rewarded with extra <b><%= "#{@reward_info[:badge_prize_points]} prize points</b>" %>
+										and rewarded with extra <b><%= "#{@reward_info[:badge_prize_points]} prize points" %></b>.
 									<% end %>	
 									<br>
 									<br>
-									<a rel="nofollow" target="_blank" href="<%= new_user_session_url %>">Find out what you can redeem now!</a>
+									<a rel="nofollow" target="_blank" href="<%=  business_profile_url(@customer.merchant) %>">Find out what you can redeem now!</a>
 									<br>
 									<br>
 									</td>

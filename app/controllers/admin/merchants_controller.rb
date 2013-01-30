@@ -97,14 +97,15 @@ module Admin
           type = MerchantType.id_to_type[params[:merchant][:type_id].to_i]
           @merchant.update_all(type, @merchant.visit_frequency, params[:merchant])
           if @merchant.status != previous_status && previous_status == :active
+            now = Time.now
             new_password = String.random_alphanumeric(8)
             @merchant.reset_password!(new_password, new_password)
             @merchant.reset_authentication_token!
             DataMapper.repository(:default).adapter.execute(
-              "UPDATE venues SET status = ? WHERE merchant_id = ?", Merchant::Statuses.index(@merchant.status)+1, @merchant.id
+              "UPDATE venues SET status = ?, update_ts = ? WHERE merchant_id = ?", Merchant::Statuses.index(@merchant.status)+1, now,  @merchant.id
             )
             DataMapper.repository(:default).adapter.execute(
-              "UPDATE customers SET status = ? WHERE merchant_id = ?", Merchant::Statuses.index(@merchant.status)+1, @merchant.id
+              "UPDATE customers SET status = ?, update_ts = ? WHERE merchant_id = ?", Merchant::Statuses.index(@merchant.status)+1, now, @merchant.id
             )
           end
           respond_to do |format|

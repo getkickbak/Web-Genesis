@@ -92,3 +92,7 @@ input[type="file"] {
 	text-align: right;
 	margin-right: 10px;
 }
+
+.sub-header {
+	margin-bottom: 20px;
+}

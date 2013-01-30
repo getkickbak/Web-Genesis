@@ -190,7 +190,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
               user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
               if user_to_tag.nil? && tag.status == :pending
                 user_info = {}
-                user_info[:name] = "KICKBAK #{String.random_alphanumeric(8)}"
+                user_info[:name] = "User #{String.random_alphanumeric(8)}"
                 user_info[:email] = "#{String.random_alphanumeric(16)}@getkickbak.com"
                 user_info[:phone] = ""
                 user_info[:role] = "anonymous"
@@ -590,7 +590,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           #logger.debug("max badge prize points: #{max_badge_prize_points}")
           badge_prize_points = Random.rand(max_badge_prize_points - min_badge_prize_points + 1) + min_badge_prize_points
           #logger.debug("badge_prize_points: #{badge_prize_points}")
-          @csutomer.customer_to_badge.destroy
+          @customer.customer_to_badge.destroy
           @customer.badge = next_badge
           @customer.prize_points += badge_prize_points
           @customer.next_badge_visits = 0
@@ -648,11 +648,11 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         Request.set_status(@request, :complete)
         #posts = []
         #Resque.enqueue(ShareOnFacebook, @current_user.id, posts.to_json)
-        if tag && (@reward_info[:prize_points] > 1 || @reward_info[:badge_prize_points] > 0)
+        if tag && current_user.status != :pending && (@reward_info[:prize_points] > 1 || @reward_info[:badge_prize_points] > 0)
           UserMailer.reward_notif_email(@customer, @reward_info).deliver
         end
         if referral_challenge
-          UserMailer.referral_challenge_confirm_email(referrer.user, @customer.user, @venue, referral_record).deliver
+          UserMailer.referral_challenge_confirm_email(referrer.user, @current_user, @venue, referral_record).deliver
         end
         render :template => '/api/v1/purchase_rewards/earn'
         logger.info(

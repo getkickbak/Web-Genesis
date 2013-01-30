@@ -1,4 +1,5 @@
 <% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/pages/merchant.css"/>
 <% end %>
 <% content_for :script do %>
 <script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
@@ -17,9 +18,14 @@
 									<%= image_tag @merchant.photo.url %>
 								</div>
 								<div>
-									<h5>Locations</h5>
+									<%= link_to @merchant.website, @merchant.website %>
+								</div>
+								<div>
+									<div class="sub-header">
+										<h5>Locations</h5>
+									</div>
 									<% @merchant.venues.each do |venue| %>
-									<div>
+									<div class="address">
 										<div>
 											<%= venue.name %>
 										</div>
@@ -27,10 +33,10 @@
 											<%= venue.address %>
 										</div>
 										<div>
-											<%= "#{venue.city}, #{venue.state}" %>
+											<%= "#{venue.city}, #{venue.state} #{venue.zipcode}" %> 
 										</div>
 										<div>
-											<%= venue.zipcode %>
+											<%= number_to_phone(venue.phone) %>
 										</div>
 									</div>
 									<% end %>
@@ -42,16 +48,18 @@
 				<div class="span8">
 					<div class="widget">
 						<div class="widget-content">
-							<h5>About Us</h5>
-							<p>
-								<%= @merchant.description %>
-							</p>
+							<div class="sub-header"><h5>About Us</h5></div>
+							<div>
+								<p>
+									<%= @merchant.description %>
+								</p>
+							</div>
 						</div>
 					</div>
 					<div class="widget">
 						<div class="widget-content">
 							<p class="lead">
-								You have <b><%= @customer.points %> points</b>
+								You have <b><%= @customer.points %> points</b> and <b><%= @customer.prize_points %> prize points
 							</p>
 						</div>
 					</div>
@@ -79,13 +87,6 @@
 									<% end %>
 								</tbody>
 							</table>
-						</div>
-					</div>
-					<div class="widget">
-						<div class="widget-content">
-							<p class="lead">
-								You have <b><%= @customer.prize_points %> prize points</b>
-							</p>
 						</div>
 					</div>
 					<div class="widget widget-table action-table">
