@@ -143,6 +143,20 @@ class Common
     return reward
   end
 
+  def self.populate_badge(badge, user_agent, resolution)
+    if badge.custom
+      badge_type_image = MerchantBadgeTypeImage.first(:merchant_badge_type_id => badge.custom_type.id)
+      badge_type = badge.custom_type
+    else
+      badge_type_image = BadgeTypeImage.first(:badge_type_id => badge.type.id) 
+      badge_type = badge.type 
+    end
+    
+    badge_type.thumbnail_small_url = "#{get_file_host}#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:small]}/#{badge_type_image.thumbnail_url}"
+    badge_type.thumbnail_medium_url = "#{get_file_host}#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:medium]}/#{badge_type_image.thumbnail_url}"
+    badge_type.thumbnail_large_url = "#{get_file_host}#{BadgeTypeImage.thumbnail_url_path[user_agent][resolution][:large]}/#{badge_type_image.thumbnail_url}"
+  end
+  
   def self.populate_badges(merchant, user_agent, resolution)
     badges = merchant.badges
     if merchant.custom_badges

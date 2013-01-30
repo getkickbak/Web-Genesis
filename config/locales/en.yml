@@ -329,7 +329,7 @@ en:
       email_subject_confirm_points_transfer: "Reward points transfer confirmation"
       email_subject_points_expiration_reminder: "Reminder - Use your points before they expire!"
       email_subject_reset_password: "Reset password instructions"
-      email_subject_reward_notif: "You won bonus prize points from %s"
+      email_subject_reward_notif: "You earned bonus points from %s"
   users:
       update_success: "Account was successfully updated."
       update_password_success: "Password was successfully updated." 

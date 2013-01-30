@@ -18,7 +18,7 @@
 						<td height="10"></td><td></td>
 					</tr>
 					<tr>
-						<td style="border:1px solid #ccc;padding:10px 15px">
+						<td style="padding:10px 15px">
 						<table width="100%" border="0" cellspacing="0" cellpadding="0">
 							<tbody>
 								<tr valign="middle">
@@ -28,10 +28,10 @@
 									<b>Hi <%= @referrer.name.split(' ')[0] %>,</b>
 									<br>
 									<br>
-									Your friend <%= @referral.name %> is now a customer at <%= @venue.name %>!
+									Your friend <%= @referral.name %> is now a customer at <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@venue.merchant) %>"><%= @venue.name %></a>!
 									<br>
 									<br>
-									To thank you for your referral, <%= @venue.name %> has awarded you <%= @record.points %> reward <%= t('api.point', :count => @record.points) %>!
+									To thank you for your referral, <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@venue.merchant) %>"><%= @venue.name %></a> has awarded you <%= @record.points %> reward <%= t('api.point', :count => @record.points) %>!
 									<br>
 									<br>
 									</td>
@@ -43,10 +43,10 @@
 								<tr>
 									<td align="center">
 									<br>
-										Questions or comments? Email us at <a rel="nofollow" ymailto="mailto:help@getkickbak.com" target="_blank" href="mailto:help@getkickbak.com">help@getkickbak.com</a>
+										Questions or comments? Email us at <a rel="nofollow" ymailto="mailto:help@getkickbak.com" target="_blank" style="text-decoration: none;" href="mailto:help@getkickbak.com">help@getkickbak.com</a>
 									<br>
 									<br>
-										Thanks from the <a rel="nofollow" target="_blank" href="<%= root_url %>">KICKBAK</a> team.
+										Thanks from the <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= root_url %>">KICKBAK</a> team.
 									<br>
 									<br>
 									</td>
