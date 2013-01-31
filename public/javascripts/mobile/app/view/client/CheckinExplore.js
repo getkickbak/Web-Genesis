@@ -52,7 +52,7 @@ Ext.define('Genesis.view.client.CheckinExplore',
             {
                iconCls : 'rewards',
                tag : 'rewardsSC',
-               text : 'Earn Pts'
+               text : 'Earn Points'
             }],
             listeners :
             {

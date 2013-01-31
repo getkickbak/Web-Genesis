@@ -210,7 +210,7 @@ Ext.define('Genesis.controller.ViewportBase',
          {
             viewport.setLoggedIn(true);
             viewport.fireEvent('updateDeviceToken');
-            
+
             // No Venue Checked-In from previous session
             if (!db['last_check_in'])
             {

@@ -31,12 +31,11 @@
       }
    }
    .x-mask-message {
-      padding-left:$panelGap*3;
-      padding-right:$panelGap*3;
-      bottom: 1.7em * (0.95em / $largeFontSize);
-      font-size:$largeFontSize;
-      max-width: 13em * (0.95em / $largeFontSize);
-      min-width: $min-width * (0.95em / $largeFontSize);
+      padding:0 $panelGap 2*$panelTopGap $panelGap;
+      bottom: 0;
+      font-size:$normalFontSize*1.15;
+      max-width: 13em * (1em / ($normalFontSize*1.15));
+      min-width: $min-width * (1em / ($normalFontSize*1.15));
    }
 }
 
