@@ -13,11 +13,11 @@
 					<div class="widget">
 						<div class="widget-content">
 							<div>
-								<h4><%= @merchant.name %></h4>
-								<div>
+								<div class="sub-header"><h4><%= @merchant.name %></h4></div>
+								<div class="merchant-photo">
 									<%= image_tag @merchant.photo.url %>
 								</div>
-								<div>
+								<div class="merchant-website">
 									<%= link_to @merchant.website, @merchant.website %>
 								</div>
 								<div>
@@ -25,7 +25,7 @@
 										<h5>Locations</h5>
 									</div>
 									<% @merchant.venues.each do |venue| %>
-									<div class="address">
+									<div class="merchant-address">
 										<div>
 											<%= venue.name %>
 										</div>
@@ -59,7 +59,7 @@
 					<div class="widget">
 						<div class="widget-content">
 							<p class="lead">
-								You have <b><%= @customer.points %> points</b> and <b><%= @customer.prize_points %> prize points
+								You have <b class="merchant-points"><%= @customer.points %> points</b> and <b class="merchant-points"><%= @customer.prize_points %> prize points</b>
 							</p>
 						</div>
 					</div>
@@ -71,7 +71,7 @@
 							<h3>Rewards</h3>
 						</div>
 						<div class="widget-content">
-							<table class="table table-striped table-bordered">
+							<table class="table">
 								<thead>
 									<tr>
 										<th>Rewards</th>
@@ -81,7 +81,14 @@
 								<tbody>
 									<% rewards.each do |customer_reward| %>
 									<tr>
-										<td><%= customer_reward.title %></td>
+										<td>
+											<% if customer_reward.photo_url.to_s.empty? %>
+											<%= image_tag Common.get_default_customer_reward_file_path(@merchant.type.value, customer_reward.type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %>
+											<% else %>
+											<%= image_tag customer_reward.photo.thumbnail_ios_small.url, :style => "width:50px;margin-right:10px;" %>
+											<% end %>
+											<%= customer_reward.title %>
+										</td>
 										<td class="td-actions"><%= customer_reward.points %></td>
 									</tr>
 									<% end %>
@@ -95,7 +102,7 @@
 							<h3>Prizes</h3>
 						</div>
 						<div class="widget-content">
-							<table class="table table-striped table-bordered">
+							<table class="table">
 								<thead>
 									<tr>
 										<th>Prizes</th>
@@ -105,7 +112,14 @@
 								<tbody>
 									<% prizes.each do |customer_reward| %>
 									<tr>
-										<td><%= customer_reward.title %></td>
+										<td>
+											<% if customer_reward.photo_url.to_s.empty? %>
+											<%= image_tag Common.get_default_customer_reward_file_path(@merchant.type.value, customer_reward.type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %>
+											<% else %>
+											<%= image_tag customer_reward.photo.thumbnail_ios_small.url, :style => "width:50px;margin-right:10px;" %>
+											<% end %>
+											<%= customer_reward.title %>
+										</td>
 										<td class="td-actions"><%= customer_reward.points %></td>
 									</tr>
 									<% end %>

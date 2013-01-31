@@ -1,3 +1,15 @@
-.address {
+.merchant-photo {
 	margin-bottom: 10px;
+}
+
+.merchant-website {
+	margin-bottom: 10px;
+}
+
+.merchant-address {
+	margin-bottom: 10px;
+}
+
+.merchant-points {
+	color: #e65407;
 }

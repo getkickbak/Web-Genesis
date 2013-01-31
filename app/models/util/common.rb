@@ -47,6 +47,10 @@ class Common
     get_photo_host+generate_temp_file_path(filename)
   end
 
+  def self.get_default_customer_reward_file_path(merchant_type, reward_value, user_agent, resolution)
+    get_file_host+"v1/icons/#{merchant_type}items/#{user_agent}/#{resolution}/#{reward_value}.png"  
+  end
+  
   def self.within_geo_distance?(user, latitude_1, longitude_1, latitude_2, longitude_2)
     if !APP_PROP["SIMULATOR_MODE"] && user.role == "user"
       cal_distance = 6371000 * Math.acos( Math.cos( Math.radians( latitude_1 ) ) * Math.cos( Math.radians( latitude_2 ) ) * Math.cos( Math.radians( longitude_2 ) - Math.radians( longitude_1 ) ) + Math.sin( Math.radians( latitude_1 ) ) * Math.sin( Math.radians( latitude_2 ) ) )
@@ -159,42 +163,39 @@ class Common
   
   def self.populate_badges(merchant, user_agent, resolution)
     badges = merchant.badges
+    badge_ids = []
+    badges.each do |badge|
+      badge_ids << badge.id
+    end
+    badge_id_to_type_id = {}
+    badge_type_ids = []
+    badge_type_id_to_type = {}
     if merchant.custom_badges
-      badge_types = []
-      badges.each do |badge|
-        badge_types << badge.custom_type
+      badge_to_types = BadgeToMerchantType.all(:fields => [:badge_id, :merchant_badge_type_id], :badge_id => badge_ids)
+      badge_to_types.each do |badge_to_type|
+        badge_id_to_type_id[badge_to_type.badge_id] = badge_to_type.merchant_badge_type_id
+        badge_type_ids << badge_to_type.merchant_badge_type_id
       end
+      badge_types = Merchant_Badge_type.all(:id => badge_type_ids)
     else
-      badge_ids = []
-      badges.each do |badge|
-        badge_ids << badge.id
-      end
-      badge_id_to_type_id = {}
       badge_to_types = BadgeToType.all(:fields => [:badge_id, :badge_type_id], :badge_id => badge_ids)
       badge_to_types.each do |badge_to_type|
         badge_id_to_type_id[badge_to_type.badge_id] = badge_to_type.badge_type_id
+        badge_type_ids << badge_to_type.badge_type_id
       end
-      badge_types = []
-      badges.each do |badge|
-        badge.eager_load_type = BadgeType.id_to_type[badge_id_to_type_id[badge.id]]
-        badge_types << badge.eager_load_type
-      end
+      badge_types = Badge_type.all(:id => badge_type_ids)
     end
-    populate_badge_type_images(merchant, user_agent, resolution, merchant.custom_badges, badge_types)
+    badge_types.each do |badge_type|
+      badge_type_id_to_type[badge_type.id] = badge_type
+    end
+    badges.each do |badge|
+      badge.eager_load_type = badge_type_id_to_type[badge_id_to_type_id[badge.id]]
+    end
+    populate_badge_type_images(merchant.custom_badges, user_agent, resolution, badge_type_ids, badge_type_id_to_type)
     merchant.badges.sort_by { |b| b.rank }
   end
 
-  def self.populate_badge_type_images(merchant, user_agent, resolution, custom_badges, badge_types)
-    type_ids = []
-    badge_type_id_to_type = {}
-    badge_types.each do |badge_type|
-      badge_type.thumbnail_small_url = nil
-      badge_type.thumbnail_medium_url = nil
-      badge_type.thumbnail_large_url = nil
-      type_ids << badge_type.id
-      badge_type_id_to_type[badge_type.id] = badge_type
-    end
-   
+  def self.populate_badge_type_images(custom_badges, user_agent, resolution, type_ids, badge_type_id_to_type)
     if custom_badges
       badge_type_images = MerchantBadgeTypeImage.all(:merchant_badge_type_id => type_ids)
     else

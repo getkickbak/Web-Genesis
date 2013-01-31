@@ -85,10 +85,16 @@
 									<% @customers.each do |customer| %>
 									<tr>
 										<td>
-											<%= link_to image_tag(customer.eager_load_merchant.photo.thumbnail_ios_small.url), business_profile_path(customer.eager_load_merchant) %>
+											<div>
+											<%= link_to image_tag(customer.eager_load_merchant.photo.thumbnail_ios_small.url, :style => "width:50px;margin-right:10px;"), business_profile_path(customer.eager_load_merchant) %>
+											</div>
 											<%= link_to customer.eager_load_merchant.name, business_profile_path(customer.eager_load_merchant) %>
+											<%= link_to 'see rewards', business_profile_path(customer.eager_load_merchant) %>
 										</td>
-										<td class="td-actions"><%= customer.eager_load_badge.eager_load_type.display_value %></td>
+										<td class="td-actions">
+											<%= image_tag customer.eager_load_badge.eager_load_type.thumbnail_medium_url, :style => "width:40px;" %>
+											<%= customer.eager_load_badge.eager_load_type.display_value %>
+										</td>
 										<td class="td-actions"><%= customer.points %></td>
 										<td class="td-actions"><%= customer.prize_points %></td>
 									</tr>
@@ -107,3 +113,4 @@
 			</div>
 		</div>
 	</div>
+</div>

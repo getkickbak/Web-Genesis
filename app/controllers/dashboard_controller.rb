@@ -212,29 +212,64 @@ class DashboardController < ApplicationController
         merchant_id_to_merchant[merchant.id] = merchant
       end
       customer_to_badges = CustomerToBadge.all(:fields => [:customer_id, :badge_id], :customer_id => customer_ids)
+      all_badge_ids = []
       badge_ids = []
+      custom_badge_ids = []
+      badge_type_ids = []
       customer_id_to_badge_id = {}
       customer_to_badges.each do |customer_to_badge|
-        badge_ids << customer_to_badge.badge_id
+        all_badge_ids << customer_to_badge.badge_id
         customer_id_to_badge_id[customer_to_badge.customer_id] = customer_to_badge.badge_id 
       end
-      badges = Badge.all(:id => badge_ids)
+      badges = Badge.all(:id => all_badge_ids)
       badge_id_to_badge = {}
       badges.each do |badge|
         badge_id_to_badge[badge.id] = badge
+        if badge.custom
+          custom_badge_ids << badge.id
+        else
+          badge_ids << badge.id
+        end
       end    
       badge_id_to_type_id = {}
-      badge_to_types = BadgeToType.all(:fields => [:badge_id, :badge_type_id], :badge_id => badge_ids)
-      badge_to_types.each do |badge_to_type|
-        badge_id_to_type_id[badge_to_type.badge_id] = badge_to_type.badge_type_id
+      custom_badge_id_to_type_id = {}
+      if custom_badge_ids.length > 0
+        badge_to_types = BadgeToMerchantType.all(:fields => [:badge_id, :merchant_badge_type_id], :badge_id => custom_badge_ids)
+        badge_to_types.each do |badge_to_type|
+          custom_badge_id_to_type_id[badge_to_type.badge_id] = badge_to_type.merchant_badge_type_id
+          badge_type_ids << badge_to_type.merchant_badge_type_id
+        end
+        badge_types = MerchantBadgeType.all(:id => badge_type_ids)
+        custom_badge_type_id_to_type = {}
+        badge_types.each do |badge_type|
+          custom_badge_type_id_to_type[badge_type.id] = badge_type
+        end
+        Common.populate_badge_type_images(true, :iphone, :mxhdpi, badge_type_ids, custom_badge_type_id_to_type)
+      end
+      if badge_ids.length > 0
+        badge_to_types = BadgeToType.all(:fields => [:badge_id, :badge_type_id], :badge_id => badge_ids)
+        badge_to_types.each do |badge_to_type|
+          badge_id_to_type_id[badge_to_type.badge_id] = badge_to_type.badge_type_id
+          badge_type_ids << badge_to_type.badge_type_id
+        end
+        badge_types = BadgeType.all(:id => badge_type_ids)
+        badge_type_id_to_type = {}
+        badge_types.each do |badge_type|
+          badge_type_id_to_type[badge_type.id] = badge_type
+        end
+        Common.populate_badge_type_images(false, :iphone, :mxhdpi, badge_type_ids, badge_type_id_to_type)
       end
     end
-    @customers = Customer.all(:user => current_user, :status => :active, :order => [:update_ts.desc]).paginate(:page => params[:page])
+    @customers = Customer.all(:user => current_user, :status => :active, :order => [:update_ts.desc])
     @customers.each do |customer|
       customer.eager_load_merchant = merchant_id_to_merchant[customer_id_to_merchant_id[customer.id]]
       badge = badge_id_to_badge[customer_id_to_badge_id[customer.id]]
       customer.eager_load_badge = badge
-      customer.eager_load_badge.eager_load_type = BadgeType.id_to_type[badge_id_to_type_id[badge.id]]
+      if badge.custom
+        customer.eager_load_badge.eager_load_type = custom_badge_type_id_to_type[custom_badge_id_to_type_id[badge.id]]
+      else
+        customer.eager_load_badge.eager_load_type = badge_type_id_to_type[badge_id_to_type_id[badge.id]]
+      end
     end
   end
 end
