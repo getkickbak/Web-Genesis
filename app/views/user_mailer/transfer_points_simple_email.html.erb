@@ -1,8 +1,4 @@
-<% if @merchant.website.empty? %>
-<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.point', :count => @record.points) %> that can be used to redeem fabulous rewards at <%= @merchant.name %>!
-<% else %>
-<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.point', :count => @record.points) %> that can be used to redeem fabulous rewards at <a href="<%= @merchant.website %>"><%= @merchant.name %></a>!
-<% end %>
+<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.point', :count => @record.points) %> that can be used to redeem fabulous rewards at <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@merchant) %>"><%= @merchant.name %></a>!
 <br>
 <br>
 To deposit this transfer, scan the QR code in the attachment with your KICKBAK app.
@@ -11,7 +7,7 @@ To deposit this transfer, scan the QR code in the attachment with your KICKBAK a
 Expiry Date: <%= @record.expiry_date.strftime("%b %d, %Y") %>
 <br>
 <br>
-Haven't downloaded KICKBAK yet? Get it for your <a rel="nofollow" target="_blank" href="http://itunes.com/apps/kickbak">iPhone</a> or <a rel="nofollow" target="_blank" href="https://play.google.com/store/apps/details?id=com.getkickbak.kickbak">Android</a>
+Haven't downloaded KICKBAK yet? Get it for your <a rel="nofollow" target="_blank" style="text-decoration: none;" href="http://itunes.com/apps/kickbak">iPhone</a> or <a rel="nofollow" target="_blank" style="text-decoration: none;" href="https://play.google.com/store/apps/details?id=com.getkickbak.kickbak">Android</a>
 <br>
 <br>
-Also visit us online at <a rel="nofollow" target="_blank" href="http://getkickbak.com">getkickbak.com</a>
+Also visit us online at <a rel="nofollow" target="_blank" style="text-decoration: none;" href="http://getkickbak.com">getkickbak.com</a>

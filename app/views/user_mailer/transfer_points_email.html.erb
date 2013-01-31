@@ -17,7 +17,7 @@
 					</tr>
 					<tr><td height="10"></td><td></td></tr>
 					<tr>
-						<td style="border:1px solid #ccc;padding:10px 15px">
+						<td style="border-top:1px solid #ccc;padding:10px 15px">
 						<br>
 						<br>
 						&lt;Input your message here&gt;
@@ -26,11 +26,7 @@
 						<hr>
 						<br>
 						<br>
-						<% if @merchant.website.empty? %>
-						<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.point', :count => @record.points) %> that can be used to redeem fabulous rewards at <%= @merchant.name %>!
-						<% else %>
-						<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.point', :count => @record.points) %> that can be used to redeem fabulous rewards at <a href="<%= @merchant.website %>"><%= @merchant.name %></a>!
-						<% end %>
+						<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.point', :count => @record.points) %> that can be used to redeem fabulous rewards at <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@merchant) %>"><%= @merchant.name %></a>!
 						<br>
 						<br>
 						To deposit this transfer, scan the QR code in the attachment with your KICKBAK app.
@@ -43,10 +39,10 @@
 					<tr>
 						<td align="center" style="padding:10px">
 						<p>
-							Haven't downloaded KICKBAK yet? Get it for your <a rel="nofollow" target="_blank" href="http://itunes.com/apps/kickbak">iPhone</a> or <a rel="nofollow" target="_blank" href="https://play.google.com/store/apps/details?id=com.getkickbak.kickbak">Android</a>
+							Haven't downloaded KICKBAK yet? Get it for your <a rel="nofollow" target="_blank" style="text-decoration: none;" href="http://itunes.com/apps/kickbak">iPhone</a> or <a rel="nofollow" target="_blank" style="text-decoration: none;" href="https://play.google.com/store/apps/details?id=com.getkickbak.kickbak">Android</a>
 						</p>
 						<p>
-							Also visit us online at <a rel="nofollow" target="_blank" href="http://getkickbak.com">getkickbak.com</a>
+							Also visit us online at <a rel="nofollow" target="_blank" style="text-decoration: none;" href="http://getkickbak.com">getkickbak.com</a>
 						</p></td>
 						<td></td>
 					</tr>
