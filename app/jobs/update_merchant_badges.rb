@@ -31,7 +31,7 @@ module UpdateMerchantBadges
           badge = badge[i]
           badge.visits = BadgeType.visits[merchant.visit_frequency.value][badge_type.value]
           if badge.eager_load_type.id != badge_type.id
-            badge.type.destroy
+            badge.badge_to_type.destroy
             badge.type = badge_type
             badge.eager_load_type = badge_type
             badge.update_ts = now
