@@ -176,14 +176,14 @@ class Common
         badge_id_to_type_id[badge_to_type.badge_id] = badge_to_type.merchant_badge_type_id
         badge_type_ids << badge_to_type.merchant_badge_type_id
       end
-      badge_types = Merchant_Badge_type.all(:id => badge_type_ids)
+      badge_types = MerchantBadgeType.all(:id => badge_type_ids)
     else
       badge_to_types = BadgeToType.all(:fields => [:badge_id, :badge_type_id], :badge_id => badge_ids)
       badge_to_types.each do |badge_to_type|
         badge_id_to_type_id[badge_to_type.badge_id] = badge_to_type.badge_type_id
         badge_type_ids << badge_to_type.badge_type_id
       end
-      badge_types = Badge_type.all(:id => badge_type_ids)
+      badge_types = BadgeType.all(:id => badge_type_ids)
     end
     badge_types.each do |badge_type|
       badge_type_id_to_type[badge_type.id] = badge_type
