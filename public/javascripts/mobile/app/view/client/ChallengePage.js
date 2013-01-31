@@ -158,7 +158,7 @@ Ext.define('Genesis.view.client.ChallengePage',
    },
    _createView : function(carousel, items)
    {
-      var itemsPerPage = 6;
+      var me = this, itemsPerPage = 6;
 
       if (Ext.os.is('iOS'))
       {
@@ -213,7 +213,11 @@ Ext.define('Genesis.view.client.ChallengePage',
                },
                getPhoto : function(values)
                {
-                  return Ext.isEmpty(values.photo) ? Genesis.view.client.ChallengePage.getPhoto(values['type']) : values.photo.url;
+                  if (!values.photo || !values.photo.url)
+                  {
+                     return me.self.getPhoto(values['type']);
+                  }
+                  return values.photo.url;
                }
             })
          });

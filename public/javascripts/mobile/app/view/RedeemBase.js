@@ -55,7 +55,7 @@ Ext.define('Genesis.view.RedeemBase',
          {
             getPhoto : function(values)
             {
-               if (!values.photo)
+               if (!values.photo || !values.photo.url)
                {
                   return me.self.getPhoto(values['type']);
                }

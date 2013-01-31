@@ -183,7 +183,9 @@ Ext.define('Genesis.view.client.MerchantAccount',
    },
    createView : function()
    {
-      if (!this.callParent(arguments))
+      var me = this;
+      
+      if (!me.callParent(arguments))
       {
          return;
       }
@@ -191,7 +193,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
       // -----------------------------------------------------------------------
       // Merchant Photos and Customer Points
       // -----------------------------------------------------------------------
-      this.getPreRender().push(Ext.create('Ext.dataview.DataView',
+      me.getPreRender().push(Ext.create('Ext.dataview.DataView',
       {
          tag : 'tbPanel',
          xtype : 'dataview',
@@ -207,9 +209,9 @@ Ext.define('Genesis.view.client.MerchantAccount',
       // -----------------------------------------------------------------------
       // What can I get ?
       // -----------------------------------------------------------------------
-      if (this.renderFeed)// && (Ext.StoreMgr.get('NewsStore').getCount() > 0))
+      if (me.renderFeed)// && (Ext.StoreMgr.get('NewsStore').getCount() > 0))
       {
-         this.getPreRender().push(Ext.create('Ext.Container',
+         me.getPreRender().push(Ext.create('Ext.Container',
          {
             xtype : 'container',
             tag : 'feedContainer',
@@ -267,9 +269,9 @@ Ext.define('Genesis.view.client.MerchantAccount',
                   },
                   getPhoto : function(values)
                   {
-                     if (!values.photo)
+                     if (!values.photo || !values.photo.url)
                      {
-                        return Genesis.view.client.MerchantAccount.getPhoto(
+                        return me.self.getPhoto(
                         {
                            value : values['type']
                         });
@@ -290,7 +292,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
          }));
       };
 
-      this.setPreRender(this.getPreRender().concat([
+      me.setPreRender(me.getPreRender().concat([
       // -----------------------------------------------------------------------
       // Merchant Description Panel
       // -----------------------------------------------------------------------
