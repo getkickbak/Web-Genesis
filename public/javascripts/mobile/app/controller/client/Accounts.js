@@ -281,7 +281,6 @@ Ext.define('Genesis.controller.client.Accounts',
          xtype : 'loadmask',
          message : me.getVenueInfoMsg
       });
-      //Venue['setGetClosestVenueURL']();
       Venue['setFindNearestURL']();
       vstore.load(
       {

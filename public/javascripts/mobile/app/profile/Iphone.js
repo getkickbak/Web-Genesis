@@ -126,7 +126,7 @@ function initPushwoosh()
 
       if (_application && (( viewport = _application.getController('client' + '.Viewport')) != null))
       {
-      	viewport.fireEvent('updateDeviceToken');
+         viewport.fireEvent('updateDeviceToken');
       }
    }, function(status)
    {
@@ -141,9 +141,9 @@ function initPushwoosh()
    {
       if (event.notification)
       {
-         var notification = event.notification, userData = notification.u;
+         var notification = event.notification, userData = notification.u, viewport = _application.getController('client' + '.Viewport');
          //if ( typeof (userData) != "undefined")
-         console.debug('push notifcation - [' + JSON.stringify(event.notification) + ']');
+         console.debug('push notifcation - [' + JSON.stringify(notification) + ']');
          {
             Ext.device.Notification.show(
             {
@@ -154,6 +154,8 @@ function initPushwoosh()
                {
                   if (btn.toLowerCase() == 'view details')
                   {
+                     viewport.setApsPayload(userData)
+                     viewport.getGeoLocation();
                   }
                }
             });

@@ -6,6 +6,7 @@ Ext.define('Genesis.controller.client.Viewport',
    },
    config :
    {
+      apsPayload : null,
       loggedIn : false,
       customer : null,
       venue : null,
@@ -127,26 +128,48 @@ Ext.define('Genesis.controller.client.Viewport',
    // --------------------------------------------------------------------------
    onLocationUpdate : function(position)
    {
-      var me = this;
-      var app = me.getApplication();
-      var controller = app.getController('client.Checkins');
-      var cestore = Ext.StoreMgr.get('CheckinExploreStore');
-      var proxy = cestore.getProxy();
-
-      Venue['setFindNearestURL']();
-      cestore.load(
+      var me = this, payload = me.getApsPayload(), vstore = Ext.StoreMgr.get('VenueStore'), proxy = vstore.getProxy(), params =
       {
-         params :
+         'merchant_id' : payload['merchant_id']
+      };
+
+      //
+      // GeoLocation is optional
+      //
+      if (position)
+      {
+         params = Ext.apply(params,
          {
             latitude : position.coords.getLatitude(),
             longitude : position.coords.getLongitude()
-         },
+         });
+      }
+
+      Ext.Viewport.setMasked(
+      {
+         xtype : 'loadmask',
+         message : me.getVenueInfoMsg
+      });
+      Venue['setGetClosestVenueURL']();
+      vstore.load(
+      {
+         scope : me,
+         params : params,
          callback : function(records, operation)
          {
+         	me.setApsPayload(null);
+            Ext.Viewport.setMasked(null);
             if (operation.wasSuccessful())
             {
-               controller.setPosition(position);
-               controller.fireEvent('checkinScan');
+               var record = records[0];
+               if (records.length > 1)
+               {
+                  console.debug('Found ' + records.length + ' venues matching current location, pick the first one ...');
+               }
+
+               viewport.setVenue(record);
+               controller = me.getApplication().getController('client.Checkins');
+               controller.fireEvent('checkin');
             }
             else
             {
@@ -162,8 +185,7 @@ Ext.define('Genesis.controller.client.Viewport',
                   }
                });
             }
-         },
-         scope : me
+         }
       });
    },
    onUpdateDeviceToken : function()
