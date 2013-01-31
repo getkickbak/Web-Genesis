@@ -30,7 +30,7 @@ module Business
                 if i <= badges_size-1
                   badge = badge[i]
                   badge.custom = true
-                  badge.type.destroy
+                  badge.badge_to_type.destroy
                   badge.custom_type = merchant_badge_type
                   badge.update_ts = now
                 else  

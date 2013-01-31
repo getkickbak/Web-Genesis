@@ -14,15 +14,16 @@ class Badge
   attr_accessor :type_id, :eager_load_type
   
   has 1, :badge_to_type, :constraint => :destroy
-  has 1, :type, 'BadgeType', :through => :badge_to_type,  :via => :badge_type
-  has 1, :custom_type, 'MerchantBadgeType', :constraint => :destroy
+  has 1, :badge_to_merchant_type, :constraint => :destroy
+  has 1, :type, 'BadgeType', :through => :badge_to_type, :via => :badge_type
+  has 1, :custom_type, 'MerchantBadgeType', :through => :badge_to_merchant_type, :via => :merchant_badge_type
   
   def rank
-    if self.custom
-      self.custom_type.rank
+    if self.eager_load_type
+      self.eager_load_type.rank
     else
-      if self.eager_load_type
-        self.eager_load_type.rank
+      if self.custom
+        self.custom_type.rank
       else
         self.type.rank
       end
