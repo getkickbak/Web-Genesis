@@ -1,3 +1,6 @@
+<% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/pages/account_dashboard.css"/>
+<% end %>
 <% content_for :script do %>
 <script type="text/javascript">
 	$(document).ready($(function() {
@@ -60,9 +63,10 @@
 						</div>
 						<div class="widget-content">
 							<%= simple_form_for @user_tag, :url => register_tag_path, :html =>
-							{ :class => 'form-vertical' } do |f| %>
-							<%= f.input :tag_id, :label => false, :placeholder => "Enter Tag ID", :input_html=>{:class => "input-large"} %>
+							{ :class => 'form-inline' } do |f| %>
+							<%= f.input :tag_id, :label => false, :error => false, :placeholder => "Enter Tag ID", :input_html=>{:class => "input-medium"} %>
 							<%= f.button :submit , "Submit", :class => 'btn btn-primary' %>
+							<%= f.error :tag_id %>
 							<% end %>
 						</div>
 					</div>
@@ -85,18 +89,28 @@
 									<% @customers.each do |customer| %>
 									<tr>
 										<td>
+											<%= link_to image_tag(customer.eager_load_merchant.photo.thumbnail_ios_small.url, :class => "pull-left merchant-photo-small"), business_profile_path(customer.eager_load_merchant) %>
 											<div>
-											<%= link_to image_tag(customer.eager_load_merchant.photo.thumbnail_ios_small.url, :style => "width:50px;margin-right:10px;"), business_profile_path(customer.eager_load_merchant) %>
+												<p><span class="merchant-name-small"><%= link_to customer.eager_load_merchant.name, business_profile_path(customer.eager_load_merchant) %></span></p>
+												<% if customer.eligible_for_reward || customer.eligible_for_prize %>
+												<p class="reward-text">"Get your <span class="eligible-reward"><%= "#{@customer_id_to_reward[customer.id].title}" %></span> ... it is on us!"</p>
+												<% else %>
+												<p class="reward-text">"Earn more points to get your next reward"</p>
+												<% end %>
 											</div>
-											<%= link_to customer.eager_load_merchant.name, business_profile_path(customer.eager_load_merchant) %>
-											<%= link_to 'see rewards', business_profile_path(customer.eager_load_merchant) %>
 										</td>
 										<td class="td-actions">
-											<%= image_tag customer.eager_load_badge.eager_load_type.thumbnail_medium_url, :style => "width:40px;" %>
-											<%= customer.eager_load_badge.eager_load_type.display_value %>
+											<span class="merchant-badge-name-small"><%= customer.eager_load_badge.eager_load_type.display_value %></span>
+											<%= image_tag customer.eager_load_badge.eager_load_type.thumbnail_medium_url, :class => "merchant-badge-small" %>
 										</td>
-										<td class="td-actions"><%= customer.points %></td>
-										<td class="td-actions"><%= customer.prize_points %></td>
+										<td class="td-actions">
+											<%= customer.points %>
+											<p><%= link_to 'see rewards', business_profile_path(customer.eager_load_merchant) %><p>
+										</td>
+										<td class="td-actions">
+											<%= customer.prize_points %>
+											<p><%= link_to 'see prizes', business_profile_path(customer.eager_load_merchant) %></p>
+										</td>
 									</tr>
 									<% end %>
 									<% if @customers.length == 0 %>

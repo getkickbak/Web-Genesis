@@ -1,0 +1,25 @@
+.merchant-photo-small {
+	width: 60px;
+	margin-right: 10px;
+}
+
+.merchant-name-small {
+	font-weight: bold;
+	font-size: 14px;
+}
+
+.merchant-badge-small {
+	width: 40px;
+}
+
+.merchant-badge-name-small {
+	font-size: 11px;	
+}
+
+.reward-text {
+	font-style: italic;
+}
+
+.eligible-reward {
+	font-weight: bold;
+}

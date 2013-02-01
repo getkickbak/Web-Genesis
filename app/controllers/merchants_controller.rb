@@ -7,6 +7,8 @@ class MerchantsController < ApplicationController
     authorize! :read, @merchant
     
     @customer = Customer.first(:user => current_user, :merchant => @merchant) || not_found
+    Common.populate_badge(@customer.badge, :iphone, :mxhdpi)
+    @next_badge = Common.find_next_badge(@merchant.badges.to_a, @customer.badge)
     @customer_rewards = CustomerReward.all(:merchant => @merchant)
 
     respond_to do |format|

@@ -25,20 +25,12 @@
 										<h5>Locations</h5>
 									</div>
 									<% @merchant.venues.each do |venue| %>
-									<div class="merchant-address">
-										<div>
-											<%= venue.name %>
-										</div>
-										<div>
-											<%= venue.address %>
-										</div>
-										<div>
-											<%= "#{venue.city}, #{venue.state} #{venue.zipcode}" %> 
-										</div>
-										<div>
-											<%= number_to_phone(venue.phone) %>
-										</div>
-									</div>
+									<address>
+										<%= venue.name %><br>
+										<%= venue.address %><br>
+										<%= "#{venue.city}, #{venue.state} #{venue.zipcode}" %><br>
+										<%= number_to_phone(venue.phone) %>
+									</address>
 									<% end %>
 								</div>
 							</div>
@@ -59,8 +51,23 @@
 					<div class="widget">
 						<div class="widget-content">
 							<p class="lead">
-								You have <b class="merchant-points"><%= @customer.points %> points</b> and <b class="merchant-points"><%= @customer.prize_points %> prize points</b>
+								You have <span class="merchant-points"><%= @customer.points %> points</span> and <span class="merchant-points"><%= @customer.prize_points %> prize points</span>
 							</p>
+							<div>
+								<% if @customer.badge.custom %>
+								<%= image_tag @customer.badge.custom_type.thumbnail_medium_url, :class => "pull-left merchant-badge" %>
+								<div>
+									<p class="sub-lead">You are our <span class="merchant-badge-name"><%= @customer.badge.custom_type.display_value %></span></p>
+									<p class="sub-lead"><%= @next_badge.visits - @customer.next_badge_visits %> more visits to be our <span class="merchant-badge-name"><%= @next_badge.custom_type.display_value %></span></p>
+								</div>
+								<% else %>
+								<%= image_tag @customer.badge.type.thumbnail_medium_url, :class => "pull-left merchant-badge" %>
+								<div>
+									<p class="sub-lead">You are our <span class="merchant-badge-name"><%= @customer.badge.type.display_value %></span></p>
+									<p class="sub-lead"><%=@next_badge.visits - @customer.next_badge_visits %> more visits to be our <span class="merchant-badge-name"><%= @next_badge.type.display_value %></span></p>
+								</div>
+								<% end %>
+							</div>
 						</div>
 					</div>
 					<% rewards = @customer_rewards.all(:mode => :reward, :order => [:points.asc]) %>

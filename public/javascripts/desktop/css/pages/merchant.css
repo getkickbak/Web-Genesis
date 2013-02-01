@@ -11,5 +11,16 @@
 }
 
 .merchant-points {
+	font-weight: bold;
 	color: #e65407;
+}
+
+.merchant-badge {
+	width: 100px;
+	margin-right: 10px;
+}
+
+.merchant-badge-name {
+	font-weight: bold;
+	font-size: 16px;
 }

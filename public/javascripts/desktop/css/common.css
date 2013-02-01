@@ -94,5 +94,13 @@ input[type="file"] {
 }
 
 .sub-header {
-	margin-bottom: 10px;
+	margin-bottom: 20px;
 }
+
+.sub-lead {
+	font-size: 16px;
+}
+
+form.form-inline div.control-group { display: inline-block; }
+form.form-inline div.control-group div.controls { display: inline-block; }
+form.form-inline span.error { color: #b94a48; }

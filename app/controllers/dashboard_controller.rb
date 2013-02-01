@@ -260,6 +260,7 @@ class DashboardController < ApplicationController
         Common.populate_badge_type_images(false, :iphone, :mxhdpi, badge_type_ids, badge_type_id_to_type)
       end
     end
+    @customer_id_to_reward = {}
     @customers = Customer.all(:user => current_user, :status => :active, :order => [:update_ts.desc])
     @customers.each do |customer|
       customer.eager_load_merchant = merchant_id_to_merchant[customer_id_to_merchant_id[customer.id]]
@@ -269,6 +270,16 @@ class DashboardController < ApplicationController
         customer.eager_load_badge.eager_load_type = custom_badge_type_id_to_type[custom_badge_id_to_type_id[badge.id]]
       else
         customer.eager_load_badge.eager_load_type = badge_type_id_to_type[badge_id_to_type_id[badge.id]]
+      end
+    end
+    eligible_customers = @customers.all(:eligible_for_reward => true) + @customers.all(:eligible_for_prize => true)
+    eligible_customers.each do |customer|
+      if customer.eligible_for_reward && !customer.eligible_for_prize
+        reward = CustomerReward.first(:merchant_id => customer.eager_load_merchant.id, :mode => :reward, :points.lte => customer.points, :order => [:points.desc])
+        @customer_id_to_reward[customer.id] = reward
+      else
+        prize = CustomerReward.first(:merchant_id => customer.eager_load_merchant.id, :mode => :prize, :points.lte => customer.prize_points, :order => [:points.desc])
+        @customer_id_to_reward[customer.id] = prize
       end
     end
   end
