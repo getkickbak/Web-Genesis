@@ -145,9 +145,9 @@
 	display: table-cell;
 }
 
-.news-item-title {
-	font-size: 13px;
-	font-weight: 600;
+.news-item-misc {
+	font-size: 11px;
+	color: #777;
 }
 
 .news-item-date {
@@ -167,8 +167,6 @@
 
 .news-item-preview {
 	margin-bottom: 0;
-	
-	color: #777;
 }
 
 .news-item-month {

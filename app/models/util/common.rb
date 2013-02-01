@@ -217,7 +217,8 @@ class Common
   
   def self.get_news(venue)
     newsfeed = []
-    promotions = Promotion.all(:merchant => venue.merchant, :end_date.gte => Date.today)
+    today = Date.today
+    promotions = Promotion.all(:merchant => venue.merchant, :start_date.lte => today, :end_date.gte => today, :order => [:start_date.desc,:created_ts.desc])
     promotions.each do |promotion|
       newsfeed << News.new(
         {
