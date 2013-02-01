@@ -114,12 +114,12 @@ class UsersController < ApplicationController
           end
           respond_to do |format|
           #format.xml  { head :ok }
-            format.json { render :json => { :success => true, :message => t("users.update_facebook_info_success").split('\n') } }
+            format.json { render :json => { :success => true, :message => t("users.update_facebook_info_success").split(/\n/) } }
           end
         else
           respond_to do |format|
           #format.xml  { head :ok }
-            format.json { render :json => { :success => true, :message => t("users.facebook_account_already_exists_failure").split('\n') } }
+            format.json { render :json => { :success => true, :message => t("users.facebook_account_already_exists_failure").split(/\n/) } }
           end
         end
       end  

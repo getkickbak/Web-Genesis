@@ -10,7 +10,7 @@ class Api::V1::DevicesController < Api::V1::BaseApplicationController
     else
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.devices.get_encryption_key_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.devices.get_encryption_key_failure").split(/\n/) } }
       end
     end
   end

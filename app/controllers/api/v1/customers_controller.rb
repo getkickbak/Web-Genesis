@@ -43,7 +43,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.customers.show_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.customers.show_failure").split(/\n/) } }
       end
       return  
     end
@@ -56,7 +56,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         logger.error("User(#{user.id}) is not a customer of Merchant(#{@venue.merchant})")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.invalid_customer").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.invalid_customer").split(/\n/) } }
         end
         return
       end
@@ -65,7 +65,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.customers.show_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.customers.show_failure").split(/\n/) } }
       end
     end
   end
@@ -103,7 +103,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       logger.info("User(#{current_user.id}) failed to transfer points, merchant is not active")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split(/\n/) } }
       end
       return  
     end
@@ -160,7 +160,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
           logger.info("User(#{current_user.id}) failed to create transfer qr code worth #{points} points for Customer Account(#{@customer.id}), insufficient points")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => (t("api.customers.insufficient_transfer_points") % [points, t('api.point', :count => points)]).split('\n') } }
+            format.json { render :json => { :success => false, :message => (t("api.customers.insufficient_transfer_points") % [points, t('api.point', :count => points)]).split(/\n/) } }
           end
           return
         end
@@ -169,14 +169,14 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split(/\n/) } }
       end  
       return  
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.customers.transfer_points_failure").split(/\n/) } }
       end  
       return
     end
@@ -208,7 +208,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
         logger.info("User(#{current_user.id}) failed to receive points at Merchant(#{merchant.id}), merchant is not active")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split(/\n/) } }
         end
         return  
       end
@@ -221,7 +221,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
           logger.info("User(#{current_user.id}) failed to receive points at Merchant(#{merchant.id}), account not compatible with merchant")
           respond_to do |format|
             #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-            format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }
+            format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split(/\n/) } }
           end
           return
         end  
@@ -244,14 +244,14 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.resource.errors.inspect)  
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.customers.invalid_transfer_code").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.customers.invalid_transfer_code").split(/\n/) } }
       end  
       return
     rescue StandardError => e
       logger.error("Exception: " + e.message)  
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.customers.invalid_transfer_code").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.customers.invalid_transfer_code").split(/\n/) } }
       end  
       return
     end
@@ -266,7 +266,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             logger.info("Customer(#{@customer.id}) failed to receive points from Customer(#{sender.id}), self transfer")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-              format.json { render :json => { :success => false, :message => t("api.customers.self_transfer_failure").split('\n') } }
+              format.json { render :json => { :success => false, :message => t("api.customers.self_transfer_failure").split(/\n/) } }
             end  
             return
           end
@@ -322,15 +322,15 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
             logger.info("Customer(#{@customer.id}) failed to receive points, insufficient points")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-              format.json { render :json => { :success => false, :message => (t("api.customers.insufficient_transfer_points") % [@record.points, t('api.point', :count => @record.points)]).split('\n') } }
+              format.json { render :json => { :success => false, :message => (t("api.customers.insufficient_transfer_points") % [@record.points, t('api.point', :count => @record.points)]).split(/\n/) } }
             end  
           end
         else
           if invalid_code
-            msg = t("api.customers.invalid_transfer_code").split('\n')
+            msg = t("api.customers.invalid_transfer_code").split(/\n/)
             logger.info("Customer(#{@customer.id}) failed to receive points, invalid transfer code")
           else
-            msg = t("api.customers.expired_transfer_code").split('\n')
+            msg = t("api.customers.expired_transfer_code").split(/\n/)
             logger.info("Customer(#{@customer.id}) failed to receive points, transfer code expired")  
           end
           respond_to do |format|
@@ -343,13 +343,13 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.customers.receive_points_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.customers.receive_points_failure").split(/\n/) } }
       end  
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.customers.receive_points_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.customers.receive_points_failure").split(/\n/) } }
       end 
     ensure
       @recipient_mutex.release if ((defined? @recipient_mutex) && !@recipient_mutex.nil?)

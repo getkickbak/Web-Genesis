@@ -29,7 +29,7 @@ class Api::V1::UsersController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.users.update_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.users.update_failure").split(/\n/) } }
       end 
     end    
   end
@@ -64,7 +64,7 @@ class Api::V1::UsersController < Api::V1::BaseApplicationController
         else
           respond_to do |format|
             #format.xml  { head :ok }
-            format.json { render :json => { :success => false, :message => t("api.users.facebook_account_already_exists_failure").split('\n') } }
+            format.json { render :json => { :success => false, :message => t("api.users.facebook_account_already_exists_failure").split(/\n/) } }
           end  
         end
       end
@@ -78,7 +78,7 @@ class Api::V1::UsersController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.users.update_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.users.update_failure").split(/\n/) } }
       end
     end    
   end
@@ -89,7 +89,7 @@ class Api::V1::UsersController < Api::V1::BaseApplicationController
     if @user.nil?
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.users.reset_password_invalid_info").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.users.reset_password_invalid_info").split(/\n/) } }
       end  
       return
     end
@@ -111,7 +111,7 @@ class Api::V1::UsersController < Api::V1::BaseApplicationController
     if not @user.valid_password?(params[:old_password])
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.users.change_password_invalid_info").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.users.change_password_invalid_info").split(/\n/) } }
       end  
       return
     end

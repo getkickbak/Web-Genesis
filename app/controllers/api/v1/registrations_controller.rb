@@ -15,7 +15,7 @@ class Api::V1::RegistrationsController < Api::V1::BaseApplicationController
           if ThirdPartyAuth.first({:provider => "facebook", :uid => user_info[:facebook_id]})
             respond_to do |format|
               #format.xml  { head :ok }
-              format.json { render :json => { :success => false, :message => t("api.users.facebook_account_already_exists_failure").split('\n') } }
+              format.json { render :json => { :success => false, :message => t("api.users.facebook_account_already_exists_failure").split(/\n/) } }
             end
             return  
           end
@@ -44,7 +44,7 @@ class Api::V1::RegistrationsController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.users.create_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.users.create_failure").split(/\n/) } }
       end  
     end        
   end

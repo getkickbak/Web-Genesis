@@ -28,7 +28,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           logger.info("No matching earn points request")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
+            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split(/\n/) } }
           end
           return
         end  
@@ -36,7 +36,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         logger.error("Exception: " + e.message)
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split(/\n/) } }
         end
         return
       end
@@ -101,7 +101,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split(/\n/) } }
       end
       return
     end
@@ -117,7 +117,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         logger.info("Venue(#{@venue.id}) failed to complete Request(#{@request.id})")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split(/\n/) } }
         end
       end
       @request.destroy if Rails.env == "production"
@@ -167,7 +167,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           logger.error("Mismatch venue information', venue_id:#{@venue_id}, venue id:#{@venue.id}")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.venue_mismatch").split('\n') } }
+            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.venue_mismatch").split(/\n/) } }
           end
           return
         end
@@ -183,7 +183,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 logger.info("Tag: #{tag.tag_id} is suspended or deleted ")
                 respond_to do |format|
                   #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-                  format.json { render :json => { :success => false, :message => t("api.invalid_tag").split('\n') } }
+                  format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
                 end
                 return
               end
@@ -207,7 +207,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                     logger.error("No such user: #{user_to_tag.user_id}")
                     respond_to do |format|
                       #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-                      format.json { render :json => { :success => false, :message => t("api.invalid_user").split('\n') } }
+                      format.json { render :json => { :success => false, :message => t("api.invalid_user").split(/\n/) } }
                     end
                     return
                   end
@@ -215,7 +215,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                   logger.error("No user is associated with this non-pending tag: #{tag.tag_id}")
                   respond_to do |format|
                     #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-                    format.json { render :json => { :success => false, :message => t("api.invalid_tag").split('\n') } }
+                    format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
                   end
                   return
                 end  
@@ -229,7 +229,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
               logger.error("No such tag or user: #{@decrypted_data["tag_id"]}")
               respond_to do |format|
                 #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-                format.json { render :json => { :success => false, :message => t("api.invalid_tag_or_phone").split('\n') } }
+                format.json { render :json => { :success => false, :message => t("api.invalid_tag_or_phone").split(/\n/) } }
               end
               return 
             end
@@ -243,7 +243,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           logger.error("User: #{@current_user.id} is not active or pending")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.inactive_user").split('\n') } }
+            format.json { render :json => { :success => false, :message => t("api.inactive_user").split(/\n/) } }
           end
           return
         end
@@ -252,7 +252,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         logger.error("Exception: " + e.resource.errors.inspect)  
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split(/\n/) } }
         end
         return
       rescue StandardError => e
@@ -260,7 +260,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         logger.error("Exception: " + e.message)
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split(/\n/) } }
         end
         return
       end
@@ -271,7 +271,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       logger.info("User(#{@current_user.id}) failed to earn points at Venue(#{@venue.id}), venue is not active")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split(/\n/) } }
       end
       return
     end
@@ -288,7 +288,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         logger.info("User(#{@current_user.id}) failed to earn points at Merchant(#{@venue.merchant.id}), account not compatible with merchant")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split(/\n/) } }
         end
         return
       end
@@ -301,7 +301,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       logger.info("User(#{@current_user.id}) failed to earn points at Merchant(#{@venue.merchant.id}), program is being terminated")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.program_termination").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.program_termination").split(/\n/) } }
       end
       return
     end
@@ -664,14 +664,14 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split(/\n/) } }
       end
     rescue StandardError => e
       Request.set_status(@request, :failed)
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.purchase_rewards.earn_failure").split(/\n/) } }
       end
     ensure
       @venue_mutex.release if ((defined? @venue_mutex) && !@venue_mutex.nil?)

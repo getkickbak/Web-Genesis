@@ -10,7 +10,7 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
     if @venue.status != :active
       respond_to do |format|
       #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split(/\n/) } }
       end
       return
     end
@@ -46,7 +46,7 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
     if @venue.status != :active
       respond_to do |format|
       #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split(/\n/) } }
       end
       return
     end
@@ -101,7 +101,7 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
     if params[:image].blank?
       respond_to do |format|
       #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.photo_blank").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.photo_blank").split(/\n/) } }
       end
     else
       filename = "#{String.random_alphanumeric(32)}.jpg"

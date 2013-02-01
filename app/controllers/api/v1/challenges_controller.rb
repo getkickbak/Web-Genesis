@@ -36,7 +36,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       logger.info("User(#{current_user.id}) failed to start Challenge(#{@challenge.id}), venue is not active")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split(/\n/) } }
       end
       return  
     end
@@ -49,7 +49,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           logger.info("User(#{current_user.id}) failed to start Challenge(#{@challenge.id}), not startable")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.challenges.start_failure").split('\n') } }
+            format.json { render :json => { :success => false, :message => t("api.challenges.start_failure").split(/\n/) } }
           end  
         end
       end
@@ -57,7 +57,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.challenges.start_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.challenges.start_failure").split(/\n/) } }
       end  
     end
   end
@@ -106,13 +106,13 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.challenges.complete_request_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.challenges.complete_request_failure").split(/\n/) } }
       end  
     rescue StandardError => e
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.challenges.complete_request_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.challenges.complete_request_failure").split(/\n/) } }
       end
       return
     end
@@ -127,7 +127,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       logger.info("Venue(#{@venue.id}) failed to complete Request(#{@request.id})")
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.challenges.complete_request_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.challenges.complete_request_failure").split(/\n/) } }
       end
     end
     @request.destroy if Rails.env == "production"
@@ -145,7 +145,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), venue is not active")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split(/\n/) } }
       end
       return  
     end
@@ -181,7 +181,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.challenges.complete_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.challenges.complete_failure").split(/\n/) } }
       end 
       return 
     end
@@ -236,11 +236,11 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
               log_msg = "User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), #{@challenge.points} points awarded"
             else
               @account_info[:eligible_for_reward] = @customer.eligible_for_reward
-              @msg = get_success_no_points_limit_reached_msg.split('\n')  
+              @msg = get_success_no_points_limit_reached_msg.split(/\n/)  
               log_msg = "User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because limit reached"
             end
           else
-            @msg = get_success_no_points_msg.split('\n')  
+            @msg = get_success_no_points_msg.split(/\n/)  
             log_msg = "User(#{current_user.id}) successfully completed Challenge(#{@challenge.id}), no points awarded because it is not eligible"
           end
           Request.set_status(@request, :complete)
@@ -251,7 +251,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           logger.info("User(#{current_user.id}) failed to complete Challenge(#{@challenge.id}), missing requirements")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.challenges.missing_requirements").split('\n') } }
+            format.json { render :json => { :success => false, :message => t("api.challenges.missing_requirements").split(/\n/) } }
           end 
         end
       end
@@ -260,14 +260,14 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.challenges.complete_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.challenges.complete_failure").split(/\n/) } }
       end  
     rescue StandardError => e
       Request.set_status(@request, :failed)
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.challenges.complete_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.challenges.complete_failure").split(/\n/) } }
       end
     ensure
       @mutex.release if ((defined? @mutex) && !@mutex.nil?)    
@@ -323,7 +323,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         logger.info("User(#{current_user.id}) failed to complete referral challenge at Merchant(#{merchant.id}), merchant is not active")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.inactive_merchant").split(/\n/) } }
         end
         return  
       end
@@ -337,7 +337,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           logger.info("User(#{current_user.id}) failed to complete referral challenge at Merchant(#{merchant.id}), account not compatible with merchant")
           respond_to do |format|
             #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-            format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }
+            format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split(/\n/) } }
           end
           return
         end  
@@ -362,7 +362,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.message) 
       respond_to do |format|
         #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.challenges.invalid_referral_code").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.challenges.invalid_referral_code").split(/\n/) } }
       end  
       return
     end
@@ -372,10 +372,10 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
     if already_customer || (referrer_id == @customer.id)
       Request.set_status(@request, :failed)
       if ReferralChallengeRecord.first(:referrer_id => referrer_id, :referral_id => @customer.id).nil?
-        msg = t("api.challenges.already_customer").split('\n')
+        msg = t("api.challenges.already_customer").split(/\n/)
         logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge_id}), already a customer")
       else
-        msg = t("api.challenges.already_referred").split('\n')
+        msg = t("api.challenges.already_referred").split(/\n/)
         logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge_id}), already referred")
       end  
       respond_to do |format|
@@ -386,7 +386,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
     else
       if ReferralChallengeRecord.first(:referral_id => @customer.id)
         Request.set_status(@request, :failed)
-        msg = t("api.challenges.already_referred").split('\n')
+        msg = t("api.challenges.already_referred").split(/\n/)
         logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{challenge_id}), already referred")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
@@ -416,7 +416,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
           logger.info("User(#{current_user.id}) failed to complete Referral Challenge(#{@challenge.id}), invalid referral code")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.challenges.invalid_referral_code").split('\n') } }
+            format.json { render :json => { :success => false, :message => t("api.challenges.invalid_referral_code").split(/\n/) } }
           end      
         end      
       end
@@ -425,14 +425,14 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.resource.errors.inspect)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.challenges.complete_referral_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.challenges.complete_referral_failure").split(/\n/) } }
       end
     rescue StandardError => e
       Request.set_status(@request, :failed)
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.challenges.complete_referral_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.challenges.complete_referral_failure").split(/\n/) } }
       end  
     end      
   end
@@ -509,7 +509,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         logger.info("User(#{current_user.id}) failed to create referral in Customer Account(#{@customer.id}), not a customer")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-          format.json { render :json => { :success => false, :message => t("api.challenges.must_be_customer_to_refer").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.challenges.must_be_customer_to_refer").split(/\n/) } }
         end
       end  
     end

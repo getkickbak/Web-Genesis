@@ -28,7 +28,7 @@ class Api::V1::CheckInsController < Api::V1::BaseApplicationController
           logger.error("Exception: " + e.message)
           respond_to do |format|
             #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-            format.json { render :json => { :success => false, :message => t("api.check_ins.invalid_code").split('\n') } }  
+            format.json { render :json => { :success => false, :message => t("api.check_ins.invalid_code").split(/\n/) } }  
           end  
           return
         end
@@ -47,7 +47,7 @@ class Api::V1::CheckInsController < Api::V1::BaseApplicationController
       logger.info("User(#{current_user.id}) failed to check-in at Venue(#{@venue.id}), venue is not active")
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.inactive_venue").split(/\n/) } }
       end
       return  
     end
@@ -65,7 +65,7 @@ class Api::V1::CheckInsController < Api::V1::BaseApplicationController
         logger.info("User(#{current_user.id}) failed to check-in at Merchant(#{@venue.merchant.id}), account not compatible with merchant")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("api.incompatible_merchant_user_role").split(/\n/) } }
         end
         return
       end  
@@ -98,7 +98,7 @@ class Api::V1::CheckInsController < Api::V1::BaseApplicationController
       logger.error("Exception: " + e.message)
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("api.check_ins.create_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("api.check_ins.create_failure").split(/\n/) } }
       end  
     end    
   end

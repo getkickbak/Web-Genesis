@@ -74,16 +74,16 @@ class ApplicationController < ActionController::Base
   end
   
   def render_unauthorized(exception)
-    handle_error(t("errors.messages.exception.http_401_headline"), t("errors.messages.exception.http_401").split('\n'), get_template, :status => 401)  
+    handle_error(t("errors.messages.exception.http_401_headline"), t("errors.messages.exception.http_401").split(/\n/), get_template, :status => 401)  
   end
   
   def render_not_found(exception)
-    handle_error(t("errors.messages.exception.http_404_headline"), t("errors.messages.exception.http_404").split('\n'), get_template, :status => 404)
+    handle_error(t("errors.messages.exception.http_404_headline"), t("errors.messages.exception.http_404").split(/\n/), get_template, :status => 404)
   end
 
   def render_error(exception)
     logger.error(exception)
-    handle_error(t("errors.messages.exception.http_500_headline"), t("errors.messages.exception.http_500").split('\n'), get_template, :status => 500)
+    handle_error(t("errors.messages.exception.http_500_headline"), t("errors.messages.exception.http_500").split(/\n/), get_template, :status => 500)
   end
   
   def handle_error(headline, message, template, params)

@@ -12,7 +12,7 @@ class Business::Api::V1::TokensController < Business::Api::V1::BaseApplicationCo
       if email.nil? or password.nil?
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-          format.json { render :json => { :success => false, :message => t("business.api.tokens.create_missing_info").split('\n') } }
+          format.json { render :json => { :success => false, :message => t("business.api.tokens.create_missing_info").split(/\n/) } }
         end  
         return  
       else
@@ -25,7 +25,7 @@ class Business::Api::V1::TokensController < Business::Api::V1::BaseApplicationCo
     if @merchant.nil?
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("business.api.tokens.create_invalid_info").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("business.api.tokens.create_invalid_info").split(/\n/) } }
       end  
       return
     end
@@ -36,7 +36,7 @@ class Business::Api::V1::TokensController < Business::Api::V1::BaseApplicationCo
     if auth_token.nil? && (not @merchant.valid_password?(password))
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("business.api.tokens.create_invalid_info").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("business.api.tokens.create_invalid_info").split(/\n/) } }
       end  
     else
       render :template => '/business/api/v1/tokens/create'
@@ -54,7 +54,7 @@ class Business::Api::V1::TokensController < Business::Api::V1::BaseApplicationCo
     if @merchant.nil?
       respond_to do |format|
         #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
-        format.json { render :json => { :success => false, :message => t("business.api.tokens.destroy_failure").split('\n') } }
+        format.json { render :json => { :success => false, :message => t("business.api.tokens.destroy_failure").split(/\n/) } }
       end  
     else
       @merchant.reset_authentication_token!
