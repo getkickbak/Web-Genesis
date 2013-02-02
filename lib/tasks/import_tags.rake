@@ -1,6 +1,6 @@
 namespace :db do
   desc "Import User Tags"
-  task :generate_tags, [:num] => :environment do |t, args|
+  task :import_tags => :environment do |t, args|
     Time.zone = "Eastern Time (US & Canada)"
     file = File.open("tags.csv", 'r')
     while (line = file.gets)

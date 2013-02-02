@@ -1,6 +1,6 @@
 namespace :db do
   desc "Phase 2 Migration"
-  task :phase_2_migration, [:num] => :environment do |t, args|
+  task :phase_2_migration => :environment do |t, args|
     puts "Starting migration ..."
     users = User.all(:facebook_id.not => "")
     users.each do |user|
