@@ -13,7 +13,7 @@ class UserTag
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false  
   
-  def self.create(status = :pending)
+  def self.create(status = :pending, tag_id = nil)
     now = Time.now
     user_tag = UserTag.new(
       :tag_id => String.random_alphanumeric,
@@ -23,7 +23,7 @@ class UserTag
     user_tag[:update_ts] = now
     user_tag.save!
     n1 = (now.to_i / 100) + user_tag.id
-    user_tag.tag_id = "#{n1}"
+    user_tag.tag_id = tag_id || "#{n1}"
     user_tag.save
     return user_tag
   end
