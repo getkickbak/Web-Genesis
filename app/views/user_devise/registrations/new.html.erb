@@ -18,8 +18,8 @@
       <% end %>
       <div class="login-fields">
       	 <% if session["devise.facebook_data"].nil? %>
-      	 <p><%= link_to "Sign in with Facebook", user_omniauth_authorize_path(:facebook) %></p>
-      	 <p>or</p>
+      	 <p style="padding-top: 9px;"><%= link_to "Sign up with Facebook", user_omniauth_authorize_path(:facebook), :id => 'facebookButton' %></p>
+      	 <p style="padding-top: 9px;">or</p>
       	 <% end %>
          <p>Please provide the following info:</p>
          <%= f.input :name, :placeholder => "Full Name" %>

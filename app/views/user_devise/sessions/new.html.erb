@@ -22,8 +22,8 @@
       <%= simple_form_for resource, :html => {:class => 'form-vertical' }, :url => session_path(resource_name) do |f| %>
       <h2>Login</h2>
       <div class="login-fields">
-      	 <p><%= link_to "Sign in with Facebook", user_omniauth_authorize_path(:facebook) %></p>
-         <p>Sign in using your registered account:</p>
+         <p style="padding-top: 9px;"><%= link_to "Sign in with Facebook", user_omniauth_authorize_path(:facebook), :id => 'facebookButton' %></p>
+      	 <p style="padding-top: 9px;">or</p>
          <%= f.input :email, :placeholder => "Email Address" %>
          <%= f.input :password, :placeholder => "Password" %>
       </div>
