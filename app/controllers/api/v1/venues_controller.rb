@@ -67,8 +67,13 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
       longitude = params[:longitude].to_f
     else
       location_result = request.location
-      latitude = location_result.latitude
-      longitude = location_result.longitude
+      if location_result
+        latitude = location_result.latitude
+        longitude = location_result.longitude
+      else
+        latitude = nil
+        longitude = nil  
+      end
     end
     @venue = Venue.find_nearest(current_user, @merchant.id, latitude, longitude, 1).first
     @customer = Customer.first(:merchant => @merchant, :user => current_user)
@@ -99,11 +104,13 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
       longitude = params[:longitude].to_f
     else
       location_result = request.location
-      if location_result == nil
-        logger.info("No geolocation found!")
+      if location_result
+        latitude = location_result.latitude
+        longitude = location_result.longitude
+      else
+        latitude = nil
+        longitude = nil  
       end
-      latitude = location_result.latitude
-      longitude = location_result.longitude
     end
     max = params[:limit].to_i
     @venues = Venue.find_nearest(current_user, merchant_id, latitude, longitude, max)
