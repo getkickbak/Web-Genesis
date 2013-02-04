@@ -99,6 +99,9 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
       longitude = params[:longitude].to_f
     else
       location_result = request.location
+      if location_result == nil
+        logger.info("No geolocation found!")
+      end
       latitude = location_result.latitude
       longitude = location_result.longitude
     end
