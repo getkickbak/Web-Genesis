@@ -41,7 +41,7 @@ module Business
             if reward.mode == :reward
               reward.points = (reward.price / @reward_model.price_per_point / @reward_model.rebate_rate * 100).to_i
             else
-              reward.points = (reward.price / @reward_model.price_per_prize_point / @reward_model.prize_rebate_rate * 100 / (100 - APP_PROP["BADGE_REBATE_RATE"]) * 100).to_i
+              reward.points = (reward.price / @reward_model.price_per_prize_point / @reward_model.prize_rebate_rate * 100).to_i
             end
             reward.update_ts = now
             reward.save

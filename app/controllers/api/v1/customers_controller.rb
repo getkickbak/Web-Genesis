@@ -74,7 +74,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
     authorize! :read, Venue
     
     @jackpot_winners = []
-    winner_records = EarnPrizeRecord.all(:fields => [:user_id, :points, :created_ts], :merchant_id => params[:merchant_id], :type => :game, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
+    winner_records = EarnPrizeRecord.all(:fields => [:user_id, :points, :created_ts], :merchant_id => params[:merchant_id], :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
     if winner_records.length > 0
       winner_ids = []
       winner_records.each do |winner_record|

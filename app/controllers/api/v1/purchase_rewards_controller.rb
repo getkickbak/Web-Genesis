@@ -316,7 +316,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         @customer.reload
         #logger.debug("Authorized to earn points.")
         prize_points = 1
-        @reward_info = { :points => 0, :signup_points => 0, :referral_points => 0, :birthday_points => 0, :prize_points => 0, :badge_prize_points => 0, :eligible_prize_id => 0 }
+        @reward_info = { :points => 0, :signup_points => 0, :referral_points => 0, :birthday_points => 0, :badge_points => 0, :prize_points => 0, :eligible_prize_id => 0 }
         now = Time.now
         challenge_type_id = ChallengeType.value_to_id["referral"]
         challenge = Challenge.first(:challenge_to_type => { :challenge_type_id => challenge_type_id }, :challenge_venues => { :venue_id => @venue.id })
@@ -456,7 +456,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @customer.points += reward_model.signup_points
           @reward_info[:signup_points] = reward_model.signup_points
         end
-
+        
         points = (amount / reward_model.price_per_point).to_i
         record = EarnRewardRecord.new(
           :type => :purchase,
@@ -498,6 +498,48 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         reward_model.total_visits += 1
         reward_model.save
           
+        if @customer.badge_reset_ts <= @venue.merchant.badges_update_ts
+          @customer.badge, @customer.next_badge_visits = Common.find_badge(@badges.to_a, @customer.visits)
+          @customer.badge_reset_ts = now
+        end
+        next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
+        if (@customer.next_badge_visits >= next_badge.visits) && (@customer.badge.id != next_badge.id)
+          #logger.debug("expected average spend: #{reward_model.expected_avg_spend}")
+          #logger.debug("next badge visits: #{next_badge.visits}")
+          #logger.debug("price per point: #{reward_model.price_per_point}")
+          badge_points =  (reward_model.expected_avg_spend / reward_model.rebate_rate * next_badge.visits / reward_model.price_per_point).to_i
+          @customer.customer_to_badge.destroy
+          @customer.badge = next_badge
+          @customer.points += badge_points
+          @customer.next_badge_visits = 0
+          next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
+          @reward_info[:badge_points] = badge_points
+
+          badge_record = EarnRewardRecord.new(
+            :type => :badge,
+            :venue_id => @venue.id,
+            :points => badge_points,
+            :created_ts => now,
+            :update_ts => now
+          )
+          badge_record.merchant = @venue.merchant
+          badge_record.customer = @customer
+          badge_record.user = @current_user
+          badge_record.save
+          badge_trans_record = TransactionRecord.new(
+            :type => :earn_points,
+            :ref_id => badge_record.id,
+            :description => I18n.t("transaction.earn"),
+            :points => badge_points,
+            :created_ts => now,
+            :update_ts => now
+          )
+          badge_trans_record.merchant = @venue.merchant
+          badge_trans_record.customer = @customer
+          badge_trans_record.user = @current_user
+          badge_trans_record.save
+        end
+          
         prize_info = @venue.prize_info
         if prize_info.prize_interval == 0
           prize_interval = pick_prize_interval(reward_model, @venue)
@@ -508,7 +550,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         end
         current_point_offset = prize_info.prize_point_offset + points
         #logger.debug("Check if Prize has been won yet.")
-        won_prize_before = EarnPrizeRecord.count(:customer => @customer, :type => :game, :points.gt => 1) > 0
+        won_prize_before = EarnPrizeRecord.count(:customer => @customer, :points.gt => 1) > 0
         if (prize_info.prize_point_offset < prize_info.prize_win_offset)
           if (current_point_offset >= prize_info.prize_win_offset) || ((@customer.visits > 1) && !won_prize_before)
             prize_points = prize_interval
@@ -546,7 +588,6 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         @reward_info[:prize_points] = prize_points
 
         prize_record = EarnPrizeRecord.new(
-          :type => :game,
           :venue_id => @venue.id,
           :points => prize_points,
           :created_ts => now,
@@ -569,58 +610,6 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         prize_trans_record.user = @current_user
         prize_trans_record.save
           
-        if @customer.badge_reset_ts <= @venue.merchant.badges_update_ts
-          @customer.badge, @customer.next_badge_visits = Common.find_badge(@badges.to_a, @customer.visits)
-          @customer.badge_reset_ts = now
-        end
-        next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
-        if (@customer.next_badge_visits >= next_badge.visits) && (@customer.badge.id != next_badge.id)
-          adjustment_ratio = APP_PROP["BADGE_REBATE_RATE"] / (100 - APP_PROP["BADGE_REBATE_RATE"]).to_f
-          #logger.debug("adjustment ratio: #{adjustment_ratio}")
-          #logger.debug("avg spend: #{reward_model.avg_spend}")
-          #logger.debug("next badge visits: #{next_badge.visits}")
-          #logger.debug("price per prize point: #{reward_model.price_per_prize_point}")
-          badge_prize_points_average = (reward_model.avg_spend * next_badge.visits * adjustment_ratio / reward_model.price_per_prize_point).to_i
-          #logger.debug("badge prize points average: #{badge_prize_points_average}")
-          badge_prize_points_diff = badge_prize_points_average / 2
-          #logger.debug("badge prize points diff: #{badge_prize_points_diff}")
-          min_badge_prize_points = badge_prize_points_average - badge_prize_points_diff
-          max_badge_prize_points = badge_prize_points_average + badge_prize_points_diff
-          #logger.debug("min badge prize points: #{min_badge_prize_points}")
-          #logger.debug("max badge prize points: #{max_badge_prize_points}")
-          badge_prize_points = Random.rand(max_badge_prize_points - min_badge_prize_points + 1) + min_badge_prize_points
-          #logger.debug("badge_prize_points: #{badge_prize_points}")
-          @customer.customer_to_badge.destroy
-          @customer.badge = next_badge
-          @customer.prize_points += badge_prize_points
-          @customer.next_badge_visits = 0
-          next_badge = Common.find_next_badge(@badges.to_a, @customer.badge)
-          @reward_info[:badge_prize_points] = badge_prize_points
-
-          badge_prize_record = EarnPrizeRecord.new(
-            :type => :badge,
-            :venue_id => @venue.id,
-            :points => badge_prize_points,
-            :created_ts => now,
-            :update_ts => now
-          )
-          badge_prize_record.merchant = @venue.merchant
-          badge_prize_record.customer = @customer
-          badge_prize_record.user = @current_user
-          badge_prize_record.save
-          badge_prize_trans_record = TransactionRecord.new(
-            :type => :earn_prize_points,
-            :ref_id => badge_prize_record.id,
-            :description => I18n.t("transaction.earn"),
-            :points => badge_prize_points,
-            :created_ts => now,
-            :update_ts => now
-          )
-          badge_prize_trans_record.merchant = @venue.merchant
-          badge_prize_trans_record.customer = @customer
-          badge_prize_trans_record.user = @current_user
-          badge_prize_trans_record.save
-        end
         @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => today.at_beginning_of_month.to_time)
         @account_info = {}
         @account_info[:visits] = @customer.visits
@@ -648,7 +637,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         Request.set_status(@request, :complete)
         #posts = []
         #Resque.enqueue(ShareOnFacebook, @current_user.id, posts.to_json)
-        if tag && current_user.status != :pending && (@reward_info[:prize_points] > 1 || @reward_info[:badge_prize_points] > 0)
+        if tag && current_user.status != :pending && (@reward_info[:birthday_points] > 0 || @reward_info[:badge_points] > 0 || @reward_info[:prize_points] > 1)
           UserMailer.reward_notif_email(@customer, @reward_info).deliver
         end
         if referral_challenge
@@ -656,7 +645,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         end
         render :template => '/api/v1/purchase_rewards/earn'
         logger.info(
-          "User(#{@current_user.id}) successfully earned #{@reward_info[:points]} points, #{@reward_info[:signup_points]} signup points, #{@reward_info[:referral_points]} referral points, #{@reward_info[:birthday_points]} birthday points, #{@reward_info[:prize_points]} prize points, #{@reward_info[:badge_prize_points]} badge prize points at Venue(#{@venue.id})"
+          "User(#{@current_user.id}) successfully earned #{@reward_info[:points]} points, #{@reward_info[:signup_points]} signup points, #{@reward_info[:referral_points]} referral points, #{@reward_info[:birthday_points]} birthday points, #{@reward_info[:badge_points]} badge points, #{@reward_info[:prize_points]} prize points at Venue(#{@venue.id})"
         )
       end
     rescue DataMapper::SaveFailureError => e

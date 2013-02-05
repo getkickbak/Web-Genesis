@@ -48,10 +48,26 @@
 												<img style="width:40px;" src="http://files.getkickbak.com/v1/icons/miscicons/birthday.png">
 											</td>
 										<tr>
-										<% if @reward_info[:prize_points] > 1 || @reward_info[:badge_prize_points] > 0 %>
+										<% if @reward_info[:badge_points] > 0 %>
+										<% Common.populate_badge(@customer.badge, :iphone, :mxhdpi) %>
+										<tr style="background-color:#f3f3f4;">
+											<td style="padding:5px 5px 5px 10px;">
+											<% if @reward_info[:birthday_points] > 1 %>
+												You are also promoted to <b style="color:#c41200;"><%= "#{@customer.badge.type.display_value}" %></b>
+											<% else %>
+												You just got promoted to <b style="color:#c41200;"><%= "#{@customer.badge.type.display_value}" %></b>
+											<% end %>
+												and rewarded with extra <b style="color:#e65407;"><%= "#{@reward_info[:badge_points]}" %> points</b>.
+											</td>
+											<td style="padding:5px 10px 5px 5px;">
+												<img style="width:40px;" src="<%= @customer.badge.custom ? @customer.badge.custom_type.thumbnail_medium_url : @customer.badge.type.thumbnail_medium_url %>">
+											</td>
+										</tr>
+										<% end %>
+										<% if @reward_info[:prize_points] > 1 %>
 										<tr>
 											<td colspan="2" style="padding: 10px 0 10px 0;">
-											Plus ...
+											And just when you think things can't get any better ...
 											</td>
 										</tr>	
 										<% end %>	
@@ -62,26 +78,10 @@
 											<% if @reward_info[:birthday_points] == 0 %>
 												Congrats! 
 											<% end %>
-												You just won a jackpot of <b style="color:#e65407;"><%= "#{@reward_info[:prize_points]}" %> prize points</b>! Someone is lucky today.
+												You won a jackpot of <b style="color:#e65407;"><%= "#{@reward_info[:prize_points]}" %> prize points</b>! Someone is lucky today.
 											</td>
 											<td style="padding:5px 10px 5px 5px;">
 												<img style="width:40px;" src="http://files.getkickbak.com/v1/icons/miscicons/prizes.png">
-											</td>
-										</tr>
-										<% end %>
-										<% if @reward_info[:badge_prize_points] > 0 %>
-										<% Common.populate_badge(@customer.badge, :iphone, :mxhdpi) %>
-										<tr style="background-color:#f3f3f4;">
-											<td style="padding:5px 5px 5px 10px;">
-											<% if @reward_info[:prize_points] > 1 %>
-												You are also promoted to <b style="color:#c41200;"><%= "#{@customer.badge.type.display_value}" %></b>
-											<% else %>
-												You just got promoted to <b style="color:#c41200;"><%= "#{@customer.badge.type.display_value}" %></b>
-											<% end %>
-												and rewarded with extra <b style="color:#e65407;"><%= "#{@reward_info[:badge_prize_points]}" %> prize points</b>.
-											</td>
-											<td style="padding:5px 10px 5px 5px;">
-												<img style="width:40px;" src="<%= @customer.badge.custom ? @customer.badge.custom_type.thumbnail_medium_url : @customer.badge.type.thumbnail_medium_url %>">
 											</td>
 										</tr>
 										<% end %>

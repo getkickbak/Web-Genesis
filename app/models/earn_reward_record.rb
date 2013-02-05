@@ -4,7 +4,7 @@ require 'util/constant'
 class EarnRewardRecord
   include DataMapper::Resource
 
-  Types = [:signup, :purchase, :challenge]
+  Types = [:signup, :purchase, :challenge, :badge]
 
   property :id, Serial
   property :type, Enum[:signup, :purchase, :challenge], :required => true

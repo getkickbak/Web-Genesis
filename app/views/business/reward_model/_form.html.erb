@@ -10,6 +10,7 @@
    <% if @reward_model.type.value == "amount_spend" %>
    <%= f.input :price_per_point, :input_html => { :disabled => 'disabled', :class => 'input-medium' } %>
    <%= f.input :price_per_prize_point, :input_html => { :disabled => 'disabled', :class => 'input-medium' } %>
+   <%= f.input :expected_avg_spend, :input_html=>{:class => "input-medium"}%>
    <% end %>
    <br />
    <div class="form-actions">
