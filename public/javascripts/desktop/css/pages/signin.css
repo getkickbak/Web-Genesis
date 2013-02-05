@@ -96,6 +96,7 @@ body{ color:#838383; font: 13px/1.7em 'Open Sans';}
 span.login-checkbox {
 	float: left;
 	margin-top: 31px;
+	width:50%;
 }
 
 span.login-checkbox > input[type='checkbox'] {

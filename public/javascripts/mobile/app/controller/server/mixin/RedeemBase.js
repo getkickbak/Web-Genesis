@@ -65,7 +65,11 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
                {
                   me.onNfc(
                   {
-                     'tagID' : tagId
+                     id : null,
+                     result :
+                     {
+                        'tagID' : tagId
+                     }
                   });
                }
                else
@@ -97,7 +101,8 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       {
          data : me.self.encryptFromParams(
          {
-            'tag_id' : (nfcResult) ? nfcResult['tagID'] : null,
+            'id' : (nfcResult) ? nfcResult.id : null,
+            'tag_id' : (nfcResult) ? nfcResult.result['tagID'] : null,
             'expiry_ts' : new Date().addHours(3).getTime()
          }, 'reward')
       }, true);

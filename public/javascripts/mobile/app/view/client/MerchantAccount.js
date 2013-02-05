@@ -238,7 +238,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
                   items : [
                   {
                      xtype : 'title',
-                     title : 'Latest News'
+                     title : 'What\'s going on?'
                   },
                   {
                      xtype : 'spacer'
