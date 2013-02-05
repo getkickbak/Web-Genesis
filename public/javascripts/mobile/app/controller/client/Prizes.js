@@ -2,7 +2,7 @@ Ext.define('Genesis.controller.client.Prizes',
 {
    extend : 'Genesis.controller.PrizeRedemptionsBase',
    mixins : ['Genesis.controller.client.mixin.RedeemBase'],
-   requires : ['Ext.data.Store', 'Genesis.view.client.Prizes'],
+   requires : ['Ext.data.Store', 'Genesis.view.client.Prizes' , 'Genesis.view.client.Badges'],
    inheritableStatics :
    {
    },
@@ -103,7 +103,7 @@ Ext.define('Genesis.controller.client.Prizes',
 
       me.callBackStack =
       {
-         callbacks : ['eligibleForPrizeHandler', 'badgePrizePointsHandler', 'redeemPrizeHandler'],
+         callbacks : ['eligibleForPrizeHandler', 'redeemPrizeHandler'],
          arguments : [],
          startIndex : 0
       };
@@ -325,14 +325,13 @@ Ext.define('Genesis.controller.client.Prizes',
    redeemPrizeHandler : function(metaData, viewsPopLength)
    {
       var me = this, FB = window.plugins.facebookConnect;
-      var info = metaData['reward_info'];
+      var info = metaData['reward_info'], points = info['badge_points'];
       var eligible = Ext.isDefined(info['eligible_prize_id']) && (info['eligible_prize_id'] > 0);
-      var prize;
 
       me._backToMain = true;
       if (eligible)
       {
-         prize = Ext.StoreMgr.get('PrizeStore').getById(info['eligible_prize_id']);
+         var prize = Ext.StoreMgr.get('PrizeStore').getById(info['eligible_prize_id']);
 
          console.debug("Eligible Prize Id[" + info['eligible_prize_id'] + "]");
          me.fireEvent('showredeemprize', prize, info, viewsPopLength);
@@ -344,7 +343,7 @@ Ext.define('Genesis.controller.client.Prizes',
       }
 
       //Update on Facebook
-      if (( typeof (FB) != "undefined") && ((eligible) || (info['badge_points'] > 0)))
+      if (( typeof (FB) != "undefined") && ((eligible) || (points > 0)))
       {
          Genesis.fb.facebook_onLogin(function(params)
          {
@@ -353,9 +352,22 @@ Ext.define('Genesis.controller.client.Prizes',
             {
                //me.updatingPrizeOnFacebook(prize);
             }
-            if (info['badge_points'] > 0)
+            if (points > 0)
             {
-               me.updatingBadgeOnFacebook(me.redeemBadgeItem);
+               var ainfo = metaData['account_info'], badgeId = ainfo['badge_id'], badge = Ext.StoreMgr.get('BadgeStore').getById(badgeId);
+               me.updatingBadgeOnFacebook(Ext.create('Genesis.model.CustomerReward',
+               {
+                  'title' : badge.get('type').display_value,
+                  'type' :
+                  {
+                     value : 'promotion'
+                  },
+                  'photo' : Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_large_url'),
+                  'points' : points,
+                  'time_limited' : false,
+                  'quantity_limited' : false,
+                  'merchant' : null
+               }));
             }
          }, false, me.updateOnFbMsg);
       }

@@ -1,7 +1,7 @@
 Ext.define('Genesis.controller.client.Rewards',
 {
    extend : 'Genesis.controller.ControllerBase',
-   requires : ['Ext.data.Store'],
+   requires : ['Ext.data.Store', 'Genesis.view.client.Badges'],
    inheritableStatics :
    {
    },
@@ -133,7 +133,7 @@ Ext.define('Genesis.controller.client.Rewards',
 
       this.callBackStack =
       {
-         callbacks : ['birthdayHandler', 'signupPromotionHandler', 'earnPtsHandler', 'referralPromotionHandler', 'scanAndWinHandler'],
+         callbacks : ['birthdayHandler', 'signupPromotionHandler', 'badgePtsHandler', 'earnPtsHandler', 'referralPromotionHandler', 'scanAndWinHandler'],
          arguments : [],
          startIndex : 0
       };
@@ -294,9 +294,9 @@ Ext.define('Genesis.controller.client.Rewards',
 
       return rc;
    },
-   badgePrizeHandler : function(metaData, customer, venue, merchantId)
+   badgePtsHandler : function(metaData, customer, venue, merchantId)
    {
-      var me = this, info = metaData['reward_info'], ainfo = metaData['account_info'], points = info['badge_points'];
+      var me = this, info = metaData['reward_info'], ainfo = metaData['account_info'], points = info['badge_points'], badgeId = ainfo['badge_id'];
       var viewport = me.getViewPortCntlr(), badge = Ext.StoreMgr.get('BadgeStore').getById(badgeId);
       //
       // Badge Promotion or First time visit
