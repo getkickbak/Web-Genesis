@@ -74,6 +74,8 @@ Ext.define('Genesis.controller.client.Rewards',
    signupPromotionTitle : 'Welcome!',
    referralPageTitle : 'Refer A Friend',
    referralPromotionTitle : 'Referral Award',
+   badgePageTitle : 'Badge Promotion',
+   badgePromotionTitle : 'Badge Promotion Award',
    prizeCheckMsg : 'Play our Instant Win Game to win Bonus Prize Points!',
    signupPromotionMsg : function(points)
    {
@@ -101,6 +103,16 @@ Ext.define('Genesis.controller.client.Rewards',
       return ('You\'ve earned an additional ' + Genesis.constants.addCRLF() + //
       points + ' Reward Pts!' + Genesis.constants.addCRLF() + //
       this.prizeCheckMsg);
+   },
+   getBadgeMsg : function(points, badge)
+   {
+      var rc = 'You\'ve been Promoted to Badge Level ' + badge.get('type').display_value + '!';
+      if (points > 0)
+      {
+         rc += (Genesis.constants.addCRLF() + 'For that, you\'ve earned ' + points + 'Bonus Reward Pts!');
+      }
+
+      return rc;
    },
    vipPopUp : function(points, callback)
    {
@@ -181,19 +193,21 @@ Ext.define('Genesis.controller.client.Rewards',
    // --------------------------------------------------------------------------
    // Rewards Page
    // --------------------------------------------------------------------------
-   promotionHandler : function(pageTitle, title, points, photoType, title, message, callback)
+   promotionHandler : function(pageTitle, title, points, photoType, message, callback)
    {
       var me = this, vport = me.getViewport(), page = me.getPromotion();
       var prefix = Genesis.constants._thumbnailAttribPrefix + 'large';
       var photoUrl =
       {
       };
+      photoUrl[prefix] = (Ext.isObject(photoType)) ? //
+      Genesis.view.client.Badges.getPhoto(photoType.get('type'), 'thumbnail_large_url') : //
       photoUrl[prefix] = Genesis.constants.getIconPath(photoType, 'reward');
 
       me.promoteCount++;
       me.redeemItem = Ext.create('Genesis.model.CustomerReward',
       {
-         'title' : null,
+         'title' : (Ext.isObject(photoType)) ? photoType.get('type').display_value : null,
          'type' :
          {
             value : 'promotion'
@@ -223,7 +237,7 @@ Ext.define('Genesis.controller.client.Rewards',
       me.promoteCount = 0;
       if (rc)
       {
-         me.promotionHandler(me.birthdayPageTitle, me.birthdayTitle, points, 'prizewon', 'Happy Birthday!', me.birthdayMsg(points), function()
+         me.promotionHandler(me.birthdayPageTitle, me.birthdayTitle, points, 'prizewon', me.birthdayMsg(points), function()
          {
             me.self.stopSoundFile(me.getViewPortCntlr().sound_files['birthdaySound']);
          });
@@ -239,7 +253,7 @@ Ext.define('Genesis.controller.client.Rewards',
       var rc = Ext.isDefined(points) && (points > 0);
       if (rc)
       {
-         me.promotionHandler(me.signupPageTitle, me.signupPromotionTitle, points, 'prizewon', 'Signup Promotion Alert!', me.signupPromotionMsg(points));
+         me.promotionHandler(me.signupPageTitle, me.signupPromotionTitle, points, 'prizewon', me.signupPromotionMsg(points));
       }
 
       return rc;
@@ -275,9 +289,27 @@ Ext.define('Genesis.controller.client.Rewards',
       var rc = Ext.isDefined(points) && (points > 0);
       if (rc)
       {
-         me.promotionHandler(me.referralPageTitle, me.referralPromotionTitle, points, 'prizewon', 'Referral Challenge', me.getReferralMsg(points));
+         me.promotionHandler(me.referralPageTitle, me.referralPromotionTitle, points, 'prizewon', me.getReferralMsg(points));
       }
 
+      return rc;
+   },
+   badgePrizeHandler : function(metaData, customer, venue, merchantId)
+   {
+      var me = this, info = metaData['reward_info'], ainfo = metaData['account_info'], points = info['badge_points'];
+      var viewport = me.getViewPortCntlr(), badge = Ext.StoreMgr.get('BadgeStore').getById(badgeId);
+      //
+      // Badge Promotion or First time visit
+      //
+      var rc = (points > 0) || (ainfo['visits'] == 1);
+      if (rc)
+      {
+         me.promotionHandler(me.badgePageTitle, me.badgePromotionTitle, points, badge, me.getBadgeMsg(points, badge), function()
+         {
+            me.self.stopSoundFile(viewport.sound_files['promoteSound']);
+         });
+         me.self.playSoundFile(viewport.sound_files['promoteSound']);
+      }
       return rc;
    },
    scanAndWinHandler : function(metaData, customer, venue, merchantId)

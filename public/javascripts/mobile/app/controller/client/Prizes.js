@@ -2,7 +2,7 @@ Ext.define('Genesis.controller.client.Prizes',
 {
    extend : 'Genesis.controller.PrizeRedemptionsBase',
    mixins : ['Genesis.controller.client.mixin.RedeemBase'],
-   requires : ['Ext.data.Store', 'Genesis.view.client.Prizes', 'Genesis.view.client.Badges'],
+   requires : ['Ext.data.Store', 'Genesis.view.client.Prizes'],
    inheritableStatics :
    {
    },
@@ -15,8 +15,7 @@ Ext.define('Genesis.controller.client.Prizes',
          //Shortcut to choose venue to redeem prizes
          'redeemPrizesChooseSC' : 'redeemChooseSCPage',
          //Shortcut to visit Merchant Account for the Vnue Page
-         'redeemBrowsePrizesSC' : 'redeemBrowseSCPage',
-         'badgeDetail' : 'badgeDetailPage'
+         'redeemBrowsePrizesSC' : 'redeemBrowseSCPage'
       },
       refs :
       {
@@ -39,17 +38,6 @@ Ext.define('Genesis.controller.client.Prizes',
          //
          prizeCheckScreen : 'clientrewardsview',
          //
-         // BadgeDetail
-         //
-         badgeDetail :
-         {
-            selector : 'clientpromotionalitemview[tag=badgeDetail]',
-            autoCreate : true,
-            tag : 'badgeDetail',
-            xtype : 'clientpromotionalitemview'
-         },
-         bDoneBtn : 'clientpromotionalitemview[tag=badgeDetail] button[tag=done]',
-         //
          // Reward Prize
          //
          sBackBB : 'clientredeemitemdetailview[tag=redeemPrize] button[tag=back]',
@@ -70,17 +58,6 @@ Ext.define('Genesis.controller.client.Prizes',
          sRedeemBtn :
          {
             tap : 'onRedeemItemTap'
-         },
-         badgeDetail :
-         {
-            createView : 'onBadgeDetailCreateView',
-            activate : 'onBadgeDetailActivate',
-            deactivate : 'onBadgeDetailDeactivate',
-            promoteItemTap : 'onPromoteItemTap'
-         },
-         bDoneBtn :
-         {
-            tap : 'onBadgeDetailDoneTap'
          }
       },
       listeners :
@@ -103,23 +80,13 @@ Ext.define('Genesis.controller.client.Prizes',
       var extraPoints = reward_info['badge_points'];
 
       return (((points > me.getMinPrizePts()) ? //
-      'You\'ve won a JACKPOT of' + Genesis.constants.addCRLF() + points + ' Prize Points!' : me.gotMinPrizePtsMsg(points)) + //
-      ((extraPoints == 0) ? Genesis.constants.addCRLF() + me.eligibleRewardMsg : ''));
+      'You\'ve won a JACKPOT of' + Genesis.constants.addCRLF() + points + ' Prize Points!' : me.gotMinPrizePtsMsg(points)) + Genesis.constants.addCRLF() +
+      // //
+      me.eligibleRewardMsg);
    },
    wonPrizeEmailMsg : function(prizeName, venueName)
    {
       return ('I just won enough Prize Points to redeem "' + prizeName + '" from ' + venueName + '!');
-   },
-   getBadgePrizeMsg : function(points, badge)
-   {
-      if (points > 0)
-      {
-         return ('You\'ve been awarded an ' + Genesis.constants.addCRLF() + //
-         'additional ' + points + ' Reward Points!' + Genesis.constants.addCRLF() + //
-         this.eligibleRewardMsg);
-      }
-
-      return ('You\'ve been Promoted to Badge Level ' + badge.get('type').display_value + '!');
    },
    upgradeBadgeEmailMsg : function(badge, venueName)
    {
@@ -211,7 +178,8 @@ Ext.define('Genesis.controller.client.Prizes',
          var wsite = venue.get('website') ? venue.get('website').split(/http[s]*:\/\//) : [null];
          var name = venue.get('name');
          var link = wsite[wsite.length - 1] || site;
-         var desc = me.redeemFbMsg;//venue.get('description').trunc(256);
+         var desc = me.redeemFbMsg;
+         //venue.get('description').trunc(256);
          var message = me.wonPrizeEmailMsg(earnprize.get('title'), venue.get('name'));
          var params =
          {
@@ -394,54 +362,6 @@ Ext.define('Genesis.controller.client.Prizes',
 
       return false;
    },
-   badgePrizePointsHandler : function(metaData, viewsPopLength)
-   {
-      var me = this;
-      var info = metaData['reward_info'];
-      var ainfo = metaData['account_info'];
-      var badgeId = metaData['account_info']['badge_id'];
-      var badge = Ext.StoreMgr.get('BadgeStore').getById(badgeId);
-      //
-      // Badge Promotion or First time visit
-      //
-      var rc = (info['badge_points'] > 0) || (ainfo['visits'] == 1);
-      if (rc)
-      {
-         Ext.device.Notification.show(
-         {
-            title : 'Badge Promotion Alert!',
-            message : me.getBadgePrizeMsg(info['badge_points'], badge),
-            buttons : ['OK'],
-            callback : function()
-            {
-               var photoUrl =
-               {
-               };
-               var prefix = Genesis.constants._thumbnailAttribPrefix + 'large';
-               photoUrl[prefix] = Genesis.view.client.Badges.getPhoto(badge.get('type'), 'thumbnail_large_url');
-
-               me.redeemBadgeItem = Ext.create('Genesis.model.CustomerReward',
-               {
-                  'title' : badge.get('type').display_value,
-                  'type' :
-                  {
-                     value : 'promotion'
-                  },
-                  'photo' : photoUrl,
-                  'points' : info['badge_points'],
-                  'time_limited' : false,
-                  'quantity_limited' : false,
-                  'merchant' : null
-               });
-
-               me.self.playSoundFile(me.getViewPortCntlr().sound_files['promoteSound']);
-               me.redirectTo('badgeDetail');
-            }
-         });
-      }
-
-      return rc;
-   },
    eligibleForPrizeHandler : function(metaData, viewsPopLength)
    {
       var me = this, viewport = me.getViewPortCntlr(), soundType, message;
@@ -514,10 +434,6 @@ Ext.define('Genesis.controller.client.Prizes',
    // --------------------------------------------------------------------------
    // Event Handler
    // --------------------------------------------------------------------------
-   onPromoteItemTap : function(b, e, eOpts, eInfo)
-   {
-      this.onBadgeDetailDoneTap();
-   },
    onPrizeCheck : function(metaData)
    {
       var me = this;
@@ -547,12 +463,6 @@ Ext.define('Genesis.controller.client.Prizes',
       me.callBackStack['arguments'] = [metaData, viewsPopLength];
       me.fireEvent('triggerCallbacksChain');
    },
-   onBadgeDetailDoneTap : function(b, e, eOpts)
-   {
-      console.debug("Closing Promotional Badge Details");
-      var me = this;
-      me.fireEvent('triggerCallbacksChain');
-   },
    // --------------------------------------------------------------------------
    // Prizes Page
    // --------------------------------------------------------------------------
@@ -569,20 +479,6 @@ Ext.define('Genesis.controller.client.Prizes',
       me.callParent(arguments);
       me.stopRouletteScreen(me.getPrizeCheckScreen());
    },
-   onBadgeDetailCreateView : function(activeItem)
-   {
-      var me = this;
-      activeItem.redeemItem = me.redeemBadgeItem;
-   },
-   onBadgeDetailActivate : function(activeItem, c, oldActiveItem, eOpts)
-   {
-      var me = this;
-      var tbbar = activeItem.query('titlebar')[0];
-      tbbar.setTitle('Badge Promotion');
-   },
-   onBadgeDetailDeactivate : function(activeItem, c, oldActiveItem, eOpts)
-   {
-   },
    // --------------------------------------------------------------------------
    // Page Navigation
    // --------------------------------------------------------------------------
@@ -590,32 +486,8 @@ Ext.define('Genesis.controller.client.Prizes',
    {
       var controller = this.getApplication().getController('client.Accounts');
       controller.redeemPrizesChooseSCPage();
-   },
-   badgeDetailPage : function()
-   {
-      this.openPage('badgeDetail');
-   },
+   }
    // --------------------------------------------------------------------------
    // Base Class Overrides
    // --------------------------------------------------------------------------
-   getRedeemMainPage : function()
-   {
-      var me = this;
-      var page = me.callParent(arguments);
-
-      if (!page)
-      {
-         switch (me.getRedeemMode())
-         {
-            case 'badgeDetail' :
-            {
-               me.setAnimationMode(Genesis.controller.ControllerBase.animationMode['coverUp']);
-               page = me.getBadgeDetail();
-               break;
-            }
-         }
-      }
-
-      return page;
-   }
 });
