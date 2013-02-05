@@ -98,12 +98,14 @@ class Venue
             venues_info = DataMapper.repository(:default).adapter.select(
               "SELECT id, 0 AS distance
               FROM venues WHERE merchant_role = 'merchant' AND status = ? AND deleted_ts IS NULL
+              ORDER BY name
               ASC LIMIT 0,?", Merchant::Statuses.index(:active)+1, max 
             )
           else
             venues_info = DataMapper.repository(:default).adapter.select(
               "SELECT id, 0 AS distance
               FROM venues WHERE merchant_role = 'test' AND status = ? AND deleted_ts IS NULL
+              ORDER BY name
               ASC LIMIT 0,?", Merchant::Statuses.index(:active)+1, max 
             )
           end    
@@ -111,6 +113,7 @@ class Venue
           venues_info = DataMapper.repository(:default).adapter.select(
             "SELECT id, 0 AS distance
             FROM venues WHERE merchant_id = ? AND status = ? AND deleted_ts IS NULL
+            ORDER BY name
             ASC LIMIT 0,?", merchant_id, Merchant::Statuses.index(:active)+1, max 
           )
         end

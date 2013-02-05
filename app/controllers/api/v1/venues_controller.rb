@@ -62,8 +62,19 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
     @merchant = Merchant.get(params[:merchant_id]) || not_found
     authorize! :read, Venue
 
-    latitude = params[:latitude].to_f
-    longitude = params[:longitude].to_f
+    if params[:latitude] && params[:longitude]
+      latitude = params[:latitude].to_f
+      longitude = params[:longitude].to_f
+    else
+      location_result = request.location
+      if location_result
+        latitude = location_result.latitude
+        longitude = location_result.longitude
+      else
+        latitude = nil
+        longitude = nil  
+      end
+    end
     @venue = Venue.find_nearest(current_user, @merchant.id, latitude, longitude, 1).first
     @customer = Customer.first(:merchant => @merchant, :user => current_user)
     @prize_jackpots = EarnPrizeRecord.count(:merchant => @merchant, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
@@ -88,8 +99,19 @@ class Api::V1::VenuesController < Api::V1::BaseApplicationController
     if merchant_id
       Merchant.get(merchant_id) || not_found
     end
-    latitude = params[:latitude] ? params[:latitude].to_f : nil
-    longitude = params[:longitude] ? params[:longitude].to_f : nil
+    if params[:latitude] && params[:longitude]
+      latitude = params[:latitude].to_f
+      longitude = params[:longitude].to_f
+    else
+      location_result = request.location
+      if location_result
+        latitude = location_result.latitude
+        longitude = location_result.longitude
+      else
+        latitude = nil
+        longitude = nil  
+      end
+    end
     max = params[:limit].to_i
     @venues = Venue.find_nearest(current_user, merchant_id, latitude, longitude, max)
     render :template => '/api/v1/venues/find_nearest'

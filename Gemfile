@@ -69,6 +69,8 @@ gem 'thin'
 gem 'omniauth'
 gem 'omniauth-facebook'
 gem "koala"
+gem "geocoder"
+#gem 'carmen-rails', '~> 1.0.0.beta3'
 
 group(:development, :test) do
   gem 'dm-sqlite-adapter', DM_VERSION
