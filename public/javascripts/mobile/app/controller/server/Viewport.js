@@ -327,7 +327,7 @@ Ext.define('Genesis.controller.server.Viewport',
             r_vol_ratio = 0.5;
             // Read fresh data as soon as there's a miss
             c.conseqMissThreshold = 1;
-            c.magThreshold = 200000;
+            c.magThreshold = 100000;
             c.numSamples = 4 * 1024;
             //Default Overlap of FFT signal analysis over previous samples
             c.sigOverlapRatio = 0.25;

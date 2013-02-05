@@ -164,7 +164,7 @@ Ext.define('Genesis.controller.client.Badges',
                value : 'promotion'
             },
             'photo' : photoUrl,
-            //'points' : info['badge_prize_points'],
+            //'points' : info['badge_points'],
             'time_limited' : false,
             'quantity_limited' : false,
             'merchant' : null

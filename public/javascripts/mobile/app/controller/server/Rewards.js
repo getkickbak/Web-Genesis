@@ -111,6 +111,7 @@ Ext.define('Genesis.controller.server.Rewards',
       var container = me.getRewardsContainer();
       if (container)
       {
+         me.getAmount().reset();
          container.setActiveItem(0);
       }
       //activeItem.createView();
@@ -119,7 +120,6 @@ Ext.define('Genesis.controller.server.Rewards',
    {
       var me = this;
 
-      me.getAmount().reset();
       if (Genesis.fn.isNative())
       {
          window.plugins.proximityID.stop();
@@ -449,7 +449,11 @@ Ext.define('Genesis.controller.server.Rewards',
                {
                   me.onNfc(
                   {
-                     'tagID' : tagId
+                     id : null,
+                     result :
+                     {
+                        'tagID' : tagId
+                     }
                   });
                }
                else
@@ -460,17 +464,17 @@ Ext.define('Genesis.controller.server.Rewards',
          });
       }
       /*
-      else
-      {
-         me.self.playSoundFile(viewport.sound_files['nfcError']);
-         Ext.device.Notification.show(
-         {
-            title : 'TAG ID',
-            message : me.invalidTagIdFormatMsg(me.tagIdMaxLength),
-            buttons : ['Dismiss']
-         });
-      }
-      */
+       else
+       {
+       me.self.playSoundFile(viewport.sound_files['nfcError']);
+       Ext.device.Notification.show(
+       {
+       title : 'TAG ID',
+       message : me.invalidTagIdFormatMsg(me.tagIdMaxLength),
+       buttons : ['Dismiss']
+       });
+       }
+       */
    },
    // --------------------------------------------------------------------------
    // Misc Event Funcs
@@ -489,7 +493,8 @@ Ext.define('Genesis.controller.server.Rewards',
       {
          data :
          {
-            'tag_id' : (nfcResult) ? nfcResult['tagID'] : null
+            'id' : (nfcResult) ? nfcResult.id : null,
+            'tag_id' : (nfcResult) ? nfcResult.result['tagID'] : null,
          }
       }, true);
    },

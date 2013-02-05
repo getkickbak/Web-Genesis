@@ -100,7 +100,7 @@ Ext.define('Genesis.controller.client.Prizes',
    {
       var me = this;
       var points = reward_info['prize_points'];
-      var extraPoints = reward_info['badge_prize_points'];
+      var extraPoints = reward_info['badge_points'];
 
       return (((points > me.getMinPrizePts()) ? //
       'You\'ve won a JACKPOT of' + Genesis.constants.addCRLF() + points + ' Prize Points!' : me.gotMinPrizePtsMsg(points)) + //
@@ -115,7 +115,7 @@ Ext.define('Genesis.controller.client.Prizes',
       if (points > 0)
       {
          return ('You\'ve been awarded an ' + Genesis.constants.addCRLF() + //
-         'additional ' + points + ' Prize Points!' + Genesis.constants.addCRLF() + //
+         'additional ' + points + ' Reward Points!' + Genesis.constants.addCRLF() + //
          this.eligibleRewardMsg);
       }
 
@@ -376,7 +376,7 @@ Ext.define('Genesis.controller.client.Prizes',
       }
 
       //Update on Facebook
-      if (( typeof (FB) != "undefined") && ((eligible) || (info['badge_prize_points'] > 0)))
+      if (( typeof (FB) != "undefined") && ((eligible) || (info['badge_points'] > 0)))
       {
          Genesis.fb.facebook_onLogin(function(params)
          {
@@ -385,7 +385,7 @@ Ext.define('Genesis.controller.client.Prizes',
             {
                //me.updatingPrizeOnFacebook(prize);
             }
-            if (info['badge_prize_points'] > 0)
+            if (info['badge_points'] > 0)
             {
                me.updatingBadgeOnFacebook(me.redeemBadgeItem);
             }
@@ -404,13 +404,13 @@ Ext.define('Genesis.controller.client.Prizes',
       //
       // Badge Promotion or First time visit
       //
-      var rc = (info['badge_prize_points'] > 0) || (ainfo['visits'] == 1);
+      var rc = (info['badge_points'] > 0) || (ainfo['visits'] == 1);
       if (rc)
       {
          Ext.device.Notification.show(
          {
             title : 'Badge Promotion Alert!',
-            message : me.getBadgePrizeMsg(info['badge_prize_points'], badge),
+            message : me.getBadgePrizeMsg(info['badge_points'], badge),
             buttons : ['OK'],
             callback : function()
             {
@@ -428,7 +428,7 @@ Ext.define('Genesis.controller.client.Prizes',
                      value : 'promotion'
                   },
                   'photo' : photoUrl,
-                  'points' : info['badge_prize_points'],
+                  'points' : info['badge_points'],
                   'time_limited' : false,
                   'quantity_limited' : false,
                   'merchant' : null
@@ -532,7 +532,7 @@ Ext.define('Genesis.controller.client.Prizes',
       //
       if (!Ext.isDefined(info['eligible_prize_id']) || (info['eligible_prize_id'] == 0))
       {
-         viewsPopLength = ((info['badge_prize_points'] > 0) || (ainfo['visits'] == 1)) ? 1 : 0;
+         viewsPopLength = ((info['badge_points'] > 0) || (ainfo['visits'] == 1)) ? 1 : 0;
          console.log("No Prize to Show. viewsPopLength =" + viewsPopLength);
       }
       //
@@ -540,7 +540,7 @@ Ext.define('Genesis.controller.client.Prizes',
       // Either Prize Points or Badge Prize Points
       else
       {
-         viewsPopLength = ((info['badge_prize_points'] > 0) || (ainfo['visits'] == 1)) ? 2 : 1;
+         viewsPopLength = ((info['badge_points'] > 0) || (ainfo['visits'] == 1)) ? 2 : 1;
          console.log("WON LumpSum Prize Points. viewsPopLength =" + viewsPopLength);
       }
 

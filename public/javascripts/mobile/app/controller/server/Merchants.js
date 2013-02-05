@@ -102,16 +102,21 @@ Ext.define('Genesis.controller.server.Merchants',
        */
       nfcResult = nfcResult ||
       {
-         'tagID' : null
+         id : null,
+         result :
+         {
+            'tagID' : null
+         }
       };
-      console.log("Retrieving Customer Account for tagID[" + nfcResult['tagID'] + '], venueId[' + venueId + ']');
+      console.log("Retrieving Customer Account for ID[" + nfcResult.id + "] tagID[" + nfcResult['tagID'] + '], venueId[' + venueId + ']');
 
       var params =
       {
          device_pixel_ratio : window.devicePixelRatio,
          data : me.self.encryptFromParams(
          {
-            'tag_id' : nfcResult['tagID']
+            'id' : nfcResult.id,
+            'tag_id' : nfcResult.result['tagID'],
          }, 'reward')
       }
       //

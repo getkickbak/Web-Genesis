@@ -136,10 +136,11 @@ Ext.define('Genesis.controller.server.Settings',
    // --------------------------------------------------------------------------
    onRefreshLicenseTap : function(b, e, eOpts)
    {
-      var me = this;
+      var me = this, viewport = me.getViewPortCntlr();
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
       Ext.device.Notification.show(
       {
-         title : 'Licence Key Refresh',
+         title : 'License Key Refresh',
          message : me.proceedToUpdateLicenseMsg,
          buttons : ['Proceed', 'Cancel'],
          callback : function(btn)

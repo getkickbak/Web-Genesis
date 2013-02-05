@@ -468,16 +468,20 @@ Ext.define('Genesis.controller.ControllerBase',
    // --------------------------------------------------------------------------
    onBeforeNfc : function(nfcEvent)
    {
-      var me = this, result = null;
+      var me = this, result = null, id = null;
 
       console.log("NDEF Message received");
       try
       {
-         var tag = nfcEvent.tag, records = tag.ndefMessage || [];
+         var tag = nfcEvent.tag, records = tag.ndefMessage || [], id = nfc.bytesToHexString(tag.id);
          var langCodeLength = records[0].payload[0], text = records[0].payload.slice((1 + langCodeLength), records[0].payload.length);
 
-         console.debug("NFC ndefMessage[" + nfc.bytesToString(text) + "]")
-         result = Ext.decode(nfc.bytesToString(text));
+         console.debug("NFC ndefID[" + id + "] ndefMessage[" + nfc.bytesToString(text) + "]")
+         result =
+         {
+            result : Ext.decode(nfc.bytesToString(text)),
+            id : id
+         }
          //
          // Decrypt Message
          //
