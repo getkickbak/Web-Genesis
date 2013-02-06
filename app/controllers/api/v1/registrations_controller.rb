@@ -32,7 +32,9 @@ class Api::V1::RegistrationsController < Api::V1::BaseApplicationController
         end
         session[:user_agent] = Common.get_user_agent(request.env['HTTP_USER_AGENT'])    
         session[:resolution] = Common.get_thumbail_resolution(session[:user_agent], params[:device_pixel_ratio].to_f)
+        logger.info("Before render")
         render :template => '/api/v1/tokens/create' 
+        logger.info("After render")
       end
     rescue DataMapper::SaveFailureError => e
       logger.error("Exception: " + e.resource.errors.inspect)
