@@ -233,7 +233,7 @@ class Venue
     "#{self.name} - #{self.address}"  
   end
   
-  def update(type, venue_info)
+  def update_all(type, venue_info)
     now = Time.now
     self.type_id = type ? type.id : nil
     self.name = venue_info[:name]

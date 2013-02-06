@@ -77,13 +77,13 @@
 											<div class="control-group">
 												<label class="control-label"> Province: </label>
 												<div id="venue_state" class="controls">
-													<%= @venue.state %>
+													<%= Carmen::Country.coded(@venue.country).subregions.coded(@venue.state).name %>
 												</div>
 											</div>
 											<div class="control-group">
 												<label class="control-label"> Country: </label>
 												<div id="venue_country" class="controls">
-													<%= @venue.country %>
+													<%= Carmen::Country.coded(@venue.country).name %>
 												</div>
 											</div>
 											<div class="control-group">

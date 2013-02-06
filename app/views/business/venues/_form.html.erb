@@ -10,7 +10,7 @@
    <%= f.input :address, :input_html=>{:class => "input-large"} %>
    <%= f.input :city, :input_html=>{:class => "input-medium"} %>
    <%= f.input :state, :as => :subregion, :parent_region => 'CA', :label => 'Province', :input_html=>{:class => "input-large"} %>
-   <%= f.input :country, :as => :carmen_country, :priority => ['CA'], :input_html=>{:disabled => 'disabled',:class => "input-medium"} %>
+   <%= f.input :country, :as => :carmen_country, :priority => ['CA'], :input_html=>{:disabled => "disabled",:class => "input-medium"} %>
    <%= f.input :zipcode, :label => 'Postal Code', :input_html=>{:class => "input-medium"} %>
    <%= f.input :time_zone, :as => :time_zone, :input_html=>{:class => "input-large"} %>
    <%= f.input :phone, :input_html=>{:class => "input-medium"} %>

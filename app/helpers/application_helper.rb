@@ -18,4 +18,7 @@ module ApplicationHelper
       link_to_function(name, "add_fields(this, \"#{association}\", \"#{escape_javascript(fields)}\")")
    end
 
+   def only_us_and_canada
+      Carmen::Country.all.select{|c| %w{US CA}.include?(c.alpha_2_code)}
+    end
 end
