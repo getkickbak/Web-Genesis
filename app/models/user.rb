@@ -214,15 +214,15 @@ class User
     self.update_ts = now
     if user_info.include? :user_profile
       self.profile.gender = user_info[:user_profile][:gender]
+      self.profile.address = user_info[:user_profile][:address]
+      self.profile.city = user_info[:user_profile][:city]
+      self.profile.state = user_info[:user_profile][:state]
+      self.profile.zipcode = user_info[:user_profile][:zipcode] 
+      self.profile.country = user_info[:user_profile][:country]
       date_str = "#{user_info[:user_profile]['birthday(1i)']}-#{user_info[:user_profile]['birthday(2i)']}-#{user_info[:user_profile]['birthday(3i)']}"
       self.profile.birthday_str = date_str
       self.profile.update_ts = now
     end 
-    (self.profile.address = user_info[:address]) if user_info.include? :address
-    (self.profile.city = user_info[:city]) if user_info.include? :city
-    (self.profile.state = user_info[:state]) if user_info.include? :state
-    (self.profile.zipcode = user_info[:zipcode]) if user_info.include? :zipcode   
-    (self.profile.country = user_info[:country]) if user_info.include? :country
     (self.profile.gender = user_info[:gender]) if user_info.include? :gender
     if user_info.include? :birthday && user_info[:birthday]
       birthday_secs = user_info[:birthday]/1000

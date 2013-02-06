@@ -8,7 +8,7 @@ class UserProfile
   property :city, String, :default => ""
   property :state, String, :default => ""
   property :zipcode, String, :default => ""
-  property :country, String, :default => ""
+  property :country, String, :default => "CA"
   property :gender, Enum[:m, :f, :u], :default => :u
   property :birthday, Date, :default => ::Constant::MIN_DATE
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME

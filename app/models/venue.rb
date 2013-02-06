@@ -10,7 +10,7 @@ class Venue
   property :city, String, :required => true, :default => ""
   property :state, String, :required => true, :default => ""
   property :zipcode, String, :required => true, :default => ""
-  property :country, String, :required => true, :default => ""
+  property :country, String, :required => true, :default => "CA"
   property :time_zone, String, :required => true, :default => ""
   property :phone, String, :required => true, :default => ""
   property :website, String, :default => "", :format => :url 

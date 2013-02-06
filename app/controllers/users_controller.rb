@@ -11,20 +11,20 @@ class UsersController < ApplicationController
     @user = current_user
     authorize! :update, @user
 
-    User.transaction do
-      begin
+    begin
+      User.transaction do
         params[:user][:role] = @user.role
         params[:user][:status] = @user.status
         @user.update_all(params[:user])
         respond_to do |format|
           format.html { redirect_to({:action => "edit"}, {:notice => t("users.update_success")}) }
         end
-      rescue DataMapper::SaveFailureError => e
-        logger.error("Exception: " + e.resource.errors.inspect)
-        @user = e.resource
-        respond_to do |format|
-          format.html { render :action => "edit" }
-        end
+      end
+    rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
+      @user = e.resource
+      respond_to do |format|
+        format.html { render :action => "edit" }
       end
     end
   end

@@ -9,9 +9,9 @@
    <%= f.input :description, :as => :text, :input_html => { :rows => 10, :class => "input-large" } %>
    <%= f.input :address, :input_html=>{:class => "input-large"} %>
    <%= f.input :city, :input_html=>{:class => "input-medium"} %>
-   <%= f.input :state, :input_html=>{:class => "input-medium"} %>
-   <%= f.input :zipcode, :input_html=>{:class => "input-medium"} %>
-   <%= f.input :country, :input_html=>{:class => "input-medium"} %>
+   <%= f.input :state, :as => :subregion, :parent_region => 'CA', :label => 'Province', :input_html=>{:class => "input-large"} %>
+   <%= f.input :country, :as => :carmen_country, :priority => ['CA'], :input_html=>{:disabled => 'disabled',:class => "input-medium"} %>
+   <%= f.input :zipcode, :label => 'Postal Code', :input_html=>{:class => "input-medium"} %>
    <%= f.input :time_zone, :as => :time_zone, :input_html=>{:class => "input-large"} %>
    <%= f.input :phone, :input_html=>{:class => "input-medium"} %>
    <%= f.input :website, :required => false, :input_html=>{:class => "input-large"} %>

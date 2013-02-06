@@ -40,11 +40,20 @@ GEM
     activemodel (3.2.6)
       activesupport (= 3.2.6)
       builder (~> 3.0.0)
+    activerecord (3.2.6)
+      activemodel (= 3.2.6)
+      activesupport (= 3.2.6)
+      arel (~> 3.0.2)
+      tzinfo (~> 0.3.29)
+    activeresource (3.2.6)
+      activemodel (= 3.2.6)
+      activesupport (= 3.2.6)
     activesupport (3.2.6)
       i18n (~> 0.6)
       multi_json (~> 1.0)
     addressable (2.2.8)
     archive-tar-minitar (0.5.2)
+    arel (3.0.2)
     aws-s3 (0.6.3)
       builder
       mime-types
@@ -55,6 +64,10 @@ GEM
       will_paginate
     builder (3.0.0)
     cancan (1.6.8)
+    carmen (1.0.0.beta2)
+    carmen-rails (1.0.0.beta3)
+      carmen (~> 1.0.0.beta2)
+      rails
     carrierwave (0.6.2)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
@@ -235,6 +248,14 @@ GEM
       rack
     rack-test (0.6.1)
       rack (>= 1.0)
+    rails (3.2.6)
+      actionmailer (= 3.2.6)
+      actionpack (= 3.2.6)
+      activerecord (= 3.2.6)
+      activeresource (= 3.2.6)
+      activesupport (= 3.2.6)
+      bundler (~> 1.0)
+      railties (= 3.2.6)
     railties (3.2.6)
       actionpack (= 3.2.6)
       activesupport (= 3.2.6)
@@ -335,6 +356,7 @@ DEPENDENCIES
   bcrypt-ruby
   bootstrap-will_paginate
   cancan
+  carmen-rails (~> 1.0.0.beta3)
   carrierwave
   carrierwave-datamapper
   country-select

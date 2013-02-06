@@ -1,6 +1,7 @@
-<%= f.input :address, :required => false %>
-<%= f.input :city, :required => false %>
-<%= f.input :state, :required => false %>
-<%= f.input :zipcode, :required => false %>
+<%= f.input :address, :required => false, :input_html => {:class=>"input-large"}%>
+<%= f.input :city, :required => false, :input_html => {:class=>"input-medium"} %>
+<%= f.input :state, :as => :subregion, :parent_region => 'CA', :label => 'Province', :required => false, :input_html=>{:class => "input-large"} %>
+<%= f.input :country, :as => :carmen_country, :priority => ['CA'], :required => false, :input_html => {:disabled => 'disabled',:class=>"input-medium"} %>
+<%= f.input :zipcode, :label => 'Postal Code', :required => false, :input_html => {:class=>"input-medium"} %>
 <%= f.input :gender, :required => false, :collection => [["", 'u'], ["Male", 'm'], ["Female", 'f']], :include_blank => false, :input_html => {:class=>"input-medium"} %>
 <%= f.input :birthday, :as => :date, :required => false, :use_short_month => true, :start_year => Date.today.year - 90, :end_year => Date.today.year - 12, :order => [:month, :day, :year], :input_html => {:class=>"input-small"} %>
