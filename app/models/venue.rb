@@ -48,11 +48,11 @@ class Venue
     
     venue = Venue.new(
       :type_id => type ? type.id : nil,
-      :name => venue_info[:name].strip,
+      :name => venue_info[:name].squeeze(' ').strip,
       :description => venue_info[:description].strip,
       :address => venue_info[:address].strip,
       :city => venue_info[:city].strip,
-      :state => venue_info[:state].strip,
+      :state => venue_info[:state],
       :zipcode => venue_info[:zipcode].strip,
       :country => venue_info[:country],
       :time_zone => venue_info[:time_zone],
@@ -236,16 +236,16 @@ class Venue
   def update_all(type, venue_info)
     now = Time.now
     self.type_id = type ? type.id : nil
-    self.name = venue_info[:name]
-    self.description = venue_info[:description]
-    self.address = venue_info[:address]
-    self.city = venue_info[:city]
+    self.name = venue_info[:name].squeeze(' ').strip
+    self.description = venue_info[:description].strip
+    self.address = venue_info[:address].strip
+    self.city = venue_info[:city].strip
     self.state = venue_info[:state]
-    self.zipcode = venue_info[:zipcode]
+    self.zipcode = venue_info[:zipcode].strip
     self.country = venue_info[:country]
     self.time_zone = venue_info[:time_zone]
-    self.phone = venue_info[:phone]
-    self.website = venue_info[:website]
+    self.phone = venue_info[:phone].strip
+    self.website = venue_info[:website].strip
     self.longitude = venue_info[:longitude].to_f
     self.latitude = venue_info[:latitude].to_f
     self.update_ts = now

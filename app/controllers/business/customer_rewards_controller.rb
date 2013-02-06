@@ -110,7 +110,7 @@ module Business
           else
             venues = []
           end
-          @customer_reward.update(type, params[:customer_reward], venues)
+          @customer_reward.update_all(type, params[:customer_reward], venues)
           respond_to do |format|
             format.html { redirect_to({:action => "edit"}, {:notice => t("business.customer_rewards.update_success")}) }
             #format.xml  { render :xml => @deal, :status => :created, :location => @deal }
