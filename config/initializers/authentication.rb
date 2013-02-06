@@ -1,10 +1,10 @@
 Warden::Strategies.add(:user_check_status) do 
   def valid? 
     # code here to check whether to try and authenticate using this strategy; 
-    Rails.logger.info("Request subdomain: #{request.subdomain}")
     if request.subdomain == 'www' && params[:user]
-      Rails.logger.info("Email: #{params[:user][:email]}")
-      return params[:user][:email]
+      if (params[:user].is_a? Hash) || (params[:user].is_a? ActiveSupport::HashWithIndifferentAccess)
+        return params[:user][:email]
+      end  
     end
     return false
   end 
@@ -33,7 +33,9 @@ Warden::Strategies.add(:staff_check_status) do
   def valid? 
     # code here to check whether to try and authenticate using this strategy; 
     if request.subdomain == 'manage' && params[:staff]
-      return params[:staff][:email]
+      if (params[:staff].is_a? Hash) || (params[:staff].is_a? ActiveSupport::HashWithIndifferentAccess)
+        return params[:staff][:email]
+      end
     end
     return false
   end 
@@ -62,7 +64,9 @@ Warden::Strategies.add(:merchant_check_status) do
   def valid? 
     # code here to check whether to try and authenticate using this strategy; 
     if request.subdomain == 'merchant' && params[:merchant]
-      return params[:merchant][:email]
+      if (params[:merchant].is_a? Hash) || (params[:merchant].is_a? ActiveSupport::HashWithIndifferentAccess)
+        return params[:merchant][:email]
+      end
     end
     return false
   end 
