@@ -38,7 +38,7 @@ class Device
     return device
   end
   
-  def update(venue, device_info)
+  def update_all(venue, device_info)
     now = Time.now
     self.venue_id = venue ? venue.id : nil
     self.device_id = device_info[:device_id].strip
