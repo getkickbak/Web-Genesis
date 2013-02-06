@@ -45,7 +45,7 @@ class Staff
   def self.create(staff_info)
     now = Time.now
     if (staff_info.is_a? Hash) || (staff_info.is_a? ActiveSupport::HashWithIndifferentAccess)
-      name = staff_info[:name].strip
+      name = staff_info[:name].squeeze(' ').strip
       email = staff_info[:email].strip
       password = staff_info[:password].strip
       password_confirmation = staff_info[:password_confirmation].strip
@@ -89,7 +89,7 @@ class Staff
   
   def update_all(staff_info)
     now = Time.now
-    self.name = staff_info[:name].strip
+    self.name = staff_info[:name].squeeze(' ').strip
     self.email = staff_info[:email].strip
     if ((staff_info.include? :current_password) && !staff_info[:current_password].empty?) || ((staff_info.include? :password) && !staff_info[:password].empty?) || ((staff_info.include? :password_confirmation) && !staff_info[:password_confirmation].empty?)
       self.current_password = staff_info[:current_password].strip
