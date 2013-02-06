@@ -7,7 +7,7 @@ class EarnRewardRecord
   Types = [:signup, :purchase, :challenge, :badge]
 
   property :id, Serial
-  property :type, Enum[:signup, :purchase, :challenge], :required => true
+  property :type, Enum[:signup, :purchase, :challenge, :badge], :required => true
   property :ref_id, Integer, :default => 0
   property :venue_id, Integer, :required => true, :default => 0
   property :data, String, :default => ""
