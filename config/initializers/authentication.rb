@@ -1,7 +1,9 @@
 Warden::Strategies.add(:user_check_status) do 
   def valid? 
     # code here to check whether to try and authenticate using this strategy; 
+    Rails.logger.info("Request subdomain: #{request.subdomain}")
     if request.subdomain == 'www' && params[:user]
+      Rails.logger.info("Email: #{params[:user][:email]}")
       return params[:user][:email]
     end
     return false
