@@ -19,148 +19,156 @@ total : <%= @next_badge.visits %>
 </script>
 <% end %>
 <div class="main">
-   <div class="main-inner">
-      <div class="container">
-         <div class="row">
-            <div class="span4">
-               <div class="widget">
-                  <div class="widget-content">
-                     <div>
-                        <div class="sub-header">
-                           <h4><%= @merchant.name %></h4>
-                        </div>
-                        <div class="merchant">
-                           <div class="merchant-photo">
-                              <%= image_tag @merchant.photo.url %>
-                              <div class="merchant-website">
-                                 <%= link_to @merchant.website, @merchant.website %>
-                              </div>
-                           </div>
-                           <div class="sub-header">
-                              <h5>Locations</h5>
-                           </div>
-                           <% @merchant.venues.each do |venue| %>
-                           <address>
-                              <%= venue.name %>
-                              <br>
-                              <%= venue.address %>
-                              <br>
-                              <%= "#{venue.city}, #{venue.state} #{venue.zipcode}" %>
-                              <br>
-                              <%= number_to_phone(venue.phone) %>
-                           </address>
-                           <% end %>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-            <div class="span8">
-               <div class="widget">
-                  <div class="widget-header">
-                     <i class="icon-home"></i>
-                     <h3>About Us</h3>
-                  </div>
-                  <div class="widget-content">
-                     <div>
-                        <p>
-                           <%= @merchant.description %>
-                        </p>
-                     </div>
-                  </div>
-               </div>
-               <div class="widget">
-                  <div class="widget-header">
-                     <i class="icon-signal"></i>
-                     <h3>Stats & Badges</h3>
-                  </div>
-                  <div class="widget-content">
-                     <div class="stats">
-                        <a href="#rewards" class="stat"> <span class="stat-value"> <!--
-                           <img class="merchant-badge" style="margin-right:10px;"
-                           src="http://devfiles.getkickbak.com/v1/icons/miscicons/ios/mxhdpi/points.png"/>
-                           --> <%= @customer.points %></span>Reward Points</a>
-                        <a href="#prizes" class="stat"><span class="stat-value"> <!--
-                           <img class="merchant-badge" style="margin-right:10px;"
-                           src="http://devfiles.getkickbak.com/v1/icons/miscicons/ios/mxhdpi/prize_points.png"/>
-                           --> <%= @customer.prize_points %></span> Prize Points</a>
-                        <div data="#badge" class="stat">
-                           <span class="stat-value"> <% if @customer.badge.custom %>
-                              <%= image_tag @customer.badge.custom_type.thumbnail_large_url, :class => "merchant-badge" %> </span> <%= @customer.badge.custom_type.display_value %> Badge<% else %>
-                           <%= image_tag @customer.badge.type.thumbnail_large_url, :class => "merchant-badge" %></span><%= @customer.badge.type.display_value %> Badge<% end %>
-                        </div>
-                        <div data="#visits" class="stat">
-                           <div id="visits_chart"></div>
-                           <span class="stat-value visit_count"> <%= @next_badge.visits - @customer.next_badge_visits %> </span>
-                           Visits Before the next Badge Promotion
-                        </div>
-                     </div>
-                  </div>
-               </div>
-               <% rewards = @customer_rewards.all(:mode => :reward, :order => [:points.asc]) %>
-               <% prizes = @customer_rewards.all(:mode => :prize, :order => [:points.asc]) %>
-               <div class="widget widget-table action-table">
-                  <div id="rewards" class="widget-header">
-                     <i class="icon-gift"></i>
-                     <h3>Rewards</h3>
-                  </div>
-                  <div class="widget-content">
-                     <table class="table">
-                        <thead>
-                           <tr>
-                              <th>Rewards</th>
-                              <th class="td-actions">Points</th>
-                           </tr>
-                        </thead>
-                        <tbody>
-                           <% rewards.each do |customer_reward| %>
-                           <tr>
-                              <td> <% if customer_reward.photo_url.to_s.empty? %>
-                              <%= image_tag Common.get_default_customer_reward_file_path(@merchant.type.value, customer_reward.type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %>
-                              <% else %>
-                              <%= image_tag customer_reward.photo.thumbnail_ios_small.url, :style => "width:50px;margin-right:10px;" %>
-                              <% end %>
-                              <%= customer_reward.title %> </td>
-                              <td class="td-actions"><%= customer_reward.points %></td>
-                           </tr>
-                           <% end %>
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
-               <div class="widget widget-table action-table">
-                  <div id="prizes" class="widget-header">
-                     <i class="icon-star"></i>
-                     <h3>Prizes</h3>
-                  </div>
-                  <div class="widget-content">
-                     <table class="table">
-                        <thead>
-                           <tr>
-                              <th>Prizes</th>
-                              <th class="td-actions">Points</th>
-                           </tr>
-                        </thead>
-                        <tbody>
-                           <% prizes.each do |customer_reward| %>
-                           <tr>
-                              <td> <% if customer_reward.photo_url.to_s.empty? %>
-                              <%= image_tag Common.get_default_customer_reward_file_path(@merchant.type.value, customer_reward.type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %>
-                              <% else %>
-                              <%= image_tag customer_reward.photo.thumbnail_ios_small.url, :style => "width:50px;margin-right:10px;" %>
-                              <% end %>
-                              <%= customer_reward.title %> </td>
-                              <td class="td-actions"><%= customer_reward.points %></td>
-                           </tr>
-                           <% end %>
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
-               <!-- -->
-            </div>
-         </div>
-      </div>
-   </div>
+	<div class="main-inner">
+		<div class="container">
+			<div class="row">
+				<div class="span4">
+					<div class="widget">
+						<div class="widget-content">
+							<div>
+								<div class="sub-header">
+									<h4><%= @merchant.name %></h4>
+								</div>
+								<div class="merchant">
+									<div class="merchant-photo">
+										<%= image_tag @merchant.photo.url %>
+										<div class="merchant-website">
+											<%= link_to @merchant.website, @merchant.website %>
+										</div>
+									</div>
+									<div class="sub-header">
+										<h5>Locations</h5>
+									</div>
+									<% @merchant.venues.each do |venue| %>
+									<address>
+										<%= venue.name %>
+										<br>
+										<%= venue.address %>
+										<br>
+										<%= "#{venue.city}, #{venue.state} #{venue.zipcode}" %>
+										<br>
+										<%= number_to_phone(venue.phone) %>
+									</address>
+									<% end %>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="span8">
+					<div class="widget">
+						<div class="widget-header">
+							<i class="icon-home"></i>
+							<h3>About Us</h3>
+						</div>
+						<div class="widget-content">
+							<div>
+								<p>
+									<%= @merchant.description %>
+								</p>
+							</div>
+						</div>
+					</div>
+					<div class="widget">
+						<div class="widget-header">
+							<i class="icon-signal"></i>
+							<h3>Stats & Badges</h3>
+						</div>
+						<div class="widget-content">
+							<div class="stats" style="padding-left: 0px;">
+								<a href="#rewards" class="stat"> <span class="stat-value"> <!--
+									<img class="merchant-badge" style="margin-right:10px;"
+									src="http://devfiles.getkickbak.com/v1/icons/miscicons/ios/mxhdpi/points.png"/>
+									--> <%= @customer.points %></span> Points</a>
+								<a href="#prizes" class="stat"><span class="stat-value"> <!--
+									<img class="merchant-badge" style="margin-right:10px;"
+									src="http://devfiles.getkickbak.com/v1/icons/miscicons/ios/mxhdpi/prize_points.png"/>
+									--> <%= @customer.prize_points %></span> Prize Points</a>
+								<div data="#badge" class="stat">
+									<span class="stat-value"> 
+									<% if @customer.badge.custom %>
+										<%= image_tag @customer.badge.custom_type.thumbnail_large_url, :class => "merchant-badge" %> </span>You are our <%= @customer.badge.custom_type.display_value %>
+									<% else %>
+										<%= image_tag @customer.badge.type.thumbnail_large_url, :class => "merchant-badge" %></span>You are our <%= @customer.badge.type.display_value %>
+									<% end %>
+								</div>
+								<div data="#visits" class="stat">
+									<div id="visits_chart"></div>
+									<span class="stat-value visit_count"> <%= @next_badge.visits - @customer.next_badge_visits %> </span>
+									Visits more to be our 
+									<% if @customer.badge.custom %>
+										<%= @next_badge.custom_type.display_value %>
+									<% else %>
+										<%= @next_badge.type.display_value %>	
+									<% end %>	
+								</div>
+							</div>
+						</div>
+					</div>
+					<% rewards = @customer_rewards.all(:mode => :reward, :order => [:points.asc]) %>
+					<% prizes = @customer_rewards.all(:mode => :prize, :order => [:points.asc]) %>
+					<div class="widget widget-table action-table">
+						<div id="rewards" class="widget-header">
+							<i class="icon-gift"></i>
+							<h3>Rewards</h3>
+						</div>
+						<div class="widget-content">
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Rewards</th>
+										<th class="td-actions">Points</th>
+									</tr>
+								</thead>
+								<tbody>
+									<% rewards.each do |customer_reward| %>
+									<tr>
+										<td> <% if customer_reward.photo_url.to_s.empty? %>
+										<%= image_tag Common.get_default_customer_reward_file_path(@merchant.type.value, customer_reward.type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %>
+										<% else %>
+										<%= image_tag customer_reward.photo.thumbnail_ios_small.url, :style => "width:50px;margin-right:10px;" %>
+										<% end %>
+										<%= customer_reward.title %> </td>
+										<td class="td-actions"><%= customer_reward.points %></td>
+									</tr>
+									<% end %>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="widget widget-table action-table">
+						<div id="prizes" class="widget-header">
+							<i class="icon-star"></i>
+							<h3>Prizes</h3>
+						</div>
+						<div class="widget-content">
+							<table class="table">
+								<thead>
+									<tr>
+										<th>Prizes</th>
+										<th class="td-actions">Points</th>
+									</tr>
+								</thead>
+								<tbody>
+									<% prizes.each do |customer_reward| %>
+									<tr>
+										<td> <% if customer_reward.photo_url.to_s.empty? %>
+										<%= image_tag Common.get_default_customer_reward_file_path(@merchant.type.value, customer_reward.type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %>
+										<% else %>
+										<%= image_tag customer_reward.photo.thumbnail_ios_small.url, :style => "width:50px;margin-right:10px;" %>
+										<% end %>
+										<%= customer_reward.title %> </td>
+										<td class="td-actions"><%= customer_reward.points %></td>
+									</tr>
+									<% end %>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<!-- -->
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 </div>
