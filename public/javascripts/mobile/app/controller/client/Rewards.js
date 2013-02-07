@@ -106,10 +106,10 @@ Ext.define('Genesis.controller.client.Rewards',
    },
    getBadgeMsg : function(points, badge)
    {
-      var rc = 'You\'ve been Promoted to Badge Level ' + badge.get('type').display_value + '!';
+      var rc = 'You\'ve been Promoted to' + Genesis.constants.addCRLF() + 'Badge Level ' + badge.get('type').display_value + '!';
       if (points > 0)
       {
-         rc += (Genesis.constants.addCRLF() + 'For that, you\'ve earned ' + points + 'Bonus Reward Pts!');
+         rc += (Genesis.constants.addCRLF() + 'For that, you\'ve earned ' + Genesis.constants.addCRLF() + points + ' Bonus Reward Pts!');
       }
 
       return rc;
@@ -453,10 +453,6 @@ Ext.define('Genesis.controller.client.Rewards',
                   // Refresh screen on first visit
                   //
                   me.fireEvent('triggerCallbacksChain');
-                  if (viewport.getCustomer().get('visits') == 0)
-                  {
-                     me.getRewards().cleanView(me.getApplication().getController('client' + '.Checkins').getExplore());
-                  }
                }
             }
          });

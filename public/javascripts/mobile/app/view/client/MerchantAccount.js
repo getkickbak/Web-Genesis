@@ -161,8 +161,9 @@ Ext.define('Genesis.view.client.MerchantAccount',
     */
    cleanView : function(activeItem)
    {
-      if (activeItem.isXType('checkinexploreview', true) || activeItem.isXType('mainpageview', true))
+      if (activeItem.isXType('clientcheckinexploreview', true) || activeItem.isXType('clientmainpageview', true))
       {
+      	console.debug("Merchant Account Page cleanup");
          this.removeAll(true);
       }
       this.callParent(arguments);

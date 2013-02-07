@@ -38,7 +38,7 @@ Ext.define('Genesis.model.Customer',
          associationKey : 'merchant',
          name : 'merchant',
          setterName : 'setMerchant',
-         getterName : 'getMerchant',
+         getterName : 'getMerchant'
       },
       {
          model : 'Genesis.model.User',

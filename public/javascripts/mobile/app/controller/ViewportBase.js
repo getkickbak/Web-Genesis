@@ -60,6 +60,35 @@ Ext.define('Genesis.controller.ViewportBase',
       var me = this, updateBadge = false, viewport = me.getViewPortCntlr();
       var bstore = Ext.StoreMgr.get('BadgeStore'), cstore = Ext.StoreMgr.get('CustomerStore');
       var customer = viewport.getCustomer(), customerId = metaData['customer_id'] || ((customer) ? customer.getId() : 0);
+      var _createNewCustomer = function()
+      {
+         //
+         // First Visit!
+         //
+         if (info['visits'] == 1)
+         {
+            console.debug("Adding New Customer Record ...");
+
+            var merchants = me.getApplication().getController('client' + '.Merchants'), checkins = me.getApplication().getController('client' + '.Checkins');
+            var _customer = viewport.getCustomer(), ccustomer = Ext.create('Genesis.model.Customer', Ext.applyIf(
+            {
+               id : customerId,
+               merchant : _customer.getMerchant().raw
+            }, info));
+            ccustomer.setLastCheckin(Ext.create('Genesis.model.Checkin'));
+            cstore.add(ccustomer);
+
+            merchants.getMain().cleanView(checkins.getExplore());
+            checkins.fireEvent('setupCheckinInfo', 'checkin', viewport.getVenue(), ccustomer, metaData);
+            
+            console.debug("New Customer Record Added.");
+
+            me.persistSyncStores('CustomerStore');
+            
+            customer = ccustomer;
+         }
+      };
+
       if (customerId > 0)
       {
          console.debug("updateAccountInfo - customerId[" + customerId + "]");
@@ -125,6 +154,14 @@ Ext.define('Genesis.controller.ViewportBase',
             customer.endEdit();
             me.persistSyncStores('CustomerStore');
          }
+         else
+         {
+            _createNewCustomer();
+         }
+      }
+      else
+      {
+         _createNewCustomer();
       }
 
       return customer;
@@ -328,7 +365,7 @@ Ext.define('Genesis.controller.ViewportBase',
                Ext.StoreMgr.get('MainPageStore').setData(response.data);
             }
          }
-      }
+      };
       request.open("GET", file, true);
       request.send(null);
    },
@@ -565,7 +602,7 @@ Ext.define('Genesis.controller.ViewportBase',
                   break;
                }
             }
-         }
+         };
          switch(type)
          {
             case 'Media' :

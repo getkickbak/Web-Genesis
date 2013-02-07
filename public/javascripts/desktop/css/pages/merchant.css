@@ -1,13 +1,23 @@
-.merchant-photo {
-	margin-bottom: 10px;
+.merchant .sub-header {
+   float:left;
+   margin-left:10px;
+   min-width:250px;"
+}
+.merchant .merchant-photo {
+   float:left;
+   margin-bottom: 10px;
+   text-align:center;
 }
 
-.merchant-website {
-	margin-bottom: 10px;
+.merchant .merchant-website {
+   text-align:left;
+   margin: 10px 0;
 }
 
-.merchant-address {
-	margin-bottom: 10px;
+.merchant address {
+   min-width : 220px;
+   margin: 0 10px 10px 10px;
+   float:left;
 }
 
 .merchant-points {
@@ -17,10 +27,68 @@
 
 .merchant-badge {
 	width: 100px;
-	margin-right: 10px;
 }
 
 .merchant-badge-name {
 	font-weight: bold;
 	font-size: 16px;
+}
+
+.shortcuts a[href="#prizes"].shortcut, .shortcuts a[href="#rewards"].shortcut {
+   width:40%;
+   min-width:100px;
+   margin:0 10px 0px;
+   padding:0;
+   background:transparent;
+   background-position:center 0;
+   background-size:100px 100px;
+   background-repeat:no-repeat;
+}
+/*
+.shortcuts a[href="#prizes"].shortcut {
+   background-image:url(http://devfiles.getkickbak.com/v1/icons/miscicons/ios/mxhdpi/prize_points.png);
+}
+.shortcuts a[href="#rewards"].shortcut {
+   background-image:url(http://devfiles.getkickbak.com/v1/icons/miscicons/ios/mxhdpi/points.png);
+}
+*/
+.stats .stat {
+   text-decoration: none;
+   width:25%;
+   min-width:100px;
+   text-align:center;
+   font-size:14px;
+}
+.stats .stat .stat-value {
+   text-decoration: none;
+   line-height:100px;
+}
+
+.stats div[data="#badge"].stat {
+   padding:0;
+   background:transparent;
+}
+.stats div[data="#visits"].stat {
+   position:relative;
+   padding:0;
+   background:transparent;	
+}
+
+.stats a[href="#prizes"].stat .shortcut-icon, .stats a[href="#rewards"].stat .shortcut-icon {
+   line-height:100px;
+}
+div#visits_chart {
+   width:100px;
+   height:100px;
+   font-size:30px;
+   margin: 0 auto 0.55em auto;
+}
+
+.visit_count {
+	position: absolute;
+	top: 0%;
+	left: 50%;
+	width:45px;
+	margin:0px -25px;
+	text-align:center;
 }
