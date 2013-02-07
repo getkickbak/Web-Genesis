@@ -1,1 +1,0 @@
-ActionView::Helpers::FormOptionsHelper::COUNTRIES = ["Canada"]

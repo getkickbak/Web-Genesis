@@ -192,7 +192,7 @@ module Business
           else
             venues = []
           end
-          @challenge.update(type, params[:challenge], venues)
+          @challenge.update_all(type, params[:challenge], venues)
           respond_to do |format|
             format.html { redirect_to({:action => "edit", :id => @challenge.id}, {:notice => t("business.challenges.update_success")}) }
             format.xml  { head :ok }

@@ -40,7 +40,7 @@ class CustomerReward
     now = Time.now
     reward = CustomerReward.new(
       :type_id => type ? type.id : nil,
-      :title => reward_info[:title].strip,
+      :title => reward_info[:title].squeeze(' ').strip,
       :price => reward_info[:price],
       :points => reward_info[:points],
       :mode => reward_info[:mode],
@@ -60,10 +60,10 @@ class CustomerReward
     return reward
   end
 
-  def update(type, reward_info, venues)
+  def update_all(type, reward_info, venues)
     now = Time.now
     self.type_id = type ? type.id : nil
-    self.title = reward_info[:title]
+    self.title = reward_info[:title].squeeze(' ').strip
     self.price = reward_info[:price]
     self.points = reward_info[:points]
     self.mode = reward_info[:mode]

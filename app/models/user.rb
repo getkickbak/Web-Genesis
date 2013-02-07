@@ -83,7 +83,7 @@ class User
   def self.create(user_info)
     now = Time.now
     if (user_info.is_a? Hash) || (user_info.is_a? ActiveSupport::HashWithIndifferentAccess)
-      name = user_info[:name].strip
+      name = user_info[:name].squeeze(' ').strip
       email = user_info[:email].strip
       phone = user_info[:phone].strip
       password = user_info[:password].strip
@@ -96,7 +96,7 @@ class User
       birthday = user_info[:birthday]
       tag_id = user_info[:tag_id]
     else
-      name = user_info.name.strip
+      name = user_info.name.squeeze(' ').strip
       email = user_info.email.strip
       phone = user_info.phone.strip
       password = user_info.password.strip
@@ -191,7 +191,7 @@ class User
   
   def update_all(user_info)
     now = Time.now
-    (self.name = user_info[:name].strip) if user_info.include? :name
+    (self.name = user_info[:name].squeeze(' ').strip) if user_info.include? :name
     (self.email = user_info[:email].strip) if user_info.include? :email
     (self.phone = user_info[:phone].strip) if user_info.include? :phone
     if ((user_info.include? :current_password) && !user_info[:current_password].empty?) || ((user_info.include? :password) && !user_info[:password].empty?) || ((user_info.include? :password_confirmation) && !user_info[:password_confirmation].empty?)

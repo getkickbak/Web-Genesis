@@ -77,7 +77,7 @@ module Admin
       begin
         Device.transaction do
           venue = Venue.get(params[:device][:venue_id])
-          @device.update(venue, params[:device])
+          @device.update_all(venue, params[:device])
           respond_to do |format|
             format.html { redirect_to(merchant_device_path(@merchant, @device), :notice => t("admin.devices.update_success")) }
           #format.xml  { head :ok }

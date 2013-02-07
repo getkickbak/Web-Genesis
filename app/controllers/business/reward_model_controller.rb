@@ -32,7 +32,7 @@ module Business
             RewardModel.create(current_merchant, type, params[:reward_model])
             msg = t("business.reward_model.setup_success")
           else
-            @reward_model.update(type, params[:reward_model])
+            @reward_model.update_all(type, params[:reward_model])
             msg = t("business.reward_model.update_success")
           end
           rewards = CustomerReward.all(:merchant => current_merchant)

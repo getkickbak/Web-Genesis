@@ -36,7 +36,7 @@ class Challenge
     now = Time.now
     challenge = Challenge.new(
       :type_id => type ? type.id : nil,
-      :name => challenge_info[:name].strip,
+      :name => challenge_info[:name].squeeze(' ').strip,
       :description => challenge_info[:description].strip,
       :require_verif => challenge_info[:require_verif],
       :reward_amount => challenge_info[:reward_amount],
@@ -54,11 +54,11 @@ class Challenge
     return challenge
   end
   
-  def update(type, challenge_info, venues)
+  def update_all(type, challenge_info, venues)
     now = Time.now
     self.type_id = type ? type.id : nil
-    self.name = challenge_info[:name]
-    self.description = challenge_info[:description]
+    self.name = challenge_info[:name].squeeze(' ').strip
+    self.description = challenge_info[:description].strip
     self.reward_amount = challenge_info[:reward_amount]
     self.points = challenge_info[:points]   
     self.require_verif = challenge_info[:require_verif]
