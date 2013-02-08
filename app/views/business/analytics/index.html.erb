@@ -1,5 +1,6 @@
 <% content_for :link do %>
 <link rel="stylesheet" href="/javascripts/desktop/css/pages/reports.css"/>
+<link rel="stylesheet" href="/javascripts/desktop/css/pages/business/analytics.css"/>
 <% end %>
 <% content_for :script do %>
 <script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
@@ -10,129 +11,225 @@
 <script type="text/javascript" src="/javascripts/desktop/src/business/analytics_highcharts.js"></script>
 <% end %>
 <div class="main">
-   <div class="main-inner">
-      <div class="container">
-         <div class="row">
-            <div class="span12">
-               <div class="widget big-stats-container">
-                  <div class="widget-content">
-                     <div id="big_stats" class="cf">
-                        <div class="stat">
-                           <h4>People in your loyalty program</h4>
-                           <span class="value"><%= @customers_total %></span>
-                        </div>
-                        <!-- .stat -->
-                        <div class="stat">
-                           <h4>New customers in the last 2 weeks</h4>
-                           <span class="value"><%= @new_customers_total %></span>
-                        </div>
-                        <div class="stat">
-                           <h4># of purchases in the last 2 months</h4>
-                           <span class="value"><%= @purchases_total %></span>
-                        </div>
-                        <div class="stat">
-                           <h4>Revenue in the last 2 months</h4>
-                           <span class="value"><%= @revenue_total %></span>
-                        </div>
-                     </div>
-                     <div id="big_stats" class="cf">
-                        <div class="stat">
-                           <h4>Total rewards redeemed</h4>
-                           <span class="value"><%= @rewards_redeemed_total %></span>
-                        </div>
-                        <!-- .stat -->
-                        <div class="stat">
-                           <h4>Rewards redeemed in the last 2 months</h4>
-                           <span class="value"><%= @new_rewards_redeemed_total %></span>
-                        </div>
-                        <div class="stat">
-                           <h4>Total prizes redeemed</h4>
-                           <span class="value"><%= @prizes_redeemed_total %></span>
-                        </div>
-                        <div class="stat">
-                           <h4>Prizes redeemed in the last 2 months</h4>
-                           <span class="value"><%= @new_prizes_redeemed_total %></span>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <div class="row">
-            <div class="span12">
-               <div class="widget">
-                  <div class="widget-header">
-                     <i class="icon-user"></i>
-                     <h3>Total Customers</h3>
-                  </div>
-                  <div class="widget-content">
-                     <div id="total_customers">
-                        &nbsp;
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <div class="row">
-            <div class="span12">
-               <div class="widget">
-                  <div class="widget-header">
-                     <i class="icon-shopping-cart"></i>
-                     <h3>Purchases</h3>
-                  </div>
-                  <div class="widget-content">
-                     <div id="purchases_line_chart">
-                        &nbsp;
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <div class="row">
-            <div class="span12">
-               <div class="widget">
-                  <div class="widget-header">
-                     <i class="icon-shopping-cart"></i>
-                     <h3>Purchases</h3>
-                  </div>
-                  <div class="widget-content">
-                     <div id="purchases_line_chart_amount">
-                        &nbsp;
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <div class="row">
-            <div class="span12">
-               <div class="widget">
-                  <div class="widget-header">
-                     <i class="icon-qrcode"></i>
-                     <h3>Challenges</h3>
-                  </div>
-                  <div class="widget-content">
-                     <div id="challenges_line_chart">
-                        &nbsp;
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-         <div class="row">
-            <div class="span12">
-               <div class="widget">
-                  <div class="widget-header">
-                     <i class="icon-qrcode"></i>
-                     <h3>Challenges</h3>
-                  </div>
-                  <div class="widget-content">
-                     <div id="challenges_pie_chart">
-                        &nbsp;
-                     </div>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-   </div>
+	<div class="main-inner">
+		<div class="container">
+			<div class="row">
+				<div class="span12">
+					<div class="widget big-stats-container">
+						<div class="widget-content">
+							<div id="big_stats" class="cf">
+								<div class="stat">
+									<h4>People in your loyalty program</h4>
+									<span class="value"><%= @customers_total %></span>
+								</div>
+								<!-- .stat -->
+								<div class="stat">
+									<h4>New customers in the past month</h4>
+									<span class="value"><%= @new_customers_total %></span>
+								</div>
+								<div class="stat">
+									<h4>Total visits in last 12 months</h4>
+									<span class="value"><%= @purchases_total %></span>
+								</div>
+								<div class="stat">
+									<h4>Revenue in last 12 months</h4>
+									<span class="value"><%= @revenue_total %></span>
+								</div>
+							</div>
+							<div id="big_stats" class="cf">
+								<div class="stat">
+									<h4>Total rewards claimed</h4>
+									<span class="value"><%= @rewards_redeemed_total %></span>
+								</div>
+								<!-- .stat -->
+								<div class="stat">
+									<h4>Rewards claimed in last 12 months</h4>
+									<span class="value"><%= @new_rewards_redeemed_total %></span>
+								</div>
+								<div class="stat">
+									<h4>Total prizes claimed</h4>
+									<span class="value"><%= @prizes_redeemed_total %></span>
+								</div>
+								<div class="stat">
+									<h4>Prizes claimed in last 12 months</h4>
+									<span class="value"><%= @new_prizes_redeemed_total %></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="span3">
+					<div class="widget">
+						<div class="widget-header">
+							<i class="icon-file"></i>
+							<h3>Reports</h3>
+						</div>
+						<div class="widget-content">
+							<div class="accordion" id="accordion">
+								<div class="accordion-group">
+									<div class="accordion-heading">
+										<ul class="nav nav-list">
+											<li>
+												<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseCustomers"> Customers </a>
+											</li>
+										</ul>
+									</div>
+									<div id="collapseCustomers" class="accordion-body collapse in">
+										<div class="accordion-inner">
+											<ul class="nav nav-list">
+												<li>
+													<%= link_to '30 days', '#', :id => 'customers-data-1', :'periodType' => 'day', :'period' => 30 %>
+												</li>
+												<li>
+													<%= link_to '3 months', '#', :id => 'customers-data-2', :'periodType' => 'month', :'period' => 3%>
+												</li>
+												<li>
+													<%= link_to '6 months', '#', :id => 'customers-data-3', :'periodType' => 'month', :'period' => 6 %>
+												</li>
+												<li>
+													<%= link_to '12 months', '#', :id => 'customers-data-4', :'periodType' => 'month', :'period' => 12 %>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="accordion-group">
+									<div class="accordion-heading">
+										<ul class="nav nav-list">
+											<li>
+												<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseVisits"> Visits </a>
+											</li>
+										</ul>
+									</div>
+									<div id="collapseVisits" class="accordion-body collapse">
+										<div class="accordion-inner">
+											<ul class="nav nav-list">
+												<li>
+													<%= link_to '30 days', '#', :id => 'visits-data-1', :'periodType' => 'day', :'period' => 30 %>
+												</li>
+												<li>
+													<%= link_to '3 months', '#', :id => 'visits-data-2', :'periodType' => 'month', :'period' => 3%>
+												</li>
+												<li>
+													<%= link_to '6 months', '#', :id => 'visits-data-3', :'periodType' => 'month', :'period' => 6 %>
+												</li>
+												<li>
+													<%= link_to '12 months', '#', :id => 'visits-data-4', :'periodType' => 'month', :'period' => 12 %>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="accordion-group">
+									<div class="accordion-heading">
+										<ul class="nav nav-list">
+											<li>
+												<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapsePurchases"> Purchases </a>
+											</li>
+										</ul>
+									</div>
+									<div id="collapsePurchases" class="accordion-body collapse">
+										<div class="accordion-inner">
+											<ul class="nav nav-list">
+												<li>
+													<%= link_to '30 days', '#', :id => 'purchases-data-1', :'periodType' => 'day', :'period' => 30 %>
+												</li>
+												<li>
+													<%= link_to '3 months', '#', :id => 'purchases-data-2', :'periodType' => 'month', :'period' => 3 %>
+												</li>
+												<li>
+													<%= link_to '6 months', '#', :id => 'purchases-data-3', :'periodType' => 'month', :'period' => 6 %>
+												</li>
+												<li>
+													<%= link_to '12 months', '#', :id => 'purchases-data-4', :'periodType' => 'month', :'period' => 12 %>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+								<div class="accordion-group">
+									<div class="accordion-heading">
+										<ul class="nav nav-list">
+											<li>
+												<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapseChallenges"> Challenges </a>
+											</li>
+										</ul>
+									</div>
+									<div id="collapseChallenges" class="accordion-body collapse">
+										<div class="accordion-inner">
+											<ul class="nav nav-list">
+												<li>
+													<%= link_to '30 days', '#', :id => 'challenges-data-1', :'periodType' => 'day', :'period' => 30 %>
+												</li>
+												<li>
+													<%= link_to '3 months', '#', :id => 'challenges-data-2', :'periodType' => 'month', :'period' => 3 %>
+												</li>
+												<li>
+													<%= link_to '6 months', '#', :id => 'challenges-data-3', :'periodType' => 'month', :'period' => 6 %>
+												</li>
+												<li>
+													<%= link_to '12 months', '#', :id => 'challenges-data-4', :'periodType' => 'month', :'period' => 12 %>
+												</li>
+											</ul>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="span9">
+					<div id="customers" class="widget">
+						<div class="widget-header">
+							<i class="icon-user"></i>
+							<h3>Customers</h3>
+						</div>
+						<div class="widget-content">
+							<div id="total_customers" class="chart-item chart-last-item">
+								&nbsp;
+							</div>
+						</div>
+					</div>
+					<div id="visits" class="widget" style="display:none;">
+						<div class="widget-header">
+							<i class="icon-shopping-cart"></i>
+							<h3>Visits</h3>
+						</div>
+						<div class="widget-content">
+							<div id="purchases_line_chart" class="chart-item chart-last-item">
+								&nbsp;
+							</div>
+						</div>
+					</div>
+					<div id="purchases" class="widget" style="display:none;">
+						<div class="widget-header">
+							<i class="icon-shopping-cart"></i>
+							<h3>Purchases</h3>
+						</div>
+						<div class="widget-content">
+							<div id="purchases_line_chart_amount" class="chart-item chart-last-item">
+								&nbsp;
+							</div>
+						</div>
+					</div>
+					<div id="challenges" class="widget" style="display:none;">
+						<div class="widget-header">
+							<i class="icon-star"></i>
+							<h3>Challenges</h3>
+						</div>
+						<div class="widget-content">
+							<div id="challenges_line_chart" class="chart-item">
+								&nbsp;
+							</div>
+							<div id="challenges_pie_chart" class="chart-item chart-last-item">
+								&nbsp;
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

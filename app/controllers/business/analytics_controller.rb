@@ -20,183 +20,25 @@ module Business
     end
     
     def show_charts
-      today = Date.today
-      total_customers_data = []
-      new_customers = DataMapper.repository(:default).adapter.select(
-          "SELECT DATE(created_ts) AS created_date, COUNT(*) AS count FROM customers WHERE merchant_id = ? 
-              AND created_ts >= ? AND deleted_ts IS NULL
-              GROUP BY created_date", current_merchant.id, today - 14
-        )
+      periodType = params[:periodType] ? params[:periodType] : "day"
+      period = params[:period] ? params[:period].to_i : 30
       
-      i = 0
-      x = 0
-      two_weeks_ago = today - 14
-      total_customers_two_weeks_ago = Customer.count(:merchant => current_merchant, :created_ts.lt => two_weeks_ago)
-      two_weeks_ago.upto(today) do |date|
-        #puts "begin"
-        #total_customers_data[i] = [date]
-        total_customers_data[i] = [date.to_time.to_i*1000]
-        #puts "total_customers_data: " + total_customers_data[i].to_s 
-        inserted = false
-        previous_customers_total = 0
-        if i == 0
-          previous_customers_total = total_customers_two_weeks_ago
-        else  
-          previous_customers_total = total_customers_data[i-1][1]
-        end
-        while x < new_customers.length
-          created_date = new_customers[x][:created_date]
-          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
-          if created_date < date
-            x += 1
-          elsif created_date == date
-            total_customers_data[i] << (previous_customers_total + new_customers[x][:count])
-            inserted = true
-            break  
-          else
-            total_customers_data[i] << previous_customers_total   
-            inserted = true
-            break  
-          end
-        end
-        if !inserted
-          total_customers_data[i] << previous_customers_total
-        end
-        i += 1
-        #puts "end"
+      if periodType == "day"
+        period = (period >= 1 && period <= 30 ? period : 30)
+      else 
+        period = (period > 1 && period <= 12 ? period : 3)  
       end
-      
-      two_months_ago = today >> -2
-      earn_rewards_total = []
-      earn_rewards = DataMapper.repository(:default).adapter.select(
-        "SELECT DATE(created_ts) AS created_date, SUM(amount) AS total_amount, COUNT(*) AS count FROM earn_reward_records WHERE type = ? 
-            AND merchant_id = ? AND created_ts >= ? AND deleted_ts IS NULL
-            GROUP BY created_date", EarnRewardRecord::Types.index(:purchase)+1, current_merchant.id, two_months_ago
-      )
-      
-      challenges = Challenge.all(:merchant => current_merchant)
-      #challenge_records = { :names => [], :data => [] }
-      challenge_records = []
-      challenges_total = []
-      challenges.each do |challenge|
-        data = DataMapper.repository(:default).adapter.select(
-          "SELECT DATE(created_ts) AS created_date, COUNT(*) AS count FROM earn_reward_records WHERE type = ? 
-              AND ref_id = ? AND created_ts >= ? AND deleted_ts IS NULL
-              GROUP BY created_date", EarnRewardRecord::Types.index(:challenge)+1, challenge.id, two_months_ago
-        )
-        #challenge_records[:names] << challenge.name
-        #challenge_records[:data] << { :data => data, :counter => 0 }
-        challenge_records << { :name => challenge.name, :data => data, :counter => 0 }
-        challenge_count = EarnRewardRecord.count(:type => :challenge, :ref_id => challenge.id, :created_ts.gte => two_months_ago)
-        challenges_total << [challenge.name, challenge_count]
-      end
-      
-      earn_rewards_data = { :count => [], :amount => [] }
-      challenge_data = []
-      
-      i = 0
-      x = 0
-      two_months_ago.upto(today) do |date|
-        #puts "begin"
-        #earn_rewards_data[i] = [date]
-        earn_rewards_data[:count][i] = [date.to_time.to_i*1000]
-        earn_rewards_data[:amount][i] = [date.to_time.to_i*1000]
-        #puts "earn_rewards: " + earn_rewards[i].to_s
-        inserted = false
-        while x < earn_rewards.length
-          created_date = earn_rewards[x][:created_date]
-          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
-          if created_date < date
-            x += 1
-          elsif created_date == date
-            earn_rewards_data[:count][i] << earn_rewards[x][:count]
-            earn_rewards_data[:amount][i] << earn_rewards[x][:total_amount]
-            inserted = true
-            break
-          else
-            earn_rewards_data[:count][i] << 0   
-            earn_rewards_data[:amount][i] << 0  
-            inserted = true
-            break
-          end
-        end
-        if !inserted
-          earn_rewards_data[:count][i] << 0
-          earn_rewards_data[:amount][i] << 0 
-        end
-=begin        
-        challenge_data[i] = [date]
-        #puts "challenge_data: " + challenge_data[i].to_s
-        challenge_records[:data].each do |records|
-          #puts "challenge_records: " + records.to_s
-          x = records[:counter]
-          inserted = false
-          while x < records[:data].length
-            created_date = records[:data][x][:created_date]
-            created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
-            if created_date < date
-              x += 1
-            elsif created_date == date
-              challenge_data[i] << records[:data][x][:count]
-              records[:counter] = x
-              inserted = true
-              break
-            else
-              challenge_data[i] << 0    
-              records[:counter] = x
-              inserted = true
-              break
-            end
-          end
-          if !inserted
-            challenge_data[i] << 0
-          end
-        end
-=end            
-        i += 1
-        #puts "end"
-      end   
-      
-      i = 0
-      challenge_records.each do |records|
-        challenge_data[i] = { :name => records[:name], :data => [] }
-        y = 0
-        two_months_ago.upto(today) do |date|
-          challenge_data[i][:data] << [date.to_time.to_i*1000]
-          x = records[:counter]
-          inserted = false
-          while x < records[:data].length
-            created_date = records[:data][x][:created_date]
-            created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
-            if created_date < date
-              x += 1
-            elsif created_date == date
-              challenge_data[i][:data][y] << records[:data][x][:count]
-              records[:counter] = x
-              inserted = true
-              break
-            else
-              challenge_data[i][:data][y] << 0    
-              records[:counter] = x
-              inserted = true
-              break
-            end
-          end
-          if !inserted
-            challenge_data[i][:data][y] << 0
-          end
-          y += 1
-        end
-        i += 1
-      end
-      
-      data = {}
-      data[:total_customers] = total_customers_data
-      data[:purchases] = { :line_data => earn_rewards_data[:count], :line_data_amount => earn_rewards_data[:amount] }
-      #data[:challenges] = { :line_data => { :names => challenge_records[:names], :data => challenge_data }, :pie_data => challenges_total }  
-      data[:challenges] = { :line_data => challenge_data, :pie_data => challenges_total }  
-      respond_to do |format|
-         format.json { render :json => { :success => true, :data => data } }
+      case params[:type]
+      when "customers"
+        show_customers_data(periodType, period)
+      when "visits"
+        show_visits_data(periodType, period)
+      when "purchases"
+        show_purchases_data(periodType, period)
+      when "challenges"
+        show_challenges_data(periodType, period)
+      else
+        show_customers_data(periodType, period)
       end
     end
     
@@ -223,6 +65,257 @@ module Business
         RedeemRewardRecord.count(:merchant => current_merchant, :mode => mode)
       else
         RedeemRewardRecord.count(:merchant => current_merchant, :mode => mode, :created_ts.gte => date)
+      end
+    end
+    
+    def show_customers_data(periodType, period)
+      today = Date.today
+      if periodType == "day"
+        sometime_ago = today - period
+      else
+        sometime_ago = today >> -period
+      end
+      new_customers = DataMapper.repository(:default).adapter.select(
+          "SELECT DATE(created_ts) AS created_date, COUNT(*) AS count FROM customers WHERE merchant_id = ? 
+              AND created_ts >= ? AND deleted_ts IS NULL
+              GROUP BY created_date", current_merchant.id, sometime_ago
+        )
+      
+      i = 0
+      x = 0
+      total_customers_data = []
+      total_customers_sometime_ago = Customer.count(:merchant => current_merchant, :created_ts.lt => sometime_ago)
+      sometime_ago.upto(today) do |date|
+        #puts "begin"
+        #total_customers_data[i] = [date]
+        total_customers_data[i] = [date.to_time.to_i*1000]
+        #puts "total_customers_data: " + total_customers_data[i].to_s 
+        inserted = false
+        if i == 0
+          previous_customers_total = total_customers_sometime_ago
+        else  
+          previous_customers_total = total_customers_data[i-1][1]
+        end
+        while x < new_customers.length
+          created_date = new_customers[x][:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
+          if created_date < date
+            x += 1
+          elsif created_date == date
+            total_customers_data[i] << (previous_customers_total + new_customers[x][:count])
+            inserted = true
+            break  
+          else
+            total_customers_data[i] << previous_customers_total   
+            inserted = true
+            break  
+          end
+        end
+        if !inserted
+          total_customers_data[i] << previous_customers_total
+        end
+        i += 1
+        #puts "end"
+      end
+      
+      data = {}
+      data[:total_customers] = total_customers_data
+      respond_to do |format|
+         format.json { render :json => { :success => true, :data => data } }
+      end
+    end
+    
+    def show_visits_data(periodType, period)
+      today = Date.today
+      if periodType == "day"
+        sometime_ago = today - period
+      else
+        sometime_ago = today >> -period
+      end
+      earn_rewards_total = []
+      earn_rewards = DataMapper.repository(:default).adapter.select(
+        "SELECT DATE(created_ts) AS created_date, SUM(points) AS points, COUNT(*) AS count FROM earn_reward_records WHERE type = ? 
+            AND merchant_id = ? AND created_ts >= ? AND deleted_ts IS NULL
+            GROUP BY created_date", EarnRewardRecord::Types.index(:purchase)+1, current_merchant.id, sometime_ago
+      )
+      
+      i = 0
+      x = 0
+      earn_rewards_data = []
+      earn_rewards_amount_data = []
+      earn_rewards_data[0] = { :name => 'Visits', :data => [] }
+      earn_rewards_data[1] = { :name => 'Points', :yAxis => 1, :data => [] }
+      total_visits_sometime_ago = EarnRewardRecord.count(:merchant => current_merchant, :type => :purchase, :created_ts.lt => sometime_ago)
+      total_points_sometime_ago = EarnRewardRecord.sum(:points, :merchant => current_merchant, :type => :purchase, :created_ts.lt => sometime_ago) || 0
+      sometime_ago.upto(today) do |date|
+        #puts "begin"
+        earn_rewards_data[0][:data][i] = [date.to_time.to_i*1000]
+        earn_rewards_data[1][:data][i] = [date.to_time.to_i*1000]
+        #puts "earn_rewards: " + earn_rewards[i].to_s
+        inserted = false
+        if i == 0
+          previous_earn_rewards_visits_total = total_visits_sometime_ago
+          previous_earn_rewards_points_total = total_points_sometime_ago
+        else  
+          previous_earn_rewards_visits_total = earn_rewards_data[0][:data][i-1][1]
+          previous_earn_rewards_points_total = earn_rewards_data[1][:data][i-1][1]
+        end
+        while x < earn_rewards.length
+          created_date = earn_rewards[x][:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
+          if created_date < date
+            x += 1
+          elsif created_date == date
+            earn_rewards_data[0][:data][i] << (previous_earn_rewards_visits_total + earn_rewards[x][:count])
+            earn_rewards_data[1][:data][i] << (previous_earn_rewards_points_total + earn_rewards[x][:points])
+            inserted = true
+            break
+          else
+            earn_rewards_data[0][:data][i] << previous_earn_rewards_visits_total
+            earn_rewards_data[1][:data][i] << previous_earn_rewards_points_total
+            inserted = true
+            break
+          end
+        end
+        if !inserted
+          earn_rewards_data[0][:data][i] << previous_earn_rewards_visits_total
+          earn_rewards_data[1][:data][i] << previous_earn_rewards_points_total
+        end   
+        i += 1
+      end
+      
+      data = {}
+      data[:visits] = earn_rewards_data
+      respond_to do |format|
+         format.json { render :json => { :success => true, :data => data } }
+      end
+    end
+    
+    def show_purchases_data(periodType, period)
+      today = Date.today
+      if periodType == "day"
+        sometime_ago = today - period
+      else
+        sometime_ago = today >> -period
+      end
+      earn_rewards = DataMapper.repository(:default).adapter.select(
+        "SELECT DATE(created_ts) AS created_date, SUM(amount) AS amount FROM earn_reward_records WHERE type = ? 
+            AND merchant_id = ? AND created_ts >= ? AND deleted_ts IS NULL
+            GROUP BY created_date", EarnRewardRecord::Types.index(:purchase)+1, current_merchant.id, sometime_ago
+      )
+            
+      i = 0
+      x = 0
+      earn_rewards_amount_data = []
+      total_amount_sometime_ago = EarnRewardRecord.sum(:amount, :merchant => current_merchant, :type => :purchase, :created_ts.lt => sometime_ago) || 0.00
+      sometime_ago.upto(today) do |date|
+        #puts "begin"
+        earn_rewards_amount_data[i] = [date.to_time.to_i*1000]
+        #puts "earn_rewards: " + earn_rewards[i].to_s
+        inserted = false
+        if i == 0
+          previous_earn_rewards_amount_total = total_amount_sometime_ago
+        else  
+          previous_earn_rewards_amount_total = earn_rewards_amount_data[i-1][1]
+        end
+        while x < earn_rewards.length
+          created_date = earn_rewards[x][:created_date]
+          created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
+          if created_date < date
+            x += 1
+          elsif created_date == date
+            earn_rewards_amount_data[i] << (previous_earn_rewards_amount_total + earn_rewards[x][:amount])
+            inserted = true
+            break
+          else
+            earn_rewards_amount_data[i] << previous_earn_rewards_amount_total
+            inserted = true
+            break
+          end
+        end
+        if !inserted
+          earn_rewards_amount_data[i] << previous_earn_rewards_amount_total 
+        end   
+        i += 1
+      end
+      
+      data = {}
+      data[:purchases] = earn_rewards_amount_data
+      respond_to do |format|
+         format.json { render :json => { :success => true, :data => data } }
+      end
+    end
+    
+    def show_challenges_data(periodType, period)
+      today = Date.today
+      if periodType == "day"
+        sometime_ago = today - period
+      else
+        sometime_ago = today >> -period
+      end
+      challenges = Challenge.all(:merchant => current_merchant)
+      #challenge_records = { :names => [], :data => [] }
+      challenge_records = []
+      challenges_total = []
+      challenge_count_sometime_ago = []
+      challenges.each do |challenge|
+        data = DataMapper.repository(:default).adapter.select(
+          "SELECT DATE(created_ts) AS created_date, COUNT(*) AS count FROM earn_reward_records WHERE type = ? 
+              AND ref_id = ? AND created_ts >= ? AND deleted_ts IS NULL
+              GROUP BY created_date", EarnRewardRecord::Types.index(:challenge)+1, challenge.id, sometime_ago
+        )
+        #challenge_records[:names] << challenge.name
+        #challenge_records[:data] << { :data => data, :counter => 0 }
+        challenge_records << { :name => challenge.name, :data => data, :counter => 0 }
+        challenge_count = EarnRewardRecord.count(:type => :challenge, :ref_id => challenge.id, :created_ts.gte => sometime_ago)
+        challenges_total << [challenge.name, challenge_count]
+        challenge_count_sometime_ago << EarnRewardRecord.count(:type => :challenge, :ref_id => challenge.id, :created_ts.lt => sometime_ago)
+      end
+      
+      i = 0
+      x = 0 
+      challenge_data = []
+      challenge_records.each do |records|
+        challenge_data[i] = { :name => records[:name], :data => [] }
+        y = 0
+        sometime_ago.upto(today) do |date|
+          challenge_data[i][:data] << [date.to_time.to_i*1000]
+          x = records[:counter]
+          inserted = false
+          if y == 0
+            previous_challenge_count = challenge_count_sometime_ago[y]
+          else  
+            previous_challenge_count = challenge_data[i][:data][y-1][1]
+          end
+          while x < records[:data].length
+            created_date = records[:data][x][:created_date]
+            created_date = (created_date.is_a? Date) ? created_date : Date.strptime(created_date,"%Y-%m-%d")
+            if created_date < date
+              x += 1
+            elsif created_date == date
+              challenge_data[i][:data][y] << (previous_challenge_count + records[:data][x][:count])
+              records[:counter] = x
+              inserted = true
+              break
+            else
+              challenge_data[i][:data][y] << previous_challenge_count  
+              records[:counter] = x
+              inserted = true
+              break
+            end
+          end
+          if !inserted
+            challenge_data[i][:data][y] << previous_challenge_count
+          end
+          y += 1
+        end
+        i += 1
+      end
+      
+      data = {}
+      data[:challenges] = { :line_data => challenge_data, :pie_data => challenges_total }  
+      respond_to do |format|
+         format.json { render :json => { :success => true, :data => data } }
       end
     end
   end
