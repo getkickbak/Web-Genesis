@@ -47,8 +47,12 @@ class Common
     get_photo_host+generate_temp_file_path(filename)
   end
 
-  def self.get_default_customer_reward_file_path(merchant_type, reward_value, user_agent, resolution)
-    get_file_host+"v1/icons/#{merchant_type}items/#{user_agent}/#{resolution}/#{reward_value}.png"  
+  def self.get_reward_icon_file_path(merchant_type, reward_type_value, user_agent, resolution)
+    get_file_host+"v1/icons/#{merchant_type}items/#{user_agent}/#{resolution}/#{reward_type_value}.png"  
+  end
+  
+  def self.get_challenge_icon_file_path(challenge_type_value, user_agent, resolution)
+    get_file_host+"v1/icons/miscicons/#{user_agent}/#{resolution}/#{challenge_type_value}.png" 
   end
   
   def self.within_geo_distance?(user, latitude_1, longitude_1, latitude_2, longitude_2)

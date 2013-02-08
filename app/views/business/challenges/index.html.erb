@@ -61,7 +61,7 @@
             <div class="span9">
                <% if @display != "challenge" %>
                <% challenges = @challenges %>
-               <% title = "Merchant Challenges List" %>
+               <% title = "List of Challenges" %>
                <% else %>
                <% challenges = @venue.challenges %>
                <% title = "Challenges for " + @venue.name %>
@@ -76,7 +76,7 @@
                         <tbody>
                            <% challenges.each do |challenge| %>
                            <tr>
-                              <td><%= challenge.name %></td>
+                              <td><%= image_tag Common.get_challenge_icon_file_path(challenge.type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %><%= challenge.name %></td>
                               <td class="td-actions">
                               <!-- -->
                               <%= link_to edit_challenge_path(challenge), :class=>"btn btn-small btn-warning", :title=>"edit" do %>

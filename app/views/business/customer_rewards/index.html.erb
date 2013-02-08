@@ -2,149 +2,127 @@
 <% end %>
 <% content_for :script do %>
 <script type="text/javascript">
-   $(document).ready($(function()
-   {
-      var msg = $("#notice").html();
-      if (msg)
-      {
-         Genesis.showWarningMsg(msg, null, true);
-      }
-   })); 
+	$(document).ready($(function() {
+	var msg=$("#notice").html();
+	if(msg) {
+	Genesis.showWarningMsg(msg,null,true);
+	}
+	}));
 </script>
 <script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
 <% end %>
 <% if flash[:notice] %>
 <div style="display:none;" id="notice">
-   <p><%= flash[:notice] %></p>
+	<p>
+		<%= flash[:notice] %>
+	</p>
 </div>
 <% end %>
 <div class="main">
-   <div class="main-inner">
-      <div class="container">
-      	<% if current_merchant.status == :pending %>
-      	<ul class="pager">
-      		<li class="previous">
-      			<%= link_to 'Continue Setup', setup_path %>
-      		</li>	
-      	</ul>
-      	<% end %>
-         <div class="row">
-            <div class="span3">
-               <div class="widget widget-table action-table">
-                  <div class="widget-header">
-                     <i class="icon-map-marker"></i>
-                     <h3>Venues (<%= link_to("Show All", :controller => "customer_rewards") %>)</h3>
-                  </div>
-                  <div class="widget-content">
-                     <table class="table table-striped table-bordered">
-                        <tbody>
-                           <% @venues.each do |venue| %>
-                           <tr>
-                              <td class="td-description">
-                              <!-- -->
-                              <% if @display != "venue" || venue.id != @venue.id %>
-                              <%= link_to(venue.name, :controller => "customer_rewards", :display => "venue", :venue_id => venue.id) %>
-                              <!-- -->
-                              <% else %>
-                              <%= link_to(venue.name, {:controller => "customer_rewards", :display => "venue", :venue_id => venue.id}, :class => "disabled") %>
-                              <!-- -->
-                              <% end %>
-                              <!-- -->
-                              </td>
-                           </tr>
-                           <% end %>
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
-            </div>
-            <div class="span9">
-               <% if @display != "venue" %>
-               <% rewards = @customer_rewards.all(:mode => :reward, :order => [:points.asc]) %>
-               <% prizes = @customer_rewards.all(:mode => :prize, :order => [:points.asc]) %>
-               <% rtitle = "Merchant Rewards Catalog" %>
-               <% ptitle = "Merchant Prizes Catalog" %>
-               <% else %>
-               <% rewards = @venue.customer_rewards.all(:mode => :reward, :order => [:points.asc]) %>
-               <% prizes = @venue.customer_rewards.all(:mode => :prize, :order => [:points.asc]) %>
-               <% rtitle = "Rewards for " + @venue.name %>
-               <% ptitle = "Prizes for " + @venue.name %>
-               <% end %>
-               <div class="widget widget-table action-table">
-                  <div class="widget-header">
-                     <i class="icon-gift"></i>
-                     <h3><%= rtitle %> (<%= link_to 'New Reward', new_customer_reward_path(:mode => :reward) %>)</h3>
-                  </div>
-                  <div class="widget-content">
-                     <table class="table table-striped table-bordered">
-                        <tbody>
-                           <% rewards.each do |customer_reward| %>
-                           <tr>
-                              <td><%= customer_reward.title %></td>
-                              <td class="td-actions">
-                              <!-- -->
-                              <%= link_to edit_customer_reward_path(customer_reward), :class=>"btn btn-small btn-warning", :title=>"edit" do %>
-                              <!-- -->
-                              <i class="btn-icon-only icon-edit"></i>
-                              <!-- -->
-                              <% end %>
-                              <%= link_to customer_reward_path(customer_reward), :data => { :confirm => 'Do you want to delete this reward?' }, :method => :delete, :class=>"btn btn-small", :title=>"delete" do %>
-                              <!-- -->
-                              <i class="btn-icon-only icon-remove"></i>
-                              <!-- -->
-                              <% end %>
-                              <!-- -->
-                              </td>
-                           </tr>
-                           <% end %>
-                           <% if rewards.length == 0 %>
-                           <tr>
-                              <td colspan="2" class="no-data">You have no rewards</td>
-                           </tr>
-                           <% end %>
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
-               <div class="widget widget-table action-table">
-                  <div class="widget-header">
-                     <i class="icon-star"></i>
-                     <h3><%= ptitle %> (<%= link_to 'New Prize', new_customer_reward_path(:mode => :prize) %>)</h3>
-                  </div>
-                  <div class="widget-content">
-                     <table class="table table-striped table-bordered">
-                        <tbody>
-                           <% prizes.each do |customer_reward| %>
-                           <tr>
-                              <td><%= customer_reward.title %></td>
-                              <td class="td-actions">
-                              <!-- -->
-                              <%= link_to edit_customer_reward_path(customer_reward), :class=>"btn btn-small btn-warning", :title=>"edit" do %>
-                              <!-- -->
-                              <i class="btn-icon-only icon-edit"></i>
-                              <!-- -->
-                              <% end %>
-                              <%= link_to customer_reward_path(customer_reward), :data => { :confirm => 'Do you want to delete this prize?' }, :method => :delete, :class=>"btn btn-small", :title=>"delete" do %>
-                              <!-- -->
-                              <i class="btn-icon-only icon-remove"></i>
-                              <!-- -->
-                              <% end %>
-                              <!-- -->
-                              </td>
-                           </tr>
-                           <% end %>
-                           <% if prizes.length == 0 %>
-                           <tr>
-                              <td colspan="2" class="no-data">You have no prizes</td>
-                           </tr>
-                           <% end %>
-                        </tbody>
-                     </table>
-                  </div>
-               </div>
-               <!-- -->
-            </div>
-         </div>
-      </div>
-   </div>
+	<div class="main-inner">
+		<div class="container">
+			<% if current_merchant.status == :pending %>
+			<ul class="pager">
+				<li class="previous">
+					<%= link_to 'Continue Setup', setup_path %>
+				</li>
+			</ul>
+			<% end %>
+			<div class="row">
+				<div class="span3">
+					<div class="widget widget-table action-table">
+						<div class="widget-header">
+							<i class="icon-map-marker"></i>
+							<h3>Venues (<%= link_to("Show All", :controller => "customer_rewards") %>)</h3>
+						</div>
+						<div class="widget-content">
+							<table class="table table-striped table-bordered">
+								<tbody>
+									<% @venues.each do |venue| %>
+									<tr>
+										<td class="td-description"><!-- --> <% if @display != "venue" || venue.id != @venue.id %>
+										<%= link_to(venue.name, :controller => "customer_rewards", :display => "venue", :venue_id => venue.id) %> <!-- --> <% else %>
+										<%= link_to(venue.name, {:controller => "customer_rewards", :display => "venue", :venue_id => venue.id}, :class => "disabled") %> <!-- --> <% end %> <!-- --></td>
+									</tr>
+									<% end %>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+				<div class="span9">
+					<% if @display != "venue" %>
+					<% rewards = @customer_rewards.all(:mode => :reward, :order => [:points.asc]) %>
+					<% prizes = @customer_rewards.all(:mode => :prize, :order => [:points.asc]) %>
+					<% rtitle = "Rewards Catalog" %>
+					<% ptitle = "Prizes Catalog" %>
+					<% else %>
+					<% rewards = @venue.customer_rewards.all(:mode => :reward, :order => [:points.asc]) %>
+					<% prizes = @venue.customer_rewards.all(:mode => :prize, :order => [:points.asc]) %>
+					<% rtitle = "Rewards for " + @venue.name %>
+					<% ptitle = "Prizes for " + @venue.name %>
+					<% end %>
+					<div class="widget widget-table action-table">
+						<div class="widget-header">
+							<i class="icon-gift"></i>
+							<h3><%= rtitle %> (<%= link_to 'New Reward', new_customer_reward_path(:mode => :reward) %>)</h3>
+						</div>
+						<div class="widget-content">
+							<table class="table table-striped table-bordered">
+								<tbody>
+									<% rewards.each do |customer_reward| %>
+									<tr>
+										<td> <% if customer_reward.photo_url.to_s.empty? %>
+										<%= image_tag Common.get_reward_icon_file_path(current_merchant.type.value, customer_reward.type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %>
+										<% else %>
+										<%= image_tag customer_reward.photo.thumbnail_ios_small.url, :style => "width:50px;margin-right:10px;" %>
+										<% end %>
+										<%= customer_reward.title %> </td>
+										<td class="td-actions"><!-- --> <%= link_to edit_customer_reward_path(customer_reward), :class=>"btn btn-small btn-warning", :title=>"edit" do %> <!-- --><i class="btn-icon-only icon-edit"></i><!-- --> <% end %>
+										<%= link_to customer_reward_path(customer_reward), :data => { :confirm => 'Do you want to delete this reward?' }, :method => :delete, :class=>"btn btn-small", :title=>"delete" do %> <!-- --><i class="btn-icon-only icon-remove"></i><!-- --> <% end %> <!-- --></td>
+									</tr>
+									<% end %>
+									<% if rewards.length == 0 %>
+									<tr>
+										<td colspan="2" class="no-data">You have no rewards</td>
+									</tr>
+									<% end %>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<div class="widget widget-table action-table">
+						<div class="widget-header">
+							<i class="icon-star"></i>
+							<h3><%= ptitle %> (<%= link_to 'New Prize', new_customer_reward_path(:mode => :prize) %>)</h3>
+						</div>
+						<div class="widget-content">
+							<table class="table table-striped table-bordered">
+								<tbody>
+									<% prizes.each do |customer_reward| %>
+									<tr>
+										<td> <% if customer_reward.photo_url.to_s.empty? %>
+										<%= image_tag Common.get_reward_icon_file_path(current_merchant.type.value, customer_reward.type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %>
+										<% else %>
+										<%= image_tag customer_reward.photo.thumbnail_ios_small.url, :style => "width:50px;margin-right:10px;" %>
+										<% end %>
+										<%= customer_reward.title %> </td>
+										<td class="td-actions"><!-- --> <%= link_to edit_customer_reward_path(customer_reward), :class=>"btn btn-small btn-warning", :title=>"edit" do %> <!-- --><i class="btn-icon-only icon-edit"></i><!-- --> <% end %>
+										<%= link_to customer_reward_path(customer_reward), :data => { :confirm => 'Do you want to delete this prize?' }, :method => :delete, :class=>"btn btn-small", :title=>"delete" do %> <!-- --><i class="btn-icon-only icon-remove"></i><!-- --> <% end %> <!-- --></td>
+									</tr>
+									<% end %>
+									<% if prizes.length == 0 %>
+									<tr>
+										<td colspan="2" class="no-data">You have no prizes</td>
+									</tr>
+									<% end %>
+								</tbody>
+							</table>
+						</div>
+					</div>
+					<!-- -->
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

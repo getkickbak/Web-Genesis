@@ -124,7 +124,7 @@ total : <%= @next_badge.visits %>
 									<% rewards.each do |customer_reward| %>
 									<tr>
 										<td> <% if customer_reward.photo_url.to_s.empty? %>
-										<%= image_tag Common.get_default_customer_reward_file_path(@merchant.type.value, customer_reward.type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %>
+										<%= image_tag Common.get_reward_icon_file_path(@merchant.type.value, customer_reward.type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %>
 										<% else %>
 										<%= image_tag customer_reward.photo.thumbnail_ios_small.url, :style => "width:50px;margin-right:10px;" %>
 										<% end %>
@@ -138,7 +138,7 @@ total : <%= @next_badge.visits %>
 					</div>
 					<div class="widget widget-table action-table">
 						<div id="prizes" class="widget-header">
-							<i class="icon-star"></i>
+							<i class="icon-trophy"></i>
 							<h3>Prizes</h3>
 						</div>
 						<div class="widget-content">
@@ -153,7 +153,7 @@ total : <%= @next_badge.visits %>
 									<% prizes.each do |customer_reward| %>
 									<tr>
 										<td> <% if customer_reward.photo_url.to_s.empty? %>
-										<%= image_tag Common.get_default_customer_reward_file_path(@merchant.type.value, customer_reward.type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %>
+										<%= image_tag Common.get_reward_icon_file_path(@merchant.type.value, customer_reward.type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %>
 										<% else %>
 										<%= image_tag customer_reward.photo.thumbnail_ios_small.url, :style => "width:50px;margin-right:10px;" %>
 										<% end %>
