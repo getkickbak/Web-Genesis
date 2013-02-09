@@ -182,12 +182,15 @@ $(document).ready($(function() {
 	
 	function drawPurchasesCharts(periodType, period, response_data) {
 		show_chart("purchases")
-		title = 'Purchases - Last ' + period + (periodType == 'day' ? ' days' : ' months');
+		title = 'Purchases and Visits - Last ' + period + (periodType == 'day' ? ' days' : ' months');
 		if (purchases_line_chart != null) {
-			purchases_line_chart.setTitle({text: title});
-			purchases_line_chart.series[0].setData(response_data.purchases, false);
-			purchases_line_chart.redraw()
-			return;
+			//purchases_line_chart.setTitle({text: title});
+			purchases_line_chart.destroy();
+			//for (i=0; i < response_data.purchases.length; i++) {
+			//	purchases_line_chart.series[i].setData(response_data.purchases[i], false);
+			//}
+			//purchases_line_chart.redraw();
+			//return;
 		}
 		
 		purchases_line_chart = new Highcharts.Chart({
@@ -195,8 +198,7 @@ $(document).ready($(function() {
             	renderTo: 'purchases_line_chart_amount',
             	type: 'line',
             	zoomType: 'x',
-            	marginRight: 50,
-				marginBottom: 35
+            	marginRight: 80
          	},
          	credits: {
          		enabled : false
@@ -212,26 +214,27 @@ $(document).ready($(function() {
 				},
 				maxZoom : 14 * 24 * 3600000
          	},
-        	yAxis: {
-            	title: {
+        	yAxis: [{
+        		title: {
                		text: 'Amount ($)'
             	},
             	min: 0,
             	allowDecimals: false
-         	},
+         	}, {
+         		title: {
+               		text: 'Visits'
+            	},
+            	min: 0,
+            	allowDecimals: false,
+            	opposite: true
+         	}],
          	tooltip: {
 				formatter: function() {
 					return '<b>'+ new Date(this.x).toDateString() +'</b><br/>'+
-					this.series.name + ': $' + this.y;
+					this.series.name + (this.series.name == 'Amount' ? ': $' : ': ') + this.y;
 				}
 			},
-         	legend: {
-				enabled: false
-			},
-         	series: [{
-         		name: 'Amount',
-            	data: response_data.purchases
-         	}]
+         	series: response_data.purchases
       	});
 	}
 	

@@ -5,6 +5,7 @@
 .merchant .merchant-photo {
    float:left;
    margin-bottom: 10px;
+   margin-right: 10px;
    text-align:center;
 }
 

@@ -142,7 +142,6 @@ module Business
       i = 0
       x = 0
       earn_rewards_data = []
-      earn_rewards_amount_data = []
       earn_rewards_data[0] = { :name => 'Visits', :data => [] }
       earn_rewards_data[1] = { :name => 'Points', :yAxis => 1, :data => [] }
       total_visits_sometime_ago = EarnRewardRecord.count(:merchant => current_merchant, :type => :purchase, :created_ts.lt => sometime_ago)
@@ -199,24 +198,31 @@ module Business
         sometime_ago = today >> -period
       end
       earn_rewards = DataMapper.repository(:default).adapter.select(
-        "SELECT DATE(created_ts) AS created_date, SUM(amount) AS amount FROM earn_reward_records WHERE type = ? 
+        "SELECT DATE(created_ts) AS created_date, SUM(amount) AS amount, COUNT(*) AS count FROM earn_reward_records WHERE type = ? 
             AND merchant_id = ? AND created_ts >= ? AND deleted_ts IS NULL
             GROUP BY created_date", EarnRewardRecord::Types.index(:purchase)+1, current_merchant.id, sometime_ago
       )
             
       i = 0
       x = 0
-      earn_rewards_amount_data = []
+      earn_rewards_data = []
+      earn_rewards_data = []
+      earn_rewards_data[0] = { :name => 'Amount', :data => [] }
+      earn_rewards_data[1] = { :name => 'Visits', :yAxis => 1, :data => [] }
       total_amount_sometime_ago = EarnRewardRecord.sum(:amount, :merchant => current_merchant, :type => :purchase, :created_ts.lt => sometime_ago) || 0.00
+      total_visits_sometime_ago = EarnRewardRecord.count(:merchant => current_merchant, :type => :purchase, :created_ts.lt => sometime_ago)
       sometime_ago.upto(today) do |date|
         #puts "begin"
-        earn_rewards_amount_data[i] = [date.to_time.to_i*1000]
+        earn_rewards_data[0][:data][i] = [date.to_time.to_i*1000]
+        earn_rewards_data[1][:data][i] = [date.to_time.to_i*1000]
         #puts "earn_rewards: " + earn_rewards[i].to_s
         inserted = false
         if i == 0
           previous_earn_rewards_amount_total = total_amount_sometime_ago
+          previous_earn_rewards_visits_total = total_visits_sometime_ago
         else  
-          previous_earn_rewards_amount_total = earn_rewards_amount_data[i-1][1]
+          previous_earn_rewards_amount_total = earn_rewards_data[0][:data][i-1][1]
+          previous_earn_rewards_visits_total = earn_rewards_data[1][:data][i-1][1]
         end
         while x < earn_rewards.length
           created_date = earn_rewards[x][:created_date]
@@ -224,23 +230,26 @@ module Business
           if created_date < date
             x += 1
           elsif created_date == date
-            earn_rewards_amount_data[i] << (previous_earn_rewards_amount_total + earn_rewards[x][:amount])
+            earn_rewards_data[0][:data][i] << (previous_earn_rewards_amount_total + earn_rewards[x][:amount])
+            earn_rewards_data[1][:data][i] << (previous_earn_rewards_visits_total + earn_rewards[x][:count])
             inserted = true
             break
           else
-            earn_rewards_amount_data[i] << previous_earn_rewards_amount_total
+            earn_rewards_data[0][:data][i] << previous_earn_rewards_amount_total
+            earn_rewards_data[1][:data][i] << previous_earn_rewards_visits_total
             inserted = true
             break
           end
         end
         if !inserted
-          earn_rewards_amount_data[i] << previous_earn_rewards_amount_total 
+          earn_rewards_data[0][:data][i] << previous_earn_rewards_amount_total 
+          earn_rewards_data[1][:data][i] << previous_earn_rewards_visits_total
         end   
         i += 1
       end
       
       data = {}
-      data[:purchases] = earn_rewards_amount_data
+      data[:purchases] = earn_rewards_data
       respond_to do |format|
          format.json { render :json => { :success => true, :data => data } }
       end

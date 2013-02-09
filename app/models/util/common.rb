@@ -52,7 +52,7 @@ class Common
   end
   
   def self.get_challenge_icon_file_path(challenge_type_value, user_agent, resolution)
-    get_file_host+"v1/icons/miscicons/#{user_agent}/#{resolution}/#{challenge_type_value}.png" 
+    get_file_host+"v1/icons/mainicons/#{user_agent}/#{resolution}/#{challenge_type_value}.png" 
   end
   
   def self.within_geo_distance?(user, latitude_1, longitude_1, latitude_2, longitude_2)
