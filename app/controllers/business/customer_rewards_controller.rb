@@ -6,9 +6,16 @@ module Business
       authorize! :read, CustomerReward
 
       @venues = current_merchant.venues
-      @customer_rewards = CustomerReward.all(:merchant => current_merchant)
-      @display = params[:display] || "default"
       @venue = Venue.get(params[:venue_id]) || @venues.first
+      @display = params[:display] || "default"
+      if @display != "venue"
+        customer_rewards = Common.get_rewards_by_merchant(current_merchant)
+        @rewards = customer_rewards.all(:mode => :reward, :order => [:points.asc])
+        @prizes = customer_rewards.all(:mode => :prize, :order => [:points.asc])  
+      else  
+        @rewards = Common.get_rewards_by_venue(@venue, :reward)
+        @prizes = Common.get_rewards_by_venue(@venue, :prize)
+      end
       
       respond_to do |format|
         format.html # index.html.erb

@@ -309,8 +309,8 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
             @reward.update_ts = now
             @reward.save
           end
-          @rewards = Common.get_rewards(@venue, :reward)
-          @prizes = Common.get_rewards(@venue, :prize)
+          @rewards = Common.get_rewards_by_venue(@venue, :reward)
+          @prizes = Common.get_rewards_by_venue(@venue, :prize)
           eligible_for_reward = !Common.find_eligible_reward(@rewards.to_a, @customer.points).nil?
           eligible_for_prize = !Common.find_eligible_reward(@prizes.to_a, @customer.prize_points).nil?
           @customer.eligible_for_reward = eligible_for_reward

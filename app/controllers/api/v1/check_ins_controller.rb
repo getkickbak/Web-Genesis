@@ -89,8 +89,8 @@ class Api::V1::CheckInsController < Api::V1::BaseApplicationController
           @account_info = { :badge_id => @customer.badge.id, :next_badge_id => @next_badge.id }
         end
         @prize_jackpots = EarnPrizeRecord.count(:merchant => @venue.merchant, :points.gt => 1, :created_ts.gte => Date.today.at_beginning_of_month.to_time)
-        @rewards = Common.get_rewards(@venue, :reward)
-        @prizes = Common.get_rewards(@venue, :prize)
+        @rewards = Common.get_rewards_by_venue(@venue, :reward)
+        @prizes = Common.get_rewards_by_venue(@venue, :prize)
         @newsfeed = Common.get_news(@venue)
         render :template => '/api/v1/check_ins/create'
       end

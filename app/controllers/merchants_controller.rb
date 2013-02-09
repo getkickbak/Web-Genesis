@@ -9,7 +9,7 @@ class MerchantsController < ApplicationController
     @customer = Customer.first(:user => current_user, :merchant => @merchant) || not_found
     Common.populate_badge(@customer.badge, :iphone, :mxhdpi)
     @next_badge = Common.find_next_badge(@merchant.badges.to_a, @customer.badge)
-    @customer_rewards = CustomerReward.all(:merchant => @merchant)
+    @customer_rewards = Common.get_rewards_by_merchant(@merchant)
 
     respond_to do |format|
       format.html # index.html.erb

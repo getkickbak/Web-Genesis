@@ -100,13 +100,30 @@ class Common
     return device
   end
 
-  def self.get_rewards(venue, mode)
+  def self.get_rewards_by_venue(venue, mode)
     customer_reward_venues = CustomerRewardVenue.all(:fields => [:customer_reward_id], :venue_id => venue.id)
     customer_reward_ids = []
     customer_reward_venues.each do |reward_venue|
       customer_reward_ids << reward_venue.customer_reward_id
     end
     rewards = CustomerReward.all(:id => customer_reward_ids, :mode => mode, :order => [:points.asc])
+    reward_id_to_subtype_id = {}
+    reward_to_subtypes = CustomerRewardToSubtype.all(:fields => [:customer_reward_id, :customer_reward_subtype_id], :customer_reward_id => customer_reward_ids)
+    reward_to_subtypes.each do |reward_to_subtype|
+      reward_id_to_subtype_id[reward_to_subtype.customer_reward_id] = reward_to_subtype.customer_reward_subtype_id
+    end
+    rewards.each do |reward|
+      reward.eager_load_type = CustomerRewardSubtype.id_to_type[reward_id_to_subtype_id[reward.id]]
+    end
+    return rewards
+  end
+  
+  def self.get_rewards_by_merchant(merchant)
+    customer_reward_ids = []
+    rewards = CustomerReward.all(:merchant => merchant, :order => [:points.asc])
+    rewards.each do |reward|
+      customer_reward_ids << reward.id
+    end
     reward_id_to_subtype_id = {}
     reward_to_subtypes = CustomerRewardToSubtype.all(:fields => [:customer_reward_id, :customer_reward_subtype_id], :customer_reward_id => customer_reward_ids)
     reward_to_subtypes.each do |reward_to_subtype|
