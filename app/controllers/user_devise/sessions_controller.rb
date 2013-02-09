@@ -22,14 +22,10 @@ class UserDevise::SessionsController < Devise::SessionsController
           raise Exception.new
         end
         user = facebook_auth.user
-        account_info = {
-          :name => params[:name],
-          :email => params[:email]
-        }
-        user.update(account_info)
         profile_info = {
           :gender => params[:gender],
-          :birthday => params[:birthday]
+          :birthday => params[:birthday],
+          :update_ts => Time.now
         }
         user.profile.update(profile_info)   
         resource = user
