@@ -52,8 +52,7 @@ class Api::V1::UsersController < Api::V1::BaseApplicationController
           if params[:gender] && params[:birthday]
             profile_info = {
               :gender => params[:gender],
-              :birthday => params[:birthday],
-              :update_ts => Time.now
+              :birthday => params[:birthday]
             }
             @user.profile.update(profile_info)
             @user.save

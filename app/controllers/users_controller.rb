@@ -68,8 +68,7 @@ class UsersController < ApplicationController
           birthday = Date.strptime(data.birthday, '%m/%d/%Y') if data.birthday
           profile_info = {
             :gender => gender,
-            :birthday => birthday,
-            :update_ts => Time.now
+            :birthday => birthday
           }
           @user.profile.update(profile_info)
           @user.save
@@ -108,8 +107,7 @@ class UsersController < ApplicationController
           if params[:gender] && params[:birthday]
             profile_info = {
               :gender => params[:gender],
-              :birthday => params[:birthday],
-              :update_ts => Time.now
+              :birthday => params[:birthday]
             }
             @user.profile.update(profile_info)
             @user.save

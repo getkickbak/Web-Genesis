@@ -24,8 +24,7 @@ class UserDevise::SessionsController < Devise::SessionsController
         user = facebook_auth.user
         profile_info = {
           :gender => params[:gender],
-          :birthday => params[:birthday],
-          :update_ts => Time.now
+          :birthday => params[:birthday]
         }
         user.profile.update(profile_info)   
         resource = user
