@@ -33,7 +33,7 @@
 								</div>
 								<div class="stat">
 									<h4>Revenue in last 12 months</h4>
-									<span class="value"><%= @revenue_total %></span>
+									<span class="value"><%= number_to_currency(@revenue_total, :precision => 0) %></span>
 								</div>
 							</div>
 							<div id="big_stats" class="cf">

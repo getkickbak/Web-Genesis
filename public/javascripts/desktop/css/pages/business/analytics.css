@@ -1,3 +1,7 @@
+#big_stats .stat .value {
+	font-size: 30px;
+}
+
 .chart-item {
 	min-height: 400px;
 	margin-bottom: 20px;	
