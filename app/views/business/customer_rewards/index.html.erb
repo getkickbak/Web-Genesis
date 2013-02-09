@@ -30,23 +30,19 @@
 			<% end %>
 			<div class="row">
 				<div class="span3">
-					<div class="widget widget-table action-table">
+					<div class="widget">
 						<div class="widget-header">
 							<i class="icon-map-marker"></i>
 							<h3>Venues (<%= link_to("Show All", :controller => "customer_rewards") %>)</h3>
 						</div>
 						<div class="widget-content">
-							<table class="table table-striped table-bordered">
-								<tbody>
-									<% @venues.each do |venue| %>
-									<tr>
-										<td class="td-description"><!-- --> <% if @display != "venue" || venue.id != @venue.id %>
-										<%= link_to(venue.name, :controller => "customer_rewards", :display => "venue", :venue_id => venue.id) %> <!-- --> <% else %>
-										<%= link_to(venue.name, {:controller => "customer_rewards", :display => "venue", :venue_id => venue.id}, :class => "disabled") %> <!-- --> <% end %> <!-- --></td>
-									</tr>
-									<% end %>
-								</tbody>
-							</table>
+							<ul class="nav nav-pills nav-stacked">
+								<% @venues.each do |venue| %>
+								<li>
+									<%= link_to(venue.name, :controller => "customer_rewards", :display => "venue", :venue_id => venue.id) %>
+								</li>
+								<% end %>
+							</ul>
 						</div>
 					</div>
 				</div>
