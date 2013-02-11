@@ -297,7 +297,6 @@ Ext.define('Genesis.controller.server.Rewards',
             }, true);
          }, function()
          {
-            Ext.device.Notification.dismiss();
             me.onDoneTap();
          }, Ext.bind(me.onRewardItem, me, arguments));
          viewport.setActiveController(me);

@@ -268,7 +268,6 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
                }, true);
             }, function()
             {
-               Ext.device.Notification.dismiss();
                me.onDoneTap();
             }, Ext.bind(me.onRedeemItem, me, arguments));
             viewport.setActiveController(me);

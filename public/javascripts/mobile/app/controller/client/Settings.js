@@ -144,40 +144,52 @@ Ext.define('Genesis.controller.client.Settings',
                   }
                   return birthday;
                }
+            },
+            'phone' :
+            {
+               preLoadFn : Ext.emptyFn,
+               field : form.query('textfield[name=phone]')[0],
+               fn : function(field)
+               {
+                  var phone = db['account']['phone'].match(Account.phoneRegex);
+                  return (phone[1] + '-' + phone[2] + '-' + phone[3]);
+               },
+               fbFn : Ext.emptyFn
             }
          });
    },
    updateAccountInfo : function()
    {
-      var i, f, me = this, db = Genesis.db.getLocalDB(), fields = me.getAccountFields();
+      var i, f, me = this, db = Genesis.db.getLocalDB(), fields = me.getAccountFields(), form = me.getSettingsPage();
 
       for (i in fields)
       {
          f = fields[i];
          f.preLoadFn(f.field);
+         if (db['account'][i])
+         {
+            f[i] = f.fn(f.field);
+         }
+         else
          if (db['fbResponse'])
          {
             f[i] = f.fbFn(f.field);
          }
+         //
+         // Default Value
+         //
          else
-         if (db['account'][i])
          {
-            f[i] = f.fn(f.field);
+            f[i] = null;
          }
       }
 
       console.log("enableFB - " + db['enableFB']);
       me.initializing = true;
-      var form = me.getSettingsPage();
-      var phone = (db['account'].phone) ? db['account'].phone.match(Account.phoneRegex) : null;
-      if (phone)
-      {
-         phone = phone[1] + '-' + phone[2] + '-' + phone[3];
-      }
       form.setValues(
       {
          birthday : fields['birthday'].birthday,
-         phone : phone,
+         phone : fields['phone'].phone,
          tagid : db['account'].virtual_tag_id || 'None',
          facebook : (db['enableFB']) ? 1 : 0
       });
