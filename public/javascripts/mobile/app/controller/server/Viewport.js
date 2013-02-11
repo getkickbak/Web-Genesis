@@ -320,14 +320,14 @@ Ext.define('Genesis.controller.server.Viewport',
          else
          if (Ext.os.is('Android'))
          {
-            s_vol_ratio = 0.4;
+            s_vol_ratio = 0.3;
             //Default Volume laying flat on a surface
-            c.s_vol = 80;
+            c.s_vol = 30;
 
             r_vol_ratio = 0.5;
             // Read fresh data as soon as there's a miss
             c.conseqMissThreshold = 1;
-            c.magThreshold = 100000;
+            c.magThreshold = 10000;
             c.numSamples = 4 * 1024;
             //Default Overlap of FFT signal analysis over previous samples
             c.sigOverlapRatio = 0.25;

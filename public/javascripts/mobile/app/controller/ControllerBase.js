@@ -18,6 +18,7 @@ Ext.define('Genesis.controller.ControllerBase',
    lostNetworkConnectionMsg : 'You have lost network connectivity',
    networkErrorMsg : 'Error Connecting to Sever',
    notAtVenuePremise : 'You must be inside the Merchant\'s premises to continue.',
+   errorLoadingAccountProfileMsg : 'Error Loading Account Profile',
    invalidTagIdFormatMsg : function(length)
    {
       return 'Invalid ' + length + '-digit Tag ID format (eg. 12345678)';
@@ -841,7 +842,7 @@ Ext.define('Genesis.controller.ControllerBase',
    },
    persistLoadStores : function(callback)
    {
-      var store, i, x, flag = 0x0, stores = [//
+      var me = this, store, i, x, flag = 0x0, viewport = me.getViewPortCntlr(), stores = [//
       [this.persistStore('CustomerStore'), 'CustomerStore', 0x0001], //
       [this.persistStore('LicenseStore'), 'LicenseStore', 0x0010] //
       //[this.persistStore('BadgeStore'), 'BadgeStore', 0x10]];
@@ -891,6 +892,18 @@ Ext.define('Genesis.controller.ControllerBase',
          catch(e)
          {
             console.log("Stack Trace - [" + e.stack + "]");
+
+            Ext.device.Notification.show(
+            {
+               title : 'Account Profile',
+               message : me.errorLoadingAccountProfileMsg,
+               buttons : ['Dismiss'],
+               callback : function()
+               {
+                  viewport.resetView();
+                  viewport.redirectTo('login');
+               }
+            });
          }
       }
    },
