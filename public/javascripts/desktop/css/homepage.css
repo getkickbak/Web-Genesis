@@ -157,19 +157,19 @@ body {
 }
 
 .hero-unit form {
-	width: 372px;
-	margin-left: 240px;	
+	width: 410px;
+	margin-left: 221px;	
 }
 
 .hero-unit input[type=tel] {
 	font-size: 18px;
 	padding: 14px;
-	width: 220px;
+	width: 240px;
 }
 
 .btn-xlarge {
-	padding: 11px 18px;
-	font-size: 20px;
+	padding: 11px 22px;
+	font-size: 22px;
 	line-height: normal;
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
