@@ -6,7 +6,7 @@ class RegistrationStep1
   attr_accessor :phone_number
   
   validates :phone_number, :presence => true
-  validate :validate_unique_phone 
+  validate :validate_phone 
   
   def initialize(attributes = {})
     @attributes = attributes
@@ -25,10 +25,12 @@ class RegistrationStep1
   
   private
   
-  def validate_unique_phone
+  def validate_phone
     if not phone_number.empty?
       phone = phone_number.gsub(/\-/, "")
-      if User.first(:phone => phone)
+      if !phone.match(/^[\d]+$/) || phone.length != 10
+        errors.add(:phone_number, I18n.t('errors.messages.phone_format', :attribute => I18n.t('activemodel.attributes.contact.phone')) % [10])
+      elsif User.first(:phone => phone)
         errors.add(:phone_number, I18n.t('errors.taken', :attribute => self.class.human_attribute_name(:phone_number)))
       end
     end

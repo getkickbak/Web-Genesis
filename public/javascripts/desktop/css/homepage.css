@@ -8,7 +8,7 @@ body {
 #page-background-top {
 	position: absolute;
 	z-index: -99998;
-	top: -400px;
+	top: -200px;
 	left: 0;
 	width: 100%;
 	height: 845px;
@@ -143,7 +143,7 @@ body {
  * Site Talking Points
  * *****************************************************************/
 .footer {
-	margin: 80px auto 140px auto;
+	margin: 10px auto 40px auto;
 	border: none;
 }
 .earnpoints {
@@ -179,7 +179,7 @@ body {
 .hero-unit span.message {
 	font-size: 50px;
 	line-height: 40px;
-	color: white !important;
+	color: #fff !important;
 	-webkit-margin-before: 0.83em;
 	-webkit-margin-after: 0.83em;
 	-webkit-margin-start: 0px;
@@ -189,4 +189,22 @@ body {
 
 .hero-unit span.error {
 	float: left;
+}
+
+.control-group.error input, .control-group.error select, .control-group.error textarea {
+	border-color: #ccc;
+}
+
+.control-group.error input:focus,
+.control-group.error select:focus,
+.control-group.error textarea:focus {
+	border-color: #ccc;
+}
+
+.control-group.error .checkbox, .control-group.error .radio, .control-group.error input, .control-group.error select, .control-group.error textarea {
+	color: #555;
+}
+
+form.form-inline span.error {
+	color: #fff;
 }
