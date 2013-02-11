@@ -58,11 +58,13 @@
 		<div class="navbar navbar-fixed-top" style="margin-bottom: 2.5em;">
 			<div class="navbar-inner">
 				<div class="container">
+					<% if signed_in? %>
 					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <!----> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> <!----> </a>
+					<% end %>
 					<a class="brand" href="/">&#160;</a>
+					<% if signed_in? %>
 					<div class="nav-collapse">
 						<ul class="nav pull-right">
-							<% if signed_in? %>
 							<li class="">
 								<a href="/">Home</a>
 							</li>
@@ -87,9 +89,9 @@
 							<li class="">
 								<a href="<%= destroy_user_session_path %>">Sign Out</a>
 							</li>
-							<% end %>
 						</ul>
 					</div>
+					<% end %>
 				</div>
 			</div>
 		</div>
