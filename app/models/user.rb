@@ -322,8 +322,8 @@ class User
   
   def validate_tag_id
     if self.tag_id && self.new?
-      return [false, I18n.t('users.invalid_tag')] if (user_tag = UserTag.first(:tag_id => self.tag_id)).nil?
-      return [false, I18n.t('users.invalid_tag')] if user_tag.status != :pending
+      return [false, I18n.t('errors.messages.invalid_tag')] if (user_tag = UserTag.first(:tag_id => self.tag_id)).nil?
+      return [false, I18n.t('errors.messages.invalid_tag')] if user_tag.status != :pending
     end
     return true
   end

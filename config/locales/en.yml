@@ -20,6 +20,7 @@ en:
         not_a_number: "%{attribute} is not a number"
         not_an_integer: "%{attribute} must be an integer"
         not_valid: "is not valid"
+        invalid_tag: "Key tag is not valid"
         carrierwave_processing_error: "Cannot resize image."
         carrierwave_integrity_error: "Not an image."
         carrierwave_download_error: "Couldn't download image."
@@ -334,7 +335,6 @@ en:
   users:
       update_success: "Account was successfully updated."
       update_password_success: "Password was successfully updated." 
-      invalid_tag: "Key tag is not valid."
       register_tag_failure: "Trouble registering user tag. Please try again."
       deregister_tag_failure: "Trouble deregistering user tag. Please try again."
       tag_already_in_use_failure: "Key tag is already in use."

@@ -22,7 +22,7 @@ class DashboardController < ApplicationController
         @tag = UserTag.first(:tag_id => tag_id)
         if @tag.nil?
           @user_tag = UserTag.new(:tag_id => tag_id)
-          @user_tag.errors.add(:tag_id, t("users.invalid_tag"))
+          @user_tag.errors.add(:tag_id, t("errors.messages.invalid_tag"))
           raise DataMapper::SaveFailureError.new("", @user_tag)
         end
         if @tag.status == :active || !@tag.status == :virtual
