@@ -17,6 +17,7 @@ Ext.define('Genesis.controller.ControllerBase',
    noCodeScannedMsg : 'No Authorization Code was Scanned!',
    lostNetworkConnectionMsg : 'You have lost network connectivity',
    networkErrorMsg : 'Error Connecting to Sever',
+   noPeerDiscoveredMsg : 'No Peers were discovered',
    notAtVenuePremise : 'You must be inside the Merchant\'s premises to continue.',
    errorLoadingAccountProfileMsg : 'Error Loading Account Profile',
    invalidTagIdFormatMsg : function(length)
@@ -714,7 +715,7 @@ Ext.define('Genesis.controller.ControllerBase',
             Ext.device.Notification.show(
             {
                title : 'Local Identity',
-               message : "No Peers were discovered ...",
+               message : me.noPeerDiscoveredMsg,
                buttons : ['Try Again', 'Cancel'],
                callback : function(btn)
                {
@@ -778,7 +779,7 @@ Ext.define('Genesis.controller.ControllerBase',
           Ext.device.Notification.show(
           {
           title : 'Local Identity',
-          message : "No Peers were discovered ...",
+          message : me.noPeerDiscoveredMsg,
           buttons : ['Try Again', 'Cancel'],
           callback : function(btn)
           {
