@@ -1,4 +1,5 @@
 class UserDevise::RegistrationsController < Devise::RegistrationsController
+  before_filter :check_phone
   
   # GET /resource/sign_up
   def new
@@ -31,8 +32,19 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
       end
     rescue DataMapper::SaveFailureError => e
       @user = e.resource
+      session[:phone_number] = @user.phone
       clean_up_passwords(@user)  
       respond_with @user
     end    
+  end
+  
+  private
+  
+  def check_phone
+    if session[:phone_number].nil?
+      respond_to do |format|
+        format.html { redirect_to root_path }
+      end
+    end
   end
 end 

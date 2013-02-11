@@ -190,6 +190,7 @@ Genesis::Application.routes.draw do
     match "/account/facebook_settings/disconnect" => 'users#facebook_disconnect', :via => :post, :as => :facebook_disconnect
     match "/account/facebook_settings/update" => 'users#update_facebook_settings', :via => :post, :as => :update_facebook_settings
     
+    match "/validate_phone" => 'pages#validate_phone', :via => :post, :as => :validate_phone
     #match "/how_it_works" => 'pages#how_it_works'
     match "/privacy" => 'pages#privacy'
     match "/terms" => 'pages#terms'

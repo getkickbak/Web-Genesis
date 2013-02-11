@@ -1,91 +1,104 @@
-<% content_for :link do %> <meta name="apple-itunes-app" content="app-id=537476722">
+<% content_for :link do %>
+<meta name="apple-itunes-app" content="app-id=537476722">
 <link rel="stylesheet" href="/javascripts/desktop/css/homepage.css"/>
 <!--[if lt IE 9]>
 <link rel="stylesheet" href="/javascripts/desktop/css/homepage-ie8.css"/>
 <![endif]-->
 <% end %>
-
+<% content_for :script do %>
+<script type="text/javascript" src="/javascripts/desktop/src/main.js"></script>
+<% end %>
 <div class="container">
-   <!--/Hero Unit-->
-   <div class="row">
-      <div class="span12">
-         <div class="hero-unit">
-            <h1>Rewards at the places you love</h1>
-         </div>
-      </div>
-   </div>
-   <!--/QRCodes-->
-   <div class="row">
-      <div class="span12 qrcodes">
-		 
-      </div>
-   </div>
-   <!--/Talking points-->
-   <div class="row features">
-      <div class="span3">
-         <img class="" src="http://files.getkickbak.com/v1/signup.png"/>
-         <br/>
-      </div>
-      <div class="span3">
-         <img class="" src="http://files.getkickbak.com/v1/coins.png"/>
-         <br/>
-      </div>
-      <div class="span3">
-         <img class="" src="http://files.getkickbak.com/v1/challenges.png"/>
-         <br/>
-      </div>
-      <div class="span3">
-         <img class="" src="http://files.getkickbak.com/v1/rewards.png"/>
-         <br/>
-      </div>
-   </div>
-   <div class="row featurestext">
-      <div class="span3">
-         <img class="signuptext" src="http://files.getkickbak.com/v1/signuptext.png"/>
-      </div>
-      <div class="span3">
-         <img class="coinstext" src="http://files.getkickbak.com/v1/coinstext.png"/>
-      </div>
-      <div class="span3">
-         <img class="challengestext" src="http://files.getkickbak.com/v1/challengestext.png"/>
-      </div>
-      <div class="span3">
-         <img class="rewardstext" src="http://files.getkickbak.com/v1/rewardstext.png"/>
-      </div>
-   </div>
-   <div class="row featuresdesc">
-      <div class="span3">
-         <p> Grab a tag at any participating stores or download our app and sign up for free. </p>
-      </div>
-      <div class="span3">
-         <p> Tab to earn points every time you make a purchase.
-         	<br>
-         	It is that simple. </p>
-      </div>
-      <div class="span3">
-         <p> Try fun challenges at your local venue and get rewarded at the same time. </p>
-      </div>
-      <div class="span3">
-         <p> Unlock real rewards with the points you earned.
-            <br>
-            You deserve it! </p>
-      </div>
-   </div>
+	<!--/Hero Unit-->
+	<div class="row">
+		<div class="span12 pagination-centered">
+			<div class="hero-unit">
+				<span class="message">Get rewards at the places you love</span>
+				<%= simple_form_for @registration_step1, :url => validate_phone_path, :html =>
+				{ :class => 'form-inline' } do |f| %>
+				<%= f.input :phone_number, :label => false, :error => false, :placeholder => "Phone Number", :input_html=>{:class => "input-medium"} %>
+				<%= f.button :submit ,"SIGN UP", :class => 'button btn  btn-warning btn-xlarge' %>
+				<%= f.error :phone_number %>
+				<% end %>
+			</div>
+		</div>
+	</div>
+	<!--/QRCodes-->
+	<div class="row">
+		<div class="span12 qrcodes">
+
+		</div>
+	</div>
+	<!--/Talking points-->
+	<div class="row features">
+		<div class="span3">
+			<img class="" src="http://files.getkickbak.com/v1/signup.png"/>
+			<br/>
+		</div>
+		<div class="span3">
+			<img class="" src="http://files.getkickbak.com/v1/coins.png"/>
+			<br/>
+		</div>
+		<div class="span3">
+			<img class="" src="http://files.getkickbak.com/v1/challenges.png"/>
+			<br/>
+		</div>
+		<div class="span3">
+			<img class="" src="http://files.getkickbak.com/v1/rewards.png"/>
+			<br/>
+		</div>
+	</div>
+	<div class="row featurestext">
+		<div class="span3">
+			<img class="signuptext" src="http://files.getkickbak.com/v1/signuptext.png"/>
+		</div>
+		<div class="span3">
+			<img class="coinstext" src="http://files.getkickbak.com/v1/coinstext.png"/>
+		</div>
+		<div class="span3">
+			<img class="challengestext" src="http://files.getkickbak.com/v1/challengestext.png"/>
+		</div>
+		<div class="span3">
+			<img class="rewardstext" src="http://files.getkickbak.com/v1/rewardstext.png"/>
+		</div>
+	</div>
+	<div class="row featuresdesc">
+		<div class="span3">
+			<p>
+				Grab a tag at any participating stores or download our app and sign up for free.
+			</p>
+		</div>
+		<div class="span3">
+			<p>
+				Tab to earn points every time you make a purchase.
+				<br>
+				It is that simple.
+			</p>
+		</div>
+		<div class="span3">
+			<p>
+				Try fun challenges at your local venue and get rewarded at the same time.
+			</p>
+		</div>
+		<div class="span3">
+			<p>
+				Unlock real rewards with the points you earned.
+				<br>
+				You deserve it!
+			</p>
+		</div>
+	</div>
 </div>
 <div class="container footer">
-   <!--/Hero Unit-->
-   <div class="row">
-      <div class="span6">
-         <img class="earnpoints" src="http://files.getkickbak.com/v1/earnpointsWHITE.png"/>
-      </div>
-      <div class="span6">
-         <h3>Each time you earn reward points,
-            <br>
-            you have a chance to win a KICKBAK prize!</h2> <a href="http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8">
-            <img class="appBtn" src="http://files.getkickbak.com/v1/apple.png"/>
-            </a><a href="https://play.google.com/store/apps/details?id=com.getkickbak.kickbak">
-            <img class="appBtn" src="http://files.getkickbak.com/v1/android.png"/>
-            </a>
-      </div>
-   </div>
+	<!--/Hero Unit-->
+	<div class="row">
+		<div class="span6">
+			<img class="earnpoints" src="http://files.getkickbak.com/v1/earnpointsWHITE.png"/>
+		</div>
+		<div class="span6">
+			<h3>Each time you earn reward points,
+			<br>
+			you have a chance to win a KICKBAK prize!</h2> <a href="http://itunes.apple.com/us/app/kickbak-inc/id537476722?ls=1&mt=8"> <img class="appBtn" src="http://files.getkickbak.com/v1/apple.png"/> </a><a href="https://play.google.com/store/apps/details?id=com.getkickbak.kickbak"> <img class="appBtn" src="http://files.getkickbak.com/v1/android.png"/> </a>
+		</div>
+	</div>
 </div>

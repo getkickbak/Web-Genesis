@@ -3,7 +3,21 @@ class PagesController < ApplicationController
   before_filter :check_signed_in, :only => [:index, :add_business, :add_business_create]
 
   def index
+    @registration_step1 = RegistrationStep1.new
+  end
   
+  def validate_phone
+    @registration_step1 = RegistrationStep1.new(params[:registration_step1])
+    if @registration_step1.valid?
+      session[:phone_number] = @registration_step1.phone_number
+      respond_to do |format|
+        format.html { redirect_to new_user_registration_path }
+      end
+    else
+      respond_to do |format|
+        format.html { render :action => 'index' }
+      end
+    end  
   end
   
   def how_it_works

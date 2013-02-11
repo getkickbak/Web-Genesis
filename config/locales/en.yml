@@ -12,6 +12,7 @@ en:
           message: "How can we help you?"    
   errors:
       blank: "%{attribute} is required"
+      taken: "%{attribute} has already been taken"
       messages:
         blank: "%{attribute} is required"
         email_format: "%{attribute} is not valid"
