@@ -53,15 +53,17 @@ Ext.define('Genesis.view.server.MerchantAccount',
    },
    createView : function()
    {
-      if (!this.callParent(arguments))
+      var me = this;
+      if (!me.callParent(arguments))
       {
          return;
       }
 
+      me.setPreRender(me.getPreRender().concat([
       // -----------------------------------------------------------------------
       // Merchant Photos and Customer Points
       // -----------------------------------------------------------------------
-      this.getPreRender().push(Ext.create('Ext.dataview.DataView',
+      Ext.create('Ext.dataview.DataView',
       {
          tag : 'tbPanel',
          xtype : 'dataview',
@@ -72,7 +74,70 @@ Ext.define('Genesis.view.server.MerchantAccount',
          defaultType : 'merchantaccountptsitem',
          defaultUnit : 'em',
          margin : '0 0 0.7 0'
-      }));
+      }), Ext.create('Ext.form.Panel',
+      {
+         xtype : 'formpanel',
+         margin : '0 0.8 0.7 0.8',
+         defaultUnit : 'em',
+         scrollable : null,
+         layout :
+         {
+            type : 'vbox',
+            align : 'stretch',
+            pack : 'start'
+         },
+         items : [
+         {
+            xtype : 'fieldset',
+            title : 'Account Profile',
+            //instructions : 'Tell us all about yourself',
+            defaults :
+            {
+               labelWidth : '50%',
+               readOnly : true,
+               required : false
+            },
+            items : [
+            {
+               xtype : 'textfield',
+               name : 'tagid',
+               clearIcon : false,
+               label : "Tag ID",
+               value : ' ',
+            },
+            {
+               xtype : 'textfield',
+               cls : 'halfHeight',
+               labelWidth : '100%',
+               name : 'user',
+               label : "John Smith" + "<br/>" + "<label>johnsmith@example.com</label>",
+               value : ' '
+            },
+            {
+               xtype : 'datepickerfield',
+               labelWidth : '30%',
+               label : 'Birthday',
+               name : 'birthday',
+               dateFormat : 'M j, Y',
+               picker :
+               {
+                  yearFrom : 1913,
+                  doneButton :
+                  {
+                     ui : 'normal'
+                  }
+               },
+               value : 0
+            }, Ext.applyIf(
+            {
+               labelWidth : '30%',
+               placeHolder : '',
+               label : 'Phone#',
+               name : 'phone',
+               required : false
+            }, Genesis.view.ViewBase.phoneField())]
+         }]
+      })]));
       //console.debug("minWidth[" + window.innerWidth + "], minHeight[" + window.innerHeight + "]");
    },
    inheritableStatics :

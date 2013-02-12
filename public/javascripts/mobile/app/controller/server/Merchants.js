@@ -21,6 +21,7 @@ Ext.define('Genesis.controller.server.Merchants',
             autoCreate : true,
             xtype : 'servermerchantaccountview'
          },
+         form : 'servermerchantaccountview formpanel',
          merchantMain : 'servermerchantaccountview container[tag=merchantMain]',
          tbPanel : 'servermerchantaccountview dataview[tag=tbPanel]',
          prizesBtn : 'merchantaccountptsitem component[tag=prizepoints]',
@@ -69,37 +70,66 @@ Ext.define('Genesis.controller.server.Merchants',
          return false;
       });
    },
+   getAccountFields : function(account)
+   {
+      var me = this, form = me.getForm();
+
+      return (
+         {
+            'birthday' :
+            {
+               field : form.query('datepickerfield[name=birthday]')[0],
+               fn : function(field)
+               {
+                  var birthday = new Date.parse(account['birthday']);
+                  return (!birthday || !( birthday instanceof Date)) ? ' ' : birthday;
+               }
+            },
+            'phone' :
+            {
+               field : form.query('textfield[name=phone]')[0],
+               fn : function(field)
+               {
+                  var phone = account['phone'].match(Account.phoneRegex);
+                  return (phone[1] + '-' + phone[2] + '-' + phone[3]);
+               }
+            }
+         });
+   },
+   showAccountInfo : function(account, tagId)
+   {
+      var i, f, me = this, fields = me.getAccountFields(account), form = me.getForm();
+
+      for (i in fields)
+      {
+         f = fields[i];
+         if (account[i])
+         {
+            f[i] = f.fn(f.field);
+         }
+         //
+         // Default Value
+         //
+         else
+         {
+            f[i] = null;
+         }
+      }
+
+      form.setValues(
+      {
+         birthday : fields['birthday'].birthday,
+         phone : fields['phone'].phone,
+         tagid : tagId,
+      });
+      form.query('textfield[name=user]')[0].setLabel(account['name'] + '<br/>' + '<label>' + account['email'] + "</label>");
+   },
    // --------------------------------------------------------------------------
    // Event Handlers
    // --------------------------------------------------------------------------
    onNfc : function(nfcResult)
    {
       var me = this, venueId = Genesis.fn.getPrivKey('venueId'), viewport = me.getViewPortCntlr();
-      /*
-       var masked = Ext.Viewport.getMasked();
-       if (nfcResult)
-       {
-       if (masked)
-       {
-       masked.setMessage("Tag NFC TagID[" + nfcResult['tagID'] + "]");
-       }
-       else
-       {
-       Ext.Viewport.setMasked(
-       {
-       xtype : 'loadmask',
-       message : "Tag NFC TagID[" + nfcResult['tagID'] + "]",
-       listeners :
-       {
-       tap : function()
-       {
-       Ext.Viewport.setMasked(null);
-       }
-       }
-       });
-       }
-       }
-       */
       nfcResult = nfcResult ||
       {
          id : null,
@@ -108,7 +138,7 @@ Ext.define('Genesis.controller.server.Merchants',
             'tagID' : null
          }
       };
-      console.log("Retrieving Customer Account for ID[" + nfcResult.id + "] tagID[" + nfcResult['tagID'] + '], venueId[' + venueId + ']');
+      console.log("Retrieving Customer Account for ID[" + nfcResult.id + "] tagID[" + nfcResult.result['tagID'] + '], venueId[' + venueId + ']');
 
       var params =
       {
@@ -138,9 +168,12 @@ Ext.define('Genesis.controller.server.Merchants',
          params : params,
          callback : function(record, operation)
          {
+            var metaData = Customer.getProxy().getReader().metaData;
             Ext.Viewport.setMasked(null);
-            if (operation.wasSuccessful())
+            if (operation.wasSuccessful() && metaData)
             {
+               me.account = metaData['account'];
+               me.tagID = nfcResult.result['tagID'];
                //console.log("Customer[" + Ext.encode(record) + "]");
                Ext.StoreMgr.get('CustomerStore').setData(record);
                viewport.setCustomer(record);
@@ -198,6 +231,7 @@ Ext.define('Genesis.controller.server.Merchants',
             animationName : 'x-paint-monitor-helper'
          });
       }
+      me.showAccountInfo(me.account, me.tagID);
    },
    onMainActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
@@ -230,6 +264,8 @@ Ext.define('Genesis.controller.server.Merchants',
          // Update TitleBar
          bar.setTitle(vrecord.get('name'));
       }, 1, me);
+
+      console.log("TagID[" + me.tagID + "] Account Info [" + Ext.encode(me.account) + "]");
    },
    onMainDeactivate : function(oldActiveItem, c, activeItem, eOpts)
    {

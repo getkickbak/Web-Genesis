@@ -41,7 +41,7 @@ Ext.define('Genesis.controller.SettingsBase',
       this.callParent(arguments);
       this.getMultipartDocumentPage();
       this.getDocumentPage();
-      
+
       console.log("Settings Base Init");
    },
    // --------------------------------------------------------------------------
