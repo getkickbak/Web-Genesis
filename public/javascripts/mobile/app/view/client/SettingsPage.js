@@ -58,6 +58,7 @@ Ext.define('Genesis.view.client.SettingsPage',
             labelWidth : '30%',
             label : 'Birthday',
             name : 'birthday',
+            dateFormat : 'M j, Y',
             required : false,
             picker :
             {
@@ -68,13 +69,13 @@ Ext.define('Genesis.view.client.SettingsPage',
                }
             },
             value : 0
-         }, Ext.apply(Genesis.view.ViewBase.phoneField(),
+         }, Ext.apply(
          {
             labelWidth : '30%',
             label : 'Phone#',
             name : 'phone',
             required : false
-         }),
+         }, Genesis.view.ViewBase.phoneField()),
          {
             xtype : 'listfield',
             name : 'changepassword',

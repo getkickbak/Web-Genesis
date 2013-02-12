@@ -14,7 +14,7 @@ Ext.define('Genesis.controller.server.Viewport',
       },
       activeController : null
    },
-   setupInfoMissingMsg : 'Missing Console Initialization information.',
+   setupInfoMissingMsg : 'Trouble initializing Merchant Device',
    licenseKeyInvalidMsg : 'Missing License Key',
    setupTitle : 'System Initialization',
    inheritableStatics :
@@ -144,10 +144,7 @@ Ext.define('Genesis.controller.server.Viewport',
    },
    initializeConsole : function(callback)
    {
-      var me = this, viewport = me;
-      var info = viewport.getCheckinInfo();
-
-      var venueId = Genesis.fn.getPrivKey('venueId');
+      var me = this, viewport = me, info = viewport.getCheckinInfo(), venueId = Genesis.fn.getPrivKey('venueId'), proxy = Venue.getProxy();
       var params =
       {
          'venue_id' : venueId
@@ -164,7 +161,7 @@ Ext.define('Genesis.controller.server.Viewport',
          scope : me,
          callback : function(record, operation)
          {
-            var metaData = Venue.getProxy().getReader().metaData;
+            var metaData = proxy.getReader().metaData;
             if (operation.wasSuccessful() && metaData)
             {
                viewport.setVenue(record);
@@ -182,9 +179,9 @@ Ext.define('Genesis.controller.server.Viewport',
             else
             if (!operation.wasSuccessful() && !metaData)
             {
+               proxy.supressErrorsPopup = true;
                console.log(me.setupInfoMissingMsg);
             }
-
             me.initNotification(me.setupInfoMissingMsg);
          }
       });

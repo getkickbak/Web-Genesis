@@ -252,7 +252,8 @@ Ext.define('Genesis.controller.client.Prizes',
          var wsite = venue.get('website') ? venue.get('website').split(/http[s]*:\/\//) : [null];
          var name = venue.get('name'), link = wsite[wsite.length - 1] || site;
          var badgeURL = badge.get('photo')[Genesis.constants._thumbnailAttribPrefix + 'large'];
-         var desc = venue.get('description').trunc(256);
+         //var desc = venue.get('description').trunc(256);
+         var desc = me.redeemFbMsg;
          var message = me.upgradeBadgeEmailMsg(badge.get('title'), name);
          var params =
          {
