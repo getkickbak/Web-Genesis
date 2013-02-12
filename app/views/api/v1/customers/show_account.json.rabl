@@ -7,6 +7,6 @@ node :data do
 end
 node :metaData do
 	{
-		account => partial('api/v1/account/base', :object => @user)
+		:account => partial('api/v1/account/base', :object => @user)
 	}
 end

@@ -93,14 +93,14 @@
 											<div>
 												<p><span class="merchant-name-small"><%= link_to customer.eager_load_merchant.name, business_profile_path(customer.eager_load_merchant) %></span></p>
 												<% if customer.eligible_for_reward || customer.eligible_for_prize %>
-												<p class="reward-text">"Get your <span class="eligible-reward"><%= "#{@customer_id_to_reward[customer.id].title}" %></span> ... it's on us!"</p>
+												<p class="reward-text">Get your <span class="eligible-reward"><%= "#{@customer_id_to_reward[customer.id].title}" %></span></p>
 												<% else %>
-												<p class="reward-text">"Earn more points to get your next reward."</p>
+												<p class="reward-text">Earn more points to get your next reward.</p>
 												<% end %>
 											</div>
 										</td>
 										<td class="td-actions">
-											<span class="merchant-badge-name-small"><%= customer.eager_load_badge.eager_load_type.display_value %></span>
+											<div class="merchant-badge-name-small"><%= customer.eager_load_badge.eager_load_type.display_value %></div>
 											<%= image_tag customer.eager_load_badge.eager_load_type.thumbnail_medium_url, :class => "merchant-badge-small" %>
 										</td>
 										<td class="td-actions">
