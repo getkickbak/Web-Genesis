@@ -35,8 +35,8 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
       if user_to_tag.nil?
         raise "No user is associated with this tag: #{decrypted_data["tag_id"]}"
       end
-      user = User.get(user_to_tag.user_id)
-      if user.nil?
+      @user = User.get(user_to_tag.user_id)
+      if @user.nil?
         raise "No such user: #{user_to_tag.user_id}"
       end
     rescue StandardError => e
@@ -51,7 +51,7 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
     begin
       session[:user_agent] = Common.get_user_agent(request.env['HTTP_USER_AGENT'])
       session[:resolution] = Common.get_thumbail_resolution(session[:user_agent], params[:device_pixel_ratio].to_f)
-      @customer = Customer.first(:merchant => @venue.merchant, :user => user)
+      @customer = Customer.first(:merchant => @venue.merchant, :user => @user)
       if @customer.nil?
         logger.error("User(#{user.id}) is not a customer of Merchant(#{@venue.merchant})")
         respond_to do |format|
