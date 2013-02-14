@@ -157,7 +157,7 @@ Ext.define('Genesis.controller.client.Viewport',
          params : params,
          callback : function(records, operation)
          {
-         	me.setApsPayload(null);
+            me.setApsPayload(null);
             Ext.Viewport.setMasked(null);
             if (operation.wasSuccessful())
             {
@@ -480,7 +480,7 @@ Ext.define('Genesis.controller.client.Viewport',
             r_vol_ratio = 0.5;
             //(rx)
             c.conseqMissThreshold = 1;
-            c.magThreshold = 10000;
+            c.magThreshold = 30000;
             // More samples for better accuracy
             c.numSamples = 4 * 1024;
             //Default Overlap of FFT signal analysis over previous samples
@@ -496,7 +496,7 @@ Ext.define('Genesis.controller.client.Viewport',
             //(rx)
             r_vol_ratio = 0.5;
             c.conseqMissThreshold = 1;
-            c.magThreshold = 10000;
+            c.magThreshold = 30000;
             c.numSamples = 4 * 1024;
             //Default Overlap of FFT signal analysis over previous samples
             c.sigOverlapRatio = 0.25;
