@@ -58,8 +58,10 @@
    height: 300px;
    float:right;
    position : relative;
+   z-index: 0;
    background : url(/javascripts/desktop/img/watch_video.jpg) no-repeat center;
    background-size : contain;
+   -ms-behavior: url(/javascripts/desktop/css/backgroundsize.min.htc);
 }
 #videogallery a {
    position : absolute;
