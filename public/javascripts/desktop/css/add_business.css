@@ -68,8 +68,13 @@
    z-index : 1;
    top : 50%;
    left : 50%;
-   margin-top : -9px;
-   margin-left : 9px;
+   margin-top : -13px;
+   margin-left : -13px;
+}
+
+#videogallery a img {
+   width: auto;
+   position:static;
 }
 /* *****************************************************************
  * ContactUs Slogan
