@@ -52,6 +52,23 @@
    min-height : 50%;
 }
 
+#videogallery {
+   margin-top:-25px;
+   width: 300px;
+   height: 300px;
+   float:right;
+   position : relative;
+   background : url(/javascripts/desktop/img/watch_video.jpg) no-repeat center;
+   background-size : contain;
+}
+#videogallery a {
+   position : absolute;
+   z-index : 1;
+   top : 50%;
+   left : 50%;
+   margin-top : -9px;
+   margin-left : 9px;
+}
 /* *****************************************************************
  * ContactUs Slogan
  * *****************************************************************/

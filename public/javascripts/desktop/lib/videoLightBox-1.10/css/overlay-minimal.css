@@ -2,7 +2,7 @@
 div#voverlay {
 	
 	/* growing background image */
-	background-image:url(/js/videoLightBox-1.10/images/white.png);
+	background-image:url(/javascripts/desktop/lib/videoLightBox-1.10/images/white.png);
 	
 	/* dimensions after the growing animation finishes  */
 	width:864px;
@@ -17,7 +17,7 @@ div#voverlay {
 
 /* default close button positioned on upper right corner */
 div#voverlay a.close {
-	background-image:url(/js/videoLightBox-1.10/images/close.png);
+	background-image:url(/javascripts/desktop/lib/videoLightBox-1.10/images/close.png);
 	position:absolute;
 	right:5px;
 	top:5px;
@@ -31,5 +31,5 @@ div#vcontainer{
 	top:0;
 	width:100%;
 	height:100%;	
-	background:url(/js/videoLightBox-1.10/images/loading.gif) no-repeat 50% 50%;
+	background:url(/javascripts/desktop/lib/videoLightBox-1.10/images/loading.gif) no-repeat 50% 50%;
 }
