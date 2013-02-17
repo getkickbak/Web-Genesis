@@ -1,6 +1,6 @@
 <% content_for :link do %>
-<link rel="stylesheet" href="/javascripts/deskstop/lib/videoLightBox-1.10/css/videolightbox.css"/>
-<link rel="stylesheet" href="/javascripts/deskstop/lib/videoLightBox-1.10/css/overlay-minimal.css"/>
+<link rel="stylesheet" href="/javascripts/desktop/lib/videoLightBox-1.10/css/videolightbox.css"/>
+<link rel="stylesheet" href="/javascripts/desktop/lib/videoLightBox-1.10/css/overlay-minimal.css"/>
 <link rel="stylesheet" href="/javascripts/desktop/css/add_business.css"/>
 <!--[if lt IE 9]>
 <link rel="stylesheet" href="/javascripts/desktop/css/add_business-ie8.css"/>
@@ -13,12 +13,13 @@
 <% end %>
 <% content_for :script do %>
 <!-- -->
-<script type="text/javascript" src="/javascripts/deskstop/lib/videoLightBox-1.10/js/swfobject.js"></script>
-<script type="text/javascript" src="/javascripts/deskstop/lib/videoLightBox-1.10/js/videolightbox.js"></script>
+<script type="text/javascript" src="http://cdn.jquerytools.org/1.2.7/full/jquery.tools.min.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/lib/videoLightBox-1.10/js/swfobject.js"></script>
+<script type="text/javascript" src="/javascripts/desktop/lib/videoLightBox-1.10/js/videolightbox.js"></script>
 <script type="text/javascript">
 	function onYouTubePlayerReady(playerId) {
-		ytplayer=document.getElementById("onYouTubePlayerReady_overlay");
-		ytplayer.setVolume(80);
+	ytplayer=document.getElementById("onYouTubePlayerReady_overlay");
+	ytplayer.setVolume(80);
 	}
 </script>
 <% end %>
@@ -34,35 +35,37 @@
       &#160;
    </div>
    <% end %>
-   <!--
-   <div id="videogallery">
-      <!--
-      <a rel="#voverlay" href="/javascripts/deskstop/lib/videoLightBox-1.10/swf/player.swf?url=../../../movie.f4v&amp;volume=100" title="">
-      -->
-      <!--
-      <a rel="#voverlay" href="http://www.youtube.com/v/GXzYxwWYOAk?autoplay=1&amp;rel=0&amp;enablejsapi=1&amp;playerapiid=ytplayer" >
-         <img border="0" src="/javascripts/deskstop/img/watch_video.png" />
-      </a>
-   </div>
-   -->
    <!--/Hero Unit-->
    <div class="row addbusiness">
+      <!--
       <img src="http://files.getkickbak.com/v1/business.gif" />
+      -->
       <div class="span12">
-         <div class="hero-unit">
-            <h1>KICKBAK is a game
-            <br>
-            designed for restaurants,
-            <br>
-            bars and more to reward
-            <br>
-            customer loyalty</h1>
+         <div class="hero-unit" style="float:left;">
+            <h1>KICKBAK is the most
+            <br/>
+            flexible loyalty program
+            <br/>
+            designed for merchants
+            <br/>
+            to reward their frequent
+            <br/>
+            customers</h1>
+         </div>
+         <div id="videogallery">
+            <!--
+            <a rel="#voverlay"
+            href="/javascripts/desktop/lib/videoLightBox-1.10/swf/player.swf?url=../../../movie.f4v&amp;volume=100"
+            title="">
+            -->
+            <a rel="#voverlay" href="http://www.youtube.com/v/t8DmQoEvdsY?autoplay=1&amp;rel=0&amp;enablejsapi=1&amp;playerapiid=ytplayer" >
+            <!-- --> <img border="0" src="/javascripts/desktop/img/video_badge_small.png" /> </a>
          </div>
       </div>
    </div>
    <!--/Cotnact Form-->
    <div class="row">
-      <div class="span12" style="margin-top:80px;margin-bottom:40px;">
+      <div class="span12" style="margin-bottom:40px;">
          <p>
             If you are a business owner, please fill out the following to get KICKBAK for your business:
          </p>
