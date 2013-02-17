@@ -80,6 +80,7 @@
 										<br />
 										<div class="form-actions">
 											<%= f.button :submit , "Update", :class => 'btn btn-primary' %>
+											<%= link_to("Cancel", '#', :id => "cancel-update-credit-card-#{i}", :'card_id' => "#{credit_card.id}", :class => 'btn') %>
 										</div>
 										<!-- /form-actions -->
 									</fieldset>
