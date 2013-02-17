@@ -5,3 +5,8 @@
 .challenge_desc_last {
 	padding: 0 0 18px 180px;
 }
+
+.action-table .td-actions { 
+	width: 80px;
+	text-align: center; 
+}
