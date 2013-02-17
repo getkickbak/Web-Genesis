@@ -1,46 +1,15 @@
 module Business
   class CreditCardsController < Business::BaseApplicationController
     before_filter :authenticate_merchant!
-    before_filter :check_is_admin
     #load_and_authorize_resource
     
     def index
       authorize! :read, CreditCard
       
+      @credit_card = CreditCardForm.new
       @credit_cards = []
-      if current_merchant.credit_cards.length > 0
-        credit_card = current_merchant.credit_cards.first
-        result = BILLING_GATEWAY.query(
-          current_merchant.id, 
-          {
-            :order_id => credit_card.card_token
-          }
-        )
-        if result.success? || true
-          @credit_cards << CreditCardForm.new(
-            :id => credit_card.id,
-            :name => 'Paul Chan',
-            :number => '5409350952057043',
-            :expiry_date => Date.today,
-            :address => '1406 - 7 King St E',
-            :city => 'Toronto',
-            :state => 'Ontario',
-            :zip => 'M5C 3C5'
-          )
-=begin        
-          @credit_cards << CreditCardForm.new(
-            :name => result.params['ordName'],
-            :number => result.params['trnCardNumber'],
-            :expiry_date => result.params['trnCardExpiry'],
-            :address => result.params['ordAddress1'],
-            :city => result.params['ordCity'],
-            :state => result.params['ordProvince'],
-            :zip => result.params['ordPostalCode']
-          )
-=end          
-        end
-      else
-        @credit_card = CreditCardForm.new
+      if current_merchant.credit_cards.length > 0 && !current_merchant.payment_account_id.empty?
+        @credit_cards = get_credit_cards
       end
 
       respond_to do |format|
@@ -50,17 +19,14 @@ module Business
     end
     
     def create
-      if current_merchant.credit_cards.length > 0
-        respond_to do |format|
-          format.html { render :action => "index" }
-        end
-        return  
-      end
       authorize! :create, CreditCard
       
-      @credit_cards = []
+      # Temporary to hard code CA for now
+      params[:credit_card_form][:country] = "CA"
       @credit_card = CreditCardForm.new(params[:credit_card_form])
       if not @credit_card.valid?
+        @credit_cards = []
+        @credit_cards = get_credit_cards if (current_merchant.credit_cards.length > 0 && !current_merchant.payment_account_id.empty?)
         respond_to do |format|
           format.html { render :action => "index" }
         end
@@ -69,188 +35,209 @@ module Business
       
       begin
         CreditCard.transaction do
-          month = @credit_card.expiry_date.month
-          year = @credit_card.expiry_date.year
-          names = @credit_card.name.split
-          last_name = names.pop
-          first_name = names.join(" ")
-          am_credit_card = ActiveMerchant::Billing::CreditCard.new(
-            :first_name => first_name,
-            :last_name => last_name,
-            :number => @credit_card.number,
-            :month => month,
-            :year => year,
-            :verification_value => @credit_card.security_code
-          )  
-          result = BILLING_GATEWAY.store(
-            am_credit_card,
-            {
-              :cardValidation => 1,
-              :operationType => 'N',
-              :vault_id => current_merchant.id,
-              :status => 'A',
-              :billing_address => {
-                :address1 => @credit_card.address,
-                :city => @credit_card.city,
-                :state => @credit_card.state,
-                :zip => @credit_card.zip,
-                :country => 'CA'
+          if current_merchant.payment_account_id.empty?
+            result = Braintree::Customer.create(
+              :first_name => current_merchant.name,
+              :credit_card => {
+                :number => @credit_card.number,
+                :expiration_date => @credit_card.expiry_date.strftime('%m/%Y'),
+                :cardholder_name => @credit_card.name,
+                :cvv => @credit_card.security_code,
+                :billing_address => {
+                  :street_address => @credit_card.address,
+                  :locality => @credit_card.city,
+                  :region => Carmen::Country.coded(@credit_card.country).subregions.coded(@credit_card.state),
+                  :postal_code => @credit_card.zipcode,
+                  :country_code_alpha2 => @credit_card.country
+                },
+                :options => {
+                  :verify_card => true
+                }
               }
-            }
-          )        
-=begin          
-          ApplicationException.new unless result.success?
-          
-          result = BILLING_GATEWAY.recurring(
-            amount,
-            am_credit_card,
-            {
+            )
+          else
+            result = Braintree::CreditCard.create(
+              :customer_id => current_merchant.payment_account_id,
+              :number => @credit_card.number,
+              :expiration_date => @credit_card.expiry_date.strftime('%m/%Y'),
+              :cardholder_name => @credit_card.name,
+              :cvv => @credit_card.security_code,
               :billing_address => {
-                :name => am_credit_card.name,
-                :email => current_merchant.email,
-                :phone => current_merchant.phone,
-                :address1 => params[:card_info][:address1],
-                :city => params[:card_info][:city],
-                :state => params[:card_info][:state],
-                :zip => params[:card_info][:zip],
-                :country => 'CA'
+                :street_address => @credit_card.address,
+                :locality => @credit_card.city,
+                :region => Carmen::Country.coded(@credit_card.country).subregions.coded(@credit_card.state).name,
+                :postal_code => @credit_card.zipcode,
+                :country_code_alpha2 => @credit_card.country
               },
-              :interval => { :unit => :months, :length => 1 },
-              :occurences => 5,
-              :start_date => ,
-              :apply_tax1 => 1,
-              :apply_tax2 => 1
-            }
-          )
-=end          
-          if result.success? || true
-            credit_card = CreditCard.create(:card_token => 're9430324032')
-            #credit_card = CreditCard.create(:card_token => result[:trnOrderNumber])
+              :options => {
+                :verify_card => true
+              }
+            )   
+          end
+          if result.success?
+            if current_merchant.payment_account_id.empty?
+              credit_card = CreditCard.create(:card_token => result.customer.credit_cards[0].token)
+            else
+              credit_card = CreditCard.create(:card_token => result.credit_card.token)
+            end   
             current_merchant.add_credit_card(credit_card)
-            #current_merchant.payment_account_id = result.params['rbAccountId']
+            if current_merchant.payment_account_id.empty?
+              current_merchant.payment_account_id = result.customer.id
+              result = Braintree::Subscription.create(
+                :payment_method_token => credit_card.card_token,
+                :plan_id => MerchantPlan::SMALL
+              )
+              if !result.success?
+                raise "Error subscribing to plan"
+              end
+            end  
             current_merchant.save
-            flash[:notice] = t('business.api.credit_cards.create_success')
+            flash[:notice] = t('business.credit_cards.create_success')
             respond_to do |format|
               format.html { redirect_to(credit_cards_path) }
             end
           else
-            respond_to do |format|
-              format.html { render :action => "index" }
-            end
+            raise "Error adding credit card"
           end
         end
       rescue DataMapper::SaveFailureError => e
         logger.error("Exception: " + e.resource.errors.inspect)
+        @credit_cards = []
+        @credit_cards = get_credit_cards if (current_merchant.credit_cards.length > 0 && !current_merchant.payment_account_id.empty?)
         respond_to do |format|
           format.html { render :action => "index" }
         end
+      rescue StandardError => e
+        logger.error("Exception: " + e.message)
+        @credit_cards = []
+        @credit_cards = get_credit_cards if (current_merchant.credit_cards.length > 0 && !current_merchant.payment_account_id.empty?)
+        flash[:error] = t('business.credit_cards.create_failure')
+        respond_to do |format|
+          format.html { render :action => "index" }
+        end  
       end
     end
 
     def update
-      @credit_card = current_merchant.credit_cards.first || not_found
-      authorize! :update, @credit_card
+      credit_card = current_merchant.credit_cards.get(params[:id]) || not_found
+      authorize! :update, credit_card
            
-      @credit_cards = []     
-      credit_card = CreditCardForm.new(params[:credit_card_form])
-      @credit_cards << credit_card
+      @credit_card = CreditCardForm.new
+      # Temporary to hard code CA for now    
+      params[:credit_card_form][:country] = "CA"    
+      params[:credit_card_form][:id] = credit_card.id
+      params[:credit_card_form][:number] = "dummy"
+      credit_card_form = CreditCardForm.new(params[:credit_card_form])
            
       begin     
         CreditCard.transaction do
-          if not credit_card.number.nil?
-            if not credit_card.valid?
-              respond_to do |format|
-                format.html { render :action => "index" }
-              end
-              return
-            end
-          end
-          month = credit_card.expiry_date.month
-          year = credit_card.expiry_date.year
-          names = credit_card.name.split
-          last_name = names.pop
-          first_name = names.join(" ")
-          credit_card_info = {
-            :first_name => first_name,
-            :last_name => last_name,
-            :month => month,
-            :year => year
-          }
-          if not credit_card.number.nil?
-            credit_card_info[:number] = credit_card.number
-          end
-          if not credit_card.security_code.nil?
-            credit_card_info[:verification_value] = credit_card.security_code
-          end
-          am_credit_card = ActiveMerchant::Billing::CreditCard.new(credit_card_info)
-          result = BILLING_GATEWAY.update(current_merchant.id, am_credit_card,
-            {
-              :cardValidation => 1,
-              :status => 'A',
-              :billing_address => {
-                :address1 => credit_card.address,
-                :city => credit_card.city,
-                :state => credit_card.state,
-                :zip => credit_card.zip,
-                :country => 'CA'
-              }
-            } 
-          )
-=begin          
-          ApplicaitonException.new unless result.success?
-
-          result = BILLING_GATEWAY.update_recurring(amount, am_credit_card,
-           {
-              :account_id => current_merchant.payment_account_id
-              :billing_address => {
-                :address1 => params[:card_info][:address1],
-                :city => params[:card_info][:city],
-                :state => params[:card_info][:state],
-                :zip => params[:card_info][:zip],
-                :country => 'CA'
-              }
-            } 
-          )
-=end          
-          if result.success?
-            @credit_card.update(:card_token => result[:trnOrderNumber])
-            flash[:notice] = t('business.api.credit_cards.update_success')
-            respond_to do |format|
-              format.html { redirect_to(credit_card_path) }
-            end
-          else
+          if not credit_card_form.valid?
+            @credit_cards = get_credit_cards(credit_card_form)
             respond_to do |format|
               format.html { render :action => "index" }
             end
+            return
+          end
+          result = Braintree::CreditCard.update(
+            credit_card.card_token,
+            :cardholder_name => credit_card_form.name,
+            :expiration_date => credit_card_form.expiry_date.strftime('%m/%Y'),
+            :cvv => credit_card_form.security_code,
+            :options => {
+              :verify_card => true
+            },
+            :billing_address => {
+              :street_address => credit_card_form.address,
+              :locality => credit_card_form.city,
+              :region => Carmen::Country.coded(credit_card_form.country).subregions.coded(credit_card_form.state).name,
+              :postal_code => credit_card_form.zipcode,
+              :country_code_alpha2 => credit_card_form.country,
+              :options => {
+                :update_existing => true
+              }
+            }
+          )
+          if result.success?
+            flash[:notice] = t('business.credit_cards.update_success')
+            respond_to do |format|
+              format.html { redirect_to(credit_cards_path) }
+            end
+          else
+            raise "Error updating credit card"
           end
         end
-      rescue DataMapper::SaveFailureError => e
+      rescue StandardError => e
+        logger.error("Exception: " + e.message)
+        @credit_cards = get_credit_cards(credit_card_form)
+        flash[:error] = t('business.credit_cards.update_failure')
         respond_to do |format|
           format.html { render :action => "index" }
         end
       end    
     end
     
-=begin    
     def destroy
-      @credit_card = current_merchant.credit_cards.first || not_found
+      @credit_card =  current_merchant.credit_cards.get(params[:id]) || not_found
       authorize! :destroy, @credit_card
    
-      CreditCard.transaction do
-        begin
+      if current_merchant.credit_cards.length == 1
+        flash[:error] = t('business.credit_cards.destroy_min_failure')
+        respond_to do |format|
+          format.html { redirect_to(credit_cards_url) }
+          #format.xml  { head :ok }
+        end
+        return  
+      end
+      
+      begin
+        CreditCard.transaction do
           current_merchant.remove_credit_card(@credit_card)
+          Braintree::CreditCard.delete(@credit_card.card_token)
           respond_to do |format|
             format.html { redirect_to(credit_cards_url) }
             #format.xml  { head :ok }
           end
-        rescue
-          respond_to do |format|
-            format.html { redirect_to(credit_cards_url) }
-            #format.xml  { head :ok }
-          end 
         end
+      rescue StandardError => e
+        logger.error("Exception: " + e.message)
+        flash[:error] = t('business.credit_cards.destroy_failure')
+        respond_to do |format|
+          format.html { redirect_to(credit_cards_url) }
+          #format.xml  { head :ok }
+        end 
       end
     end
-=end    
+    
+    private
+    
+    def get_credit_cards(validated_card = nil)
+      credit_cards = []
+      card_token_to_id = {}
+      current_merchant.credit_cards.each do |credit_card|
+        card_token_to_id[credit_card.card_token] = credit_card.id
+      end
+      
+      customer = Braintree::Customer.find(current_merchant.payment_account_id)
+      customer.credit_cards.each do |credit_card|
+        if validated_card && card_token_to_id[credit_card.token] == validated_card.id
+          credit_cards << validated_card
+        else
+          billing_address = credit_card.billing_address
+          credit_cards << CreditCardForm.new(
+            :id => card_token_to_id[credit_card.token],
+            :type => credit_card.card_type,
+            :name => credit_card.cardholder_name,
+            :number => "****-#{credit_card.last_4}",
+            :expiry_date => Date.strptime(credit_card.expiration_date, '%m/%Y'),
+            :address => credit_card.billing_address.street_address,
+            :city => credit_card.billing_address.locality,
+            :state => Carmen::Country.coded(billing_address.country_code_alpha2).subregions.named(billing_address.region).code,
+            :zipcode => billing_address.postal_code,
+            :country => billing_address.country_code_alpha2,
+          )  
+        end   
+      end
+      return credit_cards
+    end
   end
 end

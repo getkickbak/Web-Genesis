@@ -1,6 +1,6 @@
 <%= f.input :address, :required => false, :input_html => {:class=>"input-large"}%>
 <%= f.input :city, :required => false, :input_html => {:class=>"input-medium"} %>
-<%= f.input :country, :as => :carmen_country, :priority => ['CA'], :required => false, :input_html => {:disabled => "disabled",:class=>"input-medium"} %>
+<%= f.input :country, :as => :carmen_country, :priority => ['CA'], :required => false, :input_html => {:value => 'CA',:disabled => "disabled",:class=>"input-medium"} %>
 <%= f.input :state, :as => :subregion, :parent_region => 'CA', :label => 'Province', :required => false, :input_html=>{:class => "input-large"} %>
 <%= f.input :zipcode, :label => 'Postal Code', :required => false, :input_html => {:class=>"input-medium"} %>
 <%= f.input :gender, :required => false, :collection => [["", 'u'], ["Male", 'm'], ["Female", 'f']], :include_blank => false, :input_html => {:class=>"input-medium"} %>
