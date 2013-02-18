@@ -150,6 +150,7 @@
 
 .createForm {
    min-height:480px;
+   margin-left:0px;
 }
 
 .span_field {
