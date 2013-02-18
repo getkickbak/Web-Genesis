@@ -270,14 +270,14 @@ Ext.define('Genesis.view.client.MerchantAccount',
                   },
                   getPhoto : function(values)
                   {
-                     if (!values.photo || !values.photo.url)
+                     if (!values.photo || !values.photo['thumbnail_medium_url'])
                      {
                         return me.self.getPhoto(
                         {
                            value : values['type']
                         });
                      }
-                     return values.photo.url;
+                     return values.photo['thumbnail_medium_url'];
                   },
                   getTitle : function(values)
                   {
