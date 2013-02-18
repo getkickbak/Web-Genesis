@@ -1,28 +1,47 @@
 
+
 #page-background-top {
-   display : none;
+	position: absolute;
+	z-index: -99998;
+	left: 0;
+	width: 100%;
+	height: 645px;
+	text-align: center;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+	overflow: hidden;
+}
+
+#page-background-top img {
+	display: block;
+	margin: 50 0 0 0;
+	min-width: 1600px;
+	max-width: 1600px;
 }
 
 #page-background-bottom {
-   position : absolute;
-   z-index : -99999;
-   top : 48px;
-   left : 0;
-   width : 100%;
-   height : 1030px;
-   text-align : center;
-   -webkit-user-select : none;
-   -khtml-user-select : none;
-   -moz-user-select : none;
-   -o-user-select : none;
-   user-select : none;
-   overflow : hidden;
+	position: absolute;
+	z-index: -99999;
+	top: 440px;
+	left: 0;
+	width: 100%;
+	height: 865px;
+	text-align: center;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+	overflow: hidden;
 }
 
 #page-background-bottom img {
-   display : block;
-   margin : auto;
-   min-width : 1600px;
+	display: block;
+	margin: auto;
+	min-width: 1600px;
 }
 
 #page-background {
@@ -52,29 +71,65 @@
    min-height : 50%;
 }
 
-#videogallery {
-   margin-top:-50px;
-   width: 400px;
-   height: 400px;
-   float:right;
-   position : relative;
-   z-index: 0;
-   background : url(/javascripts/desktop/img/watch_video.jpg) no-repeat center;
-   background-size : contain;
-   -ms-behavior: url(/javascripts/desktop/css/backgroundsize.min.htc);
+/*
+#page-background-top {
+   display : none;
 }
+
+#page-background-bottom {
+   position : absolute;
+   z-index : -99999;
+   top : 48px;
+   left : 0;
+   width : 100%;
+   height : 1030px;
+   text-align : center;
+   -webkit-user-select : none;
+   -khtml-user-select : none;
+   -moz-user-select : none;
+   -o-user-select : none;
+   user-select : none;
+   overflow : hidden;
+}
+
+#page-background-bottom img {
+   display : block;
+   margin : auto;
+   min-width : 1600px;
+}
+*/
+
+#videogallery {
+   height:400px;
+   position:relative;
+}
+
 #videogallery a {
    position : absolute;
    z-index : 1;
    top : 50%;
    left : 50%;
-   margin-top : -13px;
-   margin-left : -13px;
+   margin-top : -149px;
+   margin-left : -73px;
 }
 
 #videogallery a img {
    width: auto;
    position:static;
+}
+
+.addbusiness .hero-unit h1 {
+   text-shadow : black 1px 3px 3px;
+   color:#fff;
+   /*
+   width: 400px;
+   height: 400px;
+   position : relative;
+   z-index: 0;
+   background : url(/javascripts/desktop/img/watch_video.jpg) no-repeat center;
+   background-size : contain;
+   -ms-behavior: url(/javascripts/desktop/css/backgroundsize.min.htc);
+   */
 }
 /* *****************************************************************
  * ContactUs Slogan
