@@ -57,8 +57,9 @@ class Merchant
   attr_accessor :type_id, :visit_frequency_id, :current_password, :eager_load_type, :termination_date_str
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :visit_frequency_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website, :photo, :alt_photo, :role, :status, :will_terminate, :termination_date,
-                  :reward_terms, :auth_code, :current_password, :password, :password_confirmation, :badges_attributes
+  attr_accessible :type_id, :visit_frequency_id, :name, :description, :email, :account_first_name, :account_last_name, :phone, :website,
+                  :photo, :alt_photo, :role, :status, :will_terminate, :termination_date, :reward_terms, :auth_code, :current_password, :password, 
+                  :password_confirmation, :badges_attributes
 
   has 1, :merchant_to_type, :constraint => :destroy
   has 1, :type, 'MerchantType', :through => :merchant_to_type, :via => :merchant_type

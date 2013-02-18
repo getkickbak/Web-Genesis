@@ -1,14 +1,14 @@
 development:
-  MERCHANT_ID = bcfdzf2xfj6wd5m2
-  PUBLIC_KEY = d995nksvjjrm9kw3
-  PRIVATE_KEY = mgzxnqwpvrqnxx9x
+  MERCHANT_ID: tvzpwtsvjxsy24z4
+  PUBLIC_KEY: bwzwjyhtx9t3mpgy
+  PRIVATE_KEY: a6f29d0afe51edc27102a042a82258e3
   
 test:
-  MERCHANT_ID = bcfdzf2xfj6wd5m2
-  PUBLIC_KEY = d995nksvjjrm9kw3
-  PRIVATE_KEY = mgzxnqwpvrqnxx9x
+  MERCHANT_ID: tvzpwtsvjxsy24z4
+  PUBLIC_KEY: bwzwjyhtx9t3mpgy
+  PRIVATE_KEY: a6f29d0afe51edc27102a042a82258e3
   
 production:
-  MERCHANT_ID = bcfdzf2xfj6wd5m2
-  PUBLIC_KEY = d995nksvjjrm9kw3
-  PRIVATE_KEY = mgzxnqwpvrqnxx9x
+  MERCHANT_ID: tvzpwtsvjxsy24z4
+  PUBLIC_KEY: bwzwjyhtx9t3mpgy
+  PRIVATE_KEY: a6f29d0afe51edc27102a042a82258e3

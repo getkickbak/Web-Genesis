@@ -13,7 +13,7 @@ module Business
       #format.xml  { render :xml => @merchants }
       end
     end
-
+    
     def show_charts
       two_months_ago = today >> -2
       earn_rewards = DataMapper.repository(:default).adapter.select(

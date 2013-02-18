@@ -3,7 +3,7 @@ class CreditCardForm
   include ActiveModel::Conversion
   include ActiveModel::Naming
   
-  attr_accessor :id, :name, :number, :expiry_date, :security_code, :address, :city, :state, :zip
+  attr_accessor :id, :type, :name, :number, :expiry_date, :security_code, :address, :city, :state, :zipcode, :country
   
   validates :name, :presence => true
   validates :number, :presence => true
@@ -12,7 +12,8 @@ class CreditCardForm
   validates :address, :presence => true
   validates :city, :presence => true
   validates :state, :presence => true
-  validates :zip, :presence => true
+  validates :zipcode, :presence => true
+  validates :country, :presence => true
   
   def initialize(attributes = {})
     @attributes = attributes

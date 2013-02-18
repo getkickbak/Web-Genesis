@@ -1,100 +1,120 @@
 <% content_for :link do %>
+<link rel="stylesheet" href="/javascripts/desktop/css/pages/business/credit_card.css"/>
 <% end %>
 <% content_for :script do %>
+<script type="text/javascript">
+	$(document).ready($(function() {
+	var notice_msg=$("#notice").html();
+	if(notice_msg) {
+	Genesis.showWarningMsg(notice_msg,null,true);
+	}
+	var error_msg=$("#error").html();
+	if(error_msg) {
+	Genesis.showErrMsg(error_msg,null,true);
+	}
+	}));
+</script>
 <script type="text/javascript" src="/javascripts/desktop/src/base.js"></script>
-<!--
 <script type="text/javascript" src="/javascripts/desktop/src/business/credit_card.js"></script>
--->
+<% end %>
+<% if flash[:notice] %>
+<div style="display:none;" id="notice">
+	<p>
+		<%= flash[:notice] %>
+	</p>
+</div>
+<% end %>
+<% if flash[:error] %>
+<div style="display:none;" id="error">
+	<p>
+		<%= flash[:error] %>
+	</p>
+</div>
 <% end %>
 <div class="main">
-   <div class="main-inner">
-      <div class="container">
-      	<% if current_merchant.status == :pending %>
-      	<ul class="pager">
-      		<li class="previous">
-      			<%= link_to 'Continue Setup', setup_path %>
-      		</li>	
-      	</ul>
-      	<% end %>
-         <div class="row">
-            <div class="span9">
-               <div class="widget ">
-                  <div class="widget-header">
-                     <i class="icon-credit-card"></i>
-                     <h3>Credit Card Information</h3>
-                  </div>
-                  <!-- /widget-header -->
-                  <div class="widget-content">
-                     <% if @credit_cards.length > 0 %>
-                     <div class="tabbable">
-                        <ul class="nav nav-tabs">
-                           <% @credit_cards.each_with_index do |credit_card, i| %>
-                           <li class="<% if i == 0 %>active<% end %>"
-                           <!-- -->
-                           <a href="#<%= credit_card.number %>" data-toggle="tab"><%= credit_card.number %></a>
-                           <!-- -->
-                           <%= link_to delete_credit_card_path, :confirm => 'Do you want to delete this credit card?' do %>
-                              <!-- -->
-                              <i class="icon-remove"></i>
-                              <!-- -->
-                              <% end %>
-                              <!---->
-                           </li>
-                           <% end %>
-                        </ul>
-                        <br>
-                        <div class="tab-content">
-                           <% @credit_cards.each do |credit_card| %>
-                           <div class="tab-pane active" id="<%= credit_card.number %>">
-                              <%= simple_form_for credit_card, :html => { :id => "edit_credit_card_#{credit_card.id}", :class =>
-                              'form-horizontal' }, :url => update_credit_card_path do |f| %>
-                              <fieldset>
-                                 <%= f.input :name, :input_html=>{:class => "input-large"} %>
-                                 <%= f.input :number, :input_html=>{:class => "input-medium"} %>
-                                 <%= f.input :expiry_date, :as => :date, :input_html => { :style => 'width:auto;' }, :order => [:month, :year] %>
-                                 <%= f.input :security_code, :input_html=>{:class => "input-small"} %>
-                                 <%= f.input :address, :input_html=>{:class => "input-xxlarge"} %>
-                                 <%= f.input :city, :input_html=>{:class => "input-large"} %>
-                                 <%= f.input :state, :input_html=>{:class => "input-large"} %>
-                                 <%= f.input :zip, :input_html=>{:class => "input-medium"} %>
-                                 <br />
-                                 <div class="form-actions">
-                                    <%= f.button :submit , "Update Credit Card", :class => 'btn btn-primary' %>
-                                 </div>
-                                 <!-- /form-actions -->
-                              </fieldset>
-                              <% end %>
-                           </div>
-                           <% end %>
-                        </div>
-                     </div>
-                     <% else %>
-                     <div class="tab-content">
-                        <div class="tab-pane active" id="addcreditcard">
-                           <%= simple_form_for @credit_card, :url => create_credit_card_path, :html => { :class => 'form-horizontal' } do |f| %>
-                           <fieldset>
-                              <%= f.input :name, :input_html=>{:class => "input-large"} %>
-                              <%= f.input :number, :input_html=>{:class => "input-medium"} %>
-                              <%= f.input :expiry_date, :as => :date, :input_html => { :style => 'width:auto;' }, :order => [:month, :year] %>
-                              <%= f.input :security_code, :input_html=>{:class => "input-small"} %>
-                              <%= f.input :address, :input_html=>{:class => "input-xxlarge"} %>
-                              <%= f.input :city, :input_html=>{:class => "input-large"} %>
-                              <%= f.input :state, :input_html=>{:class => "input-large"} %>
-                              <%= f.input :zip, :input_html=>{:class => "input-medium"} %>
-                              <br />
-                              <div class="form-actions">
-                                 <%= f.button :submit , "Add Credit Card", :class => 'btn btn-primary' %>
-                              </div>
-                              <!-- /form-actions -->
-                           </fieldset>
-                           <% end %>
-                        </div>
-                     </div>
-                     <% end %>
-                  </div>
-               </div>
-            </div>
-         </div>
-      </div>
-   </div>
+	<div class="main-inner">
+		<div class="container">
+			<% if current_merchant.status == :pending %>
+			<ul class="pager">
+				<li class="previous">
+					<%= link_to 'Continue Setup', setup_path %>
+				</li>
+			</ul>
+			<% end %>
+			<div class="row">
+				<div class="span9">
+					<div class="widget ">
+						<div class="widget-header">
+							<i class="icon-credit-card"></i>
+							<h3>Billing Info</h3>
+						</div>
+						<!-- /widget-header -->
+						<div class="widget-content">
+							<% if @credit_cards.length > 0 %>
+							<div class="payment">
+								<h4>Payment Methods</h4>
+								<% @credit_cards.each_with_index do |credit_card, i| %>
+								<div class="credit-card">
+									<% card_type = credit_card.type %>
+									<% if card_type == "Visa" %>
+									<%= image_tag "http://files.getkickbak.com/v1/visa.gif" %>
+									<% elsif card_type == "American Express" %>
+									<%= image_tag "http://files.getkickbak.com/v1/american_express.gif" %>
+									<% else %>
+									<%= image_tag "http://files.getkickbak.com/v1/mastercard.gif" %>	
+									<% end %>
+									<span class="card-number"><%= "#{credit_card.type} ending in #{credit_card.number}" %></span>
+									<%= link_to 'edit', '#', :id => "credit-card-#{i}", :'card_id' => "#{credit_card.id}", :class => "card-link" %>
+									<%= link_to 'delete', "#{delete_credit_card_path}?id=#{credit_card.id}", :data => { :confirm => 'Do you want to delete this credit card?' }, :method => :delete, :class => "card-link" %>
+									<%= simple_form_for credit_card, :html => { :id => "edit_credit_card_#{credit_card.id}", :class =>
+									'form-horizontal credit-card-form hide' }, :url => "#{update_credit_card_path}?id=#{credit_card.id}" do |f| %>
+									<fieldset>
+										<%= f.input :name, :input_html=>{:class => "input-large"} %>
+										<%= f.input :expiry_date, :as => :date, :input_html => { :style => 'width:auto;' }, :order => [:month, :year] %>
+										<%= f.input :security_code, :input_html=>{:class => "input-small"} %>
+										<%= f.input :address, :input_html=>{:class => "input-xxlarge"} %>
+										<%= f.input :city, :input_html=>{:class => "input-large"} %>
+										<%= f.input :country, :as => :carmen_country, :priority => ['CA'], :input_html => {:value => 'CA',:disabled => "disabled",:class=>"input-medium"} %>
+										<%= f.input :state, :as => :subregion, :parent_region => 'CA', :label => 'Province', :input_html=>{:class => "input-large"} %>
+										<%= f.input :zipcode, :label => 'Postal Code', :input_html=>{:class => "input-medium"} %>
+										<br />
+										<div class="form-actions">
+											<%= f.button :submit , "Update", :class => 'btn btn-primary' %>
+											<%= link_to("Cancel", '#', :id => "cancel-update-credit-card-#{i}", :'card_id' => "#{credit_card.id}", :class => 'btn') %>
+										</div>
+										<!-- /form-actions -->
+									</fieldset>
+									<% end %>
+								</div>
+								<% end %>
+							</div>
+							<% end %>
+							<div class="payment">
+								<h4>Add a New Card</h4>
+								<%= simple_form_for @credit_card, :url => create_credit_card_path, :html => { :class => 'form-horizontal' } do |f| %>
+								<fieldset>
+									<%= f.input :name, :input_html=>{:class => "input-large"} %>
+									<%= f.input :number, :input_html=>{:class => "input-medium"} %>
+									<%= f.input :expiry_date, :as => :date, :input_html => { :style => 'width:auto;' }, :order => [:month, :year] %>
+									<%= f.input :security_code, :input_html=>{:class => "input-small"} %>
+									<%= f.input :address, :input_html=>{:class => "input-xxlarge"} %>
+									<%= f.input :city, :input_html=>{:class => "input-large"} %>
+									<%= f.input :country, :as => :carmen_country, :priority => ['CA'], :input_html => {:value => 'CA',:disabled => "disabled",:class=>"input-medium"} %>
+									<%= f.input :state, :as => :subregion, :parent_region => 'CA', :label => 'Province', :input_html=>{:class => "input-large"} %>
+									<%= f.input :zipcode, :label => 'Postal Code', :input_html=>{:class => "input-medium"} %>
+									<br />
+									<div class="form-actions">
+										<%= f.button :submit , "Add", :class => 'btn btn-primary' %>
+									</div>
+									<!-- /form-actions -->
+								</fieldset>
+								<% end %>
+							</div>
+						</div>
+					</div>
+				</div>
+				<%= render 'plan' %>
+			</div>
+		</div>
+	</div>
 </div>

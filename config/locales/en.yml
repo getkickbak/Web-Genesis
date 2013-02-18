@@ -289,7 +289,11 @@ en:
         min_referral_points: "Referral points must be greater than 0."
       credit_cards:
         create_success: "Credit card was successfully added."
+        create_failure: "Failed to add credit card."
         update_success: "Credit card was successfully updated."
+        update_failure: "Failed to update credit card."
+        destroy_min_failure: "You need to have at least one credit card registered."
+        destroy_failure: "Failed to remove credit card."
       customer_rewards:
         create_success: "Reward was successfully created."
         update_success: "Reward was successfully updated."

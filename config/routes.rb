@@ -26,10 +26,11 @@ Genesis::Application.routes.draw do
         get 'check_in_template', :on => :member, :as => :check_in_template
       end
       resources :invoices, :only => [:index, :show]
-      resources :promotions, :only => [:new, :create]
+      resources :promotions, :only => [:index, :new, :create]
       #resources :deals
               
-      match "/dashboard" => 'dashboard#index', :as => :dashboard
+      match "/dashboard" => 'analytics#index', :as => :dashboard
+      match "/dashboard/show_charts" => 'analytics#show_charts'
       match "/setup" => 'setup#index', :as => :setup
       match "/setup/activate" => 'setup#activate', :as => :setup_activate
       match "/account/photo" => 'merchants#photo', :as => :account_photo
@@ -40,8 +41,6 @@ Genesis::Application.routes.draw do
       match "/marketing" => 'marketing#index', :as => :marketing
       match "/marketing/create_sign_up_code" => 'marketing#create_sign_up_code', :as => :create_sign_up_code
       match "/marketing/update_sign_up_code" => 'marketing#update_sign_up_code', :as => :update_sign_up_code
-      match "/analytics" => 'analytics#index', :as => :analytics
-      match "/analytics/show_charts" => 'analytics#show_charts'
       match "/badges" => 'badges#index', :as => :badges
       match "/badges/edit" => 'badges#edit', :as => :edit_badges
       match "/badges/update_badges" => 'badges#update_badges', :as => :update_badges
@@ -53,7 +52,7 @@ Genesis::Application.routes.draw do
       match "/billings" => 'credit_cards#index', :as => :credit_cards
       match "/billings/create" => 'credit_cards#create', :via => :post, :as => :create_credit_card
       match "/billings/update" => 'credit_cards#update', :as => :update_credit_card
-      match "/billings/delete" => 'credit_cards#destroy', :as => :delete_credit_card
+      match "/billings/delete" => 'credit_cards#destroy', :via => :delete, :as => :delete_credit_card
 
       #match "/merchant_terms" => 'pages#merchant_terms'
       match "/contact_us" => 'pages#contact_us'
