@@ -14,11 +14,7 @@ class PromotionPhotoUploader < CarrierWave::Uploader::Base
   def store_dir
     Rails.logger.info("m_id: #{model.m_id}")
     Rails.logger.info("m_id is null") if model.m_id.nil?
-    if model.m_id
-      m_id = model.m_id
-    else
-      m_id = model.merchant.id  
-    end
+    m_id = (model.merchant ? model.merchant.id : model.m_id)
     "merchants/#{m_id}/promotions"
   end
 
