@@ -15,10 +15,10 @@ class Promotion
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
   
-  attr_accessor :start_date_str, :end_date_str
+  attr_accessor :merchant_id, :start_date_str, :end_date_str
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :subject, :message, :photo, :start_date, :end_date   
+  attr_accessible :subject, :message, :photo, :start_date, :end_date, :merchant_id
     
   validates_with_method :start_date, :method => :validate_start_date
   validates_with_method :end_date, :method => :validate_end_date
@@ -34,7 +34,8 @@ class Promotion
       :message => promotion_info[:message].strip,
       :photo => promotion_info[:photo],
       :start_date => now.to_date,
-      :end_date => now.to_date
+      :end_date => now.to_date,
+      :merchant_id => merchant.id,
     )
     promotion.start_date_str = promotion_info[:start_date]
     # End date set to start date for now
