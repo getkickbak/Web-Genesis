@@ -14,19 +14,7 @@ Genesis.constants =
    //host : 'http://www.dev1getkickbak.com',
    host : 'http://www.devgetkickbak.com',
    //host : 'http://www.getkickbak.com',
-   //
-   // Proximity ID
-   //
-   conseqMissThreshold : 0,
-   magThreshold : 0,
-   // More samples for better accuracy
-   numSamples : 0,
    //Default Volume laying flat on a surface (tx)
-   s_vol : 0,
-   //Default Overlap of FFT signal analysis over previous samples
-   sigOverlapRatio : 0,
-   proximityTxTimeout : 0,
-   proximityRxTimeout : 0,
    isNfcEnabled : false,
    userName : 'Eric Chan',
    appMimeType : 'application/kickbak',
@@ -66,8 +54,8 @@ Genesis.constants =
    s_vol : -1,
    //
    device : null,
-   //minDistance : 0.1 * 1000,
-   minDistance : 100000 * 1000,
+   minDistance : 0.2 * 1000,
+   //minDistance : 100000 * 1000,
    createAccountMsg : 'Create user account using Facebook Profile information',
    init : function()
    {
