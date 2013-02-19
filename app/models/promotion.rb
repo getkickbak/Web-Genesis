@@ -16,6 +16,8 @@ class Promotion
   #property :deleted, ParanoidBoolean, :default => false
   
   attr_accessor :start_date_str, :end_date_str
+  attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
+
   attr_accessible :subject, :message, :photo, :start_date, :end_date   
     
   validates_with_method :start_date, :method => :validate_start_date
@@ -35,16 +37,13 @@ class Promotion
       :start_date => now.to_date,
       :end_date => now.to_date
     )
-    Rails.logger.info("After new promotion")
     promotion.start_date_str = promotion_info[:start_date]
     # End date set to start date for now
     promotion.end_date_str = promotion_info[:end_date]
     promotion[:created_ts] = now
     promotion[:update_ts] = now
     promotion.merchant = merchant
-    Rails.logger.info("Before save promotion")
     promotion.save
-    Rails.logger.info("After save promotion")
     return promotion
   end
   
