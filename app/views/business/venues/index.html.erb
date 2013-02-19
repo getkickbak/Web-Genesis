@@ -22,6 +22,12 @@
 						</div>
 						<div class="widget-content">
 							<table class="table table-striped table-bordered">
+								<thead>
+									<tr>
+										<th>Venues</th>
+										<th class="td-actions">Actions</th>
+									</tr>
+								</thead>
 								<tbody>
 									<% @venues.each do |venue| %>
 									<tr>
@@ -31,7 +37,7 @@
 									<% end %>
 									<% if @venues.length == 0 %>
 									<tr>
-										<td colspan="2" class="no-data">You have no venues</td>
+										<td colspan="2" class="no-data">You have no venues at the moment.</td>
 									</tr>
 									<% end %>
 								</tbody>

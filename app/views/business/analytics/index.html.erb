@@ -187,8 +187,32 @@
 							<h3>Customers</h3>
 						</div>
 						<div class="widget-content">
-							<div id="total_customers" class="chart-item chart-last-item">
+							<div id="total_customers" class="chart-item">
 								&nbsp;
+							</div>
+							<div id="best_customers" class="chart-table-item chart-last-item">
+								<div class="report-header">Your Best Customers</div>
+								<table class="table table-striped table-bordered">
+									<thead>
+										<tr>
+											<th>Name</th>
+											<th class="td-actions">Total Spent</th>
+										</tr>
+									</thead>
+									<tbody>
+										<% @best_customers.reverse.each do |customer| %>
+										<tr>
+											<td><%= customer[:name] %></td>
+											<td class="td-actions"><%= number_to_currency(customer[:total_amount], :precision => 2) %></td>
+										</tr>
+										<% end %>
+										<% if @best_customers.length == 0 %>
+										<tr>
+											<td colspan="2" class="no-data">You have no customers at the moment.</td>
+										</tr>
+										<% end %>
+									</tbody>
+								</table>
 							</div>
 						</div>
 					</div>

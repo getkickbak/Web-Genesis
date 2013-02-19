@@ -66,30 +66,41 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       if @decrypted_data["type"] == EncryptedDataType::EARN_POINTS
         # Cache expires in 12 hrs
         if (data_expiry_ts >= Time.now) && EarnRewardRecord.first(:venue_id => @venue.id, :data_expiry_ts => data_expiry_ts, :data => data).nil?
-          amount = @decrypted_data["amount"].to_f
-          if amount >= 1.00
-            if params[:frequency]
-              request_data = { 
-                :amount => amount,
-                :data => params[:data]
-              }.to_json
-              frequency = JSON.parse(params[:frequency])
-              channel_group = Channel.get_group(params[:venue_id])
-              request_info = {
-                :type => RequestType::EARN_POINTS,
-                :frequency1 => frequency[0],
-                :frequency2 => frequency[1],
-                :frequency3 => frequency[2],
-                :latitude => @venue.latitude,
-                :longitude => @venue.longitude,
-                :data => request_data,
-                :channel_group => channel_group,
-                :channel => Channel.reserve(channel_group)
-              }
-              @request = Request.create(request_info)
+          reward_model_type = @venue.merchant.reward_model.type
+          if reward_model_type.value == "amount_spend"
+            amount = @decrypted_data["amount"].to_f
+            if amount < 1.00
+              raise "Amount must be >= 1.00"  
             end
+            request_data = { 
+              :amount => amount,
+              :data => params[:data]
+            }.to_json
           else
-            raise "Amount must be >= 1.00"  
+            points = @decrypted_data["points"]
+            if points == 0
+              raise "Points must be >= 1"
+            end
+            request_data = { 
+              :points => points,
+              :data => params[:data]
+            }.to_json
+          end  
+          if params[:frequency]
+            frequency = JSON.parse(params[:frequency])
+            channel_group = Channel.get_group(params[:venue_id])
+            request_info = {
+              :type => RequestType::EARN_POINTS,
+              :frequency1 => frequency[0],
+              :frequency2 => frequency[1],
+              :frequency3 => frequency[2],
+              :latitude => @venue.latitude,
+              :longitude => @venue.longitude,
+              :data => request_data,
+              :channel_group => channel_group,
+              :channel => Channel.reserve(channel_group)
+            }
+            @request = Request.create(request_info)
           end
         else
           raise "Authorization code expired"  
@@ -138,16 +149,33 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       end
       data = String.random_alphanumeric(32)
       data_expiry_ts = Time.now
-      amount = Random.rand(100)+1
+      reward_model_type = @venue.merchant.reward_model.type
+      if reward_model_type.value == "amount_spend"
+        amount = Random.rand(100)+1
+      else
+        amount = 0.00
+        points = Random.rand(10)+1
+      end  
     else
       begin
+        reward_model_type = @venue.merchant.reward_model.type
         if signed_in?
           decrypted_data = JSON.parse(@request.data)
           data = decrypted_data["data"]
-          amount = decrypted_data["amount"].to_f
+          if reward_model_type.value == "amount_spend"
+            amount = decrypted_data["amount"].to_f
+          else
+            amount = 0.00
+            points = decrypted_data["points"].to_f
+          end  
         else
           data = params[:data]
-          amount = @decrypted_data["amount"].to_f
+          if reward_model_type.value == "amount_spend"
+            amount = @decrypted_data["amount"].to_f
+          else
+            amount = 0.00
+            points = @decrypted_data["points"].to_f
+          end
         end
 
         encrypted_data = data.split('$')
@@ -457,7 +485,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           @reward_info[:signup_points] = reward_model.signup_points
         end
         
-        points = (amount / reward_model.price_per_point).to_i
+        if reward_model_type.value == "amount_spend"
+          points = (amount / reward_model.price_per_point).to_i
+        end  
         record = EarnRewardRecord.new(
           :type => :purchase,
           :venue_id => @venue.id,
@@ -507,7 +537,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           #logger.debug("expected average spend: #{reward_model.expected_avg_spend}")
           #logger.debug("next badge visits: #{next_badge.visits}")
           #logger.debug("price per point: #{reward_model.price_per_point}")
-          badge_points =  (reward_model.expected_avg_spend / reward_model.rebate_rate * next_badge.visits / reward_model.price_per_point).to_i
+          if reward_model_type.value == "amount_spend"
+            badge_points =  (reward_model.expected_avg_spend * reward_model.badge_rebate_rate / 100  * next_badge.visits / reward_model.price_per_point).to_i
+          else
+            badge_points = (1 / reward_model.badge_rebate_rate * next_badge.visits).to_i
+            badge_points = (badge_points >= 1 ? badge_points : 1)
+          end  
           @customer.customer_to_badge.destroy
           @customer.badge = next_badge
           @customer.points += badge_points

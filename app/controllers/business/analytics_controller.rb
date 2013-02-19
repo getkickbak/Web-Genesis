@@ -13,6 +13,33 @@ module Business
       @new_rewards_redeemed_total = get_rewards_redeemed_total(nil, :reward, Date.today >> -2) 
       @prizes_redeemed_total = get_rewards_redeemed_total(nil, :prize)
       @new_prizes_redeemed_total = get_rewards_redeemed_total(nil, :prize, Date.today >> -2)
+      
+      best_customers_info = DataMapper.repository(:default).adapter.select(
+          "SELECT user_id, SUM(amount) AS total_amount FROM earn_reward_records WHERE merchant_id = ? 
+              AND deleted_ts IS NULL
+              GROUP BY user_id
+              LIMIT 0,10", current_merchant.id
+        )
+      best_customer_ids = []  
+      @user_id_to_amount_spent = {}
+      best_customers_info.each do |customer_info|
+        best_customer_ids << customer_info.user_id
+        @user_id_to_amount_spent[customer_info.user_id] = customer_info.total_amount
+      end 
+      @best_customers = []
+      if best_customer_ids.length > 0
+        users = User.all(:fields => [:id, :name], :id => best_customer_ids)
+        users.each do |user|
+          customer = {}
+          customer[:name] = user.name
+          customer[:total_amount] = @user_id_to_amount_spent[user.id]
+          @best_customers << customer 
+        end
+        @best_customers.sort! {| a, b | 
+          a[:total_amount] <=> b[:total_amount] 
+        }
+      end
+      
       respond_to do |format|
         format.html # index.html.erb
         #format.xml  { render :xml => @merchants }

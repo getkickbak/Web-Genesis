@@ -6,6 +6,7 @@ class Promotion
   property :id, Serial
   property :subject, String, :length => 128, :required => true, :default => ""
   property :message, String, :required => true, :default => ""
+  property :photo, String, :auto_validation => false
   property :start_date, Date, :default => ::Constant::MIN_DATE
   property :end_date, Date, :default => ::Constant::MIN_DATE
   property :status, Enum[:pending, :delivered], :default => :pending
@@ -15,10 +16,12 @@ class Promotion
   #property :deleted, ParanoidBoolean, :default => false
   
   attr_accessor :start_date_str, :end_date_str
-  attr_accessible :subject, :message, :start_date, :end_date   
+  attr_accessible :subject, :message, :photo, :start_date, :end_date   
     
   validates_with_method :start_date, :method => :validate_start_date
   validates_with_method :end_date, :method => :validate_end_date
+  
+  mount_uploader :photo, PromotionPhotoUploader
   
   belongs_to :merchant
   
@@ -27,6 +30,7 @@ class Promotion
     promotion = Promotion.new(
       :subject => promotion_info[:subject].strip,
       :message => promotion_info[:message].strip,
+      :photo => promotion_info[:photo],
       :start_date => now.to_date,
       :end_date => now.to_date
     )
