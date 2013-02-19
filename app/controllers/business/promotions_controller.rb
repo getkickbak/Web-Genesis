@@ -34,6 +34,7 @@ module Business
         Promotion.transaction do
           logger.info("before creation")
           promotion = Promotion.create(current_merchant, params[:promotion])
+          logger.info("after creation")
           logger.info("promotion is null") if promotion.nil?
           logger.info("promotion: #{promotion.id}")
           Resque.enqueue(CreatePromotion, promotion.id)
