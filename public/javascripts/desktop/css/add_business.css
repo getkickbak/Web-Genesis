@@ -100,7 +100,7 @@
 */
 
 #videogallery {
-   height:400px;
+   height:300px;
    position:relative;
 }
 
@@ -131,6 +131,15 @@
    -ms-behavior: url(/javascripts/desktop/css/backgroundsize.min.htc);
    */
 }
+
+.addbusiness .hero-unit h2 {
+	text-shadow : black 1px 3px 3px;
+	color:#fff;
+}
+
+.consultation {
+	font-size: 20px;
+}
 /* *****************************************************************
  * ContactUs Slogan
  * *****************************************************************/
@@ -140,7 +149,8 @@
 }
 
 .createForm {
-   min-height:520px;
+   min-height:480px;
+   margin-left:0px;
 }
 
 .span_field {
