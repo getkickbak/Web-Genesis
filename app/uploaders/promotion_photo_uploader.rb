@@ -12,8 +12,6 @@ class PromotionPhotoUploader < CarrierWave::Uploader::Base
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
-    Rails.logger.info("m_id: #{model.m_id}")
-    Rails.logger.info("m_id is null") if model.m_id.nil?
     m_id = (model.merchant ? model.merchant.id : model.m_id)
     "merchants/#{m_id}/promotions"
   end
