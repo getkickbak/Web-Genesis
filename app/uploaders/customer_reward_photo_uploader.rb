@@ -12,7 +12,12 @@ class CustomerRewardPhotoUploader < CarrierWave::Uploader::Base
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
-    "merchants/#{model.m_id}/customer_rewards"
+    if model.m_id
+      m_id = model.m_id
+    else
+      m_id = model.merchant.id  
+    end
+    "merchants/#{m_id}/customer_rewards"
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
