@@ -40,7 +40,9 @@ class Promotion
     promotion[:created_ts] = now
     promotion[:update_ts] = now
     promotion.merchant = merchant
+    Rails.logger.info("Before save promotion")
     promotion.save
+    Rails.logger.info("After save promotion")
     return promotion
   end
   
