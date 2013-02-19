@@ -33,6 +33,7 @@ module Business
       begin
         Promotion.transaction do
           promotion = Promotion.create(current_merchant, params[:promotion])
+          logger.info("after creation - promotion: #{promotion.id}")
           Resque.enqueue(CreatePromotion, promotion.id)
           respond_to do |format|
             format.html { redirect_to({:action => "index"}, {:notice => t("business.promotions.create_success")}) }
