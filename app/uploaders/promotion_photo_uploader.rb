@@ -35,13 +35,9 @@ class PromotionPhotoUploader < CarrierWave::Uploader::Base
         image = MiniMagick::Image.open(current_path)
         width = image[:width]
         height = image[:height]
-        if width == height
+        if width == height || width > height
           crop_x = 0
           crop_y = 0
-        elsif width > height
-          crop_x = (width - height)/2
-          crop_y = 0
-          width = height
         elsif height > width
           crop_x = 0
           crop_y = (height - width)/2
@@ -72,7 +68,7 @@ class PromotionPhotoUploader < CarrierWave::Uploader::Base
     process :resize_to_limit => [114, 114]
   end
   
-  version :thumbnail_ios_small, :from_version => :thumbnail_ios_medium do
+  version :thumbnail_ios_small, :from_version => :thumbnail_ios_large do
     process :resize_to_limit => [60, 60]
   end
  
@@ -84,7 +80,7 @@ class PromotionPhotoUploader < CarrierWave::Uploader::Base
     process :resize_to_limit => [96, 96]
   end
   
-  version :thumbnail_android_mxhdpi_small, :from_version => :thumbnail_android_mxhdpi_medium do
+  version :thumbnail_android_mxhdpi_small, :from_version => :thumbnail_android_mxhdpi_large do
     process :resize_to_limit => [60, 60]
   end
   
@@ -96,7 +92,7 @@ class PromotionPhotoUploader < CarrierWave::Uploader::Base
     process :resize_to_limit => [72, 72]
   end
   
-  version :thumbnail_android_lhdpi_small, :from_version => :thumbnail_android_lhdpi_medium do
+  version :thumbnail_android_lhdpi_small, :from_version => :thumbnail_android_lhdpi_large do
     process :resize_to_limit => [60, 60]
   end
   

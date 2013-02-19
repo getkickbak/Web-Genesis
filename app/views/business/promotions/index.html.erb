@@ -1,5 +1,6 @@
 <% content_for :link do %>
 <link rel="stylesheet" href="/javascripts/desktop/css/pages/business/reports.css"/>
+<link rel="stylesheet" href="/javascripts/desktop/css/pages/business/promotion.css"/>
 <% end %>
 <% content_for :script do %>
 <script type="text/javascript">
@@ -41,7 +42,7 @@
 								<li>
 									<div class="news-item-detail">
 										<% if promotion.photo_url %>
-										<%= image_tag promotion.photo_url %>
+										<%= image_tag promotion.photo.thumbnail_ios_large.url %>
 										<% end %>
 										<p class="news-item-preview">
 											<%= promotion.message %>

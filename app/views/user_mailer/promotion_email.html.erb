@@ -30,7 +30,7 @@
 									<br>
 									<br>
 									<% if @promotion.photo_url %>
-									<%= image_tag @promotion.photo_url %>
+									<%= image_tag @promotion.photo.thumbnail_ios_large.url %>
 									<br>
 									<br>
 									<% end %>
