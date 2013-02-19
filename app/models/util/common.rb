@@ -247,6 +247,7 @@ class Common
           :item_id => 0,
           :item_type => "",
           :title => "",
+          :photo => promotion.photo,
           :text => promotion.message
         }
       )

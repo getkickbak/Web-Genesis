@@ -23,39 +23,43 @@
 				<div class="span12">
 					<div class="widget widget-table action-table">
 						<div class="widget-header">
-							<i class="icon-money"></i>
-							<h3>Merchants Listing (<%= link_to("New Merchant", new_merchant_path) %>)</h3>
+							<i class="icon-user"></i>
+							<h3>Members</h3>
 						</div>
 						<div class="widget-content">
 							<div class="paginate">
-								<%= will_paginate @merchants %>
+								<%= will_paginate @customers %>
 							</div>
 							<table class="table table-striped table-bordered">
 								<thead>
 									<tr>
 										<th>Name</th>
 										<th class="td-actions">Email</th>
-										<th class="td-actions">Actions</th>
+										<th class="td-actions">Points</th>
+										<th class="td-actions">Prize Points</th>
+										<th class="td-actions">Joined Date</th>
 									</tr>
 								</thead>
 								<tbody>
-									<% @merchants.each do |merchant| %>
+									<% @customers.each do |customer| %>
 									<tr>
-										<td><%= link_to merchant.name, merchant_path(merchant) %></td>
-										<td class="td-actions"><%= merchant.email %></td>
-										<td class="td-actions"><!-- --> <%= link_to(edit_merchant_path(merchant), :class=>"btn btn-small btn-warning", :title=>"edit") do %> <!-- --><i class="btn-icon-only icon-edit"></i><!-- --> <% end %>
-										<%= link_to merchant_path(merchant), :data => { :confirm => 'Do you want to delete this merchant?' }, :method => :delete, :class=>"btn btn-small", :title=>"delete" do %> <!-- --><i class="btn-icon-only icon-remove"></i><!-- --> <% end %> </td>
+										<% user = @user_id_to_user[@customer_id_to_user_id[customer.id]] %>
+										<td><%= user.name %></td>
+										<td class="td-actions"><%= user.email %></td>
+										<td class="td-actions"><%= customer.points %></td>
+										<td class="td-actions"><%= customer.prize_points %></td>
+										<td class="td-actions"><%= customer.created_ts.strftime("%b %d, %Y") %></td>
 									</tr>
 									<% end %>
-									<% if @merchants.length == 0 %>
+									<% if @customers.length == 0 %>
 									<tr>
-										<td colspan="3" class="no-data">You have no merchants at the moment.</td>
+										<td colspan="5" class="no-data">You have no customers at the moment.</td>
 									</tr>
 									<% end %>
 								</tbody>
 							</table>
 							<div class="paginate">
-								<%= will_paginate @merchants %>
+								<%= will_paginate @customers %>
 							</div>
 						</div>
 					</div>

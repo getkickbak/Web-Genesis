@@ -7,6 +7,19 @@
 	margin-bottom: 20px;	
 }
 
+.chart-table-item {
+	margin-bottom: 20px;	
+}
+
 .chart-last-item {
 	margin-bottom: 0px;
+}
+
+.report-header {
+	font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, Arial, Helvetica, sans-serif;
+	font-size: 16px;
+	color: #3E576F;
+	width: 100%;
+	text-align: center;
+	margin-bottom: 10px;
 }

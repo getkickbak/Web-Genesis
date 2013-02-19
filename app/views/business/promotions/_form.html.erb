@@ -2,6 +2,7 @@
 <fieldset>
    <%= f.input :subject, :input_html => { :class => 'input-xxlarge' } %>
    <%= f.input :message, :as => :text, :input_html => { :rows => 10, :class => 'input-xxlarge' } %>
+   <%= f.input :photo, :as => :file, :required => false %>
    <%= f.input :start_date, :input_html => { :class => 'date_picker input-medium' } %>
    <%= f.input :end_date, :input_html => { :class => 'date_picker input-medium' } %>
    <br />

@@ -25,6 +25,7 @@ Genesis::Application.routes.draw do
         get 'update_check_in_auth_code', :on => :member, :as => :update_check_in_auth_code
         get 'check_in_template', :on => :member, :as => :check_in_template
       end
+      resources :customers, :only => [:index], :path => "members"
       resources :invoices, :only => [:index, :show]
       resources :promotions, :only => [:index, :new, :create]
       #resources :deals
