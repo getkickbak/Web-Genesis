@@ -29,7 +29,6 @@ class Promotion
   
   def self.create(merchant, promotion_info)
     now = Time.now
-    Rails.logger.info("Before new promotion")
     promotion = Promotion.new(
       :subject => promotion_info[:subject].strip,
       :message => promotion_info[:message].strip,
