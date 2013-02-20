@@ -54,7 +54,7 @@ class RewardModel
     return reward_model
   end
   
-  def update(type, reward_model_info)
+  def update_all(type, reward_model_info)
     now = Time.now
     self.type_id = type ? type.id : nil
     self.signup_amount = reward_model_info[:signup_amount]
