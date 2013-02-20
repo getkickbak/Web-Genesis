@@ -19,10 +19,10 @@ class CustomerReward
   property :deleted_ts, ParanoidDateTime
   #property :deleted, ParanoidBoolean, :default => false
 
-  attr_accessor :type_id, :venue_ids, :eager_load_type, :expiry_date_str, :m_id
+  attr_accessor :type_id, :venue_ids, :eager_load_type, :expiry_date_str
   attr_accessor :crop_x, :crop_y, :crop_w, :crop_h
 
-  attr_accessible :type_id, :title, :price, :points, :mode, :quantity_limited, :quantity, :time_limited, :expiry_date, :photo, :m_id
+  attr_accessible :type_id, :title, :price, :points, :mode, :quantity_limited, :quantity, :time_limited, :expiry_date, :photo
 
   belongs_to :merchant
   has 1, :customer_reward_to_subtype, :constraint => :destroy
@@ -48,8 +48,7 @@ class CustomerReward
       :quantity => reward_info[:quantity_limited] ? reward_info[:quantity] : 0,
       :time_limited => reward_info[:time_limited],
       :expiry_date => now.to_date,
-      :photo => reward_info[:photo],
-      :m_id => merchant_id
+      :photo => reward_info[:photo]
     )
     reward.expiry_date_str = reward_info[:time_limited] ? reward_info[:expiry_date] : ""
     reward[:created_ts] = now
