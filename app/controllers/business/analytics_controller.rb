@@ -6,13 +6,13 @@ module Business
     
     def index
       @customers_total = get_customers_total(nil)
-      @new_customers_total = get_customers_total(Date.today - 14) 
-      @purchases_total = get_purchases_total(nil, Date.today >> -2)
-      @revenue_total = get_revenue_total(nil, Date.today >> -2)
+      @new_customers_total = get_customers_total(Date.today >> -1) 
+      @purchases_total = get_purchases_total(nil, Date.today >> -12)
+      @revenue_total = get_revenue_total(nil, Date.today >> -12)
       @rewards_redeemed_total = get_rewards_redeemed_total(nil, :reward)
-      @new_rewards_redeemed_total = get_rewards_redeemed_total(nil, :reward, Date.today >> -2) 
+      @new_rewards_redeemed_total = get_rewards_redeemed_total(nil, :reward, Date.today >> -12) 
       @prizes_redeemed_total = get_rewards_redeemed_total(nil, :prize)
-      @new_prizes_redeemed_total = get_rewards_redeemed_total(nil, :prize, Date.today >> -2)
+      @new_prizes_redeemed_total = get_rewards_redeemed_total(nil, :prize, Date.today >> -12)
       
       best_customers_info = DataMapper.repository(:default).adapter.select(
           "SELECT user_id, SUM(amount) AS total_amount FROM earn_reward_records WHERE merchant_id = ? 
