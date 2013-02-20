@@ -307,7 +307,7 @@ $(document).ready($(function() {
 			},
 			tooltip: {
 				formatter: function() {
-					return '<b>'+ this.point.name +'</b>: '+ this.percentage.toFixed(2), +' %';
+					return '<b>'+ this.point.name +'</b>: '+ this.percentage.toFixed(2) +' %';
 				}
 			},
 			plotOptions: {
