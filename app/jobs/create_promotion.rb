@@ -56,7 +56,8 @@ module CreatePromotion
           logger.info("No mobile notifications to send for iteration #{i+1}")  
         end
         logger.info("Sending emails")
-        email_user_list = user_list - device_user_list
+        #email_user_list = user_list - device_user_list
+        email_user_list = user_list
         if email_user_list.length > 0
           email_users = User.all(:fields => [:id, :email], :id => email_user_list)
           subscriptions = Subscription.all(:fields => [:user_id, :email_notif], :user_id => email_user_list)
