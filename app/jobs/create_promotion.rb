@@ -66,7 +66,10 @@ module CreatePromotion
             user_id_to_subscription[subscription.user_id] = subscription
           end
           email_users.each do |user|
-            if user_id_to_subscription[user.id].email_notif
+            if user_id_to_subscription[user.id]
+              UserMailer.promotion_email(user, promotion).deliver if user_id_to_subscription[user.id].email_notif
+            else
+              Subscription.create(user)
               UserMailer.promotion_email(user, promotion).deliver
             end  
           end
