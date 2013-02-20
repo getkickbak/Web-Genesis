@@ -41,12 +41,12 @@
 								<% @promotions.each do |promotion| %>
 								<li>
 									<div class="news-item-detail">
-										<% if promotion.photo_url %>
-										<%= image_tag promotion.photo.thumbnail_ios_large.url %>
-										<% end %>
 										<p class="news-item-preview">
 											<%= promotion.message %>
 										</p>
+										<% if promotion.photo_url %>
+										<%= image_tag promotion.photo.thumbnail_ios_large.url %>
+										<% end %>
 										<div class="news-item-misc">
 											Start Date: <%= promotion.start_date.strftime("%A %b %d, %Y") %>
 										</div>

@@ -29,14 +29,14 @@
 									<b><a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@promotion.merchant) %>"><%= "#{@promotion.merchant.name}" %></a></b>	
 									<br>
 									<br>
+									<%= @promotion.message %>
+									<br>
+									<br>
 									<% if @promotion.photo_url %>
 									<%= image_tag @promotion.photo.thumbnail_ios_large.url %>
 									<br>
 									<br>
 									<% end %>
-									<%= @promotion.message %>
-									<br>
-									<br>
 									</td>
 								</tr>
 							</tbody>
