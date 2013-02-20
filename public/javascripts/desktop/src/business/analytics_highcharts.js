@@ -231,7 +231,7 @@ $(document).ready($(function() {
          	tooltip: {
 				formatter: function() {
 					return '<b>'+ new Date(this.x).toDateString() +'</b><br/>'+
-					this.series.name + (this.series.name == 'Amount' ? ': $' : ': ') + this.y.toFixed (2);
+					this.series.name + (this.series.name == 'Amount' ? ': $'+this.y.toFixed(2) : ': '+this.y);
 				}
 			},
          	series: response_data.purchases
@@ -307,7 +307,7 @@ $(document).ready($(function() {
 			},
 			tooltip: {
 				formatter: function() {
-					return '<b>'+ this.point.name +'</b>: '+ this.percentage.toFixed (2), +' %';
+					return '<b>'+ this.point.name +'</b>: '+ this.percentage.toFixed(2), +' %';
 				}
 			},
 			plotOptions: {
