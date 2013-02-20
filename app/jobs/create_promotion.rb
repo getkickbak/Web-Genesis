@@ -56,8 +56,7 @@ module CreatePromotion
           logger.info("No mobile notifications to send for iteration #{i+1}")  
         end
         logger.info("Sending emails")
-        #email_user_list = user_list - device_user_list
-        email_user_list = user_list
+        email_user_list = user_list - device_user_list
         if email_user_list.length > 0
           email_users = User.all(:fields => [:id, :email], :id => email_user_list)
           subscriptions = Subscription.all(:fields => [:user_id, :email_notif], :user_id => email_user_list)
@@ -66,12 +65,14 @@ module CreatePromotion
             user_id_to_subscription[subscription.user_id] = subscription
           end
           email_users.each do |user|
-            if user_id_to_subscription[user.id]
-              UserMailer.promotion_email(user, promotion).deliver if user_id_to_subscription[user.id].email_notif
-            else
-              Subscription.create(user)
-              UserMailer.promotion_email(user, promotion).deliver
-            end  
+            if user.role != "anonymous"
+              if user_id_to_subscription[user.id]
+                UserMailer.promotion_email(user, promotion).deliver if user_id_to_subscription[user.id].email_notif
+              else
+                Subscription.create(user)
+                UserMailer.promotion_email(user, promotion).deliver
+              end  
+            end
           end
           logger.info("Sending emails - complete for iteration #{i+1}")
         else

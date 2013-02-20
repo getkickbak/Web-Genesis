@@ -218,8 +218,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
               user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
               if user_to_tag.nil? && tag.status == :pending
                 user_info = {}
-                user_info[:name] = "User #{String.random_alphanumeric(8)}"
-                user_info[:email] = "#{String.random_alphanumeric(16)}@getkickbak.com"
+                rand_name = String.random_alphanumeric(16)
+                user_info[:name] = "#{rand_name}"
+                user_info[:email] = "#{rand_name}@getkickbak.com"
                 user_info[:phone] = ""
                 user_info[:role] = "anonymous"
                 user_info[:status] = :pending
@@ -227,6 +228,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 user_info[:password] = password
                 user_info[:password_confirmation] = password
                 @current_user = User.create(user_info)
+                @current_user.name = "User #{@current_user.id}"
+                @current_user.email = "user#{@current_user.id}@getkickbak.com"
+                @current_user.save
                 @current_user.register_tag(tag, tag.status)
               else
                 if user_to_tag
