@@ -178,6 +178,11 @@ class User
     user.subscription[:created_ts] = now
     user.subscription[:update_ts] = now
     user.save
+    if user.role == "anonymous"
+      user.name = "User #{user.id}"
+      user.email = "user#{user.id}@getkickbak.com"
+      user.save
+    end   
     return user 
   end
   

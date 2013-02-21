@@ -39,55 +39,17 @@
 											Thank you for your recent visit to <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@customer.merchant) %>"><%= "#{@customer.merchant.name}" %></a>.
 											</td>
 										</tr>
-										<% if @reward_info[:birthday_points] > 0 %>
 										<tr style="background-color:#f3f3f4;">
 											<td style="padding:5px 5px 5px 10px;">
-											Happy Birthday! To celebrate your big day, you are given <b style="color:#e65407;"><%= "#{@reward_info[:birthday_points]}" %> bonus points</b>!
+												You have just earned enough points to get <%= @reward_info[:eligible_reward].title %>! 
 											</td>
 											<td style="padding:5px 10px 5px 5px;">
-												<img style="width:40px;" src="http://files.getkickbak.com/v1/icons/mainicons/ios/mxhdpi/birthday.png">
-											</td>
-										<tr>
-										<% if @reward_info[:badge_points] > 0 %>
-										<% Common.populate_badge(@customer.badge, :iphone, :mxhdpi) %>
-										<tr style="background-color:#f3f3f4;">
-											<td style="padding:5px 5px 5px 10px;">
-											<% if @reward_info[:birthday_points] > 1 %>
-												You are also promoted to <b style="color:#c41200;"><%= "#{@customer.badge.type.display_value}" %></b>
-											<% else %>
-												You just got promoted to <b style="color:#c41200;"><%= "#{@customer.badge.type.display_value}" %></b>
-											<% end %>
-												and rewarded with extra <b style="color:#e65407;"><%= "#{@reward_info[:badge_points]}" %> points</b>.
-											</td>
-											<td style="padding:5px 10px 5px 5px;">
-												<img style="width:40px;" src="<%= @customer.badge.custom ? @customer.badge.custom_type.thumbnail_medium_url : @customer.badge.type.thumbnail_medium_url %>">
+												<%= image_tag Common.get_reward_icon_file_path(@customer.merchant.type.value, @reward_info[:eligible_reward].type.value, :ios, :mxhdpi), :style => "width:50px;margin-right:10px;" %>
 											</td>
 										</tr>
-										<% end %>
-										<% if @reward_info[:prize_points] > 1 %>
-										<tr>
-											<td colspan="2" style="padding: 10px 0 10px 0;">
-											And just when you think things can't get any better ...
-											</td>
-										</tr>	
-										<% end %>	
-										<% end %>		
-										<% if @reward_info[:prize_points] > 1 %>
-										<tr style="background-color:#f3f3f4;">
-											<td style="padding:5px 5px 5px 10px;">
-											<% if @reward_info[:birthday_points] == 0 %>
-												Congrats! 
-											<% end %>
-												You won a jackpot of <b style="color:#e65407;"><%= "#{@reward_info[:prize_points]}" %> prize points</b>! Someone is lucky today.
-											</td>
-											<td style="padding:5px 10px 5px 5px;">
-												<img style="width:40px;" src="http://files.getkickbak.com/v1/icons/mainicons/ios/mxhdpi/prizes.png">
-											</td>
-										</tr>
-										<% end %>
 										<tr>
 											<td colspan="2" style="padding-top: 10px;">
-												That's what we call customer love. <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@customer.merchant) %>">Find out what you can redeem now!</a>
+												<a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@customer.merchant) %>">Find out what else you can get now!</a>
 											</td>
 										</tr>
 										</tbody>

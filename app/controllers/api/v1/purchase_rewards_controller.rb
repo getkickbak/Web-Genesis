@@ -228,9 +228,6 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 user_info[:password] = password
                 user_info[:password_confirmation] = password
                 @current_user = User.create(user_info)
-                @current_user.name = "User #{@current_user.id}"
-                @current_user.email = "user#{@current_user.id}@getkickbak.com"
-                @current_user.save
                 @current_user.register_tag(tag, tag.status)
               else
                 if user_to_tag
@@ -659,10 +656,12 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         @account_info[:next_badge_id] = next_badge.id
         rewards = Common.get_rewards_by_venue(@venue, :reward)
         prizes = Common.get_rewards_by_venue(@venue, :prize)
-        eligible_prize = Common.find_eligible_reward(prizes.to_a, @customer.prize_points - previous_prize_points)
-        @reward_info[:eligible_prize_id] = eligible_prize.id if !eligible_prize.nil?
-        eligible_for_reward = !Common.find_eligible_reward(rewards.to_a, @customer.points).nil?
-        eligible_for_prize = !Common.find_eligible_reward(prizes.to_a, @customer.prize_points).nil?
+        new_eligible_prize = Common.find_eligible_reward(prizes.to_a, @customer.prize_points - previous_prize_points)
+        @reward_info[:eligible_prize_id] = new_eligible_prize.id if !new_eligible_prize.nil?
+        eligible_reward = Common.find_eligible_reward(rewards.to_a, @customer.points)
+        eligible_prize = Common.find_eligible_reward(prizes.to_a, @customer.prize_points)
+        eligible_for_reward = !eligible_reward.nil?
+        eligible_for_prize = !eligible_prize.nil?
         @customer.eligible_for_reward = eligible_for_reward
         @customer.eligible_for_prize = eligible_for_prize
         @customer.update_ts = now
@@ -676,8 +675,13 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         Request.set_status(@request, :complete)
         #posts = []
         #Resque.enqueue(ShareOnFacebook, @current_user.id, posts.to_json)
-        if tag && current_user.status != :pending && (@reward_info[:birthday_points] > 0 || @reward_info[:badge_points] > 0 || @reward_info[:prize_points] > 1)
-          UserMailer.reward_notif_email(@customer, @reward_info).deliver
+        if tag && current_user.status != :pending
+          if @reward_info[:birthday_points] > 0 || @reward_info[:badge_points] > 0 || @reward_info[:prize_points] > 1
+            UserMailer.reward_notif_email(@customer, @reward_info).deliver
+          elsif eligible_for_reward
+            @reward_info[:eligible_reward] = eligible_reward
+            UserMailer.eligible_reward_email(@customer, @reward_info).deliver
+          end  
         end
         if referral_challenge
           UserMailer.referral_challenge_confirm_email(referrer.user, @current_user, @venue, referral_record).deliver

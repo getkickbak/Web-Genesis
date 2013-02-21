@@ -336,6 +336,7 @@ en:
       email_subject_points_expiration_reminder: "Reminder - Use your points before they expire!"
       email_subject_reset_password: "Reset password instructions"
       email_subject_reward_notif: "You earned bonus points from %s"
+      email_subject_eligible_reward: "You earned a reward from %s"
   users:
       update_success: "Account was successfully updated."
       update_password_success: "Password was successfully updated." 

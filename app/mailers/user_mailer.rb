@@ -35,6 +35,12 @@ class UserMailer < ActionMailer::Base
     mail(:to => sender.email, :subject => I18n.t("mailer.email_subject_confirm_points_transfer"))
   end
 
+  def eligible_reward_email(customer, reward_info)
+    @customer = customer
+    @reward_info = reward_info
+    mail(:to => customer.user.email, :subject => (I18n.t("mailer.email_subject_eligible_reward") % [customer.merchant.name]))
+  end
+  
   def reward_notif_email(customer, reward_info)
     @customer = customer
     @reward_info = reward_info

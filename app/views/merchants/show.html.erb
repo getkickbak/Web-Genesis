@@ -69,6 +69,7 @@ total : <%= @next_badge.visits %>
 							</div>
 						</div>
 					</div>
+					<% if @customer %>
 					<div class="widget">
 						<div class="widget-header">
 							<i class="icon-signal"></i>
@@ -105,6 +106,7 @@ total : <%= @next_badge.visits %>
 							</div>
 						</div>
 					</div>
+					<% end %>
 					<% rewards = @customer_rewards.all(:mode => :reward, :order => [:points.asc]) %>
 					<% prizes = @customer_rewards.all(:mode => :prize, :order => [:points.asc]) %>
 					<div class="widget widget-table action-table">
