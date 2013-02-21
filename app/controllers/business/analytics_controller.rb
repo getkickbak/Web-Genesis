@@ -18,6 +18,7 @@ module Business
           "SELECT user_id, SUM(amount) AS total_amount FROM earn_reward_records WHERE merchant_id = ? 
               AND deleted_ts IS NULL
               GROUP BY user_id
+              ORDER BY total_amount
               LIMIT 0,10", current_merchant.id
         )
       best_customer_ids = []  
