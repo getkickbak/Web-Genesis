@@ -19,7 +19,7 @@ module Business
               AND deleted_ts IS NULL
               GROUP BY user_id
               ORDER BY total_amount
-              LIMIT 0,10", current_merchant.id
+              DESC LIMIT 0,10", current_merchant.id
         )
       best_customer_ids = []  
       @user_id_to_amount_spent = {}
