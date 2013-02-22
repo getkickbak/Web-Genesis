@@ -163,7 +163,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
    {
       if (activeItem.isXType('clientcheckinexploreview', true) || activeItem.isXType('clientmainpageview', true))
       {
-      	console.debug("Merchant Account Page cleanup");
+         console.debug("Merchant Account Page cleanup");
          this.removeAll(true);
       }
       this.callParent(arguments);
@@ -185,7 +185,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
    createView : function()
    {
       var me = this;
-      
+
       if (!me.callParent(arguments))
       {
          return;
@@ -247,12 +247,17 @@ Ext.define('Genesis.view.client.MerchantAccount',
                }],
                itemTpl : Ext.create('Ext.XTemplate',
                // @formatter:off
-               '<div class="itemWrapper" style="{[this.getDisclose(values)]}">',
+               '<div class="itemWrapper" style="position:relative;{[this.getDisclose(values)]}">',
                   '<div class="photo">'+
-                     '<img src="{[this.getPhoto(values)]}"/>'+
+                     '<img src="{[this.getIcon(values)]}"/>'+
                   '</div>',
                   '<div class="itemTitle">{[this.getTitle(values)]}</div>',
+                  '<div class="date">{[this.getStartDate(values)]}</div>' +
                   '<div class="itemDesc">{[this.getDesc(values)]}</div>',
+                  '<div class="promoImage">',
+                     '<img src="{[this.getPhoto(values)]}" style="{[this.getWidth()]}"/>'+
+                  '</div>',
+                  '<img class="promoImageAnchor" src="{[this.getPhoto(values)]}"/>'+
                '</div>',
                 // @formatter:on
                {
@@ -268,24 +273,34 @@ Ext.define('Genesis.view.client.MerchantAccount',
                      }
                      return ((values['disclosure'] === false) ? 'padding-right:0;' : '');
                   },
+                  getIcon : function(values)
+                  {
+                     return me.self.getPhoto(
+                     {
+                        value : values['type']
+                     });
+                  },
                   getPhoto : function(values)
                   {
-                     if (!values.photo || !values.photo['thumbnail_medium_url'])
-                     {
-                        return me.self.getPhoto(
-                        {
-                           value : values['type']
-                        });
-                     }
-                     return values.photo['thumbnail_medium_url'];
+                     return (!values.photo || !values.photo['thumbnail_large_url']) ? '' : values.photo['thumbnail_large_url'];
+                  },
+                  getStartDate : function(values)
+                  {
+                     return ((values['created_date']) ? 'Posted on ' + values['created_date'] : 'No Posted Date');
                   },
                   getTitle : function(values)
                   {
-                     return values['title'];
+                     return ((values['title']) ? values['title'] : 'Mobile Promotion');
                   },
                   getDesc : function(values)
                   {
                      return values['text'];
+                  },
+                  getWidth : function()
+                  {
+                  	var fn = Genesis.fn;
+                     var width = fn.calcPxEm(document.body.clientWidth, -1 * 2 * 0.50 * 0.8, 1);
+                     return ('width:' + fn.addUnit(fn.calcPx(width, 1)) + ';');
                   }
                }),
                onItemDisclosure : Ext.emptyFn

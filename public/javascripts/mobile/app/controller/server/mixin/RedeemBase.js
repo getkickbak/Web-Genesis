@@ -101,7 +101,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       {
          data : me.self.encryptFromParams(
          {
-            'id' : (nfcResult) ? nfcResult.id : null,
+            'uid' : (nfcResult) ? nfcResult.id : null,
             'tag_id' : (nfcResult) ? nfcResult.result['tagID'] : null,
             'expiry_ts' : new Date().addHours(3).getTime()
          }, 'reward')

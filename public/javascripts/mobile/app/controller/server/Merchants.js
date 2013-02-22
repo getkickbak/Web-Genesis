@@ -145,7 +145,7 @@ Ext.define('Genesis.controller.server.Merchants',
          device_pixel_ratio : window.devicePixelRatio,
          data : me.self.encryptFromParams(
          {
-            'id' : nfcResult.id,
+            'uid' : nfcResult.id,
             'tag_id' : nfcResult.result['tagID'],
          }, 'reward')
       }

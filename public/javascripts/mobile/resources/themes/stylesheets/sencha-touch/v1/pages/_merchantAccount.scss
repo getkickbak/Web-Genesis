@@ -130,9 +130,9 @@ $itemDescHeightSmall : calc-px-em($icon-size*$icon-multiplier,0em, $smallFontSiz
          position:relative;
          min-height:$icon-size*$icon-multiplier;
          .photo {
+            position:absolute;
             top:0;
             left:0;
-            position:absolute;
             height:$icon-size*$icon-multiplier;
             img {
                width : $icon-size*$icon-multiplier;
@@ -144,12 +144,33 @@ $itemDescHeightSmall : calc-px-em($icon-size*$icon-multiplier,0em, $smallFontSiz
             font-weight:bold;
             font-size:$largeFontSize !important;
             padding-top:$panelTopGap/2;
+            margin-bottom:$panelTopGap/2;
+         }
+         .date {
+            padding-left:calc-px-em($icon-size*$icon-multiplier, $panelGap, $normalFontSize);
+            font-weight:bold;
+            color : $GreyEnd;
+            font-size:$normalFontSize !important;
          }
          .itemDesc {
-            padding-left:calc-px-em($icon-size*$icon-multiplier, $panelGap, $normalFontSize);
+            padding-top:calc-px-em($icon-size*$icon-multiplier*0.375, 0em, $normalFontSize);
+            //padding-left:calc-px-em($icon-size*$icon-multiplier, $panelGap, $normalFontSize);
             font-size:$normalFontSize !important;
-            line-height:1em;
-         }   
+            //line-height:1em;
+         } 
+         .promoImageAnchor {
+            width:100%;
+            margin:$panelTopGap*2 0;
+         }
+         .promoImage {
+            position:relative;
+            img {
+               position:absolute;
+               top :$panelTopGap;
+               left : -1*$panelGap*1.5;
+               z-index:1;
+            }
+         }  
       }
    }
 }
