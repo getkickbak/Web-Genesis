@@ -26,13 +26,13 @@
 						<hr>
 						<br>
 						<br>
-						<%= @sender.name %> really likes <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= app.business_profile_url(@venue.merchant) %>"><%= @venue.name %></a> and wants you to give it a try!
+						<%= @sender.name %> really likes <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@venue.merchant) %>"><%= @venue.name %></a> and wants you to give it a try!
 						<br>
 						<br>
 						To thank you for being <%= @venue.name.prepend_a_or_an %> customer, you will receive <%= @challenge.data.referral_points %> reward <%= t('api.point', :count => @challenge.data.referral_points) %> on your first visit.
 						<br>
 						<br>
-						These points can be used to redeem fabulous rewards at <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= app.business_profile_url(@venue.merchant) %>"><%= @venue.name %></a>!
+						These points can be used to redeem fabulous rewards at <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@venue.merchant) %>"><%= @venue.name %></a>!
 						<br>
 						<br>
 						<div>
@@ -41,7 +41,7 @@
 								</div>
 								<div>
 									<div style="font-size:16px;font-weight:bold;">
-										<a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= app.business_profile_url(@venue.merchant) %>"><%= @venue.name %></a>
+										<a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@venue.merchant) %>"><%= @venue.name %></a>
 									</div>
 									<br>
 									<%= @venue.address %>
