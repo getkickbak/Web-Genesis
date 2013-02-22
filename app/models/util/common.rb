@@ -246,9 +246,10 @@ class Common
           :type => "",
           :item_id => 0,
           :item_type => "",
-          :title => "",
+          :title => proomtion.subject,
           :photo => promotion.photo,
-          :text => promotion.message
+          :text => promotion.message,
+          :created_date => promotion.starte_date.strftime('%Y/%m/%d') 
         }
       )
     end

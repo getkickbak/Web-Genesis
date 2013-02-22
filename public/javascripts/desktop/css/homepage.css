@@ -188,6 +188,7 @@ body {
 	padding: 14px;
 	width: 240px;
 	line-height:22px;
+	margin-top:1px;
 }
 
 .btn-xlarge {
@@ -212,8 +213,9 @@ body {
 	display: block;
 }
 
-.hero-unit span.error {
-	float: left;
+.control-group.error > label, .control-group.error .help-block, .control-group.error .help-inline {
+	color: #fff;
+	text-align: left;
 }
 
 .control-group.error input, .control-group.error select, .control-group.error textarea {
@@ -230,6 +232,6 @@ body {
 	color: #555;
 }
 
-form.form-inline span.error {
-	color: #fff;
+.form-inline input.btn {
+	vertical-align: top;
 }
