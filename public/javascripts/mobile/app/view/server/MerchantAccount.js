@@ -118,7 +118,7 @@ Ext.define('Genesis.view.server.MerchantAccount',
                labelWidth : '30%',
                label : 'Birthday',
                name : 'birthday',
-               dateFormat : 'M j, Y',
+               dateFormat : 'M j',
                picker :
                {
                   yearFrom : 1913,
@@ -132,7 +132,7 @@ Ext.define('Genesis.view.server.MerchantAccount',
             {
                labelWidth : '30%',
                placeHolder : '',
-               label : 'Phone#',
+               label : 'Phone #',
                name : 'phone',
                required : false
             }, Genesis.view.ViewBase.phoneField())]
