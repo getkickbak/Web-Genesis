@@ -492,7 +492,7 @@ Ext.define('Genesis.controller.server.Rewards',
       {
          data :
          {
-            'id' : (nfcResult) ? nfcResult.id : null,
+            'uid' : (nfcResult) ? nfcResult.id : null,
             'tag_id' : (nfcResult) ? nfcResult.result['tagID'] : null,
          }
       }, true);

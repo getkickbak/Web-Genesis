@@ -14,7 +14,6 @@ Genesis.constants =
    //host : 'http://www.dev1getkickbak.com',
    host : 'http://www.devgetkickbak.com',
    //host : 'http://www.getkickbak.com',
-   //Default Volume laying flat on a surface (tx)
    isNfcEnabled : false,
    userName : 'Eric Chan',
    appMimeType : 'application/kickbak',
@@ -51,6 +50,7 @@ Genesis.constants =
    numSamples : -1,
    conseqMissThreshold : -1,
    sigOverlapRatio : -1,
+   //Default Volume laying flat on a surface (tx)
    s_vol : -1,
    //
    device : null,
