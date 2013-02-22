@@ -70,6 +70,7 @@ Genesis::Application.configure do
       :disable_smart_shrinking=>false
     }
   end
+  Rails.application.routes.default_url_options[:host] = 'getkickbak.com'
 =begin
   ActiveMerchant::Billing::Base.mode = :production
   ::BILLING_GATEWAY = ActiveMerchant::Billing::BeanstreamGateway.new(

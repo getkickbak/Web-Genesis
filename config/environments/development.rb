@@ -66,5 +66,6 @@ Genesis::Application.configure do
 
   # This is where ImageMagicK is installed
   ENV['PATH'] = "/opt/local/bin:#{ENV['PATH']}"
+  Rails.application.routes.default_url_options[:host] = 'getkickbak.com'
 end
 
