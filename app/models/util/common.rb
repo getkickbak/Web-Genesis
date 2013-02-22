@@ -249,7 +249,7 @@ class Common
           :title => promotion.subject,
           :photo => promotion.photo,
           :text => promotion.message,
-          :created_date => promotion.starte_date.strftime('%Y/%m/%d') 
+          :created_date => promotion.start_date.strftime('%Y/%m/%d') 
         }
       )
     end
