@@ -24,9 +24,8 @@
 				<span class="message">Get rewards at the places you love.</span>
 				<%= simple_form_for @registration_step1, :url => validate_phone_path, :html =>
 				{ :class => 'form-inline' } do |f| %>
-				<%= f.input :phone_number, :label => false, :error => false, :placeholder => "Phone Number", :input_html=>{:class => "input-medium"} %>
+				<%= f.input :phone_number, :label => false, :placeholder => "Phone Number", :input_html=>{:class => "input-medium"} %>
 				<%= f.button :submit ,"SIGN UP", :class => 'button btn  btn-warning btn-xlarge' %>
-				<%= f.error :phone_number %>
 				<% end %>
 			</div>
 		</div>
