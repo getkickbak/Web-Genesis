@@ -228,6 +228,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 user_info[:password] = password
                 user_info[:password_confirmation] = password
                 @current_user = User.create(user_info)
+                tag.uid = @decrypted_data["uid"] if tag.uid.empty?
                 @current_user.register_tag(tag, tag.status)
               else
                 if user_to_tag
