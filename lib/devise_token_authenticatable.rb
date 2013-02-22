@@ -16,7 +16,6 @@ module Devise
         resource = mapping.to.find_for_token_authentication(authentication_hash)
         return fail(:invalid_token) unless resource
 
-        sign_out(:user)
         if validate(resource)
           if params[:sid]
             staff = Staff.get(params[:sid])
