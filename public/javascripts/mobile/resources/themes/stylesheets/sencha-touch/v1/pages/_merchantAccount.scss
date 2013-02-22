@@ -1,4 +1,3 @@
-
 //------------------------------------------------------------------------------
 // Merchant Account Page and Merchant Prize Page
 //------------------------------------------------------------------------------
@@ -148,7 +147,7 @@ $itemDescHeightSmall : calc-px-em($icon-size*$icon-multiplier,0em, $smallFontSiz
          }
          .date {
             padding-left:calc-px-em($icon-size*$icon-multiplier, $panelGap, $normalFontSize);
-            font-weight:bold;
+            //font-weight:bold;
             color : $GreyEnd;
             font-size:$normalFontSize !important;
          }
