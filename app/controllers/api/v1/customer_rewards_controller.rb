@@ -103,7 +103,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       end
       @request.destroy if Rails.env == "production"
     else
-      tag = UserTag.first(:tag_id => decrypted_data["tag_id"])
+      tag = UserTag.first(:tag_id => decrypted_data["tag_id"], :uid => decrypted_data["uid"])
       if tag.nil?
         logger.error("No such tag: #{decrypted_data["tag_id"]}")
         respond_to do |format|

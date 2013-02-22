@@ -276,6 +276,7 @@ class User
   
   def register_tag(tag, status = :active)
     if tag.status != :virtual
+      tag.uid = tag.uid || ""
       tag.status = status
       tag.update_ts = Time.now
       tag.save
