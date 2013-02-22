@@ -1,4 +1,5 @@
-<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.point', :count => @record.points) %> that can be used to redeem fabulous rewards at <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= business_profile_url(@merchant) %>"><%= @merchant.name %></a>!
+<% app = Rails.application.routes.url_helpers %>
+<%= @sender.name %> has sent you a transfer of <%= @record.points %> reward <%= t('api.point', :count => @record.points) %> that can be used to redeem fabulous rewards at <a rel="nofollow" target="_blank" style="text-decoration: none;" href="<%= app.business_profile_url(@merchant) %>"><%= @merchant.name %></a>!
 <br>
 <br>
 To deposit this transfer, scan the QR code in the attachment with your KICKBAK app.

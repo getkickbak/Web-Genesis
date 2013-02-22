@@ -14,10 +14,6 @@ class ReferralChallenge
     @challenge = challenge
   end
   
-  def controller
-    nil
-  end
-  
   def render_html
     @@template.result(binding)
   end
