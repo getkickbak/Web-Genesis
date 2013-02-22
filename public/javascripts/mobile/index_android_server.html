@@ -19,9 +19,9 @@
       <link rel="stylesheet" type="text/css" media="only screen and (min-height:641px) and (-webkit-min-device-pixel-ratio: 2.0)" href="resources/css/android-tablet-mxhdpi.css">
       <!-- If your application is targeting iOS BEFORE 4.0 you MUST put json2.js from http://www.JSON.org/json2.js into your www
       <link rel="stylesheet" type="text/css" href="resources/css/android-phone-lhdpi.css">
-      <script src="http://192.168.0.52:8081/target/target-script-min.js#client"></script>
+      <script src="http://192.168.0.52:8081/target/target-script-min.js#client"></script>       
       directory and include it here -->
-
+      
       <script type="text/javascript" src="lib/gibberish-aes.min.js"></script>
       <script type="text/javascript" src="lib/cordova-2.3.0.android.js"></script>
       <script type="text/javascript" charset="utf-8" src="lib/core/phonegap-nfc.js"></script>
@@ -31,152 +31,214 @@
       Phone Gap Libs
       -->
       <script type="text/javascript">
-							var launched=0x00;
-							var backBtnCallbackListFn=[];
-							var offlineDialogShown=false;
-							var phoneGapAvailable=true;
-							var debugMode=false;
-							var merchantMode=true;
-							var appName='MerKickBak';
-							var _appPath="app", _extPath='lib/touch-2.1.1/src';
-							function _appLaunch() {
-							if(launched==0x11) {
-							var viewport=_application.getController('server.Viewport');
-							viewport.appName=appName;
-							Ext.create('Genesis.view.Viewport');
-							console.log("Launched App");
-							navigator.splashscreen.hide();
-							}
-							}
+         var launched = 0x00;
+         var backBtnCallbackListFn = [];
+
+         var offlineDialogShown = false;
+         var phoneGapAvailable = true;
+         var debugMode = false;
+         var merchantMode = true;
+         var appName = 'MerKickBak';
+
+         var _appPath = "app", _extPath = 'lib/touch-2.1.1/src';
+
+         function _appLaunch()
+         {
+            if (launched == 0x11)
+            {
+               var viewport = _application.getController('server.Viewport');
+               viewport.appName = appName;
+
+               Ext.create('Genesis.view.Viewport');
+               console.log("Launched App");
+               navigator.splashscreen.hide();               
+            }
+         }
       </script>
       <script type="text/javascript">
-							// If you want to prevent dragging, uncomment this section
-							/*
-							 function preventBehavior(e)
-							 {
-							 e.preventDefault();
-							 };
-							 document.addEventListener("touchmove", preventBehavior, false);
-							 */
-							/* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
-							 see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
-							 for more details -jm */
-							/*
-							 function handleOpenURL(url)
-							 {
-							 // TODO: do something with the url passed in.
-							 }
-							 */
-							/* When this function is called, PhoneGap has been initialized and is ready to roll */
-							/* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
-							 see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
-							 for more details -jm */
-							function onBodyLoad() {
-							document.addEventListener("online", function() {
-							if(Ext.device) {
-							console.log("Phone is Online"+", "+//
-							Ext.device.Connection.__proto__.$className+", "+//
-							"devicePixelRatio - "+window.devicePixelRatio+", "+//
-							'Connection type: ['+Ext.device.Connection.getType()+']');
-							}
-							},false);
-							document.addEventListener("offline", function() {
-							if(Ext.device) {
-							console.log("Phone is Offline");
-							}
-							},false);
-							document.addEventListener("pause", function() {
-							console.log("App is Paused");
-							},false);
-							document.addEventListener("resume", function() {
-							if(Ext.device) {
-							}
-							console.log("App is Resumed");
-							},false);
-							window.addEventListener("batterylow", function(info) {
-							if(Ext.device) {
-							Ext.device.Notification.show({
-							title:'Battery Level Low',messsage:'Battery is at '+info.level+'%'
-							});
-							Ext.device.Notification.vibrate();
-							}
-							},false);
-							window.addEventListener("batterycritical", function(info) {
-							if(Ext.device) {
-							Ext.device.Notification.show({
-							title:'Battery Level Critical',messsage:'Battery is at '+info.level+'%'+'\n'+//
-							'Recharge Soon!'
-							});
-							Ext.device.Notification.vibrate();
-							Ext.device.Notification.beep();
-							}
-							},false);
-							document.addEventListener("deviceready", function() {
-							navigator.splashscreen.show();
-							console.debug=console.debug||console.log;
-							console.warn=console.warn||console.debug;
-							console.log("PhoneGap App Launch");
-							launched=0x10;
-							_appLaunch();
-							},false);
-							// add back button listener
-							function onBackKeyDown(e) {
-							var viewport=_application.getController('server.Viewport');
-							//e.preventDefault();
-							//
-							// Disable BackKey if something is in progress or application is not instantiated
-							//
-							if(!_application||Ext.Viewport.getMasked()||!viewport||viewport.popViewInProgress) {
-							return;
-							}
-							console.log("BackButton Pressed");
-							if(Ext.device.Notification.msg&&!Ext.device.Notification.msg.isHidden()) {
-							Ext.device.Notification.dismiss();
-							return;
-							}
-							var vport=viewport.getViewport();
-							var activeItem=(vport)?vport.getActiveItem():null;
-							if(activeItem) {
-							var success=false;
-							for(var i=0;i<backBtnCallbackListFn.length;i++) {
-							success=backBtnCallbackListFn[i](activeItem);
-							if(success) {
-							break;
-							}
-							}
-							if(!success) {
-							var backButton=activeItem.query('button[tag=back]')[0];
-							var closeButton=activeItem.query('button[tag=close]')[0];
-							if((backButton&&!backButton.isHidden())||//
-							(closeButton&&!closeButton.isHidden())) {
-							viewport.self.playSoundFile(viewport.sound_files['clickSound']);
-							viewport.popView();
-							}
-							}
-							} else {
-							viewport.self.playSoundFile(viewport.sound_files['clickSound']);
-							navigator.app.exitApp();
-							}
-							}
-							Ext.Loader.setConfig({
-							enabled:false,paths: {
-							Ext:_extPath,Genesis:_appPath,"Ext.ux":_appPath
-							}
-							});
-							Ext.application({
-							profiles:['Android'],views:['Document','server.Rewards','server.Redemptions','server.MerchantAccount','server.MainPage','widgets.server.RedeemItemDetail','server.SettingsPage','server.TagCreatePage','Viewport'],controllers:['server.Viewport','server.MainPage','server.Challenges','server.Rewards','server.Redemptions','server.Merchants','server.Settings','server.Prizes'],launch: function() {
-							_application=this;
-							if(launched>0x00) {
-							launched|=0x01;
-							} else {
-							launched=0x01;
-							}
-							console.log("Ext App Launch");
-							document.addEventListener("backbutton",onBackKeyDown,false);
-							_appLaunch();
-							},appFolder:_appPath,name:'Genesis'
-							});
-							}
+         // If you want to prevent dragging, uncomment this section
+         /*
+          function preventBehavior(e)
+          {
+          e.preventDefault();
+          };
+          document.addEventListener("touchmove", preventBehavior, false);
+          */
+
+         /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+          see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+          for more details -jm */
+         /*
+          function handleOpenURL(url)
+          {
+          // TODO: do something with the url passed in.
+          }
+          */
+         /* When this function is called, PhoneGap has been initialized and is ready to roll */
+         /* If you are supporting your own protocol, the var invokeString will contain any arguments to the app launch.
+          see http://iphonedevelopertips.com/cocoa/launching-your-own-application-via-a-custom-url-scheme.html
+          for more details -jm */
+         function onBodyLoad()
+         {
+            document.addEventListener("online", function()
+            {
+               if (Ext.device)
+               {
+                  console.log("Phone is Online"+ ", " + //
+                  Ext.device.Connection.__proto__.$className + ", " + //
+                  "devicePixelRatio - " + window.devicePixelRatio + ", " + //
+                  'Connection type: [' + Ext.device.Connection.getType() + ']');
+               }
+            }, false);
+
+            document.addEventListener("offline", function()
+            {
+               if (Ext.device)
+               {
+                  console.log("Phone is Offline");
+               }
+            }, false);
+            document.addEventListener("pause", function()
+            {
+               console.log("App is Paused");
+            }, false);
+
+            document.addEventListener("resume", function()
+            {
+               if (Ext.device)
+               {
+               }
+               console.log("App is Resumed");
+            }, false);
+            window.addEventListener("batterylow", function(info)
+            {
+               if (Ext.device)
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Battery Level Low',
+                     messsage : 'Battery is at ' + info.level + '%'
+                  });
+                  Ext.device.Notification.vibrate();
+
+               }
+            }, false);
+            window.addEventListener("batterycritical", function(info)
+            {
+               if (Ext.device)
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : 'Battery Level Critical',
+                     messsage : 'Battery is at ' + info.level + '%' + '\n' + //
+                     'Recharge Soon!'
+                  });
+                  Ext.device.Notification.vibrate();
+                  Ext.device.Notification.beep();
+               }
+            }, false);
+
+            document.addEventListener("deviceready", function()
+            {
+               navigator.splashscreen.show();
+               console.debug = console.debug || console.log;
+               console.warn = console.warn || console.debug;
+
+               console.log("PhoneGap App Launch");
+               launched = 0x10;
+               _appLaunch();
+            }, false);
+
+            // add back button listener
+            function onBackKeyDown(e)
+            {
+               var viewport = _application.getController('server.Viewport');
+
+               //e.preventDefault();
+
+               //
+               // Disable BackKey if something is in progress or application is not instantiated
+               //
+               if (!_application || Ext.Viewport.getMasked() || !viewport || viewport.popViewInProgress)
+               {
+                  return;
+               }
+
+               console.log("BackButton Pressed");
+               
+               if (Ext.device.Notification.msg && !Ext.device.Notification.msg.isHidden())
+               {
+                  Ext.device.Notification.dismiss();
+                  return;
+               }
+               
+               var vport = viewport.getViewport();
+               var activeItem = (vport) ? vport.getActiveItem() : null;
+               if (activeItem)
+               {
+                  var success = false;
+                  for (var i = 0; i < backBtnCallbackListFn.length; i++)
+                  {
+                     success = backBtnCallbackListFn[i](activeItem);
+                     if (success)
+                     {
+                        break;
+                     }
+                  }
+                  if (!success)
+                  {
+                     var backButton = activeItem.query('button[tag=back]')[0];
+                     var closeButton = activeItem.query('button[tag=close]')[0];
+                     if ((backButton && !backButton.isHidden()) || //
+                     (closeButton && !closeButton.isHidden()))
+                     {
+                        viewport.self.playSoundFile(viewport.sound_files['clickSound']);
+                        viewport.popView();
+                     }
+                  }
+               }
+               else
+               {
+                  viewport.self.playSoundFile(viewport.sound_files['clickSound']);
+                  navigator.app.exitApp();
+               }
+            }
+            
+            Ext.Loader.setConfig(
+            {
+               enabled : false,
+               paths :
+               {
+                  Ext : _extPath,
+                  Genesis : _appPath,
+                  "Ext.ux" : _appPath
+               }
+            });
+
+            Ext.application(
+            {
+               profiles : ['Android'],
+               views : ['Document', 'server.Rewards', 'server.Redemptions', 'server.MerchantAccount', 'server.MainPage', 'widgets.server.RedeemItemDetail', 'server.SettingsPage', 'server.TagCreatePage', 'Viewport'],
+               controllers : ['server.Viewport', 'server.MainPage', 'server.Challenges', 'server.Rewards', 'server.Redemptions', 'server.Merchants', 'server.Settings', 'server.Prizes'],
+               launch : function()
+               {
+                  _application = this;
+                  if (launched > 0x00)
+                  {
+                     launched |= 0x01;
+                  }
+                  else
+                  {
+                     launched = 0x01;
+                  }
+                  console.log("Ext App Launch");
+                  document.addEventListener("backbutton", onBackKeyDown, false);
+                  _appLaunch();
+               },
+               appFolder : _appPath,
+               name : 'Genesis'
+            });
+         }
       </script>
       <script type="text/javascript" src="core.js"></script>
       <script type="text/javascript" src="app/profile/Android.js"></script>
@@ -184,9 +246,10 @@
    </head>
    <body onload="onBodyLoad()">
       <script type="text/javascript">
-							window.onerror= function(e,url,linenum) {
-							console.log("Error on Line#"+linenum+"\n"+e);
-							}
+         window.onerror = function(e, url, linenum)
+         {
+            console.log("Error on Line#" + linenum + "\n" + e);
+         }
       </script>
       <!-- Cache images -->
       <div class="serverPhotoCache"></div>
