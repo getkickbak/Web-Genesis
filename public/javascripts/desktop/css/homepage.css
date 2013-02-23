@@ -214,7 +214,7 @@ body {
 }
 
 .hero-unit .form-inline div.control-group div.controls {
-	position:absolute;
+	position:relative;
 }
 .control-group.error > label, .control-group.error .help-block, .control-group.error .help-inline {
 	color: #fff;
