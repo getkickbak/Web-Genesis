@@ -45,7 +45,7 @@
 					<div class="widget">
 						<div class="widget-content">
 							<h3>Share on Facebook</h3>
-							<div style="margin:20px 0 10px 0;">
+							<div style="padding:20px 0 10px 0;">
 								<% if current_user.facebook_auth.nil? %>
 								<p style="padding-top: 9px;"><%= link_to "Connect with Facebook", user_omniauth_authorize_path(:facebook), :id => 'facebookButton' %></p>
 								<% else %>
