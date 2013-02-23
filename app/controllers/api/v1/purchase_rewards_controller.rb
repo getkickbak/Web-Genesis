@@ -323,6 +323,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       @venue.eager_load_type = @venue.type
       @venue.merchant.eager_load_type = @venue.merchant.type
     end
+
     @customer = Customer.first(:merchant => @venue.merchant, :user => @current_user)
     if @customer.nil?
       if (@venue.merchant.role == "merchant" && @current_user.role == "user") || (@venue.merchant.role == "test" && @current_user.role == "test") || @current_user.role == "admin" || @current_user.role == "anonymous"
