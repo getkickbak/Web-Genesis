@@ -17,9 +17,12 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
           params[:user][:gender] = (data["gender"] == "male" ? :m : :f) if data["gender"]
           params[:user][:birthday] = Date.strptime(data["birthday"], '%m/%d/%Y') if data["birthday"]
         end
+        Rails.logger.info("Before create user")
         resource = User.create(params[:user])
+        Rails.logger.info("After create user")
         user_tag = UserTag.first(:tag_id => params[:user][:tag_id])
         resource.register_tag(user_tag)
+        Rails.logger.info("After register tag")
         if resource.active_for_authentication?
           set_flash_message :notice, :signed_up if is_navigational_format?
           sign_in(resource_name, resource)

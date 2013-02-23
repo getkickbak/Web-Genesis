@@ -169,14 +169,18 @@ class User
         }
       )
     end
+    Rails.logger.info("before new subscription")
     user.subscription = Subscription.new
     user.subscription[:created_ts] = now
     user.subscription[:update_ts] = now
+    Rails.logger.info("before user save")
     user.save
+    Rails.logger.info("after user save")
     if user.role == "anonymous"
       user.name = "User #{user.id}"
       user.email = "user#{user.id}@getkickbak.com"
       user.save
+      Rails.logger.info("after user save 2")
     end   
     return user 
   end
