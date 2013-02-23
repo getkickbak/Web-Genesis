@@ -158,136 +158,138 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       end  
     else
       begin
-        reward_model_type = @venue.merchant.reward_model.type
-        if signed_in?
-          decrypted_data = JSON.parse(@request.data)
-          data = decrypted_data["data"]
-          if reward_model_type.value == "amount_spend"
-            amount = decrypted_data["amount"].to_f
+        User.transaction do
+          reward_model_type = @venue.merchant.reward_model.type
+          if signed_in?
+            decrypted_data = JSON.parse(@request.data)
+            data = decrypted_data["data"]
+            if reward_model_type.value == "amount_spend"
+              amount = decrypted_data["amount"].to_f
+            else
+              amount = 0.00
+              points = decrypted_data["points"].to_f
+            end  
           else
-            amount = 0.00
-            points = decrypted_data["points"].to_f
-          end  
-        else
-          data = params[:data]
-          if reward_model_type.value == "amount_spend"
-            amount = @decrypted_data["amount"].to_f
-          else
-            amount = 0.00
-            points = @decrypted_data["points"].to_f
+            data = params[:data]
+            if reward_model_type.value == "amount_spend"
+              amount = @decrypted_data["amount"].to_f
+            else
+              amount = 0.00
+              points = @decrypted_data["points"].to_f
+            end
           end
-        end
 
-        encrypted_data = data.split('$')
-        if encrypted_data.length != 2
-          raise "Invalid authorization code format"
-        end
+          encrypted_data = data.split('$')
+          if encrypted_data.length != 2
+            raise "Invalid authorization code format"
+          end
         
-        if !(defined? @venue)
-          @venue = Venue.get(encrypted_data[0])
-          if @venue.nil?
-            raise "No such venue: #{encrypted_data[0]}"
+          if !(defined? @venue)
+            @venue = Venue.get(encrypted_data[0])
+            if @venue.nil?
+              raise "No such venue: #{encrypted_data[0]}"
+            end
           end
-        end
                 
-        if @venue_id && (@venue.id != @venue_id.to_i)
-          Request.set_status(@request, :failed)
-          logger.error("Mismatch venue information', venue_id:#{@venue_id}, venue id:#{@venue.id}")
-          respond_to do |format|
-            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.purchase_rewards.venue_mismatch").split(/\n/) } }
+          if @venue_id && (@venue.id != @venue_id.to_i)
+            Request.set_status(@request, :failed)
+            logger.error("Mismatch venue information', venue_id:#{@venue_id}, venue id:#{@venue.id}")
+            respond_to do |format|
+              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+              format.json { render :json => { :success => false, :message => t("api.purchase_rewards.venue_mismatch").split(/\n/) } }
+            end
+            return
           end
-          return
-        end
                
-        data = encrypted_data[1]
+          data = encrypted_data[1]
 
-        tag = nil
-        if not signed_in?
-          if @decrypted_data["tag_id"]
-            tag = UserTag.first(:tag_id => @decrypted_data["tag_id"])
-            if tag
-              if tag.status == :suspended || tag.status == :deleted
-                logger.info("Tag: #{tag.tag_id} is suspended or deleted ")
+          tag = nil
+          if not signed_in?
+            if @decrypted_data["tag_id"]
+              tag = UserTag.first(:tag_id => @decrypted_data["tag_id"])
+              if tag
+                if tag.status == :suspended || tag.status == :deleted
+                  logger.info("Tag: #{tag.tag_id} is suspended or deleted ")
+                  respond_to do |format|
+                    #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                    format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
+                  end
+                  return
+                end
+                user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
+                if user_to_tag.nil? && tag.status == :pending
+                  user_info = {}
+                  rand_name = String.random_alphanumeric(16)
+                  user_info[:name] = "#{rand_name}"
+                  user_info[:email] = "#{rand_name}@getkickbak.com"
+                  user_info[:phone] = ""
+                  user_info[:role] = "anonymous"
+                  user_info[:status] = :pending
+                  password = String.random_alphanumeric(8)
+                  user_info[:password] = password
+                  user_info[:password_confirmation] = password
+                  @current_user = User.create(user_info)
+                  tag.uid = @decrypted_data["uid"] if tag.uid.empty?
+                  @current_user.register_tag(tag, tag.status)
+                else
+                  if user_to_tag
+                    @current_user = User.get(user_to_tag.user_id)
+                    if @current_user.nil?
+                      logger.error("No such user: #{user_to_tag.user_id}")
+                      respond_to do |format|
+                        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                        format.json { render :json => { :success => false, :message => t("api.invalid_user").split(/\n/) } }
+                      end
+                      return
+                    end
+                  else
+                    logger.error("No user is associated with this non-pending tag: #{tag.tag_id}")
+                    respond_to do |format|
+                      #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                      format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
+                    end
+                    return
+                  end  
+                end
+              else
+                logger.error("No such tag_id: #{@decrypted_data["tag_id"]}")
                 respond_to do |format|
                   #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                   format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
                 end
                 return
               end
-              user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
-              if user_to_tag.nil? && tag.status == :pending
-                user_info = {}
-                rand_name = String.random_alphanumeric(16)
-                user_info[:name] = "#{rand_name}"
-                user_info[:email] = "#{rand_name}@getkickbak.com"
-                user_info[:phone] = ""
-                user_info[:role] = "anonymous"
-                user_info[:status] = :pending
-                password = String.random_alphanumeric(8)
-                user_info[:password] = password
-                user_info[:password_confirmation] = password
-                @current_user = User.create(user_info)
-                tag.uid = @decrypted_data["uid"] if tag.uid.empty?
-                @current_user.register_tag(tag, tag.status)
-              else
-                if user_to_tag
-                  @current_user = User.get(user_to_tag.user_id)
-                  if @current_user.nil?
-                    logger.error("No such user: #{user_to_tag.user_id}")
-                    respond_to do |format|
-                      #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-                      format.json { render :json => { :success => false, :message => t("api.invalid_user").split(/\n/) } }
-                    end
-                    return
-                  end
-                else
-                  logger.error("No user is associated with this non-pending tag: #{tag.tag_id}")
-                  respond_to do |format|
-                    #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-                    format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
-                  end
-                  return
-                end  
-              end
-            else
-              logger.error("No such tag_id: #{@decrypted_data["tag_id"]}")
+            elsif @decrypted_data["phone"]
+              @current_user = User.first(:phone => @decrypted_data["phone"])
+              if @current_user.nil?
+                logger.error("No such phone number: #{@decrypted_data["phone"]}")
+                respond_to do |format|
+                  #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                  format.json { render :json => { :success => false, :message => t("api.invalid_phone").split(/\n/) } }
+                end
+                return 
+              end 
+            else 
+              logger.error("Missing user identification info")
               respond_to do |format|
                 #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-                format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
+                format.json { render :json => { :success => false, :message => t("api.missing_user_info").split(/\n/) } }
               end
-              return
-            end
-          elsif @decrypted_data["phone"]
-            @current_user = User.first(:phone => @decrypted_data["phone"])
-            if @current_user.nil?
-              logger.error("No such phone number: #{@decrypted_data["phone"]}")
-              respond_to do |format|
-                #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-                format.json { render :json => { :success => false, :message => t("api.invalid_phone").split(/\n/) } }
-              end
-              return 
-            end 
-          else 
-            logger.error("Missing user identification info")
+              return  
+            end  
+          else
+            @current_user = current_user  
+          end
+        
+          if @current_user.status != :active && @current_user.status != :pending
+            Request.set_status(@request, :failed)
+            logger.error("User: #{@current_user.id} is not active or pending")
             respond_to do |format|
               #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-              format.json { render :json => { :success => false, :message => t("api.missing_user_info").split(/\n/) } }
+              format.json { render :json => { :success => false, :message => t("api.inactive_user").split(/\n/) } }
             end
-            return  
-          end  
-        else
-          @current_user = current_user  
-        end
-        
-        if @current_user.status != :active && @current_user.status != :pending
-          Request.set_status(@request, :failed)
-          logger.error("User: #{@current_user.id} is not active or pending")
-          respond_to do |format|
-            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.inactive_user").split(/\n/) } }
+            return
           end
-          return
         end
       rescue DataMapper::SaveFailureError => e  
         Request.set_status(@request, :failed)
