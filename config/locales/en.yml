@@ -176,6 +176,7 @@ en:
       invalid_tag: "This key tag is not valid."
       invalid_user: "Problem with this user account.\nPlease contact support."
       invalid_tag_or_phone: "This key tag or phone number is not valid."
+      missing_user_info: "Missing user identification info."
       invalid_customer: "This user is not a customer yet."
       out_of_distance: "Outside of distance.\nPlease try again."
       photo_blank: "Uploaded photo is blank."

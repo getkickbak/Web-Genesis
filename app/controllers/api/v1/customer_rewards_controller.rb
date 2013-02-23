@@ -102,17 +102,9 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         end
       end
       @request.destroy if Rails.env == "production"  
-    else
-      if decrypted_data["tag_id"]
-        tag = UserTag.first(:tag_id => decrypted_data["tag_id"], :uid => decrypted_data["uid"])
-        if tag.nil?
-          logger.error("No such tag: #{decrypted_data["tag_id"]}")
-          respond_to do |format|
-            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
-          end
-          return
-        end
+    elsif decrypted_data["tag_id"]
+      tag = UserTag.first(:tag_id => decrypted_data["tag_id"], :uid => decrypted_data["uid"])
+      if tag
         if tag.status != :active && tag.status != :virtual
           logger.info("Tag: #{decrypted_data["tag_id"]} is not active")
           respond_to do |format|
@@ -140,16 +132,17 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           return
         end
       else
-        user = User.first(:phone => decrypted_data["phone"])  
+        user = User.first(:phone => decrypted_data["tag_id"])
         if user.nil?
-          logger.error("No such user: #{decrypted_data["phone"]}")
+          logger.error("No such tag or user: #{decrypted_data["tag_id"]}")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.invalid_user").split(/\n/) } }
+            format.json { render :json => { :success => false, :message => t("api.invalid_tag_or_phone").split(/\n/) } }
           end
-          return
-        end
+          return 
+        end  
       end
+
       @customer = Customer.first(:merchant => @venue.merchant, :user => user)
       if @customer.nil?
         logger.error("User(#{user.id}) is not a customer of Merchant(#{@venue.merchant})")
@@ -160,6 +153,13 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         return
       end
       redeem_common(user)
+    else
+      logger.error("Missing user identification info")
+      respond_to do |format|
+        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+        format.json { render :json => { :success => false, :message => t("api.missing_user_info").split(/\n/) } }
+      end
+      return  
     end
   end
   
