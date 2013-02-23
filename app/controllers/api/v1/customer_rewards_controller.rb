@@ -103,44 +103,60 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       end
       @request.destroy if Rails.env == "production"  
     elsif decrypted_data["tag_id"]
-      tag = UserTag.first(:tag_id => decrypted_data["tag_id"], :uid => decrypted_data["uid"])
-      if tag
-        if tag.status != :active && tag.status != :virtual
-          logger.info("Tag: #{decrypted_data["tag_id"]} is not active")
-          respond_to do |format|
-            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.inactive_tag").split(/\n/) } }
+      if decrypted_data["tag_id"]
+        tag = UserTag.first(:tag_id => decrypted_data["tag_id"], :uid => decrypted_data["uid"])
+        if tag
+          if tag.status != :active
+            logger.info("Tag: #{decrypted_data["tag_id"]} is not active")
+            respond_to do |format|
+              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+              format.json { render :json => { :success => false, :message => t("api.inactive_tag").split(/\n/) } }
+            end
+            return
           end
-          return
-        end
-        user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
-        if user_to_tag.nil?
-          logger.error("No user is associated with this tag: #{decrypted_data["tag_id"]}")
+          user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
+          if user_to_tag.nil?
+            logger.error("No user is associated with this tag: #{decrypted_data["tag_id"]}")
+            respond_to do |format|
+              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+              format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
+            end
+            return
+          end
+          user = User.get(user_to_tag.user_id)
+          if user.nil?
+            logger.error("No such user: #{user_to_tag.user_id}")
+            respond_to do |format|
+              #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+              format.json { render :json => { :success => false, :message => t("api.invalid_user").split(/\n/) } }
+            end
+            return
+          end
+        else
+          logger.error("No such tag_id: #{@decrypted_data["tag_id"]}")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
           end
-          return
+          return  
         end
-        user = User.get(user_to_tag.user_id)
+      elsif decrypted_data["phone"]
+        user = User.first(:phone => decrypted_data["phone"])
         if user.nil?
-          logger.error("No such user: #{user_to_tag.user_id}")
+          logger.error("No such phone number: #{decrypted_data["phone"]}")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.invalid_user").split(/\n/) } }
-          end
-          return
-        end
-      else
-        user = User.first(:phone => decrypted_data["tag_id"])
-        if user.nil?
-          logger.error("No such tag or user: #{decrypted_data["tag_id"]}")
-          respond_to do |format|
-            #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.invalid_tag_or_phone").split(/\n/) } }
+            format.json { render :json => { :success => false, :message => t("api.invalid_phone").split(/\n/) } }
           end
           return 
-        end  
+        end
+      else
+        logger.error("Missing user identification info")
+        respond_to do |format|
+          #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+          format.json { render :json => { :success => false, :message => t("api.missing_user_info").split(/\n/) } }
+        end
+        return
       end
 
       @customer = Customer.first(:merchant => @venue.merchant, :user => user)
@@ -152,14 +168,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         end
         return
       end
-      redeem_common(user)
-    else
-      logger.error("Missing user identification info")
-      respond_to do |format|
-        #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-        format.json { render :json => { :success => false, :message => t("api.missing_user_info").split(/\n/) } }
-      end
-      return  
+      redeem_common(user)  
     end
   end
   

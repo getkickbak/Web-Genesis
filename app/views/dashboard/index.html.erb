@@ -35,16 +35,8 @@
 		<div class="container">
 			<div class="row">
 				<div class="span9">
-					<div class="widget">
-						<div class="widget-content">
-							<div>
-								Mobile Tag ID: <%= current_user.virtual_tag.tag_id %>
-							</div>
-						</div>
-					</div>
 					<% if not current_user.tags.empty? %>
 					<% current_user.tags.each do |tag| %>
-					<% if tag.status != :virtual %>
 					<div class="widget">
 						<div class="widget-content">
 							<div>
@@ -53,7 +45,6 @@
 							</div>
 						</div>
 					</div>
-					<% end %>
 					<% end %>
 					<% end %>
 					<div class="widget">

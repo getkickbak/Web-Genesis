@@ -251,16 +251,23 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 end  
               end
             else
-              @current_user = User.first(:phone => @decrypted_data["tag_id"])
-              if @current_user.nil?
-                logger.error("No such tag or user: #{@decrypted_data["tag_id"]}")
-                respond_to do |format|
-                  #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-                  format.json { render :json => { :success => false, :message => t("api.invalid_tag_or_phone").split(/\n/) } }
-                end
-                return 
-              end  
+              logger.error("No such tag_id: #{@decrypted_data["tag_id"]}")
+              respond_to do |format|
+                #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
+              end
+              return
             end
+          elsif @decrypted_data["phone"]
+            @current_user = User.first(:phone => @decrypted_data["phone"])
+            if @current_user.nil?
+              logger.error("No such phone number: #{@decrypted_data["phone"]}")
+              respond_to do |format|
+                #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
+                format.json { render :json => { :success => false, :message => t("api.invalid_phone").split(/\n/) } }
+              end
+              return 
+            end 
           else 
             logger.error("Missing user identification info")
             respond_to do |format|

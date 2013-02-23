@@ -32,10 +32,6 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
 
     begin
       User.transaction do
-        if @user.virtual_tag.nil?
-          @user.virtual_tag = UserTag.create(:virtual)
-          @user.register_tag(@user.virtual_tag)
-        end
         @user.ensure_authentication_token!
         @user.save!
         if auth_token.nil? && (not @user.valid_password?(password))
@@ -114,10 +110,6 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
     
     begin
       User.transaction do
-        if @user.virtual_tag.nil?
-          @user.virtual_tag = UserTag.create(:virtual)
-          @user.register_tag(@user.virtual_tag)
-        end
         if facebook_id
           @user.update_facebook_auth({:provider => "facebook", :uid => facebook_id, :token => params[:accessToken]})
           if params[:gender] && params[:birthday]
@@ -158,10 +150,6 @@ class Api::V1::TokensController < Api::V1::BaseApplicationController
   end
 
   def get_csrf_token
-    if current_user.virtual_tag.nil?
-      current_user.virtual_tag = UserTag.create(:virtual)
-      current_user.register_tag(current_user.virtual_tag)
-    end
     if params[:device] && (params[:device] != "null")
       device_info = JSON.parse(params[:device], { :symbolize_names => true })
       Common.register_user_device(current_user, device_info)

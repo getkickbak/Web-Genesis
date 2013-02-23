@@ -46,8 +46,6 @@ class User
     
   has 1, :profile, 'UserProfile', :constraint => :destroy
   has 1, :subscription, :constraint => :destroy
-  has 1, :user_to_virtual_tag, :constraint => :destroy      
-  has 1, :virtual_tag, 'UserTag', :through => :user_to_virtual_tag,  :via => :user_tag
   has 1, :user_to_facebook_auth, :constraint => :destroy
   has 1, :facebook_auth, 'ThirdPartyAuth', :through => :user_to_facebook_auth, :via => :third_party_auth
   has n, :user_to_tags, :constraint => :destroy
@@ -171,9 +169,6 @@ class User
         }
       )
     end
-    if user.virtual_tag.nil?
-      user.virtual_tag = UserTag.create(:virtual)
-    end
     user.subscription = Subscription.new
     user.subscription[:created_ts] = now
     user.subscription[:update_ts] = now
@@ -275,24 +270,20 @@ class User
   end
   
   def register_tag(tag, status = :active)
-    if tag.status != :virtual
-      tag.uid = tag.uid || ""
-      tag.status = status
-      tag.update_ts = Time.now
-      tag.save
-    end
+    tag.uid = tag.uid || ""
+    tag.status = status
+    tag.update_ts = Time.now
+    tag.save
     self.tags.concat(Array(tag))
     save  
   end
   
   def deregister_tag(tag)
-    if tag.status != :virtual
-      tag.status = :deleted
-      tag.update_ts = Time.now
-      tag.save
-      self.user_to_tags.all(:user_tag => Array(tag)).destroy
-      reload
-    end
+    tag.status = :deleted
+    tag.update_ts = Time.now
+    tag.save
+    self.user_to_tags.all(:user_tag => Array(tag)).destroy
+    reload
   end
   
   def follow(others)
