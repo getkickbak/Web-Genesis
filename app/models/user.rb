@@ -330,7 +330,9 @@ class User
   end
   
   def validate_phone
+    Rails.logger.info("in validate phone")
     if not self.phone.empty?
+      Rails.logger.info("phone number is not empty")
       self.phone.gsub!(/\-/, "")
       if !self.phone.match(/^[\d]+$/) || self.phone.length != 10
         return [false, I18n.t('errors.messages.phone_format', :attribute => I18n.t('activemodel.attributes.contact.phone')) % [10]]  
