@@ -73,7 +73,7 @@ Ext.define('Genesis.view.server.Rewards',
          {
             xtype : 'calculator',
             tag : 'tagId',
-            title : 'Enter TAG ID/Phone#',
+            title : 'Enter TAG ID or Phone#',
             placeHolder : '12345678',
             bottomButtons : [
             {

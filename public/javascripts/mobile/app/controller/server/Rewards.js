@@ -253,7 +253,7 @@ Ext.define('Genesis.controller.server.Rewards',
             window.plugins.proximityID.stop();
          }
 
-         if (b && (b.toLowerCase() == 'enter tag id'))
+         if (b && (b.toLowerCase() == 'manual'))
          {
             Ext.Viewport.setMasked(null);
             me.onEnterTagIdTap();
@@ -273,8 +273,8 @@ Ext.define('Genesis.controller.server.Rewards',
          ignoreOnHide : true,
          buttons : [
          {
-            text : 'Enter TAG ID',
-            itemId : 'enter tag id'
+            text : 'Manual',
+            itemId : 'manual'
          },
          {
             text : 'Cancel',
