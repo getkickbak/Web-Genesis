@@ -43,7 +43,6 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
     end
       
     earn_common
-    logger.info("This is crazy!!!")
   end
   
   def merchant_earn
@@ -215,6 +214,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                     #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                     format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
                   end
+                  logger.info("This is crazy!!!")
                   return
                 end
                 user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
