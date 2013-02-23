@@ -213,9 +213,15 @@ body {
 	display: block;
 }
 
+.hero-unit .form-inline div.control-group div.controls {
+	position:absolute;
+}
 .control-group.error > label, .control-group.error .help-block, .control-group.error .help-inline {
 	color: #fff;
 	text-align: left;
+	position:absolute;
+	bottom:-27px;
+	left:0;
 }
 
 .control-group.error input, .control-group.error select, .control-group.error textarea {
