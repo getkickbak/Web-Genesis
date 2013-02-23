@@ -27,7 +27,8 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
       {
          var viewport = me.getViewPortCntlr(), venue = viewport.getVenue(), site = Genesis.constants.site;
          var wsite = venue.get('website') ? venue.get('website').split(/http[s]*:\/\//) : [null];
-         var name = venue.get('name'), link = wsite[wsite.length - 1] || site, desc = me.redeemFbMsg;//venue.get('description').trunc(256);
+         var name = venue.get('name'), link = wsite[wsite.length - 1] || site, desc = me.redeemFbMsg;
+         //venue.get('description').trunc(256);
          var message = me.redeemItemEmailMsg(earnprize.get('title'), venue.get('name'));
          var params =
          {
@@ -89,6 +90,12 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
          console.log('Exception [' + e + ']' + '\n' + //
          'Post was not published to Facebook.');
       }
+   },
+   // --------------------------------------------------------------------------
+   // Event Handlers
+   // --------------------------------------------------------------------------
+   onActivate : function(activeItem, c, oldActiveItem, eOpts)
+   {
    },
    // --------------------------------------------------------------------------
    // Redemptions Page
@@ -183,18 +190,21 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                   {
                      me.getSRedeemBtn()['show']();
                   }
-                  proxy.supressErrorsPopup = true;
-                  Ext.device.Notification.show(
-                  {
-                     title : me.getRedeemPopupTitle(),
-                     message : me.redeemFailedMsg,
-                     buttons : ['Dismiss'],
-                     callback : function()
-                     {
-                        proxy.supressErrorsPopup = false;
-                        me.onDoneTap();
-                     }
-                  });
+                  proxy._errorCallback = Ext.bind(me.onDoneTap, me);
+                  /*
+                   proxy.supressErrorsPopup = true;
+                   Ext.device.Notification.show(
+                   {
+                   title : me.getRedeemPopupTitle(),
+                   message : me.redeemFailedMsg,
+                   buttons : ['Dismiss'],
+                   callback : function()
+                   {
+                   proxy.supressErrorsPopup = false;
+                   me.onDoneTap();
+                   }
+                   });
+                   */
                }
             }
          });

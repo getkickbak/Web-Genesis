@@ -10,7 +10,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       sDoneBtn : null,
       sRedeemBtn : null
    },
-   tagIdMaxLength : 8,
+   tagIdMaxLength : 10,
    redeemPtsConfirmMsg : 'Please confirm to submit',
    // --------------------------------------------------------------------------
    // Utility Functions
@@ -57,7 +57,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          Ext.device.Notification.show(
          {
             title : 'TAG ID',
-            message : me.redeemPtsConfirmMsg(me.tagIdMaxLength),
+            message : me.redeemPtsConfirmMsg,
             buttons : ['Confirm', 'Cancel'],
             callback : function(btn)
             {
@@ -239,7 +239,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
             ignoreOnHide : true,
             buttons : [
             {
-               text : 'Manual',
+               text : 'Phone Number',
                itemId : 'manual'
             },
             {
@@ -296,8 +296,9 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
    onActivate : function(activeItem, c, oldActiveItem, eOpts)
    {
       var me = this, container = me.getRedeemItemCardContainer();
-      me.callParent(arguments);
       container.setActiveItem(0);
+      
+      console.debug("Server ReedeemBase: onActivate");
    },
    onRedeemItemCardContainerActivate : function(c, value, oldValue, eOpts)
    {

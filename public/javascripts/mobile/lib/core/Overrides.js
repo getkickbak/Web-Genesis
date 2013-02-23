@@ -17,8 +17,8 @@ Genesis.constants =
    isNfcEnabled : false,
    userName : 'Eric Chan',
    appMimeType : 'application/kickbak',
-   clientVersion : '2.0.0',
-   serverVersion : '2.0.0',
+   clientVersion : '2.1.0',
+   serverVersion : '2.1.0',
    themeName : 'v1',
    _thumbnailAttribPrefix : '',
    _iconPath : '',
@@ -54,8 +54,8 @@ Genesis.constants =
    s_vol : -1,
    //
    device : null,
-   minDistance : 0.2 * 1000,
-   //minDistance : 100000 * 1000,
+   //minDistance : 0.2 * 1000,
+   minDistance : 100000 * 1000,
    createAccountMsg : 'Create user account using Facebook Profile information',
    init : function()
    {

@@ -31,7 +31,7 @@ Ext.define('Genesis.controller.server.Redemptions',
          redemptionsList : 'serverredemptionsview list[tag=redemptionsList]',
          redeemItemCardContainer : 'serverredeemitemdetailview[tag=redeemReward] container[tag=redeemItemCardContainer]',
          redeemItemButtonsContainer : 'serverredeemitemdetailview[tag=redeemReward] container[tag=bottomButtons]',
-         tagId : 'serverredeemitemdetailview[tag=redeemReward] calculator[tag=tagId] textfield',
+         tagId : 'serverredeemitemdetailview[tag=redeemReward] calculator[tag=phoneId] textfield',
          mRedeemBtn : 'serverredeemitemdetailview[tag=redeemReward] button[tag=merchantRedeem]',
          //
          // Redeem Rewards
@@ -63,11 +63,11 @@ Ext.define('Genesis.controller.server.Redemptions',
             tap : 'onEnterTagIdTap'
          },
          */
-         'serverredeemitemdetailview[tag=redeemReward] calculator[tag=tagId] container[tag=dialpad] button' :
+         'serverredeemitemdetailview[tag=redeemReward] calculator[tag=phoneId] container[tag=dialpad] button' :
          {
             tap : 'onTagIdBtnTap'
          },
-         'serverredeemitemdetailview[tag=redeemReward] calculator[tag=tagId] container[tag=bottomButtons] button[tag=redeemTagId]' :
+         'serverredeemitemdetailview[tag=redeemReward] calculator[tag=phoneId] container[tag=bottomButtons] button[tag=redeemTagId]' :
          {
             tap : 'onTagItTap'
          }
