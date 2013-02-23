@@ -332,7 +332,7 @@ en:
   mailer:
       email_subject_referral_challenge: "Check out %s"
       email_subject_confirm_referral_challenge: "Referral confirmation"
-      email_subject_points_transfer: "Reward points transfer" 
+      email_subject_points_transfer: "KICKBAK reward points transfer" 
       email_subject_confirm_points_transfer: "Reward points transfer confirmation"
       email_subject_points_expiration_reminder: "Reminder - Use your points before they expire!"
       email_subject_reset_password: "Reset password instructions"
