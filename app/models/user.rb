@@ -169,18 +169,14 @@ class User
         }
       )
     end
-    Rails.logger.info("before new subscription")
     user.subscription = Subscription.new
     user.subscription[:created_ts] = now
     user.subscription[:update_ts] = now
-    Rails.logger.info("before user save")
     user.save
-    Rails.logger.info("after user save")
     if user.role == "anonymous"
       user.name = "User #{user.id}"
       user.email = "user#{user.id}@getkickbak.com"
       user.save
-      Rails.logger.info("after user save 2")
     end   
     return user 
   end
@@ -330,9 +326,7 @@ class User
   end
   
   def validate_phone
-    Rails.logger.info("in validate phone")
     if not self.phone.empty?
-      Rails.logger.info("phone number is not empty")
       self.phone.gsub!(/\-/, "")
       if !self.phone.match(/^[\d]+$/) || self.phone.length != 10
         return [false, I18n.t('errors.messages.phone_format', :attribute => I18n.t('activemodel.attributes.contact.phone')) % [10]]  
