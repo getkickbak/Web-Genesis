@@ -69,8 +69,9 @@ Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
                defaultUnit : 'em',
                html : (function()//Send
                {
-                  return 'Have the Mobile Device' + Genesis.constants.addCRLF() + //
-                  'Tap against the Terminal'
+                  return 'Please Swipe TAG or' + Genesis.constants.addCRLF() + //
+                  'Tap Mobile Device or' + Genesis.constants.addCRLF() + //
+                  'Enter Phone Number';
                })()
                //,ui : 'orange-large'
             },
@@ -106,9 +107,9 @@ Ext.define('Genesis.view.widgets.server.RedeemItemDetail',
          // -------------------------------------------------------------------
          {
             xtype : 'calculator',
-            tag : 'tagId',
-            title : 'Enter TAG ID or Phone#',
-            placeHolder : '12345678',
+            tag : 'phoneId',
+            title : 'Enter Phone Number',
+            placeHolder : '8005551234',
             bottomButtons : [
             {
                tag : 'redeemTagId',

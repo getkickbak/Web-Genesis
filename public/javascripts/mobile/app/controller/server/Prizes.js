@@ -32,7 +32,7 @@ Ext.define('Genesis.controller.server.Prizes',
          redemptionsList : 'serverprizesview list[tag=prizesList]',
          redeemItemCardContainer : 'serverredeemitemdetailview[tag=redeemPrize] container[tag=redeemItemCardContainer]',
          redeemItemButtonsContainer : 'serverredeemitemdetailview[tag=redeemPrize] container[tag=bottomButtons]',
-         tagId : 'serverredeemitemdetailview[tag=redeemPrize] calculator[tag=tagId] textfield',
+         tagId : 'serverredeemitemdetailview[tag=redeemPrize] calculator[tag=phoneId] textfield',
          mRedeemBtn : 'serverredeemitemdetailview[tag=redeemPrize] button[tag=merchantRedeem]',
          //
          // Reward Prize
@@ -64,11 +64,11 @@ Ext.define('Genesis.controller.server.Prizes',
             tap : 'onEnterTagIdTap'
          },
          */
-         'serverredeemitemdetailview[tag=redeemPrize] calculator[tag=tagId] container[tag=dialpad] button' :
+         'serverredeemitemdetailview[tag=redeemPrize] calculator[tag=phoneId] container[tag=dialpad] button' :
          {
             tap : 'onTagIdBtnTap'
          },
-         'serverredeemitemdetailview[tag=redeemPrize] calculator[tag=tagId] container[tag=bottomButtons] button[tag=redeemTagId]' :
+         'serverredeemitemdetailview[tag=redeemPrize] calculator[tag=phoneId] container[tag=bottomButtons] button[tag=redeemTagId]' :
          {
             tap : 'onTagItTap'
          }

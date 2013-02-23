@@ -318,9 +318,9 @@ Ext.define('Genesis.controller.server.Viewport',
          else
          if (Ext.os.is('Android'))
          {
-            s_vol_ratio = 0.3;
+            s_vol_ratio = 0.4;
             //Default Volume laying flat on a surface
-            c.s_vol = 30;
+            c.s_vol = 40;
 
             r_vol_ratio = 0.5;
             // Read fresh data as soon as there's a miss

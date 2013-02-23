@@ -35,6 +35,7 @@ Ext.define('Genesis.view.client.SettingsPage',
             labelWidth : '50%'
          },
          items : [
+         /*
          {
             xtype : 'textfield',
             name : 'tagid',
@@ -43,6 +44,7 @@ Ext.define('Genesis.view.client.SettingsPage',
             value : ' ',
             readOnly : true
          },
+         */
          {
             xtype : 'textfield',
             cls : 'halfHeight',

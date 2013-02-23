@@ -190,7 +190,7 @@ Ext.define('Genesis.controller.client.Settings',
       {
          birthday : fields['birthday'].birthday,
          phone : fields['phone'].phone,
-         tagid : db['account'].virtual_tag_id || 'None',
+         //tagid : db['account'].virtual_tag_id || 'None',
          facebook : (db['enableFB']) ? 1 : 0
       });
       form.query('textfield[name=user]')[0].setLabel(db['account'].name + '<br/>' + '<label>' + db['account'].email + "</label>");

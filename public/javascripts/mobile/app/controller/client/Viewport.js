@@ -489,9 +489,9 @@ Ext.define('Genesis.controller.client.Viewport',
          if (Ext.os.is('Android'))
          {
             //(tx)
-            s_vol_ratio = 0.30;
+            s_vol_ratio = 0.50;
             //Default Volume laying flat on a surface (tx)
-            c.s_vol = 30;
+            c.s_vol = 50;
 
             //(rx)
             r_vol_ratio = 0.5;

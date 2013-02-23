@@ -50,11 +50,11 @@ Ext.define('Genesis.controller.server.Rewards',
          {
             tap : 'onEarnPtsTap'
          },
-         'serverrewardsview calculator[tag=tagId] container[tag=dialpad] button' :
+         'serverrewardsview calculator[tag=phoneId] container[tag=dialpad] button' :
          {
             tap : 'onTagIdBtnTap'
          },
-         'serverrewardsview calculator[tag=tagId] container[tag=bottomButtons] button[tag=earnTagId]' :
+         'serverrewardsview calculator[tag=phoneId] container[tag=bottomButtons] button[tag=earnTagId]' :
          {
             tap : 'onTagItTap'
          }
@@ -273,7 +273,7 @@ Ext.define('Genesis.controller.server.Rewards',
          ignoreOnHide : true,
          buttons : [
          {
-            text : 'Manual',
+            text : 'Phone Number',
             itemId : 'manual'
          },
          {

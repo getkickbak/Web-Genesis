@@ -76,15 +76,15 @@ Ext.define('Genesis.controller.ControllerBase',
    prepareToSendMobileDeviceMsg : 'Prepare to send data across to Mobile Device ...',
    lookingForMobileDeviceMsg : function()//Send
    {
-      return 'Have the customer\'s ' + Genesis.constants.addCRLF() + //
-      'TAG or Mobile Device' + Genesis.constants.addCRLF() + //
-      'tap against the Terminal';
+      return 'Please Swipe TAG or' + Genesis.constants.addCRLF() + //
+      'Tap Mobile Device or' + Genesis.constants.addCRLF() + //
+      'Enter Phone Number';
    },
    detectMobileDeviceMsg : function()//Recv
    {
-      return 'Have the customer\'s ' + Genesis.constants.addCRLF() + //
-      'TAG or Mobile Device' + Genesis.constants.addCRLF() + //
-      'tap against the Terminal';
+      return 'Please Swipe TAG or' + Genesis.constants.addCRLF() + //
+      'Tap Mobile Device or' + Genesis.constants.addCRLF() + //
+      'Enter Phone Number';
    },
    //
    //

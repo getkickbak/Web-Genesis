@@ -115,6 +115,14 @@ Ext.define('Genesis.controller.RedeemBase',
          //activeItem.getInnerItems()[i].setVisibility(false);
       }
       console.debug("ReedeemBase: onActivate");
+
+      //
+      // Call Mixins
+      //
+      if (me.mixins && me.mixins.redeemBase)
+      {
+         me.mixins.redeemBase.onActivate.apply(me, arguments);
+      }
    },
    onDeactivate : function(oldActiveItem, c, newActiveItem, eOpts)
    {
