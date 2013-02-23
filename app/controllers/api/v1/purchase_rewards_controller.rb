@@ -216,6 +216,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                   end
                   return
                 end
+                logger.info("This shouln't happen")
                 user_to_tag = UserToTag.first(:fields => [:user_id], :user_tag_id => tag.id)
                 if user_to_tag.nil? && tag.status == :pending
                   user_info = {}
