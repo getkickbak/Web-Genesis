@@ -141,7 +141,6 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
 
   def earn_common
     @venue_id = params[:venue_id]
-    @current_user = nil
     tag = nil
     if signed_in? && APP_PROP["SIMULATOR_MODE"]
       if @venue_id.nil?
