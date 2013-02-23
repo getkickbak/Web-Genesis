@@ -141,6 +141,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
 
   def earn_common
     @venue_id = params[:venue_id]
+    tag = nil
     if signed_in? && APP_PROP["SIMULATOR_MODE"]
       if @venue_id.nil?
         @venue = Venue.first(:offset => 0, :limit => 1)
@@ -203,7 +204,6 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                
           data = encrypted_data[1]
 
-          tag = nil
           if not signed_in?
             if @decrypted_data["tag_id"]
               tag = UserTag.first(:tag_id => @decrypted_data["tag_id"])
