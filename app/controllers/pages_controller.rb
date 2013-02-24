@@ -26,7 +26,6 @@ class PagesController < ApplicationController
 
   def contact_us
     @contact = Contact.new
-    @notice = request.filtered_parameters['notice']
     if signed_in?
       render :template => '/pages/alt_contact_us'
     end
@@ -52,7 +51,6 @@ class PagesController < ApplicationController
 
   def add_business
     @merchant_contact = MerchantContact.new
-    @notice = request.filtered_parameters['notice']
   end
 
   def add_business_create
@@ -60,7 +58,7 @@ class PagesController < ApplicationController
     if @merchant_contact.valid?
       UserMailer.add_merchant_contact_email(@merchant_contact).deliver
       respond_to do |format|
-        format.html { redirect_to(:action => 'add_business', :notice => 'Email was successfully sent.') }
+        format.html { redirect_to({:action => 'add_business'}, {:notice => 'Email was successfully sent.'}) }
       end
     else
       respond_to do |format|
