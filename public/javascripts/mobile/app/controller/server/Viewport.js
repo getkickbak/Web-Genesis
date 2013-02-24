@@ -18,6 +18,10 @@ Ext.define('Genesis.controller.server.Viewport',
    licenseKeyInvalidMsg : 'Missing License Key',
    setupTitle : 'System Initialization',
    unsupportedPlatformMsg : 'This platform is not supported.',
+   licenseKeySuccessMsg : function()
+   {
+      return 'License Key Updated for ' + Genesis.constants.addCRLF() + '[' + Genesis.fn.getPrivKey('venue') + ']';
+   },
    inheritableStatics :
    {
    },
@@ -135,7 +139,22 @@ Ext.define('Genesis.controller.server.Viewport',
             {
                Ext.defer(function()
                {
-                  me.refreshLicenseKey();
+                  me.refreshLicenseKey(function()
+                  {
+                     Ext.device.Notification.show(
+                     {
+                        title : 'License Key Updated!',
+                        message : me.licenseKeySuccessMsg(),
+                        buttons : ['Exit App'],
+                        callback : function()
+                        {
+                           //
+                           // Exit App, because we can't continue without Console Setup data
+                           //
+                           navigator.app.exitApp();
+                        }
+                     });
+                  }, true);
                }, 100, me);
             }
          }
