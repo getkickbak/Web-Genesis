@@ -31,7 +31,7 @@ Ext.define('Genesis.controller.server.Redemptions',
          redemptionsList : 'serverredemptionsview list[tag=redemptionsList]',
          redeemItemCardContainer : 'serverredeemitemdetailview[tag=redeemReward] container[tag=redeemItemCardContainer]',
          redeemItemButtonsContainer : 'serverredeemitemdetailview[tag=redeemReward] container[tag=bottomButtons]',
-         tagId : 'serverredeemitemdetailview[tag=redeemReward] calculator[tag=phoneId] textfield',
+         phoneId : 'serverredeemitemdetailview[tag=redeemReward] calculator[tag=phoneId] textfield',
          mRedeemBtn : 'serverredeemitemdetailview[tag=redeemReward] button[tag=merchantRedeem]',
          //
          // Redeem Rewards
