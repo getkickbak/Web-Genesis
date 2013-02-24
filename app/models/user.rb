@@ -169,15 +169,17 @@ class User
         }
       )
     end
-    user.subscription = Subscription.new
-    user.subscription[:created_ts] = now
-    user.subscription[:update_ts] = now
+    if user.new?
+      user.subscription = Subscription.new
+      user.subscription[:created_ts] = now
+      user.subscription[:update_ts] = now
+    end  
     user.save
     if user.role == "anonymous"
       user.name = "User #{user.id}"
       user.email = "user#{user.id}@getkickbak.com"
       user.save
-    end   
+    end
     return user 
   end
   
