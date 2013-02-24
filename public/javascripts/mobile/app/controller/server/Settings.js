@@ -108,14 +108,8 @@ Ext.define('Genesis.controller.server.Settings',
    {
       var me = this, viewport = me.getViewPortCntlr();
 
-      Ext.Viewport.setMasked(
-      {
-         xtype : 'loadmask',
-         message : me.loadingMsg
-      });
       viewport.refreshLicenseKey(function()
       {
-         Ext.Viewport.setMasked(null);
          Ext.device.Notification.show(
          {
             title : 'License Key Updated!',

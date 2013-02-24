@@ -56,6 +56,11 @@ Ext.define('Genesis.controller.server.Viewport',
          var lstore = Ext.StoreMgr.get('LicenseStore');
          if ((lstore.getRange().length < 1) || (forceRefresh))
          {
+            Ext.Viewport.setMasked(
+            {
+               xtype : 'loadmask',
+               message : me.loadingMsg
+            });
             lstore.removeAll();
             LicenseKey['setGetLicenseKeyURL']();
             lstore.load(
@@ -116,13 +121,23 @@ Ext.define('Genesis.controller.server.Viewport',
       {
          title : me.setupTitle,
          message : msg,
-         buttons : ['Dismiss'],
-         callback : function()
+         buttons : ['Refresh License', 'Exit App'],
+         callback : function(btn)
          {
             //
             // Exit App, because we can't continue without Console Setup data
             //
-            navigator.app.exitApp();
+            if (!btn || (btn.toLowerCase() == 'exit app'))
+            {
+               navigator.app.exitApp();
+            }
+            else
+            {
+               Ext.defer(function()
+               {
+                  me.refreshLicenseKey();
+               }, 100, me);
+            }
          }
       });
    },
