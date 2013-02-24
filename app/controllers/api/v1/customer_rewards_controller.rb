@@ -87,7 +87,6 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       return  
     end
     
-    logger.info("Decrypted data: #{decrypted_data}")
     if params[:frequency]
       if @request.is_status?(:complete)
         logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
@@ -134,7 +133,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
             return
           end
         else
-          logger.error("No such tag_id: #{@decrypted_data["tag_id"]}")
+          logger.error("No such tag_id: #{decrypted_data["tag_id"]}")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.invalid_tag").split(/\n/) } }
