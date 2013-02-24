@@ -10,7 +10,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       sDoneBtn : null,
       sRedeemBtn : null
    },
-   tagIdMaxLength : 10,
+   phoneIdMaxLength : 10,
    redeemPtsConfirmMsg : 'Please confirm to submit',
    // --------------------------------------------------------------------------
    // Utility Functions
@@ -28,7 +28,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       var me = this, value = b.getText();
       var phoneIdField = me.getPhoneId(), phoneId = phoneIdField.getValue(), phoneIdFieldLength = phoneId.length;
 
-      if (phoneIdFieldLength < me.tagIdMaxLength)
+      if (phoneIdFieldLength < me.phoneIdMaxLength)
       {
          switch (value)
          {
@@ -49,7 +49,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
       var me = this, viewport = me.getViewPortCntlr(), container = me.getRedeemItemCardContainer();
       var phoneIdField = me.getPhoneId(), phoneId = phoneIdField.getValue(), phoneIdFieldLength = phoneId.length;
 
-      if (phoneIdFieldLength <= me.tagIdMaxLength)
+      if (phoneIdFieldLength == me.phoneIdMaxLength)
       {
          me.self.playSoundFile(viewport.sound_files['nfcEnd']);
          me.onRedeemItemTap(null);
@@ -85,7 +85,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          Ext.device.Notification.show(
          {
             title : me.getRedeemPopupTitle(),
-            message : me.invalidTagIdFormatMsg(),
+            message : me.invalidPhoneIdFormatMsg(me.phoneIdMaxLength),
             buttons : ['Dismiss']
          });
       }

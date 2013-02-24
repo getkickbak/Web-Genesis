@@ -65,7 +65,7 @@ Ext.define('Genesis.controller.server.Rewards',
       }
    },
    maxValue : 1000.00,
-   tagIdMaxLength : 10,
+   phoneIdMaxLength : 10,
    rewardSuccessfulMsg : 'Transaction Complete',
    rewardFailedMsg : 'Transaction Failed',
    invalidAmountMsg : 'Please enter a valid amount (eg. 5.00), upto $1000',
@@ -147,7 +147,7 @@ Ext.define('Genesis.controller.server.Rewards',
          {
             me.getPhoneId().reset();
             animation.setReverse(true);
-            console.debug("Rewards ContainerActivate Called. Reset TagID ...");
+            console.debug("Rewards ContainerActivate Called. Reset PhoneID ...");
             break;
          }
          case 'qrcodeContainer' :
@@ -433,7 +433,7 @@ Ext.define('Genesis.controller.server.Rewards',
       var me = this, viewport = me.getViewPortCntlr();
       var phoneIdField = me.getPhoneId(), phoneId = phoneIdField.getValue(), phoneIdFieldLength = phoneId.length;
 
-      //if (tagIdFieldLength <= me.tagIdMaxLength)
+      if (phoneIdFieldLength == me.phoneIdMaxLength)
       {
          me.self.playSoundFile(viewport.sound_files['nfcEnd']);
          me.onEarnPtsTap(null);
@@ -463,18 +463,16 @@ Ext.define('Genesis.controller.server.Rewards',
             }
          });
       }
-      /*
-       else
-       {
-       me.self.playSoundFile(viewport.sound_files['nfcError']);
-       Ext.device.Notification.show(
-       {
-       title : 'TAG ID',
-       message : me.invalidTagIdFormatMsg(me.tagIdMaxLength),
-       buttons : ['Dismiss']
-       });
-       }
-       */
+      else
+      {
+         me.self.playSoundFile(viewport.sound_files['nfcError']);
+         Ext.device.Notification.show(
+         {
+            title : me.earnPtsTitle,
+            message : me.invalidPhoneIdFormatMsg(me.phoneIdMaxLength),
+            buttons : ['Dismiss']
+         });
+      }
    },
    // --------------------------------------------------------------------------
    // Misc Event Funcs

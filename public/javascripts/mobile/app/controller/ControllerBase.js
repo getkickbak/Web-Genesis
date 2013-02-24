@@ -24,9 +24,9 @@ Ext.define('Genesis.controller.ControllerBase',
    {
       return 'Invalid ' + length + '-digit Tag ID format (eg. 12345678)';
    },
-   invalidTagIdFormatMsg : function(length)
+   invalidPhoneIdFormatMsg : function(length)
    {
-      return 'Invalid ' + length + '-digit Tag ID format (eg. 12345678)';
+      return 'Invalid ' + length + '-digit Telephone format (eg. 8005551234)';
    },
    transactionCancelledMsg : 'This transaction is cancelled',
    backToMerchantPageMsg : function(venue)
