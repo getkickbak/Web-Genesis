@@ -79,9 +79,6 @@ en:
         birthday: 
           name: "Birthday"
           description: "Get rewarded when you visit on your birthday."
-        vip: 
-          name: "VIP"
-          description: "Get rewarded when you visit %s times."
         menu: 
           name: "Special Menu Item"
           description: "Get rewarded when you buy one %s."
