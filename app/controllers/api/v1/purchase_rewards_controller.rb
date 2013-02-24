@@ -205,7 +205,6 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           data = encrypted_data[1]
 
           if not signed_in?
-            logger.info("decrypted_data: #{@decrypted_data}")
             if @decrypted_data["tag_id"]
               tag = UserTag.first(:tag_id => @decrypted_data["tag_id"])
               if tag
@@ -260,10 +259,10 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 end
                 return
               end
-            elsif @decrypted_data["phone"]
-              @current_user = User.first(:phone => @decrypted_data["phone"])
+            elsif @decrypted_data["phone_id"]
+              @current_user = User.first(:phone => @decrypted_data["phone_id"])
               if @current_user.nil?
-                logger.error("No such phone number: #{@decrypted_data["phone"]}")
+                logger.error("No such phone number: #{@decrypted_data["phone_id"]}")
                 respond_to do |format|
                   #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                   format.json { render :json => { :success => false, :message => t("api.invalid_phone").split(/\n/) } }
