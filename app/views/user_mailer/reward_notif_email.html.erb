@@ -53,7 +53,7 @@
 										<% Common.populate_badge(@customer.badge, :iphone, :mxhdpi) %>
 										<tr style="background-color:#f3f3f4;">
 											<td style="padding:5px 5px 5px 10px;">
-											<% if @reward_info[:birthday_points] > 1 %>
+											<% if @reward_info[:birthday_points] > 0 %>
 												You are also promoted to <b style="color:#c41200;"><%= "#{@customer.badge.type.display_value}" %></b>
 											<% else %>
 												You just got promoted to <b style="color:#c41200;"><%= "#{@customer.badge.type.display_value}" %></b>
@@ -66,11 +66,13 @@
 										</tr>
 										<% end %>
 										<% if @reward_info[:prize_points] > 1 %>
+										<% if @reward_info[:birthday_points] > 0 || @reward_info[:badge_points] > 0 %>
 										<tr>
 											<td colspan="2" style="padding: 10px 0 10px 0;">
 											And just when you think things can't get any better ...
 											</td>
 										</tr>
+										<% end %>
 										<tr style="background-color:#f3f3f4;">
 											<td style="padding:5px 5px 5px 10px;">
 											<% if @reward_info[:birthday_points] == 0 %>
