@@ -102,7 +102,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         end
       end
       @request.destroy if Rails.env == "production"  
-    elsif decrypted_data["tag_id"]
+    else
       if decrypted_data["tag_id"]
         tag = UserTag.first(:tag_id => decrypted_data["tag_id"], :uid => decrypted_data["uid"])
         if tag
