@@ -10,8 +10,8 @@
    <div class="main-inner">
       <div class="container">
          <div class="row">
-            <div class="span6">
-               <div class="widget widget-table action-table">
+            <div class="span9">
+               <div class="widget">
                   <div class="widget-header">
                      <i class="icon-list"></i>
                      <h3>Program Setup</h3>
@@ -29,7 +29,7 @@
                            <%= @checklist[:count] %>
                         </div>
                      </div>
-                     <div>
+                     <div style="margin-top: 10px;">
                         <div>
                            <% if !@checklist[:data][:upload_photo] %>
                            <% proceed_next_step = false %>
@@ -80,7 +80,7 @@
                            Create Challenge
                            <% end %>
                         </div>
-                        <div>
+                        <div style="margin-top: 10px;">
                            <% if @checklist[:data][:venues] && proceed_next_step %>
                            <a href="<%= setup_activate_path %>" class="btn pricetag alignCenter">Activate</a>
                            <% else %>
