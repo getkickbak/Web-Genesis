@@ -205,6 +205,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           data = encrypted_data[1]
 
           if not signed_in?
+            logger.info("decrypted_data: #{@decrypted_data}")
             if @decrypted_data["tag_id"]
               tag = UserTag.first(:tag_id => @decrypted_data["tag_id"])
               if tag

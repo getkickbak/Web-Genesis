@@ -87,6 +87,8 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       return  
     end
     
+    logger.info("decrypted_data: #{decrypted_data}")
+    
     if params[:frequency]
       if @request.is_status?(:complete)
         logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
