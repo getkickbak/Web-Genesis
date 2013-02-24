@@ -26,20 +26,20 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
    onTagIdBtnTap : function(b, e, eOpts, eInfo)
    {
       var me = this, value = b.getText();
-      var tagIdField = me.getTagId(), tagId = tagIdField.getValue(), tagIdFieldLength = tagId.length;
+      var phoneIdField = me.getPhoneId(), phoneId = phoneIdField.getValue(), phoneIdFieldLength = phoneId.length;
 
-      if (tagIdFieldLength < me.tagIdMaxLength)
+      if (phoneIdFieldLength < me.tagIdMaxLength)
       {
          switch (value)
          {
             case 'AC' :
             {
-               tagIdField.reset();
+               phoneIdField.reset();
                break;
             }
             default :
-               tagId += value;
-               tagIdField.setValue(tagId);
+               phoneId += value;
+               phoneIdField.setValue(phoneId);
                break;
          }
       }
@@ -47,16 +47,16 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
    onTagItTap : function()
    {
       var me = this, viewport = me.getViewPortCntlr(), container = me.getRedeemItemCardContainer();
-      var tagIdField = me.getTagId(), tagId = tagIdField.getValue(), tagIdFieldLength = tagId.length;
+      var phoneIdField = me.getPhoneId(), phoneId = phoneIdField.getValue(), phoneIdFieldLength = phoneId.length;
 
-      if (tagIdFieldLength <= me.tagIdMaxLength)
+      if (phoneIdFieldLength <= me.tagIdMaxLength)
       {
          me.self.playSoundFile(viewport.sound_files['nfcEnd']);
          me.onRedeemItemTap(null);
 
          Ext.device.Notification.show(
          {
-            title : 'TAG ID',
+            title : me.getRedeemPopupTitle(),
             message : me.redeemPtsConfirmMsg,
             buttons : ['Confirm', 'Cancel'],
             callback : function(btn)
@@ -68,7 +68,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
                      id : null,
                      result :
                      {
-                        'tagID' : tagId
+                        'phoneID' : phoneId
                      }
                   });
                }
@@ -84,7 +84,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          me.self.playSoundFile(viewport.sound_files['nfcError']);
          Ext.device.Notification.show(
          {
-            title : 'TAG ID',
+            title : me.getRedeemPopupTitle(),
             message : me.invalidTagIdFormatMsg(),
             buttons : ['Dismiss']
          });
@@ -103,6 +103,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
          {
             'uid' : (nfcResult) ? nfcResult.id : null,
             'tag_id' : (nfcResult) ? nfcResult.result['tagID'] : null,
+            'phone_id' : (nfcResult) ? nfcResult.result['phoneID'] : null,
             'expiry_ts' : new Date().addHours(3).getTime()
          }, 'reward')
       }, true);
@@ -297,7 +298,7 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
    {
       var me = this, container = me.getRedeemItemCardContainer();
       container.setActiveItem(0);
-      
+
       console.debug("Server ReedeemBase: onActivate");
    },
    onRedeemItemCardContainerActivate : function(c, value, oldValue, eOpts)
@@ -313,9 +314,9 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
             animation.setReverse(true);
             break;
          }
-         case 'tagId' :
+         case 'phoneId' :
          {
-            me.getTagId().reset();
+            me.getPhoneId().reset();
             animation.setReverse(true);
             break;
          }

@@ -23,7 +23,7 @@ Ext.define('Genesis.controller.server.Rewards',
          },
          rewardsContainer : 'serverrewardsview container[tag=rewards]',
          amount : 'serverrewardsview calculator[tag=amount] textfield',
-         tagId : 'serverrewardsview calculator[tag=tagId] textfield',
+         phoneId : 'serverrewardsview calculator[tag=phoneId] textfield',
          //qrcode : 'serverrewardsview component[tag=qrcode]',
          title : 'serverrewardsview container[tag=qrcodeContainer] component[tag=title]'
       },
@@ -70,6 +70,7 @@ Ext.define('Genesis.controller.server.Rewards',
    rewardFailedMsg : 'Transaction Failed',
    invalidAmountMsg : 'Please enter a valid amount (eg. 5.00), upto $1000',
    earnPtsConfirmMsg : 'Please confirm to submit',
+   earnPtsTitle : 'Earn Reward Points',
    init : function()
    {
       this.callParent(arguments);
@@ -142,9 +143,9 @@ Ext.define('Genesis.controller.server.Rewards',
             console.debug("Rewards ContainerActivate Called. Reset Amount ...");
             break;
          }
-         case 'tagId' :
+         case 'phoneId' :
          {
-            me.getTagId().reset();
+            me.getPhoneId().reset();
             animation.setReverse(true);
             console.debug("Rewards ContainerActivate Called. Reset TagID ...");
             break;
@@ -203,7 +204,7 @@ Ext.define('Genesis.controller.server.Rewards',
                {
                   Ext.device.Notification.show(
                   {
-                     title : 'Earn Reward Points',
+                     title : me.earnPtsTitle,
                      message : me.rewardSuccessfulMsg,
                      buttons : ['OK'],
                      callback : function()
@@ -219,7 +220,7 @@ Ext.define('Genesis.controller.server.Rewards',
                    proxy.supressErrorsPopup = true;
                    Ext.device.Notification.show(
                    {
-                   title : 'Earn Reward Points',
+                   title : me.earnPtsTitle,
                    message : me.rewardFailedMsg,
                    buttons : ['Dismiss'],
                    callback : function()
@@ -268,7 +269,7 @@ Ext.define('Genesis.controller.server.Rewards',
 
       Ext.device.Notification.show(
       {
-         title : 'Earn Reward Points',
+         title : me.earnPtsTitle,
          message : (Genesis.fn.isNative()) ? me.lookingForMobileDeviceMsg() : me.genQRCodeMsg,
          ignoreOnHide : true,
          buttons : [
@@ -409,20 +410,20 @@ Ext.define('Genesis.controller.server.Rewards',
    onTagIdBtnTap : function(b, e, eOpts, eInfo)
    {
       var me = this, value = b.getText();
-      var tagIdField = me.getTagId(), tagId = tagIdField.getValue(), tagIdFieldLength = tagId.length;
+      var phoneIdField = me.getPhoneId(), phoneId = phoneIdField.getValue(), phoneIdFieldLength = phoneId.length;
 
-      if (tagIdFieldLength < me.tagIdMaxLength)
+      if (phoneIdFieldLength < me.phoneIdMaxLength)
       {
          switch (value)
          {
             case 'AC' :
             {
-               tagIdField.reset();
+               phoneIdField.reset();
                break;
             }
             default :
-               tagId += value;
-               tagIdField.setValue(tagId);
+               phoneId += value;
+               phoneIdField.setValue(phoneId);
                break;
          }
       }
@@ -430,7 +431,7 @@ Ext.define('Genesis.controller.server.Rewards',
    onTagItTap : function()
    {
       var me = this, viewport = me.getViewPortCntlr();
-      var tagIdField = me.getTagId(), tagId = tagIdField.getValue(), tagIdFieldLength = tagId.length;
+      var phoneIdField = me.getPhoneId(), phoneId = phoneIdField.getValue(), phoneIdFieldLength = phoneId.length;
 
       //if (tagIdFieldLength <= me.tagIdMaxLength)
       {
@@ -439,7 +440,7 @@ Ext.define('Genesis.controller.server.Rewards',
 
          Ext.device.Notification.show(
          {
-            title : 'TAG ID',
+            title : me.earnPtsTitle,
             message : me.earnPtsConfirmMsg,
             buttons : ['Confirm', 'Cancel'],
             callback : function(btn)
@@ -451,7 +452,7 @@ Ext.define('Genesis.controller.server.Rewards',
                      id : null,
                      result :
                      {
-                        'tagID' : tagId
+                        'phoneID' : phoneId
                      }
                   });
                }
@@ -494,6 +495,7 @@ Ext.define('Genesis.controller.server.Rewards',
          {
             'uid' : (nfcResult) ? nfcResult.id : null,
             'tag_id' : (nfcResult) ? nfcResult.result['tagID'] : null,
+            'phone_id' : (nfcResult) ? nfcResult.result['phoneID'] : null,
          }
       }, true);
    },
