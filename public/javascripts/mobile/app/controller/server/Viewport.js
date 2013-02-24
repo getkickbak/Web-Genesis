@@ -18,6 +18,10 @@ Ext.define('Genesis.controller.server.Viewport',
    licenseKeyInvalidMsg : 'Missing License Key',
    setupTitle : 'System Initialization',
    unsupportedPlatformMsg : 'This platform is not supported.',
+   licenseKeySuccessMsg : function()
+   {
+      return 'License Key Updated for ' + Genesis.constants.addCRLF() + '[' + Genesis.fn.getPrivKey('venue') + ']';
+   },
    inheritableStatics :
    {
    },
@@ -56,6 +60,11 @@ Ext.define('Genesis.controller.server.Viewport',
          var lstore = Ext.StoreMgr.get('LicenseStore');
          if ((lstore.getRange().length < 1) || (forceRefresh))
          {
+            Ext.Viewport.setMasked(
+            {
+               xtype : 'loadmask',
+               message : me.loadingMsg
+            });
             lstore.removeAll();
             LicenseKey['setGetLicenseKeyURL']();
             lstore.load(
@@ -116,13 +125,38 @@ Ext.define('Genesis.controller.server.Viewport',
       {
          title : me.setupTitle,
          message : msg,
-         buttons : ['Dismiss'],
-         callback : function()
+         buttons : ['Refresh License', 'Exit App'],
+         callback : function(btn)
          {
             //
             // Exit App, because we can't continue without Console Setup data
             //
-            navigator.app.exitApp();
+            if (!btn || (btn.toLowerCase() == 'exit app'))
+            {
+               navigator.app.exitApp();
+            }
+            else
+            {
+               Ext.defer(function()
+               {
+                  me.refreshLicenseKey(function()
+                  {
+                     Ext.device.Notification.show(
+                     {
+                        title : 'License Key Updated!',
+                        message : me.licenseKeySuccessMsg(),
+                        buttons : ['Exit App'],
+                        callback : function()
+                        {
+                           //
+                           // Exit App, because we can't continue without Console Setup data
+                           //
+                           navigator.app.exitApp();
+                        }
+                     });
+                  }, true);
+               }, 100, me);
+            }
          }
       });
    },
