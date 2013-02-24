@@ -37,7 +37,7 @@ class PagesController < ApplicationController
     if @contact.valid?
       UserMailer.contact_email(@contact).deliver
       respond_to do |format|
-        format.html { redirect_to(:action => 'contact_us', :notice => 'Email was successfully sent.') }
+        format.html { redirect_to({:action => "contact_us"}, {:notice => 'Email was successfully sent.'}) }
       end
     else
       if signed_in?

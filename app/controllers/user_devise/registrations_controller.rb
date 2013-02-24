@@ -31,6 +31,7 @@ class UserDevise::RegistrationsController < Devise::RegistrationsController
         end    
       end
     rescue DataMapper::SaveFailureError => e
+      logger.error("Exception: " + e.resource.errors.inspect)
       @user = e.resource
       session[:phone_number] = @user.phone
       clean_up_passwords(@user)  
