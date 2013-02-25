@@ -218,7 +218,7 @@ en:
         expired_code: "Authorization code no longer valid."
         invalid_code: "Authorization code is not valid."
         not_available: "Sorry, but the %s is not available at this venue!"
-        insufficient_points: "Not enough points to redeem %s."
+        insufficient_points: "Not enough points to redeem this %s."
         redeem_failure: "Trouble redeeming this %s.\nPlease try again."
         redeem_item_failure: "Trouble redeeming this item.\nPlease try again."
         no_longer_available: "Sorry, but this %s is no longer available!\nPlease choose another."

@@ -362,7 +362,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           logger.info("User(#{user.id}) failed to redeem Reward(#{@reward.id}), insufficient points")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
-            format.json { render :json => { :success => false, :message => t("api.customer_rewards.insufficient_points").split(/\n/) } }
+            format.json { render :json => { :success => false, :message => (t("api.customer_rewards.insufficient_points") % [@reward.mode == :reward ? t("api.reward") : t("api.prize")]).split(/\n/) } }
           end  
         end
       end
