@@ -74,7 +74,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             end
             request_data = { 
               :amount => amount,
-              :data => params[:data]
+              :data => params[:data],
+              :venue_id => @venue.id
             }.to_json
           else
             points = @decrypted_data["points"]
@@ -83,7 +84,8 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             end
             request_data = { 
               :points => points,
-              :data => params[:data]
+              :data => params[:data],
+              :venue_id => @venue.id
             }.to_json
           end  
           if params[:frequency]
@@ -159,36 +161,31 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
     else
       begin
         User.transaction do
-          reward_model_type = @venue.merchant.reward_model.type
           if signed_in?
-            decrypted_data = JSON.parse(@request.data)
-            data = decrypted_data["data"]
-            if reward_model_type.value == "amount_spend"
-              amount = decrypted_data["amount"].to_f
-            else
-              amount = 0.00
-              points = decrypted_data["points"].to_f
-            end  
+            @decrypted_data = JSON.parse(@request.data)
+            data = @decrypted_data["data"]
+            if !(defined? @venue)
+              @venue = Venue.get(@decrypted_data["venue_id"])
+              if @venue.nil?
+                raise "No such venue: #{@decrypted_data["venue_id"]}"
+              end
+            end
+            reward_model_type = @venue.merchant.reward_model.type 
           else
             data = params[:data]
-            if reward_model_type.value == "amount_spend"
-              amount = @decrypted_data["amount"].to_f
-            else
-              amount = 0.00
-              points = @decrypted_data["points"].to_f
-            end
+            reward_model_type = @venue.merchant.reward_model.type
+          end
+          
+          if reward_model_type.value == "amount_spend"
+            amount = @decrypted_data["amount"].to_f
+          else
+            amount = 0.00
+            points = @decrypted_data["points"].to_f
           end
 
           encrypted_data = data.split('$')
           if encrypted_data.length != 2
             raise "Invalid authorization code format"
-          end
-        
-          if !(defined? @venue)
-            @venue = Venue.get(encrypted_data[0])
-            if @venue.nil?
-              raise "No such venue: #{encrypted_data[0]}"
-            end
           end
                 
           if @venue_id && (@venue.id != @venue_id.to_i)
