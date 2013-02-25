@@ -70,9 +70,11 @@
                            <li>
                               <a href="<%= account_password_path %>">Update Password</a>
                            </li>
+                           <% if session[:is_admin] %>
                            <li>
                               <a href="<%= credit_cards_path %>">Billing Info</a>
                            </li>
+                           <% end %>
                         </ul>
                      </li>
                      <li class="">

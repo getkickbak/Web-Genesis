@@ -86,7 +86,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       end
       return  
     end
-    
+        
     if params[:frequency]
       if @request.is_status?(:complete)
         logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
@@ -102,7 +102,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         end
       end
       @request.destroy if Rails.env == "production"  
-    elsif decrypted_data["tag_id"]
+    else
       if decrypted_data["tag_id"]
         tag = UserTag.first(:tag_id => decrypted_data["tag_id"], :uid => decrypted_data["uid"])
         if tag
@@ -140,10 +140,10 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
           end
           return  
         end
-      elsif decrypted_data["phone"]
-        user = User.first(:phone => decrypted_data["phone"])
+      elsif decrypted_data["phone_id"]
+        user = User.first(:phone => decrypted_data["phone_id"])
         if user.nil?
-          logger.error("No such phone number: #{decrypted_data["phone"]}")
+          logger.error("No such phone number: #{decrypted_data["phone_id"]}")
           respond_to do |format|
             #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
             format.json { render :json => { :success => false, :message => t("api.invalid_phone").split(/\n/) } }

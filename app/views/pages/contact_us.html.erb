@@ -6,40 +6,39 @@
 <% end %>
 <% content_for :background do %>
 <div id="page-background-top">
-   <img src="http://files.getkickbak.com/v1/headerimage5.jpg">
+	<img src="http://files.getkickbak.com/v1/headerimage5.jpg">
 </div>
 <div id="page-background-bottom">
-   <img src="http://files.getkickbak.com/v1/contentbg.png">
+	<img src="http://files.getkickbak.com/v1/contentbg.png">
 </div>
 <% end %>
-<div class="container">
-   <% if @notice %>
-   <div class="alert alert-warning">
-      <a class="close" data-dismiss="alert" href="#">×</a>
-      <%= @notice %>
-   </div>
-   <% else %>
-   <div class="alert alert-warning" style="visibility: hidden;">
-      &#160;
-   </div>
-   <% end %>
-   <!--/Cotnact Form-->
-   <div class="row">
-      <div class="span8 createForm">
-         <h2>Email KICKBAK</h2>
-         <%= simple_form_for @contact, :url => create_contact_path do |f| %>
-         <%= f.input :name, :input_html => { :style => 'width:550px;' } %>
-         <% if signed_in? && @contact.errors.empty? %>
-         <%= f.input :email, :input_html => { :style => 'width:550px;', :value => current_user.email } %>
-         <% else %>
-         <%= f.input :email, :input_html => { :style => 'width:550px;' } %>
-         <% end %>
-         <%= f.input :topic, :collection => Contact.topic_list, :input_html => { :style => 'width:560px;' } %>
-         <%= f.input :message, :as => :text, :input_html => { :style => 'width:550px;', :rows => 5 } %>
-         <div class="pull-right">
-            <%= f.button :submit, 'Send', :type => :image, :src => 'http://files.getkickbak.com/v1/send2.png' %>
-         </div>
-         <% end %>
-      </div>
-   </div>
+<div id="container" class="container">
+	<% if flash[:notice] %>
+	<div class="alert alert-warning">
+		<a class="close" data-dismiss="alert" href="#">×</a>
+		<%= flash[:notice] %>
+	</div>
+	<% end %>
+	<!--/Cotnact Form-->
+	<div class="row">
+		<div class="widget">
+			<div class="span8 createForm">
+				<h2>Email KICKBAK</h2>
+				<%= simple_form_for @contact, :url => create_contact_path do |f| %>
+				<%= f.input :name, :input_html => { :style => 'width:550px;' } %>
+				<% if signed_in? && @contact.errors.empty? %>
+				<%= f.input :email, :input_html => { :style => 'width:550px;', :value => current_user.email } %>
+				<% else %>
+				<%= f.input :email, :input_html => { :style => 'width:550px;' } %>
+				<% end %>
+				<%= f.input :topic, :collection => Contact.topic_list, :input_html => { :style => 'width:560px;' } %>
+				<%= f.input :message, :as => :text, :input_html => { :style => 'width:550px;', :rows => 5 } %>
+				<div class="pull-right">
+					<%= f.button :submit, 'Send', :type => :image, :src => 'http://files.getkickbak.com/v1/send2.png' %>
+				</div>
+				<% end %>
+			</div>
+		</div>
+	</div>
 </div>
+

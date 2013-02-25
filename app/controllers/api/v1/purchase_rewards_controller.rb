@@ -141,7 +141,6 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
 
   def earn_common
     @venue_id = params[:venue_id]
-    tag = nil
     if signed_in? && APP_PROP["SIMULATOR_MODE"]
       if @venue_id.nil?
         @venue = Venue.first(:offset => 0, :limit => 1)
@@ -259,10 +258,10 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
                 end
                 return
               end
-            elsif @decrypted_data["phone"]
-              @current_user = User.first(:phone => @decrypted_data["phone"])
+            elsif @decrypted_data["phone_id"]
+              @current_user = User.first(:phone => @decrypted_data["phone_id"])
               if @current_user.nil?
-                logger.error("No such phone number: #{@decrypted_data["phone"]}")
+                logger.error("No such phone number: #{@decrypted_data["phone_id"]}")
                 respond_to do |format|
                   #format.xml  { render :xml => @referral, :status => :created, :location => @referral }
                   format.json { render :json => { :success => false, :message => t("api.invalid_phone").split(/\n/) } }
@@ -691,7 +690,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         Request.set_status(@request, :complete)
         #posts = []
         #Resque.enqueue(ShareOnFacebook, @current_user.id, posts.to_json)
-        if tag && current_user.status != :pending
+        if !signed_in? && @current_user.status != :pending && @current_user.subscription.email_notif
           if @reward_info[:birthday_points] > 0 || @reward_info[:badge_points] > 0 || @reward_info[:prize_points] > 1
             UserMailer.reward_notif_email(@customer, @reward_info).deliver
           elsif eligible_for_reward

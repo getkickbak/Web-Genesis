@@ -31,6 +31,16 @@
 <div class="main">
 	<div class="main-inner">
 		<div class="container">
+			<% if current_merchant.status == :pending %>
+			<ul class="pager">
+				<li class="previous">
+					<%= link_to 'Continue Setup', setup_path %>
+				</li>
+				<li class="previous">
+					<%= link_to 'Back to Venues', venues_path %>
+				</li>
+			</ul>
+			<% end %>
 			<div class="row">
 				<div class="span9">
 					<div class="widget ">

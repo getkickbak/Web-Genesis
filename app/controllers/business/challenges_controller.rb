@@ -35,7 +35,7 @@ module Business
 
       if type
         flash.delete(:error)
-        @challenge = Challenge.new(get_challenge_info()[type])
+        @challenge = Challenge.new(get_challenge_info()[type.value])
         @challenge.type_id = params[:type_id].to_i
         @challenge.type = ChallengeType.id_to_type[@challenge.type_id]
       else
@@ -130,7 +130,7 @@ module Business
 
       type = ChallengeType.id_to_type[params[:type_id].to_i]
       if type
-        challenge_info = get_challenge_info()[type]
+        challenge_info = get_challenge_info()[type.value]
         @challenge.update_without_save(challenge_info)
         @challenge.type_id = params[:type_id].to_i
         @challenge.type = ChallengeType.id_to_type[@challenge.type_id]

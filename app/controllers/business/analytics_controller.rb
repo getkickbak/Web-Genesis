@@ -85,7 +85,7 @@ module Business
     end
     
     def get_revenue_total(venue, date)
-      EarnRewardRecord.sum(:amount, :type => :purchase, :merchant => current_merchant, :created_ts.gte => date)
+      EarnRewardRecord.sum(:amount, :type => :purchase, :merchant => current_merchant, :created_ts.gte => date) || 0.00
     end
     
     def get_rewards_redeemed_total(venue, mode, date = nil)
