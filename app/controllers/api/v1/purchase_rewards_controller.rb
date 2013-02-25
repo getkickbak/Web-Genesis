@@ -690,6 +690,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         Request.set_status(@request, :complete)
         #posts = []
         #Resque.enqueue(ShareOnFacebook, @current_user.id, posts.to_json)
+        logger.info("decrypted_data: #{@decrypted_data}")
         logger.info("before sending reward emails")
         if (@decrypted_data["tag_id"] || @decrypted_data["phone_id"]) && @current_user.status != :pending && @current_user.subscription.email_notif
           if @reward_info[:birthday_points] > 0 || @reward_info[:badge_points] > 0 || @reward_info[:prize_points] > 1
