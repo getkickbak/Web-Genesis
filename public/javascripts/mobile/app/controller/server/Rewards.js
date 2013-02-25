@@ -225,7 +225,7 @@ Ext.define('Genesis.controller.server.Rewards',
                    buttons : ['Dismiss'],
                    callback : function()
                    {
-                   proxy.supressErrorsPopup = false;
+                   proxy.supressErrorsCallbackFn();
                    me.onDoneTap();
                    }
                    });

@@ -181,7 +181,7 @@ Ext.define('Genesis.controller.client.Viewport',
                   buttons : ['Dismiss'],
                   callback : function()
                   {
-                     proxy.supressErrorsPopup = false;
+                     proxy.supressErrorsCallbackFn();
                   }
                });
             }
@@ -190,13 +190,13 @@ Ext.define('Genesis.controller.client.Viewport',
    },
    onUpdateDeviceToken : function()
    {
-      var me = this, mainPage = me.getApplication().getController('client' + '.MainPage');
+      var me = this, mainPage = me.getApplication().getController('client' + '.MainPage'), proxy = Account.getProxy();
 
       if (me.getLoggedIn() && Genesis.constants.device && mainPage && !mainPage.updatedDeviceToken)
       {
          Account['setUpdateRegUserDeviceUrl']();
          console.log("setUpdateRegUserDeviceUrl - Refreshing Device Token ...");
-         Account.getProxy().supressErrorsPopup = true;
+         proxy.supressErrorsPopup = true;
          Account.load(0,
          {
             jsonData :
@@ -208,7 +208,7 @@ Ext.define('Genesis.controller.client.Viewport',
             },
             callback : function(record, operation)
             {
-               Account.getProxy().supressErrorsPopup = false;
+               proxy.supressErrorsPopup = false;
                if (operation.wasSuccessful())
                {
                   mainPage.updatedDeviceToken = true;

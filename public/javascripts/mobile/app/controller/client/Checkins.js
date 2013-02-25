@@ -481,7 +481,7 @@ Ext.define('Genesis.controller.client.Checkins',
                      buttons : ['Dismiss'],
                      callback : function()
                      {
-                        proxy.supressErrorsPopup = false;
+                        proxy.supressErrorsCallbackFn();
                      }
                   });
                }
@@ -500,6 +500,10 @@ Ext.define('Genesis.controller.client.Checkins',
       //
       if ((cestore.getCount() == 0) || forceReload)
       {
+         if (Ext.os.is('Android'))
+         {
+            navigator.splashscreen.hide();
+         }
          me.getGeoLocation();
       }
    },

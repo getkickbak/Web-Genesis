@@ -264,7 +264,7 @@ Ext.define('Genesis.controller.client.Settings',
                      buttons : ['Dismiss'],
                      callback : function()
                      {
-                        proxy.supressErrorsPopup = false;
+                        proxy.supressErrorsCallbackFn();
                      }
                   });
                }

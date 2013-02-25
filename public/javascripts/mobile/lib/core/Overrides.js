@@ -812,10 +812,123 @@ Ext.define('Genesis.data.writer.Writer',
 Ext.define('Genesis.data.proxy.Server',
 {
    override : 'Ext.data.proxy.Server',
+   errorResponseHandlerFn : function(metaData, messages, success, operation, request, response, callback, scope)
+   {
+      var me = this, action = operation.getAction(), app = _application;
+      var viewport = app.getController(((!merchantMode) ? 'client' : 'server') + '.Viewport');
+
+      switch (metaData['rescode'])
+      {
+         //
+         // Error from server, display this to user
+         //
+         case 'server_error' :
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Server Error(s)',
+               message : messages,
+               buttons : ['Dismiss'],
+               callback : function(btn)
+               {
+                  if (metaData['session_timeout'])
+                  {
+                     viewport.resetView();
+                     viewport.redirectTo('login');
+                     return;
+                  }
+                  else
+                  {
+                     //
+                     // No need to take any action. Let to user try again.
+                     //
+                  }
+               }
+            });
+            break;
+         }
+         //
+         // Sign in failed due to invalid Facebook info, Create Account.
+         //
+         case 'login_invalid_facebook_info' :
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Create Account',
+               message : Genesis.constants.createAccountMsg,
+               buttons : ['OK'],
+               callback : function(btn)
+               {
+                  viewport.setLoggedIn(false);
+                  viewport.redirectTo('createAccount');
+               }
+            });
+            return;
+         }
+         case 'update_account_invalid_info' :
+         case 'signup_invalid_info' :
+         case 'update_account_invalid_facebook_info' :
+         case 'login_invalid_info' :
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Login Error',
+               message : messages,
+               buttons : ['Dismiss'],
+               callback : function(btn)
+               {
+                  viewport.resetView();
+                  viewport.redirectTo('login');
+               }
+            });
+            return;
+         }
+         default:
+            //console.log("Error - " + metaData['rescode']);
+            if (messages && (messages != 'Error Connecting to Server'))
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Error',
+                  message : messages,
+                  buttons : ['Dismiss'],
+                  callback : function()
+                  {
+                     if (me._errorCallback)
+                     {
+                        me._errorCallback();
+                        delete me._errorCallback;
+                     }
+                  }
+               });
+            }
+            else
+            if (operation.initialConfig.doNotRetryAttempt)
+            {
+               Ext.device.Notification.show(
+               {
+                  title : 'Network Error',
+                  message : "Error Contacting Server",
+                  buttons : ['Dismiss'],
+                  callback : function()
+                  {
+                     if (me._errorCallback)
+                     {
+                        me._errorCallback();
+                        delete me._errorCallback;
+                     }
+                  }
+               });
+            }
+            break;
+      }
+      console.debug("Ajax ErrorHandler called. Operation(" + operation.wasSuccessful() + ")" + //
+      ((messages) ? '\n' + messages : ''));
+      me.fireEvent('exception', me, response, operation);
+   },
    processResponse : function(success, operation, request, response, callback, scope)
    {
-      var me = this, action = operation.getAction(), reader = me.getReader(), resultSet, app = _application;
-      var viewport = app.getController(((!merchantMode) ? 'client' : 'server') + '.Viewport'), messages, metaData;
+      var me = this, action = operation.getAction(), reader = me.getReader(), resultSet, messages, metaData;
 
       //console.debug("request = [" + Ext.encode(operation.initialConfig) + "]");
       if (response.timedout || ((response.status == 0) && (!request.aborted) && (!operation.initialConfig.doNotRetryAttempt)))
@@ -863,145 +976,19 @@ Ext.define('Genesis.data.proxy.Server',
             callback.call(scope || me, operation);
          }
 
-         //
-         // Supress Error Messages on Manual Override
-         //
-         if (!me.supressErrorsPopup)
+         if (me.supressErrorsPopup)
          {
-            switch (metaData['rescode'])
+            me.supressErrorsCallbackFn = function()
             {
-               //
-               // Error from server, display this to user
-               //
-               case 'server_error' :
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Server Error(s)',
-                     message : messages,
-                     buttons : ['Dismiss'],
-                     callback : function(btn)
-                     {
-                        if (metaData['session_timeout'])
-                        {
-                           viewport.resetView();
-                           viewport.redirectTo('login');
-                           return;
-                        }
-                        else
-                        {
-                           //
-                           // No need to take any action. Let to user try again.
-                           //
-                        }
-                     }
-                  });
-                  break;
-               }
-               //
-               // Sign in failed due to invalid Facebook info, Create Account.
-               //
-               case 'login_invalid_facebook_info' :
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Create Account',
-                     message : Genesis.constants.createAccountMsg,
-                     buttons : ['OK'],
-                     callback : function(btn)
-                     {
-                        viewport.setLoggedIn(false);
-                        viewport.redirectTo('createAccount');
-                     }
-                  });
-                  return;
-               }
-               case 'update_account_invalid_info' :
-               case 'signup_invalid_info' :
-               case 'update_account_invalid_facebook_info' :
-               case 'login_invalid_info' :
-               {
-                  Ext.device.Notification.show(
-                  {
-                     title : 'Login Error',
-                     message : messages,
-                     buttons : ['Dismiss'],
-                     callback : function(btn)
-                     {
-                        viewport.resetView();
-                        viewport.redirectTo('login');
-                     }
-                  });
-                  return;
-               }
-               default:
-                  //console.log("Error - " + metaData['rescode']);
-                  if (messages)
-                  {
-                     Ext.device.Notification.show(
-                     {
-                        title : 'Error',
-                        message : messages,
-                        buttons : ['Dismiss'],
-                        callback : function()
-                        {
-                           if (me._errorCallback)
-                           {
-                              me._errorCallback();
-                              delete me._errorCallback;
-                           }
-                        }
-                     });
-                  }
-                  else
-                  if (operation.initialConfig.doNotRetryAttempt)
-                  {
-                     Ext.device.Notification.show(
-                     {
-                        title : 'Network Error',
-                        message : "Error Contacting Server",
-                        buttons : ['Dismiss'],
-                        callback : function()
-                        {
-                           if (me._errorCallback)
-                           {
-                              me._errorCallback();
-                              delete me._errorCallback;
-                           }
-                        }
-                     });
-                  }
-                  break;
+               me.supressErrorsPopup = false;
+               me.errorResponseHandlerFn(metaData, messages, success, operation, request, response, callback, scope);
+               delete me.supressErrorsCallbackFn;
             }
          }
          else
          {
-            switch (metaData['rescode'])
-            {
-               //
-               // Error from server, display this to user
-               //
-               case 'server_error' :
-               {
-                  if (metaData['session_timeout'])
-                  {
-                     viewport.resetView();
-                     viewport.redirectTo('login');
-                     return;
-                  }
-                  else
-                  {
-                     //
-                     // No need to take any action. Let to user try again.
-                     //
-                  }
-                  break;
-               }
-            }
+            me.errorResponseHandlerFn(metaData, messages, success, operation, request, response, callback, scope);
          }
-         console.debug("Ajax ErrorHandler called. Operation(" + operation.wasSuccessful() + ")" + //
-         ((messages) ? '\n' + messages : ''));
-         me.fireEvent('exception', me, response, operation);
       };
 
       if (!response.aborted)

@@ -205,7 +205,7 @@ Ext.define('Genesis.controller.server.Challenges',
                    buttons : ['Dismiss'],
                    callback : function()
                    {
-                   proxy.supressErrorsPopup = false;
+                   proxy.supressErrorsCallbackFn();
                    }
                    });
                    */

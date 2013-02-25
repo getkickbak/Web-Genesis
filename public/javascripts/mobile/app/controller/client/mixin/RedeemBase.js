@@ -200,7 +200,7 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                    buttons : ['Dismiss'],
                    callback : function()
                    {
-                   proxy.supressErrorsPopup = false;
+                   proxy.supressErrorsCallbackFn();
                    me.onDoneTap();
                    }
                    });
