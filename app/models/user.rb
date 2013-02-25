@@ -32,7 +32,6 @@ class User
   property :last_sign_in_ip, String
   ## Token authenticatable
   property :authentication_token, String
-  property :facebook_id, String, :default => ""
   property :role, String, :required => true, :default => "anonymous"
   property :status, Enum[:active, :pending, :suspended, :deleted], :required => true, :default => :active
   property :created_ts, DateTime, :default => ::Constant::MIN_TIME
