@@ -48,6 +48,7 @@ module Business
         @venue_ids << venue.id
       end
       
+      logger.info("I am here")
       respond_to do |format|
         format.html # index.html.erb
         #format.xml  { render :xml => @merchants }
