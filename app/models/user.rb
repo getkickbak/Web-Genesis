@@ -121,6 +121,7 @@ class User
             user.name = name
             user.email = email
             user.phone = phone
+            user.current_password = password
             user.password = password
             user.password_confirmation = password
             user.role = role
