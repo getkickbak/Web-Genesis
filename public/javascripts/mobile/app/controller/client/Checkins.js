@@ -500,6 +500,10 @@ Ext.define('Genesis.controller.client.Checkins',
       //
       if ((cestore.getCount() == 0) || forceReload)
       {
+         if (Ext.os.is('Android'))
+         {
+            navigator.splashscreen.hide();
+         }
          me.getGeoLocation();
       }
    },
