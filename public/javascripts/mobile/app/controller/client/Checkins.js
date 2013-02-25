@@ -544,10 +544,10 @@ Ext.define('Genesis.controller.client.Checkins',
             tbbar.setTitle(' ');
             tbbar.addCls('kbTitle');
             tbb.setDisabled(true);
-            tbb.show();
+            //tbb.show();
             break;
          case 'explore' :
-            tbb.hide();
+            //tbb.hide();
             break;
       }
       //activeItem.createView();
