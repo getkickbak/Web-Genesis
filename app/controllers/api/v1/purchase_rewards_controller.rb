@@ -690,6 +690,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         Request.set_status(@request, :complete)
         #posts = []
         #Resque.enqueue(ShareOnFacebook, @current_user.id, posts.to_json)
+        logger.info("before sending reward emails")
         if (@decrypted_data["tag_id"] || @decrypted_data["phone_id"]) && @current_user.status != :pending && @current_user.subscription.email_notif
           if @reward_info[:birthday_points] > 0 || @reward_info[:badge_points] > 0 || @reward_info[:prize_points] > 1
             UserMailer.reward_notif_email(@customer, @reward_info).deliver
@@ -698,9 +699,11 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
             UserMailer.eligible_reward_email(@customer, @reward_info).deliver
           end  
         end
+        logger.info("before sending referral emails")
         if referral_challenge
           UserMailer.referral_challenge_confirm_email(referrer.user, @current_user, @venue, referral_record).deliver
         end
+        logger.info("before rendering template")
         render :template => '/api/v1/purchase_rewards/earn'
         logger.info(
           "User(#{@current_user.id}) successfully earned #{@reward_info[:points]} points, #{@reward_info[:signup_points]} signup points, #{@reward_info[:referral_points]} referral points, #{@reward_info[:birthday_points]} birthday points, #{@reward_info[:badge_points]} badge points, #{@reward_info[:prize_points]} prize points at Venue(#{@venue.id})"
