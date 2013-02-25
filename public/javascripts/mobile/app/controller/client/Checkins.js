@@ -481,7 +481,7 @@ Ext.define('Genesis.controller.client.Checkins',
                      buttons : ['Dismiss'],
                      callback : function()
                      {
-                        proxy.supressErrorsPopup = false;
+                        proxy.supressErrorsCallbackFn();
                      }
                   });
                }

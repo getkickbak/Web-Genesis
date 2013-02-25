@@ -779,7 +779,7 @@ Ext.define('Genesis.controller.client.Challenges',
                   buttons : ['Try Again', 'Cancel'],
                   callback : function(btn)
                   {
-                     proxy.supressErrorsPopup = false;
+                     proxy.supressErrorsPopup = true;
                      if (btn.toLowerCase() == 'try again')
                      {
                         Ext.defer(me.fireEvent, 1 * 1000, me, ['fbphotouploadcomplete']);
