@@ -183,21 +183,19 @@ Ext.define('Genesis.controller.server.mixin.RedeemBase',
                }
                else
                {
-                  proxy._errorCallback = Ext.bind(me.onDoneTap, me);
-                  /*
-                   proxy.supressErrorsPopup = true;
-                   Ext.device.Notification.show(
-                   {
-                   title : me.getRedeemPopupTitle(),
-                   message : me.redeemFailedMsg,
-                   buttons : ['Dismiss'],
-                   callback : function()
-                   {
-                   proxy.supressErrorsCallbackFn();
-                   me.onDoneTap();
-                   }
-                   });
-                   */
+                  //proxy._errorCallback = Ext.bind(me.onDoneTap, me);
+                  proxy.supressErrorsPopup = true;
+                  Ext.device.Notification.show(
+                  {
+                     title : me.getRedeemPopupTitle(),
+                     message : me.redeemFailedMsg,
+                     buttons : ['Dismiss'],
+                     callback : function()
+                     {
+                        proxy.supressErrorsCallbackFn();
+                        me.onDoneTap();
+                     }
+                  });
                }
             }
          });
