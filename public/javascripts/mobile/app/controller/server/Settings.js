@@ -88,7 +88,7 @@ Ext.define('Genesis.controller.server.Settings',
       }
    },
    tagIdLength : 8,
-   writeTagEnabled : true,
+   writeTagEnabled : false,
    proceedToUpdateLicenseMsg : 'Please confirm to proceed with License Update',
    noLicenseKeyScannedMsg : 'No License Key was found!',
    createTagMsg : function()
