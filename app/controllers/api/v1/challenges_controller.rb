@@ -165,7 +165,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
             :latitude => @venue.latitude,
             :longitude => @venue.longitude
           }  
-          @request = Request.match(request_info)
+          @request = Request.match(request_info, @venue.merchant)
           if @request.nil?
             raise "No matching challenge complete request"
           end

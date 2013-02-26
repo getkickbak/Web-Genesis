@@ -23,7 +23,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           :latitude => params[:latitude] || @venue.latitude,
           :longitude => params[:longitude] || @venue.longitude
         }  
-        @request = Request.match(request_info)
+        @request = Request.match(request_info, @venue.merchant)
         if @request.nil?
           logger.info("No matching earn points request")
           respond_to do |format|
