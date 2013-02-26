@@ -687,6 +687,9 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
         Request.set_status(@request, :complete)
         #posts = []
         #Resque.enqueue(ShareOnFacebook, @current_user.id, posts.to_json)
+        if @current_user.subscription.nil?
+          Subscription.create(@current_user)
+        end
         if !signed_in? && @current_user.status != :pending && @current_user.subscription.email_notif
           if @reward_info[:birthday_points] > 0 || @reward_info[:badge_points] > 0 || @reward_info[:prize_points] > 1
             UserMailer.reward_notif_email(@customer, @reward_info).deliver
