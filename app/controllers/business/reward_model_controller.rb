@@ -44,14 +44,14 @@ module Business
               reward.points = (reward.price / @reward_model.price_per_prize_point / @reward_model.prize_rebate_rate * 100).to_i
             end
             reward.update_ts = now
-            reward.save
+            reward.save!
           end
           challenges = Challenge.all(:merchant => current_merchant)
           challenges.each do |challenge|
             challenge.type_id = challenge.type.id
             challenge.points = (challenge.reward_amount / @reward_model.price_per_point / @reward_model.rebate_rate * 100).to_i
             challenge.update_ts = now
-            challenge.save
+            challenge.save!
           end
           respond_to do |format|
             format.html { redirect_to({:action => "index"}, {:notice => msg}) }
