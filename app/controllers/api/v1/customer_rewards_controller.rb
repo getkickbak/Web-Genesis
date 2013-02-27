@@ -97,7 +97,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       else
         logger.info("Venue(#{@venue.id}) failed to complete Request(#{@request.id})")
         request_data = JSON.parse(@request.data)
-        if request_data.include? :message
+        if request_data["message"]
           message = t("api.customer_rewards.redeem_mismatch").split(/\n/)
         else
           message = (t("api.customer_rewards.redeem_failure") % [@reward.mode == :reward ? t("api.reward") : t("api.prize")]).split(/\n/)  
