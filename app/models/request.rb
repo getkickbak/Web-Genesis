@@ -85,12 +85,13 @@ class Request
     return nil    
   end
   
-  def self.set_status(request, status)
+  def self.set_status(request, status, data = nil)
     if (defined? request) && request
       c = File.open(request.channel, "w+")
       c.puts status.to_s
       c.flush
       request.status = status
+      request.data = data if data
       request.update_ts = Time.now
       request.save
     end  
