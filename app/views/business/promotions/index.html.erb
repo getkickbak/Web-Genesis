@@ -41,6 +41,9 @@
 								<% @promotions.each do |promotion| %>
 								<li>
 									<div class="news-item-detail">
+										<p class="news-item-header">
+											<%= promotion.subject %>
+										</p>
 										<p class="news-item-preview">
 											<%= promotion.message %>
 										</p>

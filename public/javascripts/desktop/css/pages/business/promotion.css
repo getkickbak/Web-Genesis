@@ -1,4 +1,16 @@
 .news-item-detail img {
-	margin-top: 1em;
 	margin-bottom: 1em;
+}
+
+.news-item-header {
+	font-weight: bold;
+	margin-bottom: 1em;
+}
+
+.news-item-preview {
+	margin-bottom: 1em;
+}
+
+.news-item-misc {
+	font-size: 12px;
 }
