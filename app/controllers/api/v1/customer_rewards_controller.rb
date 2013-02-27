@@ -97,6 +97,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       else
         logger.info("Venue(#{@venue.id}) failed to complete Request(#{@request.id})")
         request_data = JSON.parse(@request.data)
+        logger.info("request_data: #{request_data}")
         if request_data["message"]
           message = request_data["message"]
         else
