@@ -40,9 +40,9 @@ class Request
     return request
   end
   
-  def self.match(request_info, merchant = nil)
+  def self.match(request_info, user = nil)
     if Rails.env == 'production'
-      if merchant.nil? || (merchant && merchant.role == "merchant")
+      if user.nil? || (user && user.role != "test")
         c = lambda {
           return DataMapper.repository(:default).adapter.select(
             "SELECT id, round( 6371000 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ), 1) AS distance
