@@ -96,7 +96,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
         end
       else
         logger.info("Venue(#{@venue.id}) failed to complete Request(#{@request.id})")
-        @request = Request.get(@request.id)
+        @request.reload
         request_data = JSON.parse(@request.data)
         logger.info("request_data: #{request_data}")
         if request_data["message"]
@@ -277,7 +277,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       Customer.transaction do
         @mutex = CacheMutex.new(@customer.mutex_key, Cache.memcache)
         acquired = @mutex.acquire
-        @customer = Customer.get(@customer.id)
+        @customer.reload
         
         if @reward.time_limited && (@reward.expiry_date < Date.today)
           Request.set_status(@request, :failed)

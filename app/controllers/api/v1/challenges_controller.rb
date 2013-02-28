@@ -192,7 +192,7 @@ class Api::V1::ChallengesController < Api::V1::BaseApplicationController
         if satisfied
           @mutex = CacheMutex.new(@customer.mutex_key, Cache.memcache)
           acquired = @mutex.acquire
-          @customer = Customer.get(@customer.id)
+          @customer.reload
           @account_info = { :points => @customer.points }
           @reward_info = { :points => 0 }
           if points_eligible?
