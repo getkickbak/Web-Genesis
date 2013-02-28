@@ -120,7 +120,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
     end
     
     if params[:frequency]
-      if @request.is_status?(:complete)
+      if (response = @request.is_status?(:complete))[:result]
         logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
         respond_to do |format|
           #format.xml  { render :xml => @referral, :status => :created, :location => @referral }

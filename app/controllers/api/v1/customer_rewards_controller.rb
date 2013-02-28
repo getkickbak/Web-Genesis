@@ -88,7 +88,7 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
     end
         
     if params[:frequency]
-      if @request.is_status?(:complete)
+      if (response = @request.is_status?(:complete))[:result]
         logger.info("Venue(#{@venue.id}) successfully completed Request(#{@request.id})")
         respond_to do |format|
           #format.xml  { render :xml => @referral.errors, :status => :unprocessable_entity }
@@ -97,10 +97,10 @@ class Api::V1::CustomerRewardsController < Api::V1::BaseApplicationController
       else
         logger.info("Venue(#{@venue.id}) failed to complete Request(#{@request.id})")
         @request.reload
-        request_data = JSON.parse(@request.data)
-        logger.info("request_data: #{request_data}")
-        if request_data["message"]
-          message = request_data["message"]
+        result_data = JSON.parse(response[:data])
+        logger.info("result_data: #{result_data}")
+        if result_data["message"]
+          message = result_data["message"]
         else
           message = (t("api.customer_rewards.redeem_failure") % [@reward.mode == :reward ? t("api.reward") : t("api.prize")]).split(/\n/)  
         end  
