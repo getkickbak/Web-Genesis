@@ -354,7 +354,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
       Customer.transaction do
         @customer_mutex = CacheMutex.new(@customer.mutex_key, Cache.memcache)
         acquired = @customer_mutex.acquire
-        @customer.reload
+        @customer = Customer.get(@customer.id)
         #logger.debug("Authorized to earn points.")
         prize_points = 1
         @reward_info = { :points => 0, :signup_points => 0, :referral_points => 0, :birthday_points => 0, :badge_points => 0, :prize_points => 0, :eligible_prize_id => 0 }
@@ -366,7 +366,7 @@ class Api::V1::PurchaseRewardsController < Api::V1::BaseApplicationController
           referrer = Customer.get(referral_record.referrer_id)
           @referrer_mutex = CacheMutex.new(referrer.mutex_key, Cache.memcache)
           acquired = @referrer_mutex.acquire
-          referrer.reload
+          referrer = Customer.get(referrer.id)
           referrer_reward_record = EarnRewardRecord.new(
             :type => :challenge,
             :ref_id => challenge.id,

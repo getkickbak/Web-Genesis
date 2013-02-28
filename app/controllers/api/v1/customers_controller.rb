@@ -272,10 +272,10 @@ class Api::V1::CustomersController < Api::V1::BaseApplicationController
           end
           @sender_mutex = CacheMutex.new(sender.mutex_key, Cache.memcache)
           acquired = @sender_mutex.acquire
-          sender.reload
+          sender = Customer.get(sender.id)
           @recipient_mutex = CacheMutex.new(@customer.mutex_key, Cache.memcache)
           acquired = @recipient_mutex.acquire
-          @customer.reload
+          @customer = Customer.get(@customer.id)
           if sender.points >= @record.points
             now = Time.now
             sender.points -= @record.points
