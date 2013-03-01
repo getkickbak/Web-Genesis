@@ -171,8 +171,7 @@ Ext.define('Genesis.controller.client.Checkins',
             {
                me.fireEvent('checkinMerchant', mode, metaData, venueId, records[0], operation, callback);
             }
-            else
-            if (!operation.wasSuccessful() && !metaData)
+            else if (!operation.wasSuccessful() && !metaData)
             {
                console.log(me.metaDataMissingMsg);
             }
@@ -291,18 +290,21 @@ Ext.define('Genesis.controller.client.Checkins',
    onCheckinScanTap : function(b, e, eOpts, einfo)
    {
       // Scan QR Code to confirm Checkin
-      this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueScanCheckinUrl', 'scan', function()
-      {
-         //Ext.device.Notification.beep();
-      });
+      this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueScanCheckinUrl', 'scan', Ext.emptyFn);
    },
-   onCheckinTap : function(b, e, eOpts, einfo)
+   onCheckinTap : function(promotion)
    {
-      // Already in Merchant Account Page, or Venue info is already loaded, No need to Scan QR Code to confirm Checkin
-      this.onCheckInScanNow(b, e, eOpts, einfo, 'checkin', 'setVenueCheckinUrl', 'noscan', function()
+      var me = this;
+      
+      if (promotion)
       {
-         //Ext.device.Notification.beep();
-      });
+         var controller = me.getApplication().getController('client' + '.Merchants');
+         var page = controller.getMain();
+         page.promotion = true;
+      }
+
+      // Checkin directly to Venue
+      me.onCheckInScanNow(null, null, null, null, 'checkin', 'setVenueCheckinUrl', 'noscan', Ext.emptyFn);
    },
    onNonCheckinTap : function(b, e, eOpts, einfo, callback)
    {

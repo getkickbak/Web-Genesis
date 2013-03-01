@@ -1,6 +1,12 @@
 Ext.define('Genesis.controller.client.Settings',
 {
    extend : 'Genesis.controller.SettingsBase',
+   settingsTitle : 'Account Settings',
+   enableFBMsg : 'By enabling Facebook connectivity, you will be received additional reward points everytime we update your KICKBAK activity to your Facebook account!',
+   disableFBMsg : '',
+   enableTwitterMsg : 'By enabling Twitter connectivity, you will be received additional reward points everytime we update your KICKBAK activity to their site!',
+   disableTwitterMsg : '',
+   twitterUnconfiguredMsg : 'Please configure your Twitter App',
    inheritableStatics :
    {
       accountValidateFailedMsg : function(msg)
@@ -42,7 +48,7 @@ Ext.define('Genesis.controller.client.Settings',
                console.log(message);
                Ext.device.Notification.show(
                {
-                  title : 'Account Settings',
+                  title : me.settingsTitle,
                   message : message,
                   buttons : ['Dismiss']
                });
@@ -69,6 +75,10 @@ Ext.define('Genesis.controller.client.Settings',
          'clientsettingspageview togglefield[name=facebook]' :
          {
             change : 'onFacebookChange'
+         },
+         'clientsettingspageview togglefield[name=twitter]' :
+         {
+            change : 'onTwitterChange'
          },
          'clientsettingspageview listfield[name=changepassword]' :
          {
@@ -100,6 +110,11 @@ Ext.define('Genesis.controller.client.Settings',
          {
             fn : 'onToggleFB',
             buffer : 5000
+         },
+         'toggleTwitter' :
+         {
+            fn : 'onToggleTwitter',
+            buffer : 300
          }
       }
    },
@@ -170,8 +185,7 @@ Ext.define('Genesis.controller.client.Settings',
          {
             f[i] = f.fn(f.field);
          }
-         else
-         if (db['fbResponse'])
+         else if (db['fbResponse'])
          {
             f[i] = f.fbFn(f.field);
          }
@@ -184,14 +198,15 @@ Ext.define('Genesis.controller.client.Settings',
          }
       }
 
-      console.log("enableFB - " + db['enableFB']);
+      console.log("enableFB - " + db['enableFB'] + ", enableTwitter - " + db['enableTwitter']);
       me.initializing = true;
       form.setValues(
       {
          birthday : fields['birthday'].birthday,
          phone : fields['phone'].phone,
          //tagid : db['account'].virtual_tag_id || 'None',
-         facebook : (db['enableFB']) ? 1 : 0
+         facebook : (db['enableFB']) ? 1 : 0,
+         twitter : (db['enableTwitter']) ? 1 : 0
       });
       form.query('textfield[name=user]')[0].setLabel(db['account'].name + '<br/>' + '<label>' + db['account'].email + "</label>");
       me.initializing = false;
@@ -219,6 +234,19 @@ Ext.define('Genesis.controller.client.Settings',
       me.self.playSoundFile(viewport.sound_files['clickSound']);
 
       me.fireEvent('toggleFB', toggle, slider, thumb, newValue, oldValue, eOpts);
+   },
+   onTwitterChange : function(toggle, slider, thumb, newValue, oldValue, eOpts)
+   {
+      var me = this, viewport = me.getViewPortCntlr();
+
+      if (me.initializing)
+      {
+         return;
+      }
+
+      me.self.playSoundFile(viewport.sound_files['clickSound']);
+
+      me.fireEvent('toggleTwitter', toggle, slider, thumb, newValue, oldValue, eOpts);
    },
    onAccountUpdateTap : function(b, e, eOpts)
    {
@@ -249,7 +277,7 @@ Ext.define('Genesis.controller.client.Settings',
                {
                   Ext.device.Notification.show(
                   {
-                     title : 'Account Settings',
+                     title : me.settingsTitle,
                      message : me.accountUpdateSuccessMsg,
                      buttons : ['OK']
                   });
@@ -259,7 +287,7 @@ Ext.define('Genesis.controller.client.Settings',
                   proxy.supressErrorsPopup = true;
                   Ext.device.Notification.show(
                   {
-                     title : 'Account Settings',
+                     title : me.settingsTitle,
                      message : me.accountUpdateFailedMsg,
                      buttons : ['Dismiss'],
                      callback : function()
@@ -278,7 +306,18 @@ Ext.define('Genesis.controller.client.Settings',
    onToggleFB : function(toggle, slider, thumb, newValue, oldValue, eOpts)
    {
       var me = this, db = Genesis.db.getLocalDB();
-
+      var updateFBSettings = function(params)
+      {
+         Ext.defer(function()
+         {
+            Ext.device.Notification.show(
+            {
+               title : 'Facebook Connect',
+               message : me.fbLoggedInIdentityMsg(params['email']),
+               buttons : ['OK']
+            });
+         }, 1, me);
+      }
       if (newValue == 1)
       {
          Genesis.fb.facebook_onLogin(function(params, operation)
@@ -294,18 +333,30 @@ Ext.define('Genesis.controller.client.Settings',
             else
             {
                toggle.originalValue = newValue;
-               Ext.device.Notification.show(
+               /*
+               if (!db['enableTwitter'])
                {
-                  title : 'Facebook Connect',
-                  message : me.fbLoggedInIdentityMsg(params['email']),
-                  buttons : ['OK']
-               });
+                  Ext.device.Notification.show(
+                  {
+                     title : me.settingsTitle,
+                     message : me.enableFBMsg,
+                     buttons : ['Dismiss'],
+                     callback : function()
+                     {
+                        updateFBSettings(params);
+                     }
+                  });
+               }
+               else
+               */
+               {
+                  updateFBSettings(params);
+               }
                me.updateAccountInfo();
             }
-         }, true);
+         }, false);
       }
-      else
-      if (db['enableFB'])
+      else if (db['enableFB'])
       {
          console.debug("Cancelling Facebook Login ...");
          var params =
@@ -339,13 +390,74 @@ Ext.define('Genesis.controller.client.Settings',
                      Genesis.fb.facebook_onLogout(null, true);
                   }
                }
-               else
-               if (me.getSettingsPage().isVisible())
+               else if (me.getSettingsPage().isVisible())
                {
                   toggle.toggle();
                }
             }
          });
+      }
+   },
+   onToggleTwitter : function(toggle, slider, thumb, newValue, oldValue, eOpts)
+   {
+      var me = this, db = Genesis.db.getLocalDB();
+      var updateTwitterSettings = function()
+      {
+         Ext.device.Notification.show(
+         {
+            title : me.settingsTitle,
+            message : me.enableTwitterMsg,
+            buttons : ['Dismiss']
+         });
+         db['enableTwitter'] = true;
+         Genesis.db.setLocalDB(db);
+      };
+
+      if (newValue == 1)
+      {
+         console.debug("Enabling Twitter Login ...");
+         if (Genesis.fn.isNative())
+         {
+            window.plugins.twitter.isTwitterSetup(function(r)
+            {
+               if (r == 1)
+               {
+                  if (!db['enableFB'])
+                  {
+                     //
+                     // Update Server to enable Twitter updates
+                     //
+                     updateTwitterSettings();
+                  }
+               }
+               else
+               {
+                  Ext.device.Notification.show(
+                  {
+                     title : me.settingsTitle,
+                     message : me.twitterUnconfiguredMsg,
+                     buttons : ['Dismiss']
+                  });
+                  if (me.getSettingsPage().isVisible())
+                  {
+                     toggle.toggle();
+                  }
+               }
+            });
+         }
+         else
+         {
+            updateTwitterSettings();
+         }
+      }
+      else if (db['enableTwitter'])
+      {
+         console.debug("Cancelling Twitter Login ...");
+         //
+         // Update Server to disable Twitter updates
+         //
+         db['enableTwitter'] = false;
+         Genesis.db.setLocalDB(db);
       }
    },
    // --------------------------------------------------------------------------

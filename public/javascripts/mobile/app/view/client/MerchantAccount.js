@@ -248,16 +248,18 @@ Ext.define('Genesis.view.client.MerchantAccount',
                itemTpl : Ext.create('Ext.XTemplate',
                // @formatter:off
                '<div class="itemWrapper" style="position:relative;{[this.getDisclose(values)]}">',
-                  '<div class="photo">'+
-                     '<img src="{[this.getIcon(values)]}"/>'+
+                  '<div class="photo">',
+                     '<img src="{[this.getIcon(values)]}"/>',
                   '</div>',
                   '<div class="itemTitle">{[this.getTitle(values)]}</div>',
-                  '<div class="date">{[this.getStartDate(values)]}</div>' +
+                  '<div class="date">{[this.getStartDate(values)]}</div>',
                   '<div class="itemDesc">{[this.getDesc(values)]}</div>',
-                  '<div class="promoImage">',
-                     '<img src="{[this.getPhoto(values)]}" style="{[this.getWidth()]}"/>'+
-                  '</div>',
-                  '<img class="promoImageAnchor" src="{[this.getPhoto(values)]}"/>'+
+                  '<tpl if="this.showImage(values)">',
+                     '<div class="promoImage">',
+                        '<img src="{[this.getPhoto(values)]}" style="{[this.getWidth()]}"/>',
+                     '</div>',
+                     '<img class="promoImageAnchor" src="{[this.getPhoto(values)]}"/>',
+                  '</tpl>',                  
                '</div>',
                 // @formatter:on
                {
@@ -280,9 +282,13 @@ Ext.define('Genesis.view.client.MerchantAccount',
                         value : values['type']
                      });
                   },
+                  showImage : function(values)
+                  {
+                     return (values.photo && values.photo['thumbnail_large_url']);
+                  },
                   getPhoto : function(values)
                   {
-                     return (!values.photo || !values.photo['thumbnail_large_url']) ? '' : values.photo['thumbnail_large_url'];
+                     return (values.photo['thumbnail_large_url']);
                   },
                   getStartDate : function(values)
                   {
@@ -298,7 +304,7 @@ Ext.define('Genesis.view.client.MerchantAccount',
                   },
                   getWidth : function()
                   {
-                  	var fn = Genesis.fn;
+                     var fn = Genesis.fn;
                      var width = fn.calcPxEm(document.body.clientWidth, -1 * 2 * 0.50 * 0.8, 1);
                      return ('width:' + fn.addUnit(fn.calcPx(width, 1)) + ';');
                   }

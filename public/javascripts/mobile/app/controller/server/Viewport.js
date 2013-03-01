@@ -125,13 +125,13 @@ Ext.define('Genesis.controller.server.Viewport',
       {
          title : me.setupTitle,
          message : msg,
-         buttons : ['Refresh License', 'Exit App'],
+         buttons : ['Refresh License', 'Restart'],
          callback : function(btn)
          {
             //
-            // Exit App, because we can't continue without Console Setup data
+            // Restart, because we can't continue without Console Setup data
             //
-            if (!btn || (btn.toLowerCase() == 'exit app'))
+            if (!btn || (btn.toLowerCase() == 'restart'))
             {
                navigator.app.exitApp();
             }
@@ -145,11 +145,11 @@ Ext.define('Genesis.controller.server.Viewport',
                      {
                         title : 'License Key Updated!',
                         message : me.licenseKeySuccessMsg(),
-                        buttons : ['Exit App'],
+                        buttons : ['Restart'],
                         callback : function()
                         {
                            //
-                           // Exit App, because we can't continue without Console Setup data
+                           // Restart because we can't continue without Console Setup data
                            //
                            navigator.app.exitApp();
                         }

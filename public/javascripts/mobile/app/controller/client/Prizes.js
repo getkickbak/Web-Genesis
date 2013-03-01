@@ -2,7 +2,7 @@ Ext.define('Genesis.controller.client.Prizes',
 {
    extend : 'Genesis.controller.PrizeRedemptionsBase',
    mixins : ['Genesis.controller.client.mixin.RedeemBase'],
-   requires : ['Ext.data.Store', 'Genesis.view.client.Prizes' , 'Genesis.view.client.Badges'],
+   requires : ['Ext.data.Store', 'Genesis.view.client.Prizes', 'Genesis.view.client.Badges'],
    inheritableStatics :
    {
    },
@@ -370,7 +370,8 @@ Ext.define('Genesis.controller.client.Prizes',
                   'merchant' : null
                }));
             }
-         }, false, me.updateOnFbMsg);
+            //}, false, me.updateOnFbMsg);
+         }, false);
       }
 
       return false;
@@ -497,7 +498,7 @@ Ext.define('Genesis.controller.client.Prizes',
    // --------------------------------------------------------------------------
    redeemChooseSCPage : function()
    {
-      var controller = this.getApplication().getController('client.Accounts');
+      var controller = this.getApplication().getController('client' + '.Accounts');
       controller.redeemPrizesChooseSCPage();
    }
    // --------------------------------------------------------------------------

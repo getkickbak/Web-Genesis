@@ -114,11 +114,11 @@ Ext.define('Genesis.controller.server.Settings',
          {
             title : 'License Key Updated!',
             message : me.licenseKeySuccessMsg(),
-            buttons : ['Exit App'],
+            buttons : ['Restart'],
             callback : function()
             {
                //
-               // Exit App, because we can't continue without Console Setup data
+               // Restart because we can't continue without Console Setup data
                //
                navigator.app.exitApp();
             }
