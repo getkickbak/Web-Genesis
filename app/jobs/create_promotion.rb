@@ -1,4 +1,5 @@
 module CreatePromotion
+  include ActionView::Helpers::TextHelper
   @queue = :create_promotion
   
   def self.logger
@@ -20,6 +21,7 @@ module CreatePromotion
       elsif count > max
         n = count/max + 1
       end  
+      message = "#{promotion.merchant.name} - #{promotion.message}".truncate(116, :separator => ' ')
       logger.info("Promotion(#{promotion.id}) requires #{n} iterations")
       for i in 0..n-1
         logger.info("Sending iteration #{i+1}")
@@ -40,7 +42,6 @@ module CreatePromotion
           end
           if device_list.length > 0
             #logger.debug("Device list: #{device_list}")
-            message = "#{promotion.merchant.name} - #{promotion.message}"
             ret = push.create_message(promotion.merchant.id, message, promotion.start_date, device_list)
             logger.info("Response body: #{ret.response}")
             if ret.success?
