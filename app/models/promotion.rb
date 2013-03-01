@@ -5,7 +5,7 @@ class Promotion
     
   property :id, Serial
   property :subject, String, :length => 64, :required => true, :default => ""
-  property :message, String, :length => 255, :required => true, :default => ""
+  property :message, String, :length => 114, :required => true, :default => ""
   property :photo, String, :auto_validation => false
   property :start_date, Date, :default => ::Constant::MIN_DATE
   property :end_date, Date, :default => ::Constant::MIN_DATE
