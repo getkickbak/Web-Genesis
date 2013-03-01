@@ -162,7 +162,7 @@ Ext.define('Genesis.controller.MainPageBase',
             // Remove all previous view from viewStack
             var controller = me.getApplication().getController('client' + '.Checkins');
             controller.fireEvent('setupCheckinInfo', 'checkin', null, null, null);
-            //me.getApplication().getController('client.Prizes').fireEvent('updatePrizeViews', null);
+            //me.getApplication().getController('client' + '.Prizes').fireEvent('updatePrizeViews', null);
             me.setAnimationMode(me.self.animationMode['fade']);
             me.pushView(me.getLogin());
             break;

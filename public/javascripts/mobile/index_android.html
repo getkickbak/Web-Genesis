@@ -38,7 +38,7 @@
          function _onGotoMainCallBackFn()
          {
             Ext.Viewport.setMasked(null);
-            var viewport = _application.getController('client.Viewport');
+            var viewport = _application.getController('client' + '.Viewport');
             if (viewport)
             {
                viewport.resetView();
@@ -72,14 +72,14 @@
          {
             if (launched == 0x111)
             {
-               var viewport = _application.getController('client.Viewport');
+               var viewport = _application.getController('client' + '.Viewport');
                viewport.appName = appName;
 
                //console.log("Launching App");
                Ext.create('Genesis.view.Viewport');
                //this.redirectTo('');
                console.log("Launched App");
-               navigator.splashscreen.hide();
+               //navigator.splashscreen.hide();
             }
          }
       </script>
@@ -93,14 +93,14 @@
          var merchantMode = false;
          var appName = 'GetKickBak';
          
-         /*
          var pushNotifAppName = 'KickBak Production';
          var pushNotifAppId = '4fef6fb0691c12.54726991';
          var pushNotifProjectId = '733275653511';
-         */
+         /*
          var pushNotifAppName = 'KickBak Dev Latest';
          var pushNotifAppId = '93D8A-5BE72';
          var pushNotifProjectId = '658015469194';
+         */
          var pushNotifType = 3;
 
          var hostRoot = "";
@@ -165,7 +165,7 @@
             {
                if (_application && (launched == 0x111) && !pausedDisabled)
                {
-                  _application.getController('client.Viewport').persistSyncStores();
+                  _application.getController('client' + '.Viewport').persistSyncStores();
                   console.log("App is Paused");
                }
             }, false);
@@ -192,7 +192,7 @@
             // add back button listener
             function onBackKeyDown(e)
             {
-               var viewport = _application.getController('client.Viewport');
+               var viewport = _application.getController('client' + '.Viewport');
 
                //e.preventDefault();
 

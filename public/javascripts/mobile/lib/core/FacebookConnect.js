@@ -153,7 +153,8 @@ Genesis.fb =
 {
    fbScope : ['email', 'user_birthday', 'publish_stream', 'read_friendlists', 'publish_actions'],
    fbConnectErrorMsg : 'Cannot retrive Facebook account information!',
-   fbConnectRequestMsg : 'Would you like to update your Facebook Timeline?',
+   fbConnectRequestMsg : 'By enabling Facebook connectivity, you will be received additional reward points everytime we update your KICKBAK activity to your Facebook account!',
+   //   fbConnectRequestMsg : 'Would you like to update your Facebook Timeline?',
    fbConnectReconnectMsg : 'Please confirm to Reconnect to Facebook',
    connectingToFBMsg : 'Connecting to Facebook ...',
    fbConnectFailMsg : 'Error Connecting to Facebook.',
@@ -264,8 +265,7 @@ Genesis.fb =
             {
                cb(params, operation);
             }
-            else
-            if (!me.cb['supress'])
+            else if (!me.cb['supress'])
             {
                Ext.device.Notification.show(
                {
@@ -300,11 +300,12 @@ Genesis.fb =
                permissions : me.fbScope,
                appId : "" + _appId
             }, Ext.bind(me.facebook_loginCallback, me));
-         }
+         };
+         
          if (!me.cb['supress'])
          {
-            var buttons = (Genesis.db.getLocalDB()['enableFB']) ? ['Confirm', 'Cancel'] : ['OK', 'Cancel'];
-            message = message || ((Genesis.db.getLocalDB()['enableFB']) ? me.fbConnectReconnectMsg : me.fbConnectRequestMsg);
+            var buttons = (db['enableFB']) ? ['Confirm', 'Cancel'] : ['OK', 'Cancel'];
+            message = message || ((db['enableFB']) ? me.fbConnectReconnectMsg : me.fbConnectRequestMsg);
             Ext.device.Notification.show(
             {
                title : 'Facebook Connect',
@@ -370,15 +371,13 @@ Genesis.fb =
                }
             });
          }
-         else
-         if (!res || res.cancelled || me.cb['iter'] >= 3)
+         else if (!res || res.cancelled || me.cb['iter'] >= 3)
          {
             Ext.Viewport.setMasked(null);
             me.cb['callback'](null, null);
             delete me.cb;
          }
-         else
-         if (me.cb['iter'] < 3)
+         else if (me.cb['iter'] < 3)
          {
             me.cb['iter']++;
             Ext.defer(function()

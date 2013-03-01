@@ -128,7 +128,7 @@ Ext.define('Genesis.controller.client.Viewport',
    // --------------------------------------------------------------------------
    onLocationUpdate : function(position)
    {
-      var me = this, payload = me.getApsPayload(), vstore = Ext.StoreMgr.get('VenueStore'), proxy = vstore.getProxy(), params =
+      var me = this, payload = me.getApsPayload(), vstore = Ext.StoreMgr.get('VenueStore'), viewport = me, proxy = vstore.getProxy(), params =
       {
          'merchant_id' : payload['merchant_id']
       };
@@ -168,7 +168,8 @@ Ext.define('Genesis.controller.client.Viewport',
                }
 
                viewport.setVenue(record);
-               controller = me.getApplication().getController('client.Checkins');
+               controller = me.getApplication().getController('client' + '.Checkins');
+               controller.setPosition(position);
                controller.fireEvent('checkin');
             }
             else

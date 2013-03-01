@@ -149,16 +149,10 @@ function initPushwoosh()
             {
                title : 'KICKBAK Notification',
                message : notification.aps.alert,
-               buttons : ['View Details', 'Cancel'],
-               callback : function(btn)
-               {
-                  if (btn.toLowerCase() == 'view details')
-                  {
-                     viewport.setApsPayload(userData)
-                     viewport.getGeoLocation();
-                  }
-               }
+               buttons : ['Dismiss']
             });
+            viewport.setApsPayload(userData)
+            viewport.getGeoLocation();
             //navigator.notification.alert(notification.aps.alert);
             //pushNotification.setApplicationIconBadgeNumber(0)
          }

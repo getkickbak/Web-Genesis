@@ -170,7 +170,8 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                         var redeemItem = store.getById(item.getData().getId());
                         Ext.Viewport.setMasked(null);
                         me.updatingRedemptionOnFacebook(redeemItem);
-                     }, false, me.updateOnFbMsg);
+                        //}, false, me.updateOnFbMsg);
+                     }, false);
                   }
 
                   Ext.device.Notification.show(

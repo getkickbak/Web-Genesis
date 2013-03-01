@@ -287,6 +287,7 @@ Ext.define('Genesis.controller.client.Merchants',
    onMainShowView : function(activeItem)
    {
       var me = this;
+
       if (Ext.os.is('Android'))
       {
          console.debug("Refreshing MerchantRenderStore ...");
@@ -304,6 +305,28 @@ Ext.define('Genesis.controller.client.Merchants',
          {
             animationName : 'x-paint-monitor-helper'
          });
+      }
+
+      //
+      // Set the initial page location to show to user
+      //
+      var feedContainer = me.getFeedContainer(), scroll = activeItem.getScrollable();
+
+      if (!activeItem.promotion || !feedContainer || !feedContainer.element)
+      {
+         scroll.getScroller().scrollTo(0, 0);
+      }
+      else
+      {
+         //
+         // Wait for rendering of the page to complete
+         //
+         Ext.defer(function()
+         {
+            scroll.getScroller().scrollTo(0, feedContainer.element.getY(), true);
+            console.debug("Located the latest Promotional Message Offset[" + feedContainer.element.getY() + "]");
+            delete activeItem.promotion;
+         }, 3 * 1000, me);
       }
    },
    onMainActivate : function(activeItem, c, oldActiveItem, eOpts)
@@ -327,6 +350,9 @@ Ext.define('Genesis.controller.client.Merchants',
       var rstore = Ext.StoreMgr.get('MerchantRenderStore'), cestore = Ext.StoreMgr.get('CheckinExploreStore');
       //if (rstore.getRange()[0] != vrecord)
       {
+         //
+         // Sync CheckinExplore with Venue object value
+         //
          var vrec = cestore.getById(vrecord.getId());
          if (vrec)
          {
@@ -371,10 +397,6 @@ Ext.define('Genesis.controller.client.Merchants',
          console.debug("Merchant Explore Mode");
       }
       //page.createView();
-
-      var scroll = activeItem.getScrollable();
-      scroll.getScroller().scrollTo(0, 0);
-
       var feedContainer = me.getFeedContainer();
       if (feedContainer)
       {

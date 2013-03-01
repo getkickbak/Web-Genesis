@@ -36,15 +36,15 @@ Ext.define('Genesis.view.client.SettingsPage',
          },
          items : [
          /*
-         {
-            xtype : 'textfield',
-            name : 'tagid',
-            clearIcon : false,
-            label : "Mobile Tag ID",
-            value : ' ',
-            readOnly : true
-         },
-         */
+          {
+          xtype : 'textfield',
+          name : 'tagid',
+          clearIcon : false,
+          label : "Mobile Tag ID",
+          value : ' ',
+          readOnly : true
+          },
+          */
          {
             xtype : 'textfield',
             cls : 'halfHeight',
@@ -107,6 +107,15 @@ Ext.define('Genesis.view.client.SettingsPage',
             label : '<img src="' + //
             'resources/themes/images/' + Genesis.constants.themeName + '/' + 'facebook_icon.png" ' + //
             'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Facebook',
+            value : 0
+         },
+         {
+            hidden : true,
+            xtype : 'togglefield',
+            name : 'twitter',
+            label : '<img src="' + //
+            'resources/themes/images/' + Genesis.constants.themeName + '/' + 'twitter_icon.png" ' + //
+            'style="height:' + (2.5 / 0.8) + 'em' + ';float:left;margin-right:0.8em;"/> Twitter',
             value : 0
          }]
       },
