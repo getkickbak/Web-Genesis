@@ -11,9 +11,9 @@ window.plugins = window.plugins ||
 
 Genesis.constants =
 {
-   host : 'http://www.dev1getkickbak.com',
+   //host : 'http://www.dev1getkickbak.com',
    //host : 'http://www.devgetkickbak.com',
-   //host : 'http://www.getkickbak.com',
+   host : 'http://www.getkickbak.com',
    isNfcEnabled : false,
    userName : 'Eric Chan',
    appMimeType : 'application/kickbak',

@@ -323,8 +323,7 @@ Ext.define('Genesis.controller.client.Merchants',
          //
          Ext.defer(function()
          {
-            var offset = scroll.getScroller().position.y;
-            scroll.getScroller().scrollTo(0, offset + feedContainer.element.getY(), true);
+            scroll.getScroller().scrollBy(0, feedContainer.element.getY(), true);
             console.debug("Located the latest Promotional Message Offset[" + feedContainer.element.getY() + "]");
             delete activeItem.promotion;
          }, 3 * 1000, me);
