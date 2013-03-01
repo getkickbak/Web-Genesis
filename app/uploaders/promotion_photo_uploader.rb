@@ -15,6 +15,14 @@ class PromotionPhotoUploader < CarrierWave::Uploader::Base
     "merchants/#{model.merchant.id}/promotions" if model.merchant
   end
 
+  def move_to_cache
+    true
+  end
+  
+  def move_to_store
+    true
+  end
+  
   # Provide a default URL as a default if there hasn't been a file uploaded:
   # def default_url
   #   "/images/fallback/" + [version_name, "default.png"].compact.join('_')

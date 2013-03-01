@@ -88,10 +88,13 @@ class Request
   def self.set_status(request, status, data = nil)
     if (defined? request) && request
       c = File.open(request.channel, "w+")
-      c.puts status.to_s
+      if data
+        c.puts "#{status.to_s}%#{data}"
+      else
+        c.puts status.to_s
+      end
       c.flush
       request.status = status
-      request.data = data if data
       request.update_ts = Time.now
       request.save
     end  
@@ -111,10 +114,13 @@ class Request
       r = c.gets 
       timer.cancel
       if (defined? r) && r
-        received_status = r.gsub(/\x0A/, '')
-        return (received_status.to_sym == status ? true : false)
+        received_str = r.gsub(/\x0A/, '')
+        res = received_str.split('%', 2)
+        rstatus = res[0]
+        result = rstatus.to_sym == status
+        return res.length == 1 ? { :result => result } : { :result => result, :data => res[1] }
       end
-      return false
+      return { :result => false }
     ensure
       Channel.free(self.channel_group, self.channel)    
     end  
