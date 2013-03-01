@@ -167,9 +167,12 @@ Ext.define('Genesis.controller.client.mixin.RedeemBase',
                   {
                      Genesis.fb.facebook_onLogin(function(params)
                      {
-                        var redeemItem = store.getById(item.getData().getId());
-                        Ext.Viewport.setMasked(null);
-                        me.updatingRedemptionOnFacebook(redeemItem);
+                        if (params)
+                        {
+                           var redeemItem = store.getById(item.getData().getId());
+                           Ext.Viewport.setMasked(null);
+                           me.updatingRedemptionOnFacebook(redeemItem);
+                        }
                         //}, false, me.updateOnFbMsg);
                      }, false);
                   }
